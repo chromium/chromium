@@ -3166,6 +3166,7 @@ chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
   deps = [
     ":chrome_unit_test_java",
     "//build/config/android/test/resource_overlay:unit_device_javatests",
+    "//chrome/android/features/keyboard_accessory:unit_device_javatests",
     "//chrome/android/features/tab_ui:unit_device_javatests",
     "//chrome/browser/back_press/android:unit_device_javatests",
     "//chrome/browser/image_descriptions:unit_device_javatests",
