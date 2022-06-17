@@ -12,7 +12,8 @@ ci.defaults.set(
     builder_group = "chromium.gpu.fyi",
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = 6 * time.hour,
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
     pool = ci.gpu.POOL,
     properties = {
         "perf_dashboard_machine_group": "ChromiumGPUFYI",
@@ -122,9 +123,7 @@ ci.gpu.linux_builder(
         category = "ChromeOS|LLVM",
         short_name = "gen",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -134,6 +133,8 @@ ci.gpu.linux_builder(
         short_name = "jcz",
     ),
     list_view = "chromium.gpu.experimental",
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.gpu.linux_builder(
@@ -142,9 +143,7 @@ ci.gpu.linux_builder(
         category = "ChromeOS|ARM",
         short_name = "kvn",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -154,6 +153,8 @@ ci.gpu.linux_builder(
         short_name = "oct",
     ),
     list_view = "chromium.gpu.experimental",
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.gpu.linux_builder(
@@ -179,6 +180,8 @@ ci.gpu.linux_builder(
         short_name = "zrk",
     ),
     list_view = "chromium.gpu.experimental",
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.gpu.linux_builder(
@@ -187,9 +190,7 @@ ci.gpu.linux_builder(
         category = "Android|Builder",
         short_name = "arm",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -198,9 +199,7 @@ ci.gpu.linux_builder(
         category = "Android|Builder",
         short_name = "arm64",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -209,9 +208,7 @@ ci.gpu.linux_builder(
         category = "Lacros|Builder",
         short_name = "rel",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -220,8 +217,6 @@ ci.gpu.linux_builder(
         category = "Linux|Builder",
         short_name = "rel",
     ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -231,8 +226,6 @@ ci.gpu.linux_builder(
         category = "Linux|Builder",
         short_name = "dbg",
     ),
-    goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -242,9 +235,6 @@ ci.gpu.linux_builder(
         category = "Linux",
         short_name = "tsn",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.mac_builder(
@@ -253,6 +243,8 @@ ci.gpu.mac_builder(
         category = "Mac|Builder",
         short_name = "rel",
     ),
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.gpu.mac_builder(
@@ -261,6 +253,8 @@ ci.gpu.mac_builder(
         category = "Mac|Builder",
         short_name = "asn",
     ),
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.gpu.mac_builder(
@@ -269,6 +263,8 @@ ci.gpu.mac_builder(
         category = "Mac|Builder",
         short_name = "dbg",
     ),
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.gpu.mac_builder(
@@ -292,6 +288,8 @@ ci.gpu.mac_builder(
         category = "Mac|Builder",
         short_name = "arm",
     ),
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.thin_tester(
@@ -649,9 +647,7 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|Release",
         short_name = "x86",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 gpu_fyi_windows_builder(
@@ -660,9 +656,7 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|Release",
         short_name = "x64",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 gpu_fyi_windows_builder(
@@ -671,9 +665,7 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|Debug",
         short_name = "x64",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 gpu_fyi_windows_builder(
@@ -682,9 +674,7 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|dx12vk",
         short_name = "rel",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 gpu_fyi_windows_builder(
@@ -693,9 +683,7 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|dx12vk",
         short_name = "dbg",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 gpu_fyi_windows_builder(
@@ -704,7 +692,5 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|XR",
         short_name = "x64",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
