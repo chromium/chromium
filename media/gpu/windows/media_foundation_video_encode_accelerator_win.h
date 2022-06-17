@@ -83,14 +83,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
       VideoCodec codec,
       bool populate_svc_info);
 
-  // Enumerates all hardware encoder backed IMFTransform instances for given
-  // codec.
-  uint32_t EnumerateHardwareEncoders(VideoCodec codec,
-                                     IMFActivate*** pp_activate);
-
   // Activates the asynchronous encoder instance |encoder_| according to codec
   // merit.
-  bool ActivateAsyncEncoder(IMFActivate** pp_activate,
+  bool ActivateAsyncEncoder(IMFActivate** pp_activates,
                             uint32_t activate_count,
                             bool is_constrained_h264);
 
@@ -149,6 +144,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Destroys encode session on |encoder_thread_task_runner_|.
   void DestroyTask();
+
+  // Initialize the encoder on |encoder_thread_task_runner_|.
+  void EncoderInitializeTask(const Config& config,
+                             std::unique_ptr<MediaLog> media_log);
 
   // Releases resources encoder holds.
   void ReleaseEncoderResources();
@@ -227,6 +226,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // This thread services tasks posted from the VEA API entry points
   // and runs them on a thread that can do heavy work and call MF COM interface.
   scoped_refptr<base::SingleThreadTaskRunner> encoder_thread_task_runner_;
+  SEQUENCE_CHECKER(encode_sequence_checker_);
 
   // DXGI device manager for handling hardware input textures
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
