@@ -302,6 +302,7 @@ tast_disabled_tests_from_chrome_all = [
 
   # http://crbug.com/1336853
   "arc.StandardizedKeyboardTyping",
+  "arc.StandardizedKeyboardTyping.tablet_mode",
   "arc.StandardizedKeyboardKeys.tablet_mode",
 
   # http://b/236312054
