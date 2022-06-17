@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -27,6 +28,8 @@ class SocketTag;
 
 namespace network {
 
+class BrokeredClientSocketFactory;
+
 // A client socket used exclusively with a socket broker. Currently intended for
 // Windows and Android only. Not intended to be used by non-brokered
 // connections. Generally, all calls pass through to an underlying
@@ -43,7 +46,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
           brokered_socket_performance_watcher,
       net::NetworkQualityEstimator* network_quality_estimator,
       net::NetLog* net_log,
-      const net::NetLogSource& source);
+      const net::NetLogSource& source,
+      BrokeredClientSocketFactory* client_socket_factory);
 
   ~TCPClientSocketBrokered() override;
 
@@ -54,9 +58,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
   int Bind(const net::IPEndPoint& address) override;
   bool SetKeepAlive(bool enable, int delay) override;
   bool SetNoDelay(bool no_delay) override;
-  void SetSocketCreatorForTesting(
-      base::RepeatingCallback<std::unique_ptr<net::TransportClientSocket>(void)>
-          socket_creator) override;
 
   // StreamSocket implementation.
   void SetBeforeConnectCallback(
@@ -102,6 +103,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
 
   void DidCompleteConnect(net::CompletionOnceCallback callback, int result);
 
+  void DidCompleteCreate(net::CompletionOnceCallback callback,
+                         mojo::PlatformHandle fd,
+                         int result);
+
   // The list of addresses we should try in order to establish a connection.
   net::AddressList addresses_;
 
@@ -120,10 +125,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
   // Need to store the tag in case ApplySocketTag() is called before Connect().
   net::SocketTag tag_;
 
+  // The underlying brokered socket. Created when the socket is created for
+  // Connect().
   std::unique_ptr<net::TransportClientSocket> brokered_socket_;
 
-  base::RepeatingCallback<std::unique_ptr<net::TransportClientSocket>(void)>
-      socket_creator_for_testing_;
+  // The ClientSocketFactory that created this socket. Used to send IPCs to the
+  // remote SocketBroker.
+  const raw_ptr<BrokeredClientSocketFactory> client_socket_factory_;
 
   base::WeakPtrFactory<TCPClientSocketBrokered> brokered_weak_ptr_factory_{
       this};

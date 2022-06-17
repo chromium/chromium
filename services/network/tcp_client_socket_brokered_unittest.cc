@@ -25,6 +25,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/brokered_client_socket_factory.h"
+#include "services/network/test/test_socket_broker_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,7 +38,11 @@ namespace network {
 class TCPClientSocketBrokeredTest : public testing::Test,
                                     public net::WithTaskEnvironment {
  public:
-  TCPClientSocketBrokeredTest() {}
+  TCPClientSocketBrokeredTest()
+      : receiver_(&socket_broker_impl_),
+        client_socket_factory_(
+            BrokeredClientSocketFactory(receiver_.BindNewPipeAndPassRemote())) {
+  }
 
   ~TCPClientSocketBrokeredTest() override = default;
 
@@ -52,6 +57,7 @@ class TCPClientSocketBrokeredTest : public testing::Test,
     listen_socket->Accept(&server_socket_, server_callback_.callback());
     net::AddressList addr = net::AddressList::CreateFromIPAddress(
         net::IPAddress::IPv4Localhost(), local_address.port());
+
     socket_ = client_socket_factory_.CreateTransportClientSocket(
         addr, nullptr, nullptr, net::NetLog::Get(), net::NetLogSource());
 
@@ -86,26 +92,18 @@ class TCPClientSocketBrokeredTest : public testing::Test,
     EXPECT_THAT(socket_->SetSendBufferSize(256), IsOk());
   }
 
-  std::unique_ptr<net::TransportClientSocket> FinishCreatingMockSocket() {
-    data_.set_connect_data(
-        net::MockConnect(net::ASYNC, net::ERR_CONNECTION_FAILED));
-    mock_client_socket_factory_.AddTcpSocketDataProvider(&data_);
-
-    return mock_client_socket_factory_.CreateTransportClientSocket(
-        net::AddressList::CreateFromIPAddress(net::IPAddress::IPv4Localhost(),
-                                              0),
-        nullptr, nullptr, net::NetLog::Get(), net::NetLogSource());
-  }
-
  protected:
   std::unique_ptr<net::TransportClientSocket> socket_;
   std::unique_ptr<net::TCPServerSocket> listen_socket;
   std::unique_ptr<net::StreamSocket> server_socket_;
+  mojo::Receiver<mojom::SocketBroker> receiver_;
   BrokeredClientSocketFactory client_socket_factory_;
   net::TestCompletionCallback server_callback_;
 
   net::MockClientSocketFactory mock_client_socket_factory_;
   net::StaticSocketDataProvider data_;
+
+  TestSocketBrokerImpl socket_broker_impl_;
 
   bool close_server_socket_on_next_send_;
 };
@@ -114,9 +112,8 @@ TEST_F(TCPClientSocketBrokeredTest, FailedConnect) {
   net::TestCompletionCallback callback;
   base::test::ScopedDisableRunLoopTimeout disable_timeout;
 
-  socket_->SetSocketCreatorForTesting(base::BindRepeating(
-      &TCPClientSocketBrokeredTest::FinishCreatingMockSocket,
-      base::Unretained(this)));
+  socket_broker_impl_.SetMockSocketTest(true);
+
   int result = socket_->Connect(callback.callback());
 
   ASSERT_EQ(result, net::ERR_IO_PENDING);
@@ -421,7 +418,8 @@ TEST_F(TCPClientSocketBrokeredTest, Tag) {
   ASSERT_TRUE(test_server.GetAddressList(&addr_list));
 
   TCPClientSocketBrokered client_socket(addr_list, nullptr, nullptr, nullptr,
-                                        net::NetLogSource());
+                                        net::NetLogSource(),
+                                        &client_socket_factory_);
 
   // Verify TCP connect packets are tagged and counted properly.
   int32_t tag_val1 = 0x12345678;

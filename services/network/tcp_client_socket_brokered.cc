@@ -11,6 +11,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/socket/tcp_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/brokered_client_socket_factory.h"
 
 namespace network {
 
@@ -19,12 +20,14 @@ TCPClientSocketBrokered::TCPClientSocketBrokered(
     std::unique_ptr<net::SocketPerformanceWatcher> socket_performance_watcher,
     net::NetworkQualityEstimator* network_quality_estimator,
     net::NetLog* net_log,
-    const net::NetLogSource& source)
+    const net::NetLogSource& source,
+    BrokeredClientSocketFactory* client_socket_factory)
     : addresses_(addresses),
       socket_performance_watcher_(std::move(socket_performance_watcher)),
       network_quality_estimator_(network_quality_estimator),
       net_log_(net_log),
-      source_(source) {}
+      source_(source),
+      client_socket_factory_(client_socket_factory) {}
 
 TCPClientSocketBrokered::~TCPClientSocketBrokered() {
   Disconnect();
@@ -50,12 +53,6 @@ bool TCPClientSocketBrokered::SetNoDelay(bool no_delay) {
   return brokered_socket_->SetNoDelay(no_delay);
 }
 
-void TCPClientSocketBrokered::SetSocketCreatorForTesting(
-    base::RepeatingCallback<std::unique_ptr<net::TransportClientSocket>(void)>
-        socket_creator) {
-  socket_creator_for_testing_ = std::move(socket_creator);
-}
-
 void TCPClientSocketBrokered::SetBeforeConnectCallback(
     const BeforeConnectCallback& before_connect_callback) {
   // TODO(liza): Implement this.
@@ -71,19 +68,15 @@ int TCPClientSocketBrokered::Connect(net::CompletionOnceCallback callback) {
     return net::OK;
 
   is_connect_in_progress_ = true;
-  // TODO(liza): Add a mojo call that creates a TCPClientSocket and calls
-  // Connect.
-  if (socket_creator_for_testing_) {
-    brokered_socket_ = socket_creator_for_testing_.Run();
-  } else {
-    brokered_socket_ = std::make_unique<net::TCPClientSocket>(
-        addresses_, std::move(socket_performance_watcher_),
-        network_quality_estimator_, net_log_, source_);
-  }
-  brokered_socket_->ApplySocketTag(tag_);
-  return brokered_socket_->Connect(base::BindOnce(
-      &TCPClientSocketBrokered::DidCompleteConnect,
-      brokered_weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  // TODO(https://crbug.com/1321274): Pass in AddressFamily of single IPEndPoint
+  client_socket_factory_->BrokerCreateTcpSocket(
+      addresses_.begin()->GetFamily(),
+      base::BindOnce(&TCPClientSocketBrokered::DidCompleteCreate,
+                     brokered_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
+
+  return net::ERR_IO_PENDING;
 }
 
 int TCPClientSocketBrokered::OpenSocketForBind(const net::IPEndPoint& address) {
@@ -107,6 +100,35 @@ void TCPClientSocketBrokered::DidCompleteConnect(
 
   std::move(callback).Run(result);
   is_connect_in_progress_ = false;
+}
+
+void TCPClientSocketBrokered ::DidCompleteCreate(
+    net::CompletionOnceCallback callback,
+    mojo::PlatformHandle fd,
+    int result) {
+  if (result != net::OK) {
+    std::move(callback).Run(result);
+    return;
+  }
+
+  // Create an unconnected TCPSocket with the socket fd that was opened in the
+  // browser process.
+  std::unique_ptr<net::TCPSocket> tcp_socket = std::make_unique<net::TCPSocket>(
+      std::move(socket_performance_watcher_), net_log_, source_);
+// TODO(https://crbug.com/1311014): call TCPSocketWin::AdoptUnconnectedSocket
+#if BUILDFLAG(IS_WIN)
+  tcp_socket->Open(addresses_.begin()->GetFamily());
+#else
+  tcp_socket->AdoptUnconnectedSocket(fd.ReleaseFD());
+#endif
+
+  // TODO(liza): Pass through the NetworkHandle.
+  brokered_socket_ = std::make_unique<net::TCPClientSocket>(
+      std::move(tcp_socket), addresses_, network_quality_estimator_);
+  brokered_socket_->ApplySocketTag(tag_);
+  brokered_socket_->Connect(base::BindOnce(
+      &TCPClientSocketBrokered::DidCompleteConnect,
+      brokered_weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void TCPClientSocketBrokered::Disconnect() {

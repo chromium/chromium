@@ -70,6 +70,12 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   TCPClientSocket(std::unique_ptr<TCPSocket> connected_socket,
                   const IPEndPoint& peer_address);
 
+  // Adopts an unconnected TCPSocket. This function is used by
+  // TCPClientSocketBrokered.
+  TCPClientSocket(std::unique_ptr<TCPSocket> unconnected_socket,
+                  const AddressList& addresses,
+                  NetworkQualityEstimator* network_quality_estimator);
+
   // Creates a TCPClientSocket from a bound-but-not-connected socket.
   static std::unique_ptr<TCPClientSocket> CreateFromBoundSocket(
       std::unique_ptr<TCPSocket> bound_socket,

@@ -524,6 +524,8 @@ source_set("test_support") {
     "test/test_resource_scheduler.h",
     "test/test_shared_url_loader_factory.cc",
     "test/test_shared_url_loader_factory.h",
+    "test/test_socket_broker_impl.cc",
+    "test/test_socket_broker_impl.h",
     "test/test_udp_socket.cc",
     "test/test_udp_socket.h",
     "test/test_url_loader_client.cc",

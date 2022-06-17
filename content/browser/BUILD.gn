@@ -1298,6 +1298,8 @@ source_set("browser") {
     "net/network_quality_observer_impl.h",
     "net/reporting_service_proxy.cc",
     "net/reporting_service_proxy.h",
+    "net/socket_broker_impl.cc",
+    "net/socket_broker_impl.h",
     "network_context_client_base_impl.cc",
     "network_context_client_base_impl.h",
     "network_sandbox_grant_result.h",

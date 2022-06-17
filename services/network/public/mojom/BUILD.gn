@@ -907,6 +907,7 @@ mojom("mojom") {
     "proxy_lookup_client.mojom",
     "proxy_resolving_socket.mojom",
     "reporting_service.mojom",
+    "socket_broker.mojom",
     "ssl_config.mojom",
     "supports_loading_mode.mojom",
     "tcp_socket.mojom",

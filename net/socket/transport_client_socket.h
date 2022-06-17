@@ -50,12 +50,6 @@ class NET_EXPORT TransportClientSocket : public StreamSocket {
   // should always be ready after successful connection or slightly earlier
   // during BeforeConnect handlers.
   virtual bool SetKeepAlive(bool enable, int delay_secs);
-
-  // Sets a callback that returns a TransportClientSocket. Used in tests for
-  // TCPClientSocketBrokered to create a MockTCPClientSocket.
-  virtual void SetSocketCreatorForTesting(
-      base::RepeatingCallback<std::unique_ptr<net::TransportClientSocket>(void)>
-          socket_creator);
 };
 
 }  // namespace net
