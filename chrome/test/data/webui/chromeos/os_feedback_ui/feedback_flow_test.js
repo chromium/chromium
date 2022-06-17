@@ -8,6 +8,7 @@ import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_pr
 import {FeedbackFlowElement, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {SendReportStatus} from 'chrome://os-feedback/feedback_types.js';
 import {setFeedbackServiceProviderForTesting, setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {eventToPromise, flushTasks} from '../../test_util.js';
@@ -194,6 +195,10 @@ export function FeedbackFlowTestSuite() {
     activePage = page.shadowRoot.querySelector('.iron-selected');
     assertTrue(!!activePage);
     assertEquals('searchPage', activePage.id);
+
+    // The description input element should have received focused.
+    const descriptionElement = activePage.shadowRoot.querySelector('textarea');
+    assertEquals(descriptionElement, getDeepActiveElement());
   });
 
   // Test the navigation from share data page to confirmation page after the

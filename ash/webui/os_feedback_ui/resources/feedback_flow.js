@@ -141,6 +141,7 @@ export class FeedbackFlowElement extends PolymerElement {
     switch (event.detail.currentState) {
       case FeedbackFlowState.SHARE_DATA:
         this.currentState_ = FeedbackFlowState.SEARCH;
+        this.shadowRoot.querySelector('search-page').focusInputElement();
         break;
       case FeedbackFlowState.CONFIRMATION:
         // Remove the text from previous search.
