@@ -120,7 +120,6 @@ bool StructTraits<
     return false;
 
   out->is_focusable = data.is_focusable();
-  out->is_visible = data.is_visible();
   out->should_autocomplete = data.should_autocomplete();
 
   if (!data.ReadRole(&out->role))
