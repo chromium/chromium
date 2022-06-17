@@ -27,7 +27,7 @@ android_library("constants_java") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityConstants.java" ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [ "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityPreferencesManagerTest.java" ]
