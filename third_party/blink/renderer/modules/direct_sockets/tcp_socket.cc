@@ -4,12 +4,16 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_socket.h"
 
+#include "base/barrier_callback.h"
+#include "base/functional/identity.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_socket_close_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_connection.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -18,10 +22,13 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/direct_sockets/direct_sockets_service_mojo_remote.h"
+#include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -159,14 +166,14 @@ void TCPSocket::Init(int32_t result,
                      mojo::ScopedDataPipeConsumerHandle receive_stream,
                      mojo::ScopedDataPipeProducerHandle send_stream) {
   if (result == net::OK && peer_addr) {
+    auto close_callback = base::BarrierCallback<bool>(
+        /*num_callbacks=*/2,
+        WTF::Bind(&TCPSocket::OnBothStreamsClosed, WrapWeakPersistent(this)));
+
     readable_stream_wrapper_ = MakeGarbageCollected<TCPReadableStreamWrapper>(
-        script_state_,
-        WTF::Bind(&TCPSocket::CloseInternal, WrapWeakPersistent(this)),
-        std::move(receive_stream));
+        script_state_, close_callback, std::move(receive_stream));
     writable_stream_wrapper_ = MakeGarbageCollected<TCPWritableStreamWrapper>(
-        script_state_,
-        WTF::Bind(&TCPSocket::CloseInternal, WrapWeakPersistent(this)),
-        std::move(send_stream));
+        script_state_, close_callback, std::move(send_stream));
 
     auto* connection = TCPSocketConnection::Create();
 
@@ -212,9 +219,12 @@ TCPSocket::GetTCPSocketObserver() {
 }
 
 void TCPSocket::OnSocketConnectionError() {
-  if (Initialized()) {
-    CloseInternal(/*error=*/true);
+  if (!Initialized()) {
+    return;
   }
+
+  readable_stream_wrapper_->ErrorStream(net::ERR_CONNECTION_ABORTED);
+  writable_stream_wrapper_->ErrorStream(net::ERR_CONNECTION_ABORTED);
 }
 
 void TCPSocket::OnServiceConnectionError() {
@@ -226,19 +236,13 @@ void TCPSocket::OnServiceConnectionError() {
 }
 
 void TCPSocket::OnReadError(int32_t net_error) {
-  if (net_error > 0 || net_error == net::Error::ERR_IO_PENDING) {
-    return;
-  }
-
-  readable_stream_wrapper_->CloseStream(/*error=*/true);
+  // |net_error| equal to net::OK means EOF -- in this case the
+  // stream is not really errored but rather closed gracefully.
+  readable_stream_wrapper_->ErrorStream(net_error);
 }
 
 void TCPSocket::OnWriteError(int32_t net_error) {
-  if (net_error > 0 || net_error == net::Error::ERR_IO_PENDING) {
-    return;
-  }
-
-  writable_stream_wrapper_->CloseStream(/*error=*/true);
+  writable_stream_wrapper_->ErrorStream(net_error);
 }
 
 void TCPSocket::Trace(Visitor* visitor) const {
@@ -254,42 +258,16 @@ bool TCPSocket::HasPendingActivity() const {
   return Socket::HasPendingActivity();
 }
 
-void TCPSocket::Close(const SocketCloseOptions* options,
-                      ExceptionState& exception_state) {
-  if (!Initialized()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Socket is not properly initialized.");
-    return;
-  }
+void TCPSocket::OnBothStreamsClosed(std::vector<bool> args) {
+  DCHECK_EQ(args.size(), 2U);
+  // At least one callback was invoked with error = true.
+  bool error = base::ranges::any_of(args, base::identity());
 
-  if (Closed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Socket is already closed or errored.");
-    return;
-  }
-
-  if (!options->hasForce() || !options->force()) {
-    if (readable_stream_wrapper_->Locked() ||
-        writable_stream_wrapper_->Locked()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Close called on locked streams.");
-      return;
-    }
-  }
-
-  CloseInternal(/*error=*/false);
-  DCHECK(Closed());
-}
-
-void TCPSocket::CloseInternal(bool error) {
   tcp_socket_.reset();
   socket_observer_.reset();
 
   CloseServiceAndResetFeatureHandle();
   ResolveOrRejectClosed(error);
-
-  readable_stream_wrapper_->CloseStream(error);
-  writable_stream_wrapper_->CloseStream(error);
 }
 
 }  // namespace blink

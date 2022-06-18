@@ -17,5 +17,5 @@
   [CallWith=ScriptState] readonly attribute Promise<void> closed;
 
   [CallWith=ScriptState, RaisesException, Measure]
-  Promise<void> close(optional SocketCloseOptions options = {});
+  Promise<void> close();
 };

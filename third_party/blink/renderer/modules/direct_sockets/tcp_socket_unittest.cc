@@ -11,10 +11,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_socket_close_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_readable_stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -41,8 +44,7 @@ TEST(TCPSocketTest, CloseBeforeInit) {
   auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
 
   auto close_promise =
-      tcp_socket->close(script_state, blink::SocketCloseOptions::Create(),
-                        scope.GetExceptionState());
+      tcp_socket->close(script_state, scope.GetExceptionState());
 
   ASSERT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
@@ -66,8 +68,7 @@ TEST(TCPSocketTest, CloseAfterInitWithoutResultOK) {
   ASSERT_TRUE(connection_tester.IsRejected());
 
   auto close_promise =
-      tcp_socket->close(script_state, blink::SocketCloseOptions::Create(),
-                        scope.GetExceptionState());
+      tcp_socket->close(script_state, scope.GetExceptionState());
 
   ASSERT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
@@ -83,17 +84,18 @@ TEST(TCPSocketTest, CloseAfterInitWithResultOK) {
   auto connection_promise = tcp_socket->connection(script_state);
   ScriptPromiseTester connection_tester(script_state, connection_promise);
 
-  auto [_, consumer] = CreateDataPipe();
+  auto [consumer_complement, consumer] = CreateDataPipe();
+  auto [producer, producer_complement] = CreateDataPipe();
   tcp_socket->Init(net::OK, net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
                    net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
-                   std::move(consumer), mojo::ScopedDataPipeProducerHandle());
+                   std::move(consumer), std::move(producer));
 
   connection_tester.WaitUntilSettled();
   ASSERT_TRUE(connection_tester.IsFulfilled());
 
   auto close_promise =
-      tcp_socket->close(script_state, blink::SocketCloseOptions::Create(),
-                        scope.GetExceptionState());
+      tcp_socket->close(script_state, scope.GetExceptionState());
+  test::RunPendingTasks();
   ASSERT_FALSE(scope.GetExceptionState().HadException());
 }
 
@@ -106,10 +108,11 @@ TEST(TCPSocketTest, OnSocketObserverConnectionError) {
   auto connection_promise = tcp_socket->connection(script_state);
   ScriptPromiseTester connection_tester(script_state, connection_promise);
 
-  auto [_, consumer] = CreateDataPipe();
+  auto [consumer_complement, consumer] = CreateDataPipe();
+  auto [producer, producer_complement] = CreateDataPipe();
   tcp_socket->Init(net::OK, net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
                    net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
-                   std::move(consumer), mojo::ScopedDataPipeProducerHandle());
+                   std::move(consumer), std::move(producer));
 
   connection_tester.WaitUntilSettled();
   ASSERT_TRUE(connection_tester.IsFulfilled());
@@ -120,12 +123,19 @@ TEST(TCPSocketTest, OnSocketObserverConnectionError) {
   // Trigger OnSocketObserverConnectionError().
   auto observer = tcp_socket->GetTCPSocketObserver();
   observer.reset();
+  consumer_complement.reset();
+  producer_complement.reset();
 
   closed_tester.WaitUntilSettled();
   ASSERT_TRUE(closed_tester.IsRejected());
 }
 
-TEST(TCPSocketTest, OnReadError) {
+class TCPSocketCloseTest
+    : public testing::TestWithParam<std::tuple<bool, bool>> {};
+
+TEST_P(TCPSocketCloseTest, OnErrorOrClose) {
+  auto [read_error, write_error] = GetParam();
+
   V8TestingScope scope;
 
   auto* script_state = scope.GetScriptState();
@@ -134,10 +144,11 @@ TEST(TCPSocketTest, OnReadError) {
   auto connection_promise = tcp_socket->connection(script_state);
   ScriptPromiseTester connection_tester(script_state, connection_promise);
 
-  auto [_, consumer] = CreateDataPipe();
+  auto [consumer_complement, consumer] = CreateDataPipe();
+  auto [producer, producer_complement] = CreateDataPipe();
   tcp_socket->Init(net::OK, net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
                    net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0},
-                   std::move(consumer), mojo::ScopedDataPipeProducerHandle());
+                   std::move(consumer), std::move(producer));
 
   connection_tester.WaitUntilSettled();
   ASSERT_TRUE(connection_tester.IsFulfilled());
@@ -145,10 +156,48 @@ TEST(TCPSocketTest, OnReadError) {
   ScriptPromiseTester closed_tester(script_state,
                                     tcp_socket->closed(script_state));
 
-  tcp_socket->OnReadError(net::ERR_UNEXPECTED);
+  if (read_error) {
+    tcp_socket->OnReadError(net::ERR_UNEXPECTED);
+    consumer_complement.reset();
+    test::RunPendingTasks();
+  } else {
+    auto* readable = tcp_socket->readable_stream_wrapper_->Readable();
+    auto cancel = ScriptPromiseTester(
+        script_state, readable->cancel(script_state, ASSERT_NO_EXCEPTION));
+    cancel.WaitUntilSettled();
+    ASSERT_TRUE(cancel.IsFulfilled());
+  }
 
   ASSERT_EQ(tcp_socket->readable_stream_wrapper_->GetState(),
-            StreamWrapper::State::kAborted);
+            read_error ? StreamWrapper::State::kAborted
+                       : StreamWrapper::State::kClosed);
+
+  if (write_error) {
+    tcp_socket->OnWriteError(net::ERR_UNEXPECTED);
+    producer_complement.reset();
+    test::RunPendingTasks();
+  } else {
+    auto* writable = tcp_socket->writable_stream_wrapper_->Writable();
+    auto abort = ScriptPromiseTester(
+        script_state, writable->abort(script_state, ASSERT_NO_EXCEPTION));
+    abort.WaitUntilSettled();
+    ASSERT_TRUE(abort.IsFulfilled());
+  }
+
+  ASSERT_EQ(tcp_socket->writable_stream_wrapper_->GetState(),
+            write_error ? StreamWrapper::State::kAborted
+                        : StreamWrapper::State::kClosed);
+
+  closed_tester.WaitUntilSettled();
+  if (!read_error && !write_error) {
+    ASSERT_TRUE(closed_tester.IsFulfilled());
+  } else {
+    ASSERT_TRUE(closed_tester.IsRejected());
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(/**/,
+                         TCPSocketCloseTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace blink

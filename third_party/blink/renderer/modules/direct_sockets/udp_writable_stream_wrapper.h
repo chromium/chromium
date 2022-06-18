@@ -26,22 +26,26 @@ class MODULES_EXPORT UDPWritableStreamWrapper final
     : public GarbageCollected<UDPWritableStreamWrapper>,
       public WritableStreamWrapper {
  public:
-  UDPWritableStreamWrapper(ScriptState* script_state,
-                           const Member<UDPSocketMojoRemote> udp_socket_);
+  UDPWritableStreamWrapper(ScriptState*,
+                           CloseOnceCallback,
+                           const Member<UDPSocketMojoRemote>);
 
-  void CloseStream(bool error) override;
+  // WritableStreamWrapper:
+  void CloseStream() override;
+  void ErrorStream(int32_t error_code) override;
   bool HasPendingWrite() const override;
-
   void Trace(Visitor*) const override;
 
+ protected:
+  // WritableStreamWrapper:
+  void OnAbortSignal() override;
+  ScriptPromise Write(ScriptValue chunk, ExceptionState&) override;
+
  private:
-  class UDPUnderlyingSink;
-
-  ScriptPromise Write(ScriptValue chunk,
-                      ExceptionState& exception_state) override;
-
   // Callback for DirectUDPSocket::Send().
   void OnSend(int32_t result);
+
+  CloseOnceCallback on_close_;
 
   const Member<UDPSocketMojoRemote> udp_socket_;
   Member<ScriptPromiseResolver> send_resolver_;
