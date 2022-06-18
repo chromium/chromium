@@ -134,8 +134,10 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   int run_nesting_level() const { return run_nesting_level_; }
   bool keep_running() const { return keep_running_; }
 
+#if BUILDFLAG(IS_IOS)
   void OnAttach();
   void OnDetach();
+#endif
 
   // Sets this pump's delegate.  Signals the appropriate sources if
   // |delegateless_work_| is true.  |delegate| can be NULL.

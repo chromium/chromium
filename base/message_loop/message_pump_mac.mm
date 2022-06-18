@@ -331,6 +331,7 @@ void MessagePumpCFRunLoopBase::InitializeFeatures() {
       std::memory_order_relaxed);
 }
 
+#if BUILDFLAG(IS_IOS)
 void MessagePumpCFRunLoopBase::OnAttach() {
   CHECK_EQ(nesting_level_, 0);
   // On iOS: the MessagePump is attached while it's already running.
@@ -342,8 +343,18 @@ void MessagePumpCFRunLoopBase::OnAttach() {
 }
 
 void MessagePumpCFRunLoopBase::OnDetach() {
-  CHECK_EQ(nesting_level_, 0);
+  // This function is called on shutdown. This can happen at either
+  // `nesting_level` 1 or 0:
+  //   `nesting_level_ == 0`: When this is detached as part of tear down outside
+  //   of a run loop (e.g. ~TaskEnvironment). `nesting_level_ == 1`: When this
+  //   is detached as part of a native shutdown notification ran from the
+  //   message pump itself.
+  // Additional nesting would be surprising as it would imply that unwinding the
+  // nested loop has to go through the detached MessagePump again...
+  CHECK_GE(nesting_level_, 0);
+  CHECK_LE(nesting_level_, 1);
 }
+#endif  // BUILDFLAG(IS_IOS)
 
 void MessagePumpCFRunLoopBase::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
