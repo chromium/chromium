@@ -767,6 +767,20 @@ TEST_F(RawPtrTest, PlusEqualOperator) {
   EXPECT_EQ(g_get_for_dereference_cnt, 2);
 }
 
+TEST_F(RawPtrTest, PlusEqualOperatorTypes) {
+  int foo[] = {42, 43, 44, 45};
+  CountingRawPtr<int> ptr = foo;
+  ASSERT_EQ(*ptr, 42);
+  ptr += 2;  // Positive literal.
+  ASSERT_EQ(*ptr, 44);
+  ptr -= 2;  // Negative literal.
+  ASSERT_EQ(*ptr, 42);
+  ptr += ptrdiff_t{1};  // ptrdiff_t.
+  ASSERT_EQ(*ptr, 43);
+  ptr += size_t{2};  // size_t.
+  ASSERT_EQ(*ptr, 45);
+}
+
 TEST_F(RawPtrTest, MinusEqualOperator) {
   int foo[] = {42, 43, 44, 45};
   CountingRawPtr<int> ptr = &foo[3];
@@ -776,6 +790,20 @@ TEST_F(RawPtrTest, MinusEqualOperator) {
   EXPECT_EQ(g_get_for_comparison_cnt, 0);
   EXPECT_EQ(g_get_for_extraction_cnt, 0);
   EXPECT_EQ(g_get_for_dereference_cnt, 2);
+}
+
+TEST_F(RawPtrTest, MinusEqualOperatorTypes) {
+  int foo[] = {42, 43, 44, 45};
+  CountingRawPtr<int> ptr = &foo[3];
+  ASSERT_EQ(*ptr, 45);
+  ptr -= 2;  // Positive literal.
+  ASSERT_EQ(*ptr, 43);
+  ptr -= -2;  // Negative literal.
+  ASSERT_EQ(*ptr, 45);
+  ptr -= ptrdiff_t{2};  // ptrdiff_t.
+  ASSERT_EQ(*ptr, 43);
+  ptr -= size_t{1};  // size_t.
+  ASSERT_EQ(*ptr, 42);
 }
 
 TEST_F(RawPtrTest, AdvanceString) {

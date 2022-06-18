@@ -83,6 +83,14 @@
 
 namespace partition_alloc::internal {
 
+// This type trait verifies a type can be used as a pointer offset.
+//
+// We support pointer offsets in signed (ptrdiff_t) or unsigned (size_t) values.
+// Smaller types are also allowed.
+template <typename Z>
+static constexpr bool offset_type =
+    std::is_integral_v<Z> && sizeof(Z) <= sizeof(ptrdiff_t);
+
 static constexpr size_t kAllocInfoSize = 1 << 20;
 
 struct AllocInfo {
@@ -972,8 +980,9 @@ PartitionAllocGetSlotStartInBRPPool(uintptr_t address) {
 //
 // This isn't a general purpose function. The caller is responsible for ensuring
 // that the ref-count is in place for this allocation.
+template <typename Z, typename = std::enable_if_t<offset_type<Z>, void>>
 PA_ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(uintptr_t address,
-                                                    ptrdiff_t delta_in_bytes) {
+                                                    Z delta_in_bytes) {
   // Required for pointers right past an allocation. See
   // |PartitionAllocGetSlotStartInBRPPool()|.
   uintptr_t adjusted_address = address - kPartitionPastAllocationAdjustment;

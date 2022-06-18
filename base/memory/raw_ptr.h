@@ -62,6 +62,14 @@ namespace internal {
 // These classes/structures are part of the raw_ptr implementation.
 // DO NOT USE THESE CLASSES DIRECTLY YOURSELF.
 
+// This type trait verifies a type can be used as a pointer offset.
+//
+// We support pointer offsets in signed (ptrdiff_t) or unsigned (size_t) values.
+// Smaller types are also allowed.
+template <typename Z>
+static constexpr bool offset_type =
+    std::is_integral_v<Z> && sizeof(Z) <= sizeof(ptrdiff_t);
+
 struct RawPtrNoOpImpl {
   // Wraps a pointer.
   template <typename T>
@@ -105,8 +113,10 @@ struct RawPtrNoOpImpl {
   }
 
   // Advance the wrapped pointer by `delta_elems`.
-  template <typename T>
-  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, ptrdiff_t delta_elems) {
+  template <typename T,
+            typename Z,
+            typename = std::enable_if_t<offset_type<Z>, void>>
+  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
   }
 
@@ -246,8 +256,10 @@ struct MTECheckedPtrImpl {
   }
 
   // Advance the wrapped pointer by `delta_elems`.
-  template <typename T>
-  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, ptrdiff_t delta_elems) {
+  template <typename T,
+            typename Z,
+            typename = std::enable_if_t<offset_type<Z>, void>>
+  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
   }
 
@@ -423,8 +435,10 @@ struct BackupRefPtrImpl {
   }
 
   // Advance the wrapped pointer by `delta_elems`.
-  template <typename T>
-  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, ptrdiff_t delta_elems) {
+  template <typename T,
+            typename Z,
+            typename = std::enable_if_t<offset_type<Z>, void>>
+  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     uintptr_t address = reinterpret_cast<uintptr_t>(wrapped_ptr);
     if (IsSupportedAndNotNull(address))
@@ -457,8 +471,17 @@ struct BackupRefPtrImpl {
   static BASE_EXPORT NOINLINE void AcquireInternal(uintptr_t address);
   static BASE_EXPORT NOINLINE void ReleaseInternal(uintptr_t address);
   static BASE_EXPORT NOINLINE bool IsPointeeAlive(uintptr_t address);
-  static BASE_EXPORT NOINLINE bool IsValidDelta(uintptr_t address,
-                                                ptrdiff_t delta_in_bytes);
+  template <typename Z, typename = std::enable_if_t<offset_type<Z>, void>>
+  static ALWAYS_INLINE bool IsValidDelta(uintptr_t address, Z delta_in_bytes) {
+    if constexpr (std::is_signed_v<Z>)
+      return IsValidSignedDelta(address, ptrdiff_t{delta_in_bytes});
+    else
+      return IsValidUnsignedDelta(address, size_t{delta_in_bytes});
+  }
+  static BASE_EXPORT NOINLINE bool IsValidSignedDelta(uintptr_t address,
+                                                      ptrdiff_t delta_in_bytes);
+  static BASE_EXPORT NOINLINE bool IsValidUnsignedDelta(uintptr_t address,
+                                                        size_t delta_in_bytes);
 };
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -510,8 +533,10 @@ struct AsanBackupRefPtrImpl {
   }
 
   // Advance the wrapped pointer by `delta_elems`.
-  template <typename T>
-  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, ptrdiff_t delta_elems) {
+  template <typename T,
+            typename Z,
+            typename = std::enable_if_t<offset_type<Z>, void>>
+  static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
   }
 
@@ -847,11 +872,15 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
     --(*this);
     return result;
   }
-  ALWAYS_INLINE raw_ptr& operator+=(ptrdiff_t delta_elems) {
+  template <typename Z,
+            typename = std::enable_if_t<internal::offset_type<Z>, void>>
+  ALWAYS_INLINE raw_ptr& operator+=(Z delta_elems) {
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, delta_elems);
     return *this;
   }
-  ALWAYS_INLINE raw_ptr& operator-=(ptrdiff_t delta_elems) {
+  template <typename Z,
+            typename = std::enable_if_t<internal::offset_type<Z>, void>>
+  ALWAYS_INLINE raw_ptr& operator-=(Z delta_elems) {
     return *this += -delta_elems;
   }
 
