@@ -339,6 +339,9 @@ public final class ProductionSupportedFlagList {
                             + " same value as before."),
             Flag.baseFeature(BlinkFeatures.THREADED_PRELOAD_SCANNER,
                     "If enabled, the HTMLPreloadScanner will run on a worker thread."),
+            Flag.baseFeature(BlinkFeatures.TIMED_HTML_PARSER_BUDGET,
+                    "If enabled, the HTMLDocumentParser will use a budget based on elapsed time"
+                            + " rather than token count."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

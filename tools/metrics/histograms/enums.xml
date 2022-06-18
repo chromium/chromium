@@ -55477,6 +55477,7 @@ from previous Chrome versions.
   <int value="-1775842908" label="EnableOAuthIpp:disabled"/>
   <int value="-1774818943" label="VrWebInputEditing:enabled"/>
   <int value="-1774290918" label="webview-shadow-dom-fenced-frames"/>
+  <int value="-1773925297" label="TimedHtmlParserBudget:disabled"/>
   <int value="-1772942854" label="LongPressBackForHistory:enabled"/>
   <int value="-1772905637"
       label="RunVideoCaptureServiceInBrowserProcess:enabled"/>
@@ -61447,6 +61448,7 @@ from previous Chrome versions.
   <int value="2133594095" label="CryptAuthV2DeviceActivityStatus:disabled"/>
   <int value="2133647636" label="ClipboardFilenames:disabled"/>
   <int value="2134480727" label="MediaSessionAccelerators:disabled"/>
+  <int value="2135378598" label="TimedHtmlParserBudget:enabled"/>
   <int value="2135408204" label="OverscrollHistoryNavigation:disabled"/>
   <int value="2137113620"
       label="ProcessSharingWithStrictSiteInstances:enabled"/>
