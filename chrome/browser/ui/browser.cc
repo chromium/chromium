@@ -2819,13 +2819,7 @@ void Browser::TabDetachedAtImpl(content::WebContents* contents,
 
 void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
                                                  bool should_show_loading_ui) {
-  if (base::FeatureList::IsEnabled(features::kStopRenderingLoadingAnimation)) {
-    auto* browser_view = source->GetPrimaryMainFrame()->GetView();
-    window_->UpdateLoadingAnimations(browser_view->IsShowing() &&
-                                     tab_strip_model_->TabsAreLoading());
-  } else {
-    window_->UpdateLoadingAnimations(tab_strip_model_->TabsAreLoading());
-  }
+  window_->UpdateLoadingAnimations(tab_strip_model_->TabsAreLoading());
   window_->UpdateTitleBar();
 
   WebContents* selected_contents = tab_strip_model_->GetActiveWebContents();

@@ -1421,10 +1421,6 @@ void BrowserView::UpdateLoadingAnimations(bool should_animate) {
   }
 }
 
-bool BrowserView::IsLoadingAnimationRunningForTesting() const {
-  return loading_animation_timer_.IsRunning();
-}
-
 void BrowserView::SetStarredState(bool is_starred) {
   PageActionIconView* star_icon =
       toolbar_button_provider_->GetPageActionIconView(
@@ -2197,16 +2193,6 @@ void BrowserView::TryNotifyWindowBoundsChanged(const gfx::Rect& widget_bounds) {
 
   last_widget_bounds_ = widget_bounds;
   browser()->extension_window_controller()->NotifyWindowBoundsChanged();
-}
-
-void BrowserView::OnWidgetVisibilityChanged(views::Widget* widget,
-                                            bool visible) {
-  if (!base::FeatureList::IsEnabled(features::kStopRenderingLoadingAnimation)) {
-    return;
-  }
-
-  UpdateLoadingAnimations(visible &&
-                          browser_->tab_strip_model()->TabsAreLoading());
 }
 
 void BrowserView::TouchModeChanged() {
