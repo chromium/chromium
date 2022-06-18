@@ -15299,6 +15299,15 @@
      ]
     ]
    },
+   "window-placement": {
+    "fullscreen-companion-window-manual.tentative.https.html": [
+     "fe82916aa26cc488e23567d4a2ccfeff33884ed4",
+     [
+      null,
+      {}
+     ]
+    ]
+   },
    "xhr": {
     "send-authentication-existing-session-manual.htm": [
      "a80efd6e8436408db15d8019beef3abc0dfd0ab9",
@@ -336357,7 +336366,13 @@
     "README.md": [
      "2a7df11c32c2748bd63b7e427bea18079cb432ff",
      []
-    ]
+    ],
+    "resources": {
+     "helpers.js": [
+      "886098923d80e801dce753eecc91f723291bc87c",
+      []
+     ]
+    }
    },
    "workers": {
     "DIR_METADATA": [
@@ -380829,7 +380844,7 @@
        ]
       ],
       "grid-shorthand-invalid.html": [
-       "cdcbb4c5443d1e9e46e85985a25e702c94b88f4d",
+       "e5dbe7821c11f45d5663c6ebdf1d5261dbd493c6",
        [
         null,
         {}
@@ -567704,7 +567719,7 @@
    },
    "window-placement": {
     "multi-screen-window-open.tentative.https.html": [
-     "00c00d904507a1fae26b3df3ff25eb15c20f294d",
+     "c9973fc490e03633253f930c750883bc8e594f94",
      [
       null,
       {
