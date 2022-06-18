@@ -388,8 +388,7 @@ views::View* PartialTranslateBubbleView::GetCurrentView() const {
 }
 
 void PartialTranslateBubbleView::Translate() {
-  // TODO(crbug/1314825): Update implementation when PartialTranslateManager is
-  // complete.
+  model_->Translate();
   SwitchView(PartialTranslateBubbleModel::VIEW_STATE_TRANSLATING);
   translate::ReportPartialTranslateBubbleUiAction(
       translate::PartialTranslateBubbleUiEvent::TARGET_LANGUAGE_TAB_SELECTED);

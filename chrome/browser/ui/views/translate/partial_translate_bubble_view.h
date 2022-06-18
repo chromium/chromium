@@ -94,6 +94,16 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   void CloseBubble() override;
 
  private:
+  friend class PartialTranslateBubbleViewTest;
+  FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
+                           TargetLanguageTabTriggersTranslate);
+  FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
+                           TabSelectedAfterTranslation);
+  FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
+                           SourceLanguageTabUpdatesViewState);
+  FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
+                           SourceLanguageTabSelectedLogged);
+
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
 
