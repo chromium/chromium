@@ -137,6 +137,8 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
  public:
   struct VideoTrackCallbacks {
     VideoCaptureDeliverFrameInternalCallback frame_callback;
+    VideoCaptureNotifyFrameDroppedInternalCallback
+        notify_frame_dropped_callback;
     DeliverEncodedVideoFrameInternalCallback encoded_frame_callback;
     VideoTrackSettingsInternalCallback settings_callback;
     VideoTrackFormatInternalCallback format_callback;
@@ -159,6 +161,8 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   void AddCallbacks(
       const MediaStreamVideoTrack* track,
       VideoCaptureDeliverFrameInternalCallback frame_callback,
+      VideoCaptureNotifyFrameDroppedInternalCallback
+          notify_frame_dropped_callback,
       DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
       VideoTrackSettingsInternalCallback settings_callback,
       VideoTrackFormatInternalCallback format_callback);
@@ -178,6 +182,9 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
       std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       const base::TimeTicks& estimated_capture_time,
       bool is_device_rotated);
+
+  // Deliver an indication that a frame was dropped.
+  void DoNotifyFrameDropped(media::VideoCaptureFrameDropReason reason);
 
   void DeliverEncodedVideoFrame(scoped_refptr<EncodedVideoFrame> frame,
                                 base::TimeTicks estimated_capture_time);
@@ -270,6 +277,8 @@ VideoTrackAdapter::VideoFrameResolutionAdapter::~VideoFrameResolutionAdapter() {
 void VideoTrackAdapter::VideoFrameResolutionAdapter::AddCallbacks(
     const MediaStreamVideoTrack* track,
     VideoCaptureDeliverFrameInternalCallback frame_callback,
+    VideoCaptureNotifyFrameDroppedInternalCallback
+        notify_frame_dropped_callback,
     DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
     VideoTrackSettingsInternalCallback settings_callback,
     VideoTrackFormatInternalCallback format_callback) {
@@ -285,8 +294,9 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::AddCallbacks(
   }
 
   VideoTrackCallbacks track_callbacks = {
-      std::move(frame_callback), std::move(encoded_frame_callback),
-      std::move(settings_callback), std::move(format_callback)};
+      std::move(frame_callback), std::move(notify_frame_dropped_callback),
+      std::move(encoded_frame_callback), std::move(settings_callback),
+      std::move(format_callback)};
   callbacks_.emplace(track, std::move(track_callbacks));
 }
 
@@ -334,7 +344,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
 
   auto frame_drop_reason = media::VideoCaptureFrameDropReason::kNone;
   if (MaybeDropFrame(*video_frame, frame_rate, &frame_drop_reason)) {
-    PostFrameDroppedToMainTaskRunner(frame_drop_reason);
+    DoNotifyFrameDropped(frame_drop_reason);
     return;
   }
 
@@ -436,10 +446,19 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DoDeliverFrame(
   }
 }
 
+void VideoTrackAdapter::VideoFrameResolutionAdapter::DoNotifyFrameDropped(
+    media::VideoCaptureFrameDropReason reason) {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+  PostFrameDroppedToMainTaskRunner(reason);
+  for (const auto& callback : callbacks_)
+    callback.second.notify_frame_dropped_callback.Run();
+}
+
 bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
     const media::VideoFrame& frame,
     float source_frame_rate,
     media::VideoCaptureFrameDropReason* reason) {
+  DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   // Do not drop frames if max frame rate hasn't been specified.
@@ -456,6 +475,7 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
 
   // Check if the time since the last frame is completely off.
   if (delta_ms.is_negative() || delta_ms > kMaxTimeInMsBetweenFrames) {
+    DVLOG(3) << " reset timestamps";
     // Reset |last_time_stamp_| and fps calculation.
     last_time_stamp_ = frame.timestamp();
     frame_rate_ = MediaStreamVideoSource::kDefaultFrameRate;
@@ -482,6 +502,7 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
   // Calculate the frame rate using a simple AR filter.
   // Use a simple filter with 0.1 weight of the current sample.
   frame_rate_ = 100 / delta_ms.InMillisecondsF() + 0.9 * frame_rate_;
+  DVLOG(3) << " delta_ms " << delta_ms << " frame_rate_ " << frame_rate_;
 
   // Prefer to not drop frames.
   if (settings_.max_frame_rate() + 0.5f > frame_rate_)
@@ -562,12 +583,14 @@ VideoTrackAdapter::~VideoTrackAdapter() {
   DCHECK(!monitoring_frame_rate_timer_);
 }
 
-void VideoTrackAdapter::AddTrack(const MediaStreamVideoTrack* track,
-                                 VideoCaptureDeliverFrameCB frame_callback,
-                                 EncodedVideoFrameCB encoded_frame_callback,
-                                 VideoTrackSettingsCallback settings_callback,
-                                 VideoTrackFormatCallback format_callback,
-                                 const VideoTrackAdapterSettings& settings) {
+void VideoTrackAdapter::AddTrack(
+    const MediaStreamVideoTrack* track,
+    VideoCaptureDeliverFrameCB frame_callback,
+    VideoCaptureNotifyFrameDroppedCB notify_frame_dropped_callback,
+    EncodedVideoFrameCB encoded_frame_callback,
+    VideoTrackSettingsCallback settings_callback,
+    VideoTrackFormatCallback format_callback,
+    const VideoTrackAdapterSettings& settings) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   PostCrossThreadTask(
@@ -576,6 +599,7 @@ void VideoTrackAdapter::AddTrack(const MediaStreamVideoTrack* track,
           &VideoTrackAdapter::AddTrackOnIO, WTF::CrossThreadUnretained(this),
           WTF::CrossThreadUnretained(track),
           CrossThreadBindRepeating(std::move(frame_callback)),
+          CrossThreadBindRepeating(std::move(notify_frame_dropped_callback)),
           CrossThreadBindRepeating(std::move(encoded_frame_callback)),
           CrossThreadBindRepeating(std::move(settings_callback)),
           CrossThreadBindRepeating(std::move(format_callback)), settings));
@@ -584,6 +608,8 @@ void VideoTrackAdapter::AddTrack(const MediaStreamVideoTrack* track,
 void VideoTrackAdapter::AddTrackOnIO(
     const MediaStreamVideoTrack* track,
     VideoCaptureDeliverFrameInternalCallback frame_callback,
+    VideoCaptureNotifyFrameDroppedInternalCallback
+        notify_frame_dropped_callback,
     DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
     VideoTrackSettingsInternalCallback settings_callback,
     VideoTrackFormatInternalCallback format_callback,
@@ -602,9 +628,11 @@ void VideoTrackAdapter::AddTrackOnIO(
     adapters_.push_back(adapter);
   }
 
-  adapter->AddCallbacks(
-      track, std::move(frame_callback), std::move(encoded_frame_callback),
-      std::move(settings_callback), std::move(format_callback));
+  adapter->AddCallbacks(track, std::move(frame_callback),
+                        std::move(notify_frame_dropped_callback),
+                        std::move(encoded_frame_callback),
+                        std::move(settings_callback),
+                        std::move(format_callback));
 }
 
 void VideoTrackAdapter::RemoveTrack(const MediaStreamVideoTrack* track) {
@@ -792,6 +820,7 @@ void VideoTrackAdapter::ReconfigureTrackOnIO(
   // If the track was found, re-add it with new settings.
   if (track_callbacks.frame_callback) {
     AddTrackOnIO(track, std::move(track_callbacks.frame_callback),
+                 std::move(track_callbacks.notify_frame_dropped_callback),
                  std::move(track_callbacks.encoded_frame_callback),
                  std::move(track_callbacks.settings_callback),
                  std::move(track_callbacks.format_callback), settings);

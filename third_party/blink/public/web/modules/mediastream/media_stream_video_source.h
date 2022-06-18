@@ -86,6 +86,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   void AddTrack(MediaStreamVideoTrack* track,
                 const VideoTrackAdapterSettings& track_adapter_settings,
                 const VideoCaptureDeliverFrameCB& frame_callback,
+                const VideoCaptureNotifyFrameDroppedCB& dropped_callback,
                 const EncodedVideoFrameCB& encoded_frame_callback,
                 const VideoTrackSettingsCallback& settings_callback,
                 const VideoTrackFormatCallback& format_callback,
@@ -357,20 +358,9 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   State state_;
 
   struct PendingTrackInfo {
-    PendingTrackInfo(
-        MediaStreamVideoTrack* track,
-        const VideoCaptureDeliverFrameCB& frame_callback,
-        const EncodedVideoFrameCB& encoded_frame_callback,
-        const VideoTrackSettingsCallback& settings_callback,
-        const VideoTrackFormatCallback& format_callback,
-        std::unique_ptr<VideoTrackAdapterSettings> adapter_settings,
-        ConstraintsOnceCallback callback);
-    PendingTrackInfo(PendingTrackInfo&& other);
-    PendingTrackInfo& operator=(PendingTrackInfo&& other);
-    ~PendingTrackInfo();
-
     MediaStreamVideoTrack* track;
     VideoCaptureDeliverFrameCB frame_callback;
+    VideoCaptureNotifyFrameDroppedCB notify_frame_dropped_callback;
     EncodedVideoFrameCB encoded_frame_callback;
     VideoTrackSettingsCallback settings_callback;
     VideoTrackFormatCallback format_callback;

@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
@@ -439,6 +440,34 @@ TEST_F(MediaStreamVideoSourceTest, MutedSource) {
   EXPECT_EQ(track.Source().GetReadyState(),
             WebMediaStreamSource::kReadyStateLive);
 
+  sink.DisconnectFromTrack();
+}
+
+TEST_F(MediaStreamVideoSourceTest, NotifyFrameDropped) {
+  constexpr int kMaxFps = 10;
+  WebMediaStreamTrack track = CreateTrackAndStartSource(640, 480, kMaxFps);
+  MockMediaStreamVideoSink sink;
+  sink.ConnectToTrack(track);
+  MediaStreamVideoTrack* native_track = MediaStreamVideoTrack::From(track);
+  native_track->SetSinkNotifyFrameDroppedCallback(
+      &sink, sink.GetNotifyFrameDroppedCB());
+
+  // Drive two frames through whose timestamps are spaced too close for the max
+  // frame rate. The last one should be dropped and cause a notification.
+  base::RunLoop run_loop;
+  base::OnceClosure quit_closure = run_loop.QuitClosure();
+  EXPECT_CALL(sink, OnNotifyFrameDropped).WillOnce([&] {
+    std::move(quit_closure).Run();
+  });
+  scoped_refptr<media::VideoFrame> frame1 =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(100, 100));
+  frame1->set_timestamp(base::Milliseconds(10));
+  mock_source()->DeliverVideoFrame(frame1);
+  scoped_refptr<media::VideoFrame> frame2 =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(100, 100));
+  frame2->set_timestamp(base::Milliseconds(20));
+  mock_source()->DeliverVideoFrame(frame2);
+  run_loop.Run();
   sink.DisconnectFromTrack();
 }
 

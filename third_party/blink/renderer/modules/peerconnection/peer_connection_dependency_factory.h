@@ -137,7 +137,8 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   // network threads (rtc::Thread), if they exist. These threads are ensured to
   // exist after an RTCPeerConnectionHandler has been Initialized().
   scoped_refptr<base::SingleThreadTaskRunner> GetWebRtcWorkerTaskRunner();
-  scoped_refptr<base::SingleThreadTaskRunner> GetWebRtcNetworkTaskRunner();
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  GetWebRtcNetworkTaskRunner();
 
   virtual scoped_refptr<base::SingleThreadTaskRunner>
   GetWebRtcSignalingTaskRunner();

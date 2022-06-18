@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -20,6 +21,12 @@ using ::testing::Field;
 using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Optional;
+
+class MockWebRtcVideoSink : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
+ public:
+  MOCK_METHOD(void, OnFrame, (const webrtc::VideoFrame&), (override));
+  MOCK_METHOD(void, OnDiscardedFrame, (), (override));
+};
 
 class MockPeerConnectionDependencyFactory2
     : public MockPeerConnectionDependencyFactory {
@@ -42,14 +49,18 @@ class MockVideoTrackSourceProxy : public MockWebRtcVideoTrackSource {
 
 class MediaStreamVideoWebRtcSinkTest : public ::testing::Test {
  public:
+  ~MediaStreamVideoWebRtcSinkTest() override {
+    registry_.reset();
+    component_ = nullptr;
+    dependency_factory_ = nullptr;
+    ThreadState::Current()->CollectAllGarbageForTesting();
+  }
+
   MockMediaStreamVideoSource* SetVideoTrack() {
     registry_.Init();
     MockMediaStreamVideoSource* source =
         registry_.AddVideoTrack("test video track");
-    auto video_components = registry_.test_stream()->VideoComponents();
-    component_ = video_components[0];
-    // TODO(hta): Verify that component_ is valid. When constraints produce
-    // no valid format, using the track will cause a crash.
+    CompleteSetVideoTrack();
     return source;
   }
 
@@ -58,10 +69,18 @@ class MediaStreamVideoWebRtcSinkTest : public ::testing::Test {
     registry_.AddVideoTrack("test video track",
                             blink::VideoTrackAdapterSettings(), noise_reduction,
                             false, 0.0);
-    auto video_components = registry_.test_stream()->VideoComponents();
-    component_ = video_components[0];
-    // TODO(hta): Verify that component_ is valid. When constraints produce
-    // no valid format, using the track will cause a crash.
+    CompleteSetVideoTrack();
+  }
+
+  MockMediaStreamVideoSource* SetVideoTrackWithMaxFramerate(
+      int max_frame_rate) {
+    registry_.Init();
+    MockMediaStreamVideoSource* source = registry_.AddVideoTrack(
+        "test video track",
+        blink::VideoTrackAdapterSettings(gfx::Size(100, 100), max_frame_rate),
+        absl::nullopt, false, 0.0);
+    CompleteSetVideoTrack();
+    return source;
   }
 
  protected:
@@ -71,6 +90,13 @@ class MediaStreamVideoWebRtcSinkTest : public ::testing::Test {
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
  private:
+  void CompleteSetVideoTrack() {
+    auto video_components = registry_.test_stream()->VideoComponents();
+    component_ = video_components[0];
+    // TODO(hta): Verify that component_ is valid. When constraints produce
+    // no valid format, using the track will cause a crash.
+  }
+
   blink::MockMediaStreamRegistry registry_;
 };
 
@@ -81,6 +107,34 @@ TEST_F(MediaStreamVideoWebRtcSinkTest, NoiseReductionDefaultsToNotSet) {
       blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   EXPECT_TRUE(my_sink.webrtc_video_track());
   EXPECT_FALSE(my_sink.SourceNeedsDenoisingForTesting());
+}
+
+TEST_F(MediaStreamVideoWebRtcSinkTest, NotifiesFrameDropped) {
+  MockMediaStreamVideoSource* mock_source = SetVideoTrackWithMaxFramerate(10);
+  mock_source->StartMockedSource();
+  blink::MediaStreamVideoWebRtcSink my_sink(
+      component_, dependency_factory_.Get(),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+  webrtc::VideoTrackInterface* webrtc_track = my_sink.webrtc_video_track();
+  MockWebRtcVideoSink mock_sink;
+  webrtc_track->GetSource()->AddOrUpdateSink(&mock_sink, rtc::VideoSinkWants());
+
+  // Drive two frames too closely spaced through. Expect one frame drop.
+  base::RunLoop run_loop;
+  base::OnceClosure quit_closure = run_loop.QuitClosure();
+  EXPECT_CALL(mock_sink, OnDiscardedFrame).WillOnce([&] {
+    std::move(quit_closure).Run();
+  });
+  scoped_refptr<media::VideoFrame> frame1 =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(100, 100));
+  frame1->set_timestamp(base::Milliseconds(1));
+  mock_source->DeliverVideoFrame(frame1);
+  scoped_refptr<media::VideoFrame> frame2 =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(100, 100));
+  frame2->set_timestamp(base::Milliseconds(2));
+  mock_source->DeliverVideoFrame(frame2);
+  platform_->RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(MediaStreamVideoWebRtcSinkTest,

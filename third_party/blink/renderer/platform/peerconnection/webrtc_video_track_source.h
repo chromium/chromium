@@ -61,6 +61,7 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   void OnFrameCaptured(
       scoped_refptr<media::VideoFrame> frame,
       std::vector<scoped_refptr<media::VideoFrame>> scaled_frames);
+  void OnNotifyFrameDropped();
 
   using webrtc::VideoTrackSourceInterface::AddOrUpdateSink;
   using webrtc::VideoTrackSourceInterface::RemoveSink;

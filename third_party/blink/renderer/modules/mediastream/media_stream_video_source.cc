@@ -64,6 +64,7 @@ void MediaStreamVideoSource::AddTrack(
     MediaStreamVideoTrack* track,
     const VideoTrackAdapterSettings& track_adapter_settings,
     const VideoCaptureDeliverFrameCB& frame_callback,
+    const VideoCaptureNotifyFrameDroppedCB& notify_frame_dropped_callback,
     const EncodedVideoFrameCB& encoded_frame_callback,
     const VideoTrackSettingsCallback& settings_callback,
     const VideoTrackFormatCallback& format_callback,
@@ -73,11 +74,11 @@ void MediaStreamVideoSource::AddTrack(
   tracks_.push_back(track);
   secure_tracker_.Add(track, true);
 
-  pending_tracks_.push_back(PendingTrackInfo(
-      track, frame_callback, encoded_frame_callback, settings_callback,
-      format_callback,
+  pending_tracks_.push_back(PendingTrackInfo{
+      track, frame_callback, notify_frame_dropped_callback,
+      encoded_frame_callback, settings_callback, format_callback,
       std::make_unique<VideoTrackAdapterSettings>(track_adapter_settings),
-      std::move(callback)));
+      std::move(callback)});
 
   switch (state_) {
     case NEW: {
@@ -457,6 +458,7 @@ void MediaStreamVideoSource::FinalizeAddPendingTracks(
     if (result == mojom::blink::MediaStreamRequestResult::OK) {
       GetTrackAdapter()->AddTrack(
           track_info.track, track_info.frame_callback,
+          track_info.notify_frame_dropped_callback,
           track_info.encoded_frame_callback, track_info.settings_callback,
           track_info.format_callback, *track_info.adapter_settings);
       UpdateTrackSettings(track_info.track, *track_info.adapter_settings);
@@ -557,29 +559,5 @@ scoped_refptr<VideoTrackAdapter> MediaStreamVideoSource::GetTrackAdapter() {
   }
   return track_adapter_;
 }
-
-MediaStreamVideoSource::PendingTrackInfo::PendingTrackInfo(
-    MediaStreamVideoTrack* track,
-    const VideoCaptureDeliverFrameCB& frame_callback,
-    const EncodedVideoFrameCB& encoded_frame_callback,
-    const VideoTrackSettingsCallback& settings_callback,
-    const VideoTrackFormatCallback& format_callback,
-    std::unique_ptr<VideoTrackAdapterSettings> adapter_settings,
-    ConstraintsOnceCallback callback)
-    : track(track),
-      frame_callback(frame_callback),
-      encoded_frame_callback(encoded_frame_callback),
-      settings_callback(settings_callback),
-      format_callback(format_callback),
-      adapter_settings(std::move(adapter_settings)),
-      callback(std::move(callback)) {}
-
-MediaStreamVideoSource::PendingTrackInfo::PendingTrackInfo(
-    PendingTrackInfo&& other) = default;
-MediaStreamVideoSource::PendingTrackInfo&
-MediaStreamVideoSource::PendingTrackInfo::operator=(
-    MediaStreamVideoSource::PendingTrackInfo&& other) = default;
-
-MediaStreamVideoSource::PendingTrackInfo::~PendingTrackInfo() {}
 
 }  // namespace blink

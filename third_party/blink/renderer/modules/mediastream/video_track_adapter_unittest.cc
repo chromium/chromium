@@ -262,6 +262,9 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
             base::BindRepeating(&VideoTrackAdapterFixtureTest::OnFrameDelivered,
                                 base::Unretained(this)),
             base::BindRepeating(
+                &VideoTrackAdapterFixtureTest::OnNotifyFrameDropped,
+                base::Unretained(this)),
+            base::BindRepeating(
                 &VideoTrackAdapterFixtureTest::OnEncodedVideoFrameDelivered,
                 base::Unretained(this)),
             base::DoNothing(), base::DoNothing(), adapter_settings));
@@ -305,6 +308,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   MOCK_METHOD2(OnEncodedVideoFrameDelivered,
                void(scoped_refptr<EncodedVideoFrame>,
                     base::TimeTicks estimated_capture_time));
+  MOCK_METHOD0(OnNotifyFrameDropped, void());
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport>
       platform_support_;
@@ -437,6 +441,7 @@ TEST_F(VideoTrackAdapterFixtureTest,
       base::BindOnce(
           &VideoTrackAdapter::AddTrack, adapter_, second_track.get(),
           /*frame_callback=*/base::DoNothing(),
+          /*notify_dropped_frame_callback=*/base::DoNothing(),
           /*encoded_frame_callback=*/base::DoNothing(),
           /*settings_callback=*/base::BindLambdaForTesting(check_dimensions),
           /*track_callback=*/base::DoNothing(), adapter_settings));
@@ -476,6 +481,7 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
           track.get(),
           base::BindRepeating(&VideoTrackAdapterEncodedTest::OnFrameDelivered,
                               base::Unretained(this)),
+          base::DoNothing(),
           base::BindRepeating(
               &VideoTrackAdapterEncodedTest::OnEncodedVideoFrameDelivered,
               base::Unretained(this)),

@@ -53,8 +53,12 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
   MOCK_METHOD(void, OnVideoFrame, (base::TimeTicks));
   MOCK_METHOD(void, OnEncodedVideoFrame, (base::TimeTicks));
 
+  // Triggered when a frame is dropped.
+  MOCK_METHOD(void, OnNotifyFrameDropped, ());
+
   VideoCaptureDeliverFrameCB GetDeliverFrameCB();
   EncodedVideoFrameCB GetDeliverEncodedVideoFrameCB();
+  VideoCaptureNotifyFrameDroppedCB GetNotifyFrameDroppedCB();
 
   int number_of_frames() const { return number_of_frames_; }
   media::VideoPixelFormat format() const { return format_; }
@@ -78,6 +82,7 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
       base::TimeTicks estimated_capture_time);
   void DeliverEncodedVideoFrame(scoped_refptr<EncodedVideoFrame> frame,
                                 base::TimeTicks estimated_capture_time);
+  void NotifyFrameDropped();
 
   MediaStreamVideoSink::UsesAlpha uses_alpha_ =
       MediaStreamVideoSink::UsesAlpha::kDefault;

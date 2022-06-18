@@ -99,12 +99,16 @@ class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
       std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       base::TimeTicks estimated_capture_time);
 
+  void OnNotifyVideoFrameDroppedOnIO();
+
  private:
   friend class WTF::ThreadSafeRefCounted<WebRtcVideoSourceAdapter>;
 
   void OnVideoFrameOnNetworkThread(
       scoped_refptr<media::VideoFrame> frame,
       std::vector<scoped_refptr<media::VideoFrame>> scaled_frames);
+
+  void OnNotifyVideoFrameDroppedOnNetworkThread();
 
   virtual ~WebRtcVideoSourceAdapter();
 
@@ -175,6 +179,17 @@ void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::OnVideoFrameOnIO(
 }
 
 void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
+    OnNotifyVideoFrameDroppedOnIO() {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+  DVLOG(1) << __func__;
+  PostCrossThreadTask(
+      *libjingle_network_task_runner_.get(), FROM_HERE,
+      CrossThreadBindOnce(
+          &WebRtcVideoSourceAdapter::OnNotifyVideoFrameDroppedOnNetworkThread,
+          WrapRefCounted(this)));
+}
+
+void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
     OnVideoFrameOnNetworkThread(
         scoped_refptr<media::VideoFrame> frame,
         std::vector<scoped_refptr<media::VideoFrame>> scaled_frames) {
@@ -182,6 +197,14 @@ void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
   base::AutoLock auto_lock(video_source_stop_lock_);
   if (video_source_)
     video_source_->OnFrameCaptured(std::move(frame), std::move(scaled_frames));
+}
+
+void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
+    OnNotifyVideoFrameDroppedOnNetworkThread() {
+  DCHECK(libjingle_network_task_runner_->BelongsToCurrentThread());
+  base::AutoLock auto_lock(video_source_stop_lock_);
+  if (video_source_)
+    video_source_->OnNotifyFrameDropped();
 }
 
 MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
@@ -235,6 +258,10 @@ MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
           &WebRtcVideoSourceAdapter::OnVideoFrameOnIO, source_adapter_)),
       MediaStreamVideoSink::IsSecure::kNo,
       MediaStreamVideoSink::UsesAlpha::kNo);
+  video_track->SetSinkNotifyFrameDroppedCallback(
+      this, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                &WebRtcVideoSourceAdapter::OnNotifyVideoFrameDroppedOnIO,
+                source_adapter_)));
 
   DVLOG(3) << "MediaStreamVideoWebRtcSink ctor() : is_screencast "
            << is_screencast;

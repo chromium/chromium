@@ -56,6 +56,7 @@ class MODULES_EXPORT VideoTrackAdapter
   // |on_muted_state_callback|.
   void AddTrack(const MediaStreamVideoTrack* track,
                 VideoCaptureDeliverFrameCB frame_callback,
+                VideoCaptureNotifyFrameDroppedCB notify_frame_dropped_callback,
                 EncodedVideoFrameCB encoded_frame_callback,
                 VideoTrackSettingsCallback settings_callback,
                 VideoTrackFormatCallback track_callback,
@@ -116,6 +117,8 @@ class MODULES_EXPORT VideoTrackAdapter
           scoped_refptr<media::VideoFrame> video_frame,
           std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
           base::TimeTicks estimated_capture_time)>;
+  using VideoCaptureNotifyFrameDroppedInternalCallback =
+      WTF::CrossThreadFunction<void()>;
   using DeliverEncodedVideoFrameInternalCallback =
       WTF::CrossThreadFunction<void(
           scoped_refptr<EncodedVideoFrame> video_frame,
@@ -127,6 +130,8 @@ class MODULES_EXPORT VideoTrackAdapter
   void AddTrackOnIO(
       const MediaStreamVideoTrack* track,
       VideoCaptureDeliverFrameInternalCallback frame_callback,
+      VideoCaptureNotifyFrameDroppedInternalCallback
+          notify_frame_dropped_callback,
       DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
       VideoTrackSettingsInternalCallback settings_callback,
       VideoTrackFormatInternalCallback track_callback,
