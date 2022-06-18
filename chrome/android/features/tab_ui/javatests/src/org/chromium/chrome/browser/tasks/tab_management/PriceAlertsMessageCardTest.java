@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageDisableReason;
@@ -108,7 +107,7 @@ public class PriceAlertsMessageCardTest {
         Intents.init();
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         mMockNotificationManager = new MockNotificationManagerProxy();
-        PriceDropNotificationManagerImpl.setNotificationManagerForTesting(mMockNotificationManager);
+        PriceDropNotificationManager.setNotificationManagerForTesting(mMockNotificationManager);
         mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create();
 
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -122,7 +121,7 @@ public class PriceAlertsMessageCardTest {
             mPriceDropNotificationManager.deleteChannelForTesting();
         }
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(null);
-        PriceDropNotificationManagerImpl.setNotificationManagerForTesting(null);
+        PriceDropNotificationManager.setNotificationManagerForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         Intents.release();
     }
