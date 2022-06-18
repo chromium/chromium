@@ -373,6 +373,16 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
   }
 }
 
+void GridItems::ReserveInitialCapacity(wtf_size_t initial_capacity) {
+  reordered_item_indices.ReserveInitialCapacity(initial_capacity);
+  item_data.ReserveInitialCapacity(initial_capacity);
+}
+
+void GridItems::ReserveCapacity(wtf_size_t new_capacity) {
+  reordered_item_indices.ReserveCapacity(new_capacity);
+  item_data.ReserveCapacity(new_capacity);
+}
+
 void GridItems::RemoveSubgriddedItems() {
   wtf_size_t new_item_count = 0;
   for (const auto& grid_item : item_data) {

@@ -27,7 +27,7 @@ GridItems NGGridNode::ConstructGridItems(
 
     // Even if the cached placement data is incorrect, as long as the grid is
     // not marked as dirty, the grid item count should be the same.
-    grid_items.ReserveCapacity(
+    grid_items.ReserveInitialCapacity(
         cached_placement_data->grid_item_positions.size());
 
     if (placement_data->column_auto_repetitions !=
@@ -109,7 +109,7 @@ GridItems NGGridNode::GridItemsIncludingSubgridded(
     if (!has_standalone_columns && !has_standalone_rows)
       return grid_items;
 
-    for (auto& grid_item : grid_items) {
+    for (auto& grid_item : grid_items.item_data) {
       grid_item.can_subgrid_items_in_column_direction = has_standalone_columns;
       grid_item.can_subgrid_items_in_row_direction = has_standalone_rows;
     }
@@ -172,6 +172,7 @@ GridItems NGGridNode::GridItemsIncludingSubgridded(
     // described in https://drafts.csswg.org/css-grid-2/#auto-repeat.
 
     auto subgridded_items = subgrid.ConstructGridItems(&subgrid_placement_data);
+    grid_items.ReserveCapacity(grid_items.Size() + subgridded_items.Size());
 
     const wtf_size_t column_start_line = current_item.StartLine(kForColumns);
     const wtf_size_t row_start_line = current_item.StartLine(kForRows);
