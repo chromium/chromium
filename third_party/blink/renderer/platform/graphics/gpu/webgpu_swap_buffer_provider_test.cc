@@ -29,6 +29,24 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
 
   MOCK_METHOD1(ReserveTexture, gpu::webgpu::ReservedTexture(WGPUDevice device));
 
+  // Could have used mock, but we only care about number of associated
+  // mailboxes, so use override for now
+  void AssociateMailbox(GLuint,
+                        GLuint,
+                        GLuint,
+                        GLuint,
+                        GLuint,
+                        gpu::webgpu::MailboxFlags,
+                        const GLbyte*) override {
+    num_associated_mailboxes++;
+  }
+  void DissociateMailbox(GLuint, GLuint) override {
+    num_associated_mailboxes--;
+  }
+  void DissociateMailboxForPresent(GLuint, GLuint, GLuint, GLuint) override {
+    num_associated_mailboxes--;
+  }
+
   // It is hard to use GMock with SyncTokens represented as GLByte*, instead we
   // remember which were the last sync tokens generated or waited upon.
   void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override {
@@ -51,6 +69,8 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
 
   gpu::SyncToken most_recent_generated_token;
   gpu::SyncToken most_recent_waited_token;
+
+  int num_associated_mailboxes = 0;
 
  private:
   uint64_t token_id_ = 42;
@@ -410,6 +430,66 @@ TEST_F(WebGPUSwapBufferProviderTest,
   viz::ReleaseCallback release_callback_2;
   EXPECT_FALSE(provider_->PrepareTransferableResource(nullptr, &resource,
                                                       &release_callback_2));
+}
+
+// Test that checks mailbox is dissociated when Neuter() is called.
+TEST_F(WebGPUSwapBufferProviderTest, VerifyMailboxDissociationOnNeuter) {
+  const gfx::Size kSize(10, 10);
+
+  viz::TransferableResource resource1;
+  gpu::webgpu::ReservedTexture reservation1 = {
+      reinterpret_cast<WGPUTexture>(&resource1), 1, 1, 1, 1};
+  viz::ReleaseCallback release_callback1;
+
+  viz::TransferableResource resource2;
+  gpu::webgpu::ReservedTexture reservation2 = {
+      reinterpret_cast<WGPUTexture>(&resource2), 2, 2, 1, 1};
+  viz::ReleaseCallback release_callback2;
+
+  // Produce and prepare transferable resource
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
+      .WillOnce(Return(reservation1));
+  provider_->GetNewTexture(kSize);
+  EXPECT_EQ(webgpu_->num_associated_mailboxes, 1);
+
+  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource1,
+                                                     &release_callback1));
+  EXPECT_EQ(webgpu_->num_associated_mailboxes, 0);
+
+  // Produce 2nd resource but this time neuters the provider. Mailbox must also
+  // be dissociated.
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
+      .WillOnce(Return(reservation2));
+  provider_->GetNewTexture(kSize);
+  EXPECT_EQ(webgpu_->num_associated_mailboxes, 1);
+
+  provider_->Neuter();
+  EXPECT_EQ(webgpu_->num_associated_mailboxes, 0);
+}
+
+// Test that checks mailbox is not dissociated twice when both
+// PrepareTransferableResource() and Neuter() are called.
+TEST_F(WebGPUSwapBufferProviderTest, VerifyNoDoubleMailboxDissociation) {
+  const gfx::Size kSize(10, 10);
+
+  viz::TransferableResource resource1;
+  gpu::webgpu::ReservedTexture reservation1 = {
+      reinterpret_cast<WGPUTexture>(&resource1), 1, 1, 1, 1};
+  viz::ReleaseCallback release_callback1;
+
+  // Produce and prepare transferable resource
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
+      .WillOnce(Return(reservation1));
+  provider_->GetNewTexture(kSize);
+  EXPECT_EQ(webgpu_->num_associated_mailboxes, 1);
+
+  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource1,
+                                                     &release_callback1));
+  EXPECT_EQ(webgpu_->num_associated_mailboxes, 0);
+
+  // Calling Neuter() won't dissociate mailbox again.
+  provider_->Neuter();
+  EXPECT_EQ(webgpu_->num_associated_mailboxes, 0);
 }
 
 }  // namespace blink

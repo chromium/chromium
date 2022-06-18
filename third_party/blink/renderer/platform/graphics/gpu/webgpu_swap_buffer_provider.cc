@@ -95,11 +95,22 @@ void WebGPUSwapBufferProvider::Neuter() {
   }
 
   if (current_swap_buffer_) {
-    // Ensure we wait for previous WebGPU commands before destroying the shared
-    // image.
     if (auto context_provider = GetContextProviderWeakPtr()) {
       gpu::webgpu::WebGPUInterface* webgpu =
           context_provider->ContextProvider()->WebGPUInterface();
+
+      // Dissociate mailbox to avoid memory leaks.
+      if (wire_device_id_ && wire_texture_id_) {
+        webgpu->DissociateMailbox(wire_texture_id_, wire_texture_generation_);
+
+        wire_device_id_ = 0;
+        wire_device_generation_ = 0;
+        wire_texture_id_ = 0;
+        wire_texture_generation_ = 0;
+      }
+
+      // Ensure we wait for previous WebGPU commands before destroying the
+      // shared image.
       webgpu->GenUnverifiedSyncTokenCHROMIUM(
           current_swap_buffer_->access_finished_token.GetData());
     }
