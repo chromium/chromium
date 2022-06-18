@@ -275,11 +275,13 @@ if (enable_pdf) {
   }
 
   source_set("pdf_test_utils") {
-    visibility = [ ":*" ]
+    visibility = [ "//pdf/*" ]
 
     testonly = true
 
     sources = [
+      "test/mock_web_associated_url_loader.cc",
+      "test/mock_web_associated_url_loader.h",
       "test/test_client.cc",
       "test/test_client.h",
       "test/test_document_loader.cc",
@@ -297,7 +299,7 @@ if (enable_pdf) {
       "//pdf/loader",
       "//testing/gmock",
       "//testing/gtest",
-      "//third_party/blink/public/common:headers",
+      "//third_party/blink/public:blink",
       "//ui/gfx/range",
       "//ui/latency:latency",
     ]

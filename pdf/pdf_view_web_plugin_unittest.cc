@@ -36,6 +36,7 @@
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_accessibility_data_handler.h"
 #include "pdf/pdf_view_plugin_base.h"
+#include "pdf/test/mock_web_associated_url_loader.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
 #include "printing/metafile_skia.h"
@@ -174,32 +175,6 @@ class MockHeaderVisitor : public blink::WebHTTPHeaderVisitor {
               (override));
 };
 
-class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
- public:
-  MockWebAssociatedURLLoader() {
-    ON_CALL(*this, LoadAsynchronously)
-        .WillByDefault([](const blink::WebURLRequest& /*request*/,
-                          blink::WebAssociatedURLLoaderClient* client) {
-          // TODO(crbug.com/1322928): Must trigger callback to free `UrlLoader`.
-          client->DidReceiveResponse(blink::WebURLResponse());
-          client->DidFinishLoading();
-        });
-  }
-
-  // blink::WebAssociatedURLLoader:
-  MOCK_METHOD(void,
-              LoadAsynchronously,
-              (const blink::WebURLRequest&,
-               blink::WebAssociatedURLLoaderClient*),
-              (override));
-  MOCK_METHOD(void, Cancel, (), (override));
-  MOCK_METHOD(void, SetDefersLoading, (bool), (override));
-  MOCK_METHOD(void,
-              SetLoadingTaskRunner,
-              (base::SingleThreadTaskRunner*),
-              (override));
-};
-
 class MockPdfAccessibilityDataHandler : public PdfAccessibilityDataHandler {
  public:
   // PdfAccessibilityDataHandler:
@@ -224,7 +199,17 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
  public:
   FakePdfViewWebPluginClient() {
     ON_CALL(*this, CreateAssociatedURLLoader).WillByDefault([]() {
-      return std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
+      auto associated_loader =
+          std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
+      ON_CALL(*associated_loader, LoadAsynchronously)
+          .WillByDefault([](const blink::WebURLRequest& /*request*/,
+                            blink::WebAssociatedURLLoaderClient* client) {
+            // TODO(crbug.com/1322928): Must trigger callback to free
+            // `UrlLoader`.
+            client->DidReceiveResponse(blink::WebURLResponse());
+            client->DidFinishLoading();
+          });
+      return associated_loader;
     });
     ON_CALL(*this, GetEmbedderOriginString)
         .WillByDefault(

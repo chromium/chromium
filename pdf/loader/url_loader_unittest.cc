@@ -23,6 +23,7 @@
 #include "net/base/net_errors.h"
 #include "net/cookies/site_for_cookies.h"
 #include "pdf/loader/result_codes.h"
+#include "pdf/test/mock_web_associated_url_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
@@ -73,22 +74,6 @@ size_t GetRequestHeaderCount(const blink::WebURLRequest& request) {
 blink::WebURLError MakeWebURLError(int reason) {
   return blink::WebURLError(reason, GURL());
 }
-
-class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
- public:
-  // blink::WebAssociatedURLLoader:
-  MOCK_METHOD(void,
-              LoadAsynchronously,
-              (const blink::WebURLRequest&,
-               blink::WebAssociatedURLLoaderClient*),
-              (override));
-  MOCK_METHOD(void, Cancel, (), (override));
-  MOCK_METHOD(void, SetDefersLoading, (bool), (override));
-  MOCK_METHOD(void,
-              SetLoadingTaskRunner,
-              (base::SingleThreadTaskRunner*),
-              (override));
-};
 
 class FakeUrlLoaderClient : public UrlLoader::Client {
  public:
