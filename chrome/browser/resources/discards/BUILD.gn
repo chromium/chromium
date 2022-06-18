@@ -95,6 +95,7 @@ copy("copy_mojo") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/$tsc_folder"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   manifest_excludes = [
     "graph_doc.ts",

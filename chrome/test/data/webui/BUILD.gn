@@ -474,11 +474,13 @@ generate_grd("build_grd") {
   if (!is_android) {
     deps += [
       "access_code_cast:build_grdp",
+      "discards:build_grdp",
       "support_tool:build_grdp",
       "whats_new:build_grdp",
     ]
     grdp_files += [
       "$target_gen_dir/access_code_cast/resources.grdp",
+      "$target_gen_dir/discards/resources.grdp",
       "$target_gen_dir/whats_new/resources.grdp",
       "$target_gen_dir/support_tool/resources.grdp",
     ]
@@ -564,7 +566,10 @@ ts_library("build_ts") {
   in_files = [
     "chrome_timeticks_test.ts",
     "color_provider_css_colors_test.ts",
+    "resources/list_property_update_mixin_tests.ts",
+    "text_defaults_test.ts",
   ]
+  deps = [ "//ui/webui/resources:library" ]
   extra_deps = [ ":generate_definitions" ]
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",

@@ -6,140 +6,158 @@
 
 import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+type SimpleArrayEntry = {
+  id: number,
+};
+
+type ComplexArrayEntry = {
+  letter: string,
+  words: string[],
+};
+
+/** A test element that implements the ListPropertyUpdateMixin. */
+const ListPropertyUpdateMixinTestElementBase =
+    ListPropertyUpdateMixin(PolymerElement);
+
+class ListPropertyUpdateMixinTestElement extends
+    ListPropertyUpdateMixinTestElementBase {
+  static get is() {
+    return 'list-property-update-mixin-test-element';
+  }
+
+  static get properties() {
+    return {
+      /**
+       * A test array containing objects with Array properties. The elements
+       * in the array represent an object that maps a list of |words| to the
+       * |letter| that they begin with.
+       */
+      complexArray: Array,
+
+      /**
+       * A test array containing objects with numerical |id|s.
+       */
+      simpleArray: Array,
+    };
+  }
+
+  complexArray: ComplexArrayEntry[] = [];
+  simpleArray: SimpleArrayEntry[] = [];
+
+  constructor() {
+    super();
+
+    this.resetSimpleArray();
+    this.resetComplexArray();
+  }
+
+  resetComplexArray() {
+    this.complexArray = [
+      {letter: 'a', words: ['adventure', 'apple']},
+      {letter: 'b', words: ['banana', 'bee', 'bottle']},
+      {letter: 'c', words: ['car']},
+    ];
+  }
+
+  resetSimpleArray() {
+    this.simpleArray = [{id: 1}, {id: 2}, {id: 3}];
+  }
+
+  /**
+   * Updates the |complexArray| with |newArray| using the
+   * ListPropertyUpdateBehavior.updateList() method. This method will
+   * iterate through the elements of |complexArray| to check if their
+   * |words| property array need to be updated if |complexArray| did not
+   * have any changes.
+   * @param newArray The array update |complexArray| with.
+   * @return An object that has a |topArrayChanged| property set to true if
+   *     notifySplices() was called for the 'complexArray' property path and
+   *     a |wordsArrayChanged| property set to true if notifySplices() was
+   *     called for the |words| property on an item of |complexArray|.
+   */
+  updateComplexArray(newArray: ComplexArrayEntry[]):
+      {topArrayChanged: boolean, wordsArrayChanged: boolean} {
+    if (this.updateList(
+            'complexArray', x => x.letter, newArray,
+            true /* identityBasedUpdate */)) {
+      return {topArrayChanged: true, wordsArrayChanged: false};
+    }
+
+    // At this point, |complexArray| and |newArray| should have the same
+    // elements.
+    let wordsSplicesNotified = false;
+    assertEquals(this.complexArray.length, newArray.length);
+    this.complexArray.forEach((item, i) => {
+      assertEquals(item.letter, newArray[i]!.letter);
+      const propertyPath = 'complexArray.' + i + '.words';
+      const newWordsArray = newArray[i]!.words;
+
+      if (this.updateList(propertyPath, x => x, newWordsArray)) {
+        wordsSplicesNotified = true;
+      }
+    });
+
+    return {
+      topArrayChanged: false,
+      wordsArrayChanged: wordsSplicesNotified,
+    };
+  }
+
+  /**
+   * Updates the |simpleArray| with |newArray| using the
+   * ListPropertyUpdateBehavior.updateList() method.
+   * @param newArray The array to update |simpleArray| with.
+   * @returns True if the update called notifySplices() for
+   *     |simpleArray|.
+   */
+  updateSimpleArray(newArray: SimpleArrayEntry[]): boolean {
+    return this.updateList('simpleArray', x => String(x.id), newArray);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'list-property-update-mixin-test-element':
+        ListPropertyUpdateMixinTestElement;
+  }
+}
+
+customElements.define(
+    ListPropertyUpdateMixinTestElement.is, ListPropertyUpdateMixinTestElement);
 
 suite('ListPropertyUpdateMixin', function() {
   /**
    * A list property update mixin test element created before each test.
-   * @type {ListPropertyUpdateMixinTestElement}
    */
-  let testElement;
-
-  suiteSetup(function() {
-    /** A test element that implements the ListPropertyUpdateMixin. */
-    const ListPropertyUpdateMixinTestElementBase =
-        ListPropertyUpdateMixin(PolymerElement);
-
-    class ListPropertyUpdateMixinTestElement extends
-        ListPropertyUpdateMixinTestElementBase {
-      static get properties() {
-        return {
-          /**
-           * A test array containing objects with Array properties. The elements
-           * in the array represent an object that maps a list of |words| to the
-           * |letter| that they begin with.
-           * @type {!Array<{letter: !string, words: !Array<string>}>}
-           */
-          complexArray: Array,
-
-          /**
-           * A test array containing objects with numerical |id|s.
-           * @type {!Array<{id: !number}>}
-           */
-          simpleArray: Array,
-        };
-      }
-
-      constructor() {
-        super();
-
-        this.resetSimpleArray();
-        this.resetComplexArray();
-      }
-
-      resetComplexArray() {
-        this.complexArray = [
-          {letter: 'a', words: ['adventure', 'apple']},
-          {letter: 'b', words: ['banana', 'bee', 'bottle']},
-          {letter: 'c', words: ['car']},
-        ];
-      }
-
-      resetSimpleArray() {
-        this.simpleArray = [{id: 1}, {id: 2}, {id: 3}];
-      }
-
-      /**
-       * Updates the |complexArray| with |newArray| using the
-       * ListPropertyUpdateBehavior.updateList() method. This method will
-       * iterate through the elements of |complexArray| to check if their
-       * |words| property array need to be updated if |complexArray| did not
-       * have any changes.
-       * @param {!Array{letter: !string, words: !Array<string>}>} newArray The
-       *     array update |complexArray| with.
-       * @returns {{topArrayChanged: boolean, wordsArrayChanged: boolean}} An
-       *     object that has a |topArrayChanged| property set to true if
-       *     notifySplices() was called for the 'complexArray' property path and
-       *     a |wordsArrayChanged| property set to true if notifySplices() was
-       *     called for the |words| property on an item of |complexArray|.
-       */
-      updateComplexArray(newArray) {
-        if (this.updateList(
-                'complexArray', x => x.letter, newArray,
-                true /* identityBasedUpdate */)) {
-          return {topArrayChanged: true, wordsArrayChanged: false};
-        }
-
-        // At this point, |complexArray| and |newArray| should have the same
-        // elements.
-        let wordsSplicesNotified = false;
-        assertEquals(this.complexArray.length, newArray.length);
-        this.complexArray.forEach((item, i) => {
-          assertEquals(item.letter, newArray[i].letter);
-          const propertyPath = 'complexArray.' + i + '.words';
-          const newWordsArray = newArray[i].words;
-
-          if (this.updateList(propertyPath, x => x, newWordsArray)) {
-            wordsSplicesNotified = true;
-          }
-        });
-
-        return {
-          topArrayChanged: false,
-          wordsArrayChanged: wordsSplicesNotified,
-        };
-      }
-
-      /**
-       * Updates the |simpleArray| with |newArray| using the
-       * ListPropertyUpdateBehavior.updateList() method.
-       * @param {!Array{id: !number}>} newArray The array to update
-       *     |simpleArray| with.
-       * @returns {boolean} True if the update called notifySplices() for
-       *     |simpleArray|.
-       */
-      updateSimpleArray(newArray) {
-        return this.updateList('simpleArray', x => x.id, newArray);
-      }
-    }
-
-    customElements.define(
-        'list-property-update-mixin-test-element',
-        ListPropertyUpdateMixinTestElement);
-  });
+  let testElement: ListPropertyUpdateMixinTestElement;
 
   // Initialize a list-property-update-mixin-test-element before each test.
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement =
         document.createElement('list-property-update-mixin-test-element');
     document.body.appendChild(testElement);
   });
 
-  function assertSimpleArrayEquals(array, expectedArray) {
+  function assertSimpleArrayEquals(
+      array: SimpleArrayEntry[], expectedArray: SimpleArrayEntry[]) {
     assertEquals(array.length, expectedArray.length);
     array.forEach((item, i) => {
-      assertEquals(item.id, expectedArray[i].id);
+      assertEquals(item.id, expectedArray[i]!.id);
     });
   }
 
-  function assertComplexArrayEquals(array, expectedArray) {
+  function assertComplexArrayEquals(
+      array: ComplexArrayEntry[], expectedArray: ComplexArrayEntry[]) {
     assertEquals(array.length, expectedArray.length);
     array.forEach((item, i) => {
-      assertEquals(item.letter, expectedArray[i].letter);
-      assertEquals(item.words.length, expectedArray[i].words.length);
+      assertEquals(item.letter, expectedArray[i]!.letter);
+      assertEquals(item.words.length, expectedArray[i]!.words.length);
 
       item.words.forEach((word, j) => {
-        assertEquals(word, expectedArray[i].words[j]);
+        assertEquals(word, expectedArray[i]!.words[j]);
       });
     });
   }
@@ -294,8 +312,9 @@ suite('ListPropertyUpdateMixin', function() {
     assertTrue(newArray[0].words.length > 0);
     assertNotEquals('apricot', newArray[0].words[0]);
     newArray[0].words = ['apricot'];
-    assertTrue(testElement.updateList('complexArray', x => x.letter, newArray));
-    assertDeepEquals(['apricot'], testElement.complexArray[0].words);
+    assertTrue(testElement.updateList(
+        'complexArray', (x: ComplexArrayEntry) => x.letter, newArray));
+    assertDeepEquals(['apricot'], testElement.complexArray[0]!.words);
   });
 
   test('first item modified with same uid and last item removed', () => {
@@ -305,8 +324,9 @@ suite('ListPropertyUpdateMixin', function() {
     newArray[0].words = ['apricot'];
     assertTrue(newArray.length > 1);
     newArray.pop();
-    assertTrue(testElement.updateList('complexArray', x => x.letter, newArray));
-    assertDeepEquals(['apricot'], testElement.complexArray[0].words);
+    assertTrue(testElement.updateList(
+        'complexArray', (x: ComplexArrayEntry) => x.letter, newArray));
+    assertDeepEquals(['apricot'], testElement.complexArray[0]!.words);
   });
 
   test('updateList() function triggers notifySplices()', () => {

@@ -106,7 +106,7 @@ TEST_F('CrComponentsManagedDialogTest', 'All', function() {
 var CrComponentsLocalizedLinkTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_components/localized_link_test.js';
+    return 'chrome://test/test_loader.html?module=cr_components/localized_link_test.js&host=webui-test';
   }
 };
 

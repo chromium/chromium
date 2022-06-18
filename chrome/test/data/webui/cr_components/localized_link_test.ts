@@ -4,14 +4,15 @@
 
 import '//resources/cr_components/localized_link/localized_link.js';
 
-import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
-
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+import {LocalizedLinkElement} from '//resources/cr_components/localized_link/localized_link.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 suite('localized_link', function() {
-  let localizedStringWithLink;
+  let localizedStringWithLink: LocalizedLinkElement|null;
 
-  function getLocalizedStringWithLinkElementHtml(localizedString, linkUrl) {
+  function getLocalizedStringWithLinkElementHtml(
+      localizedString: string, linkUrl: string): string {
     return `<localized-link localized-string="${localizedString}"` +
         ` link-url="${linkUrl}"></localized-link>`;
   }
@@ -20,6 +21,7 @@ suite('localized_link', function() {
     document.body.innerHTML =
         getLocalizedStringWithLinkElementHtml(`<a>first link</a>then text`, ``);
     localizedStringWithLink = document.body.querySelector('localized-link');
+    assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<a id="id0" aria-labelledby="id0 id1" tabindex="0">first link</a>` +
@@ -30,6 +32,7 @@ suite('localized_link', function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
         `first text <a>then link</a> then more text`, ``);
     localizedStringWithLink = document.body.querySelector('localized-link');
+    assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<span id="id0" aria-hidden="true">first text </span>` +
@@ -41,6 +44,7 @@ suite('localized_link', function() {
     document.body.innerHTML =
         getLocalizedStringWithLinkElementHtml(`first text<a>then link</a>`, ``);
     localizedStringWithLink = document.body.querySelector('localized-link');
+    assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<span id="id0" aria-hidden="true">first text</span>` +
@@ -51,6 +55,7 @@ suite('localized_link', function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
         `<a>populated link</a>`, `http://google.com`);
     localizedStringWithLink = document.body.querySelector('localized-link');
+    assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<a id="id0" aria-labelledby="id0" tabindex="0" ` +
@@ -61,6 +66,7 @@ suite('localized_link', function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
         `<a href='http://google.com'>pre-populated link</a>`, ``);
     localizedStringWithLink = document.body.querySelector('localized-link');
+    assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<a href="http://google.com" id="id0" aria-labelledby="id0" tabindex="0">` +
@@ -71,6 +77,7 @@ suite('localized_link', function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
         `No anchor tags in this sentence.`, ``);
     localizedStringWithLink = document.body.querySelector('localized-link');
+    assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `No anchor tags in this sentence.`);
@@ -83,7 +90,7 @@ suite('localized_link', function() {
     return flushTasks().then(async () => {
       const localizedLink = document.body.querySelector('localized-link');
       assertTrue(!!localizedLink);
-      const anchorTag = localizedLink.shadowRoot.querySelector('a');
+      const anchorTag = localizedLink.shadowRoot!.querySelector('a');
       assertTrue(!!anchorTag);
       const localizedLinkPromise =
           eventToPromise('link-clicked', localizedLink);
@@ -100,7 +107,7 @@ suite('localized_link', function() {
     await flushTasks();
     const localizedLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedLink);
-    const anchorTag = localizedLink.shadowRoot.querySelector('a');
+    const anchorTag = localizedLink.shadowRoot!.querySelector('a');
     assertTrue(!!anchorTag);
     assertEquals(anchorTag.getAttribute('tabindex'), '0');
     localizedLink.linkDisabled = true;
@@ -114,6 +121,7 @@ suite('localized_link', function() {
     await flushTasks();
 
     const localizedLink = document.body.querySelector('localized-link');
+    assertTrue(!!localizedLink);
     localizedLink.linkDisabled = true;
     const localizedLinkPromise = eventToPromise('link-clicked', localizedLink);
     await flushTasks();
@@ -122,7 +130,7 @@ suite('localized_link', function() {
     await flushTasks();
 
     // Tab index is still -1 due to it being disabled.
-    const anchorTag = localizedLink.shadowRoot.querySelector('a');
+    const anchorTag = localizedLink.shadowRoot!.querySelector('a');
     assertTrue(!!anchorTag);
     assertEquals(anchorTag.getAttribute('tabindex'), '-1');
 
