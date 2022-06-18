@@ -87,7 +87,6 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -97,13 +96,9 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
@@ -145,7 +140,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 // clang-format off
 /** Tests for the {@link TabSwitcherAndStartSurfaceLayout} */
@@ -1720,98 +1714,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         // A longer timeout is needed. Achieve that by using the CriteriaHelper.pollUiThread.
         CriteriaHelper.pollUiThread(
                 () -> GarbageCollectionTestUtils.canBeGarbageCollected(activityRef));
-    }
-
-    /**
-     * This test is to simulate closing all incognito tabs during the activity recreation stage.
-     * This is a regression test for crbug.com/1044557. The test ensures all incognito tabs closed,
-     * which leads to a TabModel switching event, before the first normal tab is restored.
-     */
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    // clang-format off
-    @DisabledTest(message = "crbug.com/1044557 This regression test fails deterministically with" +
-            " the bot, but passes with local emulator. Disable the test for now.")
-    public void
-    closeAllIncognitoTabsBeforeRestoreCompleted() {
-        // clang-format on
-        prepareTabs(3, 1, "about:blank");
-
-        assertTrue(mActivityTestRule.getActivity().getCurrentTabModel().isIncognito());
-
-        // Need to wait for contentsState to be initialized for the tab to restore correctly.
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> TabStateExtractor.from(mActivityTestRule.getActivity().getActivityTab())
-                                   .contentsState
-                        != null,
-                "Incognito tab contentsState is null");
-
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(), true, false);
-
-        mActivityTestRule.loadUrl("about:blank");
-
-        // Need to wait for contentsState to be initialized for the tab to restore correctly.
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> TabStateExtractor.from(mActivityTestRule.getActivity().getActivityTab())
-                                   .contentsState
-                        != null,
-                "Incognito tab contentsState is null");
-
-        PseudoTab.clearForTesting();
-
-        AtomicBoolean tabModelRestoreCompleted = new AtomicBoolean(false);
-        AtomicBoolean normalModelIsEmpty = new AtomicBoolean(true);
-
-        mActivityTestRule.recreateActivity();
-        ChromeTabbedActivity newActivity = mActivityTestRule.getActivity();
-
-        new TabModelSelectorTabModelObserver(newActivity.getTabModelSelector()) {
-            @Override
-            public void restoreCompleted() {
-                tabModelRestoreCompleted.set(true);
-            }
-
-            @Override
-            public void willAddTab(Tab tab, int type) {
-                if (tab.isIncognito() || !normalModelIsEmpty.get()) return;
-
-                // Ensure normal tab model is active before its first tab restores.
-                CriteriaHelper.pollUiThread(
-                        ()
-                                -> !newActivity.getCurrentTabModel().isIncognito(),
-                        "Had not switched to Normal TabModel before the first normal Tab restored");
-            }
-
-            @Override
-            public void didAddTab(Tab tab, int type, int creationState) {
-                if (tab.isIncognito()) return;
-                normalModelIsEmpty.set(false);
-            }
-        };
-
-        CriteriaHelper.pollUiThread(()
-                                            -> newActivity.didFinishNativeInitialization(),
-                "New Activity has not finished initialized yet");
-        CriteriaHelper.pollUiThread(()
-                                            -> newActivity.getCurrentTabModel().isIncognito(),
-                "New Activity current TabModel is not incognito");
-        TestThreadUtils.runOnUiThreadBlocking(IncognitoTabHostUtils::closeAllIncognitoTabs);
-
-        assertTrue("Deferred startup never completed", mActivityTestRule.waitForDeferredStartup());
-
-        CriteriaHelper.pollUiThread(()
-                                            -> tabModelRestoreCompleted.get(),
-                "New Activity normal TabModel has never restored");
-
-        assertFalse(newActivity.getCurrentTabModel().isIncognito());
-        assertNotNull(newActivity.getTabModelSelector().getCurrentTab());
-        // With the fix, StaticLayout guarantees to be shown. Otherwise, StartSurfaceLayout could be
-        // shown, not guaranteed.
-        assertTrue(newActivity.getLayoutManager().getActiveLayout() instanceof StaticLayout);
     }
 
     @Test
