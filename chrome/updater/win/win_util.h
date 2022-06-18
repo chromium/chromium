@@ -266,6 +266,12 @@ absl::optional<OSVERSIONINFOEX> GetOSVersion();
 // call to `::GetVersionEx` or `::RtlGetVersion`.
 bool CompareOSVersions(const OSVERSIONINFOEX& os, BYTE oper);
 
+// Starts a process with separate `executable` and `command_line` components.
+// `executable` needs to be an absolute path.
+HRESULT StartProcess(const base::FilePath& executable,
+                     const std::wstring& command_line,
+                     base::Process& process);
+
 // Separates a command line in `command_format` into an `executable` and
 // `parameters`. `executable` needs to be an absolute path, and additionally
 // needs to be under %programfiles% for System `scope`. Parameters on the
@@ -290,6 +296,12 @@ HRESULT GetAppCommandFormatComponents(UpdaterScope scope,
 absl::optional<std::wstring> FormatAppCommandLine(
     const std::vector<std::wstring>& parameters,
     const std::vector<std::wstring>& substitutions);
+
+// Helper method that calls `FormatAppCommandLine` and then `StartProcess`.
+HRESULT ExecuteAppCommand(const base::FilePath& executable,
+                          const std::vector<std::wstring>& parameters,
+                          const std::vector<std::wstring>& substitutions,
+                          base::Process& process);
 
 }  // namespace updater
 

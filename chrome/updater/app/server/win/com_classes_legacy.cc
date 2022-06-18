@@ -691,22 +691,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
     substitutions.push_back(substitution_string.value());
   }
 
-  absl::optional<std::wstring> command_line = FormatCommandLine(substitutions);
-  if (!command_line)
-    return E_INVALIDARG;
-
-  STARTUPINFOW si = {sizeof(si)};
-  PROCESS_INFORMATION pi = {0};
-  if (!::CreateProcess(executable_.value().c_str(), &(*command_line)[0],
-                       nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr,
-                       nullptr, &si, &pi)) {
-    return HRESULTFromLastError();
-  }
-
-  ::CloseHandle(pi.hThread);
-
-  process_ = base::Process(pi.hProcess);
-  return process_.IsValid() ? S_OK : E_UNEXPECTED;
+  return ExecuteAppCommand(executable_, parameters_, substitutions, process_);
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::GetTypeInfoCount(UINT*) {

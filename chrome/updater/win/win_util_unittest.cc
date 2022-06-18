@@ -13,11 +13,14 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_timeouts.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/unittest_util_win.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/win/test/test_executables.h"
@@ -437,6 +440,33 @@ TEST(WinUtil, GetAppCommandFormatComponents_And_FormatAppCommandLine) {
         << "' gave command line '" << cmd
         << "' which did not parse back to the "
         << "original substitution";
+  }
+}
+
+TEST(WinUtil, ExecuteAppCommand) {
+  base::CommandLine cmd_exe_command_line(base::CommandLine::NO_PROGRAM);
+  base::ScopedTempDir temp_programfiles_dir;
+  SetupCmdExe(GetTestScope(), cmd_exe_command_line, temp_programfiles_dir);
+
+  const struct {
+    const std::vector<std::wstring> input;
+    const std::vector<std::wstring> substitutions;
+    const int expected_exit_code;
+  } test_cases[] = {
+      {{L"/c", L"exit 7"}, {}, 7},
+      {{L"/c", L"exit %1"}, {L"5420"}, 5420},
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::Process process;
+    ASSERT_HRESULT_SUCCEEDED(
+        ExecuteAppCommand(cmd_exe_command_line.GetProgram(), test_case.input,
+                          test_case.substitutions, process));
+
+    int exit_code = 0;
+    EXPECT_TRUE(process.WaitForExitWithTimeout(
+        TestTimeouts::action_max_timeout(), &exit_code));
+    EXPECT_EQ(exit_code, test_case.expected_exit_code);
   }
 }
 

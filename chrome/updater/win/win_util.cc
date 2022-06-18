@@ -927,6 +927,37 @@ bool CompareOSVersions(const OSVERSIONINFOEX& os_version, BYTE oper) {
              : CompareOSVersionsInternal(os_version, kOSTypeMask, oper);
 }
 
+HRESULT StartProcess(const base::FilePath& executable,
+                     const std::wstring& command_line,
+                     base::Process& process) {
+  if (executable.empty() || process.IsValid()) {
+    return E_UNEXPECTED;
+  }
+
+  if (!executable.IsAbsolute())
+    return E_INVALIDARG;
+
+  STARTUPINFOW si = {sizeof(si)};
+  PROCESS_INFORMATION pi = {0};
+  std::wstring parameters = command_line;
+
+  // In contrast to the following call to `::CreateProcess`,
+  // `base::Process::LaunchProcess` passes the `executable` in the
+  // `lpCommandLine` parameter to `::CreateProcess`, which uses the search path
+  // for path resolution of `executable`.
+  if (!::CreateProcess(executable.value().c_str(), &parameters[0], nullptr,
+                       nullptr, FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si,
+                       &pi)) {
+    return HRESULTFromLastError();
+  }
+
+  ::CloseHandle(pi.hThread);
+
+  process = base::Process(pi.hProcess);
+  CHECK(process.IsValid());
+  return S_OK;
+}
+
 HRESULT GetAppCommandFormatComponents(UpdaterScope scope,
                                       const std::wstring& command_format,
                                       base::FilePath& executable,
@@ -970,6 +1001,18 @@ absl::optional<std::wstring> FormatAppCommandLine(
   }
 
   return formatted_command_line;
+}
+
+HRESULT ExecuteAppCommand(const base::FilePath& executable,
+                          const std::vector<std::wstring>& parameters,
+                          const std::vector<std::wstring>& substitutions,
+                          base::Process& process) {
+  const absl::optional<std::wstring> command_line =
+      FormatAppCommandLine(parameters, substitutions);
+  if (!command_line)
+    return E_INVALIDARG;
+
+  return StartProcess(executable, command_line.value(), process);
 }
 
 }  // namespace updater
