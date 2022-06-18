@@ -88,8 +88,32 @@ class EndIfDelayedForbiddenScope;
 class ShouldCompleteScope;
 class AttemptToEndForbiddenScope;
 
+bool ThreadedPreloadScannerEnabled() {
+  // Cache the feature value since checking for each parser regresses some micro
+  // benchmarks.
+  static const bool kEnabled =
+      base::FeatureList::IsEnabled(features::kThreadedPreloadScanner);
+  return kEnabled;
+}
+
+bool TimedParserBudgetEnabled() {
+  // Cache the feature value since checking for each parser regresses some micro
+  // benchmarks.
+  static const bool kEnabled =
+      base::FeatureList::IsEnabled(features::kTimedHTMLParserBudget);
+  return kEnabled;
+}
+
+bool PrecompileInlineScriptsEnabled() {
+  // Cache the feature value since checking for each parser regresses some micro
+  // benchmarks.
+  static const bool kEnabled =
+      base::FeatureList::IsEnabled(features::kPrecompileInlineScripts);
+  return kEnabled;
+}
+
 Thread* GetPreloadScannerThread() {
-  DCHECK(base::FeatureList::IsEnabled(features::kThreadedPreloadScanner));
+  DCHECK(ThreadedPreloadScannerEnabled());
 
   // The preload scanner relies on parsing CSS, which requires creating garbage
   // collected objects. This means the thread the scanning runs on must be GC
@@ -117,7 +141,7 @@ enum class PreloadProcessingMode {
 };
 
 PreloadProcessingMode GetPreloadProcessingMode() {
-  if (!base::FeatureList::IsEnabled(features::kThreadedPreloadScanner))
+  if (!ThreadedPreloadScannerEnabled())
     return PreloadProcessingMode::kNone;
 
   static const base::FeatureParam<PreloadProcessingMode>::Option
@@ -504,7 +528,7 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
                      ? Thread::Current()->Scheduler()
                      : nullptr) {
   // Make sure the preload scanner thread will be ready when needed.
-  if (background_scanning_enabled_ && !task_runner_state_->IsSynchronous())
+  if (ThreadedPreloadScannerEnabled() && !task_runner_state_->IsSynchronous())
     GetPreloadScannerThread();
 
   // Report metrics for async document parsing or forced synchronous parsing.
@@ -774,7 +798,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
           : 1e7;
 
   base::TimeDelta timed_budget;
-  if (timed_parser_budget_enabled_)
+  if (TimedParserBudgetEnabled())
     timed_budget = GetTimedBudget(task_runner_state_->TimesYielded());
 
   base::ElapsedTimer chunk_parsing_timer_;
@@ -793,7 +817,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
       // to yield at some point soon, especially if we're in "extended budget"
       // mode. So reduce the budget back to at most the default.
       budget = std::min(budget, kDefaultMaxTokenizationBudget);
-      if (timed_parser_budget_enabled_) {
+      if (TimedParserBudgetEnabled()) {
         timed_budget = std::min(timed_budget, chunk_parsing_timer_.Elapsed() +
                                                   GetDefaultTimedBudget());
       }
@@ -814,7 +838,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
       DCHECK(base::FeatureList::IsEnabled(
                  features::kDeferBeginMainFrameDuringLoading) ||
              scheduler_->DontDeferBeginMainFrame());
-      if (timed_parser_budget_enabled_)
+      if (TimedParserBudgetEnabled())
         should_yield = chunk_parsing_timer_.Elapsed() >= timed_budget;
       else
         should_yield = budget <= 0 && scheduler_->DontDeferBeginMainFrame();
@@ -1387,7 +1411,7 @@ std::unique_ptr<HTMLPreloadScanner> HTMLDocumentParser::CreatePreloadScanner(
     // If background scanning is enabled, the main document scanner is used when
     // the parser is paused, for prefetch documents, or if preload scanning is
     // disabled in tests (HTMLPreloadScanner internally handles this setting).
-    DCHECK(!background_scanning_enabled_ || IsPaused() ||
+    DCHECK(!ThreadedPreloadScannerEnabled() || IsPaused() ||
            GetDocument()->IsPrefetchOnly() ||
            !IsPreloadScanningEnabled(GetDocument()));
   }
@@ -1470,7 +1494,7 @@ std::string HTMLDocumentParser::GetPreloadHistogramSuffix() {
 }
 
 void HTMLDocumentParser::ScanInBackground(const String& source) {
-  if (background_scanning_enabled_ && preloader_ &&
+  if (ThreadedPreloadScannerEnabled() && preloader_ &&
       !task_runner_state_->IsSynchronous() && GetDocument()->Url().IsValid() &&
       // TODO(crbug.com/1329535): Support scanning prefetch documents in the
       // background.
@@ -1494,7 +1518,7 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kPrecompileInlineScripts))
+  if (!PrecompileInlineScriptsEnabled())
     return;
 
   DCHECK(!background_scanner_);
@@ -1521,7 +1545,7 @@ void HTMLDocumentParser::AddPreloadDataOnBackgroundThread(
 }
 
 void HTMLDocumentParser::FlushPendingPreloads() {
-  DCHECK(background_scanning_enabled_);
+  DCHECK(ThreadedPreloadScannerEnabled());
   if (IsDetached() || !preloader_)
     return;
 
