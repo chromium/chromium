@@ -720,6 +720,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />: <ph name="RESULT_TEXT" />. Om du trycker på Sök och blanksteg visas resultatet på Google Sök.</translation>
 <translation id="7343649194310845056">Nätverksenheter</translation>
 <translation id="7359657277149375382">Filtyp</translation>
+<translation id="73631062356239394">Dela diagnostikdata</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">Inaktivera ljust tema</translation>
@@ -925,6 +926,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="9149391708638971077">Kör minnestest</translation>
 <translation id="9173638680043580060">Mindre än en minut kvar</translation>
 <translation id="917720651393141712">Testa</translation>
+<translation id="9188992814426075118">Tangentbordet kan matcha bakgrunden automatiskt</translation>
 <translation id="9204237731135241582">Det gick inte att kontakta gateway från Android-appar</translation>
 <translation id="9211490828691860325">Alla skrivbord</translation>
 <translation id="922179502584117429">Nuvarande version <ph name="VERSION_NUMBER" /> är inte uppdaterad</translation>

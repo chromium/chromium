@@ -1910,6 +1910,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Odstrániť 1 nepodporovanú aplikáciu}few{Odstrániť # nepodporované aplikácie}many{Remove # unsupported apps}other{Odstrániť # nepodporovaných aplikácií}}</translation>
 <translation id="2776560192867872731">Zmeniť názov zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Odstrániť tento kontajner</translation>
+<translation id="2778471504622896352">Pridanie vzdialených aplikácií do spúšťača systému ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Pri inštalácii aplikácie pre Linux sa vyskytla chyba</translation>
 <translation id="2783298271312924866">Stiahnuté</translation>
@@ -3545,6 +3546,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a ďalšie (<ph name="NUMBER_OF_OTHER_SWITCHES" />) prepínače</translation>
 <translation id="439266289085815679">Konfiguráciu rozhrania Bluetooth spravuje <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Úprava konfiguračného súboru</translation>
+<translation id="4393713825278446281">Zariadenia podporujúce rýchle párovanie uložené do účtu <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Zakázať</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Otvoriť všetky}=1{Otvoriť záložku}few{Otvoriť všetky ({COUNT})}many{Otvoriť všetky ({COUNT})}other{Otvoriť všetky ({COUNT})}}</translation>
 <translation id="4397372003838952832">Toto heslo si nebudete musieť pamätať. Bude uložené v službe <ph name="GOOGLE_PASSWORD_MANAGER" /> pre účet <ph name="EMAIL" />.</translation>
@@ -3774,6 +3776,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4615586811063744755">nevybrali ste žiadny súbor cookie</translation>
 <translation id="461661862154729886">Zdroj napájania</translation>
 <translation id="4617001782309103936">Príliš krátky</translation>
+<translation id="4617019240346358451">Ak chcete použiť rozšírenie <ph name="EXTENSION_NAME" />, znova načítajte stránku</translation>
 <translation id="4617270414136722281">Možnosti rozšírenia</translation>
 <translation id="4617880081511131945">Pripojenie sa nedá nadviazať</translation>
 <translation id="4619564267100705184">Overte, že ste to vy</translation>
@@ -3989,6 +3992,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4833683849865011483">Na tlačovom serveri bola nájdená jedna tlačiareň</translation>
 <translation id="4836504898754963407">Správa odtlačkov</translation>
 <translation id="4837128290434901661">Chcete prepnúť späť na Vyhľadávanie Google?</translation>
+<translation id="4837165100461973682">Ak chcete zmeny použiť, znova načítajte stránku</translation>
 <translation id="4837926214103741331">Nemáte oprávnenie používať toto zariadenie. Ak chcete získať povolenie na prihlásenie, kontaktujte majiteľa zariadenia.</translation>
 <translation id="4837952862063191349">Ak chcete zariadenie odomknúť a obnoviť svoje miestne údaje, zadajte svoje staré heslo pre zariadenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Zobrazujte si fotky, médiá a upozornenia svojho telefónu</translation>
@@ -4298,6 +4302,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5150254825601720210">Netscape – názov servera SSL certifikátu</translation>
 <translation id="5151354047782775295">Uvoľnite miesto na disku, inak môže dôjsť k automatickému odstráneniu vybraných údajov</translation>
 <translation id="5153234146675181447">Odstránenie telefónu</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Rozšírené nastavenia pre <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Predmet</translation>
 <translation id="5155327081870541046">V paneli s adresou zadajte odkaz zodpovedajúci webu, na ktorom chcete hľadať, napríklad @bookmarks. Potom stlačte preferovanú klávesovú skratku a zadajte hľadaný výraz.</translation>
@@ -5937,6 +5942,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6790497603648687708">Rozšírenie <ph name="EXTENSION_NAME" /> bolo pridané vzdialene</translation>
 <translation id="6790820461102226165">Pridať osobu...</translation>
 <translation id="6793604637258913070">Zvýrazňovať textový kurzor, keď sa zobrazí alebo pohne</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Automatické prehľadávanie vám umožňuje prechádzať po položkách na obrazovke automaticky. Po zvýraznení aktivujte položku stlačením tlačidla Vybrať.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hops, niečo sa pokazilo.</translation>
@@ -7809,6 +7815,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8642947597466641025">Zväčšiť text</translation>
 <translation id="8643443571868262066">Súbor <ph name="FILE_NAME" /> môže byť nebezpečný. Chcete ho odoslať na kontrolu do rozšírenej ochrany Googlu?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Žiadne súbory cookie}=1{1 súbor cookie je blokovaný}few{# súbory cookie sú blokované}many{# cookies are blocked}other{# súborov cookie je blokovaných}}</translation>
+<translation id="864423554496711319">Zariadenia uložené do účtu</translation>
 <translation id="8644655801811752511">Tento bezpečnostný kľúč sa nedá resetovať. Skúste ho resetovať ihneď po vložení.</translation>
 <translation id="8645354835496065562">Naďalej umožňovať prístup k senzorom</translation>
 <translation id="8645920082661222035">Predpovedá nebezpečné udalosti a upozorní vás, než k nim dôjde</translation>

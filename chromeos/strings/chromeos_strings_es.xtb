@@ -103,6 +103,7 @@
 <translation id="1745577949879301685">No se han podido cargar las imágenes. Revisa tu conexión de red o prueba a cargar las imágenes de nuevo.</translation>
 <translation id="1751249301761991853">Personalizar</translation>
 <translation id="1753496554272155572">Salir de la vista previa de fondo de pantalla</translation>
+<translation id="1755556344721611131">Aplicación Diagnóstico</translation>
 <translation id="175763766237925754">Buena (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -719,6 +720,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; pulsa Buscar y la barra espaciadora para ver el resultado en la Búsqueda de Google.</translation>
 <translation id="7343649194310845056">Dispositivos de red</translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
+<translation id="73631062356239394">Compartir datos de diagnóstico</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">Desactivar tema claro</translation>
@@ -924,6 +926,7 @@
 <translation id="9149391708638971077">Realizar prueba de memoria</translation>
 <translation id="9173638680043580060">Queda menos de 1 minuto</translation>
 <translation id="917720651393141712">Prueba</translation>
+<translation id="9188992814426075118">Tu teclado puede combinar automáticamente con tu fondo de pantalla</translation>
 <translation id="9204237731135241582">No se puede contactar con la pasarela desde aplicaciones Android</translation>
 <translation id="9211490828691860325">Todos los escritorios</translation>
 <translation id="922179502584117429">La versión actual (<ph name="VERSION_NUMBER" />) está desactualizada</translation>

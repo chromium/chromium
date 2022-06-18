@@ -1923,6 +1923,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Κατάργηση 1 μη υποστηριζόμενης εφαρμογής}other{Κατάργηση # μη υποστηριζόμενων εφαρμογών}}</translation>
 <translation id="2776560192867872731">Αλλαγή ονόματος συσκευής για τη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Διαγραφή αυτού του κοντέινερ</translation>
+<translation id="2778471504622896352">Προσθήκη απομακρυσμένων εφαρμογών στην εφαρμογή εκκίνησης ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής Linux</translation>
 <translation id="2783298271312924866">Η λήψη ολοκληρώθηκε</translation>
@@ -3558,6 +3559,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> και <ph name="NUMBER_OF_OTHER_SWITCHES" /> ακόμη διακόπτες</translation>
 <translation id="439266289085815679">Η διαμόρφωση Bluetooth ελέγχεται από τον χρήστη <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Επεξεργαστείτε το αρχείο διαμόρφωσης.</translation>
+<translation id="4393713825278446281">Οι συσκευές Γρήγορης σύζευξης αποθηκεύτηκαν στο <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Απενεργοποίηση</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Άνοιγμα όλων}=1{&amp;Άνοιγμα σελιδοδείκτη}other{&amp;Άνοιγμα όλων ({COUNT})}}</translation>
 <translation id="4397372003838952832">Δεν θα χρειάζεται να θυμάστε αυτόν τον κωδικό πρόσβασης. Θα αποθηκευτεί στην υπηρεσία <ph name="GOOGLE_PASSWORD_MANAGER" /> για τον λογαριασμό <ph name="EMAIL" />.</translation>
@@ -3788,6 +3790,7 @@
 <translation id="4615586811063744755">δεν έχουν επιλεγεί cookie</translation>
 <translation id="461661862154729886">Πηγή ενέργειας</translation>
 <translation id="4617001782309103936">Υπερβολικά μικρό</translation>
+<translation id="4617019240346358451">Ανανεώστε τη σελίδα για χρήση της επέκτασης "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4617270414136722281">Επιλογές επεκτάσεων</translation>
 <translation id="4617880081511131945">Δεν είναι δυνατή η δημιουργία σύνδεσης</translation>
 <translation id="4619564267100705184">Επαλήθευση ταυτότητας</translation>
@@ -4003,6 +4006,7 @@
 <translation id="4833683849865011483">Βρέθηκε ένας εκτυπωτής από τον διακομιστή εκτύπωσης.</translation>
 <translation id="4836504898754963407">Διαχείριση δακτυλικών αποτυπωμάτων</translation>
 <translation id="4837128290434901661">Αλλαγή στην Αναζήτηση Google;</translation>
+<translation id="4837165100461973682">Επαναλάβετε τη φόρτωση της σελίδας για να εφαρμόσετε τις αλλαγές σας</translation>
 <translation id="4837926214103741331">Δεν έχετε εξουσιοδότηση για χρήση αυτής της συσκευής. Για να λάβετε άδεια σύνδεσης, επικοινωνήστε με τον κάτοχο της συσκευής.</translation>
 <translation id="4837952862063191349">Για να ξεκλειδώσετε και να επαναφέρετε τα τοπικά δεδομένα σας, πληκτρολογήστε τον προηγούμενο κωδικό πρόσβασής σας για <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Δείτε τις φωτογραφίες, τα πολυμέσα και τις ειδοποιήσεις του τηλεφώνου σας.</translation>
@@ -4312,6 +4316,7 @@
 <translation id="5150254825601720210">Όνομα διακομιστή SSL πιστοποιητικού Netscape</translation>
 <translation id="5151354047782775295">Απελευθερώστε χώρο στον δίσκο, διαφορετικά τα δεδομένα επιλογής ενδέχεται να διαγραφούν αυτόματα</translation>
 <translation id="5153234146675181447">Θα γίνει παράβλεψη του τηλεφώνου</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Σύνθετες ρυθμίσεις για <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Θέμα</translation>
 <translation id="5155327081870541046">Στη γραμμή διευθύνσεων, εισαγάγετε τη συντόμευση για τον ιστότοπο που θέλετε να αναζητήσετε, όπως "@σελιδοδείκτες". Στη συνέχεια, πατήστε τη συντόμευση πληκτρολογίου που προτιμάτε και εισαγάγετε τον όρο αναζήτησης.</translation>
@@ -5948,6 +5953,7 @@
 <translation id="6790497603648687708">Η επέκταση <ph name="EXTENSION_NAME" /> προστέθηκε απομακρυσμένα</translation>
 <translation id="6790820461102226165">Προσθήκη ατόμου</translation>
 <translation id="6793604637258913070">Επισήμανση του δρομέα κειμένου όταν εμφανίζεται ή κινείται.</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Με την αυτόματη σάρωση μπορείτε να μετακινήστε αυτόματα στα στοιχεία στην οθόνη. Όταν ένα στοιχείο είναι επισημασμένο, πατήστε Επιλογή για να το ενεργοποιήσετε.</translation>
 <translation id="6795884519221689054">Πάντα</translation>
 <translation id="6797493596609571643">Ωχ, κάτι δεν πήγε καλά.</translation>
@@ -7821,6 +7827,7 @@
 <translation id="8642947597466641025">Μεγέθυνση κειμένου</translation>
 <translation id="8643443571868262066">Το αρχείο <ph name="FILE_NAME" /> ενδέχεται να είναι επικίνδυνο. Αποστολή στη Σύνθετη προστασία Google για σάρωση;</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Κανένα cookie}=1{Αποκλείστηκε 1 cookie.}other{Αποκλείστηκαν # cookie.}}</translation>
+<translation id="864423554496711319">Συσκευές που έχουν αποθηκευτεί στον λογαριασμό σας</translation>
 <translation id="8644655801811752511">Δεν είναι δυνατή η επαναφορά αυτού του κλειδιού ασφαλείας. Δοκιμάστε να επαναφέρετε το κλειδί αμέσως μετά την τοποθέτησή του.</translation>
 <translation id="8645354835496065562">Να εξακολουθήσει να επιτρέπεται η πρόσβαση στους αισθητήρες</translation>
 <translation id="8645920082661222035">Προβλέπει και σας προειδοποιεί για επικίνδυνα συμβάντα προτού αυτά συμβούν.</translation>

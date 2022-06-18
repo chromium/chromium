@@ -720,6 +720,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" /> ; <ph name="RESULT_TEXT" /> ; Appuyez sur "Rechercher" et sur "Espace" pour voir le résultat dans la recherche Google.</translation>
 <translation id="7343649194310845056">Appareils sur le réseau</translation>
 <translation id="7359657277149375382">Type de fichier</translation>
+<translation id="73631062356239394">Partager les données de diagnostic</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">Code SKU</translation>
 <translation id="7397270852490618635">Annuler le thème clair</translation>
@@ -925,6 +926,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="9149391708638971077">Lancer le test de mémoire</translation>
 <translation id="9173638680043580060">Moins d'une minute restante</translation>
 <translation id="917720651393141712">Tester</translation>
+<translation id="9188992814426075118">Votre clavier peut être automatiquement assorti à votre fond d'écran</translation>
 <translation id="9204237731135241582">Impossible de contacter la passerelle depuis les applis Android</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>
 <translation id="922179502584117429">La version <ph name="VERSION_NUMBER" /> actuellement installée est obsolète</translation>

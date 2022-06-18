@@ -1922,6 +1922,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{सपोर्ट नसलेले एक अ‍ॅप काढून टाका}other{सपोर्ट नसलेली # अ‍ॅप्स काढून टाका}}</translation>
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> या डिव्हाइसचे नाव बदला</translation>
 <translation id="2777251078198759550">हा कंटेनर हटवा</translation>
+<translation id="2778471504622896352">ChromeOS लाँचरमध्ये रिमोट अ‍ॅप्स जोडा</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux ॲप्लिकेशन इंस्टॉल करताना एरर आली</translation>
 <translation id="2783298271312924866">डाउनलोड केलेले</translation>
@@ -3555,6 +3556,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, आणि आणखी <ph name="NUMBER_OF_OTHER_SWITCHES" /> स्विच</translation>
 <translation id="439266289085815679">ब्लूटूथ कॉंफिगरेशन <ph name="USER_EMAIL" /> नियंत्रित करते.</translation>
 <translation id="4392896746540753732">कॉंफिगरेशन फाइल संपादित करा</translation>
+<translation id="4393713825278446281">जलद पेअरिंग डिव्हाइस ही <ph name="PRIMARY_EMAIL" /> मध्ये सेव्ह केली आहेत</translation>
 <translation id="4394049700291259645">अक्षम करा</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Open all}=1{बुकमार्क उघडा}other{सर्व ({COUNT}) उघडा}}</translation>
 <translation id="4397372003838952832">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो <ph name="EMAIL" /> साठी <ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये सेव्ह केला जाईल.</translation>
@@ -3785,6 +3787,7 @@
 <translation id="4615586811063744755">कोणत्याही कुकीज निवडलेल्या नाही</translation>
 <translation id="461661862154729886">ऊर्जा स्रोत</translation>
 <translation id="4617001782309103936">खूपच लहान</translation>
+<translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" वापरण्यासाठी पेज रीलोड करा</translation>
 <translation id="4617270414136722281">एक्स्टेंशन पर्याय</translation>
 <translation id="4617880081511131945">कनेक्शन स्थापित करू शकत नाही</translation>
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
@@ -4000,6 +4003,7 @@
 <translation id="4833683849865011483">प्रिंट सर्व्हरवरील एक प्रिंटर आढळला</translation>
 <translation id="4836504898754963407">फिंगरप्रिंट व्यवस्‍थापित करा</translation>
 <translation id="4837128290434901661">Google Search वर परत बदलायचे आहे का?</translation>
+<translation id="4837165100461973682">तुमचे बदल लागू करण्यासाठी पेज रीलोड करा</translation>
 <translation id="4837926214103741331">तुम्ही हे डिव्हाइस वापरण्यासाठी प्राधिकृत नाही. कृपया साइन इन करण्याच्या परवानगीसाठी डिव्हाइस मालकाशी संपर्क साधा.</translation>
 <translation id="4837952862063191349">तुमचा स्थानिक डेटा अनलॉक आणि रिस्टोअर करण्‍यासाठी, कृपया तुमचा जुना <ph name="DEVICE_TYPE" /> पासवर्ड एंटर करा.</translation>
 <translation id="4838170306476614339">तुमच्या फोनमधील फोटो, मीडिया आणि सूचना पहा</translation>
@@ -4309,6 +4313,7 @@
 <translation id="5150254825601720210">Netscape सर्टिफिकेट SSL सर्व्हर नाव</translation>
 <translation id="5151354047782775295">डिस्क स्थान मोकळे करा किंवा निवडलेला डेटा स्वयंचलितपणे हटवला जाऊ शकतो</translation>
 <translation id="5153234146675181447">फोन विसरा</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> यासाठी प्रगत सेटिंग्ज</translation>
 <translation id="5154702632169343078">विषय</translation>
 <translation id="5155327081870541046">तुम्हाला शोधायच्या असलेल्या साइटचा शॉर्टकट अ‍ॅड्रेस बारमध्ये एंटर करा जसे की, "@bookmarks". त्यानंतर, तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट दाबा आणि तुमची शोध संज्ञा एंटर करा.</translation>
@@ -5945,6 +5950,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> दूरस्थपणे जोडला</translation>
 <translation id="6790820461102226165">व्यक्ती जोडा...</translation>
 <translation id="6793604637258913070">मजकूर घालण्याचे स्थान दिसते किंवा हलते तेव्हा ते हायलाइट करा</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">ऑटो-स्कॅन हे तुम्हाला स्क्रीनवरील आयटमदरम्यान आपोआप नेव्हिगेट करू देते. एखादा आयटम हायलाइट केला जातो तेव्हा, तो अ‍ॅक्टिव्हेट करण्यासाठी “निवडा” दाबा.</translation>
 <translation id="6795884519221689054">पांडा</translation>
 <translation id="6797493596609571643">अरेरे, काहीतरी चूक झाली.</translation>
@@ -7816,6 +7822,7 @@
 <translation id="8642947597466641025">मजकूर मोठा करा</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> धोकादायक असू शकते. ती स्कॅन करण्यासाठी Google प्रगत संरक्षण कडे पाठवायची?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{No cookies}=1{एक कुकी ब्लॉक केली}other{# कुकी ब्लॉक केल्या}}</translation>
+<translation id="864423554496711319">तुमच्या खात्यामध्ये डिव्हाइस सेव्ह केली आहेत</translation>
 <translation id="8644655801811752511">ही सिक्युरिटी की रीसेट करू शकत नाही. की घातल्यानंतर ती लगेच रीसेट करण्याचा प्रयत्न करा.</translation>
 <translation id="8645354835496065562">सेन्सर ॲक्सेस देणे सुरू ठेवा</translation>
 <translation id="8645920082661222035">धोकादायक घटना घडण्याआधी त्यांचे पूर्वानुमान करते आणि त्यांबद्दल तुम्हाला चेतावणी देते</translation>

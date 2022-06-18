@@ -719,6 +719,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Нәтижені Google Search-тен көру үшін іздеу және бос орын пернелерін бірге басыңыз.</translation>
 <translation id="7343649194310845056">Желілік құрылғылар</translation>
 <translation id="7359657277149375382">Файл түрі</translation>
+<translation id="73631062356239394">Диагностика деректерін бөлісу</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU нөмірі</translation>
 <translation id="7397270852490618635">Жарық режимді өшіру</translation>
@@ -924,6 +925,7 @@
 <translation id="9149391708638971077">Жад тексерісін іске қосу</translation>
 <translation id="9173638680043580060">Бір минутқа жетпейтін уақыт қалды.</translation>
 <translation id="917720651393141712">Тексеру</translation>
+<translation id="9188992814426075118">Пернетақта тұсқағазды автоматты түрде сәйкестендіре алады.</translation>
 <translation id="9204237731135241582">Android қолданбаларынан шлюзге қосылу мүмкін емес.</translation>
 <translation id="9211490828691860325">Барлық жұмыс үстелдері</translation>
 <translation id="922179502584117429">Қазіргі <ph name="VERSION_NUMBER" /> нұсқасы ескірген.</translation>

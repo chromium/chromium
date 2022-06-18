@@ -720,6 +720,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Appuyez simultanément sur le bouton de recherche et la barre d'espacement pour afficher les résultats dans la recherche Google.</translation>
 <translation id="7343649194310845056">Appareils réseau</translation>
 <translation id="7359657277149375382">Type de fichier</translation>
+<translation id="73631062356239394">Partager les données de diagnostics</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">UGS</translation>
 <translation id="7397270852490618635">Désactiver le thème clair</translation>
@@ -925,6 +926,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="9149391708638971077">Exécuter le test de mémoire</translation>
 <translation id="9173638680043580060">Il reste moins d'une minute</translation>
 <translation id="917720651393141712">Test</translation>
+<translation id="9188992814426075118">Votre clavier peut automatiquement s'agencer à votre fond d'écran</translation>
 <translation id="9204237731135241582">Impossible de communiquer avec la passerelle à partir d'applications Android</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>
 <translation id="922179502584117429">La version actuelle (<ph name="VERSION_NUMBER" />) est obsolète</translation>
