@@ -15,7 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * ViewBinder for menu item in tab grid dialog menu.
  */
 public class TabGridDialogMenuItemBinder {
-    public static void binder(PropertyModel model, View view, PropertyKey propertyKey) {
+    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == TabGridDialogMenuItemProperties.TITLE) {
             TextView textView = view.findViewById(R.id.menu_item_text);
             textView.setText(model.get(TabGridDialogMenuItemProperties.TITLE));

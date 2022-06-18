@@ -92,7 +92,7 @@ public class TabGridDialogMenuCoordinator {
         // clang-format off
         adapter.registerType(ListItemType.MENU_ITEM,
                 new LayoutViewBuilder(R.layout.list_menu_item),
-                TabGridDialogMenuItemBinder::binder);
+                TabGridDialogMenuItemBinder::bind);
         // clang-format on
         listView.setOnItemClickListener((p, v, pos, id) -> {
             if (mOnItemClickedCallback != null) {
