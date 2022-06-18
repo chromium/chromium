@@ -170,14 +170,16 @@ GridItems NGGridNode::GridItemsIncludingSubgridded(
 
     // TODO(ethavar): Compute automatic repetitions for subgridded axes as
     // described in https://drafts.csswg.org/css-grid-2/#auto-repeat.
-
     auto subgridded_items = subgrid.ConstructGridItems(&subgrid_placement_data);
-    grid_items.ReserveCapacity(grid_items.Size() + subgridded_items.Size());
 
     const wtf_size_t column_start_line = current_item.StartLine(kForColumns);
     const wtf_size_t row_start_line = current_item.StartLine(kForRows);
 
-    for (auto subgridded_item : subgridded_items.item_data) {
+    // Don't use |current_item| after we reserve the new capacity; the reference
+    // becomes invalid because |grid_items| is reallocated.
+    grid_items.ReserveCapacity(grid_items.Size() + subgridded_items.Size());
+
+    for (auto& subgridded_item : subgridded_items.item_data) {
       subgridded_item.is_subgridded_to_parent_grid = true;
 
       subgridded_item.resolved_position.columns.Translate(column_start_line);
