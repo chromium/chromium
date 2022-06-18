@@ -75,6 +75,11 @@
             "optional": true,
             "description": " The <a href='webNavigation#frame_ids'>ID of the frame</a> of the element where the context menu was clicked, if it was in a frame."
           },
+          "linkText": {
+            "type": "string",
+            "optional": true,
+            "description": "If the element is a link, the text for the link. May be an empty string if the contents of the link are an image."
+          },
           "selectionText": {
             "type": "string",
             "optional": true,

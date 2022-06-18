@@ -678,6 +678,8 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
   AddURLProperty(properties, "pageUrl", params.page_url);
   AddURLProperty(properties, "frameUrl", params.frame_url);
 
+  if (params.link_text.length() > 0)
+    properties.SetStringKey("linkText", params.link_text);
   if (params.selection_text.length() > 0)
     properties.SetStringKey("selectionText", params.selection_text);
 
