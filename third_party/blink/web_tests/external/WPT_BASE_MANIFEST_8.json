@@ -800,6 +800,17 @@
        {}
       ]
      ],
+     "table": {
+      "repeated-section": {
+       "nested-repeated-header-crash.html": [
+        "1dffcf821a113b6afe6c4205cee892007f83eb30",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
+     },
      "uncontained-oof-in-inline-after-break-000-crash.html": [
       "4d301e497749ddf0d2bfca3a5976a9877b45cff8",
       [
@@ -140842,6 +140853,19 @@
        {}
       ]
      ],
+     "multicol-fill-balance-024.html": [
+      "c31f0770678ba054ff652ac08ee0322dab92a89f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "multicol-fill-balance-nested-000.html": [
       "5e466df8077545b4d6474389d296bc26c5b28b86",
       [
@@ -143574,6 +143598,19 @@
      ],
      "resize-in-strict-containment-nested.html": [
       "73f1494a29c56a838a1438ddca37539146e3ec7a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "resize-multicol-with-fixed-size-children.html": [
+      "47c041b994eb79a7cf82eafdfb386e37142a852c",
       [
        null,
        [
@@ -379671,6 +379708,34 @@
         {}
        ]
       ],
+      "grid-template-columns-neutral-keyframe-001.html": [
+       "070539e2c0eda9cbc8585f8bd1fc4217485d97e4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-template-columns-neutral-keyframe-002.html": [
+       "6cd163711ee599366280b352dcb808e83ea2899f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-template-columns-neutral-keyframe-003.html": [
+       "80187cf68487bf3af4d39a0799b30886600e61f3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-template-columns-neutral-keyframe-004.html": [
+       "a207aa713c971cda94052dc8abf810f1e1cb29fd",
+       [
+        null,
+        {}
+       ]
+      ],
       "grid-template-rows-composition.html": [
        "42f9c92e9ad6d2042553e7e4b440adeeddf09bab",
        [
@@ -379680,6 +379745,34 @@
       ],
       "grid-template-rows-interpolation.html": [
        "f749cbd832b0014cc5ec42e3df0066dbfc891a29",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-template-rows-neutral-keyframe-001.html": [
+       "ecbe0481eded5ede38ab482b9175555258f82861",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-template-rows-neutral-keyframe-002.html": [
+       "f63d45b4a71929ae703bd1dc51b875c0c843b12e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-template-rows-neutral-keyframe-003.html": [
+       "5ffd67528ca91f27ae801fe8930745a27c61df0b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-template-rows-neutral-keyframe-004.html": [
+       "941e843624837b16506b9900cc0736f3ca8a5a5f",
        [
         null,
         {}
@@ -399854,6 +399947,13 @@
      ],
      "has-basic.html": [
       "3a73edd184128ea764a8547cf38911377ee12368",
+      [
+       null,
+       {}
+      ]
+     ],
+     "has-error-recovery.html": [
+      "143638c9e325f13576a02e19151a42eec4684408",
       [
        null,
        {}
