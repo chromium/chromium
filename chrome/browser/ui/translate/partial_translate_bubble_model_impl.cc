@@ -8,6 +8,7 @@
 
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 
 // TODO(crbug/1314825): When the PartialTranslateManager is added it will
@@ -105,4 +106,11 @@ bool PartialTranslateBubbleModelImpl::IsCurrentSelectionTranslated() const {
   // can change, so we will need to save that state because we can't rely on
   // LanguageState.
   return false;
+}
+
+void PartialTranslateBubbleModelImpl::TranslateFullPage(
+    content::WebContents* web_contents) {
+  translate::TranslateManager* translate_manager =
+      ChromeTranslateClient::GetManagerFromWebContents(web_contents);
+  translate_manager->ShowTranslateUI(true);
 }

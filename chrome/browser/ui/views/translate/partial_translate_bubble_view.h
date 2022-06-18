@@ -94,6 +94,16 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   void CloseBubble() override;
 
  private:
+  // IDs used by PartialTranslateBubbleViewTest to simulate button presses.
+  enum ButtonID {
+    BUTTON_ID_DONE = 1,
+    BUTTON_ID_TRY_AGAIN,
+    BUTTON_ID_OPTIONS_MENU,
+    BUTTON_ID_CLOSE,
+    BUTTON_ID_RESET,
+    BUTTON_ID_FULL_PAGE_TRANSLATE
+  };
+
   friend class PartialTranslateBubbleViewTest;
   FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
                            TargetLanguageTabTriggersTranslate);
@@ -103,6 +113,8 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
                            SourceLanguageTabUpdatesViewState);
   FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
                            SourceLanguageTabSelectedLogged);
+  FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
+                           TranslateFullPageButton);
 
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
@@ -200,6 +212,9 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
 
   void UpdateInsets(PartialTranslateBubbleModel::ViewState state);
 
+  // Function bound to the "Translate full page" button.
+  void TranslateFullPage();
+
   static PartialTranslateBubbleView* partial_translate_bubble_view_;
 
   raw_ptr<views::View> translate_view_ = nullptr;
@@ -231,6 +246,8 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   std::unique_ptr<WebContentMouseHandler> mouse_handler_;
 
   base::OnceClosure on_closing_;
+
+  content::WebContents* web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRANSLATE_PARTIAL_TRANSLATE_BUBBLE_VIEW_H_

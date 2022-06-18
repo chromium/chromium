@@ -35,6 +35,7 @@ class PartialTranslateBubbleModelImpl : public PartialTranslateBubbleModel {
   void Translate() override;
   void RevertTranslation() override;
   bool IsCurrentSelectionTranslated() const override;
+  void TranslateFullPage(content::WebContents* web_contents) override;
 
  private:
   std::unique_ptr<translate::TranslateUIDelegate> ui_delegate_;

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/translate/translate_language_list_model.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/translate/core/common/translate_errors.h"
+#include "content/public/browser/web_contents.h"
 
 // The model for the Partial Translate bubble UX. This manages the user's
 // manipulation of the bubble and offers the data to show on the bubble.
@@ -72,6 +73,10 @@ class PartialTranslateBubbleModel : public TranslateLanguageListModel {
   // Returns true if the current text selection is translated in the currently
   // selected source and target language.
   virtual bool IsCurrentSelectionTranslated() const = 0;
+
+  // Closes the Partial Translate bubble, then immediately opens the Full Page
+  // Translate bubble and starts a translation.
+  virtual void TranslateFullPage(content::WebContents* web_contents) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TRANSLATE_PARTIAL_TRANSLATE_BUBBLE_MODEL_H_

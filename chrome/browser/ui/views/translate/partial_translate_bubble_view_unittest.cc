@@ -10,6 +10,9 @@
 #include "chrome/browser/ui/translate/partial_translate_bubble_ui_action_logger.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -60,8 +63,13 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
 
   bool IsCurrentSelectionTranslated() const override { return false; }
 
+  void TranslateFullPage(content::WebContents* web_contents) override {
+    full_page_translate_called_ = true;
+  }
+
   ViewState current_view_state_;
   bool translate_called_ = false;
+  bool full_page_translate_called_ = false;
 };
 
 }  // namespace
@@ -88,6 +96,14 @@ class PartialTranslateBubbleViewTest : public ChromeViewsTestBase {
         anchor_widget_->GetContentsView(), std::move(model),
         translate::TranslateErrors::NONE, nullptr, base::DoNothing());
     views::BubbleDialogDelegateView::CreateBubble(bubble_)->Show();
+  }
+
+  void PressButton(PartialTranslateBubbleView::ButtonID id) {
+    views::Button* button =
+        static_cast<views::Button*>(bubble_->GetViewByID(id));
+    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
+                           ui::DomCode::ENTER, ui::EF_NONE);
+    views::test::ButtonTestApi(button).NotifyClick(key_event);
   }
 
   void TearDown() override {
@@ -151,4 +167,10 @@ TEST_F(PartialTranslateBubbleViewTest, SourceLanguageTabSelectedLogged) {
       translate::kPartialTranslateBubbleUiEventHistogramName,
       translate::PartialTranslateBubbleUiEvent::SOURCE_LANGUAGE_TAB_SELECTED,
       1);
+}
+
+TEST_F(PartialTranslateBubbleViewTest, TranslateFullPageButton) {
+  CreateAndShowBubble();
+  PressButton(PartialTranslateBubbleView::BUTTON_ID_FULL_PAGE_TRANSLATE);
+  EXPECT_TRUE(mock_model_->full_page_translate_called_);
 }

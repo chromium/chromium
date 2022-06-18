@@ -149,6 +149,8 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
 
   bool IsCurrentSelectionTranslated() const override { return false; }
 
+  void TranslateFullPage(content::WebContents* web_contents) override {}
+
   ViewState current_view_state_;
 };
 
@@ -212,7 +214,7 @@ TEST_F(TranslateBubbleControllerTest, ShowFullPageThenPartialTranslateBubble) {
   EXPECT_THAT(controller_->GetTranslateBubble(), testing::IsNull());
   EXPECT_THAT(controller_->GetPartialTranslateBubble(), testing::IsNull());
 
-  // Show the full page translate bubble first.
+  // Show the Full Page Translate bubble first.
   controller_->ShowTranslateBubble(
       anchor_widget_->GetContentsView(), nullptr,
       translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE, "fr", "en",
@@ -221,7 +223,7 @@ TEST_F(TranslateBubbleControllerTest, ShowFullPageThenPartialTranslateBubble) {
 
   EXPECT_THAT(controller_->GetTranslateBubble(), testing::NotNull());
 
-  // Showing the partial translate bubble while the full page translate bubble
+  // Showing the partial translate bubble while the Full Page Translate bubble
   // is open should close the full translate bubble.
   controller_->ShowPartialTranslateBubble(
       anchor_widget_->GetContentsView(), nullptr,
@@ -248,7 +250,7 @@ TEST_F(TranslateBubbleControllerTest, ShowPartialThenFullPageTranslateBubble) {
       "en", translate::TranslateErrors::Type::NONE);
   EXPECT_THAT(controller_->GetPartialTranslateBubble(), testing::NotNull());
 
-  // Showing the full page translate bubble while the partial translate bubble
+  // Showing the Full Page Translate bubble while the partial translate bubble
   // is open should close the partial translate bubble.
   controller_->ShowTranslateBubble(
       anchor_widget_->GetContentsView(), nullptr,
@@ -259,7 +261,7 @@ TEST_F(TranslateBubbleControllerTest, ShowPartialThenFullPageTranslateBubble) {
   EXPECT_THAT(controller_->GetTranslateBubble(), testing::NotNull());
   EXPECT_THAT(controller_->GetPartialTranslateBubble(), testing::IsNull());
 
-  // Only the full page translate bubble should remain, close it.
+  // Only the Full Page Translate bubble should remain, close it.
   controller_->CloseBubble();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(controller_->GetTranslateBubble(), testing::IsNull());
