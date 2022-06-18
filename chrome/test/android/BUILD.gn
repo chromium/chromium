@@ -260,6 +260,7 @@ android_library("chrome_java_integration_only_test_support") {
   visibility = [
     ":*",
     "//chrome/android/features/tab_ui:test_support_javalib",
+    "//chrome/android/features/tab_ui:unit_device_javatests",
   ]
   sources = [
     "javatests/src/org/chromium/chrome/browser/history/HistoryTestUtils.java",

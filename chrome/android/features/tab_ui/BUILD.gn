@@ -242,6 +242,7 @@ android_library("unit_device_javatests") {
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/LargeMessageCardViewBinderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardProviderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewBinderTest.java",
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/PriceCardViewTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiViewBinderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorLayoutBinderTest.java",
   ]
@@ -255,6 +256,7 @@ android_library("unit_device_javatests") {
     "//chrome/android/features/tab_ui:tab_suggestions_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_integration_only_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
