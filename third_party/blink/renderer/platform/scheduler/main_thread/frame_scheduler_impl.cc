@@ -320,7 +320,7 @@ bool FrameSchedulerImpl::IsFrameVisible() const {
   return frame_visible_;
 }
 
-void FrameSchedulerImpl::SetCrossOriginToMainFrame(bool cross_origin) {
+void FrameSchedulerImpl::SetCrossOriginToNearestMainFrame(bool cross_origin) {
   DCHECK(parent_page_scheduler_);
   if (frame_origin_type_ == FrameOriginType::kMainFrame) {
     DCHECK(!cross_origin);
@@ -350,7 +350,7 @@ bool FrameSchedulerImpl::IsInEmbeddedFrameTree() const {
   return is_in_embedded_frame_tree_;
 }
 
-bool FrameSchedulerImpl::IsCrossOriginToMainFrame() const {
+bool FrameSchedulerImpl::IsCrossOriginToNearestMainFrame() const {
   return frame_origin_type_ == FrameOriginType::kCrossOriginToMainFrame;
 }
 
@@ -746,7 +746,7 @@ void FrameSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame_visible", frame_visible_);
   dict.Add("page_visible", parent_page_scheduler_->IsPageVisible());
-  dict.Add("cross_origin_to_main_frame", IsCrossOriginToMainFrame());
+  dict.Add("cross_origin_to_main_frame", IsCrossOriginToNearestMainFrame());
   dict.Add("frame_type", frame_type_ == FrameScheduler::FrameType::kMainFrame
                              ? "MainFrame"
                              : "Subframe");
@@ -768,10 +768,9 @@ void FrameSchedulerImpl::WriteIntoTrace(
   proto->set_frame_type(
       frame_type_ == FrameScheduler::FrameType::kMainFrame
           ? RendererMainThreadTaskExecution::FRAME_TYPE_MAIN_FRAME
-          : IsCrossOriginToMainFrame() ? RendererMainThreadTaskExecution::
-                                             FRAME_TYPE_CROSS_ORIGIN_SUBFRAME
-                                       : RendererMainThreadTaskExecution::
-                                             FRAME_TYPE_SAME_ORIGIN_SUBFRAME);
+      : IsCrossOriginToNearestMainFrame()
+          ? RendererMainThreadTaskExecution::FRAME_TYPE_CROSS_ORIGIN_SUBFRAME
+          : RendererMainThreadTaskExecution::FRAME_TYPE_SAME_ORIGIN_SUBFRAME);
   proto->set_is_ad_frame(is_ad_frame_);
 }
 
@@ -957,7 +956,7 @@ bool FrameSchedulerImpl::ShouldThrottleTaskQueues() const {
     return false;
   if (!parent_page_scheduler_->IsPageVisible())
     return true;
-  return !frame_visible_ && IsCrossOriginToMainFrame();
+  return !frame_visible_ && IsCrossOriginToNearestMainFrame();
 }
 
 bool FrameSchedulerImpl::IsExemptFromBudgetBasedThrottling() const {
@@ -1079,7 +1078,7 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   }
 
   // Frame origin type experiment.
-  if (IsCrossOriginToMainFrame()) {
+  if (IsCrossOriginToNearestMainFrame()) {
     if (main_thread_scheduler_->scheduling_settings()
             .low_priority_cross_origin ||
         (main_thread_scheduler_->scheduling_settings()

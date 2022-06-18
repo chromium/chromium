@@ -710,7 +710,7 @@ class CORE_EXPORT LocalFrameView final
 
   void MapLocalToRemoteMainFrame(TransformState&);
 
-  void CrossOriginToMainFrameChanged();
+  void CrossOriginToNearestMainFrameChanged();
   void CrossOriginToParentFrameChanged();
 
   void SetVisualViewportOrOverlayNeedsRepaint();

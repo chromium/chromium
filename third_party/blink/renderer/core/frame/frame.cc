@@ -199,7 +199,7 @@ bool Frame::IsOutermostMainFrame() const {
   return IsMainFrame() && !IsInFencedFrameTree();
 }
 
-bool Frame::IsCrossOriginToMainFrame() const {
+bool Frame::IsCrossOriginToNearestMainFrame() const {
   DCHECK(GetSecurityContext());
   const SecurityOrigin* security_origin =
       GetSecurityContext()->GetSecurityOrigin();
@@ -208,7 +208,7 @@ bool Frame::IsCrossOriginToMainFrame() const {
 }
 
 bool Frame::IsCrossOriginToOutermostMainFrame() const {
-  return IsCrossOriginToMainFrame() || IsInFencedFrameTree();
+  return IsCrossOriginToNearestMainFrame() || IsInFencedFrameTree();
 }
 
 bool Frame::IsCrossOriginToParentOrOuterDocument() const {

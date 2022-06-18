@@ -4354,7 +4354,7 @@ void LocalFrameView::DeliverSynchronousIntersectionObservations() {
   });
 }
 
-void LocalFrameView::CrossOriginToMainFrameChanged() {
+void LocalFrameView::CrossOriginToNearestMainFrameChanged() {
   // If any of these conditions hold, then a change in cross-origin status does
   // not affect throttling.
   if (lifecycle_updates_throttled_ || IsSubtreeThrottled() ||
@@ -4554,7 +4554,7 @@ bool LocalFrameView::CanThrottleRendering() const {
   // cross-origin frames must already communicate with asynchronous messages,
   // so they should be able to tolerate some delay in receiving replies from a
   // throttled peer.
-  return IsHiddenForThrottling() && frame_->IsCrossOriginToMainFrame();
+  return IsHiddenForThrottling() && frame_->IsCrossOriginToNearestMainFrame();
 }
 
 void LocalFrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,

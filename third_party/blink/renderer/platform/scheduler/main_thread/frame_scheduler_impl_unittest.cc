@@ -758,10 +758,10 @@ TEST_F(FrameSchedulerImplTest,
   LazyInitThrottleableTaskQueue();
   EXPECT_FALSE(IsThrottled());
   frame_scheduler_->SetFrameVisible(false);
-  frame_scheduler_->SetCrossOriginToMainFrame(true);
-  frame_scheduler_->SetCrossOriginToMainFrame(false);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(false);
   EXPECT_FALSE(IsThrottled());
-  frame_scheduler_->SetCrossOriginToMainFrame(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
   EXPECT_TRUE(IsThrottled());
   frame_scheduler_->SetFrameVisible(true);
   EXPECT_FALSE(IsThrottled());
@@ -771,7 +771,7 @@ TEST_F(FrameSchedulerImplTest,
 
 TEST_F(FrameSchedulerImplTest, FrameHidden_CrossOrigin_LazyInit) {
   frame_scheduler_->SetFrameVisible(false);
-  frame_scheduler_->SetCrossOriginToMainFrame(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
   LazyInitThrottleableTaskQueue();
   EXPECT_TRUE(IsThrottled());
 }
@@ -795,13 +795,13 @@ TEST_F(FrameSchedulerImplTest, FrameVisible_CrossOrigin_ExplicitInit) {
   EXPECT_TRUE(throttleable_task_queue());
   frame_scheduler_->SetFrameVisible(true);
   EXPECT_FALSE(IsThrottled());
-  frame_scheduler_->SetCrossOriginToMainFrame(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
   EXPECT_FALSE(IsThrottled());
 }
 
 TEST_F(FrameSchedulerImplTest, FrameVisible_CrossOrigin_LazyInit) {
   frame_scheduler_->SetFrameVisible(true);
-  frame_scheduler_->SetCrossOriginToMainFrame(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
   LazyInitThrottleableTaskQueue();
   EXPECT_FALSE(IsThrottled());
 }
@@ -2336,7 +2336,7 @@ class LowPriorityCrossOriginTaskExperimentTest : public FrameSchedulerImplTest {
 };
 
 TEST_F(LowPriorityCrossOriginTaskExperimentTest, FrameQueuesPriorities) {
-  EXPECT_FALSE(frame_scheduler_->IsCrossOriginToMainFrame());
+  EXPECT_FALSE(frame_scheduler_->IsCrossOriginToNearestMainFrame());
 
   // Same Origin Task Queues.
   EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
@@ -2352,8 +2352,8 @@ TEST_F(LowPriorityCrossOriginTaskExperimentTest, FrameQueuesPriorities) {
   EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
-  frame_scheduler_->SetCrossOriginToMainFrame(true);
-  EXPECT_TRUE(frame_scheduler_->IsCrossOriginToMainFrame());
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  EXPECT_TRUE(frame_scheduler_->IsCrossOriginToNearestMainFrame());
 
   EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
@@ -2402,8 +2402,8 @@ TEST_F(LowPriorityCrossOriginTaskDuringLoadingExperimentTest,
   EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
-  frame_scheduler_->SetCrossOriginToMainFrame(true);
-  EXPECT_TRUE(frame_scheduler_->IsCrossOriginToMainFrame());
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  EXPECT_TRUE(frame_scheduler_->IsCrossOriginToNearestMainFrame());
 
   EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
@@ -3017,7 +3017,7 @@ TEST_F(FrameSchedulerImplTest, DontReportFMPAndFCPForSubframes) {
 // the main frame with intensive wake up throttling.
 TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
        TaskExecutionSameOriginFrame) {
-  ASSERT_FALSE(frame_scheduler_->IsCrossOriginToMainFrame());
+  ASSERT_FALSE(frame_scheduler_->IsCrossOriginToNearestMainFrame());
 
   // Throttled TaskRunner to which tasks are posted in this test.
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
@@ -3188,7 +3188,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
 // with the main frame with intensive wake up throttling.
 TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
        TaskExecutionCrossOriginFrame) {
-  frame_scheduler_->SetCrossOriginToMainFrame(true);
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
 
   // Throttled TaskRunner to which tasks are posted in this test.
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
@@ -3359,7 +3359,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
 // frame run at the expected time.
 TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
        ManySameOriginFrames) {
-  ASSERT_FALSE(frame_scheduler_->IsCrossOriginToMainFrame());
+  ASSERT_FALSE(frame_scheduler_->IsCrossOriginToNearestMainFrame());
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       GetTaskRunner();
 
@@ -3370,7 +3370,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
                            frame_scheduler_delegate_.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
-  ASSERT_FALSE(other_frame_scheduler->IsCrossOriginToMainFrame());
+  ASSERT_FALSE(other_frame_scheduler->IsCrossOriginToNearestMainFrame());
   const scoped_refptr<base::SingleThreadTaskRunner> other_task_runner =
       GetTaskRunner(other_frame_scheduler.get());
 
@@ -3542,7 +3542,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
 // same-origin and cross-origin with the main frame.
 TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
        FrameChangesOriginType) {
-  EXPECT_FALSE(frame_scheduler_->IsCrossOriginToMainFrame());
+  EXPECT_FALSE(frame_scheduler_->IsCrossOriginToNearestMainFrame());
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       GetTaskRunner();
 
@@ -3553,7 +3553,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
                            frame_scheduler_delegate_.get(), nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
-  cross_origin_frame_scheduler->SetCrossOriginToMainFrame(true);
+  cross_origin_frame_scheduler->SetCrossOriginToNearestMainFrame(true);
   const scoped_refptr<base::SingleThreadTaskRunner> cross_origin_task_runner =
       GetTaskRunner(cross_origin_frame_scheduler.get());
 
@@ -3586,7 +3586,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
 
     // Make the |frame_scheduler_| cross-origin. Its task must now run at an
     // aligned time.
-    frame_scheduler_->SetCrossOriginToMainFrame(true);
+    frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
 
     task_environment_.FastForwardBy(kDefaultThrottledWakeUpInterval);
     if (IsIntensiveThrottlingExpected()) {
@@ -3621,7 +3621,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
 
     // Make the |frame_scheduler_| same-origin. Its task can now run at a
     // 1-second aligned time, since there was no wake up in the last minute.
-    frame_scheduler_->SetCrossOriginToMainFrame(false);
+    frame_scheduler_->SetCrossOriginToNearestMainFrame(false);
 
     task_environment_.FastForwardBy(kLongUnalignedDelay);
     if (IsIntensiveThrottlingExpected()) {
@@ -4066,7 +4066,7 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
   page_scheduler_->SetPageVisible(true);
-  cross_origin_frame_scheduler->SetCrossOriginToMainFrame(true);
+  cross_origin_frame_scheduler->SetCrossOriginToNearestMainFrame(true);
   const scoped_refptr<base::SingleThreadTaskRunner> cross_origin_task_runner =
       cross_origin_frame_scheduler->GetTaskRunner(
           TaskType::kJavascriptTimerDelayedLowNesting);
@@ -4101,7 +4101,7 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
   page_scheduler_->SetPageVisible(true);
-  cross_origin_frame_scheduler->SetCrossOriginToMainFrame(true);
+  cross_origin_frame_scheduler->SetCrossOriginToNearestMainFrame(true);
   const scoped_refptr<base::SingleThreadTaskRunner> cross_origin_task_runner =
       cross_origin_frame_scheduler->GetTaskRunner(
           TaskType::kJavascriptTimerDelayedLowNesting);

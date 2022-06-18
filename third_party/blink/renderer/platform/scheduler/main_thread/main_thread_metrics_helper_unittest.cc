@@ -179,38 +179,38 @@ class MainThreadMetricsHelperTest : public testing::Test {
         break;
       case FrameStatus::kCrossOriginVisible:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
-            .SetIsCrossOriginToMainFrame(true)
+            .SetIsCrossOriginToNearestMainFrame(true)
             .SetIsPageVisible(true)
             .SetIsFrameVisible(true);
         break;
       case FrameStatus::kCrossOriginVisibleService:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
-            .SetIsCrossOriginToMainFrame(true)
+            .SetIsCrossOriginToNearestMainFrame(true)
             .SetPageScheduler(playing_view_.get())
             .SetIsFrameVisible(true);
         break;
       case FrameStatus::kCrossOriginHidden:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
-            .SetIsCrossOriginToMainFrame(true)
+            .SetIsCrossOriginToNearestMainFrame(true)
             .SetIsPageVisible(true);
         break;
       case FrameStatus::kCrossOriginHiddenService:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
-            .SetIsCrossOriginToMainFrame(true)
+            .SetIsCrossOriginToNearestMainFrame(true)
             .SetPageScheduler(playing_view_.get());
         break;
       case FrameStatus::kCrossOriginBackground:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
-            .SetIsCrossOriginToMainFrame(true);
+            .SetIsCrossOriginToNearestMainFrame(true);
         break;
       case FrameStatus::kCrossOriginBackgroundExemptSelf:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
-            .SetIsCrossOriginToMainFrame(true)
+            .SetIsCrossOriginToNearestMainFrame(true)
             .SetIsExemptFromThrottling(true);
         break;
       case FrameStatus::kCrossOriginBackgroundExemptOther:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
-            .SetIsCrossOriginToMainFrame(true)
+            .SetIsCrossOriginToNearestMainFrame(true)
             .SetPageScheduler(throtting_exempt_view_.get());
         break;
       case FrameStatus::kCount:

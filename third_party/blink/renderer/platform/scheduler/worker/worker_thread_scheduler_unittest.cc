@@ -492,10 +492,10 @@ class WorkerThreadSchedulerWithProxyTest : public testing::Test {
     frame_scheduler_ = FakeFrameScheduler::Builder()
                            .SetIsPageVisible(false)
                            .SetFrameType(FrameScheduler::FrameType::kSubframe)
-                           .SetIsCrossOriginToMainFrame(true)
+                           .SetIsCrossOriginToNearestMainFrame(true)
                            .SetDelegate(frame_scheduler_delegate_.get())
                            .Build();
-    frame_scheduler_->SetCrossOriginToMainFrame(true);
+    frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
 
     worker_scheduler_proxy_ =
         std::make_unique<WorkerSchedulerProxy>(frame_scheduler_.get());

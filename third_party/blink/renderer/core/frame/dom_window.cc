@@ -589,7 +589,7 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
     return;
 
   // See https://crbug.com/1183571
-  // We assumed accessing_frame->IsCrossOriginToMainFrame() implies
+  // We assumed accessing_frame->IsCrossOriginToNearestMainFrame() implies
   // accessing_frame->Tree().Top() to be a LocalFrame. This might not be the
   // case after all, some crashes are reported. This block speculatively returns
   // early to avoid crashing.

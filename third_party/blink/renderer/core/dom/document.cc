@@ -5858,28 +5858,32 @@ void Document::setDomain(const String& raw_domain,
                       dom_window_->GetSecurityOrigin()->Port() == 0
                           ? WebFeature::kDocumentDomainSetWithDefaultPort
                           : WebFeature::kDocumentDomainSetWithNonDefaultPort);
-    bool was_cross_origin_to_main_frame =
-        GetFrame()->IsCrossOriginToMainFrame();
+    bool was_cross_origin_to_nearest_main_frame =
+        GetFrame()->IsCrossOriginToNearestMainFrame();
     bool was_cross_origin_to_parent_frame =
         GetFrame()->IsCrossOriginToParentOrOuterDocument();
     dom_window_->GetMutableSecurityOrigin()->SetDomainFromDOM(new_domain);
-    bool is_cross_origin_to_main_frame = GetFrame()->IsCrossOriginToMainFrame();
-    if (FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler())
-      frame_scheduler->SetCrossOriginToMainFrame(is_cross_origin_to_main_frame);
-    if (View() &&
-        (was_cross_origin_to_main_frame != is_cross_origin_to_main_frame)) {
-      View()->CrossOriginToMainFrameChanged();
+    bool is_cross_origin_to_nearest_main_frame =
+        GetFrame()->IsCrossOriginToNearestMainFrame();
+    if (FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler()) {
+      frame_scheduler->SetCrossOriginToNearestMainFrame(
+          is_cross_origin_to_nearest_main_frame);
+    }
+    if (View() && (was_cross_origin_to_nearest_main_frame !=
+                   is_cross_origin_to_nearest_main_frame)) {
+      View()->CrossOriginToNearestMainFrameChanged();
     }
     if (GetFrame()->IsMainFrame()) {
       // Notify descendants if their cross-origin-to-main-frame status changed.
-      // TODO(pdr): This will notify even if |Frame::IsCrossOriginToMainFrame|
-      // is the same. Track whether each child was cross-origin to main before
-      // and after changing the domain, and only notify the changed ones.
+      // TODO(pdr): This will notify even if
+      // |Frame::IsCrossOriginToNearestMainFrame| is the same. Track whether
+      // each child was cross-origin to main before and after changing the
+      // domain, and only notify the changed ones.
       for (Frame* child = GetFrame()->Tree().FirstChild(); child;
            child = child->Tree().TraverseNext(GetFrame())) {
         auto* child_local_frame = DynamicTo<LocalFrame>(child);
         if (child_local_frame && child_local_frame->View())
-          child_local_frame->View()->CrossOriginToMainFrameChanged();
+          child_local_frame->View()->CrossOriginToNearestMainFrameChanged();
       }
     }
 

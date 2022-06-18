@@ -5877,7 +5877,7 @@ def CheckMPArchApiUsage(input_api, output_api):
         'IsMainFrame',
     ]
     concerning_blink_frame_methods = [
-        'IsCrossOriginToMainFrame',
+        'IsCrossOriginToNearestMainFrame',
     ]
     concerning_method_pattern = input_api.re.compile(r'(' + r'|'.join(
         item for sublist in [

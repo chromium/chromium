@@ -34,7 +34,7 @@ bool FrameView::CanThrottleRenderingForPropagation() const {
   if (CanThrottleRendering())
     return true;
   Frame& frame = GetFrame();
-  if (!frame.IsCrossOriginToMainFrame())
+  if (!frame.IsCrossOriginToNearestMainFrame())
     return false;
   if (frame.IsLocalFrame() && To<LocalFrame>(frame).IsHidden())
     return true;

@@ -15,7 +15,7 @@ FrameOriginType GetFrameOriginType(FrameScheduler* scheduler) {
   if (scheduler->GetFrameType() == FrameScheduler::FrameType::kMainFrame)
     return FrameOriginType::kMainFrame;
 
-  if (scheduler->IsCrossOriginToMainFrame()) {
+  if (scheduler->IsCrossOriginToNearestMainFrame()) {
     return FrameOriginType::kCrossOriginToMainFrame;
   } else {
     return FrameOriginType::kSameOriginToMainFrame;

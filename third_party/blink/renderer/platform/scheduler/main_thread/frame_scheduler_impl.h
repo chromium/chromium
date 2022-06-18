@@ -95,8 +95,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void SetPaused(bool frame_paused) override;
   void SetShouldReportPostedTasksWhenDisabled(bool should_report) override;
 
-  void SetCrossOriginToMainFrame(bool cross_origin) override;
-  bool IsCrossOriginToMainFrame() const override;
+  void SetCrossOriginToNearestMainFrame(bool cross_origin) override;
+  bool IsCrossOriginToNearestMainFrame() const override;
 
   void SetIsAdFrame(bool is_ad_frame) override;
   bool IsAdFrame() const override;

@@ -724,8 +724,8 @@ Document* LocalDOMWindow::InstallNewDocument(const DocumentInit& init) {
 
   auto* frame_scheduler = GetFrame()->GetFrameScheduler();
   frame_scheduler->TraceUrlChange(document_->Url().GetString());
-  frame_scheduler->SetCrossOriginToMainFrame(
-      GetFrame()->IsCrossOriginToMainFrame());
+  frame_scheduler->SetCrossOriginToNearestMainFrame(
+      GetFrame()->IsCrossOriginToNearestMainFrame());
 
   GetFrame()->GetPage()->GetChromeClient().InstallSupplements(*GetFrame());
 

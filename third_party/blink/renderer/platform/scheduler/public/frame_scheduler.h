@@ -82,8 +82,8 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   // Set whether this frame is cross origin w.r.t. the top level frame. Cross
   // origin frames may use a different scheduling policy from same origin
   // frames.
-  virtual void SetCrossOriginToMainFrame(bool) = 0;
-  virtual bool IsCrossOriginToMainFrame() const = 0;
+  virtual void SetCrossOriginToNearestMainFrame(bool) = 0;
+  virtual bool IsCrossOriginToNearestMainFrame() const = 0;
 
   virtual void SetIsAdFrame(bool is_ad_frame) = 0;
   virtual bool IsAdFrame() const = 0;

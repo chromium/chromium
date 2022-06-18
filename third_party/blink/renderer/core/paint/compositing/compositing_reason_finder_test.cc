@@ -302,7 +302,7 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
   ASSERT_TRUE(iframe);
   iframe->contentDocument()->OverrideIsInitialEmptyDocument();
   To<LocalFrame>(iframe->ContentFrame())->View()->BeginLifecycleUpdates();
-  ASSERT_FALSE(iframe->ContentFrame()->IsCrossOriginToMainFrame());
+  ASSERT_FALSE(iframe->ContentFrame()->IsCrossOriginToNearestMainFrame());
   UpdateAllLifecyclePhasesForTest();
   LayoutView* iframe_layout_view =
       To<LocalFrame>(iframe->ContentFrame())->ContentLayoutObject();
@@ -325,7 +325,7 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
       To<LocalFrame>(iframe->ContentFrame())->ContentLayoutObject();
   iframe_layer = iframe_layout_view->Layer();
   ASSERT_TRUE(iframe_layer);
-  ASSERT_TRUE(iframe->ContentFrame()->IsCrossOriginToMainFrame());
+  ASSERT_TRUE(iframe->ContentFrame()->IsCrossOriginToNearestMainFrame());
   EXPECT_FALSE(iframe_layer->GetScrollableArea()->NeedsCompositedScrolling());
   EXPECT_REASONS(CompositingReason::kIFrame,
                  DirectReasonsForPaintProperties(*iframe_layout_view));

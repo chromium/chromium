@@ -85,7 +85,7 @@ void CollectHistogramMetrics(LocalDOMWindow* window) {
   } else if (!window->GetFrame()->IsMainFrame()) {
     // TODO(crbug.com/1254770): Update for embedded portals.
     UseCounter::Count(window, WebFeature::kNavigatorVibrateSubFrame);
-    if (window->GetFrame()->IsCrossOriginToMainFrame()) {
+    if (window->GetFrame()->IsCrossOriginToNearestMainFrame()) {
       if (user_gesture)
         type = NavigatorVibrationType::kCrossOriginSubFrameWithUserGesture;
       else
@@ -191,7 +191,7 @@ bool VibrationController::Vibrate(const VibrationPattern& pattern) {
   if (!frame->HasStickyUserActivation()) {
     String message;
     // TODO(crbug.com/1254770): Update for embedded portals.
-    if (frame->IsCrossOriginToMainFrame()) {
+    if (frame->IsCrossOriginToNearestMainFrame()) {
       message =
           "Blocked call to navigator.vibrate inside a cross-origin "
           "iframe because the frame has never been activated by the user: "
