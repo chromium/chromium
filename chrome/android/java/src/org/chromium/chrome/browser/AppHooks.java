@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;
 import org.chromium.chrome.browser.webapps.GooglePlayWebApkInstallDelegate;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
-import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.external_intents.AuthenticatorNavigationInterceptor;
 import org.chromium.components.policy.AppRestrictionsProvider;
 import org.chromium.components.policy.CombinedPolicyProvider;
@@ -201,10 +200,6 @@ public abstract class AppHooks {
      */
     public ChimeDelegate getChimeDelegate() {
         return new ChimeDelegate();
-    }
-
-    public @Nullable ImageEditorModuleProvider getImageEditorModuleProvider() {
-        return null;
     }
 
     public ChromeStartupDelegate createChromeStartupDelegate() {

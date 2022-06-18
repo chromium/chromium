@@ -8,7 +8,6 @@ include_rules = [
   "+chrome/browser/privacy",
   "+chrome/browser/privacy_sandbox",
   "+chrome/browser/profiles/android/java",
-  "+chrome/browser/share/android",
   "+chrome/browser/tab",
   "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel",
   "+chrome/browser/thumbnail/generator/android/java",

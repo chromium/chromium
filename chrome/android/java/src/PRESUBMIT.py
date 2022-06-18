@@ -154,7 +154,6 @@ def _CheckCompatibleAlertDialogBuilder(input_api, output_api):
       BROWSER_ROOT + 'externalnav/ExternalNavigationDelegateImpl.java',
       BROWSER_ROOT + 'payments/AndroidPaymentApp.java',
       BROWSER_ROOT + 'permissions/AndroidPermissionRequester.java',
-      BROWSER_ROOT + 'share/ShareDelegateImpl.java',
       BROWSER_ROOT + 'util/AccessibilityUtil.java',
       BROWSER_ROOT + 'webapps/AddToHomescreenDialog.java',
       BROWSER_ROOT + 'webapps/WebappOfflineDialog.java',

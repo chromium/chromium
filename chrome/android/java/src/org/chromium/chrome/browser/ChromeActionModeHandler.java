@@ -20,21 +20,14 @@ import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Consumer;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.share.ChromeShareExtras;
-import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -60,16 +53,13 @@ public class ChromeActionModeHandler {
      * @param actionBarObserver observer called when the contextual action bar's visibility
      *        has changed.
      * @param searchCallback Callback to run when search action is selected in the action mode.
-     * @param shareDelegateSupplier The {@link Supplier} of the {@link ShareDelegate} that will be
-     *        notified when a share action is performed.
      */
     public ChromeActionModeHandler(ActivityTabProvider activityTabProvider,
-            Consumer<Boolean> actionBarObserver, Callback<String> searchCallback,
-            Supplier<ShareDelegate> shareDelegateSupplier) {
+            Consumer<Boolean> actionBarObserver, Callback<String> searchCallback) {
         mInitWebContentsObserver = (webContents) -> {
             SelectionPopupController.fromWebContents(webContents)
                     .setActionModeCallback(new ActionModeCallback(mActiveTab, webContents,
-                            actionBarObserver, searchCallback, shareDelegateSupplier));
+                            actionBarObserver, searchCallback));
         };
 
         mActivityTabTabObserver =
@@ -105,18 +95,16 @@ public class ChromeActionModeHandler {
         private final ActionModeCallbackHelper mHelper;
         private final Consumer<Boolean> mActionBarObserver;
         private final Callback<String> mSearchCallback;
-        private final Supplier<ShareDelegate> mShareDelegateSupplier;
 
         // Used for recording UMA histograms.
         private long mContextMenuStartTime;
 
         ActionModeCallback(Tab tab, WebContents webContents, Consumer<Boolean> observer,
-                Callback<String> searchCallback, Supplier<ShareDelegate> shareDelegateSupplier) {
+                Callback<String> searchCallback) {
             mTab = tab;
             mHelper = getActionModeCallbackHelper(webContents);
             mActionBarObserver = observer;
             mSearchCallback = searchCallback;
-            mShareDelegateSupplier = shareDelegateSupplier;
         }
 
         @VisibleForTesting
@@ -199,22 +187,6 @@ public class ChromeActionModeHandler {
                     if (result != null && result) search(selectedText);
                 };
                 mHelper.finishActionMode();
-            } else if (mShareDelegateSupplier.get().isSharingHubEnabled()
-                    && item.getItemId() == R.id.select_action_menu_share) {
-                RecordUserAction.record(SelectionPopupController.UMA_MOBILE_ACTION_MODE_SHARE);
-                RecordHistogram.recordMediumTimesHistogram("ContextMenu.TimeToSelectShare",
-                        System.currentTimeMillis() - mContextMenuStartTime);
-                mShareDelegateSupplier.get().share(
-                        new ShareParams.Builder(mTab.getWindowAndroid(), /*url=*/"", /*title=*/"")
-                                .setText(sanitizeTextForShare(mHelper.getSelectedText()))
-                                .build(),
-                        new ChromeShareExtras.Builder()
-                                .setSaveLastUsed(true)
-                                .setRenderFrameHost(mHelper.getRenderFrameHost())
-                                .setDetailedContentType(
-                                        ChromeShareExtras.DetailedContentType.HIGHLIGHTED_TEXT)
-                                .build(),
-                        ShareOrigin.MOBILE_ACTION_MODE);
             } else {
                 return mHelper.onActionItemClicked(mode, item);
             }

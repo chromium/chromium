@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
@@ -79,7 +78,6 @@ public class ChromeActivityCommonsModule {
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
-    private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final TabModelInitializer mTabModelInitializer;
     private final @ActivityType int mActivityType;
 
@@ -107,7 +105,6 @@ public class ChromeActivityCommonsModule {
                 BrowserControlsStateProvider browserControlsStateProvider,
                 Supplier<Bundle> savedInstanceStateSupplier,
                 ObservableSupplier<Integer> autofillUiBottomInsetSupplier,
-                Supplier<ShareDelegate> shareDelegateSupplier,
                 TabModelInitializer tabModelInitializer, @ActivityType int activityType);
     }
 
@@ -133,7 +130,7 @@ public class ChromeActivityCommonsModule {
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Bundle> savedInstanceStateSupplier,
             ObservableSupplier<Integer> autofillUiBottomInsetSupplier,
-            Supplier<ShareDelegate> shareDelegateSupplier, TabModelInitializer tabModelInitializer,
+            TabModelInitializer tabModelInitializer,
             @ActivityType int activityType) {
         mActivity = activity;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -160,7 +157,6 @@ public class ChromeActivityCommonsModule {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
         mAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
-        mShareDelegateSupplier = shareDelegateSupplier;
         mTabModelInitializer = tabModelInitializer;
         mActivityType = activityType;
     }
@@ -327,11 +323,6 @@ public class ChromeActivityCommonsModule {
     @Provides
     public ObservableSupplier<Integer> provideAutofillUiBottomInsetSupplier() {
         return mAutofillUiBottomInsetSupplier;
-    }
-
-    @Provides
-    public Supplier<ShareDelegate> provideShareDelegateSupplier() {
-        return mShareDelegateSupplier;
     }
 
     @Provides

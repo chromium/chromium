@@ -21,10 +21,6 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
-#endif
-
 namespace send_tab_to_self {
 
 ReceivingUiHandlerRegistry::ReceivingUiHandlerRegistry() {}
@@ -38,10 +34,7 @@ ReceivingUiHandlerRegistry* ReceivingUiHandlerRegistry::GetInstance() {
 // Instantiates all the handlers relevant to this platform.
 void ReceivingUiHandlerRegistry::InstantiatePlatformSpecificHandlers(
     Profile* profile) {
-#if BUILDFLAG(IS_ANDROID)
-  applicable_handlers_.push_back(
-      std::make_unique<AndroidNotificationHandler>(profile));
-#endif
+
 }
 
 SendTabToSelfToolbarIconController*
@@ -73,16 +66,6 @@ ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
 AndroidNotificationHandler*
 ReceivingUiHandlerRegistry::GetAndroidNotificationHandlerForProfile(
     Profile* profile) {
-#if BUILDFLAG(IS_ANDROID)
-  for (const std::unique_ptr<ReceivingUiHandler>& handler :
-       applicable_handlers_) {
-    auto* notification_handler =
-        static_cast<AndroidNotificationHandler*>(handler.get());
-    if (notification_handler && notification_handler->profile() == profile) {
-      return notification_handler;
-    }
-  }
-#endif
   return nullptr;
 }
 

@@ -722,9 +722,6 @@ by a child template that "extends" this file.
         <receiver android:name="org.chromium.chrome.browser.notifications.scheduler.DisplayAgent$Receiver"
             android:exported="false"/>
 
-        <receiver android:name="org.chromium.chrome.browser.app.send_tab_to_self.SendTabToSelfNotificationReceiver"
-            android:exported="false"/>
-
         <receiver android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$CompleteNotificationReceiver"
             android:exported="false"/>
         <receiver android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$InProgressCancelReceiver"

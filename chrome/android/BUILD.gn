@@ -16,7 +16,6 @@ import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
 import("//chrome/android/monochrome_android_manifest_jinja_variables.gni")
 import("//chrome/browser/password_manager/buildflags.gni")
-import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
 import("//chrome/common/features.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -290,7 +289,6 @@ android_library("chrome_java") {
     "//chrome/android/features/keyboard_accessory:public_java",
     "//chrome/android/features/start_surface:public_java",
     "//chrome/android/modules/cablev2_authenticator/public:java",
-    "//chrome/android/modules/image_editor/provider:java",
     "//chrome/android/modules/stack_unwinder/provider:java",
     "//chrome/android/webapk/libs/client:client_java",
     "//chrome/android/webapk/libs/common:common_java",
@@ -321,7 +319,6 @@ android_library("chrome_java") {
     "//chrome/browser/gsa:java",
     "//chrome/browser/history_clusters:java",
     "//chrome/browser/image_descriptions:java",
-    "//chrome/browser/image_editor/public:java",
     "//chrome/browser/incognito:java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/lens:java",
@@ -350,8 +347,6 @@ android_library("chrome_java") {
     "//chrome/browser/safe_browsing/android:java",
     "//chrome/browser/search_engines/android:java",
     "//chrome/browser/segmentation_platform:factory_java",
-    "//chrome/browser/share:java",
-    "//chrome/browser/share/android:java_resources",
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_group:java",
     "//chrome/browser/tabmodel:factory_java",
@@ -609,11 +604,6 @@ android_library("chrome_java") {
 
   resources_package = "org.chromium.chrome"
 
-  # TODO(crbug/1022172): Instead of adding source files, add it as a separate
-  # dependency when circular deps is resolved.
-  sources += share_java_sources
-  deps += share_java_deps
-
 #  commerce_subscriptions_java_deps = [
 #    "//base:base_java",
 #    "//base:jni_java",
@@ -683,8 +673,6 @@ java_group("chrome_all_java") {
   deps = [
     ":chrome_java",
     "//chrome/android/features/keyboard_accessory:internal_java",
-    "//chrome/browser/content_creation/notes/internal/android:java",
-    "//chrome/browser/content_creation/reactions/internal/android:java",
     "//chrome/browser/download/internal/android:java",
     "//chrome/browser/page_annotations/android:java",
     "//chrome/browser/password_check:internal_java",
@@ -765,7 +753,6 @@ java_cpp_enum("chrome_android_java_enums_srcjar") {
     "//chrome/browser/android/customtabs/detached_resource_request.h",
     "//chrome/browser/android/policy/policy_auditor.cc",
     "//chrome/browser/android/webapk/webapk_installer.h",
-    "//chrome/browser/long_screenshots/long_screenshots_tab_service.h",
     "//chrome/browser/notifications/notification_handler.h",
     "//chrome/browser/notifications/notification_platform_bridge_android.cc",
   ]
@@ -2386,7 +2373,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/ShortcutHelper.java",
     "java/src/org/chromium/chrome/browser/WarmupManager.java",
     "java/src/org/chromium/chrome/browser/WebContentsFactory.java",
-    "java/src/org/chromium/chrome/browser/app/send_tab_to_self/SendTabToSelfNotificationReceiver.java",
     "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTask.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillLogger.java",

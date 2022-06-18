@@ -18,10 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
@@ -58,8 +55,6 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     private final Runnable mToolbarClickCallback;
     private final Runnable mCloseButtonCallback;
     private final int mToolbarHeightPx;
-    private final UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier =
-            new ShareDelegateSupplier();
 
     private ViewGroup mToolbarView;
     private ViewGroup mSheetContentView;
@@ -114,7 +109,6 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
         // the share feature disabled on Preview Tab.
         WindowAndroid window = mWebContents.getTopLevelNativeWindow();
         assert window != null;
-        mShareDelegateSupplier.attach(window.getUnownedUserDataHost());
     }
 
     /**
@@ -255,7 +249,6 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     @Override
     public void destroy() {
         mThinWebView.destroy();
-        mShareDelegateSupplier.destroy();
     }
 
     @Override

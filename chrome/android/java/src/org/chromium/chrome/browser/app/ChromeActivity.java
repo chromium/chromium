@@ -38,7 +38,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BundleUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
@@ -119,9 +118,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareDelegateImpl;
-import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -198,9 +194,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private static final String TAG = "ChromeActivity";
     private C mComponent;
 
-    /** Used to access the {@link ShareDelegate} from {@link WindowAndroid}. */
-    private final UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier =
-            new ShareDelegateSupplier();
     private final ObservableSupplierImpl<TabModelOrchestrator> mTabModelOrchestratorSupplier =
             new ObservableSupplierImpl<>();
     /** Used to access the {@link TabModelSelector} from {@link WindowAndroid}. */
@@ -391,7 +384,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     private void setupUnownedUserDataSuppliers() {
-        mShareDelegateSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mTabModelSelectorSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mTabCreatorManagerSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mManualFillingComponentSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
@@ -425,7 +417,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         /* ChromeActivityNativeDelegate */ this, getModalDialogManagerSupplier(),
                         getBrowserControlsManager(), this::getSavedInstanceState,
                         mManualFillingComponentSupplier.get().getBottomInsetSupplier(),
-                        getShareDelegateSupplier(), /* tabModelInitializer= */ this,
+                        /* tabModelInitializer= */ this,
                         getActivityType())
                 : overridenCommonsFactory.create(this,
                         getTabModelSelectorSupplier(), getBrowserControlsManager(),
@@ -440,7 +432,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         /* ChromeActivityNativeDelegate */ this, getModalDialogManagerSupplier(),
                         getBrowserControlsManager(), this::getSavedInstanceState,
                         mManualFillingComponentSupplier.get().getBottomInsetSupplier(),
-                        getShareDelegateSupplier(), /* tabModelInitializer= */ this,
+                        /* tabModelInitializer= */ this,
                         getActivityType());
 
         return createComponent(commonsModule);
@@ -510,11 +502,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     getWindowAndroid().getApplicationBottomInsetProvider(),
                     mManualFillingComponentSupplier.get().getBottomInsetSupplier());
 
-            ShareDelegate shareDelegate = new ShareDelegateImpl(getLifecycleDispatcher(),
-                    getActivityTabProvider(), getTabModelSelectorSupplier(),
-                    new ShareDelegateImpl.ShareSheetDelegate(), isCustomTab());
-            mShareDelegateSupplier.set(shareDelegate);
-
             // If onStart was called before postLayoutInflation (because inflation was done in a
             // background thread) then make sure to call the relevant methods belatedly.
             if (mStarted) {
@@ -539,7 +526,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 mTabModelSelectorSupplier.get().openNewTab(
                         generateUrlParamsForSearch(tab, query),
                         TabLaunchType.FROM_LONGPRESS_FOREGROUND, tab, tab.isIncognito());
-            }, mShareDelegateSupplier);
+            });
         }
     }
 
@@ -1244,10 +1231,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         destroyTabModels();
 
-        if (mShareDelegateSupplier != null) {
-            mShareDelegateSupplier.destroy();
-        }
-
         if (mTabModelSelectorSupplier != null) {
             mTabModelSelectorSupplier.destroy();
         }
@@ -1340,14 +1323,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         DownloadManagerService.getDownloadManagerService().onActivityLaunched();
 
         PowerMonitor.create();
-
-        // The first launch of the screenshot feature benefits from this DFM being installed
-        // proactively. However without the isolated split feature there are performance regressions
-        // as a result of adding this extra code.
-        if (BundleUtils.isolatedSplitsEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && AppHooks.get().getImageEditorModuleProvider() != null) {
-            AppHooks.get().getImageEditorModuleProvider().maybeInstallModuleDeferred();
-        }
 
         super.finishNativeInitialization();
 
@@ -1699,14 +1674,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      */
     public ObservableSupplier<LayoutManagerImpl> getLayoutManagerSupplier() {
         return mLayoutManagerSupplier;
-    }
-
-    /**
-     * @return An {@link ObservableSupplier} that will supply the {@link ShareDelegate} when
-     *         it is ready.
-     */
-    public ObservableSupplier<ShareDelegate> getShareDelegateSupplier() {
-        return mShareDelegateSupplier;
     }
 
     /**

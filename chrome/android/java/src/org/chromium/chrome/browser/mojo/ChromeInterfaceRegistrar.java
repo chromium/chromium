@@ -7,32 +7,18 @@ package org.chromium.chrome.browser.mojo;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsFactoryFactory;
-import org.chromium.chrome.browser.webshare.ShareServiceImplementationFactory;
 import org.chromium.components.webauthn.AuthenticatorFactory;
 import org.chromium.content_public.browser.InterfaceRegistrar;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.DigitalGoodsFactory;
 import org.chromium.services.service_manager.InterfaceRegistry;
-import org.chromium.webshare.mojom.ShareService;
 
 /** Registers mojo interface implementations exposed to C++ code at the Chrome layer. */
 class ChromeInterfaceRegistrar {
     @CalledByNative
     private static void registerMojoInterfaces() {
-        InterfaceRegistrar.Registry.addWebContentsRegistrar(
-                new ChromeWebContentsInterfaceRegistrar());
         InterfaceRegistrar.Registry.addRenderFrameHostRegistrar(
                 new ChromeRenderFrameHostInterfaceRegistrar());
-    }
-
-    private static class ChromeWebContentsInterfaceRegistrar
-            implements InterfaceRegistrar<WebContents> {
-        @Override
-        public void registerInterfaces(InterfaceRegistry registry, final WebContents webContents) {
-            registry.addInterface(
-                    ShareService.MANAGER, new ShareServiceImplementationFactory(webContents));
-        }
     }
 
     private static class ChromeRenderFrameHostInterfaceRegistrar

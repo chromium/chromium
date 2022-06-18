@@ -103,7 +103,6 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -1382,12 +1381,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(mTabModelSelector) {
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-                if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()) {
-                    return;
-                }
-                try (TraceEvent te = TraceEvent.scoped("updateActiveWebContents")) {
-                    SendTabToSelfAndroidBridge.updateActiveWebContents(tab.getWebContents());
-                }
+
             }
         };
         mAppIndexingUtil = new AppIndexingUtil(mTabModelSelector);
@@ -1403,7 +1397,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private TabDelegateFactory getTabDelegateFactory() {
         if (mTabDelegateFactory == null) {
             mTabDelegateFactory = new TabbedModeTabDelegateFactory(this,
-                    getShareDelegateSupplier(),
                     mEphemeralTabCoordinatorSupplier,
                     /* ChromeActivityNativeDelegate */ this,
                     getBrowserControlsManager(), getFullscreenManager(),

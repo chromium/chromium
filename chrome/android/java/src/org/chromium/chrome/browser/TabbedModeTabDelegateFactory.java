@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
-import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -38,7 +37,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  */
 public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Activity mActivity;
-    private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -50,7 +48,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
 
     public TabbedModeTabDelegateFactory(Activity activity,
-            Supplier<ShareDelegate> shareDelegateSupplier,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -60,7 +57,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<SnackbarManager> snackbarManagerSupplier) {
         mActivity = activity;
-        mShareDelegateSupplier = shareDelegateSupplier;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -92,7 +88,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                 new TabContextMenuItemDelegate(tab, mTabModelSelectorSupplier.get(),
                         mEphemeralTabCoordinatorSupplier,
                         mSnackbarManagerSupplier),
-                mShareDelegateSupplier, ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
                 ExternalAuthUtils.getInstance());
     }
 

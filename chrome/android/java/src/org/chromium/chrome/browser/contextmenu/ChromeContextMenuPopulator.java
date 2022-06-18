@@ -5,24 +5,20 @@
 package org.chromium.chrome.browser.contextmenu;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.MailTo;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.webkit.URLUtil;
+import android.widget.Toast;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
@@ -41,13 +37,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.LensUtils;
-import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
-import org.chromium.chrome.browser.share.ShareHelper;
-import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
-import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -70,14 +60,10 @@ import org.chromium.url.Origin;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
 
 /**
  * A {@link ContextMenuPopulator} used for showing the default Chrome context menu.
@@ -86,7 +72,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final Context mContext;
     private final ContextMenuItemDelegate mItemDelegate;
     private final @ContextMenuMode int mMode;
-    private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final ExternalAuthUtils mExternalAuthUtils;
     private final ContextMenuParams mParams;
     private final @Nullable Origin mInitiatingOrigin;
@@ -286,8 +271,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * Builds a {@link ChromeContextMenuPopulator}.
      * @param itemDelegate The {@link ContextMenuItemDelegate} that will be notified with actions
      *                 to perform when menu items are selected.
-     * @param shareDelegate The Supplier of {@link ShareDelegate} that will be notified when a share
-     *                      action is performed.
      * @param mode Defines the context menu mode
      * @param externalAuthUtils {@link ExternalAuthUtils} instance.
      * @param context The {@link Context} used to retrieve the strings.
@@ -295,11 +278,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @param nativeDelegate The {@link ContextMenuNativeDelegate} used to interact with native.
      */
     public ChromeContextMenuPopulator(ContextMenuItemDelegate itemDelegate,
-            Supplier<ShareDelegate> shareDelegate, @ContextMenuMode int mode,
+            @ContextMenuMode int mode,
             ExternalAuthUtils externalAuthUtils, Context context, ContextMenuParams params,
             ContextMenuNativeDelegate nativeDelegate) {
         mItemDelegate = itemDelegate;
-        mShareDelegateSupplier = shareDelegate;
         mMode = mode;
         mExternalAuthUtils = externalAuthUtils;
         mContext = context;
@@ -377,7 +359,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     && UrlUtilities.isDownloadableScheme(mParams.getLinkUrl())) {
                 linkGroup.add(createListItem(Item.SAVE_LINK_AS));
             }
-            linkGroup.add(createShareListItem(Item.SHARE_LINK, Item.DIRECT_SHARE_LINK));
             if (UrlUtilities.isTelScheme(mParams.getLinkUrl())) {
                 if (mItemDelegate.supportsCall()) {
                     linkGroup.add(createListItem(Item.CALL));
@@ -433,14 +414,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 hasSaveImage = true;
             }
 
-            // If set, show 'Share Image' before 'Search with Google Lens'.
-            // IMPORTANT: Must stay consistent with logic after the below Lens block.
-            boolean addedShareImageAboveLens = false;
-            if (LensUtils.orderShareImageBeforeLens()) {
-                addedShareImageAboveLens = true;
-                imageGroup.add(createShareListItem(Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE));
-            }
-
             if (mMode == ContextMenuMode.CUSTOM_TAB || mMode == ContextMenuMode.NORMAL) {
                 if (checkSupportsGoogleSearchByImage(isSrcDownloadableScheme)) {
                     // All behavior relating to Lens integration is gated by Feature Flag.
@@ -460,12 +433,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     LensMetrics.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
                             LensMetrics.LensSupportStatus.SEARCH_BY_IMAGE_UNAVAILABLE);
                 }
-            }
-
-            // By default show 'Share Image' after 'Search with Google Lens'.
-            // IMPORTANT: Must stay consistent with logic before the above Lens block.
-            if (!addedShareImageAboveLens) {
-                imageGroup.add(createShareListItem(Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE));
             }
 
             recordSaveImageContextMenuResult(isSrcDownloadableScheme);
@@ -647,16 +614,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 mNativeDelegate.startDownload(true);
             }
         } else if (itemId == R.id.contextmenu_share_link) {
-            recordContextMenuSelection(ContextMenuUma.Action.SHARE_LINK);
-            // TODO(https://crbug.com/783819): Migrate ShareParams to GURL.
-            ShareParams linkShareParams =
-                    new ShareParams
-                            .Builder(getWindow(), ContextMenuUtils.getTitle(mParams),
-                                    mParams.getUrl().getSpec())
-                            .build();
-            mShareDelegateSupplier.get().share(linkShareParams,
-                    new ChromeShareExtras.Builder().setSaveLastUsed(true).build(),
-                    ShareOrigin.CONTEXT_MENU);
+            Toast.makeText(mContext, "分享链接", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.contextmenu_read_later) {
             recordContextMenuSelection(ContextMenuUma.Action.READ_LATER);
             // TODO(crbug.com/1147475): Download the page to offline page backend.
@@ -666,15 +624,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
             mItemDelegate.onReadLater(mParams.getUrl(), title);
         } else if (itemId == R.id.contextmenu_direct_share_link) {
-            recordContextMenuSelection(ContextMenuUma.Action.DIRECT_SHARE_LINK);
-            final ShareParams shareParams =
-                    new ShareParams
-                            .Builder(getWindow(), ContextMenuUtils.getTitle(mParams),
-                                    mParams.getUrl().getSpec())
-                            .build();
-            mShareDelegateSupplier.get().share(shareParams,
-                    new ChromeShareExtras.Builder().setShareDirectly(true).build(),
-                    ShareOrigin.CONTEXT_MENU);
+            Toast.makeText(mContext, "直接分享链接", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.contextmenu_search_with_google_lens) {
             recordContextMenuSelection(ContextMenuUma.Action.SEARCH_WITH_GOOGLE_LENS);
             searchWithGoogleLens(LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM);
@@ -685,14 +635,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             recordContextMenuSelection(ContextMenuUma.Action.SEARCH_BY_IMAGE);
             mNativeDelegate.searchForImage();
         } else if (itemId == R.id.contextmenu_share_image) {
-            recordContextMenuSelection(ContextMenuUma.Action.SHARE_IMAGE);
-            shareImage();
+            Toast.makeText(mContext, "图片分享", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.contextmenu_direct_share_image) {
-            recordContextMenuSelection(ContextMenuUma.Action.DIRECT_SHARE_IMAGE);
-            mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.ORIGINAL, (Uri uri) -> {
-                ShareHelper.shareImage(
-                        getWindow(), getProfile(), ShareHelper.getLastShareComponentName(), uri);
-            });
+            Toast.makeText(mContext, "图片直接分享", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.contextmenu_open_in_chrome) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_CHROME);
             mItemDelegate.onOpenInChrome(mParams.getUrl(), mParams.getPageUrl());
@@ -706,15 +651,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_BROWSER);
             mItemDelegate.onOpenInDefaultBrowser(mParams.getUrl());
         } else if (itemId == R.id.contextmenu_share_highlight) {
-            recordContextMenuSelection(ContextMenuUma.Action.SHARE_HIGHLIGHT);
-            shareHighlighting();
+            Toast.makeText(mContext, "分享highlight", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.contextmenu_remove_highlight) {
-            recordContextMenuSelection(ContextMenuUma.Action.REMOVE_HIGHLIGHT);
-            LinkToTextHelper.removeHighlightsAllFrames(mItemDelegate.getWebContents());
+            Toast.makeText(mContext, "remove highlight", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.contextmenu_learn_more) {
-            recordContextMenuSelection(ContextMenuUma.Action.LEARN_MORE);
-            mItemDelegate.onOpenInNewTab(new GURL(LinkToTextHelper.SHARED_HIGHLIGHTING_SUPPORT_URL),
-                    mParams.getReferrer(), /*navigateToTab=*/true);
+            Toast.makeText(mContext, "learn more", Toast.LENGTH_SHORT).show();
         } else {
             assert false;
         }
@@ -738,68 +679,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         return getWindow().getActivity().get();
     }
 
-    private void shareHighlighting() {
-        ShareParams linkShareParams = new ShareParams
-                                              .Builder(getWindow(),
-                                                      /*title=*/"",
-                                                      /*url=*/mParams.getUrl().getSpec())
-                                              .build();
-
-        mShareDelegateSupplier.get().share(linkShareParams,
-                new ChromeShareExtras.Builder()
-                        .setSaveLastUsed(true)
-                        .setIsReshareHighlightedText(true)
-                        .setRenderFrameHost(mNativeDelegate.getRenderFrameHost())
-                        .setDetailedContentType(
-                                ChromeShareExtras.DetailedContentType.HIGHLIGHTED_TEXT)
-                        .build(),
-                ShareOrigin.MOBILE_ACTION_MODE);
-    }
-
     /**
      * Copy the image, that triggered the current context menu, to system clipboard.
      */
     private void copyImageToClipboard() {
         mNativeDelegate.retrieveImageForShare(
                 ContextMenuImageFormat.ORIGINAL, mItemDelegate::onSaveImageToClipboard);
-    }
-
-    /**
-     * Share the image that triggered the current context menu.
-     * Package-private, allowing access only from the context menu item to ensure that
-     * it will use the right activity set when the menu was displayed.
-     */
-    private void shareImage() {
-        mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.ORIGINAL, (Uri imageUri) -> {
-            if (!mShareDelegateSupplier.get().isSharingHubEnabled()) {
-                ShareHelper.shareImage(getWindow(),
-                        Profile.fromWebContents(mItemDelegate.getWebContents()), null, imageUri);
-                return;
-            }
-            ContentResolver contentResolver =
-                    ContextUtils.getApplicationContext().getContentResolver();
-            String mimeType = contentResolver.getType(imageUri);
-            ShareParams imageShareParams =
-                    new ShareParams
-                            .Builder(getWindow(), ContextMenuUtils.getTitle(mParams), /*url=*/"")
-                            .setFileUris(new ArrayList<>(Collections.singletonList(imageUri)))
-                            .setFileContentType(mimeType)
-                            .build();
-            int detailedContentType;
-            if (mimeType.equals("image/gif")) {
-                detailedContentType = ChromeShareExtras.DetailedContentType.GIF;
-            } else {
-                detailedContentType = ChromeShareExtras.DetailedContentType.IMAGE;
-            }
-            mShareDelegateSupplier.get().share(imageShareParams,
-                    new ChromeShareExtras.Builder()
-                            .setSaveLastUsed(true)
-                            .setImageSrcUrl(mParams.getSrcUrl())
-                            .setContentUrl(mParams.getPageUrl())
-                            .setDetailedContentType(detailedContentType)
-                            .build(),
-                    ShareOrigin.CONTEXT_MENU);
-        });
     }
 
     /**
@@ -980,30 +865,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 ChromeContextMenuItem.getTitle(mContext, item, showInProductHelp))
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
-    }
-
-    private ListItem createShareListItem(@Item int item, @Item int iconButtonItem) {
-        final boolean isLink = item == Item.SHARE_LINK;
-        final Pair<Drawable, CharSequence> shareInfo = createRecentShareAppInfo(isLink);
-        final PropertyModel model =
-                new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
-                        .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
-                        .with(TEXT, ChromeContextMenuItem.getTitle(mContext, item, false))
-                        .with(BUTTON_IMAGE, shareInfo.first)
-                        .with(BUTTON_CONTENT_DESC, shareInfo.second)
-                        .with(BUTTON_MENU_ID, ChromeContextMenuItem.getMenuId(iconButtonItem))
-                        .build();
-        return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
-    }
-
-    /**
-     * Return the icon and name of the most recently shared app by certain app.
-     * @param isLink Whether the item is SHARE_LINK.
-     */
-    private static Pair<Drawable, CharSequence> createRecentShareAppInfo(boolean isLink) {
-        Intent shareIntent = isLink ? ShareHelper.getShareLinkAppCompatibilityIntent()
-                                    : ShareHelper.getShareImageIntent(null);
-        return ShareHelper.getShareableIconAndName(shareIntent);
     }
 
     /**
