@@ -597,6 +597,7 @@ const ProfileCodecMap& GetProfileCodecMap() {
         // {AV1PROFILE_PROFILE_HIGH, VAProfileAV1Profile1},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
           {HEVCPROFILE_MAIN, VAProfileHEVCMain},
+          {HEVCPROFILE_MAIN_STILL_PICTURE, VAProfileHEVCMain},
           {HEVCPROFILE_MAIN10, VAProfileHEVCMain10},
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   });
