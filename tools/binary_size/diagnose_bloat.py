@@ -417,7 +417,9 @@ class _BuildArchive:
       for path in self.build.abs_apk_paths:
         self._ArchiveFile(path)
       for path in self.build.abs_mapping_paths:
-        self._ArchiveFile(path)
+        # TrichromeLibrary has no .mapping file.
+        if 'TrichromeLibrary' not in path:
+          self._ArchiveFile(path)
       self._ArchiveResourceSizes()
     self._ArchiveSizeFile()
     if self._save_unstripped:
