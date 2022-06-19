@@ -24,8 +24,13 @@ struct CORE_EXPORT LogicalSize {
   constexpr LogicalSize(LayoutUnit inline_size, LayoutUnit block_size)
       : inline_size(inline_size), block_size(block_size) {}
 
+  // This is deleted to avoid unwanted lossy conversion from float to LayoutUnit
+  // or int. Use explicit LayoutUnit constructor for each parameter instead.
+  LogicalSize(float, float) = delete;
+
   // For testing only. It's defined in core/testing/core_unit_test_helper.h.
-  inline LogicalSize(int inline_size, int block_size);
+  // 'constexpr' is to let compiler detect usage from production code.
+  constexpr LogicalSize(int inline_size, int block_size);
 
   // Use ToPhysicalSize to convert to a physical size.
 
