@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Utilizator</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Fereastra de actualizare a firmware-ului pentru dispozitivele externe este deschisă. <ph name="NUM_UPDATES" /> actualizări disponibile.</translation>
+<translation id="1145516343487477149">Găsește articole de ajutor și răspunsuri la întrebările frecvente despre Chromebookuri</translation>
 <translation id="1165039591588034296">Eroare</translation>
 <translation id="1175697296044146566">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Medie (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Dezactivează tema întunecată</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Dezactivează modul întunecat</translation>
+<translation id="1881188606372070653">Accesează <ph name="BEGIN_LINK1" />pagina Asistență juridică<ph name="END_LINK1" /> ca să soliciți modificări ale conținutului din motive juridice. Unele informații despre cont și sistem pot fi trimise la Google. Vom folosi informațiile trimise pentru a ajuta la remedierea problemelor tehnice sau pentru a îmbunătăți serviciile, conform <ph name="BEGIN_LINK2" />Politicii de confidențialitate<ph name="END_LINK2" /> și <ph name="BEGIN_LINK3" />Termenilor și condițiilor<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Versiune hardware</translation>
 <translation id="1905710495812624430">Ai depășit numărul maxim de încercări permise.</translation>
 <translation id="1908234395526491708">Erori de solicitare UDP</translation>
@@ -623,6 +625,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6379086450106841622">Ecran tactil</translation>
 <translation id="6381741036071372448">Testează tastatura</translation>
 <translation id="6388847657025262518">Alimentatorul de documente al scanerului este blocat. Verifică alimentatorul și încearcă din nou.</translation>
+<translation id="6394634179843537518">Adaugă un fișier</translation>
 <translation id="6410257289063177456">Fișiere imagine</translation>
 <translation id="641081527798843608">Potrivirea subiectului</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
