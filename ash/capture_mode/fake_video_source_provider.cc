@@ -92,9 +92,14 @@ void FakeVideoSourceProvider::AddFakeCameraWithoutNotifying(
 }
 
 void FakeVideoSourceProvider::RemoveFakeCamera(const std::string& device_id) {
+  RemoveFakeCameraWithoutNotifying(device_id);
+  NotifyVideoCaptureDevicesChanged();
+}
+
+void FakeVideoSourceProvider::RemoveFakeCameraWithoutNotifying(
+    const std::string& device_id) {
   DCHECK(devices_map_.contains(device_id));
   devices_map_.erase(device_id);
-  NotifyVideoCaptureDevicesChanged();
 }
 
 void FakeVideoSourceProvider::GetSourceInfos(GetSourceInfosCallback callback) {

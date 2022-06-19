@@ -49,6 +49,7 @@ class FakeVideoSourceProvider
                                      const std::string& model_id,
                                      media::VideoFacingMode camera_facing_mode);
   void RemoveFakeCamera(const std::string& device_id);
+  void RemoveFakeCameraWithoutNotifying(const std::string& device_id);
 
   // video_capture::mojom::VideoSourceProvider:
   void GetSourceInfos(GetSourceInfosCallback callback) override;
