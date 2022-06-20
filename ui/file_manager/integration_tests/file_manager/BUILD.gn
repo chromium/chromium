@@ -360,6 +360,7 @@ js_library("tasks") {
 js_library("toolbar") {
   testonly = true
   deps = [
+    ":tasks",
     ":test_data",
     "//ui/file_manager/integration_tests:testcase",
   ]
@@ -376,6 +377,7 @@ js_library("transfer") {
 js_library("trash") {
   testonly = true
   deps = [
+    ":tasks",
     ":test_data",
     "//ui/file_manager/integration_tests:testcase",
   ]

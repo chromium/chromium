@@ -787,6 +787,9 @@
   <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_ERROR" desc="Message informing about error while restoring an item or items from the trash / recycle bin.">
     An error occurred. Some items may not have been restored.
   </message>
+  <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILES_ERROR" desc="Message informing users they can't open files from the Trash folder">
+    Cannot open trashed files. Please restore the files before opening.
+  </message>
   <message name="IDS_FILE_BROWSER_ERROR_PROGRESS_SUMMARY_PLURAL" desc="Summary message for multiple errors above the progress bar. This message may be placed at the next to ohter *_PROGERSS_SUMMARY messages.">
     <ph name="COUNT">$1<ex>10</ex></ph> errors.
   </message>

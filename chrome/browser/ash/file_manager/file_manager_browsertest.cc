@@ -2038,10 +2038,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("trashEmptyTrashShortcut").EnableTrash(),
         // TODO(b/189173190): Enable
         // TestCase("trashEmptyTrashShortcut").EnableTrash().FilesSwa(),
-        TestCase("trashDeleteFromTrash").EnableTrash()
+        TestCase("trashDeleteFromTrash").EnableTrash(),
         // TODO(b/189173190): Enable
         // TestCase("trashDeleteFromTrash").EnableTrash().FilesSwa()
-        ));
+        TestCase("trashNoTasksInTrashRoot").EnableTrash(),
+        TestCase("trashDoubleClickOnFileInTrashRootShowsDialog")
+            .EnableTrash()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */
