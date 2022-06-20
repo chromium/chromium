@@ -15200,7 +15200,7 @@
         "policies": {
           "SendDownloadToCloudEnterpriseConnector": [
             {
-              "service_provider": "google",
+              "service_provider": "box",
               "enterprise_id": "1234567890",
               "domain": "example.com",
               "enable": [
@@ -15239,7 +15239,7 @@
           "enterprise_connectors.send_download_to_cloud": {
             "value": [
               {
-                "service_provider": "google",
+                "service_provider": "box",
                 "enterprise_id": "1234567890",
                 "domain": "example.com",
                 "enable": [
@@ -15300,7 +15300,7 @@
         "policies": {
           "OnFileAttachedEnterpriseConnector": [
             {
-              "service_provider": "Google",
+              "service_provider": "google",
               "enable": [
                 {
                   "url_list": [
@@ -15355,7 +15355,7 @@
         "policies": {
           "OnFileDownloadedEnterpriseConnector": [
             {
-              "service_provider": "Google",
+              "service_provider": "google",
               "enable": [
                 {
                   "url_list": [
@@ -15410,7 +15410,7 @@
         "policies": {
           "OnBulkDataEntryEnterpriseConnector": [
             {
-              "service_provider": "Google",
+              "service_provider": "google",
               "enable": [
                 {
                   "url_list": [
@@ -15463,7 +15463,7 @@
         "policies": {
           "OnPrintEnterpriseConnector": [
             {
-              "service_provider": "Google",
+              "service_provider": "google",
               "enable": [
                 { "url_list": ["*"], "tags": ["malware"] },
                 { "url_list": ["*.them.com", "*.others.com"], "tags": ["dlp"] }
@@ -15495,7 +15495,7 @@
         "policies": {
           "OnSecurityEventEnterpriseConnector": [
             {
-              "service_provider": "Google"
+              "service_provider": "google"
             }
           ]
         },

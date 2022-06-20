@@ -24991,7 +24991,13 @@
         'items': {
           'type': 'object',
           'properties': {
-            'service_provider': { 'type': 'string' },
+            'service_provider': {
+              'type': 'string',
+              'enum': [
+                'google',
+                'local_test'
+              ]
+            },
             'enable': {
               'type': 'array',
               'items': {
@@ -25047,7 +25053,7 @@
         },
       },
       'example_value': [{
-        'service_provider': 'Google',
+        'service_provider': 'google',
         'enable': [
           {
             'url_list': ['*'],
@@ -25125,7 +25131,13 @@
         'items': {
           'type': 'object',
           'properties': {
-            'service_provider': { 'type': 'string' },
+            'service_provider': {
+              'type': 'string',
+              'enum': [
+                'google',
+                'local_test'
+              ]
+            },
             'enable': {
               'type': 'array',
               'items': {
@@ -25181,7 +25193,7 @@
         },
       },
       'example_value': [{
-        'service_provider': 'Google',
+        'service_provider': 'google',
         'enable': [
           {
             'url_list': ['*'],
@@ -25259,7 +25271,13 @@
         'items': {
           'type': 'object',
           'properties': {
-            'service_provider': { 'type': 'string' },
+            'service_provider': {
+              'type': 'string',
+              'enum': [
+                'google',
+                'local_test'
+              ]
+            },
             'enable': {
               'type': 'array',
               'items': {
@@ -25314,7 +25332,7 @@
         },
       },
       'example_value': [{
-        'service_provider': 'Google',
+        'service_provider': 'google',
         'enable': [
           {
             'url_list': ['*'],
@@ -25389,7 +25407,13 @@
         'items': {
           'type': 'object',
           'properties': {
-            'service_provider': { 'type': 'string' },
+            'service_provider': {
+              'type': 'string',
+              'enum': [
+                'google',
+                'local_test'
+              ]
+            },
             'enable': {
               'type': 'array',
               'items': {
@@ -25444,7 +25468,7 @@
         },
       },
       'example_value': [{
-        'service_provider': 'Google',
+        'service_provider': 'google',
         'enable': [
           {
             'url_list': ['*.them.com', '*.others.com'],
@@ -25509,7 +25533,7 @@
         'items': {
           'type': 'object',
           'properties': {
-            'service_provider': { 'type': 'string' },
+            'service_provider': { 'type': 'string', 'enum': [ 'google' ] },
             'enabled_event_names': {
               'type': 'array',
               'items': { 'type': 'string' },
@@ -25531,7 +25555,7 @@
         },
       },
       'example_value': [{
-        'service_provider': 'Google',
+        'service_provider': 'google',
         'enabled_event_names': ['passwordChangedEvent', 'sensitiveDataEvent'],
         'enabled_opt_in_events': [
           { 'name': 'loginEvent', 'url_patterns': ['*'] },
@@ -28624,7 +28648,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'items': {
           'type': 'object',
           'properties': {
-            'service_provider': { 'type': 'string' },
+            'service_provider': { 'type': 'string', 'enum': [ 'box' ] },
             'enterprise_id': { 'type': 'string' },
             'domain': { 'type': 'string' },
             'enable': {
@@ -28663,7 +28687,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         },
       },
       'example_value': [{
-        'service_provider': 'google',
+        'service_provider': 'box',
         'enterprise_id': '1234567890',
         'domain': 'example.com',
         'enable': [
