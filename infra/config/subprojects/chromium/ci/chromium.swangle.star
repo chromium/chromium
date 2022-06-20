@@ -11,6 +11,8 @@ ci.defaults.set(
     builder_group = "chromium.swangle",
     executable = "recipe:angle_chromium",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
     pool = ci.gpu.POOL,
     service_account = ci.gpu.SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM_GPU,
@@ -39,9 +41,7 @@ ci.gpu.linux_builder(
         short_name = "x64",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -50,9 +50,7 @@ ci.gpu.linux_builder(
         category = "ToT SwiftShader|Linux",
         short_name = "x64",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -62,9 +60,7 @@ ci.gpu.linux_builder(
         short_name = "x64",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.mac_builder(
@@ -75,6 +71,7 @@ ci.gpu.mac_builder(
     ),
     executable = ci.DEFAULT_EXECUTABLE,
     goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.gpu.windows_builder(
@@ -84,9 +81,7 @@ ci.gpu.windows_builder(
         short_name = "x86",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.windows_builder(
@@ -95,9 +90,7 @@ ci.gpu.windows_builder(
         category = "ToT SwiftShader|Windows",
         short_name = "x64",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.windows_builder(
@@ -106,9 +99,7 @@ ci.gpu.windows_builder(
         category = "ToT SwiftShader|Windows",
         short_name = "x86",
     ),
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.windows_builder(
@@ -118,9 +109,7 @@ ci.gpu.windows_builder(
         short_name = "x64",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.windows_builder(
@@ -130,7 +119,5 @@ ci.gpu.windows_builder(
         short_name = "x86",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
-    goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
