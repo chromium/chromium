@@ -59,7 +59,7 @@
 #include "gpu/command_buffer/service/shared_image_backing_factory_ahardwarebuffer.h"
 #elif BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/service/shared_image_backing_factory_iosurface.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "gpu/command_buffer/service/shared_image_backing_factory_ozone.h"
 #endif
 
@@ -404,7 +404,7 @@ SharedImageFactory::SharedImageFactory(
     factories_.push_back(std::move(external_vk_image_factory));
   }
   vulkan_context_provider_ = context_state->vk_context_provider();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   auto ozone_factory = std::make_unique<SharedImageBackingFactoryOzone>(
       context_state, workarounds);
   factories_.push_back(std::move(ozone_factory));
