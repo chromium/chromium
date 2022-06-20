@@ -17,7 +17,4 @@ struct EarlyHints {
   ReferrerPolicy referrer_policy;
   // The IP address space of the request client instantiated from this response.
   IPAddressSpace ip_address_space;
-  // The values of `Origin-Trial` header fields. Values aren't validated so
-  // values must be validated before being used.
-  array<string> origin_trial_tokens;
 };

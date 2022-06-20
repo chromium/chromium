@@ -2186,19 +2186,10 @@ void URLLoader::NotifyEarlyResponse(
   mojom::IPAddressSpace ip_address_space =
       CalculateClientAddressSpace(url_request_->url(), params);
 
-  // Populate origin trial tokens.
-  std::vector<std::string> origin_trial_tokens;
-  size_t iter = 0;
-  std::string value;
-  while (headers->EnumerateHeader(&iter, "Origin-Trial", &value)) {
-    origin_trial_tokens.push_back(value);
-  }
-
   mojom::ReferrerPolicy referrer_policy = ParseReferrerPolicy(*headers);
 
-  url_loader_client_.Get()->OnReceiveEarlyHints(
-      mojom::EarlyHints::New(std::move(parsed_headers), referrer_policy,
-                             ip_address_space, std::move(origin_trial_tokens)));
+  url_loader_client_.Get()->OnReceiveEarlyHints(mojom::EarlyHints::New(
+      std::move(parsed_headers), referrer_policy, ip_address_space));
 }
 
 void URLLoader::SetRawRequestHeadersAndNotify(

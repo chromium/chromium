@@ -56,8 +56,7 @@ void TestURLLoaderFactory::NotifyClientOnReceiveEarlyHints(
     response_headers->SetHeader(header.first, header.second);
   auto hints = mojom::EarlyHints::New(
       PopulateParsedHeaders(response_headers.get(), GetRequestedURL()),
-      mojom::ReferrerPolicy::kDefault, mojom::IPAddressSpace::kPublic,
-      /*origin_trial_tokens=*/std::vector<std::string>());
+      mojom::ReferrerPolicy::kDefault, mojom::IPAddressSpace::kPublic);
   client_remote_->OnReceiveEarlyHints(std::move(hints));
 }
 

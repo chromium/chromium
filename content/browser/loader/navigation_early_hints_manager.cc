@@ -33,8 +33,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
-#include "third_party/blink/public/common/origin_trials/trial_token.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/origin.h"
 
@@ -81,9 +79,6 @@ const net::NetworkTrafficAnnotationTag kEarlyHintsPreloadTrafficAnnotation =
       "disabled. Using either URLBlocklist or URLAllowlist (or a combination "
       "of both) limits the scope of these requests."
 )");
-
-constexpr char kEarlyHintsPreloadForNavigationOriginTrialName[] =
-    "EarlyHintsPreloadForNavigation";
 
 bool IsDisabledEarlyHintsPreloadForcibly() {
   return base::GetFieldTrialParamByFeatureAsBool(
@@ -440,32 +435,22 @@ void NavigationEarlyHintsManager::HandleEarlyHints(
 
   net::ReferrerPolicy referrer_policy =
       Referrer::ReferrerPolicyForUrlRequest(early_hints->referrer_policy);
-  bool enabled_by_origin_trial = IsPreloadForNavigationEnabledByOriginTrial(
-      early_hints->origin_trial_tokens);
 
   for (const auto& link : early_hints->headers->link_headers) {
     // TODO(crbug.com/671310): Support other `rel` attributes.
     if (link->rel == network::mojom::LinkRelAttribute::kPreconnect) {
-      MaybePreconnect(link, enabled_by_origin_trial);
+      MaybePreconnect(link);
     } else if (link->rel == network::mojom::LinkRelAttribute::kPreload ||
                link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
       MaybePreloadHintedResource(link, request_for_navigation,
                                  early_hints->headers->content_security_policy,
-                                 referrer_policy, enabled_by_origin_trial);
+                                 referrer_policy);
     }
   }
 }
 
 bool NavigationEarlyHintsManager::WasResourceHintsReceived() const {
-  // The field trial for Early Hints preload uses this method to determine
-  // whether custom page metrics for the trial should be recorded. Returns false
-  // when Early Hints preloads are triggered by the origin trial but the field
-  // trial is disabled so that we can avoid skewing the custom page metrics for
-  // the field trial.
-  if (base::FeatureList::IsEnabled(features::kEarlyHintsPreloadForNavigation))
-    return was_resource_hints_received_;
-  return was_resource_hints_received_ &&
-         !was_resource_hints_triggered_by_origin_trial_;
+  return was_resource_hints_received_;
 }
 
 std::vector<GURL> NavigationEarlyHintsManager::TakePreloadedResourceURLs() {
@@ -500,39 +485,14 @@ NavigationEarlyHintsManager::GetNetworkContext() {
   return storage_partition_.GetNetworkContext();
 }
 
-bool NavigationEarlyHintsManager::IsPreloadForNavigationEnabledByOriginTrial(
-    const std::vector<std::string>& raw_tokens) {
-  if (!blink::TrialTokenValidator::IsTrialPossibleOnOrigin(origin_.GetURL()))
-    return false;
-
-  auto current_time = base::Time::Now();
-  for (auto& raw_token : raw_tokens) {
-    blink::TrialTokenResult result =
-        trial_token_validator_.ValidateToken(raw_token, origin_, current_time);
-    if (result.Status() != blink::OriginTrialTokenStatus::kSuccess)
-      continue;
-
-    const blink::TrialToken* token = result.ParsedToken();
-    DCHECK(token);
-    DCHECK_EQ(token->IsValid(origin_, current_time),
-              blink::OriginTrialTokenStatus::kSuccess);
-    if (token->feature_name() != kEarlyHintsPreloadForNavigationOriginTrialName)
-      continue;
-
-    return true;
-  }
-  return false;
-}
-
 void NavigationEarlyHintsManager::MaybePreconnect(
-    const network::mojom::LinkHeaderPtr& link,
-    bool enabled_by_origin_trial) {
+    const network::mojom::LinkHeaderPtr& link) {
   was_resource_hints_received_ = true;
 
   if (!IsEnabledEarlyHintsPreconnect())
     return;
 
-  if (!ShouldHandleResourceHints(link, enabled_by_origin_trial))
+  if (!ShouldHandleResourceHints(link))
     return;
 
   PreconnectEntry entry(url::Origin::Create(link->href), link->cross_origin);
@@ -549,9 +509,6 @@ void NavigationEarlyHintsManager::MaybePreconnect(
                                      allow_credentials,
                                      isolation_info_.network_isolation_key());
   preconnect_entries_.insert(std::move(entry));
-
-  if (enabled_by_origin_trial)
-    was_resource_hints_triggered_by_origin_trial_ = true;
 }
 
 void NavigationEarlyHintsManager::MaybePreloadHintedResource(
@@ -559,14 +516,13 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
     const network::ResourceRequest& request_for_navigation,
     const std::vector<network::mojom::ContentSecurityPolicyPtr>&
         content_security_policies,
-    net::ReferrerPolicy referrer_policy,
-    bool enabled_by_origin_trial) {
+    net::ReferrerPolicy referrer_policy) {
   DCHECK(request_for_navigation.is_outermost_main_frame);
   DCHECK(request_for_navigation.url.SchemeIsHTTPOrHTTPS());
 
   was_resource_hints_received_ = true;
 
-  if (!ShouldHandleResourceHints(link, enabled_by_origin_trial))
+  if (!ShouldHandleResourceHints(link))
     return;
 
   if (!CheckContentSecurityPolicyForPreload(link, content_security_policies))
@@ -615,22 +571,15 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
       std::move(loader), std::move(loader_client));
 
   preloaded_urls_.push_back(request.url);
-
-  if (enabled_by_origin_trial)
-    was_resource_hints_triggered_by_origin_trial_ = true;
 }
 
 bool NavigationEarlyHintsManager::ShouldHandleResourceHints(
-    const network::mojom::LinkHeaderPtr& link,
-    bool enabled_by_origin_trial) {
+    const network::mojom::LinkHeaderPtr& link) {
   if (IsDisabledEarlyHintsPreloadForcibly())
     return false;
 
-  if (!base::FeatureList::IsEnabled(
-          features::kEarlyHintsPreloadForNavigation) &&
-      !enabled_by_origin_trial) {
+  if (!base::FeatureList::IsEnabled(features::kEarlyHintsPreloadForNavigation))
     return false;
-  }
 
   if (!link->href.SchemeIsHTTPOrHTTPS())
     return false;

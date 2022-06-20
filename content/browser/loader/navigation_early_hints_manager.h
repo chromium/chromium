@@ -17,7 +17,6 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -131,26 +130,18 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   network::mojom::NetworkContext* GetNetworkContext();
 
-  bool IsPreloadForNavigationEnabledByOriginTrial(
-      const std::vector<std::string>& raw_tokens);
-
-  void MaybePreconnect(const network::mojom::LinkHeaderPtr& link,
-                       bool enabled_by_origin_trial);
+  void MaybePreconnect(const network::mojom::LinkHeaderPtr& link);
 
   void MaybePreloadHintedResource(
       const network::mojom::LinkHeaderPtr& link,
       const network::ResourceRequest& request_for_navigation,
       const std::vector<network::mojom::ContentSecurityPolicyPtr>&
           content_security_policies,
-      net::ReferrerPolicy referrer_policy,
-      bool enabled_by_origin_trial);
+      net::ReferrerPolicy referrer_policy);
 
   // Determines whether resource hints like preload and preconnect should be
-  // handled or not. Currently we are running two trials: The field trial and
-  // the origin trial. When the field trial forcibly disables preloads, always
-  // returns false. Otherwise, returns true when either of trials is enabled.
-  bool ShouldHandleResourceHints(const network::mojom::LinkHeaderPtr& link,
-                                 bool enabled_by_origin_trial);
+  // handled or not.
+  bool ShouldHandleResourceHints(const network::mojom::LinkHeaderPtr& link);
 
   void OnPreloadComplete(const GURL& url, const PreloadedResource& result);
 
@@ -191,11 +182,6 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   // Set to true when preload or preconnect Link headers are received. Used for
   // metrics recording.
   bool was_resource_hints_received_ = false;
-  // Set to true when preload or preconnect are triggered by using origin trial
-  // tokens. Used for metrics recording.
-  bool was_resource_hints_triggered_by_origin_trial_ = false;
-
-  blink::TrialTokenValidator const trial_token_validator_;
 
   base::OnceCallback<void(PreloadedResources)>
       preloads_completion_callback_for_testing_;
