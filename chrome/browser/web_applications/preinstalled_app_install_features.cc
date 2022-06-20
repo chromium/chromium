@@ -76,7 +76,7 @@ const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers{
 // Enables installing the Cursive app on devices with a built-in stylus-capable
 // screen.
 const base::Feature kCursiveStylusPreinstall{"CursiveStylusPreinstall",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables installing the Messages app on unmanaged devices.
 const base::Feature kMessagesPreinstall{"MessagesPreinstall",
