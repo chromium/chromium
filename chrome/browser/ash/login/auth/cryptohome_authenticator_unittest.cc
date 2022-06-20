@@ -65,9 +65,6 @@ using ::testing::_;
 // A fake sanitized username used for testing.
 constexpr char kFakeSanitizedUsername[] = "01234567890ABC";
 
-// Salt used by pre-hashed key.
-const char kSalt[] = "SALT $$";
-
 // An owner key in PKCS#8 PrivateKeyInfo for testing owner checks.
 const uint8_t kOwnerPrivateKey[] = {
     0x30, 0x82, 0x01, 0x53, 0x02, 0x01, 0x00, 0x30, 0x0d, 0x06, 0x09, 0x2a,
@@ -835,42 +832,6 @@ TEST_F(CryptohomeAuthenticatorTest, DriveOnlineLogin) {
   SetAttemptState(auth_.get(), state_.release());
 
   RunResolve(auth_.get());
-}
-
-TEST_F(CryptohomeAuthenticatorTest, DriveLoginWithPreHashedPassword) {
-  CreateTransformedKey(Key::KEY_TYPE_SALTED_SHA256, kSalt);
-
-  UserContext expected_user_context(user_context_with_transformed_key_);
-  expected_user_context.SetUserIDHash(kFakeSanitizedUsername);
-  ExpectLoginSuccess(expected_user_context);
-  FailOnLoginFailure();
-
-  // Set up mock homedir methods to respond with key metadata indicating that a
-  // pre-hashed key was used to create the cryptohome and allow a successful
-  // mount when this pre-hashed key is used.
-
-  ExpectGetKeyDataExCall(std::make_unique<int64_t>(Key::KEY_TYPE_SALTED_SHA256),
-                         std::make_unique<std::string>(kSalt));
-  ExpectMountExCall(false /* expect_create_attempt */);
-
-  auth_->AuthenticateToLogin(std::make_unique<UserContext>(user_context_));
-  run_loop_.Run();
-}
-
-TEST_F(CryptohomeAuthenticatorTest, FailLoginWithMissingSalt) {
-  CreateTransformedKey(Key::KEY_TYPE_SALTED_SHA256, kSalt);
-
-  FailOnLoginSuccess();
-  ExpectLoginFailure(AuthFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
-
-  // Set up mock homedir methods to respond with key metadata indicating that a
-  // pre-hashed key was used to create the cryptohome but without the required
-  // salt.
-  ExpectGetKeyDataExCall(std::make_unique<int64_t>(Key::KEY_TYPE_SALTED_SHA256),
-                         std::unique_ptr<std::string>());
-
-  auth_->AuthenticateToLogin(std::make_unique<UserContext>(user_context_));
-  run_loop_.Run();
 }
 
 }  // namespace ash

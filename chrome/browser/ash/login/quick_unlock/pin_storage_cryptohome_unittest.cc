@@ -156,8 +156,6 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
         ->mutable_data()
         ->mutable_policy()
         ->set_low_entropy_credential(true);
-    request.mutable_key()->mutable_data()->mutable_policy()->set_auth_locked(
-        true);
     *request.mutable_account_id() =
         cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_);
     // Ensure that has_authorization_request() would return true.
@@ -170,7 +168,11 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
                        std::move(closure).Run();
                      },
                      run_loop.QuitClosure()));
+
     run_loop.Run();
+    FakeUserDataAuthClient::TestApi::Get()->SetPinLocked(
+        cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_),
+        kCryptohomePinLabel, true);
   }
 
   bool RemovePin(const std::string& pin) const {

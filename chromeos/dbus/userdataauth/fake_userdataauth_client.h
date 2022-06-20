@@ -78,6 +78,13 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     void SetEcryptfsUserHome(const cryptohome::AccountIdentifier& cryptohome_id,
                              bool use_ecryptfs);
 
+    // Marks a PIN key as locked or unlocked. The key is identified by the
+    // |account_id| of the user it belongs to and its |label|. The key must
+    // exist prior to this call, and it must be a PIN key.
+    void SetPinLocked(const cryptohome::AccountIdentifier& account_id,
+                      const std::string& label,
+                      bool locked);
+
    private:
     friend class FakeUserDataAuthClient;
 
@@ -296,6 +303,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void CreateUserProfileDir(const cryptohome::AccountIdentifier& account_id);
 
  private:
+  struct UserCryptohomeState;
+
   // Helper that returns the protobuf reply.
   template <typename ReplyType>
   void ReturnProtobufMethodCallback(const ReplyType& reply,
@@ -307,11 +316,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // This method is used to implement StartMigrateToDircrypto with simulated
   // progress updates.
   void OnDircryptoMigrationProgressUpdated();
-
-  // Finds a key matching the given label. Wildcard labels are supported.
-  std::map<std::string, cryptohome::Key>::const_iterator FindKey(
-      const std::map<std::string, cryptohome::Key>& keys,
-      const std::string& label);
 
   // Returns a path to home directory for account.
   base::FilePath GetUserProfileDir(
@@ -344,10 +348,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // The `unlock_webauthn_secret` parameter passed in the last CheckKeyEx call.
   bool last_unlock_webauthn_secret_;
 
-  // The key data for various accounts.
-  std::map<cryptohome::AccountIdentifier,
-           std::map<std::string, cryptohome::Key>>
-      key_data_map_;
+  // The collection of users we know about.
+  std::map<cryptohome::AccountIdentifier, UserCryptohomeState> users_;
 
   // Set of account identifiers whose user homes use ecryptfs. User homes not
   // mentioned here use dircrypto.
