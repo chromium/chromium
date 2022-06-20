@@ -116,24 +116,18 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       media::TypedScopedAsyncTrace<media::TraceCategory::kMediaStream>;
 
   void GetVideoInputDeviceFormats(
-      const std::string& device_id,
+      const std::string& hashed_device_id,
       bool try_in_use_first,
       GetVideoInputDeviceFormatsCallback client_callback,
-      std::unique_ptr<ScopedMediaStreamTrace> scoped_trace);
-  void EnumerateVideoDevicesForFormats(
-      GetVideoInputDeviceFormatsCallback client_callback,
-      const std::string& device_id,
-      bool try_in_use_first,
       std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
       const MediaDeviceSaltAndOrigin& salt_and_origin);
-  void FinalizeGetVideoInputDeviceFormats(
-      GetVideoInputDeviceFormatsCallback client_callback,
-      const std::string& device_id,
+
+  void GetVideoInputDeviceFormatsWithRawId(
+      const std::string& hashed_device_id,
       bool try_in_use_first,
-      const std::string& device_id_salt,
-      const url::Origin& security_origin,
+      GetVideoInputDeviceFormatsCallback client_callback,
       std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
-      const media::VideoCaptureDeviceDescriptors& device_descriptors);
+      const absl::optional<std::string>& raw_id);
 
   void ReceivedBadMessage(int render_process_id,
                           bad_message::BadMessageReason reason);
