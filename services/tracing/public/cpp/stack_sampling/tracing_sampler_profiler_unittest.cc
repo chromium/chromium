@@ -113,7 +113,7 @@ class TracingSampleProfilerTest
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
         base::ThreadTaskRunnerHandle::Get());
-    TraceEventDataSource::GetInstance()->ResetForTesting();
+    TracingSamplerProfiler::ResetDataSourceForTesting();
 #else
     auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
         base::ThreadTaskRunnerHandle::Get());

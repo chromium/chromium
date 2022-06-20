@@ -186,6 +186,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   static void StartTracingForTesting(tracing::PerfettoProducer* producer);
   static void StopTracingForTesting();
   static void MangleModuleIDIfNeeded(std::string* module_id);
+  static void ResetDataSourceForTesting();
 
   // Returns whether of not the sampler profiling is able to unwind the stack
   // on this platform.

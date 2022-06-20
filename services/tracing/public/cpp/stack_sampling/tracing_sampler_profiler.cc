@@ -88,6 +88,10 @@ uintptr_t executable_start_addr() {
 // Pointer to the main thread instance, if any.
 TracingSamplerProfiler* g_main_thread_instance = nullptr;
 
+class TracingSamplerProfilerDataSource;
+
+TracingSamplerProfilerDataSource* g_sampler_profiler_ds_for_test = nullptr;
+
 class TracingSamplerProfilerDataSource
     : public PerfettoTracedProcess::DataSourceBase {
  public:
@@ -95,18 +99,6 @@ class TracingSamplerProfilerDataSource
     static base::NoDestructor<TracingSamplerProfilerDataSource> instance;
     return instance.get();
   }
-
-  TracingSamplerProfilerDataSource()
-      : DataSourceBase(mojom::kSamplerProfilerSourceName) {
-    PerfettoTracedProcess::Get()->AddDataSource(this);
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    perfetto::DataSourceDescriptor dsd;
-    dsd.set_name(mojom::kSamplerProfilerSourceName);
-    DataSourceProxy::Register(dsd, this);
-#endif
-  }
-
-  ~TracingSamplerProfilerDataSource() override { NOTREACHED(); }
 
   void RegisterProfiler(TracingSamplerProfiler* profiler) {
     base::AutoLock lock(lock_);
@@ -232,7 +224,33 @@ class TracingSamplerProfilerDataSource
       PerfettoTracedProcess::DataSourceProxy<TracingSamplerProfilerDataSource>;
 #endif
 
+  static void ResetForTesting() {
+    if (!g_sampler_profiler_ds_for_test)
+      return;
+    g_sampler_profiler_ds_for_test->~TracingSamplerProfilerDataSource();
+    new (g_sampler_profiler_ds_for_test) TracingSamplerProfilerDataSource;
+  }
+
  private:
+  friend class base::NoDestructor<TracingSamplerProfilerDataSource>;
+
+  TracingSamplerProfilerDataSource()
+      : DataSourceBase(mojom::kSamplerProfilerSourceName) {
+    PerfettoTracedProcess::Get()->AddDataSource(this);
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    perfetto::DataSourceDescriptor dsd;
+    dsd.set_name(mojom::kSamplerProfilerSourceName);
+    DataSourceProxy::Register(dsd, this);
+#endif
+    g_sampler_profiler_ds_for_test = this;
+  }
+
+  ~TracingSamplerProfilerDataSource() override {
+    // Unreachable because of static instance of type `base::NoDestructor<>`
+    // and private ctr.
+    // Reachable only in case of test mode. See `ResetForTesting()`.
+  }
+
   // TODO(eseckler): Use GUARDED_BY annotations for all members below.
   base::Lock lock_;  // Protects subsequent members.
   raw_ptr<tracing::PerfettoProducer> producer_ GUARDED_BY(lock_) = nullptr;
@@ -715,6 +733,11 @@ void TracingSamplerProfiler::CreateOnChildThread() {
 // static
 void TracingSamplerProfiler::DeleteOnChildThreadForTesting() {
   GetSequenceLocalStorageProfilerSlot().reset();
+}
+
+// static
+void TracingSamplerProfiler::ResetDataSourceForTesting() {
+  TracingSamplerProfilerDataSource::Get()->ResetForTesting();
 }
 
 // static
