@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_HEADLESS_EXTERNAL_SCRIPT_CONTROLLER_IMPL_H_
-#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_HEADLESS_EXTERNAL_SCRIPT_CONTROLLER_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_HEADLESS_HEADLESS_SCRIPT_CONTROLLER_IMPL_H_
+#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_HEADLESS_HEADLESS_SCRIPT_CONTROLLER_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -21,19 +21,19 @@
 
 namespace autofill_assistant {
 
-class ExternalScriptControllerImpl : public ExternalScriptController {
+class HeadlessScriptControllerImpl : public HeadlessScriptController {
  public:
-  ExternalScriptControllerImpl(
+  HeadlessScriptControllerImpl(
       content::WebContents* web_contents,
       ExternalActionDelegate* action_extension_delegate);
 
-  ExternalScriptControllerImpl(const ExternalScriptControllerImpl&) = delete;
-  ExternalScriptControllerImpl& operator=(const ExternalScriptControllerImpl&) =
+  HeadlessScriptControllerImpl(const HeadlessScriptControllerImpl&) = delete;
+  HeadlessScriptControllerImpl& operator=(const HeadlessScriptControllerImpl&) =
       delete;
 
-  ~ExternalScriptControllerImpl() override;
+  ~HeadlessScriptControllerImpl() override;
 
-  // Overrides ExternalScriptController.
+  // Overrides HeadlessScriptController.
   void StartScript(
       const base::flat_map<std::string, std::string>& script_parameters,
       base::OnceCallback<void(ScriptResult)> script_ended_callback) override;
@@ -52,9 +52,9 @@ class ExternalScriptControllerImpl : public ExternalScriptController {
 
   base::OnceCallback<void(ScriptResult)> script_ended_callback_;
 
-  base::WeakPtrFactory<ExternalScriptControllerImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<HeadlessScriptControllerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_HEADLESS_EXTERNAL_SCRIPT_CONTROLLER_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_HEADLESS_HEADLESS_SCRIPT_CONTROLLER_IMPL_H_

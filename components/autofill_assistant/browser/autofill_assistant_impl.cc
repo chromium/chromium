@@ -9,7 +9,7 @@
 
 #include "components/autofill_assistant/browser/common_dependencies.h"
 #include "components/autofill_assistant/browser/desktop/starter_delegate_desktop.h"
-#include "components/autofill_assistant/browser/headless/external_script_controller_impl.h"
+#include "components/autofill_assistant/browser/headless/headless_script_controller_impl.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
@@ -134,11 +134,11 @@ void AutofillAssistantImpl::GetCapabilitiesByHashPrefix(
       RpcType::GET_CAPABILITIES_BY_HASH_PREFIX);
 }
 
-std::unique_ptr<ExternalScriptController>
-AutofillAssistantImpl::CreateExternalScriptController(
+std::unique_ptr<HeadlessScriptController>
+AutofillAssistantImpl::CreateHeadlessScriptController(
     content::WebContents* web_contents,
     ExternalActionDelegate* action_extension_delegate) {
-  return std::make_unique<ExternalScriptControllerImpl>(
+  return std::make_unique<HeadlessScriptControllerImpl>(
       web_contents, action_extension_delegate);
 }
 

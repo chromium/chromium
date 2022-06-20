@@ -16,7 +16,7 @@
 class PasswordChangeRunDisplay;
 class AssistantDisplayDelegate;
 
-// Receives actions from the `ExternalScriptController` and passes them on an
+// Receives actions from the `HeadlessScriptController` and passes them on an
 // implementation of a `PasswordChangeRunDisplay`.
 // Currently `ApcExternalActionDelegate` implements two interfaces. If the
 // class becomes too complex, we may later separate out the

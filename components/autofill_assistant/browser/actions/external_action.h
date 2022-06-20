@@ -8,7 +8,7 @@
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
-#include "components/autofill_assistant/browser/public/external_script_controller.h"
+#include "components/autofill_assistant/browser/public/headless_script_controller.h"
 #include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 
 namespace autofill_assistant {

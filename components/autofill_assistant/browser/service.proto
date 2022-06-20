@@ -3467,11 +3467,11 @@ message JsFlowProto {
   optional string js_flow = 1;
 }
 
-// Action which forwards a proto to the owner of the |ExternalScriptController|
+// Action which forwards a proto to the owner of the |HeadlessScriptController|
 // for the current flow. Not supported for internal flows.
 message ExternalActionProto {
   // The opaque proto to be forwarded to the owner of the
-  // |ExternalScriptController| for this flow.
+  // |HeadlessScriptController| for this flow.
   optional external.ActionInfo info = 1;
 
   // Whether to show the touchable area in the overlay.

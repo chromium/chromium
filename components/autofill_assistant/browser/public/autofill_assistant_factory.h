@@ -18,10 +18,10 @@ class CommonDependencies;
 // Factory class for creating |AutofillAssistant|.
 class AutofillAssistantFactory {
  public:
-  // TODO(b/201964911) The |AutofillAssistant::CreateExternalScriptController|
+  // TODO(b/201964911) The |AutofillAssistant::CreateHeadlessScriptController|
   // method ignores the  |channel|, |country_code| and |locale| passed here and
   // instead fetches them directly. Make the treatment between
-  // |ExternalScriptController| and |GetCapabilitiesByHashPrefix| consistent.
+  // |HeadlessScriptController| and |GetCapabilitiesByHashPrefix| consistent.
   static std::unique_ptr<AutofillAssistant> CreateForBrowserContext(
       content::BrowserContext* browser_context,
       std::unique_ptr<CommonDependencies> dependencies);

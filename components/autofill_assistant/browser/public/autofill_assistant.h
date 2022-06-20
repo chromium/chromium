@@ -11,7 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
-#include "components/autofill_assistant/browser/public/external_script_controller.h"
+#include "components/autofill_assistant/browser/public/headless_script_controller.h"
 
 namespace content {
 class WebContents;
@@ -53,17 +53,17 @@ class AutofillAssistant {
       const std::string& intent,
       GetCapabilitiesResponseCallback callback) = 0;
 
-  // Returns an |ExternalScriptController| which can be used to execute scripts
+  // Returns an |HeadlessScriptController| which can be used to execute scripts
   // on the tab specified by |web_contents|, by calling
-  // |ExternalScriptController::StartScript|.
-  // The returned |ExternalScriptController| instance has to survive for the
+  // |HeadlessScriptController::StartScript|.
+  // The returned |HeadlessScriptController| instance has to survive for the
   // duration of the execution of the script.
   // |action_extension_delegate| can be nullptr, but in that case the script
   // execution will fail if it reaches an external action. If present,
   // |action_extension_delegate| instance must outlive the
-  // |ExternalScriptController|.
-  virtual std::unique_ptr<ExternalScriptController>
-  CreateExternalScriptController(
+  // |HeadlessScriptController|.
+  virtual std::unique_ptr<HeadlessScriptController>
+  CreateHeadlessScriptController(
       content::WebContents* web_contents,
       ExternalActionDelegate* action_extension_delegate) = 0;
 

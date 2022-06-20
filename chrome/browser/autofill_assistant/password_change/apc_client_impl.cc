@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
-#include "components/autofill_assistant/browser/public/external_script_controller.h"
+#include "components/autofill_assistant/browser/public/headless_script_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -106,14 +106,14 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
       skip_login_ ? base::NumberToString(kSourcePasswordChangeLeakWarning)
                   : base::NumberToString(kSourcePasswordChangeSettings);
 
-  external_script_controller_ = CreateExternalScriptController();
+  external_script_controller_ = CreateHeadlessScriptController();
   external_script_controller_->StartScript(
       params_map,
       base::BindOnce(&ApcClientImpl::OnRunComplete, base::Unretained(this)));
 }
 
 void ApcClientImpl::OnRunComplete(
-    autofill_assistant::ExternalScriptController::ScriptResult result) {
+    autofill_assistant::HeadlessScriptController::ScriptResult result) {
   // TODO(crbug.com/1324089): Handle failed result.
   Stop();
 }
@@ -137,8 +137,8 @@ ApcClientImpl::CreateSidePanel() {
   return AssistantSidePanelCoordinator::Create(&GetWebContents());
 }
 
-std::unique_ptr<autofill_assistant::ExternalScriptController>
-ApcClientImpl::CreateExternalScriptController() {
+std::unique_ptr<autofill_assistant::HeadlessScriptController>
+ApcClientImpl::CreateHeadlessScriptController() {
   apc_external_action_delegate_ = std::make_unique<ApcExternalActionDelegate>(
       side_panel_coordinator_.get());
   apc_external_action_delegate_->SetupDisplay();
@@ -148,7 +148,7 @@ ApcClientImpl::CreateExternalScriptController() {
       autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(
           GetWebContents().GetBrowserContext(),
           std::make_unique<autofill_assistant::CommonDependenciesChrome>());
-  return autofill_assistant->CreateExternalScriptController(
+  return autofill_assistant->CreateHeadlessScriptController(
       &GetWebContents(), apc_external_action_delegate_.get());
 }
 

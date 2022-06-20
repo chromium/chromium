@@ -14,7 +14,7 @@
 #include "components/autofill_assistant/browser/details.h"
 #include "components/autofill_assistant/browser/info_box.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
-#include "components/autofill_assistant/browser/public/external_script_controller.h"
+#include "components/autofill_assistant/browser/public/headless_script_controller.h"
 #include "components/autofill_assistant/browser/state.h"
 #include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/user_action.h"

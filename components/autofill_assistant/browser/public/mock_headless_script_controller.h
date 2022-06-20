@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_MOCK_EXTERNAL_SCRIPT_CONTROLLER_H_
-#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_MOCK_EXTERNAL_SCRIPT_CONTROLLER_H_
+#ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_MOCK_HEADLESS_SCRIPT_CONTROLLER_H_
+#define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_MOCK_HEADLESS_SCRIPT_CONTROLLER_H_
 
 #include "base/callback_helpers.h"
-#include "components/autofill_assistant/browser/public/external_script_controller.h"
+#include "components/autofill_assistant/browser/public/headless_script_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
 
-class MockExternalScriptController : public ExternalScriptController {
+class MockHeadlessScriptController : public HeadlessScriptController {
  public:
-  MockExternalScriptController();
-  ~MockExternalScriptController() override;
+  MockHeadlessScriptController();
+  ~MockHeadlessScriptController() override;
 
   MOCK_METHOD(void,
               StartScript,
@@ -25,4 +25,4 @@ class MockExternalScriptController : public ExternalScriptController {
 
 }  // namespace autofill_assistant
 
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_MOCK_EXTERNAL_SCRIPT_CONTROLLER_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_MOCK_HEADLESS_SCRIPT_CONTROLLER_H_

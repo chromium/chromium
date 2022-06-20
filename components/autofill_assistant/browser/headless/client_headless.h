@@ -27,7 +27,7 @@
 
 namespace autofill_assistant {
 
-class ExternalScriptControllerImpl;
+class HeadlessScriptControllerImpl;
 
 // An Autofill Assistant client for headless runs.
 class ClientHeadless : public Client, public AccessTokenFetcher {
@@ -36,7 +36,7 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
       content::WebContents* web_contents,
       const CommonDependencies* common_dependencies,
       ExternalActionDelegate* action_extension_delegate,
-      ExternalScriptControllerImpl* external_script_controller);
+      HeadlessScriptControllerImpl* external_script_controller);
   ClientHeadless(const ClientHeadless&) = delete;
   ClientHeadless& operator=(const ClientHeadless&) = delete;
 
@@ -98,7 +98,7 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
   base::OnceCallback<void(bool, const std::string&)>
       fetch_access_token_callback_;
-  const raw_ptr<ExternalScriptControllerImpl> external_script_controller_;
+  const raw_ptr<HeadlessScriptControllerImpl> external_script_controller_;
 
   base::WeakPtrFactory<ClientHeadless> weak_ptr_factory_{this};
 };

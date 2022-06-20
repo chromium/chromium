@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_side_panel_coordinator.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill_assistant/browser/public/mock_external_script_controller.h"
+#include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,8 +51,8 @@ class TestApcClientImpl : public ApcClientImpl {
     return std::move(side_panel_);
   }
 
-  std::unique_ptr<autofill_assistant::ExternalScriptController>
-  CreateExternalScriptController() override {
+  std::unique_ptr<autofill_assistant::HeadlessScriptController>
+  CreateHeadlessScriptController() override {
     return std::move(external_script_controller_);
   }
 
@@ -69,10 +69,10 @@ class TestApcClientImpl : public ApcClientImpl {
     side_panel_ = std::move(side_panel);
   }
 
-  // Allows setting an ExternalScriptController. Must be called at least once
-  // before every expected call to `CreateExternalScriptController()`.
-  void InjectExternalScriptControllerForTesting(
-      std::unique_ptr<autofill_assistant::ExternalScriptController>
+  // Allows setting an HeadlessScriptController. Must be called at least once
+  // before every expected call to `CreateHeadlessScriptController()`.
+  void InjectHeadlessScriptControllerForTesting(
+      std::unique_ptr<autofill_assistant::HeadlessScriptController>
           external_script_controller) {
     external_script_controller_ = std::move(external_script_controller);
   }
@@ -80,7 +80,7 @@ class TestApcClientImpl : public ApcClientImpl {
  private:
   std::unique_ptr<ApcOnboardingCoordinator> coordinator_;
   std::unique_ptr<AssistantSidePanelCoordinator> side_panel_;
-  std::unique_ptr<autofill_assistant::ExternalScriptController>
+  std::unique_ptr<autofill_assistant::HeadlessScriptController>
       external_script_controller_;
 };
 
@@ -120,11 +120,11 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(*side_panel_ref_, AddObserver)
         .WillByDefault(SaveArg<0>(&side_panel_observer_));
 
-    // Prepare the ExternalScriptController.
+    // Prepare the HeadlessScriptController.
     auto external_script_controller =
-        std::make_unique<autofill_assistant::MockExternalScriptController>();
+        std::make_unique<autofill_assistant::MockHeadlessScriptController>();
     external_script_controller_ref_ = external_script_controller.get();
-    test_apc_client_->InjectExternalScriptControllerForTesting(
+    test_apc_client_->InjectHeadlessScriptControllerForTesting(
         std::move(external_script_controller));
   }
 
@@ -134,7 +134,7 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
   AssistantSidePanelCoordinator::Observer* side_panel_observer() {
     return side_panel_observer_;
   }
-  autofill_assistant::MockExternalScriptController*
+  autofill_assistant::MockHeadlessScriptController*
   external_script_controller() {
     return external_script_controller_ref_;
   }
@@ -146,7 +146,7 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
   // Pointers to mocked components that are injected into the `ApcClientImpl`.
   raw_ptr<MockApcOnboardingCoordinator> coordinator_ref_ = nullptr;
   raw_ptr<MockAssistantSidePanelCoordinator> side_panel_ref_ = nullptr;
-  raw_ptr<autofill_assistant::MockExternalScriptController>
+  raw_ptr<autofill_assistant::MockHeadlessScriptController>
       external_script_controller_ref_ = nullptr;
 
   // The last registered side panel observer - may be null or dangling.
@@ -180,7 +180,7 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
 
   // Prepare to extract the callback to the external script controller.
   base::OnceCallback<void(
-      autofill_assistant::ExternalScriptController::ScriptResult)>
+      autofill_assistant::HeadlessScriptController::ScriptResult)>
       external_script_controller_callback;
   EXPECT_CALL(*external_script_controller(), StartScript)
       .Times(1)
@@ -190,7 +190,7 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
   std::move(coordinator_callback).Run(true);
   EXPECT_TRUE(client->IsRunning());
 
-  autofill_assistant::ExternalScriptController::ScriptResult script_result = {
+  autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
       /* success= */ true};
   std::move(external_script_controller_callback).Run(script_result);
   EXPECT_FALSE(client->IsRunning());

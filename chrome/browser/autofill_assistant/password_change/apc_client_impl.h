@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_side_panel_coordinator.h"
-#include "components/autofill_assistant/browser/public/external_script_controller.h"
+#include "components/autofill_assistant/browser/public/headless_script_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -53,8 +53,8 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   virtual std::unique_ptr<AssistantSidePanelCoordinator> CreateSidePanel();
 
   // Creates an external script controller.
-  virtual std::unique_ptr<autofill_assistant::ExternalScriptController>
-  CreateExternalScriptController();
+  virtual std::unique_ptr<autofill_assistant::HeadlessScriptController>
+  CreateHeadlessScriptController();
 
   explicit ApcClientImpl(content::WebContents* web_contents);
 
@@ -67,7 +67,7 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
 
   // Registers when a run is complete. Used in callbacks.
   void OnRunComplete(
-      autofill_assistant::ExternalScriptController::ScriptResult result);
+      autofill_assistant::HeadlessScriptController::ScriptResult result);
 
   // AssistantSidePanelCoordinator::Observer:
   void OnHidden() override;
@@ -79,7 +79,7 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   // Controls a script run triggered by the headless API. This class is
   // responsible for handling the forwarding of action to
   // `apc_external_action_delegate_` and managing the run lifetime.
-  std::unique_ptr<autofill_assistant::ExternalScriptController>
+  std::unique_ptr<autofill_assistant::HeadlessScriptController>
       external_script_controller_;
 
   // The username for which `Start()` was triggered.

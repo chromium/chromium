@@ -18,7 +18,7 @@
 #include "components/autofill_assistant/browser/display_strings_util.h"
 #include "components/autofill_assistant/browser/empty_website_login_manager_impl.h"
 #include "components/autofill_assistant/browser/features.h"
-#include "components/autofill_assistant/browser/headless/external_script_controller_impl.h"
+#include "components/autofill_assistant/browser/headless/headless_script_controller_impl.h"
 #include "components/autofill_assistant/browser/public/ui_state.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/switches.h"
@@ -45,7 +45,7 @@ ClientHeadless::ClientHeadless(
     content::WebContents* web_contents,
     const CommonDependencies* common_dependencies,
     ExternalActionDelegate* action_extension_delegate,
-    ExternalScriptControllerImpl* external_script_controller)
+    HeadlessScriptControllerImpl* external_script_controller)
     : web_contents_(web_contents),
       common_dependencies_(common_dependencies),
       external_script_controller_(external_script_controller) {

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/public/mock_external_script_controller.h"
+#include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
 
 namespace autofill_assistant {
 
-MockExternalScriptController::MockExternalScriptController() = default;
+MockHeadlessScriptController::MockHeadlessScriptController() = default;
 
-MockExternalScriptController::~MockExternalScriptController() = default;
+MockHeadlessScriptController::~MockHeadlessScriptController() = default;
 
 }  // namespace autofill_assistant
