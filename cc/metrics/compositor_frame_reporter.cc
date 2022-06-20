@@ -358,6 +358,8 @@ CompositorFrameReporter::CompositorFrameReporter(
              FrameSequenceTrackerType::kSETMainThreadAnimation)) ||
          active_trackers_.test(static_cast<size_t>(
              FrameSequenceTrackerType::kMainThreadAnimation)));
+  is_forked_ = false;
+  is_backfill_ = false;
 }
 
 // static
@@ -509,6 +511,7 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() {
       StageType::kBeginImplFrameToSendBeginMainFrame;
   new_reporter->current_stage_.start_time = stage_history_.front().start_time;
   new_reporter->set_tick_clock(tick_clock_);
+  new_reporter->set_is_forked(true);
 
   // Set up the new reporter so that it depends on |this| for partial update
   // information.
@@ -1078,6 +1081,12 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
         reporter->set_has_smooth_input_main(has_smooth_input_main);
         reporter->set_has_high_latency(
             (frame_termination_time_ - args_.frame_time) > kHighLatencyMin);
+
+        if (is_forked_) {
+          reporter->set_frame_type(ChromeFrameReporter::FORKED);
+        } else if (is_backfill_) {
+          reporter->set_frame_type(ChromeFrameReporter::BACKFILL);
+        }
 
         // TODO(crbug.com/1086974): Set 'drop reason' if applicable.
       });

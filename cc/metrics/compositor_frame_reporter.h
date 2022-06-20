@@ -330,6 +330,13 @@ class CC_EXPORT CompositorFrameReporter {
         is_accompanied_by_main_thread_update;
   }
 
+  void set_is_forked(bool is_forked) {
+    is_forked_ = is_forked;
+  }
+  void set_is_backfill(bool is_backfill) {
+    is_backfill_ = is_backfill;
+  }
+
   const viz::BeginFrameId& frame_id() const { return args_.frame_id; }
 
   // Adopts |cloned_reporter|, i.e. keeps |cloned_reporter| alive until after
@@ -457,6 +464,14 @@ class CC_EXPORT CompositorFrameReporter {
   // Indicates whether the submitted frame had any missing content (i.e. content
   // with checkerboarding).
   bool has_missing_content_ = false;
+
+  // Indicates whether the frame is forked (i.e. a PipelineReporter event starts
+  // at the same frame sequence as another PipelineReporter).
+  bool is_forked_ = false;
+
+  // Indicates whether the frame is backfill (i.e. dropped frames when there are
+  // no partial compositor updates).
+  bool is_backfill_ = false;
 
   // For a reporter A, if the main-thread takes a long time to respond
   // to a begin-main-frame, then all reporters created (and terminated) until
