@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
 
 class PrefRegistrySimple;
@@ -84,7 +85,7 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
   // Replaces chrome::AttemptUserExit() by |closure|.
   void SetAttemptUserExitForTesting(base::OnceClosure closure);
 
-  Browser* GetSettingsBrowserForTesting() { return settings_browser_; }
+  Browser* GetSettingsBrowserForTesting();
   void SetOnHandleBrowserCallbackForTesting(base::RepeatingClosure closure);
 
  protected:
@@ -100,11 +101,7 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
   // App Kiosk.
   class AppWindowHandler;
 
-  // BrowserWindowHandler monitors Browser object being created during
-  // a kiosk session, log info such as URL so that the code path could be
-  // fixed and closes the just opened browser window.
-  class BrowserWindowHandler;
-
+  void OnHandledNewBrowserWindow();
   void OnAppWindowAdded(extensions::AppWindow* app_window);
   void OnLastAppWindowClosed();
 
@@ -116,12 +113,8 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
   bool is_shutting_down_ = false;
 
   std::unique_ptr<AppWindowHandler> app_window_handler_;
-  std::unique_ptr<BrowserWindowHandler> browser_window_handler_;
+  std::unique_ptr<AppSessionBrowserWindowHandler> browser_window_handler_;
   std::unique_ptr<KioskSessionPluginHandler> plugin_handler_;
-
-  // Browser in which settings are shown, restricted by
-  // KioskSettingsNavigationThrottle.
-  Browser* settings_browser_ = nullptr;
 
   Profile* profile_ = nullptr;
 
@@ -131,6 +124,8 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
   // Is called whenever a new browser creation was handled by the
   // BrowserWindowHandler.
   base::RepeatingClosure on_handle_browser_callback_;
+
+  base::WeakPtrFactory<AppSession> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos

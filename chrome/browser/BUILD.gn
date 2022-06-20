@@ -5247,6 +5247,8 @@ static_library("browser") {
       "chrome_browser_main_parts_lacros.h",
       "chromeos/app_mode/app_session.cc",
       "chromeos/app_mode/app_session.h",
+      "chromeos/app_mode/app_session_browser_window_handler.cc",
+      "chromeos/app_mode/app_session_browser_window_handler.h",
       "chromeos/app_mode/chrome_kiosk_app_installer.cc",
       "chromeos/app_mode/chrome_kiosk_app_installer.h",
       "chromeos/app_mode/chrome_kiosk_app_launcher.cc",

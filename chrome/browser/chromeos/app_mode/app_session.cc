@@ -8,6 +8,7 @@
 #include <signal.h>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -17,19 +18,13 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -354,90 +349,6 @@ class AppSession::AppWindowHandler : public AppWindowRegistry::Observer {
   bool app_window_created_ = false;
 };
 
-class AppSession::BrowserWindowHandler : public BrowserListObserver {
- public:
-  BrowserWindowHandler(AppSession* app_session, Browser* browser)
-      : app_session_(app_session), browser_(browser) {
-    BrowserList::AddObserver(this);
-  }
-  BrowserWindowHandler(const BrowserWindowHandler&) = delete;
-  BrowserWindowHandler& operator=(const BrowserWindowHandler&) = delete;
-  ~BrowserWindowHandler() override { BrowserList::RemoveObserver(this); }
-
- private:
-  void HandleBrowser(Browser* browser) {
-    content::WebContents* active_tab =
-        browser->tab_strip_model()->GetActiveWebContents();
-    std::string url_string =
-        active_tab ? active_tab->GetURL().spec() : std::string();
-
-    if (KioskSettingsNavigationThrottle::IsSettingsPage(url_string)) {
-      bool app_browser = browser->is_type_app() ||
-                         browser->is_type_app_popup() ||
-                         browser->is_type_popup();
-      // If this browser is not an app browser or another settings browser
-      // exists, close this one and navigate to |url_string| in the old browser
-      // or create a new app browser if none yet exists.
-      if (!app_browser || app_session_->settings_browser_) {
-        browser->window()->Close();
-        if (!app_session_->settings_browser_) {
-          // Create a new app browser.
-          NavigateParams nav_params(
-              app_session_->profile_, GURL(url_string),
-              ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
-          nav_params.disposition = WindowOpenDisposition::NEW_POPUP;
-          Navigate(&nav_params);
-        } else {
-          // Navigate in the existing browser.
-          NavigateParams nav_params(
-              app_session_->settings_browser_, GURL(url_string),
-              ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
-
-          Navigate(&nav_params);
-        }
-      } else {
-        app_session_->settings_browser_ = browser;
-        // We have to first call Restore() because the window was created as a
-        // fullscreen window, having no prior bounds.
-        // TODO(crbug.com/1015383): Figure out how to do it more cleanly.
-        browser->window()->Restore();
-        browser->window()->Maximize();
-      }
-    } else {
-      LOG(WARNING) << "Browser opened in kiosk session"
-                   << ", url=" << url_string;
-      browser->window()->Close();
-    }
-    // Call the callback to notify tests that browser was handled.
-    if (app_session_->on_handle_browser_callback_)
-      app_session_->on_handle_browser_callback_.Run();
-  }
-
-  // BrowserListObserver overrides:
-  void OnBrowserAdded(Browser* browser) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BrowserWindowHandler::HandleBrowser,
-                       base::Unretained(this),  // LazyInstance, always valid
-                       browser));
-  }
-
-  // Called when a Browser is removed from the list.
-  void OnBrowserRemoved(Browser* browser) override {
-    // The app browser was removed.
-    if (browser == browser_) {
-      app_session_->OnLastAppWindowClosed();
-    }
-
-    if (browser == app_session_->settings_browser_) {
-      app_session_->settings_browser_ = nullptr;
-    }
-  }
-
-  AppSession* const app_session_;
-  Browser* const browser_;
-};
-
 AppSession::AppSession()
     : attempt_user_exit_(base::BindOnce(chrome::AttemptUserExit)),
       metrics_service_(std::make_unique<AppSessionMetricsService>(
@@ -485,8 +396,17 @@ void AppSession::SetProfile(Profile* profile) {
 }
 
 void AppSession::CreateBrowserWindowHandler(Browser* browser) {
-  browser_window_handler_ =
-      std::make_unique<BrowserWindowHandler>(this, browser);
+  browser_window_handler_ = std::make_unique<AppSessionBrowserWindowHandler>(
+      profile_, browser,
+      base::BindRepeating(&AppSession::OnHandledNewBrowserWindow,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&AppSession::OnLastAppWindowClosed,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AppSession::OnHandledNewBrowserWindow() {
+  if (on_handle_browser_callback_)
+    on_handle_browser_callback_.Run();
 }
 
 void AppSession::OnAppWindowAdded(AppWindow* app_window) {
@@ -541,6 +461,13 @@ void AppSession::OnPluginHung(const std::set<int>& hung_plugins) {
 
   LOG(ERROR) << "Plugin hung detected. Dump and reboot.";
   DumpPluginProcess(hung_plugins);
+}
+
+Browser* AppSession::GetSettingsBrowserForTesting() {
+  if (browser_window_handler_) {
+    return browser_window_handler_->GetSettingsBrowserForTesting();  // IN-TEST
+  }
+  return nullptr;
 }
 
 }  // namespace chromeos
