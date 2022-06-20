@@ -770,18 +770,39 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   // TODO(mustaq): Explore use cases for delegating multiple capabilities.
   mojom::blink::DelegatedCapability delegated_capability =
       mojom::blink::DelegatedCapability::kNone;
-  if (LocalFrame::HasTransientUserActivation(source_frame) &&
-      options->hasDelegate()) {
+  if (options->hasDelegate()) {
     Vector<String> capability_list;
     options->delegate().Split(' ', capability_list);
     if (capability_list.Contains("payment")) {
       delegated_capability = mojom::blink::DelegatedCapability::kPaymentRequest;
-      LocalFrame::ConsumeTransientUserActivation(source_frame);
     } else if (capability_list.Contains("fullscreen")) {
       delegated_capability =
           mojom::blink::DelegatedCapability::kFullscreenRequest;
-      LocalFrame::ConsumeTransientUserActivation(source_frame);
+    } else {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "Delegation of \'" + options->delegate() + "\' is not supported.");
+      return;
     }
+
+    // TODO(mustaq): Add checks for allowed-to-use policy as proposed here:
+    // https://wicg.github.io/capability-delegation/spec.html#monkey-patch-to-html-initiating-delegation
+
+    if (!target) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "Delegation to target origin '*' is not allowed.");
+      return;
+    }
+
+    if (!LocalFrame::HasTransientUserActivation(source_frame)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "Delegation is not allowed without transient user activation.");
+      return;
+    }
+
+    LocalFrame::ConsumeTransientUserActivation(source_frame);
   }
 
   PostedMessage* posted_message = MakeGarbageCollected<PostedMessage>();

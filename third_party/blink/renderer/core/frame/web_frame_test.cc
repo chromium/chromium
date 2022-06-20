@@ -996,69 +996,79 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
   ScriptExecutionCallbackHelper callback_helper(
       web_view_helper.LocalMainFrame()->MainWorldScriptContext());
 
-  String post_message_wo_request(
-      "window.frames[0].postMessage('0', {targetOrigin: '*'});");
-  String post_message_w_payment_request(
-      "window.frames[0].postMessage("
-      "'1', {targetOrigin: '*', delegate: 'payment'});");
-  String post_message_w_fullscreen_request(
-      "window.frames[0].postMessage("
-      "'1', {targetOrigin: '*', delegate: 'fullscreen'});");
-  String post_message_w_unknown_request(
-      "window.frames[0].postMessage("
-      "'1', {targetOrigin: '*', delegate: 'foo'});");
+  {
+    String post_message_wo_request(
+        "window.frames[0].postMessage('0', {targetOrigin: '/'});");
+    String post_message_w_payment_request(
+        "window.frames[0].postMessage("
+        "'1', {targetOrigin: '/', delegate: 'payment'});");
 
-  // The delegation info is not passed through a postMessage that is sent
-  // without either user activation or the delegation option.
-  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
-                           post_message_wo_request, &callback_helper);
-  RunPendingTasks();
-  EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_FALSE(message_event_listener->DelegateCapability());
+    // The delegation info is not passed through a postMessage that is sent
+    // without either user activation or the delegation option.
+    ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                             post_message_wo_request, &callback_helper);
+    RunPendingTasks();
+    EXPECT_TRUE(callback_helper.DidComplete());
+    EXPECT_FALSE(message_event_listener->DelegateCapability());
 
-  // The delegation info is not passed through a postMessage that is sent
-  // without user activation but with the delegation option.
-  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
-                           post_message_w_payment_request, &callback_helper);
-  RunPendingTasks();
-  EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_FALSE(message_event_listener->DelegateCapability());
+    // The delegation info is not passed through a postMessage that is sent
+    // without user activation but with the delegation option.
+    ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                             post_message_w_payment_request, &callback_helper);
+    RunPendingTasks();
+    EXPECT_TRUE(callback_helper.DidComplete());
+    EXPECT_FALSE(message_event_listener->DelegateCapability());
 
-  // The delegation info is not passed through a postMessage that is sent with
-  // user activation but without the delegation option.
-  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
-                           post_message_wo_request, &callback_helper,
-                           /*wait_for_promise=*/true, /*user_gesture=*/true);
-  RunPendingTasks();
-  EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_FALSE(message_event_listener->DelegateCapability());
+    // The delegation info is not passed through a postMessage that is sent with
+    // user activation but without the delegation option.
+    ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                             post_message_wo_request, &callback_helper,
+                             /*wait_for_promise=*/true, /*user_gesture=*/true);
+    RunPendingTasks();
+    EXPECT_TRUE(callback_helper.DidComplete());
+    EXPECT_FALSE(message_event_listener->DelegateCapability());
 
-  // The delegation info is passed through a postMessage that is sent with both
-  // user activation and the delegation option.
-  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
-                           post_message_w_payment_request, &callback_helper,
-                           /*wait_for_promise=*/true, /*user_gesture=*/true);
-  RunPendingTasks();
-  EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_TRUE(message_event_listener->DelegateCapability());
+    // The delegation info is passed through a postMessage that is sent with
+    // both user activation and the delegation option.
+    ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                             post_message_w_payment_request, &callback_helper,
+                             /*wait_for_promise=*/true, /*user_gesture=*/true);
+    RunPendingTasks();
+    EXPECT_TRUE(callback_helper.DidComplete());
+    EXPECT_TRUE(message_event_listener->DelegateCapability());
+  }
 
-  // The delegation info is passed through a postMessage that is sent with both
-  // user activation and the delegation option for another known capability.
-  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
-                           post_message_w_fullscreen_request, &callback_helper,
-                           /*wait_for_promise=*/true, /*user_gesture=*/true);
-  RunPendingTasks();
-  EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_TRUE(message_event_listener->DelegateCapability());
+  {
+    String post_message_w_fullscreen_request(
+        "window.frames[0].postMessage("
+        "'1', {targetOrigin: '/', delegate: 'fullscreen'});");
 
-  // The delegation info is not passed through a postMessage that is sent with
-  // user activation and the delegation option for an unknown capability.
-  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
-                           post_message_w_unknown_request, &callback_helper,
-                           /*wait_for_promise=*/true, /*user_gesture=*/true);
-  RunPendingTasks();
-  EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_FALSE(message_event_listener->DelegateCapability());
+    // The delegation info is passed through a postMessage that is sent with
+    // both user activation and the delegation option for another known
+    // capability.
+    ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                             post_message_w_fullscreen_request,
+                             &callback_helper,
+                             /*wait_for_promise=*/true, /*user_gesture=*/true);
+    RunPendingTasks();
+    EXPECT_TRUE(callback_helper.DidComplete());
+    EXPECT_TRUE(message_event_listener->DelegateCapability());
+  }
+
+  {
+    String post_message_w_unknown_request(
+        "window.frames[0].postMessage("
+        "'1', {targetOrigin: '/', delegate: 'foo'});");
+
+    // The delegation info is not passed through a postMessage that is sent with
+    // user activation and the delegation option for an unknown capability.
+    ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                             post_message_w_unknown_request, &callback_helper,
+                             /*wait_for_promise=*/true, /*user_gesture=*/true);
+    RunPendingTasks();
+    EXPECT_TRUE(callback_helper.DidComplete());
+    EXPECT_FALSE(message_event_listener->DelegateCapability());
+  }
 }
 
 TEST_F(WebFrameTest, FormWithNullFrame) {
