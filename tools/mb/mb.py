@@ -79,7 +79,8 @@ def main(args):
   mbw = MetaBuildWrapper()
   return mbw.Main(args)
 
-class MetaBuildWrapper(object):
+
+class MetaBuildWrapper:
   def __init__(self):
     self.chromium_src_dir = CHROMIUM_SRC_DIR
     self.default_config = os.path.join(self.chromium_src_dir, 'tools', 'mb',
@@ -1039,7 +1040,8 @@ class MetaBuildWrapper(object):
     try:
       contents = ast.literal_eval(self.ReadFile(config_file))
     except SyntaxError as e:
-      raise MBErr('Failed to parse config file "%s": %s' % (config_file, e))
+      raise MBErr('Failed to parse config file "%s": %s' %
+                  (config_file, e)) from e
 
     self.configs = contents['configs']
     self.mixins = contents['mixins']
@@ -1064,8 +1066,8 @@ class MetaBuildWrapper(object):
               ', '.join(duplicates))
         isolate_maps.update(isolate_map)
       except SyntaxError as e:
-        raise MBErr(
-            'Failed to parse isolate map file "%s": %s' % (isolate_map, e))
+        raise MBErr('Failed to parse isolate map file "%s": %s' %
+                    (isolate_map, e)) from e
     return isolate_maps
 
   def ConfigFromArgs(self):
@@ -1999,8 +2001,7 @@ class MetaBuildWrapper(object):
       self.WriteFile(path, json.dumps(obj, indent=2, sort_keys=True) + '\n',
                      force_verbose=force_verbose)
     except Exception as e:
-      raise MBErr('Error %s writing to the output path "%s"' %
-                 (e, path))
+      raise MBErr('Error %s writing to the output path "%s"' % (e, path)) from e
 
   def PrintCmd(self, cmd):
     if self.platform == 'win32':
@@ -2148,7 +2149,7 @@ class MetaBuildWrapper(object):
       return fp.write(contents)
 
 
-class LedResult(object):
+class LedResult:
   """Holds the result of a led operation. Can be chained using |then|."""
 
   def __init__(self, result, run_cmd):
