@@ -104,7 +104,7 @@ void WiredDisplayMediaRouteProvider::CreateRoute(
   if (!display) {
     std::move(callback).Run(absl::nullopt, nullptr,
                             std::string("Display not found"),
-                            RouteRequestResult::SINK_NOT_FOUND);
+                            mojom::RouteRequestResultCode::SINK_NOT_FOUND);
     return;
   }
 
@@ -124,7 +124,7 @@ void WiredDisplayMediaRouteProvider::CreateRoute(
       CreatePresentationReceiver(presentation_id, &presentation, *display));
   presentation.receiver()->Start(presentation_id, GURL(media_source));
   std::move(callback).Run(route, nullptr, absl::nullopt,
-                          RouteRequestResult::OK);
+                          mojom::RouteRequestResultCode::OK);
   NotifyRouteObservers();
 }
 
@@ -139,7 +139,7 @@ void WiredDisplayMediaRouteProvider::JoinRoute(
   std::move(callback).Run(
       absl::nullopt, nullptr,
       std::string("Join should be handled by the presentation manager"),
-      RouteRequestResult::UNKNOWN_ERROR);
+      mojom::RouteRequestResultCode::UNKNOWN_ERROR);
 }
 
 void WiredDisplayMediaRouteProvider::TerminateRoute(
@@ -148,14 +148,14 @@ void WiredDisplayMediaRouteProvider::TerminateRoute(
   auto it = presentations_.find(route_id);
   if (it == presentations_.end()) {
     std::move(callback).Run(std::string("Presentation not found"),
-                            RouteRequestResult::ROUTE_NOT_FOUND);
+                            mojom::RouteRequestResultCode::ROUTE_NOT_FOUND);
     return;
   }
 
   // The presentation will be removed from |presentations_| in the termination
   // callback of its receiver.
   it->second.receiver()->Terminate();
-  std::move(callback).Run(absl::nullopt, RouteRequestResult::OK);
+  std::move(callback).Run(absl::nullopt, mojom::RouteRequestResultCode::OK);
 }
 
 void WiredDisplayMediaRouteProvider::SendRouteMessage(

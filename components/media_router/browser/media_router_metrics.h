@@ -256,18 +256,18 @@ class MediaRouterMetrics {
   // This and the following methods that record ResultCode use per-provider
   // histograms.
   static void RecordCreateRouteResultCode(
-      RouteRequestResult::ResultCode result_code,
+      mojom::RouteRequestResultCode result_code,
       absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
 
   // Records the outcome of a join route request to a Media Route Provider.
   static void RecordJoinRouteResultCode(
-      RouteRequestResult::ResultCode result_code,
+      mojom::RouteRequestResultCode result_code,
       absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
 
   // Records the outcome of a call to terminateRoute() on a Media Route
   // Provider.
   static void RecordMediaRouteProviderTerminateRoute(
-      RouteRequestResult::ResultCode result_code,
+      mojom::RouteRequestResultCode result_code,
       absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
 
   // Records the type of the MediaRouter dialog opened. Android only.

@@ -152,8 +152,8 @@ class DialActivityManager {
   // Checks if there are existing conditions that would cause a stop app request
   // to fail, such as |route_id| being invalid or there already being a pending
   // stop request. If so, returns the error message and error code. Returns
-  // nullopt and RouteRequestResult::OK otherwise.
-  std::pair<absl::optional<std::string>, RouteRequestResult::ResultCode>
+  // nullopt and mojom::RouteRequestResultCode::OK otherwise.
+  std::pair<absl::optional<std::string>, mojom::RouteRequestResultCode>
   CanStopApp(const MediaRoute::Id& route_id) const;
 
   // Stops the app that is currently active on |route_id|. Assumes that

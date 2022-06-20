@@ -315,35 +315,32 @@ void MediaRouterMetrics::RecordIconStateAtInit(bool is_pinned) {
 
 // static
 void MediaRouterMetrics::RecordCreateRouteResultCode(
-    RouteRequestResult::ResultCode result_code,
+    mojom::RouteRequestResultCode result_code,
     absl::optional<mojom::MediaRouteProviderId> provider_id) {
-  DCHECK_LT(result_code, RouteRequestResult::TOTAL_COUNT);
   base::UmaHistogramEnumeration(
       GetHistogramNameForProvider(kHistogramProviderCreateRouteResult,
                                   provider_id),
-      result_code, RouteRequestResult::TOTAL_COUNT);
+      result_code);
 }
 
 // static
 void MediaRouterMetrics::RecordJoinRouteResultCode(
-    RouteRequestResult::ResultCode result_code,
+    mojom::RouteRequestResultCode result_code,
     absl::optional<mojom::MediaRouteProviderId> provider_id) {
-  DCHECK_LT(result_code, RouteRequestResult::ResultCode::TOTAL_COUNT);
   base::UmaHistogramEnumeration(
       GetHistogramNameForProvider(kHistogramProviderJoinRouteResult,
                                   provider_id),
-      result_code, RouteRequestResult::TOTAL_COUNT);
+      result_code);
 }
 
 // static
 void MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(
-    RouteRequestResult::ResultCode result_code,
+    mojom::RouteRequestResultCode result_code,
     absl::optional<mojom::MediaRouteProviderId> provider_id) {
-  DCHECK_LT(result_code, RouteRequestResult::ResultCode::TOTAL_COUNT);
   base::UmaHistogramEnumeration(
       GetHistogramNameForProvider(kHistogramProviderTerminateRouteResult,
                                   provider_id),
-      result_code, RouteRequestResult::TOTAL_COUNT);
+      result_code);
 }
 
 // static

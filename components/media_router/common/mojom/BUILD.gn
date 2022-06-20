@@ -77,10 +77,6 @@ mojom("media_router") {
           mojom = "media_router.mojom.MediaSink"
           cpp = "::media_router::MediaSinkInternal"
         },
-        {
-          mojom = "media_router.mojom.RouteRequestResultCode"
-          cpp = "::media_router::RouteRequestResult::ResultCode"
-        },
       ]
       traits_headers = [ "media_router_mojom_traits.h" ]
       traits_sources = [ "media_router_mojom_traits.cc" ]

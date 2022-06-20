@@ -40,10 +40,10 @@ class MockCallback {
                void(const absl::optional<MediaRoute>& route,
                     mojom::RoutePresentationConnectionPtr connection,
                     const absl::optional<std::string>& error,
-                    RouteRequestResult::ResultCode result));
+                    mojom::RouteRequestResultCode result));
   MOCK_METHOD2(TerminateRoute,
                void(const absl::optional<std::string>& error,
-                    RouteRequestResult::ResultCode result));
+                    mojom::RouteRequestResultCode result));
 };
 
 std::string GetSinkId(const Display& display) {
@@ -313,7 +313,7 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
 
   // Create a route for |presentation_id|.
   EXPECT_CALL(callback, CreateRoute(_, _, absl::optional<std::string>(),
-                                    RouteRequestResult::OK))
+                                    mojom::RouteRequestResultCode::OK))
       .WillOnce(WithArg<0>(
           Invoke([&presentation_id](const absl::optional<MediaRoute>& route) {
             EXPECT_TRUE(route.has_value());
@@ -338,7 +338,7 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
 
   // Terminate the route.
   EXPECT_CALL(callback, TerminateRoute(absl::optional<std::string>(),
-                                       RouteRequestResult::OK));
+                                       mojom::RouteRequestResultCode::OK));
   EXPECT_CALL(*receiver_creator_.receiver(), Terminate());
   EXPECT_CALL(router_,
               OnPresentationConnectionStateChanged(

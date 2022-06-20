@@ -317,17 +317,14 @@ void AccessCodeCastHandler::OnRouteResponse(MediaCastMode cast_mode,
 
   const MediaRoute* route = result.route();
   if (!route) {
-    DCHECK(result.result_code() != RouteRequestResult::OK)
+    DCHECK(result.result_code() != mojom::RouteRequestResultCode::OK)
         << "No route but OK response";
     // The provider will handle sending an issue for a failed route request.
     GetMediaRouter()->GetLogger()->LogError(
         mojom::LogCategory::kUi, kLoggerComponent,
         "MediaRouteResponse returned error: " + result.error(), sink_id, "",
         "");
-    std::move(dialog_callback)
-        .Run(mojo::EnumTraits<
-             RouteRequestResultCode,
-             RouteRequestResult::ResultCode>::ToMojom(result.result_code()));
+    std::move(dialog_callback).Run(result.result_code());
     return;
   }
 

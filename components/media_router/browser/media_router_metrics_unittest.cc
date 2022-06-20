@@ -57,7 +57,7 @@ void TestRecordBooleanMetric(base::RepeatingCallback<void(bool)> recording_cb,
 // Tests that |record_cb| records metrics for each MediaRouteProvider in a
 // histogram specific to the provider.
 void TestRouteResultCodeHistogramsWithProviders(
-    base::RepeatingCallback<void(RouteRequestResult::ResultCode,
+    base::RepeatingCallback<void(mojom::RouteRequestResultCode,
                                  absl::optional<mojom::MediaRouteProviderId>)>
         record_cb,
     mojom::MediaRouteProviderId provider1,
@@ -68,29 +68,33 @@ void TestRouteResultCodeHistogramsWithProviders(
   tester.ExpectTotalCount(histogram_provider1, 0);
   tester.ExpectTotalCount(histogram_provider2, 0);
 
-  record_cb.Run(RouteRequestResult::SINK_NOT_FOUND, provider1);
-  record_cb.Run(RouteRequestResult::OK, provider2);
-  record_cb.Run(RouteRequestResult::SINK_NOT_FOUND, provider1);
-  record_cb.Run(RouteRequestResult::ROUTE_NOT_FOUND, provider2);
-  record_cb.Run(RouteRequestResult::OK, provider1);
+  record_cb.Run(mojom::RouteRequestResultCode::SINK_NOT_FOUND, provider1);
+  record_cb.Run(mojom::RouteRequestResultCode::OK, provider2);
+  record_cb.Run(mojom::RouteRequestResultCode::SINK_NOT_FOUND, provider1);
+  record_cb.Run(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, provider2);
+  record_cb.Run(mojom::RouteRequestResultCode::OK, provider1);
 
   tester.ExpectTotalCount(histogram_provider1, 3);
   EXPECT_THAT(
       tester.GetAllSamples(histogram_provider1),
       ElementsAre(
-          Bucket(static_cast<int>(RouteRequestResult::OK), 1),
-          Bucket(static_cast<int>(RouteRequestResult::SINK_NOT_FOUND), 2)));
+          Bucket(static_cast<int>(mojom::RouteRequestResultCode::OK), 1),
+          Bucket(
+              static_cast<int>(mojom::RouteRequestResultCode::SINK_NOT_FOUND),
+              2)));
 
   tester.ExpectTotalCount(histogram_provider2, 2);
   EXPECT_THAT(
       tester.GetAllSamples(histogram_provider2),
       ElementsAre(
-          Bucket(static_cast<int>(RouteRequestResult::OK), 1),
-          Bucket(static_cast<int>(RouteRequestResult::ROUTE_NOT_FOUND), 1)));
+          Bucket(static_cast<int>(mojom::RouteRequestResultCode::OK), 1),
+          Bucket(
+              static_cast<int>(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND),
+              1)));
 }
 
 void TestRouteResultCodeHistograms(
-    base::RepeatingCallback<void(RouteRequestResult::ResultCode,
+    base::RepeatingCallback<void(mojom::RouteRequestResultCode,
                                  absl::optional<mojom::MediaRouteProviderId>)>
         record_cb,
     const std::string& base_histogram_name) {

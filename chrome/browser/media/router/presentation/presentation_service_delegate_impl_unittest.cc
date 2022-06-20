@@ -209,7 +209,7 @@ class PresentationServiceDelegateImplTest
 
     // Should not trigger callback since route response is error.
     std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
-        "Error", RouteRequestResult::UNKNOWN_ERROR);
+        "Error", mojom::RouteRequestResultCode::UNKNOWN_ERROR);
     delegate_impl_->OnPresentationResponse(request, /** connection */ nullptr,
                                            *result);
     EXPECT_TRUE(Mock::VerifyAndClearExpectations(this));

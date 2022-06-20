@@ -221,7 +221,7 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
                     expected_issue_title);
         }));
     std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
-        "Timed out", RouteRequestResult::TIMED_OUT);
+        "Timed out", mojom::RouteRequestResultCode::TIMED_OUT);
     std::move(callback).Run(nullptr, *result);
   }
 

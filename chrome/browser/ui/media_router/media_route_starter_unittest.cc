@@ -201,10 +201,9 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
                               MediaRouteResponseCallback& callback,
                               base::TimeDelta timeout, bool incognito) {
           // This indicates the test did not properly set the expected result
-          EXPECT_NE(RouteRequestResult::ResultCode::UNKNOWN_ERROR,
-                    result_code_);
+          EXPECT_NE(mojom::RouteRequestResultCode::UNKNOWN_ERROR, result_code_);
           std::unique_ptr<RouteRequestResult> result;
-          if (result_code_ == RouteRequestResult::ResultCode::OK) {
+          if (result_code_ == mojom::RouteRequestResultCode::OK) {
             result = GetSuccessResult(source_id, sink_id);
           } else {
             result = GetErrorResult(result_code_);
@@ -247,7 +246,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
     return start_presentation_request_;
   }
 
-  void set_expected_cast_result(RouteRequestResult::ResultCode code) {
+  void set_expected_cast_result(mojom::RouteRequestResultCode code) {
     result_code_ = code;
   }
 
@@ -323,7 +322,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
   }
 
   std::unique_ptr<RouteRequestResult> GetErrorResult(
-      RouteRequestResult::ResultCode result_code) {
+      mojom::RouteRequestResultCode result_code) {
     return RouteRequestResult::FromError("unit test error", result_code);
   }
 
@@ -383,7 +382,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
   // For demonstrating that the MediaRouteResultCallbacks are called.
   void HandleMediaRouteResponse(const RouteRequestResult& result) {
     // Store the response so tests can examine it.
-    if (result.result_code() == RouteRequestResult::ResultCode::OK) {
+    if (result.result_code() == mojom::RouteRequestResultCode::OK) {
       auto route = std::make_unique<MediaRoute>(*result.route());
       route_request_result_ = std::make_unique<RouteRequestResult>(
           std::move(route), result.presentation_id(), result.error(),
@@ -411,8 +410,8 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
   content::PresentationRequest start_presentation_request_ =
       CreatePresentationRequest(kStartPresentationUrl, kStartOriginUrl);
 
-  RouteRequestResult::ResultCode result_code_ =
-      RouteRequestResult::ResultCode::UNKNOWN_ERROR;
+  mojom::RouteRequestResultCode result_code_ =
+      mojom::RouteRequestResultCode::UNKNOWN_ERROR;
   std::unique_ptr<RouteRequestResult> route_request_result_;
 };
 
@@ -702,11 +701,11 @@ TEST_F(MediaRouteStarterTest, CreateRouteParameters_StartPresentationContext) {
 TEST_F(MediaRouteStarterTest, StartRoute_DesktopMirroring) {
   CreateStarter(kAllModes, web_contents(), nullptr);
 
-  set_expected_cast_result(RouteRequestResult::ResultCode::OK);
+  set_expected_cast_result(mojom::RouteRequestResultCode::OK);
 
   StartMirroring(cast_sink(), MediaCastMode::DESKTOP_MIRROR);
 
-  EXPECT_EQ(RouteRequestResult::ResultCode::OK,
+  EXPECT_EQ(mojom::RouteRequestResultCode::OK,
             route_request_result()->result_code());
 
   MediaSource expected_source = MediaSource::ForUnchosenDesktop();
@@ -717,11 +716,11 @@ TEST_F(MediaRouteStarterTest, StartRoute_DesktopMirroring) {
 TEST_F(MediaRouteStarterTest, StartRoute_DesktopMirroringError) {
   CreateStarter(kAllModes, web_contents(), nullptr);
 
-  set_expected_cast_result(RouteRequestResult::ResultCode::ROUTE_NOT_FOUND);
+  set_expected_cast_result(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND);
 
   StartMirroring(cast_sink(), MediaCastMode::DESKTOP_MIRROR);
 
-  EXPECT_EQ(RouteRequestResult::ResultCode::ROUTE_NOT_FOUND,
+  EXPECT_EQ(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND,
             route_request_result()->result_code());
 }
 
@@ -729,11 +728,11 @@ TEST_F(MediaRouteStarterTest, StartRoute_DesktopMirroringError) {
 TEST_F(MediaRouteStarterTest, StartRoute_TabMirroring) {
   CreateStarter(kAllModes, web_contents(), nullptr);
 
-  set_expected_cast_result(RouteRequestResult::ResultCode::OK);
+  set_expected_cast_result(mojom::RouteRequestResultCode::OK);
 
   StartMirroring(cast_sink(), MediaCastMode::TAB_MIRROR);
 
-  EXPECT_EQ(RouteRequestResult::ResultCode::OK,
+  EXPECT_EQ(mojom::RouteRequestResultCode::OK,
             route_request_result()->result_code());
 
   MediaSource expected_source = MediaSource::ForTab(
@@ -745,11 +744,11 @@ TEST_F(MediaRouteStarterTest, StartRoute_TabMirroring) {
 TEST_F(MediaRouteStarterTest, StartRoute_TabMirroringError) {
   CreateStarter(kAllModes, web_contents(), nullptr);
 
-  set_expected_cast_result(RouteRequestResult::ResultCode::INVALID_ORIGIN);
+  set_expected_cast_result(mojom::RouteRequestResultCode::INVALID_ORIGIN);
 
   StartMirroring(cast_sink(), MediaCastMode::DESKTOP_MIRROR);
 
-  EXPECT_EQ(RouteRequestResult::ResultCode::INVALID_ORIGIN,
+  EXPECT_EQ(mojom::RouteRequestResultCode::INVALID_ORIGIN,
             route_request_result()->result_code());
 }
 
@@ -761,7 +760,7 @@ TEST_F(MediaRouteStarterTest, StartRoute_WebContentPresentation) {
 
   CreateStarter(kAllModes, web_contents(), nullptr);
 
-  set_expected_cast_result(RouteRequestResult::ResultCode::OK);
+  set_expected_cast_result(mojom::RouteRequestResultCode::OK);
   auto expected_result =
       GetSuccessResult(default_presentation_request(), cast_sink().id());
 
@@ -770,7 +769,7 @@ TEST_F(MediaRouteStarterTest, StartRoute_WebContentPresentation) {
 
   StartPresentation(cast_sink(), default_presentation_request());
 
-  EXPECT_EQ(RouteRequestResult::ResultCode::OK,
+  EXPECT_EQ(mojom::RouteRequestResultCode::OK,
             route_request_result()->result_code());
   EXPECT_EQ(kDefaultPresentationUrl,
             route_request_result()->presentation_url());
@@ -784,13 +783,13 @@ TEST_F(MediaRouteStarterTest, StartRoute_WebContentPresentationError) {
 
   CreateStarter(kAllModes, web_contents(), nullptr);
 
-  set_expected_cast_result(RouteRequestResult::ResultCode::INVALID_ORIGIN);
+  set_expected_cast_result(mojom::RouteRequestResultCode::INVALID_ORIGIN);
   EXPECT_CALL(*presentation_manager(),
               OnPresentationResponse(default_presentation_request(), _, _));
 
   StartPresentation(cast_sink(), default_presentation_request());
 
-  EXPECT_EQ(RouteRequestResult::ResultCode::INVALID_ORIGIN,
+  EXPECT_EQ(mojom::RouteRequestResultCode::INVALID_ORIGIN,
             route_request_result()->result_code());
 }
 
@@ -803,7 +802,7 @@ TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContext) {
   CreateStarter(kAllModes, web_contents(),
                 std::move(start_presentation_context));
 
-  set_expected_cast_result(RouteRequestResult::ResultCode::OK);
+  set_expected_cast_result(mojom::RouteRequestResultCode::OK);
   auto expected_result =
       GetSuccessResult(start_presentation_request(), cast_sink().id());
 
@@ -811,7 +810,7 @@ TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContext) {
 
   StartPresentation(cast_sink(), start_presentation_request());
 
-  EXPECT_EQ(RouteRequestResult::ResultCode::OK,
+  EXPECT_EQ(mojom::RouteRequestResultCode::OK,
             route_request_result()->result_code());
   EXPECT_EQ(kStartPresentationUrl, route_request_result()->presentation_url());
 }
@@ -826,13 +825,13 @@ TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContextError) {
                 std::move(start_presentation_context));
 
   set_expected_cast_result(
-      RouteRequestResult::ResultCode::NO_SUPPORTED_PROVIDER);
+      mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER);
 
   EXPECT_CALL(*this, RequestError(_));
 
   StartPresentation(cast_sink(), start_presentation_request());
 
-  EXPECT_EQ(RouteRequestResult::ResultCode::NO_SUPPORTED_PROVIDER,
+  EXPECT_EQ(mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER,
             route_request_result()->result_code());
 }
 
@@ -901,11 +900,11 @@ TEST_F(MediaRouteStarterIncognitoTest, CreateRouteParameters_TabMirroring) {
 TEST_F(MediaRouteStarterIncognitoTest, StartRoute_TabMirroring) {
   CreateStarter(kAllModes, web_contents(), nullptr);
 
-  set_expected_cast_result(RouteRequestResult::ResultCode::OK);
+  set_expected_cast_result(mojom::RouteRequestResultCode::OK);
 
   StartMirroring(cast_sink(), MediaCastMode::TAB_MIRROR);
 
-  EXPECT_EQ(RouteRequestResult::ResultCode::OK,
+  EXPECT_EQ(mojom::RouteRequestResultCode::OK,
             route_request_result()->result_code());
 
   MediaSource expected_source = MediaSource::ForTab(

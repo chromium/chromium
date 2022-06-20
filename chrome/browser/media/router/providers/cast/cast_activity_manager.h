@@ -233,7 +233,7 @@ class CastActivityManager : public CastActivityManagerBase,
       ActivityMap::iterator activity_it,
       DoLaunchSessionParams params,
       const std::string& message,
-      RouteRequestResult::ResultCode result_code);
+      mojom::RouteRequestResultCode result_code);
   void EnsureConnection(const std::string& client_id,
                         int channel_id,
                         const std::string& destination_id,

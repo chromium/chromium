@@ -117,13 +117,13 @@ class DialMediaRouteProviderTest : public ::testing::Test {
 
   void TearDown() override { provider_.reset(); }
 
-  void ExpectRouteResult(RouteRequestResult::ResultCode expected_result_code,
+  void ExpectRouteResult(mojom::RouteRequestResultCode expected_result_code,
                          const absl::optional<MediaRoute>& media_route,
                          mojom::RoutePresentationConnectionPtr,
                          const absl::optional<std::string>& error_text,
-                         RouteRequestResult::ResultCode result_code) {
+                         mojom::RouteRequestResultCode result_code) {
     EXPECT_EQ(expected_result_code, result_code);
-    if (result_code == RouteRequestResult::OK) {
+    if (result_code == mojom::RouteRequestResultCode::OK) {
       ASSERT_TRUE(media_route);
       route_ = std::make_unique<MediaRoute>(*media_route);
     } else {
@@ -153,7 +153,8 @@ class DialMediaRouteProviderTest : public ::testing::Test {
         source_id, sink_id, presentation_id, origin_, 1, base::TimeDelta(),
         /* off_the_record */ false,
         base::BindOnce(&DialMediaRouteProviderTest::ExpectRouteResult,
-                       base::Unretained(this), RouteRequestResult::OK));
+                       base::Unretained(this),
+                       mojom::RouteRequestResultCode::OK));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -184,7 +185,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
   }
 
   void TestJoinRoute(
-      RouteRequestResult::ResultCode expected_result,
+      mojom::RouteRequestResultCode expected_result,
       absl::optional<std::string> source_to_join = absl::nullopt,
       absl::optional<std::string> presentation_to_join = absl::nullopt,
       absl::optional<url::Origin> client_origin = absl::nullopt,
@@ -304,7 +305,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     loader_factory_.AddResponse(app_instance_url_,
                                 network::mojom::URLResponseHead::New(), "",
                                 network::URLLoaderCompletionStatus());
-    EXPECT_CALL(*this, OnTerminateRoute(_, RouteRequestResult::OK));
+    EXPECT_CALL(*this, OnTerminateRoute(_, mojom::RouteRequestResultCode::OK));
     provider_->TerminateRoute(
         route_id, base::BindOnce(&DialMediaRouteProviderTest::OnTerminateRoute,
                                  base::Unretained(this)));
@@ -316,7 +317,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
   void TestTerminateRouteNoStopApp() {
     const MediaRoute::Id& route_id = route_->media_route_id();
     EXPECT_CALL(*activity_manager_, OnFetcherCreated()).Times(0);
-    EXPECT_CALL(*this, OnTerminateRoute(_, RouteRequestResult::OK));
+    EXPECT_CALL(*this, OnTerminateRoute(_, mojom::RouteRequestResultCode::OK));
     provider_->TerminateRoute(
         route_id, base::BindOnce(&DialMediaRouteProviderTest::OnTerminateRoute,
                                  base::Unretained(this)));
@@ -383,8 +384,8 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     loader_factory_.AddResponse(
         app_launch_url_, network::mojom::URLResponseHead::New(), "",
         network::URLLoaderCompletionStatus(net::HTTP_SERVICE_UNAVAILABLE));
-    EXPECT_CALL(*this,
-                OnTerminateRoute(_, testing::Ne(RouteRequestResult::OK)));
+    EXPECT_CALL(*this, OnTerminateRoute(
+                           _, testing::Ne(mojom::RouteRequestResultCode::OK)));
     EXPECT_CALL(mock_router_, OnRouteMessagesReceived(_, _));
     EXPECT_CALL(mock_router_, OnRoutesUpdated(_, _)).Times(1);
     EXPECT_CALL(*mock_sink_service_.app_discovery_service(),
@@ -406,7 +407,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
 
   MOCK_METHOD2(OnTerminateRoute,
                void(const absl::optional<std::string>&,
-                    RouteRequestResult::ResultCode));
+                    mojom::RouteRequestResultCode));
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -621,26 +622,27 @@ TEST_F(DialMediaRouteProviderTest, CreateRoute) {
 }
 
 TEST_F(DialMediaRouteProviderTest, JoinRoute) {
-  TestJoinRoute(RouteRequestResult::OK);
+  TestJoinRoute(mojom::RouteRequestResultCode::OK);
 }
 
 TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForWrongMediaSource) {
-  TestJoinRoute(RouteRequestResult::ROUTE_NOT_FOUND, "wrong-media-source");
+  TestJoinRoute(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND,
+                "wrong-media-source");
 }
 
 TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForWrongPresentationId) {
-  TestJoinRoute(RouteRequestResult::ROUTE_NOT_FOUND, absl::nullopt,
+  TestJoinRoute(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, absl::nullopt,
                 "wrong-presentation-id");
 }
 
 TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForWrongOrigin) {
-  TestJoinRoute(RouteRequestResult::ROUTE_NOT_FOUND, absl::nullopt,
+  TestJoinRoute(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, absl::nullopt,
                 absl::nullopt,
                 url::Origin::Create(GURL("https://wrong-origin.com")));
 }
 
 TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForIncognitoMismatch) {
-  TestJoinRoute(RouteRequestResult::ROUTE_NOT_FOUND, absl::nullopt,
+  TestJoinRoute(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, absl::nullopt,
                 absl::nullopt, absl::nullopt, true);
 }
 
