@@ -14,8 +14,8 @@ struct Counts;
 }  // namespace profile_metrics
 
 // Counts and returns summary information about the browser states currently in
-// the |manager|. This information is returned in the output variable
-// |counts|. Assumes that all field of |counts| are set to zero before the call.
+// the `manager`. This information is returned in the output variable
+// `counts`. Assumes that all field of `counts` are set to zero before the call.
 bool CountBrowserStateInformation(ios::ChromeBrowserStateManager* manager,
                                   profile_metrics::Counts* counts);
 
