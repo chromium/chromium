@@ -374,6 +374,8 @@ enum RecentDateBucket {
   older
 };
 
+enum VmType { termina, plugin_vm, borealis, bruschetta, arcvm };
+
 // These three fields together uniquely identify a task.
 dictionary FileTaskDescriptor {
   DOMString appId;
@@ -617,6 +619,9 @@ dictionary VolumeMetadata {
 
   // Flag that specifies whether the volume is hidden from the user.
   boolean hidden;
+
+  // Type of the VM which owns this volume.
+  VmType? vmType;
 };
 
 // Payload data for mount event.
@@ -1015,6 +1020,9 @@ dictionary MountableGuest {
 
   // The localised display name of this guest as e.g. shown in the sidebar.
   DOMString displayName;
+
+  // The type of the VM backing this guest.
+  VmType vmType;
 };
 
 // Callback that does not take arguments.

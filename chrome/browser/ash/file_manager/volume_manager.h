@@ -200,7 +200,6 @@ class Volume : public base::SupportsWeakPtr<Volume> {
     return icon_set_;
   }
   bool hidden() const { return hidden_; }
-
   absl::optional<guest_os::VmType> vm_type() const { return vm_type_; }
 
  private:

@@ -217,7 +217,9 @@ export class MockVolumeManager {
     // If there's no label set it to volumeId to make it shorter to write
     // tests.
     const volumeInfo = new VolumeInfoImpl(
-        type, volumeId, fileSystem,
+        type,
+        volumeId,
+        fileSystem,
         '',                                         // error
         '',                                         // deviceType
         devicePath || '',                           // devicePath
@@ -233,7 +235,10 @@ export class MockVolumeManager {
         diskFileSystemType,                         // diskFileSystemType
         {},                                         // iconSet
         '',                                         // driveLabel
-        remoteMountPath);                           // remoteMountPath
+        remoteMountPath,                            // remoteMountPath
+        undefined,                                  // vmType
+    );
+
 
     return volumeInfo;
   }

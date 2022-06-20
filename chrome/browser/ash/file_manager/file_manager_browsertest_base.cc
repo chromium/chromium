@@ -1696,8 +1696,23 @@ class SmbfsTestVolume : public LocalTestVolume {
 
 class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
  public:
-  MockGuestOsMountProvider(Profile* profile, std::string name)
-      : profile_(profile), name_(name) {}
+  MockGuestOsMountProvider(Profile* profile,
+                           std::string name,
+                           std::string vm_type)
+      : profile_(profile), name_(name) {
+    if (vm_type == "bruschetta") {
+      vm_type_ = guest_os::VmType::BRUSCHETTA;
+    } else if (vm_type == "termina") {
+      vm_type_ = guest_os::VmType::TERMINA;
+    } else if (vm_type == "arcvm") {
+      vm_type_ = guest_os::VmType::ARCVM;
+    } else if (vm_type == "unknown") {
+      vm_type_ = guest_os::VmType::UNKNOWN;
+    } else {
+      NOTREACHED();
+      vm_type_ = guest_os::VmType::UNKNOWN;
+    }
+  }
 
   MockGuestOsMountProvider(const MockGuestOsMountProvider&) = delete;
   MockGuestOsMountProvider& operator=(const MockGuestOsMountProvider&) = delete;
@@ -1708,7 +1723,7 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
     return crostini::DefaultContainerId();
   }
 
-  guest_os::VmType vm_type() override { return guest_os::VmType::TERMINA; }
+  guest_os::VmType vm_type() override { return vm_type_; }
 
   int cid_;
   int cid() override { return cid_; }
@@ -1716,6 +1731,7 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
  private:
   Profile* profile_;
   std::string name_;
+  guest_os::VmType vm_type_;
 };
 
 // GuestOsTestVolume: local test volume for the "Guest OS" directories.
@@ -3151,11 +3167,12 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
   if (name == "registerMountableGuest") {
     auto* displayName = value.GetDict().FindString("displayName");
     auto* canMount = value.GetDict().Find("canMount");
+    auto* vmType = value.GetDict().FindString("vmType");
     CHECK(displayName != nullptr);
     auto* registry = guest_os::GuestOsService::GetForProfile(profile())
                          ->MountProviderRegistry();
-    auto id = registry->Register(
-        std::make_unique<MockGuestOsMountProvider>(profile(), *displayName));
+    auto id = registry->Register(std::make_unique<MockGuestOsMountProvider>(
+        profile(), *displayName, vmType ? *vmType : "bruschetta"));
     MockGuestOsMountProvider* ptr =
         reinterpret_cast<MockGuestOsMountProvider*>(registry->Get(id));
     ptr->cid_ = id;

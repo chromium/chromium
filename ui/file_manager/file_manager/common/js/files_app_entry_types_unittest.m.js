@@ -367,7 +367,8 @@ export function testVolumeEntry() {
       fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS, fakeRootEntry);
 
   assertEquals(fakeRootEntry, volumeEntry.getNativeEntry());
-  assertEquals(VolumeManagerCommon.VolumeType.DOWNLOADS, volumeEntry.iconName);
+  // Downloads volume is displayed with MyFiles icon.
+  assertEquals(VolumeManagerCommon.VolumeType.MY_FILES, volumeEntry.iconName);
   assertEquals('filesystem:fake-fs/', volumeEntry.filesystem.rootURL);
   assertEquals('/', volumeEntry.fullPath);
   assertEquals('filesystem:fake-fs/', volumeEntry.toURL());

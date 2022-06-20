@@ -139,6 +139,12 @@ export class VolumeInfo {
      * @type {(string|undefined)}
      */
     this.remoteMountPath;
+
+    /**
+     * If this is a GuestOS volume, the type of the VM which owns this volume.
+     * @type {chrome.fileManagerPrivate.VmType}
+     */
+    this.vmType;
   }
 
   /**

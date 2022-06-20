@@ -335,6 +335,15 @@ chrome.fileManagerPrivate.RecentDateBucket = {
   OLDER: 'older',
 };
 
+/** @enum {string} */
+chrome.fileManagerPrivate.VmType = {
+  TERMINA: 'termina',
+  PLUGIN_VM: 'plugin_vm',
+  BOREALIS: 'borealis',
+  BRUSCHETTA: 'bruschetta',
+  ARCVM: 'arcvm',
+};
+
 /**
  * @typedef {{
  *   appId: string,
@@ -608,6 +617,7 @@ chrome.fileManagerPrivate.LinuxPackageInfo;
  * @typedef {{
  * id: number,
  * displayName: string,
+ * vmType: !chrome.fileManagerPrivate.VmType,
  * }}
  */
 chrome.fileManagerPrivate.MountableGuest;

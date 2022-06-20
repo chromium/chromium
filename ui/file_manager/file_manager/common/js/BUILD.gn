@@ -34,6 +34,7 @@ group("js_modules") {
     ":files_app_entry_types",
     ":filtered_volume_manager",
     ":glitch",
+    ":icon_util",
     ":importer_common",
     ":lru_cache",
     ":mediasession_types",
@@ -64,6 +65,7 @@ js_type_check("closure_compile_jsmodules") {
     ":files_app_entry_types",
     ":filtered_volume_manager",
     ":glitch",
+    ":icon_util",
     ":importer_common",
     ":lru_cache",
     ":metrics",
@@ -147,6 +149,7 @@ js_unittest("files_app_entry_types_unittest.m") {
 
 js_library("files_app_entry_types") {
   deps = [
+    ":icon_util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
   ]
@@ -398,6 +401,10 @@ js_library("volume_manager_types") {
     "//ui/file_manager/file_manager/externs:file_manager_private",
     "//ui/webui/resources/js:assert.m",
   ]
+}
+
+js_library("icon_util") {
+  deps = [ "//ui/file_manager/file_manager/externs:file_manager_private" ]
 }
 
 js_test_gen_html("js_test_gen_html_modules") {

@@ -9,6 +9,7 @@ import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handl
 import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 
 import {FileType} from '../../../common/js/file_type.js';
+import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {metrics} from '../../../common/js/metrics.js';
 import {str, util} from '../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
@@ -874,7 +875,12 @@ export class SubDirectoryItem extends DirectoryItem {
     // Add volume-dependent attributes / icon.
     const location = tree.volumeManager.getLocationInfo(this.entry);
     if (location && location.rootType && location.isRootEntry) {
-      icon.setAttribute('volume-type-icon', location.rootType);
+      const iconOverride = this.entry.iconName;
+      if (iconOverride) {
+        icon.setAttribute('volume-type-icon', iconOverride);
+      } else {
+        icon.setAttribute('volume-type-icon', location.rootType);
+      }
       if (window.IN_TEST && location.volumeInfo) {
         this.setAttribute(
             'volume-type-for-testing', location.volumeInfo.volumeType);
@@ -983,7 +989,11 @@ export class EntryListItem extends DirectoryItem {
 
     const icon = this.querySelector('.icon');
     icon.classList.add('item-icon');
-    icon.setAttribute('root-type-icon', rootType);
+    if (this.entry && this.entry.iconName) {
+      icon.setAttribute('root-type-icon', this.entry.iconName);
+    } else {
+      icon.setAttribute('root-type-icon', rootType);
+    }
 
     if (window.IN_TEST && this.entry && this.entry.volumeInfo) {
       this.setAttribute(
@@ -1209,8 +1219,13 @@ class VolumeItem extends DirectoryItem {
       icon.setAttribute('use-generic-provided-icon', '');
     }
 
-    icon.setAttribute(
-        'volume-type-icon', /** @type {string} */ (volumeInfo.volumeType));
+    if (volumeInfo.volumeType == VolumeManagerCommon.VolumeType.GUEST_OS) {
+      icon.setAttribute(
+          'volume-type-icon', vmTypeToIconName(volumeInfo.vmType));
+    } else {
+      icon.setAttribute(
+          'volume-type-icon', /** @type {string} */ (volumeInfo.volumeType));
+    }
 
     if (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.MEDIA_VIEW) {
       const subtype = VolumeManagerCommon.getMediaViewRootTypeFromVolumeId(
@@ -1837,7 +1852,11 @@ export class FakeItem extends FilesTreeItem {
 
     const icon = this.querySelector('.icon');
     icon.classList.add('item-icon');
-    icon.setAttribute('root-type-icon', rootType);
+    if (this.entry && this.entry.iconName) {
+      icon.setAttribute('root-type-icon', this.entry.iconName);
+    } else {
+      icon.setAttribute('root-type-icon', rootType);
+    }
 
     if (util.isRecentRootType(rootType)) {
       if (this.dirEntry_.recentFileType) {

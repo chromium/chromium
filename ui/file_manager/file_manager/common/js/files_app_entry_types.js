@@ -24,6 +24,7 @@
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
+import {vmTypeToIconName} from './icon_util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -444,6 +445,14 @@ export class VolumeEntry {
    * @return {string}
    */
   get iconName() {
+    if (this.volumeInfo_.volumeType ==
+        VolumeManagerCommon.VolumeType.GUEST_OS) {
+      return vmTypeToIconName(this.volumeInfo_.vmType);
+    }
+    if (this.volumeInfo_.volumeType ==
+        VolumeManagerCommon.VolumeType.DOWNLOADS) {
+      return /** @type {string} */ (VolumeManagerCommon.VolumeType.MY_FILES);
+    }
     return /** @type {string} */ (this.volumeInfo_.volumeType);
   }
 
@@ -665,6 +674,20 @@ export class FakeEntryImpl {
    * @return {string}
    */
   get iconName() {
+    // Recent roots use "recent-file-type" to customize the icon.
+    // TODO(lucmult): Change the CSS to use only root-type-icon and fix the test
+    // selectors.
+    if (this.rootType === VolumeManagerCommon.RootType.RECENT_AUDIO ||
+        this.rootType === VolumeManagerCommon.RootType.RECENT_IMAGES ||
+        this.rootType === VolumeManagerCommon.RootType.RECENT_VIDEOS) {
+      return /** @type {string}  */ (VolumeManagerCommon.RootType.RECENT);
+    }
+    // When Drive volume isn't available yet, the FakeEntry should show the
+    // "drive" icon.
+    if (this.rootType === VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT) {
+      return /** @type {string}  */ (VolumeManagerCommon.RootType.DRIVE);
+    }
+
     return /** @type{string} */ (this.rootType);
   }
 
@@ -703,8 +726,10 @@ export class GuestOsPlaceholder extends FakeEntryImpl {
   /**
    * @param {string} label Translated text to be displayed to user.
    * @param {number} guest_id Id of the guest
+   * @param {!chrome.fileManagerPrivate.VmType} vm_type Type of the underlying
+   *     VM
    */
-  constructor(label, guest_id) {
+  constructor(label, guest_id, vm_type) {
     super(label, VolumeManagerCommon.RootType.GUEST_OS, undefined, undefined);
 
     /**
@@ -718,14 +743,17 @@ export class GuestOsPlaceholder extends FakeEntryImpl {
      * page can't be checked with "instanceof".
      */
     this.type_name = 'GuestOsPlaceholder';
+
+    this.vm_type = vm_type;
   }
 
   /**
+   * @override
    * String used to determine the icon.
    * @return {string}
    */
   get iconName() {
-    return /** @type{string} */ ('crostini');
+    return vmTypeToIconName(this.vm_type);
   }
 
   /** @override */

@@ -1416,16 +1416,7 @@ void EventRouter::OnUnregistered(
 }
 
 void EventRouter::OnMountableGuestsChanged() {
-  auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
-                       ->MountProviderRegistry();
-  std::vector<file_manager_private::MountableGuest> guests;
-  for (const auto id : registry->List()) {
-    file_manager_private::MountableGuest guest;
-    auto* provider = registry->Get(id);
-    guest.id = id;
-    guest.display_name = provider->DisplayName();
-    guests.push_back(std::move(guest));
-  }
+  auto guests = util::CreateMountableGuestList(profile_);
   BroadcastEvent(
       profile_,
       extensions::events::FILE_MANAGER_PRIVATE_ON_IO_TASK_PROGRESS_STATUS,

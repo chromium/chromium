@@ -513,7 +513,8 @@ export function testWhenReady(callback) {
         /* diskFileSystemType */ VolumeManagerCommon.FileSystemType.UNKNOWN,
         /* iconSet */ {},
         /* driveLabel */ 'TEST_DRIVE_LABEL',
-        /* remoteMountPath*/ '');
+        /* remoteMountPath*/ '',
+        /* vmType*/ undefined);
     volumeManager.volumeInfoList.add(volumeInfo);
     const promiseAfterAdd = volumeManager.whenVolumeInfoReady('volumeId');
     reportPromise(
@@ -647,7 +648,8 @@ export async function testDriveWithNullFilesystem(done) {
       (driveVolumeMetadata.source),
       /** @type {VolumeManagerCommon.FileSystemType} */
       (driveVolumeMetadata.diskFileSystemType), driveVolumeMetadata.iconSet,
-      driveVolumeMetadata.driveLabel, driveVolumeMetadata.remoteMountPath);
+      driveVolumeMetadata.driveLabel, driveVolumeMetadata.remoteMountPath,
+      driveVolumeMetadata.vmType);
 
   // Wait for trying to resolve display root, it should fail with
   // |expectedError| if not re-throw to make the test fail.
