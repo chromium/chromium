@@ -1,0 +1,6 @@
+HTTP/1.1 200 OK
+Content-Type: text/html
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+Cross-Origin-Resource-Policy: cross-origin
+Permissions-Policy: usb=(self)

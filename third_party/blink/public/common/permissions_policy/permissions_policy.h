@@ -155,12 +155,24 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     // Returns true if the allowlist matches all origins.
     bool MatchesAll() const;
 
+    // Sets matches_all_origins_ to false for Isolated Apps that have a more
+    // restrictive Permissions-Policy HTTP header than the permissions policy
+    // declared in its Web App Manifest.
+    void RemoveMatchesAll();
+
     // Returns true if the allowlist should match the opaque origin implied by
     // the 'src' keyword.
     bool MatchesOpaqueSrc() const;
 
     const std::vector<url::Origin>& AllowedOrigins() const {
       return allowed_origins_;
+    }
+
+    // Overwrite allowed_origins_ for Isolated Apps that have a more restrictive
+    // Permissions-Policy HTTP header than the permissions policy declared in
+    // its Web App Manifest.
+    void SetAllowedOrigins(const std::vector<url::Origin> allowed_origins) {
+      allowed_origins_ = allowed_origins;
     }
 
    private:
@@ -215,6 +227,14 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // Sets the declared policy from the parsed Permissions-Policy HTTP header.
   // Unrecognized features will be ignored.
   void SetHeaderPolicy(const ParsedPermissionsPolicy& parsed_header);
+
+  // Further restricts the policy for Isolated Apps that have a
+  // Permissions-Policy HTTP header, |parsed_header|, that might be more
+  // restrictive than its permissions policy declared in the Web App Manifest.
+  // TODO(crbug.com/1336701): Rename to something more generic so Permissions
+  // Policy remains unaware of isolated apps.
+  void SetHeaderPolicyForIsolatedApp(
+      const ParsedPermissionsPolicy& parsed_header);
 
   // Used to update a client hint header policy set via the accept-ch meta tag.
   // It will fail if header policies not for client hints are included in

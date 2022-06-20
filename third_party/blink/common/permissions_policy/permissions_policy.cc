@@ -99,6 +99,10 @@ bool PermissionsPolicy::Allowlist::MatchesAll() const {
   return matches_all_origins_;
 }
 
+void PermissionsPolicy::Allowlist::RemoveMatchesAll() {
+  matches_all_origins_ = false;
+}
+
 bool PermissionsPolicy::Allowlist::MatchesOpaqueSrc() const {
   return matches_opaque_src_;
 }
@@ -281,6 +285,46 @@ void PermissionsPolicy::SetHeaderPolicy(
     DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
     allowlists_.emplace(
         feature, AllowlistFromDeclaration(parsed_declaration, feature_list_));
+  }
+}
+
+void PermissionsPolicy::SetHeaderPolicyForIsolatedApp(
+    const ParsedPermissionsPolicy& parsed_header) {
+  DCHECK(!allowlists_checked_);
+  for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
+       parsed_header) {
+    mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
+    DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
+    const auto header_allowlist =
+        AllowlistFromDeclaration(parsed_declaration, feature_list_);
+    auto& isolated_app_allowlist = allowlists_.at(feature);
+
+    // If the header does not specify further restrictions we do not need to
+    // modify the policy.
+    if (header_allowlist.MatchesAll())
+      continue;
+
+    const auto header_allowed_origins = header_allowlist.AllowedOrigins();
+    // If the manifest allows all origins access to this feature, use the more
+    // restrictive header policy.
+    if (isolated_app_allowlist.MatchesAll()) {
+      // TODO(crbug.com/1336275): Refactor to use Allowlist::clone() after
+      // clone() is implemented.
+      isolated_app_allowlist.SetAllowedOrigins(header_allowed_origins);
+      isolated_app_allowlist.RemoveMatchesAll();
+      continue;
+    }
+
+    // Otherwise, we use the intersection of origins in the manifest and the
+    // header.
+    auto manifest_allowed_origins = isolated_app_allowlist.AllowedOrigins();
+    std::vector<url::Origin> final_allowed_origins;
+    for (const auto& origin : manifest_allowed_origins) {
+      if (base::Contains(header_allowed_origins, origin)) {
+        final_allowed_origins.push_back(origin);
+      }
+    }
+    isolated_app_allowlist.SetAllowedOrigins(final_allowed_origins);
   }
 }
 

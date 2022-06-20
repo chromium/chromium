@@ -7101,6 +7101,8 @@ domain Page
       IframeAttribute
       # Inside fenced frame.
       InFencedFrameTree
+      # Inside an Isolated Application.
+      InIsolatedApp
 
   experimental type PermissionsPolicyBlockLocator extends object
     properties

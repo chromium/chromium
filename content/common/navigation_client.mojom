@@ -250,6 +250,7 @@ interface NavigationClient {
       blink.mojom.ServiceWorkerContainerInfoForClient? container_info,
       pending_remote<network.mojom.URLLoaderFactory>? prefetch_loader_factory,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
+      array<blink.mojom.ParsedPermissionsPolicyDeclaration> permissions_policy,
       blink.mojom.PolicyContainer policy_container,
       pending_remote<blink.mojom.CodeCacheHost>? code_cache_host,
       CookieManagerInfo? cookie_manager_info,

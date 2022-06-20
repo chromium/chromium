@@ -44,9 +44,11 @@
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/accept_language_and_content_language_usage.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -55,6 +57,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -254,6 +257,7 @@ struct SameSizeAsDocumentLoader
   Member<MHTMLArchive> archive;
   std::unique_ptr<WebNavigationParams> params;
   std::unique_ptr<PolicyContainer> policy_container;
+  absl::optional<ParsedPermissionsPolicy> isolated_app_permissions_policy;
   KURL url;
   AtomicString http_method;
   AtomicString referrer;
@@ -357,6 +361,7 @@ DocumentLoader::DocumentLoader(
     std::unique_ptr<ExtraData> extra_data)
     : params_(std::move(navigation_params)),
       policy_container_(std::move(policy_container)),
+      initial_permissions_policy_(params_->permissions_policy_override),
       url_(params_->url),
       http_method_(static_cast<String>(params_->http_method)),
       referrer_(static_cast<String>(params_->referrer)),
@@ -2363,8 +2368,11 @@ void DocumentLoader::CommitNavigation() {
     // PermissionsPolicy and DocumentPolicy require SecurityOrigin and origin
     // trials to be initialized.
     // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
-    security_init.ApplyPermissionsPolicy(*frame_.Get(), response_,
-                                         origin_policy_, frame_policy_);
+    security_init.ApplyPermissionsPolicy(
+        *frame_.Get(), response_, origin_policy_, frame_policy_,
+        Agent::IsDirectSocketEnabled() ? initial_permissions_policy_
+                                       : absl::nullopt);
+
     // |document_policy_| is parsed in document loader because it is
     // compared with |frame_policy.required_document_policy| to decide
     // whether to block the document load or not.

@@ -10,6 +10,7 @@
 #include "content/renderer/render_frame_impl.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
@@ -36,6 +37,7 @@ void NavigationClient::CommitNavigation(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
     const base::UnguessableToken& devtools_navigation_token,
+    const blink::ParsedPermissionsPolicy& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     mojom::CookieManagerInfoPtr cookie_manager_info,
@@ -55,9 +57,9 @@ void NavigationClient::CommitNavigation(
       std::move(subresource_overrides),
       std::move(controller_service_worker_info), std::move(container_info),
       std::move(prefetch_loader_factory), devtools_navigation_token,
-      std::move(policy_container), std::move(code_cache_host),
-      std::move(cookie_manager_info), std::move(storage_info),
-      std::move(callback));
+      permissions_policy, std::move(policy_container),
+      std::move(code_cache_host), std::move(cookie_manager_info),
+      std::move(storage_info), std::move(callback));
 }
 
 void NavigationClient::CommitFailedNavigation(

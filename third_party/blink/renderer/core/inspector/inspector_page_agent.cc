@@ -806,6 +806,9 @@ CreatePermissionsPolicyBlockLocator(
       reason =
           protocol::Page::PermissionsPolicyBlockReasonEnum::InFencedFrameTree;
       break;
+    case blink::PermissionsPolicyBlockReason::kInIsolatedApp:
+      reason = protocol::Page::PermissionsPolicyBlockReasonEnum::InIsolatedApp;
+      break;
   }
 
   return protocol::Page::PermissionsPolicyBlockLocator::create()

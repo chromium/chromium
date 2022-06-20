@@ -41,6 +41,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
@@ -527,6 +528,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // type WebPolicyContainer, and we want to avoid a back-and-forth type
   // conversion.
   std::unique_ptr<PolicyContainer> policy_container_;
+
+  // The permissions policy to be applied to the window at initialization time.
+  const absl::optional<ParsedPermissionsPolicy> initial_permissions_policy_;
 
   // These fields are copied from WebNavigationParams, see there for definition.
   KURL url_;

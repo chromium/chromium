@@ -8886,6 +8886,16 @@ void RenderFrameHostImpl::CommitNavigation(
     blink::mojom::PolicyContainerPtr policy_container =
         navigation_request->CreatePolicyContainerForBlink();
 
+    auto isolation_info = GetSiteInstance()->GetWebExposedIsolationInfo();
+    RenderFrameHostImpl* parent_frame_host = GetParentOrOuterDocument();
+
+    blink::ParsedPermissionsPolicy manifest_policy;
+    if (!parent_frame_host && isolation_info.is_isolated_application()) {
+      manifest_policy =
+          GetContentClient()->browser()->GetPermissionsPolicyForIsolatedApp(
+              GetBrowserContext(), isolation_info.origin());
+    }
+
     // TODO(crbug.com/1126305): Once the Prerender2 moves to use the MPArch, we
     // need to check the relevant FrameTree to know the precise prerendering
     // state to update commit_params.is_prerendering here.
@@ -8898,7 +8908,8 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(subresource_loader_factories),
         std::move(subresource_overrides), std::move(controller),
         std::move(container_info), std::move(prefetch_loader_factory),
-        std::move(policy_container), devtools_navigation_token);
+        manifest_policy, std::move(policy_container),
+        devtools_navigation_token);
     frame_tree_node_->navigator().LogCommitNavigationSent();
 
     // |remote_object| is an associated interface ptr, so calls can't be made on
@@ -11547,7 +11558,20 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   ResetPermissionsPolicy();
 
   permissions_policy_header_ = params.permissions_policy_header;
-  permissions_policy_->SetHeaderPolicy(params.permissions_policy_header);
+  auto isolation_info = GetSiteInstance()->GetWebExposedIsolationInfo();
+  // Isolated Apps start with a base policy as defined by the permissions_policy
+  // field in its Web App Manifest, which is an allowlist, and then have headers
+  // further restrict the policy if applicable. This needs to be handled
+  // differently than the normal permissions policy behavior, which uses a fully
+  // permissive policy as its base permissions policy and accepts rules
+  // specifying which permissions policy features should be blocked, aka a
+  // blocklist.
+  if (isolation_info.is_isolated_application() && IsOutermostMainFrame()) {
+    permissions_policy_->SetHeaderPolicyForIsolatedApp(
+        params.permissions_policy_header);
+  } else {
+    permissions_policy_->SetHeaderPolicy(params.permissions_policy_header);
+  }
   document_policy_ = blink::DocumentPolicy::CreateWithHeaderPolicy({
       params.document_policy_header,  // document_policy_header
       {},                             // endpoint_map
@@ -11831,6 +11855,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
+    const blink::ParsedPermissionsPolicy& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     const base::UnguessableToken& devtools_navigation_token) {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::SendCommitNavigation");
@@ -11898,8 +11923,9 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller), std::move(container_info),
       std::move(prefetch_loader_factory), devtools_navigation_token,
-      std::move(policy_container), std::move(code_cache_host),
-      std::move(cookie_manager_info), std::move(storage_info),
+      permissions_policy, std::move(policy_container),
+      std::move(code_cache_host), std::move(cookie_manager_info),
+      std::move(storage_info),
       BuildCommitNavigationCallback(navigation_request));
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.SendCommitNavigationTime.",

@@ -438,6 +438,12 @@ struct BLINK_EXPORT WebNavigationParams {
   // enforced on the document created by this navigation.
   std::unique_ptr<WebPolicyContainer> policy_container;
 
+  // Blink's copy of a permissions policy constructed in the browser that should
+  // take precedence over any permissions policy constructed in blink. This is
+  // useful for isolated applications, which use a different base permissions
+  // policy than blink, which uses a fully permissive policy as its base.
+  absl::optional<blink::ParsedPermissionsPolicy> permissions_policy_override;
+
   // These are used to construct a subset of the back/forward list for the
   // window.navigation API. They only have the attributes that are needed for
   // that API.

@@ -151,6 +151,7 @@
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
@@ -2636,6 +2637,7 @@ void RenderFrameImpl::CommitNavigation(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
     const base::UnguessableToken& devtools_navigation_token,
+    const blink::ParsedPermissionsPolicy& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     mojom::CookieManagerInfoPtr cookie_manager_info,
@@ -2677,6 +2679,12 @@ void RenderFrameImpl::CommitNavigation(
                            navigation_params.get());
   navigation_params->policy_container =
       ToWebPolicyContainer(std::move(policy_container));
+  // TODO(b/235479329): Rename IsDirectSocketEnabled().
+  // IsDirectSocketEnabled() implies this renderer is for an isolated
+  // application.
+  if (blink::IsDirectSocketEnabled() && frame_->IsOutermostMainFrame()) {
+    navigation_params->permissions_policy_override = permissions_policy;
+  }
 
   auto commit_with_params = base::BindOnce(
       &RenderFrameImpl::CommitNavigationWithParams, weak_factory_.GetWeakPtr(),

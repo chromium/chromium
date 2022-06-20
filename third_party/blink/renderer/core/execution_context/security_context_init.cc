@@ -123,7 +123,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
     LocalFrame& frame,
     const ResourceResponse& response,
     const absl::optional<WebOriginPolicy>& origin_policy,
-    const FramePolicy& frame_policy) {
+    const FramePolicy& frame_policy,
+    const absl::optional<ParsedPermissionsPolicy>& isolated_app_policy) {
   const url::Origin origin =
       execution_context_->GetSecurityOrigin()->ToUrlOrigin();
   // If we are a HTMLViewSourceDocument we use container, header or
@@ -213,24 +214,35 @@ void SecurityContextInit::ApplyPermissionsPolicy(
         container_policy);
   }
 
-  std::unique_ptr<PermissionsPolicy> permissions_policy;
-  if (frame.IsInFencedFrameTree()) {
-    // In Fenced Frames, all permission policy gated features must be disabled
-    // for privacy reasons.
-    permissions_policy = PermissionsPolicy::CreateForFencedFrame(origin);
+  if (isolated_app_policy) {
+    DCHECK(frame.IsOutermostMainFrame());
+    std::unique_ptr<PermissionsPolicy> permissions_policy =
+        PermissionsPolicy::CreateFromParsedPolicy(isolated_app_policy.value(),
+                                                  origin);
+    permissions_policy->SetHeaderPolicyForIsolatedApp(
+        permissions_policy_header_);
+    execution_context_->GetSecurityContext().SetPermissionsPolicy(
+        std::move(permissions_policy));
   } else {
-    auto* parent_permissions_policy = frame.Tree().Parent()
-                                          ? frame.Tree()
-                                                .Parent()
-                                                ->GetSecurityContext()
-                                                ->GetPermissionsPolicy()
-                                          : nullptr;
-    permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
-        parent_permissions_policy, container_policy, origin);
+    std::unique_ptr<PermissionsPolicy> permissions_policy;
+    if (frame.IsInFencedFrameTree()) {
+      // In Fenced Frames, all permission policy gated features must be disabled
+      // for privacy reasons.
+      permissions_policy = PermissionsPolicy::CreateForFencedFrame(origin);
+    } else {
+      auto* parent_permissions_policy = frame.Tree().Parent()
+                                            ? frame.Tree()
+                                                  .Parent()
+                                                  ->GetSecurityContext()
+                                                  ->GetPermissionsPolicy()
+                                            : nullptr;
+      permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
+          parent_permissions_policy, container_policy, origin);
+    }
+    permissions_policy->SetHeaderPolicy(permissions_policy_header_);
+    execution_context_->GetSecurityContext().SetPermissionsPolicy(
+        std::move(permissions_policy));
   }
-  permissions_policy->SetHeaderPolicy(permissions_policy_header_);
-  execution_context_->GetSecurityContext().SetPermissionsPolicy(
-      std::move(permissions_policy));
 
   // Report-only permissions policy only takes effect when it is stricter than
   // enforced permissions policy, i.e. when enforced permissions policy allows a
