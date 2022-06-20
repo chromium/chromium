@@ -202,7 +202,7 @@
   // Calling WebViewTapElement right after WebViewScrollElement caused flaky
   // issues with the wrong location being provided for the tap target,
   // seemingly caused by the screen not redrawing in-between these two actions.
-  // We force a brief wait here to avoid this issue. |waitWithTimeout| requires
+  // We force a brief wait here to avoid this issue. `waitWithTimeout` requires
   // its result to be used. Void the result as it's always false.
   (void)[[GREYCondition conditionWithName:@"forced wait to allow for redraw"
                                     block:^BOOL {
