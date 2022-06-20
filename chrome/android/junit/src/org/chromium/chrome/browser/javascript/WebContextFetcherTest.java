@@ -4,25 +4,24 @@
 
 package org.chromium.chrome.browser.javascript;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.javascript.WebContextFetcher.WebContextFetchResponse;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 /**
  * Unit tests for web context fetching java code.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class WebContextFetcherTest {
     /**
      * Test that converting map to json results in the correct output in various scenarios.
      */
     @Test
-    @SmallTest
     public void testConvertJsonToResponse_Successful() {
         WebContextFetchResponse emptyResponse = WebContextFetcher.convertJsonToResponse("{}");
         Assert.assertTrue("Empty json dictionary does not return empty map.",
@@ -37,7 +36,6 @@ public class WebContextFetcherTest {
     }
 
     @Test
-    @SmallTest
     public void testConvertJsonToResponse_AssertionErrorMalformed() {
         WebContextFetchResponse response =
                 WebContextFetcher.convertJsonToResponse("14324asdfasc132434");
@@ -49,7 +47,6 @@ public class WebContextFetcherTest {
     }
 
     @Test
-    @SmallTest
     public void testConvertJsonToResponse_AssertionErrorNestedObject() {
         WebContextFetchResponse response = WebContextFetcher.convertJsonToResponse(
                 "{\"nestedObject\": {\"nestedKey\": \"nestedVal\"}}");
@@ -60,7 +57,6 @@ public class WebContextFetcherTest {
     }
 
     @Test
-    @SmallTest
     public void testConvertJsonToResponse_AssertionErrorNonStringVal() {
         WebContextFetchResponse response =
                 WebContextFetcher.convertJsonToResponse("{\"integer\": 123}");
@@ -71,7 +67,6 @@ public class WebContextFetcherTest {
     }
 
     @Test
-    @SmallTest
     public void testConvertJsonToResponse_AssertionErrorArray() {
         WebContextFetchResponse response = WebContextFetcher.convertJsonToResponse(
                 "{\"nestedArray\":[\"arrayVal1\", \"arrayVal2\"]}");
