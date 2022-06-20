@@ -79,6 +79,7 @@ _CONFIG = [
             'base::PlatformThreadId',
             'base::RefCountedData',
             'base::RunLoop',
+            'base::HashingLRUCache',
             'base::ReadOnlySharedMemoryMapping',
             'base::ReadOnlySharedMemoryRegion',
             'base::RemoveChars',

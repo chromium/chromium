@@ -59,24 +59,24 @@ TEST(FallbackLruCacheTest, KeepChineseWhenFetched) {
   EXPECT_EQ(lru_cache.size(), 1u);
 
   fillCacheWithDummies(lru_cache, "dummy_locale_%zu", kLruCacheTestSize - 1);
-  TypefaceVector* chinese_typefaces = lru_cache.Get(kHanSimplifiedLocale);
-  EXPECT_TRUE(chinese_typefaces);
-  EXPECT_TRUE(chinese_typefaces->at(0)->unicharToGlyph(0x4E01));
+  auto it = lru_cache.Get(kHanSimplifiedLocale);
+  EXPECT_TRUE(it != lru_cache.end());
+  TypefaceVector& chinese_typefaces = it->second;
+  EXPECT_TRUE(chinese_typefaces.at(0)->unicharToGlyph(0x4E01));
   EXPECT_EQ(lru_cache.size(), kLruCacheTestSize);
 
   fillCacheWithDummies(lru_cache, "dummy_locale_2nd_%zu",
                        kLruCacheTestSize - 1);
-  chinese_typefaces = nullptr;
-  chinese_typefaces = lru_cache.Get(kHanSimplifiedLocale);
-  EXPECT_TRUE(chinese_typefaces);
-  EXPECT_EQ(chinese_typefaces->size(), 1u);
-  EXPECT_TRUE(chinese_typefaces->at(0)->unicharToGlyph(kSecondCJKIdeograph));
+  it = lru_cache.Get(kHanSimplifiedLocale);
+  EXPECT_TRUE(it != lru_cache.end());
+  chinese_typefaces = it->second;
+  EXPECT_EQ(chinese_typefaces.size(), 1u);
+  EXPECT_TRUE(chinese_typefaces.at(0)->unicharToGlyph(kSecondCJKIdeograph));
   EXPECT_EQ(lru_cache.size(), kLruCacheTestSize);
 
   fillCacheWithDummies(lru_cache, "dummy_locale_3rd_%zu", kLruCacheTestSize);
-  chinese_typefaces = nullptr;
-  chinese_typefaces = lru_cache.Get(kHanSimplifiedLocale);
-  EXPECT_FALSE(chinese_typefaces);
+  it = lru_cache.Get(kHanSimplifiedLocale);
+  EXPECT_TRUE(it == lru_cache.end());
   EXPECT_EQ(lru_cache.size(), kLruCacheTestSize);
 }
 

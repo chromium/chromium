@@ -49,9 +49,9 @@ void FallbackFamilyStyleCache::Put(
   String cache_key =
       makeCacheKey(generic_family, bcp47_language_tag, fallback_priority);
 
-  TypefaceVector* existing_typefaces = recent_fallback_fonts_.Get(cache_key);
-  if (existing_typefaces) {
-    existing_typefaces->insert(0, sk_ref_sp(typeface));
+  auto it = recent_fallback_fonts_.Get(cache_key);
+  if (it != recent_fallback_fonts_.end()) {
+    it->second.insert(0, sk_ref_sp(typeface));
   } else {
     TypefaceVector typefaces;
     typefaces.push_back(sk_ref_sp(typeface));
@@ -66,13 +66,13 @@ void FallbackFamilyStyleCache::Get(
     UChar32 character,
     String* fallback_family,
     SkFontStyle* fallback_style) {
-  TypefaceVector* typefaces = recent_fallback_fonts_.Get(
+  auto it = recent_fallback_fonts_.Get(
       makeCacheKey(generic_family, bcp47_language_tag, fallback_priority));
-  if (!typefaces)
+  if (it == recent_fallback_fonts_.end())
     return;
-
-  for (wtf_size_t i = 0; i < typefaces->size(); ++i) {
-    sk_sp<SkTypeface>& typeface = typefaces->at(i);
+  TypefaceVector& typefaces = it->second;
+  for (wtf_size_t i = 0; i < typefaces.size(); ++i) {
+    sk_sp<SkTypeface>& typeface = typefaces.at(i);
     if (typeface->unicharToGlyph(character)) {
       getFallbackFamilyAndStyle(typeface.get(), fallback_family,
                                 fallback_style);
@@ -80,8 +80,8 @@ void FallbackFamilyStyleCache::Get(
       // For the vector of typefaces for this specific language tag, since this
       // SkTypeface had a glyph, move it to the beginning to accelerate
       // subsequent lookups.
-      typefaces->EraseAt(i);
-      typefaces->insert(0, std::move(tmp_typeface));
+      typefaces.EraseAt(i);
+      typefaces.insert(0, std::move(tmp_typeface));
       return;
     }
   }

@@ -62,6 +62,7 @@ include_rules = [
     "+base/time/time_delta_from_string.h",
     "+base/timer/elapsed_timer.h",
     "+base/timer/timer.h",
+    "+base/containers/lru_cache.h",
     "+base/token.h",
     "+base/trace_event",
     "+base/types/pass_key.h",

@@ -184,4 +184,11 @@ struct HashTraits<blink::FontCacheKey>
 
 }  // namespace WTF
 
+template <>
+struct std::hash<blink::FontCacheKey> {
+  std::size_t operator()(blink::FontCacheKey const& s) const noexcept {
+    return static_cast<size_t>(s.GetHash());
+  }
+};
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_CACHE_KEY_H_
