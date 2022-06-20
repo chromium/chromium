@@ -105,7 +105,6 @@ void WaylandBufferManagerGpu::OnSubmission(gfx::AcceleratedWidget widget,
                                            gfx::GpuFenceHandle release_fence) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
-  base::AutoLock scoped_lock(lock_);
   DCHECK_LE(commit_thread_runners_.count(widget), 1u);
   // Return back to the same thread where the commit request came from.
   auto it = commit_thread_runners_.find(widget);
@@ -124,7 +123,6 @@ void WaylandBufferManagerGpu::OnPresentation(
     const gfx::PresentationFeedback& feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
-  base::AutoLock scoped_lock(lock_);
   DCHECK_LE(commit_thread_runners_.count(widget), 1u);
   // Return back to the same thread where the commit request came from.
   auto it = commit_thread_runners_.find(widget);
