@@ -33,7 +33,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "chromeos/network/cellular_metrics_logger.h"
+#include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "components/prefs/testing_pref_service.h"

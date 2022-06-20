@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "chromeos/network/cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "dbus/object_path.h"
 
 namespace chromeos {

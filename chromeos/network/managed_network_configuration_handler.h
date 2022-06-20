@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "chromeos/network/client_cert_util.h"
+#include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "components/onc/onc_constants.h"

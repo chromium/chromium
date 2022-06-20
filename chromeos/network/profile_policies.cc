@@ -10,10 +10,10 @@
 
 #include "base/containers/flat_set.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/components/onc/variable_expander.h"
-#include "chromeos/network/client_cert_util.h"
 #include "chromeos/network/policy_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/onc/onc_constants.h"

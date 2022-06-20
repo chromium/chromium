@@ -5,7 +5,7 @@
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
 
 #include "base/containers/contains.h"
-#include "chromeos/network/cellular_utils.h"
+#include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/network/network_state_handler.h"
 
 namespace chromeos {

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chromeos/network/cellular_inhibitor.h"
+#include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"

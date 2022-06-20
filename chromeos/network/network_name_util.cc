@@ -11,7 +11,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/network/cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/network_state.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 

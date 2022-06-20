@@ -8,7 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/guid.h"
-#include "chromeos/network/cellular_utils.h"
+#include "chromeos/ash/components/network/cellular_utils.h"
 
 namespace chromeos {
 

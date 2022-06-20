@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/values.h"
-#include "chromeos/network/client_cert_util.h"
+#include "chromeos/ash/components/network/client_cert_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

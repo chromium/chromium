@@ -8,7 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "chromeos/network/client_cert_util.h"
+#include "chromeos/ash/components/network/client_cert_util.h"
 #include "components/onc/onc_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

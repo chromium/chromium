@@ -16,7 +16,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/network/cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_connection_handler.h"
