@@ -13,6 +13,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -472,6 +473,67 @@ IN_PROC_BROWSER_TEST_F(PlatformAppNavigationRedirectorPrerenderingBrowserTest,
   // The primary page doesn't have any change.
   EXPECT_EQ(initial_url, GetWebContents()->GetLastCommittedURL());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(0U, GetAppWindowCount());
+}
+
+class PlatformAppNavigationRedirectorFencedFrameBrowserTest
+    : public PlatformAppNavigationRedirectorBrowserTest {
+ public:
+  PlatformAppNavigationRedirectorFencedFrameBrowserTest() = default;
+  ~PlatformAppNavigationRedirectorFencedFrameBrowserTest() override = default;
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+// Test that PlatformAppNavigationRedirector doesn't apply to fenced frames.
+IN_PROC_BROWSER_TEST_F(PlatformAppNavigationRedirectorFencedFrameBrowserTest,
+                       DoNotLaunchAppInFencedFrames) {
+  // Set a response for a fenced frame.
+  embedded_test_server()->RegisterRequestHandler(
+      base::BindRepeating([](const net::test_server::HttpRequest& request) {
+        const char kFencedFramePage[] = "target.html";
+        if (request.GetURL().ExtractFileName() == kFencedFramePage) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_content_type("text/html");
+          response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
+          return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
+              std::move(response));
+        } else {
+          return std::unique_ptr<net::test_server::HttpResponse>();
+        }
+      }));
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const char* handler = "url_handlers/handlers/simple";
+  InstallPlatformApp(handler);
+
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  EXPECT_EQ(initial_url, GetWebContents()->GetLastCommittedURL());
+
+  // Load an app URL in a fenced frame.
+  const GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "/extensions/platform_apps/url_handlers/common/target.html");
+  content::RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
+
+  // Ensure that a fenced frame doesn't launch an app and the page is opened
+  // in a fenced frame.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
+  EXPECT_EQ(fenced_frame_rfh->GetParentOrOuterDocument(),
+            GetWebContents()->GetPrimaryMainFrame());
   EXPECT_EQ(0U, GetAppWindowCount());
 }
 

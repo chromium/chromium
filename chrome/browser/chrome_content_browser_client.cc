@@ -4329,13 +4329,11 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 #endif  // BUILDFLAG(DFMIFY_DEV_UI)
 
 #elif BUILDFLAG(ENABLE_EXTENSIONS)
-  if (handle->IsInMainFrame()) {
-    // Redirect some navigations to apps that have registered matching URL
-    // handlers ('url_handlers' in the manifest).
-    MaybeAddThrottle(
-        PlatformAppNavigationRedirector::MaybeCreateThrottleFor(handle),
-        &throttles);
-  }
+  // Redirect some navigations to apps that have registered matching URL
+  // handlers ('url_handlers' in the manifest).
+  MaybeAddThrottle(
+      PlatformAppNavigationRedirector::MaybeCreateThrottleFor(handle),
+      &throttles);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

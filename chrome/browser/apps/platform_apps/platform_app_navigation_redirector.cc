@@ -86,6 +86,11 @@ PlatformAppNavigationRedirector::MaybeCreateThrottleFor(
       handle->GetWebContents()->GetBrowserContext();
   DCHECK(browser_context);
 
+  if (handle->GetParentFrameOrOuterDocument()) {
+    DVLOG(1) << "Skip redirection: navigation is from an iframe or inner page";
+    return nullptr;
+  }
+
   // Support only GET for now.
   if (handle->IsPost()) {
     DVLOG(1) << "Skip redirection: method is not GET";
