@@ -36,10 +36,9 @@ declare_args() {
 declare_args() {
   # Set to true to use lld, the LLVM linker.
   # In late bring-up on macOS (see docs/mac_lld.md).
-  # Tentatively used on iOS, except in cronet builds (cronet still supports
-  # 32-bit builds, which lld doesn't support).
+  # Tentatively used on iOS.
   # The default linker everywhere else.
-  use_lld = is_clang && current_os != "zos" && !(is_ios && is_cronet_build)
+  use_lld = is_clang && current_os != "zos"
 }
 
 declare_args() {

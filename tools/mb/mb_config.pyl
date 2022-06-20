@@ -2770,11 +2770,11 @@
     ],
 
     'ios_cronet_xctest': [
-      'cronet_ios', 'debug_static_bot', 'ios_deployment_target_10_0', 'ios', 'ios_simulator', 'ios_cpu_x64_x86', 'xctest', 'ios_disable_xcode_project_generation',
+      'cronet_ios', 'debug_static_bot', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
     ],
 
     'ios_cronet_xctest_arm64': [
-      'cronet_ios', 'debug_static_bot', 'ios_deployment_target_10_0', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
+      'cronet_ios', 'debug_static_bot', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
     ],
 
     'ios_device_release_compile_only': [
@@ -3997,12 +3997,8 @@
       'gn_args': 'target_cpu="x64"',
     },
 
-    'ios_cpu_x64_x86': {
-      'gn_args': 'target_cpu="x64" additional_target_cpus=["x86"]',
-    },
-
-    'ios_deployment_target_10_0': {
-      'gn_args': 'ios_deployment_target=\"10.0\"',
+    'ios_deployment_target_11_0': {
+      'gn_args': 'ios_deployment_target=\"11.0\"',
     },
 
     'ios_device': {
