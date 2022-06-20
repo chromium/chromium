@@ -47,7 +47,7 @@ TEST_F(NGInlinePaintContextTest, NestedBlocks) {
   const auto* ifc = To<LayoutBlockFlow>(GetLayoutObjectByElementId("ifc"));
   NGInlineCursor cursor(*ifc);
   cursor.MoveToFirstLine();
-  context.SetLineBox(*cursor.Current());
+  context.SetLineBox(cursor);
   // Two text decorations are propagated to the `ifc`. The outer one does not
   // establish an inline formatting context, so the anonymous inline box of the
   // `ifc` is the decorating box of both decorations.

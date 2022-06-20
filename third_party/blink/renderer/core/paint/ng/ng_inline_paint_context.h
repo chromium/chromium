@@ -7,6 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_decorating_box.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -27,8 +28,8 @@ class CORE_EXPORT NGInlinePaintContext {
   void PushDecoratingBoxAncestors(const NGInlineCursor& inline_box);
   void PopDecoratingBox() { decorating_boxes_.pop_back(); }
 
-  void SetLineBox(const NGFragmentItem& line_item);
-  void ClearLineBox() { line_item_ = nullptr; }
+  void SetLineBox(const NGInlineCursor& line_cursor);
+  void ClearLineBox() { line_cursor_.reset(); }
 
   const PhysicalOffset& PaintOffset() const { return paint_offset_; }
   void SetPaintOffset(const PhysicalOffset& paint_offset) {
@@ -68,7 +69,7 @@ class CORE_EXPORT NGInlinePaintContext {
     STACK_ALLOCATED();
 
    public:
-    ScopedLineBox(const NGFragmentItem& line_item,
+    ScopedLineBox(const NGInlineCursor& line_cursor,
                   NGInlinePaintContext* inline_context);
     ~ScopedLineBox();
 
@@ -94,7 +95,7 @@ class CORE_EXPORT NGInlinePaintContext {
                          DecoratingBoxList* saved_decorating_boxes);
 
   DecoratingBoxList decorating_boxes_;
-  const NGFragmentItem* line_item_ = nullptr;
+  absl::optional<NGInlineCursor> line_cursor_;
   PhysicalOffset paint_offset_;
 };
 

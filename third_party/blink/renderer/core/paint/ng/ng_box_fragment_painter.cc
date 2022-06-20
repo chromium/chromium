@@ -1581,7 +1581,7 @@ void NGBoxFragmentPainter::PaintLineBoxChildItems(
       DCHECK(line_box_fragment);
       PaintLineBox(*line_box_fragment, *child_item->GetDisplayItemClient(),
                    *child_item, paint_info, child_offset);
-      NGInlinePaintContext::ScopedLineBox scoped_line_box(*child_item,
+      NGInlinePaintContext::ScopedLineBox scoped_line_box(*children,
                                                           inline_context_);
       NGInlineCursor line_box_cursor = children->CursorForDescendants();
       PaintInlineItems(paint_info, paint_offset,

@@ -77,7 +77,7 @@ void NGInlinePaintContext::PushDecoratingBoxAncestors(
     DCHECK(current);
 
     if (current.IsLineBox()) {
-      SetLineBox(*current);
+      SetLineBox(cursor);
       for (const NGFragmentItem* item : base::Reversed(boundary_items)) {
         DecoratingBoxList saved_decorating_boxes;
         PushDecoratingBox(*item, &saved_decorating_boxes);
@@ -91,21 +91,22 @@ void NGInlinePaintContext::PushDecoratingBoxAncestors(
 }
 
 NGInlinePaintContext::ScopedLineBox::ScopedLineBox(
-    const NGFragmentItem& line_item,
+    const NGInlineCursor& line_cursor,
     NGInlinePaintContext* inline_context) {
   if (!RuntimeEnabledFeatures::TextDecoratingBoxEnabled())
     return;
   DCHECK(inline_context);
   inline_context_ = inline_context;
-  inline_context->SetLineBox(line_item);
+  inline_context->SetLineBox(line_cursor);
 }
 
-void NGInlinePaintContext::SetLineBox(const NGFragmentItem& line_item) {
+void NGInlinePaintContext::SetLineBox(const NGInlineCursor& line_cursor) {
   DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
-  DCHECK_EQ(line_item.Type(), NGFragmentItem::kLine);
-  line_item_ = &line_item;
+  DCHECK_EQ(line_cursor.Current()->Type(), NGFragmentItem::kLine);
+  line_cursor_ = line_cursor;
   decorating_boxes_.Shrink(0);
 
+  const NGFragmentItem& line_item = *line_cursor.Current();
   const ComputedStyle& style = line_item.Style();
   const Vector<AppliedTextDecoration>& applied_text_decorations =
       style.AppliedTextDecorations();
