@@ -198,6 +198,9 @@ class WizardController : public OobeUI::Observer {
   // Returns a given screen. Creates it lazily.
   BaseScreen* GetScreen(OobeScreenId screen_id);
 
+  // Returns a given OobescreenId with both name and external_api_prefix.
+  OobeScreenId GetScreenByName(const std::string& screen_name);
+
   // Returns the current ScreenManager instance.
   ScreenManager* screen_manager() const { return screen_manager_.get(); }
 

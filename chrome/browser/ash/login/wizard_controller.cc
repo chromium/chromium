@@ -524,6 +524,13 @@ BaseScreen* WizardController::GetScreen(OobeScreenId screen_id) {
   return screen_manager_->GetScreen(screen_id);
 }
 
+OobeScreenId WizardController::GetScreenByName(const std::string& screen_name) {
+  if (screen_name == ErrorScreenView::kScreenId.name) {
+    return ErrorScreenView::kScreenId;
+  }
+  return screen_manager_->GetScreenByName(screen_name);
+}
+
 void WizardController::SetCurrentScreenForTesting(BaseScreen* screen) {
   current_screen_ = screen;
 }

@@ -30,9 +30,12 @@ struct OobeScreenId {
   // Create an identifier from a string.
   // TODO(https://crbug.com/1312880): Remove this.
   explicit OobeScreenId(const std::string& id);
+
   // Create an identifier from a statically created identifier. This is implicit
   // to make StaticOobeScreenId act more like OobeScreenId.
   OobeScreenId(const StaticOobeScreenId& id);
+
+  OobeScreenId(const std::string& id, const std::string& api_prefix);
 
   std::string name;
   std::string external_api_prefix;

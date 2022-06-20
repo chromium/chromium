@@ -18,7 +18,8 @@ namespace chromeos {
 // representation. Owned by ErrorScreen.
 class ErrorScreenView {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"error-message"};
+  constexpr static StaticOobeScreenId kScreenId{"error-message",
+                                                "ErrorMessageScreen"};
 
   virtual ~ErrorScreenView() {}
 
