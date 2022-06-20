@@ -31,8 +31,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
 
   WaylandInputMethodContext(WaylandConnection* connection,
                             WaylandKeyboard::Delegate* key_delegate,
-                            LinuxInputMethodContextDelegate* ime_delegate,
-                            bool is_simple);
+                            LinuxInputMethodContextDelegate* ime_delegate);
   WaylandInputMethodContext(const WaylandInputMethodContext&) = delete;
   WaylandInputMethodContext& operator=(const WaylandInputMethodContext&) =
       delete;
@@ -94,7 +93,6 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
 
   // Delegate IME-specific events to be handled by //ui code.
   LinuxInputMethodContextDelegate* const ime_delegate_;
-  bool is_simple_;
 
   std::unique_ptr<ZWPTextInputWrapper> text_input_;
 

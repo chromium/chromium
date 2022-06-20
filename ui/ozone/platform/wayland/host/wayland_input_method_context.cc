@@ -122,12 +122,10 @@ ConvertStyle(uint32_t style) {
 WaylandInputMethodContext::WaylandInputMethodContext(
     WaylandConnection* connection,
     WaylandKeyboard::Delegate* key_delegate,
-    LinuxInputMethodContextDelegate* ime_delegate,
-    bool is_simple)
+    LinuxInputMethodContextDelegate* ime_delegate)
     : connection_(connection),
       key_delegate_(key_delegate),
       ime_delegate_(ime_delegate),
-      is_simple_(is_simple),
       text_input_(nullptr) {
   connection_->wayland_window_manager()->AddObserver(this);
   Init();
@@ -147,7 +145,7 @@ void WaylandInputMethodContext::Init(bool initialize_for_testing) {
   // If text input instance is not created then all ime context operations
   // are noop. This option is because in some environments someone might not
   // want to enable ime/virtual keyboard even if it's available.
-  if (use_ozone_wayland_vkb && !is_simple_ && !text_input_ &&
+  if (use_ozone_wayland_vkb && !text_input_ &&
       connection_->text_input_manager_v1()) {
     text_input_ = std::make_unique<ZWPTextInputWrapperV1>(
         connection_, this, connection_->text_input_manager_v1(),
@@ -209,22 +207,10 @@ void WaylandInputMethodContext::Reset() {
 void WaylandInputMethodContext::UpdateFocus(bool has_client,
                                             TextInputType old_type,
                                             TextInputType new_type) {
-  // TODO(b/226781965): Known issue that this does not work.
-  if (is_simple_) {
-    // simple context can be used in any textfield, including password box, and
-    // even if the focused text input client's text input type is
-    // ui::TEXT_INPUT_TYPE_NONE.
-    if (has_client)
-      Focus();
-    else
-      Blur();
-  } else {
-    // Otherwise We only focus when the focus is in a textfield.
-    if (old_type != TEXT_INPUT_TYPE_NONE)
-      Blur();
-    if (new_type != TEXT_INPUT_TYPE_NONE)
-      Focus();
-  }
+  if (old_type != TEXT_INPUT_TYPE_NONE)
+    Blur();
+  if (new_type != TEXT_INPUT_TYPE_NONE)
+    Focus();
 }
 
 void WaylandInputMethodContext::Focus() {

@@ -124,8 +124,10 @@ class WaylandInputMethodContextTest : public WaylandTest {
     WaylandInputMethodContextFactory factory(connection_.get());
     LinuxInputMethodContextFactory::SetInstance(&factory);
 
-    input_method_context_ = factory.CreateWaylandInputMethodContext(
-        input_method_context_delegate_.get(), false);
+    auto input_method_context =
+        factory.CreateInputMethodContext(input_method_context_delegate_.get());
+    input_method_context_.reset(static_cast<WaylandInputMethodContext*>(
+        input_method_context.release()));
     input_method_context_->Init(true);
     connection_->ScheduleFlush();
 
