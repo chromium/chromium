@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {COLORS_CSS_SELECTOR, refreshColorCss} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
 
 suite('ColorChangeListenerTest', () => {
   setup(() => {
@@ -12,18 +13,15 @@ suite('ColorChangeListenerTest', () => {
   });
 
   test('CorrectlyUpdatesColorsStylesheetURL', () => {
-    const colorCssNode =
-        document.querySelector<HTMLLinkElement>(COLORS_CSS_SELECTOR);
+    const colorCssNode = document.querySelector(COLORS_CSS_SELECTOR);
     assertTrue(!!colorCssNode);
     const initialHref = colorCssNode.getAttribute('href');
-    assertTrue(!!initialHref);
     assertTrue(initialHref.startsWith('chrome://theme/colors.css'));
 
     // refreshColorCss() should append search params to the colors CSS href.
     assertTrue(refreshColorCss());
 
     const finalHref = colorCssNode.getAttribute('href');
-    assertTrue(!!finalHref);
     assertTrue(finalHref.startsWith('chrome://theme/colors.css'));
     assertTrue(!!new URL(finalHref).search);
 
