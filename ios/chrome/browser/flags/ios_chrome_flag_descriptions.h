@@ -109,11 +109,6 @@ extern const char kBubbleRichIPHDescription[];
 extern const char kBookmarkStringName[];
 extern const char kBookmarkStringDescription[];
 
-// Title and description for the flag to enable the use of apple calendar in
-// experience kit calendar.
-extern const char kEnableExpKitAppleCalendarName[];
-extern const char kEnableExpKitAppleCalendarDescription[];
-
 // Title and description for the flag to enable experience kit calendar events.
 extern const char kCalendarExperienceKitName[];
 extern const char kCalendarExperienceKitDescription[];

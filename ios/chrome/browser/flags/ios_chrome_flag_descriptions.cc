@@ -128,12 +128,6 @@ const char kBookmarkStringDescription[] =
     "This flag is used to change the string of the action allowing the user to "
     "bookmark a page from the overflow menu.";
 
-const char kEnableExpKitAppleCalendarName[] =
-    "Enable Add Apple Calendar Events from long pressing dates";
-const char kEnableExpKitAppleCalendarDescription[] =
-    "When enabled, Experience Kit Calendar suggest the use of the Apple "
-    "Calendar via the context menu";
-
 extern const char kCalendarExperienceKitName[] = "Experience Kit Calendar";
 extern const char kCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Calendar "
