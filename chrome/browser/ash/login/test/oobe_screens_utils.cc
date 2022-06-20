@@ -251,10 +251,10 @@ void OobeUiDestroyedWaiter::Wait() {
 
   ASSERT_TRUE(was_destroyed_)
       << "Timed out while waiting for OobeUI to be destroyed!";
-  oobe_ui_observation_.Reset();
 }
 
 void OobeUiDestroyedWaiter::OnDestroyingOobeUI() {
+  oobe_ui_observation_.Reset();
   was_destroyed_ = true;
   run_loop_->Quit();
 }
