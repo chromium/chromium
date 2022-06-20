@@ -274,7 +274,7 @@ suite('PasswordsSection', function() {
     PasswordManagerImpl.setInstance(passwordManager);
     elementFactory = new PasswordSectionElementFactory(document);
     loadTimeData.overrideValues({
-      enablePasswordNotes: false,
+      enablePasswordViewPage: false,
       unifiedPasswordManagerEnabled: false,
     });
   });
@@ -1068,8 +1068,8 @@ suite('PasswordsSection', function() {
                 '#showPasswordButton')!.classList.contains('icon-visibility'));
   });
 
-  test('clickingTheRowOpensSubpageWhenNotesEnabled', async function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
+  test('clickingTheRowOpensSubpageWhenViewPageEnabled', async function() {
+    loadTimeData.overrideValues({enablePasswordViewPage: true});
     Router.resetInstanceForTesting(buildRouter());
     routes.PASSWORD_VIEW =
         (Router.getInstance().getRoutes() as SettingsRoutes).PASSWORD_VIEW;

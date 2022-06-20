@@ -141,7 +141,7 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
   if (visibility.autofill !== false) {
     r.AUTOFILL = r.BASIC.createSection('/autofill', 'autofill');
     r.PASSWORDS = r.AUTOFILL.createChild('/passwords');
-    if (loadTimeData.getBoolean('enablePasswordNotes')) {
+    if (loadTimeData.getBoolean('enablePasswordViewPage')) {
       r.PASSWORD_VIEW = r.PASSWORDS.createChild('view');
     }
     r.CHECK_PASSWORDS = r.PASSWORDS.createChild('check');

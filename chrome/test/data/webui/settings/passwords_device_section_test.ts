@@ -362,11 +362,11 @@ suite('PasswordsDeviceSection', function() {
   // Testing moving multiple password dialog doesn't have more actions menu
   // button next to each password row but it has the eye icon
   [false, true].forEach(
-      enablePasswordNotes => test(
+      enablePasswordViewPage => test(
           `moveMultiplePasswordsDialogButtonVisibilities` +
-              `WhenPasswordNotesEnabledIs_${enablePasswordNotes}`,
+              `WhenPasswordNotesEnabledIs_${enablePasswordViewPage}`,
           function() {
-            loadTimeData.overrideValues({enablePasswordNotes});
+            loadTimeData.overrideValues({enablePasswordViewPage});
             const deviceEntry = createMultiStorePasswordEntry(
                 {url: 'goo.gl', username: 'bart', deviceId: 42});
             const moveMultipleDialog =

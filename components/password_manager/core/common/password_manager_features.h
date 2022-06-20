@@ -41,6 +41,7 @@ extern const base::Feature kIOSPasswordUISplit;
 #endif  // IS_IOS
 extern const base::Feature kMuteCompromisedPasswords;
 extern const base::Feature kPasswordNotes;
+extern const base::Feature kPasswordViewPageInSettings;
 extern const base::Feature kSendPasswords;
 extern const base::Feature kLeakDetectionUnauthenticated;
 extern const base::Feature kPasswordChange;

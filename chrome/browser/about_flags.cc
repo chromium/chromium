@@ -7277,6 +7277,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kSupportForAddPasswordsInSettings)},
 
+    {"password-view-page-in-settings",
+     flag_descriptions::kPasswordViewPageInSettingsName,
+     flag_descriptions::kPasswordViewPageInSettingsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kPasswordViewPageInSettings)},
+
     {"password-notes", flag_descriptions::kPasswordNotesName,
      flag_descriptions::kPasswordNotesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordNotes)},

@@ -27,7 +27,6 @@ function assertVisibilityOfPageElements(
    '#passwordInput',
    '#showPasswordButton',
    '#copyPasswordButton',
-   'settings-textarea',
    '#editButton',
    '#deleteButton',
   ]
@@ -49,7 +48,6 @@ function assertVisibilityOfFederatedCredentialElements(
 
   ['#showPasswordButton',
    '#copyPasswordButton',
-   'settings-textarea',
    '#editButton',
   ]
       .forEach(
@@ -68,7 +66,8 @@ suite('PasswordViewTest', function() {
   let passwordManager: TestPasswordManagerProxy;
 
   setup(function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
+    loadTimeData.overrideValues(
+        {enablePasswordViewPage: true, enablePasswordNotes: false});
     Router.resetInstanceForTesting(buildRouter());
     routes.PASSWORD_VIEW =
         (Router.getInstance().getRoutes() as SettingsRoutes).PASSWORD_VIEW;
@@ -77,33 +76,47 @@ suite('PasswordViewTest', function() {
     PasswordManagerImpl.setInstance(passwordManager);
   });
 
-  [{url: SITE, username: USERNAME}, {url: SITE, username: ''}].forEach(
-      item =>
-          test('Valid site and username displays an entry', async function() {
-            const passwordList = [
-              createPasswordEntry({
-                url: item.url,
-                username: item.username,
-                id: ID,
-                note: NOTE,
-              }),
-            ];
+  [{url: SITE, username: USERNAME, notesEnabled: false},
+   {url: SITE, username: '', notesEnabled: false},
+   {url: SITE, username: USERNAME, notesEnabled: true},
+   {url: SITE, username: '', notesEnabled: true}]
+      .forEach(
+          item => test(
+              `Valid site and username displays an entry ${item.notesEnabled}`,
+              async function() {
+                loadTimeData.overrideValues(
+                    {enablePasswordNotes: item.notesEnabled});
 
-            passwordManager.data.passwords = passwordList;
-            const page = document.createElement('password-view');
-            document.body.appendChild(page);
-            const params = new URLSearchParams({
-              username: item.username,
-              site: item.url,
-            });
-            Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+                const passwordList = [
+                  createPasswordEntry({
+                    url: item.url,
+                    username: item.username,
+                    id: ID,
+                    note: NOTE,
+                  }),
+                ];
 
-            await flushTasks();
-            assertVisibilityOfPageElements(page, /*visibility=*/ true);
-            assertEquals(
-                NOTE,
-                page.shadowRoot!.querySelector('settings-textarea')!.value);
-          }));
+                passwordManager.data.passwords = passwordList;
+                const page = document.createElement('password-view');
+                document.body.appendChild(page);
+                const params = new URLSearchParams({
+                  username: item.username,
+                  site: item.url,
+                });
+                Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+
+                await flushTasks();
+                assertVisibilityOfPageElements(page, /*visibility=*/ true);
+                if (item.notesEnabled) {
+                  assertEquals(
+                      NOTE,
+                      page.shadowRoot!.querySelector(
+                                          'settings-textarea')!.value);
+                } else {
+                  assertFalse(isVisible(
+                      page.shadowRoot!.querySelector('settings-textarea')));
+                }
+              }));
 
   [{inAccount: false, onDevice: true, username: USERNAME},
    {inAccount: true, onDevice: false, username: USERNAME},
@@ -172,6 +185,7 @@ suite('PasswordViewTest', function() {
               }));
 
   test('Empty note shows placeholder text', async function() {
+    loadTimeData.overrideValues({enablePasswordNotes: true});
     const passwordList = [
       createPasswordEntry({url: SITE, username: USERNAME, id: ID}),
     ];
