@@ -77,6 +77,7 @@ out/Default/bin/run_chrome_junit_tests --wait-for-java-debugger  # Specify custo
 *   Click "Run"->"Attach debugger to Android process" (see
 [here](https://developer.android.com/studio/debug/index.html) for more).
 *   Click "Run"->"Attach to Local Process..." for Robolectric junit tests.
+    * If this fails, you likely need to follow [these instructions](https://stackoverflow.com/questions/21114066/attach-intellij-idea-debugger-to-a-running-java-process).
 
 ### Eclipse
 *   In Eclipse, make a debug configuration of type "Remote Java Application".
