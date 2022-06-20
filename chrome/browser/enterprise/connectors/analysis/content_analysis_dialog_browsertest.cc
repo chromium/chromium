@@ -1085,7 +1085,13 @@ class ContentAnalysysDialogUiTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(ContentAnalysysDialogUiTest, InvokeUi_default) {
+// Flaky on Windows, http://crbug.com/1337078
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+IN_PROC_BROWSER_TEST_P(ContentAnalysysDialogUiTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
