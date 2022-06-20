@@ -161,6 +161,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.CleanExitBeaconConsistency2"
     enum="UmaCleanExitConsistency2" expires_after="2023-05-31">
+  <obsolete>
+    Removed in M105.
+  </obsolete>
   <owner>asvitkine@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>

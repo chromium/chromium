@@ -108,12 +108,6 @@ struct BeaconConsistencyTestParams {
 };
 
 #if BUILDFLAG(IS_IOS)
-// Used for testing the logic that emits to the UMA.CleanExitBeaconConsistency2
-// histogram.
-class PlatformBeaconAndLocalStateBeaconConsistencyTest
-    : public testing::WithParamInterface<BeaconConsistencyTestParams>,
-      public CleanExitBeaconTest {};
-
 // Used for testing the logic that emits to the UMA.CleanExitBeaconConsistency3
 // histogram.
 class BeaconFileAndPlatformBeaconConsistencyTest
@@ -455,76 +449,6 @@ TEST_F(CleanExitBeaconTest,
 }
 
 #if BUILDFLAG(IS_IOS)
-// Verify that the logic for recording UMA.CleanExitBeaconConsistency2 is
-// correct.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PlatformBeaconAndLocalStateBeaconConsistencyTest,
-    ::testing::Values(
-        BeaconConsistencyTestParams{
-            .test_name = "MissingMissing",
-            .expected_consistency =
-                CleanExitBeaconConsistency::kMissingMissing},
-        BeaconConsistencyTestParams{
-            .test_name = "MissingClean",
-            .local_state_beacon_value = true,
-            .expected_consistency = CleanExitBeaconConsistency::kMissingClean},
-        BeaconConsistencyTestParams{
-            .test_name = "MissingDirty",
-            .local_state_beacon_value = false,
-            .expected_consistency = CleanExitBeaconConsistency::kMissingDirty},
-        BeaconConsistencyTestParams{
-            .test_name = "CleanMissing",
-            .platform_specific_beacon_value = true,
-            .expected_consistency = CleanExitBeaconConsistency::kCleanMissing},
-        BeaconConsistencyTestParams{
-            .test_name = "DirtyMissing",
-            .platform_specific_beacon_value = false,
-            .expected_consistency = CleanExitBeaconConsistency::kDirtyMissing},
-        BeaconConsistencyTestParams{
-            .test_name = "CleanClean",
-            .platform_specific_beacon_value = true,
-            .local_state_beacon_value = true,
-            .expected_consistency = CleanExitBeaconConsistency::kCleanClean},
-        BeaconConsistencyTestParams{
-            .test_name = "CleanDirty",
-            .platform_specific_beacon_value = true,
-            .local_state_beacon_value = false,
-            .expected_consistency = CleanExitBeaconConsistency::kCleanDirty},
-        BeaconConsistencyTestParams{
-            .test_name = "DirtyClean",
-            .platform_specific_beacon_value = false,
-            .local_state_beacon_value = true,
-            .expected_consistency = CleanExitBeaconConsistency::kDirtyClean},
-        BeaconConsistencyTestParams{
-            .test_name = "DirtyDirty",
-            .platform_specific_beacon_value = false,
-            .local_state_beacon_value = false,
-            .expected_consistency = CleanExitBeaconConsistency::kDirtyDirty}),
-    [](const ::testing::TestParamInfo<BeaconConsistencyTestParams>& params) {
-      return params.param.test_name;
-    });
-
-TEST_P(PlatformBeaconAndLocalStateBeaconConsistencyTest, BeaconConsistency) {
-  // Clear the platform-specific and Local State beacons. Unless set below, the
-  // beacons are considered missing.
-  CleanExitBeacon::ResetStabilityExitedCleanlyForTesting(&prefs_);
-
-  BeaconConsistencyTestParams params = GetParam();
-  if (params.platform_specific_beacon_value) {
-    CleanExitBeacon::SetUserDefaultsBeacon(
-        /*exited_cleanly=*/params.platform_specific_beacon_value.value());
-  }
-  if (params.local_state_beacon_value) {
-    prefs_.SetBoolean(prefs::kStabilityExitedCleanly,
-                      params.local_state_beacon_value.value());
-  }
-
-  TestCleanExitBeacon clean_exit_beacon(&prefs_);
-  histogram_tester_.ExpectUniqueSample("UMA.CleanExitBeaconConsistency2",
-                                       params.expected_consistency, 1);
-}
-
 // Verify that the logic for recording UMA.CleanExitBeaconConsistency3 is
 // correct for clients in the Extended Variations Safe Mode experiment's enabled
 // group.

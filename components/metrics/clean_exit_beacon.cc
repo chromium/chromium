@@ -251,10 +251,7 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   absl::optional<bool> backup_beacon_value = ExitedCleanly();
-  RecordBeaconConsistency("UMA.CleanExitBeaconConsistency2",
-                          backup_beacon_value, local_state_beacon_value);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
-
+#endif
   absl::optional<bool> beacon_file_beacon_value;
   bool use_beacon_file = base::FieldTrialList::FindFullName(
                              kExtendedSafeModeTrial) == kEnabledGroup;
