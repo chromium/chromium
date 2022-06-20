@@ -175,7 +175,7 @@ int SequenceMatcher::EditDistance() {
       // Transposition
       if (i > 1 && j > 1 && first_string_[i - 2] == second_string_[j - 1] &&
           first_string_[i - 1] == second_string_[j - 2]) {
-        dp[i][j] = std::min(dp[i][j], dp[i - 2][j - 2] + cost);
+        dp[i][j] = std::min(dp[i][j], dp[i - 2][j - 2] + 1);
       }
     }
   }
