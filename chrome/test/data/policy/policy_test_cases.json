@@ -15200,7 +15200,7 @@
         "policies": {
           "SendDownloadToCloudEnterpriseConnector": [
             {
-              "service_provider": "Google",
+              "service_provider": "google",
               "enterprise_id": "1234567890",
               "domain": "example.com",
               "enable": [
@@ -15239,7 +15239,7 @@
           "enterprise_connectors.send_download_to_cloud": {
             "value": [
               {
-                "service_provider": "Google",
+                "service_provider": "google",
                 "enterprise_id": "1234567890",
                 "domain": "example.com",
                 "enable": [
