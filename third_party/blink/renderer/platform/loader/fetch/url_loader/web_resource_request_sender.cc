@@ -79,16 +79,9 @@ struct CrossThreadCopier<net::NetworkTrafficAnnotationTag>
 };
 
 template <>
-struct CrossThreadCopier<blink::WebVector<blink::WebString>> {
+struct CrossThreadCopier<blink::WebVector<blink::WebString>>
+    : public CrossThreadCopierPassThrough<blink::WebVector<blink::WebString>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = blink::WebVector<blink::WebString>;
-  static Type Copy(const Type& value) {
-    Type result;
-    result.reserve(value.size());
-    for (const auto& element : value)
-      result.emplace_back(element.IsolatedCopy());
-    return result;
-  }
 };
 
 }  // namespace WTF

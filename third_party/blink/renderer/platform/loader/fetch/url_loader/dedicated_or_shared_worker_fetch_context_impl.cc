@@ -192,9 +192,8 @@ DedicatedOrSharedWorkerFetchContextImpl::
       cors_exempt_header_list_(cors_exempt_header_list.size()),
       pending_resource_load_info_notifier_(
           std::move(pending_resource_load_info_notifier)) {
-  // Make a deep copy because we will visit it on the worker thread.
   for (const WebString& cors_exempt_header : cors_exempt_header_list)
-    cors_exempt_header_list_.emplace_back(cors_exempt_header.IsolatedCopy());
+    cors_exempt_header_list_.emplace_back(cors_exempt_header);
 }
 
 scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
@@ -484,8 +483,7 @@ void DedicatedOrSharedWorkerFetchContextImpl::
 
 void DedicatedOrSharedWorkerFetchContextImpl::set_client_id(
     const WebString& client_id) {
-  // Make a deep copy because we will visit it on the worker thread.
-  client_id_ = client_id.IsolatedCopy();
+  client_id_ = client_id;
 }
 
 WebString DedicatedOrSharedWorkerFetchContextImpl::GetAcceptLanguages() const {
@@ -592,8 +590,8 @@ void DedicatedOrSharedWorkerFetchContextImpl::
       FROM_HERE,
       base::BindOnce(
           &CreateServiceWorkerSubresourceLoaderFactory,
-          std::move(cloned_service_worker_container_host),
-          client_id_.IsolatedCopy(), fallback_factory_->Clone(),
+          std::move(cloned_service_worker_container_host), client_id_,
+          fallback_factory_->Clone(),
           service_worker_url_loader_factory.InitWithNewPipeAndPassReceiver(),
           task_runner));
   web_loader_factory_->SetServiceWorkerURLLoaderFactory(

@@ -83,7 +83,6 @@ namespace blink {
 // * WebString FilePathToWebString(const base::FilePath&);
 //
 // It is inexpensive to copy a WebString object.
-// WARNING: It is not safe to pass a WebString across threads!!!
 //
 class WebString {
  public:
@@ -164,10 +163,6 @@ class WebString {
 
   // Does same as FromLatin1 but asserts if the given string has non-ascii char.
   BLINK_PLATFORM_EXPORT static WebString FromASCII(const std::string&);
-
-  // Makes a deep copy. Use this when you need to pass a WebString to another
-  // thread.
-  BLINK_PLATFORM_EXPORT WebString IsolatedCopy() const;
 
   template <int N>
   WebString(const char (&data)[N]) : WebString(FromUTF8(data, N - 1)) {}
