@@ -1998,6 +1998,89 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NoPopupWidget) {
   EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
 }
 
+// This throttle cancels prerendering on subframe navigation in prerendered
+// pages. The subframe navigation itself will keep proceeding.
+class TestPrerenderCancellerSubframeNavigationThrottle
+    : public NavigationThrottle {
+ public:
+  explicit TestPrerenderCancellerSubframeNavigationThrottle(
+      NavigationHandle* navigation_handle)
+      : NavigationThrottle(navigation_handle),
+        navigation_request_(NavigationRequest::From(navigation_handle)) {}
+
+  ThrottleCheckResult WillStartRequest() override {
+    // Cancel prerendering if this navigation is for subframes in prerendered
+    // pages.
+    FrameTreeNode* frame_tree_node = navigation_request_->frame_tree_node();
+    if (frame_tree_node->frame_tree()->is_prerendering() &&
+        !frame_tree_node->IsMainFrame()) {
+      PrerenderHostRegistry* prerender_host_registry =
+          frame_tree_node->current_frame_host()
+              ->delegate()
+              ->GetPrerenderHostRegistry();
+      prerender_host_registry->CancelHost(
+          frame_tree_node->frame_tree()->root()->frame_tree_node_id(),
+          PrerenderHost::FinalStatus::kMaxValue);
+    }
+    return PROCEED;
+  }
+
+  const char* GetNameForLogging() override {
+    return "TestPrerenderCancellerSubframeNavigationThrottle";
+  }
+
+ private:
+  NavigationRequest* navigation_request_;
+};
+
+// Regression test for https://crbug.com/1323309.
+// Tests that subframe navigation in prerendered pages starting while
+// PrerenderHost is being destroyed should not crash.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       SubframeNavigationWhilePrerenderHostIsBeingDestroyed) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  const GURL kCrossOriginSubframeUrl =
+      GetCrossOriginUrl("/empty.html?cross_origin_iframe");
+
+  // Navigate to the initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Start a prerender.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  test::PrerenderHostObserver observer(*web_contents_impl(), host_id);
+
+  // Insert TestPrerenderCancellerSubframeNavigationThrottle that cancels
+  // prerendering on subframe navigation in a prerendered page. This should run
+  // before PrerenderSubframeNavigationThrottle.
+  content::ShellContentBrowserClient::Get()
+      ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
+          [](content::NavigationHandle* handle)
+              -> std::vector<std::unique_ptr<content::NavigationThrottle>> {
+            std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+            throttles.push_back(
+                std::make_unique<
+                    TestPrerenderCancellerSubframeNavigationThrottle>(handle));
+            return throttles;
+          }));
+
+  // Use ExecuteScriptAsync instead of EvalJs as inserted cross-origin iframe
+  // navigation should be canceled and script execution cannot wait for the
+  // completion.
+  RenderFrameHost* prerender_frame_host = GetPrerenderedMainFrameHost(host_id);
+  EXPECT_TRUE(AddTestUtilJS(prerender_frame_host));
+  ExecuteScriptAsync(prerender_frame_host, JsReplace("add_iframe_async($1)",
+                                                     kCrossOriginSubframeUrl));
+
+  // Wait for the cancellation triggered by the throttle. The subframe
+  // navigation should not crash during the period.
+  observer.WaitForDestroyed();
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kMaxValue);
+}
+
 class MojoCapabilityControlTestContentBrowserClient
     : public TestContentBrowserClient,
       mojom::TestInterfaceForDefer,

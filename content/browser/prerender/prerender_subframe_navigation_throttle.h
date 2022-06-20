@@ -44,8 +44,11 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
   ThrottleCheckResult WillStartOrRedirectRequest();
 
   // Called when this throttle defers a navigation. Observes the PrerenderHost
-  // so that the throttle can resume the navigation upon activation.
-  void DeferCrossOriginSubframeNavigation(const FrameTreeNode& frame_tree_node);
+  // so that the throttle can resume the navigation upon activation, and returns
+  // ThrottleCheckResult::DEFER. If it's not feasible to defer it, returns
+  // Throttlecheckresult::CANCEL.
+  ThrottleCheckResult DeferOrCancelCrossOriginSubframeNavigation(
+      const FrameTreeNode& frame_tree_node);
 
   bool is_deferred_ = false;
   const int prerender_root_ftn_id_;

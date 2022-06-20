@@ -93,8 +93,7 @@ PrerenderSubframeNavigationThrottle::WillProcessResponse() {
   RenderFrameHostImpl* rfhi = frame_tree_node->frame_tree()->GetMainFrame();
   const url::Origin& main_origin = rfhi->GetLastCommittedOrigin();
   if (!main_origin.IsSameOriginWith(navigation_request->GetOriginToCommit())) {
-    DeferCrossOriginSubframeNavigation(*frame_tree_node);
-    return NavigationThrottle::DEFER;
+    return DeferOrCancelCrossOriginSubframeNavigation(*frame_tree_node);
   }
 
   return PROCEED;
@@ -147,16 +146,23 @@ void PrerenderSubframeNavigationThrottle::DidFinishNavigation(
   // Resume() may have deleted `this`.
 }
 
-void PrerenderSubframeNavigationThrottle::DeferCrossOriginSubframeNavigation(
+NavigationThrottle::ThrottleCheckResult
+PrerenderSubframeNavigationThrottle::DeferOrCancelCrossOriginSubframeNavigation(
     const FrameTreeNode& frame_tree_node) {
-  // Look up the PrerenderHost.
+  DCHECK(frame_tree_node.frame_tree()->is_prerendering());
   DCHECK(!frame_tree_node.IsMainFrame());
+
+  // Look up the PrerenderHost.
   PrerenderHostRegistry* registry = frame_tree_node.current_frame_host()
                                         ->delegate()
                                         ->GetPrerenderHostRegistry();
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_root_ftn_id_);
-  DCHECK(prerender_host);
+  if (!prerender_host) {
+    // The PrerenderHostRegistry removed the PrerenderHost and scheduled to
+    // destroy it asynchronously.
+    return NavigationThrottle::CANCEL;
+  }
 
   // Defer cross-origin subframe navigations during prerendering.
   // Will resume the navigation upon activation.
@@ -164,6 +170,7 @@ void PrerenderSubframeNavigationThrottle::DeferCrossOriginSubframeNavigation(
   observation_.Observe(prerender_host);
   DCHECK(observation_.IsObservingSource(prerender_host));
   is_deferred_ = true;
+  return NavigationThrottle::DEFER;
 }
 
 void PrerenderSubframeNavigationThrottle::OnHostDestroyed() {
@@ -194,10 +201,8 @@ PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
   // through the NavigationThrottle, so it's not a problem here
   RenderFrameHostImpl* rfhi = frame_tree_node->frame_tree()->GetMainFrame();
   const url::Origin& main_origin = rfhi->GetLastCommittedOrigin();
-  if (!main_origin.IsSameOriginWith(navigation_handle()->GetURL())) {
-    DeferCrossOriginSubframeNavigation(*frame_tree_node);
-    return NavigationThrottle::DEFER;
-  }
+  if (!main_origin.IsSameOriginWith(navigation_handle()->GetURL()))
+    return DeferOrCancelCrossOriginSubframeNavigation(*frame_tree_node);
 
   return NavigationThrottle::PROCEED;
 }
