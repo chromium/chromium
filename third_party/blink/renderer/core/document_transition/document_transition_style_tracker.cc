@@ -943,19 +943,24 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
   if (add_animations)
     builder.Append(AnimationUAStyles());
 
+  auto append_selector = [&builder](const String& name, const String& tag) {
+    builder.Append(name);
+    builder.Append("(");
+    builder.Append(tag);
+    builder.Append(")");
+  };
+
   for (auto& root_tag : AllRootTags()) {
-    builder.AppendFormat(
-        R"CSS(
-        html::page-transition-container(%s) {
+    append_selector("html::page-transition-container", root_tag);
+    builder.Append(
+        R"CSS({
           right: 0;
           bottom: 0;
-        }
-        )CSS",
-        root_tag.Utf8().c_str());
+        })CSS");
   }
 
   for (auto& entry : element_data_map_) {
-    auto document_transition_tag = entry.key.GetString().Utf8();
+    const auto& document_transition_tag = entry.key.GetString();
     auto& element_data = entry.value;
 
     gfx::Rect border_box_in_css_space = gfx::Rect(
@@ -970,17 +975,16 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
 
     // ::page-transition-container styles using computed properties for each
     // element.
+    append_selector("html::page-transition-container", document_transition_tag);
     builder.AppendFormat(
-        R"CSS(
-        html::page-transition-container(%s) {
+        R"CSS({
           width: %dpx;
           height: %dpx;
           transform: %s;
           writing-mode: %s;
         }
         )CSS",
-        document_transition_tag.c_str(), border_box_in_css_space.width(),
-        border_box_in_css_space.height(),
+        border_box_in_css_space.width(), border_box_in_css_space.height(),
         ComputedStyleUtils::ValueForTransformationMatrix(
             element_data->viewport_matrix, 1, false)
             ->CssText()
@@ -993,26 +997,28 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
         element_data->visual_overflow_rect_in_layout_space,
         border_box_in_css_space, device_pixel_ratio);
     if (incoming_inset) {
+      append_selector("html::page-transition-incoming-image",
+                      document_transition_tag);
       builder.AppendFormat(
-          R"CSS(
-          html::page-transition-incoming-image(%s) {
+          R"CSS({
             object-view-box: %s;
           }
           )CSS",
-          document_transition_tag.c_str(), incoming_inset->Utf8().c_str());
+          incoming_inset->Utf8().c_str());
     }
 
     absl::optional<String> outgoing_inset = ComputeInsetDifference(
         element_data->cached_visual_overflow_rect_in_layout_space,
         cached_border_box_in_css_space, device_pixel_ratio);
     if (outgoing_inset) {
+      append_selector("html::page-transition-outgoing-image",
+                      document_transition_tag);
       builder.AppendFormat(
-          R"CSS(
-          html::page-transition-outgoing-image(%s) {
+          R"CSS({
             object-view-box: %s;
           }
           )CSS",
-          document_transition_tag.c_str(), outgoing_inset->Utf8().c_str());
+          outgoing_inset->Utf8().c_str());
     }
 
     // TODO(khushalsagar) : We'll need to retarget the animation if the final
@@ -1021,9 +1027,10 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
     // the source/destination.
     if (add_animations && element_data->old_snapshot_id.IsValid() &&
         element_data->new_snapshot_id.IsValid()) {
+      builder.Append("@keyframes page-transition-container-anim-");
+      builder.Append(document_transition_tag);
       builder.AppendFormat(
-          R"CSS(
-          @keyframes page-transition-container-anim-%s {
+          R"CSS({
             from {
              transform: %s;
              width: %dpx;
@@ -1031,7 +1038,6 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
             }
            }
            )CSS",
-          document_transition_tag.c_str(),
           ComputedStyleUtils::ValueForTransformationMatrix(
               element_data->cached_viewport_matrix, 1, false)
               ->CssText()
@@ -1042,13 +1048,11 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
 
       // TODO(khushalsagar) : The duration/delay in the UA stylesheet will need
       // to be the duration from TransitionConfig. See crbug.com/1275727.
-      builder.AppendFormat(
-          R"CSS(
-          html::page-transition-container(%s) {
-            animation: page-transition-container-anim-%s 0.25s both
-          }
-          )CSS",
-          document_transition_tag.c_str(), document_transition_tag.c_str());
+      append_selector("html::page-transition-container",
+                      document_transition_tag);
+      builder.Append("{ animation: page-transition-container-anim-");
+      builder.Append(document_transition_tag);
+      builder.Append(" 0.25s both }");
     }
   }
 
