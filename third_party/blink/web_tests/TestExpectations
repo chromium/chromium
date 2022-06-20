@@ -7080,3 +7080,6 @@ crbug.com/1316343 [ Win ] external/wpt/web-bundle/subresource-loading/script-reu
 
 # Manual test fails when run under automation due to lack of pop-up blocking. https://github.com/web-platform-tests/wpt/issues/3867
 crbug.com/1337125 external/wpt/window-placement/fullscreen-companion-window-manual.tentative.https.html [ Failure ]
+
+# Temporarily disable test to merge DevTools top layer support
+crbug.com/1313690 http/tests/devtools/elements/iframe-load-event.js [ Skip ]
