@@ -70,6 +70,18 @@ chrome_pgo_phase = 0
 EOF
         ;;
 
+    linux)
+        cat <<EOF
+target_os = "linux"
+dcheck_always_on = true
+is_chrome_branded = true
+is_debug = false
+is_official_build = true
+use_goma = false
+chrome_pgo_phase = 0
+EOF
+        ;;
+
     mac)
         cat <<EOF
 target_os = "mac"
