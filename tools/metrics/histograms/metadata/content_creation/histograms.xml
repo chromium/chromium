@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="LightweightReactions.AssetsFetchDuration.{Outcome}" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.Editing.Tapped{Button}.NumberOf{Action}"
-    units="times" expires_after="2022-07-31">
+    units="times" expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.EditingDone" enum="BooleanContinueChoice"
-    expires_after="2022-07-31">
+    expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.GifGenerationCancelled" enum="Boolean"
-    expires_after="2022-07-31">
+    expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.GifGenerationCancelled.Duration"
-    units="ms" expires_after="2022-07-31">
+    units="ms" expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.GifGenerationCancelled.Progress"
-    units="%" expires_after="2022-07-31">
+    units="%" expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -144,7 +144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.GifGenerationDuration" units="ms"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.GifGenerationSuccess"
-    enum="BooleanSuccess" expires_after="2022-10-04">
+    enum="BooleanSuccess" expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -162,14 +162,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.GifShared" enum="BooleanShared"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>Records whether the GIF was shared in the Share Sheet.</summary>
 </histogram>
 
 <histogram name="LightweightReactions.OrientationChange"
-    enum="DeviceOrientation" expires_after="2022-07-31">
+    enum="DeviceOrientation" expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.ReactionsUsed" enum="ReactionType"
-    expires_after="2022-10-04">
+    expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.ShareDestination"
-    enum="NoteShareDestination" expires_after="2022-07-31">
+    enum="NoteShareDestination" expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LightweightReactions.TimeTo{Action}" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2022-12-04">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
