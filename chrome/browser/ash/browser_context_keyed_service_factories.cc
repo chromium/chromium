@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/ash/nearby/nearby_connections_dependencies_provider_factory.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
@@ -81,6 +82,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   file_system_provider::ServiceFactory::GetInstance();
   guest_os::GuestOsRegistryServiceFactory::GetInstance();
   KerberosCredentialsManagerFactory::GetInstance();
+  LockScreenAppsFactory::GetInstance();
   nearby::NearbyConnectionsDependenciesProviderFactory::GetInstance();
   nearby::NearbyProcessManagerFactory::GetInstance();
   OwnerSettingsServiceAshFactory::GetInstance();

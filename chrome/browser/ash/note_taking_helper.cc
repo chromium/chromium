@@ -40,6 +40,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/note_taking_controller_client.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -291,8 +292,7 @@ std::vector<NoteTakingAppInfo> NoteTakingHelper::GetAvailableApps(
   std::vector<std::string> app_ids = GetNoteTakingAppIds(profile);
   for (const auto& app_id : app_ids) {
     LockScreenAppSupport lock_screen_support =
-        LockScreenHelper::GetInstance().GetLockScreenSupportForApp(profile,
-                                                                   app_id);
+        LockScreenApps::GetSupport(profile, app_id);
     infos.push_back(NoteTakingAppInfo{GetAppName(profile, app_id), app_id,
                                       /*preferred=*/false,
                                       lock_screen_support});
@@ -344,8 +344,12 @@ bool NoteTakingHelper::SetPreferredAppEnabledOnLockScreen(Profile* profile,
   if (app_id.empty())
     return false;
 
-  bool changed = LockScreenHelper::GetInstance().SetAppEnabledOnLockScreen(
-      profile, app_id, enabled);
+  LockScreenApps* lock_screen_apps =
+      LockScreenAppsFactory::GetInstance()->Get(profile);
+  if (!lock_screen_apps)
+    return false;
+
+  bool changed = lock_screen_apps->SetAppEnabledOnLockScreen(app_id, enabled);
   if (!changed)
     return false;
 

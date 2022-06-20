@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/lock_screen_apps/lock_screen_helper.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 
 #include <memory>
 #include <ostream>
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -17,13 +18,17 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/note_taking_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
@@ -113,37 +118,18 @@ std::unique_ptr<std::set<std::string>> GetAllowedLockScreenApps(
 
 }  // namespace
 
-LockScreenHelper& LockScreenHelper::GetInstance() {
-  static base::NoDestructor<LockScreenHelper> instance;
-  return *instance;
+LockScreenAppSupport LockScreenApps::GetSupport(Profile* profile,
+                                                const std::string& app_id) {
+  LockScreenApps* lock_screen_apps =
+      LockScreenAppsFactory::GetInstance()->Get(profile);
+  if (!lock_screen_apps)
+    return LockScreenAppSupport::kNotSupported;
+  return lock_screen_apps->GetSupport(app_id);
 }
 
-void LockScreenHelper::Initialize(Profile* profile) {
-  DCHECK(profile);
-  DCHECK(!profile_with_enabled_lock_screen_apps_);
-  profile_with_enabled_lock_screen_apps_ = profile;
-
-  pref_change_registrar_.Init(profile->GetPrefs());
-  pref_change_registrar_.Add(
-      prefs::kNoteTakingAppsLockScreenAllowlist,
-      base::BindRepeating(&LockScreenHelper::OnAllowedLockScreenAppsChanged,
-                          base::Unretained(this)));
-  OnAllowedLockScreenAppsChanged();
-}
-
-// TODO(crbug.com/1332379): Remove this method. Make this class a keyed service
-// so it will shutdown cleanly with the profile.
-void LockScreenHelper::Shutdown() {
-  profile_with_enabled_lock_screen_apps_ = nullptr;
-  pref_change_registrar_.RemoveAll();
-  allowed_lock_screen_apps_state_ = AllowedAppListState::kUndetermined;
-  allowed_lock_screen_apps_by_policy_.clear();
-}
-
-void LockScreenHelper::UpdateAllowedLockScreenAppsList() {
+void LockScreenApps::UpdateAllowedLockScreenAppsList() {
   std::unique_ptr<std::set<std::string>> allowed_apps =
-      GetAllowedLockScreenApps(
-          profile_with_enabled_lock_screen_apps_->GetPrefs());
+      GetAllowedLockScreenApps(profile_->GetPrefs());
 
   if (allowed_apps) {
     allowed_lock_screen_apps_state_ = AllowedAppListState::kAllowedAppsListed;
@@ -154,16 +140,11 @@ void LockScreenHelper::UpdateAllowedLockScreenAppsList() {
   }
 }
 
-LockScreenAppSupport LockScreenHelper::GetLockScreenSupportForApp(
-    Profile* profile,
-    const std::string& app_id) {
-  if (profile != profile_with_enabled_lock_screen_apps_)
-    return LockScreenAppSupport::kNotSupported;
-
+LockScreenAppSupport LockScreenApps::GetSupport(const std::string& app_id) {
   if (app_id.empty())
     return LockScreenAppSupport::kNotSupported;
 
-  if (!IsLockScreenCapable(profile, app_id))
+  if (!IsLockScreenCapable(profile_, app_id))
     return LockScreenAppSupport::kNotSupported;
 
   if (allowed_lock_screen_apps_state_ == AllowedAppListState::kUndetermined)
@@ -175,29 +156,24 @@ LockScreenAppSupport LockScreenHelper::GetLockScreenSupportForApp(
     return LockScreenAppSupport::kNotAllowedByPolicy;
   }
 
-  if (profile->GetPrefs()->GetBoolean(prefs::kNoteTakingAppEnabledOnLockScreen))
+  if (profile_->GetPrefs()->GetBoolean(
+          prefs::kNoteTakingAppEnabledOnLockScreen))
     return LockScreenAppSupport::kEnabled;
 
   return LockScreenAppSupport::kSupported;
 }
 
-bool LockScreenHelper::SetAppEnabledOnLockScreen(Profile* profile,
-                                                 const std::string& app_id,
-                                                 bool enabled) {
-  DCHECK(profile);
+bool LockScreenApps::SetAppEnabledOnLockScreen(const std::string& app_id,
+                                               bool enabled) {
   DCHECK(!app_id.empty());
-
-  if (profile != profile_with_enabled_lock_screen_apps_)
-    return false;
 
   // Currently only the preferred note-taking app is ever enabled on the lock
   // screen.
   // TODO(crbug.com/1332379): Remove this dependency on note taking code by
   // migrating to a separate prefs entry.
-  DCHECK_EQ(app_id, NoteTakingHelper::Get()->GetPreferredAppId(profile));
+  DCHECK_EQ(app_id, NoteTakingHelper::Get()->GetPreferredAppId(profile_));
 
-  LockScreenAppSupport current_state =
-      GetLockScreenSupportForApp(profile, app_id);
+  LockScreenAppSupport current_state = GetSupport(app_id);
 
   if ((enabled && current_state != LockScreenAppSupport::kSupported) ||
       (!enabled && current_state != LockScreenAppSupport::kEnabled)) {
@@ -205,41 +181,98 @@ bool LockScreenHelper::SetAppEnabledOnLockScreen(Profile* profile,
   }
 
   // TODO(crbug.com/1332379): Migrate to a non-note-taking prefs entry.
-  profile->GetPrefs()->SetBoolean(prefs::kNoteTakingAppEnabledOnLockScreen,
-                                  enabled);
+  profile_->GetPrefs()->SetBoolean(prefs::kNoteTakingAppEnabledOnLockScreen,
+                                   enabled);
 
   return true;
 }
 
-LockScreenHelper::LockScreenHelper() = default;
-LockScreenHelper::~LockScreenHelper() = default;
+LockScreenApps::LockScreenApps(Profile* primary_profile)
+    : profile_(primary_profile) {
+  DCHECK(LockScreenAppsFactory::IsSupportedProfile(profile_));
 
-// Called when kNoteTakingAppsLockScreenAllowlist pref changes for
-// |profile_with_enabled_lock_screen_apps_|.
-void LockScreenHelper::OnAllowedLockScreenAppsChanged() {
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kNoteTakingAppsLockScreenAllowlist,
+      base::BindRepeating(&LockScreenApps::OnAllowedLockScreenAppsChanged,
+                          base::Unretained(this)));
+  OnAllowedLockScreenAppsChanged();
+}
+LockScreenApps::~LockScreenApps() = default;
+
+// Called when kNoteTakingAppsLockScreenAllowlist pref changes for `profile_`.
+void LockScreenApps::OnAllowedLockScreenAppsChanged() {
   if (allowed_lock_screen_apps_state_ == AllowedAppListState::kUndetermined)
     return;
 
-  std::string app_id = NoteTakingHelper::Get()->GetPreferredAppId(
-      profile_with_enabled_lock_screen_apps_);
-  LockScreenAppSupport lock_screen_value_before_update =
-      GetLockScreenSupportForApp(profile_with_enabled_lock_screen_apps_,
-                                 app_id);
+  std::string app_id = NoteTakingHelper::Get()->GetPreferredAppId(profile_);
+  LockScreenAppSupport lock_screen_value_before_update = GetSupport(app_id);
 
   UpdateAllowedLockScreenAppsList();
 
-  LockScreenAppSupport lock_screen_value_after_update =
-      GetLockScreenSupportForApp(profile_with_enabled_lock_screen_apps_,
-                                 app_id);
+  LockScreenAppSupport lock_screen_value_after_update = GetSupport(app_id);
 
   // Do not notify observers about preferred app change if its lock screen
   // support status has not actually changed.
   if (lock_screen_value_before_update != lock_screen_value_after_update) {
     // TODO(crbug.com/1332379): Reverse this dependency by making note taking
     // code observe this class instead.
-    NoteTakingHelper::Get()->NotifyAppUpdated(
-        profile_with_enabled_lock_screen_apps_, app_id);
+    NoteTakingHelper::Get()->NotifyAppUpdated(profile_, app_id);
   }
+}
+
+// ---------------------------------------
+// LockScreenAppsFactory implementation
+// ---------------------------------------
+
+// static
+LockScreenAppsFactory* LockScreenAppsFactory::GetInstance() {
+  static base::NoDestructor<LockScreenAppsFactory> instance;
+  return instance.get();
+}
+
+// static
+bool LockScreenAppsFactory::IsSupportedProfile(Profile* profile) {
+  if (!profile)
+    return false;
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+    return false;
+  if (!ProfileHelper::IsPrimaryProfile(profile))
+    return false;
+  return true;
+}
+
+LockScreenApps* LockScreenAppsFactory::Get(Profile* profile) {
+  return static_cast<LockScreenApps*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+}
+
+LockScreenAppsFactory::LockScreenAppsFactory()
+    : BrowserContextKeyedServiceFactory(
+          "LockScreenApps",
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(apps::AppServiceProxyFactory::GetInstance());
+}
+
+LockScreenAppsFactory::~LockScreenAppsFactory() = default;
+
+void LockScreenAppsFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterListPref(::prefs::kNoteTakingAppsLockScreenAllowlist);
+  registry->RegisterBooleanPref(::prefs::kNoteTakingAppEnabledOnLockScreen,
+                                true);
+}
+
+KeyedService* LockScreenAppsFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  return new LockScreenApps(profile);
+}
+
+content::BrowserContext* LockScreenAppsFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  return IsSupportedProfile(profile) ? context : nullptr;
 }
 
 }  // namespace ash

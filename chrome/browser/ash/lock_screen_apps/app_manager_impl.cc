@@ -27,7 +27,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/lock_screen_apps/lock_screen_helper.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -369,9 +369,11 @@ void AppManagerImpl::UpdateLockScreenAppState() {
 std::string AppManagerImpl::FindLockScreenAppId() const {
   ash::NoteTakingHelper* helper = ash::NoteTakingHelper::Get();
   std::string app_id = helper->GetPreferredAppId(primary_profile_);
+  // Lock screen apps service should always exist on the primary profile.
+  DCHECK(primary_profile_);
+  DCHECK(ash::LockScreenAppsFactory::IsSupportedProfile(primary_profile_));
   ash::LockScreenAppSupport lock_screen_support =
-      ash::LockScreenHelper::GetInstance().GetLockScreenSupportForApp(
-          primary_profile_, app_id);
+      ash::LockScreenApps::GetSupport(primary_profile_, app_id);
 
   ActionAvailability availability =
       app_id.empty() ? ActionAvailability::kNoActionHandlerApp

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 
+#include <atomic>
+#include <ostream>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "ash/public/ash_interfaces.h"
@@ -12,25 +15,32 @@
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/command_line.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_internal.h"
 #include "base/path_service.h"
 #include "base/time/default_tick_clock.h"
+#include "chrome/browser/ash/lock_screen_apps/app_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager_impl.h"
 #include "chrome/browser/ash/lock_screen_apps/app_window_metrics_tracker.h"
 #include "chrome/browser/ash/lock_screen_apps/first_app_run_toast_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
-#include "chrome/browser/ash/lock_screen_apps/lock_screen_helper.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator_impl.h"
-#include "chrome/browser/ash/note_taking_helper.h"
+#include "chrome/browser/ash/lock_screen_apps/state_observer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/lock_screen_storage.h"
 #include "content/public/browser/web_contents.h"
@@ -41,8 +51,12 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/aura/window.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/wm/core/window_animations.h"
+#include "ui/wm/core/window_properties.h"
 
 using ash::mojom::CloseLockScreenNoteReason;
 using ash::mojom::LockScreenNoteOrigin;
@@ -129,7 +143,7 @@ void StateController::Initialize() {
     tick_clock_ = base::DefaultTickClock::GetInstance();
 
   // The tray action ptr might be set previously if the client was being created
-  // for testing.
+
   if (!tray_action_)
     ash::BindTrayAction(tray_action_.BindNewPipeAndPassReceiver());
   mojo::PendingRemote<ash::mojom::TrayActionClient> client;
@@ -173,7 +187,6 @@ void StateController::Shutdown() {
     app_manager_.reset();
   }
   first_app_run_toast_manager_.reset();
-  ash::LockScreenHelper::GetInstance().Shutdown();
   lock_screen_profile_creator_.reset();
   focus_cycler_delegate_ = nullptr;
   power_manager_client_observation_.Reset();
@@ -214,7 +227,8 @@ void StateController::InitializeWithCryptoKey(Profile* profile,
           base_path.AppendASCII("lock_screen_app_data_v2"));
   lock_screen_data_->SetSessionLocked(false);
 
-  ash::LockScreenHelper::GetInstance().Initialize(profile);
+  // Initialize a LockScreenApps instance.
+  ash::LockScreenAppsFactory::GetInstance()->Get(profile);
 
   // Lock screen profile creator might have been set by a test.
   if (!lock_screen_profile_creator_) {

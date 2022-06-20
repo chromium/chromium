@@ -64,8 +64,7 @@ class NoteTakingOnLockScreenPolicyTest : public ExtensionPolicyTestBase {
 
   ash::LockScreenAppSupport GetLockScreenSupportForApp(
       const std::string& app_id) {
-    return ash::LockScreenHelper::GetInstance().GetLockScreenSupportForApp(
-        browser()->profile(), app_id);
+    return ash::LockScreenApps::GetSupport(browser()->profile(), app_id);
   }
 
   // The test app ID.

@@ -21,7 +21,8 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/lock_screen_apps/lock_screen_helper.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -39,6 +40,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -239,15 +241,16 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         std::move(profile_manager_unique));
 
+    CreatePrimaryProfile();
+
+    InitExtensionSystem(primary_profile_);
+
     // Needed by note taking helper.
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(&ArcSessionFactory)));
     ash::NoteTakingHelper::Initialize();
 
-    AddTestUserProfile();
-
-    ash::LockScreenHelper::GetInstance().Initialize(primary_profile_);
     lock_screen_profile_creator_ =
         std::make_unique<LockScreenProfileCreatorImpl>(primary_profile_,
                                                        &tick_clock_);
@@ -256,7 +259,6 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
   void TearDown() override {
     lock_screen_profile_creator_.reset();
     arc_session_manager_.reset();
-    ash::LockScreenHelper::GetInstance().Shutdown();
     ash::NoteTakingHelper::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 
@@ -351,18 +353,23 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
         false /* autoupdate_enabled */);
   }
 
-  // Creates a testing primary user profile for this test.
-  void AddTestUserProfile() {
+  void CreatePrimaryProfile() {
+    DCHECK(!scoped_user_manager_) << "there can be only one primary profile";
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    const AccountId account_id(AccountId::FromUserEmail(kPrimaryUser));
+    user_manager->AddUser(account_id);
+    user_manager->LoginUser(account_id);
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+
     base::FilePath user_profile_path =
         user_data_dir_.GetPath().Append(ProfileHelper::Get()->GetUserProfileDir(
             ProfileHelper::GetUserIdHashByUserIdForTesting(kPrimaryUser)));
-
-    std::unique_ptr<TestingProfile> primary_profile =
-        std::make_unique<TestingProfile>(user_profile_path);
-    primary_profile_ = primary_profile.get();
-    profile_manager_->RegisterTestingProfile(std::move(primary_profile),
+    auto profile = std::make_unique<TestingProfile>(user_profile_path);
+    primary_profile_ = profile.get();
+    profile_manager_->RegisterTestingProfile(std::move(profile),
                                              false /*add_to_storage*/);
-    InitExtensionSystem(primary_profile_);
+    DCHECK(ash::ProfileHelper::IsPrimaryProfile(primary_profile_));
   }
 
   base::ScopedTempDir user_data_dir_;
@@ -370,7 +377,7 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  ash::ScopedTestUserManager test_user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   UnittestProfileManager* profile_manager_;
 
