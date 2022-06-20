@@ -3090,6 +3090,33 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFormSubmitted(
   builder.Record(ukm_recorder_);
 }
 
+void AutofillMetrics::FormInteractionsUkmLogger::LogKeyMetrics(
+    const DenseSet<FormType>& form_types,
+    bool data_to_fill_available,
+    bool suggestions_shown,
+    bool edited_autofilled_field,
+    bool suggestion_filled,
+    autofill_assistant::AutofillAssistantIntent intent) {
+  if (!CanLog())
+    return;
+
+  ukm::builders::Autofill_KeyMetrics builder(source_id_);
+  builder.SetFillingReadiness(data_to_fill_available)
+      .SetFillingAssistance(suggestion_filled)
+      .SetFormTypes(FormTypesToBitVector(form_types));
+
+  if (intent != autofill_assistant::AutofillAssistantIntent::UNDEFINED_INTENT)
+    builder.SetAutofillAssistantIntent(static_cast<int64_t>(intent));
+
+  if (suggestions_shown)
+    builder.SetFillingAcceptance(suggestion_filled);
+
+  if (suggestion_filled)
+    builder.SetFillingCorrectness(!edited_autofilled_field);
+
+  builder.Record(ukm_recorder_);
+}
+
 void AutofillMetrics::FormInteractionsUkmLogger::LogFormEvent(
     FormEvent form_event,
     const DenseSet<FormType>& form_types,

@@ -17,6 +17,7 @@
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -495,6 +496,9 @@ class ActionDelegate {
   // because they act as a script executor.
   virtual void MaybeSetPreviousAction(
       const ProcessedActionProto& processed_action) = 0;
+
+  // Returns the Autofill Assistant intent for the current flow.
+  virtual absl::optional<std::string> GetIntent() const = 0;
 
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 

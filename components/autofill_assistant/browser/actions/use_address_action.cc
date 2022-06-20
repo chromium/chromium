@@ -21,6 +21,7 @@
 #include "components/autofill_assistant/browser/value_util.h"
 #include "components/autofill_assistant/browser/web/element_action_util.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
@@ -157,12 +158,14 @@ void UseAddressAction::OnWaitForElement(const ClientStatus& element_status) {
   DCHECK(!selector_.empty());
   delegate_->FindElement(
       selector_,
-      base::BindOnce(&element_action_util::TakeElementAndPerform,
-                     base::BindOnce(&WebController::FillAddressForm,
-                                    delegate_->GetWebController()->GetWeakPtr(),
-                                    std::move(profile_)),
-                     base::BindOnce(&UseAddressAction::ExecuteFallback,
-                                    weak_ptr_factory_.GetWeakPtr())));
+      base::BindOnce(
+          &element_action_util::TakeElementAndPerform,
+          base::BindOnce(&WebController::FillAddressForm,
+                         delegate_->GetWebController()->GetWeakPtr(),
+                         std::move(profile_),
+                         ExtractIntentFromString(delegate_->GetIntent())),
+          base::BindOnce(&UseAddressAction::ExecuteFallback,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void UseAddressAction::InitFallbackHandler(

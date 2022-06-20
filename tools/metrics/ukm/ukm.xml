@@ -2006,6 +2006,66 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.KeyMetrics">
+  <owner>battre@chromium.org</owner>
+  <owner>kolos@chromium.org</owner>
+  <owner>nepper@chromium.org</owner>
+  <summary>
+    These metrics are a clone of Autofill's UMA key metrics to measure Autofill
+    quality. They are recorded on navigation if a form was submitted before.
+  </summary>
+  <metric name="AutofillAssistantIntent" enum="AutofillAssistantIntent">
+    <summary>
+      Describes the trigger source that invoked Autofill. Only recorded if
+      AutofillAssistantIntent was not undefined.
+    </summary>
+  </metric>
+  <metric name="FillingAcceptance">
+    <summary>
+      Has value 1 if user accepted the suggestion to fill values on a submitted
+      form, 0 otherwise. This is counted as 1 if the user accepted such a
+      suggestion at any time, regardless whether other suggestions were ignored
+      or whether the accepted suggestion was reverted afterwards. Only recorded
+      if suggestions were shown to the user.
+    </summary>
+  </metric>
+  <metric name="FillingAssistance">
+    <summary>
+      Has value 1 if the user filled any fields via Autofill on a submitted
+      form, 0 otherwise.
+
+      If the user reverts the filling, the form is still counted as filled.
+
+      This metric is different from FillingAcceptance in the sense that the
+      latter is only recorded if the user has actually seen a prompt to fill
+      data.
+    </summary>
+  </metric>
+  <metric name="FillingCorrectness">
+    <summary>
+      Has value 1 for submitted and autofilled forms if user edited at least one
+      filled value before submitting the form, 0 otherwise. Only recorded if any
+      suggestion was filled.
+    </summary>
+  </metric>
+  <metric name="FillingReadiness">
+    <summary>
+      Has value 1 for submitted forms when Chromium had any address or payments
+      data to fill, 0 otherwise.
+
+      It does not matter whether the user actually requested to fill the data.
+      It does not matter either whether the data available for filling
+      corresponded to the submitted data.
+    </summary>
+  </metric>
+  <metric name="FormTypes">
+    <summary>
+      Type of form. Stored as bitvector. A set ith bit implies enum FormType's
+      ith type was detected. Multiple types are possible.
+    </summary>
+  </metric>
+</event>
+
 <event name="Autofill.RepeatedServerTypePredictionRationalized">
   <owner>parastoog@chromium.org</owner>
   <summary>

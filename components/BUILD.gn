@@ -900,6 +900,7 @@ if (!is_ios) {
         "//components/autofill_assistant/content/common",
         "//components/autofill_assistant/content/common:mojo_interfaces",
         "//components/autofill_assistant/content/renderer:browser_tests",
+        "//components/autofill_assistant/core/public:public",
         "//components/browser_ui/client_certificate/android",
         "//components/browser_ui/client_certificate/android:java",
         "//components/download/internal/common:internal_java",

@@ -8,7 +8,9 @@
 #include <iosfwd>
 #include <string>
 
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -504,30 +506,6 @@ class Metrics {
     kMaxValue = G_CAROUSEL
   };
 
-  // Used for logging the intent of an autofill-assistant flow.
-  //
-  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
-  // at the end and update kMaxValue. Also remember to update the
-  // AutofillAssistantIntent enum listing in
-  // tools/metrics/histograms/enums.xml.
-  enum class AutofillAssistantIntent {
-    UNDEFINED_INTENT = 0,
-    BUY_MOVIE_TICKET = 3,
-    RENT_CAR = 9,
-    SHOPPING = 10,
-    TELEPORT = 11,
-    SHOPPING_ASSISTED_CHECKOUT = 14,
-    FLIGHTS_CHECKIN = 15,
-    FOOD_ORDERING = 17,
-    PASSWORD_CHANGE = 18,
-    FOOD_ORDERING_PICKUP = 19,
-    FOOD_ORDERING_DELIVERY = 20,
-    UNLAUNCHED_VERTICAL_1 = 22,
-    FIND_COUPONS = 25,
-
-    kMaxValue = FIND_COUPONS
-  };
-
   // Used for logging active autofill-assistant experiments. This is intended
   // to be a bitmask to support cases where more than one experiment is running.
   //
@@ -822,6 +800,11 @@ class Metrics {
   static void RecordCupRpcVerificationEvent(CupRpcVerificationEvent event);
   static void RecordJsFlowStartedEvent(JsFlowStartedEvent event);
   static void RecordServiceRequestRetryCount(int count, bool success);
+
+  // Extracts the enum value corresponding to the intent specified in
+  // |script_parameters|.
+  static AutofillAssistantIntent ExtractIntentFromScriptParameters(
+      const ScriptParameters& script_parameters);
 
   // Intended for debugging: writes string representation of |reason| to
   // |out|.

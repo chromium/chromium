@@ -75,6 +75,11 @@ class AndroidAutofillManager : public AutofillManager {
                          mojom::RendererFormDataAction action,
                          const FormData& form);
 
+  void SetFillViaAutofillAssistantIntent(
+      const FormData& form,
+      const FormFieldData& field,
+      const autofill_assistant::AutofillAssistantIntent intent) override;
+
  protected:
   friend void AndroidDriverInitHook(
       AutofillClient* client,

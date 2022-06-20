@@ -275,7 +275,7 @@ TEST_F(StarterTest, RegularScriptFailsWithoutInitialUrl) {
               ElementsAreArray(ToHumanReadableMetrics(
                   {{navigation_ids_[0],
                     {Metrics::AutofillAssistantStarted::FAILED_NO_INITIAL_URL,
-                     Metrics::AutofillAssistantIntent::UNDEFINED_INTENT,
+                     AutofillAssistantIntent::UNDEFINED_INTENT,
                      Metrics::AutofillAssistantCaller::UNKNOWN_CALLER,
                      Metrics::AutofillAssistantSource::UNKNOWN_SOURCE,
                      Metrics::AutofillAssistantExperiment::NO_EXPERIMENT}}})));
@@ -305,7 +305,7 @@ TEST_F(StarterTest, TriggerScriptFailsWithoutInitialUrl) {
               ElementsAreArray(ToHumanReadableMetrics(
                   {{navigation_ids_[0],
                     {Metrics::AutofillAssistantStarted::FAILED_NO_INITIAL_URL,
-                     Metrics::AutofillAssistantIntent::UNDEFINED_INTENT,
+                     AutofillAssistantIntent::UNDEFINED_INTENT,
                      Metrics::AutofillAssistantCaller::UNKNOWN_CALLER,
                      Metrics::AutofillAssistantSource::UNKNOWN_SOURCE,
                      Metrics::AutofillAssistantExperiment::NO_EXPERIMENT}}})));
@@ -337,7 +337,7 @@ TEST_F(StarterTest, FailWithoutMandatoryScriptParameter) {
                   {{navigation_ids_[0],
                     {Metrics::AutofillAssistantStarted::
                          FAILED_MANDATORY_PARAMETER_MISSING,
-                     Metrics::AutofillAssistantIntent::UNDEFINED_INTENT,
+                     AutofillAssistantIntent::UNDEFINED_INTENT,
                      Metrics::AutofillAssistantCaller::UNKNOWN_CALLER,
                      Metrics::AutofillAssistantSource::UNKNOWN_SOURCE,
                      Metrics::AutofillAssistantExperiment::NO_EXPERIMENT}}})));
@@ -376,7 +376,7 @@ TEST_F(StarterTest, FailWhenFeatureDisabled) {
       ElementsAreArray(ToHumanReadableMetrics(
           {{navigation_ids_[0],
             {Metrics::AutofillAssistantStarted::FAILED_FEATURE_DISABLED,
-             Metrics::AutofillAssistantIntent::SHOPPING,
+             AutofillAssistantIntent::SHOPPING,
              Metrics::AutofillAssistantCaller::IN_CHROME,
              Metrics::AutofillAssistantSource::ORGANIC,
              Metrics::AutofillAssistantExperiment::UNKNOWN_EXPERIMENT}}})));
@@ -417,7 +417,7 @@ TEST_F(StarterTest, RegularStartupForReturningUsersSucceeds) {
               ElementsAreArray(ToHumanReadableMetrics(
                   {{navigation_ids_[0],
                     {Metrics::AutofillAssistantStarted::OK_IMMEDIATE_START,
-                     Metrics::AutofillAssistantIntent::UNDEFINED_INTENT,
+                     AutofillAssistantIntent::UNDEFINED_INTENT,
                      Metrics::AutofillAssistantCaller::UNKNOWN_CALLER,
                      Metrics::AutofillAssistantSource::UNKNOWN_SOURCE,
                      Metrics::AutofillAssistantExperiment::NO_EXPERIMENT}}})));
@@ -637,7 +637,7 @@ TEST_F(StarterTest, RpcTriggerScriptFailsIfProactiveHelpIsDisabled) {
               ElementsAreArray(ToHumanReadableMetrics(
                   {{navigation_ids_[0],
                     {Metrics::AutofillAssistantStarted::FAILED_SETTING_DISABLED,
-                     Metrics::AutofillAssistantIntent::UNDEFINED_INTENT,
+                     AutofillAssistantIntent::UNDEFINED_INTENT,
                      Metrics::AutofillAssistantCaller::UNKNOWN_CALLER,
                      Metrics::AutofillAssistantSource::UNKNOWN_SOURCE,
                      Metrics::AutofillAssistantExperiment::NO_EXPERIMENT}}})));
@@ -720,7 +720,7 @@ TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
               ElementsAreArray(ToHumanReadableMetrics(
                   {{navigation_ids_[0],
                     {Metrics::AutofillAssistantStarted::OK_DELAYED_START,
-                     Metrics::AutofillAssistantIntent::UNDEFINED_INTENT,
+                     AutofillAssistantIntent::UNDEFINED_INTENT,
                      Metrics::AutofillAssistantCaller::UNKNOWN_CALLER,
                      Metrics::AutofillAssistantSource::UNKNOWN_SOURCE,
                      Metrics::AutofillAssistantExperiment::NO_EXPERIMENT}}})));
@@ -2380,7 +2380,7 @@ TEST_F(StarterTest, CanStartSucceeds) {
               ElementsAreArray(ToHumanReadableMetrics(
                   {{navigation_ids_[0],
                     {Metrics::AutofillAssistantStarted::OK_IMMEDIATE_START,
-                     Metrics::AutofillAssistantIntent::UNDEFINED_INTENT,
+                     AutofillAssistantIntent::UNDEFINED_INTENT,
                      Metrics::AutofillAssistantCaller::UNKNOWN_CALLER,
                      Metrics::AutofillAssistantSource::UNKNOWN_SOURCE,
                      Metrics::AutofillAssistantExperiment::NO_EXPERIMENT}}})));

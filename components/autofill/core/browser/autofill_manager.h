@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/version_info/channel.h"
 
@@ -279,6 +280,12 @@ class AutofillManager
       int http_error) {
     OnServerRequestError(form_signature, request_type, http_error);
   }
+
+  // Autofill was triggered by assistant's |intent|.
+  virtual void SetFillViaAutofillAssistantIntent(
+      const FormData& form,
+      const FormFieldData& field,
+      const autofill_assistant::AutofillAssistantIntent intent) = 0;
 
 #ifdef UNIT_TEST
   // A public wrapper that calls |mutable_form_structures| for testing purposes

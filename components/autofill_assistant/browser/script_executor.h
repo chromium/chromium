@@ -277,6 +277,7 @@ class ScriptExecutor : public ActionDelegate,
   bool MustUseBackendData() const override;
   void MaybeSetPreviousAction(
       const ProcessedActionProto& processed_action) override;
+  absl::optional<std::string> GetIntent() const override;
 
  private:
   // TODO(b/220079189): remove this friend declaration.
@@ -360,6 +361,10 @@ class ScriptExecutor : public ActionDelegate,
 
   // Returns the current ActionData, or nullptr if there is no current action.
   Action::ActionData* GetCurrentActionData();
+
+  // Creates new TriggerContext from |delegate_|'s TriggerContext and
+  // |additional_context_|.
+  TriggerContext GetMergedTriggerContext() const;
 
   const std::string script_path_;
   std::unique_ptr<TriggerContext> additional_context_;

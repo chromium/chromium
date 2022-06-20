@@ -1192,6 +1192,20 @@ void BrowserAutofillManager::FillProfileForm(const AutofillProfile& profile,
                            /*query_id=*/kNoQueryId, form, field, profile);
 }
 
+void BrowserAutofillManager::SetFillViaAutofillAssistantIntent(
+    const FormData& form,
+    const FormFieldData& field,
+    const autofill_assistant::AutofillAssistantIntent intent) {
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
+    return;
+
+  auto* logger = GetEventFormLogger(autofill_field->Type().group());
+  if (logger)
+    logger->SetAutofillAssistantIntentForFilling(intent);
+}
+
 void BrowserAutofillManager::FillOrPreviewVirtualCardInformation(
     mojom::RendererFormDataAction action,
     const std::string& guid,
@@ -1710,6 +1724,15 @@ void BrowserAutofillManager::Reset() {
   // save a card is shown after page navigation.
   ProcessPendingFormForUpload();
   DCHECK(!pending_form_data_);
+  // {address, credit_card}_form_event_logger_ need to be reset before
+  // AutofillManager::Reset() because ~FormEventLoggerBase() uses
+  // form_interactions_ukm_logger_ that is created and assigned in
+  // AutofillManager::Reset(). The new form_interactions_ukm_logger_ instance
+  // is needed for constructing the new *form_event_logger_ instances which is
+  // why calling AutofillManager::Reset() after constructing *form_event_logger_
+  // instances is not an option.
+  address_form_event_logger_.reset();
+  credit_card_form_event_logger_.reset();
   AutofillManager::Reset();
   address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(
       driver()->IsInAnyMainFrame(), form_interactions_ukm_logger(),

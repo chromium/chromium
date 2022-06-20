@@ -938,17 +938,19 @@ void WebController::OnSelectorObserverFinished(SelectorObserver* observer) {
 
 void WebController::FillAddressForm(
     std::unique_ptr<autofill::AutofillProfile> profile,
+    const AutofillAssistantIntent intent,
     const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   autofill::AutofillableData data_to_autofill(profile.get());
   GetElementFormAndFieldData(
       element, base::BindOnce(&WebController::OnGetFormAndFieldDataForFilling,
                               weak_ptr_factory_.GetWeakPtr(), data_to_autofill,
-                              std::move(profile), std::move(callback)));
+                              std::move(profile), intent, std::move(callback)));
 }
 
 void WebController::FillCardForm(
     std::unique_ptr<autofill::CreditCard> card,
+    const AutofillAssistantIntent intent,
     const std::u16string& cvc,
     const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
@@ -956,7 +958,7 @@ void WebController::FillCardForm(
   GetElementFormAndFieldData(
       element, base::BindOnce(&WebController::OnGetFormAndFieldDataForFilling,
                               weak_ptr_factory_.GetWeakPtr(), data_to_autofill,
-                              std::move(card), std::move(callback)));
+                              std::move(card), intent, std::move(callback)));
 }
 
 void WebController::RetrieveElementFormAndFieldData(
@@ -1073,6 +1075,7 @@ void WebController::OnGetFormAndFieldData(
 void WebController::OnGetFormAndFieldDataForFilling(
     const autofill::AutofillableData& data_to_autofill,
     std::unique_ptr<autofill::AutofillDataModel> retain_data,
+    const AutofillAssistantIntent intent,
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& form_status,
     ContentAutofillDriver* driver,
@@ -1082,7 +1085,7 @@ void WebController::OnGetFormAndFieldDataForFilling(
     std::move(callback).Run(form_status);
     return;
   }
-  driver->FillFormForAssistant(data_to_autofill, form_data, form_field);
+  driver->FillFormForAssistant(data_to_autofill, form_data, form_field, intent);
   std::move(callback).Run(OkClientStatus());
 }
 

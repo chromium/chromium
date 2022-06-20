@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/form_data_predictions.h"
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -288,14 +289,16 @@ class ContentAutofillDriver : public AutofillDriver,
   // FillFormForAssistant() is located in ContentAutofillDriver so that
   // |raw_form| and |raw_field| get their meta data set analogous to
   // AskForValuesToFill().
-  // TODO(crbug/1224094): Migrate Autofill Assistant to the standard Autofill
-  // flow.
-  void FillFormForAssistant(const AutofillableData& fill_data,
-                            const FormData& raw_form,
-                            const FormFieldData& raw_field);
-  void FillFormForAssistantImpl(const AutofillableData& fill_data,
-                                const FormData& form,
-                                const FormFieldData& field);
+  void FillFormForAssistant(
+      const AutofillableData& fill_data,
+      const FormData& raw_form,
+      const FormFieldData& raw_field,
+      const autofill_assistant::AutofillAssistantIntent intent);
+  void FillFormForAssistantImpl(
+      const AutofillableData& fill_data,
+      const FormData& form,
+      const FormFieldData& fiel,
+      const autofill_assistant::AutofillAssistantIntent intent);
 
   // Transform bounding box coordinates to real viewport coordinates. In the
   // case of a page spanning multiple renderer processes, subframe renderers

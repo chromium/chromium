@@ -117,6 +117,7 @@ using UkmFieldFillStatusType = ukm::builders::Autofill_FieldFillStatus;
 using UkmFormEventType = ukm::builders::Autofill_FormEvent;
 using UkmEditedAutofilledFieldAtSubmission =
     ukm::builders::Autofill_EditedAutofilledFieldAtSubmission;
+using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 
 using ExpectedUkmMetricsRecord = std::vector<std::pair<const char*, int64_t>>;
 using ExpectedUkmMetrics = std::vector<ExpectedUkmMetricsRecord>;
@@ -11593,6 +11594,12 @@ TEST_P(AutofillMetricsFunnelTest, LogFunnelMetrics) {
         "Autofill.Autocomplete.NotOff.FillingAcceptance.Address", 1, 1);
     histogram_tester.ExpectTotalCount(
         "Autofill.Autocomplete.Off.FillingAcceptance.Address", 0);
+    VerifyUkm(test_ukm_recorder_, form, UkmAutofillKeyMetricsType::kEntryName,
+              {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+                {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
+                {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 1},
+                {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
+                {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
   } else {
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingReadiness.Address", 0);
@@ -11758,6 +11765,11 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogEmptyForm) {
       "Autofill.KeyMetrics.FillingAssistance.Address", 0, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.Address", 0);
+
+  VerifyUkm(test_ukm_recorder_, form_, UkmAutofillKeyMetricsType::kEntryName,
+            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
+              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user has no address profile on
@@ -11793,6 +11805,11 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogNoProfile) {
       "Autofill.KeyMetrics.FillingAssistance.Address", 0, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.Address", 1, 1);
+
+  VerifyUkm(test_ukm_recorder_, form_, UkmAutofillKeyMetricsType::kEntryName,
+            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 0},
+              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
+              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user does not accept a suggestion.
@@ -11828,6 +11845,12 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
       "Autofill.KeyMetrics.FillingAssistance.Address", 0, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.Address", 1, 1);
+
+  VerifyUkm(test_ukm_recorder_, form_, UkmAutofillKeyMetricsType::kEntryName,
+            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 0},
+              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
+              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user has to fix the filled data.
@@ -11865,6 +11888,13 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledData) {
       "Autofill.KeyMetrics.FillingAssistance.Address", 1, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.Autofilled.Address", 1, 1);
+
+  VerifyUkm(test_ukm_recorder_, form_, UkmAutofillKeyMetricsType::kEntryName,
+            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
+              {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 0},
+              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
+              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user fixes the filled data but
@@ -11901,6 +11931,13 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledDataButDoesNotSubmit) {
       "Autofill.KeyMetrics.FillingAssistance.Address", 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.Autofilled.Address", 0, 1);
+
+  VerifyUkm(test_ukm_recorder_, form_, UkmAutofillKeyMetricsType::kEntryName,
+            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 0},
+              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 0},
+              {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 0},
+              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
+              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 
 TEST_F(AutofillMetricsTest, GetFieldTypeUserEditStatusMetric) {

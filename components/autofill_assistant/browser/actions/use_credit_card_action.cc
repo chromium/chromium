@@ -22,6 +22,7 @@
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/element_action_util.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
@@ -168,12 +169,14 @@ void UseCreditCardAction::OnGetFullCard(
   DCHECK(!selector_.empty());
   delegate_->FindElement(
       selector_,
-      base::BindOnce(&element_action_util::TakeElementAndPerform,
-                     base::BindOnce(&WebController::FillCardForm,
-                                    delegate_->GetWebController()->GetWeakPtr(),
-                                    std::move(card), cvc),
-                     base::BindOnce(&UseCreditCardAction::ExecuteFallback,
-                                    weak_ptr_factory_.GetWeakPtr())));
+      base::BindOnce(
+          &element_action_util::TakeElementAndPerform,
+          base::BindOnce(&WebController::FillCardForm,
+                         delegate_->GetWebController()->GetWeakPtr(),
+                         std::move(card),
+                         ExtractIntentFromString(delegate_->GetIntent()), cvc),
+          base::BindOnce(&UseCreditCardAction::ExecuteFallback,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void UseCreditCardAction::InitFallbackHandler(const autofill::CreditCard& card,

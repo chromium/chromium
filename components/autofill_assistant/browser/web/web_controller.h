@@ -33,6 +33,7 @@
 #include "components/autofill_assistant/browser/web/send_keyboard_input_worker.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/icu/source/common/unicode/umachine.h"
 #include "url/gurl.h"
@@ -187,6 +188,7 @@ class WebController {
   // |profile|.
   virtual void FillAddressForm(
       std::unique_ptr<autofill::AutofillProfile> profile,
+      const AutofillAssistantIntent intent,
       const ElementFinderResult& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
@@ -194,6 +196,7 @@ class WebController {
   // |cvc|.
   virtual void FillCardForm(
       std::unique_ptr<autofill::CreditCard> card,
+      const AutofillAssistantIntent intent,
       const std::u16string& cvc,
       const ElementFinderResult& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
@@ -488,6 +491,7 @@ class WebController {
   void OnGetFormAndFieldDataForFilling(
       const autofill::AutofillableData& data_to_autofill,
       std::unique_ptr<autofill::AutofillDataModel> retain_data,
+      const autofill_assistant::AutofillAssistantIntent intent,
       base::OnceCallback<void(const ClientStatus&)> callback,
       const ClientStatus& form_status,
       autofill::ContentAutofillDriver* driver,

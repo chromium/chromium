@@ -25,6 +25,7 @@
 #include "components/autofill_assistant/browser/web/fake_element_store.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 class PasswordChangeSuccessTracker;
@@ -229,6 +230,7 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_CONST_METHOD0(MustUseBackendData, bool());
   MOCK_METHOD1(MaybeSetPreviousAction,
                void(const ProcessedActionProto& processed_action));
+  MOCK_CONST_METHOD0(GetIntent, absl::optional<std::string>());
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();

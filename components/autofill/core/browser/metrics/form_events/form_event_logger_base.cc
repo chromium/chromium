@@ -154,6 +154,7 @@ void FormEventLoggerBase::OnWillSubmitForm(AutofillSyncSigninState sync_state,
   if (has_logged_will_submit_)
     return;
   has_logged_will_submit_ = true;
+  submitted_form_types_ = form.GetFormTypes();
 
   LogWillSubmitForm(form);
 
@@ -335,6 +336,13 @@ void FormEventLoggerBase::RecordFunnelAndKeyMetrics() {
         has_logged_suggestion_filled_);
     key_metrics_rows << Tr{} << "FillingAssistance"
                      << has_logged_suggestion_filled_;
+
+    if (form_interactions_ukm_logger_) {
+      form_interactions_ukm_logger_->LogKeyMetrics(
+          submitted_form_types_, has_logged_data_to_fill_available_,
+          has_logged_suggestions_shown_, has_logged_edited_autofilled_field_,
+          has_logged_suggestion_filled_, intent_);
+    }
   }
   if (has_logged_typed_into_non_filled_field_ ||
       has_logged_suggestion_filled_) {
@@ -407,6 +415,11 @@ void FormEventLoggerBase::RecordAblationMetrics() {
           base::Minutes(10), 50);
     }
   }
+}
+
+void FormEventLoggerBase::SetAutofillAssistantIntentForFilling(
+    const autofill_assistant::AutofillAssistantIntent intent) {
+  intent_ = intent;
 }
 
 }  // namespace autofill
