@@ -859,6 +859,8 @@ crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance/state/gl-enable-
 crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/rendering/blitframebuffer-resolve-to-back-buffer.html [ Failure ]
 crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/textures/misc/tex-input-validation.html [ Failure ]
 
+crbug.com/1337803 [ chromeos chromeos-board-kevin ] conformance2/misc/expando-loss-2.html [ Failure ]
+
 ##############################
 # Lacros-like Linux Failures #
 ##############################
