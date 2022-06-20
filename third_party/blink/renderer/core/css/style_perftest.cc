@@ -11,6 +11,7 @@
 
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
 
+#include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "testing/perf/perf_test.h"
@@ -156,6 +157,14 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
 }
 
 static void MeasureStyleForDumpedPage(const char* filename, const char* label) {
+  // Running more than once is useful for profiling. (If this flag does not
+  // exist, it will return the empty string.)
+  const std::string recalc_iterations_str =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "style-recalc-iterations");
+  int recalc_iterations =
+      recalc_iterations_str.empty() ? 1 : stoi(recalc_iterations_str);
+
   auto reporter = perf_test::PerfResultReporter("BlinkStyle", label);
 
   // Do a forced GC run before we start loading anything, so that we have
@@ -188,7 +197,13 @@ static void MeasureStyleForDumpedPage(const char* filename, const char* label) {
 
   {
     base::ElapsedTimer style_timer;
-    page->GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
+    for (int i = 0; i < recalc_iterations; ++i) {
+      page->GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
+      if (i != recalc_iterations - 1) {
+        page->GetDocument().GetStyleEngine().MarkAllElementsForStyleRecalc(
+            StyleChangeReasonForTracing::Create("test"));
+      }
+    }
     base::TimeDelta style_time = style_timer.Elapsed();
     reporter.RegisterImportantMetric("InitialCalcTime", "us");
     reporter.AddResult("InitialCalcTime", style_time);
