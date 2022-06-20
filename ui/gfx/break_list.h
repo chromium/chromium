@@ -38,11 +38,13 @@ class BreakList {
   const std::vector<Break>& breaks() const { return breaks_; }
 
   // Clear the breaks and set a break at position 0 with the supplied |value|.
-  void SetValue(T value);
+  // Returns whether or not the breaks changed while applying the |value|.
+  bool SetValue(T value);
 
   // Adjust the breaks to apply |value| over the supplied |range|.
   // Range |range| must be between [0, max_).
-  void ApplyValue(T value, const Range& range);
+  // Returns true if the breaks changed while applying the |value|.
+  bool ApplyValue(T value, const Range& range);
 
   // Set the max position and trim any breaks at or beyond that position.
   void SetMax(size_t max);
@@ -78,22 +80,31 @@ BreakList<T>::BreakList() : breaks_(1, Break(0, T())) {}
 template <class T>
 BreakList<T>::BreakList(T value) : breaks_(1, Break(0, value)) {}
 
-template<class T>
-void BreakList<T>::SetValue(T value) {
+template <class T>
+bool BreakList<T>::SetValue(T value) {
+  // Return false if setting |value| does not change the breaks.
+  if (breaks_.size() == 1 && breaks_[0].second == value)
+    return false;
+
   breaks_.clear();
   breaks_.push_back(Break(0, value));
+  return true;
 }
 
-template<class T>
-void BreakList<T>::ApplyValue(T value, const Range& range) {
+template <class T>
+bool BreakList<T>::ApplyValue(T value, const Range& range) {
   if (!range.IsValid() || range.is_empty())
-    return;
+    return false;
   DCHECK(!breaks_.empty());
   DCHECK(!range.is_reversed());
   DCHECK(Range(0, static_cast<uint32_t>(max_)).Contains(range));
 
-  // Erase any breaks in |range|, then add start and end breaks as needed.
+  // Return false if setting |value| does not change the breaks.
   const_iterator start = GetBreak(range.start());
+  if (start->second == value && GetRange(start).Contains(range))
+    return false;
+
+  // Erase any breaks in |range|, then add start and end breaks as needed.
   start += start->first < range.start() ? 1 : 0;
   const_iterator end =
       range.end() == max_ ? breaks_.cend() - 1 : GetBreak(range.end());
@@ -108,6 +119,8 @@ void BreakList<T>::ApplyValue(T value, const Range& range) {
 #ifndef NDEBUG
   CheckBreaks();
 #endif
+
+  return true;
 }
 
 template<class T>

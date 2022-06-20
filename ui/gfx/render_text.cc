@@ -574,8 +574,10 @@ void RenderText::SetFontList(const FontList& font_list) {
 }
 
 void RenderText::SetCursorEnabled(bool cursor_enabled) {
-  cursor_enabled_ = cursor_enabled;
-  cached_bounds_and_offset_valid_ = false;
+  if (cursor_enabled_ != cursor_enabled) {
+    cursor_enabled_ = cursor_enabled;
+    cached_bounds_and_offset_valid_ = false;
+  }
 }
 
 void RenderText::SetObscured(bool obscured) {
@@ -611,8 +613,10 @@ void RenderText::SetMultiline(bool multiline) {
 }
 
 void RenderText::SetMaxLines(size_t max_lines) {
-  max_lines_ = max_lines;
-  OnDisplayTextAttributeChanged();
+  if (max_lines_ != max_lines) {
+    max_lines_ = max_lines;
+    OnDisplayTextAttributeChanged();
+  }
 }
 
 size_t RenderText::GetNumLines() {
@@ -856,61 +860,61 @@ void RenderText::SetCompositionRange(const Range& composition_range) {
 }
 
 void RenderText::SetColor(SkColor value) {
-  colors_.SetValue(value);
-  OnLayoutTextAttributeChanged(false);
+  if (colors_.SetValue(value))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::ApplyColor(SkColor value, const Range& range) {
-  colors_.ApplyValue(value, range);
-  OnLayoutTextAttributeChanged(false);
+  if (colors_.ApplyValue(value, range))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::SetBaselineStyle(BaselineStyle value) {
-  baselines_.SetValue(value);
-  OnLayoutTextAttributeChanged(false);
+  if (baselines_.SetValue(value))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::ApplyBaselineStyle(BaselineStyle value, const Range& range) {
-  baselines_.ApplyValue(value, range);
-  OnLayoutTextAttributeChanged(false);
+  if (baselines_.ApplyValue(value, range))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::ApplyFontSizeOverride(int font_size_override,
                                        const Range& range) {
-  font_size_overrides_.ApplyValue(font_size_override, range);
-  OnLayoutTextAttributeChanged(false);
+  if (font_size_overrides_.ApplyValue(font_size_override, range))
+    OnLayoutTextAttributeChanged(false);
 }
 
 void RenderText::SetStyle(TextStyle style, bool value) {
-  styles_[style].SetValue(value);
-
-  cached_bounds_and_offset_valid_ = false;
-  // TODO(oshima|msw): Not all style change requires layout changes.
-  // Consider optimizing based on the type of change.
-  OnLayoutTextAttributeChanged(false);
+  if (styles_[style].SetValue(value)) {
+    cached_bounds_and_offset_valid_ = false;
+    // TODO(oshima|msw): Not all style change requires layout changes.
+    // Consider optimizing based on the type of change.
+    OnLayoutTextAttributeChanged(false);
+  }
 }
 
 void RenderText::ApplyStyle(TextStyle style, bool value, const Range& range) {
-  styles_[style].ApplyValue(value, range);
-
-  cached_bounds_and_offset_valid_ = false;
-  // TODO(oshima|msw): Not all style change requires layout changes.
-  // Consider optimizing based on the type of change.
-  OnLayoutTextAttributeChanged(false);
+  if (styles_[style].ApplyValue(value, range)) {
+    cached_bounds_and_offset_valid_ = false;
+    // TODO(oshima|msw): Not all style change requires layout changes.
+    // Consider optimizing based on the type of change.
+    OnLayoutTextAttributeChanged(false);
+  }
 }
 
 void RenderText::SetWeight(Font::Weight weight) {
-  weights_.SetValue(weight);
-
-  cached_bounds_and_offset_valid_ = false;
-  OnLayoutTextAttributeChanged(false);
+  if (weights_.SetValue(weight)) {
+    cached_bounds_and_offset_valid_ = false;
+    OnLayoutTextAttributeChanged(false);
+  }
 }
 
 void RenderText::ApplyWeight(Font::Weight weight, const Range& range) {
-  weights_.ApplyValue(weight, range);
-
-  cached_bounds_and_offset_valid_ = false;
-  OnLayoutTextAttributeChanged(false);
+  if (weights_.ApplyValue(weight, range)) {
+    cached_bounds_and_offset_valid_ = false;
+    OnLayoutTextAttributeChanged(false);
+  }
 }
 
 bool RenderText::GetStyle(TextStyle style) const {

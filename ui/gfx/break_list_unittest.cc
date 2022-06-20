@@ -28,6 +28,21 @@ TEST_F(BreakListTest, SetValue) {
   EXPECT_TRUE(color_breaks.EqualsValueForTesting(SK_ColorBLACK));
 }
 
+TEST_F(BreakListTest, SetValueChanged) {
+  BreakList<bool> breaks(false);
+  EXPECT_FALSE(breaks.SetValue(false));
+  EXPECT_TRUE(breaks.SetValue(true));
+  EXPECT_FALSE(breaks.SetValue(true));
+  EXPECT_TRUE(breaks.SetValue(false));
+
+  const size_t max = 99;
+  breaks.SetMax(max);
+  breaks.ApplyValue(true, Range(0, 2));
+  breaks.ApplyValue(true, Range(3, 6));
+  EXPECT_TRUE(breaks.SetValue(false));
+  EXPECT_FALSE(breaks.SetValue(false));
+}
+
 TEST_F(BreakListTest, ApplyValue) {
   BreakList<bool> breaks(false);
   const size_t max = 99;
@@ -100,6 +115,27 @@ TEST_F(BreakListTest, ApplyValue) {
   overlap.push_back(std::pair<size_t, bool>(6, false));
   overlap.push_back(std::pair<size_t, bool>(7, true));
   EXPECT_TRUE(breaks.EqualsForTesting(overlap));
+}
+
+TEST_F(BreakListTest, ApplyValueChanged) {
+  BreakList<bool> breaks(false);
+  const size_t max = 99;
+  breaks.SetMax(max);
+
+  // Set two ranges.
+  EXPECT_TRUE(breaks.ApplyValue(true, Range(0, 5)));
+  EXPECT_TRUE(breaks.ApplyValue(true, Range(9, 10)));
+
+  // Setting sub-ranges should be a no-op.
+  EXPECT_FALSE(breaks.ApplyValue(true, Range(0, 2)));
+  EXPECT_FALSE(breaks.ApplyValue(true, Range(1, 3)));
+
+  // Merge the two ranges.
+  EXPECT_TRUE(breaks.ApplyValue(true, Range(2, 10)));
+
+  // Setting sub-ranges should be a no-op.
+  EXPECT_FALSE(breaks.ApplyValue(true, Range(0, 2)));
+  EXPECT_FALSE(breaks.ApplyValue(true, Range(1, 3)));
 }
 
 TEST_F(BreakListTest, SetMax) {
