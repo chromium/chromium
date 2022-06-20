@@ -248,8 +248,10 @@ void UserNoteUICoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  // TODO(cheickcisse): Call invalidate on active tab changed. It seems to
-  // fail when the tab is deleted.
+  if (!selection.active_tab_changed() || tab_strip_model->closing_all())
+    return;
+
+  Invalidate();
 }
 
 std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesView() {
