@@ -38,7 +38,7 @@ public class PasswordCheckupLauncher {
                     PasswordCheckupClientHelperFactory.getInstance().createHelper();
             if (checkupHelper != null) {
                 PasswordManagerHelper.showPasswordCheckup(windowAndroid.getContext().get(),
-                        PasswordCheckReferrer.PHISHED_WARNING_DIALOG,
+                        PasswordCheckReferrer.LEAK_DIALOG,
                         PasswordCheckupClientHelperFactory.getInstance().createHelper(),
                         SyncService.get(), getModalDialogManagerSupplier(windowAndroid));
                 return;

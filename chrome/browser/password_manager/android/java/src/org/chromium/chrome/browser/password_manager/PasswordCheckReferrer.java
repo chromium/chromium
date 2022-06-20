@@ -13,7 +13,8 @@ import java.lang.annotation.RetentionPolicy;
  * never be reused. To be kept in sync with PasswordCheckReferrerAndroid in enums.xml.
  */
 @IntDef({PasswordCheckReferrer.PASSWORD_SETTINGS, PasswordCheckReferrer.SAFETY_CHECK,
-        PasswordCheckReferrer.LEAK_DIALOG, PasswordCheckReferrer.PHISHED_WARNING_DIALOG})
+        PasswordCheckReferrer.LEAK_DIALOG, PasswordCheckReferrer.PHISHED_WARNING_DIALOG,
+        PasswordCheckReferrer.COUNT})
 @Retention(RetentionPolicy.SOURCE)
 public @interface PasswordCheckReferrer {
     /** Corresponds to the Settings > Passwords page. */
