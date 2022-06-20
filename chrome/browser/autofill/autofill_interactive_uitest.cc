@@ -2911,8 +2911,14 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
 // 3) The AutofillAgent recognizes that it failed to fill 09/2999 and fills
 //    09 / 99 instead.
 // 4) The promise waits to see 09 / 99 and resolved.
+// Flaky on Win https://crbug.com/1337757.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FillCardOnReformatingForm DISABLED_FillCardOnReformatingForm
+#else
+#define MAYBE_FillCardOnReformatingForm FillCardOnReformatingForm
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestCreditCard,
-                       FillCardOnReformatingForm) {
+                       MAYBE_FillCardOnReformatingForm) {
   CreateTestCreditCart();
   GURL url = https_server()->GetURL(
       "a.com", "/autofill/autofill_creditcard_form_with_date_formatter.html");
