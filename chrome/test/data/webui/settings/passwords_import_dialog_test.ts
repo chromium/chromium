@@ -17,7 +17,7 @@ import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 // clang-format on
 
-suite('PasswordEditDialog', function() {
+suite('PasswordsImportDialog', function() {
   let passwordManager: TestPasswordManagerProxy;
   let elementFactory: PasswordSectionElementFactory;
 

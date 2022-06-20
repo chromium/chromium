@@ -89,8 +89,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'addPassword',
+      'cancelExportPasswords',
       'changeInsecureCredential',
       'changeSavedPassword',
+      'exportPasswords',
       'getCompromisedCredentials',
       'getPasswordCheckStatus',
       'getPlaintextInsecurePassword',
@@ -109,6 +111,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'removeInsecureCredential',
       'removeSavedPassword',
       'removeSavedPasswords',
+      'requestExportProgressStatus',
       'requestPlaintextPassword',
       'startBulkPasswordCheck',
       'stopBulkPasswordCheck',
@@ -363,6 +366,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     return Promise.resolve(this.isAccountStoreDefault_);
   }
 
+  optInForAccountStorage(_optIn: boolean) {}
+
   /**
    * Sets the value to be returned by getUrlCollection.
    */
@@ -403,22 +408,27 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
         'recordChangePasswordFlowStarted', insecureCredential, isManualFlow);
   }
 
-  cancelExportPasswords() {}
-
-  exportPasswords(_callback: () => void) {}
-
   importPasswords() {
     this.methodCalled('importPasswords');
   }
 
-  optInForAccountStorage(_optIn: boolean) {}
+  exportPasswords() {
+    this.methodCalled('exportPasswords');
+    return Promise.resolve();
+  }
+
+  cancelExportPasswords() {
+    this.methodCalled('cancelExportPasswords');
+  }
 
   removePasswordsFileExportProgressListener(
       _listener: PasswordsFileExportProgressListener) {}
 
-  requestExportProgressStatus(
-      _callback:
-          (status: chrome.passwordsPrivate.ExportProgressStatus) => void) {}
+  requestExportProgressStatus() {
+    this.methodCalled('requestExportProgressStatus');
+    return Promise.resolve(
+        chrome.passwordsPrivate.ExportProgressStatus.NOT_STARTED);
+  }
 
   undoRemoveSavedPasswordOrException() {}
 }

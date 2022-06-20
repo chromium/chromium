@@ -6,7 +6,7 @@
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AutofillManagerProxy, PasswordEditDialogElement, PasswordListItemElement, PasswordMoveMultiplePasswordsToAccountDialogElement, PasswordsExportDialogElement, PasswordsImportDialogElement, PasswordsSectionElement, PaymentsManagerProxy, PersonalDataChangedListener} from 'chrome://settings/lazy_load.js';
-import {MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordManagerProxy} from 'chrome://settings/settings.js';
+import {MultiStoreExceptionEntry, MultiStorePasswordUiEntry} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -411,19 +411,10 @@ export class PasswordSectionElementFactory {
   /**
    * Helper method used to create an export passwords dialog.
    */
-  createExportPasswordsDialog(passwordManager: PasswordManagerProxy):
-      PasswordsExportDialogElement {
-    passwordManager.requestExportProgressStatus = callback => {
-      callback(chrome.passwordsPrivate.ExportProgressStatus.NOT_STARTED);
-    };
-    passwordManager.exportPasswords = (callback) => {
-      callback();
-    };
-
+  createExportPasswordsDialog(): PasswordsExportDialogElement {
     const dialog = this.document.createElement('passwords-export-dialog');
     this.document.body.appendChild(dialog);
     flush();
-
     return dialog;
   }
 

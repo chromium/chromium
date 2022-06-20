@@ -217,7 +217,7 @@ void PasswordsPrivateExportPasswordsFunction::ExportRequestCompleted(
   if (error.empty())
     Respond(NoArguments());
   else
-    Error(error);
+    Respond(Error(error));
 }
 
 // PasswordsPrivateCancelExportPasswordsFunction

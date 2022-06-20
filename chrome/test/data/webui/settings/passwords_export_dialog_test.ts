@@ -1,35 +1,39 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/** @fileoverview Runs the Polymer Passwords Export Dialog tests. */
+
 // clang-format off
+import 'chrome://settings/lazy_load.js';
+
+import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrDialogElement, PasswordsExportDialogElement} from 'chrome://settings/lazy_load.js';
+import {PasswordManagerImpl} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+import {PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+
 // clang-format on
 
 // Test that tapping "Export passwords..." notifies the browser.
-export function runStartExportTest(
+export async function runStartExportTest(
     exportDialog: PasswordsExportDialogElement,
-    passwordManager: TestPasswordManagerProxy, done: Function) {
-  passwordManager.exportPasswords = (callback) => {
-    callback();
-    done();
-  };
-
+    passwordManager: TestPasswordManagerProxy) {
   exportDialog.shadowRoot!.querySelector<HTMLElement>(
                               '#exportPasswordsButton')!.click();
+  await passwordManager.whenCalled('exportPasswords');
 }
 
 // Test the export flow. If exporting is fast, we should skip the
 // in-progress view altogether.
 export function runExportFlowFastTest(
     exportDialog: PasswordsExportDialogElement,
-    passwordManager: TestPasswordManagerProxy, done: Function) {
+    passwordManager: TestPasswordManagerProxy) {
   const progressCallback =
       passwordManager.lastCallback.addPasswordsFileExportProgressListener!;
 
@@ -59,7 +63,6 @@ export function runExportFlowFastTest(
       '#dialog_error'));
   assertFalse(!!exportDialog.shadowRoot!.querySelector<CrDialogElement>(
       '#dialog_progress'));
-  done();
 
   mockTimer.uninstall();
 }
@@ -67,7 +70,7 @@ export function runExportFlowFastTest(
 // The error view is shown when an error occurs.
 export function runExportFlowErrorTest(
     exportDialog: PasswordsExportDialogElement,
-    passwordManager: TestPasswordManagerProxy, done: Function) {
+    passwordManager: TestPasswordManagerProxy) {
   const progressCallback =
       passwordManager.lastCallback.addPasswordsFileExportProgressListener!;
 
@@ -101,7 +104,6 @@ export function runExportFlowErrorTest(
   flush();
   assertFalse(!!exportDialog.shadowRoot!.querySelector<CrDialogElement>(
       '#dialog_error'));
-  done();
 
   mockTimer.uninstall();
 }
@@ -109,49 +111,42 @@ export function runExportFlowErrorTest(
 // The error view allows to retry.
 export function runExportFlowErrorRetryTest(
     exportDialog: PasswordsExportDialogElement,
-    passwordManager: TestPasswordManagerProxy, done: Function) {
+    passwordManager: TestPasswordManagerProxy) {
   const progressCallback =
       passwordManager.lastCallback.addPasswordsFileExportProgressListener!;
   // Use this to freeze the delayed progress bar and avoid flakiness.
   const mockTimer = new MockTimer();
 
-  new Promise(resolve => {
-    mockTimer.install();
+  mockTimer.install();
 
-    passwordManager.exportPasswords = resolve;
-    exportDialog.shadowRoot!
-        .querySelector<HTMLElement>('#exportPasswordsButton')!.click();
-  }).then(() => {
-    // This wait allows the BlockingRequestManager to process the click if
-    // the test is running in ChromeOS.
-    progressCallback(
-        {status: chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS});
-    progressCallback({
-      status: chrome.passwordsPrivate.ExportProgressStatus.FAILED_WRITE_FAILED,
-      folderName: 'tmp',
-    });
+  exportDialog.shadowRoot!.querySelector<HTMLElement>(
+                              '#exportPasswordsButton')!.click();
 
-    flush();
-    // Test that the error dialog is shown.
-    assertTrue(exportDialog.shadowRoot!
-                   .querySelector<CrDialogElement>('#dialog_error')!.open);
-    // Test that clicking retry will start a new export.
-    passwordManager.exportPasswords = (callback) => {
-      callback();
-      done();
-    };
-    exportDialog.shadowRoot!.querySelector<HTMLElement>(
-                                '#tryAgainButton')!.click();
-
-    mockTimer.uninstall();
+  progressCallback(
+      {status: chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS});
+  progressCallback({
+    status: chrome.passwordsPrivate.ExportProgressStatus.FAILED_WRITE_FAILED,
+    folderName: 'tmp',
   });
+
+  flush();
+  // Test that the error dialog is shown.
+  assertTrue(
+      exportDialog.shadowRoot!.querySelector<CrDialogElement>(
+                                  '#dialog_error')!.open);
+  // Test that clicking retry will start a new export.
+
+  exportDialog.shadowRoot!.querySelector<HTMLElement>(
+                              '#tryAgainButton')!.click();
+
+  mockTimer.uninstall();
 }
 
 // Test the export flow. If exporting is slow, Chrome should show the
 // in-progress dialog for at least 1000ms.
 export function runExportFlowSlowTest(
     exportDialog: PasswordsExportDialogElement,
-    passwordManager: TestPasswordManagerProxy, done: Function) {
+    passwordManager: TestPasswordManagerProxy) {
   const progressCallback =
       passwordManager.lastCallback.addPasswordsFileExportProgressListener!;
 
@@ -208,22 +203,17 @@ export function runExportFlowSlowTest(
       '#dialog_start'));
   assertFalse(!!exportDialog.shadowRoot!.querySelector<CrDialogElement>(
       '#dialog_error'));
-  done();
 
   mockTimer.uninstall();
 }
 
 // Test that canceling the dialog while exporting will also cancel the
 // export on the browser.
-export function runCancelExportTest(
+export async function runCancelExportTest(
     exportDialog: PasswordsExportDialogElement,
-    passwordManager: TestPasswordManagerProxy, done: Function) {
+    passwordManager: TestPasswordManagerProxy) {
   const progressCallback =
       passwordManager.lastCallback.addPasswordsFileExportProgressListener!;
-
-  passwordManager.cancelExportPasswords = () => {
-    done();
-  };
 
   const mockTimer = new MockTimer();
   mockTimer.install();
@@ -241,6 +231,7 @@ export function runCancelExportTest(
                  .querySelector<CrDialogElement>('#dialog_progress')!.open);
   exportDialog.shadowRoot!
       .querySelector<HTMLElement>('#cancel_progress_button')!.click();
+  await passwordManager.whenCalled('cancelExportPasswords');
 
   flush();
   // The dialog should be dismissed entirely.
@@ -254,15 +245,95 @@ export function runCancelExportTest(
   mockTimer.uninstall();
 }
 
-export function runFireCloseEventAfterExportCompleteTest(
+export async function runFireCloseEventAfterExportCompleteTest(
     exportDialog: PasswordsExportDialogElement,
     passwordManager: TestPasswordManagerProxy) {
-  const wait = eventToPromise('passwords-export-dialog-close', exportDialog);
   exportDialog.shadowRoot!.querySelector<HTMLElement>(
                               '#exportPasswordsButton')!.click();
   passwordManager.lastCallback.addPasswordsFileExportProgressListener!
       ({status: chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS});
   passwordManager.lastCallback.addPasswordsFileExportProgressListener!
       ({status: chrome.passwordsPrivate.ExportProgressStatus.SUCCEEDED});
-  return wait;
+  await eventToPromise('passwords-export-dialog-close', exportDialog);
 }
+
+suite('PasswordsExportDialog', function() {
+  let passwordManager: TestPasswordManagerProxy;
+  let elementFactory: PasswordSectionElementFactory;
+
+
+  setup(function() {
+    document.body.innerHTML = '';
+    // Override the PasswordManagerImpl for testing.
+    passwordManager = new TestPasswordManagerProxy();
+    PasswordManagerImpl.setInstance(passwordManager);
+    elementFactory = new PasswordSectionElementFactory(document);
+  });
+
+
+  if (!(isChromeOS || isLacros)) {
+    // Test that tapping "Export passwords..." notifies the browser.
+    test('startExport', async function() {
+      const exportDialog = elementFactory.createExportPasswordsDialog();
+      await runStartExportTest(exportDialog, passwordManager);
+    });
+
+    // Test the export flow. If exporting is fast, we should skip the
+    // in-progress view altogether.
+    test('exportFlowFast', function() {
+      const exportDialog = elementFactory.createExportPasswordsDialog();
+      runExportFlowFastTest(exportDialog, passwordManager);
+    });
+
+    // The error view is shown when an error occurs.
+    test('exportFlowError', function() {
+      const exportDialog = elementFactory.createExportPasswordsDialog();
+      runExportFlowErrorTest(exportDialog, passwordManager);
+    });
+
+    // The error view allows to retry.
+    test('exportFlowErrorRetry', function() {
+      const exportDialog = elementFactory.createExportPasswordsDialog();
+      runExportFlowErrorRetryTest(exportDialog, passwordManager);
+    });
+
+    // Test the export flow. If exporting is slow, Chrome should show the
+    // in-progress dialog for at least 1000ms.
+    test('exportFlowSlow', function() {
+      const exportDialog = elementFactory.createExportPasswordsDialog();
+      runExportFlowSlowTest(exportDialog, passwordManager);
+    });
+
+    // Test that canceling the dialog while exporting will also cancel the
+    // export on the browser.
+    test('cancelExport', async function() {
+      const exportDialog = elementFactory.createExportPasswordsDialog();
+      await runCancelExportTest(exportDialog, passwordManager);
+    });
+
+    test('fires close event after export complete', async function() {
+      const exportDialog = elementFactory.createExportPasswordsDialog();
+      await runFireCloseEventAfterExportCompleteTest(
+          exportDialog, passwordManager);
+    });
+  }
+
+  // The export dialog is dismissable.
+  test('exportDismissable', function() {
+    const exportDialog = elementFactory.createExportPasswordsDialog();
+
+    assertTrue(exportDialog.shadowRoot!
+                   .querySelector<CrDialogElement>('#dialog_start')!.open);
+    exportDialog.shadowRoot!.querySelector<HTMLElement>(
+                                '#cancelButton')!.click();
+    flush();
+    assertFalse(!!exportDialog.shadowRoot!.querySelector('#dialog_start'));
+  });
+
+  test('fires close event when canceled', async function() {
+    const exportDialog = elementFactory.createExportPasswordsDialog();
+    exportDialog.shadowRoot!.querySelector<HTMLElement>(
+                                '#cancelButton')!.click();
+    await eventToPromise('passwords-export-dialog-close', exportDialog);
+  });
+});
