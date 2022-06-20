@@ -51,6 +51,10 @@ using file_manager::util::EntryDefinition;
 
 namespace file_manager {
 
+namespace {
+class RecalculateTasksObserver;
+}  // namespace
+
 // Monitors changes in disk mounts, network connection state and preferences
 // affecting File Manager. Dispatches appropriate File Browser events.
 class EventRouter
@@ -306,6 +310,7 @@ class EventRouter
   std::unique_ptr<SystemNotificationManager> notification_manager_;
   std::unique_ptr<DeviceEventRouter> device_event_router_;
   std::unique_ptr<DriveFsEventRouter> drivefs_event_router_;
+  std::unique_ptr<RecalculateTasksObserver> recalculate_tasks_observer_;
 
   DispatchDirectoryChangeEventImplCallback
       dispatch_directory_change_event_impl_;

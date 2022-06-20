@@ -173,7 +173,7 @@ export class TaskController {
     this.taskHistory_.addEventListener(
         TaskHistory.EventType.UPDATE, this.updateTasks_.bind(this));
     chrome.fileManagerPrivate.onAppsUpdated.addListener(
-        this.updateTasks_.bind(this));
+        this.clearCacheAndUpdateTasks_.bind(this));
   }
 
   /**
@@ -365,6 +365,16 @@ export class TaskController {
       this.updateContextMenuTaskItems_([]);
     }
     this.lastSelectedEntries_ = selection.entries;
+  }
+
+  /**
+   * Explicitly removes the cached tasks first and and re-calculates the current
+   * tasks.
+   * @private
+   */
+  clearCacheAndUpdateTasks_() {
+    this.tasks_ = null;
+    this.updateTasks_();
   }
 
   /**

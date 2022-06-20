@@ -29,6 +29,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -63,6 +65,7 @@
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_process_host.h"
@@ -429,6 +432,31 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
       file_watchers_;
 };
 
+// Observes App Service and notifies Files app when there are any changes in the
+// apps which might affect which file tasks are currently available, e.g. when
+// an app is installed or uninstalled.
+class RecalculateTasksObserver : public apps::AppRegistryCache::Observer {
+ public:
+  explicit RecalculateTasksObserver(Profile* profile) : profile_(profile) {}
+
+  // Tell Files app frontend that file tasks might have changed.
+  void OnAppUpdate(const apps::AppUpdate& update) override {
+    // TODO(petermarshall): Filter update more carefully.
+    BroadcastEvent(profile_,
+                   extensions::events::FILE_MANAGER_PRIVATE_ON_APPS_UPDATED,
+                   file_manager_private::OnAppsUpdated::kEventName,
+                   file_manager_private::OnAppsUpdated::Create());
+  }
+
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override {
+    apps::AppRegistryCache::Observer::Observe(nullptr);
+  }
+
+ private:
+  Profile* profile_;
+};
+
 // Records mounted File System Provider type if known otherwise UNKNOWN.
 void RecordFileSystemProviderMountMetrics(const Volume& volume) {
   const ash::file_system_provider::ProviderId& provider_id =
@@ -528,6 +556,8 @@ EventRouter::EventRouter(Profile* profile)
           std::make_unique<DriveFsEventRouterImpl>(notification_manager_.get(),
                                                    profile,
                                                    &file_watchers_)),
+      recalculate_tasks_observer_(
+          std::make_unique<RecalculateTasksObserver>(profile)),
       dispatch_directory_change_event_impl_(
           base::BindRepeating(&EventRouter::DispatchDirectoryChangeEventImpl,
                               base::Unretained(this))) {
@@ -600,6 +630,13 @@ void EventRouter::Shutdown() {
     auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
                          ->MountProviderRegistry();
     registry->RemoveObserver(this);
+  }
+
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_)) {
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile_);
+    DCHECK(proxy);
+    proxy->AppRegistryCache().RemoveObserver(recalculate_tasks_observer_.get());
   }
 
   profile_ = nullptr;
@@ -699,6 +736,13 @@ void EventRouter::ObserveEvents() {
     auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
                          ->MountProviderRegistry();
     registry->AddObserver(this);
+  }
+
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_)) {
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile_);
+    DCHECK(proxy);
+    proxy->AppRegistryCache().AddObserver(recalculate_tasks_observer_.get());
   }
 }
 
