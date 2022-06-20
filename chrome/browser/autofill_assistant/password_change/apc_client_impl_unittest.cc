@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
+#include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,6 +57,10 @@ class TestApcClientImpl : public ApcClientImpl {
     return std::move(external_script_controller_);
   }
 
+  autofill_assistant::RuntimeManager* GetRuntimeManager() override {
+    return runtime_manager_;
+  }
+
   // Allows setting an onboarding coordinator that is returned by the factory
   // function. Must be called at least once before every expected call to
   // `CreateOnboardingCoordinator()`.
@@ -77,11 +82,18 @@ class TestApcClientImpl : public ApcClientImpl {
     external_script_controller_ = std::move(external_script_controller);
   }
 
+  // Allows setting an RunTimeManager.
+  void InjectRunTimeManagerForTesting(
+      autofill_assistant::RuntimeManager* runtime_manager) {
+    runtime_manager_ = runtime_manager;
+  }
+
  private:
   std::unique_ptr<ApcOnboardingCoordinator> coordinator_;
   std::unique_ptr<AssistantSidePanelCoordinator> side_panel_;
   std::unique_ptr<autofill_assistant::HeadlessScriptController>
       external_script_controller_;
+  autofill_assistant::RuntimeManager* runtime_manager_;
 };
 
 // static
@@ -126,6 +138,10 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
     external_script_controller_ref_ = external_script_controller.get();
     test_apc_client_->InjectHeadlessScriptControllerForTesting(
         std::move(external_script_controller));
+
+    // Prepare the RunTimeManager.
+    test_apc_client_->InjectRunTimeManagerForTesting(
+        mock_runtime_manager_.get());
   }
 
   TestApcClientImpl* apc_client() { return test_apc_client_; }
@@ -137,6 +153,9 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
   autofill_assistant::MockHeadlessScriptController*
   external_script_controller() {
     return external_script_controller_ref_;
+  }
+  autofill_assistant::MockRuntimeManager* runtime_manager() {
+    return mock_runtime_manager_.get();
   }
 
  private:
@@ -155,6 +174,9 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
 
   // The object that is tested.
   raw_ptr<TestApcClientImpl> test_apc_client_ = nullptr;
+  std::unique_ptr<autofill_assistant::MockRuntimeManager>
+      mock_runtime_manager_ =
+          std::make_unique<autofill_assistant::MockRuntimeManager>();
 };
 
 TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
@@ -171,7 +193,8 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
   ApcOnboardingCoordinator::Callback coordinator_callback;
   EXPECT_CALL(*coordinator(), PerformOnboarding)
       .WillOnce(MoveArg<0>(&coordinator_callback));
-
+  EXPECT_CALL(*runtime_manager(),
+              SetUIState(autofill_assistant::UIState::kShown));
   EXPECT_TRUE(client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false));
   EXPECT_TRUE(client->IsRunning());
 
@@ -192,6 +215,8 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
 
   autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
       /* success= */ true};
+  EXPECT_CALL(*runtime_manager(),
+              SetUIState(autofill_assistant::UIState::kNotShown));
   std::move(external_script_controller_callback).Run(script_result);
   EXPECT_FALSE(client->IsRunning());
 }
@@ -272,6 +297,10 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_WithUnifiedSidePanelDisabled) {
   // The `ApcClient` is paused.
   EXPECT_FALSE(client->IsRunning());
 
+  EXPECT_CALL(*runtime_manager(),
+              SetUIState(autofill_assistant::UIState::kShown))
+      .Times(0);
+
   // Starting it does not work.
   EXPECT_FALSE(client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true));
   EXPECT_FALSE(client->IsRunning());
@@ -285,7 +314,8 @@ TEST_F(ApcClientImplTest, OnHidden_WithOngoingApcFlow) {
   EXPECT_CALL(*coordinator(), PerformOnboarding)
       .Times(1)
       .WillOnce(MoveArg<0>(&coordinator_callback));
-
+  EXPECT_CALL(*runtime_manager(),
+              SetUIState(autofill_assistant::UIState::kShown));
   EXPECT_TRUE(
       apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true));
   std::move(coordinator_callback).Run(true);
@@ -294,6 +324,8 @@ TEST_F(ApcClientImplTest, OnHidden_WithOngoingApcFlow) {
   // The `ApcClientImpl` is registered as an observer to the side panel.
   ASSERT_EQ(side_panel_observer(), apc_client());
 
+  EXPECT_CALL(*runtime_manager(),
+              SetUIState(autofill_assistant::UIState::kNotShown));
   // Simulate hiding the side panel.
   side_panel_observer()->OnHidden();
 

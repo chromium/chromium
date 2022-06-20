@@ -14,6 +14,7 @@
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_side_panel_coordinator.h"
 #include "components/autofill_assistant/browser/public/headless_script_controller.h"
+#include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -55,6 +56,11 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   // Creates an external script controller.
   virtual std::unique_ptr<autofill_assistant::HeadlessScriptController>
   CreateHeadlessScriptController();
+
+  // Gets the RunTimeManager used to disable dialogs and prompts, such as
+  // password manager, translation dialogs and permissions. Protected to allow
+  // for overrides by test classes.
+  virtual autofill_assistant::RuntimeManager* GetRuntimeManager();
 
   explicit ApcClientImpl(content::WebContents* web_contents);
 

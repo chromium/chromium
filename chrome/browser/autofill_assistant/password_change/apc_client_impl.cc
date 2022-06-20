@@ -59,6 +59,8 @@ bool ApcClientImpl::Start(const GURL& url,
     return false;
   is_running_ = true;
 
+  GetRuntimeManager()->SetUIState(autofill_assistant::UIState::kShown);
+
   url_ = url;
   username_ = username;
   skip_login_ = skip_login;
@@ -73,6 +75,7 @@ bool ApcClientImpl::Start(const GURL& url,
 }
 
 void ApcClientImpl::Stop() {
+  GetRuntimeManager()->SetUIState(autofill_assistant::UIState::kNotShown);
   onboarding_coordinator_.reset();
   external_script_controller_.reset();
   is_running_ = false;
@@ -150,6 +153,11 @@ ApcClientImpl::CreateHeadlessScriptController() {
           std::make_unique<autofill_assistant::CommonDependenciesChrome>());
   return autofill_assistant->CreateHeadlessScriptController(
       &GetWebContents(), apc_external_action_delegate_.get());
+}
+
+autofill_assistant::RuntimeManager* ApcClientImpl::GetRuntimeManager() {
+  return autofill_assistant::RuntimeManager::GetOrCreateForWebContents(
+      &GetWebContents());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ApcClientImpl);
