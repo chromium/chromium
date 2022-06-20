@@ -12,6 +12,7 @@ const USER_ACTION_LAUNCH_OOBE_GUEST = 'launch-oobe-guest';
 const USER_ACTION_LOCAL_STATE_POWERWASH = 'local-state-error-powerwash';
 const USER_ACTION_SHOW_CAPTIVE_PORTAL = 'show-captive-portal';
 const USER_ACTION_OPEN_INTERNET_DIALOG = 'open-internet-dialog';
+const USER_ACTION_OFFLINE_LOGIN = 'offline-login';
 
 /**
  * Possible UI states of the error screen.
@@ -387,7 +388,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
     this.updateElementWithStringAndAnchorTag_(
         'error-offline-login', 'offlineLogin', {}, 'error-offline-login-link');
     this.shadowRoot.querySelector('#error-offline-login-link').onclick = () => {
-      chrome.send('offlineLogin');
+      this.userActed(USER_ACTION_OFFLINE_LOGIN);
     };
   }
 

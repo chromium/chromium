@@ -91,11 +91,23 @@ void OfflineLoginScreen::OnViewDestroyed(OfflineLoginView* view) {
 void OfflineLoginScreen::ShowImpl() {
   if (!view_)
     return;
+
   scoped_observer_ = std::make_unique<base::ScopedObservation<
       NetworkStateInformer, NetworkStateInformerObserver>>(this);
   scoped_observer_->Observe(network_state_informer_.get());
   StartIdleDetection();
-  view_->Show();
+
+  base::Value::Dict params;
+  const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
+  if (!enterprise_domain_manager.empty())
+    params.Set("enterpriseDomainManager", enterprise_domain_manager);
+  std::string email_domain;
+  if (CrosSettings::Get()->GetString(kAccountsPrefLoginScreenDomainAutoComplete,
+                                     &email_domain) &&
+      !email_domain.empty()) {
+    params.Set("emailDomain", email_domain);
+  }
+  view_->Show(std::move(params));
 }
 
 void OfflineLoginScreen::HideImpl() {
@@ -103,22 +115,6 @@ void OfflineLoginScreen::HideImpl() {
   idle_detector_.reset();
   if (view_)
     view_->Hide();
-}
-
-void OfflineLoginScreen::LoadOffline() {
-  base::DictionaryValue params;
-
-  const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
-  if (!enterprise_domain_manager.empty())
-    params.SetStringKey("enterpriseDomainManager", enterprise_domain_manager);
-  std::string email_domain;
-  if (CrosSettings::Get()->GetString(kAccountsPrefLoginScreenDomainAutoComplete,
-                                     &email_domain) &&
-      !email_domain.empty()) {
-    params.SetStringKey("emailDomain", email_domain);
-  }
-  if (view_)
-    view_->LoadParams(std::move(params));
 }
 
 void OfflineLoginScreen::OnUserActionDeprecated(const std::string& action_id) {

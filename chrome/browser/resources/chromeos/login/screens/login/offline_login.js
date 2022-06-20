@@ -117,8 +117,7 @@ class OfflineLogin extends OfflineLoginBase {
   /** Overridden from LoginScreenBehavior. */
   // clang-format off
   get EXTERNAL_API() {
-    return ['loadParams',
-            'reset',
+    return ['reset',
             'proceedToPasswordPage',
             'showOnlineRequiredDialog',
             'showPasswordMismatchMessage',
@@ -151,8 +150,22 @@ class OfflineLogin extends OfflineLoginBase {
     this.switchToEmailCard(true /* animated */);
   }
 
-  onBeforeShow() {
-    this.$.dialog.onBeforeShow();
+  cancel() {
+    this.onBackButtonClicked_();
+  }
+
+  /**
+   *
+   * @param {Object} params
+   */
+  onBeforeShow(params) {
+    this.reset();
+    if ('enterpriseDomainManager' in params) {
+      this.manager = params['enterpriseDomainManager'];
+    }
+    if ('emailDomain' in params) {
+      this.emailDomain = '@' + params['emailDomain'];
+    }
     this.$.emailInput.pattern = INPUT_EMAIL_PATTERN;
     if (!this.email_) {
       this.switchToEmailCard(false /* animated */);
@@ -160,6 +173,7 @@ class OfflineLogin extends OfflineLoginBase {
   }
 
   reset() {
+    this.animationInProgress = false;
     this.disabled = false;
     this.emailDomain = '';
     this.manager = '';
@@ -168,19 +182,6 @@ class OfflineLogin extends OfflineLoginBase {
     this.$.emailInput.invalid = false;
     this.$.passwordInput.invalid = false;
     this.activeSection = LOGIN_SECTION.EMAIL;
-  }
-
-  /**
-   * @param {!Object} params parameters bag.
-   */
-  loadParams(params) {
-    this.reset();
-    if ('enterpriseDomainManager' in params) {
-      this.manager = params['enterpriseDomainManager'];
-    }
-    if ('emailDomain' in params) {
-      this.emailDomain = '@' + params['emailDomain'];
-    }
   }
 
   proceedToPasswordPage() {

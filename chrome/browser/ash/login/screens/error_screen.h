@@ -154,6 +154,9 @@ class ErrorScreen : public BaseScreen,
   // If show is true offline login flow is enabled from the error screen.
   void ShowOfflineLoginOption(bool show);
 
+  // Handle user action to login in offline mode.
+  void OnOfflineLoginClicked();
+
   // Handles the response of an ownership check and starts the guest session if
   // applicable.
   void StartGuestSessionAfterOwnershipCheck(

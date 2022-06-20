@@ -51,19 +51,8 @@ void OfflineLoginScreenHandler::DeclareLocalizedValues(
   builder->Add("offlineLoginOkBtn", IDS_OFFLINE_LOGIN_OK_BUTTON_TEXT);
 }
 
-void OfflineLoginScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    show_on_init_ = false;
-    Show();
-  }
-}
-
-void OfflineLoginScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-  ShowInWebUI();
+void OfflineLoginScreenHandler::Show(base::Value::Dict params) {
+  ShowInWebUI(std::move(params));
 }
 
 void OfflineLoginScreenHandler::Hide() {
@@ -93,10 +82,6 @@ void OfflineLoginScreenHandler::HandleCompleteAuth(
 void OfflineLoginScreenHandler::HandleEmailSubmitted(
     const std::string& username) {
   screen_->HandleEmailSubmitted(username);
-}
-
-void OfflineLoginScreenHandler::LoadParams(base::DictionaryValue params) {
-  CallJS("login.OfflineLoginScreen.loadParams", std::move(params));
 }
 
 void OfflineLoginScreenHandler::ShowPasswordPage() {

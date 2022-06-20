@@ -61,7 +61,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
-#include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
@@ -207,8 +206,6 @@ void SigninScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
 void SigninScreenHandler::RegisterMessages() {
-  AddCallback("offlineLogin", &SigninScreenHandler::HandleOfflineLogin);
-
   AddCallback("showLoadingTimeoutError",
               &SigninScreenHandler::HandleShowLoadingTimeoutError);
 }
@@ -362,6 +359,8 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   if (!is_online || is_gaia_loading_timeout || is_gaia_error) {
     if (GetCurrentScreen() != ErrorScreenView::kScreenId) {
       error_screen_->SetParentScreen(GaiaView::kScreenId);
+      error_screen_->SetHideCallback(base::BindOnce(
+          &SigninScreenHandler::OnErrorScreenHide, weak_factory_.GetWeakPtr()));
       error_screen_->ShowNetworkErrorMessage(state, reason);
       histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
     }
@@ -381,7 +380,6 @@ void SigninScreenHandler::HideOfflineMessage(NetworkStateInformer::State state,
   gaia_reload_reason_ = NetworkError::ERROR_REASON_NONE;
 
   error_screen_->Hide();
-  histogram_helper_->OnErrorHide();
 
   // Forces a reload for Gaia screen on hiding error message.
   if (IsGaiaVisible() || IsGaiaHiddenByError())
@@ -440,18 +438,9 @@ void SigninScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth() {
   network_state_ignored_until_proxy_auth_ = false;
 }
 
-void SigninScreenHandler::HandleOfflineLogin() {
-  if (!delegate_) {
-    NOTREACHED();
-    return;
-  }
-
-  auto* offline_login_screen =
-      WizardController::default_controller()->GetScreen<OfflineLoginScreen>();
-  offline_login_screen->LoadOffline();
-  HideOfflineMessage(NetworkStateInformer::OFFLINE,
-                     NetworkError::ERROR_REASON_NONE);
-  LoginDisplayHost::default_host()->StartWizard(OfflineLoginView::kScreenId);
+void SigninScreenHandler::OnErrorScreenHide() {
+  histogram_helper_->OnErrorHide();
+  ShowScreenDeprecated(GaiaView::kScreenId);
 }
 
 void SigninScreenHandler::HandleShowLoadingTimeoutError() {

@@ -83,6 +83,7 @@ constexpr const char kUserActionNetworkConnected[] = "network-connected";
 constexpr const char kUserActionReloadGaia[] = "reload-gaia";
 constexpr const char kUserActionCancelReset[] = "cancel-reset";
 constexpr const char kUserActionCancel[] = "cancel";
+constexpr const char kUserActionOfflineLogin[] = "offline-login";
 
 ErrorScreen::ErrorScreen(ErrorScreenView* view)
     : BaseScreen(ErrorScreenView::kScreenId, OobeScreenPriority::DEFAULT),
@@ -108,6 +109,15 @@ void ErrorScreen::AllowGuestSignin(bool allowed) {
 void ErrorScreen::ShowOfflineLoginOption(bool show) {
   if (view_)
     view_->SetOfflineSigninAllowed(show);
+}
+
+void ErrorScreen::OnOfflineLoginClicked() {
+  // Reset hide callback as we advance to OfflineLoginScreen. Exit from this
+  // screen is handled by WizardController.
+  // TODO(https://crbug.com/1199816, dkuzmin): Use exit_callback_ once available
+  on_hide_callback_ = base::OnceClosure();
+  Hide();
+  LoginDisplayHost::default_host()->StartWizard(OfflineLoginView::kScreenId);
 }
 
 void ErrorScreen::AllowOfflineLogin(bool allowed) {
@@ -269,7 +279,7 @@ void ErrorScreen::ShowImpl() {
 }
 
 void ErrorScreen::HideImpl() {
-  if (view_)
+  if (view_ && !is_hidden())
     view_->Hide();
 }
 
@@ -296,6 +306,8 @@ void ErrorScreen::OnUserActionDeprecated(const std::string& action_id) {
   } else if (action_id == kUserActionNetworkConnected ||
              action_id == kUserActionCancelReset) {
     Hide();
+  } else if (action_id == kUserActionOfflineLogin) {
+    OnOfflineLoginClicked();
   } else {
     BaseScreen::OnUserActionDeprecated(action_id);
   }

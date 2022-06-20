@@ -122,8 +122,6 @@ class SigninScreenHandler
                const content::NotificationDetails& details) override;
 
   // WebUI message handlers.
-  void HandleOfflineLogin();
-
   void HandleShowLoadingTimeoutError();
 
   // Returns true if current visible screen is the Gaia sign-in page.
@@ -143,6 +141,10 @@ class SigninScreenHandler
   // After proxy auth information has been supplied, this function re-enables
   // responding to network state notifications.
   void ReenableNetworkStateUpdatesAfterProxyAuth();
+
+  // Error screen hide callback which records error screen metrics and shows
+  // GAIA.
+  void OnErrorScreenHide();
 
   // A delegate that glues this handler with backend LoginDisplay.
   SigninScreenHandlerDelegate* delegate_ = nullptr;
