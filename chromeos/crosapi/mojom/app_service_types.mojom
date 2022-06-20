@@ -347,6 +347,7 @@ struct Intent {
   [MinVersion=5] array<IntentFile>? files@5;
   // The activity for the app to launch.
   [MinVersion=13] string? activity_name@6;
+  [MinVersion=14] string? data@7;
 };
 
 // The result from launching an app.
