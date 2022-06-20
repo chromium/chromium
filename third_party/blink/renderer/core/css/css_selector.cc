@@ -580,7 +580,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(const AtomicString& name,
   }
 
   if (match->type == CSSSelector::kPseudoHas &&
-      !RuntimeEnabledFeatures::CSSPseudoHasInSnapshotProfileEnabled()) {
+      !RuntimeEnabledFeatures::CSSPseudoHasEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 

@@ -711,12 +711,7 @@
     },
     {
       name: "CSSPseudoHas",
-      status: "experimental",
-    },
-    {
-      name: "CSSPseudoHasInSnapshotProfile",
-      status: "experimental",
-      implied_by: ["CSSPseudoHas"],
+      status: "stable",
     },
     {
       // When an audio, video, or similar resource is "playing"
