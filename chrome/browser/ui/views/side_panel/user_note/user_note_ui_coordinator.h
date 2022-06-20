@@ -60,7 +60,7 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
                      const std::string& note_content);
 
   // UserNoteUI overrides
-  void FocusNote(const std::string& guid) override;
+  void FocusNote(const base::UnguessableToken& guid) override;
   void StartNoteCreation(user_notes::UserNoteInstance* instance) override;
   void Invalidate() override;
   void Show() override;

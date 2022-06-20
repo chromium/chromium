@@ -378,7 +378,7 @@ void UserNoteView::OnMenuClosed() {
 
 void UserNoteView::OnCancelUserNote(UserNoteView::State state) {
   if (state == UserNoteView::State::kCreating) {
-    coordinator_->OnNoteCreationCancelled(UserNoteId(), this);
+    coordinator_->OnNoteCreationCancelled(user_note_id(), this);
     return;
   }
 
@@ -408,7 +408,7 @@ void UserNoteView::OnAddUserNote() {
                          base::UTF16ToUTF8(note_content),
                          /*quote =*/std::string());
 
-  coordinator_->OnNoteCreationDone(UserNoteId(),
+  coordinator_->OnNoteCreationDone(user_note_id(),
                                    base::UTF16ToUTF8(note_content));
 }
 
@@ -430,7 +430,7 @@ void UserNoteView::OnEditUserNote(int event_flags) {
 }
 
 void UserNoteView::OnDeleteUserNote(int event_flags) {
-  coordinator_->OnNoteDeleted(UserNoteId(), this);
+  coordinator_->OnNoteDeleted(user_note_id(), this);
 }
 
 void UserNoteView::OnLearnUserNote(int event_flags) {
@@ -459,5 +459,5 @@ void UserNoteView::OnSaveUserNote() {
       date, base::UTF16ToUTF8(note_content),
       !note_quote.empty() ? base::UTF16ToUTF8(note_quote) : std::string());
 
-  coordinator_->OnNoteUpdated(UserNoteId(), base::UTF16ToUTF8(note_content));
+  coordinator_->OnNoteUpdated(user_note_id(), base::UTF16ToUTF8(note_content));
 }

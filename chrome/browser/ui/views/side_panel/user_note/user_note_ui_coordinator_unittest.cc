@@ -134,7 +134,7 @@ TEST_F(UserNoteUICoordinatorTest, PopulateUserNoteSidePanel) {
     UserNoteView* user_note_view = views::AsViewClass<UserNoteView>(child_view);
     // Verify that the notes added to the service are displayed in the user note
     // side panel.
-    EXPECT_EQ(user_note_view->UserNoteId(), note_ids_[index]);
+    EXPECT_EQ(user_note_view->user_note_id(), note_ids_[index]);
     index++;
   }
 }
@@ -175,7 +175,7 @@ TEST_F(UserNoteUICoordinatorTest, AddNoteMiddleUserSidePanel) {
   UserNoteView* middle_user_note_view = views::AsViewClass<UserNoteView>(
       scroll_view->contents()->children().at(1));
   // Verify that note3 is the middle note in the side panel.
-  EXPECT_EQ(middle_user_note_view->UserNoteId(), note_ids_[index]);
+  EXPECT_EQ(middle_user_note_view->user_note_id(), note_ids_[index]);
 }
 
 TEST_F(UserNoteUICoordinatorTest, AddNoteEndUserSidePanel) {
@@ -215,7 +215,7 @@ TEST_F(UserNoteUICoordinatorTest, AddNoteEndUserSidePanel) {
   UserNoteView* last_user_note_view = views::AsViewClass<UserNoteView>(
       scroll_view->contents()->children().at(index));
   // Verify that note3 is the last note in the side panel.
-  EXPECT_EQ(last_user_note_view->UserNoteId(), note_ids_[index]);
+  EXPECT_EQ(last_user_note_view->user_note_id(), note_ids_[index]);
 }
 
 // TODO(crbug.com/1328966): Re-enable this test
@@ -257,7 +257,7 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveMiddleUserSidePanel) {
   for (auto* child_view : scroll_view->contents()->children()) {
     UserNoteView* user_note_view = views::AsViewClass<UserNoteView>(child_view);
     // Verify that note2 has been removed from the side panel.
-    EXPECT_NE(user_note_view->UserNoteId(), note_ids_[1]);
+    EXPECT_NE(user_note_view->user_note_id(), note_ids_[1]);
   }
 }
 
@@ -300,7 +300,7 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveEndUserSidePanel) {
   for (auto* child_view : scroll_view->contents()->children()) {
     UserNoteView* user_note_view = views::AsViewClass<UserNoteView>(child_view);
     // Verify that note3 has been removed from the side panel.
-    EXPECT_NE(user_note_view->UserNoteId(), note_ids_[index]);
+    EXPECT_NE(user_note_view->user_note_id(), note_ids_[index]);
   }
 }
 

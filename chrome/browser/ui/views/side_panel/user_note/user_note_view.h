@@ -55,7 +55,7 @@ class UserNoteView : public views::View {
   UserNoteView& operator=(const UserNoteView&) = delete;
   ~UserNoteView() override;
 
-  const base::UnguessableToken& UserNoteId() { return id_; }
+  const base::UnguessableToken& user_note_id() { return id_; }
 
   const gfx::Rect& user_note_rect() const { return rect_; }
 
