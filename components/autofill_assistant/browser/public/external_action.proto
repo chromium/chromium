@@ -18,6 +18,8 @@ message Action {
 
 // Extended by the integrator.
 message ActionInfo {
+  optional bytes action_payload = 1;
+
   extensions 100 to max;
 }
 
@@ -33,6 +35,8 @@ message Result {
 
 // Extended by the integrator.
 message ResultInfo {
+  optional bytes result_payload = 1;
+
   extensions 100 to max;
 }
 

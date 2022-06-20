@@ -55,8 +55,8 @@ external::Result MakeResult(bool success) {
   testing::TestResultExtension test_extension_proto;
   test_extension_proto.set_text("test text");
 
-  *result.mutable_result_info()->MutableExtension(
-      testing::test_result_extension) = std::move(test_extension_proto);
+  test_extension_proto.SerializeToString(
+      result.mutable_result_info()->mutable_result_payload());
   return result;
 }
 
@@ -75,12 +75,17 @@ TEST_F(ExternalActionTest, Success) {
           });
   Run();
   EXPECT_THAT(returned_processed_action_proto->status(), Eq(ACTION_APPLIED));
-  EXPECT_TRUE(returned_processed_action_proto->has_external_action_result());
-  EXPECT_THAT(returned_processed_action_proto->external_action_result()
+  ASSERT_TRUE(returned_processed_action_proto->external_action_result()
                   .result_info()
-                  .GetExtension(testing::test_result_extension)
-                  .text(),
-              Eq("test text"));
+                  .has_result_payload());
+  testing::TestResultExtension test_extension_proto;
+  bool parse_success = test_extension_proto.ParseFromString(
+      returned_processed_action_proto->external_action_result()
+          .result_info()
+          .result_payload());
+  EXPECT_TRUE(parse_success);
+
+  EXPECT_THAT(test_extension_proto.text(), Eq("test text"));
 }
 
 TEST_F(ExternalActionTest, ExternalFailure) {
@@ -99,11 +104,17 @@ TEST_F(ExternalActionTest, ExternalFailure) {
   EXPECT_THAT(returned_processed_action_proto->status(),
               Eq(UNKNOWN_ACTION_STATUS));
   EXPECT_TRUE(returned_processed_action_proto->has_external_action_result());
-  EXPECT_THAT(returned_processed_action_proto->external_action_result()
+  ASSERT_TRUE(returned_processed_action_proto->external_action_result()
                   .result_info()
-                  .GetExtension(testing::test_result_extension)
-                  .text(),
-              Eq("test text"));
+                  .has_result_payload());
+  testing::TestResultExtension test_extension_proto;
+  bool parse_success = test_extension_proto.ParseFromString(
+      returned_processed_action_proto->external_action_result()
+          .result_info()
+          .result_payload());
+  EXPECT_TRUE(parse_success);
+
+  EXPECT_THAT(test_extension_proto.text(), Eq("test text"));
 }
 
 TEST_F(ExternalActionTest, FailsIfProtoExtensionInfoNotSet) {
