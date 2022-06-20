@@ -50,10 +50,8 @@ class UserNoteDatabase {
   void DeleteAllNotes();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, UpdateNote);
-  FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, CreateNote);
-  FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, DeleteNote);
   FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, GetNotesById);
+  friend class UserNoteDatabaseTest;
 
   // Initialises internal database if needed.
   bool EnsureDBInit();
@@ -68,6 +66,8 @@ class UserNoteDatabase {
   void CreateNote(const UserNote* model, std::string note_body_text);
 
   bool CreateSchema();
+
+  void DeleteNoteWithStringId(std::string id);
 
   std::unique_ptr<UserNote> GetNoteById(const base::UnguessableToken& id);
 
