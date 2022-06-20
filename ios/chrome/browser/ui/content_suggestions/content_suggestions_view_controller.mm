@@ -86,7 +86,10 @@ const float kModuleVerticalSpacing = 16.0f;
 // List of all of the Most Visited views.
 @property(nonatomic, strong)
     NSMutableArray<ContentSuggestionsMostVisitedTileView*>* mostVisitedViews;
-// StackView holding all of `shortcutsViews`.
+// Module Container for the Shortcuts.
+@property(nonatomic, strong)
+    ContentSuggestionsModuleContainer* shortcutsModuleContainer;
+// StackView holding all of |shortcutsViews|.
 @property(nonatomic, strong) UIStackView* shortcutsStackView;
 // List of all of the Shortcut views.
 @property(nonatomic, strong)
@@ -222,7 +225,7 @@ const float kModuleVerticalSpacing = 16.0f;
                   .height;
     [NSLayoutConstraint activateConstraints:@[
       [parentView.widthAnchor constraintEqualToConstant:width],
-      [parentView.heightAnchor constraintEqualToConstant:height]
+      [parentView.heightAnchor constraintGreaterThanOrEqualToConstant:height]
     ]];
     [self populateMostVisitedModule];
   }
@@ -254,12 +257,11 @@ const float kModuleVerticalSpacing = 16.0f;
 
     UIView* parentView = self.shortcutsStackView;
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      ContentSuggestionsModuleContainer* shortcutsContainer =
-          [[ContentSuggestionsModuleContainer alloc]
-              initWithContentView:self.shortcutsStackView
-                       moduleType:ContentSuggestionsModuleTypeShortcuts];
-      parentView = shortcutsContainer;
-      [self.verticalStackView addArrangedSubview:shortcutsContainer];
+      self.shortcutsModuleContainer = [[ContentSuggestionsModuleContainer alloc]
+          initWithContentView:self.shortcutsStackView
+                   moduleType:ContentSuggestionsModuleTypeShortcuts];
+      parentView = self.shortcutsModuleContainer;
+      [self.verticalStackView addArrangedSubview:self.shortcutsModuleContainer];
     } else {
       [self addUIElement:self.shortcutsStackView
           withCustomBottomSpacing:kMostVisitedBottomMargin];
@@ -276,7 +278,7 @@ const float kModuleVerticalSpacing = 16.0f;
                   .height;
     [NSLayoutConstraint activateConstraints:@[
       [parentView.widthAnchor constraintEqualToConstant:width],
-      [parentView.heightAnchor constraintEqualToConstant:height]
+      [parentView.heightAnchor constraintGreaterThanOrEqualToConstant:height]
     ]];
   }
 }
@@ -380,7 +382,9 @@ const float kModuleVerticalSpacing = 16.0f;
   if (!configs) {
     return;
   }
-  self.mostVisitedModuleContainer.isPlaceholder = NO;
+  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+    self.mostVisitedModuleContainer.isPlaceholder = NO;
+  }
   if ([self.mostVisitedViews count]) {
     for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
       [view removeFromSuperview];
@@ -394,6 +398,9 @@ const float kModuleVerticalSpacing = 16.0f;
   if ([configs count] == 0) {
     // No Most Visited Tiles to show. Remove module.
     [self.mostVisitedStackView removeFromSuperview];
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      [self.mostVisitedModuleContainer removeFromSuperview];
+    }
     return;
   }
   NSInteger index = 0;
@@ -450,7 +457,8 @@ const float kModuleVerticalSpacing = 16.0f;
 - (CGFloat)contentSuggestionsHeight {
   CGFloat height = 0;
   if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-    height += kModuleHeight + kModuleVerticalSpacing;
+    height += [self.mostVisitedModuleContainer calculateIntrinsicHeight] +
+              kModuleVerticalSpacing;
   } else if ([self.mostVisitedViews count] > 0) {
     height += MostVisitedCellSize(
                   UIApplication.sharedApplication.preferredContentSizeCategory)
@@ -459,7 +467,8 @@ const float kModuleVerticalSpacing = 16.0f;
   }
   if ([self.shortcutsViews count] > 0) {
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      height += kModuleHeight + kModuleVerticalSpacing;
+      height += [self.shortcutsModuleContainer calculateIntrinsicHeight] +
+                kModuleVerticalSpacing;
     } else {
       height +=
           MostVisitedCellSize(
