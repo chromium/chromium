@@ -76,9 +76,8 @@ ReportingServiceSettings::ReportingServiceSettings(
     // when new events may be added in the future. And this is also to support
     // existing customer policies that were created before we introduced the
     // concept of enabling/disabling events.
-    for (auto* event_name :
-         extensions::SafeBrowsingPrivateEventRouter::kAllEvents) {
-      enabled_event_names_.insert(event_name);
+    for (const auto& event : kAllReportingEvents) {
+      enabled_event_names_.insert(event.name);
     }
   }
 

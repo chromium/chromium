@@ -12,9 +12,24 @@
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
+
+// The source of events that can be reported through the reporting connector.
+// This enum is used in ReportingConnectorEventDescription below to specify
+// where any particular reporting connector signal comes from. Used in order to
+// filter all supported events from a particular source in kAllReportingEvents.
+enum class ReportingConnectorEventSource {
+  SAFE_BROWSING,  // Events that are part of the safe browsing suite.
+};
+
+// A struct describing a type of event including its name and source.
+struct ReportingConnectorEventDescription {
+  const char* name;
+  ReportingConnectorEventSource source;
+};
 
 // The settings for a report service obtained from a connector policy.
 class ReportingServiceSettings {
@@ -30,6 +45,26 @@ class ReportingServiceSettings {
   absl::optional<ReportingSettings> GetReportingSettings() const;
 
   std::string service_provider_name() const { return service_provider_name_; }
+
+  // All events that the reporting connector supports.
+  static constexpr ReportingConnectorEventDescription kAllReportingEvents[8] = {
+      {extensions::SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent,
+       ReportingConnectorEventSource::SAFE_BROWSING},
+      {extensions::SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent,
+       ReportingConnectorEventSource::SAFE_BROWSING},
+      {extensions::SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent,
+       ReportingConnectorEventSource::SAFE_BROWSING},
+      {extensions::SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent,
+       ReportingConnectorEventSource::SAFE_BROWSING},
+      {extensions::SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent,
+       ReportingConnectorEventSource::SAFE_BROWSING},
+      {extensions::SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent,
+       ReportingConnectorEventSource::SAFE_BROWSING},
+      {extensions::SafeBrowsingPrivateEventRouter::kKeyLoginEvent,
+       ReportingConnectorEventSource::SAFE_BROWSING},
+      {extensions::SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent,
+       ReportingConnectorEventSource::SAFE_BROWSING},
+  };
 
  private:
   // Returns true if the settings were initialized correctly. If this returns

@@ -21,6 +21,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -224,7 +225,9 @@ const char
 const char SafeBrowsingPrivateEventRouter::kKeyUserJustification[] =
     "userJustification";
 
-// All new event names should be added to the kAllEvents array below!
+// All new event names should be added to the array
+// `enterprise_connectors::ReportingServiceSettings::kAllReportingEvents` in
+// `chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h`
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent[] =
     "passwordReuseEvent";
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent[] =
@@ -240,17 +243,6 @@ const char SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent[] =
 const char SafeBrowsingPrivateEventRouter::kKeyLoginEvent[] = "loginEvent";
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent[] =
     "passwordBreachEvent";
-// All new event names should be added to this array!
-const char* SafeBrowsingPrivateEventRouter::kAllEvents[8] = {
-    SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent,
-    SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent,
-    SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent,
-    SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent,
-    SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent,
-    SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent,
-    SafeBrowsingPrivateEventRouter::kKeyLoginEvent,
-    SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent,
-};
 
 const char SafeBrowsingPrivateEventRouter::kKeyUnscannedReason[] =
     "unscannedReason";
@@ -1124,11 +1116,13 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEvent(
   }
 
 #ifndef NDEBUG
-  // Make sure that the event is included in the kAllEvents array.
+  // Make sure the event is a SAFE_BROWSING event in kAllReportingEvents array.
   bool found = false;
-  for (const char* known_event_name :
-       extensions::SafeBrowsingPrivateEventRouter::kAllEvents) {
-    if (name == known_event_name) {
+  for (const auto& event :
+       enterprise_connectors::ReportingServiceSettings::kAllReportingEvents) {
+    if (event.source == enterprise_connectors::ReportingConnectorEventSource::
+                            SAFE_BROWSING &&
+        event.name == name) {
       found = true;
       break;
     }
