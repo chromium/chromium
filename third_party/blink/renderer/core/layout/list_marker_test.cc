@@ -346,7 +346,7 @@ class ListMarkerLegacyTest : public RenderingTest {
 };
 
 // crbug.com/1336864
-TEST_F(ListMarkerLegacyTest, NegativeLetterSpacing) {
+TEST_F(ListMarkerLegacyTest, NegativeLetterSpacingByStatic) {
   SetBodyContent(
       R"HTML(<ul><li id="target" style="
   font-size: 100px;
@@ -354,6 +354,23 @@ TEST_F(ListMarkerLegacyTest, NegativeLetterSpacing) {
   list-style-type: 'foo';
   list-style-position: outside;
   ">foo</li></ul>)HTML");
+
+  auto* item_object = GetLayoutObjectByElementId("target");
+  auto* marker_object = ListMarker::MarkerFromListItem(item_object);
+  // Negative letter-spacing should not make the marker width negative.
+  EXPECT_GE(To<LayoutBox>(marker_object)->LogicalWidth(), LayoutUnit());
+}
+
+// crbug.com/1336864
+TEST_F(ListMarkerLegacyTest, NegativeLetterSpacingBySuffix) {
+  // The following marker is a decimal counter, and it has a suffix like ".".
+  SetBodyContent(
+      R"HTML(<ol><li id="target">foo</li></ol>
+      <style>
+      #target::marker {
+        font-size: 100px;
+        letter-spacing: -4400000000px;
+      }</style>)HTML");
 
   auto* item_object = GetLayoutObjectByElementId("target");
   auto* marker_object = ListMarker::MarkerFromListItem(item_object);
