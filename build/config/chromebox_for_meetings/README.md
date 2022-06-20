@@ -4,7 +4,7 @@ Note: GN Flags are Build time flags
 
 You can get a comprehensive list of all arguments supported by gn by running the
 command gn args --list out/some-directory (the directory passed to gn args is
-    required as gn args will invokes gn gen to generate the build.ninja files).
+required as gn args will invokes gn gen to generate the build.ninja files).
 
 ## is_cfm (BUILDFLAG(PLATFORM_CFM))
 
@@ -12,9 +12,10 @@ Flag for building chromium for CfM devices.
 
 ### Query Flag
 ```bash
-$ gn args out_<cfm_overlay>/{Release||Debug} --list-is_cfm
+$ gn args out_<cfm_overlay>/{Release||Debug} --list=is_cfm
 ```
-### Enagle Flag
+
+### Enable Flag
 ```bash
 $ gn args out_<cfm_overlay>/{Release||Debug}
 $ Editor will open add is_cfm=true save and exit

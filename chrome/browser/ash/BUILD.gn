@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//chromeos/ash/components/hibernate/buildflags.gni")
-import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions, "Ash Chrome has to be built with extensions")
@@ -2203,6 +2203,7 @@ source_set("ash") {
     "//ash/webui/shimless_rma",
     "//base:i18n",
     "//build:branding_buildflags",
+    "//build/config/chromebox_for_meetings:buildflags",
     "//cc/base",
     "//chrome/app:chromium_strings",
     "//chrome/app:command_ids",
@@ -2257,7 +2258,6 @@ source_set("ash") {
     "//chromeos/ash/components/hibernate:buildflags",
     "//chromeos/ash/components/oobe_quick_start",
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
-    "//chromeos/components/chromebox_for_meetings/buildflags",
     "//chromeos/components/disks:prefs",
     "//chromeos/components/local_search_service/public/cpp",
     "//chromeos/components/mojo_bootstrap",
@@ -2292,8 +2292,8 @@ source_set("ash") {
     "//chromeos/dbus/virtual_file_provider",
     "//chromeos/dbus/vm_plugin_dispatcher",
     "//chromeos/ime:gencode",
-    "//chromeos/services/bluetooth_config:in_process_bluetooth_config",
     "//chromeos/services/assistant/public/cpp",
+    "//chromeos/services/bluetooth_config:in_process_bluetooth_config",
     "//chromeos/services/cros_healthd/private/cpp",
     "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/machine_learning/public/cpp",

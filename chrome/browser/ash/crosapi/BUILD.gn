@@ -220,6 +220,7 @@ source_set("crosapi") {
     "//ash/constants",
     "//ash/webui/help_app_ui",
     "//base",
+    "//build/config/chromebox_for_meetings:buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/chromeos:print_job_info_proto",

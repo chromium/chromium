@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 
 import("//ash/ambient/resources/resources.gni")
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
-import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//ui/base/ui_features.gni")

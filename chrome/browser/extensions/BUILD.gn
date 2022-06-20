@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ozone.gni")
@@ -762,6 +763,7 @@ static_library("extensions") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//build/config/chromebox_for_meetings:buildflags",
     "//chrome:extra_resources",
     "//chrome:resources",
     "//chrome:strings",
@@ -1144,7 +1146,6 @@ static_library("extensions") {
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
-      "//chromeos/components/chromebox_for_meetings/buildflags",
       "//chromeos/components/remote_apps/mojom",
       "//chromeos/dbus",
       "//chromeos/dbus/cros_disks",
@@ -1184,6 +1185,10 @@ static_library("extensions") {
       "//ui/views",
     ]
     allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
+
+    if (is_cfm) {
+      deps += [ "//chromeos/components/chromebox_for_meetings/features" ]
+    }
   }
 
   if (is_chromeos_lacros) {

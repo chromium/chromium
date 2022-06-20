@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
@@ -22,10 +22,6 @@ source_set("cpp") {
       "service_connection.h",
     ]
     deps += [ "//chromeos/ash/components/dbus/chromebox_for_meetings" ]
-    public_deps = [
-      "//chromeos/components/chromebox_for_meetings/buildflags",
-      "//chromeos/components/chromebox_for_meetings/features",
-    ]
   }
 }
 

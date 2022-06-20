@@ -4,7 +4,6 @@
 
 import("//build/config/ui.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
-import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")

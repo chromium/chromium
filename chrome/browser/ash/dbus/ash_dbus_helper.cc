@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_paths.h"
@@ -38,7 +39,6 @@
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
-#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
 #include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
 #include "chromeos/dbus/arc/arc_camera_client.h"

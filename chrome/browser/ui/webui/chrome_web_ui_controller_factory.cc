@@ -213,6 +213,7 @@
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
 #include "ash/webui/system_extensions_internals_ui/url_constants.h"
 #include "base/system/sys_info.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
