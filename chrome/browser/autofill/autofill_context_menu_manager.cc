@@ -125,12 +125,14 @@ void AutofillContextMenuManager::ExecuteCommand(
   // Field Renderer id should be present because the context menu is triggered
   // on a input field. Otherwise, Autofill context menu models would not have
   // been added to the context menu.
-  if (params.field_renderer_id)
+  if (!params.field_renderer_id)
     return;
+
   driver->RendererShouldFillFieldWithValue(
       {LocalFrameToken(render_frame_host->GetFrameToken().value()),
        FieldRendererId(params.field_renderer_id.value())},
       it->second.fill_value);
+
   // TODO(crbug.com/1325811): Use `it->second.sub_menu_type` to record the usage
   // of the context menu based on the type.
 }
