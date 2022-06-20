@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">صارف</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">خارجی آلات کے لیے فرم ویئر کو اپ ڈیٹ کریں کا ونڈو کھلا ہے۔ <ph name="NUM_UPDATES" /> اپ ڈیٹس دستیاب ہیں۔</translation>
+<translation id="1145516343487477149">‏امدادی مضامین اور Chromebook سے متعلق عام سوالات کے جوابات تلاش کریں</translation>
 <translation id="1165039591588034296">خرابی</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> اس <ph name="DEVICE_TYPE" /> کا نظم کرتا ہے۔</translation>
 <translation id="1175951029573070619">اوسط (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">گہری تھیم آف کریں</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">تاریک وضع آف کریں</translation>
+<translation id="1881188606372070653">‏قانونی وجوہات کی بنا پر مواد میں تبدیلی کی درخواست کرنے کے لیے <ph name="BEGIN_LINK1" />قانونی مدد کے صفحہ<ph name="END_LINK1" /> پر جائیں۔ اکاؤنٹ اور سسٹم کی کچھ معلومات Google کو بھیجی جا سکتی ہے۔ ہم اپنی <ph name="BEGIN_LINK2" />رازداری کی پالیسی<ph name="END_LINK2" /> اور <ph name="BEGIN_LINK3" />سروس کی شرائط<ph name="END_LINK3" /> کے ساتھ مشروط، تکنیکی مسائل حل کرنے اور اپنی سروسز کو بہتر بنانے کیلئے آپ کی فراہم کردہ معلومات کا استعمال کریں گے۔</translation>
 <translation id="1887850431809612466">ہارڈ ویئر سے متعلق نظر ثانی</translation>
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
 <translation id="1908234395526491708">‏UDP درخواست کی ناکامیاں</translation>
@@ -622,6 +624,7 @@
 <translation id="6379086450106841622">ٹچ اسکرین</translation>
 <translation id="6381741036071372448">اپنے کی بورڈ کو ٹیسٹ کریں</translation>
 <translation id="6388847657025262518">اسکینر کا دستاویز فیڈر جام ہے۔ فیڈر چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="6394634179843537518">فائل شامل کریں</translation>
 <translation id="6410257289063177456">تصویری فائلیں</translation>
 <translation id="641081527798843608">موضوع کی مماثلت</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">მომხმარებელი</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">გახსნილია გარე მოწყობილობების ჩაშენებული პროგრამული უზრუნველყოფის განახლების ფანჯარა. ხელმისაწვდომია <ph name="NUM_UPDATES" /> განახლება.</translation>
+<translation id="1145516343487477149">იპოვეთ დამხმარე სტატიები და პასუხები გავრცელებულ შეკითხვებზე Chromebook-თან დაკავშირებით</translation>
 <translation id="1165039591588034296">შეცდომა</translation>
 <translation id="1175697296044146566">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ.</translation>
 <translation id="1175951029573070619">საშუალო (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">მუქი თემის გამორთვა</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">მუქი რეჟიმის გამორთვა</translation>
+<translation id="1881188606372070653">გადადით <ph name="BEGIN_LINK1" />სამართლებრივი დახმარების გვერდზე<ph name="END_LINK1" />, რათა მოითხოვოთ კონტენტის ცვლილება სამართლებრივი მიზეზებით. ანგარიშისა და სისტემის შესახებ გარკვეული ინფორმაცია შეიძლება გაეგზავნოს Google-ს. თქვენ მიერ მოწოდებულ ინფორმაციას ტექნიკური პრობლემების მოსაგვარებლად და ჩვენი სერვისების გასაუმჯობესებლად გამოვიყენებთ, ჩვენი <ph name="BEGIN_LINK2" />კონფიდენციალურობის დებულებისა<ph name="END_LINK2" /> და <ph name="BEGIN_LINK3" />მომსახურების პირობების<ph name="END_LINK3" /> შესაბამისად.</translation>
 <translation id="1887850431809612466">აპარატურის ვერსია</translation>
 <translation id="1905710495812624430">გადაჭარბებულია მცდელობათა მაქსიმალური რაოდენობა.</translation>
 <translation id="1908234395526491708">წარუმატებელი UDP მოთხოვნები</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">სენსორული ეკრანი</translation>
 <translation id="6381741036071372448">შეამოწმეთ თქვენი კლავიატურა</translation>
 <translation id="6388847657025262518">სკანერის დოკუმენტების მიმწოდი გაიჭედა. შეამოწმეთ მიმწოდი და ცადეთ ხელახლა.</translation>
+<translation id="6394634179843537518">ფაილის დამატება</translation>
 <translation id="6410257289063177456">გამოსახულების ფაილები</translation>
 <translation id="641081527798843608">თემის თანხვედრა</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

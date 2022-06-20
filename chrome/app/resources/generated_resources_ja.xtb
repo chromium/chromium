@@ -3909,6 +3909,7 @@
 <translation id="4768332406694066911">次の機関から発行された、あなたを識別する証明書があります</translation>
 <translation id="4770119228883592393">権限がリクエストされました。対応するには、⌘+option+下矢印キーを押してください</translation>
 <translation id="4773112038801431077">Linux のアップグレード</translation>
+<translation id="4774337692467964393">Smart Lock がオンになっている場合、PIN やパスワードを入力する必要はありません</translation>
 <translation id="4775142426314270551">Chrome および Chrome OS の機能とパフォーマンスを改善できるよう、クラッシュ レポートと診断データ、使用状況データの自動送信にご協力ください。集約されるデータは、Android アプリと Google パートナーにとっても役立ちます。お子様の Google アカウントで [ウェブとアプリのアクティビティ] 設定がオンになっている場合は、お子様の Android データをお子様の Google アカウントに保存できます。</translation>
 <translation id="477647109558161443">デスクトップ ショートカットを作成</translation>
 <translation id="4776594120007763294">ページを追加して後で読むには、ボタンをクリックしてください</translation>
@@ -3958,6 +3959,7 @@
 <translation id="4820236583224459650">有効なチケットとして設定</translation>
 <translation id="4821935166599369261">プロファイル記録の開始(&amp;P)</translation>
 <translation id="4823484602432206655">ユーザー設定とデバイス設定の読み取りと変更</translation>
+<translation id="4823894915586516138">PIN またはパスワードで、この <ph name="DEVICE_TYPE" /> のデータ（スマートフォンからアクセスする情報を含む）を保護します</translation>
 <translation id="4824037980212326045">Linux のバックアップと復元</translation>
 <translation id="4824958205181053313">同期をキャンセルしますか？</translation>
 <translation id="4827675678516992122">接続エラー</translation>
@@ -5610,6 +5612,7 @@
 <translation id="648927581764831596">使用できるものはありません</translation>
 <translation id="6490471652906364588">USB-C デバイス（右側面のポート）</translation>
 <translation id="6491376743066338510">認証できませんでした</translation>
+<translation id="6492396476180293140">ハードウェア スイッチにより内部カメラが無効になりました</translation>
 <translation id="6494327278868541139">保護強化機能の詳細を表示</translation>
 <translation id="6494445798847293442">認証局ではありません</translation>
 <translation id="6494974875566443634">カスタマイズ</translation>

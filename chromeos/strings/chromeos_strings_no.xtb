@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Bruker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Vinduet for oppdatering av fastvare på eksterne enheter er åpent. <ph name="NUM_UPDATES" /> oppdateringer er tilgjengelige.</translation>
+<translation id="1145516343487477149">Finn hjelpeartikler og svar på vanlige Chromebook-spørsmål</translation>
 <translation id="1165039591588034296">Feil</translation>
 <translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" />-enheten administreres av <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gjennomsnittlig (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Slå av mørkt tema</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Slå av mørk modus</translation>
+<translation id="1881188606372070653">Gå til <ph name="BEGIN_LINK1" />siden for juridisk hjelp<ph name="END_LINK1" /> for å be om innholdsendringer på juridisk grunnlag. Noe konto- og systeminformasjon kan bli sendt til Google. Vi bruker informasjonen du gir oss, til å løse tekniske problemer og forbedre tjenestene våre i henhold til <ph name="BEGIN_LINK2" />personvernreglene<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />vilkårene for bruk<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Maskinvareversjon</translation>
 <translation id="1905710495812624430">Du har overskredet maksimumsgrensen for antall forsøk.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-forespørsler</translation>
@@ -623,6 +625,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6379086450106841622">Berøringsskjerm</translation>
 <translation id="6381741036071372448">Test tastaturet</translation>
 <translation id="6388847657025262518">Skannerens dokumentmater er tilstoppet. Sjekk materen, og prøv på nytt.</translation>
+<translation id="6394634179843537518">Legg til fil</translation>
 <translation id="6410257289063177456">Bildefiler</translation>
 <translation id="641081527798843608">Emnetreff</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

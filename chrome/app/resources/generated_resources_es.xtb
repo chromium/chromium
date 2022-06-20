@@ -1544,6 +1544,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2433836460518180625">Solo bloquear dispositivo</translation>
 <translation id="2434449159125086437">No se ha podido configurar la impresora. Comprueba la configuración e inténtalo de nuevo.</translation>
 <translation id="2434758125294431199">Selecciona quién puede compartir archivos contigo</translation>
+<translation id="2434915728183570229">Ya puedes consultar las aplicaciones de tu teléfono</translation>
 <translation id="2435137177546457207">Términos Adicionales de Google Chrome y ChromeOS Flex</translation>
 <translation id="2435248616906486374">Red desconectada</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
@@ -4221,6 +4222,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5072900412896857127">Los Términos del Servicio de Google Play no se pueden cargar. Comprueba tu conexión de red y vuelve a intentarlo.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" /> y <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> y # más}}</translation>
 <translation id="5074318175948309511">Es posible que debas actualizar la página para que se aplique la nueva configuración.</translation>
+<translation id="5074761966806028321">Se sigue necesitando permiso para completar la configuración</translation>
 <translation id="5075910247684008552">El contenido no seguro se bloquea de forma predeterminada en los sitios seguros</translation>
 <translation id="5078638979202084724">Añadir todas las pestañas a marcadores</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
@@ -4583,6 +4585,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5449551289610225147">La contraseña no es válida</translation>
 <translation id="5449588825071916739">Añadir todas las pestañas a marcadores...</translation>
 <translation id="5449716055534515760">Cerrar &amp;ventana</translation>
+<translation id="5452446625764825792">Ahora puedes consultar las fotos, el contenido multimedia y las aplicaciones recientes de tu teléfono</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona sin conexión)</translation>
 <translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">Ver más resultados de búsqueda</translation>
@@ -4643,6 +4646,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5499211612787418966">Este cuadro de diálogo no está seleccionado actualmente. Pulsa Alt + Mayús + A para seleccionarlo.</translation>
 <translation id="5499313591153584299">Este archivo puede ser dañino para tu ordenador.</translation>
 <translation id="5499453227627332024">Hay una actualización disponible para tu contenedor de Linux. También puedes actualizarlo más tarde en la aplicación Ajustes.</translation>
+<translation id="5499476581866658341">Ahora puedes consultar el contenido multimedia y las fotos recientes de tu teléfono</translation>
 <translation id="549957179819296104">Icono nuevo</translation>
 <translation id="5500168250243071806">Es posible que el <ph name="BEGIN_LINK_SEARCH" />historial de búsqueda<ph name="END_LINK_SEARCH" /> y <ph name="BEGIN_LINK_GOOGLE" />otras formas de actividad<ph name="END_LINK_GOOGLE" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlos cuando quieras.</translation>
 <translation id="5500709606820808700">La comprobación de seguridad se ha ejecutado hoy</translation>
@@ -6306,6 +6310,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7152478047064750137">Esta extensión no requiere permisos especiales</translation>
 <translation id="7154130902455071009">Cambiar página de inicio por: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto de la cámara o archivo</translation>
+<translation id="7160182524506337403">Ya puedes consultar las notificaciones de tu teléfono</translation>
 <translation id="7163202347044721291">Verificando código de activación...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" puede leer archivos de sonido, vídeo e imágenes en las ubicaciones seleccionadas.</translation>
 <translation id="7167486101654761064">&amp;Abrir siempre archivos de este tipo</translation>
@@ -7321,6 +7326,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8138997515734480534">Estado de <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Archivos de Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141418916163800697">Puedes configurar más funciones en los ajustes de Mi teléfono</translation>
 <translation id="8141584439523427891">Abriendo en un navegador alternativo</translation>
 <translation id="8141725884565838206">Administra tus contraseñas</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{un vídeo}other{# vídeos}}</translation>
@@ -7528,6 +7534,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="833986336429795709">Para abrir este enlace, elige una aplicación</translation>
 <translation id="8342221978608739536">No lo he intentado</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
+<translation id="8345848587667658367">Ahora puedes consultar las fotos, el contenido multimedia, las notificaciones y las aplicaciones recientes de tu teléfono</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="834785183489258869">Mientras estás en modo Incógnito, los sitios no pueden usar las cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar tus anuncios. Es posible que las funciones de algunos sitios no funcionen.</translation>
 <translation id="8350789879725387295">Herramientas del lápiz óptico en el Dock</translation>
@@ -8132,6 +8139,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8957757410289731985">Personalizar perfil</translation>
 <translation id="895944840846194039">Memoria de JavaScript</translation>
 <translation id="8960208913905765425">Conversiones de unidades de Respuestas rápidas</translation>
+<translation id="8960638196855923532">Ahora puedes consultar las notificaciones y aplicaciones de tu teléfono</translation>
 <translation id="8962051932294470566">Solo puedes compartir un archivo a la vez. Vuelve a intentarlo cuando se haya completado la transferencia actual.</translation>
 <translation id="8962083179518285172">Ocultar detalles</translation>
 <translation id="8962918469425892674">Este sitio web está usando los sensores de luz o movimiento.</translation>
@@ -8283,6 +8291,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9103868373786083162">Pulsa para ir hacia atrás y acceder al menú contextual para ver el historial</translation>
 <translation id="9108035152087032312">Asignar nombre a &amp;ventana...</translation>
 <translation id="9108072915170399168">La configuración actual de uso de datos es Sin Internet</translation>
+<translation id="9108294543511800041">Ahora puedes consultar las fotos, el contenido multimedia y las notificaciones recientes de tu teléfono</translation>
 <translation id="9108674852930645435">Descubre las novedades de tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="9108808586816295166">Es posible que no haya un DNS seguro disponible de forma ininterrumpida</translation>
 <translation id="9109122242323516435">Para liberar espacio, elimina archivos del almacenamiento del dispositivo.</translation>

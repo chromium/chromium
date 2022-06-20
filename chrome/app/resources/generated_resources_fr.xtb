@@ -3922,6 +3922,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4768332406694066911">Certains certificats provenant de ces organisations vous identifient.</translation>
 <translation id="4770119228883592393">Autorisation demandée, appuyez sur ⌘+Option+Flèche vers le bas pour répondre</translation>
 <translation id="4773112038801431077">Mettre à niveau Linux</translation>
+<translation id="4774337692467964393">Si Smart Lock est activé, vous n'aurez pas besoin de saisir de code ni de mot de passe</translation>
 <translation id="4775142426314270551">Contribuez à améliorer les fonctionnalités et performances de Chrome et Chrome OS en envoyant automatiquement à Google les rapports d'erreur, ainsi que les données d'utilisation et de diagnostic. Certaines données globales seront aussi utiles aux partenaires Google et développeurs d'applis Android. Si le paramètre "Activité sur le Web et les applications" est activé pour le compte Google de votre enfant, ses données Android peuvent être enregistrées dans son compte Google.</translation>
 <translation id="477647109558161443">Créer un raccourci sur le bureau</translation>
 <translation id="4776594120007763294">Pour ajouter une page à lire plus tard, cliquez sur le bouton</translation>
@@ -3971,6 +3972,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4820236583224459650">Définir comme ticket actif</translation>
 <translation id="4821935166599369261">&amp;Profilage activé</translation>
 <translation id="4823484602432206655">Consulter et modifier les paramètres d'utilisateur et d'appareil</translation>
+<translation id="4823894915586516138">Ce code ou mot de passe protège vos données sur ce <ph name="DEVICE_TYPE" />, y compris les informations auxquelles vous accédez depuis votre téléphone</translation>
 <translation id="4824037980212326045">Sauvegarde et restauration Linux</translation>
 <translation id="4824958205181053313">Annuler la synchronisation ?</translation>
 <translation id="4827675678516992122">Impossible de se connecter</translation>
@@ -5629,6 +5631,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="648927581764831596">Aucun média disponible</translation>
 <translation id="6490471652906364588">Appareil USB de type C (port situé sur la droite de l'appareil)</translation>
 <translation id="6491376743066338510">Échec de l'autorisation</translation>
+<translation id="6492396476180293140">Caméra interne désactivée par le contacteur matériel</translation>
 <translation id="6494327278868541139">Afficher les détails de la protection renforcée</translation>
 <translation id="6494445798847293442">N'est pas une autorité de certification</translation>
 <translation id="6494974875566443634">Personnalisation</translation>

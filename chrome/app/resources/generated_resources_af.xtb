@@ -1923,6 +1923,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Verwyder 1 ongesteunde program}other{Verwyder # ongesteunde programme}}</translation>
 <translation id="2776560192867872731">Verander toestelnaam vir <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Vee hierdie houer uit</translation>
+<translation id="2778471504622896352">Voeg afstandprogramme by die Chrome-bedryfstelsellanseerder</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Kon nie Linux-program installeer nie</translation>
 <translation id="2783298271312924866">Afgelaai</translation>
@@ -3558,6 +3559,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog <ph name="NUMBER_OF_OTHER_SWITCHES" /> skakelaars</translation>
 <translation id="439266289085815679">Bluetooth-opstelling word beheer deur <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Wysig die opstellinglêer</translation>
+<translation id="4393713825278446281">Kitsbind-toestelle wat in <ph name="PRIMARY_EMAIL" /> gestoor is</translation>
 <translation id="4394049700291259645">Deaktiveer</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Maak almal &amp;oop}=1{Maak boekmerk &amp;oop}other{Maak almal ({COUNT}) &amp;oop}}</translation>
 <translation id="4397372003838952832">Jy hoef nie hierdie wagwoord te onthou nie. Dit sal in <ph name="GOOGLE_PASSWORD_MANAGER" /> gestoor word vir <ph name="EMAIL" /></translation>
@@ -3788,6 +3790,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4615586811063744755">geen webkoekie is gekies nie</translation>
 <translation id="461661862154729886">Energiebron</translation>
 <translation id="4617001782309103936">Te kort</translation>
+<translation id="4617019240346358451">Herlaai die bladsy om "<ph name="EXTENSION_NAME" />" te gebruik</translation>
 <translation id="4617270414136722281">Uitbreidingopsies</translation>
 <translation id="4617880081511131945">Kan nie verbinding vestig nie</translation>
 <translation id="4619564267100705184">Verifieer dis jy</translation>
@@ -4003,6 +4006,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4833683849865011483">Het 1 drukker op die drukbediener gekry</translation>
 <translation id="4836504898754963407">Bestuur vingerafdrukke</translation>
 <translation id="4837128290434901661">Verander terug na Google Search?</translation>
+<translation id="4837165100461973682">Herlaai die bladsy om jou veranderinge toe te pas</translation>
 <translation id="4837926214103741331">Jy is nie gemagtig om hierdie toestel te gebruik nie. Kontak asseblief die toesteleienaar vir toestemming om aan te meld.</translation>
 <translation id="4837952862063191349">Voer asseblief jou ou <ph name="DEVICE_TYPE" />-wagwoord in om jou plaaslike data te ontsluit en te herwin.</translation>
 <translation id="4838170306476614339">Bekyk jou foon se foto's, media en kennisgewings</translation>
@@ -4312,6 +4316,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5150254825601720210">Netscape-sertifikaat se SSL-bedienernaam</translation>
 <translation id="5151354047782775295">Maak skyfspasie beskikbaar, anders kan sekere data outomaties uitgevee word</translation>
 <translation id="5153234146675181447">Vergeet foon</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Gevorderde instellings vir <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Onderwerp</translation>
 <translation id="5155327081870541046">Voer die kortpad vir die werf wat jy wil deursoek, soos "@boekmerke", by die adresbalk in. Druk dan jou voorkeurkortpadsleutel en voer jou soekterm in.</translation>
@@ -5948,6 +5953,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> is oor 'n afstand bygevoeg</translation>
 <translation id="6790820461102226165">Voeg persoon by …</translation>
 <translation id="6793604637258913070">Lig die tekskaret uit wanneer dit verskyn of beweeg</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Outoskandeer maak dit vir jou moontlik om outomaties deur items op die skerm te beweeg. Druk “Kies” om 'n item te aktiveer wanneer dit gemerk is.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Oeps, iets het verkeerd geloop.</translation>
@@ -7820,6 +7826,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8642947597466641025">Maak teks groter</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> kan gevaarlik wees. Stuur dit na Google Gevorderde Beskerming om te skandeer?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Geen webkoekies nie}=1{1 webkoekie word geblokkeer}other{# webkoekies word geblokkeer}}</translation>
+<translation id="864423554496711319">Toestelle wat in jou rekening gestoor is</translation>
 <translation id="8644655801811752511">Kan nie hierdie sekuriteitsleutel terugstel nie. Probeer om die sleutel onmiddellik terug te stel nadat jy dit ingesit het.</translation>
 <translation id="8645354835496065562">Hou aan om sentortoegang toe te laat</translation>
 <translation id="8645920082661222035">Voorspel en waarsku jou teen gevaarlike gevalle voordat hulle plaasvind</translation>

@@ -1543,6 +1543,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2433836460518180625">Sblocca solo il dispositivo</translation>
 <translation id="2434449159125086437">Impossibile configurare la stampante. Verifica la configurazione e riprova.</translation>
 <translation id="2434758125294431199">Seleziona chi può condividere file con te</translation>
+<translation id="2434915728183570229">Ora puoi visualizzare le app del tuo telefono</translation>
 <translation id="2435137177546457207">Termini aggiuntivi di Google Chrome e Chrome OS Flex</translation>
 <translation id="2435248616906486374">Rete scollegata</translation>
 <translation id="2435457462613246316">Mostra password</translation>
@@ -4222,6 +4223,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5072900412896857127">Impossibile caricare i Termini di servizio di Google Play. Controlla la connessione di rete e riprova.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> e altri #}}</translation>
 <translation id="5074318175948309511">Potrebbe essere necessario ricaricare la pagina per applicare le nuove impostazioni.</translation>
+<translation id="5074761966806028321">Autorizzazione ancora necessaria per completare la configurazione</translation>
 <translation id="5075910247684008552">I contenuti non sicuri vengono bloccati per impostazione predefinita sui siti protetti</translation>
 <translation id="5078638979202084724">Aggiungi tutte le schede ai Preferiti</translation>
 <translation id="5078796286268621944">PIN errato</translation>
@@ -4531,7 +4533,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5392192690789334093">Possono inviare notifiche</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# link}}</translation>
 <translation id="5396325212236512832">Accedi automaticamente ai siti e alle app usando le credenziali memorizzate. Se la funzionalità è disattivata, ti verrà chiesta una conferma ogni volta che vuoi accedere a un sito o a un'app.</translation>
-<translation id="5397378439569041789">Registra dispositivi kiosk o insegna</translation>
+<translation id="5397378439569041789">Registra dispositivi kiosk o segnaletica</translation>
 <translation id="5397794290049113714">Tu</translation>
 <translation id="5398497406011404839">Preferiti nascosti</translation>
 <translation id="5398572795982417028">Riferimento pagina oltre i limiti. Il limite è <ph name="MAXIMUM_PAGE" /></translation>
@@ -4584,6 +4586,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5449551289610225147">Password non valida</translation>
 <translation id="5449588825071916739">Aggiungi tutte le schede ai Preferiti</translation>
 <translation id="5449716055534515760">Chiu&amp;di finestra</translation>
+<translation id="5452446625764825792">Ora puoi visualizzare le foto recenti, i contenuti multimediali e le app del tuo telefono</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funziona offline)</translation>
 <translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">Mostra altri risultati di ricerca</translation>
@@ -4644,6 +4647,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5499211612787418966">Questa finestra di dialogo non è attualmente attiva. Premi Alt+Maiusc+A per attivarla.</translation>
 <translation id="5499313591153584299">Questo file potrebbe essere dannoso per il computer.</translation>
 <translation id="5499453227627332024">È disponibile un upgrade per il tuo contenitore Linux. Puoi anche eseguire l'upgrade in un secondo momento dall'app Impostazioni.</translation>
+<translation id="5499476581866658341">Ora puoi visualizzare le foto recenti e i contenuti multimediali del tuo telefono</translation>
 <translation id="549957179819296104">Nuova icona</translation>
 <translation id="5500168250243071806">La <ph name="BEGIN_LINK_SEARCH" />cronologia delle ricerche<ph name="END_LINK_SEARCH" /> e <ph name="BEGIN_LINK_GOOGLE" />altri tipi di attività<ph name="END_LINK_GOOGLE" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.</translation>
 <translation id="5500709606820808700">Il controllo di sicurezza è stato eseguito oggi</translation>
@@ -6304,6 +6308,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7152478047064750137">Questa estensione non richiede autorizzazioni speciali</translation>
 <translation id="7154130902455071009">Cambio della pagina iniziale con: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto esistente da fotocamera o file</translation>
+<translation id="7160182524506337403">Ora puoi visualizzare le notifiche del tuo telefono</translation>
 <translation id="7163202347044721291">Verifica del codice di attivazione in corso…</translation>
 <translation id="716640248772308851">L'estensione "<ph name="EXTENSION" />" può leggere file di immagini, video e audio nelle posizioni selezionate.</translation>
 <translation id="7167486101654761064">&amp;Apri sempre file di questo tipo</translation>
@@ -7319,6 +7324,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8138997515734480534">Stato <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">File di Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141418916163800697">Puoi configurare altre funzionalità nelle impostazioni di Phone Hub</translation>
 <translation id="8141584439523427891">Apertura browser alternativo</translation>
 <translation id="8141725884565838206">Gestisci le tue password</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{un video}other{# video}}</translation>
@@ -7526,6 +7532,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="833986336429795709">Scegli un'app per aprire il link</translation>
 <translation id="8342221978608739536">Non ho provato</translation>
 <translation id="8342861492835240085">Seleziona una raccolta</translation>
+<translation id="8345848587667658367">Ora puoi visualizzare le foto recenti, i contenuti multimediali, le notifiche e le app del tuo telefono</translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
 <translation id="834785183489258869">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="8350789879725387295">Strumenti stilo nel dock</translation>
@@ -8130,6 +8137,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8957757410289731985">Personalizza il profilo</translation>
 <translation id="895944840846194039">Memoria JavaScript</translation>
 <translation id="8960208913905765425">Conversione di unità Risposte rapide</translation>
+<translation id="8960638196855923532">Ora puoi visualizzare le notifiche e le app del tuo telefono</translation>
 <translation id="8962051932294470566">Puoi condividere un solo file alla volta. Riprova al termine dell'attuale trasferimento.</translation>
 <translation id="8962083179518285172">Nascondi dettagli</translation>
 <translation id="8962918469425892674">Questo sito usa sensori di movimento o della luce.</translation>
@@ -8281,6 +8289,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9103868373786083162">Premi per tornare indietro, menu contestuale per visualizzare la cronologia</translation>
 <translation id="9108035152087032312">Assegna nome alla &amp;finestra…</translation>
 <translation id="9108072915170399168">Impostazione di utilizzo dei dati corrente: Senza Internet</translation>
+<translation id="9108294543511800041">Ora puoi visualizzare le foto recenti, i contenuti multimediali e le notifiche del tuo telefono</translation>
 <translation id="9108674852930645435">Esplora le novità di <ph name="DEVICE_TYPE" /></translation>
 <translation id="9108808586816295166">Il sistema DNS sicuro potrebbe non essere sempre disponibile</translation>
 <translation id="9109122242323516435">Per liberare spazio, elimina i file dallo spazio di archiviazione del dispositivo.</translation>

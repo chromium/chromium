@@ -3917,6 +3917,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4768332406694066911">Bu təşkilatlardan Sizi tanıdacaq sertifikatlarınız var</translation>
 <translation id="4770119228883592393">İcazə tələb edilib, cavablandırmaq üçün ⌘ + Seçim + Aşağı ox düyməsini basın</translation>
 <translation id="4773112038801431077">Linux'u təkmilləşdirin</translation>
+<translation id="4774337692467964393">Smart Lock aktiv olduqda PIN və ya parol daxil etməyinizə ehtiyac olmayacaq</translation>
 <translation id="4775142426314270551">Xəta hesabatları, eləcə də diaqnostika və istifadə datasını avtomatik Google'a göndərməklə Chrome və ChromeOS funksiyalarını və performansını təkmilləşdirməyə yardım edin. Bəzi birləşdirilmiş data Android tətbiqləri və Google partnyorlarına da kömək edəcək. Veb və Tətbiq Fəaliyyəti ayarı övladınızın Google Hesabı üçün aktiv edilərsə, övladınızın Android datası onun Google Hesabında yadda saxlanıla bilər.</translation>
 <translation id="477647109558161443">Masaüstü qısayol yaradın</translation>
 <translation id="4776594120007763294">Daha sonra oxumaq məqsədilə bir səhifə əlavə etmək üçün düyməni basın</translation>
@@ -3966,6 +3967,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4820236583224459650">Aktiv bilet kimi yadda saxlayın</translation>
 <translation id="4821935166599369261">Profilləşdirmə aktivdir</translation>
 <translation id="4823484602432206655">İstifadəçi və cihaz ayarlarını oxuyun və dəyişin</translation>
+<translation id="4823894915586516138">Bu PIN və ya parol telefonunuzdan giriş etdiyiniz hər hansı məzmun daxil olmaqla, bu <ph name="DEVICE_TYPE" /> cihazındakı məlumatlarınızı qoruyur</translation>
 <translation id="4824037980212326045">Linux yedəkləmə və bərpası</translation>
 <translation id="4824958205181053313">Sinxronizasiya ləğv edilsin?</translation>
 <translation id="4827675678516992122">Qoşulmaq mümkün deyil</translation>
@@ -5621,6 +5623,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="648927581764831596">Heç biri mövcud deyil</translation>
 <translation id="6490471652906364588">USB-C cihazı (sağ port)</translation>
 <translation id="6491376743066338510">Doğrulama uğursuz oldu</translation>
+<translation id="6492396476180293140">Daxili kamera avadanlıq açarı ilə deaktiv edilib</translation>
 <translation id="6494327278868541139">Geniş qoruma detallarını göstərin</translation>
 <translation id="6494445798847293442">Sertifikatlaşdırma Təşkilatı deyil</translation>
 <translation id="6494974875566443634">Fərdiləşdirmə</translation>

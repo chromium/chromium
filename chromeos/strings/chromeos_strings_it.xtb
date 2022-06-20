@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">È aperta la finestra per aggiornare il firmware dei dispositivi esterni. <ph name="NUM_UPDATES" /> aggiornamenti disponibili.</translation>
+<translation id="1145516343487477149">Trova articoli del Centro assistenza e risposte a domande comuni sui Chromebook</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1175697296044146566">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Nella media (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Disattiva il tema scuro</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Disattiva la modalità Buio</translation>
+<translation id="1881188606372070653">Vai alla <ph name="BEGIN_LINK1" />Guida di approfondimento legale<ph name="END_LINK1" /> per richiedere modifiche ai contenuti per motivi legali. Alcune informazioni sull'account e sul sistema potrebbero essere inviate a Google. Utilizzeremo le informazioni fornite per risolvere problemi tecnici e migliorare i nostri servizi, in conformità con le nostre <ph name="BEGIN_LINK2" />Norme sulla privacy<ph name="END_LINK2" /> e i nostri <ph name="BEGIN_LINK3" />Termini di servizio<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Revisione hardware</translation>
 <translation id="1905710495812624430">Numero massimo di tentativi consentiti superato.</translation>
 <translation id="1908234395526491708">Errori delle richieste UDP</translation>
@@ -623,6 +625,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Testare la tastiera</translation>
 <translation id="6388847657025262518">L'alimentatore di documenti dello scanner è inceppato. Controlla l'alimentatore e riprova.</translation>
+<translation id="6394634179843537518">Aggiungi file</translation>
 <translation id="6410257289063177456">File di immagine</translation>
 <translation id="641081527798843608">Corrispondenza oggetto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

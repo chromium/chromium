@@ -3919,6 +3919,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="4768332406694066911">Tes certificados destas organizacións que te identifican</translation>
 <translation id="4770119228883592393">Permiso solicitado; preme ⌘ + Option (Opción) + Down arrow (Frecha abaixo) para responder</translation>
 <translation id="4773112038801431077">Actualizar Linux</translation>
+<translation id="4774337692467964393">Se activas Smart Lock, non terás que meter ningún PIN nin contrasinal</translation>
 <translation id="4775142426314270551">Se queres axudar a mellorar as funcións e o rendemento de Chrome e de ChromeOS, permite que se lle envíen a Google de forma automática os informes de fallos, así como os datos de uso e de diagnóstico. Algúns datos agregados tamén serán útiles para os socios de Google e as aplicacións Android. Se está activada a opción Actividade web e das aplicacións na Conta de Google da túa filla ou fillo, pódense gardar nela os seus datos de Android.</translation>
 <translation id="477647109558161443">Crear acceso directo do escritorio</translation>
 <translation id="4776594120007763294">Se queres engadir unha páxina para ler máis adiante, fai clic no botón</translation>
@@ -3968,6 +3969,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="4820236583224459650">Definir como tícket activo</translation>
 <translation id="4821935166599369261">&amp;Perfís activados</translation>
 <translation id="4823484602432206655">Ler e cambiar a configuración do usuario e o dispositivo</translation>
+<translation id="4823894915586516138">Este PIN ou contrasinal protexe os datos que tes neste dispositivo (<ph name="DEVICE_TYPE" />), ademais da información á que accedas desde o teléfono</translation>
 <translation id="4824037980212326045">Copia de seguranza e restauración de Linux</translation>
 <translation id="4824958205181053313">Queres cancelar a sincronización?</translation>
 <translation id="4827675678516992122">Non se puido establecer conexión</translation>
@@ -5622,6 +5624,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="648927581764831596">Nada dispoñible</translation>
 <translation id="6490471652906364588">Dispositivo USB‑C (porto dereito)</translation>
 <translation id="6491376743066338510">Produciuse un erro na autorización</translation>
+<translation id="6492396476180293140">A cámara interna desactivouse ao premer o interruptor de hardware</translation>
 <translation id="6494327278868541139">Mostrar detalles de protección mellorada</translation>
 <translation id="6494445798847293442">Non é unha autoridade de certificación</translation>
 <translation id="6494974875566443634">Personalización</translation>

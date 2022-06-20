@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Het venster voor het updaten van firmware voor externe apparaten is geopend. <ph name="NUM_UPDATES" /> updates beschikbaar.</translation>
+<translation id="1145516343487477149">Help-artikelen en antwoorden op veelgestelde vragen over Chromebooks bekijken</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1175697296044146566">Deze <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gemiddeld (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Donker thema uitzetten</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Donkere modus uitzetten</translation>
+<translation id="1881188606372070653">Ga naar de <ph name="BEGIN_LINK1" />juridische Help-pagina<ph name="END_LINK1" /> om contentwijzigingen om juridische redenen aan te vragen. Bepaalde account- en systeemgegevens worden mogelijk naar Google gestuurd. We gebruiken deze gegevens om technische problemen op te lossen en onze services te verbeteren, in overeenstemming met ons <ph name="BEGIN_LINK2" />Privacybeleid<ph name="END_LINK2" /> en onze <ph name="BEGIN_LINK3" />Servicevoorwaarden<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Hardwarerevisie</translation>
 <translation id="1905710495812624430">Maximumaantal toegestane pogingen overschreden.</translation>
 <translation id="1908234395526491708">Mislukte UDP-verzoeken</translation>
@@ -623,6 +625,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Je toetsenbord testen</translation>
 <translation id="6388847657025262518">De documentinvoer van de scanner is vastgelopen. Check de invoer en probeer het opnieuw.</translation>
+<translation id="6394634179843537518">Bestand toevoegen</translation>
 <translation id="6410257289063177456">Afbeeldingsbestanden</translation>
 <translation id="641081527798843608">Overeenkomst van onderwerp</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

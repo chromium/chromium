@@ -3934,6 +3934,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4768332406694066911">Имате идентифициращи ви сертификати от тези организации</translation>
 <translation id="4770119228883592393">Изисква се разрешение. Натиснете ⌘ + Option + стрелката за надолу, за да отговорите</translation>
 <translation id="4773112038801431077">Надстройване на Linux</translation>
+<translation id="4774337692467964393">Ако функцията Smart Lock е включена, няма да е необходимо да въвеждате ПИН код или парола.</translation>
 <translation id="4775142426314270551">Помогнете за подобряването на функциите и ефективността на Chrome и Chrome OS, като автоматично изпращате до Google сигнали за сривове, както и диагностична информация и данни за използването. Някои обобщени данни също така ще подпомогнат приложенията за Android и партньорите на Google. Ако настройката „Активност в мрежата и приложенията“ е включена за профила в Google на детето ви, данните му от Android може да се запазват в профила му в Google.</translation>
 <translation id="477647109558161443">Създаване на пряк път на работния плот</translation>
 <translation id="4776594120007763294">За да добавите страница за четене по-късно, кликнете върху бутона</translation>
@@ -3983,6 +3984,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4820236583224459650">Задаване като активен пропуск</translation>
 <translation id="4821935166599369261">&amp;Профилирането е активирано</translation>
 <translation id="4823484602432206655">Четене и промяна на настройките на потребителите и устройството</translation>
+<translation id="4823894915586516138">ПИН кодът или паролата защитават данните ви на това устройство <ph name="DEVICE_TYPE" />, включително информацията, до която осъществявате достъп от телефона си</translation>
 <translation id="4824037980212326045">Резервни копия и възстановяване на Linux</translation>
 <translation id="4824958205181053313">Да се анулира ли синхронизирането?</translation>
 <translation id="4827675678516992122">Не можа да се установи връзка</translation>
@@ -5641,6 +5643,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="648927581764831596">Няма</translation>
 <translation id="6490471652906364588">USB-C устройство (десният порт)</translation>
 <translation id="6491376743066338510">Упълномощаването не бе успешно</translation>
+<translation id="6492396476180293140">Вътрешната камера е деактивирана чрез хардуерния превключвател</translation>
 <translation id="6494327278868541139">Показване на подробности за подобрената защита</translation>
 <translation id="6494445798847293442">Не е сертифициращ орган</translation>
 <translation id="6494974875566443634">Персонализиране</translation>

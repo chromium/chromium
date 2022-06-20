@@ -1545,6 +1545,7 @@
 <translation id="2433836460518180625">صرف آلہ غیر مقفل کریں</translation>
 <translation id="2434449159125086437">پرنٹر سیٹ اپ نہیں ہو سکتا۔ براہ کرم کنفیگریشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2434758125294431199">منتخب کریں کہ کون آپ کے ساتھ اشتراک کرسکتا ہے</translation>
+<translation id="2434915728183570229">اب آپ اپنے فون کی ایپس دیکھ سکتے ہیں</translation>
 <translation id="2435137177546457207">‏Google Chrome اور ChromeOS Flex کی اضافی شرائط</translation>
 <translation id="2435248616906486374">نیٹ ورک منقطع ہوگیا</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
@@ -4223,6 +4224,7 @@
 <translation id="5072900412896857127">‏Google Play سروس کی شرائط کو لوڈ نہیں کیا جا سکتا ہے۔ براہ کرم اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />،<ph name="FILE2" />}other{<ph name="FILE1" />،<ph name="FILE2" />، اور # مزید}}</translation>
 <translation id="5074318175948309511">نئی ترتیبات مؤثر ہونے سے پہلے اس صفحہ کو دوبارہ لوڈ کرنے کی ضرورت پڑ سکتی ہے۔</translation>
+<translation id="5074761966806028321">سیٹ اپ مکمل کرنے کے لیے ابھی بھی اجازت درکار ہے</translation>
 <translation id="5075910247684008552">محفوظ سائٹس پر غیر محفوظ مواد بذریعہ ڈیفالٹ مسدود ہوتا ہے</translation>
 <translation id="5078638979202084724">سبھی ٹیبز کو بُک مارک کریں</translation>
 <translation id="5078796286268621944">‏غلط PIN</translation>
@@ -4584,6 +4586,7 @@
 <translation id="5449551289610225147">غلط پاس ورڈ</translation>
 <translation id="5449588825071916739">سبھی ٹیبز کا بُک مارک بنائیں</translation>
 <translation id="5449716055534515760">&amp;ونڈو بند کردیں</translation>
+<translation id="5452446625764825792">اب آپ اپنے فون کی حالیہ تصاویر، میڈیا اور ایپس دیکھ سکتے ہیں</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (آف لائن کام کرتی ہے)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> کے ساتھ</translation>
 <translation id="545484289444831485">تلاش کے مزید نتائج دیکھیں</translation>
@@ -4644,6 +4647,7 @@
 <translation id="5499211612787418966">‏فی الحال اس ڈائیلاگ پر فوکس نہیں کیا گیا۔ اس ڈائیلاگ پر فوکس کرنے کے لیے Alt-Shift A دبائیں۔</translation>
 <translation id="5499313591153584299">یہ فائل آپ کے کمپیوٹر کیلئے نقصاندہ ہو سکتی ہے۔</translation>
 <translation id="5499453227627332024">‏آپ کے Linux Container کیلئے ایک اپ گریڈ دستیاب ہے۔ آپ بعد میں ترتیبات ایپ سے بھی اپ گریڈ کر سکتے ہیں۔</translation>
+<translation id="5499476581866658341">اب آپ اپنے فون کی حالیہ تصاویر اور میڈیا دیکھ سکتے ہیں</translation>
 <translation id="549957179819296104">نیا آئیکن</translation>
 <translation id="5500168250243071806">‏سائن ان ہونے پر آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK_SEARCH" />تلاش کی سرگزشت<ph name="END_LINK_SEARCH" /> اور <ph name="BEGIN_LINK_GOOGLE" />دیگر اقسام کی سرگرمی<ph name="END_LINK_GOOGLE" /> محفوظ ہو سکتی ہے۔ آپ انہیں کسی بھی وقت حذف کر سکتے ہیں۔</translation>
 <translation id="5500709606820808700">سیفٹی چیک آج کیا گیا</translation>
@@ -6307,6 +6311,7 @@
 <translation id="7152478047064750137">اس ایکسٹینشن کو کوئی خاص اجازتیں درکار نہیں ہیں</translation>
 <translation id="7154130902455071009">اپنے شروعاتی صفحہ کو اس پر تبدیل کریں: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">کیمرے یا فائل سے موجودہ تصویر</translation>
+<translation id="7160182524506337403">اب آپ اپنے فون کی اطلاعات دیکھ سکتے ہیں</translation>
 <translation id="7163202347044721291">فعالیت کے کوڈ کی توثیق کی جا رہی ہے...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" نشان زد مقامات میں تصاویر، ویڈیوز اور آواز والی فائلیں پڑھ سکتا ہے۔</translation>
 <translation id="7167486101654761064">اس قسم کی فائلیں &amp;ہمیشہ کھولیں</translation>
@@ -7320,6 +7325,7 @@
 <translation id="8138997515734480534"><ph name="VM_NAME" /> کا اسٹیٹس</translation>
 <translation id="8139447493436036221">‏Google Drive فائلز</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />، <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141418916163800697">آپ فون ہب کی ترتیبات میں مزید خصوصیات سیٹ اپ کر سکتے ہیں</translation>
 <translation id="8141584439523427891">اب متبادل براؤزر میں کھل رہا ہے</translation>
 <translation id="8141725884565838206">اپنے پاس ورڈز کا نظم کریں</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{ایک ویڈیو}other{# ویڈیوز}}</translation>
@@ -7527,6 +7533,7 @@
 <translation id="833986336429795709">یہ لنک کھولنے کیلئے، ایک ایپ منتخب کریں</translation>
 <translation id="8342221978608739536">کوشش نہیں کی</translation>
 <translation id="8342861492835240085">ایک مجموعہ منتخب کریں</translation>
+<translation id="8345848587667658367">اب آپ اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھ سکتے ہیں</translation>
 <translation id="8347227221149377169">پرنٹ جابز</translation>
 <translation id="834785183489258869">پوشیدگی موڈ میں ہونے پر سائٹس مختلف سائٹس میں آپ کی براؤزنگ سرگرمی کو دیکھنے کے لیے آپ کی کوکیز کا استعمال نہیں کر سکتیں، مثال کے طور پر اشتہارات کو ذاتی نوعیت کا بنانا۔ ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں۔</translation>
 <translation id="8350789879725387295">ڈاک میں اسٹائلس ٹولز</translation>
@@ -8131,6 +8138,7 @@
 <translation id="8957757410289731985">پروفائل حسب ضرورت بنائیں</translation>
 <translation id="895944840846194039">‏JavaScript میموری</translation>
 <translation id="8960208913905765425">فوری جوابات یونٹ کی تبدیلی</translation>
+<translation id="8960638196855923532">اب آپ اپنے فون کی اطلاعات اور ایپس دیکھ سکتے ہیں</translation>
 <translation id="8962051932294470566">آپ ایک وقت میں صرف ایک فائل کا اشتراک کر سکتے ہیں۔ موجودہ منتقلی مکمل ہونے پر دوبارہ کوشش کریں۔</translation>
 <translation id="8962083179518285172">تفصیلات چھپائیں</translation>
 <translation id="8962918469425892674">یہ سائٹ موشن یا لائٹ سینسرز کا استعمال کر رہی ہے۔</translation>
@@ -8282,6 +8290,7 @@
 <translation id="9103868373786083162">پیچھے جانے کیلئے دبائیں، سرگزشت دیکھنے کیلئے سیاق وسباق کا مینو</translation>
 <translation id="9108035152087032312">ونڈو کا نام رکھیں...</translation>
 <translation id="9108072915170399168">موجودہ ڈیٹا استعمال کی ترتیب بغیر انٹرنیٹ کے ہے</translation>
+<translation id="9108294543511800041">اب آپ اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھ سکتے ہیں</translation>
 <translation id="9108674852930645435">دیکھیں کہ آپ کے <ph name="DEVICE_TYPE" /> پر نیا کیا ہے</translation>
 <translation id="9108808586816295166">‏ممکن ہے کہ محفوظ DNS ہر وقت دستیاب نہ ہو</translation>
 <translation id="9109122242323516435">جگہ خالی کرنے کیلئے، آلہ کے اسٹوریج سے فائلیں حذف کریں۔</translation>

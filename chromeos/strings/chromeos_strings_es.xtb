@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">La ventana de actualización de firmware de dispositivos externos está abierta. Actualizaciones disponibles: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1145516343487477149">Encuentra artículos de ayuda y respuestas a preguntas frecuentes sobre Chromebook</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> gestiona el dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1175951029573070619">Ni buena ni mala (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Desactivar tema oscuro</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Desactivar modo Oscuro</translation>
+<translation id="1881188606372070653">Ve a la <ph name="BEGIN_LINK1" />página de ayuda jurídica<ph name="END_LINK1" /> para solicitar cambios en el contenido por motivos legales. Algunos datos de tu cuenta y tu sistema podrían enviarse a Google. Utilizaremos la información que nos facilites para solucionar problemas técnicos y mejorar nuestros servicios de acuerdo con lo especificado en nuestra <ph name="BEGIN_LINK2" />Política de Privacidad<ph name="END_LINK2" /> y en los <ph name="BEGIN_LINK3" />Términos del Servicio<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
 <translation id="1905710495812624430">Se ha superado el máximo de intentos permitidos.</translation>
 <translation id="1908234395526491708">Errores de solicitud UDP</translation>
@@ -622,6 +624,7 @@
 <translation id="6379086450106841622">Pantalla táctil</translation>
 <translation id="6381741036071372448">Prueba tu teclado</translation>
 <translation id="6388847657025262518">El alimentador de documentos del escáner está atascado. Revisa el alimentador y vuelve a intentarlo.</translation>
+<translation id="6394634179843537518">Añadir archivo</translation>
 <translation id="6410257289063177456">Archivos de imagen</translation>
 <translation id="641081527798843608">Coincidencia de asunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

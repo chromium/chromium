@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Nakabukas ang window para i-update ang firmware para sa mga external device. <ph name="NUM_UPDATES" /> (na) update ang available.</translation>
+<translation id="1145516343487477149">Maghanap ng mga artikulo ng tulong at sagot sa mga karaniwang tanong sa Chromebook</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1175697296044146566">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="1175951029573070619">Katamtaman (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">I-off ang madilim na tema</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">I-off ang dark mode</translation>
+<translation id="1881188606372070653">Pumunta sa <ph name="BEGIN_LINK1" />page na Legal na Tulong<ph name="END_LINK1" /> para humiling ng mga pagbabago sa content para sa mga legal na dahilan. Puwedeng ipadala sa Google ang ilang impormasyon ng account at system. Gagamitin namin ang impormasyong ibibigay mo sa amin para makatulong sa pagtugon sa mga teknikal na isyu at mapahusay ang aming mga serbisyo, na napapailalim sa aming <ph name="BEGIN_LINK2" />Patakaran sa Privacy<ph name="END_LINK2" /> at <ph name="BEGIN_LINK3" />Mga Tuntunin ng Serbisyo<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Rebisyon ng hardware</translation>
 <translation id="1905710495812624430">Nalampasan na ang maximum na pinapahintulutang bilang ng pagsubok</translation>
 <translation id="1908234395526491708">Mga hindi naisagawang kahilingan sa UDP</translation>
@@ -623,6 +625,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Subukan ang iyong keyboard</translation>
 <translation id="6388847657025262518">Nag-jam ang document feeder ng scanner. Tingnan ang feeder at subukan ulit.</translation>
+<translation id="6394634179843537518">Magdagdag ng file</translation>
 <translation id="6410257289063177456">Mga File ng Larawan</translation>
 <translation id="641081527798843608">Pagtugma ng paksa</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

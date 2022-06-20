@@ -1894,6 +1894,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Usuń 1 nieobsługiwaną aplikację}few{Usuń # nieobsługiwane aplikacje}many{Usuń # nieobsługiwanych aplikacji}other{Usuń # nieobsługiwanej aplikacji}}</translation>
 <translation id="2776560192867872731">Zmień nazwę urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Usuń ten kontener</translation>
+<translation id="2778471504622896352">Dodaj aplikacje zdalne do Menu z aplikacjami w ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Błąd podczas instalowania aplikacji na Linuksa</translation>
 <translation id="2783298271312924866">Pobrane</translation>
@@ -3529,6 +3530,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i jeszcze <ph name="NUMBER_OF_OTHER_SWITCHES" /></translation>
 <translation id="439266289085815679">Konfiguracją Bluetooth zarządza <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edytuj plik konfiguracji</translation>
+<translation id="4393713825278446281">Urządzenia obsługujące szybkie parowanie zostały zapisane na koncie <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Wyłącz</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Otwórz wszystkie}=1{&amp;Otwórz zakładkę}few{&amp;Otwórz wszystkie ({COUNT})}many{&amp;Otwórz wszystkie ({COUNT})}other{&amp;Otwórz wszystkie ({COUNT})}}</translation>
 <translation id="4397372003838952832">Nie musisz pamiętać tego hasła. Zostanie ono zapisane w usłudze <ph name="GOOGLE_PASSWORD_MANAGER" /> na koncie <ph name="EMAIL" />.</translation>
@@ -3758,6 +3760,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4615586811063744755">nie wybrano plików cookie</translation>
 <translation id="461661862154729886">Źródło energii</translation>
 <translation id="4617001782309103936">Za krótki</translation>
+<translation id="4617019240346358451">Aby użyć rozszerzenia „<ph name="EXTENSION_NAME" />”, odśwież stronę</translation>
 <translation id="4617270414136722281">Opcje rozszerzeń</translation>
 <translation id="4617880081511131945">Nie można nawiązać połączenia</translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
@@ -3907,6 +3910,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4768332406694066911">Masz certyfikaty od tych organizacji potwierdzające Twoją tożsamość</translation>
 <translation id="4770119228883592393">Zgłoszono prośbę o uprawnienia. Aby odpowiedzieć, naciśnij ⌘ + Option + strzałka w dół.</translation>
 <translation id="4773112038801431077">Uaktualnij Linuksa</translation>
+<translation id="4774337692467964393">Jeśli funkcja Smart Lock jest włączona, nie musisz podawać kodu PIN ani hasła</translation>
 <translation id="4775142426314270551">Pomóż ulepszać funkcje i działanie Chrome OS, automatycznie wysyłając do Google raporty o awariach, dane diagnostyczne i dane o korzystaniu. Niektóre dane zbiorcze pomagają również w opracowywaniu lepszych aplikacji na Androida i usług partnerów Google. Jeśli na koncie Google dziecka włączysz ustawienie Aktywność w internecie i aplikacjach, dane Androida z urządzenia dziecka mogą być zapisywane na jego koncie.</translation>
 <translation id="477647109558161443">Utwórz skrót na pulpicie</translation>
 <translation id="4776594120007763294">Aby dodać stronę, którą chcesz przeczytać później, kliknij ten przycisk</translation>
@@ -3956,6 +3960,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4820236583224459650">Ustaw jako zgłoszenie aktywne</translation>
 <translation id="4821935166599369261">&amp;Profilowanie włączone</translation>
 <translation id="4823484602432206655">Odczyt i zmiana ustawień użytkownika oraz urządzenia</translation>
+<translation id="4823894915586516138">Kod PIN lub hasło chronią dane znajdujące się na urządzeniu <ph name="DEVICE_TYPE" />, w tym wszystkie informacje, do których uzyskujesz dostęp z telefonu</translation>
 <translation id="4824037980212326045">Tworzenie i przywracanie kopii zapasowej Linuksa</translation>
 <translation id="4824958205181053313">Anulować synchronizację?</translation>
 <translation id="4827675678516992122">Nie udało się połączyć</translation>
@@ -3971,6 +3976,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4833683849865011483">Znaleziono jedną drukarkę na serwerze druku</translation>
 <translation id="4836504898754963407">Zarządzaj odciskami palców</translation>
 <translation id="4837128290434901661">Zmienić z powrotem na wyszukiwarkę Google?</translation>
+<translation id="4837165100461973682">Aby zastosować zmiany, odśwież stronę</translation>
 <translation id="4837926214103741331">Nie masz uprawnień do korzystania z tego urządzenia. Aby uzyskać pozwolenie na logowanie się, skontaktuj się z jego właścicielem.</translation>
 <translation id="4837952862063191349">Aby odblokować i przywrócić dane lokalne, podaj swoje stare hasło do urządzenia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Wyświetlaj zdjęcia, pliki multimedialne i powiadomienia z telefonu</translation>
@@ -4280,6 +4286,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5150254825601720210">Nazwa serwera SSL certyfikatu firmy Netscape</translation>
 <translation id="5151354047782775295">Zwolnij miejsce na dysku albo wybierz dane, które mogą być usuwane automatycznie</translation>
 <translation id="5153234146675181447">Zapomnij telefon</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Ustawienia zaawansowane dla <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Temat</translation>
 <translation id="5155327081870541046">Na pasku adresu wpisz skrót obszaru, w którym chcesz coś wyszukać, na przykład „@bookmarks”. Następnie naciśnij preferowany skrót klawiszowy i wpisz wyszukiwane słowa.</translation>
@@ -5612,6 +5619,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="648927581764831596">Brak dostępnych</translation>
 <translation id="6490471652906364588">Urządzenie USB-C (prawy port)</translation>
 <translation id="6491376743066338510">Nieudana autoryzacja</translation>
+<translation id="6492396476180293140">Kamerę wewnętrzną wyłączono przełącznikiem sprzętowym</translation>
 <translation id="6494327278868541139">Pokaż szczegóły silniejszej ochrony</translation>
 <translation id="6494445798847293442">To nie jest urząd certyfikacji</translation>
 <translation id="6494974875566443634">Dostosowywanie</translation>
@@ -5917,6 +5925,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6790497603648687708">Dodano zdalnie: <ph name="EXTENSION_NAME" /></translation>
 <translation id="6790820461102226165">Dodaj osobę...</translation>
 <translation id="6793604637258913070">Podświetlaj kursor tekstu, gdy się wyświetla lub porusza.</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Automatyczne skanowanie pozwala przechodzić między elementami na ekranie automatycznie. Gdy element zostanie podświetlony, kliknij „Wybierz”, aby go aktywować.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Ups, coś poszło nie tak.</translation>
@@ -7790,6 +7799,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8642947597466641025">Powiększ tekst</translation>
 <translation id="8643443571868262066">Plik <ph name="FILE_NAME" /> może być niebezpieczny. Wysłać go do przeskanowania przez Ochronę zaawansowaną Google?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Nie ma plików cookie}=1{Zablokowano 1 plik cookie}few{Zablokowano # pliki cookie}many{Zablokowano # plików cookie}other{Zablokowano # pliku cookie}}</translation>
+<translation id="864423554496711319">Urządzenia zapisane na Twoim koncie</translation>
 <translation id="8644655801811752511">Nie udało się zresetować tego klucza bezpieczeństwa. Spróbuj go zresetować zaraz po włożeniu.</translation>
 <translation id="8645354835496065562">Nadal zezwalaj na dostęp do czujników</translation>
 <translation id="8645920082661222035">Przewiduje niebezpieczne zdarzenia i ostrzega Cię przed nimi, zanim nastąpią</translation>

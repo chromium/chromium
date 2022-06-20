@@ -1910,6 +1910,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{1 ta mos kelmaydigan iovani olib tashlang}other{# ta mos kelmaydigan iovani olib tashlang}}</translation>
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> uchun qurilma nomini oʻzgartirish</translation>
 <translation id="2777251078198759550">Bu konteynerni oʻchirish</translation>
+<translation id="2778471504622896352">Ilovalarni masofadan ChromeOS ishga tushirgichiga qoʻshish</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux ilovasini o‘rnatishda xatolik yuz berdi</translation>
 <translation id="2783298271312924866">Yuklab olingan</translation>
@@ -3545,6 +3546,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> va yana <ph name="NUMBER_OF_OTHER_SWITCHES" /> ta kalit tugma</translation>
 <translation id="439266289085815679">Tarmoq sozlamalari <ph name="USER_EMAIL" /> tomonidan boshqariladi.</translation>
 <translation id="4392896746540753732">Konfiguratsiya faylini tahrirlash</translation>
+<translation id="4393713825278446281">Tezkor ulanadigan qurilmalarga <ph name="PRIMARY_EMAIL" /> hisobingizga saqlandi</translation>
 <translation id="4394049700291259645">Faolsizlantirish</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Barchasini &amp;ochish}=1{Bukmarkni &amp;ochish}other{Barchasini ({COUNT}) &amp;ochish}}</translation>
 <translation id="4397372003838952832">Bu parolni eslab qolishingiz shart emas. <ph name="EMAIL" /> hisobining paroli <ph name="GOOGLE_PASSWORD_MANAGER" />ga saqlanadi</translation>
@@ -3775,6 +3777,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4615586811063744755">cookie fayllari tanlanmadi</translation>
 <translation id="461661862154729886">Energiya manbai</translation>
 <translation id="4617001782309103936">Juda qisqa</translation>
+<translation id="4617019240346358451">“<ph name="EXTENSION_NAME" />” ishlatish uchun sahifani yangilang</translation>
 <translation id="4617270414136722281">Kengaytma parametrlari</translation>
 <translation id="4617880081511131945">Aloqa oʻrnatilmadi</translation>
 <translation id="4619564267100705184">Bu siz ekaningizni isbotlang</translation>
@@ -3990,6 +3993,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4833683849865011483">Bosma serverda 1 ta printer topildi</translation>
 <translation id="4836504898754963407">Barmoq izlari</translation>
 <translation id="4837128290434901661">Google Qidiruviga qaytarilsinmi?</translation>
+<translation id="4837165100461973682">Oʻzgarishlar amalga oshishi uchun sahifani yangilang</translation>
 <translation id="4837926214103741331">Ushbu qurilmaga ruxsatingiz yo‘q. Qurilma egasi bilan bog‘laning.</translation>
 <translation id="4837952862063191349">Qulfdan chiqarish va ma’lumotlarni tiklash uchun <ph name="DEVICE_TYPE" /> qurilmasining eski parolini kiriting.</translation>
 <translation id="4838170306476614339">Telefondagi suratlar, media fayllar va bildirishnomalarni ochish</translation>
@@ -4299,6 +4303,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5150254825601720210">Netscape SSL sertifikat serveri nomi</translation>
 <translation id="5151354047782775295">Diskdan joy bo‘shating yoki avtomatik o‘chirilishi mumkin bo‘lgan ma’lumotlarni tanlang</translation>
 <translation id="5153234146675181447">Telefonni unutish</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" />  – kengaytirilgan sozlamalar</translation>
 <translation id="5154702632169343078">Subyekt</translation>
 <translation id="5155327081870541046">Manzil qatorida qidiriladigan sayt uchun “@bookmarks” kabi buyruqni kiriting. Keyin oldindan belgilangan tezkor tugmani bosib, qidiruv iborasini kiriting.</translation>
@@ -5934,6 +5939,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> kengaytmasi masofadan qo‘shildi</translation>
 <translation id="6790820461102226165">Foydalanuvchini qo‘shish...</translation>
 <translation id="6793604637258913070">Matnni kiritish nuqtasi paydo bo‘lganda yoki siljiganda ajratib ko‘rsatilsin.</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Avto-skanerlash yordamida ekrandagi narsalar avtomatik varaqlanadi. Kerakli narsa belgilanganda, uni faollashtirish uchun “Tanlash” tugmasini bosing.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Xatolik sodir bo‘ldi.</translation>
@@ -7805,6 +7811,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8642947597466641025">Matnni yiriklashtirish</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> fayli xavfli boʻlishi mumkin. Tekshirish uchun Google kengaytirilgan himoya tizimiga yuborilsinmi?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Cookie fayllar yoʻq}=1{1 ta cookie fayl bloklandi}other{# ta cookie fayl bloklandi}}</translation>
+<translation id="864423554496711319">Qurilmalar hisobingizga saqlandi</translation>
 <translation id="8644655801811752511">Bu elektron kalit sozlamalari qayta tiklanmaydi Elektron kalit ulanishi bilan, uning sozlamalarini qayta tiklash mumkin</translation>
 <translation id="8645354835496065562">Sensordan foydalanishga ruxsat berilsin</translation>
 <translation id="8645920082661222035">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi</translation>

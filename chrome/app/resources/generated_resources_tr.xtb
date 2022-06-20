@@ -3918,6 +3918,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4768332406694066911">Sizi tanımlayan şu kuruluşlardan sertifikalarınız var</translation>
 <translation id="4770119228883592393">İzin istendi, yanıtlamak için ⌘ + Option + Aşağı ok tuşlarına basın</translation>
 <translation id="4773112038801431077">Linux'u yeni sürüme geçirin</translation>
+<translation id="4774337692467964393">Smart Lock açıksa PIN veya şifre girmeniz gerekmez</translation>
 <translation id="4775142426314270551">Kilitlenme raporlarının yanı sıra teşhis ve kullanım verilerini Google'a otomatik olarak göndererek Chrome ve ChromeOS özellikleri ile performansını iyileştirmeye yardımcı olun. Bazı birleştirilmiş veriler, Android uygulamalarına ve Google iş ortaklarına da yardımcı olur. Çocuğunuzun Google Hesabında Web ve Uygulama Etkinliği ayarı açıksa çocuğunuzun Android verileri Google Hesabına kaydedilebilir.</translation>
 <translation id="477647109558161443">Masaüstü kısayolu oluştur</translation>
 <translation id="4776594120007763294">Daha sonra okunacak bir sayfa eklemek için düğmeyi tıklayın</translation>
@@ -3967,6 +3968,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4820236583224459650">Aktif bilet olarak ayarla</translation>
 <translation id="4821935166599369261">&amp;Profil Oluşturma Etkin</translation>
 <translation id="4823484602432206655">Kullanıcı ve cihaz ayarlarını okuma ve değiştirme</translation>
+<translation id="4823894915586516138">Bu PIN veya şifre, telefonunuzdan eriştiğiniz bilgiler de dahil olmak üzere <ph name="DEVICE_TYPE" /> cihazındaki verilerinizi korur</translation>
 <translation id="4824037980212326045">Linux yedekleme ve geri yükleme</translation>
 <translation id="4824958205181053313">Senkronizasyon iptal edilsin mi?</translation>
 <translation id="4827675678516992122">Bağlanılamadı</translation>
@@ -5625,6 +5627,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="648927581764831596">Hiçbiri mevcut değil</translation>
 <translation id="6490471652906364588">USB-C cihaz (sağ bağlantı noktası)</translation>
 <translation id="6491376743066338510">Yetkilendirme başarısız oldu</translation>
+<translation id="6492396476180293140">Dahili kamera, donanım anahtarı tarafından devre dışı bırakıldı</translation>
 <translation id="6494327278868541139">Gelişmiş koruma ayrıntılarını göster</translation>
 <translation id="6494445798847293442">Sertifika Yetkilisi değil</translation>
 <translation id="6494974875566443634">Özelleştirme</translation>

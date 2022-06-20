@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">အသုံးပြုသူ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ပြင်ပစက်ပစ္စည်းများအတွက် ဖာမ်းဝဲအပ်ဒိတ်ဝင်းဒိုး ဖွင့်ထားသည်။ <ph name="NUM_UPDATES" /> အပ်ဒိတ်များ ရနိုင်ပါပြီ။</translation>
+<translation id="1145516343487477149">မေးလေ့ရှိသော Chromebook မေးခွန်းများအတွက် အကူအညီပေးဆောင်းပါးနှင့် အဖြေများ ရှာဖွေနိုင်သည်</translation>
 <translation id="1165039591588034296">အမှား</translation>
 <translation id="1175697296044146566">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံသည်။</translation>
 <translation id="1175951029573070619">သာမန် (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">မှောင်သည့် အပြင်အဆင် ပိတ်ရန်</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">အမှောင်မုဒ် ပိတ်ရန်</translation>
+<translation id="1881188606372070653">ဥပဒေဆိုင်ရာ အကြောင်းများကြောင့် အချက်အလက်များ ပြောင်းလိုပါက <ph name="BEGIN_LINK1" />'ဥပဒေဆိုင်ရာ အကူအညီ' စာမျက်နှာ<ph name="END_LINK1" /> သို့ သွားပါ။ အကောင့်နှင့် စနစ်အချက်အလက် အချို့ကို Google သို့ ပေးပို့နိုင်သည်။ ကျွန်ုပ်တို့၏ <ph name="BEGIN_LINK2" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK2" /> နှင့် <ph name="BEGIN_LINK3" />ဝန်ဆောင်မှု စည်းမျဉ်းများ<ph name="END_LINK3" /> အရ ကျွန်ုပ်တို့၏ ဝန်ဆောင်မှုများ တိုးတက်ကောင်းမွန်လာစေရန်နှင့် နည်းပညာဆိုင်ရာ ပြဿနာများ ကူညီဖြေရှင်းပေးနိုင်ရန် သင်ပေးသည့် အချက်အလက်များကို ကျွန်ုပ်တို့ အသုံးပြုသွားပါမည်။</translation>
 <translation id="1887850431809612466">စက်ပစ္စည်း စိစစ်သုံးသပ်ခြင်း</translation>
 <translation id="1905710495812624430">အများဆုံးခွင့်ပြုပေးထားသည့် အခေါက်အရေအတွက်ထက် ကျော်လွန်သွားပါပြီ။</translation>
 <translation id="1908234395526491708">UDP တောင်းဆိုချက် ချွတ်ယွင်းမှုများ</translation>
@@ -622,6 +624,7 @@
 <translation id="6379086450106841622">တို့ထိမျက်နှာပြင်</translation>
 <translation id="6381741036071372448">ကီးဘုတ်စမ်းသပ်ရန်</translation>
 <translation id="6388847657025262518">စကင်ဖတ်စက်၏ စာရွက်ထည့်ရန်ဗန်း ညပ်နေသည်။ ဗန်းကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="6394634179843537518">ဖိုင်ထည့်ရန်</translation>
 <translation id="6410257289063177456">ပုံ ဖိုင်များ</translation>
 <translation id="641081527798843608">တိုက်ဆိုင်သည့် အကြောင်းအရာ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

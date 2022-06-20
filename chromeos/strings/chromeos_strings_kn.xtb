@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ಬಳಕೆದಾರ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ಬಾಹ್ಯ ಸಾಧನಗಳಿಗಾಗಿ ಫರ್ಮ್‌ವೇರ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ ವಿಂಡೋ ತೆರೆದಿದೆ. <ph name="NUM_UPDATES" /> ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿದೆ.</translation>
+<translation id="1145516343487477149">ಸಾಮಾನ್ಯ Chromebook ಪ್ರಶ್ನೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಸಹಾಯ ಒದಗಿಸುವ ಲೇಖನಗಳು ಹಾಗೂ ಉತ್ತರಗಳನ್ನು ಕಂಡುಕೊಳ್ಳಿ</translation>
 <translation id="1165039591588034296">ದೋಷ</translation>
 <translation id="1175697296044146566">ಈ <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ಇಂದ ನಿರ್ವಹಿಸಲ್ಪಡುತ್ತದೆ.</translation>
 <translation id="1175951029573070619">ಸರಾಸರಿ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">ಕತ್ತಲೆ ಮೋಡ್ ಆಫ್ ಮಾಡಿ</translation>
+<translation id="1881188606372070653">ಕಾನೂನು ಕಾರಣಗಳಿಗಾಗಿ ವಿಷಯದ ಬದಲಾವಣೆಗಳಿಗೆ ವಿನಂತಿಸುವುದಕ್ಕಾಗಿ <ph name="BEGIN_LINK1" />ಕಾನೂನು ಸಹಾಯ ಪುಟಕ್ಕೆ<ph name="END_LINK1" /> ಹೋಗಿ. ಕೆಲವು ಖಾತೆ ಮತ್ತು ಸಿಸ್ಟಂ ಮಾಹಿತಿಯನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ತಾಂತ್ರಿಕ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸಲು ಮತ್ತು ನಮ್ಮ ಸೇವೆಗಳನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡುವುದಕ್ಕಾಗಿ, ನೀವು ನಮಗೆ ನೀಡಿರುವ ಮಾಹಿತಿಯನ್ನು ನಾವು ಬಳಸುತ್ತೇವೆ, ಇದು ನಮ್ಮ <ph name="BEGIN_LINK2" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_LINK2" /> ಮತ್ತು <ph name="BEGIN_LINK3" />ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK3" /> ಒಳಪಟ್ಟಿರುತ್ತದೆ.</translation>
 <translation id="1887850431809612466">ಹಾರ್ಡ್‌ವೇರ್ ಪರಿಷ್ಕರಣೆ</translation>
 <translation id="1905710495812624430">ಅನುಮತಿಸಲಾದ ಗರಿಷ್ಟ ಪ್ರಯತ್ನಗಳು ಮೀರಿವೆ.</translation>
 <translation id="1908234395526491708">UDP ವಿನಂತಿ ವೈಫಲ್ಯಗಳು</translation>
@@ -622,6 +624,7 @@
 <translation id="6379086450106841622">ಟಚ್‌ಸ್ಕ್ರೀನ್</translation>
 <translation id="6381741036071372448">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6388847657025262518">ಸ್ಕ್ಯಾನರ್‌ನ ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ ಜಾಮ್ ಆಗಿದೆ. ಫೀಡರ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="6394634179843537518">ಫೈಲ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6410257289063177456">ಇಮೇಜ್ ಫೈಲ್‌ಗಳು</translation>
 <translation id="641081527798843608">ವಿಷಯದ ಹೊಂದಾಣಿಕೆ</translation>
 <translation id="6423239382391657905">VPN ತೆರೆಯಿರಿ</translation>

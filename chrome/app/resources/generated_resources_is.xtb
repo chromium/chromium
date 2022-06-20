@@ -3937,6 +3937,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4768332406694066911">Þú ert með vottorð frá þessum notendaskipunum sem auðkenna þig</translation>
 <translation id="4770119228883592393">Heimildar óskað, ýttu á ⌘ + Option + ör niður til að svara</translation>
 <translation id="4773112038801431077">Uppfæra Linux</translation>
+<translation id="4774337692467964393">Ef kveikt er á Smart Lock þarftu ekki að slá inn PIN-númer eða aðgangsorð</translation>
 <translation id="4775142426314270551">Hjálpaðu til við að bæta eiginleika og afköst Chrome og ChromeOS með því að senda hrunskýrslur ásamt greiningar- og notkunargögnum sjálfkrafa til Google. Einnig kunna tiltekin samantekin gögn að gagnast Android forritum og samstarfsaðilum Google. Ef kveikt er á vef- og forritavirkni á Google reikningi barnsins verða Android gögn barnsins hugsanlega vistuð á Google reikningi þess.</translation>
 <translation id="477647109558161443">Búa til flýtileið</translation>
 <translation id="4776594120007763294">Smelltu á hnappinn til að bæta við síðu til að lesa síðar</translation>
@@ -3986,6 +3987,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4820236583224459650">Gera að virkum miða</translation>
 <translation id="4821935166599369261">Kveikt á hegðunarskráningu</translation>
 <translation id="4823484602432206655">Lesa og breyta stillingum notanda og tækis</translation>
+<translation id="4823894915586516138">Þetta PIN-númer eða aðgangsorð verndar gögnin þín í þessari <ph name="DEVICE_TYPE" />, þ.m.t. upplýsingar sem þú nálgast úr símanum.</translation>
 <translation id="4824037980212326045">Afritun og endurheimt í Linux</translation>
 <translation id="4824958205181053313">Hætta við samstillingu?</translation>
 <translation id="4827675678516992122">Tenging mistókst</translation>
@@ -5643,6 +5645,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="648927581764831596">Ekki í boði</translation>
 <translation id="6490471652906364588">USB-C-tæki (hægra tengi)</translation>
 <translation id="6491376743066338510">Auðkenning mistókst</translation>
+<translation id="6492396476180293140">Innbyggð myndavél gerð óvirk með vélbúnaðarrofa</translation>
 <translation id="6494327278868541139">Sýna upplýsingar um aukna vernd</translation>
 <translation id="6494445798847293442">Ekki vottunarstöð</translation>
 <translation id="6494974875566443634">Sérsnið</translation>

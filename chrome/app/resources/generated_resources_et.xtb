@@ -3927,6 +3927,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4768332406694066911">Teil on nende organisatsioonide sertifikaadid, mis teid tuvastavad</translation>
 <translation id="4770119228883592393">Taotleti luba, vastamiseks vajutage klahvikombinatsiooni ⌘ + Option + allanool</translation>
 <translation id="4773112038801431077">Üleminek Linuxi uuemale versioonile</translation>
+<translation id="4774337692467964393">Kui sisse on lülitatud Smart Lock, ei pea te PIN-koodi ega parooli sisestama</translation>
 <translation id="4775142426314270551">Aidake Chrome'i ja Chrome OS-i funktsioone ning toimivust täiustada, saates Google'ile automaatselt krahhiaruandeid ning ka diagnostika- ja kasutusandmeid. Mõningaid koondandmeid kasutatakse ka Androidi rakenduste ja Google'i partnerite aitamiseks. Kui veebi- ja rakendustegevuste seade on teie lapse Google'i kontol sisse lülitatud, võidakse teie lapse Androidi andmed salvestada tema Google'i kontole.</translation>
 <translation id="477647109558161443">Loo töölaua otsetee</translation>
 <translation id="4776594120007763294">Lehe lisamiseks hiljem lugemiseks klõpsake nupul</translation>
@@ -3976,6 +3977,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4820236583224459650">Määra aktiivseks piletiks</translation>
 <translation id="4821935166599369261">&amp;Profileerimine lubatud</translation>
 <translation id="4823484602432206655">Loe ja muuda kasutaja ja seadme seadeid</translation>
+<translation id="4823894915586516138">See PIN-kood või parool kaitseb teie andmeid seadmes <ph name="DEVICE_TYPE" />, sealhulgas teavet, millele telefoni kaudu juurde pääsete</translation>
 <translation id="4824037980212326045">Linuxi varundamine ja taastamine</translation>
 <translation id="4824958205181053313">Kas tühistada sünkroonimine?</translation>
 <translation id="4827675678516992122">Ühendamine ebaõnnestus</translation>
@@ -5633,6 +5635,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="648927581764831596">Pole saadaval</translation>
 <translation id="6490471652906364588">C-tüüpi USB-seade (parempoolne port)</translation>
 <translation id="6491376743066338510">Volitamine ebaõnnestus</translation>
+<translation id="6492396476180293140">Riistvara lüliti inaktiveeris sisekaamera</translation>
 <translation id="6494327278868541139">Kuva täiustatud kaitse üksikasjad</translation>
 <translation id="6494445798847293442">Pole sertifitseerimisorgan</translation>
 <translation id="6494974875566443634">Kohandamine</translation>

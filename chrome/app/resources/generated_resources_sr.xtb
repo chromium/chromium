@@ -1907,6 +1907,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Уклони 1 неподржану апликацију}one{Уклони # неподржану апликацију}few{Уклони # неподржане апликације}other{Уклони # неподржаних апликација}}</translation>
 <translation id="2776560192867872731">Промените назив уређаја <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Избриши овај контејнер</translation>
+<translation id="2778471504622896352">Додавање даљинских апликација у Chrome ОС покретач</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Грешка при инсталирању Linux апликације</translation>
 <translation id="2783298271312924866">Преузето</translation>
@@ -3542,6 +3543,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и још <ph name="NUMBER_OF_OTHER_SWITCHES" /> прекидача</translation>
 <translation id="439266289085815679">Конфигурацију Bluetooth-а контролише <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Измените датотеку конфигурације</translation>
+<translation id="4393713825278446281">Уређаји за брзо упаривање су сачувани на <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Онемогући</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Отвори све}=1{&amp;Отвори обележивач}one{&amp;Отвори све ({COUNT})}few{&amp;Отвори све ({COUNT})}other{&amp;Отвори све ({COUNT})}}</translation>
 <translation id="4397372003838952832">Не морате да запамтите ову лозинку. Биће сачувана у алатки <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
@@ -3771,6 +3773,7 @@
 <translation id="4615586811063744755">ниједан колачић није изабран</translation>
 <translation id="461661862154729886">Извор енергије</translation>
 <translation id="4617001782309103936">Прекратко</translation>
+<translation id="4617019240346358451">Поново учитајте страницу да бисте користили „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4617270414136722281">Опције додатака</translation>
 <translation id="4617880081511131945">Успостављање везе није успело</translation>
 <translation id="4619564267100705184">Потврдите свој идентитет</translation>
@@ -3986,6 +3989,7 @@
 <translation id="4833683849865011483">Пронађен је 1 штампач са сервера за штампање</translation>
 <translation id="4836504898754963407">Управљајте отисцима прстију</translation>
 <translation id="4837128290434901661">Желите ли да се вратите на Google претрагу?</translation>
+<translation id="4837165100461973682">Поново учитајте страницу да бисте применили промене</translation>
 <translation id="4837926214103741331">Немате овлашћење за коришћење овог уређаја. Контактирајте власника уређаја да бисте добили дозволу за пријављивање.</translation>
 <translation id="4837952862063191349">Да бисте откључали приступ локалним подацима и вратили их, унесите стару лозинку за уређај <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Прегледајте слике, медијски садржај и обавештења са телефона</translation>
@@ -4295,6 +4299,7 @@
 <translation id="5150254825601720210">Назив SSL сервера Netscape сертификата</translation>
 <translation id="5151354047782775295">Ослободите простор на диску или ће одређени подаци можда аутоматски бити избрисани</translation>
 <translation id="5153234146675181447">Заборављање телефона</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Напредна подешавања за <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Тема</translation>
 <translation id="5155327081870541046">У траци за адресу унесите пречицу за сајт који желите да претражите, на пример, „@bookmarks“. Затим притисните жељену тастерску пречицу и унесите термин за претрагу.</translation>
@@ -5934,6 +5939,7 @@
 <translation id="6790497603648687708">Додатак <ph name="EXTENSION_NAME" /> је додат даљински</translation>
 <translation id="6790820461102226165">Додај особу...</translation>
 <translation id="6793604637258913070">Истичи курсор за текст када се појави или креће</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Аутоматско скенирање вам омогућава да се аутоматски крећете кроз ставке на екрану. Када је ставка истакнута, притисните Изабери да бисте је активирали.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">Упс, нешто није у реду.</translation>
@@ -7806,6 +7812,7 @@
 <translation id="8642947597466641025">Увећај текст</translation>
 <translation id="8643443571868262066">Датотека <ph name="FILE_NAME" /> је можда опасна. Желите ли да је пошаљете у Google напредну заштиту ради скенирања?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Без колачића}=1{1 колачић је блокиран}one{# колачић је блокиран}few{# колачића су блокирана}other{# колачића је блокирано}}</translation>
+<translation id="864423554496711319">Уређаји сачувани на налогу</translation>
 <translation id="8644655801811752511">Ресетовање овог безбедносног кључа није успело. Ресетујте кључ чим га уметнете.</translation>
 <translation id="8645354835496065562">Настави да дозвољаваш приступ сензорима</translation>
 <translation id="8645920082661222035">Открива опасне догађаје пре него што се догоде и упозорава вас на њих</translation>
