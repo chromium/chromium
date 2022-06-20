@@ -60,3 +60,9 @@ blink_core_sources_xml = [
   "xslt_unicode_sort.cc",
   "xslt_unicode_sort.h",
 ]
+
+blink_core_tests_xml = [
+  "parser/shared_buffer_reader_test.cc",
+  "parser/xml_document_parser_test.cc",
+  "xpath_functions_test.cc",
+]

@@ -16,3 +16,8 @@ blink_core_sources_document_transition = [
   "document_transition_supplement.h",
   "document_transition_utils.h",
 ]
+
+blink_core_tests_document_transition = [
+  "document_transition_origin_trial_test.cc",
+  "document_transition_test.cc",
+]

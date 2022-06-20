@@ -16,3 +16,8 @@ blink_core_sources_messaging = [
   "message_port.cc",
   "message_port.h",
 ]
+
+blink_core_tests_messaging = [
+  "blink_transferable_message_mojom_traits_test.cc",
+  "message_port_descriptor_mojom_traits_test.cc",
+]

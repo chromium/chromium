@@ -1253,9 +1253,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "accessibility/ax_context_test.cc",
-    "annotation/annotation_agent_container_impl_test.cc",
-    "annotation/annotation_agent_impl_test.cc",
-    "annotation/annotation_test_utils.h",
     "clipboard/clipboard_utilities_test.cc",
     "content_capture/content_capture_test.cc",
     "css/css_revert_layer_value_test.cc",
@@ -1266,10 +1263,6 @@ source_set("unit_tests") {
     "css/css_value_test_helper.h",
     "css/font_display_auto_lcp_align_test.cc",
     "css/mock_css_paint_image_generator.h",
-    "display_lock/display_lock_context_test.cc",
-    "display_lock/display_lock_utilities_test.cc",
-    "document_transition/document_transition_origin_trial_test.cc",
-    "document_transition/document_transition_test.cc",
     "editing/caret_display_item_client_test.cc",
     "editing/finder/text_finder_test.cc",
     "editing/keyboard_test.cc",
@@ -1296,8 +1289,6 @@ source_set("unit_tests") {
     "geometry/dom_matrix_test.cc",
     "imagebitmap/image_bitmap_test.cc",
     "intersection_observer/intersection_observer_test.cc",
-    "messaging/blink_transferable_message_mojom_traits_test.cc",
-    "messaging/message_port_descriptor_mojom_traits_test.cc",
     "mobile_metrics/mobile_friendliness_checker_test.cc",
     "navigation_api/navigation_api_test.cc",
     "origin_trials/origin_trial_context_test.cc",
@@ -1308,12 +1299,7 @@ source_set("unit_tests") {
     "scheduler_integration_tests/throttling_test.cc",
     "scheduler_integration_tests/virtual_time_test.cc",
     "trustedtypes/trusted_types_util_test.cc",
-    "typed_arrays/array_buffer/array_buffer_contents_test.cc",
-    "typed_arrays/dom_array_buffer_test.cc",
     "url/url_search_params_test.cc",
-    "xml/parser/shared_buffer_reader_test.cc",
-    "xml/parser/xml_document_parser_test.cc",
-    "xml/xpath_functions_test.cc",
   ]
 
   # If you create a new subdirectory 'foo' that contains unit tests, list them in
@@ -1321,8 +1307,13 @@ source_set("unit_tests") {
   # the deps section below.
   sources += rebase_path(blink_core_tests_accessibility, "", "accessibility")
   sources += rebase_path(blink_core_tests_animation, "", "animation")
+  sources += rebase_path(blink_core_tests_annotation, "", "annotation")
   sources += rebase_path(blink_core_tests_clipboard, "", "clipboard")
   sources += rebase_path(blink_core_tests_css, "", "css")
+  sources += rebase_path(blink_core_tests_display_lock, "", "display_lock")
+  sources += rebase_path(blink_core_tests_document_transition,
+                         "",
+                         "document_transition")
   sources += rebase_path(blink_core_tests_dom, "", "dom")
   sources += rebase_path(blink_core_tests_editing, "", "editing")
   sources += rebase_path(blink_core_tests_events, "", "events")
@@ -1336,6 +1327,7 @@ source_set("unit_tests") {
   sources += rebase_path(blink_core_tests_inspector, "", "inspector")
   sources += rebase_path(blink_core_tests_layout, "", "layout")
   sources += rebase_path(blink_core_tests_loader, "", "loader")
+  sources += rebase_path(blink_core_tests_messaging, "", "messaging")
   sources += rebase_path(blink_core_tests_page, "", "page")
   sources += rebase_path(blink_core_tests_paint, "", "paint")
   sources +=
@@ -1348,7 +1340,9 @@ source_set("unit_tests") {
   sources += rebase_path(blink_core_tests_style, "", "style")
   sources += rebase_path(blink_core_tests_svg, "", "svg")
   sources += rebase_path(blink_core_tests_timing, "", "timing")
+  sources += rebase_path(blink_core_tests_typed_arrays, "", "typed_arrays")
   sources += rebase_path(blink_core_tests_workers, "", "workers")
+  sources += rebase_path(blink_core_tests_xml, "", "xml")
 
   if (is_debug || dcheck_always_on) {
     sources += [ "exported/web_disallow_transition_scope_test.cc" ]
