@@ -19,14 +19,14 @@ app_with_locale {
   }
   locale_availability {
     available_country_codes: "AU"
-    available_country_codes: "US"
+    available_country_codes: "CA"
     available_localised_names {
       language_code: "en-US"
-      name_in_language: "English Name"
+      name_in_language: "US Name"
     }
     available_localised_names {
-      language_code: "zh-CN"
-      name_in_language: "Chinese Name"
+      language_code: "en-CA"
+      name_in_language: "CA Name"
     }
   }
 }
@@ -51,7 +51,7 @@ app_with_locale {
   }
   locale_availability {
     available_country_codes: "CH"
-    available_country_codes: "US"
+    available_country_codes: "CA"
     available_localised_names {
       language_code: "en-US"
       name_in_language: "14 days"
