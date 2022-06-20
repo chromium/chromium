@@ -400,6 +400,9 @@ TEST_P(HeapProfilerControllerFeatureTest, StableChannel) {
             GetParam().stable.expect_browser_sample
                 ? HeapProfilerController::ProfilingEnabled::kEnabled
                 : HeapProfilerController::ProfilingEnabled::kDisabled);
+  histogram_tester_.ExpectUniqueSample(
+      "HeapProfiling.InProcess.Enabled.Browser",
+      GetParam().stable.expect_browser_sample, 1);
   histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
                                        GetParam().stable.expect_browser_sample,
                                        1);
@@ -423,6 +426,9 @@ TEST_P(HeapProfilerControllerFeatureTest, MAYBE_CanaryChannel) {
                 ? HeapProfilerController::ProfilingEnabled::kEnabled
                 : HeapProfilerController::ProfilingEnabled::kDisabled);
   histogram_tester_.ExpectUniqueSample(
+      "HeapProfiling.InProcess.Enabled.Browser",
+      GetParam().nonstable.expect_browser_sample, 1);
+  histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled",
       GetParam().nonstable.expect_browser_sample, 1);
   AddOneSampleAndWait();
@@ -438,6 +444,9 @@ TEST_P(HeapProfilerControllerFeatureTest, ChildProcess) {
             GetParam().stable.expect_child_sample
                 ? HeapProfilerController::ProfilingEnabled::kEnabled
                 : HeapProfilerController::ProfilingEnabled::kDisabled);
+  histogram_tester_.ExpectUniqueSample(
+      "HeapProfiling.InProcess.Enabled.Utility",
+      GetParam().stable.expect_child_sample, 1);
   histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
                                        GetParam().stable.expect_child_sample,
                                        1);
@@ -454,8 +463,10 @@ TEST_P(HeapProfilerControllerFeatureTest, UnhandledProcess) {
                           base::Unretained(this)));
   EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
             HeapProfilerController::ProfilingEnabled::kDisabled);
-  histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled", false,
-                                       1);
+  // The Enabled summary histogram should not be logged for unsupported
+  // processes, because they're not included in the per-process histograms that
+  // are aggregated into it.
+  histogram_tester_.ExpectTotalCount("HeapProfiling.InProcess.Enabled", 0);
   AddOneSampleAndWait();
   EXPECT_FALSE(sample_received_);
 }

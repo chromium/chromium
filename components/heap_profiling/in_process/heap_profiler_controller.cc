@@ -111,7 +111,7 @@ base::TimeDelta RandomInterval(base::TimeDelta mean) {
 
 // Returns the string to use in the kSupportedProcesses feature for
 // `process_type`, or nullptr if the process is not supported..
-[[maybe_unused]] const char* ProcessParamString(ProcessType process_type) {
+const char* ProcessParamString(ProcessType process_type) {
   switch (process_type) {
     case ProcessType::kBrowser:
       return "browser";
@@ -127,6 +127,30 @@ base::TimeDelta RandomInterval(base::TimeDelta mean) {
     default:
       // Profiler hasn't been tested in these process types.
       return nullptr;
+  }
+}
+
+// Returns the full name of a histogram to record by appending the
+// ProfiledProcess variant name for `process_type` (defined in
+// tools/metrics/histograms/metadata/memory/histograms.xml) to `base_name`.
+std::string ProcessHistogramName(base::StringPiece base_name,
+                                 ProcessType process_type) {
+  switch (process_type) {
+    case ProcessType::kBrowser:
+      return base::StrCat({base_name, ".Browser"});
+    case ProcessType::kRenderer:
+      return base::StrCat({base_name, ".Renderer"});
+    case ProcessType::kGpu:
+      return base::StrCat({base_name, ".GPU"});
+    case ProcessType::kUtility:
+      return base::StrCat({base_name, ".Utility"});
+    case ProcessType::kNetworkService:
+      return base::StrCat({base_name, ".NetworkService"});
+    case ProcessType::kUnknown:
+    default:
+      // Profiler should not be enabled for these process types.
+      NOTREACHED();
+      return std::string();
   }
 }
 
@@ -170,7 +194,8 @@ ProfilingEnabled DecideIfCollectionIsEnabled(version_info::Channel channel,
 // definition of HeapProfiling.InProcess.SnapshotInterval.{Platform}.
 // {RecordingTime} in tools/metrics/histograms/metadata/memory/histograms.xml.
 void RecordUmaSnapshotInterval(base::TimeDelta interval,
-                               base::StringPiece recording_time) {
+                               base::StringPiece recording_time,
+                               ProcessType process_type) {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // On mobile, the interval is distributed around a mean of 30 minutes.
   constexpr base::TimeDelta kMinHistogramTime = base::Seconds(30);
@@ -182,10 +207,16 @@ void RecordUmaSnapshotInterval(base::TimeDelta interval,
   constexpr base::TimeDelta kMaxHistogramTime = base::Days(6);
   constexpr const char* const kPlatform = "Desktop";
 #endif
-  base::UmaHistogramCustomTimes(
+
+  const auto base_name =
       base::StrCat({"HeapProfiling.InProcess.SnapshotInterval.", kPlatform, ".",
-                    recording_time}),
-      interval, kMinHistogramTime, kMaxHistogramTime, 50);
+                    recording_time});
+  base::UmaHistogramCustomTimes(ProcessHistogramName(base_name, process_type),
+                                interval, kMinHistogramTime, kMaxHistogramTime,
+                                50);
+  // Also summarize over all process types.
+  base::UmaHistogramCustomTimes(base_name, interval, kMinHistogramTime,
+                                kMaxHistogramTime, 50);
 }
 
 }  // namespace
@@ -238,8 +269,15 @@ void HeapProfilerController::StartIfEnabled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const bool profiling_enabled =
       g_profiling_enabled == ProfilingEnabled::kEnabled;
-  base::UmaHistogramBoolean("HeapProfiling.InProcess.Enabled",
-                            profiling_enabled);
+  // Only supported processes are assigned a param string.
+  if (ProcessParamString(process_type_)) {
+    constexpr char kEnabledHistogramName[] = "HeapProfiling.InProcess.Enabled";
+    base::UmaHistogramBoolean(
+        ProcessHistogramName(kEnabledHistogramName, process_type_),
+        profiling_enabled);
+    // Also summarize over all supported process types.
+    base::UmaHistogramBoolean(kEnabledHistogramName, profiling_enabled);
+  }
   if (!profiling_enabled)
     return;
   int sampling_rate_bytes = kSamplingRateBytes.Get();
@@ -264,7 +302,7 @@ void HeapProfilerController::ScheduleNextSnapshot(SnapshotParams params) {
   base::TimeDelta interval = params.use_random_interval
                                  ? RandomInterval(params.mean_interval)
                                  : params.mean_interval;
-  RecordUmaSnapshotInterval(interval, "Scheduled");
+  RecordUmaSnapshotInterval(interval, "Scheduled", params.process_type);
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&HeapProfilerController::TakeSnapshot, std::move(params),
@@ -277,7 +315,7 @@ void HeapProfilerController::TakeSnapshot(SnapshotParams params,
                                           base::TimeDelta previous_interval) {
   if (params.stopped->data.IsSet())
     return;
-  RecordUmaSnapshotInterval(previous_interval, "Taken");
+  RecordUmaSnapshotInterval(previous_interval, "Taken", params.process_type);
   RetrieveAndSendSnapshot(params.process_type);
   ScheduleNextSnapshot(std::move(params));
 }
@@ -286,8 +324,14 @@ void HeapProfilerController::TakeSnapshot(SnapshotParams params,
 void HeapProfilerController::RetrieveAndSendSnapshot(ProcessType process_type) {
   std::vector<Sample> samples =
       base::SamplingHeapProfiler::Get()->GetSamples(0);
-  // TODO(crbug.com/1327069): Split uma by process type.
-  base::UmaHistogramCounts100000("HeapProfiling.InProcess.SamplesPerSnapshot",
+  constexpr char kSamplesPerSnapshotHistogramName[] =
+      "HeapProfiling.InProcess.SamplesPerSnapshot";
+  base::UmaHistogramCounts100000(
+      ProcessHistogramName("HeapProfiling.InProcess.SamplesPerSnapshot",
+                           process_type),
+      samples.size());
+  // Also summarize over all process types.
+  base::UmaHistogramCounts100000(kSamplesPerSnapshotHistogramName,
                                  samples.size());
   if (samples.empty())
     return;
@@ -313,8 +357,8 @@ void HeapProfilerController::RetrieveAndSendSnapshot(ProcessType process_type) {
           module_cache.GetModuleForAddress(address);
       frames.emplace_back(address, module);
     }
-    // Heap "samples" represent allocation stacks aggregated over time so do not
-    // have a meaningful timestamp.
+    // Heap "samples" represent allocation stacks aggregated over time so
+    // do not have a meaningful timestamp.
     profile_builder.OnSampleCompleted(std::move(frames), base::TimeTicks(),
                                       value.total, value.count);
   }

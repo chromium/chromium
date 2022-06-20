@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ProfiledProcess">
+  <variant name="" summary="all process types, aggregated"/>
+  <variant name=".Browser" summary="the Browser process"/>
+  <variant name=".GPU" summary="the GPU process"/>
+  <variant name=".NetworkService" summary="the NetworkService process"/>
+  <variant name=".Renderer" summary="a Renderer process"/>
+  <variant name=".Utility" summary="a Utility process"/>
+</variants>
+
 <histogram name="HeapProfiling.AndroidStackUnwinder"
     enum="AndroidStackUnwinder" expires_after="2022-12-02">
   <owner>joenotcharles@chromium.org</owner>
@@ -33,25 +42,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HeapProfiling.InProcess.Enabled" enum="BooleanEnabled"
-    expires_after="2022-12-02">
+<histogram name="HeapProfiling.InProcess.Enabled{Process}"
+    enum="BooleanEnabled" expires_after="2022-12-02">
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
-    One metric is emitted on every Chrome launch, recording whether the
-    in-process heap profiler is enabled in the browser process for this Chrome
-    session.
+    One metric is emitted on every process start, recording whether the
+    in-process heap profiler is enabled in {Process} for this Chrome session.
   </summary>
+  <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
-<histogram name="HeapProfiling.InProcess.SamplesPerSnapshot" units="samples"
-    expires_after="2022-12-02">
+<histogram name="HeapProfiling.InProcess.SamplesPerSnapshot{Process}"
+    units="samples" expires_after="2022-12-02">
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
-    The number of samples in a heap snapshot. Emitted once per snapshot when the
-    in-process heap profiler is enabled.
+    The number of samples in a heap snapshot taken in {Process}. Emitted once
+    per snapshot when the in-process heap profiler is enabled.
   </summary>
+  <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.SnapshotInterval" units="ms"
@@ -70,18 +80,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="HeapProfiling.InProcess.SnapshotInterval.{Platform}.{RecordingTime}"
+    name="HeapProfiling.InProcess.SnapshotInterval.{Platform}.{RecordingTime}{Process}"
     units="ms" expires_after="2022-12-02">
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
-    The time between heap snapshots on {Platform}. Emitted for each snapshot
-    when the in-process heap profiler is enabled, at the beginning and end of
-    the snapshot interval. *.Scheduled histograms are recorded at the beginning
-    of the interval, when the snapshot is scheduled. *.Taken histograms are
-    recorded at the end of the interval, when the snapshot is taken. Entries in
-    *.Scheduled that don't appear in *.Taken show which snapshot intervals are
-    interrupted before the snapshot is taken.
+    The time between heap snapshots taken in {Process} on {Platform}. Emitted
+    for each snapshot when the in-process heap profiler is enabled, at the
+    beginning and end of the snapshot interval. *.Scheduled histograms are
+    recorded at the beginning of the interval, when the snapshot is scheduled.
+    *.Taken histograms are recorded at the end of the interval, when the
+    snapshot is taken. Entries in *.Scheduled that don't appear in *.Taken show
+    which snapshot intervals are interrupted before the snapshot is taken.
   </summary>
   <token key="Platform">
     <variant name="Desktop" summary="All desktop platforms"/>
@@ -92,6 +102,7 @@ chromium-metrics-reviews@google.com.
         summary="Recorded when the snapshot is scheduled."/>
     <variant name="Taken" summary="Recorded when the snapshot is taken."/>
   </token>
+  <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
 <histogram name="HeapProfiling.ProfiledProcess.Type"
@@ -100,7 +111,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-memory@google.com</owner>
   <summary>
     One metric is emitted every 24-hours after Chrome is launched for every
-    process that is being profiled. The timer is reset if Chrome exits.
+    process that is being profiled by the out-of-process heap profiler. The
+    timer is reset if Chrome exits.
   </summary>
 </histogram>
 
