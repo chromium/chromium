@@ -5530,6 +5530,11 @@ const char kTrafficCountersEnabledDescription[] =
     "If enabled, data usage will be visible in the Cellular Settings UI and "
     "traffic counters will be automatically reset if that setting is enabled.";
 
+const char kUploadOfficeToCloudName[] = "Enable Office files upload workflow.";
+const char kUploadOfficeToCloudDescription[] =
+    "Some file handlers for Microsoft Office files are only available on the "
+    "the cloud. Enables the cloud upload workflow for Office file handling.";
+
 const char kUseFakeDeviceForMediaStreamName[] = "Use fake video capture device";
 const char kUseFakeDeviceForMediaStreamDescription[] =
     "Forces Chrome to use a fake video capture device (a rolling pacman with a "

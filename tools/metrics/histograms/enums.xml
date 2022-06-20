@@ -58358,6 +58358,7 @@ from previous Chrome versions.
   <int value="91938915" label="enable-suggestions-service"/>
   <int value="92106937" label="CloseTabSuggestions:disabled"/>
   <int value="92327255" label="DisplayMoveWindowAccels:disabled"/>
+  <int value="92466801" label="UploadOfficeToCloud:disabled"/>
   <int value="93832899" label="NtpCustomizationMenuV2:enabled"/>
   <int value="96148142" label="SyncAndroidPromosWithAlternativeTitle:enabled"/>
   <int value="97091906" label="AutofillSaveCardShowNoThanks:enabled"/>
@@ -61059,6 +61060,7 @@ from previous Chrome versions.
   <int value="1870973833" label="AssistantEnableStereoAudioInput:enabled"/>
   <int value="1871938175" label="FontSrcLocalMatching:disabled"/>
   <int value="1872185826" label="LocationHardReload:enabled"/>
+  <int value="1874050287" label="UploadOfficeToCloud:enabled"/>
   <int value="1874195462" label="ChromeHomeMenuItemsExpandSheet:disabled"/>
   <int value="1874604540" label="UseSuggestionsEvenIfFew:disabled"/>
   <int value="1875156497" label="CaptureMode:enabled"/>

@@ -589,6 +589,7 @@ extern const base::Feature kTerminalTmuxIntegration;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kTrafficCountersEnabled;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kTrilinearFiltering;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kUploadOfficeToCloud;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kUsbNotificationController;
 COMPONENT_EXPORT(ASH_CONSTANTS)

@@ -3171,6 +3171,9 @@ extern const char kUiDevToolsDescription[];
 extern const char kUiSlowAnimationsName[];
 extern const char kUiSlowAnimationsDescription[];
 
+extern const char kUploadOfficeToCloudName[];
+extern const char kUploadOfficeToCloudDescription[];
+
 extern const char kUsbNotificationControllerName[];
 extern const char kUsbNotificationControllerDescription[];
 

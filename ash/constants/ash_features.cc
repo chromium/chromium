@@ -1487,6 +1487,10 @@ const base::Feature kTrafficCountersEnabled{"TrafficCountersEnabled",
 const base::Feature kTrilinearFiltering{"TrilinearFiltering",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Office files upload workflow to improve Office files support.
+const base::Feature kUploadOfficeToCloud("UploadOfficeToCloud",
+                                         base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Unblock the UsbPeripheralNotificationController class in ash to display
 // USB related notifications from the type-c daemon in ChromeOS.
 const base::Feature kUsbNotificationController{
