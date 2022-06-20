@@ -54,6 +54,12 @@ BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageFuchsia::SaveDMTokenTask(
   return base::BindOnce(&LogAndDoNothing);
 }
 
+BrowserDMTokenStorage::StoreTask
+BrowserDMTokenStorageFuchsia::DeleteDMTokenTask(const std::string& client_id) {
+  // TODO(crbug.com/1236996)
+  return base::BindOnce(&LogAndDoNothing);
+}
+
 scoped_refptr<base::TaskRunner>
 BrowserDMTokenStorageFuchsia::SaveDMTokenTaskRunner() {
   return task_runner_;

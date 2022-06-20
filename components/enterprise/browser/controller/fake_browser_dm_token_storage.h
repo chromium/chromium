@@ -66,6 +66,8 @@ class FakeBrowserDMTokenStorage : public BrowserDMTokenStorage {
     BrowserDMTokenStorage::StoreTask SaveDMTokenTask(
         const std::string& token,
         const std::string& client_id) override;
+    BrowserDMTokenStorage::StoreTask DeleteDMTokenTask(
+        const std::string& client_id) override;
     scoped_refptr<base::TaskRunner> SaveDMTokenTaskRunner() override;
 
    private:

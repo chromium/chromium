@@ -104,10 +104,8 @@ void BrowserDMTokenStorage::StoreDMToken(const std::string& dm_token,
   store_callback_ = std::move(callback);
 
   if (dm_token.empty()) {
-    // TODO(crbug.com/1318153): Implement DMToken deletion logic once all
-    // delegates have the required handling.
     dm_token_ = CreateEmptyToken();
-    SaveDMToken("");
+    DeleteDMToken();
   } else if (dm_token == kInvalidTokenValue) {
     dm_token_ = CreateInvalidToken();
     SaveDMToken(kInvalidTokenValue);
@@ -211,6 +209,15 @@ void BrowserDMTokenStorage::InitIfNeeded() {
 
 void BrowserDMTokenStorage::SaveDMToken(const std::string& token) {
   auto task = delegate_->SaveDMTokenTask(token, RetrieveClientId());
+  auto reply = base::BindOnce(&BrowserDMTokenStorage::OnDMTokenStored,
+                              weak_factory_.GetWeakPtr());
+  base::PostTaskAndReplyWithResult(delegate_->SaveDMTokenTaskRunner().get(),
+                                   FROM_HERE, std::move(task),
+                                   std::move(reply));
+}
+
+void BrowserDMTokenStorage::DeleteDMToken() {
+  auto task = delegate_->DeleteDMTokenTask(RetrieveClientId());
   auto reply = base::BindOnce(&BrowserDMTokenStorage::OnDMTokenStored,
                               weak_factory_.GetWeakPtr());
   base::PostTaskAndReplyWithResult(delegate_->SaveDMTokenTaskRunner().get(),
