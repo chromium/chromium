@@ -70,6 +70,10 @@ void TriggerScriptCoordinator::Start(
       version_info::GetProductNameAndVersionForUserAgent());
   client_context.set_is_in_chrome_triggered(
       trigger_context_->GetInChromeTriggered());
+  client_context.set_locale(
+      starter_delegate_->GetCommonDependencies()->GetLocale());
+  client_context.set_country(
+      starter_delegate_->GetCommonDependencies()->GetCountryCode());
 
   request_sender_->SendRequest(
       get_trigger_scripts_server_,

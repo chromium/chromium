@@ -135,9 +135,9 @@ bool FakeStarterPlatformDelegate::IsAttached() {
   return is_attached_;
 }
 
-const CommonDependencies* FakeStarterPlatformDelegate::GetCommonDependencies()
-    const {
-  return nullptr;
+const FakeCommonDependencies*
+FakeStarterPlatformDelegate::GetCommonDependencies() const {
+  return &fake_common_dependencies_;
 }
 
 const PlatformDependencies*
