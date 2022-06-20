@@ -24,7 +24,8 @@ FileSystemServiceSettings::FileSystemServiceSettings(
   // an existing provider.
   const std::string* service_provider_name =
       settings_value.FindStringKey(kKeyServiceProvider);
-  if (service_provider_name) {
+  if (service_provider_name &&
+      service_provider_config.count(*service_provider_name)) {
     file_system_config_ =
         service_provider_config.at(*service_provider_name).file_system;
   }
