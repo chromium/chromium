@@ -24,9 +24,11 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
+#include "components/download/public/common/download_item.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
@@ -171,11 +173,11 @@ void DownloadTargetDeterminer::DoLoop() {
       case STATE_CHECK_DOWNLOAD_URL:
         result = DoCheckDownloadUrl();
         break;
-      case STATE_DETERMINE_INTERMEDIATE_PATH:
-        result = DoDetermineIntermediatePath();
-        break;
       case STATE_CHECK_VISITED_REFERRER_BEFORE:
         result = DoCheckVisitedReferrerBefore();
+        break;
+      case STATE_DETERMINE_INTERMEDIATE_PATH:
+        result = DoDetermineIntermediatePath();
         break;
       case STATE_NONE:
         NOTREACHED();
@@ -508,6 +510,21 @@ void DownloadTargetDeterminer::ReserveVirtualPathDone(
   DoLoop();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void DownloadTargetDeterminer::RequestIncognitoWarningConfirmationDone(
+    bool accepted) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (accepted) {
+    DoLoop();
+  } else {
+    ScheduleCallbackAndDeleteSelf(
+        download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
+    return;
+  }
+}
+#endif
+
 DownloadTargetDeterminer::Result
 DownloadTargetDeterminer::DoRequestConfirmation() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -539,6 +556,20 @@ DownloadTargetDeterminer::DoRequestConfirmation() {
               &DownloadTargetDeterminer::RequestConfirmationDone,
               weak_ptr_factory_.GetWeakPtr()));
       return QUIT_DOLOOP;
+    } else {
+#if BUILDFLAG(IS_ANDROID)
+      content::BrowserContext* browser_context =
+          content::DownloadItemUtils::GetBrowserContext(download_);
+      bool isOffTheRecord =
+          Profile::FromBrowserContext(browser_context)->IsOffTheRecord();
+      if (base::FeatureList::IsEnabled(features::kIncognitoDownloadsWarning) &&
+          isOffTheRecord) {
+        delegate_->RequestIncognitoWarningConfirmation(base::BindOnce(
+            &DownloadTargetDeterminer::RequestIncognitoWarningConfirmationDone,
+            weak_ptr_factory_.GetWeakPtr()));
+        return QUIT_DOLOOP;
+      }
+#endif
     }
   }
 

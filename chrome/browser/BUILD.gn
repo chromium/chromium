@@ -2958,6 +2958,8 @@ static_library("browser") {
       "download/android/download_manager_bridge.h",
       "download/android/download_manager_service.cc",
       "download/android/download_manager_service.h",
+      "download/android/download_message_bridge.cc",
+      "download/android/download_message_bridge.h",
       "download/android/download_open_source.h",
       "download/android/download_startup_utils.cc",
       "download/android/download_startup_utils.h",

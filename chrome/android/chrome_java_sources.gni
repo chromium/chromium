@@ -524,6 +524,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/download/DownloadForegroundServiceObservers.java",
   "java/src/org/chromium/chrome/browser/download/DownloadItem.java",
   "java/src/org/chromium/chrome/browser/download/DownloadManagerService.java",
+  "java/src/org/chromium/chrome/browser/download/DownloadMessageBridge.java",
   "java/src/org/chromium/chrome/browser/download/DownloadMetrics.java",
   "java/src/org/chromium/chrome/browser/download/DownloadNotificationFactory.java",
   "java/src/org/chromium/chrome/browser/download/DownloadNotificationService.java",

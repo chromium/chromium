@@ -2267,6 +2267,16 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Download will start at <ph name="time">%1$s<ex>8:30PM</ex></ph>.
       </message>
 
+      <message name="IDS_INCOGNITO_DOWNLOAD_MESSAGE_TITLE" desc="Download title displayed in a prompt message when the user downloads a file in Incognito mode.">
+        Download file?
+      </message>
+      <message name="IDS_INCOGNITO_DOWNLOAD_MESSAGE_DETAIL" desc="Download message text displayed in a prompt message when the user downloads a file in Incognito mode.">
+        Anyone using this device can see downloaded files
+      </message>
+      <message name="IDS_INCOGNITO_DOWNLOAD_MESSAGE_BUTTON" desc="Download primary button text displayed in a prompt message when the user downloads a file in Incognito mode.">
+        Download
+      </message>
+
       <message name="IDS_MENU_TRANSLATE" desc="Menu item for triggering a page translation. The word 'Translate' should match the translation in TC ID 1613971242435858090. [CHAR_LIMIT=27]">
         Translate…
       </message>

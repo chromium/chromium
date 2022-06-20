@@ -101,6 +101,7 @@
 #include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/download_dialog_bridge.h"
 #include "chrome/browser/download/android/download_manager_service.h"
+#include "chrome/browser/download/android/download_message_bridge.h"
 #include "chrome/browser/download/android/download_open_source.h"
 #include "chrome/browser/download/android/download_utils.h"
 #include "chrome/browser/download/android/duplicate_download_dialog_bridge_delegate.h"
@@ -428,6 +429,7 @@ ChromeDownloadManagerDelegate::ChromeDownloadManagerDelegate(Profile* profile)
       is_file_picker_showing_(false) {
 #if BUILDFLAG(IS_ANDROID)
   download_dialog_bridge_ = std::make_unique<DownloadDialogBridge>();
+  download_message_bridge_ = std::make_unique<DownloadMessageBridge>();
 #endif
 }
 
@@ -992,6 +994,14 @@ void ChromeDownloadManagerDelegate::ReserveVirtualPath(
       download, virtual_path, download_prefs_->DownloadPath(), document_dir,
       create_directory, conflict_action, std::move(callback));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromeDownloadManagerDelegate::RequestIncognitoWarningConfirmation(
+    IncognitoWarningConfirmationCallback callback) {
+
+  download_message_bridge_->ShowIncognitoDownloadMessage(std::move(callback));
+}
+#endif
 
 void ChromeDownloadManagerDelegate::RequestConfirmation(
     DownloadItem* download,

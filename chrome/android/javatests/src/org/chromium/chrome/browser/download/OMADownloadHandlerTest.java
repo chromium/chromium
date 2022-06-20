@@ -88,6 +88,9 @@ public class OMADownloadHandlerTest {
         }
 
         @Override
+        public void showIncognitoDownloadMessage(Callback<Boolean> callback) {}
+
+        @Override
         public void addDownloadInterstitialSource(GURL originalUrl) {}
 
         @Override

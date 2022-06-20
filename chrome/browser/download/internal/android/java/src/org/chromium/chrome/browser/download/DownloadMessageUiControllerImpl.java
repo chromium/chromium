@@ -19,6 +19,8 @@ import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.download.DownloadLaterMetrics.DownloadLaterUiEvent;
@@ -324,6 +326,31 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     @Override
     public void onDownloadStarted() {
         computeNextStepForUpdate(null, true, false, false);
+    }
+
+    @Override
+    public void showIncognitoDownloadMessage(Callback<Boolean> callback) {
+        Context context = ContextUtils.getApplicationContext();
+
+        PropertyModel mPropertyModel =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS).build();
+
+        mPropertyModel.set(MessageBannerProperties.TITLE,
+                context.getString(R.string.incognito_download_message_title));
+        mPropertyModel.set(MessageBannerProperties.DESCRIPTION,
+                context.getString(R.string.incognito_download_message_detail));
+        mPropertyModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                context.getString(R.string.incognito_download_message_button));
+        mPropertyModel.set(MessageBannerProperties.ICON,
+                AppCompatResources.getDrawable(context, R.drawable.infobar_download_complete));
+        mPropertyModel.set(MessageBannerProperties.ON_PRIMARY_ACTION, () -> {
+            callback.onResult(/*accepted=*/true);
+            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+        });
+        mPropertyModel.set(MessageBannerProperties.ON_DISMISSED,
+                (dismissReason) -> callback.onResult(/*accepted=*/false));
+
+        getMessageDispatcher().enqueueWindowScopedMessage(mPropertyModel, /*highPriority=*/true);
     }
 
     /** Associates a notification ID with the tracked download for future usage. */

@@ -224,6 +224,14 @@ class MockDownloadTargetDeterminerDelegate
                     const base::FilePath&,
                     DownloadConfirmationReason,
                     ConfirmationCallback&));
+#if BUILDFLAG(IS_ANDROID)
+  void RequestIncognitoWarningConfirmation(
+      IncognitoWarningConfirmationCallback cb) override {
+    RequestIncognitoWarningConfirmation_(std::move(cb));
+  }
+  MOCK_METHOD1(RequestIncognitoWarningConfirmation_,
+               void(IncognitoWarningConfirmationCallback cb));
+#endif
   void DetermineLocalPath(DownloadItem* item,
                           const base::FilePath& path,
                           download::LocalPathCallback cb) override {

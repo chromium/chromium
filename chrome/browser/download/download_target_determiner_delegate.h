@@ -56,6 +56,13 @@ class DownloadTargetDeterminerDelegate {
       const base::FilePath& virtual_path,
       absl::optional<download::DownloadSchedule> download_schedule)>;
 
+  // Callback to be invoked when RequestIncognitoWarningConfirmation()
+  // completes.
+  // |accepted|: boolean saying if user accepted or the prompt was
+  // dismissed.
+  using IncognitoWarningConfirmationCallback =
+      base::OnceCallback<void(bool /*accepted*/)>;
+
   // Callback to be invoked after CheckDownloadUrl() completes. The parameter to
   // the callback should indicate the danger type of the download based on the
   // results of the URL check.
@@ -108,7 +115,12 @@ class DownloadTargetDeterminerDelegate {
                                    const base::FilePath& virtual_path,
                                    DownloadConfirmationReason reason,
                                    ConfirmationCallback callback) = 0;
-
+#if BUILDFLAG(IS_ANDROID)
+  // Display a message prompt to the user containing an incognito warning.
+  // Should invoke |callback| upon completion.
+  virtual void RequestIncognitoWarningConfirmation(
+      IncognitoWarningConfirmationCallback callback) = 0;
+#endif
   // If |virtual_path| is not a local path, should return a possibly temporary
   // local path to use for storing the downloaded file. If |virtual_path| is
   // already local, then it should return the same path. |callback| should be

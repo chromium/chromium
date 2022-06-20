@@ -14,6 +14,7 @@ import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
+import org.chromium.base.Callback;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -103,6 +104,9 @@ public class DownloadTest implements CustomMainActivityStart {
 
         @Override
         public void onDownloadStarted() {}
+
+        @Override
+        public void showIncognitoDownloadMessage(Callback<Boolean> callback) {}
 
         @Override
         public void onNotificationShown(ContentId id, int notificationId) {}
