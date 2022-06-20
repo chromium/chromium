@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_pb {
@@ -39,5 +40,22 @@ class ServerDeviceInfoMatchChecker
  private:
   const Matcher matcher_;
 };
+
+namespace device_info_helper {
+
+MATCHER(HasSharingFields, "") {
+  return arg.specifics()
+      .device_info()
+      .sharing_fields()
+      .has_sender_id_fcm_token_v2();
+}
+
+MATCHER_P(HasCacheGuid, expected_cache_guid, "") {
+  return arg.specifics().device_info().cache_guid() == expected_cache_guid;
+}
+
+bool WaitForFullDeviceInfoCommitted(const std::string& cache_guid);
+
+}  // namespace device_info_helper
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_DEVICE_INFO_HELPER_H_

@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -1007,17 +1008,23 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsWithDestroyProfileSyncTest,
   CloseTab(/*browser_index=*/0, /*tab_index=*/0);
   WaitForHierarchyOnServer(SessionsHierarchy({{kURL2}}));
 
-  CloseTab(/*browser_index=*/0, /*tab_index=*/0);
-
-  // TODO(crbug.com/1039234): When DestroyProfileOnBrowserClose is enabled, the
-  // last CloseTab() triggers Profile deletion (and SyncService deletion).
-  // This means the last tab close never gets synced. We should fix this
-  // regression eventually. Once that's done, merge this test with the
-  // WithoutDestroyProfile version.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
-  run_loop.Run();
+  {
+    // Closing the last tab results in profile destruction and hence may require
+    // running blocking tasks which are normally disallowed during tests.
+    // TODO(crbug.com/1334091): remove once it's clear why it results in
+    // blocking tasks.
+    base::ScopedAllowUnresponsiveTasksForTesting scoped_allow_sync_primitives;
+    CloseTab(/*browser_index=*/0, /*tab_index=*/0);
+    // TODO(crbug.com/1039234): When DestroyProfileOnBrowserClose is enabled,
+    // the last CloseTab() triggers Profile deletion (and SyncService deletion).
+    // This means the last tab close never gets synced. We should fix this
+    // regression eventually. Once that's done, merge this test with the
+    // WithoutDestroyProfile version.
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
+    run_loop.Run();
+  }
 
   // Even after several seconds, state didn't change on the server.
   fake_server::FakeServerVerifier verifier(GetFakeServer());

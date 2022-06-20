@@ -208,7 +208,7 @@ class SyncTest : public PlatformBrowserTest {
 
   // Returns a pointer to a particular sync profile. Callee owns the object
   // and manages its lifetime.
-  Profile* GetProfile(int index);
+  Profile* GetProfile(int index) const;
 
   // Returns a list of all profiles including the verifier if available. Callee
   // owns the objects and manages its lifetime.
@@ -261,6 +261,8 @@ class SyncTest : public PlatformBrowserTest {
   [[nodiscard]] virtual bool SetupClients();
 
   // Initializes sync clients and profiles if required and syncs each of them.
+  // Makes it sure that all the local changes are committed and waits for
+  // populating all fields in DeviceInfo.
   [[nodiscard]] virtual bool SetupSync();
 
   // This is similar to click the reset button on chrome.google.com/sync.
@@ -318,6 +320,8 @@ class SyncTest : public PlatformBrowserTest {
   void StopConfigurationRefresher();
 
   arc::SyncArcPackageHelper* sync_arc_helper();
+
+  std::string GetCacheGuid(size_t profile_index) const;
 
  protected:
   // Add custom switches needed for running the test.

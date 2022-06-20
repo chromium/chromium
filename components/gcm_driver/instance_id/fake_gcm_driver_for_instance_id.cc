@@ -5,6 +5,7 @@
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -16,14 +17,15 @@
 namespace instance_id {
 
 FakeGCMDriverForInstanceID::FakeGCMDriverForInstanceID()
-    : gcm::FakeGCMDriver(base::ThreadTaskRunnerHandle::Get()) {}
+    : gcm::FakeGCMDriver(base::FilePath(),
+                         base::ThreadTaskRunnerHandle::Get()) {}
 
 FakeGCMDriverForInstanceID::FakeGCMDriverForInstanceID(
+    const base::FilePath& store_path,
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner)
-    : FakeGCMDriver(blocking_task_runner) {}
+    : FakeGCMDriver(store_path, blocking_task_runner) {}
 
-FakeGCMDriverForInstanceID::~FakeGCMDriverForInstanceID() {
-}
+FakeGCMDriverForInstanceID::~FakeGCMDriverForInstanceID() = default;
 
 gcm::InstanceIDHandler*
 FakeGCMDriverForInstanceID::GetInstanceIDHandlerInternal() {
@@ -68,7 +70,7 @@ void FakeGCMDriverForInstanceID::GetToken(
   if (iter != tokens_.end()) {
     token = iter->second;
   } else {
-    token = base::NumberToString(base::RandUint64());
+    token = GenerateTokenImpl(app_id, authorized_entity, scope);
     tokens_[key] = token;
   }
 
@@ -116,6 +118,13 @@ void FakeGCMDriverForInstanceID::DeleteToken(
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), gcm::GCMClient::SUCCESS));
+}
+
+std::string FakeGCMDriverForInstanceID::GenerateTokenImpl(
+    const std::string& app_id,
+    const std::string& authorized_entity,
+    const std::string& scope) {
+  return base::NumberToString(base::RandUint64());
 }
 
 }  // namespace instance_id

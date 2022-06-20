@@ -93,9 +93,7 @@ class FakeGCMProfileService::CustomFakeGCMDriver
 
 FakeGCMProfileService::CustomFakeGCMDriver::CustomFakeGCMDriver(
     FakeGCMProfileService* service)
-    : instance_id::FakeGCMDriverForInstanceID(
-          base::ThreadTaskRunnerHandle::Get()),
-      service_(service) {}
+    : service_(service) {}
 
 FakeGCMProfileService::CustomFakeGCMDriver::~CustomFakeGCMDriver() {}
 

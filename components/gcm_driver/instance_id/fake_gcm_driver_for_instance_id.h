@@ -13,6 +13,7 @@
 #include "components/gcm_driver/fake_gcm_driver.h"
 
 namespace base {
+class FilePath;
 class SequencedTaskRunner;
 }
 
@@ -23,6 +24,7 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
  public:
   FakeGCMDriverForInstanceID();
   explicit FakeGCMDriverForInstanceID(
+      const base::FilePath& store_path,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
 
   FakeGCMDriverForInstanceID(const FakeGCMDriverForInstanceID&) = delete;
@@ -66,6 +68,10 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
   void RemoveInstanceIDData(const std::string& app_id) override;
   void GetInstanceIDData(const std::string& app_id,
                          GetInstanceIDDataCallback callback) override;
+
+  virtual std::string GenerateTokenImpl(const std::string& app_id,
+                                        const std::string& authorized_entity,
+                                        const std::string& scope);
 
  private:
   std::map<std::string, std::pair<std::string, std::string>> instance_id_data_;
