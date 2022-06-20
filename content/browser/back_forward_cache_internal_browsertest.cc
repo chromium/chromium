@@ -3551,6 +3551,14 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
   // Use Screen Reader.
   EnableAccessibilityForWebContents(shell()->web_contents());
 
+  // Wait until we receive the LOAD_COMPLETE AX event. This means that the
+  // LOAD_START event has definitely already passed and any LOAD_START we see
+  // from this frame in the future is newly generated.
+  AccessibilityNotificationWaiter waiter_complete(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::LOAD_COMPLETE);
+  ASSERT_TRUE(waiter_complete.WaitForNotification());
+
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), url_b));
   RenderFrameHostImplWrapper rfh_b(current_frame_host());
@@ -3571,7 +3579,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
   update.root_id = 1;
   updates_and_events->updates.emplace_back(update);
   updates_and_events->events.emplace_back(
-      ui::AXEvent(/*id=*/0, ax::mojom::Event::kChildrenChanged));
+      /*id=*/0, ax::mojom::Event::kChildrenChanged);
   // If any events are generated and fired, they will be fired synchronously
   // in the same task of |HandleAXEventsForTests()| and and result in a test
   // fail.
@@ -3585,22 +3593,17 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
       GeneratedEventCallbackForTesting());
 
   // 4) Navigate back and ensure that |rfh_a| is successfully restored from
-  // bfcache.
+  // bfcache and that we see its LOAD_START event.
+  AccessibilityNotificationWaiter waiter_start(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::LOAD_START);
+
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(current_frame_host(), rfh_a.get());
   ExpectRestored(FROM_HERE);
 
-  // 5) Accessibility events are dispatched again.
-  AccessibilityNotificationWaiter waiter(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::CHILDREN_CHANGED);
-  // Modify the DOM tree to dispatch new events to verify that the new events
-  // won't be dropped.
-  EXPECT_TRUE(ExecJs(rfh_a.get(),
-                     "document.getElementsByTagName('body')[0].remove();"));
-  // Ensure the AX events are dispatched for |rfh_a|.
-  ASSERT_TRUE(waiter.WaitForNotification());
-  EXPECT_EQ(waiter.event_render_frame_host(), rfh_a.get());
+  ASSERT_TRUE(waiter_start.WaitForNotification());
+  EXPECT_EQ(waiter_start.event_render_frame_host(), rfh_a.get());
 }
 
 class BackgroundForegroundProcessLimitBackForwardCacheBrowserTest
