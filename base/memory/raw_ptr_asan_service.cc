@@ -29,6 +29,15 @@ constexpr uint8_t kAsanHeapLeftRedzoneMagic = 0xfa;
 constexpr uint8_t kAsanUserPoisonedMemoryMagic = 0xf7;
 }  // namespace
 
+#if defined(COMPONENT_BUILD) && defined(_WIN32)
+// In component builds on Windows, weak function exported by ASan have the
+// `__dll` suffix. ASan itself uses the `alternatename` directive to account for
+// that.
+__pragma(comment(linker,
+                 "/alternatename:__sanitizer_report_error_summary=__sanitizer_"
+                 "report_error_summary__dll"));
+#endif  // defined(COMPONENT_BUILD) && defined(_WIN32)
+
 // static
 void RawPtrAsanService::Log(const char* format, ...) {
   va_list ap;
@@ -183,6 +192,12 @@ void RawPtrAsanService::ErrorReportCallback(const char* report) {
       "https://chromium.googlesource.com/chromium/src/+/main/base/memory/"
       "raw_ptr.md for details.",
       status_body);
+}
+
+// static
+RawPtrAsanService::PendingReport& RawPtrAsanService::GetPendingReport() {
+  static thread_local PendingReport report;
+  return report;
 }
 
 }  // namespace base

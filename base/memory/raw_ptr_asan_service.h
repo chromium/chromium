@@ -74,10 +74,7 @@ class BASE_EXPORT RawPtrAsanService {
     size_t allocation_size;
   };
 
-  static PendingReport& GetPendingReport() {
-    static thread_local PendingReport report;
-    return report;
-  }
+  static PendingReport& GetPendingReport();
 
   uint8_t* GetShadow(void* ptr) const;
 
