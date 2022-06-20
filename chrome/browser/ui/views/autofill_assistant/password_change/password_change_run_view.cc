@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
+#include "chrome/browser/ui/views/autofill_assistant/password_change/password_change_run_progress.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/button.h"
@@ -93,6 +94,12 @@ void PasswordChangeRunView::CreateView() {
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
   top_icon_ = AddChildView(views::Builder<views::ImageView>().Build());
+
+  // childrenIDsOffset makes sure that none of the IDs set in this view will
+  // colapse with the ones insde `PasswordChangeRunProgress`.
+  password_change_run_progress_ = AddChildView(
+      std::make_unique<PasswordChangeRunProgress>(/*childrenIDsOffset=*/20));
+
   title_container_ = AddChildView(
       views::Builder<views::View>()
           .SetID(static_cast<int>(ChildrenViewsIds::kTitleContainer))
@@ -145,7 +152,9 @@ void PasswordChangeRunView::SetDescription(const std::u16string& description) {
           .Build());
 }
 void PasswordChangeRunView::SetProgressBarStep(
-    autofill_assistant::password_change::ProgressStep progress_step) {}
+    autofill_assistant::password_change::ProgressStep progress_step) {
+  password_change_run_progress_->SetProgressBarStep(progress_step);
+}
 
 void PasswordChangeRunView::ShowBasePrompt(
     const std::vector<PromptChoice>& choices) {

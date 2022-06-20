@@ -22,6 +22,7 @@ class View;
 }  // namespace views
 
 class PasswordChangeRunController;
+class PasswordChangeRunProgress;
 
 // View that displays the automatic password change experience. When this class
 // is instantiated its ownership is given to the `display_delegate` passed
@@ -89,6 +90,7 @@ class PasswordChangeRunView : public views::View,
 
   raw_ptr<views::ImageView> top_icon_ = nullptr;
   raw_ptr<views::View> title_container_ = nullptr;
+  raw_ptr<PasswordChangeRunProgress> password_change_run_progress_ = nullptr;
 
   // The body is used to render content below the title, i.e
   // prompts and descriptions.

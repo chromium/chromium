@@ -4188,6 +4188,8 @@ static_library("ui") {
       "views/autofill_assistant/password_change/assistant_side_panel_coordinator_impl.cc",
       "views/autofill_assistant/password_change/assistant_side_panel_coordinator_impl.h",
       "views/autofill_assistant/password_change/password_change_run_display.cc",
+      "views/autofill_assistant/password_change/password_change_run_progress.cc",
+      "views/autofill_assistant/password_change/password_change_run_progress.h",
       "views/autofill_assistant/password_change/password_change_run_view.cc",
       "views/autofill_assistant/password_change/password_change_run_view.h",
       "views/bookmarks/bookmark_bar_view.cc",
