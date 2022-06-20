@@ -20,6 +20,7 @@
 #include <sstream>
 #include <string>
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/flags/flag.h"
 #include "absl/flags/internal/parse.h"
@@ -105,14 +106,19 @@ class UsageReportingTest : public testing::Test {
 using UsageReportingDeathTest = UsageReportingTest;
 
 TEST_F(UsageReportingDeathTest, TestSetProgramUsageMessage) {
+#if !defined(GTEST_HAS_ABSL) || !GTEST_HAS_ABSL
+  // Check for kTestUsageMessage set in main() below.
   EXPECT_EQ(absl::ProgramUsageMessage(), kTestUsageMessage);
+#else
+  // Check for part of the usage message set by GoogleTest.
+  EXPECT_THAT(absl::ProgramUsageMessage(),
+              ::testing::HasSubstr(
+                  "This program contains tests written using Google Test"));
+#endif
 
-#ifndef _WIN32
-  // TODO(rogeeff): figure out why this does not work on Windows.
   EXPECT_DEATH_IF_SUPPORTED(
       absl::SetProgramUsageMessage("custom usage message"),
-      ".*SetProgramUsageMessage\\(\\) called twice.*");
-#endif
+      ::testing::HasSubstr("SetProgramUsageMessage() called twice"));
 }
 
 // --------------------------------------------------------------------
@@ -489,8 +495,10 @@ path.
 int main(int argc, char* argv[]) {
   (void)absl::GetFlag(FLAGS_undefok);  // Force linking of parse.cc
   flags::SetProgramInvocationName("usage_test");
+#if !defined(GTEST_HAS_ABSL) || !GTEST_HAS_ABSL
+  // GoogleTest calls absl::SetProgramUsageMessage() already.
   absl::SetProgramUsageMessage(kTestUsageMessage);
+#endif
   ::testing::InitGoogleTest(&argc, argv);
-
   return RUN_ALL_TESTS();
 }

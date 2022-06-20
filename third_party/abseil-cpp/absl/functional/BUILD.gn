@@ -4,6 +4,36 @@
 
 import("//third_party/abseil-cpp/absl.gni")
 
+absl_source_set("any_invocable") {
+  sources = [ "internal/any_invocable.h" ]
+  public = [ "any_invocable.h" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:base_internal",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/utility",
+  ]
+}
+
+absl_source_set("any_invocable_test") {
+  testonly = true
+  sources = [
+    "any_invocable_test.cc",
+    "internal/any_invocable.h",
+  ]
+  deps = [
+    ":any_invocable",
+    "//third_party/abseil-cpp/absl/base:base_internal",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/utility",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
 absl_source_set("bind_front") {
   sources = [ "internal/front_binder.h" ]
   public = [ "bind_front.h" ]

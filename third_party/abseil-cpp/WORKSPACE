@@ -20,11 +20,21 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # GoogleTest/GoogleMock framework. Used by most unit-tests.
 http_archive(
-    name = "com_google_googletest",  # 2022-01-28T15:27:11Z
-    sha256 = "eb70a6d4520f940956a6b3e37d205d92736bb104c6a1b2b9f82bfc41bd7a2b34",
-    strip_prefix = "googletest-28e1da21d8d677bc98f12ccc7fc159ff19e8e817",
+    name = "com_google_googletest",  # 2022-06-16T20:18:32Z
+    sha256 = "a1d3123179024258f9c399d45da3e0b09c4aaf8d2c041466ce5b4793a8929f23",
+    strip_prefix = "googletest-86add13493e5c881d7e4ba77fb91c1f57752b3a4",
     # Keep this URL in sync with ABSL_GOOGLETEST_COMMIT in ci/cmake_common.sh.
-    urls = ["https://github.com/google/googletest/archive/28e1da21d8d677bc98f12ccc7fc159ff19e8e817.zip"],
+    urls = ["https://github.com/google/googletest/archive/86add13493e5c881d7e4ba77fb91c1f57752b3a4.zip"],
+)
+
+# RE2 (the regular expression library used by GoogleTest)
+# Note this must use a commit from the `abseil` branch of the RE2 project.
+# https://github.com/google/re2/tree/abseil
+http_archive(
+    name = "com_googlesource_code_re2",  # 2022-04-08
+    sha256 = "906d0df8ff48f8d3a00a808827f009a840190f404559f649cb8e4d7143255ef9",
+    strip_prefix = "re2-a276a8c738735a0fe45a6ee590fe2df69bcf4502",
+    urls = ["https://github.com/google/re2/archive/a276a8c738735a0fe45a6ee590fe2df69bcf4502.zip"],
 )
 
 # Google benchmark.
