@@ -69,7 +69,7 @@ public class SigninPromoControllerRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(6)
+                    .setRevision(7)
                     .setBugComponent(RenderTestRule.Component.SERVICES_SIGN_IN)
                     .build();
 
@@ -137,7 +137,7 @@ public class SigninPromoControllerRenderTest {
         View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
                 R.layout.personalized_signin_promo_view_bookmarks);
         mRenderTestRule.render(
-                view, "bookmark_sync_promo_view_signed_out_and_no_account_available");
+                view, "bookmark_sync_promo_illustration_signed_out_and_no_account_available");
     }
 
     @Test
@@ -342,7 +342,7 @@ public class SigninPromoControllerRenderTest {
         View view = setUpSyncPromoView(SigninAccessPoint.SETTINGS, profileDataCache,
                 R.layout.personalized_signin_promo_view_settings);
         mRenderTestRule.render(
-                view, "settings_sync_promo_view_signed_out_and_no_account_available");
+                view, "settings_sync_promo_illustration_signed_out_and_no_account_available");
     }
 
     @Test
@@ -583,7 +583,7 @@ public class SigninPromoControllerRenderTest {
         View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
                 R.layout.personalized_signin_promo_view_recent_tabs);
         mRenderTestRule.render(
-                view, "recent_tabs_sync_promo_view_signed_out_and_no_account_available");
+                view, "recent_tabs_sync_promo_illustration_signed_out_and_no_account_available");
     }
 
     @Test
@@ -827,7 +827,7 @@ public class SigninPromoControllerRenderTest {
         View view = setUpSyncPromoView(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, profileDataCache,
                 R.layout.personalized_signin_promo_view_modern_content_suggestions);
         mRenderTestRule.render(view,
-                "ntp_content_suggestions_sync_promo_view_signed_out_and_no_account_available");
+                "ntp_content_suggestions_sync_promo_illustration_signed_out_and_no_account_available");
     }
 
     @Test

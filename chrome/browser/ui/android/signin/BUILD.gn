@@ -83,17 +83,13 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-hdpi/chrome_sync_logo.png",
     "java/res/drawable-hdpi/ic_account_child_20dp.png",
-    "java/res/drawable-mdpi/chrome_sync_logo.png",
     "java/res/drawable-mdpi/ic_account_child_20dp.png",
     "java/res/drawable-night/sync_promo_illustration.xml",
-    "java/res/drawable-xhdpi/chrome_sync_logo.png",
     "java/res/drawable-xhdpi/ic_account_child_20dp.png",
-    "java/res/drawable-xxhdpi/chrome_sync_logo.png",
     "java/res/drawable-xxhdpi/ic_account_child_20dp.png",
-    "java/res/drawable-xxxhdpi/chrome_sync_logo.png",
     "java/res/drawable-xxxhdpi/ic_account_child_20dp.png",
+    "java/res/drawable/chrome_sync_logo.xml",
     "java/res/drawable/ic_expand_more_in_circle_24dp.xml",
     "java/res/drawable/sync_promo_illustration.xml",
     "java/res/layout/account_picker_bottom_sheet_continue_button.xml",

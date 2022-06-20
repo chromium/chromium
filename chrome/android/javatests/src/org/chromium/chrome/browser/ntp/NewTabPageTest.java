@@ -128,7 +128,7 @@ public class NewTabPageTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;
 
-    private static final int RENDER_TEST_REVISION = 3;
+    private static final int RENDER_TEST_REVISION = 4;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -227,6 +227,8 @@ public class NewTabPageTest {
         scrimCoordinator.disableAnimationForTesting(false);
     }
 
+    // TODO(crbug.com/1334912): This sync promos tests should be removed, since we have a similar tests in
+    // SigninPromoControllerRenderTest.
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
