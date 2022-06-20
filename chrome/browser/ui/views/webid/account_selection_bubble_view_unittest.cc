@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
@@ -24,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -44,6 +46,13 @@ const std::u16string kTitleSigningIn = u"Verifying…";
 void MockAccountSelectedCallback(
     const content::IdentityRequestAccount& selected_account) {}
 
+constexpr char kIdBase[] = "id";
+constexpr char kEmailBase[] = "email";
+constexpr char kNameBase[] = "name";
+constexpr char kGivenNameBase[] = "given_name";
+
+const char kTermsOfServiceUrl[] = "htpps://terms-of-service.com";
+
 }  // namespace
 
 class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
@@ -51,47 +60,23 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   AccountSelectionBubbleViewTest() = default;
 
  protected:
-  void CreateSingleAccountViewAndShow(bool exclude_terms_of_service = false) {
-    const content::IdentityRequestAccount accounts[] = {
-        {"id", "email", "name", "given_name", GURL::EmptyGURL()}};
-    CreateViewAndShow(accounts, exclude_terms_of_service);
-  }
-
-  void CreateReturningAccountViewAndShow() {
-    const content::IdentityRequestAccount accounts[] = {
-        {"id", "email", "name", "given_name", GURL::EmptyGURL(),
-         Account::LoginState::kSignIn}};
-    CreateViewAndShow(accounts, false /*=exclude_terms_of_service*/);
-  }
-
-  void CreateMultipleAccountViewAndShow() {
-    const content::IdentityRequestAccount accounts[] = {
-        {"id0", "email0", "name0", "given_name0", GURL::EmptyGURL()},
-        {"id1", "email1", "name1", "given_name1", GURL::EmptyGURL()},
-        {"id2", "email2", "name2", "given_name2", GURL::EmptyGURL()}};
-    CreateViewAndShow(accounts);
-  }
-
-  void CreateMultipleReturningAccountViewAndShow() {
-    const content::IdentityRequestAccount accounts[] = {
-        {"id0", "email0", "name0", "given_name0", GURL::EmptyGURL(),
-         Account::LoginState::kSignIn},
-        {"id1", "email1", "name1", "given_name1", GURL::EmptyGURL(),
-         Account::LoginState::kSignIn},
-        {"id2", "email2", "name2", "given_name2", GURL::EmptyGURL(),
-         Account::LoginState::kSignIn}};
-    CreateViewAndShow(accounts);
-  }
-
   void CreateViewAndShow(
-      const base::span<const content::IdentityRequestAccount>& accounts,
-      bool exclude_terms_of_service = false) {
+      const std::vector<std::string>& account_suffixes,
+      absl::optional<content::IdentityRequestAccount::LoginState> login_state =
+          absl::nullopt,
+      const GURL& terms_of_service_url = GURL(kTermsOfServiceUrl)) {
+    std::vector<content::IdentityRequestAccount> accounts;
+    for (const std::string& account_suffix : account_suffixes) {
+      accounts.emplace_back(std::string(kIdBase) + account_suffix,
+                            std::string(kEmailBase) + account_suffix,
+                            std::string(kNameBase) + account_suffix,
+                            std::string(kGivenNameBase) + account_suffix,
+                            GURL::EmptyGURL(), login_state);
+    }
+
     content::IdentityProviderMetadata idp_metadata;
     const GURL kPrivacyPolicyURL = GURL("htpps://privacy-policy.com");
-    const GURL kTermsOfServiceURL = GURL("htpps://terms-of-service.com");
-    content::ClientIdData client_data(
-        exclude_terms_of_service ? GURL::EmptyGURL() : kTermsOfServiceURL,
-        kPrivacyPolicyURL);
+    content::ClientIdData client_data(terms_of_service_url, kPrivacyPolicyURL);
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::TYPE_WINDOW);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -107,9 +92,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
   }
 
-  void CheckAccountRow(views::View* row,
-                       std::u16string name,
-                       std::u16string email) {
+  void CheckAccountRow(views::View* row, const std::string& account_suffix) {
     std::vector<views::View*> row_children = row->children();
     ASSERT_EQ(row_children.size(), 2u);
 
@@ -127,13 +110,17 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
               views::BoxLayout::Orientation::kVertical);
     std::vector<views::View*> text_view_children = text_view->children();
     ASSERT_EQ(text_view_children.size(), 2u);
+
+    std::string expected_name(std::string(kNameBase) + account_suffix);
     views::Label* name_view = static_cast<views::Label*>(text_view_children[0]);
     ASSERT_TRUE(name_view);
-    EXPECT_EQ(name_view->GetText(), name);
+    EXPECT_EQ(name_view->GetText(), base::UTF8ToUTF16(expected_name));
+
+    std::string expected_email(std::string(kEmailBase) + account_suffix);
     views::Label* email_view =
         static_cast<views::Label*>(text_view_children[1]);
     ASSERT_TRUE(email_view);
-    EXPECT_EQ(email_view->GetText(), email);
+    EXPECT_EQ(email_view->GetText(), base::UTF8ToUTF16(expected_email));
   }
 
   void PerformHeaderChecks(views::View* header, const std::u16string& title) {
@@ -145,27 +132,93 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     EXPECT_FALSE(dialog()->GetCancelButton());
 
     std::vector<views::View*> header_children = header->children();
-    ASSERT_EQ(header_children.size(), 2u);
+    ASSERT_EQ(header_children.size(), 3u);
+
+    // Potentially hidden back button.
+    EXPECT_STREQ("ImageButton", header_children[0]->GetClassName());
 
     // Check title text.
-    views::Label* title_view = static_cast<views::Label*>(header_children[0]);
+    views::Label* title_view = static_cast<views::Label*>(header_children[1]);
     ASSERT_TRUE(title_view);
     EXPECT_EQ(title_view->GetText(), title);
 
     // Check close button.
-    views::Button* button = static_cast<views::Button*>(header_children[1]);
-    EXPECT_TRUE(button);
+    EXPECT_STREQ("ImageButton", header_children[2]->GetClassName());
 
     // Check separator.
     if (title == kTitleSignIn) {
-      views::Separator* separator =
-          static_cast<views::Separator*>(dialog()->children()[1]);
-      EXPECT_TRUE(separator);
+      EXPECT_STREQ("Separator", dialog()->children()[1]->GetClassName());
     } else if (title == kTitleSigningIn) {
-      views::ProgressBar* progress_bar =
-          static_cast<views::ProgressBar*>(dialog()->children()[1]);
-      EXPECT_TRUE(progress_bar);
+      EXPECT_STREQ("ProgressBar", dialog()->children()[1]->GetClassName());
     }
+  }
+
+  // Test that the bubble is showing the single account selection.
+  void TestAtSingleAccountChooser(const std::string& account_suffix,
+                                  bool expected_disclosure,
+                                  bool click_button) {
+    std::vector<views::View*> children = dialog()->children();
+    ASSERT_EQ(children.size(), 3u);
+    PerformHeaderChecks(children[0], kTitleSignIn);
+
+    views::View* single_account_chooser = children[2];
+    std::vector<views::View*> chooser_children =
+        single_account_chooser->children();
+    ASSERT_EQ(chooser_children.size(), expected_disclosure ? 3u : 2u);
+    views::View* single_account_row = chooser_children[0];
+
+    CheckAccountRow(single_account_row, account_suffix);
+
+    // Check the "Continue as" button.
+    views::MdTextButton* button =
+        static_cast<views::MdTextButton*>(chooser_children[1]);
+    EXPECT_EQ(button->GetText(),
+              base::UTF8ToUTF16("Continue as " + std::string(kGivenNameBase) +
+                                account_suffix));
+
+    if (expected_disclosure) {
+      views::StyledLabel* disclosure_text =
+          static_cast<views::StyledLabel*>(chooser_children[2]);
+      EXPECT_TRUE(
+          base::StartsWith(disclosure_text->GetText(), u"To continue,"));
+    }
+
+    if (click_button) {
+      const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                 gfx::Point(), ui::EventTimeForNow(), 0, 0);
+      views::test::ButtonTestApi(button).NotifyClick(event);
+    }
+  }
+
+  // Test that the bubble is showing the multiple account picker. Clicks the
+  // accounts at `click_index`.
+  void TestAtMultipleAccountChooser(size_t num_expected_accounts,
+                                    size_t click_index) {
+    std::vector<views::View*> children = dialog()->children();
+    ASSERT_EQ(children.size(), 3u);
+
+    PerformHeaderChecks(children[0], kTitleSignIn);
+
+    views::View* multiple_account_chooser = children[2];
+    std::vector<views::View*> accounts = multiple_account_chooser->children();
+    ASSERT_EQ(accounts.size(), num_expected_accounts);
+    for (views::View* account : accounts)
+      ASSERT_STREQ("HoverButton", account->GetClassName());
+
+    HoverButton* button = static_cast<HoverButton*>(accounts[click_index]);
+    const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                               ui::EventTimeForNow(), 0, 0);
+    views::test::ButtonTestApi(button).NotifyClick(event);
+  }
+
+  void TestAtVerifyingScreen(const std::string& account_suffix) {
+    const std::vector<views::View*> children = dialog()->children();
+    ASSERT_EQ(children.size(), 3u);
+    PerformHeaderChecks(children[0], kTitleSigningIn);
+
+    views::View* row_container = dialog()->children()[2];
+    ASSERT_EQ(row_container->children().size(), 1u);
+    CheckAccountRow(row_container->children()[0], account_suffix);
   }
 
   void SetUp() override {
@@ -208,7 +261,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
-  CreateSingleAccountViewAndShow();
+  const std::string kAccountSuffix = "suffix";
+  CreateViewAndShow({kAccountSuffix});
 
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
@@ -217,13 +271,15 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
   views::View* single_account_chooser = children[2];
   ASSERT_EQ(single_account_chooser->children().size(), 3u);
 
-  CheckAccountRow(single_account_chooser->children()[0], u"name", u"email");
+  CheckAccountRow(single_account_chooser->children()[0], kAccountSuffix);
 
   // Check the "Continue as" button.
   views::MdTextButton* button =
       static_cast<views::MdTextButton*>(single_account_chooser->children()[1]);
   ASSERT_TRUE(button);
-  EXPECT_EQ(button->GetText(), u"Continue as given_name");
+  EXPECT_EQ(button->GetText(),
+            base::UTF8ToUTF16("Continue as " + std::string(kGivenNameBase) +
+                              kAccountSuffix));
 
   views::StyledLabel* disclosure_text =
       static_cast<views::StyledLabel*>(single_account_chooser->children()[2]);
@@ -235,7 +291,10 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
 }
 
 TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
-  CreateSingleAccountViewAndShow(true /*=exclude_terms_of_service*/);
+  const std::string kAccountSuffix = "suffix";
+  CreateViewAndShow({kAccountSuffix},
+                    /*login_state=*/absl::nullopt,
+                    /*terms_of_service_url=*/GURL::EmptyGURL());
 
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
@@ -248,7 +307,9 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
   views::MdTextButton* button =
       static_cast<views::MdTextButton*>(single_account_chooser->children()[1]);
   ASSERT_TRUE(button);
-  EXPECT_EQ(button->GetText(), u"Continue as given_name");
+  EXPECT_EQ(button->GetText(),
+            base::UTF8ToUTF16("Continue as " + std::string(kGivenNameBase) +
+                              kAccountSuffix));
 
   views::StyledLabel* disclosure_text =
       static_cast<views::StyledLabel*>(single_account_chooser->children()[2]);
@@ -260,7 +321,8 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
 }
 
 TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
-  CreateMultipleAccountViewAndShow();
+  const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
+  CreateViewAndShow(kAccountSuffixes);
 
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
@@ -276,19 +338,13 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
   ASSERT_EQ(accounts.size(), 3u);
 
   // Check the text shown.
-  struct {
-    std::u16string name;
-    std::u16string email;
-  } expected[3] = {
-      {u"name0", u"email0"},
-      {u"name1", u"email1"},
-      {u"name2", u"email2"},
-  };
-  for (size_t i = 0; i < 3; ++i) {
+  for (size_t i = 0; i < std::size(kAccountSuffixes); ++i) {
     HoverButton* account_row = static_cast<HoverButton*>(accounts[i]);
     ASSERT_TRUE(account_row);
-    EXPECT_EQ(account_row->title()->GetText(), expected[i].name);
-    EXPECT_EQ(account_row->subtitle()->GetText(), expected[i].email);
+    EXPECT_EQ(account_row->title()->GetText(),
+              base::UTF8ToUTF16(kNameBase + kAccountSuffixes[i]));
+    EXPECT_EQ(account_row->subtitle()->GetText(),
+              base::UTF8ToUTF16(std::string(kEmailBase) + kAccountSuffixes[i]));
     // The subtitle has changed style, so AutoColorReadabilityEnabled should be
     // set.
     EXPECT_TRUE(account_row->subtitle()->GetAutoColorReadabilityEnabled());
@@ -297,114 +353,58 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
 
 TEST_F(AccountSelectionBubbleViewTest, MultipleAccountsFlow) {
   // Create multiple account view.
-  CreateMultipleAccountViewAndShow();
+  const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
+  CreateViewAndShow(kAccountSuffixes);
+  TestAtMultipleAccountChooser(3u, /*click_index=*/1u);
+  TestAtSingleAccountChooser(kAccountSuffixes[1u],
+                             /*expected_disclosure=*/true,
+                             /*click_button=*/true);
+  TestAtVerifyingScreen(kAccountSuffixes[1u]);
+}
 
-  std::vector<views::View*> children = dialog()->children();
-  ASSERT_EQ(children.size(), 3u);
-  PerformHeaderChecks(children[0], kTitleSignIn);
+// Test that clicking 'back' on the consent page in the multi-account signup
+// flow brings the user back to the account chooser.
+TEST_F(AccountSelectionBubbleViewTest, MultipleAccountsFlowClickBack) {
+  const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
+  CreateViewAndShow(kAccountSuffixes);
 
-  views::View* multiple_account_chooser = children[2];
-  std::vector<views::View*> accounts = multiple_account_chooser->children();
-  ASSERT_EQ(accounts.size(), 3u);
+  // Button should not be visible in multi account chooser.
+  views::Button* back_button =
+      static_cast<views::Button*>(dialog()->children()[0]->children()[0]);
+  EXPECT_FALSE(back_button->GetVisible());
 
-  // Click on the middle account, i.e. accounts[1].
-  HoverButton* account_row = static_cast<HoverButton*>(accounts[1]);
-  ASSERT_TRUE(account_row);
+  TestAtMultipleAccountChooser(3u, /*click_index=*/1u);
+  TestAtSingleAccountChooser(kAccountSuffixes[1u],
+                             /*expected_disclosure=*/true,
+                             /*click_button=*/false);
+
+  // Button should be visible after navigating to consent screen.
+  EXPECT_TRUE(back_button->GetVisible());
+
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi button_test(account_row);
-  button_test.NotifyClick(event);
+  views::test::ButtonTestApi(back_button).NotifyClick(event);
 
-  // Test that we arrive to the single account selection. Check buttons and
-  // title.
-  children = dialog()->children();
-  ASSERT_EQ(children.size(), 3u);
-  PerformHeaderChecks(children[0], kTitleSignIn);
-
-  views::View* single_account_chooser = children[2];
-  ASSERT_EQ(single_account_chooser->children().size(), 3u);
-  views::View* single_account_row = single_account_chooser->children()[0];
-  std::vector<views::View*> row_children = single_account_row->children();
-
-  CheckAccountRow(single_account_row, u"name1", u"email1");
-
-  // Check the "Continue as" button.
-  views::MdTextButton* button =
-      static_cast<views::MdTextButton*>(single_account_chooser->children()[1]);
-  ASSERT_TRUE(button);
-  EXPECT_EQ(button->GetText(), u"Continue as given_name1");
-
-  views::StyledLabel* disclosure_text =
-      static_cast<views::StyledLabel*>(single_account_chooser->children()[2]);
-  ASSERT_TRUE(disclosure_text);
-  EXPECT_EQ(disclosure_text->GetText(),
-            u"To continue, idp-example.com will share your name, email "
-            u"address, and profile picture with this site. See this site's "
-            u"privacy policy and terms of service.");
-
-  // Click to Continue. We can reuse the |event|.
-  views::test::ButtonTestApi button_test_continue(button);
-  button_test_continue.NotifyClick(event);
-
-  // Check that the UI changes to 'verifying'.
-  children = dialog()->children();
-  ASSERT_EQ(children.size(), 3u);
-  PerformHeaderChecks(children[0], kTitleSigningIn);
-
-  views::View* row_container = dialog()->children()[2];
-  ASSERT_TRUE(row_container);
-  ASSERT_EQ(row_container->children().size(), 1u);
-  CheckAccountRow(row_container->children()[0], u"name1", u"email1");
+  TestAtMultipleAccountChooser(3u, /*click_index=*/2u);
+  TestAtSingleAccountChooser(kAccountSuffixes[2u],
+                             /*expected_disclosure=*/true,
+                             /*click_button=*/true);
+  TestAtVerifyingScreen(kAccountSuffixes[2u]);
 }
 
 TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
-  CreateReturningAccountViewAndShow();
-
-  std::vector<views::View*> children = dialog()->children();
-  ASSERT_EQ(children.size(), 3u);
-  PerformHeaderChecks(children[0], kTitleSignIn);
-
-  views::View* single_account_chooser = children[2];
-
-  // There should be no disclosure text, so only 2 children: the account row and
-  // the continue button.
-  ASSERT_EQ(single_account_chooser->children().size(), 2u);
-
-  CheckAccountRow(single_account_chooser->children()[0], u"name", u"email");
-
-  // Check the "Continue as" button.
-  views::MdTextButton* button =
-      static_cast<views::MdTextButton*>(single_account_chooser->children()[1]);
-  ASSERT_TRUE(button);
-  EXPECT_EQ(button->GetText(), u"Continue as given_name");
+  const std::string kAccountSuffix = "";
+  CreateViewAndShow({kAccountSuffix},
+                    content::IdentityRequestAccount::LoginState::kSignIn);
+  TestAtSingleAccountChooser(kAccountSuffix,
+                             /*expected_disclosure=*/false,
+                             /*click_button=*/false);
 }
 
 TEST_F(AccountSelectionBubbleViewTest, MultipleReturningAccounts) {
-  CreateMultipleReturningAccountViewAndShow();
-
-  std::vector<views::View*> children = dialog()->children();
-  ASSERT_EQ(children.size(), 3u);
-  PerformHeaderChecks(children[0], kTitleSignIn);
-
-  views::View* multiple_account_chooser = children[2];
-  std::vector<views::View*> accounts = multiple_account_chooser->children();
-  ASSERT_EQ(accounts.size(), 3u);
-
-  // Click on the middle account, i.e. accounts[1].
-  HoverButton* account_row = static_cast<HoverButton*>(accounts[1]);
-  ASSERT_TRUE(account_row);
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi button_test(account_row);
-  button_test.NotifyClick(event);
-
-  // Check that the UI changes directly to 'verifying'.
-  children = dialog()->children();
-  ASSERT_EQ(children.size(), 3u);
-  PerformHeaderChecks(children[0], kTitleSigningIn);
-
-  views::View* row_container = dialog()->children()[2];
-  ASSERT_TRUE(row_container);
-  ASSERT_EQ(row_container->children().size(), 1u);
-  CheckAccountRow(row_container->children()[0], u"name1", u"email1");
+  const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
+  CreateViewAndShow(kAccountSuffixes,
+                    content::IdentityRequestAccount::LoginState::kSignIn);
+  TestAtMultipleAccountChooser(3u, /*click_index=*/1u);
+  TestAtVerifyingScreen(kAccountSuffixes[1]);
 }

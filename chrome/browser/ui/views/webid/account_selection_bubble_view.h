@@ -17,6 +17,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class ImageButton;
 class ImageView;
 class Label;
 class MdTextButton;
@@ -95,12 +96,19 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // "Signing you in".
   void OnSingleAccountPicked(const content::IdentityRequestAccount& account);
 
-  // Called when the user clicks on the button from the single account chooser.
-  void OnAccountSelected(const content::IdentityRequestAccount& account);
+  // Called when the user clicks on the back button.
+  void HandleBackPressed();
+
+  // Called when the user clicks on the 'continue' button from the single
+  // account chooser.
+  void OnClickedContinue(const content::IdentityRequestAccount& account);
 
   // Shows 'verifying' once the user has clicked to continue with a given
   // account.
   void ShowVerifySheet(const content::IdentityRequestAccount& account);
+
+  // Sets whether the back button in the header is visible.
+  void SetBackButtonVisible(bool is_visible);
 
   // Removes all children except for `header_view_`.
   void RemoveNonHeaderChildViews();
@@ -115,6 +123,13 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   absl::optional<SkColor> brand_text_color_;
   absl::optional<SkColor> brand_background_color_;
 
+  // The privacy policy and terms of service URLs.
+  const content::ClientIdData client_data_;
+
+  // The list of accounts to select from. Not updated when the user selects an
+  // account and navigates to the privacy policy / terms of service page.
+  const std::vector<const content::IdentityRequestAccount> account_list_;
+
   // The TabStripModel of the current browser. We need this in order to show the
   // privacy policy and terms of service urls when the user clicks on the links.
   const raw_ptr<TabStripModel> tab_strip_model_;
@@ -122,14 +137,14 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   base::OnceCallback<void(const content::IdentityRequestAccount&)>
       on_account_selected_callback_;
 
-  // The privacy policy and terms of service URLs
-  const content::ClientIdData client_data_;
-
   // View containing the logo of the identity provider and the title.
   raw_ptr<views::View> header_view_{nullptr};
 
-  // View containing the bubble icon.
-  raw_ptr<views::ImageView> bubble_icon_view_{nullptr};
+  // View containing the header icon.
+  raw_ptr<views::ImageView> header_icon_view_{nullptr};
+
+  // View containing the back button.
+  raw_ptr<views::ImageButton> back_button_{nullptr};
 
   // View containing the bubble title.
   raw_ptr<views::Label> title_label_{nullptr};
