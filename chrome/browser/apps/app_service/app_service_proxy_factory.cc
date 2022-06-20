@@ -119,16 +119,15 @@ content::BrowserContext* AppServiceProxyFactory::GetBrowserContextToUse(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::ProfileHelper::IsSigninProfile(profile)) {
-    return nullptr;
-  }
-
   // We must have a proxy in guest mode to ensure default extension-based apps
   // are served.
   if (profile->IsGuestSession()) {
     return profile->IsOffTheRecord()
                ? chrome::GetBrowserContextOwnInstanceInIncognito(context)
                : nullptr;
+  }
+  if (ash::ProfileHelper::IsSigninProfile(profile)) {
+    return nullptr;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
