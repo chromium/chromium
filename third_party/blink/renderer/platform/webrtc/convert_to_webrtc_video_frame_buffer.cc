@@ -383,12 +383,39 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
           const_cast<uint8_t*>(yuv_buffer->DataV()), timestamp);
       break;
     }
+    case webrtc::VideoFrameBuffer::Type::kI422: {
+      const webrtc::I422BufferInterface* yuv_buffer = buffer->GetI422();
+      video_frame = media::VideoFrame::WrapExternalYuvData(
+          media::PIXEL_FORMAT_I422, size, gfx::Rect(size), size,
+          yuv_buffer->StrideY(), yuv_buffer->StrideU(), yuv_buffer->StrideV(),
+          const_cast<uint8_t*>(yuv_buffer->DataY()),
+          const_cast<uint8_t*>(yuv_buffer->DataU()),
+          const_cast<uint8_t*>(yuv_buffer->DataV()), timestamp);
+      break;
+    }
     case webrtc::VideoFrameBuffer::Type::kI010: {
       const webrtc::I010BufferInterface* yuv_buffer = buffer->GetI010();
       // WebRTC defines I010 data as uint16 whereas Chromium uses uint8 for all
       // video formats, so conversion and cast is needed.
       video_frame = media::VideoFrame::WrapExternalYuvData(
           media::PIXEL_FORMAT_YUV420P10, size, gfx::Rect(size), size,
+          yuv_buffer->StrideY() * 2, yuv_buffer->StrideU() * 2,
+          yuv_buffer->StrideV() * 2,
+          const_cast<uint8_t*>(
+              reinterpret_cast<const uint8_t*>(yuv_buffer->DataY())),
+          const_cast<uint8_t*>(
+              reinterpret_cast<const uint8_t*>(yuv_buffer->DataU())),
+          const_cast<uint8_t*>(
+              reinterpret_cast<const uint8_t*>(yuv_buffer->DataV())),
+          timestamp);
+      break;
+    }
+    case webrtc::VideoFrameBuffer::Type::kI210: {
+      const webrtc::I210BufferInterface* yuv_buffer = buffer->GetI210();
+      // WebRTC defines I210 data as uint16 whereas Chromium uses uint8 for all
+      // video formats, so conversion and cast is needed.
+      video_frame = media::VideoFrame::WrapExternalYuvData(
+          media::PIXEL_FORMAT_YUV422P10, size, gfx::Rect(size), size,
           yuv_buffer->StrideY() * 2, yuv_buffer->StrideU() * 2,
           yuv_buffer->StrideV() * 2,
           const_cast<uint8_t*>(
