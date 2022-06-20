@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
@@ -142,11 +143,14 @@ base::Value::List APCInternalsHandler::GetAPCRelatedFlags() const {
   // base::FeatureList::IsEnabled) checks that there is only one memory address
   // per feature.
   const base::Feature* const apc_features[] = {
-      &password_manager::features::kPasswordChange,
-      &password_manager::features::kPasswordChangeInSettings,
-      &password_manager::features::kPasswordScriptsFetching,
-      &password_manager::features::kPasswordDomainCapabilitiesFetching,
-      &password_manager::features::kForceEnablePasswordDomainCapabilities,
+    &password_manager::features::kPasswordChange,
+    &password_manager::features::kPasswordChangeInSettings,
+    &password_manager::features::kPasswordScriptsFetching,
+    &password_manager::features::kPasswordDomainCapabilitiesFetching,
+    &password_manager::features::kForceEnablePasswordDomainCapabilities,
+#if !BUILDFLAG(IS_ANDROID)
+    &features::kUnifiedSidePanel,
+#endif
   };
 
   base::Value::List relevant_features;
