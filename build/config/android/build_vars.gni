@@ -17,7 +17,9 @@ android_build_vars_json = {
     android_sdk_root = rebase_path(android_sdk_root, root_build_dir)
     android_sdk_version = android_sdk_version
     android_tool_prefix = rebase_path(android_tool_prefix, root_build_dir)
+    default_min_sdk_version = default_min_sdk_version
     final_android_sdk = final_android_sdk
+    public_android_sdk_version = public_android_sdk_version
 
     if (defined(android_secondary_abi_cpu)) {
       android_secondary_abi_toolchain =

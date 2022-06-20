@@ -38,21 +38,6 @@ available" notification.
     * After `gn clean` you may need to restart Android Studio.
     * File -&gt; "Invalidate Caches / Restart..."
 
-## Troubleshooting
-
-If building the Gradle files in Android Studio prints an error like this:
-
-```
-Failed to find Platform SDK with path: platforms;android-31
-```
-
-Then it means the SDK is being updated to the new release. A workaround is to
-ask for an older SDK version in `args.gn`:
-
-```
-android_sdk_version = 30
-```
-
 ## How It Works
 
 By default, only an `_all` module containing all java apk targets is generated.
