@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ui/base/device_form_factor.h"
 
@@ -55,7 +56,15 @@
 - (CGFloat)visibleKeyboardHeight {
   if (self.keyboardState.isVisible && !self.keyboardState.isHardware &&
       !self.keyboardState.isUndocked) {
+    // Software keyboard is visible and covers the full width of the screen
+    // (docked). Returns the keyboard + accessory height.
     return CGRectGetHeight(self.keyboardView.frame);
+  } else if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE &&
+             self.keyboardState.isVisible && !self.keyboardState.isUndocked) {
+    // Keyboard is visible but hardware, only the accessory covers the full
+    // width of the display, the keyboard is hidden below the display. Returns
+    // the accessory's height.
+    return CurrentScreenHeight() - self.keyboardView.frame.origin.y;
   } else {
     return 0;
   }

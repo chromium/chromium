@@ -45,9 +45,8 @@ typedef struct {
 // isKeyboardVisible.
 @property(nonatomic, readonly, getter=isKeyboardOnScreen) BOOL keyboardOnScreen;
 
-// Returns keyboard's height if it's docked, visible and not hardware.
-// Otherwise returns 0.
-// Note: This includes the keyboard accessory's height.
+// Returns keyboard's height if it covers the full width of the display,
+// otherwise returns 0. Note: This includes the keyboard accessory's height.
 @property(nonatomic, readonly) CGFloat visibleKeyboardHeight;
 
 @end
