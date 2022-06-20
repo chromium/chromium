@@ -1179,9 +1179,6 @@ export class DirectoryModel extends EventTarget {
       event.newDirEntry = dirEntry;
       event.volumeChanged = previousVolumeInfo !== currentVolumeInfo;
       this.dispatchEvent(event);
-      if (util.isFilesAppExperimental()) {
-        this.store_.dispatch(changeDirectory({to: dirEntry}));
-      }
     });
   }
 

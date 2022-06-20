@@ -172,6 +172,8 @@ export class BaseStore<StateType, ActionType extends BaseAction> {
 
   /** Notify observers with the current state. */
   private notifyObservers_(state: StateType) {
+    // TODO(lucmult): Should we try/catch each observer, so an error in observer
+    // doesn't stop other parts from rendering.
     this.observers_.forEach(o => o.onStateChanged(state));
   }
 }

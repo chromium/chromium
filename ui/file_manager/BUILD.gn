@@ -6,6 +6,7 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/file_manager/file_names.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -110,9 +111,10 @@ preprocess_if_expr("preprocess_generated") {
   out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/manifest_preprocess_generated.json"
 
-  in_files = generated_js_files
+  in_files = generated_js_files + ts_generated_templates
 
   deps = [
+    ":html_wrapper_files",
     "//ui/file_manager/base/gn:file_types_data_gen_js",
     "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
@@ -241,6 +243,10 @@ copy("copy_ts") {
   outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
 }
 
+html_to_wrapper("html_wrapper_files") {
+  in_files = ts_templates
+}
+
 ts_library("build_ts") {
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
@@ -256,13 +262,22 @@ ts_library("build_ts") {
 
   deps = [ "//ui/webui/resources:library" ]
 
-  in_files = static_js_files + generated_js_files + ts_files +
-             image_loader_static_js_files + image_loader_generated_js_files
+  in_files =
+      static_js_files + generated_js_files + ts_files + ts_generated_templates +
+      image_loader_static_js_files + image_loader_generated_js_files
 
   definitions = [
     "//ui/file_manager/file_manager/definitions/file_manager.d.ts",
     "//ui/file_manager/file_manager/definitions/volume_manager.d.ts",
   ]
+}
+
+js_library("js_from_ts") {
+  sources = []
+  foreach(_t, ts_files) {
+    sources += [ "$target_gen_dir/tsc/" + string_replace(_t, ".ts", ".js") ]
+  }
+  extra_deps = [ ":build_ts" ]
 }
 
 # GRD for test files.

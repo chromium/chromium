@@ -124,6 +124,8 @@ static_js_files = [
   "file_manager/externs/volume_info.js",
   "file_manager/externs/volume_info_list.js",
   "file_manager/externs/volume_manager.js",
+  "file_manager/externs/ts/state.js",
+  "file_manager/externs/ts/store.js",
 
   # Files app Foreground:
   "file_manager/foreground/js/actions_controller.js",
@@ -265,11 +267,20 @@ static_js_files = [
 ts_files = [
   "file_manager/lib/base_store.ts",
   "file_manager/state/store.ts",
-  "file_manager/state/state.ts",
   "file_manager/state/reducers.ts",
   "file_manager/state/actions.ts",
   "file_manager/state/file_key.ts",
+  "file_manager/widgets/breadcrumbs.ts",
+  "file_manager/controllers/breadcrumbs_controller.ts",
 ]
+
+# HTML template files that are used to generate the ".html.ts"
+ts_templates = [ "file_manager/widgets/breadcrumbs.html" ]
+
+ts_generated_templates = []
+foreach(_t, ts_templates) {
+  ts_generated_templates += [ _t + ".ts" ]
+}
 
 # Generated files are built from the repository and the final JS files is only
 # available in the "gen/" folder.
