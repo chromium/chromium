@@ -12,13 +12,13 @@ function CreateWebViewAndGuest(callback) {
     webview.removeEventListener('loadabort', onLoadAbort);
     callback();
   };
-  webview.addEventListener('loadstop', onLoadStop);
-
   var onLoadAbort = function(e) {
     chrome.test.sendMessage('WebViewTest.FAILURE');
     webview.removeEventListener('loadstop', onLoadStop);
     webview.removeEventListener('loadabort', onLoadAbort);
   };
+  webview.addEventListener('loadstop', onLoadStop);
+  webview.addEventListener('loadabort', onLoadAbort);
   webview.src = 'data:text/html,<html><body>simple test</body></html>';
   return webview;
 }
