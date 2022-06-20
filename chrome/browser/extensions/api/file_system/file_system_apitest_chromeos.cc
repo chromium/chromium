@@ -560,13 +560,4 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
-                       AllowlistedExtensionForDownloads) {
-  ScopedSkipRequestFileSystemDialog dialog_skipper(ui::DIALOG_BUTTON_CANCEL);
-  ASSERT_TRUE(RunExtensionTest(
-      "api_test/file_system/request_downloads_allowed_extension",
-      {.launch_as_platform_app = true}))
-      << message_;
-}
-
 }  // namespace extensions
