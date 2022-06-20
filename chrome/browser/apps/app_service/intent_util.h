@@ -17,14 +17,12 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/mojom/intent_common.mojom-forward.h"
 #include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 
 namespace arc {
@@ -47,10 +45,6 @@ class FilePath;
 namespace extensions {
 class Extension;
 }  // namespace extensions
-
-namespace web_app {
-class WebApp;
-}  // namespace web_app
 
 namespace apps_util {
 

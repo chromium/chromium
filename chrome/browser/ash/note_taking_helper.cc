@@ -83,6 +83,13 @@ const char* const kDefaultAllowedAppIds[] = {
     NoteTakingHelper::kNoteTakingWebAppIdTest,
 };
 
+// Types of App Service apps that support note taking. Note that Note Taking
+// Chrome Apps are not supported in Lacros, so kStandaloneBrowserChromeApp is
+// not included.
+// TODO (crbug.com/1336120): Add Android here.
+const apps::AppType kNoteTakingAppTypes[] = {apps::AppType::kWeb,
+                                             apps::AppType::kChromeApp};
+
 // Returns whether `app_id` looks like it's probably an Android package name
 // rather than a Chrome extension ID or web app ID.
 bool LooksLikeAndroidPackageName(const std::string& app_id) {
@@ -401,13 +408,6 @@ void NoteTakingHelper::OnArcPlayStoreEnabledChanged(bool enabled) {
 }
 
 void NoteTakingHelper::OnProfileAdded(Profile* profile) {
-  auto* registry = extensions::ExtensionRegistry::Get(profile);
-  if (extension_registry_observations_.IsObservingSource(registry)) {
-    base::debug::DumpWithoutCrashing();
-  } else {
-    extension_registry_observations_.AddObservation(registry);
-  }
-
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     auto& cache = apps::AppServiceProxyFactory::GetForProfile(profile)
                       ->AppRegistryCache();
@@ -457,12 +457,6 @@ NoteTakingHelper::NoteTakingHelper()
   play_store_enabled_ = false;
   for (Profile* profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    // TODO(crbug.com/1194370): Remove extension_registry_observations_ once
-    // Chrome Apps are gone or Lacros launches, as note-taking Chrome Apps will
-    // not be supported in Lacros.
-    extension_registry_observations_.AddObservation(
-        extensions::ExtensionRegistry::Get(profile));
-
     if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
             profile)) {
       auto& cache = apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -519,64 +513,35 @@ NoteTakingHelper::~NoteTakingHelper() {
 std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
     Profile* profile) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(profile);
-  const extensions::ExtensionSet& enabled_extensions =
-      extension_registry->enabled_extensions();
-  apps::AppRegistryCache* maybe_cache = nullptr;
-  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    maybe_cache = &apps::AppServiceProxyFactory::GetForProfile(profile)
-                       ->AppRegistryCache();
-  }
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+    return {};
+
+  auto& cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
 
   std::vector<std::string> app_ids;
   for (const auto& id : force_allowed_app_ids_) {
-    // TODO(crbug.com/1194370): Remove once Chrome Apps are gone or Lacros
-    // launches, as note-taking Chrome Apps will not be supported in Lacros.
-    if (enabled_extensions.Contains(id)) {
-      app_ids.push_back(id);
-      continue;
-    }
-
-    if (maybe_cache) {
-      maybe_cache->ForOneApp(id, [&app_ids](const apps::AppUpdate& update) {
-        if (!apps_util::IsInstalled(update.Readiness()))
-          return;
-        if (update.AppType() != apps::AppType::kWeb)
-          return;
-        DCHECK(!base::Contains(app_ids, update.AppId()));
-        app_ids.push_back(update.AppId());
-      });
-    }
-  }
-
-  // Add any Chrome Apps that have a "note" action in their manifest
-  // "action_handler" entry.
-  // TODO(crbug.com/1194370): Remove once Chrome Apps are gone or Lacros
-  // launches, as note-taking Chrome Apps will not be supported in Lacros.
-  for (const auto& extension : enabled_extensions) {
-    if (base::Contains(app_ids, extension.get()->id()))
-      continue;
-
-    if (extensions::ActionHandlersInfo::HasActionHandler(
-            extension.get(), app_runtime::ACTION_TYPE_NEW_NOTE)) {
-      app_ids.push_back(extension.get()->id());
-    }
-  }
-
-  if (maybe_cache) {
-    maybe_cache->ForEachApp([&app_ids](const apps::AppUpdate& update) {
+    cache.ForOneApp(id, [&app_ids](const apps::AppUpdate& update) {
       if (!apps_util::IsInstalled(update.Readiness()))
         return;
-      if (base::Contains(app_ids, update.AppId()))
+      if (!base::Contains(kNoteTakingAppTypes, update.AppType()))
         return;
-      if (HasNoteTakingIntentFilter(update.IntentFilters())) {
-        // Currently only web apps are expected to have this intent set.
-        DCHECK(update.AppType() == apps::AppType::kWeb);
-        app_ids.push_back(update.AppId());
-      }
+      DCHECK(!base::Contains(app_ids, update.AppId()));
+      app_ids.push_back(update.AppId());
     });
   }
+
+  cache.ForEachApp([&app_ids](const apps::AppUpdate& update) {
+    if (!apps_util::IsInstalled(update.Readiness()))
+      return;
+    if (base::Contains(app_ids, update.AppId()))
+      return;
+    if (!base::Contains(kNoteTakingAppTypes, update.AppType()))
+      return;
+    if (HasNoteTakingIntentFilter(update.IntentFilters())) {
+      app_ids.push_back(update.AppId());
+    }
+  });
 
   return app_ids;
 }
@@ -692,42 +657,16 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
   return LaunchResult::CHROME_SUCCESS;
 }
 
-void NoteTakingHelper::OnExtensionLoaded(
-    content::BrowserContext* browser_context,
-    const extensions::Extension* extension) {
-  if (base::Contains(force_allowed_app_ids_, extension->id()) ||
-      extensions::ActionHandlersInfo::HasActionHandler(
-          extension, app_runtime::ACTION_TYPE_NEW_NOTE)) {
-    for (Observer& observer : observers_)
-      observer.OnAvailableNoteTakingAppsUpdated();
-  }
-}
-
-void NoteTakingHelper::OnExtensionUnloaded(
-    content::BrowserContext* browser_context,
-    const extensions::Extension* extension,
-    extensions::UnloadedExtensionReason reason) {
-  if (base::Contains(force_allowed_app_ids_, extension->id()) ||
-      extensions::ActionHandlersInfo::HasActionHandler(
-          extension, app_runtime::ACTION_TYPE_NEW_NOTE)) {
-    for (Observer& observer : observers_)
-      observer.OnAvailableNoteTakingAppsUpdated();
-  }
-}
-
-void NoteTakingHelper::OnShutdown(extensions::ExtensionRegistry* registry) {
-  extension_registry_observations_.RemoveObservation(registry);
-}
-
 void NoteTakingHelper::OnAppUpdate(const apps::AppUpdate& update) {
-  bool is_web_app = update.AppType() == apps::AppType::kWeb;
-  bool is_chrome_app =
-      update.AppType() == apps::AppType::kStandaloneBrowserChromeApp;
-  if (!is_web_app && !is_chrome_app)
+  if (!base::Contains(kNoteTakingAppTypes, update.AppType()))
     return;
   // App was added, removed, enabled, or disabled.
   if (!update.ReadinessChanged())
     return;
+  if (!base::Contains(force_allowed_app_ids_, update.AppId()) &&
+      !HasNoteTakingIntentFilter(update.IntentFilters())) {
+    return;
+  }
 
   // Ok to send false positive notifications to observers.
   for (Observer& observer : observers_)

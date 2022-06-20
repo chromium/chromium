@@ -4,20 +4,29 @@
 
 #include "chrome/browser/ash/lock_screen_apps/app_manager_impl.h"
 
+#include <atomic>
 #include <memory>
+#include <ostream>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "apps/launcher.h"
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/ref_counted.h"
+#include "base/location.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_helper.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/ash/note_taking_helper.h"
@@ -25,16 +34,23 @@
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
+#include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "url/gurl.h"
 
 namespace lock_screen_apps {
 

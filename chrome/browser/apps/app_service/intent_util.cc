@@ -5,14 +5,23 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 
 #include <algorithm>
+#include <functional>
+#include <memory>
+#include <set>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/flat_tree.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -23,23 +32,29 @@
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/share_target.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
 #include "extensions/common/url_pattern.h"
+#include "extensions/common/url_pattern_set.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#include "extensions/common/manifest_handlers/action_handlers_handler.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/intent_common.mojom.h"
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom-shared.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ui/app_list/arc/intent.h"
@@ -482,19 +497,27 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
 
 apps::IntentFilters CreateIntentFiltersForChromeApp(
     const extensions::Extension* extension) {
-  const extensions::FileHandlersInfo* file_handlers =
-      extensions::FileHandlers::GetFileHandlers(extension);
-  if (!file_handlers) {
-    return {};
-  }
+  apps::IntentFilters filters;
 
   // Check that the extension can be launched with files. This includes all
   // platform apps and allowlisted extensions.
   if (!CanLaunchViaEvent(extension)) {
-    return {};
+    return filters;
   }
 
-  apps::IntentFilters filters;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (extensions::ActionHandlersInfo::HasActionHandler(
+          extension, extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE)) {
+    filters.push_back(CreateNoteTakingFilter());
+  }
+#endif
+
+  const extensions::FileHandlersInfo* file_handlers =
+      extensions::FileHandlers::GetFileHandlers(extension);
+  if (!file_handlers) {
+    return filters;
+  }
+
   for (const apps::FileHandlerInfo& handler : *file_handlers) {
     // "share_with", "add_to" and "pack_with" are ignored in the Files app
     // frontend.
@@ -516,16 +539,25 @@ apps::IntentFilters CreateIntentFiltersForChromeApp(
 
 std::vector<apps::mojom::IntentFilterPtr> CreateChromeAppIntentFilters(
     const extensions::Extension* extension) {
-  const extensions::FileHandlersInfo* file_handlers =
-      extensions::FileHandlers::GetFileHandlers(extension);
-  if (!file_handlers)
-    return {};
+  std::vector<apps::mojom::IntentFilterPtr> filters;
+
   // Check that the extension can be launched with files. This includes all
   // platform apps and allowlisted extensions.
   if (!CanLaunchViaEvent(extension))
-    return {};
+    return filters;
 
-  std::vector<apps::mojom::IntentFilterPtr> filters;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (extensions::ActionHandlersInfo::HasActionHandler(
+          extension, extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE)) {
+    filters.push_back(CreateNoteTakingFilterMojom());
+  }
+#endif
+
+  const extensions::FileHandlersInfo* file_handlers =
+      extensions::FileHandlers::GetFileHandlers(extension);
+  if (!file_handlers)
+    return filters;
+
   for (const apps::FileHandlerInfo& handler : *file_handlers) {
     // "share_with", "add_to" and "pack_with" are ignored in the Files app
     // frontend.

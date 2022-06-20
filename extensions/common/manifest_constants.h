@@ -162,8 +162,6 @@ extern const char kWebviewAccessibleResources[];
 extern const char kWebviewPartitions[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kFileSystemProviderCapabilities[];
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kActionHandlers[];
 extern const char kActionHandlerActionKey[];
 extern const char kActionHandlerEnabledOnLockScreenKey[];
@@ -466,8 +464,6 @@ extern const char16_t kWebRequestConflictsWithLazyBackground[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char16_t kInvalidFileSystemProviderMissingCapabilities[];
 extern const char kInvalidFileSystemProviderMissingPermission[];
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kDuplicateActionHandlerFound[];
 extern const char kIllegalPlugins[];
 extern const char16_t kInvalidActionHandlerDictionary[];
