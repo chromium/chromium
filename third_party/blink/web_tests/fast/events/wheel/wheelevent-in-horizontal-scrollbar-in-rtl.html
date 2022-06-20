@@ -29,7 +29,7 @@
     promise_test(async () => {
       await mouseMoveTo(100, 100);
       await smoothScroll(testCase.distance, 100, 100,
-          GestureSourceType.MOUSE_INPUT, testCase.direction, SPEED_INSTANT);
+          GestureSourceType.MOUSE_INPUT, testCase.direction, SPEED_INSTANT, !isPercentBasedScrollingEnabled());
       await waitForAnimationEndTimeBased(() => { return window.scrollX; });
       await waitForAnimationEndTimeBased(() => { return window.scrollY; });
       assert_approx_equals(window.scrollX, testCase.expectedX, 1);

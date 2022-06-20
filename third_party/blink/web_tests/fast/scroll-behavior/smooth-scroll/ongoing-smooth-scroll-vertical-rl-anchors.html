@@ -58,7 +58,7 @@
     document.addEventListener("scroll", scrollListener);
 
     // Smooth scroll.
-    smoothScroll(userScrollX, 100, 100, source, 'right', SPEED_INSTANT);
+    smoothScroll(userScrollX, 100, 100, source, 'right', SPEED_INSTANT, !isPercentBasedScrollingEnabled());
     await raf();
     window.scrollTo(initialX, initialY);
   }

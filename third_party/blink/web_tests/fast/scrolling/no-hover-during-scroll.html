@@ -65,7 +65,7 @@
       }
       const scrollCallback = (x, y) => {
         return smoothScroll(Math.floor(scrollAmount), x, y, mouse, 'down',
-                            scrollSpeed);
+                            scrollSpeed, !isPercentBasedScrollingEnabled());
       };
       return runHoverStateOnScrollTest(scrollCallback, postScrollHoverIndex);
     }, 'Mouse wheel scroll on the page, no hover update during scrolling, ' +

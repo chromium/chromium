@@ -32,7 +32,7 @@ function mousewheelHandler(e) {
 }
 
 promise_test(async () => {
-    await smoothScroll(SCROLL_LEFT, 100, 110, SOURCE, 'right', SPEED_INSTANT);
+    await smoothScroll(SCROLL_LEFT, 100, 110, SOURCE, 'right', SPEED_INSTANT, !isPercentBasedScrollingEnabled());
     await waitForAnimationEndTimeBased(() => {
       return overflowElement.scrollLeft;
     });
@@ -42,7 +42,7 @@ promise_test(async () => {
 
     last_event = null;
 
-    await smoothScroll(SCROLL_TOP, 100, 110, SOURCE, 'down', SPEED_INSTANT);
+    await smoothScroll(SCROLL_TOP, 100, 110, SOURCE, 'down', SPEED_INSTANT, !isPercentBasedScrollingEnabled());
     await waitForAnimationEndTimeBased(() => {
       return overflowElement.scrollTop;
     });

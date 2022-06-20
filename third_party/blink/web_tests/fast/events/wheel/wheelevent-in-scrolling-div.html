@@ -32,7 +32,7 @@
     var y = overflowElement.offsetTop + 5
     await mouseMoveTo(x, y);
     await smoothScroll(SCROLL_AMOUNT, x, y, GestureSourceType.MOUSE_INPUT,
-      "downright", SPEED_INSTANT);
+      "downright", SPEED_INSTANT, !isPercentBasedScrollingEnabled());
     await waitForAnimationEndTimeBased(() => {
       return overflowElement.scrollTop;
     });
