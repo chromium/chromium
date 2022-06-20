@@ -428,11 +428,10 @@ void FakeMediaSource::Rewind() {
 }
 
 ScopedAVPacket FakeMediaSource::DemuxOnePacket(bool* audio) {
-  ScopedAVPacket packet = MakeScopedAVPacket();
+  auto packet = ScopedAVPacket::Allocate();
   if (av_read_frame(av_format_context_, packet.get()) < 0) {
     VLOG(1) << "Failed to read one AVPacket.";
-    packet.reset();
-    return packet;
+    return {};
   }
 
   int stream_index = static_cast<int>(packet->stream_index);
@@ -443,7 +442,7 @@ ScopedAVPacket FakeMediaSource::DemuxOnePacket(bool* audio) {
   } else {
     // Ignore unknown packet.
     LOG(INFO) << "Unknown packet.";
-    packet.reset();
+    return {};
   }
   return packet;
 }

@@ -18,9 +18,9 @@ struct ScopedPtrAVFree {
   void operator()(void* x) const;
 };
 
-// This assumes that the ScopedAVPacket was created using MakeScopedAVPacket
-// from ffmpeg_demuxer.h. Do not use this with an AVPacket instance that was
-// allocated with new or manually av_malloc'd.
+// Calls av_packet_free(). Do not use this with an AVPacket instance that was
+// allocated with new or manually av_malloc'd. ScopedAVPacket is the
+// recommended way to manage an AVPacket's lifetime.
 struct ScopedPtrAVFreePacket {
   void operator()(void* x) const;
 };

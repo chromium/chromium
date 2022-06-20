@@ -13,7 +13,6 @@
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/filters/blocking_url_protocol.h"
 #include "media/filters/ffmpeg_bitstream_converter.h"
-#include "media/filters/ffmpeg_demuxer.h"
 #include "media/filters/ffmpeg_glue.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -119,7 +118,7 @@ void VideoFrameExtractor::ConvertPacket(AVPacket* packet) {
 
 ScopedAVPacket VideoFrameExtractor::ReadVideoFrame() {
   AVFormatContext* format_context = glue_->format_context();
-  ScopedAVPacket packet = MakeScopedAVPacket();
+  auto packet = ScopedAVPacket::Allocate();
   while (av_read_frame(format_context, packet.get()) >= 0) {
     // Skip frames from streams other than video.
     if (packet->stream_index != video_stream_index_)
@@ -128,7 +127,7 @@ ScopedAVPacket VideoFrameExtractor::ReadVideoFrame() {
     DCHECK(packet->flags & AV_PKT_FLAG_KEY);
     return packet;
   }
-  return nullptr;
+  return {};
 }
 
 void VideoFrameExtractor::NotifyComplete(std::vector<uint8_t> encoded_frame,

@@ -25,12 +25,13 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/media_util.h"
 #include "media/cast/cast_config.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/audio_renderer_algorithm.h"
-#include "media/filters/ffmpeg_demuxer.h"
 
 struct AVCodecContext;
 struct AVFormatContext;
 struct AVFrame;
+struct AVStream;
 
 namespace media {
 

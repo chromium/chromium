@@ -14,15 +14,15 @@ source_set("ffmpeg") {
     "//media",
     "//media/filters",
   ]
-  configs += [
-    "//media:subcomponent_config",
-  ]
+  configs += [ "//media:subcomponent_config" ]
   sources = [
     "ffmpeg_common.cc",
     "ffmpeg_common.h",
     "ffmpeg_decoding_loop.cc",
     "ffmpeg_decoding_loop.h",
     "ffmpeg_deleters.h",
+    "scoped_av_packet.cc",
+    "scoped_av_packet.h",
   ]
   deps = [
     "//base",
@@ -35,7 +35,10 @@ source_set("ffmpeg") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ffmpeg_common_unittest.cc" ]
+  sources = [
+    "ffmpeg_common_unittest.cc",
+    "scoped_av_packet_unittest.cc",
+  ]
   configs += [ "//media:media_config" ]
   deps = [
     "//base",

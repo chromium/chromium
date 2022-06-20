@@ -67,11 +67,6 @@ void SetAVStreamDiscard(AVStream* stream, AVDiscard discard) {
 
 }  // namespace
 
-ScopedAVPacket MakeScopedAVPacket() {
-  ScopedAVPacket packet(av_packet_alloc());
-  return packet;
-}
-
 static base::Time ExtractTimelineOffset(
     container_names::MediaContainerName container,
     const AVFormatContext* format_context) {
@@ -1779,7 +1774,7 @@ void FFmpegDemuxer::ReadFrameIfNeeded() {
   // Allocate and read an AVPacket from the media. Save |packet_ptr| since
   // evaluation order of packet.get() and std::move(&packet) is
   // undefined.
-  ScopedAVPacket packet = MakeScopedAVPacket();
+  auto packet = ScopedAVPacket::Allocate();
   AVPacket* packet_ptr = packet.get();
 
   pending_read_ = true;

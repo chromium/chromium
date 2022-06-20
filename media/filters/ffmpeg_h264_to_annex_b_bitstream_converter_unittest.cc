@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "media/ffmpeg/ffmpeg_common.h"
-#include "media/filters/ffmpeg_demuxer.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/ffmpeg_h264_to_annex_b_bitstream_converter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -305,7 +305,7 @@ class FFmpegH264ToAnnexBBitstreamConverterTest : public testing::Test {
 TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_Success) {
   FFmpegH264ToAnnexBBitstreamConverter converter(&test_parameters_);
 
-  ScopedAVPacket test_packet = MakeScopedAVPacket();
+  auto test_packet = ScopedAVPacket::Allocate();
   CreatePacket(test_packet.get(), kPacketDataOkWithFieldLen4,
                sizeof(kPacketDataOkWithFieldLen4));
 
@@ -320,7 +320,7 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_SuccessBigPacket) {
   FFmpegH264ToAnnexBBitstreamConverter converter(&test_parameters_);
 
   // Create new packet with 1000 excess bytes.
-  ScopedAVPacket test_packet = MakeScopedAVPacket();
+  auto test_packet = ScopedAVPacket::Allocate();
   static uint8_t excess_data[sizeof(kPacketDataOkWithFieldLen4) + 1000] = {0};
   memcpy(excess_data, kPacketDataOkWithFieldLen4,
          sizeof(kPacketDataOkWithFieldLen4));
@@ -344,7 +344,7 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_FailureNullParams) {
   EXPECT_FALSE(converter.ConvertPacket(nullptr));
 
   // Create new packet to test actual conversion.
-  ScopedAVPacket test_packet = MakeScopedAVPacket();
+  auto test_packet = ScopedAVPacket::Allocate();
   CreatePacket(test_packet.get(), kPacketDataOkWithFieldLen4,
                sizeof(kPacketDataOkWithFieldLen4));
 
