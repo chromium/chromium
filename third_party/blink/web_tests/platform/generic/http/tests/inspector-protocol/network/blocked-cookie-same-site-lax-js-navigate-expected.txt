@@ -1,6 +1,6 @@
-Verifies that making cross-party requests with SameParty cookies sends us Network.RequestWillBeSentExtraInfo events with corresponding associated cookies.
+Verifies that making cross origin requests with SameSite=Lax cookies sends us Network.RequestWillBeSentExtraInfo events with corresponding blocked cookies.
 
-Browser initiated navigation associated cookies:[
+Browser initiated navigation blocked cookies:[
     [0] : {
         blockedReasons : [
         ]
@@ -11,9 +11,9 @@ Browser initiated navigation associated cookies:[
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
-            sameParty : true
-            sameSite : None
-            secure : true
+            sameParty : false
+            sameSite : Lax
+            secure : false
             session : true
             size : 9
             sourcePort : 8443
@@ -22,7 +22,7 @@ Browser initiated navigation associated cookies:[
         }
     }
 ]
-Javascript initiated navigation associated cookies:[
+Javascript initiated navigation blocked cookies:[
     [0] : {
         blockedReasons : [
         ]
@@ -33,9 +33,9 @@ Javascript initiated navigation associated cookies:[
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
-            sameParty : true
-            sameSite : None
-            secure : true
+            sameParty : false
+            sameSite : Lax
+            secure : false
             session : true
             size : 9
             sourcePort : 8443
@@ -44,10 +44,10 @@ Javascript initiated navigation associated cookies:[
         }
     }
 ]
-Javascript initiated subresource associated cookies:[
+Javascript initiated subresource blocked cookies:[
     [0] : {
         blockedReasons : [
-            [0] : SamePartyFromCrossPartyContext
+            [0] : SameSiteLax
         ]
         cookie : {
             domain : cookie.test
@@ -56,9 +56,9 @@ Javascript initiated subresource associated cookies:[
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
-            sameParty : true
-            sameSite : None
-            secure : true
+            sameParty : false
+            sameSite : Lax
+            secure : false
             session : true
             size : 9
             sourcePort : 8443

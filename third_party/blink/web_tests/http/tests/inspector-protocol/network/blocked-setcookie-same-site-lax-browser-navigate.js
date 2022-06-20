@@ -1,6 +1,6 @@
 (async function(testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
-      `Verifies that making cross origin requests which set SameSite=Lax cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.\n`);
+      `Verifies that making cross origin navigation requests from browser which set SameSite=Lax cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.\n`);
   await dp.Network.enable();
 
   const thirdPartyUrl = 'https://thirdparty.test:8443/inspector-protocol/network/resources/hello-world.html';
@@ -8,16 +8,6 @@
       + encodeURIComponent('name=value; SameSite=Lax');
 
   const helper = (await testRunner.loadScript('resources/extra-info-helper.js'))(dp, session);
-
-  // make a cross origin request to set the cookie, see that it gets blocked
-  await helper.navigateWithExtraInfo(thirdPartyUrl);
-  var {responseExtraInfo} = await helper.fetchWithExtraInfo(setCookieUrl);
-  testRunner.log(responseExtraInfo.params.blockedCookies, 'Javascript initiated subresource blocked set-cookies:');
-
-  // make a cross origin navigation via javascript to set the cookie, see that it is not blocked
-  await helper.navigateWithExtraInfo(thirdPartyUrl);
-  var {responseExtraInfo} = await helper.jsNavigateWithExtraInfo(setCookieUrl);
-  testRunner.log(responseExtraInfo.params.blockedCookies, 'Javascript initiated navigation blocked set-cookies:');
 
   // make a cross origin navigation via browser to set the cookie, see that it is not blocked
   await helper.navigateWithExtraInfo(thirdPartyUrl);

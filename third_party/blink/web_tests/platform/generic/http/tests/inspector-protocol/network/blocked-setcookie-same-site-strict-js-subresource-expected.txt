@@ -1,4 +1,4 @@
-Verifies that making cross origin requests which set SameSite=Strict cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.
+Verifies that making cross origin subresource requests from JS which set SameSite=Strict cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.
 
 Javascript initiated subresource blocked set-cookies:[
     [0] : {
@@ -23,9 +23,5 @@ Javascript initiated subresource blocked set-cookies:[
         }
         cookieLine : name=value; SameSite=Strict
     }
-]
-Javascript initiated navigation blocked set-cookies:[
-]
-Browser initiated navigation blocked set-cookies:[
 ]
 

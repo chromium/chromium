@@ -1,0 +1,26 @@
+Verifies that making cross-party subresource requests from JS with SameParty cookies sends us Network.RequestWillBeSentExtraInfo events with corresponding associated cookies.
+
+Javascript initiated subresource associated cookies:[
+    [0] : {
+        blockedReasons : [
+            [0] : SamePartyFromCrossPartyContext
+        ]
+        cookie : {
+            domain : cookie.test
+            expires : -1
+            httpOnly : false
+            name : name
+            path : /inspector-protocol/network/resources
+            priority : Medium
+            sameParty : true
+            sameSite : None
+            secure : true
+            session : true
+            size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
+            value : value
+        }
+    }
+]
+

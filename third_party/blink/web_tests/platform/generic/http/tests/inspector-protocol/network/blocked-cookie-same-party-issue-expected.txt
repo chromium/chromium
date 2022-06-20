@@ -1,0 +1,28 @@
+Verifies that making cross-party requests with SameParty cookies results in a blocked cookie issue
+
+Javascript initiated subresource associated cookies:[
+    [0] : {
+        blockedReasons : [
+        ]
+        cookie : {
+            domain : cookie.test
+            expires : -1
+            httpOnly : false
+            name : name
+            path : /inspector-protocol/network/resources
+            priority : Medium
+            sameParty : true
+            sameSite : None
+            secure : true
+            session : true
+            size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
+            value : value
+        }
+    }
+]
+Error while executing test script: TypeError: Cannot read properties of undefined (reading 'params')
+TypeError: Cannot read properties of undefined (reading 'params')
+    at eval (http://127.0.0.1:8000/inspector-protocol/network/blocked-cookie-same-party-issue.js:26:34)
+

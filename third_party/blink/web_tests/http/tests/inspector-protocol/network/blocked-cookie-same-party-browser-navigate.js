@@ -1,6 +1,6 @@
 (async function(testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
-      `Verifies that making cross-party requests with SameParty cookies sends us Network.RequestWillBeSentExtraInfo events with corresponding associated cookies.\n`);
+      `Verifies that making cross-party navigation requests from browser with SameParty cookies sends us Network.RequestWillBeSentExtraInfo events with corresponding associated cookies.\n`);
   await dp.Network.enable();
 
   const setCookieUrl = 'https://cookie.test:8443/inspector-protocol/network/resources/set-cookie.php?cookie='
@@ -17,16 +17,6 @@
   await helper.navigateWithExtraInfo(thirdPartyUrl);
   let {requestExtraInfo} = await helper.navigateWithExtraInfo(firstPartyUrl);
   testRunner.log(requestExtraInfo.params.associatedCookies, 'Browser initiated navigation associated cookies:');
-
-  // navigate to a cross-party domain and back from javascript and see that the cookie is not blocked
-  await helper.navigateWithExtraInfo(thirdPartyUrl);
-  ({requestExtraInfo} = await helper.jsNavigateWithExtraInfo(firstPartyUrl));
-  testRunner.log(requestExtraInfo.params.associatedCookies, 'Javascript initiated navigation associated cookies:');
-
-  // navigate away and make a subresource request from javascript, see that the cookie is not blocked
-  await helper.navigateWithExtraInfo(thirdPartyUrl);
-  ({requestExtraInfo} = await helper.fetchWithExtraInfo(firstPartyUrl));
-  testRunner.log(requestExtraInfo.params.associatedCookies, 'Javascript initiated subresource associated cookies:');
 
   testRunner.completeTest();
 })

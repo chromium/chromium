@@ -1,9 +1,8 @@
-Verifies that making cross-party requests which set SameParty cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.
+Verifies that making cross-party navigation requests from JS with SameParty cookies sends us Network.RequestWillBeSentExtraInfo events with corresponding associated cookies.
 
-Javascript initiated subresource blocked set-cookies:[
+Javascript initiated navigation associated cookies:[
     [0] : {
         blockedReasons : [
-            [0] : SamePartyFromCrossPartyContext
         ]
         cookie : {
             domain : cookie.test
@@ -21,11 +20,6 @@ Javascript initiated subresource blocked set-cookies:[
             sourceScheme : Secure
             value : value
         }
-        cookieLine : name=value; SameSite=None; SameParty; Secure
     }
-]
-Javascript initiated navigation blocked set-cookies:[
-]
-Browser initiated navigation blocked set-cookies:[
 ]
 
