@@ -343,6 +343,13 @@ void CanvasRenderingContext2DState::SetFont(
     selector->RegisterForInvalidationCallbacks(this);
 }
 
+bool CanvasRenderingContext2DState::IsFontDirtyForFilter() const {
+  // Indicates if the font has changed since the last time the filter was set.
+  if (!HasRealizedFont())
+    return true;
+  return GetFont() != font_for_filter_;
+}
+
 const Font& CanvasRenderingContext2DState::GetFont() const {
   DCHECK(realized_font_);
   return font_;

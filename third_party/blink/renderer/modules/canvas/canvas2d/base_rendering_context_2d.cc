@@ -769,7 +769,7 @@ void BaseRenderingContext2D::setFilter(
             CanvasOps::kSetFilter,
             IdentifiabilitySensitiveStringToken(filter_string));
       }
-      if (!GetState().GetCanvasFilter() &&
+      if (!GetState().GetCanvasFilter() && !GetState().IsFontDirtyForFilter() &&
           filter_string == GetState().UnparsedCSSFilter()) {
         return;
       }
