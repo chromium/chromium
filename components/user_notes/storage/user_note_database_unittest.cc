@@ -4,6 +4,7 @@
 
 #include "components/user_notes/storage/user_note_database.h"
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -298,6 +299,42 @@ TEST_F(UserNoteDatabaseTest, DeleteAllForUrl) {
 
   for (const base::UnguessableToken& id : ids) {
     check_is_removed_from_db(&user_note_db, id);
+  }
+}
+
+TEST_F(UserNoteDatabaseTest, GetNoteMetadataForUrls) {
+  UserNoteDatabase user_note_db(db_dir());
+  EXPECT_TRUE(user_note_db.Init());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_note_db.sequence_checker_);
+
+  std::set<base::UnguessableToken> ids;
+  base::Time time = base::Time::FromDoubleT(1600000000);
+  int note_version = 1;
+  for (int i = 0; i < 3; i++) {
+    base::UnguessableToken note_id = base::UnguessableToken::Create();
+    ids.emplace(note_id);
+    auto note_metadata =
+        std::make_unique<UserNoteMetadata>(time, time, note_version);
+    UserNote* user_note =
+        new UserNote(note_id, std::move(note_metadata), GetTestUserNoteBody(),
+                     GetTestUserNotePageTarget("https://www.test.com"));
+    user_note_db.UpdateNote(user_note, "new test note", /*is_creation=*/true);
+    delete user_note;
+  }
+
+  GURL url = GURL("https://www.test.com");
+  std::vector<GURL> urls{url};
+  UserNoteMetadataSnapshot metadata_snapshot =
+      user_note_db.GetNoteMetadataForUrls(urls);
+  const UserNoteMetadataSnapshot::IdToMetadataMap* metadata_map =
+      metadata_snapshot.GetMapForUrl(url);
+  EXPECT_EQ(3u, metadata_map->size());
+
+  for (const auto& metadata_it : *metadata_map) {
+    EXPECT_TRUE(base::Contains(ids, metadata_it.first));
+    EXPECT_EQ(time, metadata_it.second->creation_date());
+    EXPECT_EQ(time, metadata_it.second->modification_date());
+    EXPECT_EQ(note_version, metadata_it.second->min_note_version());
   }
 }
 

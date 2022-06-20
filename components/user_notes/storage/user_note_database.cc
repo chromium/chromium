@@ -5,6 +5,7 @@
 #include "components/user_notes/storage/user_note_database.h"
 
 #include "base/files/file_util.h"
+#include "base/json/values_util.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -73,9 +74,51 @@ UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
     std::vector<GURL> urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(gayane): Implement.
+  if (!EnsureDBInit())
+    return UserNoteMetadataSnapshot();
 
-  return UserNoteMetadataSnapshot();
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin())
+    return UserNoteMetadataSnapshot();
+
+  UserNoteMetadataSnapshot metadata_snapshot;
+  for (GURL url : urls) {
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE,
+                               "SELECT id, creation_date, modification_date "
+                               "FROM notes WHERE url = ?"));
+
+    if (!statement.is_valid())
+      continue;
+
+    statement.BindString(0, url.spec());
+
+    while (statement.Step()) {
+      DCHECK_EQ(3, statement.ColumnCount());
+
+      std::string id = statement.ColumnString(0);
+      base::StringPiece string_piece(id);
+      uint64_t high = 0;
+      uint64_t low = 0;
+      if (!base::HexStringToUInt64(string_piece.substr(0, 16), &high) ||
+          !base::HexStringToUInt64(string_piece.substr(16, 16), &low)) {
+        continue;
+      }
+      base::UnguessableToken token =
+          base::UnguessableToken::Deserialize(high, low);
+
+      base::Time creation_date = statement.ColumnTime(1);
+      base::Time modification_date = statement.ColumnTime(2);
+
+      auto metadata = std::make_unique<UserNoteMetadata>(
+          creation_date, modification_date, /*min_note_version=*/1);
+      metadata_snapshot.AddEntry(url, token, std::move(metadata));
+    }
+  }
+
+  transaction.Commit();
+
+  return metadata_snapshot;
 }
 
 std::vector<std::unique_ptr<UserNote>> UserNoteDatabase::GetNotesById(

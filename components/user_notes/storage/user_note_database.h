@@ -51,6 +51,7 @@ class UserNoteDatabase {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, GetNotesById);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteDatabaseTest, GetNoteMetadataForUrls);
   friend class UserNoteDatabaseTest;
 
   // Initialises internal database if needed.
