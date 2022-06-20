@@ -6629,29 +6629,6 @@
             ]
         }
     ],
-    "PreconnectPriorities": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "StandaloneHighestPriorityQ",
-                    "enable_features": [
-                        "GivePreconnectTasksHighestPriority"
-                    ],
-                    "disable_features": [
-                        "TreatPreconnectAsDefault"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreconnectToSearchDesktop": [
         {
             "platforms": [
