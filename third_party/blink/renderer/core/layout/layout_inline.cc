@@ -410,14 +410,6 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
       style.MayHaveMargin())
     return true;
 
-  // TODO(crbug.com/1008951): This is to force decorating boxes not to be
-  // culled. Probably not sufficient, see |StopPropagateTextDecorations| and
-  // |IsTextDecorationBoundary|. Also better if decorating box can be computed
-  // for culled inline too from the performance perspective.
-  if (RuntimeEnabledFeatures::TextDecoratingBoxEnabled() &&
-      style.GetTextDecorationLine() != TextDecorationLine::kNone)
-    return true;
-
   return ComputeIsAbsoluteContainer(&style) ||
          NGOutlineUtils::HasPaintedOutline(style, GetNode()) ||
          CanBeHitTestTargetPseudoNodeStyle(style);

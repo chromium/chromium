@@ -18,25 +18,35 @@ class ComputedStyle;
 class CORE_EXPORT NGDecoratingBox {
  public:
   NGDecoratingBox(const PhysicalOffset& content_offset_in_container,
-                  const ComputedStyle& style)
+                  const ComputedStyle& style,
+                  const Vector<AppliedTextDecoration>* decorations)
       : content_offset_in_container_(content_offset_in_container),
-        style_(&style) {}
-  NGDecoratingBox(const NGFragmentItem& item, const ComputedStyle& style)
-      : NGDecoratingBox(item.ContentOffsetInContainerFragment(), style) {
-    // DCHECK(inline_box.IsInlineBox());
-    DCHECK_EQ(&item.Style(), &style);
+        style_(&style),
+        decorations_(decorations ? decorations
+                                 : &style.AppliedTextDecorations()) {
+    DCHECK_EQ(&style.AppliedTextDecorations(), decorations_);
   }
+  NGDecoratingBox(const NGFragmentItem& item,
+                  const ComputedStyle& style,
+                  const Vector<AppliedTextDecoration>* decorations)
+      : NGDecoratingBox(item.ContentOffsetInContainerFragment(),
+                        style,
+                        decorations) {}
   explicit NGDecoratingBox(const NGFragmentItem& item)
-      : NGDecoratingBox(item, item.Style()) {}
+      : NGDecoratingBox(item, item.Style(), /* decorations */ nullptr) {}
 
   const PhysicalOffset& ContentOffsetInContainer() const {
     return content_offset_in_container_;
   }
   const ComputedStyle& Style() const { return *style_; }
+  const Vector<AppliedTextDecoration>* AppliedTextDecorations() const {
+    return decorations_;
+  }
 
  private:
   PhysicalOffset content_offset_in_container_;
   const ComputedStyle* style_;
+  const Vector<AppliedTextDecoration>* decorations_;
 };
 
 }  // namespace blink
