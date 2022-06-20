@@ -220,7 +220,47 @@ TEST_F(RestoreIOTaskTest, ValidRestorePathShouldSucceedAndCreateDirectory) {
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
 
-  EXPECT_TRUE(base::PathExists(downloads_dir_.Append("bar")));
+  EXPECT_TRUE(base::PathExists(downloads_dir_.Append("bar").Append("foo.txt")));
+}
+
+TEST_F(RestoreIOTaskTest, ItemWithExistingConflictAreRenamed) {
+  EnsureTrashDirectorySetup(downloads_dir_);
+
+  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+  const base::FilePath trash_path = downloads_dir_.Append(kTrashFolderName);
+  const base::FilePath info_file_path =
+      trash_path.Append(kInfoFolderName).Append("foo.txt.trashinfo");
+  ASSERT_TRUE(base::WriteFile(info_file_path, foo_contents));
+  const base::FilePath files_path =
+      trash_path.Append(kFilesFolderName).Append("foo.txt");
+  ASSERT_TRUE(base::WriteFile(files_path, foo_contents));
+
+  // Create conflicting item at same place restore is going to happen at.
+  const base::FilePath bar_dir = downloads_dir_.Append("bar");
+  ASSERT_TRUE(base::CreateDirectory(bar_dir));
+  ASSERT_TRUE(base::WriteFile(bar_dir.Append("foo.txt"), foo_contents));
+
+  base::RunLoop run_loop;
+  std::vector<storage::FileSystemURL> source_urls = {
+      CreateFileSystemURL(info_file_path),
+  };
+  std::vector<std::string> restore_paths{"/bar/foo.txt"};
+
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  EXPECT_CALL(progress_callback, Run(_)).Times(0);
+  EXPECT_CALL(complete_callback,
+              Run(Field(&ProgressStatus::state, State::kSuccess)))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  RestoreIOTask task(source_urls, restore_paths, profile_.get(),
+                     file_system_context_, temp_dir_.GetPath());
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  run_loop.Run();
+
+  EXPECT_TRUE(base::PathExists(bar_dir.Append("foo.txt")));
+  EXPECT_TRUE(base::PathExists(bar_dir.Append("foo (1).txt")));
 }
 
 }  // namespace

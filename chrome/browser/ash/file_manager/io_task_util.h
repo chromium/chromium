@@ -28,6 +28,14 @@ storage::FileSystemOperationRunner::OperationID StartDeleteOnIOThread(
     const storage::FileSystemURL& file_url,
     storage::FileSystemOperation::StatusCallback status_callback);
 
+// Starts the local move operation via the FileSystemOperationRunner.
+storage::FileSystemOperationRunner::OperationID StartMoveFileLocalOnIOThread(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const storage::FileSystemURL source_url,
+    const storage::FileSystemURL destination_url,
+    storage::FileSystemOperation::CopyOrMoveOptionSet options,
+    storage::FileSystemOperation::StatusCallback callback);
+
 // Helper operator to enable pretty debugging of a `ProgressStatus`.
 // Typical usage in an IOTask might be:
 //   LOG(INFO) << progress_;
