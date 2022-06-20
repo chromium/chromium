@@ -124,6 +124,11 @@ void NGInlinePaintContext::SetLineBox(const NGInlineCursor& line_cursor) {
   offset.top += fragment->Metrics().ascent;
   offset.top -= style.GetFont().PrimaryFont()->GetFontMetrics().FixedAscent();
 
+  // If the block has multiple decorations, all decorations have the same
+  // decorating box, which is a non-existent anonymous inline box that wraps all
+  // the in-flow children. See
+  // https://drafts.csswg.org/css-text-decor-3/#line-decoration, EXAMPLE 1 in
+  // the spec, and crbug.com/855589.
   for (wtf_size_t i = 0; i < applied_text_decorations.size(); ++i)
     decorating_boxes_.emplace_back(offset, style);
 }
