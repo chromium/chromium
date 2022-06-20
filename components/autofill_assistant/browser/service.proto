@@ -140,6 +140,11 @@ message ClientContextProto {
   // The model for semantic dom annotation.
   message AnnotateDomModelContextProto {
     optional int64 model_version = 1;
+
+    // If set to true, serve semantic selectors even if a user is not part of
+    // an official server side experiment. This is used for emulator use cases
+    // that do not necessarily have a signed in user or an account.
+    optional bool force_semantic_selection = 2;
   }
   optional AnnotateDomModelContextProto annotate_dom_model_context = 22;
 

@@ -4,11 +4,13 @@
 
 #include "components/autofill_assistant/browser/client_context.h"
 
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/mock_client.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -138,7 +140,9 @@ TEST_F(ClientContextTest, UpdatesToClientContext) {
   actual_client_context = client_context.AsProto();
   EXPECT_THAT(
       actual_client_context.annotate_dom_model_context().model_version(),
-      123456);
+      Eq(123456));
+  EXPECT_FALSE(actual_client_context.annotate_dom_model_context()
+                   .force_semantic_selection());
 }
 
 TEST_F(ClientContextTest, WindowSizeIsClearedIfNoLongerAvailable) {
@@ -228,6 +232,18 @@ TEST_F(ClientContextTest, UpdateJsFlowLibraryLoaded) {
   EXPECT_EQ(client_context.AsProto().js_flow_library_loaded(), true);
   client_context.UpdateJsFlowLibraryLoaded(false);
   EXPECT_EQ(client_context.AsProto().js_flow_library_loaded(), false);
+}
+
+TEST_F(ClientContextTest, AnnotateDomSwitchForcesSemanticSelection) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kAutofillAssistantAnnotateDom);
+
+  ClientContextImpl client_context(&mock_client_);
+  client_context.UpdateAnnotateDomModelContext(123456);
+
+  auto model_context = client_context.AsProto().annotate_dom_model_context();
+  EXPECT_THAT(model_context.model_version(), Eq(123456));
+  EXPECT_TRUE(model_context.force_semantic_selection());
 }
 
 }  // namespace

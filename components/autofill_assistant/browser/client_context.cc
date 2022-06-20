@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/client_context.h"
+
+#include "base/command_line.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_util.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/version_info/version_info.h"
 
 namespace autofill_assistant {
@@ -87,7 +90,12 @@ void ClientContextImpl::Update(const TriggerContext& trigger_context) {
 }
 
 void ClientContextImpl::UpdateAnnotateDomModelContext(int64_t model_version) {
-  proto_.mutable_annotate_dom_model_context()->set_model_version(model_version);
+  auto* model_context = proto_.mutable_annotate_dom_model_context();
+  model_context->set_model_version(model_version);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAutofillAssistantAnnotateDom)) {
+    model_context->set_force_semantic_selection(true);
+  }
 }
 
 void ClientContextImpl::UpdateJsFlowLibraryLoaded(
