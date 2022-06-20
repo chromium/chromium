@@ -10,11 +10,21 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
+#include "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
 
 namespace autofill {
 
 class AutofillProfile;
 class PersonalDataManager;
+
+// Extend `components` using Autofill's address format extensions. These are
+// used make fields beyond libaddressinput's format available in Autofill's
+// settings UI and import dialogs.
+void ExtendAddressComponents(
+    std::vector<::i18n::addressinput::AddressUiComponent>& components,
+    const std::string& country_code,
+    const ::i18n::addressinput::Localization& localization,
+    bool include_literals);
 
 // |address_components| is a 2D array for the address components in each line.
 // Fills |address_components| with the address UI components that should be used
