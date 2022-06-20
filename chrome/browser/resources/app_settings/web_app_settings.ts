@@ -4,9 +4,9 @@
 
 import './app.js';
 
-export {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+export {App, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 export {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-export {PermissionType, PermissionTypeIndex, TriState} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+export {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 export {AppManagementPermissionItemElement} from 'chrome://resources/cr_components/app_management/permission_item.js';
 export {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 export {AppManagementRunOnOsLoginItemElement} from 'chrome://resources/cr_components/app_management/run_on_os_login_item.js';

@@ -95,9 +95,9 @@ import './os_toolbar/os_toolbar.js';
 import './parental_controls_page/parental_controls_page.js';
 import './settings_scheduler_slider/settings_scheduler_slider.js';
 
+export {PermissionType, TriState} from '//resources/cr_components/app_management/app_management.mojom-webui.js';
 export {BrowserProxy as AppManagementComponentBrowserProxy} from '//resources/cr_components/app_management/browser_proxy.js';
 export {PageType, WindowMode} from '//resources/cr_components/app_management/constants.js';
-export {PermissionType, TriState} from '//resources/cr_components/app_management/permission_constants.js';
 export {createBoolPermission, createTriStatePermission, getBoolPermissionValue, isBoolValue} from '//resources/cr_components/app_management/permission_util.js';
 export {convertOptionalBoolToBool, createEmptyState, createInitialState, getPermissionValueBool} from '//resources/cr_components/app_management/util.js';
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';

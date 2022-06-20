@@ -5,7 +5,7 @@
 import './app_management_shared_style.css.js';
 import './toggle_row.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {App} from './app_management.mojom-webui.js';
@@ -14,6 +14,25 @@ import {AppManagementUserAction, RunOnOsLoginMode} from './constants.js';
 import {getTemplate} from './run_on_os_login_item.html.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
 import {recordAppManagementUserAction} from './util.js';
+
+function convertModeToBoolean(runOnOsLoginMode: RunOnOsLoginMode): boolean {
+  switch (runOnOsLoginMode) {
+    case RunOnOsLoginMode.kNotRun:
+      return false;
+    case RunOnOsLoginMode.kWindowed:
+      return true;
+    default:
+      assertNotReached();
+  }
+}
+
+function getRunOnOsLoginModeBoolean(runOnOsLoginMode: RunOnOsLoginMode):
+    boolean {
+  assert(
+      runOnOsLoginMode !== RunOnOsLoginMode.kUnknown,
+      'Run on OS Login Mode is not set');
+  return convertModeToBoolean(runOnOsLoginMode);
+}
 
 export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
   static get is() {
@@ -32,7 +51,7 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
     };
   }
 
-  loginModeLabel: String;
+  loginModeLabel: string;
   app: App;
 
   override ready() {
@@ -41,30 +60,20 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
     this.addEventListener('change', this.toggleOsLoginMode_);
   }
 
-  private isManaged_(app: App): boolean {
-    if (app === undefined) {
-      return false;
-    }
-    assert(app);
-
-    const loginData = app.runOnOsLogin;
+  private isManaged_(): boolean {
+    const loginData = this.app.runOnOsLogin;
     if (loginData) {
       return loginData.isManaged;
     }
     return false;
   }
 
-  private getValue_(app: App): boolean {
-    if (app === undefined) {
-      return false;
-    }
-    assert(app);
-
-    const loginMode = this.getRunOnOsLoginMode(app);
+  private getValue_(): boolean {
+    const loginMode = this.getRunOnOsLoginMode();
     assert(loginMode);
 
     if (loginMode) {
-      return this.getRunOnOsLoginModeBoolean(loginMode);
+      return getRunOnOsLoginModeBoolean(loginMode);
     }
     return false;
   }
@@ -91,7 +100,7 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
           newRunOnOsLoginMode,
       );
       const booleanRunOnOsLoginMode =
-          this.getRunOnOsLoginModeBoolean(newRunOnOsLoginMode);
+          getRunOnOsLoginModeBoolean(newRunOnOsLoginMode);
       const runOnOsLoginModeChangeAction = booleanRunOnOsLoginMode ?
           AppManagementUserAction.RUN_ON_OS_LOGIN_MODE_TURNED_ON :
           AppManagementUserAction.RUN_ON_OS_LOGIN_MODE_TURNED_OFF;
@@ -99,31 +108,11 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
     }
   }
 
-  private getRunOnOsLoginMode(app: App): RunOnOsLoginMode|null {
-    if (app.runOnOsLogin) {
-      return app.runOnOsLogin.loginMode;
+  private getRunOnOsLoginMode(): RunOnOsLoginMode|null {
+    if (this.app.runOnOsLogin) {
+      return this.app.runOnOsLogin.loginMode;
     }
     return null;
-  }
-
-  private convertModeToBoolean(runOnOsLoginMode: RunOnOsLoginMode): boolean {
-    switch (runOnOsLoginMode) {
-      case RunOnOsLoginMode.kNotRun:
-        return false;
-      case RunOnOsLoginMode.kWindowed:
-        return true;
-      default:
-        assertNotReached();
-        return false;
-    }
-  }
-
-  private getRunOnOsLoginModeBoolean(runOnOsLoginMode: RunOnOsLoginMode):
-      boolean {
-    assert(
-        runOnOsLoginMode !== RunOnOsLoginMode.kUnknown,
-        'Run on OS Login Mode is not set');
-    return this.convertModeToBoolean(runOnOsLoginMode);
   }
 }
 

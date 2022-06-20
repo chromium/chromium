@@ -5,7 +5,7 @@
 import './app_management_shared_style.css.js';
 import './toggle_row.js';
 
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -123,7 +123,9 @@ export class AppManagementFileHandlingItemElement extends
 
   private onDialogClose_(): void {
     this.showOverflowDialog = false;
-    focusWithoutInk(assert(this.shadowRoot!.querySelector('#type-list')!));
+    const toFocus = this.shadowRoot!.querySelector('#type-list');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   private getValue_(app: App): boolean {

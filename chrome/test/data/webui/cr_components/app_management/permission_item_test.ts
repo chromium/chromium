@@ -5,9 +5,9 @@
 /** @fileoverview Test suite for app-manageemnt-permission-item. */
 import 'chrome://resources/cr_components/app_management/permission_item.js';
 
+import {TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
-import {TriState} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {AppManagementPermissionItemElement} from 'chrome://resources/cr_components/app_management/permission_item.js';
 import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';

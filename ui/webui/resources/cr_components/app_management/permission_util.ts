@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {Permission} from './app_management.mojom-webui.js';
-import {PermissionType, PermissionValue, TriState} from './permission_constants.js';
+import {Permission, PermissionType, PermissionValue, TriState} from './app_management.mojom-webui.js';
 
 export function createPermission(
     permissionType: PermissionType, value: PermissionValue,
@@ -65,10 +64,11 @@ export function createTriStatePermission(
 export function isPermissionEnabled(permissionValue: PermissionValue): boolean {
   if (isBoolValue(permissionValue)) {
     return getBoolPermissionValue(permissionValue)!;
-  } else if (isTriStateValue(permissionValue)) {
-    return getTriStatePermissionValue(permissionValue) === TriState.kAllow;
-  } else {
-    assertNotReached();
-    return false;
   }
+
+  if (isTriStateValue(permissionValue)) {
+    return getTriStatePermissionValue(permissionValue) === TriState.kAllow;
+  }
+
+  assertNotReached();
 }
