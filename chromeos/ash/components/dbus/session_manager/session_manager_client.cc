@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -28,12 +28,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/components/dbus/login_manager/arc.pb.h"
+#include "chromeos/ash/components/dbus/login_manager/login_screen_storage.pb.h"
+#include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/common/blocking_method_caller.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/login_manager/arc.pb.h"
-#include "chromeos/dbus/login_manager/login_screen_storage.pb.h"
-#include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

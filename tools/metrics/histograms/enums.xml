@@ -31897,7 +31897,7 @@ Called by update_document_policy_enum.py.-->
   <summary>
     Status codes produced by SessionManagerClient for policy retrieval requests.
     Corresponds to RetrievePolicyResponseType in
-    chromeos/dbus/session_manager_client.h.
+    chromeos/ash/components/dbus/session_manager_client.h.
   </summary>
   <int value="0" label="Other type of error on retrieve policy request"/>
   <int value="1" label="Success"/>

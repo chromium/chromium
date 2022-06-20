@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
+#include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"

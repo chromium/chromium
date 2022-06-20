@@ -21,8 +21,8 @@ component("authpolicy") {
 
     # For FakeAuthPolicyClient
     "//ash/components/tpm",
+    "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
-    "//chromeos/dbus/session_manager",
     "//components/policy:cloud_policy_proto_generated_compile",
   ]
 

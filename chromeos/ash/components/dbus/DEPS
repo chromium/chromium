@@ -6,6 +6,7 @@ include_rules = [
   "+components/account_id/account_id.h",
   "+components/policy/proto",
   "+dbus",
+  "+crypto",
   "+testing",
   "+third_party/cros_system_api",
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 
 #include <utility>
 
@@ -24,9 +24,9 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
-#include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/sha2.h"

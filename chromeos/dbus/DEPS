@@ -5,7 +5,6 @@ include_rules = [
   # Please do not add any chromeos/ dependencies here: https://crbug.com/863439
   "+components/device_event_log",
   "+components/policy/proto",
-  "+crypto",
   "+dbus",
   "+net",
   "+testing",

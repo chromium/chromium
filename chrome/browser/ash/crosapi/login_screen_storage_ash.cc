@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
 
 #include "chrome/common/extensions/api/login_screen_storage.h"
+#include "chromeos/ash/components/dbus/login_manager/login_screen_storage.pb.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
-#include "chromeos/dbus/login_manager/login_screen_storage.pb.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace crosapi {

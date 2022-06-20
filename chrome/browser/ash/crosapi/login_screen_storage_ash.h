@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_LOGIN_SCREEN_STORAGE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_LOGIN_SCREEN_STORAGE_ASH_H_
 
+#include "chromeos/ash/components/dbus/login_manager/login_screen_storage.pb.h"
 #include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
-#include "chromeos/dbus/login_manager/login_screen_storage.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 

@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_CROSAPI_IDLE_SERVICE_ASH_H_
 
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/crosapi/mojom/idle_service.mojom.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/base/user_activity/user_activity_observer.h"

@@ -6,7 +6,7 @@
 
 #include "ash/components/arc/session/arc_container_client_adapter.h"
 #include "base/callback_helpers.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

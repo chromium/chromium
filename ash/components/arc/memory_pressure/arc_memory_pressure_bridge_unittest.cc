@@ -19,7 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace arc {
