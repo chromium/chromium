@@ -281,7 +281,13 @@ IN_PROC_BROWSER_TEST_F(ResetTest, ShowAndCancelMultipleTimes) {
   EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
 }
 
-IN_PROC_BROWSER_TEST_F(ResetTest, RestartBeforePowerwash) {
+// TODO(https://crbug.com/1337714): Flaky.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RestartBeforePowerwash DISABLED_RestartBeforePowerwash
+#else
+#define MAYBE_RestartBeforePowerwash RestartBeforePowerwash
+#endif
+IN_PROC_BROWSER_TEST_F(ResetTest, MAYBE_RestartBeforePowerwash) {
   EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   PrefService* prefs = g_browser_process->local_state();
 
