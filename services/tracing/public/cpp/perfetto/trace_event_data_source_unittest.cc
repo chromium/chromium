@@ -267,7 +267,7 @@ class TraceEventDataSourceTest
 
   const perfetto::protos::TracePacket* GetFinalizedPacket(size_t packet_index) {
     auto& packets = GetFinalizedPackets();
-    EXPECT_GT(packets.size(), packet_index);
+    CHECK(packet_index < packets.size());
     return packets.at(packet_index).get();
   }
 
@@ -345,15 +345,12 @@ class TraceEventDataSourceTest
         packet->trace_packet_defaults().track_event_defaults().track_uuid(),
         0u);
 
-    // TODO(skyostil): Add support for thread ticks.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     if (base::ThreadTicks::IsSupported()) {
       EXPECT_GT(packet->trace_packet_defaults()
                     .track_event_defaults()
                     .extra_counter_track_uuids_size(),
                 0);
     }
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
     default_track_uuid_ =
         packet->trace_packet_defaults().track_event_defaults().track_uuid();
@@ -457,10 +454,7 @@ class TraceEventDataSourceTest
 
     EXPECT_EQ(packet->track_descriptor().counter().type(),
               perfetto::protos::CounterDescriptor::COUNTER_THREAD_TIME_NS);
-    // TODO(mohitms): Support/enable microsecond thread time counters.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     EXPECT_EQ(packet->track_descriptor().counter().unit_multiplier(), 1000u);
-#endif
   }
 
   void ExpectProcessTrack(const perfetto::protos::TracePacket* packet,
@@ -1610,8 +1604,8 @@ TEST_F(TraceEventDataSourceTest, UpdateDurationOfCompleteEvent) {
       /*absolute_timestamp=*/10, /*tid_override=*/0);
 }
 
+// TODO(b/236578755)
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-// TODO(skyostil): Add support for thread time.
 #define MAYBE_ExplicitThreadTimeForDifferentThread \
   DISABLED_ExplicitThreadTimeForDifferentThread
 #else
