@@ -552,8 +552,14 @@ INSTANTIATE_TEST_SUITE_P(
 // whether the browser is running with software compositing or GPU-accelerated
 // compositing, whether the WebContents is visible/hidden or occluded/unoccluded
 // and whether the main document contains a cross-site iframe.
+// Flaky on Mac https://crbug.com/1337765.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
+#else
+#define MAYBE_CapturesContentChanges CapturesContentChanges
+#endif
 IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
-                       CapturesContentChanges) {
+                       MAYBE_CapturesContentChanges) {
   media::VideoPixelFormat specified_format = GetVideoPixelFormat();
   media::VideoPixelFormat expected_format = specified_format;
   if (specified_format == media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
