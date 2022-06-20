@@ -1344,6 +1344,10 @@ void ChromeContentRendererClient::PostCompositorThreadCreated(
       FROM_HERE,
       base::BindOnce(&ThreadProfiler::StartOnChildThread,
                      metrics::CallStackProfileParams::Thread::kCompositor));
+  // Enable stack sampling for tracing.
+  compositor_thread_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&tracing::TracingSamplerProfiler::CreateOnChildThread));
 }
 
 bool ChromeContentRendererClient::RunIdleHandlerWhenWidgetsHidden() {
