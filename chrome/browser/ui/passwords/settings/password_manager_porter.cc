@@ -113,9 +113,11 @@ void PasswordImportConsumer::ConsumePassword(
 }  // namespace
 
 PasswordManagerPorter::PasswordManagerPorter(
+    Profile* profile,
     password_manager::SavedPasswordsPresenter* presenter,
     ProgressCallback on_export_progress_callback)
-    : presenter_(presenter),
+    : profile_(profile),
+      presenter_(presenter),
       on_export_progress_callback_(on_export_progress_callback) {}
 
 PasswordManagerPorter::~PasswordManagerPorter() = default;
@@ -162,13 +164,6 @@ void PasswordManagerPorter::Import(content::WebContents* web_contents) {
                       PasswordManagerPorter::Type::PASSWORD_IMPORT);
 }
 
-void PasswordManagerPorter::ImportPasswordsFromPathForTesting(
-    const base::FilePath& path,
-    Profile* profile) {
-  base::AutoReset<Profile*> reset(&profile_, profile);
-  ImportPasswordsFromPath(path);
-}
-
 void PasswordManagerPorter::PresentFileSelector(
     content::WebContents* web_contents,
     Type type) {
@@ -180,7 +175,6 @@ void PasswordManagerPorter::PresentFileSelector(
     return;
 
   DCHECK(web_contents);
-  profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   // Get the default file extension for password files.
   ui::SelectFileDialog::FileTypeInfo file_type_info;

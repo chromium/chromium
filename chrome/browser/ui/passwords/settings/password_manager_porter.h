@@ -32,10 +32,12 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
       base::RepeatingCallback<void(password_manager::ExportProgressStatus,
                                    const std::string&)>;
 
+  // |profile| for which credentials to be importerd.
   // |presenter| provides the credentials which can be exported.
   // |on_export_progress_callback| will be called with updates to the progress
   // of exporting.
-  PasswordManagerPorter(password_manager::SavedPasswordsPresenter* presenter,
+  PasswordManagerPorter(Profile* profile,
+                        password_manager::SavedPasswordsPresenter* presenter,
                         ProgressCallback on_export_progress_callback);
 
   PasswordManagerPorter(const PasswordManagerPorter&) = delete;
@@ -55,12 +57,6 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
 
   // Triggers passwords import flow for the given |web_contents|.
   void Import(content::WebContents* web_contents);
-
-  // ImportPasswordsFromPathForTesting allows tests to call
-  // ImportPasswordsFromPath without the need to trigger UI with file choosers.
-  // It also allows to inject a testing profile.
-  void ImportPasswordsFromPathForTesting(const base::FilePath& path,
-                                         Profile* profile);
 
  private:
   enum Type {
@@ -86,7 +82,7 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
 
   std::unique_ptr<password_manager::PasswordManagerExporter> exporter_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  Profile* profile_ = nullptr;
+  Profile* profile_;
 
   // We store |presenter_| and
   // |on_export_progress_callback_| to use them to create a new

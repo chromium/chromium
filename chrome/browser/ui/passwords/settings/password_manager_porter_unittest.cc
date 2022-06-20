@@ -165,7 +165,7 @@ class FakeCancellingSelectFileDialogFactory
 class TestPasswordManagerPorter : public PasswordManagerPorter {
  public:
   TestPasswordManagerPorter()
-      : PasswordManagerPorter(nullptr, ProgressCallback()) {}
+      : PasswordManagerPorter(nullptr, nullptr, ProgressCallback()) {}
 
   TestPasswordManagerPorter(const TestPasswordManagerPorter&) = delete;
   TestPasswordManagerPorter& operator=(const TestPasswordManagerPorter&) =
@@ -242,7 +242,7 @@ TEST_F(PasswordManagerPorterTest, PasswordImport) {
 }
 
 TEST_F(PasswordManagerPorterTest, PasswordExport) {
-  PasswordManagerPorter porter(nullptr,
+  PasswordManagerPorter porter(/* profile */ nullptr, /* presenter */ nullptr,
                                PasswordManagerPorter::ProgressCallback());
   std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter_ =
       std::make_unique<StrictMock<MockPasswordManagerExporter>>();
@@ -259,7 +259,7 @@ TEST_F(PasswordManagerPorterTest, CancelExportFileSelection) {
 
   std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter_ =
       std::make_unique<StrictMock<MockPasswordManagerExporter>>();
-  PasswordManagerPorter porter(nullptr,
+  PasswordManagerPorter porter(/* profile */ nullptr, /* presenter */ nullptr,
                                PasswordManagerPorter::ProgressCallback());
 
   EXPECT_CALL(*mock_password_manager_exporter_, PreparePasswordsForExport());
@@ -272,7 +272,7 @@ TEST_F(PasswordManagerPorterTest, CancelExportFileSelection) {
 TEST_F(PasswordManagerPorterTest, CancelExport) {
   std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter_ =
       std::make_unique<StrictMock<MockPasswordManagerExporter>>();
-  PasswordManagerPorter porter(nullptr,
+  PasswordManagerPorter porter(/* profile */ nullptr, /* presenter */ nullptr,
                                PasswordManagerPorter::ProgressCallback());
 
   EXPECT_CALL(*mock_password_manager_exporter_, PreparePasswordsForExport());
@@ -335,9 +335,12 @@ TEST_P(PasswordManagerPorterStoreTest, Import) {
   // No credential provider needed, because this |porter| won't be used for
   // exporting. No progress callback needed, because UI interaction will be
   // skipped.
-  PasswordManagerPorter porter(/*credential_provider_interface=*/nullptr,
+  PasswordManagerPorter porter(profile.get(),
+                               /*presenter=*/nullptr,
                                PasswordManagerPorter::ProgressCallback());
-  porter.ImportPasswordsFromPathForTesting(temp_file_path, profile.get());
+  ui::SelectFileDialog::SetFactory(
+      new TestSelectFileDialogFactory(temp_file_path));
+  porter.Import(web_contents());
   base::RunLoop().RunUntilIdle();
   if (tc.descriptions.empty()) {
     EXPECT_THAT(test_password_store->stored_passwords(), IsEmpty());
