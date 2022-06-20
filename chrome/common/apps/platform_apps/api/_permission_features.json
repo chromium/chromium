@@ -32,6 +32,14 @@
     "extension_types": ["extension"],
     "location": "policy",
     "platforms": ["chromeos", "lacros"]
+  }, {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "location": "policy",
+    "platforms": ["chromeos", "lacros"],
+    "allowlist": [
+      "0962FDCCF4987E36619F5BDA0A8ED4CE78E6AC34"  // Mercury V-Launcher
+    ]
   }],
   "firstRunPrivate": {
     "channel": "stable",
