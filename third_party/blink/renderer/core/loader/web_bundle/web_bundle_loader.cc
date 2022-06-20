@@ -32,13 +32,10 @@ WebBundleLoader::WebBundleLoader(
       receivers_(this, document.GetExecutionContext()) {
   ResourceRequest request(url);
   request.SetUseStreamOnResponse(true);
-  // TODO(crbug.com/1082020): Revisit these once the fetch and process the
-  // linked resource algorithm [1] for <link rel=webbundle> is defined.
-  // [1]
-  // https://html.spec.whatwg.org/multipage/semantics.html#fetch-and-process-the-linked-resource
   request.SetRequestContext(
       mojom::blink::RequestContextType::SUBRESOURCE_WEBBUNDLE);
 
+  // Spec:
   // https://github.com/WICG/webpackage/blob/main/explainers/subresource-loading.md#requests-mode-and-credentials-mode
   request.SetMode(network::mojom::blink::RequestMode::kCors);
   request.SetCredentialsMode(credentials_mode);
