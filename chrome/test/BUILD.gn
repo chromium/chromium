@@ -1188,6 +1188,7 @@ if (!is_android) {
       "//chrome/browser:theme_properties",
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/apps/app_service:test_support",
+      "//chrome/browser/ash/system_web_apps:browser_tests",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/breadcrumbs:browser_tests",
       "//chrome/browser/browsing_data:constants",
@@ -4450,6 +4451,7 @@ if (!is_android) {
 
       # TODO(crbug.com/1278123): Enable once PWAs are supported.
       deps -= [
+        "//chrome/browser/ash/system_web_apps:browser_tests",
         "//chrome/browser/web_applications:browser_tests",
         "//chrome/browser/web_applications:browser_tests_base",
       ]

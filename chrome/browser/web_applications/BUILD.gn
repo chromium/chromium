@@ -684,10 +684,7 @@ source_set("browser_tests") {
   }
 
   if (is_chromeos) {
-    sources += [
-      "policy/web_app_policy_manager_browsertest.cc",
-      "system_web_apps/test/system_web_app_manager_browsertest.cc",
-    ]
+    sources += [ "policy/web_app_policy_manager_browsertest.cc" ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -698,42 +695,18 @@ source_set("browser_tests") {
     ":web_applications_test_support",
     "adjustments:adjustments_browser_tests",
     "//base",
-    "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service:test_support",
-    "//chrome/browser/ash/system_web_apps/types:types",
-    "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/web_applications/extensions",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
-    "//components/permissions:permissions",
-    "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:app_update",
-    "//components/services/app_service/public/cpp:icon_types",
-    "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/cpp:protocol_handling",
-    "//components/services/app_service/public/cpp:run_on_os_login",
-    "//components/services/app_service/public/cpp:types",
     "//components/webapps/browser",
     "//components/webapps/services/web_app_origin_association/test:test_support",
-    "//extensions/browser:test_support",
-    "//net:test_support",
-    "//third_party/blink/public/common",
-    "//ui/base/idle:idle",
-    "//ui/base/idle:test_support",
     "//ui/events/devices:test_support",
     "//url",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash:test_support",
-      "//chrome/browser/ash",
-      "//chrome/browser/ui",
-    ]
-  }
 }
 
 source_set("interactive_ui_tests") {
