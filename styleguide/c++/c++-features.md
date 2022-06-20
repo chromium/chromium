@@ -38,6 +38,7 @@ The current status of existing standards and Abseil features is:
     features below
     *   absl::StatusOr: Initially supported September 3, 2020
     *   absl::Cleanup: Initially supported February 4, 2021
+    *   absl::AnyInvocable: Initially supported June 20, 2022
 
 [TOC]
 
@@ -1795,6 +1796,23 @@ Banned due to only working with 8-bit characters. Keep using
 The following Abseil library features are not allowed in the Chromium codebase.
 See the top of this page on how to propose moving a feature from this list into
 the allowed or banned sections.
+
+### AnyInvocable <sup>[tbd]</sup>
+
+```c++
+absl::AnyInvocable
+```
+
+**Description:** An equivalent of the C++23 std::move_only_function.
+
+**Documentation:**
+*   [any_invocable.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/functional/any_invocable.h)
+*   [std::move_only_function](https://en.cppreference.com/w/cpp/utility/functional/move_only_function/move_only_function)
+
+**Notes:**
+*** promo
+Overlaps with `base::RepeatingCallback`, `base::OnceCallback`.
+***
 
 ### bind_front <sup>[tbd]</sup>
 
