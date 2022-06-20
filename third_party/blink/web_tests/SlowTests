@@ -94,6 +94,7 @@ crbug.com/1327867 http/tests/inspector-protocol/network/initiator-minified.js [ 
 crbug.com/1325514 http/tests/inspector-protocol/network/cookies-protocol-test.js [ Slow ]
 crbug.com/1280882 http/tests/inspector-protocol/network/cors-errors.js [ Slow ]
 crbug.com/1289238 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-navigation-context-downgrade.js [ Slow ]
+crbug.com/1300352 http/tests/inspector-protocol/network/blocked-cookie-not-on-path.js [ Slow ]
 
 crbug.com/510337 cssom/cssvalue-comparison.html [ Slow ]
 
