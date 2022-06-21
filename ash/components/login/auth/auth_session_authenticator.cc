@@ -15,6 +15,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
@@ -603,10 +605,12 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
     case user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_DENIED:
     case user_data_auth::CRYPTOHOME_ERROR_KEY_LABEL_EXISTS:
     case user_data_auth::CRYPTOHOME_ERROR_UPDATE_SIGNATURE_INVALID:
+    case user_data_auth::CRYPTOHOME_ERROR_UNKNOWN_LEGACY:
       // Assumptions about key are not correct
       error.failure_reason = default_error;
       break;
     case user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN:
+    case user_data_auth::CRYPTOHOME_ERROR_UNAUTHENTICATED_AUTH_SESSION:
       // Auth session expired, might need to handle it separately later.
       error.failure_reason = default_error;
       break;
@@ -630,6 +634,7 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
       error.failure_reason = AuthFailure::TPM_UPDATE_REQUIRED;
       break;
     case user_data_auth::CRYPTOHOME_ERROR_VAULT_UNRECOVERABLE:
+    case user_data_auth::CRYPTOHOME_ERROR_UNUSABLE_VAULT:
       error.failure_reason = AuthFailure::UNRECOVERABLE_CRYPTOHOME;
       break;
     case user_data_auth::CryptohomeErrorCode_INT_MIN_SENTINEL_DO_NOT_USE_:
@@ -665,7 +670,13 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
     return;
   }
   bool handled = ResolveCryptohomeError(default_error, error);
-  CHECK(handled);
+  if (!handled) {
+    NOTREACHED() << "Unhandled cryptohome error: " << error.error_code;
+    SCOPED_CRASH_KEY_NUMBER("Cryptohome", "error_code", error.error_code);
+    base::debug::DumpWithoutCrashing();
+    error.failure_reason = default_error;
+  }
+
   NotifyFailure(error.failure_reason, std::move(context));
 }
 
