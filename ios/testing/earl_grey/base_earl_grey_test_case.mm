@@ -87,9 +87,11 @@ bool g_needs_set_up_for_test_case = true;
   // The same screen object is shared across multiple test runs on IOS build.
   // Make sure that all display observers are removed at the end of each
   // test.
-  display::ScreenBase* screen =
-      static_cast<display::ScreenBase*>(display::Screen::GetScreen());
-  DCHECK(!screen->HasDisplayObservers());
+  if (display::Screen::HasScreen()) {
+    display::ScreenBase* screen =
+        static_cast<display::ScreenBase*>(display::Screen::GetScreen());
+    DCHECK(!screen->HasDisplayObservers());
+  }
 #endif
   if ([[AppLaunchManager sharedManager] appIsLaunched]) {
     [CoverageUtils writeClangCoverageProfile];
