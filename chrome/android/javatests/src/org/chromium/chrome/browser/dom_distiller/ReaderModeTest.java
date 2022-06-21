@@ -186,6 +186,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.READER_MODE_IN_CCT, ChromeFeatureList.CCT_INCOGNITO})
+    @DisabledTest(message = "https://crbug.com/1338273")
     public void testCloseAllIncognitoNotification_ClosesCCT()
             throws PendingIntent.CanceledException, TimeoutException {
         CustomTabActivity customTabActivity = openReaderModeInIncognitoCCT();
