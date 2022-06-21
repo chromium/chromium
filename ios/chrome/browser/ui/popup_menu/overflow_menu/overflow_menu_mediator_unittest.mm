@@ -31,6 +31,7 @@
 #include "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
@@ -139,11 +140,17 @@ class OverflowMenuMediatorTest : public PlatformTest {
     return mediator_;
   }
 
-  void CreatePrefs() {
-    prefs_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs_->registry()->RegisterBooleanPref(
+  void CreateBrowserStatePrefs() {
+    browserStatePrefs_ = std::make_unique<TestingPrefServiceSimple>();
+    browserStatePrefs_->registry()->RegisterBooleanPref(
         bookmarks::prefs::kEditBookmarksEnabled,
         /*default_value=*/true);
+  }
+
+  void CreateLocalStatePrefs() {
+    localStatePrefs_ = std::make_unique<TestingPrefServiceSimple>();
+    localStatePrefs_->registry()->RegisterDictionaryPref(
+        prefs::kOverflowMenuDestinationUsageHistory, PrefRegistry::LOSSY_PREF);
   }
 
   void SetUpBookmarks() {
@@ -223,7 +230,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
   FakeOverlayPresentationContext presentation_context_;
   OverflowMenuMediator* mediator_;
   BookmarkModel* bookmark_model_;
-  std::unique_ptr<TestingPrefServiceSimple> prefs_;
+  std::unique_ptr<TestingPrefServiceSimple> browserStatePrefs_;
+  std::unique_ptr<TestingPrefServiceSimple> localStatePrefs_;
   web::FakeWebState* web_state_;
   std::unique_ptr<web::NavigationItem> navigation_item_;
   UIViewController* baseViewController_;
@@ -249,7 +257,10 @@ TEST_F(OverflowMenuMediatorTest, TestFeatureEngagementDisconnect) {
 // Tests that the mediator is returning the right number of items and sections
 // for the Tools Menu type.
 TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
+  CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
+  mediator_.localStatePrefs = localStatePrefs_.get();
+
   NSUInteger number_of_action_items = 5;
   if (ios::provider::IsTextZoomEnabled()) {
     number_of_action_items++;
@@ -287,9 +298,11 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
 // Tests that the items returned by the mediator are correctly enabled on a
 // WebPage.
 TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnWebPage) {
+  CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
+  mediator_.localStatePrefs = localStatePrefs_.get();
 
   // Force creation of the model.
   [mediator_ overflowMenuModel];
@@ -304,9 +317,11 @@ TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnWebPage) {
 // Tests that the items returned by the mediator are correctly enabled on the
 // NTP.
 TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnNTP) {
+  CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
+  mediator_.localStatePrefs = localStatePrefs_.get();
 
   // Force creation of the model.
   [mediator_ overflowMenuModel];
@@ -324,13 +339,13 @@ TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnNTP) {
 TEST_F(OverflowMenuMediatorTest, TestReadLaterDisabled) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
-  CreatePrefs();
+  CreateBrowserStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       browser_.get(), OverlayModality::kWebContentArea);
-  mediator_.browserStatePrefs = prefs_.get();
+  mediator_.browserStatePrefs = browserStatePrefs_.get();
 
   // Force creation of the model.
   [mediator_ overflowMenuModel];
@@ -430,12 +445,12 @@ TEST_F(OverflowMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   SetUpActiveWebState();
 
   CreateMediator(/*is_incognito=*/NO);
-  CreatePrefs();
+  CreateBrowserStatePrefs();
   SetUpBookmarks();
   bookmarks::AddIfNotBookmarked(bookmark_model_, bookmarkedURL,
                                 base::SysNSStringToUTF16(@"Test bookmark"));
   mediator_.webStateList = browser_->GetWebStateList();
-  mediator_.browserStatePrefs = prefs_.get();
+  mediator_.browserStatePrefs = browserStatePrefs_.get();
 
   // Force creation of the model.
   [mediator_ overflowMenuModel];
@@ -463,15 +478,16 @@ TEST_F(OverflowMenuMediatorTest, TestDisableBookmarksButton) {
   SetUpActiveWebState();
 
   CreateMediator(/*is_incognito=*/NO);
-  CreatePrefs();
+  CreateBrowserStatePrefs();
   mediator_.webStateList = browser_->GetWebStateList();
-  mediator_.browserStatePrefs = prefs_.get();
+  mediator_.browserStatePrefs = browserStatePrefs_.get();
 
   // Force creation of the model.
   [mediator_ overflowMenuModel];
 
   EXPECT_TRUE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
 
-  prefs_->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, false);
+  browserStatePrefs_->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled,
+                                 false);
   EXPECT_TRUE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/NO));
 }
