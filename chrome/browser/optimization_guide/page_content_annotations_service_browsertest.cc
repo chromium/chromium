@@ -731,8 +731,16 @@ class PageContentAnnotationsServiceNoHistoryTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Flaky on Linux Tests (dbg): crbug.com/1338040
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_ModelExecutesButDoesntWriteToHistory \
+  DISABLED_ModelExecutesButDoesntWriteToHistory
+#else
+#define MAYBE_ModelExecutesButDoesntWriteToHistory \
+  ModelExecutesButDoesntWriteToHistory
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
-                       ModelExecutesButDoesntWriteToHistory) {
+                       MAYBE_ModelExecutesButDoesntWriteToHistory) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
