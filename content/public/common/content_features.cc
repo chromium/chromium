@@ -99,7 +99,7 @@ const base::Feature kBackForwardCacheMediaSessionService{
 // Enable back/forward cache for screen reader users. This flag should be
 // removed once the https://crbug.com/1271450 is resolved.
 const base::Feature kEnableBackForwardCacheForScreenReader{
-    "EnableBackForwardCacheForScreenReader", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableBackForwardCacheForScreenReader", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // BackForwardCache is disabled on low memory devices. The threshold is defined
 // via a field trial param: "memory_threshold_for_back_forward_cache_in_mb"
