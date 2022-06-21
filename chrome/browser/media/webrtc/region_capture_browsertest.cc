@@ -416,8 +416,6 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, CropToAllowedToUncrop) {
             "top-level-crop-success");
 }
 
-// TODO(crbug.com/1333319): Align implementation and specification.
-// This is discussed in: https://github.com/w3c/mediacapture-region/issues/60
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
                        CropToForUncroppingAllowedOnUncroppedTracks) {
   SetUpTest(Frame::kTopLevelDocument, /*self_capture=*/true);
