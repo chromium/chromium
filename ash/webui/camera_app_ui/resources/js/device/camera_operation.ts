@@ -8,6 +8,7 @@ import {
   assertString,
 } from '../assert.js';
 import * as error from '../error.js';
+import * as expert from '../expert.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
 import {
@@ -156,7 +157,8 @@ class Reconfigurer {
                 r !== null && (maxR === null || r.area > maxR.area) ? r : maxR);
         for (const c of candidates) {
           const videoSnapshotResolution =
-              state.get(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT) ?
+              expert.isEnabled(
+                  expert.ExpertOption.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT) ?
               maxResolution :
               c.resolution;
           for (const constraints of c.getStreamConstraintsCandidates()) {

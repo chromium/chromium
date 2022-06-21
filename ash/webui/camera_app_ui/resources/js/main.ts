@@ -11,6 +11,7 @@ import {CameraManager} from './device/index.js';
 import {ModeConstraints} from './device/type.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
+import * as expert from './expert.js';
 import {GalleryButton} from './gallerybutton.js';
 import {I18nString} from './i18n_string.js';
 import {Intent} from './intent.js';
@@ -427,7 +428,7 @@ let instance: App|null = null;
     metrics.sendPerfEvent({event, duration, perfInfo});
 
     // Setup for console perf logger.
-    if (state.get(state.State.PRINT_PERFORMANCE_LOGS)) {
+    if (expert.isEnabled(expert.ExpertOption.PRINT_PERFORMANCE_LOGS)) {
       // eslint-disable-next-line no-console
       console.log(
           '%c%s %s ms %s', 'color: #4E4F97; font-weight: bold;',

@@ -19,6 +19,7 @@ import {
 } from '../device/index.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
+import * as expert from '../expert.js';
 import {Point} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
 import * as metrics from '../metrics.js';
@@ -264,15 +265,15 @@ export class Camera extends View implements CameraViewUI {
    * Initializes camera view.
    */
   async initialize(): Promise<void> {
-    state.addObserver(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT, () => {
-      this.cameraManager.reconfigure();
-    });
-    state.addObserver(state.State.ENABLE_MULTISTREAM_RECORDING, () => {
-      this.cameraManager.reconfigure();
-    });
-    state.addObserver(state.State.ENABLE_PTZ_FOR_BUILTIN, () => {
-      this.cameraManager.reconfigure();
-    });
+    expert.addObserver(
+        expert.ExpertOption.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT,
+        () => this.cameraManager.reconfigure());
+    expert.addObserver(
+        expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING,
+        () => this.cameraManager.reconfigure());
+    expert.addObserver(
+        expert.ExpertOption.ENABLE_PTZ_FOR_BUILTIN,
+        () => this.cameraManager.reconfigure());
 
     this.initVideoEncoderOptions();
     await this.initScanMode();

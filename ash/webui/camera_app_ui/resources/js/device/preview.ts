@@ -5,6 +5,7 @@
 import {assert, assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
 import {reportError} from '../error.js';
+import * as expert from '../expert.js';
 import {FaceOverlay} from '../face.js';
 import {Point} from '../geometry.js';
 import {DeviceOperator, parseMetadata} from '../mojo/device_operator.js';
@@ -100,9 +101,8 @@ export class Preview {
    * @param onNewStreamNeeded Callback to request new stream.
    */
   constructor(private readonly onNewStreamNeeded: () => Promise<void>) {
-    for (const s of [state.State.EXPERT, state.State.SHOW_METADATA]) {
-      state.addObserver(s, () => this.updateShowMetadata());
-    }
+    expert.addObserver(
+        expert.ExpertOption.SHOW_METADATA, () => this.updateShowMetadata());
   }
 
   getVideo(): PreviewVideo {
@@ -178,9 +178,7 @@ export class Preview {
       }
       if (this.facing === Facing.EXTERNAL) {
         return true;
-      } else if (
-          state.get(state.State.EXPERT) &&
-          state.get(state.State.ENABLE_PTZ_FOR_BUILTIN)) {
+      } else if (expert.isEnabled(expert.ExpertOption.ENABLE_PTZ_FOR_BUILTIN)) {
         return true;
       }
 
@@ -377,7 +375,7 @@ export class Preview {
    * Checks preview whether to show preview metadata or not.
    */
   private updateShowMetadata() {
-    if (state.get(state.State.EXPERT) && state.get(state.State.SHOW_METADATA)) {
+    if (expert.isEnabled(expert.ExpertOption.SHOW_METADATA)) {
       this.enableShowMetadata();
     } else {
       this.disableShowMetadata();

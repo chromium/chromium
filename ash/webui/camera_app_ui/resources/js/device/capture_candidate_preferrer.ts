@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '../assert.js';
+import * as expert from '../expert.js';
 import * as localStorage from '../models/local_storage.js';
-import * as state from '../state.js';
 import {
   AspectRatioSet,
   LocalStorageKey,
@@ -387,7 +387,8 @@ export class CaptureCandidatePreferrer {
     const candidates = [];
 
     const prefLevel = this.prefPhotoResolutionLevelMap[deviceId];
-    const showAllResolutions = state.get(state.State.SHOW_ALL_RESOLUTIONS);
+    const showAllResolutions =
+        expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS);
     const prefAspectRatioSet = this.prefPhotoAspectRatioSetMap[deviceId];
     const aspectRatioOptions = this.photoOptions.get(deviceId);
     assert(aspectRatioOptions !== undefined);
@@ -427,13 +428,14 @@ export class CaptureCandidatePreferrer {
     const cameraInfo = this.cameraInfos.get(deviceId);
     assert(cameraInfo !== undefined);
     const enableMultiStreamRecording =
-        state.get(state.State.ENABLE_MULTISTREAM_RECORDING);
+        expert.isEnabled(expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING);
 
     const candidates = [];
     const prefLevel = this.prefVideoResolutionLevelMap[deviceId];
     const prefResolution = this.prefVideoResolutionMap[deviceId] ?? null;
     const options = this.videoOptions.get(deviceId);
-    const showAllResolutions = state.get(state.State.SHOW_ALL_RESOLUTIONS);
+    const showAllResolutions =
+        expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS);
     assert(options !== undefined);
     for (const option of options) {
       const prefFps = this.getFallbackFPS(deviceId, option.resolutionLevel);
@@ -511,7 +513,7 @@ export class CaptureCandidatePreferrer {
           },
       );
     }
-    if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+    if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
       return options.flatMap(
           (option) =>
               option.resolutions.map((r) => ({
@@ -633,7 +635,7 @@ export class CaptureCandidatePreferrer {
       },
     ];
     let matches: VideoLevelResolution[] = [];
-    if (!state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+    if (!expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
       for (const resolution of resolutions) {
         const option = COMMON_VIDEO_OPTIONS.find(
             (option) => option.resolution.equals(resolution));
@@ -667,7 +669,7 @@ export class CaptureCandidatePreferrer {
       }
     }
 
-    if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+    if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
       matches =
           matches.flatMap((match) => match.resolutions.map((r) => ({
                                                              level: match.level,
@@ -726,7 +728,7 @@ export class CaptureCandidatePreferrer {
         option.checked =
             option.resolutions.some((r) => r.equals(currentResolution));
       } else {
-        if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+        if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
           option.checked = option.resolutions[0].equals(prefResolution);
         } else {
           option.checked = option.resolutionLevel === prefResolutionLevel;
@@ -749,7 +751,7 @@ export class CaptureCandidatePreferrer {
     const prefResolution =
         this.getPreferPhotoResolution(deviceId, AspectRatioSet.RATIO_SQUARE);
     for (const option of options) {
-      if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+      if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
         option.checked = option.resolutions[0].equals(prefResolution);
       } else {
         option.checked = option.resolutionLevel === prefResolutionLevel;
@@ -836,7 +838,7 @@ export class CaptureCandidatePreferrer {
             this.cameraConfig?.mode === Mode.VIDEO) {
           option.checked = isRunningCameraOption;
         } else {
-          if (state.get(state.State.SHOW_ALL_RESOLUTIONS)) {
+          if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
             option.checked = option.fpsOptions.some(
                 (fpsOption) => fpsOption.resolutions[0].equals(prefResolution));
           } else {
