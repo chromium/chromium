@@ -20,10 +20,10 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -51,7 +51,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/utils.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -326,27 +325,25 @@ std::string SwReporterInstallerPolicy::GetName() const {
 update_client::InstallerAttributes
 SwReporterInstallerPolicy::GetInstallerAttributes() const {
   update_client::InstallerAttributes attributes;
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kChromeCleanupDistributionFeature)) {
-    // Pass the tag parameter to the installer as the "tag" attribute; it will
-    // be used to choose which binary is downloaded.
-    constexpr char kTagParamName[] = "reporter_omaha_tag";
-    const std::string tag = variations::GetVariationParamValueByFeature(
-        safe_browsing::kChromeCleanupDistributionFeature, kTagParamName);
+  // Pass the tag parameter to the installer as the "tag" attribute; it will be
+  // used to choose which binary is downloaded.
+  std::string tag = safe_browsing::kReporterDistributionTagParam.Get();
 
-    // If the tag is not a valid attribute (see the regexp in
-    // ComponentInstallerPolicy::InstallerAttributes), set it to a valid but
-    // unrecognized value so that nothing will be downloaded.
-    constexpr size_t kMaxAttributeLength = 256;
-    constexpr char kExtraAttributeChars[] = "-.,;+_=";
-    constexpr char kTagParam[] = "tag";
-    if (tag.empty() ||
-        !ValidateString(tag, kExtraAttributeChars, kMaxAttributeLength)) {
-      ReportConfigurationError(kBadTag);
-      attributes[kTagParam] = "missing_tag";
-    } else {
-      attributes[kTagParam] = tag;
-    }
+  // If the tag is not a valid attribute (see the regexp in
+  // ComponentInstallerPolicy::InstallerAttributes), set it to a valid but
+  // unrecognized value so that nothing will be downloaded.
+  constexpr size_t kMaxAttributeLength = 256;
+  constexpr char kExtraAttributeChars[] = "-.,;+_=";
+  constexpr char kTagParam[] = "tag";
+  if (tag.empty()) {
+    // TODO(crbug.com/1305048): If the tag isn't assigned by the server,
+    // randomly assign the user to canary or stable.
+    attributes[kTagParam] = "stable";
+  } else if (!ValidateString(tag, kExtraAttributeChars, kMaxAttributeLength)) {
+    ReportConfigurationError(kBadTag);
+    attributes[kTagParam] = "missing_tag";
+  } else {
+    attributes[kTagParam] = tag;
   }
   return attributes;
 }

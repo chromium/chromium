@@ -2143,25 +2143,6 @@
             ]
         }
     ],
-    "ChromeCleanupDistribution": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Stable",
-                    "params": {
-                        "cleaner_download_group": "fieldtrial",
-                        "reporter_omaha_tag": "fieldtrial"
-                    },
-                    "enable_features": [
-                        "ChromeCleanupDistribution"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeLabs": [
         {
             "platforms": [

@@ -4,10 +4,15 @@
 
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
 
+#include <string>
+
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
+#include "base/strings/strcat.h"
 #include "base/win/windows_version.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
@@ -16,52 +21,40 @@ namespace {
 constexpr char kDownloadRootPath[] =
     "https://dl.google.com/dl/softwareremovaltool/win/";
 
-constexpr char kSRTX86StableDownloadURL[] =
-    "https://dl.google.com/dl"
-    "/softwareremovaltool/win/x86/stable/chrome_cleanup_tool.exe";
-
-constexpr char kSRTX64StableDownloadURL[] =
-    "https://dl.google.com/dl"
-    "/softwareremovaltool/win/x64/stable/chrome_cleanup_tool.exe";
-
 }  // namespace
 
 namespace safe_browsing {
 
 const base::Feature kChromeCleanupDistributionFeature{
-    "ChromeCleanupDistribution", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ChromeCleanupDistribution", base::FEATURE_ENABLED_BY_DEFAULT};
 
-GURL GetStableDownloadURL() {
-  const std::string url = base::win::OSInfo::GetArchitecture() ==
-                                  base::win::OSInfo::X86_ARCHITECTURE
-                              ? kSRTX86StableDownloadURL
-                              : kSRTX64StableDownloadURL;
-  return GURL(url);
-}
+const base::FeatureParam<std::string> kReporterDistributionTagParam{
+    &kChromeCleanupDistributionFeature, "reporter_omaha_tag", ""};
+
+const base::FeatureParam<std::string> kCleanerDownloadGroupParam{
+    &kChromeCleanupDistributionFeature, "cleaner_download_group", ""};
 
 GURL GetSRTDownloadURL() {
-  constexpr char kCleanerDownloadGroupParam[] = "cleaner_download_group";
-  const std::string download_group = base::GetFieldTrialParamValueByFeature(
-      kChromeCleanupDistributionFeature, kCleanerDownloadGroupParam);
-  if (download_group.empty())
-    return GetStableDownloadURL();
-
-  std::string architecture = base::win::OSInfo::GetArchitecture() ==
-                                     base::win::OSInfo::X86_ARCHITECTURE
-                                 ? "x86"
-                                 : "x64";
+  std::string download_group = kCleanerDownloadGroupParam.Get();
+  if (download_group.empty()) {
+    // TODO(crbug.com/1305048): If the download group isn't assigned by the
+    // server, randomly assign the user to canary or stable.
+    download_group = "stable";
+  }
+  const std::string architecture = base::win::OSInfo::GetArchitecture() ==
+                                           base::win::OSInfo::X86_ARCHITECTURE
+                                       ? "x86"
+                                       : "x64";
 
   // Construct download URL using the following pattern:
   // https://dl.google.com/.../win/{arch}/{group}/chrome_cleanup_tool.exe
-  std::string download_url_str = std::string(kDownloadRootPath) + architecture +
-                                 "/" + download_group +
-                                 "/chrome_cleanup_tool.exe";
-  GURL download_url(download_url_str);
+  GURL download_url(base::StrCat({kDownloadRootPath, architecture, "/",
+                                  download_group, "/chrome_cleanup_tool.exe"}));
 
-  // Ensure URL construction didn't change origin.
-  const GURL download_root(kDownloadRootPath);
-  if (!url::IsSameOriginWith(download_url, download_root))
-    return GetStableDownloadURL();
+  // Ensure URL construction didn't change origin. The only part of the url
+  // that doesn't come from a fixed list is `download_group`, which comes from
+  // a trusted server, so this should be impossible.
+  CHECK(url::IsSameOriginWith(download_url, GURL(kDownloadRootPath)));
 
   return download_url;
 }

@@ -36,6 +36,7 @@ namespace component_updater {
 namespace {
 
 constexpr char kErrorHistogramName[] = "SoftwareReporter.ConfigurationErrors";
+constexpr char kDefaultTag[] = "stable";
 constexpr char kExperimentTag[] = "experiment_tag";
 constexpr char kMissingTag[] = "missing_tag";
 
@@ -85,9 +86,13 @@ class SwReporterInstallerTest : public ::testing::Test {
   }
 
   void CreateFeatureWithParams(const base::FieldTrialParams& params) {
-    scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         safe_browsing::kChromeCleanupDistributionFeature, params);
+  }
+
+  void DisableFeature() {
+    scoped_feature_list_.InitAndDisableFeature(
+        safe_browsing::kChromeCleanupDistributionFeature);
   }
 
   void ExpectAttributesWithTag(const SwReporterInstallerPolicy& policy,
@@ -229,17 +234,18 @@ class SwReporterInstallerTest : public ::testing::Test {
 
 TEST_F(SwReporterInstallerTest, MissingManifest) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
-  ExpectEmptyAttributes(policy);
+  CreateFeatureWithTag(kDefaultTag);
+  ExpectAttributesWithTag(policy, kDefaultTag);
   policy.ComponentReady(default_version_, default_path_,
                         base::Value(base::Value::Type::DICTIONARY));
   ExpectLaunchError(kMissingPromptSeed);
 }
 
-TEST_F(SwReporterInstallerTest, MissingTag) {
+TEST_F(SwReporterInstallerTest, MissingTagDefaultsToStable) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
   CreateFeatureWithoutTag();
-  ExpectAttributesWithTag(policy, kMissingTag);
-  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadTag, 1);
+  ExpectAttributesWithTag(policy, kDefaultTag);
+  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadTag, 0);
 }
 
 TEST_F(SwReporterInstallerTest, InvalidTag) {
@@ -257,17 +263,25 @@ TEST_F(SwReporterInstallerTest, TagTooLong) {
   histograms_.ExpectUniqueSample(kErrorHistogramName, kBadTag, 1);
 }
 
-TEST_F(SwReporterInstallerTest, EmptyTag) {
+TEST_F(SwReporterInstallerTest, EmptyTagDefaultsToStable) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
   CreateFeatureWithTag("");
-  ExpectAttributesWithTag(policy, kMissingTag);
-  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadTag, 1);
+  ExpectAttributesWithTag(policy, kDefaultTag);
+  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadTag, 0);
 }
 
 TEST_F(SwReporterInstallerTest, ValidTag) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
   CreateFeatureWithTag(kExperimentTag);
   ExpectAttributesWithTag(policy, kExperimentTag);
+  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadTag, 0);
+}
+
+TEST_F(SwReporterInstallerTest, TagFeatureDisabledDefaultsToStable) {
+  SwReporterInstallerPolicy policy(on_component_ready_callback_);
+  DisableFeature();
+  ExpectAttributesWithTag(policy, kDefaultTag);
+  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadTag, 0);
 }
 
 TEST_F(SwReporterInstallerTest, SingleInvocation) {

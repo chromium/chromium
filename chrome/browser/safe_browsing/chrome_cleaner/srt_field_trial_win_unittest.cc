@@ -11,16 +11,36 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
+namespace {
+
+// Returns the expected path for the "stable" group on the current architecture.
+std::string GetStablePath() {
+  if (base::win::OSInfo::GetArchitecture() ==
+      base::win::OSInfo::X86_ARCHITECTURE) {
+    return "/dl/softwareremovaltool/win/x86/stable/chrome_cleanup_tool.exe";
+  } else {
+    return "/dl/softwareremovaltool/win/x64/stable/chrome_cleanup_tool.exe";
+  }
+}
+
 class SRTDownloadURLTest : public ::testing::Test {
  protected:
-  void CreateDownloadFeature(const std::string& download_group_name) {
+  void CreateDownloadFeature(
+      const absl::optional<std::string>& download_group_name) {
     base::FieldTrialParams params;
-    params["cleaner_download_group"] = download_group_name;
+    if (download_group_name)
+      params["cleaner_download_group"] = *download_group_name;
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         kChromeCleanupDistributionFeature, params);
+  }
+
+  void DisableDownloadFeature() {
+    scoped_feature_list_.InitAndDisableFeature(
+        kChromeCleanupDistributionFeature);
   }
 
  private:
@@ -29,29 +49,30 @@ class SRTDownloadURLTest : public ::testing::Test {
 
 TEST_F(SRTDownloadURLTest, Experiment) {
   CreateDownloadFeature("experiment");
-  std::string expected_path;
-  if (base::win::OSInfo::GetArchitecture() ==
-      base::win::OSInfo::X86_ARCHITECTURE) {
-    expected_path =
-        "/dl/softwareremovaltool/win/x86/experiment/chrome_cleanup_tool.exe";
-  } else {
-    expected_path =
-        "/dl/softwareremovaltool/win/x64/experiment/chrome_cleanup_tool.exe";
-  }
+  const std::string expected_path =
+      (base::win::OSInfo::GetArchitecture() ==
+       base::win::OSInfo::X86_ARCHITECTURE)
+          ? "/dl/softwareremovaltool/win/x86/experiment/chrome_cleanup_tool.exe"
+          : "/dl/softwareremovaltool/win/x64/experiment/"
+            "chrome_cleanup_tool.exe";
   EXPECT_EQ(expected_path, GetSRTDownloadURL().path());
 }
 
 TEST_F(SRTDownloadURLTest, DefaultsToStable) {
-  std::string expected_path;
-  if (base::win::OSInfo::GetArchitecture() ==
-      base::win::OSInfo::X86_ARCHITECTURE) {
-    expected_path =
-        "/dl/softwareremovaltool/win/x86/stable/chrome_cleanup_tool.exe";
-  } else {
-    expected_path =
-        "/dl/softwareremovaltool/win/x64/stable/chrome_cleanup_tool.exe";
-  }
-  EXPECT_EQ(expected_path, GetSRTDownloadURL().path());
+  DisableDownloadFeature();
+  EXPECT_EQ(GetStablePath(), GetSRTDownloadURL().path());
 }
+
+TEST_F(SRTDownloadURLTest, EmptyParamIsStable) {
+  CreateDownloadFeature("");
+  EXPECT_EQ(GetStablePath(), GetSRTDownloadURL().path());
+}
+
+TEST_F(SRTDownloadURLTest, MissingParamIsStable) {
+  CreateDownloadFeature(absl::nullopt);
+  EXPECT_EQ(GetStablePath(), GetSRTDownloadURL().path());
+}
+
+}  // namespace
 
 }  // namespace safe_browsing
