@@ -4466,16 +4466,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.Startup.InitType"
-    enum="AndroidWebViewInitType" expires_after="2022-06-21">
-  <owner>torne@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records which thread WebView initialization started from. The metric is
-    recorded during the first startChromiumLocked call.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.SupportLibrary.ClientIsCompat"
     enum="WebViewClientTypeEnum" expires_after="2022-10-06">
   <owner>ntfschr@chromium.org</owner>
