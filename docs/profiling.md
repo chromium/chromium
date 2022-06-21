@@ -16,7 +16,7 @@ This doc is intended to be an authoritative one-stop resource for profiling chro
 * https://www.chromium.org/developers/profiling-chromium-and-webkit
 * https://www.chromium.org/developers/telemetry/profiling
 
-***promo 
+***promo
 CPU profiling is not to be confused with tracing or task profiling:
 
 * https://www.chromium.org/developers/how-tos/trace-event-profiling-tool
@@ -31,19 +31,20 @@ Profiling should always be done on a Release build, which has very similar perfo
     is_debug = false
     blink_symbol_level = 2
     symbol_level = 2
+    dcheck_always_on = false
 
 ## Profiling a process or thread for a defined period of time using perf
 
 First, make sure you have the `linux-perf` package installed:
 
     $ sudo apt-get install linux-perf
-    
+
 After starting up the browser and loading the page you want to profile, press 'Shift-Escape' to bring up the task manager, and get the Process ID of the process you want to profile.
 
 Run the perf tool like this:
 
     $ perf record -g -p <Process ID> -o <output file>
-    
+
 *** promo
 To adjust the sampling frequency, use the `-F` argument, e.g., `-F 1000`.
 ***
@@ -62,12 +63,12 @@ Tip for Googlers: running `gcert` first will make `pprof` run faster, and elimin
 
 If you want to limit the profile to a single thread, run:
 
-    $ ps -T -p <Process ID> 
-    
+    $ ps -T -p <Process ID>
+
 From the output, find the Thread ID (column header "SPID") of the thread you want. Now run perf:
 
     $ perf record -g -t <Thread ID> -o <output file>
-    
+
 Use the same `pprof` command as above to view the single-thread results.
 
 ## Profiling the renderer process for a period defined in javascript
@@ -132,13 +133,13 @@ Follow the [instructions](./android_build_instructions.md) for building and inst
 
     $ src/out/Release/bin/chrome_public_apk profile
     Profiler is running; press Enter to stop...
-    
+
 Once you stop the profiler, the profiling data will be copied off the device to the host machine and post-processed so it can be viewed in `pprof`, as described above.
 
 To profile the renderer process, you must have just one tab open in chromium, and use a command like this:
 
     $ src/out/Release/bin/chrome_public_apk profile --profile-process=renderer
-    
+
 To limit the profile to a single thread, use a command like this:
 
     $ src/out/Release/bin/chrome_public_apk profile --profile-process=renderer --profile-thread=main
@@ -185,7 +186,7 @@ update this doc!
 The perf benchmark runner can generate a CPU profile over the course of running a perf test. Currently, this is supported only on Linux and Android. To get info about the relevant options, run:
 
     $ src/tools/perf/run_benchmark help run
-    
+
 ... and look for the `--interval-profiling-*` options. For example, to generate a profile of the main thread of the renderer process during the "page interactions" phase of a perf benchmark, you might run:
 
     $ src/tools/perf/run_benchmark run <benchmark name> --interval-profiling-target=renderer:main --interval-profiling-period=interactions --interval-profiling-frequency=2000
@@ -208,13 +209,13 @@ for instructions on how to go about this.
 Many of the profiling tools expect you to provide the PID of the process to profile. If the tool used does not support finding the application by name or you would like to run the command for many processes it can be useful to use `pgrep` to find the PIDs.
 
 Find the PID for Chromium (browser process):
-    
+
     $ pgrep -X Chromium
 Find the PID for all child processes of Chromium:
-    
+
     $ pgrep -P $CHROMIUM_PID
 Combine commands to run tool for Chromium and all its children:
-    
+
     $ cat <(pgrep -x Chromium) <(pgrep -P $(pgrep -x Chromium)) | xargs $MY_TOOL --pid
 
 ## Checkout setup
