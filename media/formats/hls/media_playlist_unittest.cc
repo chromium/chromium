@@ -182,37 +182,41 @@ TEST(HlsMediaPlaylistTest, Segments) {
 }
 
 TEST(HlsMediaPlaylistTest, TotalDuration) {
-  constexpr types::DecimalInteger kLargeDuration =
-      (base::TimeDelta::FiniteMax() / 2.5).InSeconds();
+  constexpr types::DecimalInteger kSegmentDuration =
+      MediaPlaylist::kMaxTargetDuration.InSeconds();
+  constexpr size_t kMaxSegments =
+      base::TimeDelta::FiniteMax().InSeconds() / kSegmentDuration;
+
+  // Make sure this test won't take an unreasonable amount of time to run
+  static_assert(kMaxSegments < 1000);
 
   // Ensure that if we have a playlist large enough where the total duration
   // overflows `base::TimeDelta`, this is caught.
   MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
   builder.AppendLine("#EXT-X-TARGETDURATION:" +
-                     base::NumberToString(kLargeDuration));
-  builder.ExpectPlaylist(HasTargetDuration, base::Seconds(kLargeDuration));
+                     base::NumberToString(kSegmentDuration));
+  builder.ExpectPlaylist(HasTargetDuration, base::Seconds(kSegmentDuration));
 
-  builder.AppendLine("#EXTINF:" + base::NumberToString(kLargeDuration) + ",\t");
-  builder.AppendLine("segment0.ts");
-  builder.ExpectAdditionalSegment();
-  builder.ExpectSegment(HasDuration, base::Seconds(kLargeDuration));
-  builder.ExpectSegment(HasUri, GURL("http://localhost/segment0.ts"));
+  for (size_t i = 0; i < kMaxSegments; ++i) {
+    builder.AppendLine("#EXTINF:" + base::NumberToString(kSegmentDuration) +
+                       ",\t");
+    builder.AppendLine("segment" + base::NumberToString(i) + ".ts");
+    builder.ExpectAdditionalSegment();
+    builder.ExpectSegment(HasDuration, base::Seconds(kSegmentDuration));
+    builder.ExpectSegment(HasUri, GURL("http://localhost/segment" +
+                                       base::NumberToString(i) + ".ts"));
+  }
 
-  builder.AppendLine("#EXTINF:" + base::NumberToString(kLargeDuration) + ",\t");
-  builder.AppendLine("segment1.ts");
-  builder.ExpectAdditionalSegment();
-  builder.ExpectSegment(HasDuration, base::Seconds(kLargeDuration));
-  builder.ExpectSegment(HasUri, GURL("http://localhost/segment1.ts"));
-
-  // These two shouldn't overflow base::TimeDelta
+  // The segments above should not overflow the playlist duration
   builder.ExpectPlaylist(HasComputedDuration,
-                         base::Seconds(kLargeDuration * 2));
+                         base::Seconds(kSegmentDuration * kMaxSegments));
   builder.ExpectOk();
 
   // But an additional segment would
-  builder.AppendLine("#EXTINF:" + base::NumberToString(kLargeDuration) + ",\t");
-  builder.AppendLine("segment3.ts");
+  builder.AppendLine("#EXTINF:" + base::NumberToString(kSegmentDuration) +
+                     ",\t");
+  builder.AppendLine("segmentX.ts");
   builder.ExpectError(ParseStatusCode::kPlaylistOverflowsTimeDelta);
 }
 
@@ -486,6 +490,24 @@ TEST(HlsMediaPlaylistTest, XTargetDurationTag) {
     builder2.AppendLine("#EXT-X-TARGETDURATION:", x);
     builder2.ExpectError(ParseStatusCode::kMalformedTag);
   }
+
+  // The target duration value may not exceed this implementation's max
+  builder = MediaPlaylistTestBuilder();
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine(
+      "#EXT-X-TARGETDURATION:",
+      base::NumberToString(MediaPlaylist::kMaxTargetDuration.InSeconds()));
+  builder.ExpectPlaylist(
+      HasTargetDuration,
+      base::Seconds(MediaPlaylist::kMaxTargetDuration.InSeconds()));
+  builder.ExpectOk();
+
+  builder = MediaPlaylistTestBuilder();
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine(
+      "#EXT-X-TARGETDURATION:",
+      base::NumberToString(MediaPlaylist::kMaxTargetDuration.InSeconds() + 1));
+  builder.ExpectError(ParseStatusCode::kTargetDurationExceedsMax);
 }
 
 TEST(HlsMediaPlaylistTest, XEndListTag) {
@@ -1095,7 +1117,7 @@ TEST(HlsMediaPlaylistTest, XBitrateTag) {
 TEST(HlsMediaPlaylistTest, XPartInfTag) {
   MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
-  builder.AppendLine("#EXT-X-TARGETDURATION:10");
+  builder.AppendLine("#EXT-X-TARGETDURATION:100");
   builder.AppendLine("#EXT-X-SERVER-CONTROL:PART-HOLD-BACK=500");
 
   // EXT-X-PART-INF tag must be well-formed
@@ -1132,6 +1154,19 @@ TEST(HlsMediaPlaylistTest, XPartInfTag) {
                       MediaPlaylist::PartialSegmentInfo{
                           .target_duration = base::Seconds(99.99)});
   fork.ExpectOk();
+
+  // PART-TARGET may not exceed the playlist's target duration
+  fork = builder;
+  fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=100");
+  fork.ExpectPlaylist(HasTargetDuration, base::Seconds(100));
+  fork.ExpectPlaylist(
+      HasPartialSegmentInfo,
+      MediaPlaylist::PartialSegmentInfo{.target_duration = base::Seconds(100)});
+  fork.ExpectOk();
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=101");
+  fork.ExpectError(ParseStatusCode::kPartTargetDurationExceedsTargetDuration);
 
   // The EXT-X-PART-INF tag may not appear twice
   fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=10");

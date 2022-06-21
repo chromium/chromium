@@ -32,6 +32,7 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kInvalidUri);
     PARSE_STATUS_CODE_CASE(kPlaylistMissingM3uTag);
     PARSE_STATUS_CODE_CASE(kMediaPlaylistMissingTargetDuration);
+    PARSE_STATUS_CODE_CASE(kTargetDurationExceedsMax);
     PARSE_STATUS_CODE_CASE(kMediaSegmentMissingInfTag);
     PARSE_STATUS_CODE_CASE(kMediaSegmentExceedsTargetDuration);
     PARSE_STATUS_CODE_CASE(kPlaylistHasDuplicateTags);
@@ -53,6 +54,7 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kPlaylistOverflowsTimeDelta);
     PARSE_STATUS_CODE_CASE(kSkipBoundaryTooLow);
     PARSE_STATUS_CODE_CASE(kHoldBackDistanceTooLow);
+    PARSE_STATUS_CODE_CASE(kPartTargetDurationExceedsTargetDuration);
     PARSE_STATUS_CODE_CASE(kPartHoldBackDistanceTooLow);
     PARSE_STATUS_CODE_CASE(kPartInfTagWithoutPartHoldBack);
   }

@@ -23,6 +23,11 @@ class MultivariantPlaylist;
 
 class MEDIA_EXPORT MediaPlaylist final : public Playlist {
  public:
+  // Several values in HLS are based on the playlist's target duration, to avoid
+  // overflow issues we limit this to a large value.
+  static constexpr base::TimeDelta kMaxTargetDuration =
+      base::TimeDelta::FiniteMax() / 10;
+
   // This structure describes information about partial segments in the
   // playlist.
   struct PartialSegmentInfo {

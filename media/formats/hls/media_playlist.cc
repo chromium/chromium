@@ -339,11 +339,21 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
     return ParseStatusCode::kMediaPlaylistMissingTargetDuration;
   }
   const auto target_duration = target_duration_tag->duration;
+  if (target_duration > kMaxTargetDuration) {
+    return ParseStatusCode::kTargetDurationExceedsMax;
+  }
 
   absl::optional<PartialSegmentInfo> partial_segment_info;
   if (part_inf_tag.has_value()) {
     partial_segment_info = MediaPlaylist::PartialSegmentInfo{
         .target_duration = part_inf_tag->target_duration};
+
+    // Since the combination of partial segments should be equivalent to their
+    // parent segment, the partial segment target duration should not exceed the
+    // parent segment target duration.
+    if (partial_segment_info->target_duration > target_duration) {
+      return ParseStatusCode::kPartTargetDurationExceedsTargetDuration;
+    }
   }
 
   bool can_skip_dateranges = false;
@@ -395,9 +405,17 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   // Ensure that no segment exceeds the target duration
   base::TimeDelta total_duration;
   for (const auto& segment : segments) {
+    // The spec says that the segment duration should not exceed the target
+    // duration after rounding to the nearest integer.
+    // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.3.1
     const auto rounded_duration =
         std::round(segment.GetDuration().InSecondsF());
-    if (rounded_duration > target_duration.InSecondsF()) {
+
+    // Compare the rounded segment duration to the target duration (as an
+    // integer). Target duration should always be an integer of seconds, so to
+    // avoid floating-point precision issues we use `InSeconds()` rather than
+    // `InSecondsF()`.
+    if (rounded_duration > target_duration.InSeconds()) {
       return ParseStatusCode::kMediaSegmentExceedsTargetDuration;
     }
 
