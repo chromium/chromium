@@ -161,8 +161,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   std::unique_ptr<PasswordUndoHelper> undo_helper_;
 
-  // Cache of the most recently obtained saved passwords. Profile store
-  // passwords are always stored first, and then account store passwords if any.
+  // Cache of the most recently obtained saved passwords.
   std::vector<PasswordForm> passwords_;
 
   // Structure used to deduplicate list of passwords.

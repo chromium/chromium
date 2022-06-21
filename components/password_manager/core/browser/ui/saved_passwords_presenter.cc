@@ -183,21 +183,9 @@ bool SavedPasswordsPresenter::AddCredential(
 
 bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
                                            std::u16string new_password) {
-  auto is_equal = [&form](const PasswordForm& form_to_check) {
-    return ArePasswordFormUniqueKeysEqual(form, form_to_check);
-  };
-  auto found = base::ranges::find_if(passwords_, is_equal);
-  if (found == passwords_.end())
-    return false;
-
-  found->password_value = std::move(new_password);
-  found->date_password_modified = base::Time::Now();
-  found->password_issues.clear();
-  PasswordStoreInterface& store =
-      form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
-  store.UpdateLogin(*found);
-  NotifyEdited(*found);
-  return true;
+  CredentialUIEntry entry(form);
+  entry.password = new_password;
+  return EditSavedCredentials(entry);
 }
 
 bool SavedPasswordsPresenter::EditSavedPasswords(
@@ -206,15 +194,10 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
     const std::u16string& new_password) {
   // TODO(crbug.com/1184691): Change desktop settings and maybe iOS to use this
   // presenter for updating the duplicates.
-  std::vector<PasswordForm> forms_to_change;
-
-  std::string current_form_key = CreateSortKey(form, IgnoreStore(true));
-  const auto range = sort_key_to_password_forms_.equal_range(current_form_key);
-
-  base::ranges::transform(range.first, range.second,
-                          std::back_inserter(forms_to_change),
-                          [](const auto& pair) { return pair.second; });
-  return EditSavedPasswords(forms_to_change, new_username, new_password);
+  CredentialUIEntry entry(form);
+  entry.password = new_password;
+  entry.username = new_username;
+  return EditSavedCredentials(entry);
 }
 
 bool SavedPasswordsPresenter::EditSavedCredentials(
@@ -411,41 +394,27 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResults(
 void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
     PasswordStoreInterface* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
-  // Profile store passwords are always stored first in `passwords_`.
-  auto account_passwords_it = base::ranges::partition_point(
-      passwords_,
-      [](auto& password) { return !password.IsUsingAccountStore(); });
-  if (store == profile_store_) {
-    // Old profile store passwords are in front. Create a temporary buffer for
-    // the new passwords and replace existing passwords.
-    std::vector<PasswordForm> new_passwords;
-    new_passwords.reserve(results.size() + passwords_.end() -
-                          account_passwords_it);
-    auto new_passwords_back_inserter = std::back_inserter(new_passwords);
-    base::ranges::transform(results, new_passwords_back_inserter,
-                            [](auto& result) { return std::move(*result); });
-    std::move(account_passwords_it, passwords_.end(),
-              new_passwords_back_inserter);
-    passwords_ = std::move(new_passwords);
-  } else {
-    // Need to replace existing account passwords at the end. Can re-use
-    // existing `passwords_` vector.
-    passwords_.erase(account_passwords_it, passwords_.end());
-    if (passwords_.capacity() < passwords_.size() + results.size())
-      passwords_.reserve(passwords_.size() + results.size());
-    base::ranges::transform(results, std::back_inserter(passwords_),
-                            [](auto& result) { return std::move(*result); });
-  }
+  bool is_account_store = store == account_store_.get();
 
-  sort_key_to_password_forms_.clear();
-  base::ranges::for_each(passwords_, [&](const auto& result) {
-    sort_key_to_password_forms_.insert(
-        std::make_pair(CreateSortKey(result, IgnoreStore(true)), result));
+  // Remove cached credentials for current store.
+  base::EraseIf(sort_key_to_password_forms_,
+                [&is_account_store](const auto& pair) {
+                  return pair.second.IsUsingAccountStore() == is_account_store;
+                });
+
+  // Move |results| into |sort_key_to_password_forms_|.
+  base::ranges::for_each(results, [&](const auto& result) {
+    PasswordForm form = std::move(*result);
+    sort_key_to_password_forms_.insert(std::make_pair(
+        CreateSortKey(form, IgnoreStore(true)), std::move(form)));
   });
 
-  // Remove blocked or federated credentials.
-  base::EraseIf(passwords_, [](const auto& form) {
-    return form.blocked_by_user || form.IsFederatedCredential();
+  // Update |passwords_|.
+  passwords_.clear();
+  base::ranges::for_each(sort_key_to_password_forms_, [&](const auto& pair) {
+    PasswordForm form = pair.second;
+    if (!form.blocked_by_user && !form.IsFederatedCredential())
+      passwords_.push_back(std::move(form));
   });
 
   NotifySavedPasswordsChanged();
