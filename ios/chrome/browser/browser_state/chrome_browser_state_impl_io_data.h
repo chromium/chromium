@@ -51,9 +51,9 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
 
     ChromeBrowserStateIOData* io_data() const;
 
-    // Deletes all network related data since |time|. It deletes transport
-    // security state since |time| and also deletes HttpServerProperties data.
-    // Works asynchronously, however if the |completion| callback is non-null,
+    // Deletes all network related data since `time`. It deletes transport
+    // security state since `time` and also deletes HttpServerProperties data.
+    // Works asynchronously, however if the `completion` callback is non-null,
     // it will be posted on the UI thread once the removal process completes.
     void ClearNetworkingHistorySince(base::Time time,
                                      base::OnceClosure completion);
@@ -71,7 +71,7 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
     void LazyInitialize() const;
 
     // Collect references to context getters in reverse order, i.e. last item
-    // will be main request getter. This list is passed to |io_data_|
+    // will be main request getter. This list is passed to `io_data_`
     // for invalidation on IO thread.
     std::unique_ptr<IOSChromeURLRequestContextGetterVector>
     GetAllContextGetters();
@@ -111,9 +111,9 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
   void InitializeInternal(net::URLRequestContextBuilder* context_builder,
                           ProfileParams* profile_params) const override;
 
-  // Deletes all network related data since |time|. It deletes transport
-  // security state since |time| and also deletes HttpServerProperties data.
-  // Works asynchronously, however if the |completion| callback is non-null,
+  // Deletes all network related data since `time`. It deletes transport
+  // security state since `time` and also deletes HttpServerProperties data.
+  // Works asynchronously, however if the `completion` callback is non-null,
   // it will be posted on the UI thread once the removal process completes.
   void ClearNetworkingHistorySinceOnIOThread(base::Time time,
                                              base::OnceClosure completion);

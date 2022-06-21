@@ -177,8 +177,8 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // The path to this browser state.
   base::FilePath state_path_;
 
-  // If non-null, |testing_prefs_| points to |prefs_|. It is there to avoid
-  // casting as |prefs_| may not be a TestingPrefServiceSyncable.
+  // If non-null, `testing_prefs_` points to `prefs_`. It is there to avoid
+  // casting as `prefs_` may not be a TestingPrefServiceSyncable.
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   sync_preferences::TestingPrefServiceSyncable* testing_prefs_;
 

@@ -44,7 +44,7 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager {
   void DoFinalInit(ChromeBrowserState* browser_state);
   void DoFinalInitForServices(ChromeBrowserState* browser_state);
 
-  // Adds |browser_state| to the browser state info cache if it hasn't been
+  // Adds `browser_state` to the browser state info cache if it hasn't been
   // added yet.
   void AddBrowserStateToCache(ChromeBrowserState* browser_state);
 

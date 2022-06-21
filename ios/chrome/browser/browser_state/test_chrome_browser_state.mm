@@ -143,10 +143,10 @@ void TestChromeBrowserState::Init() {
   EnsureBrowserStateKeyedServiceFactoriesBuilt();
 
   if (prefs_) {
-    // If user passed a custom PrefServiceSyncable, then leave |testing_prefs_|
+    // If user passed a custom PrefServiceSyncable, then leave `testing_prefs_`
     // unset as it is not possible to determine its type.
   } else if (IsOffTheRecord()) {
-    // This leaves |testing_prefs_| unset as CreateIncognitoBrowserStatePrefs()
+    // This leaves `testing_prefs_` unset as CreateIncognitoBrowserStatePrefs()
     // does not return a TestingPrefServiceSyncable.
     DCHECK(original_browser_state_);
     prefs_ =

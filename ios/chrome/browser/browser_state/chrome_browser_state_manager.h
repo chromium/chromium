@@ -31,7 +31,7 @@ class ChromeBrowserStateManager {
   // necessary.
   virtual ChromeBrowserState* GetLastUsedBrowserState() = 0;
 
-  // Returns the ChromeBrowserState associated with |path|, creating one if
+  // Returns the ChromeBrowserState associated with `path`, creating one if
   // necessary.
   virtual ChromeBrowserState* GetBrowserState(const base::FilePath& path) = 0;
 
