@@ -315,7 +315,7 @@ builder.
 * [linux-cfm-rel](https://ci.chromium.org/p/chromium/builders/try/linux-cfm-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-cfm-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-cfm-rel""))
 
   Path regular expressions:
-  * [`//chromeos/components/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/components/chromebox_for_meetings/)
+  * [`//chromeos/ash/components/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/ash/components/chromebox_for_meetings/)
   * [`//chromeos/ash/components/dbus/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/ash/components/dbus/chromebox_for_meetings/)
   * [`//ash/services/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/ash/services/chromebox_for_meetings/)
   * [`//chrome/browser/ash/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ash/chromebox_for_meetings/)

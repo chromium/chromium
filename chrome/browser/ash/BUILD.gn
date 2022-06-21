@@ -2442,8 +2442,8 @@ source_set("ash") {
 
   if (is_cfm) {
     deps += [
+      "//chromeos/ash/components/chromebox_for_meetings",
       "//chromeos/ash/components/dbus/chromebox_for_meetings",
-      "//chromeos/components/chromebox_for_meetings/features",
     ]
   }
 

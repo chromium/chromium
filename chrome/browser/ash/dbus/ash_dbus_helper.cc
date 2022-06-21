@@ -74,8 +74,8 @@
 #include "device/bluetooth/floss/floss_features.h"
 
 #if BUILDFLAG(PLATFORM_CFM)
+#include "chromeos/ash/components/chromebox_for_meetings/features.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
-#include "chromeos/components/chromebox_for_meetings/features/features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_HIBERNATE)
@@ -182,7 +182,7 @@ void InitializeFeatureListDependentDBus() {
     InitializeDBusClient<bluez::BluezDBusManager>(bus);
   }
 #if BUILDFLAG(PLATFORM_CFM)
-  if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices)) {
+  if (base::FeatureList::IsEnabled(cfm::features::kMojoServices)) {
     InitializeDBusClient<CfmHotlineClient>(bus);
   }
 #endif
@@ -209,7 +209,7 @@ void ShutdownDBus() {
   }
   chromeos::WilcoDtcSupportdClient::Shutdown();
 #if BUILDFLAG(PLATFORM_CFM)
-  if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices)) {
+  if (base::FeatureList::IsEnabled(cfm::features::kMojoServices)) {
     CfmHotlineClient::Shutdown();
   }
 #endif

@@ -20,8 +20,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/chromebox_for_meetings/features.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
-#include "chromeos/components/chromebox_for_meetings/features/features.h"
 #include "components/reporting/util/status.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -79,9 +79,7 @@ class CfmLoggerServiceTest : public testing::Test {
  public:
   CfmLoggerServiceTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::cfm::features::kMojoServices,
-         chromeos::cfm::features::kCloudLogger},
-        {});
+        {features::kMojoServices, features::kCloudLogger}, {});
   }
   CfmLoggerServiceTest(const CfmLoggerServiceTest&) = delete;
   CfmLoggerServiceTest& operator=(const CfmLoggerServiceTest&) = delete;
@@ -147,9 +145,8 @@ class CfmLoggerServiceTest : public testing::Test {
 
   void DisableLoggerFeature() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::cfm::features::kMojoServices},
-        {chromeos::cfm::features::kCloudLogger});
+    scoped_feature_list_.InitWithFeatures({features::kMojoServices},
+                                          {features::kCloudLogger});
   }
 
  protected:

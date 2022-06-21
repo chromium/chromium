@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_FEATURES_H_
-#define CHROMEOS_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_FEATURES_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_H_
+#define CHROMEOS_ASH_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_H_
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
 
-namespace chromeos {
-namespace cfm {
-namespace features {
+namespace ash::cfm::features {
 
 // IMPORTANT: Please keep this file in alphabetical order.
 
@@ -26,14 +24,6 @@ extern const base::Feature kCloudLogger;
 COMPONENT_EXPORT(CFM_FEATURES)
 extern const base::Feature kMojoServices;
 
-}  // namespace features
-}  // namespace cfm
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::cfm::features {
-using ::chromeos::cfm::features::kCloudLogger;
-using ::chromeos::cfm::features::kMojoServices;
 }  // namespace ash::cfm::features
 
-#endif  // CHROMEOS_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_FEATURES_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_H_

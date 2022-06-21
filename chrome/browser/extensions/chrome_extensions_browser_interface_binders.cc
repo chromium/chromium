@@ -51,7 +51,7 @@
 
 #if BUILDFLAG(PLATFORM_CFM)
 #include "ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
-#include "chromeos/components/chromebox_for_meetings/features/features.h"
+#include "chromeos/ash/components/chromebox_for_meetings/features.h"
 #endif
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -169,13 +169,12 @@ void PopulateChromeFrameBindersForExtension(
            mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
                receiver) {
 #if BUILDFLAG(PLATFORM_CFM)
-          if (base::FeatureList::IsEnabled(
-                  chromeos::cfm::features::kMojoServices)) {
+          if (base::FeatureList::IsEnabled(ash::cfm::features::kMojoServices)) {
             ash::cfm::ServiceConnection::GetInstance()->BindServiceContext(
                 std::move(receiver));
           } else {
             // The experimentation framework used to manage the
-            // chromeos::cfm::features::kMojoServices feature flag requires
+            // `ash::cfm::features::kMojoServices` feature flag requires
             // Chrome to restart before updates are applied. Meet Devices have
             // a variable uptime ranging from a week or more and set by the
             // admin. Additionally its kiosked process is not tied to a chromium

@@ -1187,7 +1187,7 @@ static_library("extensions") {
     allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
 
     if (is_cfm) {
-      deps += [ "//chromeos/components/chromebox_for_meetings/features" ]
+      deps += [ "//chromeos/ash/components/chromebox_for_meetings" ]
     }
   }
 

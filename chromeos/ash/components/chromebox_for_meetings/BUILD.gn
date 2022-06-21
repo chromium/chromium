@@ -6,7 +6,13 @@
 # the buildflag header and feature list to get the necessary finch experiments,
 # respectively, without bringing in unneeded resources.
 
-component("features") {
+import("//build/config/chromebox_for_meetings/buildflags.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+assert(is_cfm)
+
+component("chromebox_for_meetings") {
   output_name = "cfm_features"
   defines = [ "IS_CFM_FEATURES_IMPL" ]
   sources = [
