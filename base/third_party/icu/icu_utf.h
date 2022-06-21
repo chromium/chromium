@@ -118,7 +118,7 @@ typedef int32_t UChar32;
  * @return TRUE or FALSE
  * @stable ICU 2.4
  */
-#define CBU_IS_SURROGATE(c) (((c)&0xfffff800)==0xd800)
+#define CBU_IS_SURROGATE(c) (((uint32_t)(c)&0xfffff800) == 0xd800)
 
 /**
  * Assuming c is a surrogate code point (U_IS_SURROGATE(c)),

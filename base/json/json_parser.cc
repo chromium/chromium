@@ -63,7 +63,7 @@ std::string ErrorCodeToString(JSONParser::JsonParseError error_code) {
 }
 
 const int32_t kExtendedASCIIStart = 0x80;
-constexpr uint32_t kUnicodeReplacementPoint = 0xFFFD;
+constexpr base_icu::UChar32 kUnicodeReplacementPoint = 0xFFFD;
 
 // UnprefixedHexStringToInt acts like |HexStringToInt|, but enforces that the
 // input consists purely of hex digits. I.e. no "0x" nor "OX" prefix is
@@ -194,8 +194,8 @@ JSONParser::StringBuilder::~StringBuilder() = default;
 JSONParser::StringBuilder& JSONParser::StringBuilder::operator=(
     StringBuilder&& other) = default;
 
-void JSONParser::StringBuilder::Append(uint32_t point) {
-  DCHECK(IsValidCodepoint(static_cast<base_icu::UChar32>(point)));
+void JSONParser::StringBuilder::Append(base_icu::UChar32 point) {
+  DCHECK(IsValidCodepoint(point));
 
   if (point < kExtendedASCIIStart && !string_) {
     DCHECK_EQ(static_cast<char>(point), pos_[length_]);
@@ -205,7 +205,7 @@ void JSONParser::StringBuilder::Append(uint32_t point) {
     if (UNLIKELY(point == kUnicodeReplacementPoint)) {
       string_->append(kUnicodeReplacementString);
     } else {
-      WriteUnicodeCharacter(static_cast<base_icu::UChar32>(point), &*string_);
+      WriteUnicodeCharacter(point, &*string_);
     }
   }
 }
@@ -621,7 +621,7 @@ bool JSONParser::ConsumeStringRaw(StringBuilder* out) {
         }
         case 'u': {  // UTF-16 sequence.
           // UTF units are of the form \uXXXX.
-          uint32_t code_point;
+          base_icu::UChar32 code_point;
           if (!DecodeUTF16(&code_point)) {
             ReportError(JSON_INVALID_ESCAPE, -1);
             return false;
@@ -675,7 +675,7 @@ bool JSONParser::ConsumeStringRaw(StringBuilder* out) {
 }
 
 // Entry is at the first X in \uXXXX.
-bool JSONParser::DecodeUTF16(uint32_t* out_code_point) {
+bool JSONParser::DecodeUTF16(base_icu::UChar32* out_code_point) {
   absl::optional<StringPiece> escape_sequence = ConsumeChars(4);
   if (!escape_sequence)
     return false;
@@ -720,7 +720,7 @@ bool JSONParser::DecodeUTF16(uint32_t* out_code_point) {
       return true;
     }
 
-    uint32_t code_point =
+    base_icu::UChar32 code_point =
         CBU16_GET_SUPPLEMENTARY(code_unit16_high, code_unit16_low);
 
     *out_code_point = code_point;
@@ -852,7 +852,7 @@ bool JSONParser::ConsumeIfMatch(StringPiece match) {
 void JSONParser::ReportError(JsonParseError code, int column_adjust) {
   error_code_ = code;
   error_line_ = line_number_;
-  error_column_ = index_ - index_last_line_ + column_adjust;
+  error_column_ = static_cast<int>(index_ - index_last_line_) + column_adjust;
 
   // For a final blank line ('\n' and then EOF), a negative column_adjust may
   // put us below 1, which doesn't really make sense for 1-based columns.

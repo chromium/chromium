@@ -33,7 +33,7 @@ static_assert('<' == 0x3C, "less than sign must be 0x3c");
 // Try to escape the |code_point| if it is a known special character. If
 // successful, returns true and appends the escape sequence to |dest|. This
 // isn't required by the spec, but it's more readable by humans.
-bool EscapeSpecialCodePoint(uint32_t code_point, std::string* dest) {
+bool EscapeSpecialCodePoint(base_icu::UChar32 code_point, std::string* dest) {
   // WARNING: if you add a new case here, you need to update the reader as well.
   // Note: \v is in the reader, but not here since the JSON spec doesn't
   // allow it.
@@ -141,14 +141,16 @@ std::string EscapeBytesAsInvalidJSONString(StringPiece str,
   if (put_in_quotes)
     dest.push_back('"');
 
-  for (unsigned char c : str) {
+  for (char c : str) {
     if (EscapeSpecialCodePoint(c, &dest))
       continue;
 
-    if (c < 32 || c > 126)
-      base::StringAppendF(&dest, kU16EscapeFormat, c);
-    else
+    if (c < 32 || c > 126) {
+      base::StringAppendF(&dest, kU16EscapeFormat,
+                          static_cast<unsigned char>(c));
+    } else {
       dest.push_back(c);
+    }
   }
 
   if (put_in_quotes)
