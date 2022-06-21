@@ -279,6 +279,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     has_user_gesture_ = has_user_gesture;
   }
 
+  void set_update_first_party_url_on_redirect(
+      bool update_first_party_url_on_redirect) {
+    update_first_party_url_on_redirect_ = update_first_party_url_on_redirect;
+  }
+
   OnStartedCallback& callback() { return callback_; }
   bool content_initiated() const { return content_initiated_; }
   const std::string& last_modified() const { return last_modified_; }
@@ -335,6 +340,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     return isolation_info_;
   }
   bool has_user_gesture() const { return has_user_gesture_; }
+  bool update_first_party_url_on_redirect() const {
+    return update_first_party_url_on_redirect_;
+  }
 
   // STATE CHANGING: All save_info_ sub-objects will be in an indeterminate
   // state following this call.
@@ -383,6 +391,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   bool require_safety_checks_;
   absl::optional<net::IsolationInfo> isolation_info_;
   bool has_user_gesture_;
+  bool update_first_party_url_on_redirect_;
 };
 
 }  // namespace download

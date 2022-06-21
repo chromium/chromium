@@ -229,6 +229,8 @@ void DownloadDriverImpl::Start(
     download_url_params->set_isolation_info(
         request_params.isolation_info.value());
   }
+  download_url_params->set_update_first_party_url_on_redirect(
+      request_params.update_first_party_url_on_redirect);
 
   download_manager_coordinator_->DownloadUrl(std::move(download_url_params));
 }
