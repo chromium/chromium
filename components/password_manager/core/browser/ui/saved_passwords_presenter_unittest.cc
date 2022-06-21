@@ -1136,43 +1136,6 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, DeleteCredentialBothStores) {
   EXPECT_TRUE(account_store().IsEmpty());
 }
 
-TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
-       ReturnsUsernamesForRealmFromSameStore) {
-  PasswordForm form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-
-  PasswordForm other_form = form;
-  other_form.username_value = u"test2@gmail.com";
-
-  PasswordForm account_store_form = other_form;
-  account_store_form.username_value = u"test3@gmail.com";
-  account_store_form.in_store = PasswordForm::Store::kAccountStore;
-
-  profile_store().AddLogin(form);
-  profile_store().AddLogin(other_form);
-
-  account_store().AddLogin(account_store_form);
-
-  RunUntilIdle();
-
-  ASSERT_THAT(profile_store().stored_passwords(),
-              ElementsAre(Pair(form.signon_realm,
-                               UnorderedElementsAre(form, other_form))));
-
-  ASSERT_THAT(account_store().stored_passwords(),
-              ElementsAre(Pair(account_store_form.signon_realm,
-                               ElementsAre(account_store_form))));
-
-  EXPECT_THAT(
-      presenter().GetUsernamesForRealm(form.signon_realm,
-                                       /*is_using_account_store=*/false),
-      UnorderedElementsAre(form.username_value, other_form.username_value));
-
-  EXPECT_THAT(presenter().GetUsernamesForRealm(account_store_form.signon_realm,
-                                               /*is_using_account_store=*/true),
-              ElementsAre(account_store_form.username_value));
-}
-
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest, GetUniquePasswords) {
   PasswordForm profile_store_form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);

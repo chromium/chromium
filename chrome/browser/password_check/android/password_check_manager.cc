@@ -14,6 +14,8 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -25,15 +27,36 @@
 
 namespace {
 
+using password_manager::PasswordForm;
+
 std::u16string GetDisplayUsername(const std::u16string& username) {
   return username.empty()
              ? l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)
              : username;
 }
 
-}  // namespace
+// Returns all the usernames for credentials saved for `signon_realm`. If
+// `is_using_account_store` is true, this method will only consider
+// credentials saved in the account store. Otherwiser it will only consider
+// credentials saved in the profile store.
+std::vector<std::u16string> GetUsernamesForRealm(
+    const std::vector<password_manager::CredentialUIEntry>& credentials,
+    const std::string& signon_realm,
+    bool is_using_account_store) {
+  std::vector<std::u16string> usernames;
+  PasswordForm::Store store = is_using_account_store
+                                  ? PasswordForm::Store::kAccountStore
+                                  : PasswordForm::Store::kProfileStore;
+  for (const auto& credential : credentials) {
+    if (credential.signon_realm == signon_realm &&
+        credential.stored_in.contains(store)) {
+      usernames.push_back(credential.username);
+    }
+  }
+  return usernames;
+}
 
-using password_manager::PasswordForm;
+}  // namespace
 
 using CredentialsView =
     password_manager::InsecureCredentialsManager::CredentialsView;
@@ -144,11 +167,12 @@ void PasswordCheckManager::OnEditCredential(
 
   const PasswordForm form =
       insecure_credentials_manager_.GetSavedPasswordsFor(credential)[0];
+  bool is_using_account_store = form.IsUsingAccountStore();
 
   credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
       std::move(form), CredentialEditBridge::IsInsecureCredential(true),
-      saved_passwords_presenter_.GetUsernamesForRealm(
-          credential.signon_realm, form.IsUsingAccountStore()),
+      GetUsernamesForRealm(saved_passwords_presenter_.GetSavedCredentials(),
+                           credential.signon_realm, is_using_account_store),
       &saved_passwords_presenter_, nullptr,
       base::BindOnce(&PasswordCheckManager::OnEditUIDismissed,
                      base::Unretained(this)),
