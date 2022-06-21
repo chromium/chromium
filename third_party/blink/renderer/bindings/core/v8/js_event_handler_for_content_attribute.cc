@@ -213,9 +213,9 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
     v8::TryCatch block(isolate);
     block.SetVerbose(true);
     v8::MaybeLocal<v8::Function> maybe_result =
-        v8::ScriptCompiler::CompileFunctionInContext(
-            v8_context_of_event_target, &source, parameter_list_size,
-            parameter_list, scopes_size, scopes);
+        v8::ScriptCompiler::CompileFunction(v8_context_of_event_target, &source,
+                                            parameter_list_size, parameter_list,
+                                            scopes_size, scopes);
 
     // Step 7. If body is not parsable as FunctionBody or if parsing detects an
     // early error, then follow these substeps:
