@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -90,13 +91,6 @@ void WebsiteMetrics::OnBrowserAdded(Browser* browser) {
   }
 }
 
-void WebsiteMetrics::OnBrowserRemoved(Browser* browser) {
-  auto* window = GetWindowWithBrowser(browser);
-  if (window) {
-    window_to_web_contents_.erase(window);
-  }
-}
-
 void WebsiteMetrics::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -114,7 +108,7 @@ void WebsiteMetrics::OnTabStripModelChanged(
                                   selection);
       break;
     case TabStripModelChange::kRemoved:
-      OnTabStripModelChangeRemove(tab_strip_model, *change.GetRemove(),
+      OnTabStripModelChangeRemove(window, tab_strip_model, *change.GetRemove(),
                                   selection);
       break;
     case TabStripModelChange::kReplaced:
@@ -123,12 +117,8 @@ void WebsiteMetrics::OnTabStripModelChanged(
       break;
   }
 
-  if (tab_strip_model->empty()) {
-    return;
-  }
-
   if (selection.active_tab_changed()) {
-    OnActiveTabChanged(selection.old_contents, selection.new_contents);
+    OnActiveTabChanged(window, selection.old_contents, selection.new_contents);
   }
 }
 
@@ -171,6 +161,7 @@ void WebsiteMetrics::OnTabStripModelChangeInsert(
 }
 
 void WebsiteMetrics::OnTabStripModelChangeRemove(
+    aura::Window* window,
     TabStripModel* tab_strip_model,
     const TabStripModelChange::Remove& remove,
     const TabStripSelectionChange& selection) {
@@ -183,20 +174,36 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
     if (activation_client_observations_.IsObservingSource(activation_client)) {
       activation_client_observations_.RemoveObservation(activation_client);
     }
+
+    // The browser window will be closed, so remove the window and the web
+    // contents.
+    auto it = window_to_web_contents_.find(window);
+    if (it != window_to_web_contents_.end()) {
+      webcontents_to_observer_map_.erase(it->second);
+      window_to_web_contents_.erase(it);
+    }
   }
 }
 
-void WebsiteMetrics::OnActiveTabChanged(content::WebContents* old_contents,
+void WebsiteMetrics::OnActiveTabChanged(aura::Window* window,
+                                        content::WebContents* old_contents,
                                         content::WebContents* new_contents) {
-  if (new_contents &&
-      !base::Contains(webcontents_to_observer_map_, new_contents)) {
-    webcontents_to_observer_map_[new_contents] =
-        std::make_unique<WebsiteMetrics::ActiveTabWebContentsObserver>(
-            new_contents, this);
-  }
-
   if (old_contents) {
     webcontents_to_observer_map_.erase(old_contents);
+
+    // Clear `old_contents` from `window_to_web_contents_`.
+    auto it = window_to_web_contents_.find(window);
+    if (it != window_to_web_contents_.end())
+      it->second = nullptr;
+  }
+
+  if (new_contents) {
+    window_to_web_contents_[window] = new_contents;
+    if (!base::Contains(webcontents_to_observer_map_, new_contents)) {
+      webcontents_to_observer_map_[new_contents] =
+          std::make_unique<WebsiteMetrics::ActiveTabWebContentsObserver>(
+              new_contents, this);
+    }
   }
 
   // TODO(crbug.com/1334173): Calculate the usage time for the activated tab

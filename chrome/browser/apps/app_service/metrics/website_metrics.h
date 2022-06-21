@@ -40,7 +40,6 @@ class WebsiteMetrics : public BrowserListObserver,
 
   // BrowserListObserver overrides:
   void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
 
   // TabStripModelObserver overrides:
   void OnTabStripModelChanged(
@@ -83,10 +82,12 @@ class WebsiteMetrics : public BrowserListObserver,
   void OnTabStripModelChangeInsert(TabStripModel* tab_strip_model,
                                    const TabStripModelChange::Insert& insert,
                                    const TabStripSelectionChange& selection);
-  void OnTabStripModelChangeRemove(TabStripModel* tab_strip_model,
+  void OnTabStripModelChangeRemove(aura::Window* window,
+                                   TabStripModel* tab_strip_model,
                                    const TabStripModelChange::Remove& remove,
                                    const TabStripSelectionChange& selection);
-  void OnActiveTabChanged(content::WebContents* old_contents,
+  void OnActiveTabChanged(aura::Window* window,
+                          content::WebContents* old_contents,
                           content::WebContents* new_contents);
 
   // Called by |WebsiteMetrics::ActiveTabWebContentsObserver|.
