@@ -152,6 +152,14 @@ class FeaturePromoSpecification {
   FeaturePromoSpecification& SetAnchorElementFilter(
       AnchorElementFilter anchor_element_filter);
 
+  // Set whether we should look for the anchor element in any context.
+  // Default is false. Since usually we only want to create the bubble in the
+  // currently active window, this is only really useful for cases where there
+  // is a floating window, WebContents, or tab-modal dialog that can become
+  // detached from the current active window and therefore requires its own
+  // unique context.
+  FeaturePromoSpecification& SetInAnyContext(bool in_any_context);
+
   // Get the anchor element based on `anchor_element_id`,
   // `anchor_element_filter`, and `context`.
   ui::TrackedElement* GetAnchorElement(ui::ElementContext context) const;
@@ -162,6 +170,7 @@ class FeaturePromoSpecification {
   const AnchorElementFilter& anchor_element_filter() const {
     return anchor_element_filter_;
   }
+  bool in_any_context() const { return in_any_context_; }
   int bubble_body_string_id() const { return bubble_body_string_id_; }
   const std::u16string& bubble_title_text() const { return bubble_title_text_; }
   const gfx::VectorIcon* bubble_icon() const { return bubble_icon_; }
@@ -190,6 +199,9 @@ class FeaturePromoSpecification {
 
   // The element identifier of the element to attach the promo to.
   ui::ElementIdentifier anchor_element_id_;
+
+  // Whether we are allowed to search for the anchor element in any context.
+  bool in_any_context_ = false;
 
   // The filter to use if there is more than one matching element, or
   // additional processing is needed (default is to always use the first

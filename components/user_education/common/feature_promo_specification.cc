@@ -163,6 +163,12 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetAnchorElementFilter(
   return *this;
 }
 
+FeaturePromoSpecification& FeaturePromoSpecification::SetInAnyContext(
+    bool in_any_context) {
+  in_any_context_ = in_any_context;
+  return *this;
+}
+
 FeaturePromoSpecification& FeaturePromoSpecification::SetDemoPageInfo(
     DemoPageInfo demo_page_info) {
   demo_page_info_ = std::move(demo_page_info);
@@ -172,11 +178,18 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetDemoPageInfo(
 ui::TrackedElement* FeaturePromoSpecification::GetAnchorElement(
     ui::ElementContext context) const {
   auto* const element_tracker = ui::ElementTracker::GetElementTracker();
-  return anchor_element_filter_ ? anchor_element_filter_.Run(
-                                      element_tracker->GetAllMatchingElements(
-                                          anchor_element_id_, context))
-                                : element_tracker->GetFirstMatchingElement(
-                                      anchor_element_id_, context);
+  if (anchor_element_filter_) {
+    return anchor_element_filter_.Run(
+        in_any_context_ ? element_tracker->GetAllMatchingElementsInAnyContext(
+                              anchor_element_id_)
+                        : element_tracker->GetAllMatchingElements(
+                              anchor_element_id_, context));
+  } else {
+    return in_any_context_
+               ? element_tracker->GetElementInAnyContext(anchor_element_id_)
+               : element_tracker->GetFirstMatchingElement(anchor_element_id_,
+                                                          context);
+  }
 }
 
 }  // namespace user_education

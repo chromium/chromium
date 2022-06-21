@@ -40,6 +40,7 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
@@ -59,9 +60,12 @@ using ::testing::Return;
 namespace {
 base::Feature kTestIPHFeature{"TestIPHFeature",
                               base::FEATURE_ENABLED_BY_DEFAULT};
+base::Feature kOneOffIPHFeature("AnyContextIPHFeature",
+                                base::FEATURE_ENABLED_BY_DEFAULT);
 base::Feature kTutorialIPHFeature{"SecondIPHFeature",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 constexpr char kTestTutorialIdentifier[] = "Test Tutorial";
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOneOffIPHElementId);
 }  // namespace
 
 using user_education::FeaturePromoController;
@@ -115,10 +119,9 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
     user_education_service->tutorial_registry().AddTutorial(
         kTestTutorialIdentifier, std::move(desc));
 
-    user_education_service->feature_promo_registry().RegisterFeature(
-        DefaultBubbleParams());
+    registry()->RegisterFeature(DefaultBubbleParams());
 
-    user_education_service->feature_promo_registry().RegisterFeature(
+    registry()->RegisterFeature(
         FeaturePromoSpecification::CreateForTutorialPromo(
             kTutorialIPHFeature, kAppMenuButtonElementId, IDS_REOPEN_TAB_PROMO,
             kTestTutorialIdentifier));
@@ -234,6 +237,130 @@ TEST_F(BrowserFeaturePromoControllerTest, ShowsBubble) {
   EXPECT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(GetPromoBubble());
+}
+
+TEST_F(BrowserFeaturePromoControllerTest, ShowsBubbleAnyContext) {
+  registry()->RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForLegacyPromo(
+          &kOneOffIPHFeature, kOneOffIPHElementId, IDS_REOPEN_TAB_PROMO)
+          .SetInAnyContext(true)));
+
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kOneOffIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  // Create a second widget with an element with the target identifier.
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.bounds = gfx::Rect(0, 0, 200, 200);
+  params.context = browser_view()->GetWidget()->GetNativeWindow();
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget->Init(std::move(params));
+  widget->SetContentsView(std::make_unique<views::View>())
+      ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);
+  widget->Show();
+
+  const ui::ElementContext widget_context =
+      views::ElementTrackerViews::GetContextForWidget(widget.get());
+  EXPECT_NE(browser_view()->GetElementContext(), widget_context);
+
+  EXPECT_TRUE(controller_->MaybeShowPromo(kOneOffIPHFeature));
+  EXPECT_TRUE(controller_->IsPromoActive(kOneOffIPHFeature));
+  auto* const bubble = GetPromoBubble();
+  ASSERT_TRUE(bubble);
+  EXPECT_EQ(widget_context,
+            controller_->promo_bubble_for_testing()->GetContext());
+
+  bubble->Close();
+}
+
+TEST_F(BrowserFeaturePromoControllerTest, ShowsBubbleWithFilter) {
+  registry()->RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForLegacyPromo(
+          &kOneOffIPHFeature, kOneOffIPHElementId, IDS_REOPEN_TAB_PROMO)
+          .SetAnchorElementFilter(base::BindLambdaForTesting(
+              [](const ui::ElementTracker::ElementList& elements) {
+                EXPECT_EQ(2U, elements.size());
+                return elements[0];
+              }))));
+
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kOneOffIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  // Add two random views to the browser with the same element ID.
+  browser_view()
+      ->toolbar()
+      ->AddChildView(std::make_unique<views::View>())
+      ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);
+  browser_view()
+      ->toolbar()
+      ->AddChildView(std::make_unique<views::View>())
+      ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);
+
+  EXPECT_TRUE(controller_->MaybeShowPromo(kOneOffIPHFeature));
+  EXPECT_TRUE(controller_->IsPromoActive(kOneOffIPHFeature));
+  auto* const bubble = GetPromoBubble();
+  ASSERT_TRUE(bubble);
+  bubble->Close();
+}
+
+TEST_F(BrowserFeaturePromoControllerTest, ShowsBubbleWithFilterAnyContext) {
+  ui::ElementContext widget_context;
+  registry()->RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForLegacyPromo(
+          &kOneOffIPHFeature, kOneOffIPHElementId, IDS_REOPEN_TAB_PROMO)
+          .SetInAnyContext(true)
+          .SetAnchorElementFilter(base::BindLambdaForTesting(
+              [&](const ui::ElementTracker::ElementList& elements) {
+                EXPECT_EQ(3U, elements.size());
+                for (auto* element : elements) {
+                  if (element->context() == widget_context)
+                    return element;
+                }
+                ADD_FAILURE() << "Did not find expected element.";
+                return (ui::TrackedElement*)(nullptr);
+              }))));
+
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kOneOffIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  // Add two random views to the browser with the same element ID.
+  browser_view()
+      ->toolbar()
+      ->AddChildView(std::make_unique<views::View>())
+      ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);
+  browser_view()
+      ->toolbar()
+      ->AddChildView(std::make_unique<views::View>())
+      ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);
+
+  // Create a second widget with an element with the target identifier.
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.bounds = gfx::Rect(0, 0, 200, 200);
+  params.context = browser_view()->GetWidget()->GetNativeWindow();
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget->Init(std::move(params));
+  widget->SetContentsView(std::make_unique<views::View>())
+      ->SetProperty(views::kElementIdentifierKey, kOneOffIPHElementId);
+  widget->Show();
+  widget_context =
+      views::ElementTrackerViews::GetContextForWidget(widget.get());
+
+  EXPECT_NE(browser_view()->GetElementContext(), widget_context);
+
+  EXPECT_TRUE(controller_->MaybeShowPromo(kOneOffIPHFeature));
+  EXPECT_TRUE(controller_->IsPromoActive(kOneOffIPHFeature));
+  auto* const bubble = GetPromoBubble();
+  ASSERT_TRUE(bubble);
+  EXPECT_EQ(widget_context,
+            controller_->promo_bubble_for_testing()->GetContext());
+
+  bubble->Close();
 }
 
 TEST_F(BrowserFeaturePromoControllerTest,
