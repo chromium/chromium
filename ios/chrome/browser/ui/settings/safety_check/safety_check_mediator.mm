@@ -101,7 +101,7 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
 // time if they all end up using their min delays.
 constexpr double kUpdateRowMinDelay = 2.0;
 constexpr double kPasswordRowMinDelay = 1.5;
-constexpr double kSafeBrowsingRowMinDelay = 1.75;
+constexpr double kSafeBrowsingRowMinDelay = 3.0;
 
 }  // namespace
 
