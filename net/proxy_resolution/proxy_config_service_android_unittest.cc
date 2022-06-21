@@ -64,7 +64,8 @@ class ProxyConfigServiceAndroidTestBase : public TestWithTaskEnvironment {
  protected:
   // Note that the current thread's message loop is initialized by the test
   // suite (see net/test/net_test_suite.cc).
-  ProxyConfigServiceAndroidTestBase(const StringMap& initial_configuration)
+  explicit ProxyConfigServiceAndroidTestBase(
+      const StringMap& initial_configuration)
       : configuration_(initial_configuration),
         service_(
             base::ThreadTaskRunnerHandle::Get(),

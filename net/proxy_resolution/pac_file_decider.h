@@ -43,7 +43,7 @@ class PacFileFetcher;
 // both for auto-detect and not.
 struct NET_EXPORT_PRIVATE PacFileDataWithSource {
   PacFileDataWithSource();
-  explicit PacFileDataWithSource(const PacFileDataWithSource&);
+  PacFileDataWithSource(const PacFileDataWithSource&);
   ~PacFileDataWithSource();
 
   PacFileDataWithSource& operator=(const PacFileDataWithSource&);

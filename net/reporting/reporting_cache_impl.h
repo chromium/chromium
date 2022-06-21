@@ -35,7 +35,7 @@ namespace net {
 
 class ReportingCacheImpl : public ReportingCache {
  public:
-  ReportingCacheImpl(ReportingContext* context);
+  explicit ReportingCacheImpl(ReportingContext* context);
 
   ReportingCacheImpl(const ReportingCacheImpl&) = delete;
   ReportingCacheImpl& operator=(const ReportingCacheImpl&) = delete;

@@ -339,7 +339,7 @@ class QuicStreamFactory::CryptoClientConfigHandle
     map_iterator->second->AddRef();
   }
 
-  explicit CryptoClientConfigHandle(const CryptoClientConfigHandle& other)
+  CryptoClientConfigHandle(const CryptoClientConfigHandle& other)
       : CryptoClientConfigHandle(other.map_iterator_) {}
 
   CryptoClientConfigHandle& operator=(const CryptoClientConfigHandle&) = delete;

@@ -90,7 +90,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
 
   // The default limit here is half of what's available on our target OS where
   // Chrome has the lowest limit.
-  SimpleFileTracker(int file_limit = 512);
+  explicit SimpleFileTracker(int file_limit = 512);
 
   SimpleFileTracker(const SimpleFileTracker&) = delete;
   SimpleFileTracker& operator=(const SimpleFileTracker&) = delete;

@@ -192,7 +192,8 @@ struct NET_EXPORT QuicParams {
 class NET_EXPORT_PRIVATE QuicContext {
  public:
   QuicContext();
-  QuicContext(std::unique_ptr<quic::QuicConnectionHelperInterface> helper);
+  explicit QuicContext(
+      std::unique_ptr<quic::QuicConnectionHelperInterface> helper);
   ~QuicContext();
 
   quic::QuicConnectionHelperInterface* helper() { return helper_.get(); }

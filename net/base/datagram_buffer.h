@@ -44,7 +44,7 @@ class NET_EXPORT_PRIVATE DatagramBufferPool {
  public:
   // |max_buffer_size| must be >= largest |buf_len| provided to
   // ||New()|.
-  DatagramBufferPool(size_t max_buffer_size);
+  explicit DatagramBufferPool(size_t max_buffer_size);
   DatagramBufferPool(const DatagramBufferPool&) = delete;
   DatagramBufferPool& operator=(const DatagramBufferPool&) = delete;
   virtual ~DatagramBufferPool();
@@ -86,7 +86,7 @@ class NET_EXPORT_PRIVATE DatagramBuffer {
   size_t length() const;
 
  protected:
-  DatagramBuffer(size_t max_packet_size);
+  explicit DatagramBuffer(size_t max_packet_size);
 
  private:
   friend class DatagramBufferPool;

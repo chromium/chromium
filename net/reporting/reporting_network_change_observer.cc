@@ -19,7 +19,7 @@ class ReportingNetworkChangeObserverImpl
     : public ReportingNetworkChangeObserver,
       public NetworkChangeNotifier::NetworkChangeObserver {
  public:
-  ReportingNetworkChangeObserverImpl(ReportingContext* context)
+  explicit ReportingNetworkChangeObserverImpl(ReportingContext* context)
       : context_(context) {
     NetworkChangeNotifier::AddNetworkChangeObserver(this);
   }

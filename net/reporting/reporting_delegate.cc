@@ -14,7 +14,7 @@ namespace {
 
 class ReportingDelegateImpl : public ReportingDelegate {
  public:
-  ReportingDelegateImpl(URLRequestContext* request_context)
+  explicit ReportingDelegateImpl(URLRequestContext* request_context)
       : request_context_(request_context) {
     DCHECK(request_context);
   }

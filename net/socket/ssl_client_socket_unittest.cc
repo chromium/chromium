@@ -1244,7 +1244,7 @@ int MakeHTTPRequest(StreamSocket* socket, const char* path = "/") {
 // as early data.
 class ZeroRTTResponse : public test_server::HttpResponse {
  public:
-  ZeroRTTResponse(bool zero_rtt) : zero_rtt_(zero_rtt) {}
+  explicit ZeroRTTResponse(bool zero_rtt) : zero_rtt_(zero_rtt) {}
 
   ZeroRTTResponse(const ZeroRTTResponse&) = delete;
   ZeroRTTResponse& operator=(const ZeroRTTResponse&) = delete;

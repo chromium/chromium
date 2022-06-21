@@ -135,7 +135,7 @@ class BasicHttpResponse : public HttpResponse {
 
 class DelayedHttpResponse : public BasicHttpResponse {
  public:
-  DelayedHttpResponse(const base::TimeDelta delay);
+  explicit DelayedHttpResponse(const base::TimeDelta delay);
 
   DelayedHttpResponse(const DelayedHttpResponse&) = delete;
   DelayedHttpResponse& operator=(const DelayedHttpResponse&) = delete;

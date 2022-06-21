@@ -68,7 +68,7 @@ base::Lock& NetworkChangeNotifierCreationLock() {
 
 class MockNetworkChangeNotifier : public NetworkChangeNotifier {
  public:
-  MockNetworkChangeNotifier(
+  explicit MockNetworkChangeNotifier(
       std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier)
       : NetworkChangeNotifier(
             NetworkChangeCalculatorParams(),

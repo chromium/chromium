@@ -35,7 +35,7 @@ struct Header;
 // 4.1.3.
 struct NET_EXPORT_PRIVATE DnsResourceRecord {
   DnsResourceRecord();
-  explicit DnsResourceRecord(const DnsResourceRecord& other);
+  DnsResourceRecord(const DnsResourceRecord& other);
   DnsResourceRecord(DnsResourceRecord&& other);
   ~DnsResourceRecord();
 

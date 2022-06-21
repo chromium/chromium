@@ -18,7 +18,8 @@ namespace net {
 // QuicCryptoClientConfig and returns it as needed. Does nothing on destruction.
 class TestQuicCryptoClientConfigHandle : public QuicCryptoClientConfigHandle {
  public:
-  TestQuicCryptoClientConfigHandle(quic::QuicCryptoClientConfig* crypto_config);
+  explicit TestQuicCryptoClientConfigHandle(
+      quic::QuicCryptoClientConfig* crypto_config);
 
   TestQuicCryptoClientConfigHandle& operator=(
       const TestQuicCryptoClientConfigHandle&) = delete;

@@ -124,8 +124,8 @@ class CaptivePortalTabHelperTest : public content::RenderViewHostTestHarness {
         .Times(1);
     auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
         url, web_contents());
-    navigation->SetResolveErrorInfo({net::ERR_CERT_COMMON_NAME_INVALID,
-                                     true /* is_secure_network_error */});
+    navigation->SetResolveErrorInfo(net::ResolveErrorInfo(
+        net::ERR_CERT_COMMON_NAME_INVALID, true /* is_secure_network_error */));
     navigation->Fail(net::ERR_NAME_NOT_RESOLVED);
     EXPECT_CALL(mock_reloader(),
                 OnLoadCommitted(net::ERR_NAME_NOT_RESOLVED,

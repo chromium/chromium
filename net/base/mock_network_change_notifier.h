@@ -79,7 +79,7 @@ class MockNetworkChangeNotifier : public NetworkChangeNotifier {
 
  private:
   // Create using MockNetworkChangeNotifier::Create().
-  MockNetworkChangeNotifier(
+  explicit MockNetworkChangeNotifier(
       std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier);
 
   bool force_network_handles_supported_ = false;

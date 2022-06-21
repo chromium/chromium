@@ -234,10 +234,11 @@ class NET_EXPORT HttpServerProperties
   //
   // |clock| is used for converting base::TimeTicks to base::Time for
   // wherever base::Time is preferable.
-  HttpServerProperties(std::unique_ptr<PrefDelegate> pref_delegate = nullptr,
-                       NetLog* net_log = nullptr,
-                       const base::TickClock* tick_clock = nullptr,
-                       base::Clock* clock = nullptr);
+  explicit HttpServerProperties(
+      std::unique_ptr<PrefDelegate> pref_delegate = nullptr,
+      NetLog* net_log = nullptr,
+      const base::TickClock* tick_clock = nullptr,
+      base::Clock* clock = nullptr);
 
   HttpServerProperties(const HttpServerProperties&) = delete;
   HttpServerProperties& operator=(const HttpServerProperties&) = delete;

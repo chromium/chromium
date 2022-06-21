@@ -24,7 +24,7 @@ const size_t kSmallBufferSize = 1;
 
 class TestFilterSourceStreamBase : public FilterSourceStream {
  public:
-  TestFilterSourceStreamBase(std::unique_ptr<SourceStream> upstream)
+  explicit TestFilterSourceStreamBase(std::unique_ptr<SourceStream> upstream)
       : FilterSourceStream(SourceStream::TYPE_NONE, std::move(upstream)) {}
 
   TestFilterSourceStreamBase(const TestFilterSourceStreamBase&) = delete;

@@ -1620,7 +1620,8 @@ class MockCertIssuerSource : public CertIssuerSource {
 // only be used with Return, not SetArgPointee.)
 class CertIssuerSourceRequestMover {
  public:
-  CertIssuerSourceRequestMover(std::unique_ptr<CertIssuerSource::Request> req)
+  explicit CertIssuerSourceRequestMover(
+      std::unique_ptr<CertIssuerSource::Request> req)
       : request_(std::move(req)) {}
   void MoveIt(const ParsedCertificate* cert,
               std::unique_ptr<CertIssuerSource::Request>* out_req) {

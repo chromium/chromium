@@ -77,7 +77,7 @@ class EmbeddedTestServerAndroid {
   // Connection listener forwarding notifications to EmbeddedTestServerAndroid.
   class ConnectionListener : public EmbeddedTestServerConnectionListener {
    public:
-    ConnectionListener(EmbeddedTestServerAndroid* test_server_android);
+    explicit ConnectionListener(EmbeddedTestServerAndroid* test_server_android);
     ~ConnectionListener() override;
 
     std::unique_ptr<StreamSocket> AcceptedSocket(

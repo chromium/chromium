@@ -58,7 +58,7 @@ const char kTestNetworkDelegateRequestIdKey[] =
 
 class TestRequestId : public base::SupportsUserData::Data {
  public:
-  TestRequestId(int id) : id_(id) {}
+  explicit TestRequestId(int id) : id_(id) {}
   ~TestRequestId() override = default;
 
   int id() const { return id_; }

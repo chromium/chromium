@@ -31,7 +31,7 @@ void DoCallback(const base::WeakPtr<ThreadedSSLPrivateKey>& key,
 class ThreadedSSLPrivateKey::Core
     : public base::RefCountedThreadSafe<ThreadedSSLPrivateKey::Core> {
  public:
-  Core(std::unique_ptr<ThreadedSSLPrivateKey::Delegate> delegate)
+  explicit Core(std::unique_ptr<ThreadedSSLPrivateKey::Delegate> delegate)
       : delegate_(std::move(delegate)) {}
 
   ThreadedSSLPrivateKey::Delegate* delegate() { return delegate_.get(); }

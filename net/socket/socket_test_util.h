@@ -953,8 +953,8 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
 
 class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
  public:
-  MockUDPClientSocket(SocketDataProvider* data = nullptr,
-                      net::NetLog* net_log = nullptr);
+  explicit MockUDPClientSocket(SocketDataProvider* data = nullptr,
+                               net::NetLog* net_log = nullptr);
 
   MockUDPClientSocket(const MockUDPClientSocket&) = delete;
   MockUDPClientSocket& operator=(const MockUDPClientSocket&) = delete;

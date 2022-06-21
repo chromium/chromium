@@ -1557,8 +1557,8 @@ TEST_P(NetworkErrorLoggingServiceTest, DuplicateEntriesInStore) {
 
   // The first call to any of the public methods triggers a load.
   service()->OnHeader(kNik_, kOrigin_, kServerIP_, kHeader_);
-  EXPECT_TRUE(store()->VerifyCommands(
-      {MockPersistentNelStore::Command::Type::LOAD_NEL_POLICIES}));
+  EXPECT_TRUE(store()->VerifyCommands({MockPersistentNelStore::Command(
+      MockPersistentNelStore::Command::Type::LOAD_NEL_POLICIES)}));
   FinishLoading(/*load_success=*/true);
 
   EXPECT_EQ(service()->GetPolicyKeysForTesting().size(), 1u);

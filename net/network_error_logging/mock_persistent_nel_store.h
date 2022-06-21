@@ -36,7 +36,7 @@ class MockPersistentNelStore
     // commands.
     Command(Type type, const NetworkErrorLoggingService::NelPolicy& policy);
     // Constructor for FLUSH commands.
-    Command(Type type);
+    explicit Command(Type type);
 
     Command(const Command& other);
     Command(Command&& other);

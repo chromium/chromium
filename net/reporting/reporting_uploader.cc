@@ -109,7 +109,8 @@ struct PendingUpload {
 
 class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
  public:
-  ReportingUploaderImpl(const URLRequestContext* context) : context_(context) {
+  explicit ReportingUploaderImpl(const URLRequestContext* context)
+      : context_(context) {
     DCHECK(context_);
   }
 

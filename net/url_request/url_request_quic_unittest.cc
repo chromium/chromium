@@ -280,7 +280,7 @@ class URLRequestQuicTest
 // received.
 class CheckLoadTimingDelegate : public TestDelegate {
  public:
-  CheckLoadTimingDelegate(bool session_reused)
+  explicit CheckLoadTimingDelegate(bool session_reused)
       : session_reused_(session_reused) {}
 
   CheckLoadTimingDelegate(const CheckLoadTimingDelegate&) = delete;

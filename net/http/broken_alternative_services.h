@@ -50,7 +50,7 @@ typedef std::list<std::pair<BrokenAlternativeService, base::TimeTicks>>
 class RecentlyBrokenAlternativeServices
     : public base::LRUCache<BrokenAlternativeService, int> {
  public:
-  RecentlyBrokenAlternativeServices(
+  explicit RecentlyBrokenAlternativeServices(
       int max_recently_broken_alternative_service_entries)
       : base::LRUCache<BrokenAlternativeService, int>(
             max_recently_broken_alternative_service_entries) {}

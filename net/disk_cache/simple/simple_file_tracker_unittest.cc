@@ -38,7 +38,8 @@ class SimpleFileTrackerTest : public DiskCacheTest {
   // create/delete SimpleSynchronousEntry objects.
   class SyncEntryDeleter {
    public:
-    SyncEntryDeleter(SimpleFileTrackerTest* fixture) : fixture_(fixture) {}
+    explicit SyncEntryDeleter(SimpleFileTrackerTest* fixture)
+        : fixture_(fixture) {}
     void operator()(SimpleSynchronousEntry* entry) {
       fixture_->DeleteSyncEntry(entry);
     }

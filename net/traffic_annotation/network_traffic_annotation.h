@@ -87,7 +87,7 @@ struct NetworkTrafficAnnotationTag {
   friend struct MutableNetworkTrafficAnnotationTag;
 
  private:
-  constexpr NetworkTrafficAnnotationTag(int32_t unique_id_hash_code_)
+  constexpr explicit NetworkTrafficAnnotationTag(int32_t unique_id_hash_code_)
       : unique_id_hash_code(unique_id_hash_code_) {}
 };
 
@@ -123,7 +123,8 @@ struct PartialNetworkTrafficAnnotationTag {
       : unique_id_hash_code(unique_id_hash_code_),
         completing_id_hash_code(completing_id_hash_code_) {}
 #else
-  constexpr PartialNetworkTrafficAnnotationTag(int32_t unique_id_hash_code_)
+  constexpr explicit PartialNetworkTrafficAnnotationTag(
+      int32_t unique_id_hash_code_)
       : unique_id_hash_code(unique_id_hash_code_) {}
 #endif
 };

@@ -135,7 +135,8 @@ struct NET_EXPORT SSLServerConfig {
    public:
     ECHKeysContainer();
     // Intentionally allow implicit conversion from bssl::UniquePtr.
-    ECHKeysContainer(bssl::UniquePtr<SSL_ECH_KEYS> keys);
+    ECHKeysContainer(  // NOLINT(google-explicit-constructor)
+        bssl::UniquePtr<SSL_ECH_KEYS> keys);
     ~ECHKeysContainer();
 
     ECHKeysContainer(const ECHKeysContainer& other);

@@ -45,7 +45,7 @@ class NET_EXPORT_PRIVATE Input {
   // Creates an Input from a std::string. The lifetimes are a bit subtle when
   // using this function: The constructed Input is only valid so long as |s| is
   // still alive and not mutated.
-  Input(const std::string* s);
+  explicit Input(const std::string* s);
 
   // Returns the length in bytes of an Input's data.
   constexpr size_t Length() const { return len_; }

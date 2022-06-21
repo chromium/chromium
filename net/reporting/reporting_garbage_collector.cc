@@ -26,7 +26,7 @@ namespace {
 class ReportingGarbageCollectorImpl : public ReportingGarbageCollector,
                                       public ReportingCacheObserver {
  public:
-  ReportingGarbageCollectorImpl(ReportingContext* context)
+  explicit ReportingGarbageCollectorImpl(ReportingContext* context)
       : context_(context), timer_(std::make_unique<base::OneShotTimer>()) {
     context_->AddCacheObserver(this);
   }
