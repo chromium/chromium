@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "components/invalidation/impl/status.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -18,13 +17,9 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace invalidation {
-
-constexpr base::Feature kInvalidationsSkipUnsubscription{
-    "InvalidationsSkipUnsubscription", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // A single request to subscribe to a topic on the per-user-topic service.
 class PerUserTopicSubscriptionRequest {
