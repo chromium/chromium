@@ -9,9 +9,12 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -59,6 +62,78 @@ class AttributionSrcLocalFrameClient : public EmptyLocalFrameClient {
 
  private:
   ResourceRequestHead request_head_;
+};
+
+class MockDataHost : public mojom::blink::AttributionDataHost {
+ public:
+  explicit MockDataHost(
+      mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host) {
+    receiver_.Bind(std::move(data_host));
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&MockDataHost::OnDisconnect, base::Unretained(this)));
+  }
+
+  ~MockDataHost() override = default;
+
+  size_t disconnects() const { return disconnects_; }
+
+ private:
+  void OnDisconnect() { disconnects_++; }
+
+  // mojom::blink::AttributionDataHost:
+  void SourceDataAvailable(
+      mojom::blink::AttributionSourceDataPtr data) override {}
+  void TriggerDataAvailable(
+      mojom::blink::AttributionTriggerDataPtr data) override {}
+
+  size_t disconnects_ = 0;
+  mojo::Receiver<mojom::blink::AttributionDataHost> receiver_{this};
+};
+
+class MockAttributionHost : public mojom::blink::ConversionHost {
+ public:
+  explicit MockAttributionHost(blink::AssociatedInterfaceProvider* provider) {
+    provider->OverrideBinderForTesting(
+        mojom::blink::ConversionHost::Name_,
+        base::BindRepeating(&MockAttributionHost::BindReceiver,
+                            base::Unretained(this)));
+  }
+
+  ~MockAttributionHost() override = default;
+
+  void WaitUntilBoundAndFlush() {
+    if (receiver_.is_bound())
+      return;
+    base::RunLoop wait_loop;
+    quit_ = wait_loop.QuitClosure();
+    wait_loop.Run();
+    receiver_.FlushForTesting();
+  }
+
+  MockDataHost* mock_data_host() { return mock_data_host_.get(); }
+
+ private:
+  void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.Bind(
+        mojo::PendingAssociatedReceiver<mojom::blink::ConversionHost>(
+            std::move(handle)));
+    if (quit_)
+      std::move(quit_).Run();
+  }
+
+  void RegisterDataHost(mojo::PendingReceiver<mojom::blink::AttributionDataHost>
+                            data_host) override {
+    mock_data_host_ = std::make_unique<MockDataHost>(std::move(data_host));
+  }
+
+  void RegisterNavigationDataHost(
+      mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host,
+      const blink::AttributionSrcToken& attribution_src_token) override {}
+
+  mojo::AssociatedReceiver<mojom::blink::ConversionHost> receiver_{this};
+  base::OnceClosure quit_;
+
+  std::unique_ptr<MockDataHost> mock_data_host_;
 };
 
 class AttributionSrcLoaderTest : public PageTestBase {
@@ -178,6 +253,25 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
   ASSERT_TRUE(dict);
   ASSERT_EQ(dict->size(), 1u);
   EXPECT_TRUE(dict->contains("navigation-source"));
+}
+
+// Regression test for crbug.com/1336797, where we didn't eagerly disconnect a
+// source-eligible data host even if we knew there is no more data to be
+// received on that channel. This test confirms the channel properly
+// disconnects in this case.
+TEST_F(AttributionSrcLoaderTest, EagerlyClosesRemote) {
+  KURL url = ToKURL("https://example1.com/foo.html");
+  RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
+
+  MockAttributionHost host(
+      GetFrame().GetRemoteNavigationAssociatedInterfaces());
+  attribution_src_loader_->Register(url, /*element=*/nullptr);
+  host.WaitUntilBoundAndFlush();
+  url_test_helpers::ServeAsynchronousRequests();
+
+  auto* mock_data_host = host.mock_data_host();
+  ASSERT_TRUE(mock_data_host);
+  EXPECT_EQ(mock_data_host->disconnects(), 1u);
 }
 
 }  // namespace
