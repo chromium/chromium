@@ -476,9 +476,12 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TreeModelDeletion) {
 
   auto tree_model =
       CookiesTreeModel::CreateForProfile(chrome_test_utils::GetProfile(this));
-  CookiesTreeObserver observer;
-  tree_model->AddCookiesTreeObserver(&observer);
-  observer.AwaitTreeModelEndBatch();
+  {
+    CookiesTreeObserver observer;
+    tree_model->AddCookiesTreeObserver(&observer);
+    observer.AwaitTreeModelEndBatch();
+    tree_model->RemoveCookiesTreeObserver(&observer);
+  }
 
   tree_model->DeleteAllStoredObjects();
 
