@@ -184,6 +184,8 @@ void MediaStreamDispatcherHostTestcase::TearDown(
     base::OnceClosure done_closure) {
   mojolpm::GetContext()->EndTestcase();
 
+  media_stream_manager_->WillDestroyCurrentMessageLoop();
+
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaStreamDispatcherHostTestcase::TearDownOnUIThread,
@@ -193,8 +195,6 @@ void MediaStreamDispatcherHostTestcase::TearDown(
 void MediaStreamDispatcherHostTestcase::TearDownOnUIThread(
     base::OnceClosure done_closure) {
   audio_manager_->Shutdown();
-
-  media_stream_manager_->WillDestroyCurrentMessageLoop();
 
   std::move(done_closure).Run();
 }
