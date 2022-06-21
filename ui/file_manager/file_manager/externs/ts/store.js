@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {State} from './state.js';
+
 /**
  * @fileoverview Simplified interfaces of the Store used by Files app. Used to
  * be able to type check the JS files using Closure compiler.
@@ -9,7 +11,7 @@
  */
 
 /** @record */
-class Store {
+export class Store {
   /** @param {!Object} action */
   dispatch(action) {}
 
@@ -29,6 +31,6 @@ class Store {
  * @record
  */
 class StoreObserver {
-  /** @param {!Object} newState */
+  /** @param {!State} newState */
   onStateChanged(newState) {}
 }

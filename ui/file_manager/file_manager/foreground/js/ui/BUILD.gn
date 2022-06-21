@@ -66,10 +66,12 @@ html_to_js("web_components") {
 js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
+                    "js_module_root=gen/ui/file_manager/tsc/",
                     "js_module_root=../../ui/file_manager/",
                     "js_module_root=gen/ui/file_manager/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                    "hide_warnings_for=gen/ui/file_manager/tsc/",
                   ]
 
   deps = [
@@ -114,6 +116,7 @@ js_type_check("closure_compile_jsmodules") {
     "table:table_header",
     "table:table_list",
     "table:table_splitter",
+    "//ui/file_manager:js_from_ts",
   ]
 }
 

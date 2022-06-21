@@ -4,7 +4,7 @@
 
 import '../widgets/breadcrumbs.js';
 
-import {CurrentDirectory, State} from '../externs/ts/state.js';
+import {CurrentDirectory, PropStatus, State} from '../externs/ts/state.js';
 import {changeDirectory} from '../state/actions.js';
 import {FileKey} from '../state/file_key.js';
 import {getStore, Store} from '../state/store.js';
@@ -15,7 +15,7 @@ import {BREADCRUMB_CLICKED, BreadcrumbClickedEvent} from '../widgets/breadcrumbs
  * path. This controller component is responsible for constructing the path
  * and passing it to the Breadcrumb element.
  */
-export class BreadcrumbsController {
+export class BreadcrumbsContainer {
   private store_: Store;
   private currentFileKey_: FileKey|null;
   private container_: HTMLElement;
@@ -30,13 +30,15 @@ export class BreadcrumbsController {
   }
 
   onStateChanged(state: State) {
-    const key = state.currentDirectory && state.currentDirectory.key;
-    if (!key) {
+    const currentDir = state.currentDirectory;
+    const key = currentDir && currentDir.key;
+    if (!key || !currentDir) {
       this.hide_();
       return;
     }
 
-    if (this.currentFileKey_ !== key) {
+    if (currentDir.status == PropStatus.SUCCESS &&
+        this.currentFileKey_ !== key) {
       this.show_(state.currentDirectory);
     }
   }

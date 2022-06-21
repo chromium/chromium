@@ -93,6 +93,7 @@ group("js_modules") {
 js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
+                    "js_module_root=gen/ui/file_manager/tsc/",
                     "js_module_root=gen/ui/file_manager/",
                     "js_module_root=../../ui/file_manager/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
@@ -162,6 +163,7 @@ js_type_check("closure_compile_jsmodules") {
     ":thumbnail_loader",
     ":toolbar_controller",
     ":webui_command_extender",
+    "//ui/file_manager:js_from_ts",
   ]
 }
 
@@ -438,14 +440,14 @@ js_library("directory_model") {
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
+    "//ui/file_manager/file_manager/externs/ts:state",
+    "//ui/file_manager/file_manager/externs/ts:store",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target.m",
     "//ui/webui/resources/js/cr/ui:list_selection_model.m",
     "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
   ]
-
-  externs_list = [ "//ui/file_manager/file_manager/externs/ts/store.js" ]
 }
 
 js_unittest("directory_model_unittest.m") {
@@ -1367,6 +1369,7 @@ js_test_gen_html("js_test_gen_html_modules") {
 
   closure_flags = strict_error_checking_closure_args + [
                     "generate_exports=false",
+                    "js_module_root=gen/ui/file_manager/tsc/",
                     "js_module_root=./gen/ui",
                     "js_module_root=../../ui/file_manager/",
                     "js_module_root=./gen/ui/file_manager/",
@@ -1375,7 +1378,9 @@ js_test_gen_html("js_test_gen_html_modules") {
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                     "hide_warnings_for=third_party/",
+                    "hide_warnings_for=gen/ui/file_manager/tsc/",
                   ]
+  extra_deps = [ "//ui/file_manager:js_from_ts" ]
 }
 
 tsc_folder =

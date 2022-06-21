@@ -12,6 +12,7 @@ import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
+import {BreadcrumbsContainer} from '../../../containers/breadcrumbs_container.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
 import {FilesToast} from '../../elements/files_toast.js';
@@ -170,7 +171,7 @@ export class FileManagerUI {
 
     /**
      * Breadcrumb controller.
-     * @type {BreadcrumbController}
+     * @type {BreadcrumbController|BreadcrumbsContainer}
      */
     this.breadcrumbController = null;
 
@@ -442,9 +443,14 @@ export class FileManagerUI {
         this.dialogType_);
 
     // Breadcrumb controller.
-    this.breadcrumbController = new BreadcrumbController(
-        queryRequiredElement('#location-breadcrumbs', this.element),
-        volumeManager, this.listContainer);
+    if (util.isFilesAppExperimental()) {
+      this.breadcrumbController = new BreadcrumbsContainer(
+          queryRequiredElement('#location-breadcrumbs', this.element));
+    } else {
+      this.breadcrumbController = new BreadcrumbController(
+          queryRequiredElement('#location-breadcrumbs', this.element),
+          volumeManager, this.listContainer);
+    }
 
     // Splitter.
     this.decorateSplitter_(

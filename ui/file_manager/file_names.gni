@@ -271,7 +271,7 @@ ts_files = [
   "file_manager/state/actions.ts",
   "file_manager/state/file_key.ts",
   "file_manager/widgets/breadcrumbs.ts",
-  "file_manager/controllers/breadcrumbs_controller.ts",
+  "file_manager/containers/breadcrumbs_container.ts",
 ]
 
 # HTML template files that are used to generate the ".html.ts"

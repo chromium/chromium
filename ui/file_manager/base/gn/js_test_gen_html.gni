@@ -87,6 +87,9 @@ template("js_test_gen_html") {
                                "is_polymer3",
                              ])
       deps = [ dep ]
+      if (defined(invoker.extra_deps)) {
+        deps += invoker.extra_deps
+      }
     }
   }
 

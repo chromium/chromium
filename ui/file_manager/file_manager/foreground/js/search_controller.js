@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {str, strf} from '../../common/js/util.js';
+import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -283,14 +283,18 @@ export class SearchController {
         const locationInfo = this.currentLocationInfo_;
         const rootEntry = locationInfo.volumeInfo.displayRoot;
         if (rootEntry) {
-          this.breadcrumbController_.show(rootEntry);
+          if (!util.isFilesAppExperimental()) {
+            this.breadcrumbController_.show(rootEntry);
+          }
         }
       }
     };
 
     const onClearSearch = function() {
-      this.breadcrumbController_.show(
-          this.directoryModel_.getCurrentDirEntry());
+      if (!util.isFilesAppExperimental()) {
+        this.breadcrumbController_.show(
+            this.directoryModel_.getCurrentDirEntry());
+      }
     };
 
     this.directoryModel_.search(

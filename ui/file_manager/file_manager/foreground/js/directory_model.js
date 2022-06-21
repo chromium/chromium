@@ -16,6 +16,8 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {EntriesChangedEvent} from '../../externs/entries_changed_event.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {PropStatus, State} from '../../externs/ts/state.js';
+import {Store} from '../../externs/ts/store.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {changeDirectory} from '../../state/actions.js';
@@ -134,6 +136,43 @@ export class DirectoryModel extends EventTarget {
 
     /** @private {!Store} */
     this.store_ = getStore();
+    this.store_.subscribe(this);
+  }
+
+  /** @param {!State} state latest state from the store. */
+  onStateChanged(state) {
+    const currentEntry = this.getCurrentDirEntry();
+    const currentURL = currentEntry ? currentEntry.toURL() : null;
+    let newURL = state.currentDirectory ? state.currentDirectory.key : null;
+
+    // If the directory is the same, ignore it.
+    if (currentURL === newURL) {
+      return;
+    }
+
+    // When something changed the current directory status to STARTED, Here we
+    // initiate the actual change and will update to SUCCESS at the end.
+    if (state.currentDirectory.status == PropStatus.STARTED) {
+      newURL = /** @type {string} */ (newURL);
+      const entry =
+          state.allEntries[newURL] ? state.allEntries[newURL].entry : null;
+
+      if (!entry) {
+        // TODO(lucmult): Fix potential race condition in this await/then.
+        util.urlToEntry(newURL).then((entry) => {
+          if (!entry) {
+            console.error(`Failed to find the new directory key ${newURL}`);
+            return;
+          }
+          // Initiate the directory change.
+          this.changeDirectoryEntry(/** @type {!DirectoryEntry} */ (entry));
+        });
+        return;
+      }
+
+      // Initiate the directory change.
+      this.changeDirectoryEntry(/** @type {!DirectoryEntry} */ (entry));
+    }
   }
 
   /**
@@ -1179,6 +1218,11 @@ export class DirectoryModel extends EventTarget {
       event.newDirEntry = dirEntry;
       event.volumeChanged = previousVolumeInfo !== currentVolumeInfo;
       this.dispatchEvent(event);
+      if (util.isFilesAppExperimental()) {
+        // Notify the Store that the new directory has successfully changed.
+        this.store_.dispatch(
+            changeDirectory({to: dirEntry, status: PropStatus.SUCCESS}));
+      }
     });
   }
 

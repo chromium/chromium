@@ -39,7 +39,6 @@ function getEntry(state: State, action: ChangeDirectoryAction): Entry|
 
   const entry = state.allEntries[key!] ? state.allEntries[key!]!.entry : null;
   if (!entry) {
-    console.error(`Invalid changeDirectory key: ${key}`);
     return null;
   }
   return entry;
@@ -53,6 +52,7 @@ export function cacheEntries(currentState: State, action: Action): State {
 
     const entry = getEntry(currentState, (action as ChangeDirectoryAction));
     if (!entry) {
+      // Nothing to cache, just continue.
       return currentState;
     }
 
@@ -72,8 +72,12 @@ export function changeDirectory(
     currentState: State, action: ChangeDirectoryAction): CurrentDirectory|null {
   const fileData = currentState.allEntries[action.key];
   if (!fileData) {
-    console.debug(`Can't find the entry with ${action.key}`);
-    return currentState.currentDirectory || null;
+    // The new directory might not be in the allEntries yet.
+    return {
+      key: action.key,
+      status: action.status,
+      pathComponents: [],
+    };
   }
 
   // TODO(lucmult): Find a correct way to grab the VolumeManager.
