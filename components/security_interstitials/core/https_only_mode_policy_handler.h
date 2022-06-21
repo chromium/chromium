@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_POLICY_HANDLER_H_
-#define CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_POLICY_HANDLER_H_
+#ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_POLICY_HANDLER_H_
+#define COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_POLICY_HANDLER_H_
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
@@ -15,7 +15,7 @@ namespace policy {
 // effect.
 class HttpsOnlyModePolicyHandler : public TypeCheckingPolicyHandler {
  public:
-  HttpsOnlyModePolicyHandler();
+  explicit HttpsOnlyModePolicyHandler(const char* const pref_name);
   ~HttpsOnlyModePolicyHandler() override;
   HttpsOnlyModePolicyHandler(const HttpsOnlyModePolicyHandler&) = delete;
   HttpsOnlyModePolicyHandler& operator=(const HttpsOnlyModePolicyHandler&) =
@@ -24,8 +24,12 @@ class HttpsOnlyModePolicyHandler : public TypeCheckingPolicyHandler {
   // ConfigurationPolicyHandler methods:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
+
+ private:
+  // Name of the HTTPS-Only pref.
+  const char* const pref_name_;
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_POLICY_HANDLER_H_
+#endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_POLICY_HANDLER_H_

@@ -1689,8 +1689,6 @@ static_library("browser") {
     "ssl/https_only_mode_controller_client.h",
     "ssl/https_only_mode_navigation_throttle.cc",
     "ssl/https_only_mode_navigation_throttle.h",
-    "ssl/https_only_mode_policy_handler.cc",
-    "ssl/https_only_mode_policy_handler.h",
     "ssl/https_only_mode_tab_helper.cc",
     "ssl/https_only_mode_tab_helper.h",
     "ssl/https_only_mode_upgrade_interceptor.cc",
