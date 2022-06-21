@@ -20,10 +20,10 @@ class MockCertProvisioningScheduler : public CertProvisioningScheduler {
   ~MockCertProvisioningScheduler() override;
 
   MOCK_METHOD(bool,
-              UpdateOneCert,
+              UpdateOneWorker,
               (const CertProfileId& cert_profile_id),
               (override));
-  MOCK_METHOD(void, UpdateAllCerts, (), (override));
+  MOCK_METHOD(void, UpdateAllWorkers, (), (override));
   MOCK_METHOD(const WorkerMap&, GetWorkers, (), (const override));
   MOCK_METHOD((const base::flat_map<CertProfileId, FailedWorkerInfo>&),
               GetFailedCertProfileIds,

@@ -390,8 +390,8 @@ TEST_F(CertProvisioningAshTest, UpdateOneProcess) {
   {
     // The service will try different schedulers until it finds the one that
     // contains the profile id.
-    EXPECT_CALL(user_scheduler_, UpdateOneCert("111")).WillOnce(Return(true));
-    EXPECT_CALL(device_scheduler_, UpdateOneCert).Times(0);
+    EXPECT_CALL(user_scheduler_, UpdateOneWorker("111")).WillOnce(Return(true));
+    EXPECT_CALL(device_scheduler_, UpdateOneWorker).Times(0);
 
     service_.UpdateOneProcess("111");
 
@@ -403,8 +403,9 @@ TEST_F(CertProvisioningAshTest, UpdateOneProcess) {
   {
     // If the first one reports that it doesn't own the id, the service will try
     // another one.
-    EXPECT_CALL(user_scheduler_, UpdateOneCert("222")).WillOnce(Return(false));
-    EXPECT_CALL(device_scheduler_, UpdateOneCert("222"))
+    EXPECT_CALL(user_scheduler_, UpdateOneWorker("222"))
+        .WillOnce(Return(false));
+    EXPECT_CALL(device_scheduler_, UpdateOneWorker("222"))
         .WillOnce(Return(false));
 
     service_.UpdateOneProcess("222");

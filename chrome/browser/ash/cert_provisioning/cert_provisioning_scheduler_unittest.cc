@@ -257,7 +257,7 @@ TEST_F(CertProvisioningSchedulerTest, Success) {
   // Check one more time that scheduler doesn't create new workers for
   // finished certificate profiles (the factory will fail on an attempt to
   // do so).
-  scheduler.UpdateAllCerts();
+  scheduler.UpdateAllWorkers();
 
   FastForwardBy(base::Seconds(100));
 }
@@ -313,7 +313,7 @@ TEST_F(CertProvisioningSchedulerTest, WorkerFailed) {
 
   // Check one more time that scheduler doesn't create new workers for failed
   // certificate profiles (the factory will fail on an attempt to do so).
-  scheduler.UpdateAllCerts();
+  scheduler.UpdateAllWorkers();
 }
 
 TEST_F(CertProvisioningSchedulerTest, InitialAndDailyUpdates) {
@@ -471,7 +471,7 @@ TEST_F(CertProvisioningSchedulerTest, MultipleWorkers) {
   certificate_helper_->AddCert(kCertScope, kCertProfileId0);
 
   // Make scheduler check workers state.
-  scheduler.UpdateAllCerts();
+  scheduler.UpdateAllWorkers();
 
   EXPECT_EQ(scheduler.GetWorkers().size(), 1U);
   EXPECT_TRUE(
@@ -479,7 +479,7 @@ TEST_F(CertProvisioningSchedulerTest, MultipleWorkers) {
 
   // Check one more time that scheduler doesn't create new workers for failed
   // certificate profiles (the factory will fail on an attempt to do so).
-  scheduler.UpdateAllCerts();
+  scheduler.UpdateAllWorkers();
   EXPECT_EQ(scheduler.GetWorkers().size(), 1U);
 }
 
@@ -640,7 +640,7 @@ TEST_F(CertProvisioningSchedulerTest, InconsistentDataErrorHandling) {
 
   // If another update happens, workers with matching policy versions should not
   // be deleted.
-  scheduler.UpdateAllCerts();
+  scheduler.UpdateAllWorkers();
   EXPECT_EQ(scheduler.GetWorkers().size(), 1U);
 
   // On policy update if existing profile has changed its policy_version,
@@ -817,7 +817,7 @@ TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
   }
 }
 
-TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
+TEST_F(CertProvisioningSchedulerTest, UpdateOneWorker) {
   const CertScope kCertScope = CertScope::kUser;
 
   CertProvisioningSchedulerImpl scheduler(
@@ -836,7 +836,7 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
   VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   // There is no policies yet, |kCertProfileId| will not be found.
-  scheduler.UpdateOneCert(kCertProfileId);
+  scheduler.UpdateOneWorker(kCertProfileId);
   FastForwardBy(base::Seconds(1));
   ASSERT_TRUE(scheduler.GetWorkers().empty());
 
@@ -860,7 +860,7 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
     worker->SetExpectations(/*do_step_times=*/Exactly(1),
                             /*is_waiting=*/true, cert_profile);
 
-    scheduler.UpdateOneCert(kCertProfileId);
+    scheduler.UpdateOneWorker(kCertProfileId);
     FastForwardBy(base::Seconds(1));
     ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
   }
@@ -870,7 +870,7 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
     worker->SetExpectations(/*do_step_times=*/Exactly(0),
                             /*is_waiting=*/false, cert_profile);
 
-    scheduler.UpdateOneCert(kCertProfileId);
+    scheduler.UpdateOneWorker(kCertProfileId);
     FastForwardBy(base::Seconds(1));
     ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
   }
@@ -883,7 +883,7 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
     worker->SetExpectations(/*do_step_times=*/Exactly(0),
                             /*is_waiting=*/true, cert_profile);
 
-    scheduler.UpdateOneCert(kCertProfileId);
+    scheduler.UpdateOneWorker(kCertProfileId);
     FastForwardBy(base::Seconds(1));
     ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
 
@@ -903,7 +903,7 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
 
   {
     // If a certificate already exists, a new worker should not be created.
-    scheduler.UpdateOneCert(kCertProfileId);
+    scheduler.UpdateOneWorker(kCertProfileId);
     FastForwardBy(base::Seconds(1));
     ASSERT_TRUE(scheduler.GetWorkers().empty());
   }
@@ -996,7 +996,7 @@ TEST_F(CertProvisioningSchedulerTest, PlatformKeysServiceShutDown) {
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
   worker->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
                           cert_profile);
-  scheduler.UpdateAllCerts();
+  scheduler.UpdateAllWorkers();
 
   // Now 1 worker should be created.
   EXPECT_EQ(scheduler.GetWorkers().size(), 1U);
@@ -1011,7 +1011,7 @@ TEST_F(CertProvisioningSchedulerTest, PlatformKeysServiceShutDown) {
   // Check one more time that scheduler doesn't create new workers after
   // PlatformKeysService has been shut down (the factory will fail on an attempt
   // to do so).
-  scheduler.UpdateAllCerts();
+  scheduler.UpdateAllWorkers();
 }
 
 TEST_F(CertProvisioningSchedulerTest, StateChangeNotifications) {

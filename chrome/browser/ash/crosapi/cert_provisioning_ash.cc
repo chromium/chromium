@@ -184,13 +184,13 @@ void CertProvisioningAsh::UpdateOneProcess(const std::string& cert_profile_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   CertProvisioningScheduler* user_scheduler = GetUserScheduler();
-  if (user_scheduler && user_scheduler->UpdateOneCert(cert_profile_id)) {
+  if (user_scheduler && user_scheduler->UpdateOneWorker(cert_profile_id)) {
     return;
   }
 
   CertProvisioningScheduler* device_scheduler = GetDeviceScheduler();
   if (device_scheduler) {
-    device_scheduler->UpdateOneCert(cert_profile_id);
+    device_scheduler->UpdateOneWorker(cert_profile_id);
   }
 }
 

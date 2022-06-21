@@ -66,10 +66,10 @@ class CertProvisioningScheduler {
   virtual ~CertProvisioningScheduler() = default;
 
   // Intended to be called when a user presses a button in certificate manager
-  // UI. Retries provisioning of a specific certificate. Returns "false" if
-  // `cert_profile_id` is not found and "true" otherwise.
-  virtual bool UpdateOneCert(const CertProfileId& cert_profile_id) = 0;
-  virtual void UpdateAllCerts() = 0;
+  // UI. Retries the process of provisioning a specific certificate.
+  // Returns "false" if `cert_profile_id` is not found and "true" otherwise.
+  virtual bool UpdateOneWorker(const CertProfileId& cert_profile_id) = 0;
+  virtual void UpdateAllWorkers() = 0;
 
   // Returns all certificate provisioning workers that are currently active.
   virtual const WorkerMap& GetWorkers() const = 0;
@@ -123,8 +123,8 @@ class CertProvisioningSchedulerImpl
       const CertProvisioningSchedulerImpl&) = delete;
 
   // CertProvisioningScheduler:
-  bool UpdateOneCert(const CertProfileId& cert_profile_id) override;
-  void UpdateAllCerts() override;
+  bool UpdateOneWorker(const CertProfileId& cert_profile_id) override;
+  void UpdateAllWorkers() override;
   const WorkerMap& GetWorkers() const override;
   const base::flat_map<CertProfileId, FailedWorkerInfo>&
   GetFailedCertProfileIds() const override;
@@ -144,7 +144,7 @@ class CertProvisioningSchedulerImpl
  private:
   void ScheduleInitialUpdate();
   void ScheduleDailyUpdate();
-  // Posts delayed task to call UpdateOneCertImpl.
+  // Posts delayed task to call UpdateOneWorkerImpl.
   void ScheduleRetry(const CertProfileId& profile_id);
   void ScheduleRenewal(const CertProfileId& profile_id, base::TimeDelta delay);
 
@@ -157,16 +157,16 @@ class CertProvisioningSchedulerImpl
   void RegisterForPrefsChanges();
 
   void InitiateRenewal(const CertProfileId& cert_profile_id);
-  void UpdateOneCertImpl(const CertProfileId& cert_profile_id);
-  void UpdateCertList(std::vector<CertProfile> profiles);
-  void UpdateCertListWithExistingCerts(
+  void UpdateOneWorkerImpl(const CertProfileId& cert_profile_id);
+  void UpdateWorkerList(std::vector<CertProfile> profiles);
+  void UpdateWorkerListWithExistingCerts(
       std::vector<CertProfile> profiles,
       base::flat_map<CertProfileId, scoped_refptr<net::X509Certificate>>
           existing_certs_with_ids,
       chromeos::platform_keys::Status status);
 
   void OnPrefsChange();
-  void DailyUpdateCerts();
+  void DailyUpdateWorkers();
   void DeserializeWorkers();
 
   // Creates a new worker for |profile| if there is no at the moment.
@@ -230,8 +230,8 @@ class CertProvisioningSchedulerImpl
   // the renewal starts for a profile id, it is removed from the set.
   base::flat_set<CertProfileId> scheduled_renewals_;
   // Collection of cert profile ids that failed recently. They will not be
-  // retried until next |DailyUpdateCerts|. FailedWorkerInfo contains some extra
-  // information about the failure. Profiles that failed with
+  // retried until next |DailyUpdateWorkers|. FailedWorkerInfo contains some
+  // extra information about the failure. Profiles that failed with
   // kInconsistentDataError will not be stored into this collection.
   base::flat_map<CertProfileId, FailedWorkerInfo> failed_cert_profiles_;
   // Equals true if the last attempt to update certificates failed because there
