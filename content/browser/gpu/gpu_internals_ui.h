@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_GPU_GPU_INTERNALS_UI_H_
 #define CONTENT_BROWSER_GPU_GPU_INTERNALS_UI_H_
 
-#include "content/common/content_export.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"

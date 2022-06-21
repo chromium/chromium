@@ -24,6 +24,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webui/content_web_ui_controller_factory.h"
+#include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
@@ -195,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnDifferenteWebUITypes) {
   WebContents* web_contents = shell()->web_contents();
 
   const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
-  EXPECT_TRUE(ContentWebUIControllerFactory::GetInstance()->UseWebUIForURL(
+  EXPECT_TRUE(WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
       web_contents->GetBrowserContext(), web_ui_url));
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
@@ -229,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
       web_contents->GetSiteInstance());
   // Navigate from the initial blank page to the WebUI URL.
   const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
-  EXPECT_TRUE(ContentWebUIControllerFactory::GetInstance()->UseWebUIForURL(
+  EXPECT_TRUE(WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
       web_contents->GetBrowserContext(), web_ui_url));
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
 
@@ -248,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromChromeToUntrusted) {
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
 
   const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
-  EXPECT_TRUE(ContentWebUIControllerFactory::GetInstance()->UseWebUIForURL(
+  EXPECT_TRUE(WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
       web_contents->GetBrowserContext(), web_ui_url));
 
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
@@ -292,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromUntrustedToChrome) {
   // Navigate to a WebUI and ensure that the SiteInstance has changed and the
   // new process has WebUI bindings.
   const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
-  EXPECT_TRUE(ContentWebUIControllerFactory::GetInstance()->UseWebUIForURL(
+  EXPECT_TRUE(WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
       web_contents->GetBrowserContext(), web_ui_url));
 
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));

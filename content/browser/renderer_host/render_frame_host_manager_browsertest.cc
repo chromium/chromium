@@ -2635,7 +2635,12 @@ IN_PROC_BROWSER_TEST_P(RFHMProcessPerTabTest, MAYBE_BackFromWebUI) {
 //  - url1 must require webui bindings;
 //  - navigating to url2 in the site instance of url1 should not swap
 //   browsing instances, but should require a new site instance.
-IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, WebUIGetsBindings) {
+//
+// The test is currently blocking the migration to WebUIConfig because it relies
+// on WebUIs incorrectly returning the same type.
+// TODO(crbug.com/1318357): Re-enable by creating a different situation that
+// causes the bug when site isolation is enabled, or delete.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, DISABLED_WebUIGetsBindings) {
   GURL url1(std::string(kChromeUIScheme) + "://" +
             std::string(kChromeUIUkmHost));
   GURL url2(std::string(kChromeUIScheme) + "://" +
