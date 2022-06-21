@@ -251,7 +251,7 @@ export function wrapupRepairCompletePageTest() {
     assertTrue(powerwashDialog.open);
   });
 
-  test('CutoffBatteryButtonOpensCountdownDialogAndCutsOffBattery', async () => {
+  test('CutoffBatteryButtonCutsOffBattery', async () => {
     const resolver = new PromiseResolver();
     await initializeRepairCompletePage();
     let callCount = 0;
@@ -274,11 +274,11 @@ export function wrapupRepairCompletePageTest() {
     // Cut off the battery.
     assertEquals(1, callCount);
     assertEquals(ShutdownMethod.kBatteryCutoff, shutdownMethod);
-    // Show the dialog.
+    // When the countdown is done, the battery cutoff dialog will be closed.
     const batteryCutoffDialog =
         component.shadowRoot.querySelector('#batteryCutoffDialog');
     assertTrue(!!batteryCutoffDialog);
-    assertTrue(batteryCutoffDialog.open);
+    assertFalse(batteryCutoffDialog.open);
   });
 
   test('PowerCableConnectCancelsBatteryCutoff', async () => {
@@ -308,11 +308,20 @@ export function wrapupRepairCompletePageTest() {
     };
     await flushTasks();
 
+    // Force the battery cutoff dialog to open, to make sure that the shutdown
+    // button closes it.
+    const batteryCutoffDialog =
+        component.shadowRoot.querySelector('#batteryCutoffDialog');
+    assertTrue(!!batteryCutoffDialog);
+    batteryCutoffDialog.showModal();
+    assertTrue(batteryCutoffDialog.open);
+
     await clickButton('#batteryCutoffShutdownButton');
     await flushTasks();
 
     assertEquals(1, callCount);
     assertEquals(ShutdownMethod.kBatteryCutoff, shutdownMethod);
+    assertFalse(batteryCutoffDialog.open);
   });
 
   test('OpensRmaLogDialog', async () => {

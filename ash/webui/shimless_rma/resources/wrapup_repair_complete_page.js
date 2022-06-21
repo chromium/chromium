@@ -234,6 +234,8 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
     // This is necessary because after the timeout "this" will be the window,
     // and not WrapupRepairCompletePage.
     const cutoffBattery = function(wrapupRepairCompletePage) {
+      wrapupRepairCompletePage.shadowRoot.querySelector('#batteryCutoffDialog')
+          .close();
       executeThenTransitionState(
           wrapupRepairCompletePage,
           () => wrapupRepairCompletePage.shimlessRmaService_.endRma(
@@ -248,6 +250,7 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
 
   /** @private */
   cutoffBattery_() {
+    this.shadowRoot.querySelector('#batteryCutoffDialog').close();
     executeThenTransitionState(
         this,
         () => this.shimlessRmaService_.endRma(ShutdownMethod.kBatteryCutoff));
