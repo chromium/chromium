@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.PartialToFullViewLatency" units="ms"
-    expires_after="2022-10-18">
+    expires_after="2022-12-18">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
