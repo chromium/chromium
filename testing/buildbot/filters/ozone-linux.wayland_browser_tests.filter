@@ -1,7 +1,5 @@
 # These tests cannot work on Wayland because the platform does not allow clients
 # to position top level windows, activate them, and set focus.
--All/HostedOrWebAppTest.CtrlClickLink/HostedApp
--All/HostedOrWebAppTest.CtrlClickLink/WebApp
 -All/PopupBrowserTest.MoveClampedToCurrentDisplay/0
 -All/PopupBrowserTest.MoveClampedToCurrentDisplay/1
 -AutomationManagerAuraBrowserTest.EventFromAction

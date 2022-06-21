@@ -54,6 +54,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -220,6 +221,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
 
       // Launch app in a window.
       app_browser_ = web_app::LaunchWebAppBrowser(profile(), app_id_);
+      ui_test_utils::BrowserActivationWaiter(app_browser_).WaitForActivation();
     }
 
     ASSERT_FALSE(app_id_.empty());
@@ -373,13 +375,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, DISABLED_OpenLinkInNewTab) {
 }
 
 // Tests that Ctrl + Clicking a link opens a foreground tab.
-// TODO(crbug.com/1190448): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_CtrlClickLink DISABLED_CtrlClickLink
-#else
-#define MAYBE_CtrlClickLink CtrlClickLink
-#endif
-IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
+IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, CtrlClickLink) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Set up an app which covers app.com URLs.
