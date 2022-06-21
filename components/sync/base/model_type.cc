@@ -511,9 +511,8 @@ bool RealModelTypeToNotificationType(ModelType model_type,
 
 bool NotificationTypeToRealModelType(const std::string& notification_type,
                                      ModelType* model_type) {
-  auto* iter = base::ranges::find(
-      kModelTypeInfoMap, notification_type,
-      [](const ModelTypeInfo& info) { return info.notification_type; });
+  auto* iter = base::ranges::find(kModelTypeInfoMap, notification_type,
+                                  &ModelTypeInfo::notification_type);
   if (iter == std::end(kModelTypeInfoMap)) {
     return false;
   }

@@ -76,9 +76,9 @@ std::vector<ExtractedSharedKey> GetNewKeys(
     const std::vector<ExtractedSharedKey>& sorted_keys,
     int last_known_version) {
   DCHECK(!sorted_keys.empty());
-  auto new_keys_start_it = base::ranges::upper_bound(
-      sorted_keys, last_known_version, /*comp=*/{},
-      [](const ExtractedSharedKey& key) { return key.version; });
+  auto new_keys_start_it =
+      base::ranges::upper_bound(sorted_keys, last_known_version, /*comp=*/{},
+                                &ExtractedSharedKey::version);
 
   return std::vector<ExtractedSharedKey>(new_keys_start_it, sorted_keys.end());
 }

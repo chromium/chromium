@@ -87,9 +87,7 @@ bool EditPrinterDescription(ash::SyncedPrintersManager* manager,
                             const std::string& description) {
   PrinterList printers = manager->GetSavedPrinters();
   std::string printer_id = PrinterId(index);
-  auto found = base::ranges::find(
-      printers, printer_id,
-      [](const chromeos::Printer& printer) { return printer.id(); });
+  auto found = base::ranges::find(printers, printer_id, &chromeos::Printer::id);
 
   if (found == printers.end()) {
     return false;

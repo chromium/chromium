@@ -56,8 +56,7 @@ enum class SyncTypedUrlDatabaseError {
 };
 
 static bool VisitsAreSorted(const std::vector<VisitRow>& visits) {
-  return base::ranges::is_sorted(
-      visits, /*comp=*/{}, [](const VisitRow& row) { return row.visit_time; });
+  return base::ranges::is_sorted(visits, /*comp=*/{}, &VisitRow::visit_time);
 }
 
 std::string GetStorageKeyFromURLRow(const URLRow& row) {

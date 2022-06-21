@@ -482,11 +482,9 @@ void SyncedSessionTracker::PutTabInWindow(const std::string& session_tag,
     // window.
     for (auto& [existing_window_id, existing_window] :
          GetSession(session_tag)->windows) {
-      auto existing_tab_iter = base::ranges::find(
-          existing_window->wrapped_window.tabs, tab_ptr,
-          [](const std::unique_ptr<sessions::SessionTab>& tab) {
-            return tab.get();
-          });
+      auto existing_tab_iter =
+          base::ranges::find(existing_window->wrapped_window.tabs, tab_ptr,
+                             &std::unique_ptr<sessions::SessionTab>::get);
       if (existing_tab_iter != existing_window->wrapped_window.tabs.end()) {
         tab = std::move(*existing_tab_iter);
         existing_window->wrapped_window.tabs.erase(existing_tab_iter);
@@ -651,11 +649,9 @@ void SyncedSessionTracker::ReassociateLocalTab(int tab_node_id,
         for (auto& [existing_window_id, existing_window] :
              session->synced_session.windows) {
           auto& existing_window_tabs = existing_window->wrapped_window.tabs;
-          auto tab_iter = base::ranges::find(
-              existing_window_tabs, new_tab_ptr,
-              [](const std::unique_ptr<sessions::SessionTab>& tab) {
-                return tab.get();
-              });
+          auto tab_iter =
+              base::ranges::find(existing_window_tabs, new_tab_ptr,
+                                 &std::unique_ptr<sessions::SessionTab>::get);
           if (tab_iter != existing_window_tabs.end()) {
             existing_window_tabs.erase(tab_iter);
             break;
