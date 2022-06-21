@@ -111,6 +111,7 @@ after discussions on the right group.
       <annotation id="printing_oauth2_next_token_request"/>
       <annotation id="printing_oauth2_registration_request"/>
       <annotation id="printing_oauth2_token_exchange_request"/>
+      <annotation id="printing_server_printers_query"/>
     </sender>
     <sender name="Device Activity">
       <annotation id="device_activity_client_health_check"/>
