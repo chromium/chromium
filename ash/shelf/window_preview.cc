@@ -46,7 +46,7 @@ WindowPreview::WindowPreview(aura::Window* window, Delegate* delegate)
   title_ = new views::Label(window->GetTitle());
   close_button_ = new views::ImageButton(base::BindRepeating(
       &WindowPreview::CloseButtonPressed, base::Unretained(this)));
-  close_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  close_button_->SetFocusBehavior(FocusBehavior::NEVER);
 
   AddChildView(preview_container_view_);
   AddChildView(preview_view_);
@@ -135,6 +135,7 @@ const char* WindowPreview::GetClassName() const {
 }
 
 void WindowPreview::OnThemeChanged() {
+  views::View::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
   SkColor background_color =
       color_provider->GetColor(ui::kColorTooltipBackground);
