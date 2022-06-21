@@ -2462,13 +2462,13 @@ java_group("chrome_public_base_module_java") {
   ]
 }
 
-# Similar to chrome_public_base_module_java but for Java libraries that go into
-# the public chrome test APK.
-java_group("chrome_public_base_module_java_for_test") {
+# Exists separately from chrome_public_base_module_java_for_test to allow
+# downstream to depend on test support packages without needing to depend on
+# delegate_public_impl_java.
+java_group("chrome_public_base_module_java_test_support") {
   testonly = true
   deps = [
     ":browser_java_test_support",
-    ":chrome_public_base_module_java",
     ":chrome_test_util_java",
     "//chrome/android/features/autofill_assistant:autofill_assistant_java_test_support",
     "//chrome/browser/android/metrics:ukm_java_test_support",
@@ -2478,6 +2478,16 @@ java_group("chrome_public_base_module_java_for_test") {
     "//components/paint_preview/player/android:player_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//ui/android:clipboard_java_test_support",
+  ]
+}
+
+# Similar to chrome_public_base_module_java but for Java libraries that go into
+# the public chrome test APK.
+java_group("chrome_public_base_module_java_for_test") {
+  testonly = true
+  deps = [
+    ":chrome_public_base_module_java",
+    ":chrome_public_base_module_java_test_support",
   ]
 }
 
