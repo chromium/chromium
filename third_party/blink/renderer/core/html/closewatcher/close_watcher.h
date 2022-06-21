@@ -28,10 +28,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
                               CloseWatcherOptions*,
                               ExceptionState&);
 
-  // TODO(domenic): remove the CloseWatcherOptions* from this overload. This is
-  // meant to be used by Chromium-internal callers, who will not want to pass an
-  // AbortSignal.
-  static CloseWatcher* Create(LocalDOMWindow*, CloseWatcherOptions*);
+  static CloseWatcher* Create(LocalDOMWindow*);
 
   explicit CloseWatcher(LocalDOMWindow*);
   void Trace(Visitor*) const override;

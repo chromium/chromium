@@ -162,8 +162,10 @@ void HTMLDialogElement::close(const String& return_value) {
     previously_focused_element->Focus(focus_options);
   }
 
-  if (close_watcher_)
+  if (close_watcher_) {
     close_watcher_->destroy();
+    close_watcher_ = nullptr;
+  }
 }
 
 void HTMLDialogElement::SetIsModal(bool is_modal) {
@@ -206,7 +208,7 @@ class DialogCloseWatcherEventListener : public NativeEventListener {
     if (!dialog_)
       return;
     if (event->type() == event_type_names::kCancel)
-      dialog_->CloseWatcherFiredCancel();
+      dialog_->CloseWatcherFiredCancel(event);
     if (event->type() == event_type_names::kClose)
       dialog_->CloseWatcherFiredClose();
   }
@@ -263,7 +265,7 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
 
   if (RuntimeEnabledFeatures::CloseWatcherEnabled()) {
     if (LocalDOMWindow* window = GetDocument().domWindow()) {
-      close_watcher_ = CloseWatcher::Create(window, /*options=*/nullptr);
+      close_watcher_ = CloseWatcher::Create(window);
       if (close_watcher_) {
         auto* event_listener =
             MakeGarbageCollected<DialogCloseWatcherEventListener>(this);
@@ -284,6 +286,11 @@ void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
   InertSubtreesChanged(document, old_modal_dialog);
   SetIsModal(false);
+
+  if (close_watcher_) {
+    close_watcher_->destroy();
+    close_watcher_ = nullptr;
+  }
 }
 
 void HTMLDialogElement::DefaultEventHandler(Event& event) {
@@ -296,21 +303,18 @@ void HTMLDialogElement::DefaultEventHandler(Event& event) {
   HTMLElement::DefaultEventHandler(event);
 }
 
-void HTMLDialogElement::CloseWatcherFiredCancel() {
-  cancel_fired_since_last_close_ = true;
+void HTMLDialogElement::CloseWatcherFiredCancel(Event* close_watcher_event) {
+  // https://wicg.github.io/close-watcher/#patch-dialog cancelAction
+
+  Event* dialog_event = Event::CreateCancelable(event_type_names::kCancel);
+  DispatchEvent(*dialog_event);
+  if (dialog_event->defaultPrevented())
+    close_watcher_event->preventDefault();
+  dialog_event->SetDefaultHandled();
 }
 
 void HTMLDialogElement::CloseWatcherFiredClose() {
-  // https://wicg.github.io/close-watcher/#cancel-the-dialog
-  if (cancel_fired_since_last_close_) {
-    cancel_fired_since_last_close_ = false;
-
-    Event* cancel_event = Event::CreateCancelable(event_type_names::kCancel);
-    DispatchEvent(*cancel_event);
-    if (cancel_event->defaultPrevented())
-      return;
-    cancel_event->SetDefaultHandled();
-  }
+  // https://wicg.github.io/close-watcher/#patch-dialog closeAction
 
   close();
 }

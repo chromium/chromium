@@ -91,13 +91,12 @@ bool CloseWatcher::WatcherStack::HasConsumedFreeWatcher() const {
 }
 
 // static
-CloseWatcher* CloseWatcher::Create(LocalDOMWindow* window,
-                                   CloseWatcherOptions* options) {
+CloseWatcher* CloseWatcher::Create(LocalDOMWindow* window) {
   if (!window->GetFrame())
     return nullptr;
 
   WatcherStack& stack = *window->closewatcher_stack();
-  return CreateInternal(window, stack, options);
+  return CreateInternal(window, stack, nullptr);
 }
 
 // static
