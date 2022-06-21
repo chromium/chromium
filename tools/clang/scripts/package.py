@@ -109,7 +109,7 @@ def PackageInArchive(directory_path, archive_path):
 
 def MaybeUpload(do_upload, filename, gcs_platform, extra_gsutil_args=[]):
   gsutil_args = ['cp'] + extra_gsutil_args + [
-      '-a', 'public-read', filename,
+      '-n', '-a', 'public-read', filename,
       'gs://chromium-browser-clang-staging/%s/%s' % (gcs_platform, filename)
   ]
   if do_upload:
