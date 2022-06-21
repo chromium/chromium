@@ -147,40 +147,86 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
   EXPECT_THAT(source_data.front()->aggregation_keys, IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered_Script) {
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       SourceRegisteredViaEligibilityHeader) {
+  const char* kTestCases[] = {
+      "createAttributionEligibleImgSrc($1);", "createAttributionSrcScript($1);",
+      "doAttributionEligibleFetch($1);", "doAttributionEligibleXHR($1);"};
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+
+  for (const char* registration_js : kTestCases) {
+    EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+    std::unique_ptr<MockDataHost> data_host;
+    base::RunLoop loop;
+    EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
+        .WillOnce(
+            [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+              data_host = GetRegisteredDataHost(std::move(host));
+              loop.Quit();
+            });
+
+    GURL register_url =
+        https_server()->GetURL("c.test", "/register_source_headers.html");
+
+    EXPECT_TRUE(
+        ExecJs(web_contents(), JsReplace(registration_js, register_url)));
+    if (!data_host)
+      loop.Run();
+    data_host->WaitForSourceData(/*num_source_data=*/1);
+    const auto& source_data = data_host->source_data();
+
+    EXPECT_EQ(source_data.size(), 1u);
+    EXPECT_EQ(source_data.front()->source_event_id, 5UL);
+    EXPECT_EQ(source_data.front()->destination,
+              url::Origin::Create(GURL("https://d.test")));
+    EXPECT_EQ(source_data.front()->priority, 0);
+    EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
+    EXPECT_FALSE(source_data.front()->debug_key);
+    EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
+    EXPECT_THAT(source_data.front()->aggregation_keys, IsEmpty());
+  }
+}
+
+// TODO(johnidel): Remove when redirect chains consistently register sources or
+// triggers. Currently, responses not handled via attributionsrc="url" use
+// their own independent data host, so we do not enforce consistency on
+// these redirect chains.
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       SourceTriggerRegistered_ImgSrc) {
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  std::unique_ptr<MockDataHost> data_host;
-  base::RunLoop loop;
+  std::unique_ptr<MockDataHost> source_data_host;
+  std::unique_ptr<MockDataHost> trigger_data_host;
+  base::RunLoop source_loop;
+  base::RunLoop trigger_loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
-      .WillOnce(
+      .WillRepeatedly(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
-            data_host = GetRegisteredDataHost(std::move(host));
-            loop.Quit();
+            if (!source_data_host) {
+              source_data_host = GetRegisteredDataHost(std::move(host));
+              source_loop.Quit();
+            } else {
+              trigger_data_host = GetRegisteredDataHost(std::move(host));
+              trigger_loop.Quit();
+            }
           });
 
-  GURL register_url =
-      https_server()->GetURL("c.test", "/register_source_headers.html");
+  GURL register_url = https_server()->GetURL(
+      "c.test", "/register_source_trigger_redirect_chain.html");
 
   EXPECT_TRUE(
       ExecJs(web_contents(),
-             JsReplace("createAttributionSrcScript($1);", register_url)));
-  if (!data_host)
-    loop.Run();
-  data_host->WaitForSourceData(/*num_source_data=*/1);
-  const auto& source_data = data_host->source_data();
+             JsReplace("createAttributionEligibleImgSrc($1);", register_url)));
+  if (!source_data_host)
+    source_loop.Run();
+  source_data_host->WaitForSourceData(/*num_source_data=*/1);
 
-  EXPECT_EQ(source_data.size(), 1u);
-  EXPECT_EQ(source_data.front()->source_event_id, 5UL);
-  EXPECT_EQ(source_data.front()->destination,
-            url::Origin::Create(GURL("https://d.test")));
-  EXPECT_EQ(source_data.front()->priority, 0);
-  EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
-  EXPECT_FALSE(source_data.front()->debug_key);
-  EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
-  EXPECT_THAT(source_data.front()->aggregation_keys, IsEmpty());
+  if (!trigger_data_host)
+    trigger_loop.Run();
+  trigger_data_host->WaitForTriggerData(/*num_trigger_data=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -605,6 +651,38 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   // Ensure that redirect requests also contain the header.
   register_response2->WaitForRequest();
   ASSERT_EQ(register_response2->http_request()->headers.at(
+                "Attribution-Reporting-Eligible"),
+            "event-source, trigger");
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       ImgSrcWithAttributionSrc_SetsEligibleHeader) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::RegisterDefaultHandlers(https_server.get());
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+  https_server->ServeFilesFromSourceDirectory("content/test/data");
+
+  auto register_response1 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_source1");
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url = https_server->GetURL("d.test", "/register_source1");
+  ASSERT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("createAttributionEligibleImgSrc($1);", register_url)));
+
+  register_response1->WaitForRequest();
+  ASSERT_EQ(register_response1->http_request()->headers.at(
                 "Attribution-Reporting-Eligible"),
             "event-source, trigger");
 }

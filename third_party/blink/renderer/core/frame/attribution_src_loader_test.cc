@@ -23,10 +23,12 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/loader/testing/web_url_loader_factory_with_mock.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -75,16 +77,35 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
 
   ~MockDataHost() override = default;
 
+  const Vector<mojom::blink::AttributionSourceDataPtr>& source_data() const {
+    return source_data_;
+  }
+
+  const Vector<mojom::blink::AttributionTriggerDataPtr>& trigger_data() const {
+    return trigger_data_;
+  }
+
   size_t disconnects() const { return disconnects_; }
+
+  void Flush() { receiver_.FlushForTesting(); }
 
  private:
   void OnDisconnect() { disconnects_++; }
 
   // mojom::blink::AttributionDataHost:
   void SourceDataAvailable(
-      mojom::blink::AttributionSourceDataPtr data) override {}
+      mojom::blink::AttributionSourceDataPtr data) override {
+    source_data_.push_back(std::move(data));
+  }
+
   void TriggerDataAvailable(
-      mojom::blink::AttributionTriggerDataPtr data) override {}
+      mojom::blink::AttributionTriggerDataPtr data) override {
+    trigger_data_.push_back(std::move(data));
+  }
+
+  Vector<mojom::blink::AttributionSourceDataPtr> source_data_;
+
+  Vector<mojom::blink::AttributionTriggerDataPtr> trigger_data_;
 
   size_t disconnects_ = 0;
   mojo::Receiver<mojom::blink::AttributionDataHost> receiver_{this};
@@ -138,6 +159,10 @@ class MockAttributionHost : public mojom::blink::ConversionHost {
 
 class AttributionSrcLoaderTest : public PageTestBase {
  public:
+  AttributionSrcLoaderTest() = default;
+
+  ~AttributionSrcLoaderTest() override = default;
+
   void SetUp() override {
     client_ = MakeGarbageCollected<AttributionSrcLocalFrameClient>();
     PageTestBase::SetupPageWithClients(nullptr, client_);
@@ -153,6 +178,11 @@ class AttributionSrcLoaderTest : public PageTestBase {
   }
 
   void TearDown() override {
+    GetFrame()
+        .GetRemoteNavigationAssociatedInterfaces()
+        ->OverrideBinderForTesting(
+            mojom::blink::ConversionHost::Name_,
+            base::BindRepeating([](mojo::ScopedInterfaceEndpointHandle) {}));
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
     PageTestBase::TearDown();
   }
@@ -161,6 +191,120 @@ class AttributionSrcLoaderTest : public PageTestBase {
   Persistent<AttributionSrcLocalFrameClient> client_;
   Persistent<AttributionSrcLoader> attribution_src_loader_;
 };
+
+TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithoutEligibleHeader) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  ResourceRequest request(test_url);
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(
+      http_names::kAttributionReportingRegisterTrigger,
+      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+
+  MockAttributionHost host(
+      GetFrame().GetRemoteNavigationAssociatedInterfaces());
+  EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+      request, response, resource));
+  host.WaitUntilBoundAndFlush();
+
+  auto* mock_data_host = host.mock_data_host();
+  ASSERT_TRUE(mock_data_host);
+
+  mock_data_host->Flush();
+  EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
+}
+
+TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithTriggerHeader) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  ResourceRequest request(test_url);
+  request.SetHttpHeaderField(http_names::kAttributionReportingEligible,
+                             "trigger");
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(
+      http_names::kAttributionReportingRegisterTrigger,
+      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+
+  MockAttributionHost host(
+      GetFrame().GetRemoteNavigationAssociatedInterfaces());
+  attribution_src_loader_->MaybeRegisterAttributionHeaders(request, response,
+                                                           resource);
+  host.WaitUntilBoundAndFlush();
+
+  auto* mock_data_host = host.mock_data_host();
+  ASSERT_TRUE(mock_data_host);
+
+  mock_data_host->Flush();
+  EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
+}
+
+TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithSourceTriggerHeader) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  ResourceRequest request(test_url);
+  request.SetHttpHeaderField(http_names::kAttributionReportingEligible,
+                             "event-source, trigger");
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(
+      http_names::kAttributionReportingRegisterTrigger,
+      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+
+  MockAttributionHost host(
+      GetFrame().GetRemoteNavigationAssociatedInterfaces());
+  attribution_src_loader_->MaybeRegisterAttributionHeaders(request, response,
+                                                           resource);
+  host.WaitUntilBoundAndFlush();
+
+  auto* mock_data_host = host.mock_data_host();
+  ASSERT_TRUE(mock_data_host);
+
+  mock_data_host->Flush();
+  EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
+}
+
+TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestsIgnored) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+  ResourceRequest request(test_url);
+  request.SetRequestContext(mojom::blink::RequestContextType::ATTRIBUTION_SRC);
+
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(
+      http_names::kAttributionReportingRegisterTrigger,
+      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+
+  EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+      request, response, resource));
+}
+
+TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestsInvalidEligibleHeaders) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+  ResourceRequest request(test_url);
+  request.SetRequestContext(mojom::blink::RequestContextType::ATTRIBUTION_SRC);
+
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+
+  const char* header_values[] = {"navigation-source, event-source, trigger",
+                                 "!!!", ""};
+
+  for (const char* header : header_values) {
+    response.SetHttpHeaderField(
+        http_names::kAttributionReportingRegisterTrigger, header);
+
+    EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+        request, response, resource))
+        << header;
+  }
+}
 
 TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestStatusHistogram) {
   base::HistogramTester histograms;

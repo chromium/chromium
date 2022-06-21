@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -497,6 +498,20 @@ void ImageLoader::DoUpdateFromElement(
           network::mojom::RequestDestination::kEmbed);
     }
 
+    DCHECK(document.GetFrame());
+    auto* frame = document.GetFrame();
+
+    if (IsA<HTMLImageElement>(GetElement()) &&
+        GetElement()->FastHasAttribute(html_names::kAttributionsrcAttr) &&
+        CanRegisterAttributionInContext(
+            frame, To<HTMLImageElement>(GetElement()), absl::nullopt,
+            AttributionSrcLoader::RegisterContext::kResource,
+            /*log_issues=*/false)) {
+      resource_request.SetHttpHeaderField(
+          http_names::kAttributionReportingEligible,
+          AttributionSrcLoader::kAttributionEligibleEventSourceAndTrigger);
+    }
+
     bool page_is_being_dismissed =
         document.PageDismissalEventBeingDispatched() != Document::kNoDismissal;
     if (page_is_being_dismissed) {
@@ -516,9 +531,6 @@ void ImageLoader::DoUpdateFromElement(
     if (html_element && html_element->IsPluginElement()) {
       resource_request.SetSkipServiceWorker(true);
     }
-
-    DCHECK(document.GetFrame());
-    auto* frame = document.GetFrame();
 
     FetchParameters params(std::move(resource_request),
                            resource_loader_options);

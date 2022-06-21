@@ -368,7 +368,7 @@ void HTMLImageElement::ParseAttribute(
     const AtomicString& attribution_src_value =
         FastGetAttribute(html_names::kAttributionsrcAttr);
     LocalDOMWindow* window = GetDocument().domWindow();
-    if (!attribution_src_value.IsNull() && window && window->GetFrame()) {
+    if (!attribution_src_value.IsEmpty() && window && window->GetFrame()) {
       window->GetFrame()->GetAttributionSrcLoader()->Register(
           GetDocument().CompleteURL(attribution_src_value), this);
     }

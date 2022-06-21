@@ -172,6 +172,8 @@ class AttributionsBrowserTest : public ContentBrowserTest {
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     net::test_server::RegisterDefaultHandlers(https_server_.get());
     https_server_->ServeFilesFromSourceDirectory("content/test/data");
+    https_server_->ServeFilesFromSourceDirectory(
+        "content/test/data/attribution_reporting");
   }
 
   void TearDownOnMainThread() override {
@@ -830,6 +832,48 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report2.WaitForReport();
 }
 
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       TriggerAndSourceSameRedirectChain_Handled) {
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager());
+
+  base::RunLoop loop;
+  int count = 0;
+  EXPECT_CALL(observer, OnTriggerHandled).WillRepeatedly([&]() {
+    count++;
+    if (count < 2)
+      return;
+    loop.Quit();
+  });
+
+  bool received_source = false;
+  base::RunLoop source_loop;
+  EXPECT_CALL(observer, OnSourceHandled).WillOnce([&]() {
+    received_source = true;
+    source_loop.Quit();
+  });
+
+  GURL register_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/register_trigger_source_trigger.html");
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("createAttributionEligibleImgSrc($1);", register_url)));
+
+  // Ensure we don't error out processing the redirect chain.
+  if (count < 2)
+    loop.Run();
+
+  if (!received_source)
+    source_loop.Run();
+}
 class AttributionsPrerenderBrowserTest : public AttributionsBrowserTest {
  public:
   AttributionsPrerenderBrowserTest()

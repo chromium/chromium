@@ -124,7 +124,8 @@ class ResourceFetcherTest : public testing::Test {
                          const ResourceResponse& redirect_response,
                          ResourceType,
                          const ResourceLoaderOptions&,
-                         RenderBlockingBehavior) override {
+                         RenderBlockingBehavior,
+                         const Resource*) override {
       request_ = PartialResourceRequest(request);
     }
     void DidChangePriority(uint64_t identifier,
