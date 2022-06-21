@@ -13,7 +13,8 @@ import tempfile
 from contextlib import AbstractContextManager
 from typing import Iterable, Optional
 
-from common import get_host_arch, run_ffx_command, run_continuous_ffx_command
+from common import get_host_arch, run_ffx_command, run_continuous_ffx_command, \
+                   SDK_ROOT
 
 
 class ScopedFfxConfig(AbstractContextManager):
@@ -86,6 +87,15 @@ class FfxEmulator(AbstractContextManager):
         node_name_suffix = random.randint(1, 9999)
         self._node_name = f'fuchsia-emulator-{node_name_suffix}'
 
+    @staticmethod
+    def _check_ssh_config_file() -> None:
+        """Checks for ssh keys and generates them if they are missing."""
+        script_path = os.path.join(SDK_ROOT, 'bin', 'fuchsia-common.sh')
+        check_cmd = [
+            'bash', '-c', f'. {script_path}; check-fuchsia-ssh-config'
+        ]
+        subprocess.run(check_cmd, check=True)
+
     def _download_product_bundle_if_necessary(self) -> None:
         """Download the image for a given product bundle."""
 
@@ -107,6 +117,7 @@ class FfxEmulator(AbstractContextManager):
             The node name of the emulator.
         """
 
+        self._check_ssh_config_file()
         self._download_product_bundle_if_necessary()
         emu_command = [
             'emu', 'start', self._product_bundle, '--name', self._node_name
