@@ -2392,26 +2392,5 @@ TEST_F(ScriptExecutorTest, ExternalActionAppliesAndRestoresTouchableArea) {
                           AutofillAssistantState::RUNNING));
 }
 
-TEST_F(ScriptExecutorTest, JsFlowLibraryUpdated) {
-  ActionsResponseProto actions_response;
-  actions_response.set_js_flow_library("const status = 2;");
-  actions_response.add_actions()->mutable_tell()->set_message("message");
-
-  EXPECT_CALL(mock_service_, GetActions)
-      .WillOnce(RunOnceCallback<5>(net::HTTP_OK,
-                                   actions_response.SerializeAsString(),
-                                   ServiceRequestSender::ResponseInfo{}));
-  EXPECT_CALL(mock_service_, GetNextActions)
-      .WillOnce(RunOnceCallback<6>(net::HTTP_OK,
-                                   ActionsResponseProto().SerializeAsString(),
-                                   ServiceRequestSender::ResponseInfo{}));
-
-  EXPECT_CALL(executor_callback_,
-              Run(Field(&ScriptExecutor::Result::success, true)));
-
-  executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_EQ(*delegate_.GetJsFlowLibrary(), actions_response.js_flow_library());
-}
-
 }  // namespace
 }  // namespace autofill_assistant

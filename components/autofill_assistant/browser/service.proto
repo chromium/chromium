@@ -1251,6 +1251,18 @@ message UnexpectedErrorInfoProto {
   // JavaScript exception class name, if reporting a JavaScript error.
   optional string js_exception_classname = 3;
 
+  enum JsExceptionLocation {
+    UNKNOWN = 0;
+    // Corresponds to ActionsResponseProto::js_flow_library
+    JS_FLOW_LIBRARY = 1;
+    // Corresponds to JsFlowProto::js_flow
+    JS_FLOW = 2;
+  }
+
+  // The location that caused the JavaScript exception. Guaranteed to have the
+  // same number of entries as js_exception_line_numbers and
+  // js_exception_column_numbers.
+  repeated JsExceptionLocation js_exception_locations = 8 [packed = true];
   // JavaScript exception line numbers, within the js snippet that was sent to
   // devtools runtime by the client, if reporting a JavaScript error. Together
   // with |js_exception_column_numbers| this forms a stack trace.

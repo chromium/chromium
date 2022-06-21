@@ -33,6 +33,9 @@ const char kNavigationStartedKey[] = "navigationStarted";
 // runNativeAction().
 // DO NOT CHANGE
 const char kAutofillErrorInfo[] = "autofillErrorInfo";
+// By appending //# sourceUrl=some_name.js to a js snippet the snippet can be
+// identified in devtools by url = some_name.js (for example in exceptions).
+constexpr char kSourceUrlCommentPrefix[] = "\n//# sourceURL=";
 
 // Returns true for remote object types that flows are allowed to return. This
 // is mostly used to filter types like FUNCTION which would otherwise slip
@@ -100,11 +103,11 @@ ClientStatus ExtractFlowReturnValue(
     const DevtoolsClient::ReplyStatus& devtools_reply_status,
     runtime::EvaluateResult* devtools_result,
     std::unique_ptr<base::Value>& out_flow_result,
-    int js_line_offset,
+    const JsLineOffsets& js_line_offsets,
     int num_stack_entries_to_drop) {
   ClientStatus status = CheckJavaScriptResult(
       devtools_reply_status, devtools_result, __FILE__, __LINE__,
-      js_line_offset, num_stack_entries_to_drop);
+      js_line_offsets, num_stack_entries_to_drop);
   if (!status.ok()) {
     return status;
   }
@@ -250,6 +253,31 @@ std::unique_ptr<base::Value> NativeActionResultToResultValue(
   }
 
   return std::make_unique<base::Value>(std::move(result_value));
+}
+
+std::string GetDevtoolsSourceUrl(
+    UnexpectedErrorInfoProto::JsExceptionLocation js_exception_location) {
+  return UnexpectedErrorInfoProto::JsExceptionLocation_Name(
+      js_exception_location);
+}
+
+UnexpectedErrorInfoProto::JsExceptionLocation GetExceptionLocation(
+    const std::string& devtools_source_url) {
+  UnexpectedErrorInfoProto::JsExceptionLocation js_exception_location;
+  return UnexpectedErrorInfoProto::JsExceptionLocation_Parse(
+             devtools_source_url, &js_exception_location)
+             ? js_exception_location
+             : UnexpectedErrorInfoProto::UNKNOWN;
+}
+
+std::string GetDevtoolsSourceUrlCommentToAppend(
+    UnexpectedErrorInfoProto::JsExceptionLocation js_exception_location) {
+  if (js_exception_location == UnexpectedErrorInfoProto::UNKNOWN) {
+    return "";
+  }
+
+  return base::StrCat(
+      {kSourceUrlCommentPrefix, GetDevtoolsSourceUrl(js_exception_location)});
 }
 
 }  // namespace js_flow_util

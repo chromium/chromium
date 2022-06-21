@@ -124,9 +124,8 @@ class Controller : public ScriptExecutorDelegate,
   password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() override;
   content::WebContents* GetWebContents() override;
-  content::WebContents* GetWebContentsForJsExecution() override;
   void SetJsFlowLibrary(const std::string& js_flow_library) override;
-  const std::string* GetJsFlowLibrary() const override;
+  JsFlowDevtoolsWrapper* GetJsFlowDevtoolsWrapper() override;
   std::string GetEmailAddressForAccessTokenAccount() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   void SetTouchableElementArea(const ElementAreaProto& area) override;
@@ -385,6 +384,8 @@ class Controller : public ScriptExecutorDelegate,
   // The next DidStartNavigation will not cause an error.
   bool expect_navigation_ = false;
 
+  std::unique_ptr<JsFlowDevtoolsWrapper> js_flow_devtools_wrapper_;
+
   // Tracks scripts and script execution. It's kept at the end, as it tend to
   // depend on everything the controller support, through script and script
   // actions.
@@ -442,10 +443,6 @@ class Controller : public ScriptExecutorDelegate,
   // If instantiated, will start delivering the required model for annotating
   // DOM nodes. May be nullptr.
   const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
-
-  // Lazily instantiated in GetWebContentsForJsExecution()
-  std::unique_ptr<content::WebContents> web_contents_for_js_execution_;
-  std::string js_flow_library_;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
 };

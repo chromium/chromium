@@ -206,6 +206,8 @@ static_library("browser") {
     "info_box.h",
     "intent_strings.cc",
     "intent_strings.h",
+    "js_flow_devtools_wrapper.cc",
+    "js_flow_devtools_wrapper.h",
     "js_flow_executor.h",
     "js_flow_executor_impl.cc",
     "js_flow_executor_impl.h",

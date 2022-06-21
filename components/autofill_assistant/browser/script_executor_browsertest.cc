@@ -76,7 +76,7 @@ class ScriptExecutorBrowserTest : public BaseBrowserTest {
 
     base::RunLoop run_loop;
 
-    ScriptExecutor script_executor = ScriptExecutor(
+    script_executor_ = std::make_unique<ScriptExecutor>(
         /* script_path= */ "",
         /* additional_context= */ std::make_unique<TriggerContext>(),
         /* global_payload= */ "",
@@ -84,8 +84,8 @@ class ScriptExecutorBrowserTest : public BaseBrowserTest {
         /* listener= */ nullptr, &ordered_interrupts_,
         &fake_script_executor_delegate_, &fake_script_executor_ui_delegate_);
 
-    script_executor.Run(&user_data_,
-                        executor_callback_.Get().Then(run_loop.QuitClosure()));
+    script_executor_->Run(
+        &user_data_, executor_callback_.Get().Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -110,6 +110,8 @@ class ScriptExecutorBrowserTest : public BaseBrowserTest {
     actions_response.add_actions()->mutable_js_flow()->set_js_flow(js_flow);
     Run(actions_response);
   }
+
+  std::unique_ptr<ScriptExecutor> script_executor_;
 
   std::vector<std::unique_ptr<Script>> ordered_interrupts_;
 
@@ -356,16 +358,14 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, JsFlowErrorInJsLibraryFlow) {
 
                 const auto& unexpected_error_info =
                     processed_action.status_details().unexpected_error_info();
+
                 EXPECT_THAT(
-                    unexpected_error_info,
-                    Property(
-                        &UnexpectedErrorInfoProto::js_exception_line_numbers,
-                        ElementsAre(0)));
-                EXPECT_THAT(
-                    unexpected_error_info,
-                    Property(
-                        &UnexpectedErrorInfoProto::js_exception_column_numbers,
-                        ElementsAre(6)));
+                    unexpected_error_info.js_exception_locations(),
+                    ElementsAre(UnexpectedErrorInfoProto::JS_FLOW_LIBRARY));
+                EXPECT_THAT(unexpected_error_info.js_exception_line_numbers(),
+                            ElementsAre(0));
+                EXPECT_THAT(unexpected_error_info.js_exception_column_numbers(),
+                            ElementsAre(6));
               }),
           RunOnceCallback<6>(net::HTTP_OK,
                              ActionsResponseProto().SerializeAsString(),
@@ -396,16 +396,53 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, JsFlowErrorInJsFlow) {
 
                 const auto& unexpected_error_info =
                     processed_action.status_details().unexpected_error_info();
+
+                EXPECT_THAT(unexpected_error_info.js_exception_locations(),
+                            ElementsAre(UnexpectedErrorInfoProto::JS_FLOW));
+                EXPECT_THAT(unexpected_error_info.js_exception_line_numbers(),
+                            ElementsAre(0));
+                EXPECT_THAT(unexpected_error_info.js_exception_column_numbers(),
+                            ElementsAre(6));
+              }),
+          RunOnceCallback<6>(net::HTTP_OK,
+                             ActionsResponseProto().SerializeAsString(),
+                             ServiceRequestSender::ResponseInfo{})));
+
+  EXPECT_CALL(executor_callback_,
+              Run(Field(&ScriptExecutor::Result::success, true)));
+
+  Run(actions_response_1);
+}
+
+IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, JsFlowNestedError) {
+  ActionsResponseProto actions_response_1;
+  actions_response_1.set_js_flow_library(
+      "function throwError() {throw new Error();}");
+  actions_response_1.add_actions()->mutable_js_flow()->set_js_flow(
+      "throwError();");
+
+  EXPECT_CALL(mock_service_, GetNextActions)
+      .WillOnce(DoAll(
+          WithArgs<3>(
+              [](const std::vector<ProcessedActionProto>& processed_actions) {
+                ASSERT_THAT(processed_actions, SizeIs(1));
+
+                const auto& processed_action = processed_actions[0];
+                EXPECT_THAT(processed_action,
+                            Property(&ProcessedActionProto::status,
+                                     UNEXPECTED_JS_ERROR));
+
+                const auto& unexpected_error_info =
+                    processed_action.status_details().unexpected_error_info();
+
                 EXPECT_THAT(
-                    unexpected_error_info,
-                    Property(
-                        &UnexpectedErrorInfoProto::js_exception_line_numbers,
-                        ElementsAre(1)));
-                EXPECT_THAT(
-                    unexpected_error_info,
-                    Property(
-                        &UnexpectedErrorInfoProto::js_exception_column_numbers,
-                        ElementsAre(6)));
+                    unexpected_error_info.js_exception_locations(),
+                    ElementsAre(UnexpectedErrorInfoProto::JS_FLOW_LIBRARY,
+                                UnexpectedErrorInfoProto::JS_FLOW));
+                EXPECT_THAT(unexpected_error_info.js_exception_line_numbers(),
+                            ElementsAre(0, 0));
+                EXPECT_THAT(unexpected_error_info.js_exception_column_numbers(),
+                            ElementsAre(29, 0));
               }),
           RunOnceCallback<6>(net::HTTP_OK,
                              ActionsResponseProto().SerializeAsString(),

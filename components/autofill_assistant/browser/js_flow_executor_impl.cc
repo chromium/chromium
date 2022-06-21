@@ -91,8 +91,6 @@ constexpr char kFulfillActionPromise[] = R"(
   }
 )";
 
-constexpr char kMainFrame[] = "";
-
 absl::optional<std::string> ConvertActionToBytes(const base::Value* action,
                                                  std::string* error_message) {
   if (action == nullptr) {
@@ -120,16 +118,9 @@ absl::optional<std::string> ConvertActionToBytes(const base::Value* action,
 
 JsFlowExecutorImpl::JsFlowExecutorImpl(
     Delegate* delegate,
-    content::WebContents* web_contents_for_js_execution,
-    const std::string* js_flow_library)
+    JsFlowDevtoolsWrapper* js_flow_devtools_wrapper)
     : delegate_(delegate),
-      devtools_client_(std::make_unique<DevtoolsClient>(
-          content::DevToolsAgentHost::GetOrCreateFor(
-              web_contents_for_js_execution),
-          base::FeatureList::IsEnabled(
-              autofill_assistant::features::
-                  kAutofillAssistantFullJsFlowStackTraces))),
-      js_flow_library_(js_flow_library) {}
+      js_flow_devtools_wrapper_(js_flow_devtools_wrapper) {}
 
 JsFlowExecutorImpl::~JsFlowExecutorImpl() = default;
 
@@ -145,54 +136,23 @@ void JsFlowExecutorImpl::Start(
 
   js_flow_ = std::make_unique<std::string>(js_flow);
   callback_ = std::move(callback);
-  if (isolated_world_context_id_ == -1) {
-    devtools_client_->GetPage()->GetFrameTree(
-        kMainFrame, base::BindOnce(&JsFlowExecutorImpl::OnGetFrameTree,
-                                   weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    InternalStart();
-  }
+
+  js_flow_devtools_wrapper_->GetDevtoolsAndMaybeInit(base::BindOnce(
+      &JsFlowExecutorImpl::InternalStart, weak_ptr_factory_.GetWeakPtr()));
 }
 
-void JsFlowExecutorImpl::OnGetFrameTree(
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<page::GetFrameTreeResult> result) {
-  if (!result) {
-    LOG(ERROR) << "Failed to retrieve frame tree";
-    std::move(callback_).Run(
-        JavaScriptErrorStatus(reply_status, __FILE__, __LINE__, nullptr),
-        nullptr);
-    return;
-  }
-
-  devtools_client_->GetPage()->CreateIsolatedWorld(
-      page::CreateIsolatedWorldParams::Builder()
-          .SetFrameId(result->GetFrameTree()->GetFrame()->GetId())
-          .Build(),
-      kMainFrame,
-      base::BindOnce(&JsFlowExecutorImpl::OnIsolatedWorldCreated,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void JsFlowExecutorImpl::OnIsolatedWorldCreated(
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<page::CreateIsolatedWorldResult> result) {
-  if (!result) {
-    LOG(ERROR) << "Failed to create isolated world";
-    std::move(callback_).Run(
-        JavaScriptErrorStatus(reply_status, __FILE__, __LINE__, nullptr),
-        nullptr);
-    return;
-  }
-
-  isolated_world_context_id_ = result->GetExecutionContextId();
-
-  InternalStart();
-}
-
-void JsFlowExecutorImpl::InternalStart() {
-  DCHECK(isolated_world_context_id_ != -1);
+void JsFlowExecutorImpl::InternalStart(const ClientStatus& status,
+                                       DevtoolsClient* devtools_client,
+                                       const int isolated_world_context_id) {
   DCHECK(callback_);
+
+  if (!status.ok()) {
+    RunCallback(status, nullptr);
+    return;
+  }
+
+  devtools_client_ = devtools_client;
+  isolated_world_context_id_ = isolated_world_context_id;
 
   // Before running the flow in the sandbox, we define a promise that
   // the flow may fulfill to request execution of a native action.
@@ -200,9 +160,11 @@ void JsFlowExecutorImpl::InternalStart() {
 
   // Wrap the main js_flow in an async function containing a method to
   // request native actions. This is essentially providing |js_flow| with a
-  // JS API to call native functionality. Also adds the js_flow_library.
-  js_flow_ = std::make_unique<std::string>(base::StrCat(
-      {kLeadingWrapper, *js_flow_library_, *js_flow_, kTrailingWrapper}));
+  // JS API to call native functionality. Also appends the source url.
+  js_flow_ = std::make_unique<std::string>(
+      base::StrCat({kLeadingWrapper, *js_flow_, kTrailingWrapper,
+                    js_flow_util::GetDevtoolsSourceUrlCommentToAppend(
+                        UnexpectedErrorInfoProto::JS_FLOW)}));
 
   // Run the wrapped js_flow in the sandbox and serve potential native action
   // requests as they arrive.
@@ -213,7 +175,7 @@ void JsFlowExecutorImpl::InternalStart() {
           .SetReturnByValue(true)
           .SetContextId(isolated_world_context_id_)
           .Build(),
-      kMainFrame,
+      js_flow_util::kMainFrame,
       base::BindOnce(&JsFlowExecutorImpl::OnFlowFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -225,7 +187,7 @@ void JsFlowExecutorImpl::RefreshNativeActionPromise() {
           .SetAwaitPromise(true)
           .SetContextId(isolated_world_context_id_)
           .Build(),
-      kMainFrame,
+      js_flow_util::kMainFrame,
       base::BindOnce(&JsFlowExecutorImpl::OnNativeActionRequested,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -249,7 +211,7 @@ void JsFlowExecutorImpl::OnNativeActionRequested(
           .SetFunctionDeclaration(kArrayGetNthElement)
           .SetReturnByValue(true)
           .Build(),
-      kMainFrame,
+      js_flow_util::kMainFrame,
       base::BindOnce(&JsFlowExecutorImpl::OnNativeActionRequestActionRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), js_array_object_id));
 }
@@ -278,7 +240,7 @@ void JsFlowExecutorImpl::OnNativeActionRequestActionRetrieved(
           .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(kArrayGetNthElement)
           .Build(),
-      kMainFrame,
+      js_flow_util::kMainFrame,
       base::BindOnce(
           &JsFlowExecutorImpl::OnNativeActionRequestFulfillPromiseRetrieved,
           weak_ptr_factory_.GetWeakPtr(),
@@ -360,7 +322,7 @@ void JsFlowExecutorImpl::OnNativeActionFinished(
           .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(kFulfillActionPromise)
           .Build(),
-      kMainFrame,
+      js_flow_util::kMainFrame,
       base::BindOnce(&JsFlowExecutorImpl::OnFlowResumed,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -383,7 +345,10 @@ void JsFlowExecutorImpl::OnFlowFinished(
   // values are allowed (see js_flow_util::ExtractFlowReturnValue for details).
   std::unique_ptr<base::Value> out_result_value;
   ClientStatus status = js_flow_util::ExtractFlowReturnValue(
-      reply_status, result.get(), out_result_value, kJsLineOffset,
+      reply_status, result.get(), out_result_value,
+      /* js_line_offsets= */
+      {{js_flow_util::GetDevtoolsSourceUrl(UnexpectedErrorInfoProto::JS_FLOW),
+        kJsLineOffset}},
       kNumStackEntriesToDrop);
 
   RunCallback(status, std::move(out_result_value));

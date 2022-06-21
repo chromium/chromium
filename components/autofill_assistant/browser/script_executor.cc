@@ -629,12 +629,8 @@ content::WebContents* ScriptExecutor::GetWebContents() const {
   return delegate_->GetWebContents();
 }
 
-content::WebContents* ScriptExecutor::GetWebContentsForJsExecution() {
-  return delegate_->GetWebContentsForJsExecution();
-}
-
-const std::string* ScriptExecutor::GetJsFlowLibrary() const {
-  return delegate_->GetJsFlowLibrary();
+JsFlowDevtoolsWrapper* ScriptExecutor::GetJsFlowDevtoolsWrapper() const {
+  return delegate_->GetJsFlowDevtoolsWrapper();
 }
 
 ElementStore* ScriptExecutor::GetElementStore() const {
