@@ -282,6 +282,9 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     // WebView.
     features.DisableIfNotSet(blink::features::kUserAgentClientHint);
 
+    // Disable Reducing User Agent minor version on WebView.
+    features.DisableIfNotSet(blink::features::kReduceUserAgentMinorVersion);
+
     // Disabled until viz scheduling can be improved.
     features.DisableIfNotSet(::features::kUseSurfaceLayerForVideoDefault);
 
