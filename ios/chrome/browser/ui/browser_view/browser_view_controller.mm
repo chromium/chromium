@@ -21,7 +21,6 @@
 #import "components/sessions/core/tab_restore_service_helper.h"
 #import "components/signin/ios/browser/active_state_manager.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/application_context.h"
@@ -29,7 +28,6 @@
 #import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -53,7 +51,6 @@
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper_delegate.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
-#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
@@ -3762,24 +3759,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // for voice search.
   [self ensureVoiceSearchControllerCreated];
   [_voiceSearchController prepareToAppear];
-}
-
-// TODO(crbug.com/1272511): Move `showTranslate` out of the BVC.
-- (void)showTranslate {
-  feature_engagement::Tracker* engagement_tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(self.browserState);
-  engagement_tracker->NotifyEvent(
-      feature_engagement::events::kTriggeredTranslateInfobar);
-
-  DCHECK(self.currentWebState);
-  ChromeIOSTranslateClient* translateClient =
-      ChromeIOSTranslateClient::FromWebState(self.currentWebState);
-  if (translateClient) {
-    translate::TranslateManager* translateManager =
-        translateClient->GetTranslateManager();
-    DCHECK(translateManager);
-    translateManager->ShowTranslateUI(/*auto_translate=*/true);
-  }
 }
 
 // TODO(crbug.com/1329106): Move `showHelpPage` out of the BVC.

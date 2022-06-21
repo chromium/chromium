@@ -45,6 +45,9 @@
 // Shows recent tabs.
 - (void)showRecentTabs;
 
+// Shows the translate infobar.
+- (void)showTranslate;
+
 // Shows the AddCreditCard UI.
 - (void)showAddCreditCard;
 

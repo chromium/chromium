@@ -56,9 +56,6 @@ class GURL;
 // Closes all tabs.
 - (void)closeAllTabs;
 
-// Shows the translate infobar.
-- (void)showTranslate;
-
 // Shows the online help page in a tab.
 - (void)showHelpPage;
 
