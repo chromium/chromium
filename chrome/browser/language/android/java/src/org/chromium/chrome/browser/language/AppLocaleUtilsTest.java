@@ -8,13 +8,14 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,12 +23,18 @@ import java.util.List;
 /**
  * Tests for the AppLocalUtils class.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AppLocaleUtilsTest {
+    @Before
+    public void setUp() {
+        LanguageTestUtils.initializeResourceBundleForTesting();
+    }
+
     // Reset the application override language after each test.
     @After
     public void tearDown() {
+        LanguageTestUtils.clearResourceBundleForTesting();
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, null);
     }

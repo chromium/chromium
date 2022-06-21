@@ -118,14 +118,8 @@ android_library("javatests") {
   testonly = true
 
   sources = [
-    "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialogTest.java",
-    "java/src/org/chromium/chrome/browser/language/AppLocaleUtilsTest.java",
-    "java/src/org/chromium/chrome/browser/language/FakeLanguageBridgeJni.java",
     "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleControllerTest.java",
-    "java/src/org/chromium/chrome/browser/language/LanguageBridgeTest.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguageSettingsTest.java",
-    "java/src/org/chromium/chrome/browser/language/settings/LanguagesManagerTest.java",
-    "java/src/org/chromium/chrome/browser/translate/FakeTranslateBridgeJni.java",
   ]
   deps = [
     ":base_module_java",
@@ -164,6 +158,38 @@ android_library("javatests") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialogTest.java",
+    "java/src/org/chromium/chrome/browser/language/AppLocaleUtilsTest.java",
+    "java/src/org/chromium/chrome/browser/language/FakeLanguageBridgeJni.java",
+    "java/src/org/chromium/chrome/browser/language/LanguageBridgeTest.java",
+    "java/src/org/chromium/chrome/browser/language/LanguageTestUtils.java",
+    "java/src/org/chromium/chrome/browser/language/settings/LanguagesManagerTest.java",
+    "java/src/org/chromium/chrome/browser/translate/FakeTranslateBridgeJni.java",
+  ]
+
+  deps = [
+    ":base_module_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:base_module_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/language/android:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

@@ -49,6 +49,10 @@ public final class ResourceBundle {
         sAvailableLocales = locales;
     }
 
+    public static void clearAvailablePakLocalesForTesting() {
+        sAvailableLocales = null;
+    }
+
     /**
      * Return the list of available locales.
      * @return The correct locale list for this build.
