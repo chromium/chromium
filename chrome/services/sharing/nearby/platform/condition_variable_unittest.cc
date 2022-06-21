@@ -74,8 +74,8 @@ class ConditionVariableTest : public testing::Test {
   base::flat_set<base::UnguessableToken> successful_run_attempts_;
 };
 
-// Speculatively disabled on ChromeOS MSAN bots due to https://crbug.com/1186166
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+// Speculatively disabled on ChromeOS bots due to https://crbug.com/1186166
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SingleSequence_BlocksOnWaitAndUnblocksOnNotify \
   DISABLED_SingleSequence_BlocksOnWaitAndUnblocksOnNotify
 #else
