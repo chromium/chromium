@@ -296,33 +296,22 @@ class CORE_EXPORT LocalFrameView final
   void DidChangeScrollOffset();
 
   void ViewportSizeChanged(bool width_changed, bool height_changed);
-  void MarkViewportConstrainedObjectsForLayout(bool width_changed,
-                                               bool height_changed);
+  void MarkFixedPositionObjectsForLayout(bool width_changed,
+                                         bool height_changed);
   void DynamicViewportUnitsChanged();
 
   AtomicString MediaType() const;
   void SetMediaType(const AtomicString&);
   void AdjustMediaTypeForPrinting(bool printing);
 
-  // For any viewport-constrained object, we need to know if it's due to fixed
-  // or sticky so that we can support HasStickyViewportConstrainedObject().
-  enum ViewportConstrainedType { kFixed = 0, kSticky = 1 };
-  // Fixed-position and viewport-constrained sticky-position objects.
   typedef HeapHashSet<Member<LayoutObject>> ObjectSet;
-  void AddViewportConstrainedObject(LayoutObject&, ViewportConstrainedType);
-  void RemoveViewportConstrainedObject(LayoutObject&, ViewportConstrainedType);
-  const ObjectSet* ViewportConstrainedObjects() const {
-    return viewport_constrained_objects_;
+  void AddFixedPositionObject(LayoutObject&);
+  void RemoveFixedPositionObject(LayoutObject&);
+  const ObjectSet* FixedPositionObjects() const {
+    return fixed_position_objects_;
   }
-  bool HasViewportConstrainedObjects() const {
-    return viewport_constrained_objects_ &&
-           viewport_constrained_objects_->size() > 0;
-  }
-  // Returns true if any of the objects in viewport_constrained_objects_ are
-  // sticky position.
-  bool HasStickyViewportConstrainedObject() const {
-    DCHECK(!sticky_position_object_count_ || HasViewportConstrainedObjects());
-    return sticky_position_object_count_ > 0;
+  bool HasFixedPositionObjects() const {
+    return fixed_position_objects_ && fixed_position_objects_->size() > 0;
   }
 
   // Objects with background-attachment:fixed.
@@ -1099,9 +1088,7 @@ class CORE_EXPORT LocalFrameView final
   Member<ScrollableAreaSet> animating_scrollable_areas_;
   // Scrollable areas which are user-scrollable, whether they overflow or not.
   Member<ScrollableAreaSet> user_scrollable_areas_;
-  Member<ObjectSet> viewport_constrained_objects_;
-  // Number of entries in viewport_constrained_objects_ that are sticky.
-  unsigned sticky_position_object_count_;
+  Member<ObjectSet> fixed_position_objects_;
   ObjectSet background_attachment_fixed_objects_;
   Member<FrameViewAutoSizeInfo> auto_size_info_;
 

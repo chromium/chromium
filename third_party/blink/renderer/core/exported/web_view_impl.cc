@@ -1250,7 +1250,7 @@ void WebViewImpl::ResizeViewWhileAnchored(
     gfx::Size old_size = frame_view->Size();
     UpdateICBAndResizeViewport(visible_viewport_size);
     gfx::Size new_size = frame_view->Size();
-    frame_view->MarkViewportConstrainedObjectsForLayout(
+    frame_view->MarkFixedPositionObjectsForLayout(
         old_size.width() != new_size.width(),
         old_size.height() != new_size.height());
   }

@@ -290,31 +290,13 @@ void PaintLayer::UpdateLayerPositionRecursive(
   if (enclosing_scroller &&
       GetLayoutObject().StyleRef().HasStickyConstrainedPosition() &&
       GetLayoutObject().NeedsPaintPropertyUpdate()) {
-    if (enclosing_scroller != previous_enclosing_scroller) {
-      // Old ancestor scroller should no longer have these constraints.
-      DCHECK(!previous_enclosing_scroller ||
-             !previous_enclosing_scroller->GetScrollableArea() ||
-             !previous_enclosing_scroller->GetScrollableArea()
-                  ->GetStickyConstraintsMap()
-                  .Contains(this));
-
-      // If our ancestor scroller has changed and the previous one was the
-      // root layer, we are no longer viewport constrained.
-      if (previous_enclosing_scroller &&
-          previous_enclosing_scroller->IsRootLayer()) {
-        GetLayoutObject()
-            .View()
-            ->GetFrameView()
-            ->RemoveViewportConstrainedObject(
-                GetLayoutObject(),
-                LocalFrameView::ViewportConstrainedType::kSticky);
-      }
-    }
-
-    if (enclosing_scroller->IsRootLayer()) {
-      GetLayoutObject().View()->GetFrameView()->AddViewportConstrainedObject(
-          GetLayoutObject(), LocalFrameView::ViewportConstrainedType::kSticky);
-    }
+    // Old ancestor scroller should no longer have these constraints.
+    DCHECK(enclosing_scroller == previous_enclosing_scroller ||
+           !previous_enclosing_scroller ||
+           !previous_enclosing_scroller->GetScrollableArea() ||
+           !previous_enclosing_scroller->GetScrollableArea()
+                ->GetStickyConstraintsMap()
+                .Contains(this));
     GetLayoutObject().UpdateStickyPositionConstraints();
 
     // Sticky position constraints and ancestor overflow scroller affect
@@ -2532,18 +2514,6 @@ void PaintLayer::RemoveAncestorScrollContainerLayer(
   }
 
   if (AncestorScrollContainerLayer()) {
-    // If the previous AncestorScrollContainerLayer is the root and this object
-    // is a sticky viewport constrained object, it is no longer known to be
-    // constrained by the root.
-    if (AncestorScrollContainerLayer()->IsRootLayer() &&
-        GetLayoutObject().StyleRef().HasStickyConstrainedPosition()) {
-      if (LocalFrameView* frame_view = GetLayoutObject().GetFrameView()) {
-        frame_view->RemoveViewportConstrainedObject(
-            GetLayoutObject(),
-            LocalFrameView::ViewportConstrainedType::kSticky);
-      }
-    }
-
     if (PaintLayerScrollableArea* ancestor_scrollable_area =
             AncestorScrollContainerLayer()->GetScrollableArea()) {
       // TODO(pdr): We will need to invalidate the scroll paint property subtree

@@ -4100,8 +4100,7 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
         // we can limit the following condition to IsA<LayoutView>(object_),
         // i.e. exclude subscrollers.
         auto* frame_view = object_.GetFrameView();
-        // TODO(crbug.com/1310584): This should be HasFixedPositionObjects().
-        if (frame_view->HasViewportConstrainedObjects() &&
+        if (frame_view->HasFixedPositionObjects() &&
             !object_.View()->FirstFragment().PaintProperties()->Scroll()) {
           frame_view->SetPaintArtifactCompositorNeedsUpdate();
         } else if (!object_.IsStackingContext() &&

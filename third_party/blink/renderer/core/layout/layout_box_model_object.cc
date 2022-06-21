@@ -161,22 +161,6 @@ void LayoutBoxModelObject::WillBeDestroyed() {
   // A continuation of this LayoutObject should be destroyed at subclasses.
   DCHECK(!Continuation());
 
-  if (IsPositioned()) {
-    // Don't use view() because the document's layoutView has been set to
-    // 0 during destruction.
-    if (LocalFrame* frame = GetFrame()) {
-      if (LocalFrameView* frame_view = frame->View()) {
-        if (StyleRef().HasViewportConstrainedPosition()) {
-          frame_view->RemoveViewportConstrainedObject(
-              *this, LocalFrameView::ViewportConstrainedType::kFixed);
-        } else if (StyleRef().HasStickyConstrainedPosition()) {
-          frame_view->RemoveViewportConstrainedObject(
-              *this, LocalFrameView::ViewportConstrainedType::kSticky);
-        }
-      }
-    }
-  }
-
   LayoutObject::WillBeDestroyed();
 
   if (HasLayer())
@@ -364,43 +348,6 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
               body_object->Style() && body_object->StyleRef().HasBackground())
             body_object->SetBackgroundNeedsFullPaintInvalidation();
         }
-      }
-    }
-  }
-
-  if (LocalFrameView* frame_view = View()->GetFrameView()) {
-    bool new_style_is_viewport_constained =
-        StyleRef().GetPosition() == EPosition::kFixed;
-    bool old_style_is_viewport_constrained =
-        old_style && old_style->GetPosition() == EPosition::kFixed;
-    bool new_style_is_sticky = StyleRef().HasStickyConstrainedPosition();
-    bool old_style_is_sticky =
-        old_style && old_style->HasStickyConstrainedPosition();
-
-    if (old_style_is_sticky && !new_style_is_sticky) {
-      // This may get re-added to viewport constrained objects if the object
-      // went from sticky to fixed.
-      frame_view->RemoveViewportConstrainedObject(
-          *this, LocalFrameView::ViewportConstrainedType::kSticky);
-
-      // Remove sticky constraints for this layer.
-      if (Layer()) {
-        if (const PaintLayer* ancestor_scroll_container_layer =
-                Layer()->AncestorScrollContainerLayer()) {
-          if (PaintLayerScrollableArea* scrollable_area =
-                  ancestor_scroll_container_layer->GetScrollableArea())
-            scrollable_area->InvalidateStickyConstraintsFor(Layer());
-        }
-      }
-    }
-
-    if (new_style_is_viewport_constained != old_style_is_viewport_constrained) {
-      if (new_style_is_viewport_constained && Layer()) {
-        frame_view->AddViewportConstrainedObject(
-            *this, LocalFrameView::ViewportConstrainedType::kFixed);
-      } else {
-        frame_view->RemoveViewportConstrainedObject(
-            *this, LocalFrameView::ViewportConstrainedType::kFixed);
       }
     }
   }

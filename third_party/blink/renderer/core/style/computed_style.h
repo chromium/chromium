@@ -2013,9 +2013,6 @@ class ComputedStyle : public ComputedStyleBase,
     return GetPosition() == EPosition::kRelative ||
            GetPosition() == EPosition::kSticky;
   }
-  bool HasViewportConstrainedPosition() const {
-    return GetPosition() == EPosition::kFixed;
-  }
   bool HasStickyConstrainedPosition() const {
     return GetPosition() == EPosition::kSticky &&
            (!Top().IsAuto() || !Left().IsAuto() || !Right().IsAuto() ||

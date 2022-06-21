@@ -474,20 +474,14 @@ void CullRectUpdater::PaintPropertiesChanged(
   if (object.HasLayer()) {
     To<LayoutBoxModelObject>(object).Layer()->SetNeedsCullRectUpdate();
     if (object.IsLayoutView() &&
-        object.GetFrameView()->HasViewportConstrainedObjects()) {
+        object.GetFrameView()->HasFixedPositionObjects()) {
       // Fixed-position cull rects depend on view clip. See
       // ComputeFragmentCullRect().
       if (const auto* clip_node =
               object.FirstFragment().PaintProperties()->OverflowClip()) {
         if (clip_node->NodeChanged() != PaintPropertyChangeType::kUnchanged) {
-          for (auto constrained :
-               *object.GetFrameView()->ViewportConstrainedObjects()) {
-            if (constrained->IsFixedPositioned()) {
-              To<LayoutBoxModelObject>(constrained.Get())
-                  ->Layer()
-                  ->SetNeedsCullRectUpdate();
-            }
-          }
+          for (auto fixed : *object.GetFrameView()->FixedPositionObjects())
+            To<LayoutBox>(fixed.Get())->Layer()->SetNeedsCullRectUpdate();
         }
       }
     }
