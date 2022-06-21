@@ -217,6 +217,7 @@ source_set("browser") {
     "//components/content_capture/android",
     "//components/content_capture/browser",
     "//components/embedder_support:browser_util",
+    "//components/embedder_support:embedder_support",
     "//components/embedder_support/android:util",
     "//components/embedder_support/origin_trials",
     "//components/favicon_base:favicon_base",

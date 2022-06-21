@@ -54,6 +54,7 @@
 #include "build/build_config.h"
 #include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/crash/content/browser/crash_handler_host_linux.h"
+#include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
@@ -347,15 +348,15 @@ void AwContentBrowserClient::AppendExtraCommandLineSwitches(
     DCHECK(process_type == switches::kRendererProcess ||
            process_type == switches::kUtilityProcess)
         << process_type;
-    // Pass crash reporter enabled state to renderer processes.
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            ::switches::kEnableCrashReporter)) {
-      command_line->AppendSwitch(::switches::kEnableCrashReporter);
-    }
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            ::switches::kEnableCrashReporterForTesting)) {
-      command_line->AppendSwitch(::switches::kEnableCrashReporterForTesting);
-    }
+
+    static const char* const kSwitchNames[] = {
+        ::switches::kEnableCrashReporter,
+        ::switches::kEnableCrashReporterForTesting,
+        embedder_support::kOriginTrialDisabledFeatures,
+    };
+
+    command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
+                                   kSwitchNames, std::size(kSwitchNames));
   }
 }
 
