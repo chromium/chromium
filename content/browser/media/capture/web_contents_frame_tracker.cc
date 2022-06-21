@@ -76,7 +76,7 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
   }
 
   float GetScaleOverrideForCapture() const override {
-    if (auto* view = GetCurrentView()) {
+    if (const auto* view = GetCurrentView()) {
       return view->GetScaleOverrideForCapture();
     }
     // Otherwise we can assume it's unset and return the default value.
@@ -155,6 +155,13 @@ void WebContentsFrameTracker::SetCapturedContentSize(
 
   DVLOG(3) << __func__ << ": content_size=" << content_size.ToString();
   if (base::FeatureList::IsEnabled(media::kWebContentsCaptureHiDpi)) {
+    // The unscaled content size can be determined by removing the scale factor
+    // from the |content_size|.
+    const float scale_override = context_->GetScaleOverrideForCapture();
+    DCHECK_NE(0.0f, scale_override);
+    const gfx::Size unscaled_content_size =
+        gfx::ScaleToCeiledSize(content_size, 1.0f / scale_override);
+
     // Check if the capture scale needs to be modified. The content_size
     // provided here is the final pixel size, with all scale factors such as the
     // device scale factor and HiDPI capture scale already applied.
@@ -163,7 +170,8 @@ void WebContentsFrameTracker::SetCapturedContentSize(
     // browser tab. If region capture is active, there will be an additional
     // call providing the region size. Lastly, if the scale was modified, there
     // will be another call with the upscaled size.
-    SetCaptureScaleOverride(CalculatePreferredScaleFactor(content_size));
+    SetCaptureScaleOverride(
+        CalculatePreferredScaleFactor(content_size, unscaled_content_size));
   }
 }
 
@@ -213,64 +221,83 @@ gfx::Size WebContentsFrameTracker::CalculatePreferredSize(
   return preferred_size;
 }
 
-// TODO(https://crbug.com/1329704): this should also include live updates
-// about system resource availability. Perhaps we can use FPS or the
-// lossyness of outputted frames?
 float WebContentsFrameTracker::CalculatePreferredScaleFactor(
-    const gfx::Size& content_size) {
+    const gfx::Size& current_content_size,
+    const gfx::Size& unscaled_current_content_size) {
   // A max factor above 2.0 would cause a quality degradation for local
   // rendering. The downscaling used by the compositor uses a linear filter
   // which only looks at 4 source pixels, so rendering more than 4 pixels per
   // destination pixel would result in information loss.
-  constexpr float kMaxFactor = 2.0f;
+  static constexpr float kMaxFactor = 2.0f;
 
-  // A minimum scale factor of less than 1.0 doesn't really make any sense: this
-  // would only occur if the "preferred size" is larger than the specified
-  // capture size, which should never happen.
-  constexpr float kMinFactor = 1.0f;
+  // A minimum factor of 1.0 means that no DPI scaling is applied.
+  static constexpr float kMinFactor = 1.0;
 
-  // The content rectangle is letterboxed within the capture size rectangle.
-  // Calculate the effective scaled size after this is applied, and use
-  // this size for ratio calculations.
+  // The content size does not include letterboxing, meaning that there may
+  // be an aspect ratio difference between the content size and the final
+  // capture size. For example, if the video frame consumer requests a 1080P
+  // video stream and the web contents has a size of 960x720 (ratio of 4:3), the
+  // letterboxed size here will be 1440x1080 (still 4:3). Graphically:
+  //
+  //    |capture_size_|
+  //    |----------------------------------------------------|
+  //    |    | |letterbox_size|                         | .  |
+  //    |    |     |-------------------------------|    |    |
+  //    |    |     | |content_size|                |    |    |
+  //    |    |     |-------------------------------|    |    |
+  //    |    |                                          |    |
+  //    |----------------------------------------------------|
+  //
+  // In order to preserve the aspect ratio of the web contents, we use this
+  // letterboxed size with the same aspect ratio instead of the requested
+  // capture size's aspect ratio.
   gfx::Size letterbox_size =
-      media::ComputeLetterboxRegion(gfx::Rect(capture_size_), content_size)
+      media::ComputeLetterboxRegion(gfx::Rect(capture_size_),
+                                    unscaled_current_content_size)
           .size();
 
-  // Ideally the |content_size| should be the same as |letterbox_size|, so if
-  // we are achieving that with current settings we can exit early. Also
-  // accept almost-equal sizes to avoid oscillations due to rounding errors.
-  if (std::abs(content_size.width() - letterbox_size.width()) < 4 &&
-      std::abs(content_size.height() - letterbox_size.height()) < 4) {
+  // Ideally the |current_content_size| should be the same as |letterbox_size|,
+  // so if we are achieving that with current settings we can exit early. Since
+  // we only scale by factors of 1/4, we accept a difference here of up to 1/8th
+  // of the letterboxed size, meaning that this scale factor would have been a
+  // more appropriate fit that a neighboring factor.
+  if (std::abs(current_content_size.width() - letterbox_size.width()) <=
+          (letterbox_size.width() / 8) &&
+      std::abs(current_content_size.height() - letterbox_size.height()) <=
+          (letterbox_size.height() / 8)) {
     return capture_scale_override_;
   }
 
-  // The content_size should already be scaled based on the currently set
-  // scale factor, so start by looking at what the content size would have been
-  // if scaling was not enabled.
-  const auto unscaled_content_size = gfx::ScaleToCeiledSize(
-      content_size, 1.0f / context_->GetScaleOverrideForCapture());
-
   // Next, determine what the ideal scale factors in each direction would have
-  // been for this frame. The factors should be nearly equal after letterboxing.
+  // been for this frame. Since we are using the letterboxed size here, the
+  // factors should be almost identical.
+  DCHECK_NE(0.0f, unscaled_current_content_size.width());
+  DCHECK_NE(0.0f, unscaled_current_content_size.height());
   const gfx::Vector2dF factors(static_cast<float>(letterbox_size.width()) /
-                                   unscaled_content_size.width(),
+                                   unscaled_current_content_size.width(),
                                static_cast<float>(letterbox_size.height()) /
-                                   unscaled_content_size.height());
+                                   unscaled_current_content_size.height());
 
   // We prefer to err on the side of having to downscale in one direction rather
   // than upscale in the other direction, so we use the largest scale factor.
   const float largest_factor = std::max(factors.x(), factors.y());
 
+  // Finally, we return a value bounded by [kMinFactor, kMaxFactor] rounded to
+  // the nearest quarter.
+  const float preferred_factor =
+      base::clamp(std::round(largest_factor * 4) / 4, kMinFactor, kMaxFactor);
   DVLOG(3) << __func__ << ":"
            << " capture_size_=" << capture_size_.ToString()
-           << " letterbox_size=" << letterbox_size.ToString()
-           << " content_size=" << content_size.ToString()
-           << " unscaled_content_size=" << unscaled_content_size.ToString()
-           << " context_->GetScaleOverrideForCapture()="
+           << ", letterbox_size=" << letterbox_size.ToString()
+           << ", current_content_size=" << current_content_size.ToString()
+           << ", unscaled_current_content_size="
+           << unscaled_current_content_size.ToString()
+           << ", context_->GetScaleOverrideForCapture()="
            << context_->GetScaleOverrideForCapture()
-           << " factors.x()=" << factors.x() << " factors.y()=" << factors.y()
-           << " largest_factor=" << largest_factor;
-  return std::clamp(largest_factor, kMinFactor, kMaxFactor);
+           << ", factors.x()=" << factors.x() << " factors.y()=" << factors.y()
+           << ", largest_factor=" << largest_factor
+           << ", preferred factor=" << preferred_factor;
+  return preferred_factor;
 }
 
 void WebContentsFrameTracker::RenderFrameCreated(

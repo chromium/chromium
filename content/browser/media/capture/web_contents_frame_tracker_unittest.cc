@@ -441,5 +441,86 @@ TEST_F(WebContentsFrameTrackerTest, SettingScaleFactorMaintainsStableCapture) {
   EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5);
 }
 
+TEST_F(WebContentsFrameTrackerTest, HighDpiIsRoundedIfBetweenBounds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
+  StartTrackerOnUIThread(kSize1080p);
+  RunAllTasksUntilIdle();
+
+  // Both factors should be 1.4f, which should be between bounds and rounded
+  // up.
+  tracker()->SetCapturedContentSize(gfx::Size{1370, 771});
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5);
+}
+
+TEST_F(WebContentsFrameTrackerTest, HighDpiIsRoundedIfBetweenDifferentBounds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
+  StartTrackerOnUIThread(kSize1080p);
+  RunAllTasksUntilIdle();
+
+  // Both factors should be 1.6f, which should be between bounds and rounded
+  // down.
+  tracker()->SetCapturedContentSize(gfx::Size{1200, 675});
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5f);
+}
+
+TEST_F(WebContentsFrameTrackerTest, HighDpiIsRoundedToMinimum) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
+  StartTrackerOnUIThread(kSize1080p);
+  RunAllTasksUntilIdle();
+
+  // Both factors should be 1.3f, which should be between bounds and rounded
+  // down.
+  tracker()->SetCapturedContentSize(gfx::Size{1477, 831});
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.25f);
+}
+
+TEST_F(WebContentsFrameTrackerTest, HighDpiIsRoundedToMaximum) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
+  StartTrackerOnUIThread(kSize1080p);
+  RunAllTasksUntilIdle();
+
+  // Both factors should be well over the maximum of 2.0f.
+  tracker()->SetCapturedContentSize(gfx::Size{320, 240});
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 2.0f);
+}
+
+TEST_F(WebContentsFrameTrackerTest, HighDpiScalingIsStable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+
+  StartTrackerOnUIThread(kSize1080p);
+  RunAllTasksUntilIdle();
+
+  // Both factors should be 1.25f, which should be exactly a scaling factor.
+  static constexpr gfx::Size kContentSize(1536, 864);
+  tracker()->SetCapturedContentSize(kContentSize);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.25f);
+
+  // Now that its applied, it should stay the same.
+  static const gfx::Size kScaledContentSize =
+      gfx::ScaleToRoundedSize(kContentSize, 1.25f);
+  tracker()->SetCapturedContentSize(kScaledContentSize);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.25f);
+
+  // If it varies slightly that shouldn't result in any changes.
+  static const gfx::Size kScaledLargerContentSize =
+      gfx::ScaleToRoundedSize(kContentSize, 1.27f);
+  tracker()->SetCapturedContentSize(kScaledLargerContentSize);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.25f);
+
+  static const gfx::Size kScaledSmallerContentSize =
+      gfx::ScaleToRoundedSize(kContentSize, 1.23f);
+  tracker()->SetCapturedContentSize(kScaledSmallerContentSize);
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.25f);
+}
+
 }  // namespace
 }  // namespace content

@@ -86,16 +86,15 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // the post" system is used and the first capturer's preferred size is set.
   gfx::Size CalculatePreferredSize(const gfx::Size& capture_size);
 
-  // Determines the preferred capture scale factor based on the content size and
-  // current conditions. This method requires the |content_size|, which is the
-  // resulting frame size from the first captured frame, and thus has an
-  // implicit relationship with |CalculatePreferredSize|, which is used to help
-  // size the backing WebContents before any frames are captured. Ideally, the
-  // result of calculating the preferred size results in a content size that
-  // does not need any scaling, however in practice this is not always true and
-  // we need to adjust the DPI of the WebContents to get an appropriately sized
-  // VideoFrame.
-  float CalculatePreferredScaleFactor(const gfx::Size& content_size);
+  // Determines the preferred DPI scaling factor based on the current content
+  // size of the video frame, meaning the populated pixels, and the unscaled
+  // current content size, meaning the original size of the frame before scaling
+  // was applied to fit the frame. These values are used to compare against
+  // the currently requested |capture_size_| set in
+  // |WillStartCapturingWebContents()|.
+  float CalculatePreferredScaleFactor(
+      const gfx::Size& current_content_size,
+      const gfx::Size& unscaled_current_content_size);
 
   // WebContentsObserver overrides.
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
@@ -188,7 +187,11 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // changes.
   float capture_scale_override_ = 1.0f;
 
-  // The last set capture size.
+  // The consumer-requested capture size, set in |WillStartCapturingWebContents|
+  // to indicate the preferred frame size from the video frame consumer. Note
+  // that frames will not necessarily be this size due to a variety of reasons,
+  // so the |current_content_size| passed into |CalculatePreferredScaleFactor|
+  // may differ from this value.
   gfx::Size capture_size_;
 };
 
