@@ -1175,6 +1175,9 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
   if (app_service_intent->activity_name.has_value()) {
     crosapi_intent->activity_name = app_service_intent->activity_name.value();
   }
+  if (app_service_intent->data.has_value())
+    crosapi_intent->data = app_service_intent->data.value();
+
   return crosapi_intent;
 }
 
@@ -1269,6 +1272,9 @@ apps::IntentPtr CreateAppServiceIntentFromCrosapi(
   if (crosapi_intent->activity_name.has_value()) {
     app_service_intent->activity_name = crosapi_intent->activity_name.value();
   }
+  if (crosapi_intent->data.has_value())
+    app_service_intent->data = crosapi_intent->data.value();
+
   return app_service_intent;
 }
 
@@ -1318,6 +1324,7 @@ apps::mojom::IntentPtr ConvertCrosapiToAppServiceIntent(
   }
   if (crosapi_intent->data.has_value())
     app_service_intent->data = crosapi_intent->data.value();
+
   return app_service_intent;
 }
 

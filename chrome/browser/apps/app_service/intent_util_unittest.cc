@@ -1178,12 +1178,23 @@ TEST_F(IntentUtilsTest, CrosapiIntentConversion) {
             converted_intent->share_text.value());
   EXPECT_EQ(original_intent->share_title.value(),
             converted_intent->share_title.value());
+
+  original_intent =
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView);
+  original_intent->data = "geo:0,0?q=1600%20amphitheatre%20parkway";
+  crosapi_intent =
+      apps_util::ConvertAppServiceToCrosapiIntent(original_intent, nullptr);
+  converted_intent =
+      apps_util::CreateAppServiceIntentFromCrosapi(crosapi_intent, nullptr);
+  ASSERT_TRUE(converted_intent->data.has_value());
+  EXPECT_EQ(original_intent->data.value(), converted_intent->data.value());
 }
 
 // TODO(crbug.com/1253250): Will be removed soon.
 TEST_F(IntentUtilsTest, CrosapiIntentConversionMojom) {
   apps::mojom::IntentPtr original_intent =
       apps_util::CreateIntentFromUrl(GURL("www.google.com"));
+  original_intent->data = "geo:0,0?q=1600%20amphitheatre%20parkway";
   auto crosapi_intent =
       apps_util::ConvertAppServiceToCrosapiIntent(original_intent, nullptr);
   auto converted_intent =
