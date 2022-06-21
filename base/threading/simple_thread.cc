@@ -101,7 +101,7 @@ void DelegateSimpleThread::Run() {
 
 DelegateSimpleThreadPool::DelegateSimpleThreadPool(
     const std::string& name_prefix,
-    int num_threads)
+    size_t num_threads)
     : name_prefix_(name_prefix),
       num_threads_(num_threads),
       dry_(WaitableEvent::ResetPolicy::MANUAL,
@@ -115,7 +115,7 @@ DelegateSimpleThreadPool::~DelegateSimpleThreadPool() {
 
 void DelegateSimpleThreadPool::Start() {
   DCHECK(threads_.empty()) << "Start() called with outstanding threads.";
-  for (int i = 0; i < num_threads_; ++i) {
+  for (size_t i = 0; i < num_threads_; ++i) {
     std::string name(name_prefix_);
     name.push_back('/');
     name.append(NumberToString(i));
@@ -132,7 +132,7 @@ void DelegateSimpleThreadPool::JoinAll() {
   AddWork(nullptr, num_threads_);
 
   // Join and destroy all the worker threads.
-  for (int i = 0; i < num_threads_; ++i) {
+  for (size_t i = 0; i < num_threads_; ++i) {
     threads_[i]->Join();
     delete threads_[i];
   }
@@ -140,9 +140,10 @@ void DelegateSimpleThreadPool::JoinAll() {
   DCHECK(delegates_.empty());
 }
 
-void DelegateSimpleThreadPool::AddWork(Delegate* delegate, int repeat_count) {
+void DelegateSimpleThreadPool::AddWork(Delegate* delegate,
+                                       size_t repeat_count) {
   AutoLock locked(lock_);
-  for (int i = 0; i < repeat_count; ++i)
+  for (size_t i = 0; i < repeat_count; ++i)
     delegates_.push(delegate);
   // If we were empty, signal that we have work now.
   if (!dry_.IsSignaled())

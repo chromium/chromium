@@ -998,9 +998,9 @@ void HangWatcher::UnregisterThread() {
 namespace internal {
 namespace {
 
-constexpr uint64_t kOnlyDeadlineMask = 0x00FFFFFFFFFFFFFFu;
+constexpr uint64_t kOnlyDeadlineMask = 0x00FF'FFFF'FFFF'FFFFu;
 constexpr uint64_t kOnlyFlagsMask = ~kOnlyDeadlineMask;
-constexpr uint64_t kMaximumFlag = 0x8000000000000000u;
+constexpr uint64_t kMaximumFlag = 0x8000'0000'0000'0000u;
 
 // Use as a mask to keep persistent flags and the deadline.
 constexpr uint64_t kPersistentFlagsAndDeadlineMask =
@@ -1060,7 +1060,8 @@ void HangWatchDeadline::SetDeadline(TimeTicks new_deadline) {
   const uint64_t old_bits = bits_.load(std::memory_order_relaxed);
   const uint64_t new_flags =
       ExtractFlags(old_bits & kPersistentFlagsAndDeadlineMask);
-  bits_.store(new_flags | ExtractDeadline(new_deadline.ToInternalValue()),
+  bits_.store(new_flags | ExtractDeadline(static_cast<uint64_t>(
+                              new_deadline.ToInternalValue())),
               std::memory_order_relaxed);
 }
 
@@ -1131,7 +1132,8 @@ TimeTicks HangWatchDeadline::DeadlineFromBits(uint64_t bits) {
   // representable value.
   DCHECK(bits <= kOnlyDeadlineMask)
       << "Flags bits are set. Remove them before returning deadline.";
-  return TimeTicks::FromInternalValue(bits);
+  static_assert(kOnlyDeadlineMask <= std::numeric_limits<int64_t>::max());
+  return TimeTicks::FromInternalValue(static_cast<int64_t>(bits));
 }
 
 bool HangWatchDeadline::IsFlagSet(Flag flag) const {
