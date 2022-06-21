@@ -28,6 +28,7 @@
 
 import optparse
 
+from blinkpy.common.system.platform_info_mock import MockPlatformInfo
 from blinkpy.web_tests.port import mac
 from blinkpy.web_tests.port import port_testcase
 
@@ -87,3 +88,20 @@ class MacPortTest(port_testcase.PortTestCase):
             port.path_to_apache_config_file(),
             '/mock-checkout/third_party/blink/tools/apache_config/apache2-httpd-2.4-php7.conf'
         )
+
+    def test_default_smoke_test_only(self):
+        """Verify that older Mac versions run only smoke tests by default.
+
+        The smoke test default should not depend on the current host's platform.
+        """
+        port = self.make_port(os_version='mac11')
+        self.assertFalse(port.default_smoke_test_only())
+        all_tests_platform = MockPlatformInfo('mac', 'mac11')
+
+        port = self.make_port(os_version='mac10.13')
+        port.host.platform = all_tests_platform
+        self.assertTrue(port.default_smoke_test_only())
+
+        port = self.make_port(os_version='mac10.14')
+        port.host.platform = all_tests_platform
+        self.assertTrue(port.default_smoke_test_only())

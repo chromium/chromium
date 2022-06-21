@@ -120,9 +120,7 @@ class MacPort(base.Port):
 
     def default_smoke_test_only(self):
         # only run platform specific tests on older mac versions
-        if self.host.platform.os_version in ['mac10.13', 'mac10.14']:
-            return True
-        return False
+        return self._version in {'mac10.13', 'mac10.14'}
 
     def path_to_smoke_tests_file(self):
         return self._filesystem.join(self.web_tests_dir(), 'SmokeTests',
