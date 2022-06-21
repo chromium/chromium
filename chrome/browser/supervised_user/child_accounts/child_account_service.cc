@@ -23,7 +23,6 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/web_approvals_manager.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -31,8 +30,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -161,28 +158,6 @@ bool ChildAccountService::SetActive(bool active) {
   active_ = active;
 
   if (active_) {
-    SupervisedUserSettingsService* settings_service =
-        SupervisedUserSettingsServiceFactory::GetForKey(
-            profile_->GetProfileKey());
-
-    // In contrast to deprecated legacy SUs, child account SUs must sign in.
-    settings_service->SetLocalSetting(supervised_users::kSigninAllowed,
-                                      std::make_unique<base::Value>(true));
-
-    // Always allow cookies, to avoid website compatibility issues.
-    settings_service->SetLocalSetting(supervised_users::kCookiesAlwaysAllowed,
-                                      std::make_unique<base::Value>(true));
-
-    // SafeSearch is controlled at the account level, so don't override it
-    // client-side.
-    settings_service->SetLocalSetting(supervised_users::kForceSafeSearch,
-                                      std::make_unique<base::Value>(false));
-
-    // GeolocationDisabled is controlled at the account level, so don't override
-    // it client-side.
-    settings_service->SetLocalSetting(supervised_users::kGeolocationDisabled,
-                                      std::make_unique<base::Value>(false));
-
 #if !BUILDFLAG(IS_CHROMEOS)
     // This is also used by user policies (UserPolicySigninService), but since
     // child accounts can not also be Dasher accounts, there shouldn't be any
@@ -197,35 +172,11 @@ bool ChildAccountService::SetActive(bool active) {
     service->web_approvals_manager().AddRemoteApprovalRequestCreator(
         PermissionRequestCreatorApiary::CreateWithProfile(profile_));
   } else {
-    SupervisedUserSettingsService* settings_service =
-        SupervisedUserSettingsServiceFactory::GetForKey(
-            profile_->GetProfileKey());
-    settings_service->SetLocalSetting(supervised_users::kSigninAllowed,
-                                      nullptr);
-    settings_service->SetLocalSetting(supervised_users::kCookiesAlwaysAllowed,
-                                      nullptr);
-    settings_service->SetLocalSetting(supervised_users::kForceSafeSearch,
-                                      nullptr);
-    settings_service->SetLocalSetting(supervised_users::kGeolocationDisabled,
-                                      nullptr);
-
 #if !BUILDFLAG(IS_CHROMEOS)
     signin_util::SetUserSignoutAllowedForProfile(profile_, true);
 #endif
 
     CancelFetchingFamilyInfo();
-  }
-
-  // Trigger a sync reconfig to enable/disable the right SU data types.
-  // The logic to do this lives in the SupervisedUserSyncModelTypeController.
-  // TODO(crbug.com/946473): Get rid of this hack and instead call
-  // DataTypePreconditionChanged from the controller.
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
-  if (sync_service->GetUserSettings()->IsFirstSetupComplete()) {
-    // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and
-    // immediately releasing it again (via the temporary unique_ptr going away).
-    sync_service->GetSetupInProgressHandle();
   }
 
   return true;

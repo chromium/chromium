@@ -84,16 +84,7 @@ TEST_F(SupervisedUserProviderTest, GeolocationTest) {
 TEST_F(SupervisedUserProviderTest, CookiesTest) {
   std::unique_ptr<RuleIterator> rule_iterator =
       provider_->GetRuleIterator(ContentSettingsType::COOKIES, false);
-  EXPECT_FALSE(rule_iterator);
 
-  // Allow cookies everywhere.
-  EXPECT_CALL(mock_observer_,
-              OnContentSettingChanged(_, _, ContentSettingsType::COOKIES));
-  service_.SetLocalSetting(supervised_users::kCookiesAlwaysAllowed,
-                           std::make_unique<base::Value>(true));
-
-  rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::COOKIES, false);
   ASSERT_TRUE(rule_iterator->HasNext());
   Rule rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());

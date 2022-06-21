@@ -82,9 +82,9 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, LocalPolicies) {
   logged_in_user_mixin_.LogInUser();
   Profile* profile = browser()->profile();
   PrefService* prefs = profile->GetPrefs();
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kForceGoogleSafeSearch));
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kForceGoogleSafeSearch));
   EXPECT_EQ(prefs->GetInteger(prefs::kForceYouTubeRestrict),
-            safe_search_util::YOUTUBE_RESTRICT_OFF);
+            safe_search_util::YOUTUBE_RESTRICT_MODERATE);
   EXPECT_FALSE(
       prefs->IsUserModifiablePreference(prefs::kForceGoogleSafeSearch));
   EXPECT_FALSE(prefs->IsUserModifiablePreference(prefs::kForceYouTubeRestrict));

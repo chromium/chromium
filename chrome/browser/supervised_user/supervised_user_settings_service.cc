@@ -156,6 +156,25 @@ SupervisedUserSettingsService::SubscribeForShutdown(
 
 void SupervisedUserSettingsService::SetActive(bool active) {
   active_ = active;
+
+  if (active_) {
+    // Child account supervised users must be signed in.
+    SetLocalSetting(supervised_users::kSigninAllowed,
+                    std::make_unique<base::Value>(true));
+
+    // Always allow cookies, to avoid website compatibility issues.
+    SetLocalSetting(supervised_users::kCookiesAlwaysAllowed,
+                    std::make_unique<base::Value>(true));
+
+    // SafeSearch and GeolocationDisabled are controlled at the account level,
+    // so don't override them client-side.
+  } else {
+    SetLocalSetting(supervised_users::kSigninAllowed, nullptr);
+    SetLocalSetting(supervised_users::kCookiesAlwaysAllowed, nullptr);
+    SetLocalSetting(supervised_users::kForceSafeSearch, nullptr);
+    SetLocalSetting(supervised_users::kGeolocationDisabled, nullptr);
+  }
+
   InformSubscribers();
 }
 
