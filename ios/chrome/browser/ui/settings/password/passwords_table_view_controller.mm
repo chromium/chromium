@@ -279,10 +279,6 @@ bool IsFaviconEnabled() {
 // empty search term. Tapping on the scrim view will dismiss the search bar.
 @property(nonatomic, strong) UIControl* scrimView;
 
-// Example headers for calculating headers' heights.
-@property(nonatomic, strong)
-    NSMutableDictionary<Class, UITableViewHeaderFooterView*>* exampleHeaders;
-
 // The loading spinner background which appears when loading passwords.
 @property(nonatomic, strong) HomeWaitingView* spinnerView;
 
@@ -336,8 +332,6 @@ bool IsFaviconEnabled() {
                       _browserState));
     _sharedPasswordAutoFillStatusManager =
         [PasswordAutoFillStatusManager sharedManager];
-
-    self.exampleHeaders = [[NSMutableDictionary alloc] init];
 
     int titleStringID =
         base::FeatureList::IsEnabled(
@@ -1219,45 +1213,6 @@ bool IsFaviconEnabled() {
                                           withRowAnimation:
                                               UITableViewRowAnimationAutomatic];
   }
-}
-
-#pragma mark - UITableViewDelegate
-
-// Uses a group of example headers to calculate the heights. Returning
-// UITableViewAutomaticDimension here will cause UITableView to cache the
-// heights and reuse them when sections are inserted or removed, which will
-// break the UI. For example:
-//   1. UITableView is inited with 4 headers;
-//   2. "tableView:heightForHeaderInSection" is called and
-//      UITableViewAutomaticDimension is returned;
-//   3. UITableView calculates headers' heights and get [10, 20, 10, 20];
-//   4. UITableView caches these heights;
-//   5. The first header is removed from UITableView;
-//   6. "tableView:heightForHeaderInSection" is called and
-//      UITableViewAutomaticDimension is returned;
-//   7. UITableView decides to use cached results as [10, 20, 10], while
-//      expected heights are [20, 10, 20].
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForHeaderInSection:(NSInteger)section {
-  if ([self.tableViewModel headerForSectionIndex:section]) {
-    TableViewHeaderFooterItem* item =
-        [self.tableViewModel headerForSectionIndex:section];
-    Class headerClass = item.cellClass;
-    if (!self.exampleHeaders[headerClass]) {
-      UITableViewHeaderFooterView* view =
-          [[headerClass alloc] initWithReuseIdentifier:@""];
-      [item configureHeaderFooterView:view withStyler:self.styler];
-      [self.exampleHeaders setObject:view forKey:headerClass];
-    }
-    UITableViewHeaderFooterView* view = self.exampleHeaders[headerClass];
-    CGSize size =
-        [view systemLayoutSizeFittingSize:self.tableView.safeAreaLayoutGuide
-                                              .layoutFrame.size
-            withHorizontalFittingPriority:UILayoutPriorityRequired
-                  verticalFittingPriority:1];
-    return size.height;
-  }
-  return [super tableView:tableView heightForHeaderInSection:section];
 }
 
 #pragma mark - UISearchControllerDelegate
