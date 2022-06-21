@@ -120,7 +120,7 @@ bool ListPolicyHandler::CheckAndGetList(const policy::PolicyMap& policies,
     return true;
 
   // Filter the list, rejecting any invalid strings.
-  base::Value::ConstListView list = value->GetListDeprecated();
+  const base::Value::List& list = value->GetList();
   if (filtered_list)
     *filtered_list = base::Value(base::Value::Type::LIST);
   for (size_t list_index = 0; list_index < list.size(); ++list_index) {
@@ -142,7 +142,7 @@ bool ListPolicyHandler::CheckAndGetList(const policy::PolicyMap& policies,
     }
 
     if (filtered_list)
-      filtered_list->Append(entry.Clone());
+      filtered_list->GetList().Append(entry.Clone());
   }
 
   return true;
@@ -539,7 +539,7 @@ bool SimpleJsonStringSchemaValidatingPolicyHandler::CheckListOfJsonStrings(
 
   // If that succeeds, validate all the list items are strings and validate
   // the JSON inside the strings.
-  base::Value::ConstListView list = root_value->GetListDeprecated();
+  const base::Value::List& list = root_value->GetList();
   bool json_error_seen = false;
 
   for (size_t index = 0; index < list.size(); ++index) {

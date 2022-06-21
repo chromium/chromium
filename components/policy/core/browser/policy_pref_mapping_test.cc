@@ -223,8 +223,7 @@ class PolicyPrefMappingTest {
     const base::Value* required_preprocessor_macros_value =
         mapping.FindListKey("required_preprocessor_macros");
     if (required_preprocessor_macros_value) {
-      for (const auto& macro :
-           required_preprocessor_macros_value->GetListDeprecated())
+      for (const auto& macro : required_preprocessor_macros_value->GetList())
         required_preprocessor_macros_.push_back(macro.GetString());
     }
   }

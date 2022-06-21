@@ -75,22 +75,23 @@ TEST_F(PolicyLoaderCommandLineTest, ParseSwitchValue) {
     "list_policy": [1,2],
     "dict_policy": {"k1":1, "k2": {"k3":true}}
   })");
-  base::Value policies(base::Value::Type::DICTIONARY);
-  policies.SetIntKey("int_policy", 42);
-  policies.SetStringKey("string_policy", "string");
-  policies.SetBoolKey("bool_policy", true);
+  base::Value::Dict policies;
+  policies.Set("int_policy", 42);
+  policies.Set("string_policy", "string");
+  policies.Set("bool_policy", true);
 
   // list policy
-  base::Value::ListStorage list_storage;
-  list_storage.emplace_back(1);
-  list_storage.emplace_back(2);
-  policies.SetKey("list_policy", base::Value(list_storage));
+  base::Value::List list;
+  list.Append(1);
+  list.Append(2);
+  policies.Set("list_policy", std::move(list));
 
   // dict policy
-  policies.SetIntPath({"dict_policy.k1"}, 1);
-  policies.SetBoolPath({"dict_policy.k2.k3"}, true);
+  policies.SetByDottedPath("dict_policy.k1", 1);
+  policies.SetByDottedPath("dict_policy.k2.k3", true);
 
-  LoadAndVerifyPolicies(CreatePolicyLoader().get(), policies);
+  LoadAndVerifyPolicies(CreatePolicyLoader().get(),
+                        base::Value(std::move(policies)));
 }
 
 }  // namespace policy

@@ -54,9 +54,9 @@ class URLBlocklistPolicyHandlerTest : public testing::Test {
     return handler_->ValidatePolicy(policy);
   }
   base::Value GetURLBlocklistPolicyValueWithEntries(size_t len) {
-    std::vector<base::Value> blocklist(len);
-    for (auto& entry : blocklist)
-      entry = base::Value(kTestBlocklistValue);
+    base::Value::List blocklist;
+    for (size_t i = 0; i < len; ++i)
+      blocklist.Append(kTestBlocklistValue);
     return base::Value(std::move(blocklist));
   }
 

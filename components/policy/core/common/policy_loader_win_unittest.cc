@@ -110,9 +110,9 @@ bool InstallValue(const base::Value& value,
     case base::Value::Type::LIST: {
       if (!value.is_list())
         return false;
-      const base::Value::ConstListView& list_view = value.GetListDeprecated();
-      for (size_t i = 0; i < list_view.size(); ++i) {
-        if (!InstallValue(list_view[i], hive, path + kPathSep + name,
+      const base::Value::List& list = value.GetList();
+      for (size_t i = 0; i < list.size(); ++i) {
+        if (!InstallValue(list[i], hive, path + kPathSep + name,
                           base::NumberToWString(i + 1))) {
           return false;
         }

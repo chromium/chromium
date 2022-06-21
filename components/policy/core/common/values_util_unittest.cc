@@ -11,28 +11,28 @@
 namespace policy {
 
 TEST(PolicyValuesToStringSetTest, Convert) {
-  base::Value::ListStorage items;
-  items.push_back(base::Value("1"));
-  items.push_back(base::Value("2"));
-  items.push_back(base::Value("3"));
-  base::Value value(items);
+  base::Value::List items;
+  items.Append("1");
+  items.Append("2");
+  items.Append("3");
+  base::Value value(std::move(items));
   base::flat_set<std::string> expected_set = {"1", "2", "3"};
   EXPECT_EQ(expected_set, ValueToStringSet(&value));
 }
 
 TEST(PolicyValuesToStringSetTest, SkipInvalidItem) {
-  base::Value::ListStorage items;
-  items.push_back(base::Value("1"));
-  items.push_back(base::Value());
-  items.push_back(base::Value(0));
-  items.push_back(base::Value(true));
-  items.push_back(base::Value(base::Value::Type::BINARY));
-  items.push_back(base::Value(base::Value::Type::LIST));
-  items.push_back(base::Value(base::Value::Type::DICTIONARY));
-  items.push_back(base::Value("2"));
-  items.push_back(base::Value("3"));
-  items.push_back(base::Value(""));
-  base::Value value(items);
+  base::Value::List items;
+  items.Append("1");
+  items.Append(base::Value());
+  items.Append(0);
+  items.Append(true);
+  items.Append(base::Value(base::Value::Type::BINARY));
+  items.Append(base::Value::List());
+  items.Append(base::Value::Dict());
+  items.Append("2");
+  items.Append("3");
+  items.Append("");
+  base::Value value(std::move(items));
   base::flat_set<std::string> expected_set = {"1", "2", "3", ""};
   EXPECT_EQ(expected_set, ValueToStringSet(&value));
 }
