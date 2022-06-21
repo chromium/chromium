@@ -248,8 +248,15 @@ ContentAnalysisDialog::ContentAnalysisDialog(
   // has been initialized by ShowWebModalDialogViews().
   // We can't move it any earlier or it will crash when we try to get the
   // color from the widget. (see b/232104687)
-  if (!is_pending())
-    UpdateDialog();
+  // if (!is_pending())
+  //  UpdateDialog();
+
+  // TODO(crbug.com/1337078): Remove if this doesn't fix the CQ
+  if (is_warning() && bypass_requires_justification()) {
+    bypass_justification_text_length_->SetEnabledColor(
+        bypass_justification_text_length_->GetColorProvider()->GetColor(
+            ui::kColorAlertHighSeverity));
+  }
 
   if (observer_for_testing)
     observer_for_testing->ViewsFirstShown(this, first_shown_timestamp_);
@@ -373,6 +380,10 @@ views::View* ContentAnalysisDialog::GetContentsView() {
     message_->SetMultiLine(true);
     message_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
     message_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+    // TODO(crbug.com/1337078): Remove if this doesn't fix the CQ
+    if (!is_pending())
+      UpdateDialog();
   }
 
   return contents_view_;
@@ -495,7 +506,7 @@ void ContentAnalysisDialog::UpdateDialog() {
   // lines after changing.
   auto height_after = contents_view_->GetPreferredSize().height();
   int height_to_add = std::max(height_after - height_before, 0);
-  if (height_to_add > 0)
+  if (height_to_add > 0 && GetWidget())
     Resize(height_to_add);
 
   // Update the dialog.
@@ -866,10 +877,13 @@ void ContentAnalysisDialog::AddJustificationTextLengthToDialog() {
       base::NumberToString16(0),
       base::NumberToString16(kMaxBypassJustificationLength)));
 
-  // Set the color to red initially because a 0 length message is invalid
-  bypass_justification_text_length_->SetEnabledColor(
-      bypass_justification_text_length_->GetColorProvider()->GetColor(
-          ui::kColorAlertHighSeverity));
+  // Set the color to red initially because a 0 length message is invalid. Skip
+  // this if the color provider is unavailable.
+  if (bypass_justification_text_length_->GetColorProvider()) {
+    bypass_justification_text_length_->SetEnabledColor(
+        bypass_justification_text_length_->GetColorProvider()->GetColor(
+            ui::kColorAlertHighSeverity));
+  }
 }
 
 bool ContentAnalysisDialog::ShouldUseDarkTopImage() const {
