@@ -213,7 +213,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/hardware_acceleration/ToastHWATest.java",
   "javatests/src/org/chromium/chrome/browser/hardware_acceleration/Utils.java",
   "javatests/src/org/chromium/chrome/browser/hardware_acceleration/WebappActivityHWATest.java",
-  "javatests/src/org/chromium/chrome/browser/history/HistoryActivityScrollingTest.java",
   "javatests/src/org/chromium/chrome/browser/history/HistoryTest.java",
   "javatests/src/org/chromium/chrome/browser/homepage/HomepagePolicyIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/homepage/settings/HomepageSettingsFragmentTest.java",

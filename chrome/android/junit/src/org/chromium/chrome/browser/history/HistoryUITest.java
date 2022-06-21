@@ -69,6 +69,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
+import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewHolder;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -90,6 +91,9 @@ import java.util.Date;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.HISTORY_JOURNEYS)
 public class HistoryUITest {
+    private static final int PAGE_INCREMENT = 2;
+    private static final String HISTORY_SEARCH_QUERY = "some page";
+
     @Rule
     public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
     @Rule
@@ -109,8 +113,7 @@ public class HistoryUITest {
 
     private HistoryItem mItem1;
     private HistoryItem mItem2;
-
-    private static final String HISTORY_SEARCH_QUERY = "some page";
+    private int mHeight;
 
     @Mock
     private SnackbarManager mSnackbarManager;
@@ -140,9 +143,7 @@ public class HistoryUITest {
     @Before
     public void setUp() throws Exception {
         mHistoryProvider = new StubbedHistoryProvider();
-
-        Date today = new Date();
-        long timestamp = today.getTime();
+        long timestamp = new Date().getTime();
         mItem1 = StubbedHistoryProvider.createHistoryItem(0, timestamp);
         mItem2 = StubbedHistoryProvider.createHistoryItem(1, timestamp);
         mHistoryProvider.addItem(mItem1);
@@ -168,6 +169,13 @@ public class HistoryUITest {
         mHistoryClustersCoordinator = mHistoryManager.getHistoryClustersCoordinatorForTests();
         mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
         mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();
+
+        // Layout the recycler view with ample height so that we can measure how much height it
+        // needs to fully display its initial set of items.
+        mRecyclerView.measure(0, 0);
+        mRecyclerView.layout(0, 0, 600, 1000);
+        // Constrain the recycler view to only the height it needs and lay it out again.
+        mHeight = mRecyclerView.getMeasuredHeight();
         layoutRecyclerView();
 
         int expectedItemCount = 4;
@@ -589,6 +597,73 @@ public class HistoryUITest {
                 mHistoryManager.getView().getChildAt(0), mHistoryManager.getSelectableListLayout());
     }
 
+    @Test
+    @SmallTest
+    public void testScrollToLoadEnabled() {
+        HistoryContentManager.setScrollToLoadDisabledForTesting(false);
+        // Reduce the height available to the recycler view to less than it needs so that scrolling
+        // has an effect.
+        mHeight--;
+        layoutRecyclerView();
+
+        mHistoryProvider.setPaging(PAGE_INCREMENT);
+        long timestamp = new Date().getTime();
+        mHistoryProvider.addItem(StubbedHistoryProvider.createHistoryItem(2, --timestamp));
+        mHistoryProvider.addItem(StubbedHistoryProvider.createHistoryItem(3, --timestamp));
+        mHistoryProvider.addItem(StubbedHistoryProvider.createHistoryItem(4, --timestamp));
+        mHistoryProvider.addItem(StubbedHistoryProvider.createHistoryItem(5, --timestamp));
+        int itemCount = mAdapter.getItemCount();
+        // Trigger a reload of items so that the adapter sees that there are now more to load.
+        mAdapter.startLoadingItems();
+
+        scrollRecyclerViewToBottom();
+
+        Assert.assertEquals(PAGE_INCREMENT + " more Items should be loaded",
+                mAdapter.getItemCount(), itemCount + PAGE_INCREMENT);
+        itemCount = mAdapter.getItemCount();
+
+        scrollRecyclerViewToBottom();
+        Assert.assertEquals(PAGE_INCREMENT + " more Items should be loaded",
+                mAdapter.getItemCount(), itemCount + PAGE_INCREMENT);
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollToLoadDisabled() throws Exception {
+        mHistoryProvider.setPaging(PAGE_INCREMENT);
+        HistoryContentManager.setScrollToLoadDisabledForTesting(true);
+        mHistoryProvider.addItem(StubbedHistoryProvider.createHistoryItem(2, new Date().getTime()));
+        mHistoryProvider.addItem(
+                StubbedHistoryProvider.createHistoryItem(3, new Date().getTime() - 1));
+        mHistoryProvider.addItem(
+                StubbedHistoryProvider.createHistoryItem(4, new Date().getTime() - 2));
+        mAdapter.startLoadingItems();
+        int itemCount = mAdapter.getItemCount();
+        scrollRecyclerViewToBottom();
+
+        Assert.assertEquals("Should not load more items into view after scroll",
+                mAdapter.getItemCount(), itemCount);
+        Assert.assertTrue(
+                "Footer should be added to the end of the view", mAdapter.hasListFooter());
+        Assert.assertEquals(
+                "Footer group should contain one item", 1, mAdapter.getLastGroupForTests().size());
+
+        // Verify the button is correctly displayed
+        DateDividedAdapter.TimedItem item = mAdapter.getLastGroupForTests().getItemAt(0);
+        MoreProgressButton button =
+                (MoreProgressButton) ((DateDividedAdapter.FooterItem) item).getView();
+        Assert.assertSame("FooterItem view should be MoreProgressButton",
+                mAdapter.getMoreProgressButtonForTest(), button);
+        Assert.assertEquals("State for the MPB should be button", button.getStateForTest(),
+                MoreProgressButton.State.BUTTON);
+
+        // Test click, should load more items
+        button.findViewById(R.id.action_button).performClick();
+
+        Assert.assertEquals((PAGE_INCREMENT) + " more Items should be loaded",
+                mAdapter.getItemCount(), itemCount + PAGE_INCREMENT);
+    }
+
     private void toggleItemSelection(int position) {
         final SelectableItemView<HistoryItem> itemView = getItemView(position);
         itemView.performLongClick();
@@ -635,6 +710,10 @@ public class HistoryUITest {
 
     private void layoutRecyclerView() {
         mRecyclerView.measure(0, 0);
-        mRecyclerView.layout(0, 0, 600, 1000);
+        mRecyclerView.layout(0, 0, 600, mHeight);
+    }
+
+    private void scrollRecyclerViewToBottom() {
+        mRecyclerView.scrollBy(0, mHeight);
     }
 }

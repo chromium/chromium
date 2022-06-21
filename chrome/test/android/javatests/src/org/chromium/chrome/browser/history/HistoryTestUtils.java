@@ -4,87 +4,14 @@
 
 package org.chromium.chrome.browser.history;
 
-import android.os.Handler;
-import android.os.Looper;
-
-import androidx.recyclerview.widget.RecyclerView;
-
 import org.junit.Assert;
 
-import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
-import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.ItemViewType;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
-
-import java.util.List;
 
 /**
  * Util class for functions and helper classes that share between different test files.
  */
 public class HistoryTestUtils {
-    /**
-     * Test Observer that used to collect the callback counts used in {@link HistoryActivityTest}
-     * {@link HistoryActivityScrollingTest}.
-     */
-    static class TestObserver extends RecyclerView.AdapterDataObserver
-            implements SelectionObserver<HistoryItem>, SignInStateObserver, PrefObserver {
-        public final CallbackHelper onChangedCallback = new CallbackHelper();
-        public final CallbackHelper onSelectionCallback = new CallbackHelper();
-        public final CallbackHelper onSigninStateChangedCallback = new CallbackHelper();
-        public final CallbackHelper onPreferenceChangeCallback = new CallbackHelper();
-
-        private Handler mHandler;
-
-        public TestObserver() {
-            mHandler = new Handler(Looper.getMainLooper());
-        }
-
-        @Override
-        public void onChanged() {
-            // To guarantee that all real Observers have had a chance to react to the event, post
-            // the CallbackHelper.notifyCalled() call.
-            mHandler.post(() -> onChangedCallback.notifyCalled());
-        }
-
-        @Override
-        public void onSelectionStateChange(List<HistoryItem> selectedItems) {
-            mHandler.post(() -> onSelectionCallback.notifyCalled());
-        }
-
-        @Override
-        public void onSignedIn() {
-            mHandler.post(() -> onSigninStateChangedCallback.notifyCalled());
-        }
-
-        @Override
-        public void onSignedOut() {
-            mHandler.post(() -> onSigninStateChangedCallback.notifyCalled());
-        }
-
-        @Override
-        public void onPreferenceChange() {
-            mHandler.post(() -> onPreferenceChangeCallback.notifyCalled());
-        }
-    }
-
-    static void setupHistoryTestHeaders(HistoryAdapter adapter, TestObserver observer)
-            throws Exception {
-        if (!adapter.isClearBrowsingDataButtonVisible()) {
-            int changedCallCount = observer.onChangedCallback.getCallCount();
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> adapter.setClearBrowsingDataButtonVisibilityForTest(true));
-            observer.onChangedCallback.waitForCallback(changedCallCount);
-        }
-
-        if (adapter.arePrivacyDisclaimersVisible()) {
-            int changedCallCount = observer.onChangedCallback.getCallCount();
-            TestThreadUtils.runOnUiThreadBlocking(() -> adapter.hasOtherFormsOfBrowsingData(false));
-            observer.onChangedCallback.waitForCallback(changedCallCount);
-        }
-    }
-
     static void checkAdapterContents(
             HistoryAdapter adapter, boolean hasHeader, boolean hasFooter, Object... items) {
         Assert.assertEquals(items.length, adapter.getItemCount());
