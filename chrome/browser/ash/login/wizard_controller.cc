@@ -710,7 +710,7 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<TpmErrorScreen>(
-      oobe_ui->GetView<TpmErrorScreenHandler>()));
+      oobe_ui->GetView<TpmErrorScreenHandler>()->AsWeakPtr()));
 
   auto gaia_password_change_screen =
       std::make_unique<GaiaPasswordChangedScreen>(
