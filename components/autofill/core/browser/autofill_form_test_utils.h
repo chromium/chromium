@@ -37,6 +37,7 @@ struct FieldDataDescription {
   absl::optional<LocalFrameToken> host_frame;
   absl::optional<FieldRendererId> unique_renderer_id;
   bool is_focusable = true;
+  bool is_visible = true;
   absl::optional<std::u16string> label;
   absl::optional<std::u16string> name;
   absl::optional<std::u16string> value;

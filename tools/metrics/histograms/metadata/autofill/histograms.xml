@@ -206,31 +206,38 @@ chromium-metrics-reviews@google.com.
   <variant name=".Reshows" summary="Bubble was reopened after being closed"/>
 </variants>
 
-<variants name="AutofillMeasurementTime">
-  <variant name="Fillable.AtFillTimeAfterSecurityPolicy"
-      summary="Recorded at filling time after applying restrictions due to
-               the cross-frame security policy under the assumption of a
-               complete profile (i.e., the profile holds data for all present
-               fields)."/>
-  <variant name="Fillable.AtFillTimeBeforeSecurityPolicy"
-      summary="Recorded at filling time before applying restrictions due to
-               the cross-frame security policy under the assumption of a
-               complete profile (i.e., the profile holds data for all present
-               fields)."/>
-  <variant name="Fills.AtFillTimeAfterSecurityPolicy"
-      summary="Recorded at filling time after applying restrictions due to
-               the cross-frame security policy."/>
-  <variant name="Fills.AtFillTimeBeforeSecurityPolicy"
-      summary="Recorded at filling time before applying restrictions due to
-               the cross-frame security policy."/>
-  <variant name="Fills.AtSubmissionTime"
+<variants name="AutofillSaveCreditCardPromptDestination">
+  <variant name=".Local" summary="to local storage"/>
+  <variant name=".Upload" summary="to upload"/>
+</variants>
+
+<variants name="AutofillSeamlessnessFillability">
+  <variant name="Fillable"
+      summary="Recorded under the assumption of a complete profile (i.e., the
+               profile holds data for all present fields)."/>
+  <variant name="Fills"
+      summary="Recorded taking only the actually filled fields into account."/>
+</variants>
+
+<variants name="AutofillSeamlessnessMeasurementTime">
+  <variant name=".AtFillTimeAfterSecurityPolicy"
+      summary="Recorded after applying restrictions due to the cross-frame
+               security policy."/>
+  <variant name=".AtFillTimeBeforeSecurityPolicy"
+      summary="Recorded before applying restrictions due to the cross-frame
+               security policy."/>
+  <variant name=".AtSubmissionTime"
       summary="Recorded at submission time. May be missed due to submission
                detection problems."/>
 </variants>
 
-<variants name="AutofillSaveCreditCardPromptDestination">
-  <variant name=".Local" summary="to local storage"/>
-  <variant name=".Upload" summary="to upload"/>
+<variants name="AutofillSeamlessnessVisibility">
+  <variant name=""
+      summary="Recorded for all detected fields, including those that may be
+               invisible to the user."/>
+  <variant name=".Visible"
+      summary="Recorded only for fields that are visible to the user as per
+               Autofill's visibility detection (IsWebElementVisible())."/>
 </variants>
 
 <variants name="AutofillStrikeDatabaseProjectType">
@@ -797,30 +804,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.CreditCard.Number{AutofillMeasurementTime}"
-    units="Filled" expires_after="2022-10-31">
-  <obsolete>
-    Deprecated as of M101. Subsumed by
-    Autofill.CreditCard.Seamless{AutofillMeasurementTime}.Bitmask.
-  </obsolete>
-  <owner>schwering@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records for each credit card form submission whether a credit card number
-    has been autofilled. {AutofillMeasurementTime}
-
-    That is, emits 1 if a form contains an autofilled credit card number.
-  </summary>
-  <token key="AutofillMeasurementTime" variants="AutofillMeasurementTime"/>
-</histogram>
-
-<histogram name="Autofill.CreditCard.Seamless{AutofillMeasurementTime}"
+<histogram
+    name="Autofill.CreditCard.Seamless{AutofillSeamlessnessFillability}{AutofillSeamlessnessMeasurementTime}{AutofillSeamlessnessVisibility}"
     enum="CreditCardSeamlessFill" expires_after="2022-10-31">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records for each credit card form the quality of the fill.
-    {AutofillMeasurementTime}
+    {AutofillSeamlessnessFillability} {AutofillSeamlessnessMeasurementTime}
+    {AutofillSeamlessnessVisibility}
 
     The fields in question are: cardholder name (full, or first and last),
     credit card number, expiration date (MM/YY, MM/YYYY, MM and YY, or MM and
@@ -844,16 +836,23 @@ chromium-metrics-reviews@google.com.
     Any form that contains at least one credit card field counts as credit card
     form.
   </summary>
-  <token key="AutofillMeasurementTime" variants="AutofillMeasurementTime"/>
+  <token key="AutofillSeamlessnessFillability"
+      variants="AutofillSeamlessnessFillability"/>
+  <token key="AutofillSeamlessnessMeasurementTime"
+      variants="AutofillSeamlessnessMeasurementTime"/>
+  <token key="AutofillSeamlessnessVisibility"
+      variants="AutofillSeamlessnessVisibility"/>
 </histogram>
 
-<histogram name="Autofill.CreditCard.Seamless{AutofillMeasurementTime}.Bitmask"
+<histogram
+    name="Autofill.CreditCard.Seamless{AutofillSeamlessnessFillability}{AutofillSeamlessnessMeasurementTime}{AutofillSeamlessnessVisibility}.Bitmask"
     enum="AutofillCreditCardSeamlessnessBitmask" expires_after="2022-10-31">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records for each credit card form the quality of the fill.
-    {AutofillMeasurementTime}
+    {AutofillSeamlessnessFillability} {AutofillSeamlessnessMeasurementTime}
+    {AutofillSeamlessnessVisibility}
 
     The emitted value is a non-zero bitmask whose bits have the following
     meaning, from highest to lowest bit:
@@ -866,7 +865,12 @@ chromium-metrics-reviews@google.com.
 
     Bit #1 is true iff a CVC name was filled.
   </summary>
-  <token key="AutofillMeasurementTime" variants="AutofillMeasurementTime"/>
+  <token key="AutofillSeamlessnessFillability"
+      variants="AutofillSeamlessnessFillability"/>
+  <token key="AutofillSeamlessnessMeasurementTime"
+      variants="AutofillSeamlessnessMeasurementTime"/>
+  <token key="AutofillSeamlessnessVisibility"
+      variants="AutofillSeamlessnessVisibility"/>
 </histogram>
 
 <histogram name="Autofill.CreditCardFillingInfoBar"

@@ -1612,6 +1612,20 @@ be describing additional metrics about the same event.
       filled if the credit card on file was complete.
     </summary>
   </metric>
+  <metric name="Fillable.AfterSecurity.Visible.Bitmask"
+      enum="AutofillCreditCardSeamlessnessBitmask">
+    <summary>
+      Logs the field types which Autofill would have filled into visible fields
+      if the credit card on file was complete.
+    </summary>
+  </metric>
+  <metric name="Fillable.AfterSecurity.Visible.Qualitative"
+      enum="CreditCardSeamlessFill">
+    <summary>
+      Logs a qualitative summary of the field types which Autofill would have
+      filled into visible fields if the credit card on file was complete.
+    </summary>
+  </metric>
   <metric name="Fillable.BeforeSecurity.Bitmask"
       enum="AutofillCreditCardSeamlessnessBitmask">
     <summary>
@@ -1627,6 +1641,21 @@ be describing additional metrics about the same event.
       policy.
     </summary>
   </metric>
+  <metric name="Fillable.BeforeSecurity.Visible.Bitmask"
+      enum="AutofillCreditCardSeamlessnessBitmask">
+    <summary>
+      Logs the field types which Autofill would have filled into visible fields
+      if the credit card on file was complete and there was no security policy.
+    </summary>
+  </metric>
+  <metric name="Fillable.BeforeSecurity.Visible.Qualitative"
+      enum="CreditCardSeamlessFill">
+    <summary>
+      Logs a qualitative summary of the field types which Autofill would have
+      filled into visible fields if the credit card on file was complete and
+      there was no security policy.
+    </summary>
+  </metric>
   <metric name="Filled.AfterSecurity.Bitmask"
       enum="AutofillCreditCardSeamlessnessBitmask">
     <summary>
@@ -1637,6 +1666,19 @@ be describing additional metrics about the same event.
     <summary>
       Logs a qualitative summary of the field types which Autofill actually
       filled.
+    </summary>
+  </metric>
+  <metric name="Filled.AfterSecurity.Visible.Bitmask"
+      enum="AutofillCreditCardSeamlessnessBitmask">
+    <summary>
+      Logs the field types which Autofill actually filled into visible fields.
+    </summary>
+  </metric>
+  <metric name="Filled.AfterSecurity.Visible.Qualitative"
+      enum="CreditCardSeamlessFill">
+    <summary>
+      Logs a qualitative summary of the field types which Autofill actually
+      filled into visible fields.
     </summary>
   </metric>
   <metric name="Filled.BeforeSecurity.Bitmask"
@@ -1651,6 +1693,20 @@ be describing additional metrics about the same event.
     <summary>
       Logs a qualitative summary of the field types which Autofill would have
       filled if there was no security policy.
+    </summary>
+  </metric>
+  <metric name="Filled.BeforeSecurity.Visible.Bitmask"
+      enum="AutofillCreditCardSeamlessnessBitmask">
+    <summary>
+      Logs the field types which Autofill would have filled into visible fields
+      if there was no security policy.
+    </summary>
+  </metric>
+  <metric name="Filled.BeforeSecurity.Visible.Qualitative"
+      enum="CreditCardSeamlessFill">
+    <summary>
+      Logs a qualitative summary of the field types which Autofill would have
+      filled into visible fields if there was no security policy.
     </summary>
   </metric>
   <metric name="FormSignature">
