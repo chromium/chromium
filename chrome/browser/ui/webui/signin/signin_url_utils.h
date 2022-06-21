@@ -7,26 +7,15 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
-// Holds parameters for the chrome://sync-confirmation URL.
-// The default values correspond to the original usage of the sync confirmation
-// page -- in the modal flow.
-struct SyncConfirmationURLParams {
-  bool is_modal = true;
-  SyncConfirmationUI::DesignVersion design =
-      SyncConfirmationUI::DesignVersion::kMonotone;
-  absl::optional<SkColor> profile_color;
-};
-
-// Returns `SyncConfirmationURLParams` parsed from `url`.
-SyncConfirmationURLParams GetParamsFromSyncConfirmationURL(const GURL& url);
+// Returns whether the sync confirmation page is using the design for modal
+// dialog.
+bool IsSyncConfirmationModal(const GURL& url);
 
 // Adds URL query parameters specified by `params` to `url`.
-GURL AppendSyncConfirmationQueryParams(const GURL& url,
-                                       const SyncConfirmationURLParams& params);
+// `is_modal` specifies whether the style for modal dialog is used.
+GURL AppendSyncConfirmationQueryParams(const GURL& url, bool is_modal);
 
 // Returns `ReauthAccessPoint` encoded in the query of the reauth confirmation
 // URL.

@@ -16,78 +16,23 @@ namespace {
 
 // Query parameter names of the sync confirmtaion URL.
 const char kIsModalParamKey[] = "is_modal";
-const char kDesignParamKey[] = "design";
-const char kProfileColorParamKey[] = "profile_color";
 
 // Query parameter names of the reauth confirmation URL.
 const char kAccessPointParamKey[] = "access_point";
 
-bool StringToDesignVersion(base::StringPiece input,
-                           SyncConfirmationUI::DesignVersion* output) {
-  int int_value;
-  if (!base::StringToInt(input, &int_value))
-    return false;
-
-  SyncConfirmationUI::DesignVersion value =
-      static_cast<SyncConfirmationUI::DesignVersion>(int_value);
-  // Make sure that `value` is a valid `DesignVersion`.
-  switch (value) {
-    case SyncConfirmationUI::DesignVersion::kColored:
-    case SyncConfirmationUI::DesignVersion::kMonotone:
-      *output = value;
-      return true;
-      // No default. Please update the switch statement when adding a new
-      // enumerator.
-  }
-
-  return false;
-}
-
 }  // namespace
 
-SyncConfirmationURLParams GetParamsFromSyncConfirmationURL(const GURL& url) {
-  // Use defaults provided by `SyncConfirmationURLParams` for parameters that
-  // fail to parse.
-  SyncConfirmationURLParams params;
-
+bool IsSyncConfirmationModal(const GURL& url) {
   std::string is_modal_str;
-  int is_modal;
-  if (net::GetValueForKeyInQuery(url, kIsModalParamKey, &is_modal_str) &&
-      base::StringToInt(is_modal_str, &is_modal)) {
-    params.is_modal = is_modal;
-  }
-
-  std::string design_str;
-  SyncConfirmationUI::DesignVersion design;
-  if (net::GetValueForKeyInQuery(url, kDesignParamKey, &design_str) &&
-      StringToDesignVersion(design_str, &design)) {
-    params.design = design;
-  }
-
-  std::string profile_color_str;
-  SkColor profile_color;
-  if (net::GetValueForKeyInQuery(url, kProfileColorParamKey,
-                                 &profile_color_str) &&
-      base::StringToUint(profile_color_str, &profile_color)) {
-    params.profile_color = profile_color;
-  }
-
-  return params;
+  int is_modal = 1;  // Default to modal if the parameter is missing.
+  if (net::GetValueForKeyInQuery(url, kIsModalParamKey, &is_modal_str))
+    base::StringToInt(is_modal_str, &is_modal);
+  return is_modal != 0;
 }
 
-GURL AppendSyncConfirmationQueryParams(
-    const GURL& url,
-    const SyncConfirmationURLParams& params) {
+GURL AppendSyncConfirmationQueryParams(const GURL& url, bool is_modal) {
   GURL url_with_params = net::AppendQueryParameter(
-      url, kIsModalParamKey, base::NumberToString(params.is_modal));
-  url_with_params = net::AppendQueryParameter(
-      url_with_params, kDesignParamKey,
-      base::NumberToString(static_cast<int>(params.design)));
-  if (params.profile_color) {
-    url_with_params =
-        net::AppendQueryParameter(url_with_params, kProfileColorParamKey,
-                                  base::NumberToString(*params.profile_color));
-  }
+      url, kIsModalParamKey, base::NumberToString(is_modal));
   return url_with_params;
 }
 

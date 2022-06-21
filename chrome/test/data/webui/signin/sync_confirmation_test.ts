@@ -12,8 +12,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 
 import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser_proxy.js';
 
-[true, false].forEach(isNewDesignEnabled => {
-  const suiteDesignSuffix = isNewDesignEnabled ? 'NewDesign' : 'OldDesign';
+[true, false].forEach(isModalDialogDesignEnabled => {
+  const suiteDesignSuffix = isModalDialogDesignEnabled ? 'Modal' : 'NonModal';
 
   const STANDARD_CONSENT_CONFIRMATION = 'Yes, I\'m in';
 
@@ -47,7 +47,7 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
             browserProxy = new TestSyncConfirmationBrowserProxy();
             SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
             loadTimeData.overrideValues({
-              isNewDesign: isNewDesignEnabled,
+              isModalDialog: isModalDialogDesignEnabled,
               syncForced: syncForcedEnabled
             });
             document.body.innerHTML = '';
@@ -60,10 +60,10 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
 
           // Tests that no DCHECKS are thrown during initialization of the UI.
           test('LoadPage', function() {
-            const cancelButton =
-                app.shadowRoot!.querySelector(
-                    isNewDesignEnabled ? '#notNowButton' : '#cancelButton') as
-                HTMLElement;
+            const cancelButton = app.shadowRoot!.querySelector(
+                                     isModalDialogDesignEnabled ?
+                                         '#cancelButton' :
+                                         '#notNowButton') as HTMLElement;
             if (syncForcedEnabled) {
               assertTrue(cancelButton!.hidden);
             } else {
@@ -80,7 +80,7 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
           // Tests clicking on cancel button.
           test('CancelClicked', async function() {
             testButtonClick(
-                isNewDesignEnabled ? '#notNowButton' : '#cancelButton');
+                isModalDialogDesignEnabled ? '#cancelButton' : '#notNowButton');
             await browserProxy.whenCalled('undo');
           });
 
@@ -112,7 +112,8 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
 
           browserProxy = new TestSyncConfirmationBrowserProxy();
           SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
-          loadTimeData.overrideValues({isNewDesign: isNewDesignEnabled});
+          loadTimeData.overrideValues(
+              {isModalDialog: isModalDialogDesignEnabled});
 
           document.body.innerHTML = '';
           app = document.createElement('sync-confirmation-app');
@@ -137,8 +138,8 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
                              '#settingsButton')!.click();
           const [_, confirmation] =
               await browserProxy.whenCalled('goToSettings');
-          // 'Sync settings' is recorded for new design but this is passed from
-          // the UI class so overriding loadTimeData does not help here.
+          // 'Sync settings' is recorded for non-modal design but this is passed
+          // from the UI class so overriding loadTimeData does not help here.
           assertEquals('Settings', confirmation);
         });
       });

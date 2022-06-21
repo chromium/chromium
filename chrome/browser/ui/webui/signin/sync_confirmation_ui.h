@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
 class Profile;
@@ -31,8 +30,6 @@ class WebUI;
 // the responsability of the caller to pass the correct message handler.
 class SyncConfirmationUI : public SigninWebDialogUI {
  public:
-  enum class DesignVersion { kMonotone, kColored };
-
   explicit SyncConfirmationUI(content::WebUI* web_ui);
 
   SyncConfirmationUI(const SyncConfirmationUI&) = delete;
@@ -45,11 +42,8 @@ class SyncConfirmationUI : public SigninWebDialogUI {
   void InitializeMessageHandlerWithBrowser(Browser* browser) override;
 
  private:
-  void InitializeForSyncConfirmation(
-      content::WebUIDataSource* source,
-      absl::optional<SkColor> profile_creation_flow_color,
-      DesignVersion design,
-      bool is_modal_dialog);
+  void InitializeForSyncConfirmation(content::WebUIDataSource* source,
+                                     bool is_modal_dialog);
   void InitializeForSyncDisabled(content::WebUIDataSource* source);
 
   // Adds a string resource with the given GRD |ids| to the WebUI data |source|

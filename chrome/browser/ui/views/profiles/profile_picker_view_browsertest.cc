@@ -134,12 +134,9 @@ AccountInfo FillAccountInfo(
   return account_info;
 }
 
-GURL GetSyncConfirmationURL(
-    absl::optional<SkColor> profile_color = kProfileColor) {
-  return AppendSyncConfirmationQueryParams(
-      GURL("chrome://sync-confirmation/"),
-      {/*is_modal=*/false, SyncConfirmationUI::DesignVersion::kColored,
-       profile_color});
+GURL GetSyncConfirmationURL() {
+  return AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
+                                           /*is_modal=*/false);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -815,7 +812,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
-  WaitForLoadStop(GetSyncConfirmationURL(kDifferentProfileColor));
+  WaitForLoadStop(GetSyncConfirmationURL());
 
   // Simulate closing the UI with "No, thanks".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
@@ -1939,7 +1936,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitAtEnd) {
       profiles::testing::ExpectPickerWelcomeScreenType(
           EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome);
   handler->HandleProceedForTesting(/*should_link_data=*/false);
-  WaitForLoadStop(GetSyncConfirmationURL(absl::optional<SkColor>()));
+  WaitForLoadStop(GetSyncConfirmationURL());
 
   // Exit the FRE.
   ProfilePicker::Hide();
@@ -1992,7 +1989,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_OptIn) {
       profiles::testing::ExpectPickerWelcomeScreenType(
           EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome);
   handler->HandleProceedForTesting(/*should_link_data=*/false);
-  WaitForLoadStop(GetSyncConfirmationURL(absl::optional<SkColor>()));
+  WaitForLoadStop(GetSyncConfirmationURL());
 
   // Opt-in to sync
   LoginUIServiceFactory::GetForProfile(profile)->SyncConfirmationUIClosed(

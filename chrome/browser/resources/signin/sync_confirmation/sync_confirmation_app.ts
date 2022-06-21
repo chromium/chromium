@@ -50,30 +50,10 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         value: false,
       },
 
-      isNewDesignModalDialog_: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value() {
-          return loadTimeData.getBoolean('isModalDialog') &&
-              loadTimeData.getBoolean('isNewDesign');
-        }
-      },
-
-      isNewDesign_: {
+      isModalDialog_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isNewDesign');
-        }
-      },
-
-      highlightColor_: {
-        type: String,
-        value() {
-          if (!loadTimeData.valueExists('highlightColor')) {
-            return '';
-          }
-
-          return loadTimeData.getString('highlightColor');
+          return loadTimeData.getBoolean('isModalDialog');
         }
       },
 
@@ -103,9 +83,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
 
   private accountImageSrc_: string;
   private anyButtonClicked_: boolean;
-  private isNewDesignModalDialog_: boolean;
-  private isNewDesign_: boolean;
-  private highlightColor_: string;
+  private isModalDialog_: boolean;
   private showEnterpriseBadge_: boolean;
   private syncForced_: boolean;
   private syncOptionalClass_: string;
