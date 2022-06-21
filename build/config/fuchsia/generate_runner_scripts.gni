@@ -88,15 +88,11 @@ template("fuchsia_run_script_with_packages") {
                                  "executable_args",
                                  "data",
                                  "include_fuchsia_build_dir",
-                                 "metadata_deps",
                                  "target",
                                ])
 
     wrapper_script = _generated_script_path
     deps = [ invoker.package ]
-    if (defined(metadata_deps)) {
-      deps += metadata_deps
-    }
 
     if (!defined(data_deps)) {
       data_deps = []
@@ -211,7 +207,6 @@ template("fuchsia_package_installer") {
     executable = rebase_path("//build/fuchsia/deploy_to_pkg_repo.py")
     output_name_format = "deploy_%package%"
     include_fuchsia_build_dir = true
-    metadata_deps = [ ":${pkg_shortname}_script_meta" ]
   }
 }
 
@@ -302,6 +297,10 @@ template("fuchsia_test_runner") {
       data = []
     }
     data += [ _test_runner_py ]
+
+    if (use_cfv2_script) {
+      data += [ "$root_gen_dir/package_metadata/${invoker.package_name}.meta" ]
+    }
 
     # TODO(crbug.com/1256870): Remove this once all out-of-tree references
     # to "package_name_override" are migrated to "package_name".
