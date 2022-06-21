@@ -181,7 +181,23 @@ class MetricsWebContentsObserver
 
   // Gets the PageLoadTracker associated with `rfh` if it exists, or nullptr
   // otherwise.
+  //
+  // Don't use GetPageLoadTrackerLegacy in new code. See also the comment around
+  // implementation.
+  // TODO(https://crbug.com/1301880): Remove this.
+  PageLoadTracker* GetPageLoadTrackerLegacy(content::RenderFrameHost* rfh);
   PageLoadTracker* GetPageLoadTracker(content::RenderFrameHost* rfh);
+  // Gets the alive PageLoadTracker corresponding to the nearest ancestral page
+  // if it exists, or nullptr otherwise.
+  //
+  // Consider to use this instead of GetPageLoadTracker if
+  //
+  // - There is a race and the target PageLoadTracker can be deleted before
+  //   receiving a event; and
+  // - PageLoadTracker forwards the event unconditionally with respect to
+  //   ObservePolicy.
+  PageLoadTracker* GetAncestralAlivePageLoadTracker(
+      content::RenderFrameHost* rfh);
 
   // Gets the memory tracker for the BrowserContext if it exists, or nullptr
   // otherwise. The tracker measures per-frame memory usage by V8.

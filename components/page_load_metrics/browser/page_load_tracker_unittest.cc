@@ -215,9 +215,15 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
     rfh_b_last = simulator->GetFinalRenderFrameHost();
   }
 
-  // "0" is wrong, "1" is correct.
-  // See comment of MetricsWebContentsObserver::GetPageLoadTracker.
+  // Note that deletion of RenderFrameHost depends on some conditions, e.g. Site
+  // Isolation and Back/Forward Cache. In unit tests, NavigationSimulator does
+  // delete them when a navigation commits. On Android, the two RenderFrameHost
+  // has same SiteInstance and the old one will be not deleted.
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(0u, GetEvents().render_frame_deleted_count);
+#else
+  EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
+#endif
   EXPECT_EQ(0u, GetEvents().sub_frame_deleted_count);
 
   // C: Add and navigate in.
@@ -234,14 +240,10 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
     rfh_c_last = simulator->GetFinalRenderFrameHost();
   }
 
-  // Note that deletion of RenderFrameHost depends on some conditions, e.g. Site
-  // Isolation and Back/Forward Cache. In unit tests, NavigationSimulator does
-  // delete them when a navigation commits. On Android, the two RenderFrameHost
-  // has same SiteInstance and the old one will be not deleted.
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(0u, GetEvents().render_frame_deleted_count);
 #else
-  EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
+  EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
 #endif
   EXPECT_EQ(0u, GetEvents().sub_frame_deleted_count);
 
@@ -251,7 +253,7 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
 #else
-  EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
+  EXPECT_EQ(3u, GetEvents().render_frame_deleted_count);
 #endif
   EXPECT_EQ(1u, GetEvents().sub_frame_deleted_count);
 
@@ -261,7 +263,7 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
 #else
-  EXPECT_EQ(3u, GetEvents().render_frame_deleted_count);
+  EXPECT_EQ(4u, GetEvents().render_frame_deleted_count);
 #endif
   // "2" may look good, but it is wrong, indeed. "1" is correct.
   //

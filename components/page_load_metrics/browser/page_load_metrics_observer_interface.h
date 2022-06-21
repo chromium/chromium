@@ -497,15 +497,14 @@ class PageLoadMetricsObserverInterface {
   // - OnRenderFrameDeleted is called for all frames. OnSubFrameDeleted is not
   //   called for main frames. This is because PageLoadTracker is bound with
   //   RenderFrameHost of the main frame and destruction of PageLoadTracker is
-  //   earlier than one of FrameTreeNode in some cases.
+  //   earlier than one of FrameTreeNode.
   // - OnRenderFrameDeleted can be called in navigation commit to discard the
   //   previous RenderFrameHost. At that timing, there are two RenderFrameHost
   //   that have the same RenderFrameHost::GetFrameNodeId.
   //
-  // TODO(https://crbug.com/1301880): Make it clear when
-  // MetricsWebContentsObserver::FrameDeleted is not called and make
-  // PageLoadMetricsObserverInterface::OnSubFrameDeleted called for fenced
-  // frame's root if possible.
+  // Note that navigation may not trigger deletion of RenderFrameHost, e.g. in
+  // the case of the page entered to Back/Forward cache. If observer only wants
+  // to observe deletion of node, OnSubFrameDeleted is more relevant.
   virtual void OnRenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) = 0;
   virtual void OnSubFrameDeleted(int frame_tree_node_id) = 0;
