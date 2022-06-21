@@ -167,7 +167,7 @@ class LoginDisplayHost {
   virtual void ShowGuestTosScreen() = 0;
 
   // Hide any visible oobe dialog.
-  virtual void HideOobeDialog(bool saml_video_timeout = false) = 0;
+  virtual void HideOobeDialog(bool saml_page_closed = false) = 0;
 
   // Sets whether shelf buttons are enabled.
   virtual void SetShelfButtonsEnabled(bool enabled) = 0;

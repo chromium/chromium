@@ -403,7 +403,7 @@ void LoginDisplayHostMojo::ShowGuestTosScreen() {
   ShowDialog();
 }
 
-void LoginDisplayHostMojo::HideOobeDialog(bool saml_video_timeout) {
+void LoginDisplayHostMojo::HideOobeDialog(bool saml_page_closed) {
   DCHECK(dialog_);
 
   // The dialog can be hidden if there are no users on the login screen only
@@ -412,7 +412,7 @@ void LoginDisplayHostMojo::HideOobeDialog(bool saml_video_timeout) {
 
   const bool no_users =
       !login_display_->IsSigninInProgress() && !has_user_pods_;
-  if (no_users && !saml_video_timeout) {
+  if (no_users && !saml_page_closed) {
     return;
   }
 
@@ -420,10 +420,11 @@ void LoginDisplayHostMojo::HideOobeDialog(bool saml_video_timeout) {
   LoadWallpaper(focused_pod_account_id_);
   HideDialog();
 
-  // If the OOBE dialog was hidden due to camera timeout and user isn't using
-  // ChromeVox let user go back to login flow with any action. Otherwise user
-  // can go back to login pressing arrow button.
-  if (saml_video_timeout && !scoped_activity_observation_.IsObserving() &&
+  // If the OOBE dialog was hidden due to closing of the SAML page (camera
+  // timeout or ESC button) and user isn't using ChromeVox - let user go back to
+  // login flow with any action. Otherwise user can go back to login pressing
+  // arrow button.
+  if (saml_page_closed && !scoped_activity_observation_.IsObserving() &&
       !AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
     scoped_activity_observation_.Observe(ui::UserActivityDetector::Get());
   }
@@ -824,6 +825,10 @@ void LoginDisplayHostMojo::MaybeUpdateOfflineLoginLinkVisibility(
 }
 
 void LoginDisplayHostMojo::OnUserActivity(const ui::Event* event) {
+  // ESC button can be used to hide login dialog when SAML is configured.
+  // Prevent reopening it with ESC.
+  if (event->IsKeyEvent() && event->AsKeyEvent()->key_code() == ui::VKEY_ESCAPE)
+    return;
   scoped_activity_observation_.Reset();
   ShowGaiaDialog(EmptyAccountId());
 }

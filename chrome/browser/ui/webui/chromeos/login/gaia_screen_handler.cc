@@ -1211,6 +1211,10 @@ void GaiaScreenHandler::ShowSigninScreenForTest(const std::string& username,
   }
 }
 
+void GaiaScreenHandler::Reset() {
+  CallExternalAPI("reset");
+}
+
 void GaiaScreenHandler::ShowSecurityTokenPinDialog(
     const std::string& /*caller_extension_name*/,
     security_token_pin::CodeType code_type,

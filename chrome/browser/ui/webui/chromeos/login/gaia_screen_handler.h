@@ -92,6 +92,8 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   virtual void ShowSigninScreenForTest(const std::string& username,
                                        const std::string& password,
                                        const std::string& services) = 0;
+  // Reset authenticator.
+  virtual void Reset() = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
@@ -137,6 +139,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void ShowSigninScreenForTest(const std::string& username,
                                const std::string& password,
                                const std::string& services) override;
+  void Reset() override;
 
   // SecurityTokenPinDialogHost:
   void ShowSecurityTokenPinDialog(

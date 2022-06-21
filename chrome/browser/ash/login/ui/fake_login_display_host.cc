@@ -136,7 +136,7 @@ void FakeLoginDisplayHost::ShowOsInstallScreen() {}
 
 void FakeLoginDisplayHost::ShowGuestTosScreen() {}
 
-void FakeLoginDisplayHost::HideOobeDialog(bool saml_video_timeout) {}
+void FakeLoginDisplayHost::HideOobeDialog(bool saml_page_closed) {}
 
 void FakeLoginDisplayHost::SetShelfButtonsEnabled(bool enabled) {}
 

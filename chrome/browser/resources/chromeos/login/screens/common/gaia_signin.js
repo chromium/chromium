@@ -344,9 +344,14 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
   get EXTERNAL_API() {
     return [
-      'loadAuthExtension', 'doReload', 'showAllowlistCheckFailedError',
-      'showPinDialog', 'closePinDialog', 'clickPrimaryButtonForTesting',
-      'onBeforeLoad'
+      'loadAuthExtension',
+      'doReload',
+      'showAllowlistCheckFailedError',
+      'showPinDialog',
+      'closePinDialog',
+      'clickPrimaryButtonForTesting',
+      'onBeforeLoad',
+      'reset',
     ];
   }
 
@@ -666,27 +671,23 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   onVideoEnabledChange_() {
     if (this.videoEnabled_ && this.videoTimer_ === undefined) {
       this.videoTimer_ =
-          setTimeout(this.onVideoTimeout_.bind(this), VIDEO_LOGIN_TIMEOUT);
+          setTimeout(this.cancel.bind(this), VIDEO_LOGIN_TIMEOUT);
     } else {
       this.clearVideoTimer_();
     }
   }
 
-  /**
-   * @private
-   */
-  onVideoTimeout_() {
-    if (!this.flagRedirectToDefaultIdPEnabled_) {
-      return this.cancel();
-    }
-    // Reset webview to prevent calls from authenticator when the screen is
-    // hidden.
+  reset() {
+    this.clearLoadingTimer_();
+    this.clearVideoTimer_();
+    this.isAllowlistErrorShown_ = false;
+    this.authCompleted_ = false;
+    // Reset webview to prevent calls from authenticator.
     this.authenticator_.resetWebview();
     // Explicitly disable video here to let `onVideoEnabledChange_()` handle
     // timer start next time when `videoEnabled_` will be set to true on SAML
     // page.
     this.videoEnabled_ = false;
-    this.userActed('samlVideoTimeout');
   }
 
   /**

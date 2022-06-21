@@ -1018,7 +1018,7 @@ void LoginDisplayHostWebUI::ShowGuestTosScreen() {
   StartWizard(GuestTosScreenView::kScreenId);
 }
 
-void LoginDisplayHostWebUI::HideOobeDialog(bool video_timeout) {
+void LoginDisplayHostWebUI::HideOobeDialog(bool saml_page_closed) {
   NOTREACHED();
 }
 

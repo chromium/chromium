@@ -356,6 +356,15 @@ OobeScreenId PrefToScreenId(const std::string& pref_value) {
   return OobeScreenId(pref_value);
 }
 
+bool IsGaiaPageDefaultsToSAML() {
+  if (!features::IsRedirectToDefaultIdPEnabled())
+    return false;
+  int authentication_behavior = 0;
+  bool authentication_behavior_set = CrosSettings::Get()->GetInteger(
+      kLoginAuthenticationBehavior, &authentication_behavior);
+  return authentication_behavior_set && authentication_behavior;
+}
+
 }  // namespace
 
 // static
@@ -1079,7 +1088,7 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
   OnScreenExit(GaiaView::kScreenId, GaiaScreen::GetResultString(result));
   switch (result) {
     case GaiaScreen::Result::BACK:
-    case GaiaScreen::Result::CANCEL:
+    case GaiaScreen::Result::CANCEL: {
       if (result == GaiaScreen::Result::BACK &&
           wizard_context_->is_user_creation_enabled) {
         // `Result::BACK` is only triggered when pressing back button. It goes
@@ -1089,22 +1098,26 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
         AdvanceToScreen(UserCreationView::kScreenId);
         break;
       }
-      if (LoginDisplayHost::default_host()->HasUserPods() &&
-          !wizard_context_->is_user_creation_enabled) {
-        LoginDisplayHost::default_host()->HideOobeDialog();
+      // If a default redirection to third party IdP is set we can hide the
+      // dialog.
+      const bool gaia_page_defaults_to_saml = IsGaiaPageDefaultsToSAML();
+      if ((LoginDisplayHost::default_host()->HasUserPods() &&
+           !wizard_context_->is_user_creation_enabled) ||
+          (!LoginDisplayHost::default_host()->HasUserPods() &&
+           gaia_page_defaults_to_saml)) {
+        GetScreen<GaiaScreen>()->Reset();
+        LoginDisplayHost::default_host()->HideOobeDialog(
+            gaia_page_defaults_to_saml);
       } else {
         GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
       }
       break;
+    }
     case GaiaScreen::Result::ENTERPRISE_ENROLL:
       ShowEnrollmentScreenIfEligible();
       break;
     case GaiaScreen::Result::START_CONSUMER_KIOSK:
       LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
-      break;
-    case GaiaScreen::Result::SAML_VIDEO_TIMEOUT:
-      LoginDisplayHost::default_host()->HideOobeDialog(
-          /*saml_video_timeout=*/true);
       break;
   }
 }
