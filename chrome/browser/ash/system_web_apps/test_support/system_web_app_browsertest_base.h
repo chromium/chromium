@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_
+#ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TEST_SUPPORT_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_
+#define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TEST_SUPPORT_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_
 
 #include <memory>
 
@@ -26,11 +26,9 @@ class WebContents;
 }
 
 namespace ash {
+
 enum class SystemWebAppType;
 class SystemWebAppManager;
-}
-
-namespace web_app {
 
 class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
  public:
@@ -48,11 +46,11 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   // Returns the SystemWebAppManager for browser()->profile(). For incognito
   // profiles, this will be the SystemWebAppManager of the original profile.
   // Returns TestSystemWebAppManager if initialized with |install_mock| true.
-  ash::SystemWebAppManager& GetManager();
+  SystemWebAppManager& GetManager();
 
-  // Returns ash::SystemWebAppType of mocked app, only valid if |install_mock|
+  // Returns SystemWebAppType of mocked app, only valid if |install_mock|
   // is true.
-  ash::SystemWebAppType GetMockAppType();
+  SystemWebAppType GetMockAppType();
 
   // Returns the start URL based on the given |params|.
   GURL GetStartUrl(const apps::AppLaunchParams& params);
@@ -61,14 +59,13 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   GURL GetStartUrl();
 
   // Returns the URL for a installed system web app type.
-  GURL GetStartUrl(ash::SystemWebAppType type);
+  GURL GetStartUrl(SystemWebAppType type);
 
   void WaitForTestSystemAppInstall();
 
   // Creates a default AppLaunchParams for |system_app_type|. Launches a window.
   // Uses kSourceTest as the AppLaunchSource.
-  apps::AppLaunchParams LaunchParamsForApp(
-      ash::SystemWebAppType system_app_type);
+  apps::AppLaunchParams LaunchParamsForApp(SystemWebAppType system_app_type);
 
   // Launch the given System App from |params|, and wait for the application to
   // finish loading. If |browser| is not nullptr, it will store the Browser*
@@ -79,7 +76,7 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   // Launch the given System App |type| with default AppLaunchParams, and wait
   // for the application to finish loading. If |browser| is not nullptr, it will
   // store the Browser* that hosts the launched application.
-  content::WebContents* LaunchApp(ash::SystemWebAppType type,
+  content::WebContents* LaunchApp(SystemWebAppType type,
                                   Browser** browser = nullptr);
 
   // Launch the given System App from |params|, without waiting for the
@@ -91,14 +88,14 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   // Launch the given System App |type| with default AppLaunchParams, without
   // waiting for the application to finish loading. If |browser| is not nullptr,
   // it will store the Browser* that hosts the launched application.
-  content::WebContents* LaunchAppWithoutWaiting(ash::SystemWebAppType type,
+  content::WebContents* LaunchAppWithoutWaiting(SystemWebAppType type,
                                                 Browser** browser = nullptr);
 
   // Returns number of system web app browser windows matching |type|.
-  size_t GetSystemWebAppBrowserCount(ash::SystemWebAppType type);
+  size_t GetSystemWebAppBrowserCount(SystemWebAppType type);
 
  protected:
-  std::unique_ptr<TestSystemWebAppInstallation> maybe_installation_;
+  std::unique_ptr<web_app::TestSystemWebAppInstallation> maybe_installation_;
 
  private:
   std::unique_ptr<KeyedService> CreateWebAppProvider(Profile* profile);
@@ -111,7 +108,7 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
                                   bool wait_for_load,
                                   Browser** out_browser);
 
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 class SystemWebAppManagerBrowserTest
@@ -125,6 +122,6 @@ class SystemWebAppManagerBrowserTest
   ~SystemWebAppManagerBrowserTest() override = default;
 };
 
-}  // namespace web_app
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_
+#endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TEST_SUPPORT_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_

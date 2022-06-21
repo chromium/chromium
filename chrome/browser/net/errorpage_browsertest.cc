@@ -82,7 +82,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"  // nogncheck
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
@@ -1068,11 +1068,9 @@ void ClickDiagnosticsLink(Browser* browser) {
 // LaCROS due to errors on Wayland initialization and to keep test to ChromeOS
 // devices.
 // TODO(crbug.com/1285441): Disabled due to test flakes.
-class ErrorPageOfflineAppLaunchTest
-    : public web_app::SystemWebAppBrowserTestBase {
+class ErrorPageOfflineAppLaunchTest : public ash::SystemWebAppBrowserTestBase {
  public:
-  ErrorPageOfflineAppLaunchTest()
-      : web_app::SystemWebAppBrowserTestBase(true) {}
+  ErrorPageOfflineAppLaunchTest() : ash::SystemWebAppBrowserTestBase(true) {}
 };
 
 IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest,

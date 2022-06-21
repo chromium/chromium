@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -21,23 +21,23 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace web_app {
+namespace ash {
 
 SystemWebAppBrowserTestBase::SystemWebAppBrowserTestBase(bool install_mock) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EnableSystemWebAppsInLacrosForTesting();
+  web_app::EnableSystemWebAppsInLacrosForTesting();
 #endif
 }
 
 SystemWebAppBrowserTestBase::~SystemWebAppBrowserTestBase() = default;
 
-ash::SystemWebAppManager& SystemWebAppBrowserTestBase::GetManager() {
-  auto* swa_manager = ash::SystemWebAppManager::Get(browser()->profile());
+SystemWebAppManager& SystemWebAppBrowserTestBase::GetManager() {
+  auto* swa_manager = SystemWebAppManager::Get(browser()->profile());
   DCHECK(swa_manager);
   return *swa_manager;
 }
 
-ash::SystemWebAppType SystemWebAppBrowserTestBase::GetMockAppType() {
+SystemWebAppType SystemWebAppBrowserTestBase::GetMockAppType() {
   CHECK(maybe_installation_);
   return maybe_installation_->GetType();
 }
@@ -60,8 +60,8 @@ void SystemWebAppBrowserTestBase::WaitForTestSystemAppInstall() {
 }
 
 apps::AppLaunchParams SystemWebAppBrowserTestBase::LaunchParamsForApp(
-    ash::SystemWebAppType system_app_type) {
-  absl::optional<AppId> app_id =
+    SystemWebAppType system_app_type) {
+  absl::optional<web_app::AppId> app_id =
       GetManager().GetAppIdForSystemApp(system_app_type);
 
   CHECK(app_id.has_value());
@@ -83,14 +83,14 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       browser()->profile()));
 
-  DCHECK(AreSystemWebAppsSupported());
+  DCHECK(web_app::AreSystemWebAppsSupported());
 
   if (!params.launch_files.empty()) {
     // SWA browser tests bypass the code in `WebAppPublisherHelper` that fills
     // in `override_url`, so fill it in here, assuming the file handler action
     // URL matches the start URL.
     params.override_url =
-        WebAppProvider::GetForLocalAppsUnchecked(browser()->profile())
+        web_app::WebAppProvider::GetForLocalAppsUnchecked(browser()->profile())
             ->registrar()
             .GetAppStartUrl(params.app_id);
   }
@@ -121,7 +121,7 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
 }
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
-    ash::SystemWebAppType type,
+    SystemWebAppType type,
     Browser** browser) {
   return LaunchApp(LaunchParamsForApp(type), browser);
 }
@@ -133,22 +133,23 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
 }
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
-    ash::SystemWebAppType type,
+    SystemWebAppType type,
     Browser** browser) {
   return LaunchAppWithoutWaiting(LaunchParamsForApp(type), browser);
 }
 
 GURL SystemWebAppBrowserTestBase::GetStartUrl(
     const apps::AppLaunchParams& params) {
-  DCHECK(AreSystemWebAppsSupported());
+  DCHECK(web_app::AreSystemWebAppsSupported());
   return params.override_url.is_valid()
              ? params.override_url
-             : WebAppProvider::GetForLocalAppsUnchecked(browser()->profile())
+             : web_app::WebAppProvider::GetForLocalAppsUnchecked(
+                   browser()->profile())
                    ->registrar()
                    .GetAppStartUrl(params.app_id);
 }
 
-GURL SystemWebAppBrowserTestBase::GetStartUrl(ash::SystemWebAppType type) {
+GURL SystemWebAppBrowserTestBase::GetStartUrl(SystemWebAppType type) {
   return GetStartUrl(LaunchParamsForApp(type));
 }
 
@@ -157,7 +158,7 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl() {
 }
 
 size_t SystemWebAppBrowserTestBase::GetSystemWebAppBrowserCount(
-    ash::SystemWebAppType type) {
+    SystemWebAppType type) {
   auto* browser_list = BrowserList::GetInstance();
   return std::count_if(
       browser_list->begin(), browser_list->end(), [&](Browser* browser) {
@@ -170,8 +171,8 @@ SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(
     : TestProfileTypeMixin<SystemWebAppBrowserTestBase>(install_mock) {
   if (install_mock) {
     maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
+        web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
   }
 }
 
-}  // namespace web_app
+}  // namespace ash

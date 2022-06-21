@@ -1189,6 +1189,7 @@ if (!is_android) {
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/ash/system_web_apps:browser_tests",
+      "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/breadcrumbs:browser_tests",
       "//chrome/browser/browsing_data:constants",
@@ -1220,7 +1221,6 @@ if (!is_android) {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/web_applications:browser_tests",
-      "//chrome/browser/web_applications:browser_tests_base",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/web_applications/extensions",
       "//chrome/browser/web_share_target:browser_tests",
@@ -4456,8 +4456,8 @@ if (!is_android) {
       # TODO(crbug.com/1278123): Enable once PWAs are supported.
       deps -= [
         "//chrome/browser/ash/system_web_apps:browser_tests",
+        "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
         "//chrome/browser/web_applications:browser_tests",
-        "//chrome/browser/web_applications:browser_tests_base",
       ]
       sources -= [
         "../../apps/app_restore_service_browsertest.cc",
@@ -9093,11 +9093,11 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/browser",
       "//chrome/browser:unexpire_flags",
+      "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
       "//chrome/browser/resource_coordinator/tab_ranker",
-      "//chrome/browser/web_applications:browser_tests_base",
       "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common:version_header",

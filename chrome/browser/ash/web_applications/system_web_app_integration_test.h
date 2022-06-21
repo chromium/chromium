@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -18,8 +18,7 @@ class Profile;
 
 // Test harness for how ChromeOS System Web Apps integrate with the System Web
 // App platform.
-class SystemWebAppIntegrationTest
-    : public web_app::SystemWebAppManagerBrowserTest {
+class SystemWebAppIntegrationTest : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppIntegrationTest();
   SystemWebAppIntegrationTest(const SystemWebAppIntegrationTest&) = delete;

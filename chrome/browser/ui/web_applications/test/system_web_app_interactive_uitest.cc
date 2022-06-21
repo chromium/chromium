@@ -17,6 +17,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -74,7 +74,7 @@
 namespace web_app {
 
 class SystemWebAppLinkCaptureBrowserTest
-    : public SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppLinkCaptureBrowserTest()
       : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class SystemWebAppManagerWindowSizeControlsTest
-    : public SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppManagerWindowSizeControlsTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
@@ -700,7 +700,8 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-using SystemWebAppLaunchProfileBrowserTest = SystemWebAppManagerBrowserTest;
+using SystemWebAppLaunchProfileBrowserTest =
+    ash::SystemWebAppManagerBrowserTest;
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
                        LaunchFromNormalSessionIncognitoProfile) {
@@ -792,7 +793,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 using SystemWebAppLaunchOmniboxNavigateBrowsertest =
-    SystemWebAppManagerBrowserTest;
+    ash::SystemWebAppManagerBrowserTest;
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
                        OpenInTab) {
@@ -853,10 +854,10 @@ class TestActivationObserver : public wm::ActivationChangeObserver {
 
 // Tests which are exercising OpenUrl called by Lacros in Ash.
 class SystemWebAppOpenInAshFromLacrosTests
-    : public SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppOpenInAshFromLacrosTests()
-      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+      : ash::SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(true);
     url_handler_ = std::make_unique<crosapi::UrlHandlerAsh>();
   }
@@ -956,7 +957,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SystemWebAppManagerCloseFromScriptsTest
-    : public SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppManagerCloseFromScriptsTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
@@ -988,10 +989,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerCloseFromScriptsTest, WindowClose) {
 }
 
 class SystemWebAppManagerShouldNotCloseFromScriptsTest
-    : public SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppManagerShouldNotCloseFromScriptsTest()
-      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+      : ash::SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
         TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
             false);
@@ -1027,10 +1028,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShouldNotCloseFromScriptsTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class SystemWebAppNewWindowMenuItemTest
-    : public SystemWebAppManagerBrowserTest {
+    : public ash::SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppNewWindowMenuItemTest()
-      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+      : ash::SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppWithNewWindowMenuItem();
   }

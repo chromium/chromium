@@ -23,6 +23,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
-#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -104,9 +104,7 @@ apps::AppServiceProxyBase* GetAppServiceProxy(Profile* profile) {
 }  // namespace
 
 using SystemWebAppManagerBrowserTestBasicInstall =
-    web_app::SystemWebAppManagerBrowserTest;
-
-using SystemWebAppManagerBrowserTest = web_app::SystemWebAppManagerBrowserTest;
+    SystemWebAppManagerBrowserTest;
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Test that System Apps install correctly with a manifest.
@@ -251,14 +249,14 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
 // EvalJs because of some quirks surrounding origin trials and content security
 // policies.
 class SystemWebAppManagerFileHandlingBrowserTestBase
-    : public TestProfileTypeMixin<web_app::SystemWebAppBrowserTestBase> {
+    : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
   using IncludeLaunchDirectory =
       web_app::TestSystemWebAppInstallation::IncludeLaunchDirectory;
 
   explicit SystemWebAppManagerFileHandlingBrowserTestBase(
       IncludeLaunchDirectory include_launch_directory)
-      : TestProfileTypeMixin<web_app::SystemWebAppBrowserTestBase>(
+      : TestProfileTypeMixin<SystemWebAppBrowserTestBase>(
             /*install_mock=*/false) {
     scoped_feature_blink_api_.InitWithFeatures(
         {blink::features::kFileHandlingAPI}, {});
@@ -275,7 +273,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
     params.override_url = maybe_installation_->GetAppUrl();
     params.launch_files = std::move(launch_files);
 
-    return web_app::SystemWebAppBrowserTestBase::LaunchApp(std::move(params));
+    return SystemWebAppBrowserTestBase::LaunchApp(std::move(params));
   }
 
   content::WebContents* LaunchAppWithoutWaiting(
@@ -285,7 +283,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
     params.override_url = maybe_installation_->GetAppUrl();
     params.launch_files = std::move(launch_files);
 
-    return web_app::SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
+    return SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
         std::move(params));
   }
 
@@ -852,7 +850,7 @@ class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
     params.launch_files = {temp_file_path};
     params.override_url = GetStartUrl();
 
-    return web_app::SystemWebAppBrowserTestBase::LaunchApp(std::move(params));
+    return SystemWebAppBrowserTestBase::LaunchApp(std::move(params));
   }
 
   bool WaitForLaunchParam(content::WebContents* web_contents) {
