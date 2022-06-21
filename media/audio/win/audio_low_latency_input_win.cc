@@ -251,12 +251,57 @@ bool InitializeUWPSupport() {
 
 }  // namespace
 
+// Counts how often an OS capture callback reports a data discontinuity and logs
+// it as a UMA histogram.
+class WASAPIAudioInputStream::DataDiscontinuityReporter {
+ public:
+  // Logs once every 10s, assuming 10ms buffers.
+  constexpr static int kCallbacksPerLogPeriod = 1000;
+
+  DataDiscontinuityReporter() {}
+
+  int GetLongTermDiscontinuityCountAndReset() {
+    int long_term_count = data_discontinuity_long_term_count_;
+    callback_count_ = 0;
+    data_discontinuity_short_term_count_ = 0;
+    data_discontinuity_long_term_count_ = 0;
+    return long_term_count;
+  }
+
+  void Log(bool observed_data_discontinuity) {
+    ++callback_count_;
+    if (observed_data_discontinuity) {
+      ++data_discontinuity_short_term_count_;
+      ++data_discontinuity_long_term_count_;
+    }
+
+    if (callback_count_ % kCallbacksPerLogPeriod)
+      return;
+
+    // TODO(https://crbug.com/825744): It can be possible to replace
+    // "Media.Audio.Capture.Glitches2" with this new (simplified) metric
+    // instead.
+    base::UmaHistogramCounts1000("Media.Audio.Capture.Win.Glitches2",
+                                 data_discontinuity_short_term_count_);
+
+    data_discontinuity_short_term_count_ = 0;
+  }
+
+ private:
+  int callback_count_ = 0;
+  int data_discontinuity_short_term_count_ = 0;
+  int data_discontinuity_long_term_count_ = 0;
+};
+
 WASAPIAudioInputStream::WASAPIAudioInputStream(
     AudioManagerWin* manager,
     const AudioParameters& params,
     const std::string& device_id,
     AudioManager::LogCallback log_callback)
     : manager_(manager),
+      glitch_reporter_(SystemGlitchReporter::StreamType::kCapture),
+      data_discontinuity_reporter_(
+          std::make_unique<DataDiscontinuityReporter>()),
       device_id_(device_id),
       log_callback_(std::move(log_callback)) {
   DCHECK(manager_);
@@ -846,16 +891,17 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
     // The data in the packet is not correlated with the previous packet's
     // device position; this is possibly due to a stream state transition or
     // timing glitch. Note that, usage of this flag was added after the existing
-    // glitch detection in UpdateGlitchCount() and it will be used as a
-    // supplementary scheme initially.
+    // glitch detection and it will be used as a supplementary scheme initially.
     // The behavior of the AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY flag is
     // undefined on the application's first call to GetBuffer after Start and
     // Windows 7 or later is required for support.
-    if (device_position > 0 && flags & AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY) {
+    const bool observed_data_discontinuity =
+        (device_position > 0 && flags & AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY);
+    if (observed_data_discontinuity) {
       LOG(WARNING) << "WAIS::" << __func__
                    << " => (WARNING: AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY)";
-      ++num_data_discontinuity_warnings_;
     }
+    data_discontinuity_reporter_->Log(observed_data_discontinuity);
 
     // The time at which the device's stream position was recorded is uncertain.
     // Thus, the client might be unable to accurately set a time stamp for the
@@ -881,7 +927,16 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
     // If the device position has not changed we assume this data belongs to the
     // previous chunk, and only update the expected next device position.
     if (device_position != last_device_position) {
-      UpdateGlitchCount(device_position);
+      if (expected_next_device_position_ != 0) {
+        base::TimeDelta glitch_duration;
+        if (device_position > expected_next_device_position_) {
+          glitch_duration = AudioTimestampHelper::FramesToTime(
+              device_position - expected_next_device_position_,
+              input_format_.Format.nSamplesPerSec);
+        }
+        glitch_reporter_.UpdateStats(glitch_duration);
+      }
+
       last_device_position = device_position;
       expected_next_device_position_ = device_position + num_frames_to_read;
     } else {
@@ -1598,10 +1653,10 @@ void WASAPIAudioInputStream::MaybeReportFormatRelatedInitError(
           ? converter_.get()
                 ? FormatRelatedInitError::kUnsupportedFormatWithFormatConversion
                 : FormatRelatedInitError::kUnsupportedFormat
-          // Otherwise |hr| == E_INVALIDARG.
-          : converter_.get()
-                ? FormatRelatedInitError::kInvalidArgumentWithFormatConversion
-                : FormatRelatedInitError::kInvalidArgument;
+      // Otherwise |hr| == E_INVALIDARG.
+      : converter_.get()
+          ? FormatRelatedInitError::kInvalidArgumentWithFormatConversion
+          : FormatRelatedInitError::kInvalidArgument;
   base::UmaHistogramEnumeration(
       "Media.Audio.Capture.Win.InitError.FormatRelated", format_related_error,
       FormatRelatedInitError::kCount);
@@ -1613,41 +1668,20 @@ double WASAPIAudioInputStream::ProvideInput(AudioBus* audio_bus,
   return 1.0;
 }
 
-void WASAPIAudioInputStream::UpdateGlitchCount(UINT64 device_position) {
-  if (expected_next_device_position_ != 0) {
-    if (device_position > expected_next_device_position_) {
-      ++total_glitches_;
-      auto lost_frames = device_position - expected_next_device_position_;
-      total_lost_frames_ += lost_frames;
-      if (lost_frames > largest_glitch_frames_)
-        largest_glitch_frames_ = lost_frames;
-    }
-  }
-}
-
 void WASAPIAudioInputStream::ReportAndResetGlitchStats() {
-  UMA_HISTOGRAM_COUNTS_1M("Media.Audio.Capture.Glitches", total_glitches_);
-  double lost_frames_ms =
-      (total_lost_frames_ * 1000) / input_format_.Format.nSamplesPerSec;
+  SystemGlitchReporter::Stats stats =
+      glitch_reporter_.GetLongTermStatsAndReset();
   SendLogMessage(
-      "%s => (total glitches=[%d], total frames lost=[%llu/%.0lf ms])",
-      __func__, total_glitches_, total_lost_frames_, lost_frames_ms);
-  if (total_glitches_ != 0) {
-    UMA_HISTOGRAM_LONG_TIMES("Media.Audio.Capture.LostFramesInMs",
-                             base::Milliseconds(lost_frames_ms));
-    int64_t largest_glitch_ms =
-        (largest_glitch_frames_ * 1000) / input_format_.Format.nSamplesPerSec;
-    UMA_HISTOGRAM_CUSTOM_TIMES("Media.Audio.Capture.LargestGlitchMs",
-                               base::Milliseconds(largest_glitch_ms),
-                               base::Milliseconds(1), base::Minutes(1), 50);
-  }
+      "%s => (num_glitches_detected=[%d], cumulative_audio_lost=[%llu ms], "
+      "largest_glitch=[%llu ms])",
+      __func__, stats.glitches_detected,
+      stats.total_glitch_duration.InMilliseconds(),
+      stats.largest_glitch_duration.InMilliseconds());
 
-  // TODO(https://crbug.com/825744): It can be possible to replace
-  // "Media.Audio.Capture.Glitches" with this new (simplified) metric instead.
-  base::UmaHistogramCounts1M("Media.Audio.Capture.Win.Glitches",
-                             num_data_discontinuity_warnings_);
-  SendLogMessage("%s => (discontinuity warnings=[%" PRIu64 "])", __func__,
-                 num_data_discontinuity_warnings_);
+  int num_data_discontinuities =
+      data_discontinuity_reporter_->GetLongTermDiscontinuityCountAndReset();
+  SendLogMessage("%s => (discontinuity warnings=[%d])", __func__,
+                 num_data_discontinuities);
   SendLogMessage("%s => (timstamp errors=[%" PRIu64 "])", __func__,
                  num_timestamp_errors_);
   if (num_timestamp_errors_ > 0) {
@@ -1657,10 +1691,6 @@ void WASAPIAudioInputStream::ReportAndResetGlitchStats() {
   }
 
   expected_next_device_position_ = 0;
-  total_glitches_ = 0;
-  total_lost_frames_ = 0;
-  largest_glitch_frames_ = 0;
-  num_data_discontinuity_warnings_ = 0;
   num_timestamp_errors_ = 0;
 }
 

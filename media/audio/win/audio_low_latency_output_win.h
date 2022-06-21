@@ -112,7 +112,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
 #include "media/audio/audio_io.h"
-#include "media/audio/system_output_glitch_reporter.h"
+#include "media/audio/system_glitch_reporter.h"
 #include "media/audio/win/audio_manager_win.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
@@ -196,7 +196,7 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
 
   // Used to aggregate and report glitch metrics to UMA (periodically) and to
   // text logs (when a stream ends).
-  SystemOutputGlitchReporter glitch_reporter_;
+  SystemGlitchReporter glitch_reporter_;
 
   // Rendering is driven by this thread (which has no message loop).
   // All OnMoreData() callbacks will be called from this thread.
