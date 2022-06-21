@@ -953,6 +953,8 @@ source_set("ash") {
     "file_manager/delete_io_task.h",
     "file_manager/documents_provider_root_manager.cc",
     "file_manager/documents_provider_root_manager.h",
+    "file_manager/empty_trash_io_task.cc",
+    "file_manager/empty_trash_io_task.h",
     "file_manager/extract_io_task.cc",
     "file_manager/extract_io_task.h",
     "file_manager/file_browser_handlers.cc",
