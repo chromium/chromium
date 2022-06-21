@@ -44,10 +44,10 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
 using chrome_test_util::WebViewMatcher;
 
 namespace {
-// Directory containing the |kLogoPagePath| and |kLogoPageImageSourcePath|
+// Directory containing the `kLogoPagePath` and `kLogoPageImageSourcePath`
 // resources.
 // const char kServerFilesDir[] = "ios/testing/data/http_server_files/";
-// Path to a page containing the chromium logo and the text |kLogoPageText|.
+// Path to a page containing the chromium logo and the text `kLogoPageText`.
 const char kLogoPagePath[] = "/chromium_logo_page.html";
 // Path to the chromium logo.
 const char kLogoPageImageSourcePath[] = "/chromium_logo.png";
@@ -244,7 +244,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
-// Long presses on |element_id| to trigger context menu.
+// Long presses on `element_id` to trigger context menu.
 void LongPressElement(const char* element_id) {
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
@@ -259,7 +259,7 @@ void ClearContextMenu() {
       performAction:grey_tapAtPoint(CGPointMake(0, 0))];
 }
 
-// Taps on |context_menu_item_button| context menu item.
+// Taps on `context_menu_item_button` context menu item.
 void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   [[EarlGrey selectElementWithMatcher:context_menu_item_button]
       assertWithMatcher:grey_notNil()];
@@ -372,7 +372,7 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   pointOnImage.y = topInset + 25.0;
   pointOnImage.x = [ChromeEarlGrey webStateWebViewSize].width / 2.0;
 
-  // Duration should match |kContextMenuLongPressDuration| as defined in
+  // Duration should match `kContextMenuLongPressDuration` as defined in
   // web_view_actions.mm.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:grey_longPressAtPointWithDuration(pointOnImage, 1.0)];
@@ -480,7 +480,7 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       assertWithMatcher:grey_notNil()];
 
   // TODO(crbug.com/1233056): Tap to dismiss the system selection callout
-  // buttons so tearDown doesn't hang when |disabler| goes out of scope.
+  // buttons so tearDown doesn't hang when `disabler` goes out of scope.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:grey_tap()];
 }

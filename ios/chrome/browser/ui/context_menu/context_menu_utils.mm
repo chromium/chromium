@@ -27,7 +27,7 @@ enum class ContextMenuTitleOrigin {
 
 typedef std::pair<NSString*, ContextMenuTitleOrigin> TitleAndOrigin;
 
-// Returns the title and origin for |params|.
+// Returns the title and origin for `params`.
 TitleAndOrigin GetContextMenuTitleAndOrigin(web::ContextMenuParams params) {
   NSString* title = nil;
   ContextMenuTitleOrigin origin = ContextMenuTitleOrigin::kUnknown;

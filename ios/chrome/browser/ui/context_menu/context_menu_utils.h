@@ -11,13 +11,13 @@ namespace web {
 struct ContextMenuParams;
 }
 
-// Returns the title for the context menu |params|.
+// Returns the title for the context menu `params`.
 NSString* GetContextMenuTitle(web::ContextMenuParams params);
 
-// Returns the subtitle for the context menu |params|.
+// Returns the subtitle for the context menu `params`.
 NSString* GetContextMenuSubtitle(web::ContextMenuParams params);
 
-// Returns whether the title for context menu |params| is an image title.
+// Returns whether the title for context menu `params` is an image title.
 bool IsImageTitle(web::ContextMenuParams params);
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTEXT_MENU_CONTEXT_MENU_UTILS_H_

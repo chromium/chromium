@@ -53,7 +53,7 @@ TEST_F(ContextMenuUtilsTest, TitleJavascriptTitle) {
   EXPECT_FALSE(IsImageTitle(params));
 }
 
-// Tests title is set to |src_url| if there is no title.
+// Tests title is set to `src_url` if there is no title.
 TEST_F(ContextMenuUtilsTest, TitleSrcTitle) {
   web::ContextMenuParams params;
   params.src_url = GURL(kSrcUrl);

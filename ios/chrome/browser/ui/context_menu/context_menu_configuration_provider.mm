@@ -366,7 +366,7 @@ NSString* const kContextMenuEllipsis = @"…";
 
 #pragma mark - Private
 
-// Searches an image with the given |imageURL| and |referrer|, optionally using
+// Searches an image with the given `imageURL` and `referrer`, optionally using
 // Lens.
 - (void)searchImageWithURL:(GURL)imageURL
                  usingLens:(BOOL)usingLens
@@ -384,7 +384,7 @@ NSString* const kContextMenuEllipsis = @"…";
   });
 }
 
-// Starts a reverse image search based on |imageData| and |imageURL| in a new
+// Starts a reverse image search based on `imageData` and `imageURL` in a new
 // tab.
 - (void)searchByImageData:(NSData*)imageData imageURL:(const GURL&)URL {
   web::NavigationManager::WebLoadParams webParams =
@@ -398,7 +398,7 @@ NSString* const kContextMenuEllipsis = @"…";
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 
-// Searches an image with Lens using the given |imageData|.
+// Searches an image with Lens using the given `imageData`.
 - (void)searchImageUsingLensWithData:(NSData*)imageData {
   // TODO(crbug.com/1323783): This should be an id<LensCommands> and use
   // HandlerForProtocol().
