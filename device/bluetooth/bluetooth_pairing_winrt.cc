@@ -289,27 +289,26 @@ void BluetoothPairingWinrt::OnPairingRequested(
       pairing_requested_ = pairing_requested;
       expecting_pin_code_ = true;
       pairing_delegate_->RequestPinCode(device_);
-      break;
+      return;
     case DevicePairingKinds_ConfirmOnly:
       if (base::FeatureList::IsEnabled(
               features::kWebBluetoothConfirmPairingSupport)) {
         pairing_requested_ = pairing_requested;
         pairing_delegate_->AuthorizePairing(device_);
+        return;
       } else {
         DVLOG(2) << "DevicePairingKind = " << static_cast<int>(pairing_kind)
                  << " is not enabled by "
                     "enable-web-bluetooth-confirm-pairing-support";
-        std::move(callback_).Run(
-            BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
-        return;
       }
       break;
     default:
       DVLOG(2) << "Unsupported DevicePairingKind = "
                << static_cast<int>(pairing_kind);
-      std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
-      return;
+      break;
   }
+  std::move(callback_).Run(
+      BluetoothDevice::ConnectErrorCode::ERROR_AUTH_FAILED);
 }
 
 void BluetoothPairingWinrt::OnPair(
