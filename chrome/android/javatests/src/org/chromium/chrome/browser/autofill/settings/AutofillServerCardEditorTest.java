@@ -254,7 +254,7 @@ public class AutofillServerCardEditorTest {
         ArgumentCaptor<Callback<VirtualCardEnrollmentFields>> callbackArgumentCaptor =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mNativeMock)
-                .offerVirtualCardEnrollment(
+                .initVirtualCardEnrollment(
                         ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
                         ArgumentMatchers.eq(234L), callbackArgumentCaptor.capture());
         // Return VirtualCardEnrollmentFields via the callback to show the dialog.
@@ -353,7 +353,7 @@ public class AutofillServerCardEditorTest {
         ArgumentCaptor<Callback<VirtualCardEnrollmentFields>> callbackArgumentCaptor =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mNativeMock)
-                .offerVirtualCardEnrollment(
+                .initVirtualCardEnrollment(
                         ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
                         ArgumentMatchers.eq(234L), callbackArgumentCaptor.capture());
         // Return VirtualCardEnrollmentFields via the callback to show the dialog.
@@ -431,7 +431,7 @@ public class AutofillServerCardEditorTest {
         ArgumentCaptor<Callback<VirtualCardEnrollmentFields>> callbackArgumentCaptor =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mNativeMock)
-                .offerVirtualCardEnrollment(
+                .initVirtualCardEnrollment(
                         ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
                         ArgumentMatchers.eq(234L), callbackArgumentCaptor.capture());
         // Return VirtualCardEnrollmentFields via the callback to show the dialog.
@@ -499,7 +499,7 @@ public class AutofillServerCardEditorTest {
         ArgumentCaptor<Callback<VirtualCardEnrollmentFields>> callbackArgumentCaptor =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mNativeMock)
-                .offerVirtualCardEnrollment(
+                .initVirtualCardEnrollment(
                         ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
                         ArgumentMatchers.eq(234L), callbackArgumentCaptor.capture());
         // Return VirtualCardEnrollmentFields via the callback to show the dialog.

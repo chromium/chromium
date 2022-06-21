@@ -211,6 +211,11 @@ PaymentsClient::GetDetailsForEnrollmentResponseDetails::
 PaymentsClient::GetDetailsForEnrollmentResponseDetails::
     ~GetDetailsForEnrollmentResponseDetails() = default;
 
+PaymentsClient::UploadCardResponseDetails::UploadCardResponseDetails() =
+    default;
+PaymentsClient::UploadCardResponseDetails::~UploadCardResponseDetails() =
+    default;
+
 PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::
     UpdateVirtualCardEnrollmentRequestDetails() = default;
 PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::

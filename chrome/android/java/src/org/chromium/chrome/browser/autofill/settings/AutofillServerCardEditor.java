@@ -177,7 +177,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                 // Disable the button until we receive a response from the server.
                 mVirtualCardEnrollmentButton.setEnabled(false);
                 if (!mVirtualCardEnrollmentButtonShowsUnenroll) {
-                    mDelegate.offerVirtualCardEnrollment(mCard.getInstrumentId(),
+                    mDelegate.initVirtualCardEnrollment(mCard.getInstrumentId(),
                             result -> showVirtualCardEnrollmentDialog(result, modalDialogManager));
                 } else {
                     showVirtualCardUnenrollmentDialog(modalDialogManager);

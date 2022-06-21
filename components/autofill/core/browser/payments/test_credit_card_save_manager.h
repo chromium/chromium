@@ -59,6 +59,9 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
 
   FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
                            OnDidUploadCard_VirtualCardEnrollment);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardSaveManagerTest,
+      OnDidUploadCard_VirtualCardEnrollment_GetDetailsForEnrollmentResponseDetailsReturned);
   FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
                            UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess);
 };
