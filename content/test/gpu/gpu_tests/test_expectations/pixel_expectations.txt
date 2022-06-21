@@ -295,6 +295,9 @@ crbug.com/1300550 [ win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanv
 # Flakes on gpu-fyi-try-chromeos-kevin and Fuchsia x64, produces notably different image.
 crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner [ Failure ]
 
+# Flakes on gpu-fyi-try-chromeos-amd64-generic, times out.
+crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRoundedCorner [ Failure ]
+
 # Flaky hang.
 crbug.com/1218288 [ fuchsia-board-astro ] Pixel_PrecisionRoundedCorner [ Failure ]
 crbug.com/1136875 [ fuchsia-board-qemu-x64 ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
