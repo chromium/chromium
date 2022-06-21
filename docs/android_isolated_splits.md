@@ -101,14 +101,15 @@ happens whenever Chrome is updated rather than when the user launches Chrome.
 [preemptively run]: https://source.chromium.org/search?q=symbol:DexFixer.needsDexCompile&ss=chromium
 [PackageReplacedBroadcastReceiver]: https://source.chromium.org/search?q=symbol:PackageReplacedBroadcastReceiver&ss=chromium
 
-### Conflicting ClassLoaders (Android Pre-S)
+### Conflicting ClassLoaders
 
 Missing synchronization can cause the parent ClassLoader of split contexts to
 be different from the Application's ClassLoader. This manifests as odd-looking
 `ClassCastExceptions` where `"TypeA cannot be cast to TypeA"` (since the two
 `TypeAs` are from different ClassLoaders).
 
-Fixed in Android S. Bug: [b/172602571] (Googler only).
+Tracked by UMA `Android.IsolatedSplits.ClassLoaderReplaced`. Occurs < 0.05% of
+the time.
 
 **Work-around:**
 
