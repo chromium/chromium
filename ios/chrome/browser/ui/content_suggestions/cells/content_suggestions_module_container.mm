@@ -7,6 +7,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -124,9 +126,11 @@ const CGSize kShadowOffset = CGSizeMake(0, 20);
 - (NSString*)titleString {
   switch (self.type) {
     case ContentSuggestionsModuleTypeShortcuts:
-      return @"Shortcuts";
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE);
     case ContentSuggestionsModuleTypeMostVisited:
-      return @"Frequently Visited";
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
     case ContentSuggestionsModuleTypeReturnToRecentTab:
       return @"";
   }
