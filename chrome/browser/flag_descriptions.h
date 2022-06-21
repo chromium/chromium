@@ -3150,6 +3150,9 @@ extern const char kSystemTransliterationPhysicalTypingDescription[];
 extern const char kQuickSettingsNetworkRevampName[];
 extern const char kQuickSettingsNetworkRevampDescription[];
 
+extern const char kTerminalAlternativeRendererName[];
+extern const char kTerminalAlternativeRendererDescription[];
+
 extern const char kTerminalDevName[];
 extern const char kTerminalDevDescription[];
 

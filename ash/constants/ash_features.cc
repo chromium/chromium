@@ -1465,6 +1465,10 @@ const base::Feature kTabClusterUI{"TabClusterUI",
 const base::Feature kTelemetryExtension{"TelemetryExtension",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the alternative renderer for the Terminal app.
+const base::Feature kTerminalAlternativeRenderer{
+    "TerminalAlternativeRenderer", base::FEATURE_DISABLED_BY_DEFAULT};
+//
 // Enables Terminal System App to load from Downloads for developer testing.
 // Only works in dev and canary channels.
 const base::Feature kTerminalDev{"TerminalDev",
