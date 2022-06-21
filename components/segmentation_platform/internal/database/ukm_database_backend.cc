@@ -47,6 +47,9 @@ void BindValuesToStatement(
       case processing::ProcessedValue::Type::INT64:
         statement.BindInt64(i, value.int64_val);
         break;
+      case processing::ProcessedValue::Type::URL:
+        statement.BindString(i, UkmUrlTable::GetDatabaseUrlString(*value.url));
+        break;
       case processing::ProcessedValue::Type::UNKNOWN:
         NOTREACHED();
     }

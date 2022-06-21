@@ -27,6 +27,9 @@ class UkmUrlTable {
   UkmUrlTable(UkmUrlTable&) = delete;
   UkmUrlTable& operator=(UkmUrlTable&) = delete;
 
+  // Converts the given GURL to string.
+  static std::string GetDatabaseUrlString(const GURL& url);
+
   // Returns an ID for the URL. The ID will be a persistent hash of the `url`.
   static UrlId GenerateUrlId(const GURL& url);
 

@@ -26,6 +26,8 @@ source_set("public") {
     "trigger.h",
     "trigger_context.cc",
     "trigger_context.h",
+    "types/processed_value.cc",
+    "types/processed_value.h",
   ]
 
   public_deps = [ "//components/segmentation_platform/public/proto" ]
@@ -33,6 +35,7 @@ source_set("public") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//url",
   ]
 
   if (is_android) {
