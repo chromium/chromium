@@ -16,6 +16,7 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "cc/trees/viewport_property_ids.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
@@ -202,6 +203,7 @@ TEST(PropertyTreeTest, FixedElementInverseTranslation) {
   FakeProtectedSequenceSynchronizer synchronizer;
   PropertyTrees property_trees(synchronizer);
 
+  ViewportPropertyIds viewport_property_ids;
   ClipTree& clip_tree = property_trees.clip_tree_mutable();
   const gfx::RectF clip_rect(0, 0, 100, 100);
   ClipNode clip_node;
@@ -209,20 +211,20 @@ TEST(PropertyTreeTest, FixedElementInverseTranslation) {
   clip_node.parent_id = 0;
   clip_node.clip = clip_rect;
   clip_tree.Insert(clip_node, 0);
-  clip_tree.set_overscroll_node_id(clip_node.id);
+  viewport_property_ids.outer_clip = clip_node.id;
 
   TransformTree& transform_tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Translate(2, 2);
   contents_root.id = transform_tree.Insert(contents_root, 0);
-  transform_tree.UpdateTransforms(1);
+  transform_tree.UpdateTransforms(1, &viewport_property_ids);
 
   const gfx::PointF overscroll_offset(0, 10);
   TransformNode overscroll_node;
   overscroll_node.scroll_offset = overscroll_offset;
   overscroll_node.id = transform_tree.Insert(overscroll_node, 1);
+  viewport_property_ids.overscroll_elasticity_transform = overscroll_node.id;
 
-  transform_tree.set_overscroll_node_id(overscroll_node.id);
   transform_tree.set_fixed_elements_dont_overscroll(true);
 
   TransformNode fixed_node;
@@ -231,8 +233,9 @@ TEST(PropertyTreeTest, FixedElementInverseTranslation) {
 
   EXPECT_TRUE(transform_tree.ShouldUndoOverscroll(&fixed_node));
 
-  transform_tree.UpdateTransforms(2);  // overscroll_node
-  transform_tree.UpdateTransforms(3);  // fixed_node
+  transform_tree.UpdateTransforms(2,
+                                  &viewport_property_ids);  // overscroll_node
+  transform_tree.UpdateTransforms(3, &viewport_property_ids);  // fixed_node
 
   gfx::Transform expected;
   expected.Translate(overscroll_offset.OffsetFromOrigin());
@@ -240,7 +243,7 @@ TEST(PropertyTreeTest, FixedElementInverseTranslation) {
 
   gfx::RectF expected_clip_rect(clip_rect);
   expected_clip_rect.set_height(clip_rect.height() + overscroll_offset.y());
-  EXPECT_EQ(clip_tree.Node(clip_tree.overscroll_node_id())->clip,
+  EXPECT_EQ(clip_tree.Node(viewport_property_ids.outer_clip)->clip,
             expected_clip_rect);
 }
 
@@ -279,7 +282,7 @@ TEST(PropertyTreeTest, TransformsWithFlattening) {
   tree.Node(grand_child)->local = rotation_about_x;
 
   tree.set_needs_update(true);
-  draw_property_utils::ComputeTransforms(&tree);
+  draw_property_utils::ComputeTransforms(&tree, ViewportPropertyIds());
   property_trees.ResetCachedData();
 
   gfx::Transform flattened_rotation_about_x = rotation_about_x;
@@ -306,7 +309,7 @@ TEST(PropertyTreeTest, TransformsWithFlattening) {
   // Remove flattening at grand_child, and recompute transforms.
   tree.Node(grand_child)->flattens_inherited_transform = false;
   tree.set_needs_update(true);
-  draw_property_utils::ComputeTransforms(&tree);
+  draw_property_utils::ComputeTransforms(&tree, ViewportPropertyIds());
 
   property_trees.GetToTarget(grand_child, effect_parent, &to_target);
   EXPECT_TRANSFORM_EQ(rotation_about_x * rotation_about_x, to_target);
@@ -417,7 +420,7 @@ TEST(PropertyTreeTest, ComputeTransformToTargetWithZeroSurfaceContentsScale) {
   tree.Node(grand_parent_id)->needs_local_transform_update = true;
   tree.set_needs_update(true);
 
-  draw_property_utils::ComputeTransforms(&tree);
+  draw_property_utils::ComputeTransforms(&tree, ViewportPropertyIds());
 
   transform.MakeIdentity();
   tree.CombineTransformsBetween(child_id, grand_parent_id, &transform);
@@ -428,7 +431,7 @@ TEST(PropertyTreeTest, ComputeTransformToTargetWithZeroSurfaceContentsScale) {
   tree.Node(grand_parent_id)->needs_local_transform_update = true;
   tree.set_needs_update(true);
 
-  draw_property_utils::ComputeTransforms(&tree);
+  draw_property_utils::ComputeTransforms(&tree, ViewportPropertyIds());
 
   transform.MakeIdentity();
   tree.CombineTransformsBetween(child_id, grand_parent_id, &transform);
@@ -456,7 +459,7 @@ TEST(PropertyTreeTest, FlatteningWhenDestinationHasOnlyFlatAncestors) {
   tree.Node(grand_child)->flattens_inherited_transform = true;
 
   tree.set_needs_update(true);
-  draw_property_utils::ComputeTransforms(&tree);
+  draw_property_utils::ComputeTransforms(&tree, ViewportPropertyIds());
 
   gfx::Transform flattened_rotation_about_x = rotation_about_x;
   flattened_rotation_about_x.FlattenTo2d();
@@ -511,7 +514,7 @@ TEST(PropertyTreeTest, SingularTransformSnapTest) {
   child_node->local.Translate(1.3f, 1.3f);
   tree.set_needs_update(true);
 
-  draw_property_utils::ComputeTransforms(&tree);
+  draw_property_utils::ComputeTransforms(&tree, ViewportPropertyIds());
   property_trees.ResetCachedData();
 
   gfx::Transform from_target;

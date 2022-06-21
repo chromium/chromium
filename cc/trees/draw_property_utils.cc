@@ -28,6 +28,7 @@
 #include "cc/trees/property_tree_builder.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "cc/trees/viewport_property_ids.h"
 #include "components/viz/common/display/de_jelly.h"
 #include "components/viz/common/shared_element_resource_id.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -1425,7 +1426,8 @@ void FindLayersThatNeedUpdates(LayerTreeImpl* layer_tree_impl,
   }
 }
 
-void ComputeTransforms(TransformTree* transform_tree) {
+void ComputeTransforms(TransformTree* transform_tree,
+                       const ViewportPropertyIds& viewport_property_ids) {
   if (!transform_tree->needs_update()) {
 #if DCHECK_IS_ON()
     // If the transform tree does not need an update, no TransformNode should
@@ -1439,7 +1441,7 @@ void ComputeTransforms(TransformTree* transform_tree) {
   }
   for (int i = kContentsRootPropertyNodeId;
        i < static_cast<int>(transform_tree->size()); ++i)
-    transform_tree->UpdateTransforms(i);
+    transform_tree->UpdateTransforms(i, &viewport_property_ids);
   transform_tree->set_needs_update(false);
 }
 
@@ -1460,14 +1462,16 @@ void UpdatePropertyTrees(LayerTreeHost* layer_tree_host) {
     property_trees->clip_tree_mutable().set_needs_update(true);
     property_trees->effect_tree_mutable().set_needs_update(true);
   }
-  ComputeTransforms(&property_trees->transform_tree_mutable());
+
+  ComputeTransforms(&property_trees->transform_tree_mutable(),
+                    layer_tree_host->viewport_property_ids());
   ComputeEffects(&property_trees->effect_tree_mutable());
   // Computation of clips uses ToScreen which is updated while computing
   // transforms. So, ComputeTransforms should be before ComputeClips.
   ComputeClips(property_trees);
 }
 
-void UpdatePropertyTreesAndRenderSurfaces(LayerImpl* root_layer,
+void UpdatePropertyTreesAndRenderSurfaces(LayerTreeImpl* layer_tree_impl,
                                           PropertyTrees* property_trees) {
   if (property_trees->transform_tree().needs_update()) {
     property_trees->clip_tree_mutable().set_needs_update(true);
@@ -1475,7 +1479,8 @@ void UpdatePropertyTreesAndRenderSurfaces(LayerImpl* root_layer,
   }
   UpdateRenderTarget(&property_trees->effect_tree_mutable());
 
-  ComputeTransforms(&property_trees->transform_tree_mutable());
+  ComputeTransforms(&property_trees->transform_tree_mutable(),
+                    layer_tree_impl->viewport_property_ids());
   ComputeEffects(&property_trees->effect_tree_mutable());
   // Computation of clips uses ToScreen which is updated while computing
   // transforms. So, ComputeTransforms should be before ComputeClips.
@@ -1554,8 +1559,7 @@ void CalculateDrawProperties(
       gfx::RectF(layer_tree_impl->GetDeviceViewport()));
   property_trees->transform_tree_mutable().SetRootScaleAndTransform(
       layer_tree_impl->device_scale_factor(), layer_tree_impl->DrawTransform());
-  UpdatePropertyTreesAndRenderSurfaces(layer_tree_impl->root_layer(),
-                                       property_trees);
+  UpdatePropertyTreesAndRenderSurfaces(layer_tree_impl, property_trees);
 
   {
     TRACE_EVENT0("cc", "draw_property_utils::FindLayersThatNeedUpdates");

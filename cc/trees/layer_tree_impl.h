@@ -450,6 +450,10 @@ class CC_EXPORT LayerTreeImpl {
     return display_color_spaces_;
   }
 
+  const ViewportPropertyIds& viewport_property_ids() const {
+    return viewport_property_ids_;
+  }
+
   SyncedElasticOverscroll* elastic_overscroll() {
     return elastic_overscroll_.get();
   }
