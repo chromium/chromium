@@ -34,8 +34,8 @@ class GURL;
 
 @interface PasswordFetcher : NSObject
 
-// The designated initializer. |passwordStore| must not be nil. The passwords
-// will be filtered by the passed |origin|, pass an empty GURL to avoid
+// The designated initializer. `passwordStore` must not be nil. The passwords
+// will be filtered by the passed `origin`, pass an empty GURL to avoid
 // filtering.
 - (instancetype)
     initWithPasswordStore:
