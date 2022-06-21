@@ -16,6 +16,7 @@ blink_core_sources_accessibility = [
 ]
 
 blink_core_tests_accessibility = [
+  "ax_context_test.cc",
   "blink_ax_event_intent_test.cc",
   "scoped_blink_ax_event_intent_test.cc",
 ]

@@ -360,6 +360,7 @@ if (is_mac) {
 }
 
 blink_core_tests_editing = [
+  "caret_display_item_client_test.cc",
   "commands/apply_block_element_command_test.cc",
   "commands/apply_style_command_test.cc",
   "commands/composite_edit_command_test.cc",
@@ -382,6 +383,7 @@ blink_core_tests_editing = [
   "element_inner_text_test.cc",
   "ephemeral_range_test.cc",
   "finder/find_buffer_test.cc",
+  "finder/text_finder_test.cc",
   "frame_caret_test.cc",
   "frame_selection_test.cc",
   "granularity_strategy_test.cc",
@@ -395,7 +397,9 @@ blink_core_tests_editing = [
   "iterators/text_iterator_behavior_test.cc",
   "iterators/text_iterator_test.cc",
   "iterators/text_searcher_icu_test.cc",
+  "keyboard_test.cc",
   "layout_selection_test.cc",
+  "link_selection_test.cc",
   "local_caret_rect_bidi_test.cc",
   "local_caret_rect_test.cc",
   "markers/active_suggestion_marker_list_impl_test.cc",

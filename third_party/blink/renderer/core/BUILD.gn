@@ -1252,21 +1252,7 @@ fuzzer_test("text_resource_decoder_fuzzer") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "accessibility/ax_context_test.cc",
-    "clipboard/clipboard_utilities_test.cc",
     "content_capture/content_capture_test.cc",
-    "css/css_revert_layer_value_test.cc",
-    "css/css_revert_value_test.cc",
-    "css/css_test_helpers.cc",
-    "css/css_test_helpers.h",
-    "css/css_uri_value_test.cc",
-    "css/css_value_test_helper.h",
-    "css/font_display_auto_lcp_align_test.cc",
-    "css/mock_css_paint_image_generator.h",
-    "editing/caret_display_item_client_test.cc",
-    "editing/finder/text_finder_test.cc",
-    "editing/keyboard_test.cc",
-    "editing/link_selection_test.cc",
     "execution_context/execution_context_lifecycle_state_observer_test.cc",
     "exported/web_document_subresource_filter_test.cc",
     "exported/web_document_test.cc",

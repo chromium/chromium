@@ -30,6 +30,7 @@ if (is_win) {
 }
 
 blink_core_tests_clipboard = [
+  "clipboard_utilities_test.cc",
   "data_object_test.cc",
   "data_transfer_test.cc",
 ]
