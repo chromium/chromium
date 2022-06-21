@@ -18,7 +18,11 @@
 #include "base/task/thread_pool.h"
 #include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/component_updater/component_updater_paths.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/search/ntp_features.h"
+#else
+#include "components/commerce/core/commerce_feature_list.h"
+#endif
 
 namespace {
 
@@ -182,7 +186,11 @@ CommerceHeuristicsInstallerPolicy::GetInstallerAttributes() const {
 
 void RegisterCommerceHeuristicsComponent(
     component_updater::ComponentUpdateService* cus) {
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule)) {
+#else
+  if (base::FeatureList::IsEnabled(commerce::kCommerceHintAndroid)) {
+#endif
     VLOG(1) << "Registering Commerce Heuristics component.";
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<CommerceHeuristicsInstallerPolicy>());
