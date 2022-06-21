@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/shell.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -42,12 +41,9 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
-#include "ui/events/test/event_generator.h"
-#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-// TODO(crbug.com/1262948): Enable and modify for lacros.
 namespace policy {
 
 namespace {
@@ -225,40 +221,11 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
                                 "PLACEHOLDER_IP"));
   }
 
-  void SetupTextfield() {
-    // Create a widget containing a single, focusable textfield.
-    widget_ = std::make_unique<views::Widget>();
-
-    views::Widget::InitParams params;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-    widget_->Init(std::move(params));
-    textfield_ = widget_->SetContentsView(std::make_unique<views::Textfield>());
-    textfield_->SetAccessibleName(u"Textfield");
-    textfield_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-
-    // Show the widget.
-    widget_->SetBounds(gfx::Rect(0, 0, 100, 100));
-    widget_->Show();
-    ASSERT_TRUE(widget_->IsActive());
-
-    // Focus the textfield and confirm initial state.
-    textfield_->RequestFocus();
-    ASSERT_TRUE(textfield_->HasFocus());
-    ASSERT_TRUE(textfield_->GetText().empty());
-
-    event_generator_ = std::make_unique<ui::test::EventGenerator>(
-        ash::Shell::GetPrimaryRootWindow());
-  }
-
   MockDlpRulesManager* rules_manager_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events;
   FakeClipboardNotifier helper_;
   std::unique_ptr<FakeDlpController> dlp_controller_;
-  std::unique_ptr<ui::test::EventGenerator> event_generator_;
-  std::unique_ptr<views::Widget> widget_;
-  views::Textfield* textfield_ = nullptr;
 };
 
 // Flaky on MSan bots: http://crbug.com/1178328

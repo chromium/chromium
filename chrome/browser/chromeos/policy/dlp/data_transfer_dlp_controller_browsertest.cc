@@ -269,7 +269,6 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
   {
     ListPrefUpdate update(g_browser_process->local_state(),
                           policy_prefs::kDlpRulesList);
-    base::Value rules(base::Value::Type::LIST);
 
     base::Value src_urls1(base::Value::Type::LIST);
     src_urls1.Append(kMailUrl);
