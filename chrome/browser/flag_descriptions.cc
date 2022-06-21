@@ -1641,6 +1641,12 @@ const char kJourneysOmniboxActionName[] = "History Journeys Omnibox Action";
 const char kJourneysOmniboxActionDescription[] =
     "Enables the History Journeys Omnibox Action.";
 
+const char kJourneysOmniboxHistoryClusterProviderName[] =
+    "History Journeys Omnibox History Cluster Provider";
+const char kJourneysOmniboxHistoryClusterProviderDescription[] =
+    "Enables the History Journeys Omnibox History Cluster Provider to surface "
+    "Journeys as a suggestion row instead of an action chip.";
+
 const char kJourneysOnDeviceClusteringBackendName[] =
     "History Journeys On-Device Clustering Backend";
 const char kJourneysOnDeviceClusteringBackendDescription[] =

@@ -54,9 +54,9 @@ ACMatches CreateACMatches(std::vector<MatchData> matches_data) {
   return matches;
 }
 
-class HistClustersActionTest : public testing::Test {
+class HistoryClustersActionTest : public testing::Test {
  public:
-  HistClustersActionTest() = default;
+  HistoryClustersActionTest() = default;
 
   // `history_dir_` needs to be initialized once only.
   void SetUp() override {
@@ -119,7 +119,7 @@ class HistClustersActionTest : public testing::Test {
     }
 
     // `AttachHistoryClustersActions()` will kick off an async task to refresh
-    // the keyword task. Wait for it to avoid it possibly being processed after
+    // the keyword cache. Wait for it to avoid it possibly being processed after
     // the next test case begins.
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   }
@@ -144,7 +144,7 @@ class HistClustersActionTest : public testing::Test {
   TestingPrefServiceSimple prefs_enabled_;
 };
 
-TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
+TEST_F(HistoryClustersActionTest, AttachHistoryClustersActions) {
   {
     SCOPED_TRACE("Shouldn't add action if history cluster service is nullptr.");
     SetUpWithConfig(search_actions_config_);

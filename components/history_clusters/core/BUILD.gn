@@ -66,6 +66,7 @@ static_library("core") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:entities",
     "//components/pref_registry",
+    "//components/prefs",
     "//components/query_parser",
     "//components/search_engines",
     "//components/site_engagement/core",

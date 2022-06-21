@@ -3610,6 +3610,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "history-journeys-omnibox-history-cluster-provider",
+    "owners": [ "tommycli", "chrome-journeys@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "history-journeys-on-device-clustering",
     "owners": [ "sophiechang", "chrome-journeys@google.com", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 110

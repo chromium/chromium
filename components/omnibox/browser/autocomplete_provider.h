@@ -171,6 +171,7 @@ class AutocompleteProvider
     TYPE_VOICE_SUGGEST = 1 << 15,
     TYPE_HISTORY_FUZZY = 1 << 16,
     TYPE_OPEN_TAB = 1 << 17,
+    TYPE_HISTORY_CLUSTER_PROVIDER = 1 << 18,
   };
 
   explicit AutocompleteProvider(Type type);

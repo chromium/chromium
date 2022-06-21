@@ -626,7 +626,10 @@ struct AutocompleteMatch {
 
   // The destination URL modified for better dupe finding.  The result may not
   // be navigable or even valid; it's only meant to be used for detecting
-  // duplicates.
+  // duplicates. Providers are not expected to set this field,
+  // `AutocompleteResult` will set it using `ComputeStrippedDestinationURL()`.
+  // Providers may manually set it to avoid the default
+  // `ComputeStrippedDestinationURL()` computation.
   GURL stripped_destination_url;
 
   // Optional image information. Used for entity suggestions. The dominant color
@@ -671,7 +674,7 @@ struct AutocompleteMatch {
   // A rich-format version of the display for the dropdown.
   absl::optional<SuggestionAnswer> answer;
 
-  // The transition type to use when the user opens this match.  By default
+  // The transition type to use when the user opens this match.  By default,
   // this is TYPED.  Providers whose matches do not look like URLs should set
   // it to GENERATED.
   ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
@@ -680,7 +683,7 @@ struct AutocompleteMatch {
   Type type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
 
   // True if we saw a tab that matched this suggestion.
-  // Unset if has not been computed yet.
+  // Unset if it has not been computed yet.
   absl::optional<bool> has_tab_match;
 
   // Used to identify the specific source / type for suggestions by the
@@ -688,7 +691,7 @@ struct AutocompleteMatch {
   // details.
   // We use flat_set to help us deduplicate repetitive elements.
   // The order of elements reported back via AQS is irrelevant, and in the case
-  // we have repetitive subtypes (eg. as a result of Chrome enriching the set
+  // we have repetitive subtypes (e.g., as a result of Chrome enriching the set
   // with its own metadata) we want to merge these subtypes together.
   // flat_set uses std::vector as a container, allowing us to reduce memory
   // overhead of keeping a handful of integers, while offering similar

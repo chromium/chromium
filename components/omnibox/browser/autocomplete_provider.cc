@@ -72,6 +72,8 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "HistoryFuzzy";
     case TYPE_OPEN_TAB:
       return "OpenTab";
+    case TYPE_HISTORY_CLUSTER_PROVIDER:
+      return "HistoryCluster";
     default:
       NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type;
       return "Unknown";
@@ -163,6 +165,8 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
       return metrics::OmniboxEventProto::HISTORY_FUZZY;
     case TYPE_OPEN_TAB:
       return metrics::OmniboxEventProto::OPEN_TAB;
+    case TYPE_HISTORY_CLUSTER_PROVIDER:
+      return metrics::OmniboxEventProto::HISTORY_CLUSTER;
     default:
       NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type_;
       return metrics::OmniboxEventProto::UNKNOWN_PROVIDER;

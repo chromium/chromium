@@ -31,6 +31,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/history_clusters/core/config.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/bookmark_provider.h"
@@ -66,6 +67,7 @@
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/actions/history_clusters_action.h"
+#include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"
 #endif
 
@@ -396,6 +398,25 @@ AutocompleteController::AutocompleteController(
   if (provider_types & AutocompleteProvider::TYPE_OPEN_TAB) {
     providers_.push_back(new OpenTabProvider(provider_client_.get()));
   }
+  // Ideally, we'd check `IsApplicationLocaleSupportedByJourneys()` when
+  // constructing `provider_types`. But that's usually constructed in
+  // `AutocompleteClassifier::DefaultOmniboxProviders` which can't depend on the
+  // browser dir to detect locale. The alternative of piping in the locale from
+  // each call site seems too intrusive for a temporary condition (some call
+  // sites are also in the components dir). All callers of
+  // `DefaultOmniboxProviders` only use it to then construct
+  // `AutocompleteController`, so placing the check here instead has no behavior
+  // change.
+#if !BUILDFLAG(IS_IOS)
+  // HistoryClusters is not enabled on iOS.
+  if (provider_types & AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER &&
+      history_clusters::IsApplicationLocaleSupportedByJourneys(
+          provider_client_->GetApplicationLocale()) &&
+      search_provider_ != nullptr) {
+    providers_.push_back(new HistoryClusterProvider(provider_client_.get(),
+                                                    this, search_provider_));
+  }
+#endif
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "AutocompleteController", base::ThreadTaskRunnerHandle::Get());

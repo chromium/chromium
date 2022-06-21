@@ -134,6 +134,10 @@ PrefService* ChromeAutocompleteProviderClient::GetLocalState() {
   return g_browser_process->local_state();
 }
 
+std::string ChromeAutocompleteProviderClient::GetApplicationLocale() const {
+  return g_browser_process->GetApplicationLocale();
+}
+
 const AutocompleteSchemeClassifier&
 ChromeAutocompleteProviderClient::GetSchemeClassifier() const {
   return scheme_classifier_;

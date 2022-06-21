@@ -5798,6 +5798,7 @@ others/histograms.xml -->
   <int value="28" label="TILE_SUGGESTION"/>
   <int value="29" label="TILE_NAVSUGGEST"/>
   <int value="30" label="OPEN_TAB"/>
+  <int value="31" label="HISTORY_CLUSTER"/>
 </enum>
 
 <enum name="AutoDSEPermissionRevertTransition">
@@ -58263,6 +58264,7 @@ from previous Chrome versions.
   <int value="26875005" label="disable-explicit-dma-fences"/>
   <int value="26945819" label="EnhancedDeskAnimations:disabled"/>
   <int value="27507364" label="apps-keep-chrome-alive"/>
+  <int value="27632363" label="JourneysOmniboxHistoryClusterProvider:enabled"/>
   <int value="29212695" label="OfflineIndicator:enabled"/>
   <int value="31776417" label="EnableIkev2Vpn:disabled"/>
   <int value="31848187" label="ViewsTaskManager:disabled"/>
@@ -58487,6 +58489,8 @@ from previous Chrome versions.
   <int value="179871410" label="ui-debug-tools:disabled"/>
   <int value="180040169" label="OneGroupPerRenderer:disabled"/>
   <int value="180074362" label="memory-pressure-thresholds"/>
+  <int value="180414503"
+      label="JourneysOmniboxHistoryClusterProvider:disabled"/>
   <int value="181150000" label="CrosVmCupsProxy:enabled"/>
   <int value="182358203" label="AddToHomescreenIPH:enabled"/>
   <int value="182788555" label="DecoupleSyncFromAndroidMasterSync:disabled"/>

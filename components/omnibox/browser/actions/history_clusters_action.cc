@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
-#include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
@@ -177,18 +176,12 @@ void AttachHistoryClustersActions(
   // This is to prevent binary size increase for no reason.
   return;
 #else
-  if (!service)
+
+  if (!IsJourneysEnabledInOmnibox(service, prefs))
     return;
 
-  // Both features must be enabled to ever attach the action chip.
-  if (!service->IsJourneysEnabled() || !GetConfig().omnibox_action) {
+  if (!GetConfig().omnibox_action)
     return;
-  }
-
-  // History Clusters must be visible to the user to attach the action chip.
-  if (!prefs->GetBoolean(history_clusters::prefs::kVisible)) {
-    return;
-  }
 
   if (result.empty())
     return;

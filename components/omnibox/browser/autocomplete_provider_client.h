@@ -70,6 +70,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   GetURLLoaderFactory() = 0;
   virtual PrefService* GetPrefs() const = 0;
   virtual PrefService* GetLocalState() = 0;
+  virtual std::string GetApplicationLocale() const = 0;
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;
   virtual AutocompleteClassifier* GetAutocompleteClassifier() = 0;
   virtual history::HistoryService* GetHistoryService() = 0;

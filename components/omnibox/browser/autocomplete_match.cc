@@ -416,6 +416,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::TAB_SEARCH_DEPRECATED:
     case Type::TILE_NAVSUGGEST:
     case Type::OPEN_TAB:
+    case Type::HISTORY_CLUSTER:
       return omnibox::kPageIcon;
 
     case Type::SEARCH_SUGGEST: {
@@ -1078,6 +1079,8 @@ AutocompleteMatch::AsOmniboxEventResultType() const {
       return OmniboxEventProto::Suggestion::NAVSUGGEST;
     case AutocompleteMatchType::OPEN_TAB:
       return OmniboxEventProto::Suggestion::OPEN_TAB;
+    case AutocompleteMatchType::HISTORY_CLUSTER:
+      return OmniboxEventProto::Suggestion::HISTORY_CLUSTER;
     case AutocompleteMatchType::VOICE_SUGGEST:
       // VOICE_SUGGEST matches are only used in Java and are not logged,
       // so we should never reach this case.

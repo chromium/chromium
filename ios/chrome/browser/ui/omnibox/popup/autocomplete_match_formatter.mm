@@ -214,6 +214,7 @@ UIColor* DimColorIncognito() {
   return _match.type == AutocompleteMatchType::BOOKMARK_TITLE ||
          _match.type == AutocompleteMatchType::CALCULATOR ||
          _match.type == AutocompleteMatchType::HISTORY_BODY ||
+         _match.type == AutocompleteMatchType::HISTORY_CLUSTER ||
          _match.type == AutocompleteMatchType::HISTORY_KEYWORD ||
          _match.type == AutocompleteMatchType::HISTORY_TITLE ||
          _match.type == AutocompleteMatchType::HISTORY_URL ||

@@ -54,6 +54,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   PrefService* GetLocalState() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   history::HistoryService* GetHistoryService() override;
+  history_clusters::HistoryClustersService* GetHistoryClustersService()
+      override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
@@ -69,6 +71,11 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
   void set_history_service(std::unique_ptr<history::HistoryService> service) {
     history_service_ = std::move(service);
+  }
+
+  void set_history_clusters_service(
+      history_clusters::HistoryClustersService* service) {
+    history_clusters_service_ = service;
   }
 
   void set_in_memory_url_index(std::unique_ptr<InMemoryURLIndex> index) {
@@ -89,6 +96,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   TestSchemeClassifier scheme_classifier_;
   std::unique_ptr<InMemoryURLIndex> in_memory_url_index_;
   std::unique_ptr<history::HistoryService> history_service_;
+  history_clusters::HistoryClustersService* history_clusters_service_ = nullptr;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   scoped_refptr<ShortcutsBackend> shortcuts_backend_;

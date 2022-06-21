@@ -9,16 +9,12 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace history_clusters {
-
-namespace prefs {
+namespace history_clusters::prefs {
 
 extern const char kVisible[];
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-}  // namespace prefs
-
-}  // namespace history_clusters
+}  // namespace history_clusters::prefs
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_PREFS_H_

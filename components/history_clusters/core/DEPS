@@ -3,6 +3,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/optimization_guide/core",
   "+components/pref_registry",
+  "+components/prefs",
   "+components/query_parser",
   "+components/site_engagement/core",
   "+components/strings/grit/components_strings.h",

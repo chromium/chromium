@@ -35,6 +35,9 @@ const base::Feature kJourneysLabels{"JourneysLabel",
 const base::Feature kOmniboxAction{"JourneysOmniboxAction",
                                    enabled_by_default_desktop_only};
 
+const base::Feature kOmniboxHistoryClusterProvider{
+    "JourneysOmniboxHistoryClusterProvider", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kNonUserVisibleDebug{"JourneysNonUserVisibleDebug",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 

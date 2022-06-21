@@ -5306,6 +5306,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kJourneysOmniboxActionVariations,
                                     "HistoryJourneysOmniboxAction")},
 
+    {"history-journeys-omnibox-history-cluster-provider",
+     flag_descriptions::kJourneysOmniboxHistoryClusterProviderName,
+     flag_descriptions::kJourneysOmniboxHistoryClusterProviderDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         history_clusters::internal::kOmniboxHistoryClusterProvider)},
+
     {"history-journeys-on-device-clustering",
      flag_descriptions::kJourneysOnDeviceClusteringBackendName,
      flag_descriptions::kJourneysOnDeviceClusteringBackendDescription,

@@ -9,7 +9,11 @@
 
 #include "base/time/time.h"
 
+class PrefService;
+
 namespace history_clusters {
+
+class HistoryClustersService;
 
 // The default configuration. Always use |GetConfig()| to get the current
 // configuration.
@@ -97,6 +101,12 @@ struct Config {
   // If enabled, allows the Omnibox Action chip to appear when the suggestions
   // contain pedals. Does nothing if `omnibox_action` is disabled.
   bool omnibox_action_with_pedals = false;
+
+  // Enables `HistoryClusterProvider` to surface Journeys as a suggestion row
+  // instead of an action chip. Enabling this won't actually disable
+  // `omnibox_action_with_pedals`, but for user experiments, the intent is to
+  // only have 1 enabled.
+  bool omnibox_history_cluster_provider = false;
 
   // If enabled, adds the keywords of aliases for detected entity names to a
   // cluster.
@@ -277,6 +287,11 @@ struct Config {
 // cached.
 bool IsApplicationLocaleSupportedByJourneys(
     const std::string& application_locale);
+
+// Checks some prerequisites for history cluster omnibox suggestions and
+// actions.
+bool IsJourneysEnabledInOmnibox(HistoryClustersService* service,
+                                PrefService* prefs);
 
 // Gets the current configuration. OverrideWithFinch() must have been called
 // before GetConfig() is called.

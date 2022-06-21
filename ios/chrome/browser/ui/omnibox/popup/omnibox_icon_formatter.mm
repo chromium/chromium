@@ -65,6 +65,7 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
     case AutocompleteMatchType::HISTORY_URL:
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::OPEN_TAB:
+    case AutocompleteMatchType::HISTORY_CLUSTER:
       return DEFAULT_FAVICON;
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
