@@ -2494,10 +2494,10 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     base::Value::Dict dict;
     source.AddToEventParameters(dict);
     dict.Set("host", ToLogStringValue(key_.host));
-    std::vector<base::Value> query_types_list;
+    base::Value::List query_types_list;
     for (DnsQueryType query_type : key_.query_types)
-      query_types_list.emplace_back(kDnsQueryTypes.at(query_type));
-    dict.Set("dns_query_types", base::Value(std::move(query_types_list)));
+      query_types_list.Append(kDnsQueryTypes.at(query_type));
+    dict.Set("dns_query_types", std::move(query_types_list));
     dict.Set("secure_dns_mode", base::strict_cast<int>(key_.secure_dns_mode));
     dict.Set("network_isolation_key",
              key_.network_isolation_key.ToDebugString());

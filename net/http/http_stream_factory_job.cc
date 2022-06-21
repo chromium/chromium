@@ -78,24 +78,23 @@ base::Value NetLogHttpStreamJobParams(const NetLogSource& source,
                                       bool expect_spdy,
                                       bool using_quic,
                                       RequestPriority priority) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   if (source.IsValid())
-    source.AddToEventParameters(&dict);
-  dict.SetStringKey("original_url",
-                    original_url.DeprecatedGetOriginAsURL().spec());
-  dict.SetStringKey("url", url.DeprecatedGetOriginAsURL().spec());
-  dict.SetBoolKey("expect_spdy", expect_spdy);
-  dict.SetBoolKey("using_quic", using_quic);
-  dict.SetStringKey("priority", RequestPriorityToString(priority));
-  return dict;
+    source.AddToEventParameters(dict);
+  dict.Set("original_url", original_url.DeprecatedGetOriginAsURL().spec());
+  dict.Set("url", url.DeprecatedGetOriginAsURL().spec());
+  dict.Set("expect_spdy", expect_spdy);
+  dict.Set("using_quic", using_quic);
+  dict.Set("priority", RequestPriorityToString(priority));
+  return base::Value(std::move(dict));
 }
 
 // Returns parameters associated with the ALPN protocol of a HTTP stream.
 base::Value NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  dict.SetStringKey("proto", NextProtoToString(negotiated_protocol));
-  return dict;
+  dict.Set("proto", NextProtoToString(negotiated_protocol));
+  return base::Value(std::move(dict));
 }
 
 HttpStreamFactory::Job::Job(Delegate* delegate,

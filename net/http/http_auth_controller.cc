@@ -32,10 +32,10 @@ namespace net {
 namespace {
 
 base::Value ControllerParamsToValue(HttpAuth::Target target, const GURL& url) {
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringPath("target", HttpAuth::GetAuthTargetString(target));
-  params.SetStringPath("url", url.spec());
-  return params;
+  base::Value::Dict params;
+  params.Set("target", HttpAuth::GetAuthTargetString(target));
+  params.Set("url", url.spec());
+  return base::Value(std::move(params));
 }
 
 }  // namespace

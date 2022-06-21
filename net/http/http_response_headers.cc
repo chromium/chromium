@@ -1373,8 +1373,8 @@ bool HttpResponseHeaders::GetContentRangeFor206(
 
 base::Value HttpResponseHeaders::NetLogParams(
     NetLogCaptureMode capture_mode) const {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  base::Value headers(base::Value::Type::LIST);
+  base::Value::Dict dict;
+  base::Value::List headers;
   headers.Append(NetLogStringValue(GetStatusLine()));
   size_t iterator = 0;
   std::string name;
@@ -1384,8 +1384,8 @@ base::Value HttpResponseHeaders::NetLogParams(
         ElideHeaderValueForNetLog(capture_mode, name, value);
     headers.Append(NetLogStringValue(base::StrCat({name, ": ", log_value})));
   }
-  dict.SetKey("headers", std::move(headers));
-  return dict;
+  dict.Set("headers", std::move(headers));
+  return base::Value(std::move(dict));
 }
 
 bool HttpResponseHeaders::IsChunkEncoded() const {

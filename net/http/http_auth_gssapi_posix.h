@@ -256,8 +256,8 @@ class NET_EXPORT_PRIVATE HttpAuthGSSAPI : public HttpAuthMechanism {
 
 // Diagnostics
 
-// GetGssStatusCodeValue constructs a base::Value containing a status code and a
-// message.
+// GetGssStatusCodeValue constructs a base::Value::Dict containing a status code
+// and a message.
 //
 //     {
 //       "status" : <status value as a number>,
@@ -274,12 +274,12 @@ class NET_EXPORT_PRIVATE HttpAuthGSSAPI : public HttpAuthMechanism {
 // identified to look up messages if |status_code_type| is |GSS_C_MECH_CODE|.
 // Since no mechanism OIDs are passed in, mechanism specific status codes will
 // likely not have messages.
-NET_EXPORT_PRIVATE base::Value GetGssStatusCodeValue(
+NET_EXPORT_PRIVATE base::Value::Dict GetGssStatusCodeValue(
     GSSAPILibrary* gssapi_lib,
     OM_uint32 status,
     OM_uint32 status_code_type);
 
-// Given major and minor GSSAPI status codes, returns a base::Value
+// Given major and minor GSSAPI status codes, returns a base::Value::Dict
 // encapsulating the codes as well as their meanings as expanded via
 // gss_display_status().
 //
@@ -304,21 +304,22 @@ NET_EXPORT_PRIVATE base::Value GetGssStatusCodeValue(
 // returned value will be missing the "message" fields. The same is true if the
 // message lookup failed for some reason, or if the lookups succeeded but
 // yielded an empty message.
-NET_EXPORT_PRIVATE base::Value GetGssStatusValue(GSSAPILibrary* gssapi_lib,
-                                                 base::StringPiece method,
-                                                 OM_uint32 major_status,
-                                                 OM_uint32 minor_status);
+NET_EXPORT_PRIVATE base::Value::Dict GetGssStatusValue(
+    GSSAPILibrary* gssapi_lib,
+    base::StringPiece method,
+    OM_uint32 major_status,
+    OM_uint32 minor_status);
 
-// OidToValue returns a base::Value representing an OID. The structure of the
-// value is:
+// OidToValue returns a base::Value::Dict representing an OID. The structure of
+// the value is:
 //   {
 //     "oid":    <symbolic name of OID if it is known>
 //     "length": <length in bytes of serialized OID>,
 //     "bytes":  <hexdump of up to 1024 bytes of serialized OID>
 //   }
-NET_EXPORT_PRIVATE base::Value OidToValue(const gss_OID oid);
+NET_EXPORT_PRIVATE base::Value::Dict OidToValue(const gss_OID oid);
 
-// GetDisplayNameValue returns a base::Value representing a gss_name_t. It
+// GetDisplayNameValue returns a base::Value::Dict representing a gss_name_t. It
 // invokes |gss_display_name()| via |gssapi_lib| to determine the display name
 // associated with |gss_name|.
 //
@@ -336,8 +337,9 @@ NET_EXPORT_PRIVATE base::Value OidToValue(const gss_OID oid);
 //
 // Note that |gss_name_t| is platform dependent. If |gss_display_name| fails,
 // there's no good value to display in its stead.
-NET_EXPORT_PRIVATE base::Value GetDisplayNameValue(GSSAPILibrary* gssapi_lib,
-                                                   const gss_name_t gss_name);
+NET_EXPORT_PRIVATE base::Value::Dict GetDisplayNameValue(
+    GSSAPILibrary* gssapi_lib,
+    const gss_name_t gss_name);
 
 // GetContextStateAsValue returns a base::Value that describes the state of a
 // GSSAPI context. The structure of the value is:

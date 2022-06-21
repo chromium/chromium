@@ -28,47 +28,45 @@ using DelegationType = HttpAuth::DelegationType;
 namespace {
 
 base::Value SecurityStatusToValue(Error mapped_error, SECURITY_STATUS status) {
-  base::Value params{base::Value::Type::DICTIONARY};
-  params.SetIntKey("net_error", mapped_error);
-  params.SetIntKey("security_status", status);
-  return params;
+  base::Value::Dict params;
+  params.Set("net_error", mapped_error);
+  params.Set("security_status", static_cast<int>(status));
+  return base::Value(std::move(params));
 }
 
 base::Value AcquireCredentialsHandleParams(const std::u16string* domain,
                                            const std::u16string* user,
                                            Error result,
                                            SECURITY_STATUS status) {
-  base::Value params{base::Value::Type::DICTIONARY};
+  base::Value::Dict params;
   if (domain && user) {
-    params.SetStringKey("domain", base::UTF16ToUTF8(*domain));
-    params.SetStringKey("user", base::UTF16ToUTF8(*user));
+    params.Set("domain", base::UTF16ToUTF8(*domain));
+    params.Set("user", base::UTF16ToUTF8(*user));
   }
-  params.SetKey("status", SecurityStatusToValue(result, status));
-  return params;
+  params.Set("status", SecurityStatusToValue(result, status));
+  return base::Value(std::move(params));
 }
 
 base::Value ContextFlagsToValue(DWORD flags) {
-  base::Value params{base::Value::Type::DICTIONARY};
-  params.SetStringKey("value", base::StringPrintf("0x%08lx", flags));
-  params.SetBoolKey("delegated",
-                    (flags & ISC_RET_DELEGATE) == ISC_RET_DELEGATE);
-  params.SetBoolKey("mutual",
-                    (flags & ISC_RET_MUTUAL_AUTH) == ISC_RET_MUTUAL_AUTH);
-  return params;
+  base::Value::Dict params;
+  params.Set("value", base::StringPrintf("0x%08lx", flags));
+  params.Set("delegated", (flags & ISC_RET_DELEGATE) == ISC_RET_DELEGATE);
+  params.Set("mutual", (flags & ISC_RET_MUTUAL_AUTH) == ISC_RET_MUTUAL_AUTH);
+  return base::Value(std::move(params));
 }
 
 base::Value ContextAttributesToValue(SSPILibrary* library,
                                      PCtxtHandle handle,
                                      DWORD attributes) {
-  base::Value params{base::Value::Type::DICTIONARY};
+  base::Value::Dict params;
 
   SecPkgContext_NativeNames native_names = {0};
   auto qc_result = library->QueryContextAttributesEx(
       handle, SECPKG_ATTR_NATIVE_NAMES, &native_names, sizeof(native_names));
   if (qc_result == SEC_E_OK && native_names.sClientName &&
       native_names.sServerName) {
-    params.SetStringKey("source", base::as_u16cstr(native_names.sClientName));
-    params.SetStringKey("target", base::as_u16cstr(native_names.sServerName));
+    params.Set("source", base::as_u16cstr(native_names.sClientName));
+    params.Set("target", base::as_u16cstr(native_names.sServerName));
   }
 
   SecPkgContext_NegotiationInfo negotiation_info = {0};
@@ -77,22 +75,21 @@ base::Value ContextAttributesToValue(SSPILibrary* library,
       sizeof(negotiation_info));
   if (qc_result == SEC_E_OK && negotiation_info.PackageInfo &&
       negotiation_info.PackageInfo->Name) {
-    params.SetStringKey("mechanism",
-                        base::as_u16cstr(negotiation_info.PackageInfo->Name));
-    params.SetBoolKey("open", negotiation_info.NegotiationState !=
-                                  SECPKG_NEGOTIATION_COMPLETE);
+    params.Set("mechanism",
+               base::as_u16cstr(negotiation_info.PackageInfo->Name));
+    params.Set("open", negotiation_info.NegotiationState !=
+                           SECPKG_NEGOTIATION_COMPLETE);
   }
 
   SecPkgContext_Authority authority = {0};
   qc_result = library->QueryContextAttributesEx(handle, SECPKG_ATTR_AUTHORITY,
                                                 &authority, sizeof(authority));
   if (qc_result == SEC_E_OK && authority.sAuthorityName) {
-    params.SetStringKey("authority",
-                        base::as_u16cstr(authority.sAuthorityName));
+    params.Set("authority", base::as_u16cstr(authority.sAuthorityName));
   }
 
-  params.SetKey("flags", ContextFlagsToValue(attributes));
-  return params;
+  params.Set("flags", ContextFlagsToValue(attributes));
+  return base::Value(std::move(params));
 }
 
 base::Value InitializeSecurityContextParams(SSPILibrary* library,
@@ -100,12 +97,13 @@ base::Value InitializeSecurityContextParams(SSPILibrary* library,
                                             Error result,
                                             SECURITY_STATUS status,
                                             DWORD attributes) {
-  base::Value params{base::Value::Type::DICTIONARY};
-  params.SetKey("status", SecurityStatusToValue(result, status));
-  if (result == OK)
-    params.SetKey("context",
-                  ContextAttributesToValue(library, handle, attributes));
-  return params;
+  base::Value::Dict params;
+  params.Set("status", SecurityStatusToValue(result, status));
+  if (result == OK) {
+    params.Set("context",
+               ContextAttributesToValue(library, handle, attributes));
+  }
+  return base::Value(std::move(params));
 }
 
 Error MapAcquireCredentialsStatusToError(SECURITY_STATUS status) {
@@ -548,10 +546,10 @@ int HttpAuthSSPI::GetNextSecurityToken(const std::string& spn,
     context_flags |= (ISC_REQ_DELEGATE | ISC_REQ_MUTUAL_AUTH);
 
   net_log.BeginEvent(NetLogEventType::AUTH_LIBRARY_INIT_SEC_CTX, [&] {
-    base::Value params{base::Value::Type::DICTIONARY};
-    params.SetStringKey("spn", spn);
-    params.SetKey("flags", ContextFlagsToValue(context_flags));
-    return params;
+    base::Value::Dict params;
+    params.Set("spn", spn);
+    params.Set("flags", ContextFlagsToValue(context_flags));
+    return base::Value(std::move(params));
   });
 
   // This returns a token that is passed to the remote server.

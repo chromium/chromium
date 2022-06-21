@@ -193,7 +193,7 @@ bool IsTransportSocketPoolStalled(HttpNetworkSession* session) {
 std::string GetHeaders(const base::Value& params) {
   if (!params.is_dict())
     return "";
-  const base::Value* header_list = params.FindListKey("headers");
+  const base::Value::List* header_list = params.GetDict().FindList("headers");
   if (!header_list)
     return "";
   std::string headers;

@@ -198,17 +198,17 @@ std::string HttpRequestHeaders::ToString() const {
 base::Value HttpRequestHeaders::NetLogParams(
     const std::string& request_line,
     NetLogCaptureMode capture_mode) const {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("line", NetLogStringValue(request_line));
-  base::Value headers(base::Value::Type::LIST);
+  base::Value::Dict dict;
+  dict.Set("line", NetLogStringValue(request_line));
+  base::Value::List headers;
   for (const auto& header : headers_) {
     std::string log_value =
         ElideHeaderValueForNetLog(capture_mode, header.key, header.value);
     headers.Append(
         NetLogStringValue(base::StrCat({header.key, ": ", log_value})));
   }
-  dict.SetKey("headers", std::move(headers));
-  return dict;
+  dict.Set("headers", std::move(headers));
+  return base::Value(std::move(dict));
 }
 
 HttpRequestHeaders::HeaderVector::iterator HttpRequestHeaders::FindHeader(

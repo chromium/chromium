@@ -38,16 +38,16 @@ base::Value NetLogParamsForCreateAuth(
     const url::SchemeHostPort& scheme_host_port,
     const absl::optional<bool>& allows_default_credentials,
     net::NetLogCaptureMode capture_mode) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("scheme", net::NetLogStringValue(scheme));
+  base::Value::Dict dict;
+  dict.Set("scheme", net::NetLogStringValue(scheme));
   if (net::NetLogCaptureIncludesSensitive(capture_mode))
-    dict.SetKey("challenge", net::NetLogStringValue(challenge));
-  dict.SetStringKey("origin", scheme_host_port.Serialize());
+    dict.Set("challenge", net::NetLogStringValue(challenge));
+  dict.Set("origin", scheme_host_port.Serialize());
   if (allows_default_credentials)
-    dict.SetBoolKey("allows_default_credentials", *allows_default_credentials);
+    dict.Set("allows_default_credentials", *allows_default_credentials);
   if (net_error < 0)
-    dict.SetIntKey("net_error", net_error);
-  return dict;
+    dict.Set("net_error", net_error);
+  return base::Value(std::move(dict));
 }
 
 }  // namespace

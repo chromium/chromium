@@ -1039,9 +1039,9 @@ int GetSocketPoolGroupCount(ClientSocketPool* pool) {
   int count = 0;
   base::Value dict = pool->GetInfoAsValue("", "");
   EXPECT_TRUE(dict.is_dict());
-  const base::Value* groups = dict.FindDictKey("groups");
+  const base::Value::Dict* groups = dict.GetDict().FindDict("groups");
   if (groups) {
-    count = groups->DictSize();
+    count = groups->size();
   }
   return count;
 }
@@ -1052,14 +1052,14 @@ int GetSpdySessionCount(HttpNetworkSession* session) {
       session->spdy_session_pool()->SpdySessionPoolInfoToValue());
   if (!value || !value->is_list())
     return -1;
-  return value->GetListDeprecated().size();
+  return value->GetList().size();
 }
 
 // Return count of sockets handed out by a given socket pool.
 int GetHandedOutSocketCount(ClientSocketPool* pool) {
   base::Value dict = pool->GetInfoAsValue("", "");
   EXPECT_TRUE(dict.is_dict());
-  return dict.FindIntKey("handed_out_socket_count").value_or(-1);
+  return dict.GetDict().FindInt("handed_out_socket_count").value_or(-1);
 }
 
 // Return count of distinct QUIC sessions.
