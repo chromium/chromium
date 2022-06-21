@@ -2779,7 +2779,7 @@
   {
     "name": "enable-tab-groups-for-tablets",
     "owners": [ "skavuluru", "clank-app-team@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 114
   },
   {
     "name": "enable-tab-groups-ui-improvements",
@@ -2794,7 +2794,7 @@
   {
     "name": "enable-tab-strip-improvements",
     "owners": [ "skavuluru", "clank-app-team@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 114
   },
   {
     "name": "enable-tab-switcher-on-return",
@@ -3515,7 +3515,7 @@
   {
     "name": "grid-tab-switcher-for-tablets",
     "owners": [ "nemco", "clank-app-team@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 114
   },
   {
     "name": "guest-os-files",
