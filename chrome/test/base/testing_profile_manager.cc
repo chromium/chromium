@@ -17,7 +17,6 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -60,8 +59,6 @@ TestingProfileManager::TestingProfileManager(
       profile_manager_(nullptr) {}
 
 TestingProfileManager::~TestingProfileManager() {
-  ProfileDestroyer::DestroyPendingProfilesForShutdown();
-
   // Destroying this class also destroys the LocalState, so make sure the
   // associated ProfileManager is also destroyed.
   browser_process_->SetProfileManager(nullptr);

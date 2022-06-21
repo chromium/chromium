@@ -551,9 +551,6 @@ ProfileManager::~ProfileManager() {
       }
     }
   }
-
-  profiles_info_.clear();
-  ProfileDestroyer::DestroyPendingProfilesForShutdown();
 }
 
 // static
