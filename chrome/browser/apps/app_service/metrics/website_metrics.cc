@@ -9,8 +9,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/aura/window.h"
 
 namespace {
@@ -56,29 +54,15 @@ wm::ActivationClient* GetActivationClientWithTabStripModel(
 
 namespace apps {
 
-// This class monitors the WebContent of the all tab and notifies a navigation
-// to the WebsiteMetrics.
-class WebsiteMetrics::ActiveTabWebContentsObserver
-    : public content::WebContentsObserver {
- public:
-  ActiveTabWebContentsObserver(content::WebContents* contents,
-                               WebsiteMetrics* owner)
-      : content::WebContentsObserver(contents), owner_(owner) {}
+WebsiteMetrics::ActiveTabWebContentsObserver::ActiveTabWebContentsObserver(
+    content::WebContents* contents,
+    WebsiteMetrics* owner)
+    : content::WebContentsObserver(contents), owner_(owner) {}
 
-  ActiveTabWebContentsObserver(const ActiveTabWebContentsObserver&) = delete;
-  ActiveTabWebContentsObserver& operator=(const ActiveTabWebContentsObserver&) =
-      delete;
-
-  ~ActiveTabWebContentsObserver() override = default;
-
-  // content::WebContentsObserver
-  void PrimaryPageChanged(content::Page& page) override {
-    owner_->OnWebContentsUpdated(web_contents());
-  }
-
- private:
-  WebsiteMetrics* owner_;
-};
+void WebsiteMetrics::ActiveTabWebContentsObserver::PrimaryPageChanged(
+    content::Page& page) {
+  owner_->OnWebContentsUpdated(web_contents());
+}
 
 WebsiteMetrics::WebsiteMetrics(Profile* profile)
     : browser_tab_strip_tracker_(this, nullptr) {
