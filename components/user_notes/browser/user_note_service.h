@@ -83,7 +83,8 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
                           gfx::Rect rect);
 
   // UserNotesUIDelegate implementation.
-  void OnNoteFocused(const base::UnguessableToken& id) override;
+  void OnNoteSelected(const base::UnguessableToken& id,
+                      content::RenderFrameHost* rfh) override;
   void OnNoteDeleted(const base::UnguessableToken& id) override;
   void OnNoteCreationDone(const base::UnguessableToken& id,
                           const std::string& note_content) override;

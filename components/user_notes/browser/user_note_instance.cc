@@ -43,6 +43,12 @@ void UserNoteInstance::InitializeHighlightIfNeeded(base::OnceClosure callback) {
   }
 }
 
+void UserNoteInstance::OnNoteSelected() {
+  if (!agent_)
+    return;
+  agent_->ScrollIntoView();
+}
+
 void UserNoteInstance::DidFinishAttachment(const gfx::Rect& rect) {
   is_initialized_ = true;
   rect_ = rect;

@@ -51,6 +51,8 @@ class UserNoteInstance : public blink::mojom::AnnotationAgentHost {
   // Marked virtual for tests to override.
   virtual void InitializeHighlightIfNeeded(base::OnceClosure callback);
 
+  void OnNoteSelected();
+
   // blink::mojom::AnnotationAgentHost implementation.
   void DidFinishAttachment(const gfx::Rect& rect) override;
 

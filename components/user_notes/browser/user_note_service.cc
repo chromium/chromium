@@ -152,9 +152,15 @@ void UserNoteService::OnAddNoteRequested(content::RenderFrameHost* frame,
   ui->StartNoteCreation(instance_raw);
 }
 
-void UserNoteService::OnNoteFocused(const base::UnguessableToken& id) {
+void UserNoteService::OnNoteSelected(const base::UnguessableToken& id,
+                                     content::RenderFrameHost* rfh) {
   DCHECK(IsUserNotesEnabled());
-  NOTIMPLEMENTED();
+  DCHECK(rfh);
+  UserNoteManager* manager = UserNoteManager::GetForPage(rfh->GetPage());
+  DCHECK(manager);
+  UserNoteInstance* note_instance = manager->GetNoteInstance(id);
+  DCHECK(note_instance);
+  note_instance->OnNoteSelected();
 }
 
 void UserNoteService::OnNoteDeleted(const base::UnguessableToken& id) {
