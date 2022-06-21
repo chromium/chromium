@@ -9,7 +9,7 @@
 
 namespace sessions_storage_util {
 
-// Mark the sessions with |session_ids| for their files to be removed from the
+// Mark the sessions with `session_ids` for their files to be removed from the
 // disk at some point later.
 void MarkSessionsForRemoval(NSArray<NSString*>* session_ids);
 // Get the list of session ids for the sessions that was marked for removal.

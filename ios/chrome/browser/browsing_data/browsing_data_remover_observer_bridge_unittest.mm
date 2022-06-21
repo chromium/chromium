@@ -24,7 +24,7 @@ class BrowsingDataRemoverObserverBridgeTest : public PlatformTest {
   BrowsingDataRemoverObserverBridge observer_bridge_;
 };
 
-// Tests |OnBrowsingDataRemoved| forwarding.
+// Tests `OnBrowsingDataRemoved` forwarding.
 TEST_F(BrowsingDataRemoverObserverBridgeTest, OnBrowsingDataRemoved) {
   ASSERT_FALSE([observer_ didRemoveBrowsingDataWithMaskInfo]);
   observer_bridge_.OnBrowsingDataRemoved(remover_.get(),

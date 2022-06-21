@@ -21,7 +21,7 @@ class BrowsingDataRemoverObserver {
 
   virtual ~BrowsingDataRemoverObserver() = default;
 
-  // Invoked when data was successfully removed. The |mask| will represent
+  // Invoked when data was successfully removed. The `mask` will represent
   // the type of removed data. See BrowsingDataRemoveMask for details.
   virtual void OnBrowsingDataRemoved(BrowsingDataRemover* remover,
                                      BrowsingDataRemoveMask mask) = 0;

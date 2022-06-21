@@ -13,7 +13,7 @@
 // Test fixture for the session storage utility functions.
 using SessionStorageUtilTest = PlatformTest;
 
-// Tests |MarkSessionsForRemoval| adds to the existing list of sessions that are
+// Tests `MarkSessionsForRemoval` adds to the existing list of sessions that are
 // marked for removal.
 TEST_F(SessionStorageUtilTest, MarkSessionRemovalTest) {
   EXPECT_FALSE(sessions_storage_util::GetDiscardedSessions());
@@ -29,7 +29,7 @@ TEST_F(SessionStorageUtilTest, MarkSessionRemovalTest) {
   sessions_storage_util::ResetDiscardedSessions();
 }
 
-// Makes sure that |ResetDiscardedSessions| removes the list of sessions that
+// Makes sure that `ResetDiscardedSessions` removes the list of sessions that
 // are marked for removal.
 TEST_F(SessionStorageUtilTest, ResetDiscardedSessionsTest) {
   EXPECT_FALSE(sessions_storage_util::GetDiscardedSessions());

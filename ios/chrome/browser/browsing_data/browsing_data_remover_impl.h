@@ -67,7 +67,7 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
     base::Time task_started;
   };
 
-  // Setter for |is_removing_|; DCHECKs that we can only start removing if we're
+  // Setter for `is_removing_`; DCHECKs that we can only start removing if we're
   // not already removing, and vice-versa.
   void SetRemoving(bool is_removing);
 

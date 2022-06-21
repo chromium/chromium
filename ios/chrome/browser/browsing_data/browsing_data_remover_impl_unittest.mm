@@ -69,7 +69,7 @@ class TestBrowsingDataRemoverObserver : public BrowsingDataRemoverObserver {
   void OnBrowsingDataRemoved(BrowsingDataRemover* remover,
                              BrowsingDataRemoveMask mask) override;
 
-  // Returns the |mask| value passed to the last call of OnBrowsingDataRemoved.
+  // Returns the `mask` value passed to the last call of OnBrowsingDataRemoved.
   // Returns BrowsingDataRemoveMask::REMOVE_NOTHING if it has not been called.
   BrowsingDataRemoveMask last_remove_mask() const { return last_remove_mask_; }
 

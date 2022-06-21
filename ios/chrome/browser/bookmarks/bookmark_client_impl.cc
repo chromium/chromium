@@ -59,9 +59,9 @@ void BookmarkClientImpl::GetTypedCountForUrls(
   history::URLDatabase* url_db =
       history_service ? history_service->InMemoryDatabase() : nullptr;
   for (auto& url_typed_count_pair : *url_typed_count_map) {
-    // If |url_db| is the InMemoryDatabase, it might not cache all URLRows, but
-    // it guarantees to contain those with |typed_count| > 0. Thus, if fetching
-    // the URLRow fails, it is safe to assume that its |typed_count| is 0.
+    // If `url_db` is the InMemoryDatabase, it might not cache all URLRows, but
+    // it guarantees to contain those with `typed_count` > 0. Thus, if fetching
+    // the URLRow fails, it is safe to assume that its `typed_count` is 0.
     int typed_count = 0;
     history::URLRow url_row;
     const GURL* url = url_typed_count_pair.first;

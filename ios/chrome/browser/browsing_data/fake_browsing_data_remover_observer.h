@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-// Arguments passed to |browsingDataRemover:didRemoveBrowsingDataWithMask:|.
+// Arguments passed to `-browsingDataRemover:didRemoveBrowsingDataWithMask:`.
 struct TestDidRemoveBrowsingDataWithMaskInfo {
   BrowsingDataRemover* remover = nullptr;
   BrowsingDataRemoveMask mask = BrowsingDataRemoveMask::REMOVE_NOTHING;
@@ -18,7 +18,7 @@ struct TestDidRemoveBrowsingDataWithMaskInfo {
 @interface FakeBrowsingDataRemoverObserver
     : NSObject <BrowsingDataRemoverObserving>
 
-// Arguments passed to |browsingDataRemover:didRemoveBrowsingDataWithMask:|.
+// Arguments passed to `-browsingDataRemover:didRemoveBrowsingDataWithMask:`.
 @property(nonatomic, readonly)
     TestDidRemoveBrowsingDataWithMaskInfo* didRemoveBrowsingDataWithMaskInfo;
 

@@ -22,7 +22,7 @@ class BookmarkNode;
 
 // Returns the permanent nodes whose url children are considered uncategorized
 // and whose folder children should be shown in the bookmark menu.
-// |model| must be loaded.
+// `model` must be loaded.
 std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
     bookmarks::BookmarkModel* model);
 
@@ -32,8 +32,8 @@ std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
 std::vector<const bookmarks::BookmarkNode*> RootLevelFolders(
     bookmarks::BookmarkModel* model);
 
-// Returns whether |node| is a primary permanent node in the sense of
-// |PrimaryPermanentNodes|.
+// Returns whether `node` is a primary permanent node in the sense of
+// `PrimaryPermanentNodes`.
 bool IsPrimaryPermanentNode(const bookmarks::BookmarkNode* node,
                             bookmarks::BookmarkModel* model);
 

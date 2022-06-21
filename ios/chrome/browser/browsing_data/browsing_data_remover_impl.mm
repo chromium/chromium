@@ -275,7 +275,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       base::SequencedTaskRunnerHandle::Get();
 
   // Note: Before adding any method below, make sure that it can finish clearing
-  // browsing data even if |browser_state)| is destroyed after this method call.
+  // browsing data even if `browser_state` is destroyed after this method call.
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
     if (session_service_) {
@@ -563,7 +563,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       MAX_CHOICE_VALUE);
 }
 
-// Removes directories for sessions with |SessionIDs|
+// Removes directories for sessions with `session_ids`
 void BrowsingDataRemoverImpl::RemoveSessionsData(
     NSArray<NSString*>* session_ids) {
   [[SessionServiceIOS sharedService]
