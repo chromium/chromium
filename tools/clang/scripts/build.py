@@ -681,8 +681,6 @@ def main():
       '-DBUG_REPORT_URL=' + BUG_REPORT_URL,
       # Don't run Go bindings tests; PGO makes them confused.
       '-DLLVM_INCLUDE_GO_TESTS=OFF',
-      # TODO(crbug.com/1113475): Update binutils.
-      '-DENABLE_X86_RELAX_RELOCATIONS=NO',
       # See crbug.com/1126219: Use native symbolizer instead of DIA
       '-DLLVM_ENABLE_DIA_SDK=OFF',
       # The default value differs per platform, force it off everywhere.
