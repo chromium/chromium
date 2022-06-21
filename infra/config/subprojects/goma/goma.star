@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os", "xcode")
+load("//lib/builders.star", "builder", "builders", "cpu", "defaults", "goma", "os", "xcode")
 
 luci.bucket(
     name = "goma",
@@ -30,6 +30,7 @@ defaults.executable.set("recipe:chromium")
 defaults.execution_timeout.set(3 * time.hour)
 defaults.os.set(os.LINUX_DEFAULT)
 defaults.pool.set("luci.chromium.ci")
+defaults.free_space.set(builders.free_space.standard)
 defaults.service_account.set(
     "goma-release-testing@chops-service-accounts.iam.gserviceaccount.com",
 )
