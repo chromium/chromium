@@ -9,6 +9,7 @@
 #include <math.h>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
@@ -104,7 +105,7 @@ bool RunningOnMainThread() {
 // around event handling.
 
 struct WorkSource : public GSource {
-  MessagePumpGlib* pump;
+  raw_ptr<MessagePumpGlib> pump;
 };
 
 gboolean WorkSourcePrepare(GSource* source, gint* timeout_ms) {
@@ -133,8 +134,8 @@ GSourceFuncs WorkSourceFuncs = {WorkSourcePrepare, WorkSourceCheck,
                                 WorkSourceDispatch, nullptr};
 
 struct FdWatchSource : public GSource {
-  MessagePumpGlib* pump;
-  MessagePumpGlib::FdWatchController* controller;
+  raw_ptr<MessagePumpGlib> pump;
+  raw_ptr<MessagePumpGlib::FdWatchController> controller;
 };
 
 gboolean FdWatchSourcePrepare(GSource* source, gint* timeout_ms) {
@@ -161,7 +162,7 @@ GSourceFuncs g_fd_watch_source_funcs = {
 }  // namespace
 
 struct MessagePumpGlib::RunState {
-  Delegate* delegate;
+  raw_ptr<Delegate> delegate;
 
   // Used to flag that the current Run() invocation should return ASAP.
   bool should_quit;

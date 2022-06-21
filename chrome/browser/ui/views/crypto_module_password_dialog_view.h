@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/crypto_module_password_dialog.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -53,9 +54,9 @@ class CryptoModulePasswordDialogView : public views::DialogDelegateView,
             const std::string& slot_name,
             CryptoModulePasswordReason reason);
 
-  views::Label* reason_label_;
-  views::Label* password_label_;
-  views::Textfield* password_entry_;
+  raw_ptr<views::Label> reason_label_;
+  raw_ptr<views::Label> password_label_;
+  raw_ptr<views::Textfield> password_entry_;
 
   CryptoModulePasswordCallback callback_;
 };

@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/branding_buildflags.h"
@@ -100,14 +101,14 @@ class ScopedPropertyList {
   pa_proplist* get() const { return property_list_; }
 
  private:
-  pa_proplist* property_list_;
+  raw_ptr<pa_proplist> property_list_;
 };
 
 struct InputBusData {
   InputBusData(pa_threaded_mainloop* loop, const std::string& name)
       : loop_(loop), name_(name), bus_() {}
 
-  pa_threaded_mainloop* const loop_;
+  const raw_ptr<pa_threaded_mainloop> loop_;
   const std::string& name_;
   std::string bus_;
 };
@@ -116,7 +117,7 @@ struct OutputBusData {
   OutputBusData(pa_threaded_mainloop* loop, const std::string& bus)
       : loop_(loop), name_(), bus_(bus) {}
 
-  pa_threaded_mainloop* const loop_;
+  const raw_ptr<pa_threaded_mainloop> loop_;
   std::string name_;
   const std::string& bus_;
 };
@@ -162,7 +163,7 @@ struct DefaultDevicesData {
   explicit DefaultDevicesData(pa_threaded_mainloop* loop) : loop_(loop) {}
   std::string input_;
   std::string output_;
-  pa_threaded_mainloop* const loop_;
+  const raw_ptr<pa_threaded_mainloop> loop_;
 };
 
 void GetDefaultDeviceIdCallback(pa_context* c,
@@ -177,8 +178,8 @@ void GetDefaultDeviceIdCallback(pa_context* c,
 }
 
 struct ContextStartupData {
-  base::WaitableEvent* context_wait;
-  pa_threaded_mainloop* pa_mainloop;
+  raw_ptr<base::WaitableEvent> context_wait;
+  raw_ptr<pa_threaded_mainloop> pa_mainloop;
 };
 
 void SignalReadyOrErrorStateCallback(pa_context* context, void* context_data) {

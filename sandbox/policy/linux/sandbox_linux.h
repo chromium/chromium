@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/global_descriptors.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
@@ -299,7 +300,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
 #if BUILDFLAG(USING_SANITIZER)
   std::unique_ptr<__sanitizer_sandbox_arguments> sanitizer_args_;
 #endif
-  syscall_broker::BrokerProcess* broker_process_;  // Leaked as global.
+  raw_ptr<syscall_broker::BrokerProcess> broker_process_;  // Leaked as global.
 };
 
 }  // namespace policy

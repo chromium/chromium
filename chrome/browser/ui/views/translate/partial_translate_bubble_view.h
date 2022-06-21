@@ -247,7 +247,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
 
   base::OnceClosure on_closing_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRANSLATE_PARTIAL_TRANSLATE_BUBBLE_VIEW_H_

@@ -706,7 +706,7 @@ bool CrashDone(const MinidumpDescriptor& minidump,
 
   DCHECK(!(upload && minidump.IsFD()));
 
-  BreakpadInfo info = {0};
+  BreakpadInfo info;
   info.filename = minidump.path();
   info.fd = minidump.fd();
 #if defined(ADDRESS_SANITIZER)

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_FILE_PICKER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_confirmation_result.h"
 #include "components/download/public/common/download_item.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -67,7 +68,7 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener,
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
   // The item to be downloaded.
-  download::DownloadItem* download_item_;
+  raw_ptr<download::DownloadItem> download_item_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_FILE_PICKER_H_

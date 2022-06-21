@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/platform_thread.h"
 #include "dbus/exported_object.h"
@@ -423,12 +424,12 @@ class BluetoothAdvertisementServiceProviderImpl
 
   // D-Bus bus object is exported on, not owned by this object and must
   // outlive it.
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus> bus_;
 
   // All incoming method calls are passed on to the Delegate and a callback
   // passed to generate the reply. |delegate_| is generally the object that
   // owns this one, and must outlive it.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Advertisement data that needs to be provided to BlueZ when requested.
   AdvertisementType type_;

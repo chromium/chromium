@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/atomic_flag.h"
@@ -329,7 +330,7 @@ class SGIVideoSyncProviderThreadShim {
 
  private:
   gfx::AcceleratedWidget parent_window_;
-  SGIVideoSyncThread* vsync_thread_;
+  raw_ptr<SGIVideoSyncThread> vsync_thread_;
   x11::Window window_ = x11::Window::None;
   GLXWindow glx_window_;
 
@@ -409,8 +410,8 @@ class SGIVideoSyncVSyncProvider
   // Raw pointers to sync primitives owned by the shim_.
   // These will only be referenced before we post a task to destroy
   // the shim_, so they are safe to access.
-  base::AtomicFlag* cancel_vsync_flag_;
-  base::Lock* vsync_lock_;
+  raw_ptr<base::AtomicFlag> cancel_vsync_flag_;
+  raw_ptr<base::Lock> vsync_lock_;
 };
 
 SGIVideoSyncThread* SGIVideoSyncThread::g_video_sync_thread = nullptr;

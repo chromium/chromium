@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_WP_POINTER_GESTURES_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_WP_POINTER_GESTURES_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
@@ -42,7 +43,7 @@ class TestWpPointerGestures : public GlobalObject {
                               struct wl_resource* pointer);
 
  private:
-  TestPinchGesture* pinch_;
+  raw_ptr<TestPinchGesture> pinch_;
 };
 
 }  // namespace wl

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/linux/x_server_clipboard.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
@@ -47,7 +48,7 @@ class ClipboardX11 : public Clipboard, public x11::EventObserver {
 
   // Connection to the X server, used by |x_server_clipboard_|. This must only
   // be accessed on the input thread.
-  x11::Connection* connection_;
+  raw_ptr<x11::Connection> connection_;
 };
 
 ClipboardX11::ClipboardX11() = default;

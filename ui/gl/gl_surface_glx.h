@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/event.h"
@@ -66,7 +67,7 @@ class GL_EXPORT GLSurfaceGLX : public GLSurface {
 
  private:
   static bool initialized_;
-  GLDisplayX11* display_;
+  raw_ptr<GLDisplayX11> display_;
 };
 
 // A surface used to render to a view.

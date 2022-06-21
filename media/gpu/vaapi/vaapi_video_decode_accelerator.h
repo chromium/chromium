@@ -19,6 +19,7 @@
 
 #include "base/containers/queue.h"
 #include "base/containers/small_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -259,7 +260,7 @@ class MEDIA_GPU_EXPORT VaapiVideoDecodeAccelerator
   std::unique_ptr<AcceleratedVideoDecoder> decoder_;
   // TODO(crbug.com/1022246): Instead of having the raw pointer here, getting
   // the pointer from AcceleratedVideoDecoder.
-  VaapiVideoDecoderDelegate* decoder_delegate_ = nullptr;
+  raw_ptr<VaapiVideoDecoderDelegate> decoder_delegate_ = nullptr;
 
   // Filled in during Initialize().
   BufferAllocationMode buffer_allocation_mode_;

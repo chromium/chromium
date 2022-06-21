@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/task_runner_util.h"
 #include "base/tuple.h"
 #include "build/build_config.h"
@@ -236,7 +237,7 @@ class NaClDescWrapper {
   NaClDesc* desc() { return desc_; }
 
  private:
-  NaClDesc* desc_;
+  raw_ptr<NaClDesc> desc_;
 };
 
 std::unique_ptr<NaClDescWrapper> MakeShmRegionNaClDesc(

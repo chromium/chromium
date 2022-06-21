@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
@@ -276,8 +277,8 @@ class ShowItemHelper {
   }
 
   scoped_refptr<dbus::Bus> bus_;
-  dbus::ObjectProxy* dbus_proxy_ = nullptr;
-  dbus::ObjectProxy* object_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> dbus_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> object_proxy_ = nullptr;
 
   absl::optional<bool> prefer_filemanager_interface_;
 

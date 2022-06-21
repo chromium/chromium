@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
 
@@ -44,7 +45,7 @@ class FakeSyncGCMDriver : public instance_id::FakeGCMDriverForInstanceID {
                       EncryptMessageCallback callback) override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_FAKE_SYNC_GCM_DRIVER_FOR_INSTANCE_ID_H_

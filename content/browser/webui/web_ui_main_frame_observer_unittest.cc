@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"  // nogncheck
@@ -67,7 +68,7 @@ class FakeJsErrorReportProcessor : public JsErrorReportProcessor {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   JavaScriptErrorReport last_error_report_;
   int error_report_count_ = 0;
-  BrowserContext* browser_context_ = nullptr;
+  raw_ptr<BrowserContext> browser_context_ = nullptr;
 };
 
 class MockWebUIController : public WebUIController {

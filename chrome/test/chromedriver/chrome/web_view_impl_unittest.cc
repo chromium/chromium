@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
@@ -292,7 +293,7 @@ class SyncWebSocketWrapper : public SyncWebSocket {
   bool HasNextMessage() override { return socket_->HasNextMessage(); }
 
  private:
-  SyncWebSocket* socket_;
+  raw_ptr<SyncWebSocket> socket_;
 };
 
 }  // namespace

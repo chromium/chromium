@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_X11_GL_SURFACE_EGL_READBACK_X11_H_
 #define UI_OZONE_PLATFORM_X11_GL_SURFACE_EGL_READBACK_X11_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/ozone/common/gl_surface_egl_readback.h"
 
@@ -29,7 +30,7 @@ class GLSurfaceEglReadbackX11 : public GLSurfaceEglReadback {
   bool HandlePixels(uint8_t* pixels) override;
 
   const x11::Window window_;
-  x11::Connection* const connection_;
+  const raw_ptr<x11::Connection> connection_;
   x11::GraphicsContext window_graphics_context_{};
   x11::VisualId visual_{};
 };

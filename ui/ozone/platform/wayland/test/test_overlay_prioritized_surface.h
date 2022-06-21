@@ -7,6 +7,7 @@
 
 #include <overlay-prioritizer-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
 struct wl_resource;
@@ -30,7 +31,7 @@ class TestOverlayPrioritizedSurface : public ServerObject {
 
  private:
   // Surface resource that is the ground for this prioritized surface.
-  wl_resource* surface_ = nullptr;
+  raw_ptr<wl_resource> surface_ = nullptr;
 
   uint32_t overlay_priority_ =
       OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_NONE;

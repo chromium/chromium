@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_EVENT_WATCHER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_for_ui.h"
 
 struct wl_display;
@@ -81,8 +82,8 @@ class WaylandEventWatcher {
   // and false is returned.
   void WlDisplayCheckForErrors();
 
-  wl_display* const display_;  // Owned by WaylandConnection.
-  wl_event_queue* const event_queue_;  // Owned by WaylandConnection.
+  const raw_ptr<wl_display> display_;          // Owned by WaylandConnection.
+  const raw_ptr<wl_event_queue> event_queue_;  // Owned by WaylandConnection.
 
   bool watching_ = false;
   bool prepared_ = false;

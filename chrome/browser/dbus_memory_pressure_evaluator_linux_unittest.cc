@@ -11,6 +11,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -144,7 +145,7 @@ class DbusMemoryPressureEvaluatorLinuxTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> portal_proxy_;
 
   std::unique_ptr<DbusMemoryPressureEvaluatorLinux> evaluator_;
-  MockMemoryPressureVoter* mock_voter_ = nullptr;
+  raw_ptr<MockMemoryPressureVoter> mock_voter_ = nullptr;
 
   std::vector<std::string> running_services_;
 };

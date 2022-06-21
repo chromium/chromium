@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -259,7 +260,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   // Task runner used by the |dbus_| object.
   scoped_refptr<base::SequencedTaskRunner> dbus_task_runner_;
   // This is owned by |dbus_| object. Only access on |dbus_thread_|.
-  dbus::ObjectProxy* network_manager_proxy_;
+  raw_ptr<dbus::ObjectProxy> network_manager_proxy_;
   // Holds the current mapping of known networks. Only access on |dbus_thread_|.
   std::unique_ptr<NetworkMap> network_map_;
   // Observers to Network Events.

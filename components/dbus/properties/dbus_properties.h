@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/dbus/properties/types.h"
 #include "dbus/bus.h"
@@ -71,7 +72,7 @@ class COMPONENT_EXPORT(DBUS) DbusProperties {
 
   bool initialized_ = false;
 
-  dbus::ExportedObject* exported_object_ = nullptr;
+  raw_ptr<dbus::ExportedObject> exported_object_ = nullptr;
 
   base::RepeatingCallback<void(bool)> barrier_;
 

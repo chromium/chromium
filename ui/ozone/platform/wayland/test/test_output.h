@@ -8,6 +8,7 @@
 #include <wayland-server-protocol.h>
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
@@ -48,7 +49,7 @@ class TestOutput : public GlobalObject {
   absl::optional<int32_t> pending_scale_ = absl::nullopt;
   absl::optional<wl_output_transform> pending_transform_ = absl::nullopt;
 
-  TestZAuraOutput* aura_output_ = nullptr;
+  raw_ptr<TestZAuraOutput> aura_output_ = nullptr;
 };
 
 }  // namespace wl

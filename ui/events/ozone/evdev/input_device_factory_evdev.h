@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -144,7 +145,7 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Cursor movement.
-  CursorDelegateEvdev* const cursor_;
+  const raw_ptr<CursorDelegateEvdev> cursor_;
 
   // Shared Palm state.
   const std::unique_ptr<SharedPalmDetectionFilterState> shared_palm_state_;

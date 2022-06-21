@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/base/video_decoder.h"
@@ -113,7 +114,7 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
   const gfx::ColorSpace target_color_space_;
 
   // Frame renderer used to manage GL context.
-  FrameRenderer* const frame_renderer_;
+  const raw_ptr<FrameRenderer> frame_renderer_;
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   // Whether the decoder output buffers should be allocated with a linear

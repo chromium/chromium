@@ -252,7 +252,7 @@ void UIControlsOzone::SendEventToSink(ui::Event* event,
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(closure));
   }
-  WindowTreeHost* host = optional_host ? optional_host : host_;
+  WindowTreeHost* host = optional_host ? optional_host : host_.get();
   ui::EventSourceTestApi event_source_test(host->GetEventSource());
   std::ignore = event_source_test.SendEventToSink(event);
 }

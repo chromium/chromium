@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -43,7 +44,7 @@ class OrgKdeKwinIdle : public wl::GlobalObjectRegistrar<OrgKdeKwinIdle> {
   // The actual idle timeout connection point.
   mutable std::unique_ptr<Timeout> idle_timeout_;
 
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 };
 
 }  // namespace ui

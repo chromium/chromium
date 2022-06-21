@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
 namespace wl {
@@ -50,7 +51,7 @@ struct WlDataSourceImpl : public TestSelectionSource::Delegate {
   void OnDestroying() override { delete this; }
 
  private:
-  TestDataSource* const source_;
+  const raw_ptr<TestDataSource> source_;
 };
 
 }  // namespace

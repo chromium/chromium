@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_MENU_UTILS_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_MENU_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/public/platform_menu_utils.h"
 
 namespace ui {
@@ -22,7 +23,7 @@ class WaylandMenuUtils : public PlatformMenuUtils {
   std::string ToDBusKeySym(KeyboardCode code) const override;
 
  private:
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 };
 
 }  // namespace ui

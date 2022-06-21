@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_surface_egl.h"
 
@@ -55,7 +56,7 @@ class GLSurfaceWayland : public gl::NativeViewGLSurfaceEGL {
   void UpdateVisualSize();
 
   WaylandEglWindowPtr egl_window_;
-  WaylandWindow* const window_;
+  const raw_ptr<WaylandWindow> window_;
 
   float scale_factor_ = 1.f;
 };

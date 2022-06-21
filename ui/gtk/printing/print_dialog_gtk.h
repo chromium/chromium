@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "printing/print_dialog_gtk_interface.h"
 #include "printing/printing_context_linux.h"
@@ -71,14 +72,14 @@ class PrintDialogGtk : public printing::PrintDialogGtkInterface,
 
   // Printing dialog callback.
   PrintingContextLinux::PrintSettingsCallback callback_;
-  PrintingContextLinux* context_;
+  raw_ptr<PrintingContextLinux> context_;
 
   // Print dialog settings. PrintDialogGtk owns |dialog_| and holds references
   // to the other objects.
   GtkWidget* dialog_ = nullptr;
-  GtkPrintSettings* gtk_settings_ = nullptr;
-  GtkPageSetup* page_setup_ = nullptr;
-  GtkPrinter* printer_ = nullptr;
+  raw_ptr<GtkPrintSettings> gtk_settings_ = nullptr;
+  raw_ptr<GtkPageSetup> page_setup_ = nullptr;
+  raw_ptr<GtkPrinter> printer_ = nullptr;
 
   base::FilePath path_to_pdf_;
 };

@@ -8,6 +8,7 @@
 #include <presentation-time-server-protocol.h>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
@@ -43,7 +44,7 @@ class MockWpPresentation : public GlobalObject {
   void SendPresentationCallbackDiscarded();
 
  private:
-  wl_resource* presentation_callback_ = nullptr;
+  raw_ptr<wl_resource> presentation_callback_ = nullptr;
 };
 
 }  // namespace wl

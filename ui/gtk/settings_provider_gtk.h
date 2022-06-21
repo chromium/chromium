@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gtk/settings_provider.h"
 #include "ui/views/linux_ui/linux_ui.h"
@@ -51,7 +52,7 @@ class SettingsProviderGtk : public SettingsProvider {
                        GParamSpec*);
 
    private:
-    SettingsProviderGtk* settings_provider_;
+    raw_ptr<SettingsProviderGtk> settings_provider_;
     std::string setting_name_;
     views::LinuxUI::WindowFrameActionSource action_type_;
     views::LinuxUI::WindowFrameAction default_action_;
@@ -72,7 +73,7 @@ class SettingsProviderGtk : public SettingsProvider {
                      GtkSettings*,
                      GParamSpec*);
 
-  GtkUi* delegate_;
+  raw_ptr<GtkUi> delegate_;
 
   unsigned long signal_id_decoration_layout_;
 

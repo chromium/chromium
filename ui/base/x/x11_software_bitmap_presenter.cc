@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -48,7 +49,7 @@ class ScopedPixmap {
   }
 
  private:
-  x11::Connection* const connection_;
+  const raw_ptr<x11::Connection> connection_;
   x11::Pixmap pixmap_;
 };
 

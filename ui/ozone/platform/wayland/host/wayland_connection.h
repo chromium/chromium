@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/display/tablet_state.h"
@@ -432,7 +433,7 @@ class WaylandConnection {
   // created when platform window test config is set.
   std::unique_ptr<wl::WaylandProxy> wayland_proxy_;
 
-  WaylandCursorBufferListener* listener_ = nullptr;
+  raw_ptr<WaylandCursorBufferListener> listener_ = nullptr;
 
   // The current window table mode layout state.
   display::TabletState tablet_layout_state_ =

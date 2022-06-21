@@ -11,6 +11,7 @@
 #include <xdg-shell-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_xdg_popup.h"
@@ -53,10 +54,10 @@ class MockXdgSurface : public ServerObject {
   // Has either toplevel role..
   std::unique_ptr<MockXdgTopLevel> xdg_toplevel_;
   // Or popup role.
-  TestXdgPopup* xdg_popup_ = nullptr;
+  raw_ptr<TestXdgPopup> xdg_popup_ = nullptr;
 
   // MockSurface that is the ground for this xdg_surface.
-  wl_resource* surface_ = nullptr;
+  raw_ptr<wl_resource> surface_ = nullptr;
 };
 
 // Manage zxdg_toplevel for providing desktop UI.

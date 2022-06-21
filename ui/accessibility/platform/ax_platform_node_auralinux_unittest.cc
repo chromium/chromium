@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/atk_util_auralinux.h"
@@ -1743,7 +1744,7 @@ class ActivationTester {
     g_signal_handler_disconnect(target_, deactivate_id_);
   }
 
-  AtkObject* target_;
+  raw_ptr<AtkObject> target_;
   bool saw_activate_ = false;
   bool saw_deactivate_ = false;
   gulong activate_id_ = 0;

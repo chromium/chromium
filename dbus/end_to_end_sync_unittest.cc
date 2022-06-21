@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -53,7 +54,7 @@ class EndToEndSyncTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<TestService> test_service_;
   scoped_refptr<Bus> client_bus_;
-  ObjectProxy* object_proxy_;
+  raw_ptr<ObjectProxy> object_proxy_;
 };
 
 TEST_F(EndToEndSyncTest, Echo) {

@@ -8,6 +8,7 @@
 #include <aura-shell-server-protocol.h>
 #include <wayland-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,7 +72,7 @@ class WaylandZAuraOutputTest : public ::testing::Test {
   wl::MockZAuraShell mock_zaura_shell_;
   WaylandConnection connection_;
 
-  WaylandOutputManager* output_manager_ = nullptr;
+  raw_ptr<WaylandOutputManager> output_manager_ = nullptr;
   std::unique_ptr<WaylandScreen> platform_screen_;
 };
 

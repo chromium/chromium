@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,7 +73,7 @@ class COMPONENT_EXPORT(X11) PropertyCache : public EventObserver {
   void OnGetPropertyResponse(PropertyValue* value,
                              GetPropertyResponse response);
 
-  Connection* connection_;
+  raw_ptr<Connection> connection_;
   Window window_;
   XScopedEventSelector event_selector_;
   base::flat_map<Atom, PropertyValue> properties_;

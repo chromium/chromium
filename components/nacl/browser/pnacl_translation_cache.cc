@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "components/nacl/common/pnacl_types.h"
@@ -108,7 +109,7 @@ class PnaclTranslationCacheEntry
 
   base::WeakPtr<PnaclTranslationCache> cache_;
   std::string key_;
-  disk_cache::Entry* entry_;
+  raw_ptr<disk_cache::Entry> entry_;
   CacheStep step_;
   bool is_read_;
   GetNexeCallback read_callback_;

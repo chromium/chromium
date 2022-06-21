@@ -12,6 +12,7 @@
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
@@ -331,7 +332,7 @@ class StreamWrapper {
     return stream;
   }
 
-  AudioManager* audio_manager_;
+  raw_ptr<AudioManager> audio_manager_;
   AudioParameters::Format format_;
   ChannelLayout channel_layout_;
   int sample_rate_;

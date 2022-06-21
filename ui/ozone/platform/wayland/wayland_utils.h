@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_WAYLAND_UTILS_H_
 #define UI_OZONE_PLATFORM_WAYLAND_WAYLAND_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/public/platform_utils.h"
 
 namespace ui {
@@ -25,7 +26,7 @@ class WaylandUtils : public PlatformUtils {
   void OnUnhandledKeyEvent(const KeyEvent& key_event) override;
 
  private:
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 };
 
 }  // namespace ui

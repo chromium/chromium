@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -107,8 +108,8 @@ class BluetoothFlossTest : public testing::Test {
 
   // Holds pointer to FakeFloss*Client's so that we can manipulate the fake
   // within tests.
-  FakeFlossManagerClient* fake_floss_manager_client_;
-  FakeFlossAdapterClient* fake_floss_adapter_client_;
+  raw_ptr<FakeFlossManagerClient> fake_floss_manager_client_;
+  raw_ptr<FakeFlossAdapterClient> fake_floss_adapter_client_;
 
   std::vector<std::unique_ptr<BluetoothDiscoverySession>> discovery_sessions_;
 

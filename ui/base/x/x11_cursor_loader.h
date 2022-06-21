@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -63,7 +64,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XCursorLoader {
   bool SupportsCreateCursor() const;
   bool SupportsCreateAnimCursor() const;
 
-  x11::Connection* connection_ = nullptr;
+  raw_ptr<x11::Connection> connection_ = nullptr;
 
   x11::Font cursor_font_ = x11::Font::None;
 

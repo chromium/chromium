@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/shell_popup_wrapper.h"
 
 namespace ui {
@@ -50,9 +51,9 @@ class ZXDGPopupV6WrapperImpl : public ShellPopupWrapper {
   ZXDGSurfaceV6WrapperImpl* zxdg_surface_v6_wrapper() const;
 
   // Non-owned WaylandWindow that uses this popup.
-  WaylandWindow* const wayland_window_;
+  const raw_ptr<WaylandWindow> wayland_window_;
   // Non-owned WaylandConnection.
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   // Ground surface for this popup.
   std::unique_ptr<ZXDGSurfaceV6WrapperImpl> zxdg_surface_v6_wrapper_;

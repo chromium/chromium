@@ -6,6 +6,7 @@
 #define GPU_IPC_SERVICE_GPU_WATCHDOG_THREAD_H_
 
 #include "base/atomicops.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -270,7 +271,7 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
 #endif
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
-  FILE* tty_file_ = nullptr;
+  raw_ptr<FILE> tty_file_ = nullptr;
   int host_tty_ = -1;
   int active_tty_ = -1;
   int last_active_tty_ = -1;

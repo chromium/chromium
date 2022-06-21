@@ -358,7 +358,7 @@ void WaylandInputEmulate::FrameCallbackHandler(void* data,
     auto event = std::move(window->pending_events.front());
     window->pending_events.pop_front();
 
-    auto* input_emulate = window->emulate;
+    auto* input_emulate = window->emulate.get();
     DCHECK(input_emulate);
 
     switch (event->type) {

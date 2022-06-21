@@ -9,6 +9,7 @@
 
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
@@ -60,10 +61,10 @@ class TestDataDevice : public TestSelectionDevice {
   wl_client* client() { return client_; }
 
  private:
-  wl_client* client_ = nullptr;
-  DragDelegate* drag_delegate_ = nullptr;
+  raw_ptr<wl_client> client_ = nullptr;
+  raw_ptr<DragDelegate> drag_delegate_ = nullptr;
 
-  TestDataDeviceManager* const manager_;
+  const raw_ptr<TestDataDeviceManager> manager_;
 };
 
 }  // namespace wl

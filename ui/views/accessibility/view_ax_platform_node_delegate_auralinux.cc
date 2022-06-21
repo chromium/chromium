@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -183,7 +184,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
 
   // TODO(nektar): Make this into a const pointer so that it can't be set
   // outside the class's constructor.
-  ui::AXPlatformNode* ax_platform_node_;
+  raw_ptr<ui::AXPlatformNode> ax_platform_node_;
   ui::AXUniqueId unique_id_;
   mutable ui::AXNodeData data_;
   std::vector<Widget*> widgets_;

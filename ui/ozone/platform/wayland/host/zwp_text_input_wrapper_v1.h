@@ -12,6 +12,7 @@
 #include <text-input-extension-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper.h"
 
@@ -113,10 +114,10 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
       int32_t index,
       uint32_t length);
 
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
   wl::Object<zwp_text_input_v1> obj_;
   wl::Object<zcr_extended_text_input_v1> extended_obj_;
-  ZWPTextInputWrapperClient* const client_;
+  const raw_ptr<ZWPTextInputWrapperClient> client_;
 
   std::vector<ZWPTextInputWrapperClient::SpanStyle> spans_;
   int32_t preedit_cursor_ = -1;

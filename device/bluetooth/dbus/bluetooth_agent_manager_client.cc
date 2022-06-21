@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -172,9 +173,9 @@ class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
     std::move(error_callback).Run(error_name, error_message);
   }
 
-  dbus::ObjectProxy* object_proxy_;
+  raw_ptr<dbus::ObjectProxy> object_proxy_;
 
-  dbus::ObjectManager* object_manager_;
+  raw_ptr<dbus::ObjectManager> object_manager_;
 
   // List of observers interested in event notifications from us.
   base::ObserverList<BluetoothAgentManagerClient::Observer> observers_;

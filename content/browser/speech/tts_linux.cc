@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -90,7 +91,7 @@ class TtsPlatformImplBackgroundWorker {
                                 char* index_mark);
 
   LibSpeechdLoader libspeechd_loader_;
-  SPDConnection* conn_ = nullptr;
+  raw_ptr<SPDConnection> conn_ = nullptr;
   int msg_uid_ = kInvalidMessageUid;
 
   // These apply to the current utterance only that is currently being

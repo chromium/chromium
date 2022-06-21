@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
@@ -121,9 +122,9 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
     std::move(error_callback).Run(error_name, error_message);
   }
 
-  dbus::ObjectProxy* object_proxy_;
+  raw_ptr<dbus::ObjectProxy> object_proxy_;
 
-  dbus::ObjectManager* object_manager_;
+  raw_ptr<dbus::ObjectManager> object_manager_;
 
   base::WeakPtrFactory<BluetoothDebugManagerClientImpl> weak_ptr_factory_{this};
 };

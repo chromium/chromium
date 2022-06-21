@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -135,16 +136,16 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   aura::Window* root_window() { return root_window_; }
 
  private:
-  aura::Window* const root_window_;
+  const raw_ptr<aura::Window> root_window_;
 
-  ui::WmDragHandler* const drag_handler_;
+  const raw_ptr<ui::WmDragHandler> drag_handler_;
 
   aura::client::DragUpdateInfo current_drag_info_;
 
   // Last window under the mouse.
-  aura::Window* current_window_ = nullptr;
+  raw_ptr<aura::Window> current_window_ = nullptr;
   // The delegate corresponding to the window located at the mouse position.
-  aura::client::DragDropDelegate* drag_drop_delegate_ = nullptr;
+  raw_ptr<aura::client::DragDropDelegate> drag_drop_delegate_ = nullptr;
 
   // The data to be delivered through the drag and drop.
   std::unique_ptr<ui::OSExchangeData> data_to_drop_;

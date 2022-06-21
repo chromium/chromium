@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
 namespace wl {
@@ -52,7 +53,7 @@ struct WlDataOfferImpl : public TestSelectionOffer::Delegate {
   void OnDestroying() override { delete this; }
 
  private:
-  TestDataOffer* const offer_;
+  const raw_ptr<TestDataOffer> offer_;
 };
 
 }  // namespace

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
@@ -112,7 +113,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptorServiceProviderImpl
 
   // D-Bus bus object is exported on, not owned by this object and must
   // outlive it.
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus> bus_;
 
   // Incoming methods to get and set the "Value" property are passed on to the
   // delegate and callbacks passed to generate a reply. |delegate_| is generally

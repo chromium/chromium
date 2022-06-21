@@ -4,6 +4,7 @@
 
 #include "media/capture/video/linux/video_capture_device_factory_linux.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -38,8 +39,8 @@ class VideoCaptureDeviceFactoryLinuxTest
   void TearDown() override { task_environment_.RunUntilIdle(); }
 
   base::test::TaskEnvironment task_environment_;
-  FakeV4L2Impl* fake_v4l2_;
-  FakeDeviceProvider* fake_device_provider_;
+  raw_ptr<FakeV4L2Impl> fake_v4l2_;
+  raw_ptr<FakeDeviceProvider> fake_device_provider_;
   std::unique_ptr<VideoCaptureDeviceFactoryLinux> factory_;
 };
 

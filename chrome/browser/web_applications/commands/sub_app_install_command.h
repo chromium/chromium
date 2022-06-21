@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_SUB_APP_INSTALL_COMMAND_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -62,8 +63,8 @@ class SubAppInstallCommand : public web_app::WebAppCommand {
   void AddResultAndRemoveFromPendingInstalls(const web_app::AppId& app_id,
                                              webapps::InstallResultCode result);
 
-  web_app::WebAppInstallManager* install_manager_;
-  web_app::WebAppRegistrar* registrar_;
+  raw_ptr<web_app::WebAppInstallManager> install_manager_;
+  raw_ptr<web_app::WebAppRegistrar> registrar_;
   std::vector<std::pair<web_app::UnhashedAppId, GURL>> requested_installs_;
   std::set<web_app::UnhashedAppId> pending_installs_;
   size_t num_pending_dialog_callbacks_ = 0;

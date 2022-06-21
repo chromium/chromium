@@ -7,6 +7,7 @@
 
 #include <text-input-unstable-v1-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 namespace wl {
@@ -33,7 +34,7 @@ class TestZwpTextInputManagerV1 : public GlobalObject {
   MockZwpTextInput* text_input() const { return text_input_; }
 
  private:
-  MockZwpTextInput* text_input_;
+  raw_ptr<MockZwpTextInput> text_input_;
 };
 
 }  // namespace wl

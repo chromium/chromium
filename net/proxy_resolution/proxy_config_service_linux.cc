@@ -20,6 +20,7 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -314,15 +315,15 @@ class SettingGetterImplGSettings
     // We could watch for the change-event signal instead of changed, but
     // since we have to watch more than one object, we'd still have to
     // debounce change notifications. This is conceptually simpler.
-    g_signal_connect(G_OBJECT(client_), "changed",
+    g_signal_connect(G_OBJECT(client_.get()), "changed",
                      G_CALLBACK(OnGSettingsChangeNotification), this);
-    g_signal_connect(G_OBJECT(http_client_), "changed",
+    g_signal_connect(G_OBJECT(http_client_.get()), "changed",
                      G_CALLBACK(OnGSettingsChangeNotification), this);
-    g_signal_connect(G_OBJECT(https_client_), "changed",
+    g_signal_connect(G_OBJECT(https_client_.get()), "changed",
                      G_CALLBACK(OnGSettingsChangeNotification), this);
-    g_signal_connect(G_OBJECT(ftp_client_), "changed",
+    g_signal_connect(G_OBJECT(ftp_client_.get()), "changed",
                      G_CALLBACK(OnGSettingsChangeNotification), this);
-    g_signal_connect(G_OBJECT(socks_client_), "changed",
+    g_signal_connect(G_OBJECT(socks_client_.get()), "changed",
                      G_CALLBACK(OnGSettingsChangeNotification), this);
     // Simulate a change to avoid possibly losing updates before this point.
     OnChangeNotification();
@@ -465,12 +466,12 @@ class SettingGetterImplGSettings
     setting_getter->OnChangeNotification();
   }
 
-  GSettings* client_ = nullptr;
-  GSettings* http_client_ = nullptr;
-  GSettings* https_client_ = nullptr;
-  GSettings* ftp_client_ = nullptr;
-  GSettings* socks_client_ = nullptr;
-  ProxyConfigServiceLinux::Delegate* notify_delegate_ = nullptr;
+  raw_ptr<GSettings> client_ = nullptr;
+  raw_ptr<GSettings> http_client_ = nullptr;
+  raw_ptr<GSettings> https_client_ = nullptr;
+  raw_ptr<GSettings> ftp_client_ = nullptr;
+  raw_ptr<GSettings> socks_client_ = nullptr;
+  raw_ptr<ProxyConfigServiceLinux::Delegate> notify_delegate_ = nullptr;
   std::unique_ptr<base::OneShotTimer> debounce_timer_;
 
   // Task runner for the thread that we make gsettings calls on. It should
@@ -1009,7 +1010,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
 
   int inotify_fd_ = -1;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> inotify_watcher_;
-  ProxyConfigServiceLinux::Delegate* notify_delegate_ = nullptr;
+  raw_ptr<ProxyConfigServiceLinux::Delegate> notify_delegate_ = nullptr;
   std::unique_ptr<base::OneShotTimer> debounce_timer_;
   std::vector<base::FilePath> kde_config_dirs_;
   bool indirect_manual_ = false;
@@ -1018,7 +1019,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
   // We don't own |env_var_getter_|.  It's safe to hold a pointer to it, since
   // both it and us are owned by ProxyConfigServiceLinux::Delegate, and have the
   // same lifetime.
-  base::Environment* env_var_getter_;
+  raw_ptr<base::Environment> env_var_getter_;
 
   // We cache these settings whenever we re-read the kioslaverc file.
   string_map_type string_table_;

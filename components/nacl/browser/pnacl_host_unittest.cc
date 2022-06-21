@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "components/nacl/browser/pnacl_translation_cache.h"
@@ -105,7 +106,7 @@ class PnaclHostTest : public testing::Test {
   }
 
  protected:
-  PnaclHost* host_;
+  raw_ptr<PnaclHost> host_;
   int temp_callback_count_;
   int write_callback_count_;
   content::BrowserTaskEnvironment task_environment_;

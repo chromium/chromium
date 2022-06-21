@@ -8,6 +8,7 @@
 #include <xdg-foreign-unstable-v2-client-protocol.h>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -52,7 +53,7 @@ struct ExportedSurface {
   ~ExportedSurface() = default;
 
   // Surface that is exported.
-  wl_surface* surface_for_export = nullptr;
+  raw_ptr<wl_surface> surface_for_export = nullptr;
 
   // Exported |surface|.
   wl::Object<ExportedType> exported;
@@ -148,7 +149,7 @@ class XdgForeignWrapperImpl
     exported_surface_it->callbacks.clear();
   }
 
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
   wl::Object<ExporterType> exporter_;
   std::vector<ExportedSurface<ExportedType>> exported_surfaces_;
 };

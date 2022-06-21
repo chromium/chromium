@@ -10,6 +10,7 @@
 
 #include <tuple>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
@@ -146,8 +147,8 @@ class VkTestXkbKeyboardLayoutEngine : public XkbKeyboardLayoutEngine {
 
  private:
   EntryType entry_type_;
-  const PrintableEntry* printable_entry_;
-  const KeysymEntry* keysym_entry_;
+  raw_ptr<const PrintableEntry> printable_entry_;
+  raw_ptr<const KeysymEntry> keysym_entry_;
 };
 
 }  // anonymous namespace

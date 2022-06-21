@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_REPRESENTATION_GL_OZONE_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -67,7 +68,7 @@ class SharedImageRepresentationGLTextureOzone
     return static_cast<SharedImageBackingOzone*>(backing());
   }
 
-  gles2::Texture* texture_;
+  raw_ptr<gles2::Texture> texture_;
   GLenum current_access_mode_ = 0;
   bool need_end_fence_;
 };

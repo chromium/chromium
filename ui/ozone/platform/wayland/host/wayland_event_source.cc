@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -60,7 +61,7 @@ struct WaylandEventSource::TouchPoint {
   TouchPoint(gfx::PointF location, WaylandWindow* current_window);
   ~TouchPoint() = default;
 
-  WaylandWindow* window;
+  raw_ptr<WaylandWindow> window;
   gfx::PointF last_known_location;
 };
 
@@ -486,7 +487,7 @@ void WaylandEventSource::OnTouchStylusToolChanged(
 
 const WaylandWindow* WaylandEventSource::GetTouchTarget(PointerId id) const {
   const auto it = touch_points_.find(id);
-  return it == touch_points_.end() ? nullptr : it->second->window;
+  return it == touch_points_.end() ? nullptr : it->second->window.get();
 }
 
 void WaylandEventSource::OnPinchEvent(EventType event_type,

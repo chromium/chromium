@@ -4,6 +4,7 @@
 
 #include "components/os_crypt/key_storage_kwallet.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/nix/xdg_util.h"
 #include "build/branding_buildflags.h"
 #include "dbus/message.h"
@@ -122,7 +123,7 @@ class KeyStorageKWalletTest : public testing::Test {
   }
 
  protected:
-  StrictMock<MockKWalletDBus>* kwallet_dbus_mock_;
+  raw_ptr<StrictMock<MockKWalletDBus>> kwallet_dbus_mock_;
   KeyStorageKWallet key_storage_kwallet_;
   const std::string wallet_name_ = "mollet";
 };
@@ -258,7 +259,7 @@ class KeyStorageKWalletFailuresTest
   }
 
  protected:
-  StrictMock<MockKWalletDBus>* kwallet_dbus_mock_;
+  raw_ptr<StrictMock<MockKWalletDBus>> kwallet_dbus_mock_;
   KeyStorageKWallet key_storage_kwallet_;
   const std::string wallet_name_ = "mollet";
 };

@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
@@ -94,7 +95,7 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     gfx::AcceleratedWidget widget;
 
     // Non-owned pointer to input emulation.
-    WaylandInputEmulate* emulate = nullptr;
+    raw_ptr<WaylandInputEmulate> emulate = nullptr;
 
     // Control flag that says if the buffer has been attached and a consequent
     // frame callback has been received. This is required to be able to know
@@ -109,10 +110,10 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     base::circular_deque<std::unique_ptr<PendingEvent>> pending_events;
 
     // Frame callback that invokes WaylandInputEmulate::FrameCallbackHandler.
-    struct wl_callback* frame_callback = nullptr;
+    raw_ptr<struct wl_callback> frame_callback = nullptr;
 
     // The attached buffer.
-    wl_buffer* buffer = nullptr;
+    raw_ptr<wl_buffer> buffer = nullptr;
   };
 
   // WaylandProxy::Delegate.
@@ -157,8 +158,8 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   // Owned raw pointers. wl::Object is not used because the component this
   // class belongs to cannot depend on the "wayland" target in the
   // //ui/ozone/platform/wayland/BUILD.gn
-  struct wl_registry* registry_ = nullptr;
-  struct weston_test* weston_test_ = nullptr;
+  raw_ptr<struct wl_registry> registry_ = nullptr;
+  raw_ptr<struct weston_test> weston_test_ = nullptr;
 };
 
 }  // namespace wl

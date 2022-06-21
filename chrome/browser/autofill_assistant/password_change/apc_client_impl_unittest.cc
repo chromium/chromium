@@ -93,7 +93,7 @@ class TestApcClientImpl : public ApcClientImpl {
   std::unique_ptr<AssistantSidePanelCoordinator> side_panel_;
   std::unique_ptr<autofill_assistant::HeadlessScriptController>
       external_script_controller_;
-  autofill_assistant::RuntimeManager* runtime_manager_;
+  raw_ptr<autofill_assistant::RuntimeManager> runtime_manager_;
 };
 
 // static

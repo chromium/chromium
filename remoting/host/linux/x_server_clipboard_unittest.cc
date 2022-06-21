@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/base/constants.h"
 #include "remoting/host/linux/x_server_clipboard.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,7 +66,7 @@ class ClipboardTestClient : public x11::EventObserver {
  private:
   std::string clipboard_data_;
   XServerClipboard clipboard_;
-  x11::Connection* connection_ = nullptr;
+  raw_ptr<x11::Connection> connection_ = nullptr;
   bool dispatched_event_ = false;
 };
 

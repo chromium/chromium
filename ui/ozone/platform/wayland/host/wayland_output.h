@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
 #include "ui/gfx/geometry/rect.h"
@@ -116,8 +117,8 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   // Size of the output in physical pixels.
   gfx::Size physical_size_;
 
-  Delegate* delegate_ = nullptr;
-  WaylandConnection* connection_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
+  raw_ptr<WaylandConnection> connection_ = nullptr;
 };
 
 }  // namespace ui

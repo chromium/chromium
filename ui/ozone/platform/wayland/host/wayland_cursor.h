@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -88,16 +89,16 @@ class WaylandCursor {
                        uint32_t hotspot_x_dip,
                        uint32_t hotspot_y_dip);
 
-  WaylandPointer* const pointer_;
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandPointer> pointer_;
+  const raw_ptr<WaylandConnection> connection_;
   const wl::Object<wl_surface> pointer_surface_;
 
   // Holds the buffers and their memory until the compositor releases them.
   base::flat_map<wl_buffer*, WaylandShmBuffer> buffers_;
-  WaylandCursorBufferListener* listener_ = nullptr;
+  raw_ptr<WaylandCursorBufferListener> listener_ = nullptr;
 
   // Current platform cursor.
-  wl_cursor* cursor_data_ = nullptr;
+  raw_ptr<wl_cursor> cursor_data_ = nullptr;
   size_t current_image_index_ = 0;
   int buffer_scale_ = 1;
   base::RepeatingTimer animation_timer_;

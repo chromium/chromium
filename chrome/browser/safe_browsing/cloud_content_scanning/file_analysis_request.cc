@@ -196,7 +196,8 @@ bool FileAnalysisRequest::FileSupportedByDlp(
     const std::string& mime_type) const {
   for (const std::string& tag : content_analysis_request().tags()) {
     if (tag == "dlp" && tag_settings_.count("dlp")) {
-      const auto* supported_files = tag_settings_.at("dlp").supported_files;
+      const auto* supported_files =
+          tag_settings_.at("dlp").supported_files.get();
       return supported_files->FileExtensionSupported(file_name_) ||
              supported_files->MimeTypeSupported(mime_type);
     }

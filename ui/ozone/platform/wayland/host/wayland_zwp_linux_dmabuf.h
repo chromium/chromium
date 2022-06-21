@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -100,7 +101,7 @@ class WaylandZwpLinuxDmabuf
   const wl::Object<zwp_linux_dmabuf_v1> zwp_linux_dmabuf_;
 
   // Non-owned.
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   // Holds supported DRM formats translated to gfx::BufferFormat.
   wl::BufferFormatsWithModifiersMap supported_buffer_formats_with_modifiers_;

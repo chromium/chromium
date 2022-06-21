@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 
@@ -53,8 +54,8 @@ class ConcatMenuModel : public ui::MenuModel {
   // adjusted for the returned menu.
   ui::MenuModel* GetMenuAndIndex(int* index) const;
 
-  ui::MenuModel* const m1_;
-  ui::MenuModel* const m2_;
+  const raw_ptr<ui::MenuModel> m1_;
+  const raw_ptr<ui::MenuModel> m2_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_CONCAT_MENU_MODEL_H_

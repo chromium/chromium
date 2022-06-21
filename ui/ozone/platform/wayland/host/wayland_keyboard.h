@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/buildflags.h"
@@ -126,8 +127,8 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
 
   wl::Object<wl_keyboard> obj_;
   std::unique_ptr<ZCRExtendedKeyboard> extended_keyboard_;
-  WaylandConnection* const connection_;
-  Delegate* const delegate_;
+  const raw_ptr<WaylandConnection> connection_;
+  const raw_ptr<Delegate> delegate_;
 
   // Key repeat handler.
   static const wl_callback_listener callback_listener_;
@@ -135,7 +136,7 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
   base::OnceClosure auto_repeat_closure_;
   wl::Object<wl_callback> sync_callback_;
 
-  LayoutEngine* layout_engine_;
+  raw_ptr<LayoutEngine> layout_engine_;
 };
 
 class WaylandKeyboard::Delegate {

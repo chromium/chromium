@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -59,7 +60,7 @@ class TestManagerObserver : public FlossManagerClient::Observer {
   std::map<int, bool> adapter_enabled_;
 
  private:
-  FlossManagerClient* client_ = nullptr;
+  raw_ptr<FlossManagerClient> client_ = nullptr;
 };
 
 }  // namespace

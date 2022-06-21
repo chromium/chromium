@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/files/scoped_file.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_base.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
@@ -124,7 +125,7 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
   // The wl_data_device wrapped by this WaylandDataDevice.
   wl::Object<wl_data_device> data_device_;
 
-  DragDelegate* drag_delegate_ = nullptr;
+  raw_ptr<DragDelegate> drag_delegate_ = nullptr;
 
   // There are two separate data offers at a time, the drag offer and the
   // selection offer, each with independent lifetimes. When we receive a new

@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -88,7 +89,7 @@ class WaylandScreen : public PlatformScreen {
                           int32_t panel_transform,
                           int32_t logical_transform);
 
-  WaylandConnection* connection_ = nullptr;
+  raw_ptr<WaylandConnection> connection_ = nullptr;
 
   display::DisplayList display_list_;
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -50,7 +51,7 @@ class MEDIA_EXPORT TypedScopedAsyncTrace {
   TypedScopedAsyncTrace(const char* name, const void* id);
 
   const char* name_;
-  const void* id_;
+  raw_ptr<const void> id_;
   std::unique_ptr<TypedScopedAsyncTrace<category>> step_;
 };
 

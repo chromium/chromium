@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -71,7 +72,7 @@ class WaylandTouchTest : public WaylandTest {
     EXPECT_EQ(event_type, touch_event->type());
   }
 
-  wl::TestTouch* touch_;
+  raw_ptr<wl::TestTouch> touch_;
 };
 
 TEST_P(WaylandTouchTest, TouchPressAndMotion) {

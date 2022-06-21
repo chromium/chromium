@@ -6,6 +6,7 @@
 #define UI_EVENTS_OZONE_EVDEV_INPUT_INJECTOR_EVDEV_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
 #include "ui/ozone/public/system_input_injector.h"
@@ -36,7 +37,7 @@ class COMPONENT_EXPORT(EVDEV) InputInjectorEvdev : public SystemInputInjector {
 
  private:
   // Shared cursor state.
-  CursorDelegateEvdev* const cursor_;
+  const raw_ptr<CursorDelegateEvdev> cursor_;
 
   int device_id_ = ED_UNKNOWN_DEVICE;
 

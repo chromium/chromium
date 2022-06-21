@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_runner.h"
 #include "ui/events/event_modifiers.h"
@@ -127,10 +128,10 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   int last_device_id_ = 0;
 
   // Interface for scanning & monitoring input devices.
-  DeviceManager* const device_manager_;  // Not owned.
+  const raw_ptr<DeviceManager> device_manager_;  // Not owned.
 
   // Gamepad provider to dispatch gamepad events.
-  GamepadProviderOzone* const gamepad_provider_;
+  const raw_ptr<GamepadProviderOzone> gamepad_provider_;
 
   // Proxy for input device factory (manages device I/O objects).
   // The real object lives on a different thread.
@@ -149,7 +150,7 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   KeyboardEvdev keyboard_;
 
   // Cursor movement.
-  CursorDelegateEvdev* const cursor_;
+  const raw_ptr<CursorDelegateEvdev> cursor_;
 
   // Object for controlling input devices.
   InputControllerEvdev input_controller_;

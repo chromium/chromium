@@ -14,6 +14,7 @@
 
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -247,7 +248,7 @@ class MockInputRouterImplClient : public InputRouterImplClient {
 
   MockInputRouterClient input_router_client_;
   MockWidgetInputHandler widget_input_handler_;
-  MockRenderWidgetHostViewForStylusWriting* render_widget_host_view_;
+  raw_ptr<MockRenderWidgetHostViewForStylusWriting> render_widget_host_view_;
   bool on_start_stylus_writing_called_ = false;
 };
 

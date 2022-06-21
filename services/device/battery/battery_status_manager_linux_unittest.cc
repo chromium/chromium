@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -191,7 +192,7 @@ class MockBatteryObject {
   void SignalPropertyChanged(const std::string& property_name);
 
   scoped_refptr<dbus::MockObjectProxy> proxy;
-  MockBatteryProperties* properties;
+  raw_ptr<MockBatteryProperties> properties;
   dbus::ObjectProxy::SignalCallback signal_callback_changed;
   dbus::ObjectProxy::SignalCallback signal_callback_properties_changed;
 

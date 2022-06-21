@@ -2030,7 +2030,7 @@ class TestPrerenderCancellerSubframeNavigationThrottle
   }
 
  private:
-  NavigationRequest* navigation_request_;
+  raw_ptr<NavigationRequest> navigation_request_;
 };
 
 // Regression test for https://crbug.com/1323309.

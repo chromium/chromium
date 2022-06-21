@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/i18n/break_iterator.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -148,8 +149,8 @@ class WaylandInputMethodContextTest : public WaylandTest {
   std::unique_ptr<TestInputMethodContextDelegate>
       input_method_context_delegate_;
   std::unique_ptr<WaylandInputMethodContext> input_method_context_;
-  wl::MockZwpTextInput* zwp_text_input_ = nullptr;
-  wl::MockZcrExtendedTextInput* zcr_extended_text_input_ = nullptr;
+  raw_ptr<wl::MockZwpTextInput> zwp_text_input_ = nullptr;
+  raw_ptr<wl::MockZcrExtendedTextInput> zcr_extended_text_input_ = nullptr;
 };
 
 TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {

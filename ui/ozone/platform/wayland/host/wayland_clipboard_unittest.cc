@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -146,11 +147,11 @@ class WaylandClipboardTestBase : public WaylandTest {
   }
 
   /* Server objects */
-  wl::MockPointer* pointer_;
-  wl::TestTouch* touch_;
-  wl::TestKeyboard* keyboard_;
+  raw_ptr<wl::MockPointer> pointer_;
+  raw_ptr<wl::TestTouch> touch_;
+  raw_ptr<wl::TestKeyboard> keyboard_;
 
-  WaylandClipboard* clipboard_ = nullptr;
+  raw_ptr<WaylandClipboard> clipboard_ = nullptr;
 
   uint32_t serial_ = 0;
   uint32_t timestamp_ = 0;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/linux/gbm_buffer.h"
@@ -78,7 +79,7 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   std::unique_ptr<GbmBuffer> gbm_bo_;
 
   // Represents a connection to Wayland.
-  WaylandBufferManagerGpu* const buffer_manager_;
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
 
   // Represents widget this pixmap backs.
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;

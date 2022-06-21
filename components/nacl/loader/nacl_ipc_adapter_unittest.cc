@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
@@ -70,7 +71,7 @@ class NaClIPCAdapterTest : public testing::Test {
   //
   // In real life the adapter needs to take ownership so the channel can be
   // destroyed on the right thread.
-  IPC::TestSink* sink_;
+  raw_ptr<IPC::TestSink> sink_;
 };
 
 }  // namespace

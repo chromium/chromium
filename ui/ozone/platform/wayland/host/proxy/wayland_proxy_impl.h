@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 
@@ -43,9 +44,9 @@ class WaylandProxyImpl : public WaylandProxy, public ui::WaylandWindowObserver {
   void OnWindowRemoved(ui::WaylandWindow* window) override;
   void OnWindowConfigured(ui::WaylandWindow* window) override;
 
-  ui::WaylandConnection* const connection_;
+  const raw_ptr<ui::WaylandConnection> connection_;
 
-  WaylandProxy::Delegate* delegate_ = nullptr;
+  raw_ptr<WaylandProxy::Delegate> delegate_ = nullptr;
 
   std::vector<ui::WaylandShmBuffer> shm_buffers_;
 };

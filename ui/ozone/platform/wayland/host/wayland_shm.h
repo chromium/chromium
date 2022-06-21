@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SHM_H_
 
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -47,7 +48,7 @@ class WaylandShm : public wl::GlobalObjectRegistrar<WaylandShm> {
   wl::Object<wl_shm> const shm_;
 
   // Non-owned pointer to the main connection.
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 };
 
 }  // namespace ui

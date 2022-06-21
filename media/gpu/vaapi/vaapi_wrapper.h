@@ -21,6 +21,7 @@
 
 #include "base/files/file.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -626,7 +627,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
 
   // If using global VA lock, this is a pointer to VADisplayState's member
   // |va_lock_|. Guaranteed to be valid for the lifetime of VaapiWrapper.
-  base::Lock* va_lock_;
+  raw_ptr<base::Lock> va_lock_;
 
   // VA handles.
   // All valid after successful Initialize() and until Deinitialize().

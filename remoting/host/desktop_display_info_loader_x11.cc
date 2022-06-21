@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "remoting/base/logging.h"
 #include "ui/base/x/x11_display_util.h"
@@ -47,8 +48,8 @@ class DesktopDisplayInfoLoaderX11 : public DesktopDisplayInfoLoader,
   // XRANDR version as MAJOR * 100 + MINOR, or 0 if XRANDR is not present.
   int xrandr_version_ = 0;
 
-  x11::Connection* connection_ = nullptr;
-  x11::RandR* randr_ = nullptr;
+  raw_ptr<x11::Connection> connection_ = nullptr;
+  raw_ptr<x11::RandR> randr_ = nullptr;
 
   // Selector for root window events.
   std::unique_ptr<x11::XScopedEventSelector> root_window_events_;

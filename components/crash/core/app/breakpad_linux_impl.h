@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/crash/core/common/crash_key_internal.h"
 
@@ -38,7 +39,9 @@ const size_t kCrashIovSize = 7;
 // The minidump information can either be contained in a file descriptor (fd) or
 // in a file (whose path is in filename).
 struct BreakpadInfo {
-  int fd;                          // File descriptor to the Breakpad dump data.
+  BreakpadInfo();
+
+  int fd = 0;                      // File descriptor to the Breakpad dump data.
   const char* filename;            // Path to the Breakpad dump data.
 #if defined(ADDRESS_SANITIZER)
   const char* log_filename;        // Path to the ASan log file.
@@ -53,7 +56,7 @@ struct BreakpadInfo {
   uint64_t process_start_time;     // Uptime of the crashing process.
   size_t oom_size;                 // Amount of memory requested if OOM.
   uint64_t pid;                    // PID where applicable.
-  crash_reporter::internal::TransitionalCrashKeyStorage* crash_keys;
+  raw_ptr<crash_reporter::internal::TransitionalCrashKeyStorage> crash_keys;
 };
 
 extern void HandleCrashDump(const BreakpadInfo& info);

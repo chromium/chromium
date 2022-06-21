@@ -5,6 +5,7 @@
 #include "chrome/browser/themes/theme_service_aura_linux.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/common/pref_names.h"
@@ -34,8 +35,8 @@ class SystemThemeLinux : public CustomThemeSupplier {
   ~SystemThemeLinux() override;
 
   // These pointers are not owned by us.
-  views::LinuxUI* const linux_ui_;
-  PrefService* const pref_service_;
+  const raw_ptr<views::LinuxUI> linux_ui_;
+  const raw_ptr<PrefService> pref_service_;
 };
 
 SystemThemeLinux::SystemThemeLinux(PrefService* pref_service)

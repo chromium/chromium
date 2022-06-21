@@ -6,6 +6,7 @@
 #include <wayland-server.h>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/timer/timer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -82,7 +83,7 @@ class WaylandKeyboardTest : public WaylandTest {
   }
 
  protected:
-  wl::TestKeyboard* keyboard_;
+  raw_ptr<wl::TestKeyboard> keyboard_;
 
   // There may be a pending wl_display_sync event, which is triggered by auto
   // key repeat and needs to be processed. Wait for its completion.

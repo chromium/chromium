@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/null_window_targeter.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
@@ -69,7 +70,7 @@ class SwapWithNewSizeObserverHelper : public ui::CompositorObserver {
     compositor_ = nullptr;
   }
 
-  ui::Compositor* compositor_;
+  raw_ptr<ui::Compositor> compositor_;
   const HelperCallback callback_;
 };
 

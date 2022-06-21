@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZCR_TOUCHPAD_HAPTICS_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZCR_TOUCHPAD_HAPTICS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
@@ -44,7 +45,7 @@ class WaylandZcrTouchpadHaptics
       struct zcr_touchpad_haptics_v1* zcr_touchpad_haptics_v1);
 
   wl::Object<zcr_touchpad_haptics_v1> obj_;
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 };
 
 }  // namespace ui

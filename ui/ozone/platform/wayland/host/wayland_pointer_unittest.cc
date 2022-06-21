@@ -8,6 +8,7 @@
 #include <cmath>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,7 +61,7 @@ class WaylandPointerTest : public WaylandTest {
   }
 
  protected:
-  wl::MockPointer* pointer_;
+  raw_ptr<wl::MockPointer> pointer_;
 };
 
 void SendAxisEvents(struct wl_resource* resource,

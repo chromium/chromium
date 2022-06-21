@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -392,10 +393,10 @@ class WaylandWindow : public PlatformWindow,
 
   void UpdateCursorShape(scoped_refptr<BitmapCursor> cursor);
 
-  PlatformWindowDelegate* delegate_;
-  WaylandConnection* connection_;
-  WaylandWindow* parent_window_ = nullptr;
-  WaylandWindow* child_window_ = nullptr;
+  raw_ptr<PlatformWindowDelegate> delegate_;
+  raw_ptr<WaylandConnection> connection_;
+  raw_ptr<WaylandWindow> parent_window_ = nullptr;
+  raw_ptr<WaylandWindow> child_window_ = nullptr;
 
   std::unique_ptr<WaylandFrameManager> frame_manager_;
   bool can_submit_frames_ = false;

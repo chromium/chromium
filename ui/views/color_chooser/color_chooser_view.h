@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -82,21 +83,21 @@ class VIEWS_EXPORT ColorChooser : public TextfieldController,
   // The current color in HSV coordinate.
   SkScalar hsv_[3];
 
-  ColorChooserListener* listener_;
+  raw_ptr<ColorChooserListener> listener_;
   ViewTracker tracker_;
 
   // Child views. These are owned as part of the normal views hierarchy.
   // The view of hue chooser.
-  HueView* hue_ = nullptr;
+  raw_ptr<HueView> hue_ = nullptr;
 
   // The view of saturation/value choosing area.
-  SaturationValueView* saturation_value_ = nullptr;
+  raw_ptr<SaturationValueView> saturation_value_ = nullptr;
 
   // The rectangle to denote the selected color.
-  SelectedColorPatchView* selected_color_patch_ = nullptr;
+  raw_ptr<SelectedColorPatchView> selected_color_patch_ = nullptr;
 
   // The textfield to write the color explicitly.
-  Textfield* textfield_ = nullptr;
+  raw_ptr<Textfield> textfield_ = nullptr;
 
   SkColor initial_color_;
 };

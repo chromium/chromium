@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -81,8 +82,8 @@ class UPowerObject {
   UPowerProperties* properties() { return properties_.get(); }
 
  private:
-  dbus::Bus* dbus_;           // Owned by the BatteryStatusNotificationThread.
-  dbus::ObjectProxy* proxy_;  // Owned by the dbus.
+  raw_ptr<dbus::Bus> dbus_;  // Owned by the BatteryStatusNotificationThread.
+  raw_ptr<dbus::ObjectProxy> proxy_;  // Owned by the dbus.
   std::unique_ptr<UPowerProperties> properties_;
 };
 
@@ -246,8 +247,8 @@ class BatteryObject {
   BatteryProperties* properties() { return properties_.get(); }
 
  private:
-  dbus::Bus* dbus_;           // Owned by the BatteryStatusNotificationThread,
-  dbus::ObjectProxy* proxy_;  // Owned by the dbus.
+  raw_ptr<dbus::Bus> dbus_;  // Owned by the BatteryStatusNotificationThread,
+  raw_ptr<dbus::ObjectProxy> proxy_;  // Owned by the dbus.
   std::unique_ptr<BatteryProperties> properties_;
 };
 

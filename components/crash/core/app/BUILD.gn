@@ -56,6 +56,7 @@ static_library("app") {
     sources += [
       "breakpad_linux.cc",
       "breakpad_linux.h",
+      "breakpad_linux_impl.cc",
       "breakpad_linux_impl.h",
       "crashpad_linux.cc",
     ]

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -122,7 +123,7 @@ class TestAdapterObserver : public FlossAdapterClient::Observer {
   int ssp_request_count_ = 0;
 
  private:
-  FlossAdapterClient* client_ = nullptr;
+  raw_ptr<FlossAdapterClient> client_ = nullptr;
 };
 
 }  // namespace

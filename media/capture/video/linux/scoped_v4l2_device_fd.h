@@ -5,6 +5,7 @@
 #ifndef MEDIA_CAPTURE_VIDEO_LINUX_SCOPED_V4L2_DEVICE_FD_H_
 #define MEDIA_CAPTURE_VIDEO_LINUX_SCOPED_V4L2_DEVICE_FD_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/capture/video/linux/v4l2_capture_device.h"
 
 namespace media {
@@ -21,7 +22,7 @@ class ScopedV4L2DeviceFD {
 
  private:
   int device_fd_;
-  V4L2CaptureDevice* const v4l2_;
+  const raw_ptr<V4L2CaptureDevice> v4l2_;
 };
 
 }  // namespace media

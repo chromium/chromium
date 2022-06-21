@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -122,7 +123,7 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
   // Callback to generate VideoDecoder.
   CreateVideoDecoderCb create_vd_cb_;
   // The client of this VDA.
-  VideoDecodeAccelerator::Client* client_ = nullptr;
+  raw_ptr<VideoDecodeAccelerator::Client> client_ = nullptr;
   // The delegated VideoDecoder instance.
   std::unique_ptr<VideoDecoder> vd_;
   // Callback for returning the result after this instance is asked to request

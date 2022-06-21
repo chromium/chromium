@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -158,7 +159,7 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   std::string error_message_;
 
   // Non-owned pointer to the main connection.
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   mojo::AssociatedRemote<ozone::mojom::WaylandBufferManagerGpu>
       buffer_manager_gpu_associated_;

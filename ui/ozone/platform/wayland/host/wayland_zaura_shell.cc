@@ -100,7 +100,7 @@ void WaylandZAuraShell::OnLayoutMode(void* data,
                                      struct zaura_shell* zaura_shell,
                                      uint32_t layout_mode) {
   auto* self = static_cast<WaylandZAuraShell*>(data);
-  auto* connection = self->connection_;
+  auto* connection = self->connection_.get();
   auto* screen = connection->wayland_output_manager()->wayland_screen();
   // |screen| is null in some unit test suites.
   if (!screen)

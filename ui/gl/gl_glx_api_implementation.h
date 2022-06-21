@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "gl_bindings.h"
 #include "ui/gl/gl_export.h"
 
@@ -35,7 +36,7 @@ class GL_EXPORT GLXApiBase : public GLXApi {
   ~GLXApiBase() override;
   void InitializeBase(DriverGLX* driver);
 
-  DriverGLX* driver_;
+  raw_ptr<DriverGLX> driver_;
 };
 
 class GL_EXPORT RealGLXApi : public GLXApiBase {
@@ -66,7 +67,7 @@ class GL_EXPORT LogGLXApi : public GLXApi {
   #include "gl_bindings_api_autogen_glx.h"
 
  private:
-  GLXApi* glx_api_;
+  raw_ptr<GLXApi> glx_api_;
 };
 
 // Inserts a TRACE for every GLX call.
@@ -83,7 +84,7 @@ class GL_EXPORT TraceGLXApi : public GLXApi {
   #include "gl_bindings_api_autogen_glx.h"
 
  private:
-  GLXApi* glx_api_;
+  raw_ptr<GLXApi> glx_api_;
 };
 
 }  // namespace gl

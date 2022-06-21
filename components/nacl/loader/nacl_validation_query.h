@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "crypto/hmac.h"
 
@@ -25,7 +26,7 @@ class NaClValidationQueryContext {
   NaClValidationQuery* CreateQuery();
 
  private:
-  NaClValidationDB* db_;
+  raw_ptr<NaClValidationDB> db_;
 
   // A key used by HMAC that is specific to this installation of Chrome.
   std::string profile_key_;
@@ -73,7 +74,7 @@ class NaClValidationQuery {
   QueryState state_;
 
   crypto::HMAC hasher_;
-  NaClValidationDB* db_;
+  raw_ptr<NaClValidationDB> db_;
 
   // The size of buffer_ is a somewhat arbitrary choice.  It needs to be at
   // at least kDigestLength * 2, but it can be arbitrarily large.  In practice

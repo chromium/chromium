@@ -6,6 +6,7 @@
 #define UI_BASE_X_X11_SOFTWARE_BITMAP_PRESENTER_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -59,7 +60,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11SoftwareBitmapPresenter {
   bool ShmPoolReady() const;
 
   x11::Window widget_;
-  x11::Connection* connection_;
+  raw_ptr<x11::Connection> connection_;
   x11::GraphicsContext gc_{};
   x11::VisualId visual_{};
   int depth_ = 0;

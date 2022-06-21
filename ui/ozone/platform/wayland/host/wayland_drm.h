@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 
@@ -92,7 +93,7 @@ class WaylandDrm : public wl::GlobalObjectRegistrar<WaylandDrm> {
   wl::Object<wl_drm> wl_drm_;
 
   // Non-owned.
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   // Holds supported DRM formats translated to gfx::BufferFormat. Note that
   // |wl_drm| neither announces modifiers nor allows to create buffers with

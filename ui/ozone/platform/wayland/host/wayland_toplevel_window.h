@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -302,7 +303,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   // True when screen coordinates is enabled.
   bool screen_coordinates_enabled_;
 
-  WorkspaceExtensionDelegate* workspace_extension_delegate_ = nullptr;
+  raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate_ = nullptr;
 };
 
 }  // namespace ui

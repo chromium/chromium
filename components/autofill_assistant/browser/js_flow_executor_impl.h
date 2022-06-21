@@ -120,10 +120,10 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
   }
 
   const raw_ptr<Delegate> delegate_;
-  JsFlowDevtoolsWrapper* js_flow_devtools_wrapper_;
+  raw_ptr<JsFlowDevtoolsWrapper> js_flow_devtools_wrapper_;
 
   // Only set during a flow.
-  DevtoolsClient* devtools_client_;
+  raw_ptr<DevtoolsClient> devtools_client_;
   int isolated_world_context_id_ = -1;
   std::unique_ptr<std::string> js_flow_;
   base::OnceCallback<void(const ClientStatus&, std::unique_ptr<base::Value>)>

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -89,7 +90,7 @@ struct CustomMessageData {
 struct TagSettings {
   CustomMessageData custom_message;
   bool requires_justification = false;
-  const SupportedFiles* supported_files = nullptr;
+  raw_ptr<const SupportedFiles> supported_files = nullptr;
 };
 
 // Structs representing settings to be used for an analysis or a report. These

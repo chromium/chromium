@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
@@ -74,7 +75,7 @@ class JsFlowDevtoolsWrapper {
   // True after FinishInit was called.
   bool InitDone();
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   std::string js_flow_library_;
 
   // Only set for the browser context constructor. Lazily instantiated.

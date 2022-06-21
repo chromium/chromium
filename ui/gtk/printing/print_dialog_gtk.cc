@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
@@ -116,7 +117,7 @@ class StickyPrintSettingGtk {
   }
 
  private:
-  GtkPrintSettings* last_used_settings_;
+  raw_ptr<GtkPrintSettings> last_used_settings_;
 };
 
 StickyPrintSettingGtk& GetLastUsedSettings() {
@@ -167,7 +168,7 @@ class GtkPrinterList {
   }
 
   std::vector<GtkPrinter*> printers_;
-  GtkPrinter* default_printer_ = nullptr;
+  raw_ptr<GtkPrinter> default_printer_ = nullptr;
 };
 
 }  // namespace

@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -132,7 +133,7 @@ class VaapiVideoDecoderDelegate {
   std::string GetDecryptKeyId() const;
 
   // Both owned by caller.
-  DecodeSurfaceHandler<VASurface>* const vaapi_dec_;
+  const raw_ptr<DecodeSurfaceHandler<VASurface>> vaapi_dec_;
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;
 
   SEQUENCE_CHECKER(sequence_checker_);

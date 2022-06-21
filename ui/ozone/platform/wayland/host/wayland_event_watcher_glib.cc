@@ -6,6 +6,8 @@
 
 #include <glib.h>
 
+#include "base/memory/raw_ptr.h"
+
 namespace ui {
 
 namespace {
@@ -13,8 +15,8 @@ namespace {
 struct GLibWaylandSource : public GSource {
   // Note: The GLibWaylandSource is created and destroyed by GLib. So its
   // constructor/destructor may or may not get called.
-  WaylandEventWatcherGlib* event_watcher;
-  GPollFD* poll_fd;
+  raw_ptr<WaylandEventWatcherGlib> event_watcher;
+  raw_ptr<GPollFD> poll_fd;
 };
 
 gboolean WatchSourcePrepare(GSource* source, gint* timeout_ms) {
@@ -22,7 +24,7 @@ gboolean WatchSourcePrepare(GSource* source, gint* timeout_ms) {
   *timeout_ms = -1;
 
   auto* event_watcher_glib =
-      static_cast<GLibWaylandSource*>(source)->event_watcher;
+      static_cast<GLibWaylandSource*>(source)->event_watcher.get();
   if (event_watcher_glib->HandlePrepare())
     return FALSE;
 
@@ -41,7 +43,7 @@ gboolean WatchSourceDispatch(GSource* source,
                              GSourceFunc unused_func,
                              gpointer data) {
   auto* event_watcher_glib =
-      static_cast<GLibWaylandSource*>(source)->event_watcher;
+      static_cast<GLibWaylandSource*>(source)->event_watcher.get();
   event_watcher_glib->HandleDispatch();
   return TRUE;
 }

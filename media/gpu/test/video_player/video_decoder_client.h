@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
@@ -173,7 +174,7 @@ class VideoDecoderClient {
   // TODO(dstaessens@) Replace with StreamParser.
   std::unique_ptr<media::test::EncodedDataHelper> encoded_data_helper_;
   // The video being decoded.
-  const Video* video_ = nullptr;
+  raw_ptr<const Video> video_ = nullptr;
 
   SEQUENCE_CHECKER(video_player_sequence_checker_);
   SEQUENCE_CHECKER(decoder_client_sequence_checker_);

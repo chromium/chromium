@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
@@ -146,7 +147,7 @@ class DISPLAY_EXPORT Screen {
 
     explicit ScreenSaverSuspender(Screen* screen) : screen_(screen) {}
 
-    Screen* screen_;
+    raw_ptr<Screen> screen_;
   };
 
   // Suspends the platform-specific screensaver until the returned

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/base/ime/linux/input_method_auralinux.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -170,7 +171,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   }
 
  private:
-  LinuxInputMethodContextDelegate* delegate_;
+  raw_ptr<LinuxInputMethodContextDelegate> delegate_;
   VirtualKeyboardControllerStub virtual_keyboard_controller_;
   std::vector<std::u16string> actions_;
   bool is_sync_mode_;
@@ -342,11 +343,11 @@ class InputMethodAuraLinuxTest : public testing::Test {
     delegate_ = nullptr;
   }
 
-  LinuxInputMethodContextFactoryForTesting* factory_;
-  InputMethodAuraLinux* input_method_auralinux_;
-  InputMethodDelegateForTesting* delegate_;
-  LinuxInputMethodContextForTesting* context_;
-  TestResult* test_result_;
+  raw_ptr<LinuxInputMethodContextFactoryForTesting> factory_;
+  raw_ptr<InputMethodAuraLinux> input_method_auralinux_;
+  raw_ptr<InputMethodDelegateForTesting> delegate_;
+  raw_ptr<LinuxInputMethodContextForTesting> context_;
+  raw_ptr<TestResult> test_result_;
 };
 
 TEST_F(InputMethodAuraLinuxTest, BasicSyncModeTest) {

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -155,7 +156,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
   std::unique_ptr<bluez::BluetoothProfileManagerClient::Options> options_;
 
   // The profile registered with the adapter for this socket.
-  BluetoothAdapterProfileBlueZ* profile_;
+  raw_ptr<BluetoothAdapterProfileBlueZ> profile_;
 
   // Pending request to an Accept() call.
   struct AcceptRequest {

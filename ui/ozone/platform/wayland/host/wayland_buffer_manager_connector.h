@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_BUFFER_MANAGER_CONNECTOR_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_BUFFER_MANAGER_CONNECTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 
 #include "base/threading/thread_checker.h"
@@ -41,7 +42,7 @@ class WaylandBufferManagerConnector : public GpuPlatformSupportHost {
 
   // Non-owned pointer, which is used to bind a mojo pointer to the
   // WaylandBufferManagerHost.
-  WaylandBufferManagerHost* const buffer_manager_host_;
+  const raw_ptr<WaylandBufferManagerHost> buffer_manager_host_;
 
   GpuHostBindInterfaceCallback binder_;
   GpuHostTerminateCallback terminate_callback_;

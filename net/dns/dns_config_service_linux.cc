@@ -24,6 +24,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -485,7 +486,7 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
   };
 
   // Raw pointer to owning DnsConfigService.
-  DnsConfigServiceLinux* const service_;
+  const raw_ptr<DnsConfigServiceLinux> service_;
 
   // Null while the `WorkItem` is running on the `ThreadPool`.
   std::unique_ptr<WorkItem> work_item_;

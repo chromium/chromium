@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 
 #include "base/run_loop.h"
@@ -132,7 +133,7 @@ class FakeWmMoveResizeHandler : public ui::WmMoveResizeHandler {
   }
 
  private:
-  ui::PlatformWindow* platform_window_;
+  raw_ptr<ui::PlatformWindow> platform_window_;
   gfx::Rect bounds_;
 
   int hittest_ = -1;
@@ -206,7 +207,7 @@ class HitTestWidgetDelegate : public WidgetDelegate {
   }
 
  private:
-  HitTestNonClientFrameView* frame_view_ = nullptr;
+  raw_ptr<HitTestNonClientFrameView> frame_view_ = nullptr;
 };
 
 // Test host that can intercept calls to the real host.
@@ -268,8 +269,8 @@ class DesktopWindowTreeHostPlatformImplTest
     auto* native_widget = new DesktopNativeWidgetAura(toplevel);
     toplevel_params.native_widget = native_widget;
     host_ = new TestDesktopWindowTreeHostPlatformImpl(toplevel, native_widget);
-    toplevel_params.desktop_window_tree_host = host_;
-    toplevel_params.delegate = delegate_;
+    toplevel_params.desktop_window_tree_host = host_.get();
+    toplevel_params.delegate = delegate_.get();
     toplevel_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     toplevel_params.bounds = bounds;
     toplevel_params.remove_standard_frame = true;
@@ -316,8 +317,8 @@ class DesktopWindowTreeHostPlatformImplTest
                                 base::TimeTicks::Now(), gesture_details);
   }
 
-  HitTestWidgetDelegate* delegate_ = nullptr;
-  TestDesktopWindowTreeHostPlatformImpl* host_ = nullptr;
+  raw_ptr<HitTestWidgetDelegate> delegate_ = nullptr;
+  raw_ptr<TestDesktopWindowTreeHostPlatformImpl> host_ = nullptr;
 };
 
 // These tests are run using either click or touch events.

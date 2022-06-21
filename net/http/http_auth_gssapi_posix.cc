@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -79,7 +80,7 @@ class ScopedBuffer {
 
  private:
   gss_buffer_t buffer_;
-  GSSAPILibrary* gssapi_lib_;
+  raw_ptr<GSSAPILibrary> gssapi_lib_;
 };
 
 // ScopedName releases a gss_name_t when it goes out of scope.
@@ -109,7 +110,7 @@ class ScopedName {
 
  private:
   gss_name_t name_;
-  GSSAPILibrary* gssapi_lib_;
+  raw_ptr<GSSAPILibrary> gssapi_lib_;
 };
 
 bool OidEquals(const gss_OID left, const gss_OID right) {

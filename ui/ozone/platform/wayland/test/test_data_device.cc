@@ -8,6 +8,7 @@
 
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
@@ -67,7 +68,7 @@ struct WlDataDeviceImpl : public TestSelectionDevice::Delegate {
   void OnDestroying() override { delete this; }
 
  private:
-  TestDataDevice* const device_;
+  const raw_ptr<TestDataDevice> device_;
 };
 
 }  // namespace

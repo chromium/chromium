@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_libevent.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
@@ -152,8 +153,8 @@ class TestWaylandServerThread : public base::Thread,
   void OnFileCanWriteWithoutBlocking(int fd) override;
 
   std::unique_ptr<wl_display, DisplayDeleter> display_;
-  wl_client* client_ = nullptr;
-  wl_event_loop* event_loop_ = nullptr;
+  raw_ptr<wl_client> client_ = nullptr;
+  raw_ptr<wl_event_loop> event_loop_ = nullptr;
 
   base::WaitableEvent pause_event_;
   base::WaitableEvent resume_event_;
@@ -188,7 +189,7 @@ class TestWaylandServerThread : public base::Thread,
 
   base::MessagePumpLibevent::FdWatchController controller_;
 
-  OutputDelegate* output_delegate_ = nullptr;
+  raw_ptr<OutputDelegate> output_delegate_ = nullptr;
 };
 
 class TestWaylandServerThread::OutputDelegate {

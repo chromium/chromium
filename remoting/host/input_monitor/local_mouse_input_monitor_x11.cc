@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/input_monitor/local_pointer_input_monitor.h"
 
 #include <sys/select.h>
@@ -80,7 +81,7 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
     // Used to send mouse event notifications.
     LocalInputMonitor::PointerMoveCallback on_mouse_move_;
 
-    x11::Connection* connection_ = nullptr;
+    raw_ptr<x11::Connection> connection_ = nullptr;
   };
 
   scoped_refptr<Core> core_;

@@ -100,7 +100,7 @@ class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
   raw_ptr<sandbox::SandboxInterfaceInfo> sandbox_info_;
 #else
   int argc_;
-  const char** argv_;
+  raw_ptr<const char*> argv_;
 #endif
   OnPreMainMessageLoopRunCallback on_pre_main_message_loop_run_callback_;
   base::OnceClosure on_resources_loaded_callback_;

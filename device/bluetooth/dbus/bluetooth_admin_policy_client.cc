@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -169,7 +170,7 @@ class BluetoothAdminPolicyClientImpl : public BluetoothAdminPolicyClient,
     std::move(error_callback).Run(error_name, error_message);
   }
 
-  dbus::ObjectManager* object_manager_ = nullptr;
+  raw_ptr<dbus::ObjectManager> object_manager_ = nullptr;
 
   // List of observers interested in event notifications from us.
   base::ObserverList<BluetoothAdminPolicyClient::Observer>::Unchecked

@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/nss_service.h"
@@ -269,7 +270,7 @@ class CertificateManagerModel {
                                   CertificateManagerModel::Observer* observer,
                                   CreationCallback callback);
 
-  net::NSSCertDatabase* cert_db_;
+  raw_ptr<net::NSSCertDatabase> cert_db_;
 
   // CertsSource instances providing certificates. The order matters - if a
   // certificate is provided by more than one CertsSource, only the first one is
@@ -279,7 +280,7 @@ class CertificateManagerModel {
   bool hold_back_updates_ = false;
 
   // The observer to notify when certificate list is refreshed.
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
 };
 
 #endif  // CHROME_BROWSER_CERTIFICATE_MANAGER_MODEL_H_

@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 
 namespace logging {
@@ -84,8 +85,8 @@ class BASE_EXPORT ScopedVmoduleSwitches {
 #if BUILDFLAG(USE_RUNTIME_VLOG)
   // Creates a new instance of |VlogInfo| adding |vmodule_switch|.
   VlogInfo* CreateVlogInfoWithSwitches(const std::string& vmodule_switch);
-  VlogInfo* scoped_vlog_info_ = nullptr;
-  VlogInfo* previous_vlog_info_ = nullptr;
+  raw_ptr<VlogInfo> scoped_vlog_info_ = nullptr;
+  raw_ptr<VlogInfo> previous_vlog_info_ = nullptr;
 #endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 };
 }  // namespace logging

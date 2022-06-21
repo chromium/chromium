@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/cursor/cursor_theme_manager.h"
@@ -70,7 +71,7 @@ class WaylandCursorFactory : public BitmapCursorFactory,
                      int loaded_theme_size,
                      wl_cursor_theme* loaded_theme);
 
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   base::ScopedObservation<CursorThemeManager, CursorThemeManagerObserver>
       cursor_theme_observer_{this};

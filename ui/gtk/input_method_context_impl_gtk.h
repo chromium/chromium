@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/glib/glib_integers.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
@@ -77,7 +78,7 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   void SetContextClientWindow(GdkWindow* window);
 
   // A set of callback functions.  Must not be nullptr.
-  ui::LinuxInputMethodContextDelegate* const delegate_;
+  const raw_ptr<ui::LinuxInputMethodContextDelegate> delegate_;
 
   // Input method context type flag.
   //   - true if it supports table-based input methods
@@ -88,7 +89,7 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   bool has_focus_ = false;
 
   // IME's input GTK context.
-  GtkIMContext* gtk_context_ = nullptr;
+  raw_ptr<GtkIMContext> gtk_context_ = nullptr;
 
   // Only used on GTK3.
   gpointer gdk_last_set_client_window_ = nullptr;

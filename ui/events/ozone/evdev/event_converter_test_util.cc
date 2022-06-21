@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/events/ozone/evdev/event_converter_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stdint.h>
 
@@ -110,7 +111,7 @@ class TestDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
   }
 
  private:
-  EventFactoryEvdev* event_factory_evdev_;
+  raw_ptr<EventFactoryEvdev> event_factory_evdev_;
 };
 
 class TestEventFactoryEvdev : public EventFactoryEvdev {

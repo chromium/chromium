@@ -10,6 +10,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/x/x11_workspace_handler.h"
 #include "ui/display/display.h"
 #include "ui/display/display_change_notifier.h"
@@ -75,11 +76,11 @@ class COMPONENT_EXPORT(UI_BASE_X) XDisplayManager
   // X11WorkspaceHandler override:
   void OnCurrentWorkspaceChanged(const std::string& new_workspace) override;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
   std::vector<display::Display> displays_;
   display::DisplayChangeNotifier change_notifier_;
 
-  x11::Connection* const connection_;
+  const raw_ptr<x11::Connection> connection_;
   x11::Window x_root_window_;
   int64_t primary_display_index_ = 0;
 

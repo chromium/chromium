@@ -1836,7 +1836,7 @@ class SSLUITestWithClientCert : public SSLUITestBase {
     loop->Quit();
   }
 
-  net::NSSCertDatabase* cert_db_;
+  raw_ptr<net::NSSCertDatabase> cert_db_;
 };
 
 // SSL client certificate tests are only enabled when using NSS for private key

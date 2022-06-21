@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_input_controller.h"
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -112,7 +113,7 @@ class WaylandInputController : public InputController {
   }
 
  private:
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 };
 
 }  // namespace

@@ -82,7 +82,7 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
 
   std::unique_ptr<password_manager::PasswordManagerExporter> exporter_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // We store |presenter_| and
   // |on_export_progress_callback_| to use them to create a new

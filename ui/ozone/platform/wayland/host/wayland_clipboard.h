@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/public/platform_clipboard.h"
@@ -65,7 +66,7 @@ class WaylandClipboard : public PlatformClipboard {
 
   // WaylandConnection providing optional data device managers, e.g: gtk
   // primary selection.
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   const std::unique_ptr<wl::Clipboard> copypaste_clipboard_;
   std::unique_ptr<wl::Clipboard> primary_selection_clipboard_;

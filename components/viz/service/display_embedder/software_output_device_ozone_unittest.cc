@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -68,7 +69,7 @@ class SoftwareOutputDeviceOzoneTest : public testing::Test {
   std::unique_ptr<SoftwareOutputDeviceOzone> output_device_;
   bool enable_pixel_output_ = false;
 
-  TestSurfaceOzoneCanvas* surface_ozone_ = nullptr;
+  raw_ptr<TestSurfaceOzoneCanvas> surface_ozone_ = nullptr;
 };
 
 SoftwareOutputDeviceOzoneTest::SoftwareOutputDeviceOzoneTest() = default;

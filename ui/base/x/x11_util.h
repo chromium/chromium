@@ -16,6 +16,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -415,7 +416,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XVisualManager {
     x11::ColorMap GetColormap();
 
     const uint8_t depth;
-    const x11::VisualType* const info;
+    const raw_ptr<const x11::VisualType> info;
 
    private:
     x11::ColorMap colormap_{};

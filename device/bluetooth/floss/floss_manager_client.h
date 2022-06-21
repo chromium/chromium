@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/exported_object.h"
@@ -188,11 +189,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
                      const std::string& interface_name) override;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
-  dbus::Bus* bus_ = nullptr;
+  raw_ptr<dbus::Bus> bus_ = nullptr;
 
   // Keep track of the object manager so we can keep track of when the manager
   // disappears. Managed by the bus object (do not delete).
-  dbus::ObjectManager* object_manager_ = nullptr;
+  raw_ptr<dbus::ObjectManager> object_manager_ = nullptr;
 
   // Is there a manager available?
   bool manager_available_ = false;

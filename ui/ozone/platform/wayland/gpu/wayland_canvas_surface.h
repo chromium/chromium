@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -83,7 +84,7 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
   sk_sp<SkSurface> GetNextSurface();
   std::unique_ptr<SharedMemoryBuffer> CreateSharedMemoryBuffer();
 
-  WaylandBufferManagerGpu* const buffer_manager_;
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
   const gfx::AcceleratedWidget widget_;
 
   gfx::Size size_;
@@ -95,14 +96,14 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
 
   // Pending buffer that is to be placed into the |unsubmitted_buffers_| to be
   // processed.
-  SharedMemoryBuffer* pending_buffer_ = nullptr;
+  raw_ptr<SharedMemoryBuffer> pending_buffer_ = nullptr;
 
   // Currently used buffer. Set on PresentCanvas() and released on
   // OnSubmission() call.
-  SharedMemoryBuffer* current_buffer_ = nullptr;
+  raw_ptr<SharedMemoryBuffer> current_buffer_ = nullptr;
 
   // Previously used buffer. Set on OnSubmission().
-  SharedMemoryBuffer* previous_buffer_ = nullptr;
+  raw_ptr<SharedMemoryBuffer> previous_buffer_ = nullptr;
 
   // Used by the internal VSyncProvider implementation. Set on OnPresentation().
   base::TimeTicks last_timestamp_;

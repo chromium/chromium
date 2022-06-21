@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/dbus/bluetooth_agent_service_provider.h"
 
@@ -49,7 +50,7 @@ class BluetoothPairingFloss {
  private:
   // UI Pairing Delegate to make method calls on, this must live as long as
   // the object capturing the PairingContext.
-  device::BluetoothDevice::PairingDelegate* pairing_delegate_;
+  raw_ptr<device::BluetoothDevice::PairingDelegate> pairing_delegate_;
 
   // If pending user interaction, what is expected from the user.
   PairingExpectation pairing_expectation_ = PairingExpectation::kNone;

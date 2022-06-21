@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -279,7 +280,7 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource,
   }
 
   // The source NSSCertDatabase used for listing certificates.
-  net::NSSCertDatabase* cert_db_;
+  raw_ptr<net::NSSCertDatabase> cert_db_;
 
   // ScopedObservation to keep track of the observer for net::CertDatabase.
   base::ScopedObservation<net::CertDatabase, net::CertDatabase::Observer>

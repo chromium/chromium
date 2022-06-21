@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
@@ -86,13 +87,14 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void UpdatePreeditText(const std::u16string& preedit_text);
   void MaybeUpdateActivated();
 
-  WaylandConnection* const connection_;  // TODO(jani) Handle this better
+  const raw_ptr<WaylandConnection>
+      connection_;  // TODO(jani) Handle this better
 
   // Delegate key events to be injected into PlatformEvent system.
-  WaylandKeyboard::Delegate* const key_delegate_;
+  const raw_ptr<WaylandKeyboard::Delegate> key_delegate_;
 
   // Delegate IME-specific events to be handled by //ui code.
-  LinuxInputMethodContextDelegate* const ime_delegate_;
+  const raw_ptr<LinuxInputMethodContextDelegate> ime_delegate_;
 
   std::unique_ptr<ZWPTextInputWrapper> text_input_;
 

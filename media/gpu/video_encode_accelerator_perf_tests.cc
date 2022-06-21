@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "media/base/bitstream_buffer.h"
@@ -545,7 +546,7 @@ class VideoEncoderTest : public ::testing::Test {
   }
 
  protected:
-  PerformanceEvaluator* performance_evaluator_;
+  raw_ptr<PerformanceEvaluator> performance_evaluator_;
   std::vector<BitstreamQualityMetrics> quality_metrics_;
 
  private:

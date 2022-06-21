@@ -5,6 +5,7 @@
 #ifndef DEVICE_BLUETOOTH_BLUEZ_BLUETOOTH_LOCAL_GATT_DESCRIPTOR_BLUEZ_H_
 #define DEVICE_BLUETOOTH_BLUEZ_BLUETOOTH_LOCAL_GATT_DESCRIPTOR_BLUEZ_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_descriptor.h"
@@ -51,7 +52,7 @@ class BluetoothLocalGattDescriptorBlueZ
   device::BluetoothGattCharacteristic::Permissions permissions_;
 
   // Characteristic that contains this descriptor.
-  BluetoothLocalGattCharacteristicBlueZ* characteristic_;
+  raw_ptr<BluetoothLocalGattCharacteristicBlueZ> characteristic_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

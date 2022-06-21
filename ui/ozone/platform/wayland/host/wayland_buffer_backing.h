@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -50,7 +51,7 @@ class WaylandBufferBacking {
 
  protected:
   // Non-owned pointer to the main connection.
-  const WaylandConnection* connection_;
+  raw_ptr<const WaylandConnection> connection_;
 
  private:
   // Requests a new wl_buffer. |callback| will be run with the created wl_buffer

@@ -127,7 +127,7 @@ ScopedVABuffer::~ScopedVABuffer() {
   if (!va_display_)
     return;  // Don't call VA-API function in test.
 
-  base::AutoLockMaybe auto_lock(lock_);
+  base::AutoLockMaybe auto_lock(lock_.get());
   VAStatus va_res = vaDestroyBuffer(va_display_, va_buffer_id_);
   LOG_IF(ERROR, va_res != VA_STATUS_SUCCESS)
       << "Failed to destroy a VA buffer: " << vaErrorStr(va_res);
@@ -163,7 +163,7 @@ ScopedVAImage::ScopedVAImage(base::Lock* lock,
 ScopedVAImage::~ScopedVAImage() {
   CHECK(sequence_checker_.CalledOnValidSequence());
   if (image_->image_id != VA_INVALID_ID) {
-    base::AutoLockMaybe auto_lock(lock_);
+    base::AutoLockMaybe auto_lock(lock_.get());
 
     // |va_buffer_| has to be deleted before vaDestroyImage().
     va_buffer_.reset();

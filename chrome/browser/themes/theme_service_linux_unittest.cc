@@ -112,7 +112,7 @@ class ThemeProviderRedirectedEquivalenceLinuxTest : public ThemeServiceTest {
   }
 
  protected:
-  views::LinuxUI* linux_ui_;
+  raw_ptr<views::LinuxUI> linux_ui_;
 };
 
 // TODO(crbug.com/1310397): There're mismatched colors in some Linux themes.

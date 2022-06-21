@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "base/memory/raw_ptr.h"
 
 #include <cstddef>
 #include <memory>
@@ -294,7 +295,7 @@ class WaylandWindowTest : public WaylandTest {
     return nullptr;
   }
 
-  wl::MockXdgSurface* xdg_surface_;
+  raw_ptr<wl::MockXdgSurface> xdg_surface_;
 
   MouseEvent test_mouse_event_;
 };
@@ -1955,7 +1956,7 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
   ASSERT_TRUE(surface);
 
   struct {
-    wl::TestOutput* output;
+    raw_ptr<wl::TestOutput> output;
     const char* label;
   } screen[] = {{main_output, "main output"},
                 {secondary_output, "secondary output"}};

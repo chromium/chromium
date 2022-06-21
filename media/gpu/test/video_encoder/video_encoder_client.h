@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -240,7 +241,7 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   VideoEncoderClientState encoder_client_state_;
 
   // The video being encoded, owned by the video encoder test environment.
-  const Video* video_ = nullptr;
+  raw_ptr<const Video> video_ = nullptr;
   // Helper used to align data and create frames from the raw video stream.
   std::unique_ptr<media::test::AlignedDataHelper> aligned_data_helper_;
 

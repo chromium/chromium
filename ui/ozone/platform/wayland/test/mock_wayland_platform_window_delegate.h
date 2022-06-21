@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_WAYLAND_PLATFORM_WINDOW_DELEGATE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_WAYLAND_PLATFORM_WINDOW_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 
 namespace ui {
@@ -32,7 +33,7 @@ class MockWaylandPlatformWindowDelegate : public MockPlatformWindowDelegate {
   gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixels) const override;
 
  private:
-  WaylandWindow* wayland_window_ = nullptr;
+  raw_ptr<WaylandWindow> wayland_window_ = nullptr;
 };
 
 }  // namespace ui

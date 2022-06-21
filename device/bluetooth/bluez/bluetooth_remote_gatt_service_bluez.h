@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
@@ -98,7 +99,7 @@ class BluetoothRemoteGattServiceBlueZ
 
   // The device this GATT service belongs to. It's ok to store a raw pointer
   // here since |device_| owns this instance.
-  BluetoothDeviceBlueZ* device_;
+  raw_ptr<BluetoothDeviceBlueZ> device_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

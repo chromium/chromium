@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 
 namespace ui {
@@ -92,8 +93,8 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   std::unique_ptr<XDGSurfaceWrapperImpl> xdg_surface_wrapper_;
 
   // Non-owing WaylandWindow that uses this toplevel wrapper.
-  WaylandWindow* const wayland_window_;
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandWindow> wayland_window_;
+  const raw_ptr<WaylandConnection> connection_;
 
   // XDG Shell Stable object.
   wl::Object<xdg_toplevel> xdg_toplevel_;

@@ -37,7 +37,7 @@ MockWpPresentation::MockWpPresentation()
 MockWpPresentation::~MockWpPresentation() {}
 
 wl_resource* MockWpPresentation::ReleasePresentationCallback() {
-  auto* presentation_callback = presentation_callback_;
+  auto* presentation_callback = presentation_callback_.get();
   presentation_callback_ = nullptr;
   return presentation_callback;
 }

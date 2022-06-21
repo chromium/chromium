@@ -4,6 +4,8 @@
 
 #include "base/debug/dwarf_line_no.h"
 
+#include "base/memory/raw_ptr.h"
+
 #ifdef USE_SYMBOLIZE
 #include "base/debug/buffered_dwarf_reader.h"
 
@@ -75,7 +77,7 @@ struct LineNumberRegisters {
     virtual void Do(LineNumberRegisters* registers) = 0;
   };
 
-  OnCommit* on_commit;
+  raw_ptr<OnCommit> on_commit;
   LineNumberRegisters(ProgramInfo info, OnCommit* on_commit)
       : on_commit(on_commit), is_stmt(info.default_is_stmt) {}
 
@@ -185,7 +187,7 @@ void EvaluateLineNumberProgram(const int fd,
   // number for an address.
   struct OnCommitImpl : public LineNumberRegisters::OnCommit {
    private:
-    LineNumberInfo* info;
+    raw_ptr<LineNumberInfo> info;
     uint64_t module_relative_pc;
     const ProgramInfo& program_info;
 

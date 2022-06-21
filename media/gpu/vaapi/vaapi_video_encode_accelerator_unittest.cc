@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -650,7 +651,7 @@ class VaapiVideoEncodeAcceleratorTest
   std::unique_ptr<VideoEncodeAccelerator> encoder_;
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
   scoped_refptr<MockVaapiWrapper> mock_vpp_vaapi_wrapper_;
-  MockVP9VaapiVideoEncoderDelegate* mock_encoder_ = nullptr;
+  raw_ptr<MockVP9VaapiVideoEncoderDelegate> mock_encoder_ = nullptr;
 };
 
 struct VaapiVideoEncodeAcceleratorTestParam {

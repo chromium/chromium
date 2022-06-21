@@ -9,6 +9,7 @@
 #include <wayland-server-protocol.h>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
@@ -114,20 +115,20 @@ class MockSurface : public ServerObject {
   void set_buffer_scale(int32_t buffer_scale) { buffer_scale_ = buffer_scale; }
 
  private:
-  MockXdgSurface* xdg_surface_ = nullptr;
-  TestSubSurface* sub_surface_ = nullptr;
-  TestViewport* viewport_ = nullptr;
-  TestAlphaBlending* blending_ = nullptr;
-  TestOverlayPrioritizedSurface* prioritized_surface_ = nullptr;
-  TestAugmentedSurface* augmented_surface_ = nullptr;
+  raw_ptr<MockXdgSurface> xdg_surface_ = nullptr;
+  raw_ptr<TestSubSurface> sub_surface_ = nullptr;
+  raw_ptr<TestViewport> viewport_ = nullptr;
+  raw_ptr<TestAlphaBlending> blending_ = nullptr;
+  raw_ptr<TestOverlayPrioritizedSurface> prioritized_surface_ = nullptr;
+  raw_ptr<TestAugmentedSurface> augmented_surface_ = nullptr;
   gfx::Rect opaque_region_ = {-1, -1, 0, 0};
   gfx::Rect input_region_ = {-1, -1, 0, 0};
 
-  wl_resource* frame_callback_ = nullptr;
+  raw_ptr<wl_resource> frame_callback_ = nullptr;
   base::flat_map<wl_resource*, wl_resource*> linux_buffer_releases_;
 
-  wl_resource* attached_buffer_ = nullptr;
-  wl_resource* prev_attached_buffer_ = nullptr;
+  raw_ptr<wl_resource> attached_buffer_ = nullptr;
+  raw_ptr<wl_resource> prev_attached_buffer_ = nullptr;
 
   int32_t buffer_scale_ = -1;
 };

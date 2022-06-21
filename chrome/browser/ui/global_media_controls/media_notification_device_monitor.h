@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_MONITOR_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/system/system_monitor.h"
 #include "build/build_config.h"
@@ -82,7 +83,7 @@ class PollingDeviceMonitorImpl : public MediaNotificationDeviceMonitor {
       media::AudioDeviceDescriptions descriptions);
   void NotifyObservers();
 
-  MediaNotificationDeviceProvider* const device_provider_;
+  const raw_ptr<MediaNotificationDeviceProvider> device_provider_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::vector<std::string> device_ids_;
   bool is_task_posted_ = false;

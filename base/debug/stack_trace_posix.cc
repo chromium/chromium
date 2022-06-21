@@ -25,6 +25,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if !defined(USE_SYMBOLIZE)
@@ -491,7 +492,7 @@ class StreamBacktraceOutputHandler : public BacktraceOutputHandler {
   void HandleOutput(const char* output) override { (*os_) << output; }
 
  private:
-  std::ostream* os_;
+  raw_ptr<std::ostream> os_;
 };
 
 void WarmUpBacktrace() {

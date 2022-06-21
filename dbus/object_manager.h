@@ -9,6 +9,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "dbus/object_path.h"
@@ -327,12 +328,12 @@ class CHROME_DBUS_EXPORT ObjectManager final
   // |service_name_owner_|.
   void UpdateServiceNameOwner(const std::string& new_owner);
 
-  Bus* bus_;
+  raw_ptr<Bus> bus_;
   std::string service_name_;
   std::string service_name_owner_;
   std::string match_rule_;
   ObjectPath object_path_;
-  ObjectProxy* object_proxy_;
+  raw_ptr<ObjectProxy> object_proxy_;
   bool setup_success_;
   bool cleanup_called_;
 
@@ -348,7 +349,7 @@ class CHROME_DBUS_EXPORT ObjectManager final
     Object();
     ~Object();
 
-    ObjectProxy* object_proxy;
+    raw_ptr<ObjectProxy> object_proxy;
 
     // Maps the name of an interface to the specific PropertySet structure
     // of that interface's properties.

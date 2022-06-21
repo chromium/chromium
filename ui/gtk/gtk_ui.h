@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gtk/gtk_ui_platform.h"
@@ -140,7 +141,7 @@ class GtkUi : public views::LinuxUI {
 
   std::unique_ptr<GtkUiPlatform> platform_;
 
-  NativeThemeGtk* native_theme_;
+  raw_ptr<NativeThemeGtk> native_theme_;
 
   // Colors calculated by LoadGtkValues() that are given to the
   // caller while |use_gtk_| is true.

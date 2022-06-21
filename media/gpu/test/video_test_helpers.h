@@ -12,6 +12,7 @@
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -265,7 +266,7 @@ class RawDataHelper {
                 const VideoFrameLayout& layout);
   // |video| and its associated data must outlive this class and VideoFrames
   // returned by GetFrame().
-  Video* const video_;
+  const raw_ptr<Video> video_;
 
   const bool reverse_;
 

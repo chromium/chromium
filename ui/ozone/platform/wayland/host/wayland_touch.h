@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/events/pointer_details.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -78,8 +79,8 @@ class WaylandTouch {
 
   wl::Object<wl_touch> obj_;
   wl::Object<zcr_touch_stylus_v2> zcr_touch_stylus_v2_;
-  WaylandConnection* const connection_;
-  Delegate* const delegate_;
+  const raw_ptr<WaylandConnection> connection_;
+  const raw_ptr<Delegate> delegate_;
 };
 
 class WaylandTouch::Delegate {

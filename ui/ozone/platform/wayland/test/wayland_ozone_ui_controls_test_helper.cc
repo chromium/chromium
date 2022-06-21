@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/test/wayland_ozone_ui_controls_test_helper.h"
+#include "base/memory/raw_ptr.h"
 
 #include <linux/input.h>
 
@@ -119,7 +120,7 @@ class WaylandGlobalEventWaiter : public WaylandInputEmulate::Observer {
 
   base::OnceClosure closure_;
 
-  WaylandInputEmulate* const emulate_;
+  const raw_ptr<WaylandInputEmulate> emulate_;
 
   // Expected pointer location on screen.
   gfx::Point screen_point_;

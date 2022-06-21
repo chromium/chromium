@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/common/net/x509_certificate_model.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -82,8 +83,8 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
   // The title of the certificate viewer dialog, Certificate Viewer: CN.
   std::u16string title_;
 
-  content::WebUI* webui_ = nullptr;
-  ConstrainedWebDialogDelegate* delegate_ = nullptr;
+  raw_ptr<content::WebUI> webui_ = nullptr;
+  raw_ptr<ConstrainedWebDialogDelegate> delegate_ = nullptr;
 };
 
 // Dialog handler which handles calls from the JS WebUI code to view certificate
@@ -123,9 +124,10 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
   int GetCertificateIndex(int requested_index) const;
 
   // The dialog.
-  CertificateViewerDialog* dialog_;
+  raw_ptr<CertificateViewerDialog> dialog_;
 
-  const std::vector<x509_certificate_model::X509CertificateModel>* certs_;
+  raw_ptr<const std::vector<x509_certificate_model::X509CertificateModel>>
+      certs_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CERTIFICATE_VIEWER_WEBUI_H_

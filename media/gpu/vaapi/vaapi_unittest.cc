@@ -539,7 +539,7 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
       VAConfigAttrib attrib{};
       attrib.type = VAConfigAttribEncQualityRange;
       {
-        base::AutoLockMaybe auto_lock(wrapper->va_lock_);
+        base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
         VAStatus va_res = vaGetConfigAttributes(
             wrapper->va_display_, va_profile, entrypoint, &attrib, 1);
         ASSERT_EQ(va_res, VA_STATUS_SUCCESS);
@@ -559,7 +559,7 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
       ASSERT_TRUE(wrapper->CreateContext(gfx::Size(640, 368)));
       ASSERT_EQ(wrapper->pending_va_buffers_.size(), 1u);
       {
-        base::AutoLockMaybe auto_lock(wrapper->va_lock_);
+        base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
         ScopedVABufferMapping mapping(wrapper->va_lock_, wrapper->va_display_,
                                       wrapper->pending_va_buffers_.front());
         ASSERT_TRUE(mapping.IsValid());
@@ -813,7 +813,7 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   // Request the underlying DRM metadata for |scoped_va_surface|.
   VADRMPRIMESurfaceDescriptor va_descriptor{};
   {
-    base::AutoLockMaybe auto_lock(wrapper->va_lock_);
+    base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
     VAStatus va_res =
         vaSyncSurface(wrapper->va_display_, scoped_va_surface->id());
     ASSERT_EQ(va_res, VA_STATUS_SUCCESS);

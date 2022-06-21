@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -171,7 +172,7 @@ class TimeZoneMonitorLinuxImpl
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
-  TimeZoneMonitorLinux* owner_;
+  raw_ptr<TimeZoneMonitorLinux> owner_;
 };
 
 }  // namespace

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,7 +65,7 @@ class NeuralStylusPalmDetectionFilterTest : public testing::Test {
   std::unique_ptr<SharedPalmDetectionFilterState> shared_palm_state;
   EventDeviceInfo nocturne_touchscreen_;
   // Owned by the filter.
-  MockNeuralModel* model_;
+  raw_ptr<MockNeuralModel> model_;
   NeuralStylusPalmDetectionFilterModelConfig model_config_;
   std::unique_ptr<PalmDetectionFilter> palm_detection_filter_;
 };

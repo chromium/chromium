@@ -6,6 +6,7 @@
 #define UI_BASE_X_X11_IDLE_QUERY_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace x11 {
 class Connection;
@@ -25,7 +26,7 @@ class COMPONENT_EXPORT(UI_BASE_X) IdleQueryX11 {
   int IdleTime();
 
  private:
-  x11::Connection* connection_;
+  raw_ptr<x11::Connection> connection_;
 };
 
 }  // namespace ui

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
@@ -177,12 +178,12 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                                  struct wl_callback* callback,
                                  uint32_t time);
 
-  WaylandConnection* const connection_;
-  WaylandDataDeviceManager* const data_device_manager_;
-  WaylandDataDevice* const data_device_;
-  WaylandWindowManager* const window_manager_;
-  WaylandPointer::Delegate* const pointer_delegate_;
-  WaylandTouch::Delegate* const touch_delegate_;
+  const raw_ptr<WaylandConnection> connection_;
+  const raw_ptr<WaylandDataDeviceManager> data_device_manager_;
+  const raw_ptr<WaylandDataDevice> data_device_;
+  const raw_ptr<WaylandWindowManager> window_manager_;
+  const raw_ptr<WaylandPointer::Delegate> pointer_delegate_;
+  const raw_ptr<WaylandTouch::Delegate> touch_delegate_;
 
   State state_ = State::kIdle;
   absl::optional<DragSource> drag_source_;
@@ -207,10 +208,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   // The window that initiated the drag session. Can be null when the session
   // has been started by an external Wayland client.
-  WaylandWindow* origin_window_ = nullptr;
+  raw_ptr<WaylandWindow> origin_window_ = nullptr;
 
   // Current window under pointer.
-  WaylandWindow* window_ = nullptr;
+  raw_ptr<WaylandWindow> window_ = nullptr;
 
   // The most recent location received while dragging the data.
   gfx::PointF last_drag_location_;
@@ -224,13 +225,13 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // Drag icon related variables.
   std::unique_ptr<WaylandSurface> icon_surface_;
   std::unique_ptr<WaylandShmBuffer> icon_buffer_;
-  const SkBitmap* icon_bitmap_ = nullptr;
+  raw_ptr<const SkBitmap> icon_bitmap_ = nullptr;
   gfx::Point icon_offset_;
   wl::Object<wl_callback> icon_frame_callback_;
 
   // Keeps track of the window that holds the pointer grab, i.e. the window that
   // will receive the mouse release event from DispatchPointerRelease().
-  WaylandWindow* pointer_grabber_for_window_drag_ = nullptr;
+  raw_ptr<WaylandWindow> pointer_grabber_for_window_drag_ = nullptr;
 
   std::unique_ptr<ScopedEventDispatcher> nested_dispatcher_;
 

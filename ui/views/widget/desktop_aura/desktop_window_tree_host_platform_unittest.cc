@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
@@ -99,7 +100,7 @@ class TestWidgetObserver : public WidgetObserver {
     run_loop_->Quit();
   }
 
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
   std::unique_ptr<base::RunLoop> run_loop_;
   bool on_widget_destroying_ = false;
   bool visible_ = false;
@@ -281,7 +282,7 @@ class ResizeObserver : public aura::WindowTreeHostObserver {
   }
 
  private:
-  aura::WindowTreeHost* const host_;
+  const raw_ptr<aura::WindowTreeHost> host_;
   int resize_count_ = 0;
   int bounds_change_count_ = 0;
 };

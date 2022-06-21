@@ -8,6 +8,7 @@
 #include <list>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -36,7 +37,7 @@ class PageTracker : public DevToolsEventListener {
                  const base::DictionaryValue& params) override;
 
  private:
-  std::list<std::unique_ptr<WebViewImpl>>* web_views_;
+  raw_ptr<std::list<std::unique_ptr<WebViewImpl>>> web_views_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_PAGE_TRACKER_H_

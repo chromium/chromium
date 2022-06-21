@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
@@ -202,9 +203,9 @@ class WaylandEventSource : public PlatformEventSource,
   // Wrap up method to support async touch release processing.
   void OnTouchReleaseInternal(PointerId id);
 
-  WaylandWindowManager* const window_manager_;
+  const raw_ptr<WaylandWindowManager> window_manager_;
 
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   // Bitmask of EventFlags used to keep track of the the pointer state.
   int pointer_flags_ = 0;

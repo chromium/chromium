@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/gpu/vaapi/vaapi_picture.h"
 #include "ui/gfx/geometry/size.h"
@@ -50,7 +51,7 @@ class VaapiTFPPicture : public VaapiPicture {
  private:
   VaapiStatus Initialize();
 
-  x11::Connection* const connection_;
+  const raw_ptr<x11::Connection> connection_;
 
   x11::Pixmap x_pixmap_;
   scoped_refptr<gl::GLImageGLX> glx_image_;

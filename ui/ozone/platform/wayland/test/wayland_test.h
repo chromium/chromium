@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,7 +70,7 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   base::test::TaskEnvironment task_environment_;
 
   wl::TestWaylandServerThread server_;
-  wl::MockSurface* surface_;
+  raw_ptr<wl::MockSurface> surface_;
 
   MockWaylandPlatformWindowDelegate delegate_;
   std::unique_ptr<ScopedKeyboardLayoutEngine> scoped_keyboard_layout_engine_;

@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
@@ -67,7 +68,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
   base::TimeDelta repeat_delay_;
   base::TimeDelta repeat_interval_;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   base::WeakPtrFactory<EventAutoRepeatHandler> weak_ptr_factory_{this};
 };

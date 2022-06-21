@@ -6,6 +6,7 @@
 #define UI_OZONE_PUBLIC_PLATFORM_GLOBAL_SHORTCUT_LISTENER_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui {
@@ -61,7 +62,7 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformGlobalShortcutListener {
   PlatformGlobalShortcutListenerDelegate* delegate() { return delegate_; }
 
  private:
-  PlatformGlobalShortcutListenerDelegate* delegate_;
+  raw_ptr<PlatformGlobalShortcutListenerDelegate> delegate_;
 };
 
 }  // namespace ui

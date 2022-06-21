@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
@@ -109,13 +110,13 @@ class WaylandWindowManager {
   gfx::AcceleratedWidget AllocateAcceleratedWidget();
 
  private:
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
   base::ObserverList<WaylandWindowObserver> observers_;
 
   base::flat_map<gfx::AcceleratedWidget, WaylandWindow*> window_map_;
 
-  WaylandWindow* located_events_grabber_ = nullptr;
+  raw_ptr<WaylandWindow> located_events_grabber_ = nullptr;
 
   // Stores strictly monotonically increasing counter for allocating unique
   // AccelerateWidgets.

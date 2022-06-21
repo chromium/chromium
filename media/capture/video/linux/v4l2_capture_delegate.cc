@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -186,8 +187,8 @@ class V4L2CaptureDelegate::BufferTracker
   friend class base::RefCounted<BufferTracker>;
   virtual ~BufferTracker();
 
-  V4L2CaptureDevice* const v4l2_;
-  uint8_t* start_;
+  const raw_ptr<V4L2CaptureDevice> v4l2_;
+  raw_ptr<uint8_t> start_;
   size_t length_;
   size_t payload_size_;
 };

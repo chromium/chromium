@@ -11,6 +11,8 @@
 
 #include <wayland-server-core.h>
 
+#include "base/memory/raw_ptr.h"
+
 struct wl_client;
 struct wl_resource;
 
@@ -31,7 +33,7 @@ class ServerObject {
   static void OnResourceDestroyed(wl_resource* resource);
 
  private:
-  wl_resource* resource_;
+  raw_ptr<wl_resource> resource_;
 };
 
 template <class T>

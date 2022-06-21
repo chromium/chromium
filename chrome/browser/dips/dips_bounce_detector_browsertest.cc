@@ -76,7 +76,7 @@ class CookieAccessObserver : public content::WebContentsObserver {
   }
 
  private:
-  content::RenderFrameHost* const render_frame_host_;
+  const raw_ptr<content::RenderFrameHost> render_frame_host_;
   base::RunLoop run_loop_;
 };
 

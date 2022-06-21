@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/exported_object.h"
@@ -342,7 +343,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   base::ObserverList<Observer> observers_;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
-  dbus::Bus* bus_ = nullptr;
+  raw_ptr<dbus::Bus> bus_ = nullptr;
 
   // Adapter managed by this client.
   dbus::ObjectPath adapter_path_;

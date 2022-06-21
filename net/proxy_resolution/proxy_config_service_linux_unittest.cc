@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -389,7 +390,7 @@ class SyncConfigGetter : public ProxyConfigService::Observer {
   base::WaitableEvent event_;
   base::Thread main_thread_;
 
-  ProxyConfigServiceLinux* config_service_;
+  raw_ptr<ProxyConfigServiceLinux> config_service_;
 
   // The config obtained by |main_thread_| and read back by the main
   // thread.

@@ -5,6 +5,7 @@
 #ifndef UI_GTK_X_GTK_EVENT_LOOP_X11_H_
 #define UI_GTK_X_GTK_EVENT_LOOP_X11_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/glib/glib_integers.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gtk/gtk_compat.h"
@@ -21,7 +22,7 @@ class GtkEventLoopX11 {
 
  private:
   // This state is only used on GTK4.
-  GdkSurface* surface_ = nullptr;
+  raw_ptr<GdkSurface> surface_ = nullptr;
   gulong signal_id_ = 0;
 
   // Only called on GTK3.

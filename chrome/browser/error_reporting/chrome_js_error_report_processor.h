@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
@@ -198,7 +199,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   base::Time last_recent_error_reports_cleaning_;
 
   // Clock for dependency injection. Not owned.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 #endif  // CHROME_BROWSER_ERROR_REPORTING_CHROME_JS_ERROR_REPORT_PROCESSOR_H_

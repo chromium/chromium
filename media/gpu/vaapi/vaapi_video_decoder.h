@@ -15,6 +15,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
 #include "base/containers/small_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -268,7 +269,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;
   // TODO(crbug.com/1022246): Instead of having the raw pointer here, getting
   // the pointer from AcceleratedVideoDecoder.
-  VaapiVideoDecoderDelegate* decoder_delegate_ = nullptr;
+  raw_ptr<VaapiVideoDecoderDelegate> decoder_delegate_ = nullptr;
 
   // This is used on AMD protected content implementations to indicate that the
   // DecoderBuffers we receive have been transcrypted and need special handling.

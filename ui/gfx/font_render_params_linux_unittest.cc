@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -137,15 +138,15 @@ class FontRenderParamsTest : public testing::Test {
     FcConfigDestroy(override_config_);
 
     SkiaFontDelegate::SetInstance(
-        const_cast<SkiaFontDelegate*>(original_font_delegate_));
+        const_cast<SkiaFontDelegate*>(original_font_delegate_.get()));
   }
 
  protected:
-  const SkiaFontDelegate* original_font_delegate_;
+  raw_ptr<const SkiaFontDelegate> original_font_delegate_;
   TestFontDelegate test_font_delegate_;
 
-  FcConfig* override_config_ = nullptr;
-  FcConfig* original_config_ = nullptr;
+  raw_ptr<FcConfig> override_config_ = nullptr;
+  raw_ptr<FcConfig> original_config_ = nullptr;
 };
 
 TEST_F(FontRenderParamsTest, Default) {

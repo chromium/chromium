@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
@@ -89,9 +90,9 @@ class DataSource {
 
   wl::Object<T> data_source_;
 
-  ui::WaylandConnection* const connection_;
+  const raw_ptr<ui::WaylandConnection> connection_;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Action selected by the compositor
   uint32_t dnd_action_ = 0;

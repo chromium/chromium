@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SUBSURFACE_H_
 
 #include "base/containers/linked_list.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -63,10 +64,10 @@ class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
   wl::Object<augmented_sub_surface> augmented_subsurface_;
   gfx::PointF position_dip_;
 
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
   // |parent_| refers to the WaylandWindow whose wl_surface is the parent to
   // this subsurface.
-  WaylandWindow* const parent_;
+  const raw_ptr<WaylandWindow> parent_;
 };
 
 }  // namespace ui

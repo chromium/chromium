@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -125,7 +126,7 @@ class VideoEncoder {
   bool NotifyEvent(EncoderEvent event);
 
   // The video currently being encoded.
-  const Video* video_ = nullptr;
+  raw_ptr<const Video> video_ = nullptr;
   // The state of the video encoder.
   std::atomic<EncoderState> video_encoder_state_{EncoderState::kUninitialized};
   // The video encoder client communicating between this class and the hardware

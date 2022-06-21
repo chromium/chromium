@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -484,17 +485,18 @@ class BluetoothBlueZTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  bluez::FakeBluetoothAdapterClient* fake_bluetooth_adapter_client_;
-  bluez::FakeBluetoothAdminPolicyClient* fake_bluetooth_admin_policy_client_;
-  bluez::FakeBluetoothBatteryClient* fake_bluetooth_battery_client_;
-  bluez::FakeBluetoothDeviceClient* fake_bluetooth_device_client_;
+  raw_ptr<bluez::FakeBluetoothAdapterClient> fake_bluetooth_adapter_client_;
+  raw_ptr<bluez::FakeBluetoothAdminPolicyClient>
+      fake_bluetooth_admin_policy_client_;
+  raw_ptr<bluez::FakeBluetoothBatteryClient> fake_bluetooth_battery_client_;
+  raw_ptr<bluez::FakeBluetoothDeviceClient> fake_bluetooth_device_client_;
   scoped_refptr<BluetoothAdapter> adapter_;
 
   int callback_count_;
   int error_callback_count_;
   std::string last_client_error_;
   std::vector<std::unique_ptr<BluetoothDiscoverySession>> discovery_sessions_;
-  BluetoothAdapterProfileBlueZ* adapter_profile_;
+  raw_ptr<BluetoothAdapterProfileBlueZ> adapter_profile_;
 #if BUILDFLAG(IS_CHROMEOS)
   base::HistogramTester histogram_tester_;
 #endif

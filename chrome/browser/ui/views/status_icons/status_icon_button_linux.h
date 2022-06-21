@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
@@ -49,7 +50,7 @@ class StatusIconButtonLinux : public views::StatusIconLinux,
  private:
   std::unique_ptr<views::Widget> widget_;
 
-  aura::WindowTreeHost* host_ = nullptr;
+  raw_ptr<aura::WindowTreeHost> host_ = nullptr;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
 };

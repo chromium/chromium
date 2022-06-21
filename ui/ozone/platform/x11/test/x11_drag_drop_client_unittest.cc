@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -72,7 +73,7 @@ class ClientMessageEventCollector {
   x11::Window window_;
 
   // Not owned.
-  TestDragDropClient* client_;
+  raw_ptr<TestDragDropClient> client_;
 
   std::vector<x11::ClientMessageEvent> events_;
 };
@@ -96,7 +97,7 @@ class TestMoveLoop : public X11MoveLoop {
 
  private:
   // Not owned.
-  X11MoveLoopDelegate* delegate_;
+  raw_ptr<X11MoveLoopDelegate> delegate_;
 
   // Ends the move loop.
   base::OnceClosure quit_closure_;
@@ -155,7 +156,7 @@ class SimpleTestDragDropClient : public XDragDropClient,
   x11::Window target_window_ = x11::Window::None;
 
   // The move loop. Not owned.
-  TestMoveLoop* loop_ = nullptr;
+  raw_ptr<TestMoveLoop> loop_ = nullptr;
 
   base::OnceClosure quit_closure_;
 };
@@ -296,7 +297,7 @@ bool SimpleTestDragDropClient::IsMoveLoopRunning() {
 std::unique_ptr<X11MoveLoop> SimpleTestDragDropClient::CreateMoveLoop(
     X11MoveLoopDelegate* delegate) {
   loop_ = new TestMoveLoop(delegate);
-  return base::WrapUnique(loop_);
+  return base::WrapUnique(loop_.get());
 }
 
 DragOperation SimpleTestDragDropClient::StartDragAndDrop(

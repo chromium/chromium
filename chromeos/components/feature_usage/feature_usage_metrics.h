@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -98,11 +99,11 @@ class FeatureUsageMetrics final : public base::PowerSuspendObserver {
   base::Time Now() const;
 
   const std::string histogram_name_;
-  const Delegate* const delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ptr<const Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::Time last_time_enabled_reported_;
 
-  const base::Clock* const clock_;
+  const raw_ptr<const base::Clock> clock_;
   base::Time start_usage_;
   base::OneShotTimer timer_;
 

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "dbus/bus.h"
@@ -788,7 +789,7 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
     std::move(error_callback).Run(error_name, error_message);
   }
 
-  dbus::ObjectManager* object_manager_;
+  raw_ptr<dbus::ObjectManager> object_manager_;
 
   // List of observers interested in event notifications from us.
   base::ObserverList<BluetoothDeviceClient::Observer>::Unchecked observers_;

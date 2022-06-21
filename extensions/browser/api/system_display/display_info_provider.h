@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 
@@ -143,7 +144,7 @@ class DisplayInfoProvider : public display::DisplayObserver {
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
-  display::Screen* const screen_;
+  const raw_ptr<display::Screen> screen_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 };

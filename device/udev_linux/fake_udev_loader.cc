@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 
 struct udev {
   // empty
@@ -21,7 +22,7 @@ struct udev_list_entry {
   udev_list_entry& operator=(const udev_list_entry& other) = delete;
 
   const std::string name;
-  udev_list_entry* next = nullptr;
+  raw_ptr<udev_list_entry> next = nullptr;
 };
 
 struct udev_device {

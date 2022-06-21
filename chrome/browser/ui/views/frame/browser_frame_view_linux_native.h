@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_NATIVE_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_NATIVE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "ui/views/linux_ui/nav_button_provider.h"
 #include "ui/views/linux_ui/window_frame_provider.h"
@@ -57,7 +58,7 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
 
   std::unique_ptr<views::NavButtonProvider> nav_button_provider_;
 
-  views::WindowFrameProvider* const window_frame_provider_;
+  const raw_ptr<views::WindowFrameProvider> window_frame_provider_;
 
   DrawFrameButtonParams cache_{0, false, false};
 };

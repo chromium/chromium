@@ -8,6 +8,7 @@
 #include <vulkan/vulkan_core.h>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/buffer_types.h"
@@ -114,8 +115,8 @@ class VulkanOverlayRenderer : public RendererBase {
 
   std::unique_ptr<PlatformWindowSurface> window_surface_;
 
-  SurfaceFactoryOzone* const surface_factory_ozone_;
-  gpu::VulkanImplementation* const vulkan_implementation_;
+  const raw_ptr<SurfaceFactoryOzone> surface_factory_ozone_;
+  const raw_ptr<gpu::VulkanImplementation> vulkan_implementation_;
   std::unique_ptr<gpu::VulkanDeviceQueue> device_queue_;
   std::unique_ptr<gpu::VulkanCommandPool> command_pool_;
   std::unique_ptr<OverlaySurface> overlay_surface_;

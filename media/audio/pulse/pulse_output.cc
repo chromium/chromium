@@ -258,7 +258,7 @@ void PulseAudioOutputStream::Stop() {
 
   // Set |source_callback_| to nullptr so all FulfillWriteRequest() calls which
   // may occur while waiting on the flush and cork exit immediately.
-  auto* callback = source_callback_;
+  auto* callback = source_callback_.get();
   source_callback_ = nullptr;
 
   // Flush the stream prior to cork, doing so after will cause hangs.  Write

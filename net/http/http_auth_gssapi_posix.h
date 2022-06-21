@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/native_library.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
@@ -214,7 +215,7 @@ class ScopedSecurityContext {
 
  private:
   gss_ctx_id_t security_context_ = GSS_C_NO_CONTEXT;
-  GSSAPILibrary* gssapi_lib_;
+  raw_ptr<GSSAPILibrary> gssapi_lib_;
 };
 
 
@@ -247,7 +248,7 @@ class NET_EXPORT_PRIVATE HttpAuthGSSAPI : public HttpAuthMechanism {
                            const NetLogWithSource& net_log);
 
   gss_OID gss_oid_;
-  GSSAPILibrary* library_;
+  raw_ptr<GSSAPILibrary> library_;
   std::string decoded_server_auth_token_;
   ScopedSecurityContext scoped_sec_context_;
   HttpAuth::DelegationType delegation_type_ = HttpAuth::DelegationType::kNone;

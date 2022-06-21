@@ -6,6 +6,7 @@
 #include <wayland-server.h>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -131,9 +132,9 @@ class WaylandScreenTest : public WaylandTest {
     EXPECT_EQ(display_for_widget.id(), expected_display_id);
   }
 
-  wl::MockZAuraShell* mock_zaura_shell_ = nullptr;
-  wl::TestOutput* output_ = nullptr;
-  WaylandOutputManager* output_manager_ = nullptr;
+  raw_ptr<wl::MockZAuraShell> mock_zaura_shell_ = nullptr;
+  raw_ptr<wl::TestOutput> output_ = nullptr;
+  raw_ptr<WaylandOutputManager> output_manager_ = nullptr;
 
   std::unique_ptr<WaylandScreen> platform_screen_;
 };
@@ -1058,9 +1059,9 @@ class LazilyConfiguredScreenTest
     aux_output_->SetRect({0, 0, 800, 600});
   }
 
-  wl::TestOutput* primary_output_ = nullptr;
-  wl::TestOutput* aux_output_ = nullptr;
-  WaylandOutputManager* output_manager_ = nullptr;
+  raw_ptr<wl::TestOutput> primary_output_ = nullptr;
+  raw_ptr<wl::TestOutput> aux_output_ = nullptr;
+  raw_ptr<WaylandOutputManager> output_manager_ = nullptr;
   bool auto_configure;
 };
 

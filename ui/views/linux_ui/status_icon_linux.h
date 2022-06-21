@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -64,7 +65,7 @@ class VIEWS_EXPORT StatusIconLinux {
   Delegate* delegate() { return delegate_; }
 
  protected:
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 }  // namespace views

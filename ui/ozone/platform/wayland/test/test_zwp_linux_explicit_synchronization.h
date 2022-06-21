@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_ZWP_LINUX_EXPLICIT_SYNCHRONIZATION_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_ZWP_LINUX_EXPLICIT_SYNCHRONIZATION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 #include "ui/ozone/platform/wayland/test/server_object.h"
@@ -20,7 +21,7 @@ class TestLinuxSurfaceSynchronization : public ServerObject {
   wl_resource* surface_resource() const { return surface_resource_; }
 
  private:
-  wl_resource* surface_resource_;
+  raw_ptr<wl_resource> surface_resource_;
 };
 
 // Manage wl_viewporter object.
