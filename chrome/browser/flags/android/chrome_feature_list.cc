@@ -210,6 +210,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextMenuPopupStyle,
     &kContextualSearchDebug,
     &kContextualSearchDelayedIntelligence,
+    &kContextualSearchDisableOnlineDetection,
     &kContextualSearchForceCaption,
     &kContextualSearchMlTapSuppression,
     &kContextualSearchTapDisableOverride,
@@ -587,6 +588,10 @@ const base::Feature kContextualSearchDebug{"ContextualSearchDebug",
 
 const base::Feature kContextualSearchDelayedIntelligence{
     "ContextualSearchDelayedIntelligence", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kContextualSearchDisableOnlineDetection{
+    "ContextualSearchDisableOnlineDetection",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContextualSearchForceCaption{
     "ContextualSearchForceCaption", base::FEATURE_DISABLED_BY_DEFAULT};

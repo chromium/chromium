@@ -32,7 +32,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        ContextualSearchFieldTrial.ONLINE_DETECTION_DISABLED,
+        ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION,
         "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION + ","
                 + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
