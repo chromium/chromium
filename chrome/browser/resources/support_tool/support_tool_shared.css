@@ -8,7 +8,7 @@
  * #css_wrapper_metadata_end */
 
 /* Common styles for Support Tool components. */
-h2 {
+h1 {
   color: var(--cr-text-color-primary);
   font-size: 20px;
   font-weight: normal;
@@ -19,20 +19,21 @@ h2 {
   color: var(--cr-title-text-color);
   font-size: 14px;
   line-height: 20px;
-  margin-bottom: 10px;
-  margin-top: 10px;
+  margin-bottom: 8px;
+  margin-top: 8px;
 }
 
 .navigation-buttons {
   float: right;
-  margin-bottom: 30px;
-  margin-top: 30px;
+  margin-bottom: 20px;
+  margin-top: 32px;
   position: relative;
   right: 0;
 }
 
 .support-case-id {
   height: 32px;
+  margin-bottom: 3px;
   width: 248px;
 }
 
@@ -43,4 +44,8 @@ h2 {
 
 .data-collector-list {
   width: 520px;
+}
+
+cr-icon-button {
+  --cr-icon-button-fill-color: white;
 }

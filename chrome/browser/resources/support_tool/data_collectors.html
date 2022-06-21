@@ -3,12 +3,14 @@
      found in the LICENSE file. -->
 
 <style include="support-tool-shared cr-shared-style">
-  .data-collector-list {
-    height: 254px;
-  }
+    .data-collector-list {
+      /* Using negative margin to cancel out the padding of the top-most item if
+      the list to set the spacing between items to 8px.*/
+      margin-top: -8px;
+    }
 </style>
 
-<h2>Step 2 of 4: Select diagnostics data to export</h2>
+<h1>Step 2 of 4: Select diagnostics data to export</h1>
 <iron-list class="data-collector-list" items="[[dataCollectors_]]">
   <template>
     <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}">

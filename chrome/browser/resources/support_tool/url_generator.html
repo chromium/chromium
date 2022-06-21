@@ -12,14 +12,13 @@
   }
 
   .data-collector-list {
-    height: 148px;
-    padding-bottom: 8px;
-    padding-top: 8px;
+    /* Using negative margin to cancel out the padding of the top-most item if
+    the list to set the spacing between items to 8px.*/
+    margin-top: -8px;
   }
 
   #info-text {
     color: var(--cr-secondary-text-color);
-    margin-top: 8px;
   }
 
   .navigation-buttons {
@@ -28,20 +27,21 @@
   }
 </style>
 
-<h2>Get a Support Tool link</h2>
+<h1>Get a Support Tool link</h1>
 <div class="support-tool-title">Support Case ID</div>
 <cr-input id="caseIdInput" class="support-case-id" value="{{caseId_}}"
   spellcheck="false" maxlength="20"">
 </cr-input>
 <div class="support-tool-title">Data sources to collect</div>
-<iron-list class="data-collector-list" items="[[dataCollectors_]]">
-  <template>
+<div class="data-collector-list">
+  <template is="dom-repeat" items="[[dataCollectors_]]">
     <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}" 
         on-click="onDataCollectorItemClicked_">
       [[item.name]]
     </cr-checkbox>
   </template>
-</iron-list>
+</div>
+
 <div class="support-tool-title">Get a link</div>
 <div id="info-text">
   Copy and send this link to the user to collect the logs.
