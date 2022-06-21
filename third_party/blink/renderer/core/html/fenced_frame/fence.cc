@@ -32,6 +32,8 @@ mojom::blink::ReportingDestination ToMojom(
       return mojom::blink::ReportingDestination::kSeller;
     case V8FenceReportingDestination::Enum::kComponentSeller:
       return mojom::blink::ReportingDestination::kComponentSeller;
+    case V8FenceReportingDestination::Enum::kSharedStorageSelectUrl:
+      return mojom::blink::ReportingDestination::kSharedStorageSelectUrl;
   }
 }
 
