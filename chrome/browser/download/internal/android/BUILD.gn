@@ -214,7 +214,7 @@ android_resources("java_resources") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerTest.java",
@@ -236,6 +236,7 @@ android_library("javatests") {
     "//chrome/browser/ui/messages/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
     "//components/messages/android:java",

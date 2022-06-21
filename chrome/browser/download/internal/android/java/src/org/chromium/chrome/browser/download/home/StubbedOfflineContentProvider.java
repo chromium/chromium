@@ -133,4 +133,8 @@ public class StubbedOfflineContentProvider implements OfflineContentProvider {
         }
         return null;
     }
+
+    public ArrayList<OfflineItem> getItemsSynchronously() {
+        return mItems;
+    }
 }
