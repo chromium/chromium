@@ -115,8 +115,7 @@ void H264Encoder::EncodeOnEncodingTaskRunner(
   TRACE_EVENT0("media", "H264Encoder::EncodeOnEncodingTaskRunner");
   DCHECK(encoding_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_NV12 ||
-         frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_I420 ||
-         frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_I420A);
+         frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_I420);
 
   if (frame->format() == media::PIXEL_FORMAT_NV12)
     frame = ConvertToI420ForSoftwareEncoder(frame);
