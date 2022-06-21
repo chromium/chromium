@@ -68977,16 +68977,38 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="kDisabledBecauseOfFailedLaunch"/>
 </enum>
 
+<enum name="NetworkSecurityDowngrade">
+  <summary>
+    Possible instances of WiFi security downgrades that happen after initial
+    connection.
+  </summary>
+  <int value="0" label="Downgrade to WPA"/>
+  <int value="1" label="Downgrade to WPA2"/>
+  <int value="2" label="Downgrade to EAP-WPA"/>
+  <int value="3" label="Downgrade to EAP-WPA2"/>
+</enum>
+
 <enum name="NetworkSecurityType">
   <summary>Shill's WiFi security types.</summary>
-  <int value="0" label="UNKNOWN"/>
-  <int value="1" label="NONE"/>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None"/>
   <int value="2" label="WEP"/>
   <int value="3" label="WPA"/>
   <int value="4" label="802.11i/RSN"/>
-  <int value="5" label="802.1x"/>
+  <int value="5" label="802.1X"/>
   <int value="6" label="PSK"/>
-  <int value="7" label="WPA3"/>
+  <int value="7" label="WPA 3"/>
+  <int value="8" label="WPA 1/2"/>
+  <int value="9" label="WPA 2"/>
+  <int value="10" label="WPA 2/3"/>
+  <int value="11" label="Enterprise WPA"/>
+  <int value="12" label="Enterprise WPA 1/2"/>
+  <int value="13" label="Enterprise WPA 2"/>
+  <int value="14" label="Enterprise WPA 2/3"/>
+  <int value="15" label="Enterprise WPA 3"/>
+  <int value="16" label="WPA 1/2/3"/>
+  <int value="17" label="Enterprise WPA 1/2/3"/>
+  <int value="18" label="Enterprise WEP"/>
 </enum>
 
 <enum name="NetworkServiceAvailability">
