@@ -23,6 +23,9 @@
 // If YES, the module will show a placeholder UI.
 @property(nonatomic, assign) BOOL isPlaceholder;
 
+// Returns the intrisic height for the entire module, including its content.
+- (CGFloat)calculateIntrinsicHeight;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_CONTENT_SUGGESTIONS_MODULE_CONTAINER_H_
