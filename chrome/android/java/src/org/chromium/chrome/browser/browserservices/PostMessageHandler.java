@@ -12,6 +12,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.PostMessageBackend;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier.OriginVerificationListener;
@@ -51,6 +52,7 @@ public class PostMessageHandler implements OriginVerificationListener {
             @Override
             public void onMessage(MessagePayload messagePayload, MessagePort[] sentPorts) {
                 mPostMessageBackend.onPostMessage(messagePayload.getAsString(), null);
+                RecordHistogram.recordBooleanHistogram("CustomTabs.PostMessage.OnMessage", true);
             }
         };
     }
@@ -152,6 +154,8 @@ public class PostMessageHandler implements OriginVerificationListener {
                 mChannel[0].postMessage(new MessagePayload(message), null);
             }
         });
+        RecordHistogram.recordBooleanHistogram(
+                "CustomTabs.PostMessage.PostMessageFromClientApp", true);
         return CustomTabsService.RESULT_SUCCESS;
     }
 
