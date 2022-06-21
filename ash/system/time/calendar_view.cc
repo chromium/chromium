@@ -60,6 +60,8 @@ constexpr int kExpandedCalendarPadding = 8;
 constexpr int kChevronPadding = calendar_utils::kColumnSetPadding - 1;
 constexpr int kEventListViewVerticalPadding = 6;
 constexpr int kEventListViewHorizontalOffset = 1;
+constexpr int kMonthHeaderLabelTopPadding = 14;
+constexpr int kMonthHeaderLabelBottomPadding = 2;
 
 // The offset for `month_label_` to make it align with `month_header`.
 constexpr int kMonthLabelPaddingOffset = -1;
@@ -210,9 +212,9 @@ class CalendarView::MonthHeaderLabelView : public views::View {
     month_label_->SetText(month_name_);
     SetupLabel(month_label_);
     month_label_->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(kLabelVerticalPadding,
+        gfx::Insets::TLBR(kMonthHeaderLabelTopPadding,
                           kContentHorizontalPadding + kMonthLabelPaddingOffset,
-                          kLabelVerticalPadding, 0)));
+                          kMonthHeaderLabelBottomPadding, 0)));
   }
   MonthHeaderLabelView(const MonthHeaderLabelView&) = delete;
   MonthHeaderLabelView& operator=(const MonthHeaderLabelView&) = delete;
