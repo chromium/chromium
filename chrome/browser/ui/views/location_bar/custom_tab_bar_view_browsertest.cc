@@ -259,8 +259,9 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
 }
 
 // Check the custom tab bar is not instantiated for a popup window.
-// Flaky on linux: crbug.com/1186608, crbug.com/1179071
-#if BUILDFLAG(IS_LINUX)
+// Flaky on linux and chromeos : crbug.com/1186608, crbug.com/1179071,
+// crbug.com/1338068
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_IsNotCreatedInPopup DISABLED_IsNotCreatedInPopup
 #else
 #define MAYBE_IsNotCreatedInPopup IsNotCreatedInPopup
