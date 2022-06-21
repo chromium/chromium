@@ -1199,7 +1199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CredentialEntryActions.{CredentialEntryType}"
-    enum="CredentialEntryAction" expires_after="M104">
+    enum="CredentialEntryAction" expires_after="M108">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
