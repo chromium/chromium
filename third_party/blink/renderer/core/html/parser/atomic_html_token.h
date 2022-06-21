@@ -199,19 +199,21 @@ inline void AtomicHTMLToken::InitializeAttributes(
     if (attribute.NameIsEmpty())
       continue;
 
+#if DCHECK_IS_ON()
     attribute.NameRange().CheckValid();
     attribute.ValueRange().CheckValid();
+#endif
 
-    AtomicString value(attribute.GetValue());
     // The string pointer in |value| is null for attributes with no values, but
     // the null atom is used to represent absence of attributes; attributes with
     // no values have the value set to an empty atom instead.
-    if (value == g_null_atom) {
-      value = g_empty_atom;
-    }
-    const QualifiedName& name = NameForAttribute(attribute);
+    QualifiedName name = NameForAttribute(attribute);
     if (added_attributes.insert(name.LocalName()).is_new_entry) {
-      attributes_.push_back(Attribute(name, value));
+      AtomicString value(attribute.GetValue());
+      if (value.IsNull()) {
+        value = g_empty_atom;
+      }
+      attributes_.UncheckedAppend(Attribute(std::move(name), std::move(value)));
     } else {
       duplicate_attribute_ = true;
     }
