@@ -48,6 +48,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -55,7 +56,9 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::Return;
 using ::testing::WithArgs;
 
@@ -201,7 +204,10 @@ class SemanticElementFinderBrowserTest
     return ClientStatus(captured_processed_actions[0].status());
   }
 
-  int GetBackendNodeId(Selector selector, ClientStatus* status_out) {
+  int GetBackendNodeId(
+      Selector selector,
+      ClientStatus* status_out,
+      content::GlobalRenderFrameHostId* frame_id_out = nullptr) {
     std::unique_ptr<ElementFinderResult> element_result;
     int backend_node_id = -1;
 
@@ -220,6 +226,10 @@ class SemanticElementFinderBrowserTest
       return backend_node_id;
     }
 
+    if (frame_id_out) {
+      *frame_id_out = element_result->render_frame_host()->GetGlobalId();
+    }
+
     // Second part in sequence, lookup backend node id.
     base::RunLoop run_loop_2;
     web_controller_->GetBackendNodeId(
@@ -233,6 +243,40 @@ class SemanticElementFinderBrowserTest
 
     log_info_.Clear();
     return backend_node_id;
+  }
+
+  std::string GetFieldValue(Selector selector, ClientStatus* status_out) {
+    std::unique_ptr<ElementFinderResult> element_result;
+    std::string value;
+
+    base::RunLoop run_loop_1;
+    web_controller_->FindElement(
+        selector, true,
+        base::BindLambdaForTesting(
+            [&](const ClientStatus& status,
+                std::unique_ptr<ElementFinderResult> result) {
+              element_result = std::move(result);
+              *status_out = status;
+              run_loop_1.Quit();
+            }));
+    run_loop_1.Run();
+    if (!status_out->ok()) {
+      return value;
+    }
+
+    base::RunLoop run_loop_2;
+    web_controller_->GetFieldValue(
+        *element_result,
+        base::BindLambdaForTesting(
+            [&](const ClientStatus& status, const std::string& element_value) {
+              *status_out = status;
+              value = element_value;
+              run_loop_2.Quit();
+            }));
+    run_loop_2.Run();
+
+    log_info_.Clear();
+    return value;
   }
 
  protected:
@@ -318,20 +362,32 @@ IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
                        ElementExistenceCheckWithSemanticModelOOPIF) {
+  // Frames return an error by default.
+  EXPECT_CALL(autofill_assistant_agent_, GetSemanticNodes)
+      .WillRepeatedly(RunOnceCallback<4>(
+          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+
   ClientStatus status;
-  int backend_node_id =
-      GetBackendNodeId(Selector({"#iframeExternal", "#button"}), &status);
+  content::GlobalRenderFrameHostId frame_id;
+  int backend_node_id = GetBackendNodeId(
+      Selector({"#iframeExternal", "#button"}), &status, &frame_id);
   EXPECT_TRUE(status.ok());
 
   NodeData node_data;
   node_data.backend_node_id = backend_node_id;
-  EXPECT_CALL(autofill_assistant_agent_,
+
+  MockAutofillAssistantAgent frame_autofill_assistant_agent_;
+  content::RenderFrameHost::FromID(frame_id)
+      ->GetRemoteAssociatedInterfaces()
+      ->OverrideBinderForTesting(
+          mojom::AutofillAssistantAgent::Name_,
+          base::BindRepeating(
+              &MockAutofillAssistantAgent::BindPendingReceiver,
+              base::Unretained(&frame_autofill_assistant_agent_)));
+  EXPECT_CALL(frame_autofill_assistant_agent_,
               GetSemanticNodes(1, 2, false, base::Milliseconds(5000), _))
       .WillOnce(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
-                                   std::vector<NodeData>{node_data}))
-      // Capture any other frames.
-      .WillRepeatedly(RunOnceCallback<4>(
-          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+                                   std::vector<NodeData>{node_data}));
 
   // We pretend that the button is the correct element.
   SelectorProto proto;
@@ -461,6 +517,210 @@ IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest, FillInputInMainFrame) {
+  // Frames return an error by default.
+  EXPECT_CALL(autofill_assistant_agent_, GetSemanticNodes)
+      .WillRepeatedly(RunOnceCallback<4>(
+          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+  EXPECT_CALL(autofill_assistant_agent_, SetElementValue).Times(0);
+
+  Selector css_selector({"#input1"});
+  ClientStatus input_status;
+  content::GlobalRenderFrameHostId frame_id;
+  int backend_node_id =
+      GetBackendNodeId(css_selector, &input_status, &frame_id);
+  ASSERT_TRUE(input_status.ok());
+
+  auto* frame = content::RenderFrameHost::FromID(frame_id);
+  ASSERT_TRUE(frame != nullptr);
+  EXPECT_THAT(frame, Eq(web_contents()->GetPrimaryMainFrame()));
+
+  NodeData node_data;
+  node_data.backend_node_id = backend_node_id;
+
+  MockAutofillAssistantAgent frame_autofill_assistant_agent_;
+  frame->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+      mojom::AutofillAssistantAgent::Name_,
+      base::BindRepeating(&MockAutofillAssistantAgent::BindPendingReceiver,
+                          base::Unretained(&frame_autofill_assistant_agent_)));
+  EXPECT_CALL(frame_autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, false, _, _))
+      .WillOnce(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
+                                   std::vector<NodeData>{node_data}));
+  std::u16string expected_value = u"native";
+  EXPECT_CALL(frame_autofill_assistant_agent_,
+              SetElementValue(backend_node_id, expected_value,
+                              /* send_events= */ true, _))
+      .WillOnce(RunOnceCallback<3>(true));
+
+  SelectorProto proto;
+  auto* semantic_filter = proto.add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
+
+  ElementFinderResult element;
+  ClientStatus element_status;
+  FindElement(Selector(proto), &element_status, &element);
+  ASSERT_TRUE(element_status.ok());
+
+  base::RunLoop devtools_run_loop;
+  web_controller_->SetValueAttribute(
+      "devtools", element,
+      base::BindLambdaForTesting([&](const ClientStatus& status) {
+        EXPECT_TRUE(status.ok());
+        devtools_run_loop.Quit();
+      }));
+  devtools_run_loop.Run();
+  ClientStatus check_status;
+  EXPECT_EQ(GetFieldValue(css_selector, &check_status), "devtools");
+  EXPECT_TRUE(check_status.ok());
+
+  base::RunLoop native_run_loop;
+  web_controller_->SetNativeValue(
+      "native", element,
+      base::BindLambdaForTesting([&](const ClientStatus& status) {
+        EXPECT_TRUE(status.ok());
+        native_run_loop.Quit();
+      }));
+  native_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest, FillInputInIFrame) {
+  // Frames return an error by default.
+  EXPECT_CALL(autofill_assistant_agent_, GetSemanticNodes)
+      .WillRepeatedly(RunOnceCallback<4>(
+          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+  EXPECT_CALL(autofill_assistant_agent_, SetElementValue).Times(0);
+
+  Selector css_selector({"#iframe", "#input"});
+  ClientStatus input_status;
+  content::GlobalRenderFrameHostId frame_id;
+  int backend_node_id =
+      GetBackendNodeId(css_selector, &input_status, &frame_id);
+  ASSERT_TRUE(input_status.ok());
+
+  auto* frame = content::RenderFrameHost::FromID(frame_id);
+  ASSERT_TRUE(frame != nullptr);
+  EXPECT_THAT(frame, Not(Eq(web_contents()->GetPrimaryMainFrame())));
+
+  NodeData node_data;
+  node_data.backend_node_id = backend_node_id;
+
+  MockAutofillAssistantAgent frame_autofill_assistant_agent_;
+  frame->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+      mojom::AutofillAssistantAgent::Name_,
+      base::BindRepeating(&MockAutofillAssistantAgent::BindPendingReceiver,
+                          base::Unretained(&frame_autofill_assistant_agent_)));
+  EXPECT_CALL(frame_autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, false, _, _))
+      .WillOnce(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
+                                   std::vector<NodeData>{node_data}));
+  std::u16string expected_value = u"native";
+  EXPECT_CALL(frame_autofill_assistant_agent_,
+              SetElementValue(backend_node_id, expected_value,
+                              /* send_events= */ true, _))
+      .WillOnce(RunOnceCallback<3>(true));
+
+  SelectorProto proto;
+  auto* semantic_filter = proto.add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
+
+  ElementFinderResult element;
+  ClientStatus element_status;
+  FindElement(Selector(proto), &element_status, &element);
+  ASSERT_TRUE(element_status.ok());
+
+  base::RunLoop devtools_run_loop;
+  web_controller_->SetValueAttribute(
+      "devtools", element,
+      base::BindLambdaForTesting([&](const ClientStatus& status) {
+        EXPECT_TRUE(status.ok());
+        devtools_run_loop.Quit();
+      }));
+  devtools_run_loop.Run();
+  ClientStatus check_status;
+  EXPECT_EQ(GetFieldValue(css_selector, &check_status), "devtools");
+  EXPECT_TRUE(check_status.ok());
+
+  base::RunLoop native_run_loop;
+  web_controller_->SetNativeValue(
+      "native", element,
+      base::BindLambdaForTesting([&](const ClientStatus& status) {
+        EXPECT_TRUE(status.ok());
+        native_run_loop.Quit();
+      }));
+  native_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest, FillInputInOOPIF) {
+  // Frames return an error by default.
+  EXPECT_CALL(autofill_assistant_agent_, GetSemanticNodes)
+      .WillRepeatedly(RunOnceCallback<4>(
+          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+  EXPECT_CALL(autofill_assistant_agent_, SetElementValue).Times(0);
+
+  Selector css_selector({"#iframeExternal", "#input"});
+  ClientStatus input_status;
+  content::GlobalRenderFrameHostId frame_id;
+  int backend_node_id =
+      GetBackendNodeId(css_selector, &input_status, &frame_id);
+  ASSERT_TRUE(input_status.ok());
+
+  auto* frame = content::RenderFrameHost::FromID(frame_id);
+  ASSERT_TRUE(frame != nullptr);
+  EXPECT_THAT(frame, Not(Eq(web_contents()->GetPrimaryMainFrame())));
+
+  NodeData node_data;
+  node_data.backend_node_id = backend_node_id;
+
+  MockAutofillAssistantAgent frame_autofill_assistant_agent_;
+  frame->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+      mojom::AutofillAssistantAgent::Name_,
+      base::BindRepeating(&MockAutofillAssistantAgent::BindPendingReceiver,
+                          base::Unretained(&frame_autofill_assistant_agent_)));
+  EXPECT_CALL(frame_autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, false, _, _))
+      .WillOnce(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
+                                   std::vector<NodeData>{node_data}));
+  std::u16string expected_value = u"native";
+  EXPECT_CALL(frame_autofill_assistant_agent_,
+              SetElementValue(backend_node_id, expected_value,
+                              /* send_events= */ true, _))
+      .WillOnce(RunOnceCallback<3>(true));
+
+  SelectorProto proto;
+  auto* semantic_filter = proto.add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
+
+  ElementFinderResult element;
+  ClientStatus element_status;
+  FindElement(Selector(proto), &element_status, &element);
+  ASSERT_TRUE(element_status.ok());
+
+  base::RunLoop devtools_run_loop;
+  web_controller_->SetValueAttribute(
+      "devtools", element,
+      base::BindLambdaForTesting([&](const ClientStatus& status) {
+        EXPECT_TRUE(status.ok());
+        devtools_run_loop.Quit();
+      }));
+  devtools_run_loop.Run();
+  ClientStatus check_status;
+  EXPECT_EQ(GetFieldValue(css_selector, &check_status), "devtools");
+  EXPECT_TRUE(check_status.ok());
+
+  base::RunLoop native_run_loop;
+  web_controller_->SetNativeValue(
+      "native", element,
+      base::BindLambdaForTesting([&](const ClientStatus& status) {
+        EXPECT_TRUE(status.ok());
+        native_run_loop.Quit();
+      }));
+  native_run_loop.Run();
 }
 
 }  // namespace autofill_assistant
