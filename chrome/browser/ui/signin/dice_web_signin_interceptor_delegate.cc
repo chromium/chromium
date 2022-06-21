@@ -61,7 +61,7 @@ class ForcedEnterpriseSigninInterceptionHandle
         bubble_parameters.profile_highlight_color,
         base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
                            OnEnterpriseInterceptionDialogClosed,
-                       base::Unretained(this)));
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   ~ForcedEnterpriseSigninInterceptionHandle() override {
@@ -96,6 +96,8 @@ class ForcedEnterpriseSigninInterceptionHandle
   const bool profile_creation_required_by_policy_;
   const bool show_link_data_option_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;
+  base::WeakPtrFactory<ForcedEnterpriseSigninInterceptionHandle>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace
