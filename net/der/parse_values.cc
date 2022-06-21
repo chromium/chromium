@@ -296,48 +296,6 @@ bool operator>=(const GeneralizedTime& lhs, const GeneralizedTime& rhs) {
   return !(lhs < rhs);
 }
 
-// A UTC Time in DER encoding should be YYMMDDHHMMSSZ, but some CAs encode
-// the time following BER rules, which allows for YYMMDDHHMMZ. If the length
-// is 11, assume it's YYMMDDHHMMZ, and in converting it to a GeneralizedTime,
-// add in the seconds (set to 0).
-bool ParseUTCTimeRelaxed(const Input& in, GeneralizedTime* value) {
-  ByteReader reader(in);
-  GeneralizedTime time;
-  if (!DecimalStringToUint(reader, 2, &time.year) ||
-      !DecimalStringToUint(reader, 2, &time.month) ||
-      !DecimalStringToUint(reader, 2, &time.day) ||
-      !DecimalStringToUint(reader, 2, &time.hours) ||
-      !DecimalStringToUint(reader, 2, &time.minutes)) {
-    return false;
-  }
-
-  // Try to read the 'Z' at the end. If we read something else, then for it to
-  // be valid the next bytes should be seconds (and then followed by 'Z').
-  uint8_t zulu;
-  ByteReader zulu_reader = reader;
-  if (!zulu_reader.ReadByte(&zulu))
-    return false;
-  if (zulu == 'Z' && !zulu_reader.HasMore()) {
-    time.seconds = 0;
-    *value = time;
-  } else {
-    if (!DecimalStringToUint(reader, 2, &time.seconds))
-      return false;
-    if (!reader.ReadByte(&zulu) || zulu != 'Z' || reader.HasMore())
-      return false;
-  }
-
-  if (time.year < 50) {
-    time.year += 2000;
-  } else {
-    time.year += 1900;
-  }
-  if (!ValidateGeneralizedTime(time))
-    return false;
-  *value = time;
-  return true;
-}
-
 bool ParseUTCTime(const Input& in, GeneralizedTime* value) {
   ByteReader reader(in);
   GeneralizedTime time;

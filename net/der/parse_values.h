@@ -109,13 +109,6 @@ NET_EXPORT_PRIVATE bool operator>=(const GeneralizedTime& lhs,
 [[nodiscard]] NET_EXPORT bool ParseUTCTime(const Input& in,
                                            GeneralizedTime* out);
 
-// Like ParseUTCTime, but it is more lenient in what is accepted. DER requires
-// a UTCTime to be in the format YYMMDDhhmmssZ; this function will accept both
-// that and YYMMDDhhmmZ, which is a valid BER encoding of a UTCTime which
-// sometimes incorrectly appears in X.509 certificates.
-[[nodiscard]] NET_EXPORT bool ParseUTCTimeRelaxed(const Input& in,
-                                                  GeneralizedTime* out);
-
 // Reads a DER-encoded ASN.1 GeneralizedTime value from |in| and puts the
 // resulting value in |out|, returning true if the GeneralizedTime could
 // be parsed successfully. This function is even more restrictive than the
