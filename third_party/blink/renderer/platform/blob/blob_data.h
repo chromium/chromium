@@ -208,8 +208,8 @@ class PLATFORM_EXPORT BlobDataHandle
       uint64_t size,
       mojo::PendingRemote<mojom::blink::Blob>);
 
-  String Uuid() const { return uuid_.IsolatedCopy(); }
-  String GetType() const { return type_.IsolatedCopy(); }
+  String Uuid() const { return uuid_; }
+  String GetType() const { return type_; }
   uint64_t size() const { return size_; }
 
   bool IsSingleUnknownSizeFile() const { return is_single_unknown_size_file_; }

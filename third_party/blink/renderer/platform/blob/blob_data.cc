@@ -333,7 +333,7 @@ BlobDataHandle::BlobDataHandle()
 
 BlobDataHandle::BlobDataHandle(std::unique_ptr<BlobData> data, uint64_t size)
     : uuid_(WTF::CreateCanonicalUUIDString()),
-      type_(data->ContentType().IsolatedCopy()),
+      type_(data->ContentType()),
       size_(size),
       is_single_unknown_size_file_(data->IsSingleUnknownSizeFile()) {
   auto elements = data->ReleaseElements();
@@ -346,8 +346,8 @@ BlobDataHandle::BlobDataHandle(std::unique_ptr<BlobData> data, uint64_t size)
 BlobDataHandle::BlobDataHandle(const String& uuid,
                                const String& type,
                                uint64_t size)
-    : uuid_(uuid.IsolatedCopy()),
-      type_(IsValidBlobType(type) ? type.IsolatedCopy() : ""),
+    : uuid_(uuid),
+      type_(IsValidBlobType(type) ? type : ""),
       size_(size),
       is_single_unknown_size_file_(false) {
   GetThreadSpecificRegistry()->GetBlobFromUUID(
@@ -359,8 +359,8 @@ BlobDataHandle::BlobDataHandle(
     const String& type,
     uint64_t size,
     mojo::PendingRemote<mojom::blink::Blob> blob_remote)
-    : uuid_(uuid.IsolatedCopy()),
-      type_(IsValidBlobType(type) ? type.IsolatedCopy() : ""),
+    : uuid_(uuid),
+      type_(IsValidBlobType(type) ? type : ""),
       size_(size),
       is_single_unknown_size_file_(false),
       blob_remote_(std::move(blob_remote)) {
