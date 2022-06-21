@@ -83,6 +83,7 @@
 #include "chrome/browser/ash/crosapi/video_capture_device_factory_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
+#include "chrome/browser/ash/crosapi/wallpaper_ash.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -227,6 +228,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           std::make_unique<VideoCaptureDeviceFactoryAsh>()),
       vpn_extension_observer_ash_(std::make_unique<VpnExtensionObserverAsh>()),
       vpn_service_ash_(std::make_unique<VpnServiceAsh>()),
+      wallpaper_ash_(std::make_unique<WallpaperAsh>()),
       web_app_service_ash_(std::make_unique<WebAppServiceAsh>()),
       web_page_info_factory_ash_(std::make_unique<WebPageInfoFactoryAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
@@ -666,6 +668,11 @@ void CrosapiAsh::BindResourceManager(
 void CrosapiAsh::BindUrlHandler(
     mojo::PendingReceiver<mojom::UrlHandler> receiver) {
   url_handler_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindWallpaper(
+    mojo::PendingReceiver<mojom::Wallpaper> receiver) {
+  wallpaper_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindMachineLearningService(

@@ -93,6 +93,7 @@ if (is_chromeos) {
     "quick_unlock_private.idl",
     "shared_storage_private.idl",
     "vpn_provider.idl",
+    "wallpaper.json",
   ]
 
   if (use_cups) {
@@ -112,7 +113,6 @@ if (is_chromeos_ash) {
     "speech_recognition_private.idl",
     "terminal_private.json",
     "users_private.idl",
-    "wallpaper.json",
     "wallpaper_private.json",
     "wm_desks_private.idl",
   ]

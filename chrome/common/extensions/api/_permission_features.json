@@ -909,7 +909,7 @@
   "wallpaper": {
     "channel": "stable",
     "extension_types": ["platform_app", "extension"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
   "wallpaperPrivate": {
     "channel": "stable",

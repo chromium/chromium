@@ -76,6 +76,7 @@ import "chromeos/services/machine_learning/public/mojom/machine_learning_service
 import "chromeos/crosapi/mojom/video_capture.mojom";
 import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
 import "chromeos/crosapi/mojom/vpn_extension_observer.mojom";
+import "chromeos/crosapi/mojom/wallpaper.mojom";
 import "chromeos/crosapi/mojom/web_app_service.mojom";
 import "chromeos/crosapi/mojom/web_page_info.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
@@ -114,8 +115,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 84
-// Next method id: 87
+// Next version: 85
+// Next method id: 88
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -567,10 +568,15 @@ interface Crosapi {
   [MinVersion=69]
   BindWebAppService@72(pending_receiver<WebAppService> receiver);
 
+  // Binds the service to allow lacros-chrome to set the chromeos wallpaper.
+  [MinVersion=84] BindWallpaper@87(pending_receiver<Wallpaper> receiver);
+
   // Passes generic browser information such as version, etc into ash in
   // |browser_info| during startup.
   // Added in M87.
   [MinVersion=3] OnBrowserStartup@6(BrowserInfo browser_info);
+
+
 };
 
 [Stable, Extensible]
