@@ -544,13 +544,34 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   /**
+   * Checks if a filter is applied.
+   * @return True if a filter is applied.
+   */
+  private isFiltered_(): Boolean {
+    return this.filter !== '';
+  }
+
+  /**
+   * Selects the correct string to display for clear button based on whether a
+   * filter is applied.
+   * @return The correct |clearAllButton| string based on whether a filter
+   *     is applied.
+   */
+  private getClearDataButtonString_(): string {
+    const buttonStringId = this.isFiltered_() ?
+        'siteSettingsClearDisplayedStorageLabel' :
+        'siteSettingsClearAllStorageLabel';
+    return this.i18n(buttonStringId);
+  }
+
+  /**
    * Selects the correct string to display for total usage based on whether a
    * filter is applied.
    * @return The correct |clearLabel| string based on whether a filter
    *     is applied.
    */
   private getClearStorageDescription_(): string {
-    const descriptionId = this.filter !== '' ?
+    const descriptionId = this.isFiltered_() ?
         'siteSettingsClearDisplayedStorageDescription' :
         'siteSettingsClearAllStorageDescription';
     return loadTimeData.substituteString(

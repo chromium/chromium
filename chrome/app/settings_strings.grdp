@@ -3145,6 +3145,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_LABEL" desc="Label for button to clear all site data">
     Clear all data
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_DISPLAYED_STORAGE_LABEL" desc="Label for button to clear displayed site data">
+    Clear displayed data
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_CONFIRMATION" desc="Text for the dialog that warns about clearing storage used by all sites.">
     This will clear <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by sites
   </message>

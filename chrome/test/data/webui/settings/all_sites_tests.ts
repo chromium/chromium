@@ -201,6 +201,31 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     assertEquals('bar.com', siteEntries[2]!.$.displayName.innerText.trim());
   });
 
+  test('dynamic filtered clear data button strings', async function() {
+    setUpAllSites(prefsVarious);
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
+    await browserProxy.whenCalled('getAllSites');
+
+    const clearAllButton = testElement.$.clearAllButton;
+    assertEquals(
+        loadTimeData.getString('siteSettingsClearAllStorageLabel'),
+        clearAllButton.innerText.trim());
+
+    // Setting a filter, text should change.
+    testElement.filter = 'foo';
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsClearDisplayedStorageLabel'),
+        clearAllButton.innerText.trim());
+
+    // Removing the filter.
+    testElement.filter = '';
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsClearAllStorageLabel'),
+        clearAllButton.innerText.trim());
+  });
+
   test('dynamic filtered total usage strings', async function() {
     setUpAllSites(prefsVarious);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
