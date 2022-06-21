@@ -61,7 +61,6 @@
 #include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -74,8 +73,6 @@
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
-using chromeos::DBusThreadManager;
-using chromeos::UpdateEngineClient;
 using session_manager::SessionManager;
 using session_manager::SessionState;
 

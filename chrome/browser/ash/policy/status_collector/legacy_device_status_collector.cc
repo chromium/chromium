@@ -68,7 +68,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -2433,9 +2432,7 @@ bool LegacyDeviceStatusCollector::GetOsUpdateStatus(
   em::OsUpdateStatus* os_update_status = status->mutable_os_update_status();
 
   const update_engine::StatusResult update_engine_status =
-      chromeos::DBusThreadManager::Get()
-          ->GetUpdateEngineClient()
-          ->GetLastStatus();
+      chromeos::UpdateEngineClient::Get()->GetLastStatus();
 
   absl::optional<base::Version> required_platform_version;
 

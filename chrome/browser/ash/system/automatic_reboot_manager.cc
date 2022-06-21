@@ -36,7 +36,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -162,7 +162,7 @@ AutomaticRebootManager::AutomaticRebootManager(
           &AutomaticRebootManager::OnAppTerminating, base::Unretained(this)));
 
   PowerManagerClient::Get()->AddObserver(this);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);
+  UpdateEngineClient::Get()->AddObserver(this);
 
   // If no user is logged in, a reboot may be performed whenever the user is
   // idle. Start listening for user activity to determine whether the user is
@@ -189,7 +189,7 @@ AutomaticRebootManager::~AutomaticRebootManager() {
     observer.WillDestroyAutomaticRebootManager();
 
   PowerManagerClient::Get()->RemoveObserver(this);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
   if (ui::UserActivityDetector::Get())
     ui::UserActivityDetector::Get()->RemoveObserver(this);
 }
@@ -290,8 +290,7 @@ void AutomaticRebootManager::Init(
     update_reboot_needed_time_ =
         *system_event_times.update_reboot_needed_time + offset;
   } else {
-    UpdateStatusChanged(
-        DBusThreadManager::Get()->GetUpdateEngineClient()->GetLastStatus());
+    UpdateStatusChanged(UpdateEngineClient::Get()->GetLastStatus());
   }
 
   Reschedule();

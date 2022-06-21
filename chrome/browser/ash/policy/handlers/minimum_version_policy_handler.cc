@@ -30,7 +30,7 @@
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -40,6 +40,7 @@ namespace policy {
 
 namespace {
 
+using chromeos::UpdateEngineClient;
 using MinimumVersionRequirement =
     MinimumVersionPolicyHandler::MinimumVersionRequirement;
 
@@ -81,10 +82,6 @@ BuildState* GetBuildState() {
 
 int GetDaysRounded(base::TimeDelta time) {
   return base::ClampRound(time / base::Days(1));
-}
-
-chromeos::UpdateEngineClient* GetUpdateEngineClient() {
-  return chromeos::DBusThreadManager::Get()->GetUpdateEngineClient();
 }
 
 // Overrides the relaunch notification style to required and configures the
@@ -169,7 +166,7 @@ MinimumVersionPolicyHandler::MinimumVersionPolicyHandler(
 MinimumVersionPolicyHandler::~MinimumVersionPolicyHandler() {
   GetBuildState()->RemoveObserver(this);
   StopObservingNetwork();
-  GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 void MinimumVersionPolicyHandler::AddObserver(Observer* observer) {
@@ -330,7 +327,7 @@ void MinimumVersionPolicyHandler::FetchEolInfo() {
 
   update_required_time_ = clock_->Now();
   // Request the End of Life (Auto Update Expiration) status.
-  GetUpdateEngineClient()->GetEolInfo(
+  UpdateEngineClient::Get()->GetEolInfo(
       base::BindOnce(&MinimumVersionPolicyHandler::OnFetchEolInfo,
                      weak_factory_.GetWeakPtr()));
 }
@@ -560,7 +557,7 @@ void MinimumVersionPolicyHandler::OnUpdate(const BuildState* build_state) {
   // will reboot it for applying the updates.
   VLOG(1) << "Update installed successfully at " << clock_->Now()
           << " with deadline " << update_required_deadline_;
-  GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
   if (build_state->update_type() == BuildState::UpdateType::kNormalUpdate) {
     ResetOnUpdateCompleted();
     OverrideRelaunchNotification(update_required_deadline_);
@@ -592,7 +589,7 @@ void MinimumVersionPolicyHandler::StopObservingNetwork() {
 void MinimumVersionPolicyHandler::UpdateOverMeteredPermssionGranted() {
   VLOG(1) << "Permission for update over metered network granted.";
   chromeos::UpdateEngineClient* const update_engine_client =
-      GetUpdateEngineClient();
+      UpdateEngineClient::Get();
   if (!update_engine_client->HasObserver(this))
     update_engine_client->AddObserver(this);
   update_engine_client->RequestUpdateCheck(
@@ -604,14 +601,14 @@ void MinimumVersionPolicyHandler::OnUpdateCheckStarted(
     chromeos::UpdateEngineClient::UpdateCheckResult result) {
   VLOG(1) << "Update check started.";
   if (result != chromeos::UpdateEngineClient::UPDATE_RESULT_SUCCESS)
-    GetUpdateEngineClient()->RemoveObserver(this);
+    UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 void MinimumVersionPolicyHandler::UpdateStatusChanged(
     const update_engine::StatusResult& status) {
   if (status.current_operation() ==
       update_engine::Operation::NEED_PERMISSION_TO_UPDATE) {
-    GetUpdateEngineClient()->SetUpdateOverCellularOneTimePermission(
+    UpdateEngineClient::Get()->SetUpdateOverCellularOneTimePermission(
         status.new_version(), status.new_size(),
         base::BindOnce(&MinimumVersionPolicyHandler::
                            OnSetUpdateOverCellularOneTimePermission,
@@ -624,7 +621,7 @@ void MinimumVersionPolicyHandler::OnSetUpdateOverCellularOneTimePermission(
   if (success)
     UpdateOverMeteredPermssionGranted();
   else
-    GetUpdateEngineClient()->RemoveObserver(this);
+    UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 void MinimumVersionPolicyHandler::OnDeadlineReached() {

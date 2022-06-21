@@ -20,14 +20,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
-using chromeos::DBusThreadManager;
 using chromeos::UpdateEngineClient;
 
 namespace {
@@ -74,7 +72,7 @@ void UpgradeDetectorChromeos::Init() {
   UpgradeDetector::Init();
   MonitorPrefChanges(prefs::kRelaunchHeadsUpPeriod);
   MonitorPrefChanges(prefs::kRelaunchNotification);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);
+  UpdateEngineClient::Get()->AddObserver(this);
   auto* const build_state = g_browser_process->GetBuildState();
   build_state->AddObserver(this);
   installed_version_updater_.emplace(build_state);
@@ -87,7 +85,7 @@ void UpgradeDetectorChromeos::Shutdown() {
     return;
   installed_version_updater_.reset();
   g_browser_process->GetBuildState()->RemoveObserver(this);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
   upgrade_notification_timer_.Stop();
   UpgradeDetector::Shutdown();
   initialized_ = false;
@@ -220,7 +218,7 @@ void UpgradeDetectorChromeos::UpdateStatusChanged(
   if (!toggled_update_flag_) {
     // Only send feature flag status one time.
     toggled_update_flag_ = true;
-    DBusThreadManager::Get()->GetUpdateEngineClient()->ToggleFeature(
+    UpdateEngineClient::Get()->ToggleFeature(
         update_engine::kFeatureRepeatedUpdates,
         base::FeatureList::IsEnabled(
             chromeos::features::kAllowRepeatedUpdates));

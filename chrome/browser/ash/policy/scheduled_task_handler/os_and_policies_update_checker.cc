@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "chrome/browser/browser_process.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "components/device_event_log/device_event_log.h"
@@ -22,8 +21,7 @@ OsAndPoliciesUpdateChecker::OsAndPoliciesUpdateChecker(
           update_checker_internal::
               kMaxOsAndPoliciesUpdateCheckerRetryIterations,
           update_checker_internal::kOsAndPoliciesUpdateCheckerRetryTime),
-      update_engine_client_(
-          chromeos::DBusThreadManager::Get()->GetUpdateEngineClient()) {}
+      update_engine_client_(chromeos::UpdateEngineClient::Get()) {}
 
 OsAndPoliciesUpdateChecker::~OsAndPoliciesUpdateChecker() {
   // Called to remove any observers.

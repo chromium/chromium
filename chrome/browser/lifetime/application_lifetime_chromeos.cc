@@ -13,9 +13,8 @@ namespace chrome {
 namespace {
 
 chromeos::UpdateEngineClient* GetUpdateEngineClient() {
-  DCHECK(ash::DBusThreadManager::IsInitialized());
   chromeos::UpdateEngineClient* update_engine_client =
-      chromeos::DBusThreadManager::Get()->GetUpdateEngineClient();
+      chromeos::UpdateEngineClient::Get();
   DCHECK(update_engine_client);
   return update_engine_client;
 }

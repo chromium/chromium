@@ -32,7 +32,6 @@ class ImageLoaderClient;
 class OobeConfigurationClient;
 class RuntimeProbeClient;
 class SmbProviderClient;
-class UpdateEngineClient;
 class VirtualFileProviderClient;
 
 // THIS CLASS IS BEING DEPRECATED. See README.md for guidelines and
@@ -85,7 +84,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   OobeConfigurationClient* GetOobeConfigurationClient();
   RuntimeProbeClient* GetRuntimeProbeClient();
   SmbProviderClient* GetSmbProviderClient();
-  UpdateEngineClient* GetUpdateEngineClient();
   VirtualFileProviderClient* GetVirtualFileProviderClient();
 
  private:

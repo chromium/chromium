@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_state.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -58,7 +58,7 @@ VersionUpdater::VersionUpdater(VersionUpdater::Delegate* delegate)
 }
 
 VersionUpdater::~VersionUpdater() {
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
   network_portal_detector::GetInstance()->RemoveObserver(this);
 }
 
@@ -89,13 +89,10 @@ void VersionUpdater::StartUpdateCheck() {
 }
 
 void VersionUpdater::SetUpdateOverCellularOneTimePermission() {
-  DBusThreadManager::Get()
-      ->GetUpdateEngineClient()
-      ->SetUpdateOverCellularOneTimePermission(
-          update_info_.update_version, update_info_.update_size,
-          base::BindOnce(
-              &VersionUpdater::OnSetUpdateOverCellularOneTimePermission,
-              weak_ptr_factory_.GetWeakPtr()));
+  UpdateEngineClient::Get()->SetUpdateOverCellularOneTimePermission(
+      update_info_.update_version, update_info_.update_size,
+      base::BindOnce(&VersionUpdater::OnSetUpdateOverCellularOneTimePermission,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VersionUpdater::RejectUpdateOverCellular() {
@@ -108,7 +105,7 @@ void VersionUpdater::RejectUpdateOverCellular() {
 
 void VersionUpdater::RebootAfterUpdate() {
   VLOG(1) << "Initiate reboot after update";
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RebootAfterUpdate();
+  UpdateEngineClient::Get()->RebootAfterUpdate();
   if (wait_for_reboot_time_.is_zero())  // Primarily for testing.
     OnWaitForRebootTimeElapsed();
   else
@@ -117,7 +114,7 @@ void VersionUpdater::RebootAfterUpdate() {
 }
 
 void VersionUpdater::StartExitUpdate(Result result) {
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
   network_portal_detector::GetInstance()->RemoveObserver(this);
   delegate_->FinishExitUpdate(result);
   // Reset internal state, because in case of error user may make another
@@ -130,12 +127,10 @@ base::OneShotTimer* VersionUpdater::GetRebootTimerForTesting() {
 }
 
 void VersionUpdater::GetEolInfo(EolInfoCallback callback) {
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
   // Request the End of Life (Auto Update Expiration) status. Bind to a weak_ptr
   // bound method rather than passing `callback` directly so that `callback`
   // does not outlive `this`.
-  update_engine_client->GetEolInfo(
+  UpdateEngineClient::Get()->GetEolInfo(
       base::BindOnce(&VersionUpdater::OnGetEolInfo,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -158,11 +153,10 @@ void VersionUpdater::RequestUpdateCheck() {
   delegate_->UpdateInfoChanged(update_info_);
 
   network_portal_detector::GetInstance()->RemoveObserver(this);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);
+  UpdateEngineClient::Get()->AddObserver(this);
   VLOG(1) << "Initiate update check";
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RequestUpdateCheck(
-      base::BindOnce(&VersionUpdater::OnUpdateCheckStarted,
-                     weak_ptr_factory_.GetWeakPtr()));
+  UpdateEngineClient::Get()->RequestUpdateCheck(base::BindOnce(
+      &VersionUpdater::OnUpdateCheckStarted, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VersionUpdater::UpdateStatusChanged(
@@ -231,7 +225,7 @@ void VersionUpdater::UpdateStatusChanged(
       update_info_.requires_permission_for_cellular = true;
       update_info_.progress_unavailable = false;
 
-      DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+      UpdateEngineClient::Get()->RemoveObserver(this);
       break;
     case update_engine::Operation::ATTEMPTING_ROLLBACK:
       VLOG(1) << "Attempting rollback";
@@ -322,7 +316,7 @@ void VersionUpdater::OnPortalDetectionCompleted(
 
       // StartUpdateCheck, which gets called when the error clears up, will add
       // the update engine observer back.
-      DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+      UpdateEngineClient::Get()->RemoveObserver(this);
 
       update_info_.state = State::STATE_ERROR;
       delegate_->UpdateInfoChanged(update_info_);

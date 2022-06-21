@@ -189,7 +189,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state.h"
@@ -1938,11 +1938,9 @@ void WizardController::InitiateOOBEUpdate() {
   // If this is a Cellular First device, instruct UpdateEngine to allow
   // updates over cellular data connections.
   if (switches::IsCellularFirstDevice()) {
-    DBusThreadManager::Get()
-        ->GetUpdateEngineClient()
-        ->SetUpdateOverCellularPermission(
-            true, base::BindOnce(&WizardController::StartOOBEUpdate,
-                                 weak_factory_.GetWeakPtr()));
+    UpdateEngineClient::Get()->SetUpdateOverCellularPermission(
+        true, base::BindOnce(&WizardController::StartOOBEUpdate,
+                             weak_factory_.GetWeakPtr()));
   } else {
     StartOOBEUpdate();
   }

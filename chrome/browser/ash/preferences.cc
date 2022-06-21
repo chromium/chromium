@@ -51,7 +51,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/components/disks/disks_prefs.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/system/devicemode.h"
@@ -124,7 +123,7 @@ Preferences::Preferences(input_method::InputMethodManager* input_method_manager)
 Preferences::~Preferences() {
   prefs_->RemoveObserver(this);
   user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 // static
@@ -605,8 +604,7 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
     pref_change_registrar_.Add(copy_pref, callback);
 
   // Re-enable OTA update when feature flag is disabled by owner.
-  auto* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
+  auto* update_engine_client = UpdateEngineClient::Get();
   if (user_manager::UserManager::Get()->IsCurrentUserOwner() &&
       !features::IsConsumerAutoUpdateToggleAllowed()) {
     // Write into the platform will signal back so pref gets synced.
@@ -629,7 +627,7 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   // This causes OnIsSyncingChanged to be called when the value of
   // PrefService::IsSyncing() changes.
   prefs->AddObserver(this);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);
+  UpdateEngineClient::Get()->AddObserver(this);
 
   user_ = user;
   user_is_primary_ =
@@ -696,9 +694,7 @@ void Preferences::InitUserPrefsForTesting(
 
   InitUserPrefs(prefs);
 
-  auto* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-  update_engine_client->AddObserver(this);
+  UpdateEngineClient::Get()->AddObserver(this);
 
   input_method_syncer_ =
       std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);
