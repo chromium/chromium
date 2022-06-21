@@ -1723,10 +1723,15 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
     return crostini::DefaultContainerId();
   }
 
+  void Prepare(base::OnceCallback<
+               void(bool success, int cid, int port, base::FilePath homedir)>
+                   callback) override {
+    std::move(callback).Run(true, cid_, 1234, base::FilePath());
+  }
+
   guest_os::VmType vm_type() override { return vm_type_; }
 
   int cid_;
-  int cid() override { return cid_; }
 
  private:
   Profile* profile_;
@@ -3180,7 +3185,7 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
       // If we ask for the volume to be mountable we add it to the map, and it's
       // mountable. If not then it's an unknown volume and the mount request
       // fails.
-      guest_os_volumes_[base::StringPrintf("sftp://%d:0", id)] =
+      guest_os_volumes_[base::StringPrintf("sftp://%d:1234", id)] =
           std::make_unique<GuestOsTestVolume>(profile(), ptr);
     }
 

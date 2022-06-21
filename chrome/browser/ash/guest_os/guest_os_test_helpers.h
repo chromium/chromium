@@ -20,6 +20,9 @@ class MockMountProvider : public GuestOsMountProvider {
   guest_os::GuestId GuestId() override;
 
   VmType vm_type() override;
+  void Prepare(base::OnceCallback<
+               void(bool success, int cid, int port, base::FilePath homedir)>
+                   callback) override;
 
   Profile* profile_;
   guest_os::GuestId container_id_;

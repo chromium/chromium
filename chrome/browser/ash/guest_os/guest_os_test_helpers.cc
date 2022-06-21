@@ -30,6 +30,13 @@ guest_os::GuestId MockMountProvider::GuestId() {
   return container_id_;
 }
 
+void MockMountProvider::Prepare(
+    base::OnceCallback<
+        void(bool success, int cid, int port, base::FilePath homedir)>
+        callback) {
+  std::move(callback).Run(true, 41, 1234, base::FilePath());
+}
+
 VmType MockMountProvider::vm_type() {
   return VmType::PLUGIN_VM;
 }
