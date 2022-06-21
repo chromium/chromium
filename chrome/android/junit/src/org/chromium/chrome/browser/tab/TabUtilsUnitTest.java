@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,13 +26,17 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.Resetter;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 
@@ -106,6 +111,9 @@ public class TabUtilsUnitTest {
     private CriticalPersistedTabData mCriticalPersistedTabData;
 
     private boolean mRdsDefault;
+    private @ContentSettingValues int mRdsException;
+    private boolean mUseDesktopUserAgent;
+    private @TabUserAgent int mTabUserAgent;
 
     @Before
     public void setup() {
@@ -114,15 +122,29 @@ public class TabUtilsUnitTest {
         ShadowProfile.setProfile(mProfile);
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
 
-        doAnswer(invocation -> mRdsDefault)
-                .when(mWebsitePreferenceBridgeJniMock)
-                .isContentSettingEnabled(any(), eq(ContentSettingsType.REQUEST_DESKTOP_SITE));
-
         when(mTab.isNativePage()).thenReturn(false);
         when(mTabNative.isNativePage()).thenReturn(true);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTabNative.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+
+        doAnswer(invocation -> mRdsDefault)
+                .when(mWebsitePreferenceBridgeJniMock)
+                .isContentSettingEnabled(any(), eq(ContentSettingsType.REQUEST_DESKTOP_SITE));
+        doAnswer(invocation -> mRdsException)
+                .when(mWebsitePreferenceBridgeJniMock)
+                .getContentSetting(
+                        any(), eq(ContentSettingsType.REQUEST_DESKTOP_SITE), any(), any());
+        doAnswer(invocation -> mUseDesktopUserAgent)
+                .when(mNavigationController)
+                .getUseDesktopUserAgent();
+        doAnswer(invocation -> mTabUserAgent).when(mCriticalPersistedTabData).getUserAgent();
+        doAnswer(invocation -> {
+            mTabUserAgent = invocation.getArgument(0);
+            return null;
+        })
+                .when(mCriticalPersistedTabData)
+                .setUserAgent(anyInt());
     }
 
     @After
@@ -197,5 +219,100 @@ public class TabUtilsUnitTest {
         TabUtils.switchUserAgent(mTabNative, true, true);
         verify(mNavigationController).setUseDesktopUserAgent(true, false);
         verify(mCriticalPersistedTabData, times(2)).setUserAgent(TabUserAgent.DEFAULT);
+    }
+
+    @Test
+    public void testIsUsingDesktopUserAgent() {
+        Assert.assertFalse("The result should be false when there is no webContents.",
+                TabUtils.isUsingDesktopUserAgent(null));
+        mUseDesktopUserAgent = false;
+        Assert.assertFalse(
+                "Should get RDS from WebContents.", TabUtils.isUsingDesktopUserAgent(mWebContents));
+        mUseDesktopUserAgent = true;
+        Assert.assertTrue(
+                "Should get RDS from WebContents.", TabUtils.isUsingDesktopUserAgent(mWebContents));
+    }
+
+    @Test
+    public void testGetTabUserAgent_UpgradePath() {
+        mTabUserAgent = TabUserAgent.UNSET;
+        mUseDesktopUserAgent = false;
+        Assert.assertEquals("TabUserAgent is not set up correctly for upgrade path.",
+                TabUserAgent.DEFAULT, TabUtils.getTabUserAgent(mTab));
+        verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.DEFAULT);
+
+        mTabUserAgent = TabUserAgent.UNSET;
+        mUseDesktopUserAgent = true;
+        Assert.assertEquals("TabUserAgent is not set up correctly for upgrade path.",
+                TabUserAgent.DESKTOP, TabUtils.getTabUserAgent(mTab));
+        verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.DESKTOP);
+    }
+
+    @Test
+    public void testGetTabUserAgent_Mobile() {
+        mTabUserAgent = TabUserAgent.MOBILE;
+        mUseDesktopUserAgent = false;
+        Assert.assertEquals("Read unexpected TabUserAgent value.", TabUserAgent.MOBILE,
+                TabUtils.getTabUserAgent(mTab));
+
+        mUseDesktopUserAgent = true;
+        Assert.assertEquals("Read unexpected TabUserAgent value.", TabUserAgent.MOBILE,
+                TabUtils.getTabUserAgent(mTab));
+
+        verify(mCriticalPersistedTabData, never()).setUserAgent(anyInt());
+    }
+
+    @Test
+    public void testGetTabUserAgent_Desktop() {
+        mTabUserAgent = TabUserAgent.DESKTOP;
+        mUseDesktopUserAgent = false;
+        Assert.assertEquals("Read unexpected TabUserAgent value.", TabUserAgent.DESKTOP,
+                TabUtils.getTabUserAgent(mTab));
+
+        mUseDesktopUserAgent = true;
+        Assert.assertEquals("Read unexpected TabUserAgent value.", TabUserAgent.DESKTOP,
+                TabUtils.getTabUserAgent(mTab));
+
+        verify(mCriticalPersistedTabData, never()).setUserAgent(anyInt());
+    }
+
+    @Test
+    public void testReadRequestDesktopSiteContentSettings_DesktopSiteExceptionDisabled() {
+        enableDesktopSiteException(false);
+
+        // Global setting is Mobile.
+        mRdsDefault = false;
+        Assert.assertFalse("The result should match RDS global setting.",
+                TabUtils.readRequestDesktopSiteContentSettings(mProfile, mWebContents));
+
+        // Global setting is Desktop.
+        mRdsDefault = true;
+        Assert.assertTrue("The result should match RDS global setting.",
+                TabUtils.readRequestDesktopSiteContentSettings(mProfile, mWebContents));
+    }
+
+    @Test
+    public void testReadRequestDesktopSiteContentSettings_DesktopSiteExceptionEnabled() {
+        enableDesktopSiteException(true);
+
+        // Site level setting is Mobile.
+        mRdsException = ContentSettingValues.BLOCK;
+        Assert.assertFalse("The result should be false when there is no webContents",
+                TabUtils.readRequestDesktopSiteContentSettings(mProfile, null));
+        Assert.assertFalse("The result should match RDS site level setting.",
+                TabUtils.readRequestDesktopSiteContentSettings(mProfile, mWebContents));
+
+        // Site level setting is Desktop.
+        mRdsException = ContentSettingValues.ALLOW;
+        Assert.assertFalse("The result should be false when there is no webContents",
+                TabUtils.readRequestDesktopSiteContentSettings(mProfile, null));
+        Assert.assertTrue("The result should match RDS site level setting.",
+                TabUtils.readRequestDesktopSiteContentSettings(mProfile, mWebContents));
+    }
+
+    private void enableDesktopSiteException(boolean enable) {
+        TestValues features = new TestValues();
+        features.addFeatureFlagOverride(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, enable);
+        FeatureList.setTestValues(features);
     }
 }

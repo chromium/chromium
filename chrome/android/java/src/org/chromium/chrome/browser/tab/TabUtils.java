@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -105,6 +106,57 @@ public class TabUtils {
                 tabUserAgent = TabUserAgent.DEFAULT;
             }
             CriticalPersistedTabData.from(tab).setUserAgent(tabUserAgent);
+        }
+    }
+
+    /**
+     * Get UseDesktopUserAgent setting from webContents.
+     * @param webContents The webContents used to retrieve UseDesktopUserAgent setting.
+     * @return Whether the webContents is set to use desktop user agent.
+     */
+    public static boolean isUsingDesktopUserAgent(WebContents webContents) {
+        return webContents != null
+                && webContents.getNavigationController().getUseDesktopUserAgent();
+    }
+
+    /**
+     * Get tabUserAgent from the tab, which represents the tab level RDS setting.
+     * @param tab The tab used to retrieve tabUserAgent.
+     * @return The tab level RDS setting.
+     */
+    public static @TabUserAgent int getTabUserAgent(Tab tab) {
+        @TabUserAgent
+        int tabUserAgent = CriticalPersistedTabData.from(tab).getUserAgent();
+        WebContents webContents = tab.getWebContents();
+        boolean currentRequestDesktopSite = isUsingDesktopUserAgent(webContents);
+        // TabUserAgent.UNSET means this is a pre-existing tab from an earlier build. In this case
+        // we set the TabUserAgent bit based on last committed entry's user agent. If webContents is
+        // null, this method is triggered too early, and we cannot read the last committed entry's
+        // user agent yet. We will skip for now and let the following call set the TabUserAgent bit.
+        if (webContents != null && tabUserAgent == TabUserAgent.UNSET) {
+            if (currentRequestDesktopSite) {
+                tabUserAgent = TabUserAgent.DESKTOP;
+            } else {
+                tabUserAgent = TabUserAgent.DEFAULT;
+            }
+            CriticalPersistedTabData.from(tab).setUserAgent(tabUserAgent);
+        }
+        return tabUserAgent;
+    }
+
+    /**
+     * Read Request Desktop Site ContentSettings.
+     * @param profile The profile used to retrieve ContentSettings.
+     * @param webContents The webContents used to retrieve Url for site level setting.
+     * @return Whether Request Desktop Site is enabled in ContentSettings.
+     */
+    public static boolean readRequestDesktopSiteContentSettings(
+            Profile profile, WebContents webContents) {
+        if (ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)) {
+            return webContents != null
+                    && TabUtils.isDesktopSiteEnabled(profile, webContents.getVisibleUrl());
+        } else {
+            return TabUtils.isDesktopSiteGlobalEnabled(profile);
         }
     }
 
