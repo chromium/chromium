@@ -33,6 +33,15 @@ git pull
 git checkout main
 ```
 
+Setup engflow:
+
+```
+export GOMA_SERVER_HOST=simpsonite.goma.engflow.com
+export GOMACTL_USE_PROXY=false
+goma_auth login
+goma_ctl restart
+```
+
 Setup the build:
 
 ```
@@ -44,6 +53,7 @@ gn args out/Release
 Add the following settings:
 
 ```
+use_goma = true # if using engflow, false if otherwise
 is_debug = false
 enable_nacl = false
 ```
