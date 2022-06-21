@@ -848,7 +848,9 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 
   const base::TimeDelta delta = base::Time::Now() - lastRefreshTime;
-  if (delta >= base::TimeDelta() && delta <= kUserSettingsMaxAge) {
+  const BOOL hasRecentData =
+      delta >= base::TimeDelta() && delta <= kUserSettingsMaxAge;
+  if (!hasRecentData) {
     return UserSettingsOnStart::kSignedInNoRecentData;
   }
 
