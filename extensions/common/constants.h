@@ -353,6 +353,10 @@ EXTENSIONS_EXPORT extern const char kGuestModeTestExtensionId[];
 // that that on other operating systems would be considered part of the OS,
 // for example the file manager.
 EXTENSIONS_EXPORT bool IsSystemUIApp(base::StringPiece extension_id);
+
+// Returns true if this app is one of Demo Mode Chrome Apps, including
+// attract loop and highlights apps.
+EXTENSIONS_EXPORT bool IsDemoModeChromeApp(base::StringPiece extension_id);
 #endif
 
 // True if the id matches any of the QuickOffice extension ids.

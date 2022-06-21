@@ -100,6 +100,7 @@
 #include "extensions/browser/updater/extension_cache.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/manifest_fetch_data.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
@@ -113,6 +114,7 @@
 #include "extensions/common/switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/install_limiter.h"
@@ -1912,6 +1914,15 @@ bool ExtensionService::OnExternalExtensionFileFound(
           info.creation_flags, info.mark_acknowledged)) {
     return false;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsDemoModeSWAEnabled()) {
+    if (extension_misc::IsDemoModeChromeApp(info.extension_id)) {
+      pending_extension_manager()->Remove(info.extension_id);
+      return true;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // no client (silent install)
   scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(this));

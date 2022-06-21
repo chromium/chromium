@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -91,6 +93,13 @@ void DemoResources::EnsureLoaded(base::OnceClosure load_callback) {
   // In unit tests, DemoModeTestHelper should set up a fake
   // CrOSComponentManager.
   DCHECK(cros_component_manager);
+
+  if (ash::features::IsDemoModeSWAEnabled()) {
+    // Skip the load of Chrome Apps when SWA enabled and mark them as loaded.
+    InstalledComponentLoaded(
+        component_updater::CrOSComponentManager::Error::NONE, base::FilePath());
+    return;
+  }
 
   cros_component_manager->Load(
       kDemoModeResourcesComponentName,

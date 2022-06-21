@@ -174,6 +174,13 @@ const char kScreensaverKraneZdksAppId[] = "fafhbhdboeiciklpkminlncemohljlkj";
 const char kSigninProfileTestExtensionId[] = "mecfefiddjlmabpeilblgegnbioikfmp";
 const char kGuestModeTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 
+const char kStagingAttractLoopAppId[] = "aefaeciooibphdopnjjmgjdlckdcfbae";
+const char kStagingHighlightsAppId[] = "glochkamldfopmdlegmcnjmgkopfiplb";
+// 2022 Attract Loop App ID
+const char kNewAttractLoopAppId[] = "igilkdghcdehjdcpndaodgnjgdggiemm";
+// 2022 Highlights App ID
+const char kNewHighlightsAppId[] = "enchmnkoajljphdmahljlebfmpkkbnkj";
+
 bool IsSystemUIApp(base::StringPiece extension_id) {
   static const char* const kApps[] = {
       // clang-format off
@@ -186,6 +193,18 @@ bool IsSystemUIApp(base::StringPiece extension_id) {
       // clang-format on
   };
   for (const char* id : kApps) {
+    if (extension_id == id)
+      return true;
+  }
+  return false;
+}
+
+bool IsDemoModeChromeApp(base::StringPiece extension_id) {
+  static const char* const kDemoModeApps[] = {
+      kHighlightsAppId,        kScreensaverAppId,    kStagingAttractLoopAppId,
+      kStagingHighlightsAppId, kNewAttractLoopAppId, kNewHighlightsAppId,
+  };
+  for (const char* id : kDemoModeApps) {
     if (extension_id == id)
       return true;
   }
