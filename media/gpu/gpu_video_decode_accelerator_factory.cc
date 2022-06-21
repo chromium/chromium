@@ -201,7 +201,7 @@ GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA(
   scoped_refptr<V4L2Device> device = V4L2Device::Create();
   if (device.get()) {
     decoder.reset(new V4L2VideoDecodeAccelerator(
-        gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(),
+        gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
         gl_client_.get_context, gl_client_.make_context_current, device));
   }
   return decoder;
@@ -216,7 +216,7 @@ GpuVideoDecodeAcceleratorFactory::CreateV4L2SliceVDA(
   scoped_refptr<V4L2Device> device = V4L2Device::Create();
   if (device.get()) {
     decoder.reset(new V4L2SliceVideoDecodeAccelerator(
-        device, gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(),
+        device, gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
         gl_client_.bind_image, gl_client_.make_context_current));
   }
   return decoder;

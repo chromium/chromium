@@ -45,7 +45,7 @@ void DisplayExtensionsEGL::UpdateConditionalExtensionSettings(
 // static
 std::string DisplayExtensionsEGL::GetPlatformExtensions(GLDisplayEGL* display) {
   DCHECK(display);
-  EGLDisplay egl_display = display->GetHardwareDisplay();
+  EGLDisplay egl_display = display->GetDisplay();
   if (egl_display == EGL_NO_DISPLAY)
     return "";
   const char* str = eglQueryString(egl_display, EGL_EXTENSIONS);

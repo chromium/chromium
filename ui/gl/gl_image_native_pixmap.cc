@@ -293,8 +293,8 @@ gfx::NativePixmapHandle GLImageNativePixmap::ExportHandle() {
   EGLuint64KHR modifiers = 0;
 
   if (!eglExportDMABUFImageQueryMESA(
-          GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(), egl_image_,
-          &fourcc, &num_planes, &modifiers)) {
+          GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), egl_image_, &fourcc,
+          &num_planes, &modifiers)) {
     LOG(ERROR) << "Error querying EGLImage: " << ui::GetLastEGLErrorString();
     return gfx::NativePixmapHandle();
   }
@@ -330,9 +330,9 @@ gfx::NativePixmapHandle GLImageNativePixmap::ExportHandle() {
 
   // It is specified for eglExportDMABUFImageMESA that the app is responsible
   // for closing any fds retrieved.
-  if (!eglExportDMABUFImageMESA(
-          GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(), egl_image_,
-          &fds[0], &strides[0], &offsets[0])) {
+  if (!eglExportDMABUFImageMESA(GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+                                egl_image_, &fds[0], &strides[0],
+                                &offsets[0])) {
     LOG(ERROR) << "Error exporting EGLImage: " << ui::GetLastEGLErrorString();
     return gfx::NativePixmapHandle();
   }
@@ -392,8 +392,7 @@ void GLImageNativePixmap::Flush() {
   if (!has_image_flush_external_)
     return;
 
-  EGLDisplay display =
-      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
+  EGLDisplay display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
   const EGLAttrib attribs[] = {
       EGL_NONE,
   };

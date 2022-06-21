@@ -565,8 +565,7 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
   // Populate the list of ANGLE features by querying the functions exposed by
   // EGL_ANGLE_feature_control if it's available.
   if (gl::g_driver_egl.client_ext.b_EGL_ANGLE_feature_control) {
-    EGLDisplay display =
-        gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
+    EGLDisplay display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
     EGLAttrib feature_count = 0;
     eglQueryDisplayAttribANGLE(display, EGL_FEATURE_COUNT_ANGLE,
                                &feature_count);

@@ -44,7 +44,7 @@ PassthroughProgramCache::PassthroughProgramCache(
       store_(ProgramLRUCache::NO_AUTO_EVICT) {
 #if defined(USE_EGL)
   gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
-  EGLDisplay egl_display = gl_display->GetHardwareDisplay();
+  EGLDisplay egl_display = gl_display->GetDisplay();
 
   DCHECK(!g_program_cache);
   g_program_cache = this;

@@ -64,16 +64,14 @@ EGLConfig ChooseCompatibleConfig(gfx::BufferFormat format) {
                                 EGL_NONE};
 
   EGLint num_config;
-  EGLDisplay display =
-      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
+  EGLDisplay display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
   EGLBoolean result =
       eglChooseConfig(display, attrib_list, nullptr, 0, &num_config);
   if (result != EGL_TRUE)
     return nullptr;
   std::vector<EGLConfig> all_configs(num_config);
-  result =
-      eglChooseConfig(gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(),
-                      attrib_list, all_configs.data(), num_config, &num_config);
+  result = eglChooseConfig(display, attrib_list, all_configs.data(), num_config,
+                           &num_config);
   if (result != EGL_TRUE)
     return nullptr;
   for (EGLConfig config : all_configs) {
@@ -127,8 +125,8 @@ EGLSurface CreatePbuffer(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& texture,
       EGL_NONE};
 
   return eglCreatePbufferFromClientBuffer(
-      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(),
-      EGL_D3D_TEXTURE_ANGLE, texture.Get(), config, pBufferAttributes);
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), EGL_D3D_TEXTURE_ANGLE,
+      texture.Get(), config, pBufferAttributes);
 }
 
 }  // namespace
@@ -174,9 +172,8 @@ bool GLImageDXGI::BindTexImage(unsigned target) {
     return false;
   }
 
-  return eglBindTexImage(
-             gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(),
-             surface_, EGL_BACK_BUFFER) == EGL_TRUE;
+  return eglBindTexImage(gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+                         surface_, EGL_BACK_BUFFER) == EGL_TRUE;
 }
 
 bool GLImageDXGI::CopyTexImage(unsigned target) {
@@ -224,7 +221,7 @@ void GLImageDXGI::ReleaseTexImage(unsigned target) {
 
   keyed_mutex_->ReleaseSync(KEY_RELEASE);
 
-  eglReleaseTexImage(gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(),
+  eglReleaseTexImage(gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
                      surface_, EGL_BACK_BUFFER);
 }
 
@@ -267,13 +264,12 @@ void GLImageDXGI::SetTexture(
 GLImageDXGI::~GLImageDXGI() {
   if (handle_.Get()) {
     if (surface_ != EGL_NO_SURFACE) {
-      eglDestroySurface(
-          gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(), surface_);
+      eglDestroySurface(gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+                        surface_);
     }
   } else if (stream_) {
-    EGLDisplay egl_display =
-        gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
-    eglDestroyStreamKHR(egl_display, stream_);
+    eglDestroyStreamKHR(gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+                        stream_);
   }
 }
 
@@ -303,8 +299,7 @@ bool CopyingGLImageDXGI::Initialize() {
     DLOG(ERROR) << "CreateTexture2D failed: " << std::hex << hr;
     return false;
   }
-  EGLDisplay egl_display =
-      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
+  EGLDisplay egl_display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
 
   EGLAttrib frame_attributes[] = {
       EGL_D3D_TEXTURE_SUBRESOURCE_ID_ANGLE, 0, EGL_NONE,

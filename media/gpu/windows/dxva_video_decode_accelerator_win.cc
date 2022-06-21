@@ -1558,7 +1558,7 @@ bool DXVAVideoDecodeAccelerator::InitDecoder(VideoCodecProfile profile) {
   if (!display->ext->b_EGL_EXT_pixel_format_float)
     use_fp16_ = false;
 
-  EGLDisplay egl_display = display->GetHardwareDisplay();
+  EGLDisplay egl_display = display->GetDisplay();
 
   while (true) {
     std::vector<EGLint> config_attribs = {EGL_BUFFER_SIZE,  32,

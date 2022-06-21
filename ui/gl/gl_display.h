@@ -15,6 +15,10 @@
 #include <EGL/egl.h>
 #endif  // defined(USE_EGL)
 
+namespace base {
+class CommandLine;
+}  // namespace base
+
 namespace gl {
 struct DisplayExtensionsEGL;
 template <typename GLDisplayPlatform>
@@ -64,6 +68,17 @@ enum DisplayType {
   DISPLAY_TYPE_MAX = 19,
 };
 
+GL_EXPORT void GetEGLInitDisplaysForTesting(
+    bool supports_angle_d3d,
+    bool supports_angle_opengl,
+    bool supports_angle_null,
+    bool supports_angle_vulkan,
+    bool supports_angle_swiftshader,
+    bool supports_angle_egl,
+    bool supports_angle_metal,
+    const base::CommandLine* command_line,
+    std::vector<DisplayType>* init_displays);
+
 class GL_EXPORT GLDisplay {
  public:
   GLDisplay(const GLDisplay&) = delete;
@@ -93,24 +108,18 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
 
   EGLDisplay GetDisplay() override;
   void SetDisplay(EGLDisplay display);
-
-  EGLDisplay GetHardwareDisplay();
-
-  EGLNativeDisplayType GetNativeDisplay();
-  DisplayType GetDisplayType();
+  EGLDisplayPlatform GetNativeDisplay() const;
+  DisplayType GetDisplayType() const;
 
   bool IsEGLSurfacelessContextSupported();
   bool IsEGLContextPrioritySupported();
   bool IsAndroidNativeFenceSyncSupported();
   bool IsANGLEExternalContextAndSurfaceSupported();
 
-  EGLDisplayPlatform native_display = EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
-
-  DisplayType display_type = DisplayType::DEFAULT;
-
-  bool egl_surfaceless_context_supported = false;
-  bool egl_context_priority_supported = false;
-  bool egl_android_native_fence_sync_supported = false;
+  bool InitializeDisplay(EGLDisplayPlatform native_display);
+  void InitializeCommon();
+  bool InitializeExtensionSettings();
+  void Shutdown();
 
   std::unique_ptr<DisplayExtensionsEGL> ext;
 
@@ -119,7 +128,13 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
 
   explicit GLDisplayEGL(uint64_t system_device_id);
 
-  EGLDisplay display_;
+  EGLDisplay display_ = EGL_NO_DISPLAY;
+  EGLDisplayPlatform native_display_ = EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
+  DisplayType display_type_ = DisplayType::DEFAULT;
+
+  bool egl_surfaceless_context_supported_ = false;
+  bool egl_context_priority_supported_ = false;
+  bool egl_android_native_fence_sync_supported_ = false;
 };
 #endif  // defined(USE_EGL)
 

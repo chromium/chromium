@@ -20,7 +20,7 @@ GLImageEGL::~GLImageEGL() {
     return;
 
   const EGLBoolean result = eglDestroyImageKHR(
-      GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(), egl_image_);
+      GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), egl_image_);
   if (result == EGL_FALSE)
     DLOG(ERROR) << "Error destroying EGLImage: " << ui::GetLastEGLErrorString();
 }
@@ -31,9 +31,8 @@ bool GLImageEGL::Initialize(EGLContext context,
                             const EGLint* attrs) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_EQ(EGL_NO_IMAGE_KHR, egl_image_);
-  egl_image_ =
-      eglCreateImageKHR(GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(),
-                        context, target, buffer, attrs);
+  egl_image_ = eglCreateImageKHR(GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
+                                 context, target, buffer, attrs);
   const bool success = egl_image_ != EGL_NO_IMAGE_KHR;
   if (!success)
     LOG(ERROR) << "Error creating EGLImage: " << ui::GetLastEGLErrorString();

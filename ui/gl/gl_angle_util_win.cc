@@ -17,8 +17,7 @@ namespace gl {
 void* QueryDeviceObjectFromANGLE(int object_type) {
   TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE");
 
-  EGLDisplay egl_display =
-      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
+  EGLDisplay egl_display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
   if (egl_display == EGL_NO_DISPLAY) {
     DVLOG(1) << "Failed to retrieve EGLDisplay";
     return nullptr;
