@@ -310,6 +310,9 @@ tast_disabled_tests_from_chrome_all = [
 
   # http://b/236312054
   "crostini.AppGeditFilesharing",
+
+  # http://crbug.com/1338038
+  "arc.IMEBlockingVK",
 ]
 
 # To create filters to be used on specific builders add them like this:
