@@ -75,6 +75,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.chrome.features.start_surface.StartSurfaceCoordinator;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
@@ -133,6 +136,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock
     private LayoutStateProvider mLayoutStateProvider;
     @Mock
+    private StartSurfaceCoordinator mStartSurfaceCoordinator;
+    @Mock
     private UpdateMenuItemHelper mUpdateMenuItemHelper;
     @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
@@ -165,6 +170,7 @@ public class AppMenuPropertiesDelegateUnitTest {
             new OneshotSupplierImpl<>();
     private ObservableSupplierImpl<BookmarkBridge> mBookmarkBridgeSupplier =
             new ObservableSupplierImpl<>();
+    private OneshotSupplierImpl<StartSurface> mStartSurfaceSupplier = new OneshotSupplierImpl<>();
 
     private final TestValues mTestValues = new TestValues();
     private AppMenuPropertiesDelegateImpl mAppMenuPropertiesDelegate;
@@ -208,11 +214,11 @@ public class AppMenuPropertiesDelegateUnitTest {
         mBookmarkBridgeSupplier.set(mBookmarkBridge);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
-        mAppMenuPropertiesDelegate =
-                Mockito.spy(new AppMenuPropertiesDelegateImpl(ContextUtils.getApplicationContext(),
-                        mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
-                        mToolbarManager, mDecorView, mLayoutStateProviderSupplier, null,
-                        mBookmarkBridgeSupplier, mIncognitoReauthControllerSupplier));
+        mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(
+                ContextUtils.getApplicationContext(), mActivityTabProvider,
+                mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
+                mLayoutStateProviderSupplier, mStartSurfaceSupplier, mBookmarkBridgeSupplier,
+                mIncognitoReauthControllerSupplier));
     }
 
     private void setupFeatureDefaults() {
@@ -884,6 +890,28 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         MenuItem item = menu.findItem(R.id.new_incognito_tab_menu_id);
         assertTrue(item.isEnabled());
+    }
+
+    @Test
+    public void testStartSurfaceMenu() {
+        mStartSurfaceSupplier.set(mStartSurfaceCoordinator);
+        setUpMocksForOverviewMenu();
+        doReturn(true).when(mAppMenuPropertiesDelegate).isAutoDarkWebContentsEnabled();
+
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+        mAppMenuPropertiesDelegate.setStartSurfaceStateForTesting(StartSurfaceState.SHOWN_HOMEPAGE);
+        Assert.assertTrue(mAppMenuPropertiesDelegate.shouldShowPageMenu());
+        Assert.assertTrue(mAppMenuPropertiesDelegate.isInStartSurfaceHomepage());
+        Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        Integer[] expectedItems = {R.id.new_tab_menu_id, R.id.new_incognito_tab_menu_id,
+                R.id.divider_line_id, R.id.open_history_menu_id, R.id.downloads_menu_id,
+                R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id, R.id.divider_line_id,
+                R.id.preferences_id, R.id.help_id};
+        assertMenuItemsAreEqual(menu, expectedItems);
     }
 
     private void setUpMocksForPageMenu() {

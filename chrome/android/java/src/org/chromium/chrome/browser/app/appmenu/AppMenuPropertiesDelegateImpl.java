@@ -306,7 +306,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     /**
      * @return Whether the Start surface homepage is showing.
      */
-    private boolean isInStartSurfaceHomepage() {
+    @VisibleForTesting
+    boolean isInStartSurfaceHomepage() {
         return mStartSurfaceSupplier != null && mStartSurfaceSupplier.get() != null
                 && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
     }
@@ -1257,6 +1258,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @VisibleForTesting
     static void setPageInReadingListForTesting(Boolean highlight) {
         sItemInReadingListForTesting = highlight;
+    }
+
+    @VisibleForTesting
+    void setStartSurfaceStateForTesting(@StartSurfaceState int state) {
+        mStartSurfaceState = state;
     }
 
     void setBookmarkBridgeSupplierForTesting(
