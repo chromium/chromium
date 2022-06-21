@@ -46,7 +46,6 @@ import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -84,7 +83,8 @@ public final class MostVisitedTilesProcessorUnitTest {
     public void setUp() {
         // Enable logs to be printed along with possible test failures.
         ShadowLog.stream = System.out;
-        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         doNothing()
                 .when(mFaviconFetcher)
