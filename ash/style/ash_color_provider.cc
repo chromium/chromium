@@ -215,6 +215,14 @@ void AshColorProvider::OnSessionStateChanged(
       state != session_manager::SessionState::LOGIN_PRIMARY) {
     oobe_state_ = OobeDialogState::HIDDEN;
   }
+
+  // Disable dark mode for Shimless RMA
+  if (features::IsShimlessRMADarkModeDisabled() &&
+      state == session_manager::SessionState::RMA) {
+    RefreshColorsOnColorMode(/*is_dark_mode_enabled=*/false);
+    return;
+  }
+
   RefreshColorsOnColorMode(IsDarkModeEnabled());
 }
 
