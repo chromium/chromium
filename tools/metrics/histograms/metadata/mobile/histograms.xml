@@ -184,28 +184,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mobile.Legacy.Translate.Toggle.Delay" units="ms"
-    expires_after="2020-12-13">
-  <owner>sczs@chromium.org</owner>
-  <owner>thegreenfrog@chromium.org</owner>
-  <summary>
-    Records the time between tapping the target and source language in a legacy
-    infobar. If only one of either is tapped, nothing is logged.
-  </summary>
-</histogram>
-
-<histogram name="Mobile.Legacy.Translate.Unused.Duration" units="ms"
-    expires_after="2020-10-11">
-  <owner>sczs@chromium.org</owner>
-  <owner>thegreenfrog@chromium.org</owner>
-  <summary>
-    Records the time an unused legacy infobar persists on screen. This is logged
-    when the infobar is closed.
-  </summary>
-</histogram>
-
 <histogram name="Mobile.Messages.Badge.Tapped.{MobileInfobarType}"
-    enum="MobileMessagesBadgeState" expires_after="2022-07-24">
+    enum="MobileMessagesBadgeState" expires_after="2023-07-24">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -214,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Dismiss.{MobileInfobarType}"
-    enum="MobileMessagesBannerDismissType" expires_after="2022-07-24">
+    enum="MobileMessagesBannerDismissType" expires_after="2023-07-24">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -223,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Event.{MobileInfobarType}"
-    enum="MobileMessagesBannerEvent" expires_after="2022-07-31">
+    enum="MobileMessagesBannerEvent" expires_after="2023-07-31">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records infobar banner events. {MobileInfobarType}</summary>
@@ -275,14 +255,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Modal.Event.{MobileInfobarType}"
-    enum="MobileMessagesModalEvent" expires_after="2022-07-24">
+    enum="MobileMessagesModalEvent" expires_after="2023-07-24">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records generic infobar modal events. {MobileInfobarType}</summary>
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.OverflowRow.Tapped"
-    enum="MobileMessagesInfobarType" expires_after="2022-07-20">
+    enum="MobileMessagesInfobarType" expires_after="2023-07-20">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records a tap on an Infobar overflow menu row.</summary>
@@ -307,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Passwords.Modal.Present"
-    enum="MobileMessagesPasswordsModalPresent" expires_after="2022-07-20">
+    enum="MobileMessagesPasswordsModalPresent" expires_after="2023-07-20">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -316,14 +296,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Save.Card.Modal.Event"
-    enum="MobileMessagesSaveCardModalEvent" expires_after="2022-10-16">
+    enum="MobileMessagesSaveCardModalEvent" expires_after="2023-10-16">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records Save Card specific Infobar Modal events.</summary>
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Banner.Event"
-    enum="MobileMessagesTranslateBannerEvent" expires_after="2022-07-20">
+    enum="MobileMessagesTranslateBannerEvent" expires_after="2023-07-20">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -343,7 +323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Modal.Present"
-    enum="MobileMessagesTranslateModalPresent" expires_after="2022-07-20">
+    enum="MobileMessagesTranslateModalPresent" expires_after="2023-07-20">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -579,7 +559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Translate.Unused.Count" units="units"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>

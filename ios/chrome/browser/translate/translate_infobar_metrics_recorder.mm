@@ -30,22 +30,9 @@
                             presentEvent);
 }
 
-+ (void)recordUnusedLegacyInfobarScreenDuration:(NSTimeInterval)duration {
-  base::TimeDelta timeDelta = base::Seconds(duration);
-  // TODO(crbug.com/1025440): Use function version of macros.
-  UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Legacy.Translate.Unused.Duration",
-                             timeDelta);
-}
-
 + (void)recordUnusedInfobar {
   // TODO(crbug.com/1025440): Use function version of macros.
   UMA_HISTOGRAM_COUNTS_10M("Mobile.Translate.Unused.Count", 1);
-}
-
-+ (void)recordLegacyInfobarToggleDelay:(NSTimeInterval)delay {
-  base::TimeDelta timeDelta = base::Seconds(delay);
-  // TODO(crbug.com/1025440): Use function version of macros.
-  UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Legacy.Translate.Toggle.Delay", timeDelta);
 }
 
 @end
