@@ -225,7 +225,7 @@ try_.orchestrator_builder(
     name = "linux-rel",
     compilator = "linux-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
-    check_for_flakiness = True,
+    check_for_flakiness = False,
     mirrors = [
         "ci/Linux Builder",
         "ci/Linux Tests",
