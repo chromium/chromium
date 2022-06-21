@@ -18,7 +18,7 @@
 using AccountControlCollectionViewItemTest = PlatformTest;
 
 // Tests that the UIImageView and UILabels are set properly after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(AccountControlCollectionViewItemTest, ImageViewAndTextLabels) {
   CollectionViewAccountItem* item =
       [[CollectionViewAccountItem alloc] initWithType:0];

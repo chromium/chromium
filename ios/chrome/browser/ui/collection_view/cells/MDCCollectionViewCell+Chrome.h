@@ -20,11 +20,11 @@
 + (void)cr_clearPreferredHeightForWidthCellCache;
 
 // Returns the height this class of cell would need to be to fit within
-// |targetWidth|, configured by |item|. The returned height is calculated by
+// `targetWidth`, configured by `item`. The returned height is calculated by
 // Auto Layout so that the contents of the cell could fit within the
-// |targetWidth|.
+// `targetWidth`.
 // If the cell contains multi-line labels, make sure to update the
-// |preferredMaxLayoutWidth| in -layoutSubviews like so:
+// `preferredMaxLayoutWidth` in -layoutSubviews like so:
 //
 // @implementation MyCell
 //

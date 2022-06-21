@@ -36,13 +36,13 @@
 // containing a text label and a switch.
 @interface CollectionViewSwitchCell : MDCCollectionViewCell
 
-// UILabel corresponding to |text| from the item.
+// UILabel corresponding to `text` from the item.
 @property(nonatomic, readonly, strong) UILabel* textLabel;
 
 // The switch view.
 @property(nonatomic, readonly, strong) UISwitch* switchView;
 
-// Returns the default text color used for the given |state|.
+// Returns the default text color used for the given `state`.
 + (UIColor*)defaultTextColorForState:(UIControlState)state;
 
 @end

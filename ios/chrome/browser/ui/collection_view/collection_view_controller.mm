@@ -290,14 +290,14 @@
 
 #pragma mark - Private
 
-// Reconfigures the cell at |indexPath| by calling |configureCell:| with |item|.
+// Reconfigures the cell at `indexPath` by calling `configureCell:` with `item`.
 - (void)reconfigureCellAtIndexPath:(NSIndexPath*)indexPath
                           withItem:(CollectionViewItem*)item {
   MDCCollectionViewCell* cell =
       base::mac::ObjCCastStrict<MDCCollectionViewCell>(
           [self.collectionView cellForItemAtIndexPath:indexPath]);
 
-  // |cell| may be nil if the row is not currently on screen.
+  // `cell` may be nil if the row is not currently on screen.
   if (cell) {
     [item configureCell:cell];
   }
