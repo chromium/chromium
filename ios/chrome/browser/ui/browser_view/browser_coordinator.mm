@@ -107,6 +107,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator.h"
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
+#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
@@ -330,6 +331,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   TabStripCoordinator* _tabStripCoordinator;
   TabStripLegacyCoordinator* _legacyTabStripCoordinator;
   SideSwipeController* _sideSwipeController;
+  // The coordinator that shows the Send Tab To Self UI.
+  SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -1025,6 +1028,15 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
 - (void)showAddCreditCard {
   [self.addCreditCardCoordinator start];
+}
+
+- (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title {
+  _sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                             url:url
+                           title:title];
+  [_sendTabToSelfCoordinator start];
 }
 
 - (void)dismissBadgePopupMenu {

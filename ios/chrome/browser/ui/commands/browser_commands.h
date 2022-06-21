@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
 
-class GURL;
 @class ReadingListAddCommand;
 
 // Protocol for commands that will generally be handled by the "current tab",
@@ -61,10 +60,6 @@ class GURL;
 
 // Shows the bookmarks manager.
 - (void)showBookmarksManager;
-
-// Shows the dialog for sending the page with |url| and |title| between a user's
-// devices.
-- (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title;
 
 // Prepares the browser to display a popup menu.
 - (void)prepareForPopupMenuPresentation:(PopupMenuCommandType)type;

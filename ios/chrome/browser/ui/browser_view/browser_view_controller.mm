@@ -93,7 +93,6 @@
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
@@ -479,9 +478,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // The webState of the active tab.
 @property(nonatomic, readonly) web::WebState* currentWebState;
-
-// The coordinator that shows the Send Tab To Self UI.
-@property(nonatomic, strong) SendTabToSelfCoordinator* sendTabToSelfCoordinator;
 
 // Whether the view has been translated for thumb strip usage when smooth
 // scrolling has been enabled. This allows the correct setup to be done when
@@ -3775,17 +3771,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)showBookmarksManager {
   [self initializeBookmarkInteractionController];
   [_bookmarkInteractionController presentBookmarks];
-}
-
-// TODO(crbug.com/972114) Move showSendTabToSelfUI or reroute to
-// browserCoordinator.
-- (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title {
-  self.sendTabToSelfCoordinator =
-      [[SendTabToSelfCoordinator alloc] initWithBaseViewController:self
-                                                           browser:self.browser
-                                                               url:url
-                                                             title:title];
-  [self.sendTabToSelfCoordinator start];
 }
 
 // TODO(crbug.com/1272498): Refactor this command away, and add a mediator to
