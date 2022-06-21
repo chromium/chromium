@@ -105,6 +105,18 @@ export class ReimagingCalibrationFailedPage extends
     super.ready();
     this.getInitialComponentsList_();
     enableNextButton(this);
+
+    // Hide the gradient when the list is scrolled to the end.
+    this.shadowRoot.querySelector('.scroll-container')
+        .addEventListener('scroll', (event) => {
+          const gradient = this.shadowRoot.querySelector('.gradient');
+          if (event.target.scrollHeight - event.target.scrollTop ===
+              event.target.clientHeight) {
+            gradient.style.setProperty('visibility', 'hidden');
+          } else {
+            gradient.style.setProperty('visibility', 'visible');
+          }
+        });
   }
 
   /** @private */
