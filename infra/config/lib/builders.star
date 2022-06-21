@@ -160,6 +160,15 @@ xcode = struct(
     x12e262 = xcode_enum("12e262"),
 )
 
+# Free disk space in a machine reserved for build tasks.
+# The values in this enum will be used to populate bot dimension "free_space",
+# and each bot will allocate a corresponding amount of free disk space based on
+# the value of the dimension through "bot_config.py".
+free_space = struct(
+    standard = "standard",
+    high = "high",
+)
+
 ################################################################################
 # Implementation details                                                       #
 ################################################################################
@@ -276,6 +285,7 @@ defaults = args.defaults(
     auto_builder_dimension = args.COMPUTE,
     builder_group = None,
     builderless = args.COMPUTE,
+    free_space = None,
     configure_kitchen = False,
     kitchen_emulate_gce = False,
     cores = None,
@@ -322,6 +332,7 @@ def builder(
         triggered_by = args.DEFAULT,
         os = args.DEFAULT,
         builderless = args.DEFAULT,
+        free_space = args.DEFAULT,
         auto_builder_dimension = args.DEFAULT,
         fully_qualified_builder_dimension = args.DEFAULT,
         cores = args.DEFAULT,
@@ -399,6 +410,10 @@ def builder(
         builderless: a boolean indicating whether the builder runs on
             builderless machines. If True, emits a 'builderless:1' dimension. By
             default, considered True iff `os` refers to a linux OS.
+        free_space: an enum that indicates the amount of free disk space reserved
+            in a machine for incoming build tasks. This value is used to create
+            a "free_space" dimension, and this dimension is appended to only
+            builderless builders.
         auto_builder_dimension: a boolean indicating whether the builder runs on
             machines devoted to the builder. If True, a dimension will be
             emitted of the form 'builder:<name>'. By default, considered True
@@ -573,6 +588,12 @@ def builder(
         builderless = os != None and os.category in _DEFAULT_BUILDERLESS_OS_CATEGORIES
     if builderless:
         dimensions["builderless"] = "1"
+
+        free_space = defaults.get_value("free_space", free_space)
+        if free_space:
+            dimensions["free_space"] = free_space
+    elif free_space and free_space != args.DEFAULT:
+        fail("\'free_space\' dimension can only be specified for builderless builders")
 
     # bucket might be the args.COMPUTE sentinel value if the caller didn't set
     # bucket in some way, which will result in a weird fully-qualified builder
@@ -795,4 +816,5 @@ builders = struct(
     os = os,
     sheriff_rotations = sheriff_rotations,
     xcode = xcode,
+    free_space = free_space,
 )
