@@ -2024,18 +2024,6 @@ void MainThreadSchedulerImpl::ResetForNavigationLocked() {
   main_thread_only().have_reported_blocking_intervention_since_navigation =
       false;
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
-
-  UMA_HISTOGRAM_COUNTS_100("RendererScheduler.WebViewsPerScheduler",
-                           base::saturated_cast<base::HistogramBase::Sample>(
-                               main_thread_only().page_schedulers.size()));
-
-  size_t frame_count = 0;
-  for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
-    frame_count += page_scheduler->FrameCount();
-  }
-  UMA_HISTOGRAM_COUNTS_100(
-      "RendererScheduler.WebFramesPerScheduler",
-      base::saturated_cast<base::HistogramBase::Sample>(frame_count));
 }
 
 void MainThreadSchedulerImpl::SetTopLevelBlameContext(

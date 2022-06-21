@@ -555,24 +555,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="RendererScheduler.WebFramesPerScheduler" units="web frames"
-    expires_after="M77">
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Number of web frame schedulers per renderer scheduler. Recorded once per
-    navigation.
-  </summary>
-</histogram>
-
-<histogram name="RendererScheduler.WebViewsPerScheduler" units="web views"
-    expires_after="M77">
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Number of web view schedulers per renderer scheduler. Recorded once per
-    navigation.
-  </summary>
-</histogram>
-
 <histogram name="RendererSyncIPC.ElapsedTime" units="ms" expires_after="M85">
   <owner>ppi@chromium.org</owner>
   <summary>
