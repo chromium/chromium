@@ -3893,7 +3893,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="473936925429402449">Seleccionado, contenido adicional: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
 <translation id="4742334355511750246">No puede mostrar imágenes</translation>
-<translation id="4742970037960872810">Quitar el texto destacado</translation>
+<translation id="4742970037960872810">Dejar de destacar</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Obtener información sobre cómo actualizar las aplicaciones<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Activar el sonido del sitio}other{Activar el sonido de los sitios}}</translation>
 <translation id="474609389162964566">Accede a tu Asistente con "Hey Google"</translation>
@@ -6176,7 +6176,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="701080569351381435">Ver código fuente</translation>
 <translation id="7011797924920577670">estima tus intereses</translation>
 <translation id="7014174261166285193">Error de instalación</translation>
-<translation id="7014480873681694324">Quitar el texto destacado</translation>
+<translation id="7014480873681694324">Dejar de destacar</translation>
 <translation id="7017004637493394352">Di "OK Google" otra vez.</translation>
 <translation id="7017219178341817193">Agregar nueva página</translation>
 <translation id="7017354871202642555">No es posible configurar el modo después de que se ha configurado la ventana.</translation>
