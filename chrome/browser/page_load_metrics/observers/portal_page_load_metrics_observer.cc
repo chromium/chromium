@@ -62,6 +62,17 @@ PortalPageLoadMetricsObserver::OnStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PortalPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // TODO(https://crbug.com/1271055): Prerender doesn't support combined use
+  // with Portals. So, there is no case to start with prerendering to monitor
+  // Portals related metrics.
+  DCHECK(!navigation_handle->GetWebContents()->IsPortal());
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PortalPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
