@@ -197,6 +197,9 @@ class PLATFORM_EXPORT PendingLayer {
   // This is set to non-null after layerization if !ChunkRequiresOwnLayer().
   std::unique_ptr<ContentLayerClientImpl> content_layer_client_;
 };
+
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PendingLayer&);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PENDING_LAYER_H_

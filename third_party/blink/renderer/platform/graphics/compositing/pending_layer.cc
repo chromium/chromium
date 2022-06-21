@@ -165,6 +165,10 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
   return result;
 }
 
+std::ostream& operator<<(std::ostream& os, const PendingLayer& layer) {
+  return os << layer.ToJSON()->ToPrettyJSONString().Utf8();
+}
+
 gfx::RectF PendingLayer::VisualRectForOverlapTesting(
     const PropertyTreeState& ancestor_state) const {
   FloatClipRect visual_rect(bounds_);
