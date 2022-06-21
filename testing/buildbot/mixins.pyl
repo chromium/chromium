@@ -844,7 +844,18 @@
       },
     },
   },
-  'mac_arm64_apple_m1_gpu': {
+  'mac_arm64_apple_m1_gpu_experimental': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'mac_model': 'Macmini9,1',
+        'os': 'Mac-12',
+        'pool': 'chromium.tests',
+        'display_attached': '1',
+      },
+    },
+  },
+  'mac_arm64_apple_m1_gpu_stable': {
     'swarming': {
       'dimensions': {
         'cpu': 'arm64',
