@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import androidx.annotation.Px;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
@@ -43,7 +42,8 @@ import java.util.List;
  * to events like clicks.
  */
 class AccountSelectionMediator {
-    private boolean mVisible;
+    private boolean mRegisteredObservers;
+    private boolean mWasDismissed;
     private final AccountSelectionComponent.Delegate mDelegate;
     private final PropertyModel mModel;
     private final ModelList mSheetAccountItems;
@@ -86,7 +86,6 @@ class AccountSelectionMediator {
             AccountSelectionBottomSheetContent bottomSheetContent, ImageFetcher imageFetcher,
             @Px int desiredAvatarSize) {
         assert delegate != null;
-        mVisible = false;
         mDelegate = delegate;
         mModel = model;
         mSheetAccountItems = sheetAccountItems;
@@ -106,7 +105,7 @@ class AccountSelectionMediator {
                 super.onSheetClosed(reason);
                 mBottomSheetController.removeObserver(mBottomSheetObserver);
 
-                if (!mVisible) return;
+                if (mWasDismissed) return;
 
                 // Dismissing the FedCM bottom sheet via {@link StateChangeReason#SWIPE} is more
                 // intentional than other methods such as {@link StateChangeReason#OMNIBOX_FOCUS}.
@@ -117,7 +116,7 @@ class AccountSelectionMediator {
     }
 
     private boolean handleBackPress() {
-        if (mVisible && mSelectedAccount != null && mAccounts.size() != 1) {
+        if (!mWasDismissed && mSelectedAccount != null && mAccounts.size() != 1) {
             mSelectedAccount = null;
             showAccountsInternal(mRpForDisplay, mIdpForDisplay, mAccounts, mIdpMetadata,
                     mClientMetadata, /*isAutoSignIn=*/false, /*focusItem=*/ItemProperties.HEADER);
@@ -162,8 +161,8 @@ class AccountSelectionMediator {
                 /* focusItem=*/ItemProperties.HEADER);
     }
 
-    void hideBottomSheet() {
-        if (mVisible) hideContent();
+    void close() {
+        if (!mWasDismissed) hideContent();
     }
 
     void showAccounts(String rpForDisplay, String idpForDisplay, List<Account> accounts,
@@ -261,12 +260,11 @@ class AccountSelectionMediator {
      * (e.g., higher priority content is being shown) it removes the request from the bottom sheet
      * controller queue and notifies the delegate of the dismissal.
      */
-    @VisibleForTesting
-    void showContent() {
+    private void showContent() {
         if (mBottomSheetController.requestShowContent(mBottomSheetContent, true)) {
-            if (mVisible) return;
+            if (mRegisteredObservers) return;
 
-            mVisible = true;
+            mRegisteredObservers = true;
             mBottomSheetController.addObserver(mBottomSheetObserver);
             KeyboardVisibilityDelegate.getInstance().addKeyboardVisibilityListener(
                     mKeyboardVisibilityListener);
@@ -279,7 +277,7 @@ class AccountSelectionMediator {
      * Requests to hide the bottom sheet.
      */
     void hideContent() {
-        mVisible = false;
+        mWasDismissed = true;
         KeyboardVisibilityDelegate.getInstance().removeKeyboardVisibilityListener(
                 mKeyboardVisibilityListener);
         mBottomSheetController.hideContent(mBottomSheetContent, true);
@@ -305,12 +303,12 @@ class AccountSelectionMediator {
         }
     }
 
-    boolean isVisible() {
-        return mVisible;
+    boolean wasDismissed() {
+        return mWasDismissed;
     }
 
     void onAccountSelected(Account selectedAccount) {
-        if (!mVisible) return;
+        if (mWasDismissed) return;
 
         Account oldSelectedAccount = mSelectedAccount;
         mSelectedAccount = selectedAccount;

@@ -127,7 +127,7 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
     }
 
     @Override
-    public void hideBottomSheet() {
-        mMediator.hideBottomSheet();
+    public void close() {
+        mMediator.close();
     }
 }

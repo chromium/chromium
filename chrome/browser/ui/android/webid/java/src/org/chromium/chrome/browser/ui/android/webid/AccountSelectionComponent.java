@@ -52,7 +52,7 @@ public interface AccountSelectionComponent {
             boolean isAutoSignIn);
 
     /**
-     * Hides the outstanding bottom sheet.
+     * Closes the outstanding bottom sheet.
      */
-    void hideBottomSheet();
+    void close();
 }
