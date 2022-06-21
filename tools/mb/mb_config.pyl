@@ -3453,7 +3453,7 @@
     ],
 
     'updater_debug_bot_x86_reclient': [
-      'updater_on_win_mac', 'debug_static_bot_reclient', 'x86',
+      'updater_on_win_mac', 'debug_static_bot_reclient', 'x86', 'no_symbols',
     ],
 
     'updater_release_bot': [
