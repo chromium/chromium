@@ -848,7 +848,11 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       // inside breaks; see https://www.w3.org/TR/css-break-3/#box-splitting
       if (!is_constrained_by_outer_fragmentation_context_)
         break;
-      new_column_block_size = FragmentainerSpaceAtBfcStart(ConstraintSpace());
+      // We'll get properly constrained right below. Rely on that, rather than
+      // calculating the exact amount here (we could check the available outer
+      // fragmentainer size and subtract the row offset and stuff, but that's
+      // duplicated logic). We'll use as much as we're allowed to.
+      new_column_block_size = LayoutUnit::Max();
     } else {
       new_column_block_size = column_size.block_size +
                               minimal_space_shortage.value_or(LayoutUnit());
