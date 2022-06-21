@@ -71,6 +71,10 @@
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/.*ChooserDialog.java|'\
                   'chrome/android/javatests/src/org/chromium/chrome/browser/.*ChooserDialogTest.java'
     },
+    'android_lint': {
+      'filepath': '/lint-baseline.xml|'\
+                  '/lint-suppressions.xml'
+    },
     'android_omnibox': {
       'filepath': 'chrome/browser/ui/android/omnibox/',
     },
@@ -2165,6 +2169,7 @@
     'android_infra': ['agrieve+watch@chromium.org',
                       'wnwen+watch@chromium.org'],
     'android_item_chooser_dialogs': [],
+    'android_lint': ['wnwen+watch.lint@chromium.org'],
     'android_omnibox': ['ender+watch@chromium.org'],
     'android_search_widget': ['tedchoc+watch@chromium.org',
                               'yusufo+watch@chromium.org'],
