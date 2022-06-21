@@ -897,6 +897,9 @@ const base::Feature kImprovedLoginErrorHandling{
 const base::Feature kInstantTethering{"InstantTethering",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables Jelly features.
+const base::Feature kJelly{"kJelly", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables to use lacros-chrome as the only web browser on ChromeOS.
 // This works only when both LacrosSupport and LacrosPrimary below are enabled.
 // NOTE: Use crosapi::browser_util::IsAshWebBrowserEnabled() instead of checking
@@ -1947,6 +1950,10 @@ bool IsInputInDiagnosticsAppEnabled() {
 bool IsInstantTetheringBackgroundAdvertisingSupported() {
   return base::FeatureList::IsEnabled(
       kInstantTetheringBackgroundAdvertisementSupport);
+}
+
+bool IsJellyEnabled() {
+  return base::FeatureList::IsEnabled(kJelly);
 }
 
 bool IsKeyboardBacklightToggleEnabled() {

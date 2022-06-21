@@ -363,6 +363,7 @@ extern const base::Feature kImprovedDesksKeyboardShortcuts;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImprovedLoginErrorHandling;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kInstantTethering;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kJelly;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosOnly;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosPrimary;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosSupport;
@@ -718,6 +719,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputNoiseCancellationUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInstantTetheringBackgroundAdvertisingSupported();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJellyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKeyboardBacklightToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLanguagePacksEnabled();
