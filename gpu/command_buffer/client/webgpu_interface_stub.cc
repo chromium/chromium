@@ -53,7 +53,9 @@ bool WebGPUInterfaceStub::EnsureAwaitingFlush() {
   return false;
 }
 void WebGPUInterfaceStub::FlushAwaitingCommands() {}
-ReservedTexture WebGPUInterfaceStub::ReserveTexture(WGPUDevice) {
+ReservedTexture WebGPUInterfaceStub::ReserveTexture(
+    WGPUDevice,
+    const WGPUTextureDescriptor*) {
   return {nullptr, 0, 0, 0, 0};
 }
 

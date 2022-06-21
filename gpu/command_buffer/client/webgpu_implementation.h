@@ -92,7 +92,9 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   bool EnsureAwaitingFlush() override;
   void FlushAwaitingCommands() override;
   scoped_refptr<APIChannel> GetAPIChannel() const override;
-  ReservedTexture ReserveTexture(WGPUDevice device) override;
+  ReservedTexture ReserveTexture(
+      WGPUDevice device,
+      const WGPUTextureDescriptor* optionalDesc = nullptr) override;
   WGPUDevice DeprecatedEnsureDefaultDeviceSync() override;
 
  private:

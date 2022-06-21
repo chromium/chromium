@@ -39,6 +39,7 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
       client_(client),
       device_(device),
       usage_(usage),
+      wgpu_format_(format),
       format_(WGPUFormatToViz(format)) {
   // Create a layer that will be used by the canvas and will ask for a
   // SharedImage each frame.
@@ -185,8 +186,20 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const gfx::Size& size) {
   webgpu->WaitSyncTokenCHROMIUM(
       current_swap_buffer_->access_finished_token.GetConstData());
 
-  // Associate the mailbox to a dawn_wire client DawnTexture object
-  gpu::webgpu::ReservedTexture reservation = webgpu->ReserveTexture(device_);
+  // Associate the mailbox to a dawn_wire client DawnTexture object. Pass in a
+  // complete descriptor of the texture so that reflection on GPUTexture from
+  // canvases gives the correct result.
+  WGPUTextureDescriptor texDesc = {};
+  texDesc.size = {static_cast<uint32_t>(size.width()),
+                  static_cast<uint32_t>(size.height()), 1};
+  texDesc.format = wgpu_format_;
+  texDesc.usage = usage_;
+  texDesc.dimension = WGPUTextureDimension_2D;
+  texDesc.mipLevelCount = 1;
+  texDesc.sampleCount = 1;
+
+  gpu::webgpu::ReservedTexture reservation =
+      webgpu->ReserveTexture(device_, &texDesc);
   DCHECK(reservation.texture);
   wire_device_id_ = reservation.deviceId;
   wire_device_generation_ = reservation.deviceGeneration;

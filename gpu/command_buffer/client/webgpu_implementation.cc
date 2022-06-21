@@ -378,13 +378,22 @@ scoped_refptr<APIChannel> WebGPUImplementation::GetAPIChannel() const {
 #endif
 }
 
-ReservedTexture WebGPUImplementation::ReserveTexture(WGPUDevice device) {
+ReservedTexture WebGPUImplementation::ReserveTexture(
+    WGPUDevice device,
+    const WGPUTextureDescriptor* optionalDesc) {
 #if BUILDFLAG(USE_DAWN)
   // Commit because we need to make sure messages that free a previously used
   // texture are seen first. ReserveTexture may reuse an existing ID.
   dawn_wire_->serializer()->Commit();
 
-  auto reservation = dawn_wire_->wire_client()->ReserveTexture(device);
+  WGPUTextureDescriptor placeholderDesc;
+  if (optionalDesc == nullptr) {
+    placeholderDesc = {};  // Zero initialize.
+    optionalDesc = &placeholderDesc;
+  }
+
+  auto reservation =
+      dawn_wire_->wire_client()->ReserveTexture(device, optionalDesc);
   ReservedTexture result;
   result.texture = reservation.texture;
   result.id = reservation.id;

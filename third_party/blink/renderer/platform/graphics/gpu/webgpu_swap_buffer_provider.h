@@ -112,6 +112,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   bool neutered_ = false;
 
   WGPUTextureUsage usage_;
+  WGPUTextureFormat wgpu_format_;
 
   // The maximum number of in-flight swap-buffers waiting to be used for
   // recycling.

@@ -65,7 +65,9 @@ class WebGPUInterface : public InterfaceBase {
   // Get a strong reference to the APIChannel backing the implementation.
   virtual scoped_refptr<APIChannel> GetAPIChannel() const = 0;
 
-  virtual ReservedTexture ReserveTexture(WGPUDevice device) = 0;
+  virtual ReservedTexture ReserveTexture(
+      WGPUDevice device,
+      const WGPUTextureDescriptor* optionalDesc = nullptr) = 0;
 
   // Gets or creates a usable WGPUDevice synchronously. It really should not
   // be used, and the async request adapter and request device APIs should be

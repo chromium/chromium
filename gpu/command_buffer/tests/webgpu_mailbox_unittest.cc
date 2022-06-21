@@ -861,6 +861,62 @@ TEST_P(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
   webgpu()->FlushCommands();
 }
 
+// Test that passing a descriptor to ReserveTexture produces a client-side
+// WGPUTexture that correctly reflects said descriptor.
+TEST_P(WebGPUMailboxTest, ReflectionOfDescriptor) {
+  if (!WebGPUSupported()) {
+    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+    return;
+  }
+
+  wgpu::Device device = GetNewDevice();
+
+  // Check that reserving a texture with a full descriptor give the same data
+  // back through reflection.
+  wgpu::TextureDescriptor desc1 = {};
+  desc1.size = {1, 2, 3};
+  desc1.format = wgpu::TextureFormat::R32Float;
+  desc1.usage = wgpu::TextureUsage::CopyDst;
+  desc1.dimension = wgpu::TextureDimension::e2D;
+  desc1.sampleCount = 1;
+  desc1.mipLevelCount = 1;
+  gpu::webgpu::ReservedTexture reservation1 = webgpu()->ReserveTexture(
+      device.Get(), reinterpret_cast<const WGPUTextureDescriptor*>(&desc1));
+  wgpu::Texture texture1 = wgpu::Texture::Acquire(reservation1.texture);
+
+  ASSERT_EQ(desc1.size.width, texture1.GetWidth());
+  ASSERT_EQ(desc1.size.height, texture1.GetHeight());
+  ASSERT_EQ(desc1.size.depthOrArrayLayers, texture1.GetDepthOrArrayLayers());
+  ASSERT_EQ(desc1.format, texture1.GetFormat());
+  ASSERT_EQ(desc1.usage, texture1.GetUsage());
+  ASSERT_EQ(desc1.dimension, texture1.GetDimension());
+  ASSERT_EQ(desc1.sampleCount, texture1.GetSampleCount());
+  ASSERT_EQ(desc1.mipLevelCount, texture1.GetMipLevelCount());
+
+  // Test with a different descriptor to check data is not hardcoded. Not that
+  // this is actually not a valid descriptor (diimension == 1D with height !=
+  // 1), but that it should still be reflected exactly.
+  wgpu::TextureDescriptor desc2 = {};
+  desc2.size = {4, 5, 6};
+  desc2.format = wgpu::TextureFormat::RGBA8Unorm;
+  desc2.usage = wgpu::TextureUsage::CopySrc;
+  desc2.dimension = wgpu::TextureDimension::e1D;
+  desc2.sampleCount = 4;
+  desc2.mipLevelCount = 3;
+  gpu::webgpu::ReservedTexture reservation2 = webgpu()->ReserveTexture(
+      device.Get(), reinterpret_cast<const WGPUTextureDescriptor*>(&desc2));
+  wgpu::Texture texture2 = wgpu::Texture::Acquire(reservation2.texture);
+
+  ASSERT_EQ(desc2.size.width, texture2.GetWidth());
+  ASSERT_EQ(desc2.size.height, texture2.GetHeight());
+  ASSERT_EQ(desc2.size.depthOrArrayLayers, texture2.GetDepthOrArrayLayers());
+  ASSERT_EQ(desc2.format, texture2.GetFormat());
+  ASSERT_EQ(desc2.usage, texture2.GetUsage());
+  ASSERT_EQ(desc2.dimension, texture2.GetDimension());
+  ASSERT_EQ(desc2.sampleCount, texture2.GetSampleCount());
+  ASSERT_EQ(desc2.mipLevelCount, texture2.GetMipLevelCount());
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          WebGPUMailboxTest,
                          ::testing::ValuesIn(WebGPUMailboxTest::TestParams()),
