@@ -15,7 +15,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -885,25 +884,8 @@ bool TabDragController::CanStartDrag(const gfx::Point& point_in_screen) const {
   static const int kMinimumDragDistance = 10;
   int x_offset = abs(point_in_screen.x() - start_point_in_screen_.x());
   int y_offset = abs(point_in_screen.y() - start_point_in_screen_.y());
-  auto distance = sqrt(pow(static_cast<float>(x_offset), 2) +
-                       pow(static_cast<float>(y_offset), 2));
-#if BUILDFLAG(IS_WIN)
-  // We're getting rare, spurious mouse events at 0,0, which if immediately
-  // preceded by a mouse down on a tab, drag and drop the tab to 0,0. See
-  // https://crbug.com/1270828. Gather crash dump information to help find
-  // possible causes/correlations.
-  static constexpr int kMinSpuriousDistance = 200;
-  static constexpr int kMaxDumps = 3;
-  static int g_num_dumps = 0;
-  if (point_in_screen == gfx::Point(0, 0) && distance > kMinSpuriousDistance &&
-      g_num_dumps++ < kMaxDumps) {
-    base::debug::Alias(&x_offset);
-    base::debug::Alias(&y_offset);
-    base::debug::DumpWithoutCrashing();
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
-  return distance > kMinimumDragDistance;
+  return sqrt(pow(static_cast<float>(x_offset), 2) +
+              pow(static_cast<float>(y_offset), 2)) > kMinimumDragDistance;
 }
 
 TabDragController::Liveness TabDragController::ContinueDragging(
