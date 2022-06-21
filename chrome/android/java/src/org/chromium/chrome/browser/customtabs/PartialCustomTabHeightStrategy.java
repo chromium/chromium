@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MotionEventCompat;
@@ -85,7 +86,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     private final Activity mActivity;
-    private final @Px int mInitialHeight;
     private final @Px int mMaxHeight;
 
     private final @Px int mFullyExpandedAdjustmentHeight;
@@ -94,6 +94,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final OnResizedCallback mOnResizedCallback;
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
     private final int mHandleHeight;
+    private @Px int mInitialHeight;
     private ValueAnimator mAnimator;
     private int mShadowOffset;
     private boolean mDrawOutlineShadow;
@@ -122,6 +123,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private View mToolbarView;
     private View mToolbarCoordinator;
     private Runnable mPositionUpdater;
+
+    // Runnable finishing the activity after the exit animation. Non-null when PCCT is closing.
+    @Nullable
+    private Runnable mFinishRunnable;
 
     /** A callback to be called once the Custom Tab has been resized. */
     interface OnResizedCallback {
@@ -509,8 +514,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                 mMaxHeight - mInitialHeight - mNavbarHeight);
         WindowManager.LayoutParams attributes = mActivity.getWindow().getAttributes();
         if (attributes.y == y) return;
+
         attributes.y = y;
         mActivity.getWindow().setAttributes(attributes);
+        if (mFinishRunnable != null) return;
+
         assert mSpinnerView != null;
         centerSpinnerVertically((ViewGroup.LayoutParams) mSpinnerView.getLayoutParams());
     }
@@ -521,6 +529,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     private void onMoveEnd() {
+        if (mFinishRunnable != null) {
+            mFinishRunnable.run();
+            return;
+        }
         setContentsHeight();
 
         // TODO(crbug.com/1328555): Look into observing a view resize event to ensure the fade
@@ -751,6 +763,25 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     public boolean changeBackgroundColorForResizing() {
         // Need to return true to keep the transparent background we set in the init step.
         return true;
+    }
+
+    @Override
+    public void handleCloseAnimation(Runnable finishRunnable) {
+        if (mFinishRunnable != null) return;
+
+        mFinishRunnable = finishRunnable;
+
+        int start = mActivity.getWindow().getAttributes().y;
+        int end = getDisplayHeight() - mNavbarHeight;
+        mInitialHeight = 0;
+
+        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+        mAnimator.setDuration(
+                mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime));
+        mAnimator.setIntValues(start, end);
+        mAnimator.start();
     }
 
     @VisibleForTesting

@@ -55,4 +55,12 @@ public class CustomTabHeightStrategy {
      */
     public void onToolbarInitialized(
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {}
+
+    /**
+     * @see {@link BaseCustomTabRootUiCoordinator#handleCloseAnimation()}
+     */
+    public void handleCloseAnimation(Runnable finishRunnable) {
+        throw new IllegalStateException(
+                "Custom close animation should be performed only on partial CCT.");
+    }
 }
