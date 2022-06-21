@@ -56,6 +56,9 @@ class GURL;
 // devices.
 - (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title;
 
+// Shows the online help page in a tab.
+- (void)showHelpPage;
+
 // Displays the Badge popup menu showing |badgeItems|.
 - (void)displayPopupMenuWithBadgeItems:(NSArray<id<BadgeItem>>*)badgeItems;
 

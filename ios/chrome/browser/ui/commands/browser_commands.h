@@ -55,9 +55,6 @@
 // Closes all tabs.
 - (void)closeAllTabs;
 
-// Shows the online help page in a tab.
-- (void)showHelpPage;
-
 // Shows the bookmarks manager.
 - (void)showBookmarksManager;
 
