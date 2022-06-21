@@ -4,6 +4,7 @@
   "manifest_version": 2,
   "permissions": ["webRequest", "<all_urls>"],
   "background" : {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": true
   }
 }

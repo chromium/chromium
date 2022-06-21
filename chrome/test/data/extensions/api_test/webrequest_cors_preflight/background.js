@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-window.preflightHeadersReceivedCount = 0
-window.preflightProxyAuthRequiredCount = 0;
-window.preflightResponseStartedCount = 0;
-window.preflightResponseStartedSuccessfullyCount = 0
+self.preflightHeadersReceivedCount = 0
+self.preflightProxyAuthRequiredCount = 0;
+self.preflightResponseStartedCount = 0;
+self.preflightResponseStartedSuccessfullyCount = 0
 
 chrome.webRequest.onHeadersReceived.addListener(function (details) {
   if (details.method === "OPTIONS") {
-    ++window.preflightHeadersReceivedCount;
+    ++self.preflightHeadersReceivedCount;
     if (details.statusCode == 407) {
-      ++window.preflightProxyAuthRequiredCount;
+      ++self.preflightProxyAuthRequiredCount;
     }
   }
 }, { urls: ['http://cors.test/*'] }, ["extraHeaders"]);
 
 chrome.webRequest.onResponseStarted.addListener(function (details) {
   if (details.method === "OPTIONS") {
-    ++window.preflightResponseStartedCount;
+    ++self.preflightResponseStartedCount;
     if (details.statusCode == 204) {
-      ++window.preflightResponseStartedSuccessfullyCount;
+      ++self.preflightResponseStartedSuccessfullyCount;
     }
   }
 }, { urls: ['http://cors.test/*'] }, ["extraHeaders"]);

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var initiators = [];
+self.initiators = [];
 
 function onBeforeRequest(details) {
   if (details.initiator && details.url.includes('title1.html'))
-    initiators.push(details.initiator);
+    self.initiators.push(details.initiator);
 }
 
 chrome.webRequest.onBeforeRequest.addListener(
