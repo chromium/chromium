@@ -115,6 +115,15 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
   std::unique_ptr<TestAccessibilityView> accessibility_view_;
 };
 
+TEST_F(AssistiveWindowControllerTest, ShowSuggestionSetsConfirmedLength) {
+  ui::ime::SuggestionDetails details;
+  details.text = u"asdf";
+  details.confirmed_length = 3;
+  controller_->ShowSuggestion(details);
+
+  EXPECT_EQ(controller_->GetConfirmedLength(), 3u);
+}
+
 TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
@@ -122,7 +131,6 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
   controller_->ShowSuggestion(details);
   ui::ime::SuggestionWindowView* suggestion_view =
       controller_->GetSuggestionWindowViewForTesting();
-  EXPECT_EQ(controller_->GetConfirmedLength(), 0u);
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
   gfx::Rect caret_bounds(0, 0, 100, 100);
@@ -141,7 +149,6 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLengthNSetsBoundsToCaretBounds) {
   controller_->ShowSuggestion(details);
   ui::ime::SuggestionWindowView* suggestion_view =
       controller_->GetSuggestionWindowViewForTesting();
-  EXPECT_EQ(controller_->GetConfirmedLength(), 1u);
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
   gfx::Rect caret_bounds(0, 0, 100, 100);
@@ -188,7 +195,6 @@ TEST_F(AssistiveWindowControllerTest,
   details.text = suggestion_;
   details.confirmed_length = 1;
   controller_->ShowSuggestion(details);
-  EXPECT_EQ(controller_->GetConfirmedLength(), 1u);
 
   gfx::Rect current_bounds =
       controller_->GetSuggestionWindowViewForTesting()->GetAnchorRect();
