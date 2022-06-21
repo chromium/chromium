@@ -720,15 +720,15 @@ def main():
       cc = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang')
       cxx = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang++')
 
-    if sys.platform != 'darwin':
-      # The host clang has lld, but self-hosting with lld is still slightly
-      # broken on mac.
-      # TODO: check if this works now.
-      base_cmake_args.append('-DLLVM_ENABLE_LLD=ON')
-
     if sys.platform.startswith('linux'):
       MaybeDownloadHostGcc(args)
       base_cmake_args += [ '-DLLVM_STATIC_LINK_CXX_STDLIB=ON' ]
+
+  if sys.platform != 'darwin':
+    # The host clang has lld, but self-hosting with lld is still slightly
+    # broken on mac.
+    # TODO: check if this works now.
+    base_cmake_args.append('-DLLVM_ENABLE_LLD=ON')
 
   if sys.platform == 'darwin':
     # For libc++, we only want the headers.
