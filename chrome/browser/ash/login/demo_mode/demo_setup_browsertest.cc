@@ -84,6 +84,8 @@ const test::UIPath kDemoPreferencesScreen = {kDemoPrefsId};
 const test::UIPath kDemoPreferencesCountry = {kDemoPrefsId, "countrySelect"};
 const test::UIPath kDemoPreferencesCountrySelect = {kDemoPrefsId,
                                                     "countrySelect", "select"};
+const test::UIPath kDemoPreferencesRetailerStoreId = {kDemoPrefsId,
+                                                      "retailerIdInput"};
 const test::UIPath kDemoPreferencesNext = {kDemoPrefsId, "nextButton"};
 
 const test::UIPath kNetworkScreen = {kNetworkId};
@@ -555,6 +557,39 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::OobeJS().ExpectElementValue("US", kDemoPreferencesCountrySelect);
 
   SelectFranceAndFinishSetup();
+}
+
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       OnlineSetupFlowSuccessWithRetailerAndStoreId) {
+  // Simulate successful online setup.
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION);
+  enrollment_helper_.ExpectAttestationEnrollmentSuccess();
+  SimulateNetworkConnected();
+
+  TriggerDemoModeOnWelcomeScreen();
+
+  const std::string expectedRetailerStoreId = "ABC-1234";
+
+  test::OobeJS().TypeIntoPath(expectedRetailerStoreId,
+                              kDemoPreferencesRetailerStoreId);
+  test::OobeJS().ExpectEnabledPath(kDemoPreferencesNext);
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+
+  EXPECT_EQ(expectedRetailerStoreId, WizardController::default_controller()
+                                         ->demo_setup_controller()
+                                         ->get_retailer_store_id_input());
+
+  UseOnlineModeOnNetworkScreen();
+
+  AcceptTermsAndExpectDemoSetupProgress();
+
+  EXPECT_EQ("admin-us@cros-demo-mode.com",
+            DemoSetupController::GetSubOrganizationEmail());
+  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
