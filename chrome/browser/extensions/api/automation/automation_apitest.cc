@@ -211,7 +211,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, LineStartOffsets) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiCanvasTest, ImageData) {
+// Flaky on Mac: crbug.com/1338036
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_ImageData DISABLED_ImageData
+#else
+#define MAYBE_ImageData ImageData
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiCanvasTest, MAYBE_ImageData) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
                                {.page_url = "image_data.html"}))
