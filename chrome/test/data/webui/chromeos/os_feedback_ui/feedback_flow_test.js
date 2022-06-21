@@ -269,6 +269,8 @@ export function FeedbackFlowTestSuite() {
     const inputElement =
         searchPage.shadowRoot.querySelector('#descriptionText');
     assertEquals(inputElement.value, '');
+    // The description input element should have received focused.
+    assertEquals(inputElement, getDeepActiveElement());
   });
 
   // When starting a new report, the send button in share data page

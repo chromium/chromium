@@ -140,8 +140,7 @@ export class FeedbackFlowElement extends PolymerElement {
   handleGoBackClick_(event) {
     switch (event.detail.currentState) {
       case FeedbackFlowState.SHARE_DATA:
-        this.currentState_ = FeedbackFlowState.SEARCH;
-        this.shadowRoot.querySelector('search-page').focusInputElement();
+        this.navigateToSearchPage_();
         break;
       case FeedbackFlowState.CONFIRMATION:
         // Remove the text from previous search.
@@ -152,11 +151,17 @@ export class FeedbackFlowElement extends PolymerElement {
         const shareDataPage = this.shadowRoot.querySelector('share-data-page');
         shareDataPage.reEnableSendReportButton();
 
-        this.currentState_ = FeedbackFlowState.SEARCH;
+        this.navigateToSearchPage_();
         break;
       default:
         console.warn('unexpected state: ', event.detail.currentState);
     }
+  }
+
+  /** @private */
+  navigateToSearchPage_() {
+    this.currentState_ = FeedbackFlowState.SEARCH;
+    this.shadowRoot.querySelector('search-page').focusInputElement();
   }
 
   /**
