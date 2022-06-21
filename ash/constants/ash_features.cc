@@ -1710,6 +1710,10 @@ bool IsAssistiveMultiWordEnabled() {
   return base::FeatureList::IsEnabled(kAssistMultiWord);
 }
 
+bool IsAudioSettingsPageEnabled() {
+  return base::FeatureList::IsEnabled(kAudioSettingsPage);
+}
+
 bool IsAutoNightLightEnabled() {
   return base::FeatureList::IsEnabled(kAutoNightLight);
 }
