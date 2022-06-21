@@ -18,12 +18,6 @@ const ArcTosState = {
 };
 
 /**
- * Timeout to load online ToS.
- * @type {number}
- */
-const ONLINE_LOAD_TIMEOUT_IN_MS = 10000;
-
-/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {LoginScreenBehaviorInterface}
@@ -342,6 +336,10 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
     this.pageReady_ = true;
 
     var termsView = this.$.arcTosView;
+    var requestFilter = {urls: ['<all_urls>'], types: ['main_frame']};
+
+    termsView.request.onErrorOccurred.addListener(
+        this.onTermsViewErrorOccurred.bind(this), requestFilter);
 
     // Open links from webview in overlay dialog.
     var self = this;
@@ -581,27 +579,8 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
     }
     this.termsError = false;
     this.usingOfflineTermsForTesting_ = false;
-
-    const loadFailureCallback = () => {
-      // If in demo mode fallback to offline Terms of Service copy.
-      if (this.isDemoModeSetup_() && this.usingOfflineTermsForTesting_) {
-        const TERMS_URL = 'chrome://terms/arc/terms';
-        const webView = this.$.arcTosView;
-        WebViewHelper.loadUrlContentToWebView(
-            webView, TERMS_URL, WebViewHelper.ContentType.HTML);
-        return;
-      }
-      this.showError_();
-    };
-
-    const termsView = this.$.arcTosView;
-    const tosLoader = new WebViewLoader(
-        termsView, ONLINE_LOAD_TIMEOUT_IN_MS, loadFailureCallback,
-        this.isDemoModeSetup_() /* clear_anchors */, false /* inject_css */);
-
-    const tosUrl = this.termsOfServiceHostName_ + '/about/play-terms.html';
-    tosLoader.setUrl(tosUrl);
-
+    var termsView = this.$.arcTosView;
+    termsView.src = this.termsOfServiceHostName_ + '/about/play-terms.html';
     this.setUIStep(ArcTosState.LOADING);
     this.enableButtons_(false);
   }
@@ -691,6 +670,26 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
     if (this.is_shown_) {
       this.$.arcTosNextButton.focus();
     }
+  }
+
+  /**
+   * Handles event when terms view cannot be loaded.
+   */
+  onTermsViewErrorOccurred(details) {
+    // If in demo mode fallback to offline Terms of Service copy.
+    if (this.isDemoModeSetup_() && this.usingOfflineTermsForTesting_) {
+      const TERMS_URL = 'chrome://terms/arc/terms';
+      var webView = this.$.arcTosView;
+      WebViewHelper.loadUrlContentToWebView(
+          webView, TERMS_URL, WebViewHelper.ContentType.HTML);
+      return;
+    } else if (details && details.error == 'net::ERR_ABORTED') {
+      // Retry triggers net::ERR_ABORTED, so ignore it.
+      // TODO(b/232592745): Replace with a state machine to handle aborts
+      // gracefully and avoid duplicate reloads.
+      return;
+    }
+    this.showError_();
   }
 
   /**
