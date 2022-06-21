@@ -1713,6 +1713,11 @@ TEST_F(BasicFederatedAuthRequestImplTest, TokenRequestTimesOut) {
 
   // Resolve token request. The callback should not be called.
   test_network_request_manager_->RunDelayedCallbacks();
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
+                                       IdTokenStatus::kUserInterfaceTimedOut,
+                                       1);
+  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kUserInterfaceTimedOut);
 }
 
 class FederatedAuthRequestImplTestCancelConsistency

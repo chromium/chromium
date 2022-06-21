@@ -46,8 +46,9 @@ enum class FedCmRequestIdTokenStatus {
   kManifestNotInManifestList,
   kManifestListTooBig,
   kDisabledEmbargo,
+  kUserInterfaceTimedOut,
 
-  kMaxValue = kDisabledEmbargo
+  kMaxValue = kUserInterfaceTimedOut
 };
 
 // This enum describes the status of a revocation call to the FedCM API.
