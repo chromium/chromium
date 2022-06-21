@@ -23,13 +23,13 @@ preprocess_if_expr("preprocess_css") {
 preprocessed_files = [ "sync_index.js" ]
 non_preprocessed_files = [
   "about.js",
-  "chrome_sync.js",
+  "chrome_sync.ts",
   "data.js",
   "invalidations.js",
-  "search.js",
+  "search.ts",
   "sync_log.js",
   "sync_node_browser.js",
-  "sync_search.js",
+  "sync_search.ts",
   "traffic_log.js",
   "user_events.js",
 ]
@@ -50,6 +50,10 @@ ts_library("build_ts") {
   in_files = non_preprocessed_files + preprocessed_files
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
+  definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
   deps = [ "//ui/webui/resources:library" ]
   extra_deps = [
     ":copy_files",
