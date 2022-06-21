@@ -289,10 +289,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   }
 
   // Interface used for drawing. Common among different draw modes.
-  sk_sp<SkSurface> root_surface_;
-  raw_ptr<SkCanvas, DanglingUntriaged> root_canvas_ = nullptr;
   raw_ptr<SkCanvas, DanglingUntriaged> current_canvas_ = nullptr;
-  raw_ptr<SkSurface, DanglingUntriaged> current_surface_ = nullptr;
 
   class FrameResourceGpuCommandsCompletedFence;
   scoped_refptr<FrameResourceGpuCommandsCompletedFence>

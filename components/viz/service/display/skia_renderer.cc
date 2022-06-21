@@ -815,9 +815,7 @@ void SkiaRenderer::BeginDrawingFrame() {
 
 void SkiaRenderer::FinishDrawingFrame() {
   TRACE_EVENT0("viz", "SkiaRenderer::FinishDrawingFrame");
-  root_canvas_ = nullptr;
   current_canvas_ = nullptr;
-  current_surface_ = nullptr;
 
   swap_buffer_rect_ = current_frame()->root_damage_rect;
 
@@ -980,9 +978,7 @@ void SkiaRenderer::EnsureScissorTestDisabled() {
 }
 
 void SkiaRenderer::BindFramebufferToOutputSurface() {
-  root_canvas_ = skia_output_surface_->BeginPaintCurrentFrame();
-  current_canvas_ = root_canvas_;
-  current_surface_ = root_surface_.get();
+  current_canvas_ = skia_output_surface_->BeginPaintCurrentFrame();
 }
 
 void SkiaRenderer::BindFramebufferToTexture(
@@ -2615,15 +2611,16 @@ SkColorMatrix ToColorMatrix(const SkM44& mat) {
 
 sk_sp<SkColorFilter> SkiaRenderer::GetContentColorFilter() {
   sk_sp<SkColorFilter> color_transform = nullptr;
-  if (current_canvas_ == root_canvas_ &&
-      output_surface_->color_matrix() != SkM44()) {
+  bool is_root =
+      current_frame()->current_render_pass == current_frame()->root_render_pass;
+
+  if (is_root && output_surface_->color_matrix() != SkM44()) {
     color_transform =
         SkColorFilters::Matrix(ToColorMatrix(output_surface_->color_matrix()));
   }
 
   sk_sp<SkColorFilter> tint_transform = nullptr;
-  if (current_canvas_ == root_canvas_ &&
-      debug_settings_->tint_composited_content) {
+  if (is_root && debug_settings_->tint_composited_content) {
     if (debug_settings_->tint_composited_content_modulate) {
       // Integer counter causes modulation through rgb dimming variations.
       std::array<float, 3> rgb;
@@ -2926,6 +2923,7 @@ void SkiaRenderer::FinishDrawingQuadList() {
   if (is_root_render_pass && UsingSkiaForDelegatedInk())
     DrawDelegatedInkTrail();
 
+  current_canvas_ = nullptr;
   EndPaint(/*failed=*/false);
 
   // Defer flushing drawing task for root render pass, to avoid extra
