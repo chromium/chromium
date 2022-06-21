@@ -1020,8 +1020,9 @@ bool FocusController::AdvanceFocusInDocumentOrder(
 
   document->UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
   ScopedFocusNavigation scope =
-      current ? ScopedFocusNavigation::CreateFor(*current, owner_map)
-              : ScopedFocusNavigation::CreateForDocument(*document, owner_map);
+      (current && current->IsInTreeScope())
+          ? ScopedFocusNavigation::CreateFor(*current, owner_map)
+          : ScopedFocusNavigation::CreateForDocument(*document, owner_map);
   Element* element =
       FindFocusableElementAcrossFocusScopes(type, scope, owner_map);
   if (!element) {
