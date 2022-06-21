@@ -612,12 +612,9 @@ void AppServiceProxyBase::AddPreferredApp(const std::string& app_id,
 
 void AppServiceProxyBase::AddPreferredApp(const std::string& app_id,
                                           const IntentPtr& intent) {
-  // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
-  // after finding out the root cause.
-  if (app_id.empty() || !preferred_apps_impl_) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
+  DCHECK(!app_id.empty());
+  DCHECK(preferred_apps_impl_);
+
   auto intent_filter = FindBestMatchingFilter(intent);
   if (!intent_filter) {
     return;
@@ -648,12 +645,8 @@ void AppServiceProxyBase::AddPreferredApp(const std::string& app_id,
 void AppServiceProxyBase::AddPreferredApp(
     const std::string& app_id,
     const apps::mojom::IntentPtr& intent) {
-  // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
-  // after finding out the root cause.
-  if (app_id.empty()) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
+  DCHECK(!app_id.empty());
+
   auto mojom_intent_filter = FindBestMatchingMojomFilter(intent);
   if (!mojom_intent_filter || !app_service_.is_connected()) {
     return;

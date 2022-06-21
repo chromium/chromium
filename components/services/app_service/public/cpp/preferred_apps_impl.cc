@@ -246,12 +246,7 @@ void PreferredAppsImpl::AddPreferredAppImpl(AppType app_type,
                                             IntentFilterPtr intent_filter,
                                             IntentPtr intent,
                                             bool from_publisher) {
-  // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
-  // after finding out the root cause.
-  if (app_id.empty()) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
+  DCHECK(!app_id.empty());
 
   auto replaced_apps =
       preferred_apps_list_.AddPreferredApp(app_id, intent_filter);

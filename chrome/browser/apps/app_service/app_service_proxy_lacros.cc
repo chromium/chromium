@@ -371,12 +371,7 @@ void AppServiceProxyLacros::AddPreferredApp(const std::string& app_id,
     return;
   }
 
-  // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
-  // after finding out the root cause.
-  if (app_id.empty()) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
+  DCHECK(!app_id.empty());
 
   remote_crosapi_app_service_proxy_->AddPreferredApp(
       app_id, apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_));
