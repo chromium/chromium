@@ -30,22 +30,20 @@ class SellerWorklet;
 // sandboxed utility process.
 class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
  public:
-  // Constructor for when `this` owns the receiver. This is for the case where
-  // this is used as a service, with ServiceFactory managing the lifetime.
-  explicit AuctionWorkletServiceImpl(
-      mojo::PendingReceiver<mojom::AuctionWorkletService> receiver);
-
-  // Constructor for when owned by an external SelfOwnedReceiver. Used by
-  // |Create()|, which is intended for use with a BinderMap.
-  AuctionWorkletServiceImpl();
-
   explicit AuctionWorkletServiceImpl(const AuctionWorkletServiceImpl&) = delete;
   AuctionWorkletServiceImpl& operator=(const AuctionWorkletServiceImpl&) =
       delete;
   ~AuctionWorkletServiceImpl() override;
 
-  // Creates an instance owned by (and bound to) |receiver|.
-  static void Create(
+  // Factory method intended for use when running in the renderer.
+  // Creates an instance owned by (and bound to) `receiver`.
+  static void CreateForRenderer(
+      mojo::PendingReceiver<mojom::AuctionWorkletService> receiver);
+
+  // Factory method intended for use when running as a service.
+  // Will be bound to `receiver` but owned by the return value
+  // (which will normally be placed in care of a ServiceFactory).
+  static std::unique_ptr<AuctionWorkletServiceImpl> CreateForService(
       mojo::PendingReceiver<mojom::AuctionWorkletService> receiver);
 
   scoped_refptr<AuctionV8Helper> AuctionV8HelperForTesting();
@@ -75,14 +73,27 @@ class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
 
  private:
   class V8HelperHolder;
+  enum class ProcessModel { kDedicated, kShared };
+
+  // Receiver may be null
+  AuctionWorkletServiceImpl(
+      ProcessModel process_model,
+      mojo::PendingReceiver<mojom::AuctionWorkletService> receiver);
+
   void DisconnectSellerWorklet(mojo::ReceiverId receiver_id,
                                const std::string& reason);
   void DisconnectBidderWorklet(mojo::ReceiverId receiver_id,
                                const std::string& reason);
 
-  mojo::Receiver<mojom::AuctionWorkletService> receiver_;
-
+  // This should be before `bidder_worklets_` and `seller_worklets_` as it needs
+  // to be destroyed after them, as the actual destruction of V8HelperHolder
+  // may need to block to get V8 shutdown cleanly, which is helped by worklets
+  // not being around to produce more work.
   scoped_refptr<V8HelperHolder> auction_v8_helper_holder_;
+
+  // This is bound when created via CreateForService(); in case of
+  // CreateForRenderer() an external SelfOwnedReceiver is used instead.
+  mojo::Receiver<mojom::AuctionWorkletService> receiver_;
 
   mojo::UniqueReceiverSet<mojom::BidderWorklet> bidder_worklets_;
   mojo::UniqueReceiverSet<mojom::SellerWorklet> seller_worklets_;
