@@ -120,7 +120,7 @@ const struct {
      IDS_LABEL_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON},
     {"label_switch_take_square_photo_button",
      IDS_LABEL_SWITCH_TAKE_SQUARE_PHOTO_BUTTON},
-    {"label_video_resolution_4K", IDS_LABEL_VIDEO_RESOLUTION_4K},
+    {"label_video_resolution_4k", IDS_LABEL_VIDEO_RESOLUTION_4K},
     {"label_video_resolution_full_hd", IDS_LABEL_VIDEO_RESOLUTION_FULL_HD},
     {"label_video_resolution_hd", IDS_LABEL_VIDEO_RESOLUTION_HD},
     {"label_video_resolution_quad_hd", IDS_LABEL_VIDEO_RESOLUTION_QUAD_HD},

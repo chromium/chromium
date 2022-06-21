@@ -322,6 +322,15 @@ def check_strings(args):
             print(f'    {", ".join(sorted(missing))}')
             returncode = 1
 
+    def check_all_name_lower_case(names, filename):
+        nonlocal returncode
+        hasUpper = [name for name in names if not name.islower()]
+        if hasUpper:
+            print(f'{filename} includes string name with upper case:')
+            for name in hasUpper:
+                print(f'    Incorrect name: {name}')
+            returncode = 1
+
     resources_h_strings = parse_resources_h()
     check_name_id_consistent(resources_h_strings, RESOURCES_H_PATH)
     resources_h_ids = set([id for (name, id) in resources_h_strings])
@@ -329,6 +338,12 @@ def check_strings(args):
     i18n_string_ts_strings = parse_i18n_string_ts()
     check_name_id_consistent(i18n_string_ts_strings, I18N_STRING_TS_PATH)
     i18n_string_ts_ids = set([id for (name, id) in i18n_string_ts_strings])
+
+    resources_h_names = set([name for (name, id) in resources_h_strings])
+    check_all_name_lower_case(resources_h_names, RESOURCES_H_PATH)
+
+    i18n_string_ts_names = set([name for (name, id) in i18n_string_ts_strings])
+    check_all_name_lower_case(i18n_string_ts_names, I18N_STRING_TS_PATH)
 
     camera_strings_grd_ids = parse_camera_strings_grd()
 
