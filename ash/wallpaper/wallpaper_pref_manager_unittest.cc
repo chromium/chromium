@@ -230,7 +230,6 @@ TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoLocal) {
 }
 
 TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoSynced) {
-  base::test::ScopedFeatureList scoped_features(features::kWallpaperWebUI);
   profile_helper_->RegisterPrefsForAccount(account_id_1);
 
   WallpaperInfo info = InfoWithType(WallpaperType::kOnline);
@@ -241,9 +240,6 @@ TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoSynced) {
 }
 
 TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoSyncDisabled) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
-
   profile_helper_->RegisterPrefsForAccount(account_id_1);
   // This needs to be saved before sync is disabled or we can't get a pref
   // service.
