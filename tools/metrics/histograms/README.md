@@ -722,6 +722,11 @@ of histograms. See
 [histograms.xml](https://source.chromium.org/search?q=file:histograms.xml%20%3Cvariants)
 for examples.
 
+*** promo
+Warning: The `name` attribute of the `<variants>` tag is globally scoped, so
+use detailed names to avoid collisions.
+***
+
 By default, a `<variant>` inherits the owners declared for the patterned
 histogram. Each variant can optionally override the inherited list with custom
 owners:
