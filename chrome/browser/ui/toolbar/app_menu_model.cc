@@ -193,11 +193,7 @@ class HelpMenuModel : public ui::SimpleMenuModel {
 #else
     int help_string_id = IDS_HELP_PAGE;
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
-#else
-    AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
-#endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenu)) {
       AddItem(IDC_CHROME_TIPS, l10n_util::GetStringUTF16(IDS_CHROME_TIPS));
