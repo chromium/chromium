@@ -31174,7 +31174,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
 
           For users where this policy is unset, Chrome will roll out the change gradually on the stable channel.
 
-          This is a temporary policy that is planned be removed in Chrome 105. This deadline may be extended if there is a need for it among enterprises.
+          This is a temporary policy that is planned be removed in Chrome 107. This deadline may be extended if there is a need for it among enterprises.
           ''',
     },
   ],
