@@ -157,6 +157,9 @@ void UnifiedMessageCenterBubble::ExpandMessageCenter() {
   if (!message_center_view_->collapsed())
     return;
 
+  if (tray_->IsShowingCalendarView())
+    tray_->bubble()->unified_system_tray_controller()->TransitionToMainView(
+        /*restore_focus=*/true);
   message_center_view_->SetExpanded();
   UpdatePosition();
   tray_->EnsureQuickSettingsCollapsed(true /*animate*/);
