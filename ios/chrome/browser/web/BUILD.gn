@@ -195,7 +195,7 @@ source_set("unit_tests") {
   ]
 }
 
-optimize_js("chrome_bundle_main_frame") {
+optimize_js("language_detection_js") {
   primary_script =
       "//components/translate/ios/browser/resources/language_detection.js"
   sources =
@@ -209,7 +209,7 @@ source_set("web_internal") {
     "chrome_web_client.mm",
   ]
   deps = [
-    ":chrome_bundle_main_frame",
+    ":language_detection_js",
     ":web",
     "//base",
     "//components/autofill/ios/browser",
