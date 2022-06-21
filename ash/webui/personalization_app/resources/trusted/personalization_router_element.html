@@ -1,19 +1,21 @@
-<style>
+<style include="common-style">
   #container {
     display: flex;
     flex-flow: column nowrap;
-    height: 100%;
     position: relative;
     width: 100%;
   }
   #breadcrumbArea {
+    background-color: var(--cros-bg-color);
     display: grid;
     grid-template-areas:
       '. . breadcrumb . .';
     grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
     grid-template-rows: 56px;
-    position: relative;
+    position: sticky;
+    top: 0;
     width: 100%;
+    z-index: 1;
   }
   personalization-breadcrumb {
     grid-area: breadcrumb;
@@ -34,7 +36,6 @@
   }
   wallpaper-subpage {
     flex-grow: 1;
-    overflow: hidden;
   }
 </style>
 <div id="container">
