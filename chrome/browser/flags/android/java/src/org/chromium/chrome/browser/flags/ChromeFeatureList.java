@@ -59,7 +59,7 @@ public abstract class ChromeFeatureList {
         return FeatureList.isInitialized();
     }
 
-    /*
+    /**
      * Returns whether the specified feature is enabled or not in native.
      *
      * @param featureName The name of the feature to query.

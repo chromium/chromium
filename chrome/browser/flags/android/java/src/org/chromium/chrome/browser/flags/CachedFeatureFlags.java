@@ -139,6 +139,20 @@ public class CachedFeatureFlags {
      *
      * Requires that the feature be registered in {@link #sDefaults}.
      *
+     * @param featureName the feature name from ChromeFeatureList.
+     * @return whether the cached feature should be considered enabled.
+     */
+    @CalledByNative
+    public static boolean isEnabled(String featureName) {
+        // All cached feature flags should have a default value.
+        if (!sDefaults.containsKey(featureName)) {
+            throw new IllegalArgumentException(
+                    "Feature " + featureName + " has no default in CachedFeatureFlags.");
+        }
+        return isEnabled(featureName, sDefaults.get(featureName));
+    }
+
+    /**
      * Rules from highest to lowest priority:
      * 1. If the flag has been forced by {@link #setForTesting}, the forced value is returned.
      * 2. If a value was previously returned in the same run, the same value is returned for
@@ -146,20 +160,10 @@ public class CachedFeatureFlags {
      * 3. If native is loaded, the value from {@link ChromeFeatureList} is returned.
      * 4. If in a previous run, the value from {@link ChromeFeatureList} was cached to SharedPrefs,
      *    it is returned.
-     * 5. The default value defined in {@link #sDefaults} is returned.
-     *
-     * @param featureName the feature name from ChromeFeatureList.
-     * @return whether the cached feature should be considered enabled.
+     * 5. The default value passed as a parameter is returned.
      */
-    @CalledByNative
     @AnyThread
-    public static boolean isEnabled(String featureName) {
-        // All cached feature flags should have a default value.
-        if (!sDefaults.containsKey(featureName)) {
-            throw new IllegalArgumentException(
-                    "Feature " + featureName + " has no default in CachedFeatureFlags.");
-        }
-
+    static boolean isEnabled(String featureName, boolean defaultValue) {
         sSafeMode.onFlagChecked();
 
         String preferenceName = getPrefForFeatureFlag(featureName);
@@ -177,7 +181,7 @@ public class CachedFeatureFlags {
                 if (prefs.contains(preferenceName)) {
                     flag = prefs.readBoolean(preferenceName, false);
                 } else {
-                    flag = sDefaults.get(featureName);
+                    flag = defaultValue;
                 }
             }
 
@@ -191,7 +195,7 @@ public class CachedFeatureFlags {
      *
      * @param featureName the feature name from ChromeFeatureList.
      */
-    private static void cacheFeature(String featureName) {
+    static void cacheFeature(String featureName) {
         String preferenceName = getPrefForFeatureFlag(featureName);
         boolean isEnabledInNative = ChromeFeatureList.isEnabled(featureName);
         SharedPreferencesManager.getInstance().writeBoolean(preferenceName, isEnabledInNative);
