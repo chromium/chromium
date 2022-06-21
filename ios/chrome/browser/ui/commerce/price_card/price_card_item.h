@@ -10,7 +10,7 @@
 // Model object representing price information for a shopping website.
 @interface PriceCardItem : NSObject
 
-// Create a price card item with |price|, and |previous price|.
+// Create a price card item with `price`, and `previous price`.
 - (instancetype)initWithPrice:(NSString*)price
                 previousPrice:(NSString*)previousPrice
     NS_DESIGNATED_INITIALIZER;
