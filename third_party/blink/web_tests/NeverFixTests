@@ -156,10 +156,6 @@ virtual/conversions-debug-mode/wpt_internal/attribution-reporting/* [ Pass ]
 fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar-thumb-scaled.html [ Skip ]
 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar-thumb-scaled.html [ Pass ]
 
-# Only run fake-Android tests on Linux
-[ Mac ] virtual/android/* [ Skip ]
-[ Win ] virtual/android/* [ Skip ]
-
 # Android doesn't support plugins
 virtual/android/fullscreen/rendering/backdrop-object.html [ Skip ]
 
@@ -1720,9 +1716,6 @@ virtual/trust-tokens/http/tests/loading/trust-tokens/* [ Pass ]
 virtual/trust-tokens/external/wpt/trust-tokens/end-to-end/* [ Pass ]
 virtual/trust-tokens/wpt_internal/trust-tokens/* [ Pass ]
 
-# Mac does not ever have fractional device scale factor.
-[ Mac ] virtual/scalefactor150/* [ Skip ]
-
 # Run these tests with under virtual/scalefactor... only.
 crbug.com/567837 fast/hidpi/static/* [ Skip ]
 [ Linux ] virtual/scalefactor150/fast/hidpi/static/* [ Pass ]
@@ -1963,14 +1956,6 @@ crbug.com/509989 [ Android ] virtual/text-antialias/font-synthesis-style-local-w
 crbug.com/626703 [ Mac10.15 ] external/wpt/appmanifest/icons-member/icons-member-cors-fail-manual.sub.html [ Skip ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/appmanifest/start_url-member/start_url-member-pass-manual.html [ Skip ]
 crbug.com/626703 [ Mac11 ] virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemBaseHandle-postMessage-windows-manual.https.html [ Skip ]
-
-# Virtual test suite shared_array_buffer_on_desktop is platform agnostic
-[ Mac ] virtual/shared_array_buffer_on_desktop/* [ Skip ]
-[ Win ] virtual/shared_array_buffer_on_desktop/* [ Skip ]
-
-# Virtual test suite plz-dedicated-worker is platform agnostic
-[ Mac ] virtual/plz-dedicated-worker/* [ Skip ]
-[ Win ] virtual/plz-dedicated-worker/* [ Skip ]
 
 # The following tests never pass in the default Blink test runner due to forced
 # frame updates, but still pass in the full browser. They are only run in the

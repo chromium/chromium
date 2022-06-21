@@ -641,11 +641,7 @@ class WPTExpectationsUpdater(object):
         # rebaselined and has an actual result but no baseline. We can't
         # add a Missing expectation (this is not allowed), but no other
         # expectation is correct.
-        # We also want to skip any new manual tests that are not automated;
-        # see crbug.com/708241 for context.
         if 'MISSING' in actual_results:
-            return {'Skip'}
-        if '-manual.' in test_name and 'TIMEOUT' in actual_results:
             return {'Skip'}
         expectations = set()
         failure_types = {'TEXT', 'IMAGE+TEXT', 'IMAGE', 'AUDIO', 'FAIL'}
@@ -950,9 +946,7 @@ class WPTExpectationsUpdater(object):
         webdriver_list = []
         for lines in line_dict.values():
             for line in lines:
-                if 'Skip' in line and '-manual.' in line:
-                    wont_fix_list.append(line)
-                elif self.finder.webdriver_prefix() in line:
+                if self.finder.webdriver_prefix() in line:
                     webdriver_list.append(line)
                 else:
                     line_list.append(line)

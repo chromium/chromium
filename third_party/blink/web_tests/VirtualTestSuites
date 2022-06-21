@@ -173,7 +173,7 @@
   },
   {
     "prefix": "android",
-    "platforms": ["Linux", "Mac", "Win"],
+    "platforms": ["Linux"],
     "bases": ["fullscreen"],
     "args": ["--enable-features=OverlayScrollbar",
              "--enable-threaded-compositing",
@@ -192,7 +192,7 @@
   },
   {
     "prefix": "shared_array_buffer_on_desktop",
-    "platforms": ["Linux", "Mac", "Win"],
+    "platforms": ["Linux"],
     "bases": ["external/wpt/html/browsers/origin/origin-keyed-agent-clusters",
               "external/wpt/wasm/jsapi/memory",
               "fast/workers/worker-atomics-wait.html",
@@ -258,7 +258,7 @@
   },
   {
     "prefix": "scalefactor150",
-    "platforms": ["Linux", "Mac", "Win"],
+    "platforms": ["Linux", "Win"],
     "bases": ["fast/events/synthetic-events",
               "fast/hidpi/static"],
     "args": ["--force-device-scale-factor=1.5"]
@@ -416,7 +416,7 @@
   },
   {
     "prefix": "plz-dedicated-worker",
-    "platforms": ["Linux", "Mac", "Win"],
+    "platforms": ["Linux"],
     "bases": ["external/wpt/content-security-policy/inside-worker",
               "external/wpt/content-security-policy/worker-src",
               "external/wpt/content-security-policy/gen",

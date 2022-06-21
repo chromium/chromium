@@ -1276,14 +1276,16 @@ class Port(object):
     def skips_test(self, test):
         """Checks whether the given test is skipped for this port.
 
-        Returns True if the test is skipped because the port runs smoke tests
-        only or because the test is marked as Skip in NeverFixTest or because
-        it is a virtual test not intended to run on this platform (otherwise
-        the test is only marked as Skip indicating a temporary skip).
+        Returns True if:
+          - the test is a manual test
+          - the port runs smoke tests only and the test is not in the list
+          - the test is marked as Skip in NeverFixTest
+          - the test is a virtual test not intended to run on this platform.
         """
-        return self.skipped_due_to_smoke_tests(
-            test) or self.skipped_in_never_fix_tests(
-            test) or self.virtual_test_skipped_due_to_platform_config(test)
+        return (self.is_manual_test(test)
+                or self.skipped_due_to_smoke_tests(test)
+                or self.skipped_in_never_fix_tests(test)
+                or self.virtual_test_skipped_due_to_platform_config(test))
 
     @memoized
     def _tests_from_file(self, filename):
@@ -1295,6 +1297,10 @@ class Port(object):
                 continue
             tests.add(line)
         return tests
+
+    def is_manual_test(self, test):
+        """Skip the test if it is a WPT manual test"""
+        return self.is_wpt_test(test) and '-manual.' in test
 
     def skipped_due_to_smoke_tests(self, test):
         """Checks if the test is skipped based on the set of Smoke tests.
