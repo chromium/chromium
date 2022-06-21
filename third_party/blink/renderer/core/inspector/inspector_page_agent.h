@@ -170,10 +170,11 @@ class CORE_EXPORT InspectorPageAgent final
       std::unique_ptr<protocol::Page::LayoutViewport>* out_css_layout_viewport,
       std::unique_ptr<protocol::Page::VisualViewport>* out_css_visual_viewport,
       std::unique_ptr<protocol::DOM::Rect>* out_css_content_size) override;
-  protocol::Response createIsolatedWorld(const String& frame_id,
-                                         Maybe<String> world_name,
-                                         Maybe<bool> grant_universal_access,
-                                         int* execution_context_id) override;
+  void createIsolatedWorld(
+      const String& frame_id,
+      Maybe<String> world_name,
+      Maybe<bool> grant_universal_access,
+      std::unique_ptr<CreateIsolatedWorldCallback>) override;
   protocol::Response setFontFamilies(
       std::unique_ptr<protocol::Page::FontFamilies>,
       Maybe<protocol::Array<protocol::Page::ScriptFontFamilies>> forScripts)
@@ -249,6 +250,8 @@ class CORE_EXPORT InspectorPageAgent final
   void Trace(Visitor*) const override;
 
  private:
+  struct IsolatedWorldRequest;
+
   void GetResourceContentAfterResourcesContentLoaded(
       const String& frame_id,
       const String& url,
@@ -277,12 +280,20 @@ class CORE_EXPORT InspectorPageAgent final
       LocalFrame*);
   std::unique_ptr<protocol::Page::FrameResourceTree> BuildObjectForResourceTree(
       LocalFrame*);
+  void CreateIsolatedWorldImpl(LocalFrame& frame,
+                               String world_name,
+                               bool grant_universal_access,
+                               std::unique_ptr<CreateIsolatedWorldCallback>);
+
   Member<InspectedFrames> inspected_frames_;
   HashMap<String, protocol::Binary> compilation_cache_;
   // TODO(caseq): should this be stored as InspectorAgentState::StringMap
   // instead? Current use cases do not require this, but we might eventually
   // reconsider. Value is true iff eager compilation requested.
   HashMap<String, bool> requested_compilation_cache_;
+
+  HeapHashMap<WeakMember<LocalFrame>, Vector<IsolatedWorldRequest>>
+      pending_isolated_worlds_;
   using FrameIsolatedWorlds = HashMap<String, scoped_refptr<DOMWrapperWorld>>;
   HeapHashMap<WeakMember<LocalFrame>, FrameIsolatedWorlds> isolated_worlds_;
   v8_inspector::V8InspectorSession* v8_session_;
