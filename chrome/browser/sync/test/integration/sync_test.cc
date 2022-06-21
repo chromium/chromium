@@ -39,6 +39,7 @@
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/fake_sync_gcm_driver_for_instance_id.h"
+#include "chrome/browser/sync/test/integration/invalidations/fake_sync_instance_id_driver.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
@@ -51,6 +52,8 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/gcm_driver/gcm_profile_service.h"
+#include "components/gcm_driver/instance_id/instance_id.h"
+#include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/fcm_invalidation_service.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
@@ -208,7 +211,7 @@ instance_id::InstanceIDDriver* GetOrCreateInstanceIDDriver(
         profile_to_instance_id_driver_map) {
   if (!profile_to_instance_id_driver_map->count(profile)) {
     (*profile_to_instance_id_driver_map)[profile] =
-        std::make_unique<SyncTest::FakeInstanceIDDriver>(
+        std::make_unique<FakeSyncInstanceIDDriver>(
             /*gcm_driver=*/gcm::GCMProfileServiceFactory::GetForProfile(profile)
                 ->driver());
   }
@@ -216,49 +219,6 @@ instance_id::InstanceIDDriver* GetOrCreateInstanceIDDriver(
 }
 
 }  // namespace
-
-SyncTest::FakeInstanceID::FakeInstanceID(const std::string& app_id,
-                                         gcm::GCMDriver* gcm_driver)
-    : instance_id::InstanceID(app_id, gcm_driver),
-      token_(GenerateNextToken()) {}
-
-void SyncTest::FakeInstanceID::GetToken(const std::string& authorized_entity,
-                                        const std::string& scope,
-                                        base::TimeDelta time_to_live,
-                                        std::set<Flags> flags,
-                                        GetTokenCallback callback) {
-  std::move(callback).Run(token_, instance_id::InstanceID::Result::SUCCESS);
-}
-
-// Deleting the InstanceID also clears any associated token.
-void SyncTest::FakeInstanceID::DeleteIDImpl(DeleteIDCallback callback) {
-  token_ = GenerateNextToken();
-  std::move(callback).Run(instance_id::InstanceID::Result::SUCCESS);
-}
-
-std::string SyncTest::FakeInstanceID::GenerateNextToken() {
-  static int next_token_id_ = 1;
-  return base::StringPrintf("token %d", next_token_id_++);
-}
-
-SyncTest::FakeInstanceIDDriver::FakeInstanceIDDriver(gcm::GCMDriver* gcm_driver)
-    : instance_id::InstanceIDDriver(gcm_driver), gcm_driver_(gcm_driver) {}
-
-SyncTest::FakeInstanceIDDriver::~FakeInstanceIDDriver() = default;
-
-instance_id::InstanceID* SyncTest::FakeInstanceIDDriver::GetInstanceID(
-    const std::string& app_id) {
-  if (!fake_instance_ids_.count(app_id)) {
-    fake_instance_ids_[app_id] =
-        std::make_unique<FakeInstanceID>(app_id, gcm_driver_);
-  }
-  return fake_instance_ids_[app_id].get();
-}
-
-bool SyncTest::FakeInstanceIDDriver::ExistsInstanceID(
-    const std::string& app_id) const {
-  return fake_instance_ids_.count(app_id);
-}
 
 #if !BUILDFLAG(IS_ANDROID)
 class SyncTest::ClosedBrowserObserver : public BrowserListObserver {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/test/integration/fake_server_sync_invalidation_sender.h"
+#include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 
 #include "base/time/time.h"
 #include "components/sync/invalidations/fcm_handler.h"

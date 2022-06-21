@@ -19,10 +19,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/configuration_refresher.h"
 #include "chrome/browser/sync/test/integration/fake_server_invalidation_sender.h"
-#include "chrome/browser/sync/test/integration/fake_server_sync_invalidation_sender.h"
+#include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 #include "chrome/common/buildflags.h"
-#include "components/gcm_driver/instance_id/instance_id.h"
-#include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -77,6 +75,10 @@ namespace syncer {
 class SyncServiceImpl;
 }  // namespace syncer
 
+namespace instance_id {
+class InstanceIDDriver;
+}  // namespace instance_id
+
 namespace switches {
 
 inline constexpr char kPasswordFileForTest[] = "password-file-for-test";
@@ -125,65 +127,6 @@ class SyncTest : public PlatformBrowserTest {
                            // account state is initially clean.
     IN_PROCESS_FAKE_SERVER,  // The fake Sync server (FakeServer) running
                              // in-process (bypassing HTTP calls).
-  };
-
-  class FakeInstanceID : public instance_id::InstanceID {
-   public:
-    explicit FakeInstanceID(const std::string& app_id,
-                            gcm::GCMDriver* gcm_driver);
-
-    FakeInstanceID(const FakeInstanceID&) = delete;
-    FakeInstanceID& operator=(const FakeInstanceID&) = delete;
-
-    ~FakeInstanceID() override = default;
-
-    void GetID(GetIDCallback callback) override {}
-
-    void GetCreationTime(GetCreationTimeCallback callback) override {}
-
-    void GetToken(const std::string& authorized_entity,
-                  const std::string& scope,
-                  base::TimeDelta time_to_live,
-                  std::set<Flags> flags,
-                  GetTokenCallback callback) override;
-
-    void ValidateToken(const std::string& authorized_entity,
-                       const std::string& scope,
-                       const std::string& token,
-                       ValidateTokenCallback callback) override {}
-
-    void DeleteToken(const std::string& authorized_entity,
-                     const std::string& scope,
-                     DeleteTokenCallback callback) override {}
-
-   protected:
-    void DeleteTokenImpl(const std::string& authorized_entity,
-                         const std::string& scope,
-                         DeleteTokenCallback callback) override {}
-
-    void DeleteIDImpl(DeleteIDCallback callback) override;
-
-   private:
-    static std::string GenerateNextToken();
-
-    std::string token_;
-  };
-
-  class FakeInstanceIDDriver : public instance_id::InstanceIDDriver {
-   public:
-    explicit FakeInstanceIDDriver(gcm::GCMDriver* gcm_driver);
-
-    FakeInstanceIDDriver(const FakeInstanceIDDriver&) = delete;
-    FakeInstanceIDDriver& operator=(const FakeInstanceIDDriver&) = delete;
-
-    ~FakeInstanceIDDriver() override;
-    instance_id::InstanceID* GetInstanceID(const std::string& app_id) override;
-    void RemoveInstanceID(const std::string& app_id) override {}
-    bool ExistsInstanceID(const std::string& app_id) const override;
-
-   private:
-    raw_ptr<gcm::GCMDriver> gcm_driver_;
-    std::map<std::string, std::unique_ptr<FakeInstanceID>> fake_instance_ids_;
   };
 
   // A SyncTest must be associated with a particular test type.
