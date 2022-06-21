@@ -5877,6 +5877,10 @@ TEST_F(StyleEngineSimTest, ContainerQueryLegacyNoWarning) {
 }
 
 TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddContainer) {
+  // For the ng-disabled bots:
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   ScopedLayoutNGTableFragmentationForTest disabled_scope(false);
 
   SimRequest main_resource("https://example.com/", "text/html");
@@ -5906,6 +5910,10 @@ TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddContainer) {
 }
 
 TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddTable) {
+  // For the ng-disabled bots:
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   ScopedLayoutNGTableFragmentationForTest disabled_scope(false);
 
   SimRequest main_resource("https://example.com/", "text/html");
@@ -5935,6 +5943,10 @@ TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddTable) {
 }
 
 TEST_F(StyleEngineSimTest, ContainerQueryLegacyConsoleWarning_AddColumns) {
+  // For the ng-disabled bots:
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   ScopedLayoutNGTableFragmentationForTest disabled_scope(false);
 
   SimRequest main_resource("https://example.com/", "text/html");
