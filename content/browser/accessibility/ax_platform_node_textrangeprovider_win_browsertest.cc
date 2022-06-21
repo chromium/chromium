@@ -2624,8 +2624,16 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                           L"Before frame\nText in iframe\nAfter frame");
 }
 
+// TODO(https://crbug.com/1338169): This test is flaky on Win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AXPlatformNodeTextRangeProviderWinBrowserTest \
+  DISABLED_AXPlatformNodeTextRangeProviderWinBrowserTest
+#else
+#define MAYBE_AXPlatformNodeTextRangeProviderWinBrowserTest \
+  AXPlatformNodeTextRangeProviderWinBrowserTest
+#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
-                       OutOfProcessIFrameTraversal) {
+                       MAYBE_AXPlatformNodeTextRangeProviderWinBrowserTest) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/accessibility/html/iframe-cross-process.html"));
   LoadInitialAccessibilityTreeFromUrl(main_url);
