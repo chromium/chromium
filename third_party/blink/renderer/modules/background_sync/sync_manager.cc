@@ -40,6 +40,14 @@ ScriptPromise SyncManager::registerFunction(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Background Sync is not allowed in fenced frames.");
+    return ScriptPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -56,6 +64,14 @@ ScriptPromise SyncManager::registerFunction(ScriptState* script_state,
 }
 
 ScriptPromise SyncManager::getTags(ScriptState* script_state) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
+    return ScriptPromise::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kNotAllowedError,
+                          "Background Sync is not allowed in fenced frames."));
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
