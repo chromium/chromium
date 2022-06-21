@@ -9,9 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "ui/events/android/drop_data_android.h"
 #include "ui/events/events_export.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -23,8 +21,6 @@ namespace ui {
 
 // Event class used to carry the info from Java DragEvent through native.
 // All coordinates are in DIPs.
-// Note that the |drop_data_android| will only be populated when the drop event
-// represents an ACTION_DROP. Otherwise it will be empty.
 class EVENTS_EXPORT DragEventAndroid {
  public:
   DragEventAndroid(JNIEnv* env,
@@ -32,7 +28,7 @@ class EVENTS_EXPORT DragEventAndroid {
                    const gfx::PointF& location,
                    const gfx::PointF& screen_location,
                    const std::vector<std::u16string>& mime_types,
-                   DropDataAndroid drop_data_android);
+                   jstring content);
 
   DragEventAndroid(const DragEventAndroid&) = delete;
   DragEventAndroid& operator=(const DragEventAndroid&) = delete;
@@ -44,7 +40,7 @@ class EVENTS_EXPORT DragEventAndroid {
   const gfx::PointF& screen_location() const { return screen_location_; }
   const std::vector<std::u16string>& mime_types() const { return mime_types_; }
 
-  DropDataAndroid drop_data_android() const { return drop_data_android_; }
+  base::android::ScopedJavaLocalRef<jstring> GetJavaContent() const;
 
   // Creates a new DragEventAndroid instance different from |this| only by
   // its location.
@@ -59,7 +55,7 @@ class EVENTS_EXPORT DragEventAndroid {
   gfx::PointF screen_location_;
   const std::vector<std::u16string>& mime_types_;
   // The Java reference to the drop content to avoid unnecessary copying.
-  DropDataAndroid drop_data_android_;
+  base::android::ScopedJavaGlobalRef<jstring> content_;
 };
 
 }  // namespace ui

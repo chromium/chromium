@@ -121,25 +121,23 @@ void EventForwarder::OnMouseEvent(JNIEnv* env,
   view_->OnMouseEvent(event);
 }
 
-void EventForwarder::OnDragEvent(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
-    jint action,
-    jfloat x,
-    jfloat y,
-    jfloat screen_x,
-    jfloat screen_y,
-    const JavaParamRef<jobjectArray>& j_mimeTypes,
-    const JavaParamRef<jobject>& j_drag_data_android) {
+void EventForwarder::OnDragEvent(JNIEnv* env,
+                                 const JavaParamRef<jobject>& jobj,
+                                 jint action,
+                                 jfloat x,
+                                 jfloat y,
+                                 jfloat screen_x,
+                                 jfloat screen_y,
+                                 const JavaParamRef<jobjectArray>& j_mimeTypes,
+                                 const JavaParamRef<jstring>& j_content) {
   float dip_scale = view_->GetDipScale();
   gfx::PointF location(x / dip_scale, y / dip_scale);
   gfx::PointF root_location(screen_x / dip_scale, screen_y / dip_scale);
   std::vector<std::u16string> mime_types;
   AppendJavaStringArrayToStringVector(env, j_mimeTypes, &mime_types);
 
-  DropDataAndroid drop_data_android(env, j_drag_data_android);
   DragEventAndroid event(env, action, location, root_location, mime_types,
-                         drop_data_android);
+                         j_content.obj());
   view_->OnDragEvent(event);
 }
 

@@ -342,7 +342,6 @@ component("events") {
   if (is_android) {
     public += [
       "android/drag_event_android.h",
-      "android/drop_data_android.h",
       "android/event_handler_android.h",
       "android/gesture_event_android.h",
       "android/gesture_event_type.h",
@@ -352,7 +351,6 @@ component("events") {
     ]
     sources += [
       "android/drag_event_android.cc",
-      "android/drop_data_android.cc",
       "android/event_handler_android.cc",
       "android/gesture_event_android.cc",
       "android/key_event_android.cc",
@@ -362,9 +360,6 @@ component("events") {
     deps += [
       ":keyevent_jni_headers",
       ":motionevent_jni_headers",
-      "//ui/android:ui_android_jni_headers",
-      "//url:gurl_android",
-      "//url:url",
     ]
   }
 
