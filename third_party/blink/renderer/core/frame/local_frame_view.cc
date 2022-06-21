@@ -1390,29 +1390,6 @@ void LocalFrameView::InvalidateBackgroundAttachmentFixedDescendantsOnScroll(
   }
 }
 
-bool LocalFrameView::InvalidateViewportConstrainedObjects() {
-  DCHECK(!base::FeatureList::IsEnabled(
-      features::kOptimizeViewportConstrainedPaintInvalidation));
-  bool fast_path_allowed = true;
-  for (const auto& layout_object : *viewport_constrained_objects_) {
-    DCHECK(layout_object->StyleRef().HasViewportConstrainedPosition() ||
-           layout_object->StyleRef().HasStickyConstrainedPosition());
-    DCHECK(layout_object->HasLayer());
-    PaintLayer* layer = To<LayoutBoxModelObject>(layout_object.Get())->Layer();
-    // If the layer has no visible content, then we shouldn't invalidate; but
-    // if we're not compositing-inputs-clean, then we can't query
-    // layer->SubtreeIsInvisible() here.
-    layout_object->SetSubtreeShouldCheckForPaintInvalidation();
-
-    // If the fixed layer has a blur/drop-shadow filter applied on at least one
-    // of its parents, we cannot scroll using the fast path, otherwise the
-    // outsets of the filter will be moved around the page.
-    if (layer->HasAncestorWithFilterThatMovesPixels())
-      fast_path_allowed = false;
-  }
-  return fast_path_allowed;
-}
-
 HitTestResult LocalFrameView::HitTestWithThrottlingAllowed(
     const HitTestLocation& location,
     HitTestRequest::HitTestRequestType request_type) const {

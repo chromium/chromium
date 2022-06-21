@@ -818,14 +818,6 @@ bool PaintLayer::HasNonIsolatedDescendantWithBlendMode() const {
   return false;
 }
 
-bool PaintLayer::HasAncestorWithFilterThatMovesPixels() const {
-  for (const PaintLayer* curr = this; curr; curr = curr->Parent()) {
-    if (curr->HasFilterThatMovesPixels())
-      return true;
-  }
-  return false;
-}
-
 void PaintLayer::AddChild(PaintLayer* child, PaintLayer* before_child) {
 #if DCHECK_IS_ON()
   DCHECK(layer_list_mutation_allowed_);

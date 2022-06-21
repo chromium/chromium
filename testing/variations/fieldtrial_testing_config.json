@@ -6029,32 +6029,6 @@
             ]
         }
     ],
-    "OptimizeViewportConstrainedPaintInvalidation": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OptimizeViewportConstrainedPaintInvalidation"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "OptimizeViewportConstrainedPaintInvalidation"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptionalToolbarButton": [
         {
             "platforms": [

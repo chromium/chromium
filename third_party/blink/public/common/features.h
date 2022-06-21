@@ -667,11 +667,6 @@ BLINK_COMMON_EXPORT extern const base::Feature
 // Gates the non-standard API Event.path to help its deprecation and removal.
 BLINK_COMMON_EXPORT extern const base::Feature kEventPath;
 
-// Removes a paint invalidation of viewport constrained objects (sticky or
-// fixed) after scrolling.
-BLINK_COMMON_EXPORT extern const base::Feature
-    kOptimizeViewportConstrainedPaintInvalidation;
-
 // If enabled, the minor version of the User-Agent string will be reduced.
 BLINK_COMMON_EXPORT extern const base::Feature kReduceUserAgentMinorVersion;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>

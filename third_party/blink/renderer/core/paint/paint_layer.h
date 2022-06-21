@@ -310,8 +310,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PaintLayer* ContainingLayer(const PaintLayer* ancestor = nullptr,
                               bool* skipped_ancestor = nullptr) const;
 
-  bool HasAncestorWithFilterThatMovesPixels() const;
-
   void ConvertToLayerCoords(const PaintLayer* ancestor_layer,
                             PhysicalOffset&) const;
   void ConvertToLayerCoords(const PaintLayer* ancestor_layer,
