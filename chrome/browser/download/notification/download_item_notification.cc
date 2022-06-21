@@ -148,14 +148,6 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_OpenWhenComplete"));
       break;
-    case DownloadCommands::ALWAYS_OPEN_TYPE:
-      base::RecordAction(
-          UserMetricsAction("DownloadNotification.Button_AlwaysOpenType"));
-      break;
-    case DownloadCommands::PLATFORM_OPEN:
-      base::RecordAction(
-          UserMetricsAction("DownloadNotification.Button_PlatformOpen"));
-      break;
     case DownloadCommands::CANCEL:
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_Cancel"));
@@ -170,10 +162,6 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
     case DownloadCommands::LEARN_MORE_SCANNING:
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_LearnScanning"));
-      break;
-    case DownloadCommands::LEARN_MORE_INTERRUPTED:
-      base::RecordAction(
-          UserMetricsAction("DownloadNotification.Button_LearnInterrupted"));
       break;
     case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
       base::RecordAction(
@@ -195,14 +183,12 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_DeepScan"));
       break;
+    // Not actually displayed in notification, so should never be reached.
+    case DownloadCommands::ALWAYS_OPEN_TYPE:
+    case DownloadCommands::PLATFORM_OPEN:
+    case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
-      base::RecordAction(
-          UserMetricsAction("DownloadNotification.Button_BypassDeepScanning"));
-      break;
     case DownloadCommands::REVIEW:
-      base::RecordAction(
-          UserMetricsAction("DownloadNotification.Button_Review"));
-      break;
     case DownloadCommands::MAX:
       NOTREACHED();
       break;

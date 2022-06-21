@@ -51,7 +51,7 @@ void DownloadShelfContextMenu::RecordCommandsEnabled(
     return;
   }
 
-  for (int command_int = 1; command_int < DownloadCommands::Command::REVIEW;
+  for (int command_int = 1; command_int < DownloadCommands::Command::MAX;
        command_int++) {
     if (model->GetIndexOfCommandId(command_int) != -1 &&
         IsCommandIdEnabled(command_int)) {
@@ -205,9 +205,8 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
     case DownloadCommands::BYPASS_DEEP_SCANNING:
       id = IDS_OPEN_DOWNLOAD_NOW;
       break;
+    // This command is not supported on the context menu.
     case DownloadCommands::REVIEW:
-      id = IDS_REVIEW_DOWNLOAD;
-      break;
     case DownloadCommands::MAX:
       NOTREACHED();
       break;

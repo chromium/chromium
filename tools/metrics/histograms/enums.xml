@@ -27977,14 +27977,15 @@ Called by update_document_policy_enum.py.-->
   <int value="25" label="Learn more mixed content clicked"/>
   <int value="26" label="Copy to clipboard enabled"/>
   <int value="27" label="Copy to clipboard clicked"/>
-  <int value="28" label="Annotate enabled"/>
-  <int value="29" label="Annotate clicked"/>
+  <int value="28" label="Annotate enabled (obsolete)"/>
+  <int value="29" label="Annotate clicked (obsolete)"/>
   <int value="30" label="Deep scan enabled"/>
   <int value="31" label="Deep scan clicked"/>
   <int value="32" label="Bypass deep scanning enabled"/>
   <int value="33" label="Bypass deep scanning clicked"/>
-  <int value="34" label="Review enabled"/>
-  <int value="35" label="Review clicked"/>
+  <int value="34" label="Review enabled (obsolete)"/>
+  <int value="35" label="Review clicked (obsolete)"/>
+  <int value="36" label="Should never be logged"/>
 </enum>
 
 <enum name="DownloadSource">
