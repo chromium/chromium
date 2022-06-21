@@ -327,6 +327,10 @@ class PageLoadMetricsObserverInterface {
       content::RenderFrameHost* subframe_rfh,
       const mojom::InputTiming& input_timing_delta) = 0;
 
+  // OnPageInputTimingUpdate is triggered when an updated InputTiming is
+  // available at the page level.
+  virtual void OnPageInputTimingUpdate(uint64_t num_input_events) = 0;
+
   // OnRenderDataUpdate is triggered when an updated PageRenderData is available
   // at the subframe level. This method may be called multiple times over the
   // course of the page load.

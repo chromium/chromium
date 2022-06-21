@@ -809,6 +809,12 @@ void PageLoadTracker::OnTimingChanged() {
       metrics_update_dispatcher_.timing().Clone();
 }
 
+void PageLoadTracker::OnPageInputTimingChanged(uint64_t num_input_events) {
+  for (const auto& observer : observers_) {
+    observer->OnPageInputTimingUpdate(num_input_events);
+  }
+}
+
 void PageLoadTracker::OnSubFrameTimingChanged(
     content::RenderFrameHost* rfh,
     const mojom::PageLoadTiming& timing) {

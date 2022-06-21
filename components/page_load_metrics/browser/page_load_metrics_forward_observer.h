@@ -70,6 +70,7 @@ class PageLoadMetricsForwardObserver final
   void OnInputTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const mojom::InputTiming& input_timing_delta) override;
+  void OnPageInputTimingUpdate(uint64_t num_input_events) override;
   void OnSubFrameRenderDataUpdate(
       content::RenderFrameHost* subframe_rfh,
       const mojom::FrameRenderDataUpdate& render_data) override;

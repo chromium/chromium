@@ -51,6 +51,8 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
 
   void OnSoftNavigationCountUpdated() override;
 
+  void OnPageInputTimingUpdate(uint64_t num_input_events) override;
+
   void OnCpuTimingUpdate(content::RenderFrameHost* subframe_rfh,
                          const mojom::CpuTiming& timing) override;
 
@@ -226,6 +228,14 @@ void PageLoadMetricsTestWaiter::OnTimingUpdated(
 
 void PageLoadMetricsTestWaiter::OnSoftNavigationCountUpdated() {
   soft_navigation_count_updated_ = true;
+}
+
+void PageLoadMetricsTestWaiter::OnPageInputTimingUpdated(
+    uint64_t num_input_events) {
+  current_num_input_events_ = num_input_events;
+  observed_.page_fields_.Set(TimingField::kTotalInputDelay);
+  if (ExpectationsSatisfied() && run_loop_)
+    run_loop_->Quit();
 }
 
 void PageLoadMetricsTestWaiter::OnCpuTimingUpdated(
@@ -505,6 +515,12 @@ bool PageLoadMetricsTestWaiter::MemoryUpdateExpectationsSatisfied() const {
                   observed_.memory_update_frame_ids_);
 }
 
+bool PageLoadMetricsTestWaiter::TotalInputDelayExpectationsSatisfied() const {
+  if (!expected_.page_fields_.IsSet(TimingField::kTotalInputDelay))
+    return true;
+  return current_num_input_events_ == expected_num_input_events_;
+}
+
 bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
   return expected_.page_fields_.AreAllSetIn(observed_.page_fields_) &&
          expected_.subframe_fields_.AreAllSetIn(observed_.subframe_fields_) &&
@@ -517,7 +533,8 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          CpuTimeExpectationsSatisfied() &&
          MainFrameIntersectionExpectationsSatisfied() &&
          MainFrameViewportRectExpectationsSatisfied() &&
-         MemoryUpdateExpectationsSatisfied();
+         MemoryUpdateExpectationsSatisfied() &&
+         TotalInputDelayExpectationsSatisfied();
 }
 
 void PageLoadMetricsTestWaiter::ResetExpectations() {
@@ -549,6 +566,11 @@ void WaiterMetricsObserver::OnTimingUpdate(
 void WaiterMetricsObserver::OnSoftNavigationCountUpdated() {
   if (waiter_)
     waiter_->OnSoftNavigationCountUpdated();
+}
+
+void WaiterMetricsObserver::OnPageInputTimingUpdate(uint64_t num_input_events) {
+  if (waiter_)
+    waiter_->OnPageInputTimingUpdated(num_input_events);
 }
 
 void WaiterMetricsObserver::OnCpuTimingUpdate(

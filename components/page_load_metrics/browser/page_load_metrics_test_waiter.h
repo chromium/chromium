@@ -42,6 +42,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     kRequestAnimationFrameAfterBackForwardCacheRestore = 1 << 12,
     kFirstScrollDelay = 1 << 13,
     kSoftNavigationCountUpdated = 1 << 14,
+    kTotalInputDelay = 1 << 15,
   };
   using FrameTreeNodeId =
       page_load_metrics::PageLoadMetricsObserver::FrameTreeNodeId;
@@ -124,6 +125,11 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     return current_network_body_bytes_;
   }
 
+  // Add the number of input events count expectation.
+  void AddNumInputEventsExpectation(uint64_t expected_num_input_events) {
+    expected_num_input_events_ = expected_num_input_events;
+  }
+
  protected:
   virtual bool ExpectationsSatisfied() const;
 
@@ -191,6 +197,11 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   void OnSoftNavigationCountUpdated();
 
+  // Updates observed page fields when a input timing update is received by the
+  // MetricsWebContentsObserver. Stops waiting if expectations are satsfied
+  // after update.
+  void OnPageInputTimingUpdated(uint64_t num_input_events);
+
   // Updates observed page fields when a timing update is received by the
   // MetricsWebContentsObserver. Stops waiting if expectations are satsfied
   // after update.
@@ -254,6 +265,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   bool MainFrameIntersectionExpectationsSatisfied() const;
   bool MainFrameViewportRectExpectationsSatisfied() const;
   bool MemoryUpdateExpectationsSatisfied() const;
+  bool TotalInputDelayExpectationsSatisfied() const;
 
   void AddObserver(page_load_metrics::PageLoadTracker* tracker);
 
@@ -301,6 +313,9 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   bool soft_navigation_count_updated_ = false;
 
   double last_main_frame_layout_shift_score_ = 0;
+
+  uint64_t current_num_input_events_ = 0;
+  uint64_t expected_num_input_events_ = 0;
 
   base::WeakPtrFactory<PageLoadMetricsTestWaiter> weak_factory_{this};
 

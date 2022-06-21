@@ -114,6 +114,7 @@ class PageLoadMetricsUpdateDispatcher {
 
     virtual bool IsPageMainFrame(content::RenderFrameHost* rfh) const = 0;
     virtual void OnTimingChanged() = 0;
+    virtual void OnPageInputTimingChanged(uint64_t num_input_events) = 0;
     virtual void OnSubFrameTimingChanged(
         content::RenderFrameHost* rfh,
         const mojom::PageLoadTiming& timing) = 0;
@@ -258,6 +259,7 @@ class PageLoadMetricsUpdateDispatcher {
   void UpdateSoftNavigationCount(uint32_t soft_navigation_count);
 
   void UpdatePageInputTiming(const mojom::InputTiming& input_timing_delta);
+
   void MaybeUpdateMainFrameIntersectionRect(
       content::RenderFrameHost* render_frame_host,
       const mojom::FrameMetadataPtr& frame_metadata);

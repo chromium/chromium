@@ -768,6 +768,8 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming(
         input_timing_delta.num_interactions,
         *(input_timing_delta.max_event_durations));
   }
+  if (page_input_timing_->num_input_events > 0)
+    client_->OnPageInputTimingChanged(page_input_timing_->num_input_events);
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(

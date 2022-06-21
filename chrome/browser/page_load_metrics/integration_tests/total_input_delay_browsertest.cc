@@ -6,6 +6,7 @@
 
 #include "base/test/trace_event_analyzer.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/hit_test_region_observer.h"
@@ -62,9 +63,14 @@ IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest, NoInputEvent) {
       PageLoad::kInteractiveTiming_TotalAdjustedInputDelayName, int64_t(0), 0);
 }
 
-// Flaky on multiple platforms. https://crbug.com/1163677
-IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest,
-                       DISABLED_MultipleInputEvents) {
+IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest, MultipleInputEvents) {
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kTotalInputDelay);
+  // In the test, we simulate 3 clicks, which generate 9 input delays for 3
+  // pointerup, mouseup and click events respectively.
+  waiter->AddNumInputEventsExpectation(9);
   LoadHTML(R"HTML(
     <script type="text/javascript">
     let eventCounts = {mouseup: 0, pointerup: 0, click: 0};
@@ -119,6 +125,8 @@ IN_PROC_BROWSER_TEST_F(TotalInputDelayIntegrationTest,
                               blink::WebMouseEvent::Button::kLeft);
 
   ASSERT_TRUE(EvalJs(web_contents(), "runtest()").ExtractBool());
+
+  waiter->Wait();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
