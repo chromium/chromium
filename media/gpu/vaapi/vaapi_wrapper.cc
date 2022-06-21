@@ -2776,42 +2776,18 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
     std::unique_ptr<base::AutoUnlock> auto_unlock;
     if (va_lock_)
       auto_unlock = std::make_unique<base::AutoUnlock>(*va_lock_);
-    switch (frame.format()) {
-      case PIXEL_FORMAT_I420:
-        ret = libyuv::I420ToNV12(
-            frame.data(VideoFrame::kYPlane), frame.stride(VideoFrame::kYPlane),
-            frame.data(VideoFrame::kUPlane), frame.stride(VideoFrame::kUPlane),
-            frame.data(VideoFrame::kVPlane), frame.stride(VideoFrame::kVPlane),
-            image_ptr + image.offsets[0], image.pitches[0],
-            image_ptr + image.offsets[1], image.pitches[1],
-            visible_size.width(), visible_size.height());
-        break;
-      case PIXEL_FORMAT_NV12: {
-        int uv_width = visible_size.width();
-        if (visible_size.width() % 2 != 0 &&
-            !base::CheckAdd<int>(visible_size.width(), 1)
-                 .AssignIfValid(&uv_width)) {
-          return false;
-        }
-
-        int uv_height = 0;
-        if (!(base::CheckAdd<int>(visible_size.height(), 1) / 2)
-                 .AssignIfValid(&uv_height)) {
-          return false;
-        }
-
-        libyuv::CopyPlane(frame.data(VideoFrame::kYPlane),
-                          frame.stride(VideoFrame::kYPlane),
-                          image_ptr + image.offsets[0], image.pitches[0],
-                          visible_size.width(), visible_size.height());
-        libyuv::CopyPlane(frame.data(VideoFrame::kUVPlane),
-                          frame.stride(VideoFrame::kUVPlane),
-                          image_ptr + image.offsets[1], image.pitches[1],
-                          uv_width, uv_height);
-      } break;
-      default:
-        LOG(ERROR) << "Unsupported pixel format: " << frame.format();
-        return false;
+    if (frame.format() == PIXEL_FORMAT_I420) {
+      ret = libyuv::I420ToNV12(
+          frame.data(VideoFrame::kYPlane), frame.stride(VideoFrame::kYPlane),
+          frame.data(VideoFrame::kUPlane), frame.stride(VideoFrame::kUPlane),
+          frame.data(VideoFrame::kVPlane), frame.stride(VideoFrame::kVPlane),
+          image_ptr + image.offsets[0], image.pitches[0],
+          image_ptr + image.offsets[1], image.pitches[1], visible_size.width(),
+          visible_size.height());
+    } else {
+      LOG(ERROR) << "Unsupported pixel format: "
+                 << VideoPixelFormatToString(frame.format());
+      return false;
     }
   }
   if (needs_va_put_image) {
