@@ -554,7 +554,19 @@ chromium-metrics-reviews@google.com.
   <owner>clumptini@google.com</owner>
   <summary>
     Recorded each time the user completes the Crostini uninstall UI, recording
-    the result of the uninstall.
+    the result of the uninstall. Error cases are broken down more in
+    Crostini.UninstallResult.Reason.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.UninstallResult.Reason" enum="CrostiniResult"
+    expires_after="2023-05-01">
+  <owner>timloh@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of a completed Crostini uninstallation. This is recorded when an
+    uninstall that the user triggered via the Crostini uninstaller dialog
+    finishes, either successfully or unsuccessful.
   </summary>
 </histogram>
 

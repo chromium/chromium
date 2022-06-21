@@ -1622,7 +1622,7 @@ void CrostiniManager::CreateLxdContainer(
     LOG(ERROR)
         << "Async call to CreateLxdContainer can't complete when signals "
            "are not connected.";
-    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
+    std::move(callback).Run(CrostiniResult::SIGNAL_NOT_CONNECTED);
     return;
   }
   vm_tools::cicerone::CreateLxdContainerRequest request;
@@ -1717,7 +1717,7 @@ void CrostiniManager::StartLxdContainer(guest_os::GuestId container_id,
       !GetCiceroneClient()->IsLxdContainerStartingSignalConnected()) {
     LOG(ERROR) << "Async call to StartLxdContainer can't complete when signals "
                   "are not connected.";
-    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
+    std::move(callback).Run(CrostiniResult::SIGNAL_NOT_CONNECTED);
     return;
   }
   vm_tools::cicerone::StartLxdContainerRequest request;
@@ -2657,7 +2657,7 @@ void CrostiniManager::OnStartLxdProgress(
       // Still in-progress, keep waiting.
       return;
     case vm_tools::cicerone::StartLxdProgressSignal::FAILED:
-      result = CrostiniResult::START_LXD_FAILED;
+      result = CrostiniResult::START_LXD_FAILED_SIGNAL;
       break;
     default:
       break;
@@ -2678,7 +2678,7 @@ void CrostiniManager::OnStopVm(
     absl::optional<vm_tools::concierge::StopVmResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to stop termina vm. Empty response.";
-    std::move(callback).Run(CrostiniResult::VM_STOP_FAILED);
+    std::move(callback).Run(CrostiniResult::STOP_VM_NO_RESPONSE);
     return;
   }
 
@@ -3222,7 +3222,7 @@ void CrostiniManager::OnLxdContainerCreated(
       result = CrostiniResult::CONTAINER_CREATE_CANCELLED;
       break;
     case vm_tools::cicerone::LxdContainerCreatedSignal::FAILED:
-      result = CrostiniResult::CONTAINER_CREATE_FAILED;
+      result = CrostiniResult::CONTAINER_CREATE_FAILED_SIGNAL;
       break;
     default:
       result = CrostiniResult::UNKNOWN_ERROR;
@@ -3541,6 +3541,7 @@ void CrostiniManager::RemoveCrostini(std::string vm_name,
 }
 
 void CrostiniManager::OnRemoveCrostini(CrostiniResult result) {
+  base::UmaHistogramEnumeration("Crostini.UninstallResult.Reason", result);
   for (auto& callback : remove_crostini_callbacks_) {
     std::move(callback).Run(result);
   }

@@ -105,7 +105,12 @@ enum class CrostiniResult {
   RESTART_REQUEST_CANCELLED = 70,
   CREATE_DISK_IMAGE_NO_RESPONSE = 71,
   CREATE_DISK_IMAGE_ALREADY_EXISTS = 72,
-  kMaxValue = CREATE_DISK_IMAGE_ALREADY_EXISTS,
+  UNINSTALL_TERMINA_FAILED = 73,
+  START_LXD_FAILED_SIGNAL = 74,
+  CONTAINER_CREATE_FAILED_SIGNAL = 75,
+  STOP_VM_NO_RESPONSE = 76,
+  SIGNAL_NOT_CONNECTED = 77,
+  kMaxValue = SIGNAL_NOT_CONNECTED,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };

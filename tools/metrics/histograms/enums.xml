@@ -21992,6 +21992,11 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="70" label="RESTART_REQUEST_CANCELLED"/>
   <int value="71" label="CREATE_DISK_IMAGE_NO_RESPONSE"/>
   <int value="72" label="CREATE_DISK_IMAGE_ALREADY_EXISTS"/>
+  <int value="73" label="UNINSTALL_TERMINA_FAILED"/>
+  <int value="74" label="START_LXD_FAILED_SIGNAL"/>
+  <int value="75" label="CONTAINER_CREATE_FAILED_SIGNAL"/>
+  <int value="76" label="STOP_VM_NO_RESPONSE"/>
+  <int value="77" label="SIGNAL_NOT_CONNECTED"/>
 </enum>
 
 <enum name="CrostiniSettingsEvent">

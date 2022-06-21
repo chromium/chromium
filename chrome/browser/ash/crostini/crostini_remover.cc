@@ -70,7 +70,7 @@ void CrostiniRemover::DestroyDiskImageFinished(bool success) {
 void CrostiniRemover::UninstallTerminaFinished(bool success) {
   if (!success) {
     LOG(ERROR) << "Failed to uninstall Termina";
-    std::move(callback_).Run(CrostiniResult::UNKNOWN_ERROR);
+    std::move(callback_).Run(CrostiniResult::UNINSTALL_TERMINA_FAILED);
     return;
   }
 
