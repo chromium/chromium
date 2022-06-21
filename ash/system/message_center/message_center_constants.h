@@ -53,8 +53,8 @@ constexpr int kNotificationExpandButtonLabelFontSize = 12;
 constexpr auto kAppIconCollapsedPadding = gfx::Insets::TLBR(24, 12, 24, 0);
 constexpr auto kAppIconExpandedPadding = gfx::Insets::TLBR(20, 12, 0, 0);
 
-constexpr auto kExpandButtonCollapsedPadding = gfx::Insets::TLBR(4, 16, 0, 12);
-constexpr auto kExpandButtonExpandedPadding = gfx::Insets::TLBR(0, 16, 0, 12);
+constexpr auto kExpandButtonCollapsedPadding = gfx::Insets::TLBR(4, 0, 0, 12);
+constexpr auto kExpandButtonExpandedPadding = gfx::Insets::TLBR(0, 0, 0, 12);
 
 constexpr auto kMessageLabelInExpandedStatePadding =
     gfx::Insets::TLBR(0, 0, 4, 12);

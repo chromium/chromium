@@ -147,7 +147,8 @@ class ASH_EXPORT AshNotificationView
   class NotificationTitleRow : public views::View {
    public:
     METADATA_HEADER(NotificationTitleRow);
-    explicit NotificationTitleRow(const std::u16string& title);
+    NotificationTitleRow(AshNotificationView* parent,
+                         const std::u16string& title);
     NotificationTitleRow(const NotificationTitleRow&) = delete;
     NotificationTitleRow& operator=(const NotificationTitleRow&) = delete;
     ~NotificationTitleRow() override;
@@ -170,6 +171,8 @@ class ASH_EXPORT AshNotificationView
 
    private:
     friend class AshNotificationViewTest;
+
+    AshNotificationView* const parent_;
 
     // Showing notification title.
     views::Label* const title_view_;
@@ -207,6 +210,9 @@ class ASH_EXPORT AshNotificationView
 
   // Update the background color with rounded corner.
   void UpdateBackground(int top_radius, int bottom_radius);
+
+  // Get the available space for the notification's title label.
+  int GetExpandedTitleLabelWidth();
 
   // Get the available space for `message_label_in_expanded_state_` width.
   int GetExpandedMessageLabelWidth();
