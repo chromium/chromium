@@ -210,8 +210,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheDisabledDestructiveScriptTest,
   ASSERT_TRUE(RunSubtest("synchronous")) << message_;
 }
 
-// Flaky on ASAN and -dbg. crbug.com/1293865
-#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+// Flaky on ASAN and -dbg and Linux CFI. crbug.com/1293865
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG) || \
+    (BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX))
 #define MAYBE_MicrotaskRemoval DISABLED_MicrotaskRemoval
 #else
 #define MAYBE_MicrotaskRemoval MicrotaskRemoval
