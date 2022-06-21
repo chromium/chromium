@@ -881,6 +881,24 @@ ci.builder(
 )
 
 ci.builder(
+    name = "Comparison ios (reclient)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "ios",
+        short_name = "cmp",
+    ),
+    goma_jobs = 250,
+    executable = "recipe:reclient_goma_comparison",
+    execution_timeout = 10 * time.hour,
+    reclient_cache_silo = "Comparison ios - cache siloed",
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = 250,
+    os = os.MAC_DEFAULT,
+    cores = None,
+    xcode = xcode.x13main,
+)
+
+ci.builder(
     name = "Linux Builder (j-500) (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux",

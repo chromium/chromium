@@ -2729,6 +2729,20 @@
           'all'
         ],
       },
+      'Comparison ios (reclient)': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'mac_11_or_12_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_main',
+          'xctest',
+        ],
+      },
       'Linux Builder (j-500) (reclient)': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
