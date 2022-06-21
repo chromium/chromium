@@ -18,9 +18,6 @@ mojom_webui_folder = "$root_gen_dir/mojom-webui/ash/webui/file_manager/mojom"
 js_library("crt0") {
 }
 
-js_library("browser_proxy") {
-}
-
 js_library("runtime_loaded_test_util_swa") {
 }
 
@@ -35,7 +32,6 @@ js_library("main") {
 
 js_library("main_js") {
   sources = [
-    "browser_proxy.js",
     "main.js",
     "script_loader.js",
   ]
@@ -89,7 +85,6 @@ preprocess_if_expr("preprocess") {
   out_manifest = "$target_gen_dir/manifest_preprocess.json"
 
   in_files = [
-    "browser_proxy.js",
     "crt0.js",
     "main.js",
     "runtime_loaded_test_util_swa.js",
@@ -98,7 +93,6 @@ preprocess_if_expr("preprocess") {
   ]
 
   deps = [
-    ":browser_proxy",
     ":crt0",
     ":main",
     ":script_loader",

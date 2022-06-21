@@ -15,45 +15,5 @@ window.isSWA = true;
  * @const {boolean}
  */
 window.IN_TEST = window.IN_TEST || (() => {
-  return window.domAutomationController ? true : undefined;
-})();
-
-/**
- * Listener service to local chrome.*{add,remove}Listener clients.
- */
-// eslint-disable-next-line
-var clientListener = clientListener || {};
-
-clientListener.Event = class {
-  constructor() {
-    this.listeners_ = [];
-  }
-
-  /** @param {function()} callback */
-  addListener(callback) {
-    this.listeners_.push(callback);
-  }
-
-  /** @param {function()} callback */
-  removeListener(callback) {
-    this.listeners_ = this.listeners_.filter(l => l !== callback);
-  }
-
-  /** @param {...*} args */
-  dispatchEvent(...args) {
-    setTimeout(() => {
-      for (const listener of this.listeners_) {
-        listener(...args);
-      }
-    }, 0);
-  }
-};
-
-// Provides dummy implementation of chrome.contextMenus, not available in SWA.
-window.chrome.contextMenus = {
-  create() {},
-
-  remove() {},
-
-  onClicked: new clientListener.Event(),
-};
+                   return window.domAutomationController ? true : undefined;
+                 })();
