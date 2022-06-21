@@ -116,8 +116,12 @@ void SyncPageCacheToDisk() {
 }
 
 bool EvictFileFromSystemCache(const FilePath& file) {
+  FilePath::StringType file_value = file.value();
+  if (file_value.length() >= MAX_PATH && file.IsAbsolute()) {
+    file_value.insert(0, L"\\\\?\\");
+  }
   win::ScopedHandle file_handle(
-      CreateFile(file.value().c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+      CreateFile(file_value.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
                  OPEN_EXISTING, FILE_FLAG_NO_BUFFERING, nullptr));
   if (!file_handle.is_valid())
     return false;

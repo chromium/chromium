@@ -3412,6 +3412,7 @@ test("base_unittests") {
       "file_version_info_win_unittest.cc",
       "process/launch_unittest_win.cc",
       "test/fake_iasync_operation_win_unittest.cc",
+      "test/test_file_util_win_unittest.cc",
       "test/test_reg_util_win_unittest.cc",
       "threading/platform_thread_win_unittest.cc",
       "time/time_win_unittest.cc",
