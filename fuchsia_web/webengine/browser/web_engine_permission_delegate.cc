@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller.h"
 #include "fuchsia_web/webengine/browser/frame_impl.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -64,6 +65,21 @@ void WebEnginePermissionDelegate::RequestPermissionsFromCurrentDocument(
     bool user_gesture,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
+  std::vector<std::string> permission_strings;
+  permission_strings.reserve(permissions.size());
+  for (const auto& permission : permissions) {
+    permission_strings.push_back(
+        permissions::PermissionUtil::GetPermissionString(
+            permissions::PermissionUtil::PermissionTypeToContentSetting(
+                permission)));
+  }
+
+  // TODO(crbug.com/1063094): Clean up this warning once the permission
+  // API is implemented.
+  LOG(WARNING) << "Denied permissions that were not previously granted by "
+               << "SetPermissionState: "
+               << base::JoinString(permission_strings, ", ");
+
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
   frame->permission_controller()->RequestPermissions(
