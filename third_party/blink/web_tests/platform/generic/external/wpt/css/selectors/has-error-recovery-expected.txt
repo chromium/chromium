@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL CSS Selectors: :has() error recovery assert_equals: Should correctly match expected Element node <div id="test-div">
-  <div id="test-descendant">
-  </div>... but got Element node <html><head><title>CSS Selectors: :has() error recovery</...
-Harness: the test ran to completion.
-

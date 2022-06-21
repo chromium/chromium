@@ -35,14 +35,14 @@
     );
     assert_equals(document.querySelector(emptyList), null, "Should never match, but should parse");
     for (let mixedList of [
-      `:has(:total-nonsense, #test-descendant)`,
-      `:has(:total-nonsense and-more-stuff, #test-descendant)`,
-      `:has(weird-token || and-more-stuff, #test-descendant)`,
+      `:has(:total-nonsense, > #test-descendant)`,
+      `:has(:total-nonsense and-more-stuff, > #test-descendant)`,
+      `:has(weird-token || and-more-stuff, > #test-descendant)`,
     ]) {
       rule.selectorText = mixedList;
       assert_equals(
         rule.selectorText,
-        `:has(#test-descendant)`,
+        `:has(> #test-descendant)`,
         `${mixedList}: Should ignore invalid selectors`,
       );
       let testDiv = document.getElementById("test-div");
