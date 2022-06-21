@@ -96,7 +96,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
    public:
     TracingProfileBuilder(
         base::PlatformThreadId sampled_thread_id,
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+        bool is_startup_tracing,
+#else
         std::unique_ptr<perfetto::TraceWriter> trace_writer,
 #endif
         bool should_enable_filtering,
@@ -111,7 +113,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
     void OnProfileCompleted(base::TimeDelta profile_duration,
                             base::TimeDelta sampling_period) override {}
 
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    void SetIsStartupTracing(bool is_startup_tracing) {
+      is_startup_tracing_ = is_startup_tracing;
+    };
+#else
     void SetTraceWriter(std::unique_ptr<perfetto::TraceWriter> trace_writer);
 #endif
 
@@ -148,7 +154,10 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
 
     base::ModuleCache module_cache_;
     const base::PlatformThreadId sampled_thread_id_;
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    // In non-SDK build, (trace_writer_ == nullptr) is equivalent of this flag.
+    bool is_startup_tracing_ = true;
+#else
     base::Lock trace_writer_lock_;
     std::unique_ptr<perfetto::TraceWriter> trace_writer_;
 #endif
@@ -218,8 +227,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   void StartTracing(
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
       std::unique_ptr<perfetto::TraceWriter> trace_writer,
+#else
+      bool is_startup_tracing,
 #endif
       bool should_enable_filtering);
+
   void StopTracing();
 
  private:

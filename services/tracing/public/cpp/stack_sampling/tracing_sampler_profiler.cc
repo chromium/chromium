@@ -108,13 +108,17 @@ class TracingSamplerProfilerDataSource
 
     if (is_started_) {
       profiler->StartTracing(
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+          false /* is_startup_tracing */,
+#else
           producer_->CreateTraceWriter(data_source_config_.target_buffer()),
 #endif
           data_source_config_.chrome_config().privacy_filtering_enabled());
     } else if (is_startup_tracing_) {
       profiler->StartTracing(
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+          true /* is_startup_tracing */,
+#else
           nullptr,
 #endif
           /*should_enable_filtering=*/true);
@@ -148,7 +152,9 @@ class TracingSamplerProfilerDataSource
 
     for (auto* profiler : profilers_) {
       profiler->StartTracing(
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+          false /* is_startup_tracing */,
+#else
           producer->CreateTraceWriter(data_source_config.target_buffer()),
 #endif
           should_enable_filtering);
@@ -189,7 +195,9 @@ class TracingSamplerProfilerDataSource
     for (auto* profiler : profilers_) {
       // Enable filtering for startup tracing always to be safe.
       profiler->StartTracing(
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+          true /* is_startup_tracing */,
+#else
           nullptr,
 #endif
           /*should_enable_filtering=*/true);
@@ -206,6 +214,8 @@ class TracingSamplerProfilerDataSource
       profiler->StartTracing(
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
           nullptr,
+#else
+          true /* is_startup_tracing */,
 #endif
           /*should_enable_filtering=*/true);
     }
@@ -390,13 +400,17 @@ TracingSamplerProfiler::TracingProfileBuilder::BufferedSample::BufferedSample(
 
 TracingSamplerProfiler::TracingProfileBuilder::TracingProfileBuilder(
     base::PlatformThreadId sampled_thread_id,
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    bool is_startup_tracing,
+#else
     std::unique_ptr<perfetto::TraceWriter> trace_writer,
 #endif
     bool should_enable_filtering,
     const base::RepeatingClosure& sample_callback_for_testing)
     : sampled_thread_id_(sampled_thread_id),
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+      is_startup_tracing_(is_startup_tracing),
+#else
       trace_writer_(std::move(trace_writer)),
 #endif
       stack_profile_writer_(should_enable_filtering),
@@ -432,9 +446,14 @@ using SampleDebugProto =
 void TracingSamplerProfiler::TracingProfileBuilder::OnSampleCompleted(
     std::vector<base::Frame> frames,
     base::TimeTicks sample_timestamp) {
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  bool is_startup_tracing = is_startup_tracing_;
+#else
   base::AutoLock l(trace_writer_lock_);
-  if (!trace_writer_) {
+  bool is_startup_tracing = (trace_writer_ == nullptr);
+#endif
+
+  if (is_startup_tracing) {
     if (buffered_samples_.size() < kMaxBufferedSamples) {
       buffered_samples_.emplace_back(
           BufferedSample(sample_timestamp, std::move(frames)));
@@ -447,7 +466,7 @@ void TracingSamplerProfiler::TracingProfileBuilder::OnSampleCompleted(
     }
     buffered_samples_.clear();
   }
-#endif
+
   WriteSampleToTrace(BufferedSample(sample_timestamp, std::move(frames)));
   if (sample_callback_for_testing_) {
     sample_callback_for_testing_.Run();
@@ -801,13 +820,19 @@ void TracingSamplerProfiler::SetSampleCallbackForTesting(
 }
 
 void TracingSamplerProfiler::StartTracing(
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    bool is_startup_tracing,
+#else
     std::unique_ptr<perfetto::TraceWriter> trace_writer,
 #endif
     bool should_enable_filtering) {
   base::AutoLock lock(lock_);
   if (profiler_) {
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    if (!is_startup_tracing) {
+      profile_builder_->SetIsStartupTracing(is_startup_tracing);
+    }
+#else
     if (trace_writer) {
       profile_builder_->SetTraceWriter(std::move(trace_writer));
     }
@@ -836,7 +861,9 @@ void TracingSamplerProfiler::StartTracing(
 
   auto profile_builder = std::make_unique<TracingProfileBuilder>(
       sampled_thread_token_.id,
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+      is_startup_tracing,
+#else
       std::move(trace_writer),
 #endif
       should_enable_filtering, sample_callback_for_testing_);
