@@ -16,7 +16,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/font_util.h"
 #include "ui/gfx/render_text.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
+#endif
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
@@ -50,6 +55,11 @@ struct Environment {
         &discardable_memory_allocator);
 #endif
     CHECK(base::i18n::InitializeICU());
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    test_fonts::SetUpFontconfig();
+#endif
+    gfx::InitializeFonts();
     gfx::FontList::SetDefaultFontDescription(kFontDescription);
   }
 

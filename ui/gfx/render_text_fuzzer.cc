@@ -11,7 +11,12 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/font_util.h"
 #include "ui/gfx/render_text.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
+#endif
 
 namespace {
 
@@ -31,6 +36,11 @@ struct Environment {
     logging::SetMinLogLevel(logging::LOG_FATAL);
 
     CHECK(base::i18n::InitializeICU());
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    test_fonts::SetUpFontconfig();
+#endif
+    gfx::InitializeFonts();
     gfx::FontList::SetDefaultFontDescription(kFontDescription);
   }
 
