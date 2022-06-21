@@ -175,12 +175,10 @@ CrdHostDelegate::CrdHostDelegate(
 CrdHostDelegate::~CrdHostDelegate() = default;
 
 bool CrdHostDelegate::HasActiveSession() const {
-  LOG(ERROR) << __FUNCTION__;
   return active_session_ != nullptr;
 }
 
 void CrdHostDelegate::TerminateSession(base::OnceClosure callback) {
-  LOG(ERROR) << __FUNCTION__;
   CRD_DVLOG(3) << "Terminating CRD session";
   active_session_ = nullptr;
   std::move(callback).Run();
