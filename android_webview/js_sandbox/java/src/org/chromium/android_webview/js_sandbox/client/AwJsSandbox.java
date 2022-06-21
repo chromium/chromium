@@ -149,7 +149,7 @@ public class AwJsSandbox implements AutoCloseable {
         });
     }
 
-    // We prevent direct initialitations of this class. Use AwJsSandbox.newConnectedInstance().
+    // We prevent direct initializations of this class. Use AwJsSandbox.newConnectedInstance().
     private AwJsSandbox(ConnectionSetup connectionSetup, IJsSandboxService jsSandboxService) {
         mConnection = connectionSetup;
         mJsSandboxService = jsSandboxService;
