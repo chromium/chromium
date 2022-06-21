@@ -20,6 +20,14 @@
 
 namespace ash {
 
+namespace {
+// Default week title for a few special languages that cannot find the start of
+// a week. So far the known languages that cannot return their day of week are:
+// 'bn', 'fa', 'mr', 'pa-PK'.
+std::vector<std::u16string> kDefaultWeekTitle = {u"S", u"M", u"T", u"W",
+                                                 u"T", u"F", u"S"};
+}  // namespace
+
 // A singleton class used to create and cache `GregorianCalendar`,
 // `icu::SimpleDateFormat` and `icu::DateIntervalFormat` objects, so that they
 // don't have to be recreated each time when querying the time difference or

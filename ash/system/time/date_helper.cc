@@ -181,16 +181,25 @@ void DateHelper::CalculateLocalWeekTitles() {
   start_date = GetLocalMidnight(start_date);
   std::u16string day_of_week =
       GetFormattedTime(&day_of_week_formatter_, start_date);
-  int safe_index = 0;
 
+  // For a few special locales the day of week is not in a number. In these
+  // cases, use the default week titles.
+  int day_int;
+  if (!base::StringToInt(day_of_week, &day_int)) {
+    week_titles_ = kDefaultWeekTitle;
+    return;
+  }
+
+  int safe_index = 0;
   // Find a first day of a week.
-  while (day_of_week != calendar_utils::kFirstDayOfWeekString) {
+  while (day_int != 1) {
     start_date += base::Hours(25);
     day_of_week = GetFormattedTime(&day_of_week_formatter_, start_date);
+    DCHECK(base::StringToInt(day_of_week, &day_int));
     ++safe_index;
     // Should already find the first day within 7 times, since there are only 7
     // days in a week.
-    DCHECK_NE(safe_index, calendar_utils::kDateInOneWeek);
+    CHECK_NE(safe_index, calendar_utils::kDateInOneWeek);
   }
 
   int day_index = 0;
