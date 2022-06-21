@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestMediaScanner} from '../../background/js/mock_media_scanner.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';

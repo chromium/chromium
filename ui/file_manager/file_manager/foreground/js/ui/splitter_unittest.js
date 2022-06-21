@@ -5,7 +5,7 @@
 // clang-format off
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {getRequiredElement} from 'chrome://resources/js/util.m.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {Splitter} from './splitter.js';
 

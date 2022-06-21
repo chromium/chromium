@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals} from 'chrome://test/chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 import {mockUtilVisitURL} from '../../../../common/js/mock_util.js';
 import {Banner} from '../../../../externs/banner.js';
 

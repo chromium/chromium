@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {importer} from '../../common/js/importer_common.js';
 import {metrics} from '../../common/js/metrics.js';

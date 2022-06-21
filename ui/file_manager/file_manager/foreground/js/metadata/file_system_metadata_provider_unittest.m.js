@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {reportPromise} from '../../../common/js/test_error_reporting.js';
+
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
 import {MetadataRequest} from './metadata_request.js';
 

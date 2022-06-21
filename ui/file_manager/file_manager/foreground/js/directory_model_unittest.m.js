@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockFileOperationManager} from '../../background/js/mock_file_operation_manager.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';

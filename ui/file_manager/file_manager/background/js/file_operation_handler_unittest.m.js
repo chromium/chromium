@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertArrayEquals, assertEquals, assertGT, assertLT, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';

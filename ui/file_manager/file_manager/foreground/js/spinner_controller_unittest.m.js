@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {reportPromise} from '../../common/js/test_error_reporting.js';
 

@@ -4,7 +4,7 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';

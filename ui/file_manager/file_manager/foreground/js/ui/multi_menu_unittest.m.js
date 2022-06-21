@@ -7,7 +7,7 @@ import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {util} from '../../../common/js/util.js';
 

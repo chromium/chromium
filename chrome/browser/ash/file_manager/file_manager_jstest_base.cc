@@ -58,14 +58,14 @@ class TestWebUIProvider
     // generated HTML to run see js_test_gen_html.py.
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ScriptSrc,
-        "script-src chrome://resources chrome://webui-test chrome://test "
+        "script-src chrome://resources chrome://webui-test "
         "'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
         "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp "
         "'unsafe-inline'; ");
 
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ScriptSrcElem,
-        "script-src chrome://resources chrome://webui-test chrome://test "
+        "script-src chrome://resources chrome://webui-test "
         "'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
         "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp "
         "'unsafe-inline'; ");

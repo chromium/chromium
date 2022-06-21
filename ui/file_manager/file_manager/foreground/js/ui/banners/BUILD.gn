@@ -203,7 +203,7 @@ js_test_gen_html("js_test_gen_html_modules") {
                     "js_module_root=../../ui/file_manager/",
                     "js_module_root=./gen/ui/file_manager/",
                     "jscomp_off=duplicate",
-                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                     "hide_warnings_for=third_party/",

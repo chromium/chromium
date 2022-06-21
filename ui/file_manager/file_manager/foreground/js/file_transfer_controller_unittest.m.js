@@ -8,7 +8,7 @@ import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {DialogType} from '../../common/js/dialog_type.js';
