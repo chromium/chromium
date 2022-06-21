@@ -27,6 +27,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.base.TestActivity;
 
 /** Tests for {@link OmniboxResourceProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -40,9 +41,7 @@ public class OmniboxResourceProviderTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mDefaultColor = ChromeColors.getDefaultThemeColor(mActivity, false);
     }
 

@@ -35,12 +35,12 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconFetchCompleteListener;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconType;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -75,8 +75,7 @@ public final class FaviconFetcherUnitTest {
         // Enable logs to be printed along with possible test failures.
         ShadowLog.stream = System.out;
 
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
 
         mFetcher = new FaviconFetcher(mActivity, () -> mLargeIconBridge);
         mFetcher.setRoundedIconGeneratorForTesting(mIconGenerator);
