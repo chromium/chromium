@@ -270,6 +270,7 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveButtonActionMenuCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarButtonControllerTest.java",
@@ -312,6 +313,7 @@ robolectric_library("junit") {
     "//chrome/browser/user_education:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/feature_engagement:feature_engagement_java",
     "//components/search_engines/android:java",
@@ -327,6 +329,7 @@ robolectric_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
@@ -335,7 +338,6 @@ robolectric_library("junit") {
 android_library("javatests") {
   testonly = true
   sources = [
-    "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/AdaptiveToolbarPreferenceFragmentTest.java",
   ]
 
