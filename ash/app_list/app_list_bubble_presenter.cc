@@ -33,7 +33,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"

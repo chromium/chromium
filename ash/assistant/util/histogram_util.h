@@ -6,7 +6,7 @@
 #define ASH_ASSISTANT_UTIL_HISTOGRAM_UTIL_H_
 
 #include "base/component_export.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 namespace ash {
 

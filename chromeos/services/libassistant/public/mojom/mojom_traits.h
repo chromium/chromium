@@ -10,7 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/time/time.h"
-#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_feedback.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"

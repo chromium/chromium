@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 namespace chromeos {
 namespace assistant {

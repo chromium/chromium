@@ -11,8 +11,8 @@
 
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "media/base/audio_capturer_source.h"

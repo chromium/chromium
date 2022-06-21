@@ -8,7 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 class DeviceActionsDelegateImpl : public DeviceActionsDelegate {
  public:

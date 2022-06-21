@@ -9,7 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 class GURL;
 

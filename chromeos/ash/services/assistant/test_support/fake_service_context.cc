@@ -4,8 +4,8 @@
 
 #include <string>
 
+#include "chromeos/ash/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/ash/services/assistant/test_support/fake_service_context.h"
-#include "chromeos/services/assistant/public/cpp/device_actions.h"
 
 namespace chromeos {
 namespace assistant {

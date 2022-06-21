@@ -1,36 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_SWITCHES_H_
 #define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_SWITCHES_H_
 
-#include "base/component_export.h"
+// TODO(https://crbug.com/1164001): Remove this file when internal assistant
+// codes are changed to use the new path chromeos/ash/services/assistant.
 
-namespace chromeos {
-namespace assistant {
-namespace switches {
-
-// NOTE: Switches are reserved for developer-facing options. End-user facing
-// features should use base::Feature. See features.h.
-
-// Forces the assistant first-run onboarding view, even if the user has seen it
-// before. Useful when working on UI layout.
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const char kForceAssistantOnboarding[];
-
-// Redirects libassistant logging to /var/log/chrome/. This is mainly used to
-// help collect logs when running tests.
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const char kRedirectLibassistantLogging[];
-
-// Redirects libassistant logging to stdout. This is mainly used to help test
-// locally.
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const char kDisableLibAssistantLogfile[];
-
-}  // namespace switches
-}  // namespace assistant
-}  // namespace chromeos
+#include "chromeos/ash/services/assistant/public/cpp/switches.h"
 
 #endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_SWITCHES_H_

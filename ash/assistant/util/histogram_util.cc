@@ -6,7 +6,7 @@
 
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 namespace ash {
 namespace assistant {
