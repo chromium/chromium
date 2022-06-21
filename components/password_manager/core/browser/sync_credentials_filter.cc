@@ -56,8 +56,8 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
   } else {
     // If kEnablePasswordsAccountStorage is NOT enabled, then don't allow saving
     // the password for the sync account specifically.
-    if (sync_util::IsSyncAccountCredential(form, sync_service,
-                                           identity_manager)) {
+    if (sync_util::IsSyncAccountCredential(form.url, form.username_value,
+                                           sync_service, identity_manager)) {
       return false;
     }
   }
@@ -87,8 +87,9 @@ bool SyncCredentialsFilter::IsSyncAccountEmail(
 
 void SyncCredentialsFilter::ReportFormLoginSuccess(
     const PasswordFormManager& form_manager) const {
+  const PasswordForm& form = form_manager.GetPendingCredentials();
   if (!form_manager.IsNewLogin() &&
-      sync_util::IsSyncAccountCredential(form_manager.GetPendingCredentials(),
+      sync_util::IsSyncAccountCredential(form.url, form.username_value,
                                          sync_service_factory_function_.Run(),
                                          client_->GetIdentityManager())) {
     base::RecordAction(base::UserMetricsAction(

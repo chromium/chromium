@@ -60,6 +60,7 @@ void SyncUsernameTestBase::FakeSigninAs(const std::string& email) {
 PasswordForm SyncUsernameTestBase::SimpleGaiaForm(const char* username) {
   PasswordForm form;
   form.signon_realm = "https://accounts.google.com";
+  form.url = GURL("https://accounts.google.com");
   form.username_value = ASCIIToUTF16(username);
   form.form_data = CreateSigninFormData(GURL(form.signon_realm), username);
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -70,6 +71,7 @@ PasswordForm SyncUsernameTestBase::SimpleGaiaForm(const char* username) {
 PasswordForm SyncUsernameTestBase::SimpleNonGaiaForm(const char* username) {
   PasswordForm form;
   form.signon_realm = "https://site.com";
+  form.url = GURL("https://site.com");
   form.username_value = ASCIIToUTF16(username);
   form.form_data = CreateSigninFormData(GURL(form.signon_realm), username);
   form.in_store = PasswordForm::Store::kProfileStore;

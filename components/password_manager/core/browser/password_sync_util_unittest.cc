@@ -24,6 +24,7 @@ using PasswordSyncUtilTest = SyncUsernameTestBase;
 
 PasswordForm SimpleGAIAChangePasswordForm() {
   PasswordForm form;
+  form.url = GURL("https://myaccount.google.com/");
   form.signon_realm = "https://myaccount.google.com/";
   return form;
 }
@@ -31,6 +32,7 @@ PasswordForm SimpleGAIAChangePasswordForm() {
 PasswordForm SimpleForm(const char* signon_realm, const char* username) {
   PasswordForm form;
   form.signon_realm = signon_realm;
+  form.url = GURL(signon_realm);
   form.username_value = ASCIIToUTF16(username);
   return form;
 }
@@ -97,8 +99,9 @@ TEST_F(PasswordSyncUtilTest, IsSyncAccountCredential) {
     SetSyncingPasswords(true);
     FakeSigninAs(kTestCases[i].fake_sync_username);
     EXPECT_EQ(kTestCases[i].expected_result,
-              IsSyncAccountCredential(kTestCases[i].form, sync_service(),
-                                      identity_manager()));
+              IsSyncAccountCredential(kTestCases[i].form.url,
+                                      kTestCases[i].form.username_value,
+                                      sync_service(), identity_manager()));
   }
 }
 

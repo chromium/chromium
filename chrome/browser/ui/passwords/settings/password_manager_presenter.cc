@@ -322,7 +322,7 @@ void PasswordManagerPresenter::RequestPlaintextPassword(
         SyncServiceFactory::GetForProfile(password_view_->GetProfile());
   }
   if (password_manager::sync_util::IsSyncAccountCredential(
-          form, sync_service,
+          form.url, form.username_value, sync_service,
           IdentityManagerFactory::GetForProfile(
               password_view_->GetProfile()))) {
     base::RecordAction(

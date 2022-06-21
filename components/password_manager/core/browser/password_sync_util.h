@@ -29,10 +29,11 @@ std::string GetSyncUsernameIfSyncingPasswords(
     const syncer::SyncService* sync_service,
     const signin::IdentityManager* identity_manager);
 
-// Returns true if |form| corresponds to the account specified by
-// GetSyncUsernameIfSyncingPasswords. Returns false if
+// Returns true if |url| is google.com domain and |username| corresponds to the
+// account specified by GetSyncUsernameIfSyncingPasswords. Returns false if
 // GetSyncUsernameIfSyncingPasswords does not specify any account.
-bool IsSyncAccountCredential(const PasswordForm& form,
+bool IsSyncAccountCredential(const GURL& url,
+                             const std::u16string& username,
                              const syncer::SyncService* sync_service,
                              const signin::IdentityManager* identity_manager);
 
