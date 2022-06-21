@@ -3678,9 +3678,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _keyCommandsProvider.canDismissModals = NO;
   [_sideSwipeController setEnabled:YES];
 
-  if (self.isNTPActiveForCurrentWebState) {
-    [_ntpCoordinator locationBarDidResignFirstResponder];
-  }
+  [_ntpCoordinator locationBarDidResignFirstResponder];
+
   [UIView animateWithDuration:0.3
       animations:^{
         [self.typingShield setAlpha:0.0];
