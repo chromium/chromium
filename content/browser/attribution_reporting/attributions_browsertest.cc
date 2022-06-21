@@ -475,10 +475,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report.WaitForReport();
 }
 
-// TODO(https://crbug.com/1301960): Flaky on multiple platforms after switch to
-// using attributionsrc.
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
-                       DISABLED_ImpressionConversionSameDomain_ReportSent) {
+                       ImpressionConversionSameDomain_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://d.test/.well-known/attribution-reporting/"
@@ -748,10 +746,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report.WaitForReport();
 }
 
-// TODO(crbug.com/1335817): Deflake this test.
-IN_PROC_BROWSER_TEST_F(
-    AttributionsBrowserTest,
-    DISABLED_AttributionSrcNavigationSourceAndTrigger_ReportSent) {
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       AttributionSrcNavigationSourceAndTrigger_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
@@ -956,15 +952,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   EXPECT_FALSE(expected_report.HasRequest());
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ConversionsRegisteredOnActivatedPrerender \
-  DISABLED_ConversionsRegisteredOnActivatedPrerender
-#else
-#define MAYBE_ConversionsRegisteredOnActivatedPrerender \
-  ConversionsRegisteredOnActivatedPrerender
-#endif
 IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
-                       MAYBE_ConversionsRegisteredOnActivatedPrerender) {
+                       ConversionsRegisteredOnActivatedPrerender) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
