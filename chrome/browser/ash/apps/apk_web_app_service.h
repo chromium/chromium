@@ -68,6 +68,9 @@ class ApkWebAppService : public KeyedService,
 
   absl::optional<std::string> GetPackageNameForWebApp(const GURL& url);
 
+  absl::optional<std::string> GetWebAppIdForPackageName(
+      const std::string& package_name);
+
   absl::optional<std::string> GetCertificateSha256Fingerprint(
       const web_app::AppId& app_id);
 
@@ -123,6 +126,7 @@ class ApkWebAppService : public KeyedService,
                           webapps::InstallResultCode code);
   void UpdatePackageInfo(const std::string& app_id,
                          const arc::mojom::WebAppInfoPtr& web_app_info);
+  const base::Value::Dict& WebAppToApks() const;
 
   WebAppCallbackForTesting web_app_installed_callback_;
   WebAppCallbackForTesting web_app_uninstalled_callback_;
