@@ -70,6 +70,7 @@ export interface AllSitesElement {
   $: {
     allSitesList: IronListElement,
     clearAllButton: HTMLElement,
+    clearLabel: HTMLElement,
     confirmClearAllData: CrLazyRenderElement<CrDialogElement>,
     confirmClearData: CrLazyRenderElement<CrDialogElement>,
     confirmRemoveSite: CrLazyRenderElement<CrDialogElement>,
@@ -263,7 +264,6 @@ export class AllSitesElement extends AllSitesElementBase {
         newMap.set(siteGroup.etldPlus1, siteGroup);
       });
       this.siteGroupMap = newMap;
-      this.updateTotalUsage_();
       this.forceListUpdate_();
     });
   }
@@ -280,7 +280,6 @@ export class AllSitesElement extends AllSitesElementBase {
       newMap.set(storageSiteGroup.etldPlus1, storageSiteGroup);
     });
     this.siteGroupMap = newMap;
-    this.updateTotalUsage_();
     this.forceListUpdate_();
     this.focusOnLastSelectedEntry_();
   }
@@ -291,11 +290,12 @@ export class AllSitesElement extends AllSitesElementBase {
    */
   private updateTotalUsage_() {
     let usageSum = 0;
-    for (const [_etldPlus1, siteGroup] of this.siteGroupMap) {
+    for (const siteGroup of this.filteredList_) {
       siteGroup.origins.forEach(origin => {
         usageSum += origin.usage;
       });
     }
+
     this.browserProxy.getFormattedBytes(usageSum).then(totalUsage => {
       this.totalUsage_ = totalUsage;
     });
@@ -402,6 +402,7 @@ export class AllSitesElement extends AllSitesElementBase {
   private forceListUpdate_() {
     this.filteredList_ =
         this.filterPopulatedList_(this.siteGroupMap, this.filter);
+    this.updateTotalUsage_();
     this.$.allSitesList.fire('iron-resize');
   }
 
@@ -540,6 +541,20 @@ export class AllSitesElement extends AllSitesElementBase {
         [AllSitesDialog.CLEAR_DATA, scope, installed, 'DialogOpened'];
     this.recordUserAction_(scopes);
     this.$.confirmClearData.get().showModal();
+  }
+
+  /**
+   * Selects the correct string to display for total usage based on whether a
+   * filter is applied.
+   * @return The correct |clearLabel| string based on whether a filter
+   *     is applied.
+   */
+  private getClearStorageDescription_(): string {
+    const descriptionId = this.filter !== '' ?
+        'siteSettingsClearDisplayedStorageDescription' :
+        'siteSettingsClearAllStorageDescription';
+    return loadTimeData.substituteString(
+        this.i18n(descriptionId), this.totalUsage_);
   }
 
   /**

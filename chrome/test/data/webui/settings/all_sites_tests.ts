@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AllSitesElement, ContentSetting, ContentSettingsTypes, LocalDataBrowserProxyImpl, SiteGroup, SiteSettingsPrefsBrowserProxyImpl, SortMethod} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestLocalDataBrowserProxy} from './test_local_data_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
@@ -113,6 +113,11 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     }
   }
 
+  function getSubstitutedString(messageId: string, substitute: string): string {
+    return loadTimeData.substituteString(
+        testElement.i18n(messageId), substitute);
+  }
+
   test('All sites list populated', async function() {
     setUpAllSites(prefsVarious);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
@@ -194,6 +199,44 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     assertEquals('google.com', siteEntries[0]!.$.displayName.innerText.trim());
     assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
     assertEquals('bar.com', siteEntries[2]!.$.displayName.innerText.trim());
+  });
+
+  test('dynamic filtered total usage strings', async function() {
+    setUpAllSites(prefsVarious);
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
+    await browserProxy.whenCalled('getAllSites');
+    // Removing extra unwanted site entries.
+    testElement.siteGroupMap.delete('google.com');
+    testElement.forceListUpdateForTesting();
+    await flushTasks();
+
+    const clearLabel = testElement.$.clearLabel;
+    assertEquals(
+        getSubstitutedString('siteSettingsClearAllStorageDescription', '100 B'),
+        clearLabel.innerText.trim());
+
+    // Setting a filter, 'foo.com' exists but doesn't have storage.
+    testElement.filter = 'foo';
+    await flushTasks();
+    assertEquals(
+        getSubstitutedString(
+            'siteSettingsClearDisplayedStorageDescription', '0 B'),
+        clearLabel.innerText.trim());
+
+    // Changing the filter, 100 B given to 'bar.com; in the test proxy.
+    testElement.filter = 'bar';
+    await flushTasks();
+    assertEquals(
+        getSubstitutedString(
+            'siteSettingsClearDisplayedStorageDescription', '100 B'),
+        clearLabel.innerText.trim());
+
+    // Remove the filter, without changing the total amount of storage.
+    testElement.filter = '';
+    await flushTasks();
+    assertEquals(
+        getSubstitutedString('siteSettingsClearAllStorageDescription', '100 B'),
+        clearLabel.innerText.trim());
   });
 
   test('can be sorted by storage', async function() {
