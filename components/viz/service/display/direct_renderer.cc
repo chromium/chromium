@@ -909,10 +909,20 @@ gfx::Size DirectRenderer::CalculateSizeForOutputSurface(
     last_viewport_resize_time_ = base::TimeTicks::Now();
 
   // Width & height mustn't be more than max texture size.
-  if (surface_width > output_surface_->capabilities().max_texture_size)
+  if (surface_width > output_surface_->capabilities().max_texture_size) {
+    auto old_width = surface_width;
     surface_width = output_surface_->capabilities().max_texture_size;
-  if (surface_height > output_surface_->capabilities().max_texture_size)
+    LOG_IF(ERROR, surface_width < request_width)
+        << "Reduced surface width from " << old_width << " to "
+        << surface_width;
+  }
+  if (surface_height > output_surface_->capabilities().max_texture_size) {
+    auto old_height = surface_height;
     surface_height = output_surface_->capabilities().max_texture_size;
+    LOG_IF(ERROR, surface_height < request_height)
+        << "Reduced surface height from " << old_height << " to "
+        << surface_height;
+  }
 
   device_viewport_size_ = requested_viewport_size;
   return gfx::Size(surface_width, surface_height);
