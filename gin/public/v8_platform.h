@@ -43,7 +43,7 @@ class GIN_EXPORT V8Platform : public v8::Platform {
       std::unique_ptr<v8::Task> task) override;
   void CallDelayedOnWorkerThread(std::unique_ptr<v8::Task> task,
                                  double delay_in_seconds) override;
-  std::unique_ptr<v8::JobHandle> PostJob(
+  std::unique_ptr<v8::JobHandle> CreateJob(
       v8::TaskPriority priority,
       std::unique_ptr<v8::JobTask> job_task) override;
   bool IdleTasksEnabled(v8::Isolate* isolate) override;

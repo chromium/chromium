@@ -431,7 +431,7 @@ void V8Platform::CallDelayedOnWorkerThread(std::unique_ptr<v8::Task> task,
       base::Seconds(delay_in_seconds));
 }
 
-std::unique_ptr<v8::JobHandle> V8Platform::PostJob(
+std::unique_ptr<v8::JobHandle> V8Platform::CreateJob(
     v8::TaskPriority priority,
     std::unique_ptr<v8::JobTask> job_task) {
   base::TaskTraits task_traits;
@@ -450,19 +450,19 @@ std::unique_ptr<v8::JobHandle> V8Platform::PostJob(
   // |max_concurrency_callback| uses an unretained pointer.
   auto* job_task_ptr = job_task.get();
   auto handle =
-      base::PostJob(FROM_HERE, task_traits,
-                    base::BindRepeating(
-                        [](const std::unique_ptr<v8::JobTask>& job_task,
-                           base::JobDelegate* delegate) {
-                          JobDelegateImpl delegate_impl(delegate);
-                          job_task->Run(&delegate_impl);
-                        },
-                        std::move(job_task)),
-                    base::BindRepeating(
-                        [](v8::JobTask* job_task, size_t worker_count) {
-                          return job_task->GetMaxConcurrency(worker_count);
-                        },
-                        base::Unretained(job_task_ptr)));
+      base::CreateJob(FROM_HERE, task_traits,
+                      base::BindRepeating(
+                          [](const std::unique_ptr<v8::JobTask>& job_task,
+                             base::JobDelegate* delegate) {
+                            JobDelegateImpl delegate_impl(delegate);
+                            job_task->Run(&delegate_impl);
+                          },
+                          std::move(job_task)),
+                      base::BindRepeating(
+                          [](v8::JobTask* job_task, size_t worker_count) {
+                            return job_task->GetMaxConcurrency(worker_count);
+                          },
+                          base::Unretained(job_task_ptr)));
 
   return std::make_unique<JobHandleImpl>(std::move(handle));
 }
