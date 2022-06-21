@@ -285,6 +285,12 @@ void ClientSession::SetCapabilities(
       // handled instead by DesktopSessionAgent.
       monitor->Start();
     }
+
+    // Re-send the extended layout information so the client has information
+    // needed to identify each stream.
+    // TODO(crbug.com/1326339): Remove this line when legacy VideoLayout
+    // messages are fully deprecated and no longer sent.
+    OnDesktopDisplayChanged(desktop_display_info_.GetVideoLayoutProto());
   }
 
   VLOG(1) << "Client capabilities: " << *client_capabilities_;
