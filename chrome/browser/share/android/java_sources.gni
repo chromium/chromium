@@ -79,6 +79,7 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetLinkToggleCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetLinkToggleMetricsHelper.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetUsageRankingHelper.java",
 ]
 
 share_java_deps = [
