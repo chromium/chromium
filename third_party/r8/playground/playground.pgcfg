@@ -9,3 +9,8 @@
 -keep,allowoptimization class Playground {
   *** main(...);
 }
+
+# Don't allow optimization of native methods or else R8 might remove parameters.
+-keepclassmembernames,allowshrinking class ** {
+  native <methods>;
+}
