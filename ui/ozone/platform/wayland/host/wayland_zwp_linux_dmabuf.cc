@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "ui/gfx/linux/drm_util_linux.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace ui {
@@ -28,8 +29,8 @@ void WaylandZwpLinuxDmabuf::Instantiate(WaylandConnection* connection,
                                         const std::string& interface,
                                         uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
-
-  if (connection->zwp_dmabuf() ||
+  auto* buffer_factory = connection->wayland_buffer_factory();
+  if (buffer_factory->wayland_zwp_dmabuf_ ||
       !wl::CanBind(interface, version, kMinVersion, kMaxVersion)) {
     return;
   }
@@ -40,7 +41,7 @@ void WaylandZwpLinuxDmabuf::Instantiate(WaylandConnection* connection,
     LOG(ERROR) << "Failed to bind zwp_linux_dmabuf_v1";
     return;
   }
-  connection->zwp_dmabuf_ = std::make_unique<WaylandZwpLinuxDmabuf>(
+  buffer_factory->wayland_zwp_dmabuf_ = std::make_unique<WaylandZwpLinuxDmabuf>(
       zwp_linux_dmabuf.release(), connection);
 }
 

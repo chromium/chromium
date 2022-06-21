@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_shm.h"
 
 #include "base/logging.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace ui {
@@ -24,7 +25,8 @@ void WaylandShm::Instantiate(WaylandConnection* connection,
                              uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (connection->shm_ ||
+  auto* buffer_factory = connection->wayland_buffer_factory();
+  if (buffer_factory->wayland_shm_ ||
       !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
   }
@@ -34,7 +36,8 @@ void WaylandShm::Instantiate(WaylandConnection* connection,
     LOG(ERROR) << "Failed to bind to wl_shm global";
     return;
   }
-  connection->shm_ = std::make_unique<WaylandShm>(shm.release(), connection);
+  buffer_factory->wayland_shm_ =
+      std::make_unique<WaylandShm>(shm.release(), connection);
 }
 
 WaylandShm::WaylandShm(wl_shm* shm, WaylandConnection* connection)

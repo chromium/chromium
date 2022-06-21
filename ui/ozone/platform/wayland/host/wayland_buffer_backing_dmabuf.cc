@@ -4,9 +4,8 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_dmabuf.h"
 
+#include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_drm.h"
-#include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
 
 namespace ui {
 
@@ -34,19 +33,9 @@ void WaylandBufferBackingDmabuf::RequestBufferHandle(
     base::OnceCallback<void(wl::Object<wl_buffer>)> callback) {
   DCHECK(!callback.is_null());
   DCHECK(fd_.is_valid());
-  if (connection_->zwp_dmabuf()) {
-    connection_->zwp_dmabuf()->CreateBuffer(fd_, size(), strides_, offsets_,
-                                            modifiers_, format_, planes_count_,
-                                            std::move(callback));
-  } else if (connection_->drm()) {
-    connection_->drm()->CreateBuffer(fd_, size(), strides_, offsets_,
-                                     modifiers_, format_, planes_count_,
-                                     std::move(callback));
-  } else {
-    // This method must never be called if neither zwp_linux_dmabuf or wl_drm
-    // are supported.
-    NOTREACHED();
-  }
+  connection_->wayland_buffer_factory()->CreateDmabufBuffer(
+      fd_, size(), strides_, offsets_, modifiers_, format_, planes_count_,
+      std::move(callback));
 
   if (UseExplicitSyncRelease())
     auto close = std::move(fd_);

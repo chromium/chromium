@@ -51,7 +51,8 @@ wl_surface* WaylandProxyImpl::GetWlSurfaceForAcceleratedWidget(
 
 wl_buffer* WaylandProxyImpl::CreateShmBasedWlBuffer(
     const gfx::Size& buffer_size) {
-  ui::WaylandShmBuffer shm_buffer(connection_->shm(), buffer_size);
+  ui::WaylandShmBuffer shm_buffer(connection_->wayland_buffer_factory(),
+                                  buffer_size);
   auto* wlbuffer = shm_buffer.get();
   DCHECK(wlbuffer);
   shm_buffers_.emplace_back(std::move(shm_buffer));

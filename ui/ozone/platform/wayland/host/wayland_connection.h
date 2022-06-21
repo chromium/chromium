@@ -39,21 +39,19 @@ namespace ui {
 class DeviceHotplugEventObserver;
 class OrgKdeKwinIdle;
 class SurfaceAugmenter;
+class WaylandBufferFactory;
 class WaylandBufferManagerHost;
 class WaylandCursor;
 class WaylandCursorBufferListener;
-class WaylandDrm;
 class WaylandEventSource;
 class WaylandOutputManager;
 class WaylandSeat;
-class WaylandShm;
 class WaylandZAuraShell;
 class WaylandZcrCursorShapes;
 class WaylandZcrTouchpadHaptics;
 class WaylandZwpPointerConstraints;
 class WaylandZwpPointerGestures;
 class WaylandZwpRelativePointerManager;
-class WaylandZwpLinuxDmabuf;
 class WaylandDataDeviceManager;
 class WaylandCursorPosition;
 class WaylandWindowDragController;
@@ -189,14 +187,12 @@ class WaylandConnection {
     return zcr_touchpad_haptics_.get();
   }
 
-  WaylandZwpLinuxDmabuf* zwp_dmabuf() const { return zwp_dmabuf_.get(); }
-
-  WaylandDrm* drm() const { return drm_.get(); }
-
-  WaylandShm* shm() const { return shm_.get(); }
-
   WaylandWindowManager* wayland_window_manager() {
     return &wayland_window_manager_;
+  }
+
+  WaylandBufferFactory* wayland_buffer_factory() const {
+    return wayland_buffer_factory_.get();
   }
 
   WaylandDataDeviceManager* data_device_manager() const {
@@ -314,13 +310,10 @@ class WaylandConnection {
   friend class OverlayPrioritizer;
   friend class SurfaceAugmenter;
   friend class WaylandDataDeviceManager;
-  friend class WaylandDrm;
   friend class WaylandOutput;
   friend class WaylandSeat;
-  friend class WaylandShm;
   friend class WaylandZAuraShell;
   friend class WaylandZcrTouchpadHaptics;
-  friend class WaylandZwpLinuxDmabuf;
   friend class WaylandZwpPointerConstraints;
   friend class WaylandZwpPointerGestures;
   friend class WaylandZwpRelativePointerManager;
@@ -391,6 +384,10 @@ class WaylandConnection {
   // outlives them so thus being able to properly handle their destruction.
   std::unique_ptr<WaylandEventSource> event_source_;
 
+  // Factory that wraps all the supported wayland objects that are provide
+  // capabilities to create wl_buffers.
+  std::unique_ptr<WaylandBufferFactory> wayland_buffer_factory_;
+
   std::unique_ptr<WaylandCursor> cursor_;
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_;
   std::unique_ptr<WaylandOutputManager> wayland_output_manager_;
@@ -403,10 +400,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandZwpRelativePointerManager>
       wayland_zwp_relative_pointer_manager_;
   std::unique_ptr<WaylandZwpPointerGestures> wayland_zwp_pointer_gestures_;
-  std::unique_ptr<WaylandZwpLinuxDmabuf> zwp_dmabuf_;
-  std::unique_ptr<WaylandDrm> drm_;
   std::unique_ptr<WaylandSeat> seat_;
-  std::unique_ptr<WaylandShm> shm_;
   std::unique_ptr<WaylandBufferManagerHost> buffer_manager_host_;
   std::unique_ptr<XdgForeignWrapper> xdg_foreign_;
   std::unique_ptr<ZwpIdleInhibitManager> zwp_idle_inhibit_manager_;

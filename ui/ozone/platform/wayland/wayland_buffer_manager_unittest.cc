@@ -26,6 +26,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
@@ -300,7 +301,8 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
 
     Sync();
 
-    auto buffer_formats = connection_->zwp_dmabuf()->supported_buffer_formats();
+    auto buffer_formats =
+        connection_->wayland_buffer_factory()->GetSupportedBufferFormats();
     DCHECK_EQ(buffer_formats.size(), 1u);
     DCHECK_EQ(buffer_formats.begin()->first,
               GetBufferFormatFromFourCCFormat(kFourccFormatR8));

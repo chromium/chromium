@@ -33,6 +33,7 @@
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
@@ -234,6 +235,10 @@ bool WaylandConnection::Initialize() {
   event_source_ = std::make_unique<WaylandEventSource>(
       display(), event_queue_.get(), wayland_window_manager(), this);
 
+  // Create the buffer factory before registry listener is set so that shm, drm,
+  // zwp_linux_dmabuf objects are able to be stored.
+  wayland_buffer_factory_ = std::make_unique<WaylandBufferFactory>();
+
   wl_registry_add_listener(registry_.get(), &registry_listener, this);
   while (!wayland_output_manager_ ||
          !wayland_output_manager_->IsOutputReady()) {
@@ -246,7 +251,7 @@ bool WaylandConnection::Initialize() {
     LOG(ERROR) << "No wl_compositor object";
     return false;
   }
-  if (!shm_) {
+  if (!wayland_buffer_factory()->shm()) {
     LOG(ERROR) << "No wl_shm object";
     return false;
   }
