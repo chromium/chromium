@@ -1221,10 +1221,6 @@ def main():
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'cr-check-all'], msvc_arch='x64')
 
   if not args.build_mac_arm and args.run_tests:
-    test_targets = [ 'check-all' ]
-    if sys.platform == 'darwin':
-      # TODO(thakis): Run check-all on Darwin too, https://crbug.com/959361
-      test_targets = [ 'check-llvm', 'check-clang', 'check-lld' ]
     env = None
     if sys.platform.startswith('linux'):
       env = os.environ.copy()
@@ -1232,7 +1228,7 @@ def main():
       # interception, so its tests can't pass.
       env['LIT_FILTER_OUT'] = ('^SanitizerCommon-(a|l|m|ub|t)san-x86_64-Linux' +
                                ' :: Linux/crypt_r.cpp$')
-    RunCommand(['ninja', '-C', LLVM_BUILD_DIR] + test_targets,
+    RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'check-all'],
                env=env,
                msvc_arch='x64')
 
