@@ -1443,10 +1443,6 @@ void Shell::Init(
   // Initialize the D-Bus bus and services for ash.
   dbus_bus_ = dbus_bus;
   ash_dbus_services_ = std::make_unique<AshDBusServices>(dbus_bus.get());
-
-  // By this point ash shell should have initialized its D-Bus signal
-  // listeners, so inform the session manager that Ash is initialized.
-  session_controller_->EmitAshInitialized();
 }
 
 void Shell::InitializeDisplayManager() {

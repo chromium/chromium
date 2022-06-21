@@ -190,6 +190,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   session_controller_client_ = std::make_unique<SessionControllerClientImpl>();
   session_controller_client_->Init();
+  // By this point ash shell should have initialized its D-Bus signal
+  // listeners, so inform the session manager that Ash is initialized.
+  session_controller_client_->EmitAshInitialized();
 
   system_tray_client_ = std::make_unique<SystemTrayClientImpl>();
   network_connect_delegate_->SetSystemTrayClient(system_tray_client_.get());
