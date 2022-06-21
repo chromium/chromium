@@ -97,6 +97,9 @@ WebContentController::~WebContentController() {
     // Therefore, it is not safe to call RemoveInputEventObserver on every
     // RenderWidgetHost that we started observing; we need to remove only
     // from currently live RenderWidgetHosts.
+    //
+    // Or, consider listening to
+    // |RenderWidgetHostObserver::RenderWidgetHostDestroyed| instead.
     std::unique_ptr<content::RenderWidgetHostIterator> widgets(
         content::RenderWidgetHost::GetRenderWidgetHosts());
     while (content::RenderWidgetHost* widget = widgets->GetNextHost()) {

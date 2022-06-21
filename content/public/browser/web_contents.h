@@ -417,15 +417,6 @@ class WebContents : public PageNavigator,
   virtual RenderFrameHost* UnsafeFindFrameByFrameTreeNodeId(
       int frame_tree_node_id) = 0;
 
-  // TODO(1208438): Migrate to |ForEachRenderFrameHost|.
-  // Calls |on_frame| for each frame in the currently active view.
-  // Note: The RenderFrameHost parameter is not guaranteed to have a live
-  // RenderFrame counterpart in the renderer process. Callbacks should check
-  // IsRenderFrameLive(), as sending IPC messages to it in this case will fail
-  // silently.
-  virtual void ForEachFrame(
-      const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) = 0;
-
   // Calls |on_frame| for every RenderFrameHost in this WebContents. Note that
   // this includes RenderFrameHosts that are not descended from the primary main
   // frame (e.g. bfcached pages and prerendered pages). The order of traversal

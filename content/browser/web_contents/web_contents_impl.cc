@@ -1356,15 +1356,6 @@ RenderFrameHostImpl* WebContentsImpl::UnsafeFindFrameByFrameTreeNodeId(
   return ftn->current_frame_host();
 }
 
-void WebContentsImpl::ForEachFrame(
-    const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) {
-  OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
-                        "WebContentsImpl::ForEachFrame");
-  for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
-    on_frame.Run(node->current_frame_host());
-  }
-}
-
 void WebContentsImpl::ForEachRenderFrameHost(
     RenderFrameHost::FrameIterationCallback on_frame) {
   ForEachRenderFrameHost(RenderFrameHostImpl::FrameIterationWrapper(on_frame));
