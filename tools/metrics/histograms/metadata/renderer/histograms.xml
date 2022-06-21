@@ -442,26 +442,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="RendererScheduler.ResourceLoadingTaskCountPerNetPriority"
-    enum="NetRequestPriority" expires_after="M77">
-  <owner>farahcharab@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Used to track the number of resource loading tasks split by net priority.
-    Recorded each time the resource's request priority is changed.
-  </summary>
-</histogram>
-
-<histogram name="RendererScheduler.ResourceLoadingTaskCountPerPriority"
-    enum="TaskQueuePriority" expires_after="M77">
-  <owner>farahcharab@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Used to track the number of resource loading tasks split by execution
-    priority. Recorded each time a task is executed.
-  </summary>
-</histogram>
-
 <histogram name="RendererScheduler.TaskCPUDurationPerTaskType2.DedicatedWorker"
     enum="RendererSchedulerTaskType" expires_after="M85">
   <owner>altimin@chromium.org</owner>

@@ -592,7 +592,6 @@ void FrameSchedulerImpl::DidChangeResourceLoadingPriority(
   auto queue_priority_pair =
       resource_loading_task_queue_priorities_.find(task_queue);
   if (queue_priority_pair != resource_loading_task_queue_priorities_.end()) {
-    task_queue->SetNetRequestPriority(priority);
     queue_priority_pair->value = main_thread_scheduler_->scheduling_settings()
                                      .net_to_blink_priority[priority];
     auto* voter =

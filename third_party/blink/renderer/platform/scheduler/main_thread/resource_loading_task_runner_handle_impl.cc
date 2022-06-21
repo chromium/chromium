@@ -34,7 +34,6 @@ ResourceLoadingTaskRunnerHandleImpl::~ResourceLoadingTaskRunnerHandleImpl() {
 
 void ResourceLoadingTaskRunnerHandleImpl::DidChangeRequestPriority(
     net::RequestPriority priority) {
-  task_queue_->SetNetRequestPriority(priority);
   FrameSchedulerImpl* frame_scheduler = task_queue_->GetFrameScheduler();
   if (frame_scheduler) {
     frame_scheduler->DidChangeResourceLoadingPriority(task_queue_, priority);

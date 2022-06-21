@@ -441,9 +441,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     return task_queue_->CreateTaskRunner(static_cast<int>(task_type));
   }
 
-  void SetNetRequestPriority(net::RequestPriority net_request_priority);
-  absl::optional<net::RequestPriority> net_request_priority() const;
-
   void SetWebSchedulingPriority(WebSchedulingPriority priority);
   absl::optional<WebSchedulingPriority> web_scheduling_priority() const;
 
@@ -550,13 +547,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   const QueueType queue_type_;
   const QueueTraits queue_traits_;
-
-  // Warning: net_request_priority is not the same as the priority of the queue.
-  // It is the priority (at the loading stack level) of the resource associated
-  // to the queue, if one exists.
-  //
-  // Used to track UMA metrics for resource loading tasks split by net priority.
-  absl::optional<net::RequestPriority> net_request_priority_;
 
   // |web_scheduling_priority_| is the priority of the task queue within the web
   // scheduling API. This priority is used in conjunction with the frame

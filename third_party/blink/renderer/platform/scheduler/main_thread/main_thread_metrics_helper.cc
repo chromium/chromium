@@ -196,21 +196,6 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
     input_handling_per_task_type_duration_reporter_.RecordTask(task_type,
                                                                duration);
   }
-
-  // TODO(crbug.com/860545): Consider removing below
-  if (task_type == TaskType::kNetworking && queue) {
-    if (queue->net_request_priority()) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "RendererScheduler.ResourceLoadingTaskCountPerNetPriority",
-          queue->net_request_priority().value(),
-          net::RequestPriority::MAXIMUM_PRIORITY + 1);
-    }
-
-    UMA_HISTOGRAM_ENUMERATION(
-        "RendererScheduler.ResourceLoadingTaskCountPerPriority",
-        queue->GetQueuePriority(),
-        base::sequence_manager::TaskQueue::QueuePriority::kQueuePriorityCount);
-  }
 }
 
 void MainThreadMetricsHelper::RecordMainThreadTaskLoad(base::TimeTicks time,
