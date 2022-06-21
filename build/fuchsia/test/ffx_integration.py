@@ -17,6 +17,19 @@ from common import get_host_arch, run_ffx_command, run_continuous_ffx_command, \
                    SDK_ROOT
 
 
+def get_config(name: str) -> Optional[str]:
+    """Run a ffx config get command to retrieve the config value."""
+
+    try:
+        return run_ffx_command(['config', 'get', name],
+                               capture_output=True).stdout.strip()
+    except subprocess.CalledProcessError as cpe:
+        # A return code of 2 indicates no previous value set.
+        if cpe.returncode == 2:
+            return None
+        raise
+
+
 class ScopedFfxConfig(AbstractContextManager):
     """Temporarily overrides `ffx` configuration. Restores the previous value
     upon exit."""
@@ -35,14 +48,7 @@ class ScopedFfxConfig(AbstractContextManager):
         """Override the configuration."""
 
         # Cache the old value.
-        try:
-            self._old_value = run_ffx_command(
-                ['config', 'get', self._name],
-                capture_output=True).stdout.strip()
-        except subprocess.CalledProcessError as cpe:
-            # A return code of 2 indicates no previous value set.
-            if cpe.returncode != 2:
-                raise
+        self._old_value = get_config(self._name)
         if self._new_value != self._old_value:
             run_ffx_command(['config', 'set', self._name, self._new_value])
         return self

@@ -111,8 +111,9 @@ def read_package_paths(out_dir: str, pkg_name: str) -> List[str]:
     Returns:
         A list of the absolute path to all FAR files the package depends on.
     """
-    with open(os.path.join(DIR_SRC_ROOT, out_dir, 'gen',
-                           f'{pkg_name}.meta')) as meta_file:
+    with open(
+            os.path.join(DIR_SRC_ROOT, out_dir, 'gen', 'package_metadata',
+                         f'{pkg_name}.meta')) as meta_file:
         data = json.load(meta_file)
     packages = []
     for package in data['packages']:
