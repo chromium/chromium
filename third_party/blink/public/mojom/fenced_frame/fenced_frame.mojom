@@ -27,7 +27,13 @@ interface FencedFrameOwnerHost {
   Navigate(url.mojom.Url url, mojo_base.mojom.TimeTicks navigation_start_time);
 };
 
-enum ReportingDestination { kBuyer, kSeller, kComponentSeller };
+enum ReportingDestination {
+  kBuyer,
+  kSeller,
+  kComponentSeller,
+  kSharedStorageSelectUrl
+};
+
 struct FencedFrameReporting {
   // If this is an "opaque-ads" mode fenced frame, there might be an associated
   // reporting metadata. This is a map from destination type to reporting

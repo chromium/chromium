@@ -21,6 +21,14 @@ struct SharedStorageValueArgument {
   mojo_base.mojom.String16 data;
 };
 
+// Bundles a candidate URL for `RunURLSelectionOperationOnWorklet()` with any
+// `reporting metadata` (map of each report event type to report URL) for
+// event-level reporting.
+struct SharedStorageUrlWithMetadata {
+  url.mojom.Url url;
+  map<string, url.mojom.Url> reporting_metadata;
+};
+
 // SharedStorage is an origin-keyed storage mechanism where the output is
 // carefully guarded to mitigate the risk of cross-site correlation.
 // See https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
@@ -61,7 +69,8 @@ interface SharedStorageDocumentService {
   // data will be only consumed in an environment (i.e. the worklet) in control
   // by the same origin.
   RunURLSelectionOperationOnWorklet(string name,
-                                    array<url.mojom.Url> urls,
+                                    array<SharedStorageUrlWithMetadata>
+                                      urls_with_metadata,
                                     array<uint8> serialized_data)
     => (bool success, string error_message, url.mojom.Url opaque_url);
 

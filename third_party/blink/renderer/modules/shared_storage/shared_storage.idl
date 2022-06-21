@@ -33,7 +33,8 @@
     CallWith=ScriptState,
     RaisesException,
     MeasureAs=SharedStorageAPI_SelectURL_Method
-  ] Promise<USVString> selectURL(DOMString name, FrozenArray<USVString> urls,
+  ] Promise<USVString> selectURL(DOMString name,
+                                 FrozenArray<SharedStorageUrlWithMetadata> urls,
                                  optional SharedStorageRunOperationMethodOptions options);
 
   [

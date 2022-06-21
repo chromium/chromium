@@ -66,7 +66,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
                              const std::vector<uint8_t>& serialized_data);
   void RunURLSelectionOperationOnWorklet(
       const std::string& name,
-      const std::vector<GURL>& urls,
+      std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
+          urls_with_metadata,
       const std::vector<uint8_t>& serialized_data,
       blink::mojom::SharedStorageDocumentService::
           RunURLSelectionOperationOnWorkletCallback callback);
@@ -197,12 +198,13 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // the value of the main frame origin in the constructor.
   const url::Origin main_frame_origin_;
 
-  // A map of unresolved URNs to the candidate URL vector. Inside
+  // A map of unresolved URNs to the candidate URL with metadata vector. Inside
   // `RunURLSelectionOperationOnWorklet()` a new URN is generated and is
   // inserted into `unresolved_urns_`. When the corresponding
   // `OnRunURLSelectionOperationOnWorkletFinished()` is called, the URN is
   // removed from `unresolved_urns_`.
-  std::map<GURL, std::vector<GURL>> unresolved_urns_;
+  std::map<GURL, std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>>
+      unresolved_urns_;
 
   // The number of unfinished worklet requests, including `addModule()`,
   // `selectURL()`, or `run()`.

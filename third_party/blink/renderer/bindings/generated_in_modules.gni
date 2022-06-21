@@ -903,6 +903,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_share_data.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_url_with_metadata.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_url_with_metadata.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_set_method_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_set_method_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_source_buffer_config.cc",
