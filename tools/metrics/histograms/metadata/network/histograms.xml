@@ -1601,7 +1601,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.PortalDetectionMultiProbeResult"
-    enum="PortalDetectionMultiProbeResult" expires_after="2022-12-31">
+    enum="PortalDetectionMultiProbeResult" expires_after="2022-06-17">
+  <obsolete>
+    Removed 6/2022 because it is unmonitored and not technology specific.
+    TODO(b/236386653): Remove entirely once removed from Shill.
+  </obsolete>
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
