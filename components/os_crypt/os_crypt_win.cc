@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/wincrypt_shim.h"
@@ -42,9 +43,14 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
       const_cast<BYTE*>(reinterpret_cast<const BYTE*>(plaintext.data()));
   input.cbData = static_cast<DWORD>(plaintext.length());
 
+  BOOL result = FALSE;
   DATA_BLOB output;
-  const BOOL result =
-      CryptProtectData(&input, L"", nullptr, nullptr, nullptr, 0, &output);
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER("OSCrypt.Win.Encrypt.Time");
+    result =
+        CryptProtectData(&input, L"", nullptr, nullptr, nullptr, 0, &output);
+  }
+  base::UmaHistogramBoolean("OSCrypt.Win.Encrypt.Result", result);
   if (!result) {
     PLOG(ERROR) << "Failed to encrypt";
     return false;
@@ -65,9 +71,14 @@ bool DecryptStringWithDPAPI(const std::string& ciphertext,
       const_cast<BYTE*>(reinterpret_cast<const BYTE*>(ciphertext.data()));
   input.cbData = static_cast<DWORD>(ciphertext.length());
 
+  BOOL result = FALSE;
   DATA_BLOB output;
-  const BOOL result = CryptUnprotectData(&input, nullptr, nullptr, nullptr,
-                                         nullptr, 0, &output);
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER("OSCrypt.Win.Decrypt.Time");
+    result = CryptUnprotectData(&input, nullptr, nullptr, nullptr, nullptr, 0,
+                                &output);
+  }
+  base::UmaHistogramBoolean("OSCrypt.Win.Decrypt.Result", result);
   if (!result) {
     PLOG(ERROR) << "Failed to decrypt";
     return false;

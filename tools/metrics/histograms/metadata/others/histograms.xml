@@ -8792,6 +8792,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.Win.Decrypt.Result" enum="BooleanSuccess"
+    expires_after="M106">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    Whether or not the DPAPI Decrypt call to decrypt the OSCrypt key succeeeded.
+    This is logged once during browser startup on Windows.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.Win.Decrypt.Time" units="ms" expires_after="M106">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The amount of time, in ms, that it takes to perform a DPAPI Decrypt call.
+    This is logged once during browser startup on Windows.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.Win.Encrypt.Result" enum="BooleanSuccess"
+    expires_after="M106">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    Whether or not the DPAPI Encrypt call to encrypt the OSCrypt key succeeeded.
+    This is logged once during browser startup on Windows, if there is no stored
+    key and a new one has to be generated. This data will therefore be biased
+    towards newer clients. See OSCrypt.Win.Decrypt.Result which contains
+    unbiased data.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.Win.Encrypt.Time" units="ms" expires_after="M106">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The amount of time, in ms, that it takes to perform a DPAPI Encrypt call.
+    This is logged once during browser startup on Windows, if there is no stored
+    key and a new one has to be generated. This data will therefore be biased
+    towards newer clients. See OSCrypt.Win.Decrypt.Time which contains unbiased
+    data.
+  </summary>
+</histogram>
+
 <histogram name="OSCrypt.Win.KeyDecryptionError" enum="WinGetLastError"
     expires_after="2021-08-01">
   <owner>wfh@chromium.org</owner>
