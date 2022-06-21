@@ -18,10 +18,6 @@ var PersonalizationAppControllerBrowserTest = class extends PolymerTest {
         '&module=chromeos/personalization_app/' +
         'personalization_app_controller_test.js';
   }
-
-  get featureList() {
-    return {enabled: ['chromeos::features::kWallpaperWebUI']};
-  }
 };
 
 TEST_F('PersonalizationAppControllerBrowserTest', 'All', () => mocha.run());

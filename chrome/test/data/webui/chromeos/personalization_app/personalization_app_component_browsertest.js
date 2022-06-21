@@ -19,12 +19,7 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
   }
 
   get featureList() {
-    return {
-      enabled: [
-        'chromeos::features::kWallpaperWebUI',
-        'ash::features::kWallpaperGooglePhotosIntegration'
-      ]
-    };
+    return {enabled: ['ash::features::kWallpaperGooglePhotosIntegration']};
   }
 };
 

@@ -219,10 +219,7 @@ class WallpaperChangeWaiter : public ash::WallpaperControllerObserver {
 
 class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
-  PersonalizationAppIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures({ash::features::kWallpaperWebUI},
-                                          {ash::features::kPersonalizationHub});
-  }
+  PersonalizationAppIntegrationTest() = default;
 
   // SystemWebAppIntegrationTest:
   void SetUp() override {
@@ -270,16 +267,13 @@ class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
 
     EXPECT_TRUE(widget->IsFullscreen());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that the Personalization App installs correctly.
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
                        PersonalizationAppInstalls) {
   const GURL url(kChromeUIPersonalizationAppURL);
-  std::string appTitle = "Wallpaper";
+  std::string appTitle = "Wallpaper & style";
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
       ash::SystemWebAppType::PERSONALIZATION, url, appTitle));
 }
@@ -383,13 +377,12 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     PersonalizationAppIntegrationTest);
 
-class PersonalizationAppWithHubIntegrationTest
+class PersonalizationAppWithoutHubIntegrationTest
     : public PersonalizationAppIntegrationTest {
  public:
-  PersonalizationAppWithHubIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kWallpaperWebUI, ash::features::kPersonalizationHub},
-        {});
+  PersonalizationAppWithoutHubIntegrationTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kPersonalizationHub);
   }
 
  private:
@@ -398,16 +391,16 @@ class PersonalizationAppWithHubIntegrationTest
 
 // Test that the Personalization App installs correctly with PersonalizationHub
 // feature on.
-IN_PROC_BROWSER_TEST_P(PersonalizationAppWithHubIntegrationTest,
+IN_PROC_BROWSER_TEST_P(PersonalizationAppWithoutHubIntegrationTest,
                        PersonalizationAppInstalls) {
   const GURL url(kChromeUIPersonalizationAppURL);
-  std::string appTitle = "Wallpaper & style";
+  std::string appTitle = "Wallpaper";
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
       ash::SystemWebAppType::PERSONALIZATION, url, appTitle));
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    PersonalizationAppWithHubIntegrationTest);
+    PersonalizationAppWithoutHubIntegrationTest);
 
 }  // namespace personalization_app
 }  // namespace ash
