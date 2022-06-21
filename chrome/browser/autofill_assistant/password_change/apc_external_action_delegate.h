@@ -38,7 +38,7 @@ class ApcExternalActionDelegate
 
   // ExternalActionDelegate:
   void OnActionRequested(
-      const autofill_assistant::external::Action& action_info,
+      const autofill_assistant::external::Action& action,
       base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
       base::OnceCallback<void(const autofill_assistant::external::Result&
                                   result)> end_action_callback) override;
@@ -56,7 +56,7 @@ class ApcExternalActionDelegate
   void ShowBasePrompt(
       const autofill_assistant::password_change::BasePromptSpecification&
           base_prompt) override;
-  void OnBasePromptChoiceSelected(int choice_index) override;
+  void OnBasePromptChoiceSelected(size_t choice_index) override;
   void ShowGeneratedPasswordPrompt(
       const autofill_assistant::password_change::
           GeneratedPasswordPromptSpecification& password_prompt,
@@ -70,6 +70,33 @@ class ApcExternalActionDelegate
   // PasswordChangeRunController:
   void Show(base::WeakPtr<PasswordChangeRunDisplay> password_change_run_display)
       override;
+
+  // Ends the current action by notifying the `ExternalActionController` about
+  // the `success` of the action. If non-empty, `serialized_result` is passed
+  // as the result payload. Otherwise, no payload is set.
+  void EndAction(bool success, std::string serialized_result = std::string());
+
+  // Handler methods for the different actions that `ApcExternalActionDelegate`
+  // supports.
+  void HandleBasePrompt(
+      const autofill_assistant::password_change::BasePromptSpecification&
+          specification);
+  void HandleGeneratedPasswordPrompt(
+      const autofill_assistant::password_change::
+          GeneratedPasswordPromptSpecification& specification);
+  void HandleUpdateSidePanel(
+      const autofill_assistant::password_change::UpdateSidePanelSpecification&
+          specification);
+
+  // The callback that terminates the current action.
+  base::OnceCallback<void(const autofill_assistant::external::Result& result)>
+      end_action_callback_;
+
+  // The callback that starts regular DOM checks.
+  base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback_;
+
+  // Indicates whether a base prompt should send back a result payload.
+  bool base_prompt_should_send_payload_ = false;
 
   // Stores the UI state of a password change run.
   PasswordChangeRunController::Model model_;

@@ -50,7 +50,7 @@ class PasswordChangeRunController {
   virtual void ShowBasePrompt(
       const autofill_assistant::password_change::BasePromptSpecification&
           base_prompt) = 0;
-  virtual void OnBasePromptChoiceSelected(int choice_index) = 0;
+  virtual void OnBasePromptChoiceSelected(size_t choice_index) = 0;
 
   // Shows a generated password prompt and receives the response from the view.
   virtual void ShowGeneratedPasswordPrompt(

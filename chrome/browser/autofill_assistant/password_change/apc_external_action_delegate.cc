@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
@@ -17,6 +18,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+using autofill_assistant::password_change::GenericPasswordChangeSpecification;
 
 // TODO(crbug.com/1324089): Implement once the side panel and
 // UpdateDesktopSideAction are available.
@@ -29,13 +32,38 @@ ApcExternalActionDelegate::ApcExternalActionDelegate(
 ApcExternalActionDelegate::~ApcExternalActionDelegate() = default;
 
 void ApcExternalActionDelegate::OnActionRequested(
-    const autofill_assistant::external::Action& action_info,
+    const autofill_assistant::external::Action& action,
     base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
     base::OnceCallback<void(const autofill_assistant::external::Result& result)>
         end_action_callback) {
-  autofill_assistant::external::Result result;
-  result.set_success(true);
-  std::move(end_action_callback).Run(result);
+  end_action_callback_ = std::move(end_action_callback);
+  start_dom_checks_callback_ = std::move(start_dom_checks_callback);
+
+  GenericPasswordChangeSpecification spec;
+  if (!spec.ParseFromString(action.info().action_payload())) {
+    DLOG(ERROR) << "unable to parse GenericPasswordChangeSpecification";
+    EndAction(false);
+    return;
+  }
+
+  switch (spec.specification_case()) {
+    case GenericPasswordChangeSpecification::SpecificationCase::kBasePrompt:
+      HandleBasePrompt(spec.base_prompt());
+      break;
+    case GenericPasswordChangeSpecification::SpecificationCase::
+        kGeneratedPasswordPrompt:
+      HandleGeneratedPasswordPrompt(spec.generated_password_prompt());
+      break;
+    case GenericPasswordChangeSpecification::SpecificationCase::
+        kUpdateSidePanel:
+      HandleUpdateSidePanel(spec.update_side_panel());
+      break;
+    case GenericPasswordChangeSpecification::SpecificationCase::
+        SPECIFICATION_NOT_SET:
+      DLOG(ERROR) << "unknown password change action";
+      EndAction(false);
+      break;
+  }
 }
 
 void ApcExternalActionDelegate::SetupDisplay() {
@@ -67,11 +95,6 @@ void ApcExternalActionDelegate::OnInterruptFinished() {
 }
 
 // PasswordChangeRunController
-void ApcExternalActionDelegate::Show(
-    base::WeakPtr<PasswordChangeRunDisplay> password_change_run_display) {
-  password_change_run_display_ = password_change_run_display;
-  password_change_run_display_->Show();
-}
 
 void ApcExternalActionDelegate::SetTopIcon(
     autofill_assistant::password_change::TopIcon top_icon) {
@@ -123,10 +146,28 @@ void ApcExternalActionDelegate::ShowBasePrompt(
   password_change_run_display_->ShowBasePrompt(choices);
 }
 
-void ApcExternalActionDelegate::OnBasePromptChoiceSelected(int choice_index) {
+void ApcExternalActionDelegate::OnBasePromptChoiceSelected(
+    size_t choice_index) {
   password_change_run_display_->ClearPrompt();
 
-  // TODO(crbug.com/1331202): Terminate action and send return value.
+  // If no `output_key` is specified, only signal that the prompt action was
+  // successfully executed.
+  if (!base_prompt_should_send_payload_) {
+    EndAction(true);
+    return;
+  }
+
+  DCHECK(choice_index < base_prompt_return_values_.size());
+  autofill_assistant::password_change::BasePromptSpecification::Result result;
+  result.set_selected_tag(base_prompt_return_values_[choice_index]);
+
+  std::string serialized_result;
+  if (!result.SerializeToString(&serialized_result)) {
+    DLOG(ERROR) << "unable to base prompt result";
+    EndAction(false);
+    return;
+  }
+  EndAction(true, std::move(serialized_result));
 }
 
 void ApcExternalActionDelegate::ShowGeneratedPasswordPrompt(
@@ -169,6 +210,48 @@ void ApcExternalActionDelegate::ShowStartingScreen(const GURL& url) {
       IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_STARTING_SCREEN_TITLE,
       base::UTF8ToUTF16(url.host_piece())));
   SetDescription(std::u16string());
+}
+
+void ApcExternalActionDelegate::Show(
+    base::WeakPtr<PasswordChangeRunDisplay> password_change_run_display) {
+  password_change_run_display_ = password_change_run_display;
+  password_change_run_display_->Show();
+}
+
+void ApcExternalActionDelegate::EndAction(bool success,
+                                          std::string serialized_result) {
+  autofill_assistant::external::Result result;
+  result.set_success(success);
+  // Only set a payload for a non-empty serialized result to avoid triggering
+  // payload processing.
+  if (!serialized_result.empty()) {
+    result.mutable_result_info()->set_result_payload(serialized_result);
+  }
+
+  std::move(end_action_callback_).Run(std::move(result));
+}
+
+void ApcExternalActionDelegate::HandleBasePrompt(
+    const autofill_assistant::password_change::BasePromptSpecification&
+        specification) {
+  base_prompt_should_send_payload_ = specification.has_output_key();
+
+  // TODO(crbug.com/1331202): Set up DOM checking and matching of DOM conditions
+  // to return values.
+
+  ShowBasePrompt(specification);
+}
+
+void ApcExternalActionDelegate::HandleGeneratedPasswordPrompt(
+    const autofill_assistant::password_change::
+        GeneratedPasswordPromptSpecification& specification) {
+  EndAction(false);
+}
+
+void ApcExternalActionDelegate::HandleUpdateSidePanel(
+    const autofill_assistant::password_change::UpdateSidePanelSpecification&
+        specification) {
+  EndAction(false);
 }
 
 base::WeakPtr<PasswordChangeRunController>

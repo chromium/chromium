@@ -8,6 +8,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_display_delegate.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_password_change_run_display.h"
@@ -21,6 +22,8 @@
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::SaveArg;
+using DomUpdateCallback =
+    autofill_assistant::ExternalActionDelegate::DomUpdateCallback;
 using ProgressStep = autofill_assistant::password_change::ProgressStep;
 using TopIcon = autofill_assistant::password_change::TopIcon;
 
@@ -28,10 +31,13 @@ namespace {
 
 constexpr char kTitle[] = "Sample title";
 constexpr char kDescription[] = "Sample description";
+constexpr char kPromptOutputKey[] = "external_output_key";
 constexpr char kPromptText1[] = "Choice 1";
 constexpr char kPromptText2[] = "Choice 2";
 constexpr bool kIsHighlighted1 = true;
 constexpr bool kIsHighlighted2 = false;
+constexpr char kPromptTag1[] = "first_tag";
+constexpr char kPromptTag2[] = "second_tag";
 constexpr char16_t kPassword[] = u"verySecretPassword123";
 constexpr TopIcon kTopIcon = TopIcon::TOP_ICON_ENTER_OLD_PASSWORD;
 constexpr ProgressStep kStep = ProgressStep::PROGRESS_STEP_START;
@@ -41,23 +47,28 @@ constexpr char16_t kInterruptDescription[] = u"Description during interrupt";
 
 constexpr char kUrl[] = "https://wwww.example.com";
 
+// Helper function to create a sample proto for a base prompt.
 autofill_assistant::password_change::BasePromptSpecification
 CreateBasePrompt() {
   autofill_assistant::password_change::BasePromptSpecification proto;
+  proto.set_output_key(kPromptOutputKey);
 
   proto.set_title(kTitle);
 
   auto* choice = proto.add_choices();
   choice->set_text(kPromptText1);
   choice->set_highlighted(kIsHighlighted1);
+  choice->set_tag(kPromptTag1);
 
   choice = proto.add_choices();
   choice->set_text(kPromptText2);
   choice->set_highlighted(kIsHighlighted2);
+  choice->set_tag(kPromptTag2);
 
   return proto;
 }
 
+// Helper function to create a sample proto for a generated password prompt.
 autofill_assistant::password_change::GeneratedPasswordPromptSpecification
 CreateGeneratedPasswordPrompt() {
   autofill_assistant::password_change::GeneratedPasswordPromptSpecification
@@ -75,6 +86,19 @@ CreateGeneratedPasswordPrompt() {
   choice->set_highlighted(kIsHighlighted2);
 
   return proto;
+}
+
+// Helper function that creates an `Action` from a `BasePromptSpecification`.
+// This function can be overloaded to handle all `password_change`
+// specifications.
+autofill_assistant::external::Action CreateAction(
+    const autofill_assistant::password_change::BasePromptSpecification& proto) {
+  autofill_assistant::external::Action action;
+  autofill_assistant::password_change::GenericPasswordChangeSpecification spec;
+  spec.mutable_base_prompt()->CopyFrom(proto);
+  spec.SerializeToString(action.mutable_info()->mutable_action_payload());
+
+  return action;
 }
 
 }  // namespace
@@ -141,24 +165,6 @@ TEST_F(ApcExternalActionDelegateTest, StartAndFinishInterrupt) {
   action_delegate()->OnInterruptFinished();
 }
 
-TEST_F(ApcExternalActionDelegateTest, ShowBasePromptAndAccept) {
-  // Save arguments for inspection.
-  std::vector<PasswordChangeRunDisplay::PromptChoice> choices;
-  EXPECT_CALL(*display(), ShowBasePrompt).WillOnce(SaveArg<0>(&choices));
-  autofill_assistant::password_change::BasePromptSpecification proto =
-      CreateBasePrompt();
-  action_delegate()->ShowBasePrompt(proto);
-
-  ASSERT_EQ(static_cast<size_t>(proto.choices_size()), choices.size());
-  for (size_t i = 0; i < choices.size(); ++i) {
-    EXPECT_EQ(choices[i].highlighted, proto.choices()[i].highlighted());
-    EXPECT_EQ(choices[i].text, base::UTF8ToUTF16(proto.choices()[i].text()));
-  }
-
-  EXPECT_CALL(*display(), ClearPrompt);
-  action_delegate()->OnBasePromptChoiceSelected(0);
-}
-
 TEST_F(ApcExternalActionDelegateTest, ShowGeneratedPasswordPromptAndAccept) {
   PasswordChangeRunDisplay::PromptChoice manual_choice, generated_choice;
   EXPECT_CALL(*display(),
@@ -195,4 +201,122 @@ TEST_F(ApcExternalActionDelegateTest, ShowStartingScreen) {
   EXPECT_CALL(*display(), SetDescription(std::u16string()));
 
   action_delegate()->ShowStartingScreen(url);
+}
+
+TEST_F(ApcExternalActionDelegateTest, ReceiveInvalidAction) {
+  autofill_assistant::external::Action empty_action;
+
+  base::MockOnceCallback<void(
+      const autofill_assistant::external::Result& result)>
+      result_callback;
+  base::MockOnceCallback<void(DomUpdateCallback)> start_dom_checks_callback;
+
+  autofill_assistant::external::Result result;
+  EXPECT_CALL(result_callback, Run).WillOnce(SaveArg<0>(&result));
+  EXPECT_FALSE(result.has_success());
+
+  // DOM checks are never started.
+  EXPECT_CALL(start_dom_checks_callback, Run).Times(0);
+
+  action_delegate()->OnActionRequested(
+      empty_action, start_dom_checks_callback.Get(), result_callback.Get());
+  EXPECT_TRUE(result.has_success());
+  EXPECT_FALSE(result.success());
+  EXPECT_FALSE(result.has_result_info());
+}
+
+TEST_F(ApcExternalActionDelegateTest,
+       ReceiveBasePromptAction_WithoutDomConditions) {
+  base::MockOnceCallback<void(
+      const autofill_assistant::external::Result& result)>
+      result_callback;
+  base::MockOnceCallback<void(DomUpdateCallback)> start_dom_checks_callback;
+
+  // Save prompt arguments for inspection.
+  std::vector<PasswordChangeRunDisplay::PromptChoice> choices;
+  EXPECT_CALL(*display(), ShowBasePrompt).WillOnce(SaveArg<0>(&choices));
+
+  // Similarly, save the prompt result.
+  autofill_assistant::external::Result result;
+  EXPECT_CALL(result_callback, Run).WillOnce(SaveArg<0>(&result));
+
+  // DOM checks will never be started.
+  EXPECT_CALL(start_dom_checks_callback, Run).Times(0);
+
+  autofill_assistant::password_change::BasePromptSpecification proto =
+      CreateBasePrompt();
+  action_delegate()->OnActionRequested(CreateAction(proto),
+                                       start_dom_checks_callback.Get(),
+                                       result_callback.Get());
+
+  // The view should now be set up.
+  ASSERT_EQ(static_cast<size_t>(proto.choices_size()), choices.size());
+  for (size_t i = 0; i < choices.size(); ++i) {
+    EXPECT_EQ(choices[i].highlighted, proto.choices()[i].highlighted());
+    EXPECT_EQ(choices[i].text, base::UTF8ToUTF16(proto.choices()[i].text()));
+  }
+
+  // But no result is sent yet.
+  EXPECT_FALSE(result.has_success());
+
+  // After simulating a click ...
+  EXPECT_CALL(*display(), ClearPrompt);
+  action_delegate()->OnBasePromptChoiceSelected(0);
+
+  // ... there is now a result.
+  EXPECT_TRUE(result.has_success());
+  EXPECT_TRUE(result.success());
+  EXPECT_TRUE(result.has_result_info() &&
+              result.result_info().has_result_payload());
+  autofill_assistant::password_change::BasePromptSpecification::Result
+      prompt_result;
+  ASSERT_TRUE(
+      prompt_result.ParseFromString(result.result_info().result_payload()));
+
+  EXPECT_TRUE(prompt_result.has_selected_tag());
+  EXPECT_EQ(prompt_result.selected_tag(), kPromptTag1);
+}
+
+TEST_F(ApcExternalActionDelegateTest,
+       ReceiveBasePromptAction_WithoutDomConditionsAndWithoutResultKey) {
+  // TODO: Check that we do not send a result if the result key field is not
+  // set.
+  base::MockOnceCallback<void(
+      const autofill_assistant::external::Result& result)>
+      result_callback;
+  base::MockOnceCallback<void(DomUpdateCallback)> start_dom_checks_callback;
+
+  // Save prompt arguments for inspection.
+  std::vector<PasswordChangeRunDisplay::PromptChoice> choices;
+  EXPECT_CALL(*display(), ShowBasePrompt).WillOnce(SaveArg<0>(&choices));
+
+  // Similarly, save the prompt result.
+  autofill_assistant::external::Result result;
+  EXPECT_CALL(result_callback, Run).WillOnce(SaveArg<0>(&result));
+
+  // DOM checks will never be started.
+  EXPECT_CALL(start_dom_checks_callback, Run).Times(0);
+
+  autofill_assistant::password_change::BasePromptSpecification proto =
+      CreateBasePrompt();
+  // Remove the output key.
+  proto.clear_output_key();
+  action_delegate()->OnActionRequested(CreateAction(proto),
+                                       start_dom_checks_callback.Get(),
+                                       result_callback.Get());
+
+  // The view should now be set up.
+  EXPECT_EQ(static_cast<size_t>(proto.choices_size()), choices.size());
+
+  // But no result is sent yet.
+  EXPECT_FALSE(result.has_success());
+
+  // After simulating a click ...
+  EXPECT_CALL(*display(), ClearPrompt);
+  action_delegate()->OnBasePromptChoiceSelected(0);
+
+  // ... there is a result, but no payload.
+  EXPECT_TRUE(result.has_success());
+  EXPECT_TRUE(result.success());
+  EXPECT_FALSE(result.has_result_info());
 }

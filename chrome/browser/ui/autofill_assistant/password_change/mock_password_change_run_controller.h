@@ -38,7 +38,7 @@ class MockPasswordChangeRunController : public PasswordChangeRunController {
       ShowBasePrompt,
       (const autofill_assistant::password_change::BasePromptSpecification&),
       (override));
-  MOCK_METHOD(void, OnBasePromptChoiceSelected, (int), (override));
+  MOCK_METHOD(void, OnBasePromptChoiceSelected, (size_t), (override));
   MOCK_METHOD(void,
               ShowGeneratedPasswordPrompt,
               (const autofill_assistant::password_change::

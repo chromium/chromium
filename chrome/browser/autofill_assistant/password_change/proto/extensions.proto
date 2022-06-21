@@ -50,8 +50,11 @@ message Choice {
 
 // Prompts the user with a title and multiple choices.
 message BasePromptSpecification {
-  // Reserved value for the return key.
-  reserved 1;
+  // The result key. If it is not set, no result payload needs to be sent to
+  // the server. This can happen if there is either only one prompt choice
+  // or if none of the prompt choices have any steps associated with them. In
+  // that case, one return trip is saved.
+  optional string output_key = 1;
 
   // The title of the prompt.
   optional string title = 2;
@@ -104,4 +107,14 @@ message UpdateSidePanelSpecification {
 
   // The current password change flow step.
   optional ProgressStep progress_step = 4;
+}
+
+// A wrapper around all available `password_change` specifications that allows
+// deserializing the appropriate specification.
+message GenericPasswordChangeSpecification {
+  oneof specification {
+    BasePromptSpecification base_prompt = 1;
+    GeneratedPasswordPromptSpecification generated_password_prompt = 2;
+    UpdateSidePanelSpecification update_side_panel = 3;
+  }
 }
