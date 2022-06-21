@@ -26,7 +26,7 @@ $CHROMIUM_SRC/tools/android/kerberos/negotiate_test_server.py
 
     ```sh
     $CHROMIUM_SRC/build/android/adb_chrome_public_command_line \
-    '--auth-server-whitelist="*" \
+    '--auth-server-allowlist="*" \
     --auth-spnego-account-type="org.chromium.tools.SpnegoAuthenticator"'
     ```
 

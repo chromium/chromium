@@ -52,6 +52,7 @@ extern const char kAppsGalleryDownloadURL[];
 extern const char kAppsGalleryUpdateURL[];
 extern const char kAppsGalleryURL[];
 extern const char kAuthServerAllowlist[];
+extern const char kAuthServerAllowlistDeprecated[];
 extern const char kAutoOpenDevToolsForTabs[];
 extern const char kAutoSelectDesktopCaptureSource[];
 extern const char kAutoSelectTabCaptureSourceByTitle[];
