@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "cpu")
+load("//lib/builders.star", "builders", "cpu")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -14,6 +14,7 @@ ci.defaults.set(
     build_numbers = True,
     cpu = cpu.X86_64,
     triggered_by = ["chromium-gitiles-trigger"],
+    free_space = builders.free_space.standard,
 )
 
 luci.bucket(
