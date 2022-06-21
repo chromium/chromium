@@ -706,7 +706,7 @@ const char kTermsOfServiceURL[] = "terms_of_service.url";
 const char kAttestationEnabled[] = "attestation.enabled";
 
 // A boolean pref recording whether user has dismissed the multiprofile
-// itroduction dialog show.
+// introduction dialog show.
 const char kMultiProfileNeverShowIntro[] =
     "settings.multi_profile_never_show_intro";
 
@@ -1398,7 +1398,7 @@ const char kProfileName[] = "profile.name";
 // Whether a profile is using a default avatar name (eg. Pickles or Person 1)
 // because it was randomly assigned at profile creation time.
 const char kProfileUsingDefaultName[] = "profile.using_default_name";
-// Whether a profile is using an avatar without having explicitely chosen it
+// Whether a profile is using an avatar without having explicitly chosen it
 // (i.e. was assigned by default by legacy profile creation).
 const char kProfileUsingDefaultAvatar[] = "profile.using_default_avatar";
 const char kProfileUsingGAIAAvatar[] = "profile.using_gaia_avatar";
@@ -2024,7 +2024,7 @@ const char kDevToolsTCPDiscoveryConfig[] = "devtools.tcp_discovery_config";
 // A dictionary with all unsynced DevTools settings.
 const char kDevToolsPreferences[] = "devtools.preferences";
 
-// A boolean specyfing whether the "syncable" subset of DevTools preferences
+// A boolean specifying whether the "syncable" subset of DevTools preferences
 // should be synced or not.
 const char kDevToolsSyncPreferences[] = "devtools.sync_preferences";
 
@@ -2258,7 +2258,7 @@ const char kNtlmV2Enabled[] = "auth.ntlm_v2_enabled";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean whether Kerberos functionality is enabled.
 const char kKerberosEnabled[] = "kerberos.enabled";
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Boolean that specifies whether to enable revocation checking (best effort)
 // by default.

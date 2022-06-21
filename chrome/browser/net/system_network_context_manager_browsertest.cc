@@ -56,7 +56,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "net/base/features.h"
-#endif
+#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 
 using SystemNetworkContextManagerBrowsertest = InProcessBrowserTest;
 
@@ -78,7 +78,8 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest,
   static_params =
       SystemNetworkContextManager::GetHttpAuthStaticParamsForTesting();
   EXPECT_EQ(dev_null, static_params->gssapi_library_name);
-#endif
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) &&
+        // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {

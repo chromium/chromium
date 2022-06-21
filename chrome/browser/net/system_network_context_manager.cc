@@ -103,7 +103,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_win.h"
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 // Enumeration of possible sandbox states. These values are persisted to logs,
@@ -141,7 +141,8 @@ network::mojom::HttpAuthStaticParamsPtr CreateHttpAuthStaticParams(
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   auth_static_params->gssapi_library_name =
       local_state->GetString(prefs::kGSSAPILibraryName);
-#endif
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) &&
+        // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   return auth_static_params;
 }
@@ -196,7 +197,7 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
   auth_dynamic_params->allow_gssapi_library_load =
       connector->IsActiveDirectoryManaged() ||
       local_state->GetBoolean(prefs::kKerberosEnabled);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return auth_dynamic_params;
 }
@@ -214,7 +215,7 @@ bool ShouldUseBuiltinCertVerifier(PrefService* local_state) {
       local_state->FindPreference(prefs::kBuiltinCertificateVerifierEnabled);
   if (builtin_cert_verifier_enabled_pref->IsManaged())
     return builtin_cert_verifier_enabled_pref->GetValue()->GetBool();
-#endif
+#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
   // Note: intentionally checking the feature state here rather than falling
   // back to CertVerifierImpl::kDefault, as browser-side network context
   // initialization for TrialComparisonCertVerifier depends on knowing which
@@ -222,7 +223,7 @@ bool ShouldUseBuiltinCertVerifier(PrefService* local_state) {
   return base::FeatureList::IsEnabled(
       net::features::kCertVerifierBuiltinFeature);
 }
-#endif
+#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 // TODO(https://crbug.com/1228958): update function with enterprise policy for
@@ -234,7 +235,7 @@ bool ShouldUseChromeRootStore(PrefService* local_state) {
   // verifier will be used.
   return base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
 }
-#endif
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 NetworkSandboxState IsNetworkSandboxEnabledInternal() {
   // If previously an attempt to launch the sandboxed process failed, then
@@ -293,7 +294,7 @@ class SystemNetworkContextManager::NetworkProcessLaunchWatcher
           "Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed."
           "WinLastError",
           info.last_error);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
       g_previously_failed_to_launch_sandboxed_service = true;
     }
   }
@@ -402,7 +403,7 @@ SystemNetworkContextManager* SystemNetworkContextManager::CreateInstance(
   static bool inside_this_function = false;
   DCHECK(!inside_this_function);
   base::AutoReset now_inside_this_function(&inside_this_function, true);
-#endif
+#endif  // DCHECK_IS_ON()
 
   DCHECK(!g_system_network_context_manager);
   g_system_network_context_manager =
@@ -453,7 +454,7 @@ SystemNetworkContextManager::SystemNetworkContextManager(
           .GetValue(policy::key::kQuicAllowed, base::Value::Type::BOOLEAN);
   if (value)
     is_quic_allowed_ = value->GetBool();
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
   shared_url_loader_factory_ = new URLLoaderFactoryForSystem(this);
 
   pref_change_registrar_.Init(local_state_);
@@ -551,6 +552,7 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
       prefs::kNtlmV2Enabled,
       base::FeatureList::IsEnabled(features::kNtlmV2Enabled));
 #endif  // BUILDFLAG(IS_POSIX)
+
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(prefs::kAuthAndroidNegotiateAccountType,
                                std::string());
@@ -570,7 +572,7 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
   // evaluated when it is managed.
   registry->RegisterBooleanPref(prefs::kBuiltinCertificateVerifierEnabled,
                                 false);
-#endif
+#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
 
   registry->RegisterListPref(prefs::kExplicitlyAllowedNetworkPorts);
 
@@ -767,6 +769,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     } else {
       network_context_params->proxy_resolver_factory =
           ChromeMojoProxyResolverFactory::CreateWithSelfOwnedReceiver();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       network_context_params->dhcp_wpad_url_client =
           ash::DhcpWpadUrlClient::CreateWithSelfOwnedReceiver();
@@ -779,7 +782,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     network_context_params->windows_system_proxy_resolver =
         ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiver();
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
   network_context_params->pac_quick_check_enabled =
       local_state_->GetBoolean(prefs::kQuickCheckEnabled);
@@ -801,7 +804,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
                 kBuiltin
           : cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
                 kSystem;
-#endif
+#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   cert_verifier_creation_params->use_chrome_root_store =
@@ -810,7 +813,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
                 kRootChrome
           : cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
                 kRootSystem;
-#endif
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 }
 
 network::mojom::NetworkContextParamsPtr
@@ -902,10 +905,10 @@ bool SystemNetworkContextManager::IsCertificateTransparencyEnabled() {
       features::kCertificateTransparencyAndroid);
 #else
   return true;
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 #else
   return false;
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OFFICIAL_BUILD)
 }
 
 network::mojom::NetworkContextParamsPtr
