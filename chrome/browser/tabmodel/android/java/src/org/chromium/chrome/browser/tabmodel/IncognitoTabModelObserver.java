@@ -9,17 +9,21 @@ package org.chromium.chrome.browser.tabmodel;
  */
 public interface IncognitoTabModelObserver {
     /**
-     * A delegate to control whether to show or hide the Incognito reauth dialog.
+     * A delegate to control whether to show or hide the Incognito re-auth dialog.
      */
     interface IncognitoReauthDialogDelegate {
         /**
-         * An event which is fired to control the visibility of the Incognito re-authentication
-         * dialog.
-         *
-         * @param newModel The new {@link TabModel} which is now active.
-         * @param oldModel The previous {@link TabModel} which was active.
+         * An event which is fired the last when the {@link TabModel} changed to regular in order
+         * to ensure we hide the re-auth dialog in the end, to avoid leaking any trace from the
+         * previous Incognito {@link TabModel}
          */
-        void onAfterTabModelSelected(TabModel newModel, TabModel oldModel);
+        void onAfterRegularTabModelChanged();
+
+        /**
+         * An event which is fired the earliest when the {@link TabModel} is selected to incognito
+         * in order to ensure we show the re-auth dialog fast.
+         */
+        void onBeforeIncognitoTabModelSelected();
     }
 
     /**

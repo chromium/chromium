@@ -71,6 +71,7 @@ class IncognitoReauthCoordinator {
      *         allows to communicate with tab switcher to show the re-auth screen.
      * @param incognitoReauthTopToolbarDelegate A {@link IncognitoReauthTopToolbarDelegate}
      *         responsible for controlling the interactability of the top toolbar elements.
+     * @param showTabSwitcherRunnable A {link Runnable} to show the tab switcher UI.
      * @param showFullScreen Whether to show a fullscreen / tab based re-auth dialog.
      */
     public IncognitoReauthCoordinator(@NonNull Context context,
@@ -81,14 +82,14 @@ class IncognitoReauthCoordinator {
             @NonNull SettingsLauncher settingsLauncher,
             @Nullable TabSwitcherCustomViewManager tabSwitcherCustomViewManager,
             @Nullable IncognitoReauthTopToolbarDelegate incognitoReauthTopToolbarDelegate,
-            boolean showFullScreen) {
+            @NonNull Runnable showTabSwitcherRunnable, boolean showFullScreen) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mTabSwitcherCustomViewManager = tabSwitcherCustomViewManager;
         mIncognitoReauthTopToolbarDelegate = incognitoReauthTopToolbarDelegate;
         mShowFullScreen = showFullScreen;
-        mIncognitoReauthMediator = new IncognitoReauthMediator(
-                tabModelSelector, incognitoReauthCallback, incognitoReauthManager);
+        mIncognitoReauthMediator = new IncognitoReauthMediator(tabModelSelector,
+                incognitoReauthCallback, incognitoReauthManager, showTabSwitcherRunnable);
         mIncognitoReauthMenuDelegate = (mShowFullScreen)
                 ? new IncognitoReauthMenuDelegate(mContext, tabModelSelector, settingsLauncher)
                 : null;

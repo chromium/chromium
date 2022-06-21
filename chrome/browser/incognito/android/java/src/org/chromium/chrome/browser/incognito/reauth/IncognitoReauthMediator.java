@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.incognito.reauth;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
@@ -13,25 +14,29 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
  */
 class IncognitoReauthMediator {
     private final TabModelSelector mTabModelSelector;
+    private final Runnable mShowTabSwitcherRunnable;
     // The entity responsible for actually calling the underlying system re-authentication.
     private final IncognitoReauthManager mIncognitoReauthManager;
     // The callback that would be fired after an authentication attempt.
     private IncognitoReauthCallback mIncognitoReauthCallback;
 
     /**
-     * @param tabModelSelector The {@link TabModelSelector} which helps to switch to regular
-     *        {@link TabModel}.
+     * @param tabModelSelector The {@link TabModelSelector} which helps to switch to regular {@link
+     *         TabModel}.
      * @param incognitoReauthCallback incognitoReauthCallback The {@link IncognitoReauthCallback}
      *                               which would be executed after an authentication attempt.
-     * @param incognitoReauthManager The {@link IncognitoReauthManager} instance which would be
-     *                               used to initiate re-authentication.
+     * @param incognitoReauthManager The {@link IncognitoReauthManager} instance which would be used
+     *         to initiate re-authentication.
+     * @param showTabSwitcherRunnable A {link Runnable} to show the tab switcher UI.
      */
     IncognitoReauthMediator(@NonNull TabModelSelector tabModelSelector,
             @NonNull IncognitoReauthCallback incognitoReauthCallback,
-            @NonNull IncognitoReauthManager incognitoReauthManager) {
+            @NonNull IncognitoReauthManager incognitoReauthManager,
+            @NonNull Runnable showTabSwitcherRunnable) {
         mTabModelSelector = tabModelSelector;
         mIncognitoReauthCallback = incognitoReauthCallback;
         mIncognitoReauthManager = incognitoReauthManager;
+        mShowTabSwitcherRunnable = showTabSwitcherRunnable;
     }
 
     void onUnlockIncognitoButtonClicked() {
@@ -43,5 +48,7 @@ class IncognitoReauthMediator {
         // will change to regular {@link TabModel} the controller will detect that and hide
         // the dialog.
         mTabModelSelector.selectModel(/*incognito=*/false);
+
+        mShowTabSwitcherRunnable.run();
     }
 }

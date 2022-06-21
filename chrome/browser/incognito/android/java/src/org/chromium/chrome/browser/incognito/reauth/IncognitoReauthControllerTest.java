@@ -78,14 +78,12 @@ public class IncognitoReauthControllerTest {
 
     private void switchToIncognitoTabModel() {
         doReturn(true).when(mTabModelSelectorMock).isIncognitoSelected();
-        mIncognitoReauthController.onAfterTabModelSelected(
-                /*newModel=*/mIncognitoTabModelMock, /*oldModel=*/mRegularTabModelMock);
+        mIncognitoReauthController.onBeforeIncognitoTabModelSelected();
     }
 
     private void switchToRegularTabModel() {
         doReturn(false).when(mTabModelSelectorMock).isIncognitoSelected();
-        mIncognitoReauthController.onAfterTabModelSelected(
-                /*newModel=*/mRegularTabModelMock, /*oldModel=*/mIncognitoTabModelMock);
+        mIncognitoReauthController.onAfterRegularTabModelChanged();
     }
 
     private Tab prepareTabForRestoreOrLauncherShortcut(boolean isRestore) {

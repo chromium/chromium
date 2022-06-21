@@ -25,6 +25,7 @@ public class IncognitoReauthCoordinatorFactory {
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull IncognitoReauthManager mIncognitoReauthManager;
     private final @NonNull SettingsLauncher mSettingsLauncher;
+    private final @NonNull Runnable mShowTabSwitcherRunnable;
     // This is non-null for Tabbed activity.
     private final @Nullable IncognitoReauthTopToolbarDelegate mIncognitoReauthTopToolbarDelegate;
 
@@ -47,7 +48,7 @@ public class IncognitoReauthCoordinatorFactory {
      *         <TabSwitcherCustomViewManager>} that allows to communicate with tab switcher to
      *         show the re-auth screen.
      * @param topToolbarDelegate A {@link IncognitoReauthTopToolbarDelegate} responsible for
-     *         controlling the interactability of the top toolbar elements.
+     * @param showTabSwitcherRunnable A {@link Runnable} to show the Tab switcher layout.
      */
     public IncognitoReauthCoordinatorFactory(@NonNull Context context,
             @NonNull TabModelSelector tabModelSelector,
@@ -55,13 +56,16 @@ public class IncognitoReauthCoordinatorFactory {
             @NonNull SettingsLauncher settingsLauncher,
             @NonNull OneshotSupplier<TabSwitcherCustomViewManager>
                     tabSwitcherCustomViewManagerOneshotSupplier,
-            @Nullable IncognitoReauthTopToolbarDelegate topToolbarDelegate) {
+            @Nullable IncognitoReauthTopToolbarDelegate topToolbarDelegate,
+            @NonNull Runnable showTabSwitcherRunnable) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
         mModalDialogManager = modalDialogManager;
         mIncognitoReauthTopToolbarDelegate = topToolbarDelegate;
         mIncognitoReauthManager = new IncognitoReauthManager();
         mSettingsLauncher = settingsLauncher;
+        mShowTabSwitcherRunnable = showTabSwitcherRunnable;
+
         tabSwitcherCustomViewManagerOneshotSupplier.onAvailable(
                 mTabSwitcherCustomViewManagerController.makeCancelable(manager -> {
                     assert manager != null;
@@ -78,6 +82,7 @@ public class IncognitoReauthCoordinatorFactory {
             boolean showFullScreen) {
         return new IncognitoReauthCoordinator(mContext, mTabModelSelector, mModalDialogManager,
                 incognitoReauthCallback, mIncognitoReauthManager, mSettingsLauncher,
-                mTabSwitcherCustomViewManager, mIncognitoReauthTopToolbarDelegate, showFullScreen);
+                mTabSwitcherCustomViewManager, mIncognitoReauthTopToolbarDelegate,
+                mShowTabSwitcherRunnable, showFullScreen);
     }
 }

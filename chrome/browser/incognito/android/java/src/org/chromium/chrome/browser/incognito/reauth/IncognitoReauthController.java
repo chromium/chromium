@@ -218,17 +218,19 @@ public class IncognitoReauthController
     }
 
     /**
-     * Override from {@link IncognitoReauthDialogDelegate}. This relays the signal that the TabModal
-     * has changed. This is fired when all other observers of {@link onTabModelChanged} have been
-     * notified to bring determinism in the re-auth dialog.
+     * Override from {@link IncognitoReauthDialogDelegate}.
      */
     @Override
-    public void onAfterTabModelSelected(TabModel newModel, TabModel oldModel) {
-        if ((newModel.isIncognito())) {
-            showDialogIfRequired();
-        } else {
-            hideDialogIfShowing(DialogDismissalCause.DIALOG_INTERACTION_DEFERRED);
-        }
+    public void onAfterRegularTabModelChanged() {
+        hideDialogIfShowing(DialogDismissalCause.DIALOG_INTERACTION_DEFERRED);
+    }
+
+    /**
+     * Override from {@link IncognitoReauthDialogDelegate}.
+     */
+    @Override
+    public void onBeforeIncognitoTabModelSelected() {
+        showDialogIfRequired();
     }
 
     /**

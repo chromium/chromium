@@ -797,11 +797,13 @@ public class RootUiCoordinator
                 }
             };
         }
-
+        Runnable showTabSwitcherRunnable =
+                () -> mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /*animate=*/false);
         IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory =
                 new IncognitoReauthCoordinatorFactory(mActivity, tabModelSelector,
                         mModalDialogManagerSupplier.get(), new SettingsLauncherImpl(),
-                        tabSwitcherCustomViewSupplier, incognitoReauthTopToolbarDelegate);
+                        tabSwitcherCustomViewSupplier, incognitoReauthTopToolbarDelegate,
+                        showTabSwitcherRunnable);
         mIncognitoReauthController = new IncognitoReauthController(tabModelSelector,
                 mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier, mProfileSupplier,
                 incognitoReauthCoordinatorFactory);
