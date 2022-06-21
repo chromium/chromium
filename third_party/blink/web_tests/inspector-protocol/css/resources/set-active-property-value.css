@@ -44,3 +44,16 @@
         }
     }
 }
+
+
+@scope (html) {
+    #inspected {
+        color: red;
+    }
+}
+
+@scope (html) to (.child-div) {
+    #inspected {
+      color: lightcyan;
+    }
+  }

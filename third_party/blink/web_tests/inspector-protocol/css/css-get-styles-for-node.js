@@ -3,6 +3,7 @@
       <link rel='stylesheet' href='${testRunner.url('resources/set-active-property-value.css')}'/>
       <div id='parent-div' style='padding-top: 20px;'>
           <div id='inspected' style='padding-top: 55px; margin-top: 33px !important;'></div>
+          <div id='child-div'></div>
       </div>`,
       'The test verifies functionality of protocol method CSS.getMatchedStylesForNode and CSS.getInlineStylesForNode.');
 

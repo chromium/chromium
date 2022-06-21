@@ -59,6 +59,7 @@ class CSSRule;
 class CSSStyleRule;
 class CSSStyleSheet;
 class CSSSupportsRule;
+class CSSScopeRule;
 class Document;
 class Element;
 class FontCustomPlatformData;
@@ -371,6 +372,11 @@ class CORE_EXPORT InspectorCSSAgent final
                              protocol::Array<protocol::CSS::CSSLayer>*);
 
   void FillAncestorData(CSSRule* rule, protocol::CSS::CSSRule* result);
+
+  // Scope at-rule implementation
+  std::unique_ptr<protocol::CSS::CSSScope> BuildScopeObject(CSSScopeRule*);
+  void CollectScopesFromRule(CSSRule*,
+                             protocol::Array<protocol::CSS::CSSScope>*);
 
   // InspectorDOMAgent::DOMListener implementation
   void DidAddDocument(Document*) override;

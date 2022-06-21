@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
+#include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
@@ -580,6 +581,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
         result->push_back(data);
         break;
       case StyleRule::kMedia:
+      case StyleRule::kScope:
       case StyleRule::kSupports:
       case StyleRule::kKeyframes:
       case StyleRule::kContainer:
@@ -599,6 +601,9 @@ CSSRuleList* AsCSSRuleList(CSSRule* rule) {
 
   if (auto* media_rule = DynamicTo<CSSMediaRule>(rule))
     return media_rule->cssRules();
+
+  if (auto* scope_rule = DynamicTo<CSSScopeRule>(rule))
+    return scope_rule->cssRules();
 
   if (auto* supports_rule = DynamicTo<CSSSupportsRule>(rule))
     return supports_rule->cssRules();
@@ -636,6 +641,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
         result->push_back(rule);
         break;
       case CSSRule::kMediaRule:
+      case CSSRule::kScopeRule:
       case CSSRule::kSupportsRule:
       case CSSRule::kKeyframesRule:
       case CSSRule::kContainerRule:

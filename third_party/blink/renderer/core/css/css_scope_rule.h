@@ -20,6 +20,7 @@ class CORE_EXPORT CSSScopeRule final : public CSSGroupingRule {
   CSSScopeRule(StyleRuleScope*, CSSStyleSheet*);
   ~CSSScopeRule() override;
 
+  String PreludeText() const;
   String cssText() const override;
 
  private:

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
+#include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
@@ -2126,6 +2127,8 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
       std::make_unique<protocol::Array<protocol::CSS::CSSSupports>>();
   auto container_queries_list =
       std::make_unique<protocol::Array<protocol::CSS::CSSContainerQuery>>();
+  auto scopes_list =
+      std::make_unique<protocol::Array<protocol::CSS::CSSScope>>();
 
   CSSRule* parent_rule = rule;
   while (parent_rule) {
@@ -2133,6 +2136,7 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
     CollectMediaQueriesFromRule(parent_rule, media_list.get());
     CollectContainerQueriesFromRule(parent_rule, container_queries_list.get());
     CollectSupportsFromRule(parent_rule, supports_list.get());
+    CollectScopesFromRule(parent_rule, scopes_list.get());
     if (parent_rule->parentRule()) {
       parent_rule = parent_rule->parentRule();
     } else {
@@ -2148,10 +2152,37 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
   }
   result->setMedia(std::move(media_list));
   result->setSupports(std::move(supports_list));
+  result->setScopes(std::move(scopes_list));
   std::reverse(layers_list.get()->begin(), layers_list.get()->end());
   result->setLayers(std::move(layers_list));
   if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
     result->setContainerQueries(std::move(container_queries_list));
+}
+
+std::unique_ptr<protocol::CSS::CSSScope> InspectorCSSAgent::BuildScopeObject(
+    CSSScopeRule* rule) {
+  std::unique_ptr<protocol::CSS::CSSScope> scope_object =
+      protocol::CSS::CSSScope::create().setText(rule->PreludeText()).build();
+
+  auto it =
+      css_style_sheet_to_inspector_style_sheet_.find(rule->parentStyleSheet());
+  if (it != css_style_sheet_to_inspector_style_sheet_.end()) {
+    InspectorStyleSheet* inspector_style_sheet = it->value;
+    scope_object->setStyleSheetId(inspector_style_sheet->Id());
+  }
+
+  InspectorStyleSheet* inspector_style_sheet =
+      BindStyleSheet(rule->parentStyleSheet());
+  scope_object->setRange(inspector_style_sheet->RuleHeaderSourceRange(rule));
+
+  return scope_object;
+}
+
+void InspectorCSSAgent::CollectScopesFromRule(
+    CSSRule* rule,
+    protocol::Array<protocol::CSS::CSSScope>* scopes_list) {
+  if (auto* scope_rule = DynamicTo<CSSScopeRule>(rule))
+    scopes_list->emplace_back(BuildScopeObject(scope_rule));
 }
 
 InspectorStyleSheetForInlineStyle* InspectorCSSAgent::AsInspectorStyleSheet(

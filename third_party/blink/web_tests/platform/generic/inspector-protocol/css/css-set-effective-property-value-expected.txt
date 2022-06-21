@@ -41,6 +41,16 @@ Dumping matched rules:
         display: grid; @[32:8-32:22]
         display: grid; @[undefined-undefined]
     }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
 Dumping inherited rules: 
 @layer base.nested
     *body* {    regular
@@ -89,6 +99,16 @@ Running test: testBasicPropertyChange
         display: grid; @[32:8-32:22]
         display: grid; @[undefined-undefined]
     }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
 @layer base.nested
     *body* {    regular
         background-color: green; @[42:12-42:36]
@@ -135,6 +155,16 @@ Running test: testChangePropertyInShortHand
     *#inspected* {    regular
         display: grid; @[32:8-32:22]
         display: grid; @[undefined-undefined]
+    }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
     }
 @layer base.nested
     *body* {    regular
@@ -183,6 +213,16 @@ Running test: testChangeImportantProperty
         display: grid; @[32:8-32:22]
         display: grid; @[undefined-undefined]
     }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
 @layer base.nested
     *body* {    regular
         background-color: green; @[42:12-42:36]
@@ -230,6 +270,16 @@ Running test: testChangeInlineProperty
         display: grid; @[32:8-32:22]
         display: grid; @[undefined-undefined]
     }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
 @layer base.nested
     *body* {    regular
         background-color: green; @[42:12-42:36]
@@ -276,6 +326,16 @@ Running test: testChangeInlineImportantProperty
     *#inspected* {    regular
         display: grid; @[32:8-32:22]
         display: grid; @[undefined-undefined]
+    }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
     }
 @layer base.nested
     *body* {    regular
@@ -325,6 +385,16 @@ Running test: testChangeMissingProperty
     *#inspected* {    regular
         display: grid; @[32:8-32:22]
         display: grid; @[undefined-undefined]
+    }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
     }
 @layer base.nested
     *body* {    regular
@@ -398,6 +468,16 @@ Running test: testChangeCustomProperty
     *#inspected* {    regular
         display: grid; @[32:8-32:22]
         display: grid; @[undefined-undefined]
+    }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
     }
 @layer base.nested
     *body* {    regular

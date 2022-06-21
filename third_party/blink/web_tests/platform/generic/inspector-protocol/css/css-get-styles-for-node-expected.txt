@@ -60,6 +60,16 @@ Dumping matched rules:
         display: grid; @[32:8-32:22]
         display: grid; @[undefined-undefined]
     }
+@scope (html)
+    *#inspected* {    regular
+        color: red; @[50:8-50:19]
+        color: red; @[undefined-undefined]
+    }
+@scope (html) to (.child-div)
+    *#inspected* {    regular
+        color: lightcyan; @[56:6-56:23]
+        color: lightcyan; @[undefined-undefined]
+    }
 Dumping inherited rules: 
     padding-top: 20px; @[0:0-0:18]
     padding-top: 20px; @[undefined-undefined]

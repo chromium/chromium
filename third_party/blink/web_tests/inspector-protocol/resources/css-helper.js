@@ -111,6 +111,13 @@
       baseIndent += 4;
     }
 
+    const scopes = rule.scopes || [];
+    const scopesLine = scopes.map(s => s.text).join(' ');
+    if (scopesLine.length) {
+      this._indentLog(baseIndent, '@scope ' + scopesLine);
+      baseIndent += 4;
+    }
+
     var selectorLine = '';
     var selectors = rule.selectorList.selectors;
     for (var i = 0; i < selectors.length; ++i) {
