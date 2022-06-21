@@ -153,7 +153,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   absl::optional<ui::MenuType> GetMenuType() override;
   absl::optional<ui::OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInPx()
       override;
-  void OnMovedToAnotherDisplay() override;
   gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dip) const override;
   gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixels) const override;
   gfx::PointF ConvertScreenPointToLocalDIP(

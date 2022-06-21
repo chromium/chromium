@@ -140,9 +140,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // Enables or disables frame rate throttling.
   virtual void SetFrameRateThrottleEnabled(bool enabled);
 
-  // Called when the platform window is moved to another display.
-  virtual void OnMovedToAnotherDisplay();
-
   // Convert gfx::Rect in pixels to DIP in screen, and vice versa.
   virtual gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const;
   virtual gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixells) const;
