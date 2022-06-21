@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -71,9 +72,10 @@ void CSSSelector::CreateRareData() {
   DCHECK_NE(Match(), kTag);
   if (has_rare_data_)
     return;
-  // This transitions the DataUnion from |value_| to |rare_data_| and thus needs to be careful to
-  // correctly manage explicitly destruction of |value_| followed by placement new of |rare_data_|.
-  // A straight-assignment will compile and may kinda work, but will be undefined behavior.
+  // This transitions the DataUnion from |value_| to |rare_data_| and thus needs
+  // to be careful to correctly manage explicitly destruction of |value_|
+  // followed by placement new of |rare_data_|. A straight-assignment will
+  // compile and may kinda work, but will be undefined behavior.
   auto rare_data = RareData::Create(data_.value_);
   data_.value_.~AtomicString();
   new (&data_.rare_data_) scoped_refptr<RareData>(std::move(rare_data));
@@ -1059,7 +1061,9 @@ void CSSSelector::SetAttribute(const QualifiedName& value,
                                AttributeMatchType match_type) {
   CreateRareData();
   data_.rare_data_->attribute_ = value;
-  data_.rare_data_->bits_.attribute_match_ = match_type;
+  data_.rare_data_->bits_.attr_.attribute_match_ = match_type;
+  data_.rare_data_->bits_.attr_.is_case_sensitive_attribute_ =
+      HTMLDocument::IsCaseSensitiveAttribute(value);
 }
 
 void CSSSelector::SetArgument(const AtomicString& value) {

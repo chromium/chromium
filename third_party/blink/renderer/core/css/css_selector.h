@@ -305,7 +305,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoPageTransitionIncomingImage,
   };
 
-  enum class AttributeMatchType {
+  enum class AttributeMatchType : int {
     kCaseSensitive,
     kCaseInsensitive,
     kCaseSensitiveAlways,
@@ -341,6 +341,7 @@ class CORE_EXPORT CSSSelector {
   // http://www.w3.org/TR/css3-selectors/#attrnmsp
   const QualifiedName& Attribute() const;
   AttributeMatchType AttributeMatch() const;
+  bool IsCaseSensitiveAttribute() const;
   // Returns the argument of a parameterized selector. For example, :lang(en-US)
   // would have an argument of en-US.
   // Note that :nth-* selectors don't store an argument and just store the
@@ -487,8 +488,12 @@ class CORE_EXPORT CSSSelector {
         int a_;  // Used for :nth-*
         int b_;  // Used for :nth-*
       } nth_;
-      AttributeMatchType
-          attribute_match_;  // used for attribute selector (with value)
+
+      struct {
+        AttributeMatchType
+            attribute_match_;  // used for attribute selector (with value)
+        bool is_case_sensitive_attribute_;
+      } attr_;
 
       struct {
         // Used for :has() with pseudos in its argument. e.g. :has(:hover)
@@ -511,8 +516,8 @@ class CORE_EXPORT CSSSelector {
   };
   void CreateRareData();
 
-  // The type tag for DataUnion is actually inferred from multiple state variables in the
-  // containing CSSSelector using the following rules.
+  // The type tag for DataUnion is actually inferred from multiple state
+  // variables in the containing CSSSelector using the following rules.
   //
   //  if (match_ == kTag) {
   //     /* data_.tag_q_name_ is valid */
@@ -522,10 +527,10 @@ class CORE_EXPORT CSSSelector {
   //     /* data_.value_ is valid */
   //  }
   //
-  // Note that it is important to placement-new and explicitly destruct the fields when
-  // shifting between types tags for a DataUnion! Otherwise there will be undefined
-  // behavior! This luckily only happens when transitioning from a normal |value_| to
-  // a |rare_data_|.
+  // Note that it is important to placement-new and explicitly destruct the
+  // fields when shifting between types tags for a DataUnion! Otherwise there
+  // will be undefined behavior! This luckily only happens when transitioning
+  // from a normal |value_| to a |rare_data_|.
   union DataUnion {
     enum ConstructUninitializedTag { kConstructUninitialized };
     explicit DataUnion(ConstructUninitializedTag) {}
@@ -553,7 +558,13 @@ inline const QualifiedName& CSSSelector::Attribute() const {
 inline CSSSelector::AttributeMatchType CSSSelector::AttributeMatch() const {
   DCHECK(IsAttributeSelector());
   DCHECK(has_rare_data_);
-  return data_.rare_data_->bits_.attribute_match_;
+  return data_.rare_data_->bits_.attr_.attribute_match_;
+}
+
+inline bool CSSSelector::IsCaseSensitiveAttribute() const {
+  DCHECK(IsAttributeSelector());
+  DCHECK(has_rare_data_);
+  return data_.rare_data_->bits_.attr_.is_case_sensitive_attribute_;
 }
 
 inline bool CSSSelector::IsASCIILower(const AtomicString& value) {

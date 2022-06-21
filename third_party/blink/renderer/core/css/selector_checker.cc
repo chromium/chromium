@@ -566,9 +566,8 @@ static bool AnyAttributeMatches(Element& element,
     // Legacy dictates that values of some attributes should be compared in
     // a case-insensitive manner regardless of whether the case insensitive
     // flag is set or not.
-    bool legacy_case_insensitive =
-        IsA<HTMLDocument>(element.GetDocument()) &&
-        !HTMLDocument::IsCaseSensitiveAttribute(selector_attr);
+    bool legacy_case_insensitive = IsA<HTMLDocument>(element.GetDocument()) &&
+                                   !selector.IsCaseSensitiveAttribute();
 
     // If case-insensitive, re-check, and count if result differs.
     // See http://code.google.com/p/chromium/issues/detail?id=327060
