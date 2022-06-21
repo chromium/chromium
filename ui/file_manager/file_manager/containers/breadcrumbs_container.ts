@@ -4,6 +4,7 @@
 
 import '../widgets/breadcrumbs.js';
 
+import {metrics} from '../common/js/metrics.js';
 import {CurrentDirectory, PropStatus, State} from '../externs/ts/state.js';
 import {changeDirectory} from '../state/actions.js';
 import {FileKey} from '../state/file_key.js';
@@ -81,5 +82,6 @@ export class BreadcrumbsContainer {
 
     const fileKey = this.pathKeys_[index];
     this.store_.dispatch(changeDirectory({toKey: fileKey as FileKey}));
+    metrics.recordUserAction('ClickBreadcrumbs');
   }
 }

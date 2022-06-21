@@ -89,6 +89,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& FilesExperimental() {
+    options.files_experimental = true;
+    return *this;
+  }
+
   TestCase& MediaSwa() {
     options.media_swa = true;
     return *this;
@@ -174,6 +179,9 @@ struct TestCase {
 
     if (options.files_swa)
       full_name += "_FilesSwa";
+
+    if (options.files_experimental)
+      full_name += "_FilesExperimental";
 
     if (!options.native_smb)
       full_name += "_DisableNativeSmb";
@@ -1951,7 +1959,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("breadcrumbsNavigate"),
+        TestCase("breadcrumbsNavigate").FilesExperimental(),
         TestCase("breadcrumbsNavigate").FilesSwa(),
+        TestCase("breadcrumbsNavigate").FilesSwa().FilesExperimental(),
         TestCase("breadcrumbsDownloadsTranslation"),
         TestCase("breadcrumbsDownloadsTranslation").FilesSwa(),
         TestCase("breadcrumbsRenderShortPath"),
@@ -1960,6 +1970,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("breadcrumbsEliderButtonHidden").FilesSwa(),
         TestCase("breadcrumbsRenderLongPath"),
         TestCase("breadcrumbsRenderLongPath").FilesSwa(),
+        TestCase("breadcrumbsRenderLongPath").FilesSwa().FilesExperimental(),
         TestCase("breadcrumbsMainButtonClick"),
         TestCase("breadcrumbsMainButtonClick").FilesSwa(),
         TestCase("breadcrumbsMainButtonEnterKey"),

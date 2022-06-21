@@ -834,6 +834,7 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(browser)
   PRINT_IF_NOT_DEFAULT(drive_dss_pin)
   PRINT_IF_NOT_DEFAULT(files_swa)
+  PRINT_IF_NOT_DEFAULT(files_experimental)
   PRINT_IF_NOT_DEFAULT(generic_documents_provider)
   PRINT_IF_NOT_DEFAULT(media_swa)
   PRINT_IF_NOT_DEFAULT(mount_volumes)
@@ -1882,6 +1883,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kFilesSWA);
   }
 
+  if (options.files_experimental) {
+    enabled_features.push_back(chromeos::features::kFilesAppExperimental);
+  } else {
+    disabled_features.push_back(chromeos::features::kFilesAppExperimental);
+  }
+
   if (options.arc) {
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
@@ -2239,6 +2246,15 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "isFilesAppSwa") {
     // Return whether or not the test is run in Files SWA mode.
     *output = options.files_swa ? "true" : "false";
+    return;
+  }
+
+  if (name == "isFilesAppExperimental") {
+    // Return whether the flag Files Experimental is enabled.
+    *output =
+        base::FeatureList::IsEnabled(chromeos::features::kFilesAppExperimental)
+            ? "true"
+            : "false";
     return;
   }
 

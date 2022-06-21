@@ -90,6 +90,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test needs the files-swa feature.
     bool files_swa = false;
 
+    // Whether test needs the files-app-experimental feature.
+    bool files_experimental = false;
+
     // Whether test needs the media-swa apps.
     bool media_swa = false;
 
