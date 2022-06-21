@@ -14,3 +14,5 @@ blink_core_sources_fullscreen = [
   "scoped_allow_fullscreen.cc",
   "scoped_allow_fullscreen.h",
 ]
+
+blink_core_tests_fullscreen = [ "scoped_allow_fullscreen_test.cc" ]

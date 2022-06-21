@@ -14,3 +14,5 @@ blink_core_sources_content_capture = [
   "task_session.cc",
   "task_session.h",
 ]
+
+blink_core_tests_content_capture = [ "content_capture_test.cc" ]

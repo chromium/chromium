@@ -21,3 +21,5 @@ blink_core_sources_geometry = [
   "dom_rect_read_only.h",
   "geometry_util.h",
 ]
+
+blink_core_tests_geometry = [ "dom_matrix_test.cc" ]

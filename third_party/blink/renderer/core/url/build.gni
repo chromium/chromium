@@ -12,3 +12,5 @@ blink_core_sources_url = [
   "url_search_params.cc",
   "url_search_params.h",
 ]
+
+blink_core_tests_url = [ "url_search_params_test.cc" ]

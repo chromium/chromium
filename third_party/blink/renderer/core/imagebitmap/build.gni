@@ -8,3 +8,5 @@ blink_core_sources_imagebitmap = [
   "image_bitmap_source.cc",
   "image_bitmap_source.h",
 ]
+
+blink_core_tests_imagebitmap = [ "image_bitmap_test.cc" ]
