@@ -79,6 +79,9 @@ class RestoreIOTask : public IOTask {
 
   void OnRestoreItem(size_t idx, base::File::Error error);
 
+  // Once a restore has completed, kick off the next restore `idx` or finish.
+  void RestoreComplete(size_t idx, base::File::Error error);
+
   void SetCurrentOperationID(
       storage::FileSystemOperationRunner::OperationID id);
 

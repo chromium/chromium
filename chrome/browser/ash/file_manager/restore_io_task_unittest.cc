@@ -261,6 +261,7 @@ TEST_F(RestoreIOTaskTest, ItemWithExistingConflictAreRenamed) {
 
   EXPECT_TRUE(base::PathExists(bar_dir.Append("foo.txt")));
   EXPECT_TRUE(base::PathExists(bar_dir.Append("foo (1).txt")));
+  EXPECT_FALSE(base::PathExists(info_file_path));
 }
 
 }  // namespace

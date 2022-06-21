@@ -208,15 +208,15 @@ void RestoreIOTask::RestoreItem(
     size_t idx,
     base::FilePath trashed_file_location,
     base::FileErrorOr<storage::FileSystemURL> destination_result) {
+  storage::FileSystemURL source_url =
+      CreateFileSystemURL(progress_.sources[idx].url,
+                          MakeRelativeFromBasePath(trashed_file_location));
   if (destination_result.is_error()) {
+    progress_.outputs.emplace_back(source_url, absl::nullopt);
     OnRestoreItem(idx, destination_result.error());
     return;
   }
   progress_.outputs.emplace_back(destination_result.value(), absl::nullopt);
-
-  storage::FileSystemURL source_url =
-      CreateFileSystemURL(progress_.sources[idx].url,
-                          MakeRelativeFromBasePath(trashed_file_location));
 
   // File browsers generally default to preserving mtimes on copy/move so we
   // should do the same.
@@ -240,9 +240,45 @@ void RestoreIOTask::RestoreItem(
 }
 
 void RestoreIOTask::OnRestoreItem(size_t idx, base::File::Error error) {
-  // TODO(b/231830250): Implement the logic such that a successful restore of an
-  // item, should delete the .trashinfo file as well.
-  Complete(State::kSuccess);
+  if (error != base::File::FILE_OK) {
+    RestoreComplete(idx, error);
+    return;
+  }
+
+  auto complete_callback =
+      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                         base::BindOnce(&RestoreIOTask::RestoreComplete,
+                                        weak_ptr_factory_.GetWeakPtr(), idx));
+
+  // On successful file restore, there is a dangling trashinfo file, remove this
+  // before restoration is considered complete.
+  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&StartDeleteOnIOThread, file_system_context_,
+                     progress_.sources[idx].url, std::move(complete_callback)),
+      base::BindOnce(&RestoreIOTask::SetCurrentOperationID,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void RestoreIOTask::RestoreComplete(size_t idx, base::File::Error error) {
+  DCHECK(idx < progress_.sources.size());
+  DCHECK(idx < progress_.outputs.size());
+  operation_id_.reset();
+  progress_.sources[idx].error = error;
+  progress_.outputs[idx].error = error;
+
+  if (idx < progress_.sources.size() - 1) {
+    progress_callback_.Run(progress_);
+    ValidateTrashInfo(idx + 1);
+  } else {
+    for (const auto& source : progress_.sources) {
+      if (source.error != base::File::FILE_OK) {
+        Complete(State::kError);
+        return;
+      }
+    }
+    Complete(State::kSuccess);
+  }
 }
 
 const storage::FileSystemURL RestoreIOTask::CreateFileSystemURL(
