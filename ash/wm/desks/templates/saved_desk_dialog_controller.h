@@ -68,6 +68,9 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
   void CreateDialogWidget(std::unique_ptr<SavedDeskDialog> dialog,
                           aura::Window* root_window);
 
+  // Returns true if a dialog can be shown.
+  bool CanShowDialog() const;
+
   // Callbacks for when a user has either accepted the unsupported apps dialog
   // or not.
   void OnUserAcceptedUnsupportedAppsDialog();

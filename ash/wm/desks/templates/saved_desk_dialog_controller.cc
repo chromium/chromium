@@ -223,6 +223,9 @@ void SavedDeskDialogController::ShowReplaceDialog(
     const std::u16string& template_name,
     base::OnceClosure on_accept_callback,
     base::OnceClosure on_cancel_callback) {
+  if (!CanShowDialog())
+    return;
+
   auto dialog = views::Builder<SavedDeskDialog>()
                     .SetTitleText(IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_TITLE)
                     .SetConfirmButtonText(
@@ -236,6 +239,7 @@ void SavedDeskDialogController::ShowReplaceDialog(
                     .SetAcceptCallback(std::move(on_accept_callback))
                     .SetCancelCallback(std::move(on_cancel_callback))
                     .Build();
+
   CreateDialogWidget(std::move(dialog), root_window);
 }
 
@@ -243,6 +247,9 @@ void SavedDeskDialogController::ShowDeleteDialog(
     aura::Window* root_window,
     const std::u16string& template_name,
     base::OnceClosure on_accept_callback) {
+  if (!CanShowDialog())
+    return;
+
   auto dialog =
       views::Builder<SavedDeskDialog>()
           .SetTitleText(IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_TITLE)
@@ -284,8 +291,8 @@ void SavedDeskDialogController::OnWidgetDestroying(views::Widget* widget) {
 void SavedDeskDialogController::CreateDialogWidget(
     std::unique_ptr<SavedDeskDialog> dialog,
     aura::Window* root_window) {
-  if (dialog_widget_)
-    dialog_widget_->CloseNow();
+  // We should not get here with an active dialog.
+  DCHECK_EQ(dialog_widget_, nullptr);
 
   // The dialog will show on the display associated with `root_window`, and will
   // block all input since it is system modal.
@@ -296,6 +303,11 @@ void SavedDeskDialogController::CreateDialogWidget(
   dialog_widget_->GetNativeWindow()->SetName("TemplateDialogForTesting");
   dialog_widget_->Show();
   dialog_widget_observation_.Observe(dialog_widget_);
+}
+
+bool SavedDeskDialogController::CanShowDialog() const {
+  // Cannot show a dialog while another is active.
+  return dialog_widget_ == nullptr;
 }
 
 void SavedDeskDialogController::OnUserAcceptedUnsupportedAppsDialog() {
