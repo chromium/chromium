@@ -2,6 +2,7 @@ include_rules = [
   "+cc/base/switches.h",
   "+components/autofill/core",
   "+components/crash/core",
+  "+components/embedder_support/switches.h",
   "+components/safe_browsing/android",
   "+components/spellcheck/common",
   "+components/translate/core/common",
