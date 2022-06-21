@@ -21,6 +21,8 @@ digraph G {
         <TD BGCOLOR="darkgrey" HEIGHT="52"></TD>
         <TD PORT="metadata"></TD>
         <TD BGCOLOR="darkgrey" WIDTH="18"></TD>
+        <!-- Bitmaps -->
+        <TD WIDTH="100">Bitmaps(?)</TD>
         <!-- Several Slot Spans -->
         <TD PORT="red" BGCOLOR="crimson" WIDTH="119">3</TD>
         <TD PORT="green" BGCOLOR="palegreen" WIDTH="39">1</TD>
@@ -50,6 +52,8 @@ digraph G {
       <TR>
         <!-- Guard Page Metadata -->
         <TD BGCOLOR="darkgrey"> </TD>
+        <!-- Bitmaps Offset -->
+        <TD> B? </TD>
         <!-- Red Slot Span Metadata -->
         <TD BGCOLOR="crimson">v</TD>
         <TD BGCOLOR="crimson">+</TD>
