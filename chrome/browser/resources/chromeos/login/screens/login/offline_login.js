@@ -254,7 +254,7 @@ class OfflineLogin extends OfflineLoginBase {
   onEmailSubmitted_() {
     if (this.$.emailInput.validate()) {
       this.fullEmail_ = this.computeFullEmail_(this.email_);
-      chrome.send('OfflineLogin.onEmailSubmitted', [this.fullEmail_]);
+      this.userActed(['email-submitted', this.fullEmail_]);
     } else {
       this.$.emailInput.focusInput();
     }
@@ -265,7 +265,7 @@ class OfflineLogin extends OfflineLoginBase {
       return;
     }
     this.email_ = this.fullEmail_;
-    chrome.send('completeOfflineAuthentication', [this.email_, this.password_]);
+    this.userActed(['complete-authentication', this.email_, this.password_]);
     this.password_ = '';
   }
 

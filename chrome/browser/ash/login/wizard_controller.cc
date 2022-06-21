@@ -705,7 +705,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnSamlConfirmPasswordScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<OfflineLoginScreen>(
-      oobe_ui->GetView<OfflineLoginScreenHandler>(),
+      oobe_ui->GetView<OfflineLoginScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnOfflineLoginScreenExit,
                           weak_factory_.GetWeakPtr())));
 

@@ -13,9 +13,10 @@ class OfflineLoginScreen;
 
 namespace chromeos {
 
-class OfflineLoginView {
+class OfflineLoginView : public base::SupportsWeakPtr<OfflineLoginView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"offline-login"};
+  inline constexpr static StaticOobeScreenId kScreenId{"offline-login",
+                                                       "OfflineLoginScreen"};
 
   OfflineLoginView() = default;
   virtual ~OfflineLoginView() = default;
@@ -25,12 +26,6 @@ class OfflineLoginView {
 
   // Hide the contents of the screen.
   virtual void Hide() = 0;
-
-  // Binds |screen| to the view.
-  virtual void Bind(ash::OfflineLoginScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
 
   // Clear the input fields on the screen.
   virtual void Reset() = 0;
@@ -59,24 +54,18 @@ class OfflineLoginScreenHandler : public BaseScreenHandler,
  private:
   void HandleCompleteAuth(const std::string& username,
                           const std::string& password);
-  void HandleEmailSubmitted(const std::string& username);
 
   // OfflineLoginView:
   void Show(base::Value::Dict params) override;
   void Hide() override;
-  void Bind(ash::OfflineLoginScreen* screen) override;
-  void Unbind() override;
   void Reset() override;
   void ShowPasswordPage() override;
   void ShowOnlineRequiredDialog() override;
   void ShowPasswordMismatchMessage() override;
 
   // BaseScreenHandler:
-  void RegisterMessages() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-
-  ash::OfflineLoginScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos
