@@ -425,9 +425,9 @@ chromium-metrics-reviews@google.com.
   <owner>jamescook@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
-    Whether the user has hidden the productivity launcher &quot;continue where
-    you left off&quot; section using the right-click menu. Recorded once per
-    launcher open. Split by clamshell vs. tablet mode.
+    Whether the user has manually hidden the productivity launcher
+    &quot;continue where you left off&quot; section. Recorded once per launcher
+    open. Split by clamshell vs. tablet mode.
   </summary>
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
