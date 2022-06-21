@@ -1923,6 +1923,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{הסרת אפליקציה אחת שלא נתמכת}two{הסרת # אפליקציות שלא נתמכות}many{הסרת # אפליקציות שלא נתמכות}other{הסרת # אפליקציות שלא נתמכות}}</translation>
 <translation id="2776560192867872731">שינוי השם של <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">מחיקת הקונטיינר הזה</translation>
+<translation id="2778471504622896352">‏הוספת אפליקציות מרוחקות למרכז האפליקציות של ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux</translation>
 <translation id="2783298271312924866">ההורדה בוצעה</translation>
@@ -3558,6 +3559,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ועוד <ph name="NUMBER_OF_OTHER_SWITCHES" /> מתגים</translation>
 <translation id="439266289085815679">‏הגדרת ה-Bluetooth היא בשליטת <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">עריכת קובץ התצורה</translation>
+<translation id="4393713825278446281">המכשירים להתאמה מהירה נשמרו ב-<ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">השבתה</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;פתיחת כל הכתובות}=1{&amp;פתיחת הסימנייה}two{&amp;פתיחת כל הכתובות ({COUNT})}many{&amp;פתיחת כל הכתובות ({COUNT})}other{&amp;פתיחת כל הכתובות ({COUNT})}}</translation>
 <translation id="4397372003838952832">לא צריך לזכור את הסיסמה הזו. היא תישמר ב<ph name="GOOGLE_PASSWORD_MANAGER" /> עבור <ph name="EMAIL" />.</translation>
@@ -3788,6 +3790,7 @@
 <translation id="4615586811063744755">‏לא נבחר קובץ Cookie</translation>
 <translation id="461661862154729886">מקור חשמל</translation>
 <translation id="4617001782309103936">קצר מדי</translation>
+<translation id="4617019240346358451">יש לטעון את הדף מחדש כדי להשתמש בתוסף '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="4617270414136722281">אפשרויות של תוספים</translation>
 <translation id="4617880081511131945">לא ניתן ליצור חיבור</translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
@@ -4003,6 +4006,7 @@
 <translation id="4833683849865011483">נמצאה מדפסת אחת המשויכת לשרת ההדפסה</translation>
 <translation id="4836504898754963407">ניהול של טביעות אצבעות</translation>
 <translation id="4837128290434901661">‏לשנות חזרה אל Google Search?</translation>
+<translation id="4837165100461973682">יש לטעון את הדף מחדש כדי להחיל את השינויים</translation>
 <translation id="4837926214103741331">אין לך אישור להשתמש במכשיר הזה. יש ליצור קשר עם בעל המכשיר כדי לקבל הרשאת כניסה.</translation>
 <translation id="4837952862063191349">כדי לבטל את הנעילה של הנתונים המקומיים ולשחזר אותם, יש להזין את הסיסמה הקודמת שלך עבור <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">הצגת התמונות, המדיה וההתראות שבטלפון</translation>
@@ -4312,6 +4316,7 @@
 <translation id="5150254825601720210">‏שם שרת SSL של אישור Netscape</translation>
 <translation id="5151354047782775295">אם לא מפנים שטח אחסון, ייבחרו נתונים למחיקה אוטומטית</translation>
 <translation id="5153234146675181447">מחיקת הטלפון</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">הגדרות מתקדמות עבור <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">נושא</translation>
 <translation id="5155327081870541046">‏בסרגל הכתובות, מזינים את קיצור הדרך לאתר שרוצים לחפש בו, כמו למשל "‎@bookmarks". לאחר מכן, מקישים על מקש הקיצור המועדף במקלדת ומזינים את מונח החיפוש.</translation>
@@ -5951,6 +5956,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> נוסף מרחוק</translation>
 <translation id="6790820461102226165">הוספת משתמש...</translation>
 <translation id="6793604637258913070">הדגשת סמן הטקסט כשהוא מופיע או זז</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">בעזרת סריקות אוטומטיות אפשר לעבור אוטומטית בין פריטים שמופיעים במסך. כשפריט כלשהו מודגש, מקישים על "בחירה" כדי להפעיל אותו.</translation>
 <translation id="6795884519221689054">פנדה</translation>
 <translation id="6797493596609571643">אופס. משהו השתבש.</translation>
@@ -7825,6 +7831,7 @@
 <translation id="8642947597466641025">הגדלת טקסט</translation>
 <translation id="8643443571868262066">‏הקובץ <ph name="FILE_NAME" /> עשוי להיות מסוכן. האם לשלוח אותו לסריקה באמצעות ההגנה המתקדמת של Google?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{‏אין קובצי cookie}=1{‏קובץ cookie אחד חסום}two{‏# קובצי cookie חסומים}many{‏# קובצי cookie חסומים}other{‏# קובצי cookie חסומים}}</translation>
+<translation id="864423554496711319">מכשירים שנשמרו בחשבון שלך</translation>
 <translation id="8644655801811752511">לא ניתן לאפס את מפתח האבטחה הזה. צריך לנסות לאפס אותו מיד אחרי החיבור.</translation>
 <translation id="8645354835496065562">המשך התרת הגישה לחיישנים</translation>
 <translation id="8645920082661222035">המערכת חוזה אירועים מסוכנים ומזהירה אותך לגביהם לפני שהם מתרחשים</translation>

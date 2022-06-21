@@ -1908,6 +1908,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{นำแอปที่ไม่รองรับออก 1 แอป}other{นำแอปที่ไม่รองรับออก # แอป}}</translation>
 <translation id="2776560192867872731">เปลี่ยนชื่ออุปกรณ์สำหรับ <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">ลบคอนเทนเนอร์นี้</translation>
+<translation id="2778471504622896352">เพิ่มแอประยะไกลลงใน Launcher ของ Chrome OS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">เกิดข้อผิดพลาดในการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="2783298271312924866">ดาวน์โหลดแล้ว</translation>
@@ -2223,6 +2224,7 @@
 <translation id="3067198360141518313">เรียกใช้ปลั๊กอินนี้</translation>
 <translation id="3071624960923923138">คุณสามารถคลิกที่นี่เพื่อเปิดแท็บใหม่</translation>
 <translation id="3072775339180057696">อนุญาตให้เว็บไซต์ดู <ph name="FILE_NAME" /> ไหม</translation>
+<translation id="3074499504015191586">แปลทั้งหน้า</translation>
 <translation id="3075874217500066906">จำเป็นต้องรีสตาร์ทเพื่อเริ่มดำเนินการ Powerwash เมื่อรีสตาร์ทแล้ว ระบบจะขอให้คุณยืนยันว่าคุณต้องการดำเนินการ</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">บันทึกในอุปกรณ์นี้เท่านั้น</translation>
@@ -3543,6 +3545,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> และสวิตช์อื่นๆ อีก <ph name="NUMBER_OF_OTHER_SWITCHES" /> รายการ</translation>
 <translation id="439266289085815679">การกำหนดค่าบลูทูธควบคุมโดย <ph name="USER_EMAIL" /></translation>
 <translation id="4392896746540753732">แก้ไขไฟล์การกำหนดค่า</translation>
+<translation id="4393713825278446281">บันทึกอุปกรณ์การจับคู่ด่วนไปยัง <ph name="PRIMARY_EMAIL" /> แล้ว</translation>
 <translation id="4394049700291259645">ปิดการใช้งาน</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;เปิดทั้งหมด}=1{&amp;เปิดบุ๊กมาร์ก}other{&amp;เปิดทั้งหมด ({COUNT})}}</translation>
 <translation id="4397372003838952832">คุณไม่ต้องจำรหัสผ่านนี้ เพราะระบบจะบันทึกไว้ใน <ph name="GOOGLE_PASSWORD_MANAGER" />สำหรับ <ph name="EMAIL" /></translation>
@@ -3772,6 +3775,7 @@
 <translation id="4615586811063744755">ไม่ได้เลือกคุกกี้</translation>
 <translation id="461661862154729886">แหล่งพลังงาน</translation>
 <translation id="4617001782309103936">สั้นเกินไป</translation>
+<translation id="4617019240346358451">โหลดหน้าเว็บซ้ำเพื่อใช้ "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4617270414136722281">ตัวเลือกส่วนขยาย</translation>
 <translation id="4617880081511131945">เริ่มการเชื่อมต่อไม่ได้</translation>
 <translation id="4619564267100705184">ยืนยันว่าเป็นคุณ</translation>
@@ -3987,6 +3991,7 @@
 <translation id="4833683849865011483">พบเครื่องพิมพ์ 1 เครื่องจากเซิร์ฟเวอร์การพิมพ์</translation>
 <translation id="4836504898754963407">จัดการลายนิ้วมือ</translation>
 <translation id="4837128290434901661">ต้องการเปลี่ยนกลับไปใช้ Google Search ไหม</translation>
+<translation id="4837165100461973682">โหลดหน้านี้ซ้ำเพื่อใช้การเปลี่ยนแปลง</translation>
 <translation id="4837926214103741331">คุณไม่ได้รับอนุญาตให้ใช้อุปกรณ์นี้ โปรดติดต่อเจ้าของอุปกรณ์เพื่อขออนุญาตลงชื่อเข้าใช้</translation>
 <translation id="4837952862063191349">หากต้องการปลดล็อกและกู้คืนข้อมูลในเครื่อง โปรดป้อนรหัสผ่านเก่าของ <ph name="DEVICE_TYPE" /></translation>
 <translation id="4838170306476614339">ดูรูปภาพ สื่อ และการแจ้งเตือนในโทรศัพท์</translation>
@@ -4296,6 +4301,7 @@
 <translation id="5150254825601720210">ใบรับรองชื่อเซิร์ฟเวอร์ SSL ของ Netscape</translation>
 <translation id="5151354047782775295">เพิ่มพื้นที่ว่างของดิสก์หรือเลือกข้อมูลที่อาจลบออกเองโดยอัตโนมัติ</translation>
 <translation id="5153234146675181447">เลิกจำโทรศัพท์</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">การตั้งค่าขั้นสูงสำหรับ <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">เรื่อง</translation>
 <translation id="5155327081870541046">ป้อนทางลัดของเว็บไซต์ที่ต้องการค้นหาในแถบที่อยู่ เช่น @bookmarks จากนั้นกดแป้นพิมพ์ลัดที่ต้องการ แล้วป้อนข้อความค้นหา</translation>
@@ -5069,6 +5075,7 @@
 <translation id="5933522550144185133"><ph name="APP_NAME" /> กำลังใช้กล้องถ่ายรูปและไมโครโฟนของคุณ</translation>
 <translation id="5935158534896975820">กำลังเตรียมคำขอลงนามใบรับรอง (กำลังรอเซิร์ฟเวอร์)</translation>
 <translation id="5935656526031444304">จัดการ Google Safe Browsing</translation>
+<translation id="5936065461722368675">แปลทั้งหน้า</translation>
 <translation id="5938002010494270685">การอัปเกรดความปลอดภัยพร้อมใช้งานแล้ว</translation>
 <translation id="5939518447894949180">รีเซ็ต</translation>
 <translation id="5939719276406088041">สร้างทางลัดไม่ได้</translation>
@@ -5928,6 +5935,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> ได้รับการเพิ่มจากระยะไกล</translation>
 <translation id="6790820461102226165">เพิ่มบุคคล...</translation>
 <translation id="6793604637258913070">ไฮไลต์เครื่องหมาย caret ของข้อความเมื่อปรากฏขึ้นหรือเคลื่อนที่</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">การสแกนอัตโนมัติช่วยให้คุณเลื่อนผ่านรายการต่างๆ ในหน้าจอได้โดยอัตโนมัติ เมื่อมีการไฮไลต์รายการ ให้กด "เลือก" เพื่อเปิดใช้งาน</translation>
 <translation id="6795884519221689054">แพนด้า</translation>
 <translation id="6797493596609571643">อ๊ะ เกิดข้อผิดพลาดบางอย่าง</translation>
@@ -7800,6 +7808,7 @@
 <translation id="8642947597466641025">ทำให้ข้อความใหญ่ขึ้น</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> อาจเป็นอันตราย ส่งไปให้การปกป้องขั้นสูงของ Google สแกนไหม</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{ไม่มีคุกกี้}=1{บล็อกคุกกี้แล้ว 1 รายการ}other{บล็อกคุกกี้แล้ว # รายการ}}</translation>
+<translation id="864423554496711319">อุปกรณ์ที่บันทึกไว้ในบัญชี</translation>
 <translation id="8644655801811752511">รีเซ็ตคีย์ความปลอดภัยนี้ไม่ได้ ลองรีเซ็ตคีย์ทันทีหลังจากเสียบคีย์แล้ว</translation>
 <translation id="8645354835496065562">อนุญาตการเข้าถึงเซ็นเซอร์ต่อไป</translation>
 <translation id="8645920082661222035">คาดการณ์และเตือนคุณก่อนเกิดเหตุการณ์อันตราย</translation>

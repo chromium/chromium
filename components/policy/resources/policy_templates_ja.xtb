@@ -143,6 +143,7 @@
 <translation id="1160939557934457296">セーフ ブラウジングの警告ページからの続行を無効にする</translation>
 <translation id="1163080558183062209">拒否リストのプリンタタイプを無効にする</translation>
 <translation id="117059611145966538">外部プリント サーバー</translation>
+<translation id="117080706484659953"><ph name="MAC_OS_NAME" /> でポリシー スコープの検出を許可します</translation>
 <translation id="1171785618439752042">このポリシーでは、<ph name="MS_AD_NAME" /> サーバーに Kerberos チケットをリクエストする際に許可する暗号化タイプを指定できます。
 
       このポリシーには、次のいずれかを指定します。
@@ -877,6 +878,17 @@
 <translation id="1962864958436828230">データ漏洩防止のクリップボード制限の最小サイズを設定する</translation>
 <translation id="1964634611280150550">シークレット モードを無効にする</translation>
 <translation id="1964802606569741174">このポリシーは Android YouTube アプリには適用されません。YouTube でセーフモードを有効にする場合は、Android YouTube アプリのインストールを禁止する必要があります。</translation>
+<translation id="1965363065727209968">setTimeout(…, 0) は、一般的に長い JavaScript タスクを分割する目的で使用されます。
+          このポリシーを有効に設定した場合、4 ミリ秒未満の間隔が指定された setTimeouts と setIntervals は積極的にはクランプされません。
+          これにより短期的および水平的なパフォーマンスは向上しますが、API を誤用しているウェブサイトでは引き続き setTimeouts がクランプされることになります。
+
+          ウェブページによってはタスクの実行順序が変更され、特定の実行順序でのみ機能するサイトでは予期しない動作が発生することがあります。
+          また、タイムアウトを 0 ミリ秒に設定した setTimeout() が多く使用されているサイトでも影響が生じる可能性があります（CPU の負荷が増加するなど）。
+
+          このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> の Stable チャンネルで段階的に変更が適用されます。
+
+          これは、<ph name="PRODUCT_NAME" /> 107 で削除が計画されている一時的なポリシーです。企業からのニーズがある場合、この期限は延長される可能性があります。
+          </translation>
 <translation id="1967334955994230472">プロジェクターを無効にする</translation>
 <translation id="1969212217917526199">リモート アクセス ホストの Debug ビルドでポリシーをオーバーライドします。
 
@@ -1373,6 +1385,14 @@
 <translation id="2496180316473517155">閲覧履歴</translation>
 <translation id="2497751676088107779">ユーザー スクリプト</translation>
 <translation id="2497965601277442929">ユーザーに HTTPS 専用モードの有効化を許可しない</translation>
+<translation id="249798396824949930"> ブラウザに <ph name="MAC_OS_NAME" /> で必須ポリシー スコープの検出を許可するかどうかを管理します。
+
+      このポリシーを有効に設定するか、未設定のままにした場合、各ポリシーのスコープは <ph name="MAC_OS_NAME" /> 管理対象プロファイルのスコープによって決まります。
+      このポリシーを無効に設定した場合、すべてのポリシーがマシンスコープ ポリシーとして認識されます。
+
+      このポリシーは、<ph name="MAC_OS_NAME" /> で適切にスコープが設定されたポリシーへの移行をスムーズに行うための一時的なものであり、<ph name="PRODUCT_NAME" /> 107 で削除されます。
+
+      </translation>
 <translation id="2498238926436517902">常にシェルフを自動的に非表示にする</translation>
 <translation id="250022556568924228">このポリシーを設定した場合、デバイスのローカル アカウントのセッションが開始されると、<ph name="PRODUCT_OS_NAME" /> は利用規約をダウンロードしてユーザーに表示します。利用規約に同意した場合のみ、ユーザーはセッションにログインできます。このポリシーを未設定のままにした場合、利用規約は表示されません。このポリシーは、<ph name="PRODUCT_OS_NAME" /> による利用規約のダウンロードが可能な URL に設定する必要があります。利用規約は書式なしテキストで、MIME タイプの text/plain として配信してください。マークアップ形式は使用できません。</translation>
 <translation id="250151283451228612"><ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> が有効な場合に、<ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> では電力ピークシフトのバッテリーのしきい値をパーセントで設定できます。
@@ -2562,6 +2582,7 @@
 <translation id="3838094946886335701">このポリシーを設定した場合（推奨）、プロトコル ハンドラのリストを登録できます。プロトコル ハンドラはユーザーが登録するプロトコル ハンドラと統合され、両方のセットが使用されます。protocol プロパティには「mailto」などのスキームを設定します。URL プロパティには、「protocol」フィールドで指定したスキームを処理するアプリケーションの URL パターンを設定します。このパターンに「%s」プレースホルダを含めて、処理された URL で置き換えることもできます。
 
       ユーザーはポリシーで登録されたプロトコル ハンドラを削除することはできません。ただし、新しいデフォルトのハンドラをインストールすることにより、ポリシーでインストールされたプロトコル ハンドラを変更できます。</translation>
+<translation id="3851443303439635700">JavaScript の setTimeout() 関数のクランプを開始するネストのしきい値を管理します</translation>
 <translation id="3857816702027059082"><ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> を有効にする URL のリストを指定します。
 
       このポリシーでは、パソコンから一連のシグナルを受け取る認証フローに含める URL を指定できます。
@@ -3062,6 +3083,7 @@
 <translation id="4472740647327683596">ページの幅（マイクロメートル）</translation>
 <translation id="4474167089968829729">パスワード マネージャーへのパスワード保存を有効にする</translation>
 <translation id="4476769083125004742">このポリシーを <ph name="BLOCK_GEOLOCATION_SETTING" /> に設定した場合、Android アプリは位置情報にアクセスできません。このポリシーを他の値に設定するか未設定のままにした場合、Android アプリで位置情報へのアクセスが必要になったときには、ユーザーに同意が求められます。</translation>
+<translation id="4478248026668918517">ポリシー スコープの検出をブロックする。</translation>
 <translation id="4479671363221255277">このポリシーでは、ホスト オペレーティング システムのファイル システム内にあるファイルやディレクトリに File System API 経由で読み取りアクセスすることに関して、ユーザーに許可を要求できるサイトの URL パターンリストを指定できます。
 
       このポリシーを未設定のままにした場合、<ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
@@ -4565,6 +4587,7 @@
 <translation id="6282799760374509080">音声キャプチャを許可または拒否する</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6287310684159482272">Cookie の設定</translation>
+<translation id="6299147100249359151">ポリシー スコープの検出を許可する。</translation>
 <translation id="6300871921951390976">このポリシーが True に設定されている場合、ユーザーにはデバイスのリリース チャンネルの変更のみが許可されます。このポリシーが False か未設定の場合、ユーザーはチャンネルを変更できません。
 
       <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> の設定は、<ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> が False に設定されている場合にのみ適用されます。</translation>

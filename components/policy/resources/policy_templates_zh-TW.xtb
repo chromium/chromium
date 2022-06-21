@@ -147,6 +147,7 @@
 <translation id="1160939557934457296">停用略過安全瀏覽警告網頁繼續進行</translation>
 <translation id="1163080558183062209">停用拒絕清單上的印表機類型</translation>
 <translation id="117059611145966538">外部列印伺服器</translation>
+<translation id="117080706484659953">允許 <ph name="MAC_OS_NAME" /> 上的政策範圍偵測</translation>
 <translation id="1171785618439752042">你可以透過這項政策，指定從 <ph name="MS_AD_NAME" /> 伺服器提出 Kerberos 票證要求時可使用哪些加密類型。
 
       如果將這項政策的值設為：
@@ -923,6 +924,17 @@
 <translation id="1962864958436828230">設定防止資料外洩的剪貼簿資料大小最低限制</translation>
 <translation id="1964634611280150550">無痕模式已停用</translation>
 <translation id="1964802606569741174">這項政策對 Android YouTube 應用程式沒有影響。如要強制採用 YouTube 安全模式，則必須禁止下載 Android YouTube 應用程式。</translation>
+<translation id="1965363065727209968">setTimeout(…, 0) 常用來細分長時間的 JavaScript 工作。
+          將這項政策設為啟用時，系統不會主動延遲間隔時間小於 4 毫秒的 setTimeouts 和 setIntervals。
+          這麼做可以提升短期間的執行效能，但濫用 API 的網站最終仍會將 setTimeouts 設為延遲。
+
+          這可能會改變網頁上的工作排序，進而導致必須以某種方法透過特定排序完成工作的網站發生異常行為，
+          也可能影響將許多 setTimeout() 設為逾時 0 毫秒 (例如增加 CPU 負載) 的網站。
+
+          對於未設定這項政策的使用者，<ph name="PRODUCT_NAME" /> 將在穩定版上逐步推出變更。
+
+          這項政策是暫時性的，預計會在 <ph name="PRODUCT_NAME" /> 107 中移除。如果有需要的企業眾多，我們將會延長這個期限。
+          </translation>
 <translation id="1967334955994230472">停用 Projector</translation>
 <translation id="1969212217917526199">覆寫遠端存取主機的偵錯版本政策。
 
@@ -1453,6 +1465,14 @@
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2497751676088107779">使用者指令碼</translation>
 <translation id="2497965601277442929">禁止使用者啟用僅限 HTTPS 模式</translation>
+<translation id="249798396824949930"> 這項政策可控管瀏覽器是否可以偵測 <ph name="MAC_OS_NAME" /> 上的強制政策範圍。
+
+      如果將這項政策設為啟用或不設定，系統會根據 <ph name="MAC_OS_NAME" /> 受管理設定檔的範圍，決定每項政策的範圍。
+      如果將這項政策設為停用，則所有政策都將被視為裝置範圍內的政策。
+
+      這項政策是暫時性的，目的是協助使用者能順利在 <ph name="MAC_OS_NAME" /> 上轉換至適當範圍的政策，且將於 <ph name="PRODUCT_NAME" /> 107 中移除。
+
+      </translation>
 <translation id="2498238926436517902">一律自動隱藏檔案櫃</translation>
 <translation id="250022556568924228">如果設定這項政策，<ph name="PRODUCT_OS_NAME" />會下載《服務條款》，並在裝置本機帳戶的工作階段啟動時向使用者顯示。使用者必須接受《服務條款》才能登入工作階段。
 
@@ -2658,6 +2678,7 @@
 <translation id="3838094946886335701">你可以透過這項政策 (只能設為「建議」) 註冊通訊協定處理常式的清單，其中的通訊協定處理常式會與使用者所註冊的合併，二種皆可供使用。請將「protocol」(通訊協定) 屬性設為「mailto」等類型的網路通訊協定配置，並將「URL」(網址) 屬性設為處理該網路通訊協定的應用程式所使用的網址模式 (這裡的網路通訊協定指的是「通訊協定」欄位中所指定的網路通訊協定配置)。模式可包含「%s」預留位置，將替換為受處理的網址。
 
       使用者無法移除透過政策註冊的通訊協定處理常式，但可透過安裝新的預設處理常式，變更透過政策安裝的通訊協定處理常式。</translation>
+<translation id="3851443303439635700">控制巢狀閾值，系統會在達到此閾值之前延遲啟動 JavaScript setTimeout() 函式</translation>
 <translation id="3857816702027059082">針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
 
       透過這項政策，你可以指定要讓哪些網址加入認證流程，接收裝置傳送的信號。
@@ -3177,6 +3198,7 @@
 <translation id="4472740647327683596">頁面的寬度 (以微米為單位)</translation>
 <translation id="4474167089968829729">允許將密碼儲存到密碼管理員</translation>
 <translation id="4476769083125004742">如果將這項政策設為 <ph name="BLOCK_GEOLOCATION_SETTING" />，Android 應用程式將無法存取位置資訊。如果將這項政策設為任何其他值或不予設定，當 Android 應用程式要存取位置資訊時，會詢問使用者是否同意。</translation>
+<translation id="4478248026668918517">封鎖政策範圍偵測。</translation>
 <translation id="4479671363221255277">你可以透過這項政策建立網址模式清單，指定哪些網站可以要求使用者授予讀取權限，以透過 File System API 讀取主機作業系統中檔案系統的檔案或目錄。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
@@ -4740,6 +4762,7 @@
 <translation id="6282799760374509080">允許或拒絕擷取音訊</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6287310684159482272">Cookie 設定</translation>
+<translation id="6299147100249359151">允許政策範圍偵測。</translation>
 <translation id="6300871921951390976">必須將這項政策設為 True，使用者才可變更裝置的發布版本。如果將這項政策設為 False 或不設定，使用者就不可變更版本。
 
       只有將 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> 設為 False，<ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 設定才會生效。</translation>

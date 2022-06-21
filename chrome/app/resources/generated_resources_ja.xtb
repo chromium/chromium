@@ -1902,6 +1902,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{1 件のサポートされていないアプリを削除}other{# 件のサポートされていないアプリを削除}}</translation>
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> のデバイス名を変更</translation>
 <translation id="2777251078198759550">このコンテナを削除</translation>
+<translation id="2778471504622896352">ChromeOS ランチャーにリモートアプリを追加する</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux アプリケーションのインストール中にエラーが発生しました</translation>
 <translation id="2783298271312924866">ダウンロード済み</translation>
@@ -3532,6 +3533,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />、他 <ph name="NUMBER_OF_OTHER_SWITCHES" /> 個のスイッチ</translation>
 <translation id="439266289085815679">Bluetooth 設定は <ph name="USER_EMAIL" /> によって管理されています。</translation>
 <translation id="4392896746540753732">設定ファイルを編集します</translation>
+<translation id="4393713825278446281">「<ph name="PRIMARY_EMAIL" />」に保存されているファスト ペアリング デバイス</translation>
 <translation id="4394049700291259645">無効にする</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{すべてを開く(&amp;O)}=1{ブックマークを開く(&amp;O)}other{すべて（{COUNT} 個）を開く(&amp;O)}}</translation>
 <translation id="4397372003838952832">このパスワードを覚えておく必要はありません。<ph name="EMAIL" /> の <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されます。</translation>
@@ -3761,6 +3763,7 @@
 <translation id="4615586811063744755">Cookie が選択されていません</translation>
 <translation id="461661862154729886">電源</translation>
 <translation id="4617001782309103936">短すぎます</translation>
+<translation id="4617019240346358451">「<ph name="EXTENSION_NAME" />」を使用するにはページを更新してください</translation>
 <translation id="4617270414136722281">拡張機能のオプション</translation>
 <translation id="4617880081511131945">接続を確立できません</translation>
 <translation id="4619564267100705184">本人確認</translation>
@@ -3975,6 +3978,7 @@
 <translation id="4833683849865011483">プリント サーバーで 1 個のプリンタが見つかりました</translation>
 <translation id="4836504898754963407">フィンガープリントの管理</translation>
 <translation id="4837128290434901661">Google 検索に戻しますか？</translation>
+<translation id="4837165100461973682">変更を適用するにはページを更新してください</translation>
 <translation id="4837926214103741331">このデバイスを使用する権限がありません。ログイン権限については、デバイスの所有者にお問い合わせください。</translation>
 <translation id="4837952862063191349">ロックを解除してローカルデータを復元するには、<ph name="DEVICE_TYPE" /> の以前のパスワードを入力してください。</translation>
 <translation id="4838170306476614339">スマートフォンの写真、メディア、通知を表示します</translation>
@@ -4284,6 +4288,7 @@
 <translation id="5150254825601720210">Netscape 証明書 SSL サーバー名</translation>
 <translation id="5151354047782775295">ディスクの空き領域を確保してください。十分な空き領域がない場合、一部のデータが自動的に削除される可能性があります</translation>
 <translation id="5153234146675181447">スマートフォンを削除</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> の詳細設定</translation>
 <translation id="5154702632169343078">件名</translation>
 <translation id="5155327081870541046">検索するサイトのショートカット（例: 「@bookmarks」）をアドレスバーに入力します。続けて、設定したキーボード ショートカットを押して、検索語句を入力します。</translation>
@@ -5912,6 +5917,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> がリモートで追加されました</translation>
 <translation id="6790820461102226165">ユーザーを追加...</translation>
 <translation id="6793604637258913070">テキスト キャレットが表示されるか移動したときに強調表示する</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">自動スキャンを使用すると、画面上のアイテム間を自動的に移動できます。アイテムがハイライト表示されているときに「選択」を押すとアクティブになります。</translation>
 <translation id="6795884519221689054">パンダ</translation>
 <translation id="6797493596609571643">エラーが発生しました。</translation>
@@ -7782,6 +7788,7 @@
 <translation id="8642947597466641025">テキストを拡大する</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google の高度な保護機能に送信してスキャンしますか？</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Cookie なし}=1{1 件の Cookie がブロックされています}other{# 件の Cookie がブロックされています}}</translation>
+<translation id="864423554496711319">アカウントに保存されているデバイス</translation>
 <translation id="8644655801811752511">このセキュリティ キーをリセットできません。キーの挿入直後にリセットしてみてください。</translation>
 <translation id="8645354835496065562">センサーへのアクセスを引き続き許可する</translation>
 <translation id="8645920082661222035">危険なイベントの発生を予測して警告します</translation>

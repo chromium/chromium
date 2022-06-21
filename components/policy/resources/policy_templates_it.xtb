@@ -149,6 +149,7 @@
 <translation id="1160939557934457296">Disattiva procedendo dalla pagina di avviso Navigazione sicura</translation>
 <translation id="1163080558183062209">Disattiva tipi di stampanti nell'elenco di tipi non consentiti</translation>
 <translation id="117059611145966538">Server di stampa esterni</translation>
+<translation id="117080706484659953">Consenti il rilevamento dell'ambito dei criteri su <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171785618439752042">La configurazione del criterio consente di determinare quali tipi di crittografia sono consentiti quando vengono richiesti ticket Kerberos a un server <ph name="MS_AD_NAME" />.
 
       La configurazione del criterio su:
@@ -943,6 +944,17 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="1962864958436828230">Imposta le dimensioni minime dei dati per la limitazione relativa agli appunti, al fine di impedire la fuga di dati</translation>
 <translation id="1964634611280150550">Modalità di navigazione in incognito non attiva</translation>
 <translation id="1964802606569741174">Questa norma non ha effetto sull'app YouTube per Android. Se è necessario applicare la modalità di protezione di YouTube, l'installazione dell'app YouTube per Android non deve essere consentita.</translation>
+<translation id="1965363065727209968">setTimeout(…, 0) viene comunemente utilizzato per suddividere le attività JavaScript lunghe.
+          Se il criterio viene impostato su Enabled, i valori di setTimeouts e setIntervals con un intervallo inferiore a 4 ms non vengono limitati in modo aggressivo.
+          Ciò migliora le prestazioni a breve termine, ma in definitiva i valori di setTimeouts dei siti web che abusano dell'API verranno fatti rientrare nei limiti.
+
+          L'operazione potrebbe modificare l'ordine delle attività su una pagina web, causando comportamenti imprevisti sui siti che dipendono in qualche misura da un ordine specifico.
+          Potrebbe anche incidere sui siti che utilizzano spesso setTimeout() con timeout di 0 ms, ad es. causando un aumento del carico della CPU.
+
+          Per gli utenti per i quali il criterio non è stato impostato, <ph name="PRODUCT_NAME" /> renderà disponibile gradualmente la modifica sul canale stabile.
+
+          Si tratta di un criterio temporaneo di cui è prevista la rimozione in <ph name="PRODUCT_NAME" /> 107. Questo termine potrebbe essere esteso nel caso in cui le aziende dovessero averne bisogno.
+          </translation>
 <translation id="1967334955994230472">Disattiva Proiettore</translation>
 <translation id="1969212217917526199">Sostituisce le build di debug dell'host di accesso remoto.
 
@@ -1487,6 +1499,14 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
 <translation id="2497751676088107779">Script utente</translation>
 <translation id="2497965601277442929">Non consentire agli utenti di attivare la Modalità solo HTTPS</translation>
+<translation id="249798396824949930"> Consente di stabilire se il browser può rilevare l'ambito dei criteri obbligatori su <ph name="MAC_OS_NAME" /> o meno.
+
+      Se il criterio viene impostato su Enabled o se non viene configurato, l'ambito di ogni criterio viene determinato dall'ambito del profilo gestito di <ph name="MAC_OS_NAME" />.
+      Se viene impostato su Disabled, tutti i criteri vengono riconosciuti come criterio dell' ambito macchina.
+
+      Questo criterio è temporaneo per semplificare la transizione ai criteri con ambito corretto su <ph name="MAC_OS_NAME" /> e verrà rimosso in <ph name="PRODUCT_NAME" /> 107.
+
+      </translation>
 <translation id="2498238926436517902">Nascondi sempre automaticamente la barra delle app</translation>
 <translation id="250022556568924228">Se il criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> scarica i Termini di servizio e li presenta agli utenti a ogni avvio di sessione con un account locale del dispositivo. Gli utenti possono accedere alla sessione dopo aver accettato i Termini di servizio.
 
@@ -2705,6 +2725,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3838094946886335701">Se il criterio viene impostato (solo come consigliato), puoi registrare un elenco di gestori di protocolli che vengono uniti a quelli registrati dall'utente, con conseguente utilizzo di entrambi i gruppi. Imposta la proprietà "protocollo" sullo schema (ad esempio "mailto") e la proprietà "URL" sul pattern URL dell'applicazione che gestisce lo schema specificato nel campo "protocollo". Il pattern può includere un segnaposto "%s", che viene sostituito dall'URL gestito.
 
       Gli utenti non possono rimuovere un gestore di protocollo registrato tramite il criterio. Se però installano un nuovo gestore predefinito, possono cambiare i gestori di protocolli installati in base al criterio.</translation>
+<translation id="3851443303439635700">Controlla la soglia di nidificazione prima della quale la funzione JavaScript setTimeout() inizia a essere bloccata</translation>
 <translation id="3857816702027059082">Consente di attivare <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> per un elenco di URL.
 
       La configurazione di questo criterio consente di specificare gli URL autorizzati a far parte del flusso di attestazione per ricevere l'insieme di segnali dalla macchina.
@@ -3223,6 +3244,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4472740647327683596">La larghezza della pagina in micron.</translation>
 <translation id="4474167089968829729">Attiva il salvataggio delle password in Gestione password</translation>
 <translation id="4476769083125004742">Se la norma viene impostata su <ph name="BLOCK_GEOLOCATION_SETTING" />, le app Android non possono accedere ai dati sulla posizione. Se la norma viene impostata su qualsiasi altro valore o non viene impostata, all'utente viene chiesta l'autorizzazione quando un'app Android vuole accedere ai dati sulla posizione.</translation>
+<translation id="4478248026668918517">Blocca il rilevamento dell'ambito dei criteri.</translation>
 <translation id="4479671363221255277">La configurazione del criterio consente di elencare pattern URL che specificano quali siti possono richiedere agli utenti l'accesso di lettura di file o directory nel file system del sistema operativo host tramite l'API file system.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, vengono applicate le impostazioni personali degli utenti.
@@ -4824,6 +4846,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6282799760374509080">Consenti o nega acquisizione audio</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6287310684159482272">Impostazioni dei cookie</translation>
+<translation id="6299147100249359151">Consenti il rilevamento dell'ambito dei criteri.</translation>
 <translation id="6300871921951390976">Gli utenti sono autorizzati a modificare il canale di rilascio del dispositivo solo se questo criterio è impostato su True. Se questo criterio è impostato su False o non viene configurato, gli utenti non potranno modificare il canale.
 
       L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto solo se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> è impostato su False.</translation>

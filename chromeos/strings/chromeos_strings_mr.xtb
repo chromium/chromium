@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">वापरकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">बाह्य डिव्हाइससाठी फर्मवेअर अपडेट करण्याची विंडो खुली आहे. <ph name="NUM_UPDATES" /> अपडेट उपलब्ध आहेत.</translation>
+<translation id="1145516343487477149">मदतपर लेख आणि Chromebook शी संबंधित सामान्य प्रश्नांची उत्तरे पहा</translation>
 <translation id="1165039591588034296">एरर</translation>
 <translation id="1175697296044146566">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे.</translation>
 <translation id="1175951029573070619">सरासरी (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">गडद थीम बंद करा</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">गडद मोड बंद करा</translation>
+<translation id="1881188606372070653">कायदेशीर कारणांसाठी आशय बदलांची विनंती करण्यासाठी <ph name="BEGIN_LINK1" />कायदेशीर मदत पेज<ph name="END_LINK1" /> वर जा. काही खाते आणि सिस्टीम माहिती Google ला पाठवली जाईल. आम्ही आमचे <ph name="BEGIN_LINK2" />गोपनीयता धोरण<ph name="END_LINK2" /> आणि <ph name="BEGIN_LINK3" />सेवा अटी<ph name="END_LINK3" /> यांच्या अधीन राहून, तुम्ही आम्हाला दिलेल्या माहितीचा वापर तांत्रिक समस्या सोडवण्यात आणि आमच्या सेवांमध्ये सुधारणा करण्यात मदत करण्यासाठी करू.</translation>
 <translation id="1887850431809612466">हार्डवेअर पुनरावृत्ती</translation>
 <translation id="1905710495812624430">कमाल अनुमती असलेले प्रयत्न ओलांडले.</translation>
 <translation id="1908234395526491708">UDP विनंती पूर्ण करता आली नाही</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">टचस्क्रीन</translation>
 <translation id="6381741036071372448">तुमच्या कीबोर्डची चाचणी करा</translation>
 <translation id="6388847657025262518">स्कॅनरचा दस्तऐवज फीडर अडकला आहे. फीडर तपासा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="6394634179843537518">फाइल जोडा</translation>
 <translation id="6410257289063177456">इमेज फाइल</translation>
 <translation id="641081527798843608">जुळणारा विषय</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

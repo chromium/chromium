@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">کاربر</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">پنجره به‌روزرسانی سفت‌افزار برای دستگاه‌های خارجی باز است. <ph name="NUM_UPDATES" /> به‌روزرسانی دردسترس است</translation>
+<translation id="1145516343487477149">‏برای سؤالات متداول Chromebook، مقاله راهنما و پاسخ پیدا کنید</translation>
 <translation id="1165039591588034296">خطا</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> این <ph name="DEVICE_TYPE" /> را مدیریت می‌کند.</translation>
 <translation id="1175951029573070619">متوسط (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -103,6 +104,7 @@
 <translation id="1745577949879301685">تصویرها بار نشد. اتصال شبکه را بررسی کنید یا دوباره برای بار کردن تصویرها تلاش کنید.</translation>
 <translation id="1751249301761991853">شخصی</translation>
 <translation id="1753496554272155572">خروج از پیش‌نمای کاغذدیواری</translation>
+<translation id="1755556344721611131">برنامه عیب‌یابی</translation>
 <translation id="175763766237925754">خوب (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -119,6 +121,7 @@
 <translation id="1871569928317311284">خاموش کردن زمینه تیره</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">خاموش کردن حالت تاریک</translation>
+<translation id="1881188606372070653">‏برای درخواست تغییر محتوا به‌دلایل حقوقی، به <ph name="BEGIN_LINK1" />صفحه «راهنمای حقوقی»<ph name="END_LINK1" /> بروید. ممکن است برخی اطلاعات سیستم و حساب به Google ارسال شود. از اطلاعاتی که به ما می‌دهید برای رسیدگی به مشکلات فنی و بهبود سرویس‌هایمان، مطابق با <ph name="BEGIN_LINK2" />خطمشی رازداری<ph name="END_LINK2" /> و <ph name="BEGIN_LINK3" />شرایط خدمات<ph name="END_LINK3" /> خود استفاده خواهیم کرد.</translation>
 <translation id="1887850431809612466">بازبینی سخت‌افزار</translation>
 <translation id="1905710495812624430">به حداکثر تعداد مجاز تلاش رسیده‌اید.</translation>
 <translation id="1908234395526491708">‏خطاهای درخواست UDP</translation>
@@ -622,6 +625,7 @@
 <translation id="6379086450106841622">صفحه لمسی</translation>
 <translation id="6381741036071372448">امتحان کردن صفحه‌کلید</translation>
 <translation id="6388847657025262518">تغذیه‌کننده سند اسکنر گیر کرده است. تغذیه‌کننده را بررسی کنید و دوباره امتحان کنید.</translation>
+<translation id="6394634179843537518">افزودن فایل</translation>
 <translation id="6410257289063177456">فایل‌های تصویری</translation>
 <translation id="641081527798843608">مطابقت موضوع</translation>
 <translation id="6423239382391657905">‏باز کردن VPN</translation>

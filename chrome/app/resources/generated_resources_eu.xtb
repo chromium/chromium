@@ -1907,6 +1907,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Ezabatu bateragarria ez den aplikazio bat}other{Ezabatu bateragarriak ez diren # aplikazio}}</translation>
 <translation id="2776560192867872731">Aldatu <ph name="DEVICE_NAME" /> gailuaren izena</translation>
 <translation id="2777251078198759550">Ezabatu edukiontzia</translation>
+<translation id="2778471504622896352">Gehitu urruneko aplikazioak Chrome OS-ren abiarazlean</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Errore bat gertatu da Linux aplikazioa instalatzean</translation>
 <translation id="2783298271312924866">Deskargatu da</translation>
@@ -3542,6 +3543,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> eta beste <ph name="NUMBER_OF_OTHER_SWITCHES" /> erabilerraztasun-etengailu</translation>
 <translation id="439266289085815679"><ph name="USER_EMAIL" /> erabiltzaileak kontrolatzen du Bluetooth konfigurazioa.</translation>
 <translation id="4392896746540753732">Editatu konfigurazio-fitxategia</translation>
+<translation id="4393713825278446281">Erabili Parekatze bizkorra <ph name="PRIMARY_EMAIL" /> kontuan gordetako gailuekin</translation>
 <translation id="4394049700291259645">Desgaitu</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Ireki guztiak}=1{&amp;Ireki laster-marka}other{&amp;Ireki guztiak ({COUNT})}}</translation>
 <translation id="4397372003838952832">Ez duzu pasahitza gogoratu beharko. <ph name="EMAIL" /> kontuari dagokion <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan gordeko da.</translation>
@@ -3771,6 +3773,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4615586811063744755">ez da hautatu cookierik</translation>
 <translation id="461661862154729886">Energia-iturburua</translation>
 <translation id="4617001782309103936">Laburregia</translation>
+<translation id="4617019240346358451">Kargatu berriro orria "<ph name="EXTENSION_NAME" />" erabiltzeko</translation>
 <translation id="4617270414136722281">Luzapenaren aukerak</translation>
 <translation id="4617880081511131945">Ezin da ezarri konexioa</translation>
 <translation id="4619564267100705184">Egiaztatu zeu zarela</translation>
@@ -3986,6 +3989,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4833683849865011483">Inprimagailu bat aurkitu da inprimatze-zerbitzarian</translation>
 <translation id="4836504898754963407">Kudeatu hatz-markak</translation>
 <translation id="4837128290434901661">Google Bilaketa zerbitzura itzuli nahi duzu?</translation>
+<translation id="4837165100461973682">Aldaketa aplikatzeko, kargatu orria berriro</translation>
 <translation id="4837926214103741331">Ez duzu gailua erabiltzeko baimenik. Saioa hasteko baimena lortzeko, jarri gailuaren jabearekin harremanetan.</translation>
 <translation id="4837952862063191349">Tokiko datuak desblokeatzeko eta gailuko datuak leheneratzeko, idatzi <ph name="DEVICE_TYPE" /> gailuaren pasahitz zaharra.</translation>
 <translation id="4838170306476614339">Ikusi telefonoko argazkiak, multimedia-elementuak eta jakinarazpenak</translation>
@@ -4295,6 +4299,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="5150254825601720210">Netscape ziurtagiriaren SSL zerbitzariaren izena</translation>
 <translation id="5151354047782775295">Egin tokia diskoan; bestela, automatikoki ezabatuko dira datu jakin batzuk</translation>
 <translation id="5153234146675181447">Ahaztu telefonoa</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> inprimagailuaren ezarpen aurreratuak</translation>
 <translation id="5154702632169343078">Hartzailea</translation>
 <translation id="5155327081870541046">Helbide-barran, idatzi zer webgune edo ataletan egin nahi duzun bilaketa; adibidez, "@laster-markak". Ondoren, sakatu erabili ohi duzun lasterbidea eta idatzi bilaketa-hitza.</translation>
@@ -5927,6 +5932,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6790497603648687708">Urrunetik gehitu da <ph name="EXTENSION_NAME" /></translation>
 <translation id="6790820461102226165">Gehitu pertsona bat...</translation>
 <translation id="6793604637258913070">Agertzen edo mugitzen denean, nabarmendu testu-kurtsorea</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Pantailan automatikoki mugitzeko aukerari esker, automatikoki joan zaitezke pantailako elementu batetik bestera. Elementu bat nabarmentzen denean, sakatu "Hautatu" hura aktibatzeko.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Arazo bat izan da.</translation>
@@ -7798,6 +7804,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8642947597466641025">Handitu testua</translation>
 <translation id="8643443571868262066">Baliteke <ph name="FILE_NAME" /> arriskutsua izatea. Google-ren Babes aurreratua programara bidali nahi duzu aztertzeko?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Ez da blokeatu cookierik}=1{1 cookie blokeatu da}other{# cookie blokeatu dira}}</translation>
+<translation id="864423554496711319">Kontuan gordetako gailuak</translation>
 <translation id="8644655801811752511">Ezin da berrezarri segurtasun-giltza. Saiatu giltza sartu eta berehala berrezartzen.</translation>
 <translation id="8645354835496065562">Jarraitu sentsoreetarako sarbidea baimentzen</translation>
 <translation id="8645920082661222035">Gertaera arriskutsuak iragartzen ditu eta haien berri ematen dizu gertatu aurretik.</translation>

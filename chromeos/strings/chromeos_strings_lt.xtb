@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Naudotojas</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Išorinių įrenginių programinės aparatinės įrangos atnaujinimo langas atidarytas. Pasiekiama naujinių: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1145516343487477149">Pagalbos straipsnių ir atsakymų į dažnai užduodamus su „Chromebook“ susijusius klausimus paieška</translation>
 <translation id="1165039591588034296">Klaida</translation>
 <translation id="1175697296044146566">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Vidutiniškas (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Išjungti tamsiąją temą</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Išjungti tamsų režimą</translation>
+<translation id="1881188606372070653">Eikite į <ph name="BEGIN_LINK1" />teisinės pagalbos puslapį<ph name="END_LINK1" /> ir pateikite užklausą pakeisti turinį dėl teisinių priežasčių. Dalis informacijos apie paskyrą ir sistemą gali būti išsiųsta į sistemą „Google“. Informacija, kurią pateiksite, mums padės spręsti technines problemas ir tobulinti teikiamas paslaugas. Ją naudosime laikydamiesi <ph name="BEGIN_LINK2" />privatumo politikos<ph name="END_LINK2" /> ir <ph name="BEGIN_LINK3" />paslaugų teikimo sąlygų<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Aparatinės įrangos taisymas</translation>
 <translation id="1905710495812624430">Viršytas didžiausias bandymų skaičius.</translation>
 <translation id="1908234395526491708">Nepavyko pateikti UDP užklausų</translation>
@@ -623,6 +625,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6379086450106841622">Jutiklinis ekranas</translation>
 <translation id="6381741036071372448">Klaviatūros išbandymas</translation>
 <translation id="6388847657025262518">Skaitytuvo dokumentų tiektuvas užstrigo. Patikrinkite tiektuvą ir bandykite dar kartą.</translation>
+<translation id="6394634179843537518">Pridėti failą</translation>
 <translation id="6410257289063177456">Vaizdo failai</translation>
 <translation id="641081527798843608">Temos atitiktis</translation>
 <translation id="6423239382391657905">Atidaryti virtualųjį privatųjį tinklą</translation>

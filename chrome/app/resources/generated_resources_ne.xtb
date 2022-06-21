@@ -1905,6 +1905,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{चलाउन नमिल्ने एउटा एप हटाउनुहोस्}other{चलाउन नमिल्ने # वटा एप हटाउनुहोस्}}</translation>
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> नामक डिभाइसको नाम बदल्नुहोस्</translation>
 <translation id="2777251078198759550">यो कन्टेनर मेटाउनुहोस्</translation>
+<translation id="2778471504622896352">ChromeOS लन्चरमा रिमोट एपहरू हाल्नुहोस्</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="2783298271312924866">डाउनलोड गरिएको</translation>
@@ -2221,6 +2222,7 @@
 <translation id="3067198360141518313">यो प्लगइन चलाउनुहोस्</translation>
 <translation id="3071624960923923138">एउटा नयाँ ट्याब खोल्न यहाँ क्लिक गर्न सक्नुहुन्छ</translation>
 <translation id="3072775339180057696">साइटलाई <ph name="FILE_NAME" /> हेर्न दिने हो?</translation>
+<translation id="3074499504015191586">पूरै पेज अनुवाद गर्नुहोस्</translation>
 <translation id="3075874217500066906">पावरवास प्रक्रिया सुरु गर्नको लागि एक फेरि सुरु गर्न आवश्यक छ। सुरु गरेपछि तपाइँलाई के तपाइँ अघि बढ्न चाहनुहुन्छ भनेर निश्चय गर्न सोधिनेछ।</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">यो डिभाइसमा मात्र सुरक्षित गरियोस्</translation>
@@ -3540,6 +3542,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> र अन्य <ph name="NUMBER_OF_OTHER_SWITCHES" /> वटा स्विच थपिए</translation>
 <translation id="439266289085815679">ब्लुटुथ कन्फिगुरेसन <ph name="USER_EMAIL" /> द्वारा नियन्त्रित छ।</translation>
 <translation id="4392896746540753732">कन्फिगुरेसन फाइल सम्पादन गर्नुहोस्</translation>
+<translation id="4393713825278446281"><ph name="PRIMARY_EMAIL" /> मा सेभ गरिएका डिभाइसहरू फास्ट पेयर गर्नुहोस्</translation>
 <translation id="4394049700291259645">असक्षम गर्नुहोस्</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;सबै खोल्नुहोस्}=1{&amp;पुस्तक चिन्ह लगाइएको साइट खोल्नुहोस्}other{&amp;सबै खोल्नुहोस् ({COUNT})}}</translation>
 <translation id="4397372003838952832">तपाईंले यो पासवर्ड याद गरिराख्नु पर्दैन। यो पासवर्ड <ph name="EMAIL" /> को <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिने छ।</translation>
@@ -3769,6 +3772,7 @@
 <translation id="4615586811063744755">कुनै पनि कुकी चयन गरिएको छैन</translation>
 <translation id="461661862154729886">चार्जिङको स्रोत</translation>
 <translation id="4617001782309103936">अत्यन्त छोटो</translation>
+<translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" प्रयोग गर्न यो पेज रिलोड गर्नुहोस्</translation>
 <translation id="4617270414136722281">विस्तार सम्बन्धी विकल्पहरू</translation>
 <translation id="4617880081511131945">कनेक्ट गर्न सकिएन</translation>
 <translation id="4619564267100705184">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
@@ -3984,6 +3988,7 @@
 <translation id="4833683849865011483">प्रिन्ट सर्भरमा १ प्रिन्टर फेला पर्‍यो</translation>
 <translation id="4836504898754963407">फिंगरप्रिन्टहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4837128290434901661">फेरि Google खोज प्रयोग गर्ने हो?</translation>
+<translation id="4837165100461973682">आफूले गरेका परिवर्तनहरू लागू गर्न यो पेज रिलोड गर्नुहोस्</translation>
 <translation id="4837926214103741331">तपाईंलाई यो डिभाइस प्रयोग गर्ने अधिकार दिइएको छैन। साइन-इन अनुमतिको लागि यन्त्र मालिकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="4837952862063191349">तपाईँको स्थानीय डेटा रिस्टोर गर्न, कृपया तपाईँको पुरानो <ph name="DEVICE_TYPE" /> पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
 <translation id="4838170306476614339">आफ्नो फोनका फोटो, मिडिया तथा सूचनाहरू हेर्नुहोस्</translation>
@@ -4293,6 +4298,7 @@
 <translation id="5150254825601720210">नेटस्केप प्रमाणपत्र SSL सर्भर नाम</translation>
 <translation id="5151354047782775295">डिस्कको ठाउँ खाली गर्नुहोस् नत्र छनौट गरिएको डेटा स्वतः मेटिन सक्छ</translation>
 <translation id="5153234146675181447">फोन बिर्सनुहोस्</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> को लागि उन्नत सेटिङहरू</translation>
 <translation id="5154702632169343078">विषय</translation>
 <translation id="5155327081870541046">एड्रेस बारमा आफूले जुन साइटमा खोज्न चाहेको हो सो साइटको सर्टकट (जस्तै "@bookmarks") टाइप गर्नुहोस्। अनि किबोर्डमा आफ्नो रोजाइको सर्टकट थिचेर खोज पद हाल्नुहोस्।</translation>
@@ -5067,6 +5073,7 @@
 <translation id="5933522550144185133"><ph name="APP_NAME" /> ले तपाईंको क्यामेरा र माइक्रोफोन प्रयोग गर्दै छ</translation>
 <translation id="5935158534896975820">प्रमाणपत्रमा हस्ताक्षर गर्ने अनुरोध तयार पार्दै (सर्भरमा प्रतीक्षा गर्दै)</translation>
 <translation id="5935656526031444304">सुरक्षित ब्राउजिङसम्बन्धी सेटिङको व्यवस्थापन गर्नुहोस्</translation>
+<translation id="5936065461722368675">पूरै पेज अनुवाद गर्नुहोस्</translation>
 <translation id="5938002010494270685">सुरक्षासम्बन्धी अपडेट उपलब्ध छ</translation>
 <translation id="5939518447894949180">रिसेट गर्नुहोस्</translation>
 <translation id="5939719276406088041">सर्टकट सिर्जना गर्न सकिँदैन</translation>
@@ -5927,6 +5934,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> लाई टाढैबाट थपिएको थियो</translation>
 <translation id="6790820461102226165">व्यक्ति थप्नुहोस्...</translation>
 <translation id="6793604637258913070">पाठको क्योरट देखा पर्दा वा गतिशील हुँदा त्यसलाई हाइलाइट गर्नुहोस्</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">तपाईं अटो-स्क्यान गर्ने सुविधाका सहायताले स्क्रिनमा भएको एउटा वस्तुबाट अर्को वस्तुमा स्वतः जान सक्नुहुन्छ। कुनै वस्तु हाइलाइट गरिएपछि उक्त वस्तु एक्टिभेट गर्न “चयन गर्नुहोस्” थिच्नुहोस्।</translation>
 <translation id="6795884519221689054">पान्डा</translation>
 <translation id="6797493596609571643">ओहो, केही गलत भयो।</translation>
@@ -7799,6 +7807,7 @@
 <translation id="8642947597466641025">पाठ ठुलो बानउनुहोस्</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> हानिकारक हुन सक्छ। यो फाइल सुरक्षित छ कि छैन भनी स्क्यान गर्न यसलाई Google को सुरक्षासम्बन्धी उन्नत सुविधामा पठाउने हो?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{कुनै पनि कुकी ब्लक गरिएको छैन}=1{एउटा कुकी ब्लक गरिएको छ}other{# वटा कुकी ब्लक गरिएका छन्}}</translation>
+<translation id="864423554496711319">तपाईंको खातामा सेभ गरिएका डिभाइसहरू</translation>
 <translation id="8644655801811752511">यो सुरक्षा साँचो रिसेट गर्न सकिएन। साँचो प्रविष्टि गर्नेबित्तिकै यसलाई रिसेट गरी हेर्नुहोस्।</translation>
 <translation id="8645354835496065562">सेन्सरलाई पहुँच राख्ने अनुमति दिन जारी राख्नुहोस्</translation>
 <translation id="8645920082661222035">जोखिमपूर्ण घटनाहरू घट्नुअघि नै तिनको पूर्वानुमान गर्छ र तपाईंलाई त्यसबारे चेतावनी दिन्छ</translation>

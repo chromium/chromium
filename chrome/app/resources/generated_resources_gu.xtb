@@ -1906,6 +1906,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{સપોર્ટ ન કરવામાં આવતી 1 ઍપ કાઢી નાખો}one{સપોર્ટ ન કરવામાં આવતી # ઍપ કાઢી નાખો}other{સપોર્ટ ન કરવામાં આવતી # ઍપ કાઢી નાખો}}</translation>
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> માટે ડિવાઇસનું નામ બદલો</translation>
 <translation id="2777251078198759550">આ કન્ટેનર ડિલીટ કરો</translation>
+<translation id="2778471504622896352">ChromeOS લૉન્ચરમાં રિમોટ ઍપ ઉમેરો</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux ઍપ્લિકેશન ઇન્સ્ટૉલ કરવામાં ભૂલ</translation>
 <translation id="2783298271312924866">ડાઉનલોડ કરેલ</translation>
@@ -3541,6 +3542,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> અને વધુ <ph name="NUMBER_OF_OTHER_SWITCHES" /> સ્વિચ</translation>
 <translation id="439266289085815679">નેટવર્ક ગોઠવણી, <ph name="USER_EMAIL" /> દ્વારા નિયંત્રિત છે.</translation>
 <translation id="4392896746540753732">કન્ફિગ્યુરેશનની ફાઇલમાં ફેરફાર કરો</translation>
+<translation id="4393713825278446281"><ph name="PRIMARY_EMAIL" />માં સાચવવામાં આવેલા ઝડપી જોડાણવાળા ડિવાઇસ</translation>
 <translation id="4394049700291259645">બંધ કરો</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{તમામ URLને &amp;ખોલો}=1{બુકમાર્ક &amp;ખોલો}one{તમામ ({COUNT}) URLને &amp;ખોલો}other{તમામ ({COUNT}) URLને &amp;ખોલો}}</translation>
 <translation id="4397372003838952832">તમારે આ પાસવર્ડ યાદ રાખવાની જરૂર રહેશે નહીં. તેને <ph name="EMAIL" /> માટે <ph name="GOOGLE_PASSWORD_MANAGER" />માં સાચવવામાં આવશે.</translation>
@@ -3770,6 +3772,7 @@
 <translation id="4615586811063744755">કોઈ કુકી પસંદ કરી નથી</translation>
 <translation id="461661862154729886">ઊર્જાનો સૉર્સ</translation>
 <translation id="4617001782309103936">ઘણું નાનું</translation>
+<translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />"નો ઉપયોગ કરવા માટે પેજ ફરીથી લોડ કરો</translation>
 <translation id="4617270414136722281">એક્સ્ટેન્શન વિકલ્પો</translation>
 <translation id="4617880081511131945">કનેક્શન મેળવી શકાતું નથી</translation>
 <translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
@@ -3919,6 +3922,7 @@
 <translation id="4768332406694066911">તમારી પાસે આ સંસ્થાઓના પ્રમાણપત્ર છે કે જે તમને ઓળખે છે</translation>
 <translation id="4770119228883592393">પરવાનગીની વિનંતી કરવામાં આવી, જવાબ આપવા માટે ⌘ + Option + નીચેનો ઍરો દબાવો</translation>
 <translation id="4773112038801431077">Linux અપગ્રેડ કરો</translation>
+<translation id="4774337692467964393">જો Smart Lock ચાલુ કરેલું હોય, તો તમારે પિન અથવા પાસવર્ડ દાખલ કરવાની જરૂર પડશે નહીં</translation>
 <translation id="4775142426314270551">Googleને ક્રૅશ રિપોર્ટ તેમજ નિદાન અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને Chrome અને ChromeOSની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો. કુલ ડેટામાંથી કેટલોક ડેટા Android ઍપ અને Googleના ભાગીદારોને પણ સહાય કરશે. જો તમારા બાળકના Google એકાઉન્ટ માટે વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો તમારા બાળકના Google એકાઉન્ટમાં તમારા બાળકનો Android ડેટા સાચવવામાં આવી શકે છે.</translation>
 <translation id="477647109558161443">ડેસ્કટૉપ શૉર્ટકટ બનાવો</translation>
 <translation id="4776594120007763294">થોડા સમય પછી વાંચી શકવા કોઈ પેજને ઉમેરવા માટે, આ બટન ક્લિક કરો</translation>
@@ -3968,6 +3972,7 @@
 <translation id="4820236583224459650">સક્રિય ટિકિટ તરીકે સેટ કરો</translation>
 <translation id="4821935166599369261">&amp;પ્રોફાઇલિંગ સક્ષમ</translation>
 <translation id="4823484602432206655">વપરાશકર્તા અને ડિવાઇસ સેટિંગ વાંચો અને બદલો</translation>
+<translation id="4823894915586516138">આ પિન અથવા પાસવર્ડ તમારા ફોન પરથી તમે ઍક્સેસ કરો છો તેવી કોઈપણ માહિતી સહિત <ph name="DEVICE_TYPE" /> પરના તમારા ડેટાનું રક્ષણ કરે છે</translation>
 <translation id="4824037980212326045">Linux બૅકઅપ લો અને રિસ્ટોર કરો</translation>
 <translation id="4824958205181053313">સિંક કરવાનું રદ કરીએ?</translation>
 <translation id="4827675678516992122">કનેક્ટ કરી શકાયું નથી</translation>
@@ -3983,6 +3988,7 @@
 <translation id="4833683849865011483">પ્રિન્ટ સર્વરમાંથી 1 પ્રિન્ટર મળ્યું</translation>
 <translation id="4836504898754963407">ફિંગરપ્રિન્ટને મેનેજ કરો</translation>
 <translation id="4837128290434901661">બદલીને પાછા Google Search પર આવીએ?</translation>
+<translation id="4837165100461973682">તમારા ફેરફારોને લાગુ કરવા પેજ ફરીથી લોડ કરો</translation>
 <translation id="4837926214103741331">તમે આ ઉપકરણ વાપરવા માટે અધિકૃત નથી. કૃપા કરીને સાઇન ઇન કરવાની પરવાનગી માટે ઉપકરણના માલિકનો સંપર્ક કરો.</translation>
 <translation id="4837952862063191349">તમારો સ્થાનિક ડેટા અનલૉક અને પુનઃસ્થાપિત કરવા માટે, કૃપા કરીને તમારા જૂના <ph name="DEVICE_TYPE" /> નો પાસવર્ડ દાખલ કરો.</translation>
 <translation id="4838170306476614339">તમારા ફોનના ફોટા, મીડિયા અને નોટિફિકેશન જુઓ</translation>
@@ -4292,6 +4298,7 @@
 <translation id="5150254825601720210">નેટસ્કેપ પ્રમાણપત્ર SSL સર્વર નામ</translation>
 <translation id="5151354047782775295">ડિસ્ક સ્થાન ખાલી કરો અથવા પસંદ કરેલ ડેટા ઑટોમૅટિક રીતે કાઢી નાખવામાં આવી શકે છે</translation>
 <translation id="5153234146675181447">ફોન ભૂલી જાઓ</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> માટે વિગતવાર સેટિંગ</translation>
 <translation id="5154702632169343078">વિષય</translation>
 <translation id="5155327081870541046">ઍડ્રેસ બારમાં, તમે જે સાઇટમાં શોધવા માગતા હો, તેના માટેનો શૉર્ટકટ દાખલ કરો, જેમ કે "@bookmarks". પછી, તમારી પસંદગીનો કીબોર્ડ શૉર્ટકટ દબાવો અને તમારો શોધ શબ્દ દાખલ કરો.</translation>
@@ -5627,6 +5634,7 @@ USB ડિવાઇસ</translation>
 <translation id="648927581764831596">કંઈપણ ઉપલબ્ધ નથી</translation>
 <translation id="6490471652906364588">USB-C ઉપકરણ (જમણું પોર્ટ)</translation>
 <translation id="6491376743066338510">પ્રમાણીકરણ નિષ્ફળ</translation>
+<translation id="6492396476180293140">હાર્ડવેર સ્વિચ દબાવીને આંતરિક કૅમેરા બંધ કર્યો</translation>
 <translation id="6494327278868541139">વધારાની સુરક્ષાની વિગતો બતાવો</translation>
 <translation id="6494445798847293442">કોઈ પ્રમાણન અધિકારી નથી</translation>
 <translation id="6494974875566443634">કસ્ટમાઇઝેશન</translation>
@@ -5930,6 +5938,7 @@ USB ડિવાઇસ</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> રિમોટ્લી ઉમેર્યું હતું</translation>
 <translation id="6790820461102226165">વ્યક્તિ ઉમેરો...</translation>
 <translation id="6793604637258913070">દેખાવા પર અથવા ખસેડવા પર ટેક્સ્ટ કૅરેટ હાઇલાઇટ કરો</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">ઑટો-સ્કૅનની સુવિધા સ્ક્રીન પર ઑટોમૅટિક રીતે એક આઇટમથી બીજી પર જવાની સરળતા પ્રદાન કરે છે. જ્યારે કોઈ આઇટમ હાઇલાઇટ કરવામાં આવી હોય, ત્યારે તેને સક્રિય કરવા માટે “પસંદ કરો” દબાવો.</translation>
 <translation id="6795884519221689054">પાંડા</translation>
 <translation id="6797493596609571643">અરેરે, કંઈક ખોટું થયું.</translation>
@@ -7797,6 +7806,7 @@ USB ડિવાઇસ</translation>
 <translation id="8642947597466641025">ટેક્સ્ટ મોટો કરો</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> જોખમકારક હોઈ શકે છે. તપાસ કરવા માટે Googleની વિગતવાર સુરક્ષાને મોકલીએ?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{કોઈ કુકી નથી}=1{1 કુકી બ્લૉક કરવામાં આવી છે}one{# કુકી બ્લૉક કરવામાં આવી છે}other{# કુકી બ્લૉક કરવામાં આવી છે}}</translation>
+<translation id="864423554496711319">તમારા એકાઉન્ટમાં સાચવવામાં આવેલા ડિવાઇસ</translation>
 <translation id="8644655801811752511">સુરક્ષા કોડ રીસેટ કરી શકાતો નથી. કોડ શામેલ કર્યા પછી તરત જ તેને રીસેટ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="8645354835496065562">સેન્સરના ઍક્સેસની મંજૂરી ચાલુ રાખો</translation>
 <translation id="8645920082661222035">જોખમકારક ઇવેન્ટ થાય તે પહેલાં તેનું અનુમાન લગાવીને તેના વિશે તમને ચેતવણી આપે છે</translation>

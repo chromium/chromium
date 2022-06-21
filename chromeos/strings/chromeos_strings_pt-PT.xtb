@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Utilizador</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">A janela de atualização do firmware para dispositivos externos está aberta. <ph name="NUM_UPDATES" /> atualizações disponíveis</translation>
+<translation id="1145516343487477149">Encontre artigos de ajuda e respostas a perguntas comuns sobre o Chromebook</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1175697296044146566">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Média (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Desativar tema escuro</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Desativar modo escuro</translation>
+<translation id="1881188606372070653">Aceda à <ph name="BEGIN_LINK1" />página de Ajuda legal<ph name="END_LINK1" /> para pedir alterações de conteúdo por motivos legais. Algumas informações da conta e do sistema podem ser enviadas para a Google. Usamos as informações fornecidas por si na resolução de problemas técnicos e melhoria dos nossos serviços, sujeitas à <ph name="BEGIN_LINK2" />Política de Privacidade<ph name="END_LINK2" /> e aos <ph name="BEGIN_LINK3" />Termos de Utilização<ph name="END_LINK3" /> da Google.</translation>
 <translation id="1887850431809612466">Revisão de hardware</translation>
 <translation id="1905710495812624430">Foi excedido o número máximo de tentativas permitidas.</translation>
 <translation id="1908234395526491708">Falhas de pedidos de UDP.</translation>
@@ -623,6 +625,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6379086450106841622">Ecrã tátil</translation>
 <translation id="6381741036071372448">Teste o seu teclado</translation>
 <translation id="6388847657025262518">O alimentador de documentos do scanner está encravado. Verifique o alimentador e tente novamente.</translation>
+<translation id="6394634179843537518">Adicionar ficheiro</translation>
 <translation id="6410257289063177456">Ficheiros de imagem</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

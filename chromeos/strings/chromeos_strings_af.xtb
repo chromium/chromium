@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">"Dateer fermware op vir eksterne toestelle"-venster is oop. <ph name="NUM_UPDATES" /> opdaterings beskikbaar.</translation>
+<translation id="1145516343487477149">Soek hulpartkels en antwoorde op algemene Chromebook-vrae</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1175697296044146566">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gemiddeld (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Skakel donkertema af</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Skakel donkermodus af</translation>
+<translation id="1881188606372070653">Gaan na die <ph name="BEGIN_LINK1" />Regshulp-bladsy<ph name="END_LINK1" /> om veranderinge om wetlike redes te versoek. Sekere rekening- en stelselinligting sal dalk na Google toe gestuur word. Ons sal die inligting wat jy vir ons gee, gebruik om te help om aan tegniese kwessies aandag te gee en om ons dienste te verbeter, onderworpe aan ons <ph name="BEGIN_LINK2" />privaatheidsbeleid<ph name="END_LINK2" /> en <ph name="BEGIN_LINK3" />diensbepalings<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Hardewarehersiening</translation>
 <translation id="1905710495812624430">Maksimum toegelate pogings is oorskry.</translation>
 <translation id="1908234395526491708">Mislukte UDP-versoeke</translation>
@@ -623,6 +625,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6379086450106841622">Raakskerm</translation>
 <translation id="6381741036071372448">Toets jou sleutelbord</translation>
 <translation id="6388847657025262518">Die skandeerder se dokumentvoerder is geblokkeer. Gaan die dokumentvoerder na en probeer weer.</translation>
+<translation id="6394634179843537518">Voeg lêer by</translation>
 <translation id="6410257289063177456">Prentlêers</translation>
 <translation id="641081527798843608">Voorwerppassing</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Прозор за ажурирање фирмвера за спољне уређаје је отворен. Доступних ажурирања: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1145516343487477149">Пронађите чланке помоћи и одговоре на честа питања о Chromebook-у</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем.</translation>
 <translation id="1175951029573070619">Просечан (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Искључите тамну тему</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Искључите тамни режим</translation>
+<translation id="1881188606372070653">Идите на <ph name="BEGIN_LINK1" />страницу правне помоћи<ph name="END_LINK1" /> да бисте затражили промене садржаја из правних разлога. Неке информације о налогу и систему могу да се шаљу Google-у. Користићемо информације које нам дате као помоћ у решавању техничких проблема и у циљу побољшања услуга, а сходно <ph name="BEGIN_LINK2" />политици приватности<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />условима коришћења услуге<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Ревизија хардвера</translation>
 <translation id="1905710495812624430">Премашен је максимални број покушаја.</translation>
 <translation id="1908234395526491708">Неуспели UDP захтеви</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">Додирни екран</translation>
 <translation id="6381741036071372448">Тестирајте тастатуру</translation>
 <translation id="6388847657025262518">Механизам за увлачење докумената на скенеру је заглављен. Проверите механизам и пробајте поново.</translation>
+<translation id="6394634179843537518">Додајте фајл</translation>
 <translation id="6410257289063177456">Датотеке слика</translation>
 <translation id="641081527798843608">Подударање наслова</translation>
 <translation id="6423239382391657905">Отворена VPN</translation>

@@ -3937,6 +3937,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4768332406694066911">Du har certifikat från dessa organisationer som identifierar dig</translation>
 <translation id="4770119228883592393">Behörighet har begärts, tryck på ⌘ + Alt + nedåtpil för att svara</translation>
 <translation id="4773112038801431077">Uppgradera Linux</translation>
+<translation id="4774337692467964393">Om du aktiverar Smart Lock behöver du inte ange en pinkod eller ett lösenord</translation>
 <translation id="4775142426314270551">Skicka felrapporter samt diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i Chrome och Chrome OS. Viss samlad data används även till att förbättra Android-appar och produkter från Googles partner. Om inställningen Webb- och appaktivitet har aktiverats för ditt barns Google-konto kan barnets Android-data sparas i Google-kontot.</translation>
 <translation id="477647109558161443">Skapa en skrivbordsgenväg</translation>
 <translation id="4776594120007763294">Klicka på knappen nedan om du vill lägga till en sida att läsa senare</translation>
@@ -3986,6 +3987,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4820236583224459650">Ställ in som aktiv biljett</translation>
 <translation id="4821935166599369261">&amp;Profilering aktiverad</translation>
 <translation id="4823484602432206655">Läsa och ändra användarinställningar och enhetsinställningar</translation>
+<translation id="4823894915586516138">Med pinkoden eller lösenordet skyddas din data på denna <ph name="DEVICE_TYPE" />, inklusive information du kommer åt från telefonen.</translation>
 <translation id="4824037980212326045">Säkerhetskopiering och återställning i Linux</translation>
 <translation id="4824958205181053313">Vill du avbryta synkroniseringen?</translation>
 <translation id="4827675678516992122">Det gick inte att ansluta</translation>
@@ -5643,6 +5645,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="648927581764831596">Inte tillgängligt</translation>
 <translation id="6490471652906364588">USB-C-enhet (höger port)</translation>
 <translation id="6491376743066338510">Auktoriseringen misslyckades</translation>
+<translation id="6492396476180293140">Intern kamera har inaktiverats med maskinvarureglage</translation>
 <translation id="6494327278868541139">Visa detaljer om förbättrat skydd</translation>
 <translation id="6494445798847293442">Inte från certifikatutfärdare</translation>
 <translation id="6494974875566443634">Anpassning</translation>

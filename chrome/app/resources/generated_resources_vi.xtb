@@ -1923,6 +1923,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Xóa 1 ứng dụng không được hỗ trợ}other{Xóa # ứng dụng không được hỗ trợ}}</translation>
 <translation id="2776560192867872731">Thay đổi tên thiết bị của <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Xoá vùng chứa này</translation>
+<translation id="2778471504622896352">Thêm ứng dụng từ xa vào trình chạy ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Lỗi khi cài đặt ứng dụng Linux</translation>
 <translation id="2783298271312924866">Đã tải xuống</translation>
@@ -3558,6 +3559,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> và <ph name="NUMBER_OF_OTHER_SWITCHES" /> công tắc khác</translation>
 <translation id="439266289085815679">Cấu hình Bluetooth do <ph name="USER_EMAIL" /> kiểm soát.</translation>
 <translation id="4392896746540753732">Chỉnh sửa tệp cấu hình này</translation>
+<translation id="4393713825278446281">Thiết bị Ghép nối nhanh đã được lưu vào <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Vô hiệu hóa</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Mở tất cả}=1{&amp;Mở dấu trang}other{&amp;Mở tất cả ({COUNT})}}</translation>
 <translation id="4397372003838952832">Bạn không cần nhớ mật khẩu này. Mật khẩu này sẽ được lưu vào <ph name="GOOGLE_PASSWORD_MANAGER" /> của <ph name="EMAIL" /></translation>
@@ -3788,6 +3790,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4615586811063744755">chưa chọn cookie nào</translation>
 <translation id="461661862154729886">Nguồn điện</translation>
 <translation id="4617001782309103936">Quá ngắn</translation>
+<translation id="4617019240346358451">Tải lại trang để sử dụng "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4617270414136722281">Tùy chọn tiện ích</translation>
 <translation id="4617880081511131945">Không thiết lập được kết nối</translation>
 <translation id="4619564267100705184">Xác minh danh tính của bạn</translation>
@@ -4003,6 +4006,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4833683849865011483">Tìm thấy 1 máy in trên máy chủ máy in</translation>
 <translation id="4836504898754963407">Quản lý vân tay số</translation>
 <translation id="4837128290434901661">Chuyển lại về Google Tìm kiếm?</translation>
+<translation id="4837165100461973682">Tải lại trang để áp dụng các thay đổi</translation>
 <translation id="4837926214103741331">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với chủ sở hữu thiết bị để có quyền đăng nhập.</translation>
 <translation id="4837952862063191349">Để mở khóa và khôi phục dữ liệu cục bộ của bạn, vui lòng nhập mật khẩu <ph name="DEVICE_TYPE" /> cũ của bạn.</translation>
 <translation id="4838170306476614339">Xem thông báo, nội dung nghe nhìn và ảnh trên điện thoại</translation>
@@ -4312,6 +4316,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5150254825601720210">Tên Máy chủ SSL của Chứng chỉ Netscape</translation>
 <translation id="5151354047782775295">Giải phóng dung lượng đĩa, nếu không một số dữ liệu có thể tự động bị xóa</translation>
 <translation id="5153234146675181447">Quên điện thoại</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Cài đặt nâng cao cho <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Chủ đề</translation>
 <translation id="5155327081870541046">Trong thanh địa chỉ, hãy nhập lối tắt cho trang web bạn muốn tìm kiếm, chẳng hạn như "@bookmarks". Sau đó, nhấn phím tắt ưu tiên của bạn rồi nhập cụm từ tìm kiếm.</translation>
@@ -5947,6 +5952,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6790497603648687708">Đã thêm <ph name="EXTENSION_NAME" /> từ xa</translation>
 <translation id="6790820461102226165">Thêm người...</translation>
 <translation id="6793604637258913070">Đánh dấu điểm chèn văn bản khi điểm này xuất hiện hoặc di chuyển</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Tính năng tự động quét cho phép bạn tự động di chuyển qua các mục trên màn hình. Khi một mục được làm nổi bật, hãy nhấn nút “Chọn” để kích hoạt mục đó.</translation>
 <translation id="6795884519221689054">Gấu trúc</translation>
 <translation id="6797493596609571643">Rất tiếc, đã xảy ra lỗi.</translation>
@@ -7669,7 +7675,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8471525937465764768">Các trang web thường kết nối với thiết bị USB để áp dụng những tính năng như in tài liệu hoặc lưu vào thiết bị lưu trữ</translation>
 <translation id="8471959340398751476">Tính năng nhận chiết khấu đang tắt. Bạn có thể bật tính năng này trong trình đơn tùy chỉnh</translation>
 <translation id="8472623782143987204">được hỗ trợ bằng phần cứng</translation>
-<translation id="8473863474539038330">Địa chỉ và các tùy chọn khác</translation>
+<translation id="8473863474539038330">Địa chỉ và các lựa chọn khác</translation>
 <translation id="8475313423285172237">Một chương trình khác trên máy tính của bạn đã thêm một tiện ích có thể thay đổi cách Chrome hoạt động.</translation>
 <translation id="8477241577829954800">Đã thay thế</translation>
 <translation id="8477384620836102176">&amp;Chung</translation>
@@ -7820,6 +7826,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8642947597466641025">Phóng to Văn bản</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> có thể nguy hiểm. Bạn có muốn gửi tệp tới Chương trình Bảo vệ nâng cao của Google để quét không?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Không có cookie}=1{Đã chặn 1 cookie}other{Đã chặn # cookie}}</translation>
+<translation id="864423554496711319">Các thiết bị đã được lưu vào tài khoản của bạn</translation>
 <translation id="8644655801811752511">Không thể đặt lại khóa bảo mật này. Thử đặt lại khóa này ngay sau khi cắm.</translation>
 <translation id="8645354835496065562">Tiếp tục cho phép sử dụng cảm biến</translation>
 <translation id="8645920082661222035">Dự đoán và cảnh báo cho bạn các sự kiện nguy hiểm trước khi các sự kiện đó xảy ra</translation>

@@ -1543,6 +1543,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2433836460518180625">Desbloquear apenas no dispositivo</translation>
 <translation id="2434449159125086437">Não é possível configurar a impressora. Verifique a configuração e tente novamente.</translation>
 <translation id="2434758125294431199">Selecione quem pode partilhar consigo.</translation>
+<translation id="2434915728183570229">Agora, pode ver as apps do seu telemóvel</translation>
 <translation id="2435137177546457207">Termos Adicionais do Google Chrome e ChromeOS Flex</translation>
 <translation id="2435248616906486374">Rede desligada</translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
@@ -4227,6 +4228,7 @@ Pretende pará-lo?</translation>
 <translation id="5072900412896857127">Não é possível carregar os Termos de Utilização do Google Play. Verifique a ligação de rede e tente novamente.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> e mais #}}</translation>
 <translation id="5074318175948309511">Poderá ser necessário voltar a atualizar esta página antes de aplicar as novas definições.</translation>
+<translation id="5074761966806028321">Ainda é necessária autorização para concluir a configuração</translation>
 <translation id="5075910247684008552">O conteúdo inseguro é bloqueado por predefinição em sites seguros.</translation>
 <translation id="5078638979202084724">Adicionar todos os separadores aos marcadores</translation>
 <translation id="5078796286268621944">PIN incorreto</translation>
@@ -4590,6 +4592,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5449551289610225147">Palavra-passe inválida</translation>
 <translation id="5449588825071916739">Adicionar Todos os Separadores aos Marcadores</translation>
 <translation id="5449716055534515760">Fechar &amp;Janela</translation>
+<translation id="5452446625764825792">Agora, pode ver as fotos, o conteúdo multimédia e as apps recentes do seu telemóvel</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona offline)</translation>
 <translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">Ver mais resultados da pesquisa</translation>
@@ -4650,6 +4653,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5499211612787418966">Atualmente, esta caixa de diálogo não está focada. Prima Alt + Shift + A para focar esta caixa de diálogo.</translation>
 <translation id="5499313591153584299">Este ficheiro pode ser prejudicial para o seu computador.</translation>
 <translation id="5499453227627332024">Está disponível uma atualização para o seu contentor do Linux. Também pode atualizar mais tarde na app Definições.</translation>
+<translation id="5499476581866658341">Agora, pode ver as fotos e o conteúdo multimédia recentes do seu telemóvel</translation>
 <translation id="549957179819296104">Novo ícone</translation>
 <translation id="5500168250243071806">O <ph name="BEGIN_LINK_SEARCH" />histórico de pesquisas<ph name="END_LINK_SEARCH" /> e <ph name="BEGIN_LINK_GOOGLE" />outras formas de atividade<ph name="END_LINK_GOOGLE" /> podem ser guardados na sua Conta Google quando tiver sessão iniciada. Pode eliminá-los em qualquer altura.</translation>
 <translation id="5500709606820808700">A verificação de segurança foi efetuada hoje.</translation>
@@ -6315,6 +6319,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7152478047064750137">Esta extensão não requer autorizações especiais.</translation>
 <translation id="7154130902455071009">Alterar a página de início para: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existente da câmara ou do ficheiro</translation>
+<translation id="7160182524506337403">Agora, pode ver as notificações do seu telemóvel</translation>
 <translation id="7163202347044721291">A validar o código de ativação…</translation>
 <translation id="716640248772308851">A extensão "<ph name="EXTENSION" />" consegue ler imagens, ficheiros de vídeo e de som nas localizações confirmadas.</translation>
 <translation id="7167486101654761064">&amp;Abrir sempre ficheiros deste tipo</translation>
@@ -7330,6 +7335,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8138997515734480534">Estado: <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Ficheiros do Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141418916163800697">Pode configurar mais funcionalidades nas definições do Phone Hub</translation>
 <translation id="8141584439523427891">A abrir num navegador alternativo agora…</translation>
 <translation id="8141725884565838206">Gerir as palavras-passe</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{um vídeo}other{# vídeos}}</translation>
@@ -7537,6 +7543,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="833986336429795709">Para abrir este link, escolher uma aplicação</translation>
 <translation id="8342221978608739536">Não tentei</translation>
 <translation id="8342861492835240085">Selecionar uma coleção</translation>
+<translation id="8345848587667658367">Agora, pode ver as fotos, o conteúdo multimédia, as notificações e as apps recentes do seu telemóvel</translation>
 <translation id="8347227221149377169">Tarefas de impressão</translation>
 <translation id="834785183489258869">Quando estiver na Navegação anónima, os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. As funcionalidades em alguns sites podem não funcionar.</translation>
 <translation id="8350789879725387295">Ferramentas da caneta stylus na estação de ancoragem</translation>
@@ -8142,6 +8149,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8957757410289731985">Personalizar perfil</translation>
 <translation id="895944840846194039">Memória JavaScript</translation>
 <translation id="8960208913905765425">Conversão de unidades das Respostas rápidas</translation>
+<translation id="8960638196855923532">Agora, pode ver as notificações e as apps do seu telemóvel</translation>
 <translation id="8962051932294470566">Só pode partilhar um ficheiro de cada vez. Tente novamente quando a transferência atual estiver concluída.</translation>
 <translation id="8962083179518285172">Ocultar Detalhes</translation>
 <translation id="8962918469425892674">Este site está a utilizar sensores de movimento ou de luz.</translation>
@@ -8293,6 +8301,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9103868373786083162">Premir para voltar, menu de contexto para ver o histórico</translation>
 <translation id="9108035152087032312">Nome da &amp;janela…</translation>
 <translation id="9108072915170399168">A definição de utilização de dados atual é Sem Internet.</translation>
+<translation id="9108294543511800041">Agora, pode ver as fotos, o conteúdo multimédia e as notificações do seu telemóvel</translation>
 <translation id="9108674852930645435">Explore as novidades no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="9108808586816295166">O DNS seguro pode não estar sempre disponível.</translation>
 <translation id="9109122242323516435">Para libertar espaço, elimine ficheiros do armazenamento do dispositivo.</translation>

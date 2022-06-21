@@ -1924,6 +1924,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{지원되지 않는 앱 1개 삭제}other{지원되지 않는 앱 #개 삭제}}</translation>
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> 기기 이름 변경</translation>
 <translation id="2777251078198759550">컨테이너 삭제</translation>
+<translation id="2778471504622896352">Chrome OS 런처에 원격 앱 추가</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux 애플리케이션 설치 중 오류 발생</translation>
 <translation id="2783298271312924866">다운로드됨</translation>
@@ -3557,6 +3558,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> 외 <ph name="NUMBER_OF_OTHER_SWITCHES" />개</translation>
 <translation id="439266289085815679">블루투스 구성은 <ph name="USER_EMAIL" />님이 관리합니다.</translation>
 <translation id="4392896746540753732">설정 파일 수정</translation>
+<translation id="4393713825278446281">빠른 페어링 기기가 <ph name="PRIMARY_EMAIL" />에 저장됩니다</translation>
 <translation id="4394049700291259645">사용 중지</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{모두 열기(O)}=1{북마크 열기(O)}other{{COUNT}개 모두 열기(O)}}</translation>
 <translation id="4397372003838952832">비밀번호를 기억하지 않아도 됩니다. 비밀번호는 <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
@@ -3787,6 +3789,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4615586811063744755">선택된 쿠키 없음</translation>
 <translation id="461661862154729886">전원</translation>
 <translation id="4617001782309103936">너무 짧음</translation>
+<translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" 확장 프로그램을 사용하려면 페이지를 새로고침하세요</translation>
 <translation id="4617270414136722281">확장 프로그램 옵션</translation>
 <translation id="4617880081511131945">연결을 설정할 수 없음</translation>
 <translation id="4619564267100705184">본인 인증</translation>
@@ -4002,6 +4005,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4833683849865011483">인쇄 서버에 프린터 1대가 있습니다.</translation>
 <translation id="4836504898754963407">지문 관리</translation>
 <translation id="4837128290434901661">Google 검색으로 되돌리시겠습니까?</translation>
+<translation id="4837165100461973682">변경사항을 적용하려면 페이지를 새로고침하세요</translation>
 <translation id="4837926214103741331">더 이상 이 기기를 사용할 권한이 없습니다. 기기 소유자에게 로그인 권한에 대해 문의하세요.</translation>
 <translation id="4837952862063191349">로컬 데이터를 잠금 해제하고 복원하려면 이전 <ph name="DEVICE_TYPE" /> 비밀번호 입력</translation>
 <translation id="4838170306476614339">휴대전화의 사진, 미디어, 알림을 봅니다.</translation>
@@ -4311,6 +4315,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
 <translation id="5151354047782775295">디스크 저장 공간을 확보하지 않으면 일부 데이터가 자동으로 삭제됩니다.</translation>
 <translation id="5153234146675181447">휴대전화 지우기</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> 고급 설정</translation>
 <translation id="5154702632169343078">대상</translation>
 <translation id="5155327081870541046">주소 표시줄에 '@bookmarks'와 같이 검색하려는 사이트의 바로가기를 입력하세요. 그런 다음 원하는 단축키를 누르고 검색어를 입력하세요.</translation>
@@ -5946,6 +5951,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" />이(가) 원격으로 추가됨</translation>
 <translation id="6790820461102226165">사용자 추가...</translation>
 <translation id="6793604637258913070">텍스트 캐럿이 나타나거나 이동할 때 이를 강조표시합니다.</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">자동 스캔을 사용하면 화면에 있는 항목 간에 자동으로 이동할 수 있습니다. 항목이 강조표시된 상태에서 '선택'을 누르면 해당 항목이 활성화됩니다.</translation>
 <translation id="6795884519221689054">판다</translation>
 <translation id="6797493596609571643">문제가 발생했습니다.</translation>
@@ -7820,6 +7826,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8642947597466641025">텍스트 확대</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> 파일은 위험할 수 있습니다. 검사를 위해 Google 고급 보호 프로그램에 전송할까요?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{쿠키 없음}=1{쿠키 1개 차단됨}other{쿠키 #개 차단됨}}</translation>
+<translation id="864423554496711319">계정에 저장된 기기</translation>
 <translation id="8644655801811752511">보안 키를 재설정할 수 없습니다. 보안 키를 삽입한 직후 키를 재설정해 보세요.</translation>
 <translation id="8645354835496065562">계속해서 센서 액세스 허용</translation>
 <translation id="8645920082661222035">위험한 이벤트가 발생하기 전에 이를 예측하여 알립니다.</translation>

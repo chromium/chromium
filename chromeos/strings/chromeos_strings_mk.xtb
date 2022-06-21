@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Отворен е прозорецот за ажурирање фирмвер за надворешни уреди. Достапни се <ph name="NUM_UPDATES" /> ажурирања.</translation>
+<translation id="1145516343487477149">Најдете статии за помош и одговори на вообичаени прашања за Chromebook</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1175951029573070619">Просечен (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Исклучи темна тема</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Исклучи темен режим</translation>
+<translation id="1881188606372070653">Одете на <ph name="BEGIN_LINK1" />страницата „Правна помош“<ph name="END_LINK1" /> за да побарате промени во содржините поради правни причини. Одредени податоци за сметката и системот може да се испратат до Google. Ќе ги користиме податоците што ни ги давате за да помогнеме во решавањето на техничките проблеми и да ги подобриме нашите услуги, што подлежат на нашата <ph name="BEGIN_LINK2" />Политика за приватност<ph name="END_LINK2" /> и<ph name="BEGIN_LINK3" />Условите за користење<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Ревизија на хардвер</translation>
 <translation id="1905710495812624430">Максималниот број дозволени обиди е надминат.</translation>
 <translation id="1908234395526491708">Неуспешни UDP-барања</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">Екран на допир</translation>
 <translation id="6381741036071372448">Тестирајте ја тастатурата</translation>
 <translation id="6388847657025262518">Фиоката за документи на скенерот е заглавена. Проверете ја и обидете се повторно.</translation>
+<translation id="6394634179843537518">Додај датотека</translation>
 <translation id="6410257289063177456">Датотеки со слики</translation>
 <translation id="641081527798843608">Совпаѓање на предмети</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

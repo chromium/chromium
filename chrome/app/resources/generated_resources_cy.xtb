@@ -1926,6 +1926,7 @@ a Ctrl+Alt+Lleihau Disgleirdeb i bellhau.</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Tynnu 1 ap na chefnogir}zero{Tynnu # ap na chefnogir}two{Tynnu # ap na chefnogir}few{Tynnu # ap na chefnogir}many{Tynnu # ap na chefnogir}other{Tynnu # ap na chefnogir}}</translation>
 <translation id="2776560192867872731">Newid enw dyfais ar gyfer <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Dileu'r cynhwysydd hwn</translation>
+<translation id="2778471504622896352">Ychwanegu apiau o bell i lansiwr ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Bu gwall wrth osod yr ap Linux</translation>
 <translation id="2783298271312924866">Wedi lawrlwytho</translation>
@@ -3561,6 +3562,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, a <ph name="NUMBER_OF_OTHER_SWITCHES" /> switsh arall</translation>
 <translation id="439266289085815679">Rheolir y ffurfweddiad Bluetooth gan <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Golygu'r ffeil ffurfweddu</translation>
+<translation id="4393713825278446281">Dyfeisiau Paru Cyflym sydd wedi'u cadw i <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Analluogi</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Agor pob un}=1{&amp;Agor nod tudalen}two{&amp;Agor pob un ({COUNT})}few{&amp;Agor pob un ({COUNT})}many{&amp;Agor pob un ({COUNT})}other{&amp;Agor pob un ({COUNT})}}</translation>
 <translation id="4397372003838952832">Ni fydd angen i chi gofio'r cyfrinair hwn. Bydd yn cael ei gadw i <ph name="GOOGLE_PASSWORD_MANAGER" /> ar gyfer <ph name="EMAIL" />.</translation>
@@ -3791,6 +3793,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4615586811063744755">Heb ddewis cwci</translation>
 <translation id="461661862154729886">Ffynhonnell ynni</translation>
 <translation id="4617001782309103936">Rhy fyr</translation>
+<translation id="4617019240346358451">Ail-lwythwch y dudalen i ddefnyddio "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4617270414136722281">Dewisiadau'r estyniad</translation>
 <translation id="4617880081511131945">Methu â sefydlu cysylltiad</translation>
 <translation id="4619564267100705184">Cadarnhewch mai chi sydd yno</translation>
@@ -4006,6 +4009,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4833683849865011483">Wedi dod o hyd i 1 argraffydd o'r gweinydd argraffu</translation>
 <translation id="4836504898754963407">Rheoli olion bysedd</translation>
 <translation id="4837128290434901661">Newid yn ôl i Google Search?</translation>
+<translation id="4837165100461973682">Ail-lwythwch y dudalen i gymhwyso'ch newidiadau</translation>
 <translation id="4837926214103741331">Nid oes gennych awdurdod i ddefnyddio'r ddyfais hon. Cysylltwch â pherchennog y ddyfais i gael caniatâd mewngofnodi.</translation>
 <translation id="4837952862063191349">I ddatgloi ac adfer eich data lleol, rhowch eich hen gyfrinair <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Gweld lluniau, cyfryngau a hysbysiadau eich ffôn</translation>
@@ -4315,6 +4319,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="5150254825601720210">Enw Gweinydd SSL Tystysgrif Netscape</translation>
 <translation id="5151354047782775295">Crëwch ragor o le ar y disg neu mae'n bosib y bydd rhai data yn cael eu dileu yn awtomatig</translation>
 <translation id="5153234146675181447">Anghofio'r ffôn</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Gosodiadau uwch ar gyfer <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Pwnc</translation>
 <translation id="5155327081870541046">Yn y bar cyfeiriad, defnyddiwch y llwybr byr ar gyfer y wefan rydych am ei chwilio, megis "@bookmarks". Yna, pwyswch eich llwybr byr bysellffwrdd a ffefrir, a rhowch eich term chwilio.</translation>
@@ -5958,6 +5963,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6790497603648687708">Cafodd <ph name="EXTENSION_NAME" /> ei ychwanegu o bell</translation>
 <translation id="6790820461102226165">Ychwanegu person...</translation>
 <translation id="6793604637258913070">Amlygu'r caret testun pan fydd yn ymddangos neu'n symud</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Mae awtosganio yn caniatáu i chi symud drwy eitemau ar y sgrîn yn awtomatig. Pan fydd eitem wedi'i hamlygu, pwyswch "Dewis" i'w gweithredu.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Wps, aeth rhywbeth o'i le.</translation>
@@ -7830,6 +7836,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8642947597466641025">Gwneud Testun yn Fwy</translation>
 <translation id="8643443571868262066">Gallai <ph name="FILE_NAME" /> fod yn beryglus. Anfon at Google Advanced Protection i'w sganio?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Dim cwcis}=1{Mae 1 cwci wedi'i rwystro}two{Mae # gwci wedi'u rhwystro}few{Mae # chwci wedi'u rhwystro}many{Mae # chwci wedi'u rhwystro}other{Mae # cwci wedi'u rhwystro}}</translation>
+<translation id="864423554496711319">Dyfeisiau sydd wedi'u cadw i'ch cyfrif</translation>
 <translation id="8644655801811752511">Methu ag ailosod yr allwedd ddiogelwch hon. Rhowch gynnig ar ailosod yr allwedd yn syth ar ôl ei mewnosod.</translation>
 <translation id="8645354835496065562">Parhau i ganiatáu mynediad at synhwyrydd</translation>
 <translation id="8645920082661222035">Yn rhagweld ac yn eich rhybuddio am ddigwyddiadau peryglus cyn iddynt ddigwydd</translation>

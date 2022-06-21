@@ -1540,6 +1540,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2433836460518180625">Gerät nur entsperren</translation>
 <translation id="2434449159125086437">Der Drucker kann nicht eingerichtet werden. Prüfe die Konfiguration und probiere es dann noch einmal.</translation>
 <translation id="2434758125294431199">Wähle aus, wer Inhalte mit dir teilen kann</translation>
+<translation id="2434915728183570229">Du kannst jetzt die Apps von deinem Smartphone aufrufen</translation>
 <translation id="2435137177546457207">Google Chrome und Chrome OS Flex – zusätzliche Nutzungsbedingungen</translation>
 <translation id="2435248616906486374">Netzwerkverbindung getrennt</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
@@ -1905,6 +1906,7 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{1 nicht unterstützte App entfernen}other{# nicht unterstützte Apps entfernen}}</translation>
 <translation id="2776560192867872731">Gerätename für <ph name="DEVICE_NAME" /> ändern</translation>
 <translation id="2777251078198759550">Diesen Container löschen</translation>
+<translation id="2778471504622896352">Remote-Apps zum Chrome OS-Launcher hinzufügen</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Fehler beim Installieren der Linux-Anwendung</translation>
 <translation id="2783298271312924866">Heruntergeladen</translation>
@@ -3540,6 +3542,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> und <ph name="NUMBER_OF_OTHER_SWITCHES" /> weitere Schalter</translation>
 <translation id="439266289085815679">Die Bluetooth-Konfiguration wird von <ph name="USER_EMAIL" /> festgelegt.</translation>
 <translation id="4392896746540753732">Konfigurationsdatei bearbeiten</translation>
+<translation id="4393713825278446281">Mit schnellem Pairing gekoppelte Geräte, die in <ph name="PRIMARY_EMAIL" /> gespeichert sind</translation>
 <translation id="4394049700291259645">Deaktivieren</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Alle &amp;öffnen}=1{Lesezeichen &amp;öffnen}other{Alle ({COUNT}) &amp;öffnen}}</translation>
 <translation id="4397372003838952832">Du musst dir dieses Passwort nicht merken. Es wird für <ph name="EMAIL" /> im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
@@ -3769,6 +3772,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4615586811063744755">Kein Cookie ausgewählt</translation>
 <translation id="461661862154729886">Energiequelle</translation>
 <translation id="4617001782309103936">Zu kurz</translation>
+<translation id="4617019240346358451">Seite aktualisieren, um „<ph name="EXTENSION_NAME" />“ zu verwenden</translation>
 <translation id="4617270414136722281">Optionen</translation>
 <translation id="4617880081511131945">Verbindung kann nicht hergestellt werden</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
@@ -3984,6 +3988,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4833683849865011483">Auf dem Druckserver wurde 1 Drucker gefunden</translation>
 <translation id="4836504898754963407">Fingerabdrücke verwalten</translation>
 <translation id="4837128290434901661">Wieder zur Google Suche wechseln?</translation>
+<translation id="4837165100461973682">Seite aktualisieren, um Änderungen zu übernehmen</translation>
 <translation id="4837926214103741331">Du bist nicht zur Verwendung dieses Geräts berechtigt. Bitte den Geräteinhaber um eine Anmeldeberechtigung.</translation>
 <translation id="4837952862063191349">Gib dein altes <ph name="DEVICE_TYPE" />-Passwort ein, um deine lokalen Daten zu entsperren und wiederherzustellen.</translation>
 <translation id="4838170306476614339">Fotos, Medien und Benachrichtigungen von deinem Smartphone abrufen</translation>
@@ -4219,6 +4224,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5072900412896857127">Fehler beim Laden der Google Play-Nutzungsbedingungen. Bitte prüfe die Netzwerkverbindung und versuche es noch einmal.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> und # weitere}}</translation>
 <translation id="5074318175948309511">Damit die neuen Einstellungen wirksam werden, muss die Seite eventuell neu geladen werden.</translation>
+<translation id="5074761966806028321">Zum Abschluss der Einrichtung fehlt noch eine Berechtigung</translation>
 <translation id="5075910247684008552">Unsichere Inhalte werden auf sicheren Websites standardmäßig blockiert</translation>
 <translation id="5078638979202084724">Alle Tabs als Lesezeichen speichern</translation>
 <translation id="5078796286268621944">Falsche PIN</translation>
@@ -4293,6 +4299,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5150254825601720210">SSL-Servername für Netscape-Zertifikat</translation>
 <translation id="5151354047782775295">Gib Speicherplatz frei oder ausgewählte Daten werden automatisch gelöscht</translation>
 <translation id="5153234146675181447">Smartphone entfernen</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Erweiterte Einstellungen für <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Betreff</translation>
 <translation id="5155327081870541046">Gib in die Adressleiste das Kürzel für die Website ein, auf der du suchen möchtest, z. B. „@bookmarks“. Drücke dann das von dir bevorzugte Tastenkürzel und gib den gewünschten Suchbegriff ein.</translation>
@@ -4581,6 +4588,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5449551289610225147">Ungültiges Passwort</translation>
 <translation id="5449588825071916739">Alle Tabs als Lesezeichen speichern</translation>
 <translation id="5449716055534515760">Fen&amp;ster schließen</translation>
+<translation id="5452446625764825792">Du kannst jetzt die neuesten Fotos, Medien und Apps von deinem Smartphone aufrufen</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funktioniert im Offlinemodus)</translation>
 <translation id="5454166040603940656">mit <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">Weitere Suchergebnisse einblenden</translation>
@@ -4641,6 +4649,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5499211612787418966">Dieses Dialogfeld ist aktuell nicht aktiv. Drücke ALT+Umschalttaste+A, um dieses Dialogfeld hervorzuheben.</translation>
 <translation id="5499313591153584299">Diese Datei könnte schädlich für deinen Computer sein.</translation>
 <translation id="5499453227627332024">Für deinen Linux-Container ist ein Upgrade verfügbar. Du kannst es auch später über die App "Einstellungen" ausführen.</translation>
+<translation id="5499476581866658341">Du kannst jetzt die neuesten Fotos und Medien von deinem Smartphone aufrufen</translation>
 <translation id="549957179819296104">Neues Symbol</translation>
 <translation id="5500168250243071806">Der <ph name="BEGIN_LINK_SEARCH" />Suchverlauf<ph name="END_LINK_SEARCH" /> und <ph name="BEGIN_LINK_GOOGLE" />andere Arten von Aktivitäten<ph name="END_LINK_GOOGLE" /> können in deinem Google-Konto gespeichert werden, wenn du angemeldet bist. Du kannst sie jederzeit löschen.</translation>
 <translation id="5500709606820808700">Der Sicherheitscheck wurde heute durchgeführt</translation>
@@ -5925,6 +5934,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> wurde per Remotezugriff hinzugefügt</translation>
 <translation id="6790820461102226165">Person hinzufügen...</translation>
 <translation id="6793604637258913070">Textcursor hervorheben, wenn er erscheint oder sich bewegt</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Mit dem automatischen Scan kannst du dich automatisch durch die Elemente auf dem Bildschirm bewegen. Wenn ein Element markiert ist, drücke auf „Auswählen“, um es zu aktivieren.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hoppla, ein Fehler ist aufgetreten.</translation>
@@ -6301,6 +6311,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7152478047064750137">Diese Erweiterung erfordert keine speziellen Berechtigungen</translation>
 <translation id="7154130902455071009">Startseite in <ph name="START_PAGE" /> ändern</translation>
 <translation id="7155171745945906037">Vorhandenes Foto von der Kamera oder als Datei</translation>
+<translation id="7160182524506337403">Du kannst jetzt die Benachrichtigungen von deinem Smartphone aufrufen</translation>
 <translation id="7163202347044721291">Aktivierungscode wird geprüft…</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" kann Bilder, Video- und Sounddateien an den geprüften Orten lesen.</translation>
 <translation id="7167486101654761064">Dateien dieses Typs &amp;immer öffnen</translation>
@@ -7315,6 +7326,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8138997515734480534"><ph name="VM_NAME" />-Status</translation>
 <translation id="8139447493436036221">Google Drive-Dateien</translation>
 <translation id="8140070492745508800">„<ph name="FIRST_DEVICE" />“, „<ph name="SECOND_DEVICE" />“</translation>
+<translation id="8141418916163800697">In den Phone Hub-Einstellungen kannst du weitere Funktionen einrichten</translation>
 <translation id="8141584439523427891">Wird in einem alternativen Browser geöffnet</translation>
 <translation id="8141725884565838206">Passwörter verwalten</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{ein Video}other{# Videos}}</translation>
@@ -7522,6 +7534,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="833986336429795709">App auswählen, um diesen Link zu öffnen</translation>
 <translation id="8342221978608739536">Nicht ausprobiert</translation>
 <translation id="8342861492835240085">Sammlung auswählen</translation>
+<translation id="8345848587667658367">Du kannst jetzt die neuesten Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone aufrufen</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
 <translation id="834785183489258869">Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="8350789879725387295">Eingabestift-Tools in Leiste</translation>
@@ -7797,6 +7810,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8642947597466641025">Schriftgrad vergrößern</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> könnte schädlich sein. Soll sie zum Scannen an das erweiterte Sicherheitsprogramm von Google gesendet werden?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Keine Cookies}=1{1 Cookie ist blockiert}other{# Cookies sind blockiert}}</translation>
+<translation id="864423554496711319">In deinem Konto gespeicherte Geräte</translation>
 <translation id="8644655801811752511">Dieser Sicherheitsschlüssel kann nicht zurückgesetzt werden. Versuche, den Schlüssel direkt nach dem Einstecken zurückzusetzen.</translation>
 <translation id="8645354835496065562">Zugriff auf Sensor weiterhin zulassen</translation>
 <translation id="8645920082661222035">Erkennt schädliche Ereignisse im Voraus und warnt dich, bevor sie eintreten</translation>
@@ -8126,6 +8140,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8957757410289731985">Profil anpassen</translation>
 <translation id="895944840846194039">JavaScript-Speicher</translation>
 <translation id="8960208913905765425">Schnellinfo – Umrechnung von Einheiten</translation>
+<translation id="8960638196855923532">Du kannst jetzt die Benachrichtigungen und Apps von deinem Smartphone aufrufen</translation>
 <translation id="8962051932294470566">Du kannst nur jeweils eine Datei teilen. Versuche es noch einmal, wenn die aktuelle Übertragung abgeschlossen ist.</translation>
 <translation id="8962083179518285172">Details ausblenden</translation>
 <translation id="8962918469425892674">Diese Website nutzt Bewegungs- oder Lichtsensoren.</translation>
@@ -8277,6 +8292,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9103868373786083162">Drücken, um zurückzugehen. Kontextmenü, um Verlauf aufzurufen</translation>
 <translation id="9108035152087032312">Fenster &amp;benennen…</translation>
 <translation id="9108072915170399168">Aktuelle Einstellung für Datennutzung ist "Ohne Internet"</translation>
+<translation id="9108294543511800041">Du kannst jetzt die neuesten Fotos, Medien und Benachrichtigungen von deinem Smartphone aufrufen</translation>
 <translation id="9108674852930645435"><ph name="DEVICE_TYPE" /> – Neuigkeiten</translation>
 <translation id="9108808586816295166">Sicheres DNS ist möglicherweise nicht immer verfügbar</translation>
 <translation id="9109122242323516435">Lösche Dateien aus dem Gerätespeicher, um Speicherplatz freizugeben.</translation>

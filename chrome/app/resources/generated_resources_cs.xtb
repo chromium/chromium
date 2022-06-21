@@ -1909,6 +1909,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Odstranit 1 nepodporovanou aplikaci}few{Odstraňte # nepodporované aplikace}many{Odstraňte # nepodporované aplikace}other{Odstranit # nepodporovaných aplikací}}</translation>
 <translation id="2776560192867872731">Změnit název zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Smazat tento kontejner</translation>
+<translation id="2778471504622896352">Přidání vzdálených aplikací do spouštěče ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Při instalaci aplikace pro Linux došlo k chybě</translation>
 <translation id="2783298271312924866">Staženo</translation>
@@ -2224,6 +2225,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3067198360141518313">Spustit plugin</translation>
 <translation id="3071624960923923138">Kliknutím sem otevřete novou kartu</translation>
 <translation id="3072775339180057696">Povolit webu zobrazení souboru <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Přeložit celou stránku</translation>
 <translation id="3075874217500066906">K zahájení obnovení pomocí funkce Powerwash je vyžadován restart. Po restartování budete požádáni o potvrzení, že chcete pokračovat.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Uložit pouze do tohoto zařízení</translation>
@@ -3543,6 +3545,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a další přepínače<ph name="NUMBER_OF_OTHER_SWITCHES" /></translation>
 <translation id="439266289085815679">Konfiguraci rozhraní Bluetooth spravuje <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Upravit konfigurační soubor</translation>
+<translation id="4393713825278446281">Zařízení s rychlým párováním byla uložena do účtu <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Deaktivovat</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Otevřít vše}=1{&amp;Otevřít záložku}few{&amp;Otevřít vše ({COUNT})}many{&amp;Otevřít vše ({COUNT})}other{&amp;Otevřít vše ({COUNT})}}</translation>
 <translation id="4397372003838952832">Toto heslo si nebudete muset pamatovat. Uloží se do správce hesel <ph name="GOOGLE_PASSWORD_MANAGER" /> pro <ph name="EMAIL" /></translation>
@@ -3772,6 +3775,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4615586811063744755">není vybrán žádný soubor cookie</translation>
 <translation id="461661862154729886">Zdroj energie</translation>
 <translation id="4617001782309103936">Příliš krátké</translation>
+<translation id="4617019240346358451">Pokud chcete použít rozšíření <ph name="EXTENSION_NAME" />, znovu načtěte stránku</translation>
 <translation id="4617270414136722281">Možnosti rozšíření</translation>
 <translation id="4617880081511131945">Nelze navázat spojení</translation>
 <translation id="4619564267100705184">Ověřte svou totožnost</translation>
@@ -3987,6 +3991,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4833683849865011483">Na tiskovém serveru byla nalezena jedna tiskárna</translation>
 <translation id="4836504898754963407">Správa otisků prstů</translation>
 <translation id="4837128290434901661">Změnit zpět na Vyhledávání Google?</translation>
+<translation id="4837165100461973682">Změny se projeví po opětovném načtení stránky</translation>
 <translation id="4837926214103741331">Nemáte oprávnění používat toto zařízení. Kontaktujte vlastníka zařízení a požádejte jej o oprávnění k přihlášení.</translation>
 <translation id="4837952862063191349">Chcete-li zařízení odemknout a obnovit svá místní data, zadejte staré heslo zařízení <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Zobrazovat fotky, média a oznámení z telefonu</translation>
@@ -4296,6 +4301,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5150254825601720210">Název serveru SSL certifikátu Netscape</translation>
 <translation id="5151354047782775295">Uvolněte místo na disku, jinak může dojít k automatickému smazání některých dat.</translation>
 <translation id="5153234146675181447">Zapomenout telefon</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Rozšířené nastavení tiskárny <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Předmět</translation>
 <translation id="5155327081870541046">Do adresního řádku zadejte zkratku pro web, na kterém chcete vyhledávat, například „@bookmarks“. Potom stiskněte požadovanou klávesovou zkratku a zadejte vyhledávací dotaz.</translation>
@@ -5069,6 +5075,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> používá vaši kameru a mikrofon.</translation>
 <translation id="5935158534896975820">Probíhá příprava žádosti o podepsání certifikátu (čeká se na server)</translation>
 <translation id="5935656526031444304">Spravovat bezpečné prohlížení</translation>
+<translation id="5936065461722368675">Přeložit celou stránku</translation>
 <translation id="5938002010494270685">Je k dispozici bezpečnostní upgrade</translation>
 <translation id="5939518447894949180">Resetovat</translation>
 <translation id="5939719276406088041">Zkratku nelze vytvořit</translation>
@@ -5932,6 +5939,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6790497603648687708">Rozšíření <ph name="EXTENSION_NAME" /> bylo přidáno vzdáleně</translation>
 <translation id="6790820461102226165">Přidat uživatele...</translation>
 <translation id="6793604637258913070">Zvýraznit textový kurzor, když se zobrazí nebo pohne</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Automatické prohledávání umožňuje automaticky přecházet mezi položkami na obrazovce. Zvýrazněnou položku aktivujete stisknutím tlačítka Vybrat.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Jejda, něco se pokazilo.</translation>
@@ -7804,6 +7812,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8642947597466641025">Zvětšit text</translation>
 <translation id="8643443571868262066">Soubor <ph name="FILE_NAME" /> může být nebezpečný. Chcete ho odeslat ke kontrole prostřednictvím pokročilé ochrany Google?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Žádné soubory cookie}=1{1 soubor cookie je blokován}few{# soubory cookie jsou blokovány}many{# souboru cookie je blokováno}other{# souborů cookie je blokováno}}</translation>
+<translation id="864423554496711319">Zařízení uložená do vašeho účtu</translation>
 <translation id="8644655801811752511">Tento bezpečnostní klíč nelze resetovat. Zkuste tento klíč resetovat ihned po vložení.</translation>
 <translation id="8645354835496065562">I nadále povolovat přístup k senzorům</translation>
 <translation id="8645920082661222035">Předvídá nebezpečné události a upozorňuje vás na ně ještě předtím, než k nim dojde</translation>

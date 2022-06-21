@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ব্যবহারকারী</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">এক্সটার্নাল ডিভাইসের জন্য ফার্মওয়্যার আপডেট করে এমন উইন্ডো খোলা আছে। <ph name="NUM_UPDATES" />টি আপডেট উপলভ্য।</translation>
+<translation id="1145516343487477149">সহায়তা নিবন্ধ এবং Chromebook সংক্রান্ত সাধারণ প্রশ্নের উত্তর খুঁজুন</translation>
 <translation id="1165039591588034296">ত্রুটি</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> এই <ph name="DEVICE_TYPE" /> ম্যানেজ করে।</translation>
 <translation id="1175951029573070619">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">ডার্ক থিম বন্ধ করুন</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">'ডার্ক মোড' বন্ধ করুন</translation>
+<translation id="1881188606372070653">আইনি কারণে কন্টেন্ট পরিবর্তনের অনুরোধ জানাতে <ph name="BEGIN_LINK1" />আইনি সহায়তা পৃষ্ঠা<ph name="END_LINK1" /> দেখুন। অ্যাকাউন্ট ও সিস্টেমের কিছু তথ্য Google-এর কাছে পাঠানো হতে পারে। আপনার দেওয়া তথ্য আমরা টেকনিক্যাল সমস্যা সমাধানের কাজে এবং আমাদের পরিষেবা আরও ভাল করে তোলার জন্য ব্যবহার করব। এই তথ্য <ph name="BEGIN_LINK2" />গোপনীয়তা নীতি<ph name="END_LINK2" /> এবং <ph name="BEGIN_LINK3" />পরিষেবার শর্তাবলী<ph name="END_LINK3" /> মেনেই ব্যবহার করা হবে।</translation>
 <translation id="1887850431809612466">হার্ডওয়্যার পুনর্বিবেচনাগুলি</translation>
 <translation id="1905710495812624430">সর্বোচ্চ অনুমোদিত প্রচেষ্টা ছাড়িয়ে গেছে।</translation>
 <translation id="1908234395526491708">UDP-এর অনুরোধ করা যায়নি</translation>
@@ -622,6 +624,7 @@
 <translation id="6379086450106841622">টাচস্ক্রিন</translation>
 <translation id="6381741036071372448">কীবোর্ড যাচাই করুন</translation>
 <translation id="6388847657025262518">স্ক্যানারের ডকুমেন্ট ফিডার কাজ করছে না। ফিডার চেক করে আবার চেষ্টা করুন।</translation>
+<translation id="6394634179843537518">ফাইল যোগ করুন</translation>
 <translation id="6410257289063177456">ছবি ফাইল</translation>
 <translation id="641081527798843608">বিষয়ের মিল</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

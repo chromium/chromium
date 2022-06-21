@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Bruger</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Vinduet Opdater firmware for eksterne enheder er åbent. <ph name="NUM_UPDATES" /> opdateringer er tilgængelige.</translation>
+<translation id="1145516343487477149">Find artikler i Hjælp og svar på almindelige spørgsmål om Chromebook</translation>
 <translation id="1165039591588034296">Fejl</translation>
 <translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gennemsnitligt (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Deaktiver Mørkt tema</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Deaktiver mørk tilstand</translation>
+<translation id="1881188606372070653">Gå til <ph name="BEGIN_LINK1" />siden Hjælp til Juridisk<ph name="END_LINK1" /> for at anmode om indholdsændringer af juridiske årsager. Visse konto- og systemoplysninger kan blive sendt til Google. Vi bruger de oplysninger, du giver os, til at løse tekniske problemer og forbedre vores tjenester. Oplysningerne håndteres i henhold til vores <ph name="BEGIN_LINK2" />privatlivspolitik<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />servicevilkår<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Hardwarerevision</translation>
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-anmodninger</translation>
@@ -622,6 +624,7 @@
 <translation id="6379086450106841622">Touchskærm</translation>
 <translation id="6381741036071372448">Test dit tastatur</translation>
 <translation id="6388847657025262518">Scannerens dokumentføder sidder fast. Løs problemet, og prøv igen.</translation>
+<translation id="6394634179843537518">Tilføj fil</translation>
 <translation id="6410257289063177456">Billedfiler</translation>
 <translation id="641081527798843608">Emnematch</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

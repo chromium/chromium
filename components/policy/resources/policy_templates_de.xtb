@@ -86,6 +86,7 @@
       Ist sie auf "true" gesetzt, werden Informationen zur Hintergrundbeleuchtung des Geräts ausgegeben.</translation>
 <translation id="1076751984131277498">Zulassungsliste von trennbaren USB-Geräten</translation>
 <translation id="1077675271127011209">Berichte mit Nutzungs- und Absturzdaten deaktivieren</translation>
+<translation id="1079120839835170592">Die Event.path API wird bis M115 wieder aktiviert.</translation>
 <translation id="1079425471279127373">Mit dieser Richtlinie kannst du festlegen, ob einige Ursprünge von Webanwendungen mit erzwungener Installation über die Device Attributes Web API Geräteattribute wie Seriennummer oder Hostname abrufen können.
 
       Device Attributes API ist eine Liste mit Web APIs. Weitere Informationen findest du unter: https://wicg.github.io/WebApiDevice/device_attributes. Sie sind nur für Ursprünge verfügbar, die zu Webanwendungen mit erzwungener Installation über <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> gehören, oder für die in der Kiosk-Session konfigurierten.</translation>
@@ -147,6 +148,7 @@
 <translation id="1160939557934457296">Fortfahren von der Safe Browsing-Hinweisseite deaktivieren</translation>
 <translation id="1163080558183062209">Druckertypen auf der "Deny"-Liste deaktivieren</translation>
 <translation id="117059611145966538">Externe Druckserver</translation>
+<translation id="117080706484659953">Lässt die Erkennung des Anwendungsbereichs von Richtlinien unter <ph name="MAC_OS_NAME" /> zu</translation>
 <translation id="1171785618439752042">Wenn die Richtlinie konfiguriert ist, wird angegeben, welche Verschlüsselungstypen bei der Anforderung von Kerberos-Tickets von einem <ph name="MS_AD_NAME" />-Server zulässig sind.
 
       Richtlinienkonfiguration:
@@ -259,6 +261,7 @@
       Wenn die Richtlinie nicht konfiguriert wird und <ph name="CHROME_CLEANUP_NAME" /> unerwünschte Software erkennt, können gemäß der durch <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> festgelegten Richtlinie Informationen zum Scan an Google gesendet werden. <ph name="CHROME_CLEANUP_NAME" /> fragt den Nutzer, ob die Bereinigung erwünscht ist, und bittet ihn, die Ergebnisse mit Google zu teilen, damit unerwünschte Software zukünftig besser erkannt werden kann. Diese Ergebnisse enthalten Dateimetadaten, automatisch installierte Erweiterungen und Registrierungsschlüssel, wie es im Whitepaper zum Datenschutz bei Chrome beschrieben ist.
 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden.</translation>
+<translation id="1285819498003746288">Die Event.path API ist nicht verfügbar.</translation>
 <translation id="1290634681382861275">Legt sonstige Einstellungen fest, u. a. für USB, Bluetooth, Richtlinienaktualisierung, Entwicklermodus und mehr.</translation>
 <translation id="1291880496936992484">Achtung: RC4 wird nach Version 52, etwa im September 2016, vollständig aus <ph name="PRODUCT_NAME" /> entfernt. Anschließend funktioniert diese Richtlinie nicht mehr.
 
@@ -933,6 +936,17 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 <translation id="1962864958436828230">Mindestgrößenbeschränkung zur Zwischenablagenbeschränkung für die Verhinderung von Datenlecks festlegen</translation>
 <translation id="1964634611280150550">Inkognitomodus deaktiviert</translation>
 <translation id="1964802606569741174">Diese Richtlinie hat keine Auswirkungen auf die Android YouTube App. Wenn der Sicherheitsmodus in YouTube erzwungen werden soll, darf das Installieren der Android YouTube App nicht zugelassen werden.</translation>
+<translation id="1965363065727209968">„setTimeout(…, 0)“ wird häufig verwendet, um lange JavaScript-Aufgaben aufzuteilen.
+          Wenn die Richtlinie aktiviert ist, werden die JavaScript-Funktionen „setTimeouts“ und „setIntervals“ mit einem kleineren Intervall als 4 ms weniger aggressiv verzögert.
+          So wird die Leistung kurzfristig verbessert, aber für Websites, die die API missbrauchen, wird „setTimeouts“ trotzdem verzögert.
+
+          Dies kann die Aufgabenreihenfolge auf einer Webseite verändern und unerwartetes Verhalten auf Websites bewirken, die auf eine bestimmte Reihenfolge angewiesen sind.
+          Außerdem kann dies Auswirkungen auf Websites haben, für die bei der Funktion „setTimeout()“ häufig ein Zeitlimit von 0 ms verwendet wird, etwa in Form einer erhöhten CPU-Auslastung.
+
+          Für Nutzer, für die diese Richtlinie nicht konfiguriert ist, wird diese Änderung schrittweise in der stabilen Version von <ph name="PRODUCT_NAME" /> eingeführt.
+
+          Diese Richtlinie kommt nur vorübergehend zum Einsatz und wird voraussichtlich in <ph name="PRODUCT_NAME" /> 107 entfernt. Die Frist kann verlängert werden, sofern bei Unternehmen Bedarf besteht.
+          </translation>
 <translation id="1967334955994230472">Projector deaktivieren</translation>
 <translation id="1969212217917526199">Überschreibt Richtlinien auf Fehlerbehebungs-Builds des Hosts für den Remotezugriff
 
@@ -1464,6 +1478,14 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2496180316473517155">Browserverlauf</translation>
 <translation id="2497751676088107779">Nutzerskript</translation>
 <translation id="2497965601277442929">Nutzern nicht erlauben, den Nur-HTTPS-Modus zu aktivieren</translation>
+<translation id="249798396824949930"> Über diese Richtlinie wird geregelt, ob der Browser den obligatorischen Anwendungsbereich von Richtlinien unter <ph name="MAC_OS_NAME" /> erkennen kann.
+
+      Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird der Anwendungsbereich jeder Richtlinie vom Anwendungsbereich des jeweiligen verwalteten <ph name="MAC_OS_NAME" />-Profils bestimmt.
+      Ist die Richtlinie deaktiviert, werden alle Richtlinien als Richtlinien für die Computerebene erkannt.
+
+      Diese Richtlinie kommt nur vorübergehend zum Einsatz, um einen reibungslosen Übergang zu Richtlinien mit korrekten Anwendungsbereichen unter <ph name="MAC_OS_NAME" /> zu ermöglichen. Sie wird in <ph name="PRODUCT_NAME" /> 107 entfernt.
+
+      </translation>
 <translation id="2498238926436517902">Ablage immer automatisch ausblenden</translation>
 <translation id="250022556568924228">Wenn die Richtlinie aktiviert ist, lädt <ph name="PRODUCT_OS_NAME" /> die Nutzungsbedingungen herunter und zeigt sie jedes Mal an, wenn eine Sitzung mit einem lokalen Gerätekonto gestartet wird. Die Nutzer können sich erst in der Sitzung anmelden, nachdem sie die Nutzungsbedingungen akzeptiert haben.
 
@@ -2511,6 +2533,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="3652670852519271837">Websites dürfen den Nutzer um Lesezugriff auf Dateien und Verzeichnisse über die File System API bitten</translation>
 <translation id="3653237928288822292">Symbol der Standardsuchmaschine</translation>
 <translation id="3654906736796256792">Ausführen der Audio-Sandbox zulassen</translation>
+<translation id="3655885297177292093">Die Event.path API hat den Standardstatus: verfügbar vor M109 und nicht verfügbar von M109 bis M114.</translation>
 <translation id="3659542706175323490">Wenn die Richtlinie aktiviert ist, ist das Starten bei anliegender Netzspannung aktiviert, sofern die Funktion vom Gerät unterstützt wird. Diese Energieverwaltungsrichtlinie erlaubt den Neustart des Systems aus dem abgeschalteten oder dem Ruhezustand bei Verbindung mit einer Netzspannungsquelle.
 
       Wenn die Richtlinie deaktiviert ist, ist das Starten bei anliegender Netzspannung immer deaktiviert.
@@ -2682,6 +2705,7 @@ Wenn diese Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Un
 <translation id="3838094946886335701">Wenn diese Richtlinie konfiguriert ist – jedoch nur wie empfohlen –, kannst du eine Liste mit Protokoll-Handlern registrieren, die mit den vom Nutzer registrierten zusammengeführt werden. Nachfolgend werden beide Handler-Gruppen verwendet. Setze die Eigenschaft "protocol" auf das Schema, z. B. "mailto", und die Eigenschaft "URL" auf das URL-Muster der Anwendung, die das im Feld "protocol" angegebene Schema bearbeitet. In dem Muster kann es einen "%s"-Platzhalter geben, der von der verarbeiteten URL ersetzt wird.
 
       Ein von der Richtlinie registrierter Protokoll-Handler kann vom Nutzer nicht entfernt werden. Allerdings können durch Installation eines neuen Standard-Handlers die von der Richtlinie installierten Protokoll-Handler geändert werden.</translation>
+<translation id="3851443303439635700">Steuert den Verschachtelungsgrenzwert, bevor die JavaScript-Funktion „setTimeout()“ verzögert wird</translation>
 <translation id="3857816702027059082">Hiermit aktivierst du <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> für eine Liste von URLs.
 
       Wenn du diese Richtlinie konfigurierst, legst du damit fest, welche URLs für den Attestierungsablauf zugelassen sein sollen, um die Signalgruppe vom Computer abzurufen.
@@ -3201,6 +3225,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="4472740647327683596">Seitenbreite in Mikrometern.</translation>
 <translation id="4474167089968829729">Aktiviert das Speichern von Passwörtern im Passwortmanager</translation>
 <translation id="4476769083125004742">Wenn diese Richtlinie auf <ph name="BLOCK_GEOLOCATION_SETTING" /> gesetzt ist, haben Android-Apps keinen Zugriff auf Standortdaten. Wenn du diese Richtlinie auf einen anderen Wert setzt oder sie nicht konfigurierst, wird der Nutzer um seine Zustimmung gebeten, wenn eine Android-App auf Standortdaten zugreifen möchte.</translation>
+<translation id="4478248026668918517">Blockiert die Erkennung des Anwendungsbereichs von Richtlinien.</translation>
 <translation id="4479671363221255277">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer um Lesezugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
@@ -4041,6 +4066,7 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die Sichtbarkeit von Karten steuern. Standardmäßig sind Karten sichtbar.
       </translation>
+<translation id="5449690328792750354">Die Event.path API ist verfügbar.</translation>
 <translation id="5455609857202311243">Genehmigung der KDC-Richtlinie bei der HTTP-Authentifizierung ignorieren</translation>
 <translation id="5455888515928026628">Während der Anmeldung über den Sperrbildschirm kann <ph name="PRODUCT_OS_NAME" /> die Authentifizierung über einen Server (online) oder über ein Passwort im Cache (offline) ausführen.
 
@@ -4781,6 +4807,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6282799760374509080">Audioaufzeichnung gestatten oder ablehnen</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6287310684159482272">Cookie-Einstellungen</translation>
+<translation id="6299147100249359151">Lässt die Erkennung des Anwendungsbereichs von Richtlinien zu.</translation>
 <translation id="6300871921951390976">Nutzer dürfen die Release-Version des Geräts nur ändern, wenn diese Richtlinie auf „True“ gesetzt ist. Wenn diese Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, dürfen Nutzer die Version nicht ändern.
 
       Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirksam, wenn <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> auf „False“ gesetzt ist.</translation>
@@ -6772,6 +6799,15 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 <translation id="8410477879938914253">Die Richtlinie wird nur auf verwaltete Gastsitzungen angewendet.
       Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, wird ein Dialogfeld angezeigt, über das der Nutzer dazu aufgefordert wird, die Abmeldung zu bestätigen oder abzulehnen, wenn das letzte Fenster geschlossen wird.
       Ist die Richtlinie auf „False“ gesetzt, wird das Dialogfeld nicht angezeigt und dadurch auch die automatische Abmeldung nach dem Schließen des letzten Fensters deaktiviert.</translation>
+<translation id="8411050083243181286"> Ab M109 wird die nicht standardmäßige Event.path API entfernt, um die Webkompatibilität zu verbessern. Durch diese Richtlinie wird die API bis zur Version M115 wieder aktiviert.
+
+      Ist diese Richtlinie aktiviert, ist die Event.path API verfügbar.
+
+      Ist sie deaktiviert, ist die Event.path API nicht verfügbar.
+
+      Wenn diese Richtlinie nicht konfiguriert ist, hat die Event.path API den Standardstatus: verfügbar vor M109 und nicht verfügbar von M109 bis 114.
+
+      Die Richtlinie wird nach Chrome 115 entfernt.</translation>
 <translation id="8415953438346821074">Wenn du diese Einstellung aktivierst, werden die in <ph name="PRODUCT_NAME" />-Profilen gespeicherten Einstellungen, etwa Lesezeichen, Daten zum automatischen Ausfüllen und Passwörter, zusätzlich in eine Datei geschrieben, die im Roaming-Nutzerprofilordner oder an einem vom Administrator über die Richtlinie <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" /> festgelegten Ort gespeichert wird. Durch die Aktivierung dieser Richtlinie wird die Cloudsynchronisierung deaktiviert.
 
 Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die regulären lokalen Profile verwendet.</translation>

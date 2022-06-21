@@ -1909,6 +1909,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Удалить 1 неподдерживаемое приложение}one{Удалить # неподдерживаемое приложение}few{Удалить # неподдерживаемых приложения}many{Удалить # неподдерживаемых приложений}other{Удалить # неподдерживаемого приложения}}</translation>
 <translation id="2776560192867872731">Изменить название устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2777251078198759550">Удалить этот контейнер</translation>
+<translation id="2778471504622896352">Добавление приложений с удаленным доступом на панель запуска Chrome OS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Не удалось установить приложение для Linux</translation>
 <translation id="2783298271312924866">Сохранено</translation>
@@ -3544,6 +3545,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и ещё несколько переключателей (<ph name="NUMBER_OF_OTHER_SWITCHES" />)</translation>
 <translation id="439266289085815679">Конфигурацию Bluetooth контролирует пользователь <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Изменение файла конфигурации.</translation>
+<translation id="4393713825278446281">Устройства с Быстрым подключением сохранены в аккаунте <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Отключить</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Открыть все}=1{&amp;Открыть закладку}one{&amp;Открыть все ({COUNT})}few{&amp;Открыть все ({COUNT})}many{&amp;Открыть все ({COUNT})}other{&amp;Открыть все ({COUNT})}}</translation>
 <translation id="4397372003838952832">Вам не нужно запоминать этот пароль. Он будет сохранен для аккаунта <ph name="EMAIL" /> здесь: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -3773,6 +3775,7 @@
 <translation id="4615586811063744755">файлы cookie не выбраны</translation>
 <translation id="461661862154729886">Источник электропитания</translation>
 <translation id="4617001782309103936">Слишком короткий</translation>
+<translation id="4617019240346358451">Чтобы использовать расширение "<ph name="EXTENSION_NAME" />", обновите страницу</translation>
 <translation id="4617270414136722281">Параметры расширений</translation>
 <translation id="4617880081511131945">Не удается подключиться</translation>
 <translation id="4619564267100705184">Подтвердить личность</translation>
@@ -3922,6 +3925,7 @@
 <translation id="4768332406694066911">У вас есть идентифицирующие вас сертификаты этих организаций</translation>
 <translation id="4770119228883592393">Требуется разрешение. Нажмите ⌘ + Option + Стрелка вниз, чтобы ответить.</translation>
 <translation id="4773112038801431077">Обновление Linux</translation>
+<translation id="4774337692467964393">Если функция Smart Lock включена, вводить PIN-код или пароль не требуется.</translation>
 <translation id="4775142426314270551">Помогите нам повышать производительность и совершенствовать функции Chrome и Chrome OS, разрешив автоматическую отправку в Google отчетов о сбоях и информации об использовании и диагностике. Некоторые агрегированные данные также позволят улучшить приложения для Android и пригодятся партнерам Google. Если в аккаунте Google вашего ребенка включена история приложений и веб-поиска, данные ребенка из Android могут сохраняться в его аккаунте.</translation>
 <translation id="477647109558161443">Создать ярлык на рабочем столе</translation>
 <translation id="4776594120007763294">Чтобы добавить страницу в список для чтения, нажмите эту кнопку.</translation>
@@ -3971,6 +3975,7 @@
 <translation id="4820236583224459650">Выбрать в качестве активного билета</translation>
 <translation id="4821935166599369261">&amp;Сбор данных включен</translation>
 <translation id="4823484602432206655">Просмотр и изменение настроек для пользователей и устройств</translation>
+<translation id="4823894915586516138">Этот PIN-код или пароль будет защищать ваши данные на текущем устройстве <ph name="DEVICE_TYPE" />, в том числе сведения, к которым вы получаете доступ с телефона.</translation>
 <translation id="4824037980212326045">Резервное копирование и восстановление Linux</translation>
 <translation id="4824958205181053313">Отключить синхронизацию?</translation>
 <translation id="4827675678516992122">Ошибка подключения</translation>
@@ -3986,6 +3991,7 @@
 <translation id="4833683849865011483">На сервере печати найден 1 принтер.</translation>
 <translation id="4836504898754963407">Управление отпечатками</translation>
 <translation id="4837128290434901661">Вернуться к Google Поиску?</translation>
+<translation id="4837165100461973682">Чтобы изменения вступили в силу, обновите страницу</translation>
 <translation id="4837926214103741331">У вас нет доступа к этому устройству. Свяжитесь с его владельцем.</translation>
 <translation id="4837952862063191349">Чтобы разблокировать и восстановить данные, введите старый пароль устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="4838170306476614339">Просмотр фотографий, медиафайлов и уведомлений с телефона</translation>
@@ -4295,6 +4301,7 @@
 <translation id="5150254825601720210">Имя сервера SSL-сертификатов Netscape</translation>
 <translation id="5151354047782775295">Освободите пространство или выберите данные для автоматического удаления.</translation>
 <translation id="5153234146675181447">Удаление телефона</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> – дополнительные настройки</translation>
 <translation id="5154702632169343078">Тема</translation>
 <translation id="5155327081870541046">В адресной строке введите быструю команду для сайта, на котором нужно выполнить поиск, например @bookmarks. Затем нажмите нужное сочетание клавиш и добавьте поисковый запрос.</translation>
@@ -5628,6 +5635,7 @@
 <translation id="648927581764831596">Отсутствуют</translation>
 <translation id="6490471652906364588">Устройство USB-C (порт справа)</translation>
 <translation id="6491376743066338510">Не удалось выполнить авторизацию</translation>
+<translation id="6492396476180293140">Встроенная камера отключена с помощью аппаратного переключателя.</translation>
 <translation id="6494327278868541139">Открыть описание улучшенной защиты</translation>
 <translation id="6494445798847293442">Не является центром сертификации</translation>
 <translation id="6494974875566443634">Персонализация</translation>
@@ -5935,6 +5943,7 @@
 <translation id="6790497603648687708">Расширение "<ph name="EXTENSION_NAME" />" было добавлено удаленно</translation>
 <translation id="6790820461102226165">Добавить пользователя</translation>
 <translation id="6793604637258913070">Выделять курсор при его появлении или перемещении</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Функция автосканирования позволяет автоматически перемещаться между объектами на экране. Чтобы активировать объект, нажмите "Выбрать", когда он будет выделен.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">Произошла ошибка</translation>
@@ -7807,6 +7816,7 @@
 <translation id="8642947597466641025">Увеличить размер шрифта</translation>
 <translation id="8643443571868262066">Файл "<ph name="FILE_NAME" />" может представлять опасность. Отправить его в Google для проверки с помощью Дополнительной защиты?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Нет файлов cookie}=1{Заблокирован 1 файл cookie}one{Заблокирован # файл cookie}few{Заблокировано # файла cookie}many{Заблокировано # файлов cookie}other{Заблокировано # файла cookie}}</translation>
+<translation id="864423554496711319">Сохраненные в аккаунте устройства</translation>
 <translation id="8644655801811752511">Не удалось сбросить настройки электронного ключа. Попробуйте сделать это сразу после того, как вставите ключ.</translation>
 <translation id="8645354835496065562">Всегда разрешать использовать датчики</translation>
 <translation id="8645920082661222035">Предсказывает опасные события и предупреждает вас о них.</translation>

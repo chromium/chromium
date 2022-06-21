@@ -1910,6 +1910,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{غیر تعاون یافتہ 1 ایپ ہٹائیں}other{غیر تعاون یافتہ # ایپس ہٹائیں}}</translation>
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> کیلئے آلہ کا نام تبدیل کریں</translation>
 <translation id="2777251078198759550">اس کنٹینر کو حذف کریں</translation>
+<translation id="2778471504622896352">‏ChromeOS لانچر میں ریموٹ ایپس شامل کریں</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">‏Linux ایپلیکیشن انسٹال کرنے میں خرابی</translation>
 <translation id="2783298271312924866">ڈاؤن لوڈ کردہ</translation>
@@ -3545,6 +3546,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" /> اور <ph name="NUMBER_OF_OTHER_SWITCHES" /> مزید سوئچز</translation>
 <translation id="439266289085815679"><ph name="USER_EMAIL" /> بلوٹوتھ کنفیگریشن کو کنٹرول کرتا ہے۔</translation>
 <translation id="4392896746540753732">کنفیگریشن فائل میں ترمیم کریں</translation>
+<translation id="4393713825278446281">فاسٹ پئیر آلات کو <ph name="PRIMARY_EMAIL" /> میں محفوظ کیا گیا</translation>
 <translation id="4394049700291259645">غیر فعال کریں</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{سبھی کو &amp;کھولیں}=1{بُک مارک &amp;کھولیں}other{سبھی ({COUNT}) کو &amp;کھولیں}}</translation>
 <translation id="4397372003838952832">آپ کو یہ پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی۔ اسے <ph name="EMAIL" /> کے لیے <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ کیا جائے گا۔</translation>
@@ -3774,6 +3776,7 @@
 <translation id="4615586811063744755">کوئی کوکی منتخب نہیں ہے</translation>
 <translation id="461661862154729886">توانائی کا ماخذ</translation>
 <translation id="4617001782309103936">بہت چھوٹا</translation>
+<translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" کا استعمال کرنے کیلئے صفحہ کو دوبارہ لوڈ کریں</translation>
 <translation id="4617270414136722281">ایکسٹینشنز کے اختیارات</translation>
 <translation id="4617880081511131945">کنکشن قائم نہیں کیا جا سکتا</translation>
 <translation id="4619564267100705184">توثیق کریں کہ یہ آپ ہیں</translation>
@@ -3989,6 +3992,7 @@
 <translation id="4833683849865011483">پرنٹ سرور سے 1 پرنٹر ملا</translation>
 <translation id="4836504898754963407">فنگر پرنٹس کا نظم کریں</translation>
 <translation id="4837128290434901661">‏Google تلاش پر واپس جائیں؟</translation>
+<translation id="4837165100461973682">اپنی تبدیلیاں لاگو کرنے کے لیے صفحہ کو دوبارہ لوڈ کریں</translation>
 <translation id="4837926214103741331">آپ کے پاس یہ آلہ استعمال کرنے کی اجازت نہیں ہے۔ سائن ان کی اجازت کیلئے براہ کرم آلہ کے مالک سے رابطہ کریں۔</translation>
 <translation id="4837952862063191349">اپنا مقامی ڈیٹا غیر مقفل اور بحال کرنے کیلئے، براہ کرم اپنا پرانا <ph name="DEVICE_TYPE" /> پاس ورڈ درج کریں۔</translation>
 <translation id="4838170306476614339">اپنے فون کی تصاویر، میڈیا اور اطلاعات دیکھیں</translation>
@@ -4299,6 +4303,7 @@
 <translation id="5150254825601720210">‏Netscape سرٹیفکیٹ SSL سرور کا نام</translation>
 <translation id="5151354047782775295">ڈسک کی جگہ خالی کریں یا منتخب کردہ ڈیٹا خودکار طور پر حذف ہوسکتا ہے</translation>
 <translation id="5153234146675181447">فون کو بھول جائیں</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> کیلئے جدید ترین ترتیبات</translation>
 <translation id="5154702632169343078">موضوع</translation>
 <translation id="5155327081870541046">‏ایڈریس بار میں، اس سائٹ کا شارٹ کٹ درج کریں جسے آپ تلاش کرنا چاہتے ہیں، جیسے "bookmarks@"۔ پھر، اپنا پسندیدہ کی بورڈ شارٹ کٹ دبائیں، اور اپنی تلاش کی اصطلاح درج کریں۔</translation>
@@ -5935,6 +5940,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> کو دور سے شامل کر دیا گیا</translation>
 <translation id="6790820461102226165">شخص کو شامل کریں…</translation>
 <translation id="6793604637258913070">متن کیرٹ کے ظاہر ہونے یا منتقل ہونے پر اسے ہائی لائٹ کریں</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">خودکار اسکین سے آپ اسکرین پر موجود ایک آئٹم سے دوسرے آئٹم پر جا سکتے ہیں۔ جب کسی آئٹمز کو نمایاں کیا جاتا ہے تو اسے فعال کرنے کیلئے "منتخب کریں" دبائیں۔</translation>
 <translation id="6795884519221689054">پانڈا</translation>
 <translation id="6797493596609571643">افوہ، کچھ غلط ہو گیا۔</translation>
@@ -7809,6 +7815,7 @@
 <translation id="8642947597466641025">متن کو اور بڑا بنائیں</translation>
 <translation id="8643443571868262066">‏<ph name="FILE_NAME" /> خطرناک ہو سکتا ہے۔ اسکیننگ کے لیے Google کے اعلی تحفظ کو بھیجیں؟</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{کوئی کوکی نہیں}=1{1 کوکی مسدود ہے}other{# کوکیز مسدود ہیں}}</translation>
+<translation id="864423554496711319">آپ کے اکاؤنٹ میں محفوظ کردہ آلات</translation>
 <translation id="8644655801811752511">اس سیکیورٹی کلید کو دوبارہ ترتیب نہیں دیا جا سکتا۔ کلید داخل کرنے کے بعد اسے فوری طور پر دوبارہ ترتیب دینے کی کوشش کریں۔</translation>
 <translation id="8645354835496065562">سینسر تک رسائی کی اجازت جاری رکھیں</translation>
 <translation id="8645920082661222035">خطرناک ایونٹس ہونے سے پہلے ان کی پیشین گوئی کرتی ہے اور آپ کو ان کے بارے میں متنبہ کرتی ہے</translation>

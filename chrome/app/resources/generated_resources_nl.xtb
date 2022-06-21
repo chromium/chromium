@@ -2224,6 +2224,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3067198360141518313">Deze plugin uitvoeren</translation>
 <translation id="3071624960923923138">Je kunt hier klikken om een nieuw tabblad te openen</translation>
 <translation id="3072775339180057696">Toestaan dat site <ph name="FILE_NAME" /> bekijkt?</translation>
+<translation id="3074499504015191586">Hele pagina vertalen</translation>
 <translation id="3075874217500066906">Apparaat moet opnieuw worden opgestart om met het Powerwash-proces te beginnen. Na het opnieuw opstarten wordt je gevraagd om te bevestigen dat je wilt doorgaan.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Alleen opslaan op dit apparaat</translation>
@@ -5075,6 +5076,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> gebruikt je camera en microfoon</translation>
 <translation id="5935158534896975820">Verzoek voor certificaatondertekening voorbereiden (wachten op server)</translation>
 <translation id="5935656526031444304">Safe Browsing beheren</translation>
+<translation id="5936065461722368675">Hele pagina vertalen</translation>
 <translation id="5938002010494270685">Beveiligingsupgrade beschikbaar</translation>
 <translation id="5939518447894949180">Resetten</translation>
 <translation id="5939719276406088041">Kan snelkoppeling niet maken</translation>

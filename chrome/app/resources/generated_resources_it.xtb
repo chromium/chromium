@@ -1909,6 +1909,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Rimuovi 1 app non supportata}other{Rimuovi # app non supportate}}</translation>
 <translation id="2776560192867872731">Cambia il nome del dispositivo per <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Elimina questo container</translation>
+<translation id="2778471504622896352">Aggiunta di app remote ad Avvio app di Chrome OS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Errore durante l'installazione dell'applicazione Linux</translation>
 <translation id="2783298271312924866">Scaricato</translation>
@@ -2224,6 +2225,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3067198360141518313">Esegui questo plug-in</translation>
 <translation id="3071624960923923138">Puoi fare clic qui per aprire una nuova scheda</translation>
 <translation id="3072775339180057696">Vuoi consentire al sito di visualizzare il file <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Traduci pagina intera</translation>
 <translation id="3075874217500066906">È necessario riavviare per iniziare la procedura di Powerwash. Dopo il riavvio ti verrà chiesto di confermare di voler procedere.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Salva solo su questo dispositivo</translation>
@@ -3544,6 +3546,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e altri <ph name="NUMBER_OF_OTHER_SWITCHES" /> sensori</translation>
 <translation id="439266289085815679">Configurazione Bluetooth controllata da <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Modifica il file di configurazione</translation>
+<translation id="4393713825278446281">Dispositivi con Accoppiamento rapido salvati in <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Disabilita</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Apri tutti}=1{&amp;Apri preferito}other{&amp;Apri tutti ({COUNT})}}</translation>
 <translation id="4397372003838952832">Non dovrai ricordare questa password perché verrà salvata in <ph name="GOOGLE_PASSWORD_MANAGER" /> per <ph name="EMAIL" />.</translation>
@@ -3773,6 +3776,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4615586811063744755">nessun cookie selezionato</translation>
 <translation id="461661862154729886">Fonte di energia</translation>
 <translation id="4617001782309103936">Troppo corto</translation>
+<translation id="4617019240346358451">Ricarica la pagina per utilizzare "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4617270414136722281">Opzioni estensione</translation>
 <translation id="4617880081511131945">Impossibile stabilire una connessione</translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
@@ -3988,6 +3992,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4833683849865011483">1 stampante trovata sul server di stampa</translation>
 <translation id="4836504898754963407">Gestisci impronte</translation>
 <translation id="4837128290434901661">Tornare a Ricerca Google?</translation>
+<translation id="4837165100461973682">Ricarica la pagina per applicare le modifiche</translation>
 <translation id="4837926214103741331">Non sei autorizzato a utilizzare questo dispositivo. Per ottenere l'autorizzazione di accesso contatta il proprietario del dispositivo.</translation>
 <translation id="4837952862063191349">Per sbloccare e ripristinare i dati locali, inserisci la vecchia password del dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Visualizza foto, contenuti multimediali e notifiche del tuo telefono</translation>
@@ -4298,6 +4303,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5150254825601720210">Nome server SSL certificato Netscape</translation>
 <translation id="5151354047782775295">Libera spazio sul disco, altrimenti alcuni dati potrebbero essere eliminati automaticamente</translation>
 <translation id="5153234146675181447">Elimina telefono</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Impostazioni avanzate per <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Oggetto</translation>
 <translation id="5155327081870541046">Nella barra degli indirizzi, inserisci la scorciatoia relativa al sito in cui vuoi eseguire la ricerca, come "@segnalibri". Successivamente, digita la tua scorciatoia da tastiera preferita e inserisci il termine di ricerca.</translation>
@@ -5073,6 +5079,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> sta usando la videocamera e il microfono</translation>
 <translation id="5935158534896975820">Preparazione della richiesta di firma del certificato (in attesa sul server)</translation>
 <translation id="5935656526031444304">Gestisci Navigazione sicura</translation>
+<translation id="5936065461722368675">Traduci pagina intera</translation>
 <translation id="5938002010494270685">Upgrade di sicurezza disponibile</translation>
 <translation id="5939518447894949180">Reimposta</translation>
 <translation id="5939719276406088041">Impossibile creare la scorciatoia</translation>
@@ -5611,7 +5618,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6466258437571594570">I siti non possono interromperti quando chiedono di poter inviare notifiche</translation>
 <translation id="6466988389784393586">&amp;Apri tutti i Preferiti</translation>
 <translation id="6467304607960172345">Ottimizza video a schermo intero</translation>
-<translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> potrà poi:</translation>
+<translation id="6467377768028664108">Su <ph name="DEVICE_TYPE" />:</translation>
 <translation id="6468485451923838994">Caratteri</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> file</translation>
 <translation id="6469557521904094793">Attiva rete mobile</translation>
@@ -5932,6 +5939,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6790497603648687708">L'estensione <ph name="EXTENSION_NAME" /> è stata aggiunta da remoto</translation>
 <translation id="6790820461102226165">Aggiungi persona...</translation>
 <translation id="6793604637258913070">Evidenzia il cursore di testo quando viene visualizzato o spostato</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">La scansione automatica ti consente di spostarti da un elemento all'altro sullo schermo in modo automatico. Quando un elemento è evidenziato, premi "Seleziona" per attivarlo.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Spiacenti, qualcosa è andato storto.</translation>
@@ -7808,6 +7816,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8642947597466641025">Ingrandisci le dimensioni del testo</translation>
 <translation id="8643443571868262066">Il file <ph name="FILE_NAME" /> potrebbe essere pericoloso. Inviare alla protezione avanzata di Google per la scansione?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Nessun cookie}=1{1 cookie bloccato}other{# cookie bloccati}}</translation>
+<translation id="864423554496711319">Dispositivi salvati nel tuo account</translation>
 <translation id="8644655801811752511">Impossibile reimpostare questo token di sicurezza. Prova a reimpostare il token subito dopo averlo inserito.</translation>
 <translation id="8645354835496065562">Continua a consentire l'accesso ai sensori</translation>
 <translation id="8645920082661222035">Prevede eventi pericolosi e ti avvisa prima che si verifichino</translation>

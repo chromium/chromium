@@ -1912,6 +1912,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{إزالة تطبيق واحد تم إيقافه نهائيًا}zero{إزالة # تطبيق تم إيقافه نهائيًا}two{إزالة تطبيقَين تم إيقافهما نهائيًا}few{إزالة # تطبيقات تم إيقافها نهائيًا}many{إزالة # تطبيقًا تم إيقافه نهائيًا}other{إزالة # تطبيق تم إيقافه نهائيًا}}</translation>
 <translation id="2776560192867872731">تعديل اسم الجهاز <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">حذف هذه الحاوية</translation>
+<translation id="2778471504622896352">‏إضافة التطبيقات عن بُعد إلى مشغِّل التطبيقات في ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
 <translation id="2783298271312924866">تم التنزيل</translation>
@@ -2857,7 +2858,7 @@
 <translation id="3714195043138862580">وُضِعَ هذا الجهاز التجريبي في الحالة "غير متوفِّر".</translation>
 <translation id="3719826155360621982">الصفحة الرئيسية</translation>
 <translation id="372062398998492895">‏إعدادات طابعات CUPS</translation>
-<translation id="3721119614952978349">‏علاقتك مع Google</translation>
+<translation id="3721119614952978349">‏أنت وGoogle</translation>
 <translation id="3722108462506185496">حدث خطأ أثناء بدء تشغيل خدمة الآلة الافتراضية. يُرجى إعادة المحاولة.</translation>
 <translation id="3727144509609414201">‏شبكات Wi-Fi المتاحة</translation>
 <translation id="3727187387656390258">فحص النوافذ المنبثقة</translation>
@@ -3545,6 +3546,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /> و<ph name="THIRD_SWITCH" /> و<ph name="NUMBER_OF_OTHER_SWITCHES" /> مفتاح تبديل آخر</translation>
 <translation id="439266289085815679">يتم التحكّم في إعداد البلوتوث من قِبل <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">تعديل ملف الضبط</translation>
+<translation id="4393713825278446281">الأجهزة التي تتضمّن ميزة "الإقران السريع" والمحفوظة في حساب <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">إيقاف</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;فتح كل العناوين}=1{&amp;فتح إشارة مرجعية واحدة}two{&amp;فتح كِلا العنوانَين ({COUNT})}few{&amp;فتح كل الـ ({COUNT}) عناوين}many{&amp;فتح كل الـ ({COUNT}) عنوانًا}other{&amp;فتح كل الـ ({COUNT}) عنوان}}</translation>
 <translation id="4397372003838952832">لن تضطر إلى تذكُّر كلمة المرور هذه. سيتم حفظ كلمة المرور في <ph name="GOOGLE_PASSWORD_MANAGER" /> للحساب <ph name="EMAIL" />.</translation>
@@ -3774,6 +3776,7 @@
 <translation id="4615586811063744755">لم يتم اختيار أي ملفات تعريف ارتباط.</translation>
 <translation id="461661862154729886">مصدر الطاقة</translation>
 <translation id="4617001782309103936">قصير جدًا</translation>
+<translation id="4617019240346358451">إعادة تحميل الصفحة لاستخدام "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4617270414136722281">خيارات الإضافات</translation>
 <translation id="4617880081511131945">لا يمكن إجراء اتصال</translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
@@ -3989,6 +3992,7 @@
 <translation id="4833683849865011483">تم العثور على طابعة واحدة من خادم الطباعة.</translation>
 <translation id="4836504898754963407">إدارة بصمات الإصبع</translation>
 <translation id="4837128290434901661">‏هل تريد التغيير مرة أخرى إلى "بحث Google"؟</translation>
+<translation id="4837165100461973682">إعادة تحميل الصفحة لتطبيق التغييرات</translation>
 <translation id="4837926214103741331">لا يصرح لك باستخدام هذا الجهاز. يُرجى الاتصال بمالك الجهاز، للحصول على إذن تسجيل الدخول.</translation>
 <translation id="4837952862063191349">لإلغاء قفل بياناتك المحلية واستعادتها، يُرجى إدخال كلمة مرور <ph name="DEVICE_TYPE" /> القديمة.</translation>
 <translation id="4838170306476614339">عرض الصور والوسائط والإشعارات من هاتفك</translation>
@@ -4199,7 +4203,7 @@
 <translation id="5051836348807686060">لا تتوفر ميزة التدقيق الإملائي للغات التي اخترتها.</translation>
 <translation id="5052499409147950210">تعديل موقع إلكتروني</translation>
 <translation id="505347685865235222">مجموعة لم تتم تسميتها - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">‏ابحث في الصور عبر "عدسة Google"</translation>
+<translation id="5053962746715621840">‏البحث باستخدام الصورة بواسطة "عدسة Google"</translation>
 <translation id="5054374119096692193">‏الاطّلاع على كل خيارات البطاقة في القسم <ph name="BEGIN_LINK" />تخصيص Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">جارٍ الاتصال بالحاوية</translation>
 <translation id="5057110919553308744">عند النقر على "الإضافة"</translation>
@@ -4298,6 +4302,7 @@
 <translation id="5150254825601720210">‏اسم خادم بروتوكول SSL (طبقة المقابس الآمنة) لشهادة Netscape</translation>
 <translation id="5151354047782775295">احرص على تفريغ مساحة على القرص أو حدد بيانات قد يتم حذفها تلقائيًا</translation>
 <translation id="5153234146675181447">عدم تذكُّر الهاتف</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">الإعدادات المتقدمة لـ <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">الموضوع</translation>
 <translation id="5155327081870541046">‏في شريط العناوين، أدخِل اختصار الموقع الإلكتروني الذي تريد البحث فيه، مثل "‎@bookmarks". بعد ذلك، اضغط على اختصار لوحة المفاتيح المفضّل لديك وأدخِل عبارة البحث.</translation>
@@ -5941,6 +5946,7 @@
 <translation id="6790497603648687708">تمت إضافة <ph name="EXTENSION_NAME" /> عن بُعد</translation>
 <translation id="6790820461102226165">إضافة شخص...</translation>
 <translation id="6793604637258913070">تمييز علامة إقحام النص عندما تظهر أو تتحرك</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">تتيح لك ميزة "المسح التلقائي" إمكانية التنقُّل بين العناصر على الشاشة تلقائيًا. عند تمييز عنصر معيَّن، اضغط على "اختيار" لتنشيطه.</translation>
 <translation id="6795884519221689054">باندا</translation>
 <translation id="6797493596609571643">عفوًا، حدث خطأ ما.</translation>
@@ -7816,6 +7822,7 @@
 <translation id="8642947597466641025">لتكبير النص</translation>
 <translation id="8643443571868262066">‏قد يكون <ph name="FILE_NAME" /> خطيرًا. هل تريد إرساله إلى برنامج "الحماية المتقدّمة" من Google لفحصه؟</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{ما مِن ملفات تعريف ارتباط}=1{تم حظر ملف تعريف ارتباط واحد}two{تم حظر ملفَي تعريف ارتباط (#)}few{تم حظر # ملفات تعريف ارتباط}many{تم حظر # ملف تعريف ارتباط}other{تم حظر # ملف تعريف ارتباط}}</translation>
+<translation id="864423554496711319">الأجهزة المحفوظة في حسابك</translation>
 <translation id="8644655801811752511">تعذّرت إعادة ضبط مفتاح الأمان هذا. يمكنك محاولة إعادة ضبط هذا المفتاح فورًا بعد إدخاله.</translation>
 <translation id="8645354835496065562">مواصلة السماح بالوصول إلى أجهزة الاستشعار</translation>
 <translation id="8645920082661222035">توقُّع الأحداث الخطيرة قبل حدوثها والتحذير منها</translation>

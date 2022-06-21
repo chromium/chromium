@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Nutzer</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Das Fenster für Firmwareupdates für externe Geräte ist geöffnet. Es sind <ph name="NUM_UPDATES" /> Updates verfügbar.</translation>
+<translation id="1145516343487477149">Hier findest du Hilfeartikel und Antworten auf häufig gestellte Fragen zu Chromebooks</translation>
 <translation id="1165039591588034296">Fehler</translation>
 <translation id="1175697296044146566">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="1175951029573070619">Durchschnittlich (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Dunkles Design ausschalten</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Dunklen Modus ausschalten</translation>
+<translation id="1881188606372070653">Auf der Seite <ph name="BEGIN_LINK1" />Rechtliche Hinweise<ph name="END_LINK1" /> kannst du Inhaltsänderungen aus rechtlichen Gründen beantragen. Einige Konto- und Systeminformationen werden möglicherweise an Google gesendet. Wir verwenden diese Informationen, um unter Einhaltung der <ph name="BEGIN_LINK2" />Datenschutzerklärung<ph name="END_LINK2" /> und der <ph name="BEGIN_LINK3" />Nutzungsbedingungen<ph name="END_LINK3" /> von Google technische Probleme zu beheben und unsere Dienste zu optimieren.</translation>
 <translation id="1887850431809612466">Hardware-Version</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
 <translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
@@ -623,6 +625,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Tastatur testen</translation>
 <translation id="6388847657025262518">Der Dokumenteneinzug des Scanners klemmt. Kontrolliere den Einzug und versuche es noch einmal.</translation>
+<translation id="6394634179843537518">Datei hinzufügen</translation>
 <translation id="6410257289063177456">Bilddateien</translation>
 <translation id="641081527798843608">subject-match</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

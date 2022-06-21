@@ -3923,6 +3923,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4768332406694066911">Vous avez des certificats provenant de ces organisations qui vous identifient</translation>
 <translation id="4770119228883592393">Autorisation demandée, appuyez sur ⌘+Option+flèche vers le bas pour répondre</translation>
 <translation id="4773112038801431077">Mettre à niveau Linux</translation>
+<translation id="4774337692467964393">Lorsque Smart Lock est activé, vous n'avez pas besoin d'entrer de NIP ni de mot de passe</translation>
 <translation id="4775142426314270551">Aidez-nous à améliorer les fonctionnalités et les performances de Chrome et de Chrome OS en envoyant automatiquement les rapports de plantage ainsi que les données de diagnostic et d'utilisation à Google. Certaines données agrégées seront également utiles aux applications Android et aux partenaires Google. Si le paramètre Activité sur le Web et dans les applications est activé pour le compte Google de votre enfant, les données Android de votre enfant peuvent être enregistrées dans le compte Google de votre enfant.</translation>
 <translation id="477647109558161443">Créer un raccourci sur le bureau</translation>
 <translation id="4776594120007763294">Pour ajouter une page à lire plus tard, cliquez sur le bouton</translation>
@@ -3972,6 +3973,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4820236583224459650">Enregistrer comme ticket actif</translation>
 <translation id="4821935166599369261">&amp;Profilage activé</translation>
 <translation id="4823484602432206655">Lire et modifier les paramètres de l’utilisateur et de l'appareil</translation>
+<translation id="4823894915586516138">Ce NIP ou ce mot de passe protège vos données sur ce <ph name="DEVICE_TYPE" />, y compris toutes celles auxquelles vous accédez à partir de votre téléphone</translation>
 <translation id="4824037980212326045">Sauvegarder et restaurer le contenu Linux</translation>
 <translation id="4824958205181053313">Annuler la synchronisation?</translation>
 <translation id="4827675678516992122">Impossible de se connecter</translation>
@@ -5629,6 +5631,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="648927581764831596">Aucun</translation>
 <translation id="6490471652906364588">Appareil USB-C (port de droite)</translation>
 <translation id="6491376743066338510">Échec de l'autorisation</translation>
+<translation id="6492396476180293140">Caméra interne désactivée par le commutateur matériel</translation>
 <translation id="6494327278868541139">Afficher les renseignements sur la protection renforcée</translation>
 <translation id="6494445798847293442">N'est pas une autorité de certification</translation>
 <translation id="6494974875566443634">Personnalisation</translation>

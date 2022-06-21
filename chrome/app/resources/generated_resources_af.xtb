@@ -1558,6 +1558,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2433836460518180625">Ontsluit net toestel</translation>
 <translation id="2434449159125086437">Kan nie drukker opstel nie. Gaan opstelling na en probeer weer.</translation>
 <translation id="2434758125294431199">Kies wie met jou kan deel</translation>
+<translation id="2434915728183570229">Jy kan nou jou foon se programme bekyk</translation>
 <translation id="2435137177546457207">Google Chrome en Chrome OS Flex se bykomende bepalings</translation>
 <translation id="2435248616906486374">Netwerk ontkoppel</translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
@@ -4242,6 +4243,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5072900412896857127">Google Play se diensbepalings kan nie gelaai word nie. Gaan jou netwerkverbinding na en probeer weer.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> en nog #}}</translation>
 <translation id="5074318175948309511">Hierdie bladsy moet dalk herlaai word voor die nuwe instellings in werking sal tree.</translation>
+<translation id="5074761966806028321">Toestemming word nog benodig om die opstelling te voltooi</translation>
 <translation id="5075910247684008552">Onveilige inhoud word by verstek op veilige werwe geblokkeer</translation>
 <translation id="5078638979202084724">Boekmerk alle oortjies</translation>
 <translation id="5078796286268621944">Verkeerde PIN</translation>
@@ -4605,6 +4607,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5449551289610225147">Ongeldige wagwoord</translation>
 <translation id="5449588825071916739">Boekmerk alle oortjies</translation>
 <translation id="5449716055534515760">Maak venster toe</translation>
+<translation id="5452446625764825792">Jy kan nou jou foon se onlangse foto's, media en programme bekyk</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (werk vanlyn)</translation>
 <translation id="5454166040603940656">met <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">Sien meer soekresultate</translation>
@@ -4665,6 +4668,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5499211612787418966">Hierdie dialoog is nie tans gefokus nie. Druk Alt-Shift A om hierdie dialoog te fokus.</translation>
 <translation id="5499313591153584299">Hierdie lêer kan skadelik vir jou rekenaar wees.</translation>
 <translation id="5499453227627332024">'n Opgradering is beskikbaar vir jou Linux-houer. Jy kan ook later deur die Instellings-program opgradeer.</translation>
+<translation id="5499476581866658341">Jy kan nou jou foon se onlangse foto's en media bekyk</translation>
 <translation id="549957179819296104">Nuwe ikoon</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Soekgeskiedenis<ph name="END_LINK_SEARCH" /> en <ph name="BEGIN_LINK_GOOGLE" />ander soorte aktiwiteit<ph name="END_LINK_GOOGLE" /> sal dalk in jou Google-rekening gestoor word wanneer jy aangemeld is. Jy kan hulle enige tyd uitvee.</translation>
 <translation id="5500709606820808700">Veiligheidskontrole het vandag plaasgevind</translation>
@@ -6330,6 +6334,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7152478047064750137">Hierdie uitbreiding vereis geen spesiale toestemmings nie</translation>
 <translation id="7154130902455071009">Verander jou beginblad na: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Bestaande foto in kamera of lêer</translation>
+<translation id="7160182524506337403">Jy kan nou jou foon se kennisgewings bekyk</translation>
 <translation id="7163202347044721291">Verifieer tans aktiveringkode …</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" kan prente, video en klanklêers in die gemerkte liggings lees.</translation>
 <translation id="7167486101654761064">Maak altyd hierdie tipe lêers oop</translation>
@@ -7344,6 +7349,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8138997515734480534"><ph name="VM_NAME" />-status</translation>
 <translation id="8139447493436036221">Google Drive-lêers</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141418916163800697">Jy kan meer kenmerke in Foonsentrum-instellings opstel</translation>
 <translation id="8141584439523427891">Maak tans in alternatiewe blaaier oop</translation>
 <translation id="8141725884565838206">Bestuur jou wagwoorde</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{'n video}other{# video's}}</translation>
@@ -7551,6 +7557,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="833986336429795709">Kies 'n program om hierdie skakel oop te maak</translation>
 <translation id="8342221978608739536">Het nie probeer nie</translation>
 <translation id="8342861492835240085">Kies 'n versameling</translation>
+<translation id="8345848587667658367">Jy kan nou jou foon se onlangse foto's, media, kennisgewings en programme bekyk</translation>
 <translation id="8347227221149377169">Druktake</translation>
 <translation id="834785183489258869">Terwyl jy in Incognito is, kan werwe nie jou webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld om advertensies te personaliseer. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
 <translation id="8350789879725387295">Stilusnutsgoed in dok</translation>
@@ -8156,6 +8163,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8957757410289731985">Pasmaak profiel</translation>
 <translation id="895944840846194039">JavaScript-geheue</translation>
 <translation id="8960208913905765425">Eenheidomskakeling vir Vinnige Antwoorde</translation>
+<translation id="8960638196855923532">Jy kan nou jou foon se kennisgewings en programme bekyk</translation>
 <translation id="8962051932294470566">Jy kan slegs een lêer op 'n slag deel. Probeer weer nadat die huidige oordrag afgehandel is.</translation>
 <translation id="8962083179518285172">Versteek besonderhede</translation>
 <translation id="8962918469425892674">Hierdie werf gebruik beweging- of ligsensors.</translation>
@@ -8307,6 +8315,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="9103868373786083162">Druk om terug te gaan, kontekskieslys om geskiedenis te sien</translation>
 <translation id="9108035152087032312">Naam en venster</translation>
 <translation id="9108072915170399168">Huidige datagebruikinstelling is Sonder Internet</translation>
+<translation id="9108294543511800041">Jy kan nou jou foon se onlangse foto's, media en kennisgewings bekyk</translation>
 <translation id="9108674852930645435">Sien wat nuut is op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="9108808586816295166">Veilige DNS is dalk nie die hele tyd beskikbaar nie</translation>
 <translation id="9109122242323516435">Vee lêers uit toestelberging om spasie beskikbaar te maak.</translation>

@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Χρήστης</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Το παράθυρο Ενημέρωσης υλικολογισμικού για εξωτερικές συσκευές είναι ανοικτό. <ph name="NUM_UPDATES" /> διαθέσιμες ενημερώσεις.</translation>
+<translation id="1145516343487477149">Βρείτε άρθρα βοήθειας και απαντήσεις σε συνήθεις ερωτήσεις του Chromebook</translation>
 <translation id="1165039591588034296">Σφάλμα</translation>
 <translation id="1175697296044146566">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Μέτριο (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Απενεργοποίηση σκούρου θέματος</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Απενεργοποίηση λειτουργίας χαμηλού φωτισμού</translation>
+<translation id="1881188606372070653">Πηγαίνετε στη <ph name="BEGIN_LINK1" />σελίδα Βοήθεια για νομικά ζητήματα<ph name="END_LINK1" />, για να ζητήσετε αλλαγές περιεχομένου για νομικούς λόγους. Ορισμένες πληροφορίες λογαριασμού και συστήματος θα σταλούν στην Google. Θα χρησιμοποιήσουμε τις πληροφορίες που μας παρέχετε για να αντιμετωπίσουμε τεχνικά ζητήματα και να βελτιώσουμε τις υπηρεσίες μας, σύμφωνα με την <ph name="BEGIN_LINK2" />Πολιτική απορρήτου<ph name="END_LINK2" /> και τους <ph name="BEGIN_LINK3" />Όρους Παροχής Υπηρεσιών<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Έκδοση υλικού</translation>
 <translation id="1905710495812624430">Έγινε υπέρβαση του μέγιστου αριθμού επιτρεπόμενων προσπαθειών.</translation>
 <translation id="1908234395526491708">Σφάλματα αιτήματος UDP</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">Οθόνη αφής</translation>
 <translation id="6381741036071372448">Έλεγχος του πληκτρολογίου σας</translation>
 <translation id="6388847657025262518">Ο τροφοδότης εγγράφων του σαρωτή έχει κολλήσει. Ελέγξτε τον τροφοδότη και δοκιμάστε ξανά.</translation>
+<translation id="6394634179843537518">Προσθήκη αρχείου</translation>
 <translation id="6410257289063177456">Αρχεία εικόνας</translation>
 <translation id="641081527798843608">Αντιστοιχία θέματος</translation>
 <translation id="6423239382391657905">Άνοιγμα VPN</translation>

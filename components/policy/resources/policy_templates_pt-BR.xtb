@@ -86,6 +86,7 @@
       Se ela for definida como verdadeira, as informações sobre as luzes de fundo do dispositivo serão enviadas.</translation>
 <translation id="1076751984131277498">Lista de permissões de dispositivos USB removíveis</translation>
 <translation id="1077675271127011209">Desativar relatórios de uso e dados relacionados a falhas</translation>
+<translation id="1079120839835170592">A API Event.path foi reativada até a versão M115.</translation>
 <translation id="1079425471279127373">Definir a política permite que algumas origens de aplicativos da web de instalação forçada recebam atributos de dispositivo (como número de série, nome do host) usando a API Device Attributes.
 
       A API Device Attributes é uma lista de APIs da Web. Consulte https://wicg.github.io/WebApiDevice/device_attributes (link em inglês). Essas APIs estão disponíveis apenas para origens que correspondem a aplicativos da Web de instalação forçada pela <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou para a configurada na sessão de quiosque.</translation>
@@ -256,6 +257,7 @@
       Se a política não for definida, a <ph name="CHROME_CLEANUP_NAME" /> poderá enviar os resultados da varredura de software indesejado ao Google de acordo com a política definida por <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. A <ph name="CHROME_CLEANUP_NAME" /> perguntará aos usuários se querem fazer a varredura e compartilhar os resultados com o Google para ajudar na detecção de software indesejado no futuro. Esses resultados contêm metadados de arquivos, extensões instaladas automaticamente e chaves de registro, conforme descrito no Whitepaper de Privacidade do Chrome.
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="1285819498003746288">A API Event.path não vai estar disponível.</translation>
 <translation id="1290634681382861275">Controla diversas configurações, inclusive USB, Bluetooth, atualização de políticas, modo de desenvolvedor, entre outras.</translation>
 <translation id="1291880496936992484">Atenção: o RC4 será completamente removido de <ph name="PRODUCT_NAME" /> após a versão 52 (por volta de setembro de 2016), e esta política parará de funcionar.
 
@@ -2526,6 +2528,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3652670852519271837">Permitir que sites peçam ao usuário para conceder permissão de acesso de leitura de arquivos e diretórios com a API File System</translation>
 <translation id="3653237928288822292">Ícone do provedor de pesquisa padrão</translation>
 <translation id="3654906736796256792">Permite a execução do sandbox de áudio.</translation>
+<translation id="3655885297177292093">A API Event.path vai estar no status padrão: disponível antes da versão M109 e indisponível da versão M109 à M114.</translation>
 <translation id="3659542706175323490">Se a política for definida como "Ativada", a inicialização em CA ficará ativada, se compatível com o dispositivo. A inicialização em CA oferece uma oportunidade ao sistema de reiniciar do estado "Desligado" ou "Suspenso" após a conexão do cabo de energia.
 
       Se a política for definida como "Desativada", a inicialização em CA ficará desativada.
@@ -4069,6 +4072,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se a política não for definida, os usuários poderão controlar a visibilidade dos cards. O padrão é visível.
       </translation>
+<translation id="5449690328792750354">A API Event.path vai estar disponível.</translation>
 <translation id="5455609857202311243">Ignorar a aprovação da política de KDC durante a autenticação do HTTP</translation>
 <translation id="5455888515928026628">Durante o login pela tela de bloqueio, o <ph name="PRODUCT_OS_NAME" /> pode fazer a autenticação por um servidor (on-line) ou usando uma senha armazenada em cache (off-line).
 
@@ -6817,6 +6821,15 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8410477879938914253">Esta política se aplica apenas a sessões de visitante gerenciadas.
       Se a política for definida como verdadeira ou deixada sem definição, uma caixa de diálogo será exibida e pedirá que o usuário confirme ou negue que quer sair da conta depois que a última janela for fechada.
       Se a política for definida como falsa, a caixa de diálogo não será exibida e, portanto, a saída automática será desativada após o fechamento da última janela.</translation>
+<translation id="8411050083243181286"> Da versão M109 em diante, a API Event.path não padrão será removida para melhorar a compatibilidade com a Web. Esta política reativa a API até a versão M115.
+
+      Se a política for ativada, a API Event.path vai ficar disponível.
+
+      Se ela for desativada, a API Event.path não vai estar disponível.
+
+      Se ela não for definida, a API Event.path vai estar no status padrão: disponível antes da versão M109 e indisponível da versão M109 à M114.
+
+      Esta política será removida após o Chrome 115.</translation>
 <translation id="8415953438346821074">Se você ativar esta configuração, as definições armazenadas nos perfis do <ph name="PRODUCT_NAME" />, como favoritos, dados de preenchimento automático, senhas, entre outras, serão gravadas em um arquivo armazenado na pasta "Perfil de usuário de roaming" ou em um local especificado pelo administrador por meio da política <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. A ativação dessa política desativa a sincronização em nuvem.
 
       Se a política for desativada ou não for configurada, apenas os perfis locais normais serão usados.</translation>

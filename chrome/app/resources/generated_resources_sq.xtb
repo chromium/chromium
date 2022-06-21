@@ -3918,6 +3918,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4768332406694066911">Ke certifikata nga këto organizata që të identifikojnë</translation>
 <translation id="4770119228883592393">Kërkohet leje, shtyp ⌘ + Option + Shigjetën poshtë për t'u përgjigjur</translation>
 <translation id="4773112038801431077">Përmirëso Linux</translation>
+<translation id="4774337692467964393">Nëse Smart Lock është aktivizuar, nuk do të jetë e nevojshme të futësh një kod PIN ose një fjalëkalim</translation>
 <translation id="4775142426314270551">Ndihmo në përmirësimin e veçorive dhe performancës së Chrome dhe ChromeOS duke dërguar automatikisht te Google raporte të ndërprerjeve aksidentale, si dhe të dhëna përdorimi dhe diagnostikuese. Disa të dhëna të përmbledhura do të ndihmojnë gjithashtu aplikacionet për Android dhe partnerët e Google. Nëse cilësimi "Aktiviteti i uebit dhe i aplikacioneve" është aktiv për "Llogarinë e Google" të fëmijës tënd, të dhënat e Android të fëmijës mund të ruhen në atë llogari.</translation>
 <translation id="477647109558161443">Krijo një shkurtore për desktop</translation>
 <translation id="4776594120007763294">Për të shtuar një faqe për ta lexuar më vonë, kliko te butoni</translation>
@@ -3967,6 +3968,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4820236583224459650">Vendose si biletë aktive</translation>
 <translation id="4821935166599369261">&amp;Profilizimi u aktivizua</translation>
 <translation id="4823484602432206655">Lexo dhe ndrysho cilësimet e përdoruesit dhe të pajisjes</translation>
+<translation id="4823894915586516138">Ky kod PIN ose fjalëkalim i mbron të dhënat e tua në këtë <ph name="DEVICE_TYPE" />, duke përfshirë çdo informacion ku ke qasje nga telefoni yt.</translation>
 <translation id="4824037980212326045">Rezervimi dhe restaurimi i Linux</translation>
 <translation id="4824958205181053313">Të anulohet sinkronizimi?</translation>
 <translation id="4827675678516992122">Nuk mund të lidhej</translation>
@@ -5624,6 +5626,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="648927581764831596">Nuk ofrohet asnjë</translation>
 <translation id="6490471652906364588">Pajisja USB-C (porta djathtas)</translation>
 <translation id="6491376743066338510">Autorizimi dështoi</translation>
+<translation id="6492396476180293140">Kamera e brendshme u çaktivizua nga çelësi i harduerit</translation>
 <translation id="6494327278868541139">Shfaq detajet e mbrojtjes së përforcuar</translation>
 <translation id="6494445798847293442">Nuk është një autoritet certifikimi</translation>
 <translation id="6494974875566443634">Personalizimi</translation>

@@ -1559,6 +1559,7 @@
 <translation id="2433836460518180625">सिर्फ़ डिवाइस अनलॉक करें</translation>
 <translation id="2434449159125086437">प्रिंटर सेट अप नहीं किया जा सका. कृपया कॉन्फ़िगरेशन की जाँच करें और फिर से कोशिश करें.</translation>
 <translation id="2434758125294431199">चुनें कि आपके डिवाइस के साथ कौन फ़ाइलें शेयर कर सकता है</translation>
+<translation id="2434915728183570229">अब आपके पास अपने फ़ोन में मौजूद ऐप्लिकेशन देखने का विकल्प है</translation>
 <translation id="2435137177546457207">Google Chrome और ChromeOS Flex की अन्य शर्तें</translation>
 <translation id="2435248616906486374">नेटवर्क डिस्‍कनेक्‍ट है</translation>
 <translation id="2435457462613246316">पासवर्ड दिखाएं</translation>
@@ -1923,6 +1924,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{1 ऐसा ऐप्लिकेशन मिटाएं जो अब उपलब्ध नहीं है}one{# ऐसा ऐप्लिकेशन मिटाएं जो अब उपलब्ध नहीं है}other{# ऐसे ऐप्लिकेशन मिटाएं जो अब उपलब्ध नहीं हैं}}</translation>
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> के लिए डिवाइस का नाम बदलें</translation>
 <translation id="2777251078198759550">यह कंटेनर मिटाएं</translation>
+<translation id="2778471504622896352">ChromeOS लॉन्चर में रिमोट ऐप्लिकेशन जोड़ें</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux ऐप्लिकेशन इंस्टॉल करते समय गड़बड़ी</translation>
 <translation id="2783298271312924866">डाउनलोड किए गए</translation>
@@ -3557,6 +3559,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, और <ph name="NUMBER_OF_OTHER_SWITCHES" /> और स्विच ऐक्सेस बटन</translation>
 <translation id="439266289085815679">ब्लूटूथ कॉन्फ़िगरेशन को <ph name="USER_EMAIL" /> से नियंत्रित किया जाता है.</translation>
 <translation id="4392896746540753732">कॉन्फ़िगरेशन फ़ाइल में बदलाव करें</translation>
+<translation id="4393713825278446281">फ़ास्ट पेयर डिवाइसों को <ph name="PRIMARY_EMAIL" /> में सेव किया गया</translation>
 <translation id="4394049700291259645">बंद करें</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{सभी यूआरएल &amp;खोलें}=1{बुकमार्क &amp;खोलें}one{दिया गया ({COUNT}) यूआरएल &amp;खोलें}other{सभी ({COUNT}) यूआरएल &amp;खोलें}}</translation>
 <translation id="4397372003838952832">आपको यह पासवर्ड याद नहीं रखना पड़ेगा. <ph name="EMAIL" /> के लिए, इस पासवर्ड को <ph name="GOOGLE_PASSWORD_MANAGER" /> में सेव किया जाएगा.</translation>
@@ -3787,6 +3790,7 @@
 <translation id="4615586811063744755">कोई कुकी नहीं चुनी गई है</translation>
 <translation id="461661862154729886">ऊर्जा का स्रोत</translation>
 <translation id="4617001782309103936">बहुत छोटा है</translation>
+<translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" का इस्तेमाल करने के लिए, इस पेज को फिर से लोड करें</translation>
 <translation id="4617270414136722281">एक्सटेंशन के विकल्प</translation>
 <translation id="4617880081511131945">फ़ोन से कनेक्ट नहीं किया जा सका</translation>
 <translation id="4619564267100705184">अपनी पहचान की पुष्टि करें</translation>
@@ -4002,6 +4006,7 @@
 <translation id="4833683849865011483">प्रिंट सर्वर पर एक प्रिंटर मिला</translation>
 <translation id="4836504898754963407">फ़िंगरप्रिंट प्रबंधित करें</translation>
 <translation id="4837128290434901661">इसे बदलकर फिर से Google Search करें?</translation>
+<translation id="4837165100461973682">अपने बदलावों को लागू करने के लिए, पेज को फिर से लोड करें</translation>
 <translation id="4837926214103741331">आपको इस डिवाइस का इस्तेमाल करने का अधिकार नहीं हैं. कृपया साइन इन की अनुमति के लिए डिवाइस के मालिक से संपर्क करें.</translation>
 <translation id="4837952862063191349">अपने स्थानीय डेटा को अनलॉक और पुनर्स्थापित करने के लिए, कृपया अपना पुराना <ph name="DEVICE_TYPE" /> पासवर्ड डालें.</translation>
 <translation id="4838170306476614339">अपने फ़ोन में मौजूद फ़ोटो, मीडिया, और सूचनाएं देखें</translation>
@@ -4237,6 +4242,7 @@
 <translation id="5072900412896857127">Google Play सेवा की शर्तें लोड नहीं की जा सकीं. कृपया अपना इंटरनेट कनेक्शन जांचें और फिर से कोशिश करें.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" />, और # दूसरी फ़ाइल}other{<ph name="FILE1" />, <ph name="FILE2" />, और # दूसरी फ़ाइल}}</translation>
 <translation id="5074318175948309511">नई सेटिंग के प्रभावी होने से पहले इस पृष्‍ठ को रीलोड करने की आवश्‍यकता हो सकती है.</translation>
+<translation id="5074761966806028321">सेट अप पूरा करने के लिए, अब भी अनुमति ज़रूरी है</translation>
 <translation id="5075910247684008552">सुरक्षित साइटों पर असुरक्षित सामग्री, डिफ़ॉल्ट रूप से ब्लॉक है</translation>
 <translation id="5078638979202084724">सभी टैब बुकमार्क करें</translation>
 <translation id="5078796286268621944">गलत पिन</translation>
@@ -4311,6 +4317,7 @@
 <translation id="5150254825601720210">Netscape प्रमाणपत्र SSL सर्वर नाम</translation>
 <translation id="5151354047782775295">डिस्क स्पेस खाली करें अन्यथा चयनित डेटा अपने आप हट जाएगा</translation>
 <translation id="5153234146675181447">फ़ोन को भूल जाएं</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> के लिए अतिरिक्त सेटिंग</translation>
 <translation id="5154702632169343078">विषय</translation>
 <translation id="5155327081870541046">पता बार में, उस साइट के लिए शॉर्टकट डालें जिसे आप खोजना चाहते हैं, जैसे कि "@bookmarks". इसके बाद, अपने हिसाब से कीबोर्ड शॉर्टकट दबाएं और खोज के लिए शब्द डालें.</translation>
@@ -4599,6 +4606,7 @@
 <translation id="5449551289610225147">गलत पासवर्ड</translation>
 <translation id="5449588825071916739">सभी टैब बुकमार्क करें</translation>
 <translation id="5449716055534515760">विं&amp;डो बंद करें</translation>
+<translation id="5452446625764825792">अब आपके पास अपने फ़ोन में मौजूद हाल की फ़ोटो, मीडिया, और ऐप्लिकेशन देखने का विकल्प है</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (ऑफ़लाइन उपलब्ध है)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> के साथ</translation>
 <translation id="545484289444831485">ज़्यादा खोज नतीजे देखें</translation>
@@ -4659,6 +4667,7 @@
 <translation id="5499211612787418966">यह डायलॉग इस समय फ़ोकस में नहीं है. इस पर फ़ोकस करने के लिए, Alt-Shift A दबाएं.</translation>
 <translation id="5499313591153584299">यह फ़ाइल आपके कंप्‍यूटर के लिए हानिकारक हो सकती है.</translation>
 <translation id="5499453227627332024">आपके Linux कंटेनर का नया वर्शन उपलब्ध है. आप सेटिंग ऐप्लिकेशन में जाकर, इसे बाद में भी अपग्रेड कर सकते हैं.</translation>
+<translation id="5499476581866658341">अब आपके पास अपने फ़ोन में मौजूद हाल की फ़ोटो और मीडिया देखने का विकल्प है</translation>
 <translation id="549957179819296104">नया आइकॉन</translation>
 <translation id="5500168250243071806">जब आप साइन इन होंगे, तब हो सकता है कि <ph name="BEGIN_LINK_SEARCH" />खोज इतिहास<ph name="END_LINK_SEARCH" /> और <ph name="BEGIN_LINK_GOOGLE" />अन्य तरह की गतिविधियां<ph name="END_LINK_GOOGLE" /> आपके Google खाते में सेव हो जाएं. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
 <translation id="5500709606820808700">आज सुरक्षा जांच हुई है</translation>
@@ -5948,6 +5957,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> को दूरस्थ रूप से जोड़ा गया है</translation>
 <translation id="6790820461102226165">व्‍यक्ति जोड़ें...</translation>
 <translation id="6793604637258913070">लेख कैरेट के दिखाई देने या उसके इधर-उधर जाने पर उसे हाइलाइट करें</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">अपने-आप स्कैन होने की सुविधा, आपको स्क्रीन पर दिए अलग-अलग आइटम पर अपने-आप जाने देती है. जब किसी आइटम को हाइलाइट किया गया हो, तो इसे चालू करने के लिए, “चुनें” को दबाएं.</translation>
 <translation id="6795884519221689054">पांडा</translation>
 <translation id="6797493596609571643">ओह! कुछ गड़बड़ी हो गई है.</translation>
@@ -6324,6 +6334,7 @@
 <translation id="7152478047064750137">इस एक्‍सटेंशन को कोई खास अनुमति नहीं चाहिए</translation>
 <translation id="7154130902455071009">अपना आरंभ पेज इसमें बदलें: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">कैमरा या फ़ाइल से मौजूदा फ़ोटो</translation>
+<translation id="7160182524506337403">अब आपके पास अपने फ़ोन की सूचनाएं देखने का विकल्प है</translation>
 <translation id="7163202347044721291">ऐक्टिवेशन कोड की पुष्टि की जा रही है...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" चेक किए गए स्‍थानों में चित्रों, वीडियो, और ध्‍वनि फ़ाइलों को पढ़ सकता है.</translation>
 <translation id="7167486101654761064">इस प्रकार की फ़ाइलें &amp;हमेशा खोलें</translation>
@@ -7338,6 +7349,7 @@
 <translation id="8138997515734480534"><ph name="VM_NAME" /> की स्थिति</translation>
 <translation id="8139447493436036221">Google Drive फ़ाइलें</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141418916163800697">आपके पास फ़ोन हब की सेटिंग में जाकर, ज़्यादा सुविधाएं सेट अप करने का विकल्प है</translation>
 <translation id="8141584439523427891">अब वैकल्पिक ब्राउज़र में खोला जा रहा है</translation>
 <translation id="8141725884565838206">अपने पासवर्ड प्रबंधित करें</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{एक वीडियो}one{# वीडियो}other{# वीडियो}}</translation>
@@ -7545,6 +7557,7 @@
 <translation id="833986336429795709">यह लिंक खोलने के लिए कोई ऐप्लिकेशन चुनें</translation>
 <translation id="8342221978608739536">कोशिश नहीं की गई</translation>
 <translation id="8342861492835240085">कोई संग्रह चुनें</translation>
+<translation id="8345848587667658367">अब आपके पास अपने फ़ोन में मौजूद हाल की फ़ोटो, मीडिया, सूचनाएं, और ऐप्लिकेशन देखने का विकल्प है</translation>
 <translation id="8347227221149377169">प्रिंट जॉब</translation>
 <translation id="834785183489258869">गुप्त मोड इस्तेमाल करने पर, अलग-अलग साइटों पर की गई आपकी ब्राउज़िंग गतिविधि देखने के लिए, साइटें, कुकी इस्तेमाल नहीं कर सकतीं. जैसे, लोगों के हिसाब से विज्ञापन दिखाने के लिए. हो सकता है कि कुछ साइटों पर खास सुविधाएं काम न करें.</translation>
 <translation id="8350789879725387295">डॉक में स्टाइलस टूल</translation>
@@ -7820,6 +7833,7 @@
 <translation id="8642947597466641025">लेख को बड़ा करें</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> खतरनाक हो सकती है. क्या आप इसे स्कैनिंग के लिए 'Google बेहतर सुरक्षा' को भेजना चाहते हैं?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{कोई भी कुकी नहीं है}=1{1 कुकी को ब्लॉक किया गया है}one{# कुकी को ब्लॉक किया गया है}other{# कुकी ब्लॉक की गई हैं}}</translation>
+<translation id="864423554496711319">आपके खाते में सेव किए गए डिवाइस</translation>
 <translation id="8644655801811752511">यह सुरक्षा कुंजी रीसेट नहीं हो पा रही है. कुंजी डालने के तुरंत बाद इसे रीसेट करके देखें.</translation>
 <translation id="8645354835496065562">सेंसर का ऐक्सेस जारी रहने दें</translation>
 <translation id="8645920082661222035">यह सुविधा, नुकसान पहुंचाने वाली घटनाओं का पहले से अंदाज़ा लगाती है और उनके बारे में आपको चेतावनी देती है</translation>
@@ -8150,6 +8164,7 @@
 <translation id="8957757410289731985">प्रोफ़ाइल को पसंद के मुताबिक बनाएं</translation>
 <translation id="895944840846194039">JavaScript मेमोरी</translation>
 <translation id="8960208913905765425">'हाज़िर जवाब' का यूनिट कन्वर्ज़न</translation>
+<translation id="8960638196855923532">अब आपके पास अपने फ़ोन की सूचनाएं और ऐप्लिकेशन देखने का विकल्प है</translation>
 <translation id="8962051932294470566">आप एक बार में सिर्फ़ एक फ़ाइल शेयर कर सकते हैं. मौजूदा ट्रांसफ़र पूरा हो जाने के बाद कोशिश करें.</translation>
 <translation id="8962083179518285172">विवरण छुपाएं</translation>
 <translation id="8962918469425892674">यह साइट गति या रोशनी के सेंसर का इस्तेमाल कर रही है.</translation>
@@ -8301,6 +8316,7 @@
 <translation id="9103868373786083162">वापस जाने के लिए इसे दबाएं, इतिहास देखने के लिए संदर्भ मेन्यू पर जाएं</translation>
 <translation id="9108035152087032312">&amp;विंडो को कोई नाम दें...</translation>
 <translation id="9108072915170399168">मौजूदा डेटा खर्च सेटिंग में इंटरनेट का इस्तेमाल नहीं होगा</translation>
+<translation id="9108294543511800041">अब आपके पास अपने फ़ोन में मौजूद हाल की फ़ोटो, मीडिया, और सूचनाएं देखने का विकल्प है</translation>
 <translation id="9108674852930645435">देखें कि आपके <ph name="DEVICE_TYPE" /> पर नया क्या है</translation>
 <translation id="9108808586816295166">हो सकता है कि सुरक्षित डीएनएस हर समय उपलब्ध न हो</translation>
 <translation id="9109122242323516435">जगह खाली करने के लिए, डिवाइस की मेमोरी से फ़ाइलों को मिटाएं.</translation>

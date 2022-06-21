@@ -1923,6 +1923,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{移除 1 個不支援的應用程式}other{移除 # 個不支援的應用程式}}</translation>
 <translation id="2776560192867872731">改 <ph name="DEVICE_NAME" /> 嘅裝置名</translation>
 <translation id="2777251078198759550">刪除此容器</translation>
+<translation id="2778471504622896352">將遠端應用程式新增至 Chrome OS 啟動器</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
 <translation id="2783298271312924866">已下載</translation>
@@ -2238,6 +2239,7 @@
 <translation id="3067198360141518313">執行這個外掛程式</translation>
 <translation id="3071624960923923138">按一下這裡即可開啟新分頁</translation>
 <translation id="3072775339180057696">要允許網站查看「<ph name="FILE_NAME" />」嗎？</translation>
+<translation id="3074499504015191586">翻譯完整網頁</translation>
 <translation id="3075874217500066906">Powerwash 程序必須重新啟動才能開始執行。重新啟動後，系統將向您確認是否繼續操作。</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">只儲存在此裝置上</translation>
@@ -3558,6 +3560,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 以及另外 <ph name="NUMBER_OF_OTHER_SWITCHES" /> 個按鈕裝置</translation>
 <translation id="439266289085815679">藍牙設定由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="4392896746540753732">編輯設定檔案</translation>
+<translation id="4393713825278446281">已儲存至 <ph name="PRIMARY_EMAIL" /> 的快速配對裝置</translation>
 <translation id="4394049700291259645">停用</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{開啟所有書籤(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟全部 {COUNT} 個書籤(&amp;O)}}</translation>
 <translation id="4397372003838952832">您不需記住此密碼。密碼將會儲存至 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
@@ -3788,6 +3791,7 @@
 <translation id="4615586811063744755">未選取 Cookie</translation>
 <translation id="461661862154729886">電源</translation>
 <translation id="4617001782309103936">太短</translation>
+<translation id="4617019240346358451">重新載入網頁以使用「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="4617270414136722281">擴充程式選項</translation>
 <translation id="4617880081511131945">無法建立連線</translation>
 <translation id="4619564267100705184">驗證身分</translation>
@@ -4003,6 +4007,7 @@
 <translation id="4833683849865011483">在列印伺服器中找到 1 部打印機</translation>
 <translation id="4836504898754963407">管理指紋</translation>
 <translation id="4837128290434901661">要改回使用「Google 搜尋」嗎？</translation>
+<translation id="4837165100461973682">重新載入頁面即可套用變更</translation>
 <translation id="4837926214103741331">您無權使用這部裝置。如需登入權限，請與裝置擁有者聯絡。</translation>
 <translation id="4837952862063191349">如果要解鎖並還原您的本機資料，請輸入您的舊 <ph name="DEVICE_TYPE" /> 密碼。</translation>
 <translation id="4838170306476614339">查看手機上的相片、媒體和通知</translation>
@@ -4312,6 +4317,7 @@
 <translation id="5150254825601720210">Netscape 憑證 SSL 伺服器名稱</translation>
 <translation id="5151354047782775295">請釋出磁碟儲存空間，否則系統可能會自動刪除部分資料</translation>
 <translation id="5153234146675181447">刪除手機</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">「<ph name="PRINTING_DESTINATION" />」進階設定</translation>
 <translation id="5154702632169343078">主旨</translation>
 <translation id="5155327081870541046">在網址列輸入您想搜尋網站的捷徑，例如「例如「@bookmarks」)，然後按下您偏好的鍵盤快速鍵，並輸入搜尋字詞。</translation>
@@ -5085,6 +5091,7 @@
 <translation id="5933522550144185133">「<ph name="APP_NAME" />」正在使用您的相機和麥克風</translation>
 <translation id="5935158534896975820">正在準備憑證簽署要求 (在伺服器上等待)</translation>
 <translation id="5935656526031444304">管理「安全瀏覽」功能</translation>
+<translation id="5936065461722368675">翻譯完整網頁</translation>
 <translation id="5938002010494270685">有可用的安全性升級</translation>
 <translation id="5939518447894949180">重設</translation>
 <translation id="5939719276406088041">無法建立捷徑</translation>
@@ -5945,6 +5952,7 @@
 <translation id="6790497603648687708">已從遠端新增 <ph name="EXTENSION_NAME" /></translation>
 <translation id="6790820461102226165">新增使用者…</translation>
 <translation id="6793604637258913070">當文字插入符號出現或移動時，突顯文字插入符號</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">自動掃瞄功能會自動在畫面上的項目間移動。選取項目，然後按下「選取」即可啟動該項目。</translation>
 <translation id="6795884519221689054">熊貓</translation>
 <translation id="6797493596609571643">糟糕，發生錯誤。</translation>
@@ -7818,6 +7826,7 @@
 <translation id="8642947597466641025">放大文字</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> 可能不安全。要傳送到「Google 進階保護功能」進行掃瞄嗎？</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{沒有 Cookie}=1{已封鎖 1 個 Cookie}other{已封鎖 # 個 Cookie}}</translation>
+<translation id="864423554496711319">已儲存到你的帳戶的裝置</translation>
 <translation id="8644655801811752511">無法重設此安全密鑰。請在插入密鑰後立即重設。</translation>
 <translation id="8645354835496065562">繼續允許存取感應器</translation>
 <translation id="8645920082661222035">在危險事件發生前進行預測並發出警告</translation>

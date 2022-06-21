@@ -2210,6 +2210,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3067198360141518313">Uruchom wtyczkę</translation>
 <translation id="3071624960923923138">Kliknij tutaj, by otworzyć nową kartę</translation>
 <translation id="3072775339180057696">Zezwolić witrynie na wyświetlanie pliku <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Przetłumacz całą stronę</translation>
 <translation id="3075874217500066906">Aby rozpocząć procedurę Powerwash, musisz ponownie uruchomić urządzenie. Po ponownym uruchomieniu poprosimy Cię o potwierdzenie, że chcesz kontynuować.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Zapisz tylko na tym urządzeniu</translation>
@@ -5061,6 +5062,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> używa Twojej kamery i mikrofonu</translation>
 <translation id="5935158534896975820">Przygotowuję żądanie podpisania certyfikatu (czekam na serwer)</translation>
 <translation id="5935656526031444304">Zarządzaj Bezpiecznym przeglądaniem</translation>
+<translation id="5936065461722368675">Przetłumacz całą stronę</translation>
 <translation id="5938002010494270685">Dostępna aktualizacja zabezpieczeń</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="5939719276406088041">Nie można utworzyć skrótu</translation>
