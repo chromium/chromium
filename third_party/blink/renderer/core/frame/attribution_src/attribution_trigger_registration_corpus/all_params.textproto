@@ -195,7 +195,9 @@ object_value {
           name: "a"
           value {
             number_value {
-              integer_value: 123
+              integer_value {
+                value: 123
+              }
             }
           }
         }
@@ -203,7 +205,9 @@ object_value {
           name: "b"
           value {
             number_value {
-              integer_value: 456
+              integer_value {
+                value: 456
+              }
             }
           }
         }
