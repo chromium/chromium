@@ -99,6 +99,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
         kFolderNameBorderThickness));
 
     AppListColorProvider* color_provider = AppListColorProvider::Get();
+    set_placeholder_text_color(color_provider->GetFolderHintTextColor());
     const SkColor text_color = color_provider->GetFolderTitleTextColor();
     SetTextColor(text_color);
     SetSelectionTextColor(text_color);
