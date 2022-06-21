@@ -130,6 +130,36 @@ TEST_P(WaylandTouchTest, TouchPressAndMotionWithStylus) {
   CheckEventType(ui::ET_TOUCH_RELEASED, event.get());
 }
 
+// Tests that touch events with stylus pen work. This variant of the test sends
+// the tool information after the touch down event, and ensures that
+// wl_touch::frame event handles it correctly.
+TEST_P(WaylandTouchTest, TouchPressAndMotionWithStylus2) {
+  std::unique_ptr<Event> event;
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(CloneEvent(&event));
+
+  wl_touch_send_down(touch_->resource(), 1, 0, surface_->resource(), 0 /* id */,
+                     wl_fixed_from_int(50), wl_fixed_from_int(100));
+  zcr_touch_stylus_v2_send_tool(touch_->touch_stylus()->resource(), 0 /* id */,
+                                ZCR_TOUCH_STYLUS_V2_TOOL_TYPE_PEN);
+  wl_touch_send_frame(touch_->resource());
+
+  Sync();
+  CheckEventType(ui::ET_TOUCH_PRESSED, event.get(), ui::EventPointerType::kPen);
+
+  wl_touch_send_motion(touch_->resource(), 500, 0 /* id */,
+                       wl_fixed_from_int(100), wl_fixed_from_int(100));
+  wl_touch_send_frame(touch_->resource());
+
+  Sync();
+  CheckEventType(ui::ET_TOUCH_MOVED, event.get(), ui::EventPointerType::kPen);
+
+  wl_touch_send_up(touch_->resource(), 1, 1000, 0 /* id */);
+  wl_touch_send_frame(touch_->resource());
+
+  Sync();
+  CheckEventType(ui::ET_TOUCH_RELEASED, event.get());
+}
+
 // Tests that touch focus is correctly set and released.
 TEST_P(WaylandTouchTest, CheckTouchFocus) {
   uint32_t serial = 0;

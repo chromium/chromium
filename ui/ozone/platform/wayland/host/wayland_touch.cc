@@ -45,7 +45,7 @@ void WaylandTouch::Down(void* data,
   if (!surface)
     return;
 
-  WaylandTouch* touch = static_cast<WaylandTouch*>(data);
+  auto* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
 
   touch->connection_->serial_tracker().UpdateSerial(wl::SerialType::kTouchPress,
@@ -64,7 +64,7 @@ void WaylandTouch::Up(void* data,
                       uint32_t serial,
                       uint32_t time,
                       int32_t id) {
-  WaylandTouch* touch = static_cast<WaylandTouch*>(data);
+  auto* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
 
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
@@ -78,8 +78,9 @@ void WaylandTouch::Motion(void* data,
                           int32_t id,
                           wl_fixed_t x,
                           wl_fixed_t y) {
-  WaylandTouch* touch = static_cast<WaylandTouch*>(data);
+  auto* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
+
   const WaylandWindow* target = touch->delegate_->GetTouchTarget(id);
   if (!target) {
     LOG(WARNING) << "Touch event fired with wrong id";
@@ -93,14 +94,16 @@ void WaylandTouch::Motion(void* data,
 }
 
 void WaylandTouch::Cancel(void* data, wl_touch* obj) {
-  WaylandTouch* touch = static_cast<WaylandTouch*>(data);
+  auto* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
+
   touch->delegate_->OnTouchCancelEvent();
 }
 
 void WaylandTouch::Frame(void* data, wl_touch* obj) {
   auto* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
+
   touch->delegate_->OnTouchFrame();
 }
 
@@ -123,7 +126,8 @@ void WaylandTouch::Tool(void* data,
                         struct zcr_touch_stylus_v2* obj,
                         uint32_t id,
                         uint32_t stylus_type) {
-  auto* pointer = static_cast<WaylandTouch*>(data);
+  auto* touch = static_cast<WaylandTouch*>(data);
+  DCHECK(touch);
 
   ui::EventPointerType pointer_type = ui::EventPointerType::kTouch;
   switch (stylus_type) {
@@ -137,7 +141,7 @@ void WaylandTouch::Tool(void* data,
       break;
   }
 
-  pointer->delegate_->OnTouchStylusToolChanged(id, pointer_type);
+  touch->delegate_->OnTouchStylusToolChanged(id, pointer_type);
 }
 
 // static
