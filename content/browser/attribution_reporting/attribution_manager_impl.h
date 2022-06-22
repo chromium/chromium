@@ -71,6 +71,11 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionReportSender> report_sender,
       StoragePartitionImpl* storage_partition);
 
+  static std::unique_ptr<AttributionManagerImpl> CreateWithNewDbForTesting(
+      StoragePartitionImpl* storage_partition,
+      const base::FilePath& user_data_directory,
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
+
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,

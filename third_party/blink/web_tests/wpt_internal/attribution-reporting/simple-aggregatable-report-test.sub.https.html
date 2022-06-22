@@ -4,7 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/helpers.js"></script>
 <script>
-promise_test(async t => {
+attribution_reporting_promise_test(async t => {
   const source = {
     source_event_id: '9153495207648170476',
     destination: `https://{{host}}`,
@@ -29,7 +29,7 @@ promise_test(async t => {
       geoValue: 1664,
     },
   };
-  await resetAggregatableReports();
+
   registerAttributionSrc(
       'Attribution-Reporting-Register-Source', source,
       'foo=bar;Secure;HttpOnly;Path=/');

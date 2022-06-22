@@ -53,6 +53,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   static void RunInMemoryForTesting();
 
+  [[nodiscard]] static bool DeleteStorageForTesting(
+      const base::FilePath& user_data_directory);
+
   AttributionStorageSql(const base::FilePath& path_to_database,
                         std::unique_ptr<AttributionStorageDelegate> delegate);
   AttributionStorageSql(const AttributionStorageSql& other) = delete;

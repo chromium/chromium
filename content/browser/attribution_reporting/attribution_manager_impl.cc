@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -218,6 +219,23 @@ absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
 // static
 void AttributionManagerImpl::RunInMemoryForTesting() {
   AttributionStorageSql::RunInMemoryForTesting();
+}
+
+// static
+std::unique_ptr<AttributionManagerImpl>
+AttributionManagerImpl::CreateWithNewDbForTesting(
+    StoragePartitionImpl* storage_partition,
+    const base::FilePath& user_data_directory,
+    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy) {
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (!AttributionStorageSql::DeleteStorageForTesting(user_data_directory))
+      return nullptr;
+  }
+
+  return std::make_unique<AttributionManagerImpl>(
+      storage_partition, user_data_directory,
+      std::move(special_storage_policy));
 }
 
 bool AttributionManagerImpl::IsReportAllowed(

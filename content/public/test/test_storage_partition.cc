@@ -229,6 +229,11 @@ int TestStoragePartition::GetDataRemovalObserverCount() {
 
 void TestStoragePartition::ClearBluetoothAllowedDevicesMapForTesting() {}
 
+void TestStoragePartition::ResetAttributionManagerForTesting(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(/*success=*/true);
+}
+
 void TestStoragePartition::FlushNetworkInterfaceForTesting() {}
 
 void TestStoragePartition::WaitForDeletionTasksForTesting() {}

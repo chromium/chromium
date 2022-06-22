@@ -4,13 +4,13 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/helpers.js"></script>
 <script>
-promise_test(async t => {
+attribution_reporting_promise_test(async t => {
   const sourceEvent = {
     source_event_id: '9153495207648170476',
     destination: `https://{{host}}`,
   };
   const trigger = {event_trigger_data: [{'trigger_data': '2'}]};
-  await resetEventLevelReports();
+
   registerAttributionSrc(
       'Attribution-Reporting-Register-Source', sourceEvent,
       'foo=bar;Secure;HttpOnly;Path=/');

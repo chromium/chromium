@@ -236,6 +236,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   void SetNetworkContextForTesting(
       mojo::PendingRemote<network::mojom::NetworkContext>
           network_context_remote) override;
+  void ResetAttributionManagerForTesting(
+      base::OnceCallback<void(bool)> callback) override;
 
   base::WeakPtr<StoragePartition> GetWeakPtr();
   BackgroundFetchContext* GetBackgroundFetchContext();

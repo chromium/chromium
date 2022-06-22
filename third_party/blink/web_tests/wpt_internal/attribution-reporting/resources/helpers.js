@@ -2,6 +2,13 @@
  * Helper functions for attribution reporting API tests.
  */
 
+attribution_reporting_promise_test = f => promise_test(async t => {
+  t.add_cleanup(() => internals.resetAttributionReporting());
+  t.add_cleanup(() => resetEventLevelReports());
+  t.add_cleanup(() => resetAggregatableReports());
+  return f(t);
+});
+
 const eventLevelReportsUrl =
     '/.well-known/attribution-reporting/report-event-attribution';
 const aggregatableReportsUrl =

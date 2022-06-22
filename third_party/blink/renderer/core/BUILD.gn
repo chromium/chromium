@@ -430,6 +430,8 @@ source_set("testing") {
     "fetch/testing/worker_internals_fetch.h",
     "html/forms/mock_file_chooser.h",
     "streams/test_underlying_source.h",
+    "testing/attribution_reporting_automation.cc",
+    "testing/attribution_reporting_automation.h",
     "testing/callback_function_test.cc",
     "testing/callback_function_test.h",
     "testing/color_scheme_helper.cc",

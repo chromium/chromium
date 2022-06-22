@@ -215,6 +215,8 @@ class TestStoragePartition : public StoragePartition {
   int GetDataRemovalObserverCount();
 
   void ClearBluetoothAllowedDevicesMapForTesting() override;
+  void ResetAttributionManagerForTesting(
+      base::OnceCallback<void(bool)> callback) override;
   void FlushNetworkInterfaceForTesting() override;
   void WaitForDeletionTasksForTesting() override;
   void WaitForCodeCacheShutdownForTesting() override;
