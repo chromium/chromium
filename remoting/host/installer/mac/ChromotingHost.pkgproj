@@ -621,7 +621,7 @@
 						<key>IC_REQUIREMENT_OS_DISTRIBUTION_TYPE</key>
 						<integer>0</integer>
 						<key>IC_REQUIREMENT_OS_MINIMUM_VERSION</key>
-						<integer>101000</integer>
+						<integer>101300</integer>
 					</dict>
 					<key>IC_REQUIREMENT_CHECK_TYPE</key>
 					<integer>1</integer>
@@ -633,7 +633,7 @@
 							<key>LANGUAGE</key>
 							<string>English</string>
 							<key>VALUE</key>
-							<string>@@HOST_NAME@@ requires 10.10 or newer.</string>
+							<string>@@HOST_NAME@@ requires 10.13 or newer.</string>
 						</dict>
 					</array>
 					<key>NAME</key>
