@@ -391,12 +391,11 @@ if (is_android) {
     zip(_zip_target_name) {
       base_dir = _grit_output_dir
 
-      # This needs to get outputs from grit's internal target, not the final
-      # source_set.
-      inputs = filter_exclude(get_target_outputs(":${_grit_target_name}_grit"),
-                              [ "*.stamp" ])
+      # No need to depend on the source_set().
+      _grit_dep = ":${_grit_target_name}_grit"
+      deps = [ _grit_dep ]
+      inputs = filter_exclude(get_target_outputs(_grit_dep), [ "*.stamp" ])
       output = _resources_zip
-      deps = [ ":$_grit_target_name" ]
     }
 
     android_generated_resources(target_name) {
