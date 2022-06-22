@@ -672,7 +672,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
 // When serializing, we should comment the BASE tag, append a new BASE tag.
 // rewrite all the savable URLs to relative local path, and change other URLs
 // to absolute URLs.
-IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests, SerializeHTMLDOMWithBaseTag) {
+//
+// Disabled. https://crbug.com/1338413
+IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
+                       DISABLED_SerializeHTMLDOMWithBaseTag) {
   base::FilePath page_file_path =
       GetTestFilePath("dom_serializer", "html_doc_has_base_tag.htm");
 
