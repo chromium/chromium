@@ -10374,5 +10374,33 @@ class LayerTreeHostTestNeedsNotifyReadyToActivateOnly
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestNeedsNotifyReadyToActivateOnly);
 
+class LayerTreeHostTestDidCommitAndDrawFrame : public LayerTreeHostTest {
+ public:
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DidCommitAndDrawFrame() override { EXPECT_EQ(0, num_draws_); }
+
+  void DidReceiveCompositorFrameAck() override {
+    ++num_draws_;
+    if (num_draws_ == 2) {
+      EndTest();
+    }
+  }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    EXPECT_EQ(0, host_impl->active_tree()->source_frame_number());
+  }
+
+  void DidReceiveCompositorFrameAckOnThread(
+      LayerTreeHostImpl* host_impl) override {
+    host_impl->SetViewportDamage(gfx::Rect(1, 1));
+    host_impl->RequestImplSideInvalidationForRerasterTiling();
+  }
+
+ protected:
+  int num_draws_ = 0;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostTestDidCommitAndDrawFrame);
 }  // namespace
 }  // namespace cc

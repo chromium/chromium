@@ -797,8 +797,6 @@ void ProxyImpl::ScheduledActionPostCommit() {
   // This is run as a separate step from commit because it can be time-consuming
   // and ought not delay sending the next BeginMainFrame.
   host_impl_->CommitComplete();
-  // TODO(szager): This should be set at activation time. crbug.com/1323906
-  next_frame_is_newly_committed_frame_ = true;
 }
 
 void ProxyImpl::ScheduledActionActivateSyncTree() {
@@ -809,6 +807,7 @@ void ProxyImpl::ScheduledActionActivateSyncTree() {
         "viz,benchmark", "MainFrame.Activate",
         TRACE_ID_LOCAL(host_impl_->sync_tree()->trace_id()),
         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+    next_frame_is_newly_committed_frame_ = true;
   }
   DCHECK(IsImplThread());
   host_impl_->ActivateSyncTree();
