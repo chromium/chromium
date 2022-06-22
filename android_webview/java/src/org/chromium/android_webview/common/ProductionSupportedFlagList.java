@@ -280,8 +280,6 @@ public final class ProductionSupportedFlagList {
                     "Enable establishing the GPU channel early in renderer startup."),
             Flag.baseFeature(ContentFeatures.OPTIMIZE_EARLY_NAVIGATION,
                     "Temporarily pauses the compositor early in navigation."),
-            Flag.baseFeature(AwFeatures.WEBVIEW_SEND_VARIATIONS_HEADERS,
-                    "Whether WebView will send variations headers on URLs where applicable."),
             Flag.baseFeature(ContentFeatures.INCLUDE_IPC_OVERHEAD_IN_NAVIGATION_START,
                     "Whether navigation metrics include ipc overhead."),
             Flag.baseFeature(ContentFeatures.AVOID_UNNECESSARY_BEFORE_UNLOAD_CHECK_POST_TASK,

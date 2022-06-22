@@ -94,10 +94,6 @@ const base::Feature kWebViewOriginTrials{"WebViewOriginTrials",
 const base::Feature kWebViewRecordAppDataDirectorySize{
     "WebViewRecordAppDataDirectorySize", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Whether WebView will send variations headers on URLs where applicable.
-const base::Feature kWebViewSendVariationsHeaders{
-    "WebViewSendVariationsHeaders", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
 const base::Feature kWebViewSuppressDifferentOriginSubframeJSDialogs{

@@ -51,8 +51,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/user_prefs/user_prefs.h"
-#include "components/variations/variations_client.h"
-#include "components/variations/variations_ids_provider.h"
 #include "components/visitedlink/browser/visitedlink_writer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -145,48 +143,6 @@ void MigrateProfileData(base::FilePath cache_path,
   migrate_context_storage_data("shared_proto_db");
   migrate_context_storage_data("webrtc_event_logs");
 }
-
-bool ShouldSendVariationsHeaders() {
-  // Note: Normally, checking the feature second is preferred to avoid tagging
-  // clients with the trial that are not participating in the behavior. However,
-  // doing so reveals the shouldSendVariationsHeaders() result for the clients
-  // where it's true, which would require carefully considering the implications
-  // of. This can be revisited later.
-  return base::FeatureList::IsEnabled(
-             features::kWebViewSendVariationsHeaders) &&
-         Java_AwBrowserContext_shouldSendVariationsHeaders(
-             base::android::AttachCurrentThread());
-}
-
-class AwVariationsClient : public variations::VariationsClient {
- public:
-  explicit AwVariationsClient(content::BrowserContext* browser_context)
-      : browser_context_(browser_context),
-        should_send_headers_(ShouldSendVariationsHeaders()) {}
-
-  ~AwVariationsClient() override = default;
-
-  bool IsOffTheRecord() const override {
-    return browser_context_->IsOffTheRecord();
-  }
-
-  variations::mojom::VariationsHeadersPtr GetVariationsHeaders()
-      const override {
-    if (!should_send_headers_)
-      return nullptr;
-
-    const bool is_signed_in = false;
-    DCHECK_EQ(
-        variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations,
-        variations::VariationsIdsProvider::GetInstance()->mode());
-    return variations::VariationsIdsProvider::GetInstance()
-        ->GetClientDataHeaders(is_signed_in);
-  }
-
- private:
-  raw_ptr<content::BrowserContext> browser_context_;
-  bool should_send_headers_;
-};
 
 }  // namespace
 
@@ -472,12 +428,6 @@ AwBrowserContext::GetPermissionControllerDelegate() {
 content::ClientHintsControllerDelegate*
 AwBrowserContext::GetClientHintsControllerDelegate() {
   return nullptr;
-}
-
-variations::VariationsClient* AwBrowserContext::GetVariationsClient() {
-  if (!variations_client_)
-    variations_client_ = std::make_unique<AwVariationsClient>(this);
-  return variations_client_.get();
 }
 
 content::BackgroundFetchDelegate*
