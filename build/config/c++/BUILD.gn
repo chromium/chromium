@@ -87,13 +87,8 @@ config("runtime_library") {
     assert(!export_libcxxabi_from_executables,
            "Don't use libcxxabi on Windows.")
 
-    if (is_clang) {
-      cflags_cc +=
-          [ "-imsvc" + rebase_path("$libcxx_prefix/include", root_build_dir) ]
-    } else {
-      cflags_cc +=
-          [ "-I" + rebase_path("$libcxx_prefix/include", root_build_dir) ]
-    }
+    cflags_cc +=
+        [ "-I" + rebase_path("$libcxx_prefix/include", root_build_dir) ]
 
     # Prevent libc++ from embedding linker flags to try to automatically link
     # against its runtime library. This is unnecessary with our build system,
