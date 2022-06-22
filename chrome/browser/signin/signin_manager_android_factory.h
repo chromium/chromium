@@ -10,11 +10,11 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
+class SigninManagerAndroid;
 
 class SigninManagerAndroidFactory : public BrowserContextKeyedServiceFactory {
  public:
-  static base::android::ScopedJavaLocalRef<jobject> GetJavaObjectForProfile(
-      Profile* profile);
+  static SigninManagerAndroid* GetForProfile(Profile* profile);
 
   // Returns an instance of the SigninManagerAndroidFactory singleton.
   static SigninManagerAndroidFactory* GetInstance();
