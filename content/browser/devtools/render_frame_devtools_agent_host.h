@@ -65,9 +65,9 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
 
   // This method is called when new frame is created for an emebedded page
   // (portal or fenced frame) or local root navigation.
-  static scoped_refptr<DevToolsAgentHost>
+  static scoped_refptr<RenderFrameDevToolsAgentHost>
   CreateForLocalRootOrEmbeddedPageNavigation(NavigationRequest* request);
-  static scoped_refptr<DevToolsAgentHost> FindForDangling(
+  static scoped_refptr<RenderFrameDevToolsAgentHost> FindForDangling(
       FrameTreeNode* frame_tree_node);
 
   RenderFrameDevToolsAgentHost(const RenderFrameDevToolsAgentHost&) = delete;
