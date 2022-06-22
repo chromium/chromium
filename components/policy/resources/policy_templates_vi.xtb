@@ -1369,17 +1369,6 @@ web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
       Nếu bạn không đặt chính sách này, thì <ph name="IE_PRODUCT_NAME" /> chỉ chuyển URL tới <ph name="PRODUCT_NAME" /> ở dạng tham số dòng lệnh.
 
       Lưu ý: Nếu bạn chưa cài đặt phần bổ trợ Hỗ trợ trình duyệt cũ cho <ph name="IE_PRODUCT_NAME" />, thì chính sách này sẽ không có hiệu lực.</translation>
-<translation id="2399419865425677422">setTimeout(…, 0) thường được dùng để chia nhỏ các tác vụ JavaScript dài.
-          Khi bạn Bật chính sách này, thì setTimeouts và setIntervals với khoảng thời gian nhỏ hơn 4 mili giây sẽ không được gắn thẻ một cách linh hoạt.
-          Điều này giúp cải thiện hiệu suất trong khoảng thời gian ngắn, nhưng những trang web lạm dụng API cuối cùng sẽ bị đặt Chế độ thời gian chờ.
-
-          Điều này có thể thay đổi thứ tự tác vụ trên trang web, dẫn đến hành vi không mong muốn trên những trang web phụ thuộc vào một thứ tự nhất định theo một cách nào đó.
-          Nó cũng có thể ảnh hưởng tới những trang web có nhiều hàm setTimeout() sử dụng thời gian chờ 0ms, ví dụ: tăng tải CPU.
-
-          Đối với người dùng không đặt chính sách này, Chrome sẽ ra mắt thay đổi từng bước trên kênh chính thức
-
-          Đây là một chính sách tạm thời và dự kiến sẽ được loại bỏ trong Chrome 105. Thời hạn này có thể được gia hạn nếu các doanh nghiệp có nhu cầu.
-          </translation>
 <translation id="2399987589969059485">Việc định cấu hình chính sách này sẽ cho phép chỉ định những biến thể được phép áp dụng trong <ph name="PRODUCT_NAME" />.
 
       Biến thể là phương tiện để sửa đổi <ph name="PRODUCT_NAME" /> mà không cần gửi phiên bản mới của trình duyệt bằng cách bật hoặc tắt những tính năng đã có một cách chọn lọc. Hãy truy cập vào https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework để xem thêm thông tin.
@@ -5307,6 +5296,17 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 
       Khi bạn tắt hoặc không đặt chính sách này, các trang web chỉ có thể sử dụng SharedArrayBuffers khi bị tách biệt nhiều nguồn gốc.</translation>
 <translation id="6735701345096330595">Buộc bật tính năng kiểm tra chính tả ngôn ngữ</translation>
+<translation id="6740299900063889926">setTimeout(…, 0) thường được dùng để chia nhỏ các tác vụ JavaScript dài.
+          Khi bạn Bật chính sách này, thì setTimeouts và setIntervals có khoảng thời gian nhỏ hơn 4 mili giây sẽ không được kẹp giá trị giữa (clamp) một cách linh hoạt.
+          Điều này giúp cải thiện hiệu suất trong khoảng thời gian ngắn, nhưng những trang web lạm dụng API cuối cùng vẫn sẽ bị kẹp giá trị giữa setTimeouts.
+
+          Điều này có thể thay đổi thứ tự tác vụ trên trang web, dẫn đến hành vi không mong muốn trên những trang web phụ thuộc vào một thứ tự nhất định theo một cách nào đó.
+          Điều này cũng có thể ảnh hưởng tới những trang web có nhiều hàm setTimeout() sử dụng thời gian chờ 0 mili giây, ví dụ: tăng tải CPU.
+
+          Đối với người dùng không đặt chính sách này, Chrome sẽ ra mắt thay đổi từng bước trên kênh chính thức.
+
+          Đây là một chính sách tạm thời và dự kiến sẽ được loại bỏ trong Chrome 107. Thời hạn này có thể được gia hạn nếu các doanh nghiệp có nhu cầu.
+          </translation>
 <translation id="6740611636377710500">Cho phép người dùng này chạy PluginVm.
 
       Nếu bạn đặt chính sách này thành false hoặc không đặt chính sách này, thì <ph name="PLUGIN_VM_NAME" /> sẽ không được bật cho người dùng.

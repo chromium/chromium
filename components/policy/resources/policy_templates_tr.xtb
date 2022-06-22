@@ -1342,17 +1342,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Bu politika ayarlanmadan bırakılırsa <ph name="IE_PRODUCT_NAME" /> tarayıcısı, URL'yi <ph name="PRODUCT_NAME" /> tarayıcısına yalnızca komut satırı parametresi olarak aktarır.
 
       Not: <ph name="IE_PRODUCT_NAME" /> için Eski Tarayıcı Desteği eklentisi yüklü değilse bu politika geçerliliğini yitirir.</translation>
-<translation id="2399419865425677422">setTimeout(…, 0), genellikle uzun JavaScript görevlerinin dökümünü almak için kullanılır.
-          Politika, Etkin değerine ayarlandığında 4 ms'den kısa bir aralığa sahip setTimeout'lar ve setInterval'lar yoğun şekilde zaman aşımına uğramaz.
-          Bu şekilde kısa dönem performansı iyileştirilir ancak, API'yi kötüye kullanan web sitelerinin setTimeout'ları nihayetinde zaman aşımına uğrar.
-
-          Bu, bir web sayfasındaki görev sıralamasını değiştirerek bir şekilde belirli bir sıralamaya bağlı olan sitelerde beklenmeyen davranışlara yol açabilir.
-          Ayrıca, 0 ms zaman aşımına sahip çok sayıda setTimeout() kullanımı içeren siteyi de etkileyebilir. (ör. CPU yükünü artırabilir.)
-
-          Chrome bu politikanın ayarlanmadığı kullanıcılar için değişikliği kararlı kanalında kademeli olarak kullanıma sunacaktır.
-
-          Bu politika geçicidir ve Chrome 105'te kaldırılması planlanmaktadır. Kuruluşların ihtiyaç duyması halinde bu süre uzatılabilir.
-          </translation>
 <translation id="2399987589969059485">Bu politikanın yapılandırılması, <ph name="PRODUCT_NAME" /> ürününde hangi varyasyonların uygulanmasına izin verileceğini belirtmeye olanak tanır.
 
       Varyasyonlar, halihazırda varolan özellikler arasından seçilenleri etkinleştirerek veya devre dışı bırakarak tarayıcının yeni bir sürümünü göndermeden <ph name="PRODUCT_NAME" /> ürününde değişiklikler sunmanın bir yolunu sağlar. Daha fazla bilgi için https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework sayfasına bakın.
@@ -5288,6 +5277,17 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa siteler, SharedArrayBuffers'ı yalnızca kökler arası erişime kapalı olduğunda kullanabilir.</translation>
 <translation id="6735701345096330595">Yazım denetimi dillerini etkinleştirmeye zorla</translation>
+<translation id="6740299900063889926">setTimeout(…, 0) genellikle uzun JavaScript görevlerinin dökümünü almak için kullanılır.
+          Politika, Etkin değerine ayarlandığında 4 ms'den kısa bir aralığa sahip setTimeout'lar ve setInterval'lar yoğun şekilde zaman aşımına uğramaz.
+          Bu şekilde kısa dönem performansı iyileştirilir ancak API'yi kötüye kullanan web sitelerinin setTimeout'ları nihayetinde zaman aşımına uğrar.
+
+          Bu, web sayfasındaki görev sıralamasını değiştirerek bir şekilde belirli bir sıralamaya bağlı olan sitelerde beklenmeyen davranışlara yol açabilir.
+          Ayrıca, 0 ms zaman aşımına sahip çok sayıda setTimeout() kullanımı içeren siteyi de etkileyebilir (ör. CPU yükünü artırabilir).
+
+          Chrome bu politikanın ayarlanmadığı kullanıcılar için değişikliği kararlı kanalında kademeli olarak kullanıma sunacaktır.
+
+          Bu politika geçicidir ve Chrome 107'de kaldırılması planlanmaktadır. ü Kuruluşların ihtiyaç duyması halinde bu süre uzatılabilir.
+          </translation>
 <translation id="6740611636377710500">Bu kullanıcının PluginVm çalıştırmasına izin verir.
 
       Politika false (yanlış) olarak ayarlanır veya ayarlanmadan bırakılırsa <ph name="PLUGIN_VM_NAME" /> kullanıcı için etkinleştirilmez.

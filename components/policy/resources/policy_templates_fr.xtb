@@ -1361,17 +1361,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle n'est pas configurée, <ph name="IE_PRODUCT_NAME" /> transmet uniquement l'URL à <ph name="PRODUCT_NAME" /> comme paramètre de ligne de commande.
 
       Remarque : Si le module complémentaire Legacy Browser Support pour <ph name="IE_PRODUCT_NAME" /> n'est pas installé, cette règle n'a aucune incidence.</translation>
-<translation id="2399419865425677422">setTimeout(…, 0) est souvent utilisé pour décomposer les longues tâches JavaScript.
-          Lorsque cette règle est activée, les fonctions setTimeouts et setIntervals ayant un intervalle inférieur à 4 ms ne sont pas limitées de façon aussi agressive.
-          Les performances à court terme sont alors meilleures, mais les fonctions setTimeouts des sites abusant de l'API seront finalement encore limitées.
-
-          Cela peut modifier l'ordre d'exécution des tâches sur une page Web et provoquer ainsi un comportement inattendu sur les sites qui dépendent de cet ordre.
-          Les sites qui emploient de nombreuses fonctions setTimeout() avec un délai d'expiration de 0 ms peuvent aussi être affectés (par exemple, ils peuvent davantage solliciter le processeur).
-
-          Le changement sera déployé graduellement sur la version stable de Chrome pour les utilisateurs chez qui cette règle n'est pas configurée.
-
-          Cette règle est temporaire et devrait être supprimée dans Chrome 105. Toutefois, si des entreprises en ont besoin, sa suppression peut être repoussée.
-          </translation>
 <translation id="2399987589969059485">Permet de définir quelles variantes peuvent être appliquées dans <ph name="PRODUCT_NAME" />.
 
       Les variantes offrent un moyen de proposer des modifications concernant <ph name="PRODUCT_NAME" /> sans envoyer de nouvelle version du navigateur, en activant ou en désactivant des fonctionnalités déjà disponibles. Pour en savoir plus, consultez cette page : https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework.
@@ -5288,6 +5277,17 @@ Si vous sélectionnez les options suivantes :
 
       Si cette règle est définie sur "False" ou n'est pas configurée, les sites ne peuvent utiliser SharedArrayBuffer que dans un contexte isolé multi-origine.</translation>
 <translation id="6735701345096330595">Forcer l'activation des langues de la vérification orthographique</translation>
+<translation id="6740299900063889926">La fonction setTimeout(…, 0) est souvent utilisée pour décomposer les longues tâches JavaScript.
+          Lorsque cette règle est activée, les fonctions setTimeouts et setIntervals ayant un intervalle inférieur à 4 ms ne sont pas limitées de façon aussi agressive.
+          Les performances à court terme sont alors meilleures, mais les fonctions setTimeouts des sites abusant de l'API seront finalement encore limitées.
+
+          Cela peut modifier l'ordre d'exécution des tâches sur une page Web et provoquer ainsi un comportement inattendu sur les sites qui dépendent de cet ordre.
+          Les sites qui emploient de nombreuses fonctions setTimeout() avec un délai d'expiration de 0 ms peuvent aussi être affectés (par exemple, ils peuvent davantage solliciter le processeur).
+
+          Le changement sera déployé graduellement sur la version stable de Chrome pour les utilisateurs chez qui cette règle n'est pas configurée.
+
+          Cette règle est temporaire et devrait être supprimée dans Chrome 107. Toutefois, si des entreprises en ont besoin, sa suppression peut être repoussée.
+          </translation>
 <translation id="6740611636377710500">Autoriser cet appareil à exécuter PluginVm.
 
       Si la règle est définie sur "False" ou n'est pas configurée, <ph name="PLUGIN_VM_NAME" /> n'est pas activé pour cet appareil.

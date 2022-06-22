@@ -1361,17 +1361,6 @@ Web e PWAs. No momento, com suporte apenas no
       Se a política não for definida, <ph name="IE_PRODUCT_NAME" /> só transmitirá o URL para o <ph name="PRODUCT_NAME" /> como um parâmetro de linha de comando.
 
       Observação: se o suplemento Suporte a navegadores legados para <ph name="IE_PRODUCT_NAME" /> não estiver instalado, esta política não terá efeito.</translation>
-<translation id="2399419865425677422">A função setTimeout(…, 0) normalmente é usada para dividir tarefas longas de JavaScript.
-          Quando a política for ativada, as funções setTimeouts e setIntervals com um intervalo menor que 4ms não serão ajustadas de forma tão agressiva.
-          Isso vai melhorar a performance no curto prazo, mas os sites que abusam da API ainda terão as setTimeouts ajustadas.
-
-          É possível que a ordem das tarefas em uma página da Web mude, levando a um comportamento inesperado em sites que dependem de uma ordem específica.
-          Também é possível que isso afete sites com muitas funções setTimeout() com um tempo limite de uso de 0ms, por exemplo, aumentando a carga da CPU.
-
-          Para usuários em que essa política não está definida, o Chrome vai lançar a mudança gradualmente no Canal Stable.
-
-          Essa é uma política temporária e tem remoção planejada para a versão 105 do Chrome. Esse prazo pode ser prorrogado caso as empresas precisem de mais tempo.
-          </translation>
 <translation id="2399987589969059485">Configurar esta política permite especificar quais variações têm permissão para ser aplicadas no <ph name="PRODUCT_NAME" />.
 
       As variações fornecem uma maneira de oferecer modificações para o <ph name="PRODUCT_NAME" /> sem lançar uma nova versão do navegador, ativando ou desativando recursos já existentes. Acesse https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework para ver mais informações.
@@ -5320,6 +5309,17 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se ela for desativada ou deixada sem definição, os sites só poderão usar os SharedArrayBuffers em isolamento de origem cruzada.</translation>
 <translation id="6735701345096330595">Forçar a ativação da correção ortográfica de idiomas</translation>
+<translation id="6740299900063889926">setTimeout(…, 0) normalmente é usado para dividir tarefas longas de JavaScript.
+          Quando a política for ativada, as funções setTimeouts e setIntervals com um intervalo menor que 4ms não serão ajustadas de forma tão agressiva.
+          Isso melhora a performance no curto prazo, mas os sites que abusam da API ainda têm os setTimeouts ajustados.
+
+          É possível que a ordem das tarefas em uma página da Web mude, levando a um comportamento inesperado em sites que dependem de uma ordem específica.
+          Também é possível que isso afete sites com muitas funções setTimeout() com um tempo limite de uso de 0ms, por exemplo, aumentando a carga da CPU.
+
+          Para usuários em que essa política não está definida, o Chrome vai lançar a mudança gradualmente no Canal Stable.
+
+          Essa é uma política temporária e tem remoção planejada para a versão 107 do Chrome. Esse prazo pode ser prorrogado caso as empresas precisem de mais tempo.
+          </translation>
 <translation id="6740611636377710500">Permitir que este usuário execute o PluginVm.
 
       Se esta política for definida como falsa ou não for definida, o <ph name="PLUGIN_VM_NAME" /> não será ativado para o usuário.

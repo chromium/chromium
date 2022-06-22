@@ -1365,17 +1365,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si no estableces la política, <ph name="IE_PRODUCT_NAME" /> solo transferirá la URL a <ph name="PRODUCT_NAME" /> como parámetro de la línea de comandos.
 
       Nota: Si no está instalado el complemento de Compatibilidad con navegadores heredados para <ph name="IE_PRODUCT_NAME" />, esta política no tendrá ningún efecto.</translation>
-<translation id="2399419865425677422">setTimeout(…, 0) se usa en general para desglosar tareas largas de JavaScript.
-          Si habilitas la política, los parámetros de setTimeout y setInterval con un intervalo inferior a 4 ms no se restringirán de forma tan agresiva.
-          Esto mejora el rendimiento a corto plazo, pero los sitios web que abusen de la API tendrán sus parámetros de setTimeout restringidos.
-
-          Es posible que esto cambie el orden de las tareas en una página web, lo que puede provocar un comportamiento inesperado en los sitios que de alguna manera dependen de un determinado orden.
-          También puede afectar a los sitios que tienen muchas funciones setTimeout() con un tiempo de espera de 0 ms de uso; por ejemplo, puede aumentar la carga de CPU.
-
-          Para los usuarios que no establezcan esta política, Chrome lanzará el cambio gradualmente en el canal estable.
-
-          Esta es una política temporal que se planea quitar en Chrome 105. Es posible que se extienda la fecha límite si las empresas lo necesitan.
-          </translation>
 <translation id="2399987589969059485">Si se configura esta política, es posible especificar qué variaciones pueden aplicarse respecto de <ph name="PRODUCT_NAME" />.
 
       Las variaciones son una forma de ofrecer modificaciones para <ph name="PRODUCT_NAME" /> sin enviar una nueva versión del navegador; solo se habilitan o inhabilitan de forma selectiva las funciones existentes. Para obtener más información, consulta https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework.
@@ -5336,6 +5325,17 @@ principal del string usuario-agente en 99.
 
       Si la inhabilitas o no la estableces, los sitios solo podrán usar la política SharedArrayBuffers cuando cuenten con aislamiento de origen cruzado.</translation>
 <translation id="6735701345096330595">Habilitar la corrección ortográfica de idiomas</translation>
+<translation id="6740299900063889926">setTimeout(…, 0) se usa en general para desglosar tareas largas de JavaScript.
+          Si habilitas la política, los parámetros de setTimeout y setInterval con un intervalo inferior a 4 ms no se restringirán de forma tan agresiva.
+          Esto mejora el rendimiento a corto plazo, pero los sitios web que abusen de la API tendrán sus parámetros de setTimeout restringidos.
+
+          Es posible que esto cambie el orden de las tareas en una página web, lo que puede provocar un comportamiento inesperado en los sitios que de alguna manera dependen de un determinado orden.
+          También puede afectar a los sitios que tienen muchas funciones setTimeout() con un tiempo de espera de 0 ms de uso; p. ej., puede aumentar la carga de CPU.
+
+          Para los usuarios que no establezcan esta política, Chrome lanzará el cambio gradualmente en el canal estable.
+
+          Esta es una política temporal que se planea quitar en Chrome 107. Es posible que se extienda la fecha límite si las empresas lo necesitan.
+          </translation>
 <translation id="6740611636377710500">Permite que este usuario ejecute PluginVm.
 
       Si estableces el valor "False" para la política, o no la configuras, no se habilitará <ph name="PLUGIN_VM_NAME" /> para este usuario.

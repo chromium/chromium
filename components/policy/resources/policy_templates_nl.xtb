@@ -1326,17 +1326,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
       Als je het beleid niet instelt, geeft <ph name="IE_PRODUCT_NAME" /> alleen de URL door aan <ph name="PRODUCT_NAME" /> als opdrachtregelparameter.
 
       Opmerking: Als de add-in 'Ondersteuning voor oudere browsers' van <ph name="IE_PRODUCT_NAME" /> niet is geïnstalleerd, heeft dit beleid geen effect.</translation>
-<translation id="2399419865425677422">setTimeout(…, 0) wordt vaak gebruikt om lange JavaScript-taken uit te splitsen.
-          Als je het beleid toepast, worden setTimeouts en setIntervals met een interval van minder dan 4 ms minder dwingend vastgezet.
-          Dit verbetert de prestaties op de korte termijn, maar voor websites die de API misbruiken, worden de setTimeouts uiteindelijk toch vastgezet.
-
-          Hierdoor kan de taakvolgorde op een webpagina veranderen, wat kan leiden tot onverwacht gedrag op sites die afhankelijk zijn van een bepaalde volgorde.
-          De functie kan ook van invloed zijn op sites die veel instanties van setTimeout() met een time-out van 0 ms gebruiken. De CPU-belasting kan bijvoorbeeld toenemen.
-
-          Voor gebruikers waarvoor dit beleid niet is ingesteld, rolt Chrome de wijziging geleidelijk uit op het stabiele kanaal.
-
-          Dit is een tijdelijk beleid dat volgens de planning wordt verwijderd in Chrome 105. Deze deadline kan worden verlengd als daar bij bedrijven behoefte aan is.
-          </translation>
 <translation id="2399987589969059485">Als je dit beleid instelt, kun je opgeven welke varianten mogen worden toegepast in <ph name="PRODUCT_NAME" />.
 
       Varianten vormen een manier om aanpassingen in <ph name="PRODUCT_NAME" /> aan te bieden zonder een nieuwe versie van de browser te publiceren. Hiervoor worden al bestaande functies selectief aan- of uitgezet. Ga voor meer informatie naar https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework.
@@ -5231,6 +5220,17 @@ Als je dit beleid instelt op True, wordt WebSQL in contexten van derden opnieuw 
 
       Als dit beleid niet wordt toegepast of niet is ingesteld, kunnen sites SharedArrayBuffers alleen gebruiken als ze cross-origin geïsoleerd zijn.</translation>
 <translation id="6735701345096330595">Spellingcontrole voor talen verplichten</translation>
+<translation id="6740299900063889926">setTimeout(…, 0) wordt vaak gebruikt om lange JavaScript-taken uit te splitsen.
+          Als je het beleid toepast, worden setTimeouts en setIntervals met een interval van minder dan 4 ms minder dwingend vastgezet.
+          Dit verbetert de prestaties op de korte termijn, maar voor websites die de API misbruiken, worden de setTimeouts uiteindelijk toch vastgezet.
+
+          Hierdoor kan de taakvolgorde op een webpagina veranderen, wat kan leiden tot onverwacht gedrag op sites die afhankelijk zijn van een bepaalde volgorde.
+          De functie kan ook van invloed zijn op sites die veel instanties van setTimeout() met een time-out van 0 ms gebruiken. De CPU-belasting kan bijvoorbeeld toenemen.
+
+          Voor gebruikers waarvoor dit beleid niet is ingesteld, rolt Chrome de wijziging geleidelijk uit op het stabiele kanaal.
+
+          Dit is een tijdelijk beleid dat volgens de planning wordt verwijderd in Chrome 107. Deze deadline kan worden verlengd als daar bij bedrijven behoefte aan is.
+          </translation>
 <translation id="6740611636377710500">Sta deze gebruiker toe om PluginVm uit te voeren.
 
       Als het beleid is ingesteld op False of niet is ingesteld, staat <ph name="PLUGIN_VM_NAME" /> niet aan voor de gebruiker.

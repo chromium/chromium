@@ -1324,17 +1324,6 @@
       如果您不设置此政策，<ph name="IE_PRODUCT_NAME" /> 只会将网址作为命令行参数传递到 <ph name="PRODUCT_NAME" />。
 
       注意：如果相应设备未安装适用于 <ph name="IE_PRODUCT_NAME" /> 的“旧版浏览器支持”插件，此政策不会产生任何效力。</translation>
-<translation id="2399419865425677422">setTimeout(…, 0) 通常用于中断耗时较长的 JavaScript 任务。
-          如果此政策设为 Enabled，系统不会主动将时间间隔小于 4 毫秒的 setTimeout 和 setInterval 强制设为下限值。
-          这可以提升短时间内的性能，但如果网站滥用该 API，其 setTimeout 最终仍会被强制设为下限值。
-
-          这可能会改变网页上的任务排序，从而导致以某种方式依赖于特定顺序的网站上出现意外行为。
-          这可能还会影响大量使用超时设为 0 毫秒的 setTimeout() 的网站，例如增加 CPU 负载。
-
-          对于未设置此政策的用户，Chrome 将在稳定渠道上逐步推出相应变更。
-
-          这是一项暂时性政策，我们计划在 Chrome 105 中将其移除。如果众多企业需要此政策，这个期限可能会延长。
-          </translation>
 <translation id="2399987589969059485">通过配置此政策，您可以指定哪些变体能应用到 <ph name="PRODUCT_NAME" /> 中。
 
       通过有选择地启用/停用现有功能，变体让我们无需推出新版浏览器即可实现对 <ph name="PRODUCT_NAME" /> 的修改。如需了解详情，请访问 https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework。
@@ -5228,6 +5217,17 @@
 
       如果此政策已停用或未设置，则意味着只有在进行了跨域隔离的情况下，网站才能使用 SharedArrayBuffers。</translation>
 <translation id="6735701345096330595">强制检查语言拼写</translation>
+<translation id="6740299900063889926">setTimeout(…, 0) 通常用于中断耗时较长的 JavaScript 任务。
+          如果此政策设为 Enabled，系统不会主动将时间间隔小于 4 毫秒的 setTimeout 和 setInterval 强制设为下限值。
+          这可以提升短时间内的性能，但如果网站滥用该 API，其 setTimeout 最终仍会被强制设为下限值。
+
+          这可能会改变网页上的任务排序，从而导致以某种方式依赖于特定顺序的网站上出现意外行为。
+          这可能还会影响大量使用超时设为 0 毫秒的 setTimeout() 的网站，例如增加 CPU 负载。
+
+          对于未设置此政策的用户，Chrome 将在稳定渠道上逐步推出相应变更。
+
+          这是一项暂时性政策，我们计划在 Chrome 107 中将其移除。如果众多企业需要此政策，这个期限可能会延长。
+          </translation>
 <translation id="6740611636377710500">允许该用户运行 PluginVm。
 
       如果此政策设为 false 或未设置，系统不会为该用户启用 <ph name="PLUGIN_VM_NAME" />。

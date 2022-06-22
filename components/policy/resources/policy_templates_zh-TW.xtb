@@ -1331,17 +1331,6 @@
       如果未設定這項政策，<ph name="IE_PRODUCT_NAME" /> 只會將網址以指令列參數的形式傳送至 <ph name="PRODUCT_NAME" />。
 
       注意：如果未安裝適用於 <ph name="IE_PRODUCT_NAME" /> 的「舊版瀏覽器支援」增益集，這項政策將不會生效。</translation>
-<translation id="2399419865425677422">setTimeout(…, 0) 常用來細分長時間的 JavaScript 工作。
-          將這項政策設為啟用時，系統不會主動延遲間隔時間小於 4 毫秒的 setTimeouts 和 setIntervals。
-          這麼做可以提升短期間的執行效能，但濫用 API 的網站最終仍會將 setTimeouts 設為延遲。
-
-          這可能會改變網頁上的工作排序，進而導致必須以某種方法透過特定排序完成工作的網站發生異常行為，
-          也可能影響將許多 setTimeout() 設為逾時 0 毫秒 (例如增加 CPU 負載) 的網站。
-
-          對於未設定這項政策的使用者，Chrome 將在穩定版上逐步推出變更。
-
-          這項政策是暫時性的，預計會在 Chrome 105 中移除。如果有需要的企業眾多，我們將會延長這個期限。
-          </translation>
 <translation id="2399987589969059485">設定這項政策後，你可以指定哪些變化版本可套用到 <ph name="PRODUCT_NAME" />。
 
       變化版本可以透過選擇性啟用或停用現有功能的方式，在不推出新版瀏覽器的情況下提供對 <ph name="PRODUCT_NAME" /> 的修改項目。詳情請參閱 https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework。
@@ -5212,6 +5201,17 @@
       如果啟用這項政策，網站就可以不受限制地使用 SharedArrayBuffer。
       如果設為停用或未設定，則網站在進行跨來源隔離時才能使用 SharedArrayBuffers。</translation>
 <translation id="6735701345096330595">強制執行拼字檢查的語言</translation>
+<translation id="6740299900063889926">setTimeout(…, 0) 常用來細分長時間的 JavaScript 工作。
+          將這項政策設為啟用時，系統不會主動延遲間隔時間小於 4 毫秒的 setTimeouts 和 setIntervals。
+          這麼做可以提升短期間的執行效能，但濫用 API 的網站最終仍會將 setTimeouts 設為延遲。
+
+          這可能會改變網頁上的工作排序，進而導致必須以某種方法透過特定排序完成工作的網站發生異常行為，
+          也可能影響將許多 setTimeout() 設為逾時 0 毫秒 (例如增加 CPU 負載) 的網站。
+
+          對於未設定這項政策的使用者，Chrome 將在穩定版上逐步推出變更。
+
+          這項政策是暫時性的，預計會在 Chrome 107 中移除。如果有需要的企業眾多，我們將會延長這個期限。
+          </translation>
 <translation id="6740611636377710500">允許這位使用者執行 PluginVm。
 
       如果將這項政策設為 False 或不設定，系統不會為使用者啟用 <ph name="PLUGIN_VM_NAME" />。

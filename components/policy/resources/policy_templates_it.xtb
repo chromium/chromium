@@ -1363,17 +1363,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
       Se il criterio non viene impostato, <ph name="IE_PRODUCT_NAME" /> passa a <ph name="PRODUCT_NAME" /> soltanto l'URL sotto forma di parametro della riga di comando.
 
       Nota: se il componente aggiuntivo Supporto dei browser precedenti per <ph name="IE_PRODUCT_NAME" /> non è installato, questo criterio non ha effetto.</translation>
-<translation id="2399419865425677422">setTimeout(…, 0) viene comunemente utilizzato per suddividere le attività JavaScript lunghe.
-          Se il criterio viene impostato su Attivato, i valori di setTimeouts e setIntervals con un intervallo inferiore a 4 ms non vengono limitati in modo aggressivo.
-          Ciò migliora le prestazioni a breve termine, ma in definitiva i valori di setTimeouts dei siti web che abusano dell'API verranno fatti rientrare nei limiti.
-
-          L'operazione potrebbe modificare l'ordine delle attività su una pagina web, causando comportamenti imprevisti sui siti che dipendono in qualche misura da un ordine specifico.
-          Potrebbe anche incidere sui siti che utilizzano spesso la funzione setTimeout() con timeout di 0 ms, ad esempio causando un aumento del carico CPU.
-
-          Per gli utenti per i quali il criterio non è stato impostato, Chrome renderà disponibile gradualmente la modifica sul canale stabile.
-
-          Si tratta di un criterio temporaneo di cui è prevista la rimozione nella versione Chrome 105. Questo termine potrebbe essere esteso nel caso in cui le aziende dovessero averne bisogno.
-          </translation>
 <translation id="2399987589969059485">La configurazione di questo criterio consente di specificare quali varianti è possibile applicare in <ph name="PRODUCT_NAME" />.
 
       Le varianti forniscono un mezzo per apportare modifiche a <ph name="PRODUCT_NAME" /> senza inviare una nuova versione del browser, attivando o disattivando in modo selettivo le funzionalità già esistenti. Per ulteriori informazioni, vai all'indirizzo https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework.
@@ -5300,6 +5289,17 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se viene impostato su Disattivato o se non viene configurato, i siti possono usare SharedArrayBuffers soltanto con isolamento multiorigine.</translation>
 <translation id="6735701345096330595">Forza attivazione lingue per controllo ortografico</translation>
+<translation id="6740299900063889926">setTimeout(…, 0) viene comunemente utilizzato per suddividere le attività JavaScript lunghe.
+          Se il criterio viene impostato su Attivato, i valori di setTimeouts e setIntervals con un intervallo inferiore a 4 ms non vengono limitati in modo aggressivo.
+          Ciò migliora le prestazioni a breve termine, ma in definitiva i valori di setTimeouts dei siti web che abusano dell'API verranno fatti rientrare nei limiti.
+
+          L'operazione potrebbe modificare l'ordine delle attività su una pagina web, causando comportamenti imprevisti sui siti che dipendono in qualche misura da un ordine specifico.
+          Potrebbe anche incidere sui siti che utilizzano spesso la funzione setTimeout() con timeout di 0 ms, ad esempio causando un aumento del carico della CPU.
+
+          Per gli utenti per i quali il criterio non è stato impostato, Chrome renderà disponibile gradualmente la modifica sul canale stabile.
+
+          Si tratta di un criterio temporaneo di cui è prevista la rimozione nella versione 107 di Chrome. Questo termine potrebbe essere esteso nel caso in cui le aziende dovessero averne bisogno.
+          </translation>
 <translation id="6740611636377710500">Consenti all'utente di eseguire PluginVm.
 
       Se il criterio è impostato su False o non viene impostato, <ph name="PLUGIN_VM_NAME" /> non viene attivato per l'utente.

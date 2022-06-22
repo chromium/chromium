@@ -1368,17 +1368,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Tidak menyetel kebijakan berarti <ph name="IE_PRODUCT_NAME" /> hanya meneruskan URL ke <ph name="PRODUCT_NAME" /> sebagai parameter command line.
 
       Catatan: Jika add-in Dukungan Browser Lama untuk <ph name="IE_PRODUCT_NAME" /> tidak diinstal, kebijakan ini tidak akan berpengaruh.</translation>
-<translation id="2399419865425677422">setTimeout(…, 0) biasa digunakan untuk menguraikan tugas JavaScript panjang.
-          Jika kebijakan disetel ke Aktif, setTimeout dan setInterval dengan interval yang lebih kecil dari 4 md tidak akan dikunci secara agresif.
-          Hal ini meningkatkan performa jangka pendek. Namun, situs yang menyalahgunakan API pada akhirnya akan memiliki setTimeout terkunci.
-
-          Hal ini dapat mengubah urutan tugas di suatu halaman web, yang menyebabkan perilaku tak terduga di situs yang bergantung pada urutan tertentu dengan cara tertentu pula.
-          Kebijakan ini juga dapat memengaruhi situs yang menggunakan banyak setTimeout() dengan waktu tunggu 0 md, misalnya penambahan beban CPU.
-
-          Bagi pengguna yang tidak menyetel kebijakan ini, Chrome akan meluncurkan perubahan secara bertahap pada saluran Stabil.
-
-          Kebijakan ini bersifat sementara dan akan dihapus di Chrome 105. Batas waktu ini dapat diperpanjang jika diperlukan di antara perusahaan.
-          </translation>
 <translation id="2399987589969059485">Dengan mengonfigurasi kebijakan ini, Anda dapat menentukan variasi mana yang diizinkan untuk diterapkan ke <ph name="PRODUCT_NAME" />.
 
       Variasi memberikan cara untuk menawarkan modifikasi pada <ph name="PRODUCT_NAME" /> tanpa mengirimkan versi baru browser, dengan mengaktifkan atau menonaktifkan fitur yang sudah ada secara selektif. Lihat https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework untuk informasi selengkapnya.
@@ -5344,6 +5333,17 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika disetel ke Nonaktif atau tidak disetel, situs hanya dapat menggunakan SharedArrayBuffer saat diisolasi lintas asal.</translation>
 <translation id="6735701345096330595">Mengaktifkan paksa pemeriksaan ejaan bahasa</translation>
+<translation id="6740299900063889926">setTimeout(…, 0) biasa digunakan untuk menguraikan tugas JavaScript panjang.
+          Jika kebijakan disetel ke Aktif, setTimeout dan setInterval dengan interval yang lebih kecil dari 4 md tidak akan dibatasi dengan sangat cepat.
+          Hal ini meningkatkan performa jangka pendek. Namun, situs yang menyalahgunakan API pada akhirnya akan memiliki setTimeout terbatas.
+
+          Hal ini dapat mengubah urutan tugas di suatu halaman web, yang menyebabkan perilaku tak terduga di situs yang bergantung pada urutan tertentu dengan cara tertentu pula.
+          Kebijakan ini juga dapat memengaruhi situs yang menggunakan banyak setTimeout() dengan waktu tunggu 0 md, misalnya penambahan beban CPU.
+
+          Bagi pengguna yang tidak menyetel kebijakan ini, Chrome akan meluncurkan perubahan secara bertahap pada saluran Stabil.
+
+          Kebijakan ini bersifat sementara dan akan dihapus di Chrome 107. Batas waktu ini dapat diperpanjang jika diperlukan di antara perusahaan.
+          </translation>
 <translation id="6740611636377710500">Mengizinkan pengguna ini menjalankan PluginVm.
 
       Jika kebijakan ditetapkan ke salah (false) atau tidak ditetapkan, <ph name="PLUGIN_VM_NAME" /> tidak akan diaktifkan untuk pengguna tersebut.
