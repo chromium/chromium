@@ -52,10 +52,10 @@ class CastStreamingTestSender final
   CastStreamingTestSender& operator=(const CastStreamingTestSender&) = delete;
 
   // Uses |message_port| as the Sender-end of a Cast Streaming MessagePort to
-  // start a Cast Streaming Session with a Cast Streaming Receiver at
+  // instantiate a Cast Streaming Session with a Cast Streaming Receiver at
   // |receiver_address|. At least one of |audio_config| or |video_config| must
-  // be set. Returns true on success.
-  bool Start(std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+  // be set.
+  void Start(std::unique_ptr<cast_api_bindings::MessagePort> message_port,
              net::IPAddress receiver_address,
              absl::optional<media::AudioDecoderConfig> audio_config,
              absl::optional<media::VideoDecoderConfig> video_config);
@@ -64,21 +64,22 @@ class CastStreamingTestSender final
   void Stop();
 
   // Sends |audio_buffer| or |video_buffer| to the Receiver. These can only be
-  // called when is_active() returns true.
+  // called when |has_startup_completed_| is true.
   void SendAudioBuffer(scoped_refptr<media::DataBuffer> audio_buffer);
   void SendVideoBuffer(scoped_refptr<media::DataBuffer> video_buffer,
                        bool is_key_frame);
 
-  // After a successful call to Start(), will run until the Cast Streaming
-  // Sender Session is active. After this call, is_active() will return true
-  // and at least one of audio_decoder_config() or video_decoder_config() will
-  // be set.
-  void RunUntilStarted();
+  // After a call to Start(), will run until the Cast Streaming
+  // Sender Session is active or has failed. After this call,
+  // |has_startup_completed_| will return true. If the session started
+  // successfully, at least one of audio_decoder_config() or
+  // video_decoder_config() will be set, and method will return true. Otherwise
+  // returns false.
+  [[nodiscard]] bool RunUntilActive();
 
-  // Runs until is_active() returns false.
+  // Runs until |has_startup_completed_| is false.
   void RunUntilStopped();
 
-  bool is_active() const { return is_active_; }
   const absl::optional<media::AudioDecoderConfig>& audio_decoder_config()
       const {
     return audio_decoder_config_;
@@ -90,6 +91,10 @@ class CastStreamingTestSender final
 
  private:
   void OnCastChannelClosed();
+
+  // After a system sender message is received, negotiates Cast Streaming Sender
+  // Session with given audio and video configs.
+  void OnSystemSenderMessageReceived();
 
   // openscreen::cast::SenderSession::Client implementation.
   void OnNegotiated(const openscreen::cast::SenderSession* session,
@@ -110,13 +115,16 @@ class CastStreamingTestSender final
   openscreen::cast::FrameId last_audio_reference_frame_id_;
   openscreen::cast::FrameId last_video_reference_frame_id_;
 
-  bool is_active_ = false;
+  bool has_startup_completed_ = false;
   absl::optional<media::AudioDecoderConfig> audio_decoder_config_;
   absl::optional<media::VideoDecoderConfig> video_decoder_config_;
 
   // Used to implement RunUntilStarted() and RunUntilStopped().
   base::OnceClosure sender_started_closure_;
   base::OnceClosure sender_stopped_closure_;
+
+  std::vector<openscreen::cast::AudioCaptureConfig> audio_configs_;
+  std::vector<openscreen::cast::VideoCaptureConfig> video_configs_;
 };
 
 }  // namespace cast_streaming

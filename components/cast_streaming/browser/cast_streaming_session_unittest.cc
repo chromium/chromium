@@ -73,10 +73,10 @@ class CastStreamingSessionTest : public testing::Test {
                                                      &receiver_message_port);
 
     receiver_.Start(std::move(receiver_message_port));
-    EXPECT_TRUE(sender_.Start(
-        std::move(sender_message_port), net::IPAddress::IPv6Localhost(),
-        GetDefaultAudioConfig(), GetDefaultVideoConfig()));
-    sender_.RunUntilStarted();
+    sender_.Start(std::move(sender_message_port),
+                  net::IPAddress::IPv6Localhost(), GetDefaultAudioConfig(),
+                  GetDefaultVideoConfig());
+    ASSERT_TRUE(sender_.RunUntilActive());
     receiver_.RunUntilStarted();
   }
 

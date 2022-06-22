@@ -15,8 +15,12 @@ namespace cast_streaming {
 
 CastMessagePortSenderImpl::CastMessagePortSenderImpl(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-    base::OnceClosure on_close)
-    : message_port_(std::move(message_port)), on_close_(std::move(on_close)) {
+    base::OnceClosure on_close,
+    base::OnceClosure on_system_sender_message_received)
+    : message_port_(std::move(message_port)),
+      on_close_(std::move(on_close)),
+      on_system_sender_message_received_(
+          std::move(on_system_sender_message_received)) {
   VLOG(1) << __func__;
   message_port_->SetReceiver(this);
 }
@@ -93,7 +97,14 @@ bool CastMessagePortSenderImpl::OnMessage(
           << ". Namespace: " << message_namespace
           << ". Message: " << str_message;
 
-  client_->OnMessage(sender_id, message_namespace, str_message);
+  if (message_namespace == kSystemNamespace) {
+    if (on_system_sender_message_received_) {
+      std::move(on_system_sender_message_received_).Run();
+    }
+  } else {
+    client_->OnMessage(sender_id, message_namespace, str_message);
+  }
+
   return true;
 }
 

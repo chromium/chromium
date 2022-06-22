@@ -20,7 +20,8 @@ class CastMessagePortSenderImpl final
  public:
   explicit CastMessagePortSenderImpl(
       std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-      base::OnceClosure on_close);
+      base::OnceClosure on_close,
+      base::OnceClosure on_system_sender_message_received);
   ~CastMessagePortSenderImpl() override;
 
   CastMessagePortSenderImpl(const CastMessagePortSenderImpl&) = delete;
@@ -48,6 +49,7 @@ class CastMessagePortSenderImpl final
   raw_ptr<Client> client_ = nullptr;
   std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
   base::OnceClosure on_close_;
+  base::OnceClosure on_system_sender_message_received_;
 };
 
 }  // namespace cast_streaming

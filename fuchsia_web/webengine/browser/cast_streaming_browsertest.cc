@@ -129,9 +129,8 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, LoadSuccess) {
 
   // Start the Sender
   cast_streaming::CastStreamingTestSender sender;
-  EXPECT_TRUE(sender.Start(std::move(sender_message_port),
-                           net::IPAddress::IPv6Localhost(),
-                           GetDefaultAudioConfig(), GetDefaultVideoConfig()));
+  sender.Start(std::move(sender_message_port), net::IPAddress::IPv6Localhost(),
+               GetDefaultAudioConfig(), GetDefaultVideoConfig());
 
   // Create a Frame and set the Receiver MessagePort on it.
   auto frame = cr_fuchsia::FrameForTest::Create(
@@ -146,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, LoadSuccess) {
       frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
       page_url.spec()));
 
-  sender.RunUntilStarted();
+  ASSERT_TRUE(sender.RunUntilActive());
   frame.navigation_listener().RunUntilTitleEquals("canplay");
 
   EXPECT_TRUE(post_result.Wait());
@@ -174,9 +173,8 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, VideoOnlyReceiver) {
 
   // Start the Sender
   cast_streaming::CastStreamingTestSender sender;
-  EXPECT_TRUE(sender.Start(std::move(sender_message_port),
-                           net::IPAddress::IPv6Localhost(),
-                           GetDefaultAudioConfig(), GetDefaultVideoConfig()));
+  sender.Start(std::move(sender_message_port), net::IPAddress::IPv6Localhost(),
+               GetDefaultAudioConfig(), GetDefaultVideoConfig());
 
   // Create a Frame and set the Receiver MessagePort on it.
   auto frame = cr_fuchsia::FrameForTest::Create(
@@ -192,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, VideoOnlyReceiver) {
       frame.GetNavigationController(), fuchsia::web::LoadUrlParams(),
       kPageUrl.spec()));
 
-  sender.RunUntilStarted();
+  ASSERT_TRUE(sender.RunUntilActive());
   frame.navigation_listener().RunUntilTitleEquals("canplay");
 
   EXPECT_TRUE(post_result.Wait());
