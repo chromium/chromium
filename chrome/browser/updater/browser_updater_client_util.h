@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "chrome/updater/updater_scope.h"
+
 namespace base {
 class FilePath;
 }
@@ -28,9 +30,9 @@ bool CanInstallUpdater();
 
 // System level updater should only be used if the browser is owned by root.
 // During promotion, the browser will be changed to be owned by root and wheel.
-// A browser should go through promotion before it can utilize the system-level
+// A browser must go through promotion before it can utilize the system-level
 // updater.
-bool ShouldUseSystemLevelUpdater();
+updater::UpdaterScope GetUpdaterScope();
 
 // Updater should be promoted if it meets the following criteria:
 //    1) When browser is owned by root and updater is not yet installed.

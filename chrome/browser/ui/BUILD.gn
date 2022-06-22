@@ -3751,6 +3751,7 @@ static_library("ui") {
 
     deps += [
       "//chrome/browser/apps/app_shim",
+      "//chrome/updater:browser_sources",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/browser",
       "//extensions/components/native_app_window",
@@ -3766,10 +3767,7 @@ static_library("ui") {
     weak_frameworks = [ "ScreenTime.framework" ]
 
     if (enable_chromium_updater) {
-      deps += [
-        "//chrome/browser/updater:browser_updater_client",
-        "//chrome/updater:browser_sources",
-      ]
+      deps += [ "//chrome/browser/updater:browser_updater_client" ]
     }
   }
 

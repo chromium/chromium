@@ -20,17 +20,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/common/chrome_version.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace {
 
-// If for_current_user is set to true, geteuid() will be called to get the
-// current effective user. If for_current_user is set to false, the given euid
-// will be 0, meaning the function will be checking with the root user in mind.
-bool PathOwnedByUser(const base::FilePath& path, bool for_current_user) {
-  uid_t user_uid = 0;
-  if (for_current_user)
-    user_uid = geteuid();
-
+bool BundleOwnedByUser(uid_t user_uid) {
+  const base::FilePath path = base::mac::OuterBundlePath();
   base::stat_wrapper_t stat_info = {};
   if (base::File::Lstat(path.value().c_str(), &stat_info) != 0) {
     VPLOG(2) << "Failed to get information on path " << path.value();
@@ -42,12 +37,15 @@ bool PathOwnedByUser(const base::FilePath& path, bool for_current_user) {
     return false;
   }
 
-  if (stat_info.st_uid != user_uid) {
-    VLOG(2) << "Path " << path.value() << " is owned by the wrong user.";
-    return false;
-  }
+  return stat_info.st_uid == user_uid;
+}
 
-  return true;
+bool BundleOwnedByRoot() {
+  return BundleOwnedByUser(0);
+}
+
+bool BundleOwnedByCurrentUser() {
+  return BundleOwnedByUser(geteuid());
 }
 
 bool IsEffectiveUserAdmin() {
@@ -118,17 +116,18 @@ base::FilePath GetUpdaterExecutablePath() {
 }
 
 bool CanInstallUpdater() {
-  return PathOwnedByUser(base::mac::OuterBundlePath(), true) && geteuid() != 0;
+  return BundleOwnedByCurrentUser() && geteuid() != 0;
 }
 
-bool ShouldUseSystemLevelUpdater() {
-  return PathOwnedByUser(base::mac::OuterBundlePath(), false);
+updater::UpdaterScope GetUpdaterScope() {
+  return BundleOwnedByRoot() ? updater::UpdaterScope::kSystem
+                             : updater::UpdaterScope::kUser;
 }
 
 bool ShouldPromoteUpdater() {
   // 1) Should promote if browser is owned by root and not installed. The not
   // installed part of this case is handled in version_updater_mac.mm
-  if (PathOwnedByUser(base::mac::OuterBundlePath(), false))
+  if (BundleOwnedByRoot())
     return true;
 
   // 2) If the effective user is root and the browser is not owned by root (i.e.
@@ -138,6 +137,5 @@ bool ShouldPromoteUpdater() {
 
   // 3) If effective user is not the owner of the browser and is an
   // administrator.
-  return !PathOwnedByUser(base::mac::OuterBundlePath(), true) &&
-         IsEffectiveUserAdmin();
+  return !BundleOwnedByCurrentUser() && IsEffectiveUserAdmin();
 }

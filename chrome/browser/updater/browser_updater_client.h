@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/build_config.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 
@@ -22,33 +21,30 @@
 class BrowserUpdaterClient
     : public base::RefCountedThreadSafe<BrowserUpdaterClient> {
  public:
-  static scoped_refptr<BrowserUpdaterClient> Create();
-
-  BrowserUpdaterClient();
+  static scoped_refptr<BrowserUpdaterClient> Create(
+      updater::UpdaterScope scope);
 
   // Registers the browser to the Chromium updater via IPC registration API.
   // When registration is completed, it will call RegistrationCompleted().
+  // A ref to this object is held until the registration completes.
   void Register();
 
-  // Begins the process of an on-demand update from the Chromium updater via IPC
-  // update API. It will periodically get updates via HandleStatusUpdate(). When
-  // update is completed, it will call UpdateCompleted().
+  // Triggers an on-demand update from the Chromium updater, reporting status
+  // updates to the callback. A ref to this object is held until the update
+  // completes.
   void CheckForUpdate(
       base::RepeatingCallback<void(updater::UpdateService::UpdateState)>
           version_updater_callback);
 
   // Gets the current updater version. Can also be used to check for the
-  // existence of the updater.
+  // existence of the updater. A ref to the BrowserUpdaterClient is held until
+  // the callback is invoked.
   virtual void GetUpdaterVersion(
       base::OnceCallback<void(const std::string&)> callback) = 0;
 
-#if BUILDFLAG(IS_MAC)
-  // Resets the XPC Connection with the given scope.
-  virtual void ResetConnection(updater::UpdaterScope scope) = 0;
-#endif  // BUILDFLAG(IS_MAC)
-
  protected:
   friend class base::RefCountedThreadSafe<BrowserUpdaterClient>;
+  BrowserUpdaterClient();
   virtual ~BrowserUpdaterClient();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner() {

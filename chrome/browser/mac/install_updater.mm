@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace {
 
@@ -76,5 +77,5 @@ void InstallUpdaterAndRegisterBrowser() {
 
             client->Register();
           },
-          BrowserUpdaterClient::Create()));
+          BrowserUpdaterClient::Create(updater::UpdaterScope::kUser)));
 }
