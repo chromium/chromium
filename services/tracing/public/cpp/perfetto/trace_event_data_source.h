@@ -35,7 +35,6 @@ namespace base {
 class HistogramSamples;
 
 namespace trace_event {
-class ThreadInstructionCount;
 class TraceEvent;
 struct TraceEventHandle;
 }  // namespace trace_event
@@ -247,15 +246,13 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource :
       base::trace_event::TraceEventHandle* handle);
   static base::trace_event::TrackEventHandle OnAddTypedTraceEvent(
       base::trace_event::TraceEvent* trace_event);
-  static void OnUpdateDuration(
-      const unsigned char* category_group_enabled,
-      const char* name,
-      base::trace_event::TraceEventHandle handle,
-      base::PlatformThreadId thread_id,
-      bool explicit_timestamps,
-      const base::TimeTicks& now,
-      const base::ThreadTicks& thread_now,
-      base::trace_event::ThreadInstructionCount thread_instruction_now);
+  static void OnUpdateDuration(const unsigned char* category_group_enabled,
+                               const char* name,
+                               base::trace_event::TraceEventHandle handle,
+                               base::PlatformThreadId thread_id,
+                               bool explicit_timestamps,
+                               const base::TimeTicks& now,
+                               const base::ThreadTicks& thread_now);
   static base::trace_event::TracePacketHandle OnAddTracePacket();
   static void OnAddEmptyPacket();
 

@@ -2571,13 +2571,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       command_line);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/1316129): Re-enable for Lacros.
-  // Processes may only query perf_event_open with the BPF sandbox disabled.
-  if (browser_command_line.HasSwitch(switches::kEnableThreadInstructionCount) &&
-      command_line->HasSwitch(sandbox::policy::switches::kNoSandbox)) {
-    command_line->AppendSwitch(switches::kEnableThreadInstructionCount);
-  }
-
   // Opt into a hardened stack canary mitigation if it hasn't already been
   // force-disabled.
   if (!browser_command_line.HasSwitch(switches::kChangeStackGuardOnFork)) {

@@ -258,8 +258,7 @@ class BASE_EXPORT TraceLog :
                PlatformThreadId thread_id,
                bool explicit_timestamps,
                const TimeTicks& now,
-               const ThreadTicks& thread_now,
-               ThreadInstructionCount thread_instruction_now);
+               const ThreadTicks& thread_now);
   // The callbacks will be called up until the point where the flush is
   // finished, i.e. must be callable until OutputCallback is called with
   // has_more_events==false.
@@ -368,8 +367,7 @@ class BASE_EXPORT TraceLog :
       PlatformThreadId thread_id,
       bool explicit_timestamps,
       const TimeTicks& now,
-      const ThreadTicks& thread_now,
-      ThreadInstructionCount thread_instruction_now);
+      const ThreadTicks& thread_now);
 
   void EndFilteredEvent(const unsigned char* category_group_enabled,
                         const char* name,

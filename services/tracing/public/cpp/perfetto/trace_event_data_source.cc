@@ -1301,8 +1301,7 @@ void TraceEventDataSource::OnUpdateDuration(
     base::PlatformThreadId thread_id,
     bool explicit_timestamps,
     const base::TimeTicks& now,
-    const base::ThreadTicks& thread_now,
-    base::trace_event::ThreadInstructionCount thread_instruction_now) {
+    const base::ThreadTicks& thread_now) {
   if (base::tracing::GetThreadIsInTraceEventTLS()->Get()) {
     return;
   }
@@ -1315,7 +1314,7 @@ void TraceEventDataSource::OnUpdateDuration(
   if (thread_local_event_sink) {
     thread_local_event_sink->UpdateDuration(
         category_group_enabled, name, handle, thread_id, explicit_timestamps,
-        now, thread_now, thread_instruction_now);
+        now, thread_now);
   }
 }
 

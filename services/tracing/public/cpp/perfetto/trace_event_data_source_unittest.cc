@@ -27,7 +27,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/task_execution_macros.h"
-#include "base/trace_event/thread_instruction_count.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "base/tracing/trace_time.h"
@@ -1551,7 +1550,7 @@ TEST_F(TraceEventDataSourceTest, UpdateDurationOfCompleteEvent) {
   base::trace_event::TraceLog::GetInstance()->UpdateTraceEventDurationExplicit(
       category_group_enabled, kEventName, handle, /*thread_id=*/1,
       /*explicit_timestamps=*/true, base::TimeTicks() + base::Microseconds(30),
-      base::ThreadTicks(), base::trace_event::ThreadInstructionCount());
+      base::ThreadTicks());
 
   // Updating the duration of an event that wasn't added before tracing begun
   // will only emit an END event, again without category or name.
@@ -1559,7 +1558,7 @@ TEST_F(TraceEventDataSourceTest, UpdateDurationOfCompleteEvent) {
   base::trace_event::TraceLog::GetInstance()->UpdateTraceEventDurationExplicit(
       category_group_enabled, "other_event_name", handle, /*thread_id=*/1,
       /*explicit_timestamps=*/true, base::TimeTicks() + base::Microseconds(40),
-      base::ThreadTicks(), base::trace_event::ThreadInstructionCount());
+      base::ThreadTicks());
 
   // Complete event for the current thread emits thread time, too.
   trace_event_internal::AddTraceEventWithThreadIdAndTimestamp(

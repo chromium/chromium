@@ -5,7 +5,6 @@
 #include "base/trace_event/event_name_filter.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/trace_event/thread_instruction_count.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,8 +13,8 @@ namespace trace_event {
 
 const TraceEvent& MakeTraceEvent(const char* name) {
   static TraceEvent event;
-  event.Reset(0, TimeTicks(), ThreadTicks(), ThreadInstructionCount(), 'b',
-              nullptr, name, "", 0, 0, nullptr, 0);
+  event.Reset(0, TimeTicks(), ThreadTicks(), 'b', nullptr, name, "", 0, 0,
+              nullptr, 0);
   return event;
 }
 
