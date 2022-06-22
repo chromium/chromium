@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/debug/crash_logging.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -30,6 +31,7 @@
 #include "content/public/common/result_codes.h"
 #include "extensions/browser/api_activity_monitor.h"
 #include "extensions/browser/bad_message.h"
+#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -42,9 +44,11 @@
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/extension_urls.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 
@@ -72,6 +76,143 @@ void ResponseCallbackOnError(ExtensionFunction::ResponseCallback callback,
                              const std::string& error) {
   std::move(callback).Run(type, base::Value::List(), error);
 }
+
+// Returns `true` if `render_process_host` can legitimately claim to send IPC
+// messages on behalf of `extension_id`.  `render_frame_host` parameter is
+// needed to account for scenarios involving a Chrome Web Store frame.
+bool CanRendererActOnBehalfOfExtension(
+    const ExtensionId& extension_id,
+    content::RenderFrameHost* render_frame_host,
+    content::RenderProcessHost& render_process_host) {
+  // TODO(lukasza): Some of the checks below can be restricted to specific
+  // context types (e.g. an empty `extension_id` should not happen in an
+  // extension context;  and the SiteInstance-based check should only be needed
+  // for hosted apps).  Consider leveraging ProcessMap::GetMostLikelyContextType
+  // to implement this kind of restrictions.  Note that
+  // ExtensionFunctionDispatcher::CreateExtensionFunction already calls
+  // GetMostLikelyContextType - some refactoring might be needed to avoid
+  // duplicating the work.
+
+  // Allow empty extension id (it seems okay to assume that no
+  // extension-specific special powers will be granted without an extension id).
+  // For instance, WebUI pages may call private APIs like developerPrivate,
+  // settingsPrivate, metricsPrivate, and others. In these cases, there is no
+  // associated extension ID.
+  //
+  // TODO(lukasza): Investigate if the exception below can be avoided if
+  // `render_process_host` hosts HTTP origins (i.e. if the exception can be
+  // restricted to NTP, and/or chrome://... cases.
+  if (extension_id.empty())
+    return true;
+
+  // Did `render_process_id` run a content script from `extension_id`?
+  if (ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+          render_process_host, extension_id)) {
+    return true;
+  }
+
+  // Can `render_process_id` host a chrome-extension:// origin (frame, worker,
+  // etc.)?
+  if (util::CanRendererHostExtensionOrigin(render_process_host.GetID(),
+                                           extension_id)) {
+    return true;
+  }
+
+  if (render_frame_host) {
+    DCHECK_EQ(render_process_host.GetID(),
+              render_frame_host->GetProcess()->GetID());
+    content::SiteInstance& site_instance =
+        *render_frame_host->GetSiteInstance();
+
+    // Chrome Extension APIs can be accessed from some hosted apps.
+    //
+    // Today this is mostly needed by the Chrome Web Store's hosted app, but the
+    // code below doesn't make this assumption and allows *all* hosted apps
+    // based on the trustworthy, Browser-side information from the SiteInstance
+    // / SiteURL.  This way the code is resilient to future changes + there are
+    // concerns that `chrome.test.sendMessage` might already be exposed to
+    // hosted apps (but maybe not covered by tests).
+    //
+    // Note that the condition below allows all extensions (i.e. not just hosted
+    // apps), but hosted apps aren't covered by the
+    // `CanRendererHostExtensionOrigin` call above (because the process lock of
+    // hosted apps is based on a https://, rather than chrome-extension:// url).
+    //
+    // GuestView is explicitly excluded, because we don't want to allow
+    // GuestViews to spoof the extension id of their host.
+    if (!site_instance.IsGuest() &&
+        extension_id == util::GetExtensionIdForSiteInstance(site_instance)) {
+      return true;
+    }
+  }
+
+  // Disallow any other cases.
+  return false;
+}
+
+absl::optional<bad_message::BadMessageReason> ValidateRequest(
+    const mojom::RequestParams& params,
+    content::RenderFrameHost* render_frame_host,
+    content::RenderProcessHost& render_process_host) {
+  if ((render_frame_host && IsRequestFromServiceWorker(params)) ||
+      (!render_frame_host && !IsRequestFromServiceWorker(params))) {
+    return bad_message::EFD_BAD_MESSAGE;
+  }
+
+  if (!CanRendererActOnBehalfOfExtension(params.extension_id, render_frame_host,
+                                         render_process_host)) {
+    return bad_message::EFD_INVALID_EXTENSION_ID_FOR_PROCESS;
+  }
+
+  // TODO(https://crbug.com/1186447): Validate `params.user_gesture`.
+
+  return absl::nullopt;
+}
+
+const char* ToString(bad_message::BadMessageReason bad_message_code) {
+  switch (bad_message_code) {
+    case bad_message::BadMessageReason::EFD_BAD_MESSAGE:
+      return "LocalFrameHost::Request got a bad message.";
+    case bad_message::BadMessageReason::EFD_INVALID_EXTENSION_ID_FOR_PROCESS:
+      return "LocalFrameHost::Request: renderer never hosted such extension";
+    default:
+      NOTREACHED();
+      return "LocalFrameHost::Request encountered unrecognized validation "
+             "error.";
+  }
+}
+
+// Helper for logging crash keys related to a the IPC payload from
+// mojom::RequestParams.
+class ScopedRequestParamsCrashKeys {
+ public:
+  explicit ScopedRequestParamsCrashKeys(const mojom::RequestParams& params)
+      : name_(GetNameCrashKey(), params.name),
+        extension_id_(GetExtensionIdCrashKey(), params.extension_id) {}
+
+  ~ScopedRequestParamsCrashKeys() = default;
+
+  // No copy constructor and no copy assignment operator.
+  ScopedRequestParamsCrashKeys(const ScopedRequestParamsCrashKeys&) = delete;
+  ScopedRequestParamsCrashKeys& operator=(const ScopedRequestParamsCrashKeys&) =
+      delete;
+
+ private:
+  static base::debug::CrashKeyString* GetNameCrashKey() {
+    static auto* crash_key = base::debug::AllocateCrashKeyString(
+        "RequestParams::name", base::debug::CrashKeySize::Size256);
+    return crash_key;
+  }
+
+  static base::debug::CrashKeyString* GetExtensionIdCrashKey() {
+    static auto* crash_key = base::debug::AllocateCrashKeyString(
+        "RequestParams::extension_id", base::debug::CrashKeySize::Size64);
+    return crash_key;
+  }
+
+  base::debug::ScopedCrashKeyString name_;
+  base::debug::ScopedCrashKeyString extension_id_;
+};
 
 }  // namespace
 
@@ -237,12 +378,18 @@ void ExtensionFunctionDispatcher::Dispatch(
     mojom::RequestParamsPtr params,
     content::RenderFrameHost& frame,
     mojom::LocalFrameHost::RequestCallback callback) {
-  if (IsRequestFromServiceWorker(*params)) {
-    constexpr char kBadMessage[] = "LocalFrameHost::Request got a bad message.";
-    std::move(callback).Run(ExtensionFunction::FAILED, base::Value::List(),
-                            kBadMessage);
+  ScopedRequestParamsCrashKeys request_params_crash_keys(*params);
+  SCOPED_CRASH_KEY_STRING256(
+      "extensions", "frame.GetSiteInstance()",
+      frame.GetSiteInstance()->GetSiteURL().possibly_invalid_spec());
+
+  if (auto bad_message_code =
+          ValidateRequest(*params, &frame, *frame.GetProcess())) {
     // Kill the renderer if it's an invalid request.
-    mojo::ReportBadMessage(kBadMessage);
+    const char* msg = ToString(*bad_message_code);
+    std::move(callback).Run(ExtensionFunction::FAILED, base::Value::List(),
+                            msg);
+    mojo::ReportBadMessage(msg);
     return;
   }
 
@@ -265,18 +412,23 @@ void ExtensionFunctionDispatcher::Dispatch(
 void ExtensionFunctionDispatcher::DispatchForServiceWorker(
     const mojom::RequestParams& params,
     int render_process_id) {
-  if (!IsRequestFromServiceWorker(params)) {
-    // Kill the renderer if it's an invalid request.
-    bad_message::ReceivedBadMessage(render_process_id,
-                                    bad_message::EFD_BAD_MESSAGE);
-    return;
-  }
+  ScopedRequestParamsCrashKeys request_params_crash_keys(params);
 
+  // The IPC might race with RenderProcessHost destruction.  This may only
+  // happen in scenarios that are already inherently racey, so dropping the IPC
+  // is okay and won't lead to any additional risk of data loss.  Continuing is
+  // impossible, because WorkerResponseCallbackWrapper requires render process
+  // host to be around.
   content::RenderProcessHost* rph =
       content::RenderProcessHost::FromID(render_process_id);
-  // WorkerResponseCallbackWrapper requires render process host to be around.
   if (!rph)
     return;
+
+  if (auto bad_message_code = ValidateRequest(params, nullptr, *rph)) {
+    // Kill the renderer if it's an invalid request.
+    bad_message::ReceivedBadMessage(render_process_id, *bad_message_code);
+    return;
+  }
 
   WorkerId worker_id{params.extension_id, render_process_id,
                      params.service_worker_version_id, params.worker_thread_id};

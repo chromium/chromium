@@ -16,6 +16,7 @@
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/event_router_factory.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/trace_util.h"
@@ -49,17 +50,6 @@ class ShutdownNotifierFactory
   ~ShutdownNotifierFactory() override = default;
 };
 
-// Returns true if the process corresponding to `render_process_id` can host an
-// extension with `extension_id`.  (It doesn't necessarily mean that the process
-// *does* host this specific extension at this point in time.)
-bool CanRendererHostExtensionOrigin(int render_process_id,
-                                    const std::string& extension_id) {
-  url::Origin extension_origin =
-      Extension::CreateOriginFromExtensionId(extension_id);
-  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  return policy->CanAccessDataForOrigin(render_process_id, extension_origin);
-}
-
 // Returns true if `source_endpoint` can be legitimately claimed/used by
 // `process`.  Otherwise reports a bad IPC message and returns false (expecting
 // the caller to not take any action based on the rejected, untrustworthy
@@ -87,7 +77,7 @@ bool IsValidMessagingSource(RenderProcessHost& process,
             &process, bad_message::EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE);
         return false;
       }
-      if (!CanRendererHostExtensionOrigin(
+      if (!util::CanRendererHostExtensionOrigin(
               process.GetID(), source_endpoint.extension_id.value())) {
         bad_message::ReceivedBadMessage(
             &process,
@@ -148,8 +138,8 @@ bool IsValidSourceContext(RenderProcessHost& process,
     // exists using ProcessManager::HasServiceWorker) might incorrectly return
     // false=invalid-IPC for IPCs from workers that were recently torn down /
     // made inactive.
-    if (!CanRendererHostExtensionOrigin(process.GetID(),
-                                        worker_context.extension_id)) {
+    if (!util::CanRendererHostExtensionOrigin(process.GetID(),
+                                              worker_context.extension_id)) {
       bad_message::ReceivedBadMessage(
           &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT);
       return false;

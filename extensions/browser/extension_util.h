@@ -18,6 +18,7 @@ class FilePath;
 
 namespace content {
 class BrowserContext;
+class SiteInstance;
 class StoragePartition;
 class StoragePartitionConfig;
 }
@@ -36,7 +37,7 @@ namespace util {
 bool CanBeIncognitoEnabled(const Extension* extension);
 
 // Returns true if |extension_id| can run in an incognito window.
-bool IsIncognitoEnabled(const std::string& extension_id,
+bool IsIncognitoEnabled(const ExtensionId& extension_id,
                         content::BrowserContext* context);
 
 // Returns true if |extension| can see events and data from another sub-profile
@@ -52,11 +53,11 @@ const std::string& GetPartitionDomainForExtension(const Extension* extension);
 // associated with |extension_id| has isolated storage.
 // Otherwise, return the default StoragePartitionConfig.
 content::StoragePartitionConfig GetStoragePartitionConfigForExtensionId(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* browser_context);
 
 content::StoragePartition* GetStoragePartitionForExtensionId(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* browser_context,
     bool can_create = true);
 
@@ -75,7 +76,7 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
 // extension.
 bool CanWithholdPermissionsFromExtension(const Extension& extension);
 bool CanWithholdPermissionsFromExtension(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const Manifest::Type type,
     const mojom::ManifestLocation location);
 
@@ -105,6 +106,16 @@ void InitializeFileSchemeAccessForExtension(
     int render_process_id,
     const std::string& extension_id,
     content::BrowserContext* browser_context);
+
+// Gets the ExtensionId associated with the given `site_instance`.  An empty
+// string is returned when `site_instance` is not associated with an extension.
+ExtensionId GetExtensionIdForSiteInstance(content::SiteInstance& site_instance);
+
+// Returns true if the process corresponding to `render_process_id` can host an
+// extension with `extension_id`.  (It doesn't necessarily mean that the process
+// *does* host this specific extension at this point in time.)
+bool CanRendererHostExtensionOrigin(int render_process_id,
+                                    const ExtensionId& extension_id);
 
 }  // namespace util
 }  // namespace extensions

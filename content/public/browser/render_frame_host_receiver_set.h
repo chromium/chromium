@@ -42,6 +42,8 @@ class WebContents;
 template <typename Interface>
 class CONTENT_EXPORT RenderFrameHostReceiverSet : public WebContentsObserver {
  public:
+  using ImplPointerType = Interface*;
+
   RenderFrameHostReceiverSet(WebContents* web_contents, Interface* impl)
       : WebContentsObserver(web_contents), impl_(impl) {}
   ~RenderFrameHostReceiverSet() override = default;
@@ -81,6 +83,31 @@ class CONTENT_EXPORT RenderFrameHostReceiverSet : public WebContentsObserver {
     current_target_frame_for_testing_ = render_frame_host;
   }
 
+  // Allows test code to swap the interface implementation.
+  //
+  // Returns the existing interface implementation to the caller.
+  //
+  // The caller needs to guarantee that `new_impl` will live longer than
+  // `this` Receiver.  One way to achieve this is to store the returned
+  // `old_impl` and swap it back in when `new_impl` is getting destroyed.
+  // Test code should prefer using `mojo::test::ScopedSwapImplForTesting` if
+  // possible.
+  [[nodiscard]] ImplPointerType SwapImplForTesting(ImplPointerType new_impl) {
+    ImplPointerType old_impl = impl_;
+    impl_ = new_impl;
+
+    for (const auto& it : frame_to_receivers_map_) {
+      const std::vector<mojo::ReceiverId>& receiver_ids = it.second;
+      for (const mojo::ReceiverId& id : receiver_ids) {
+        // RenderFrameHostReceiverSet only allows all-or=nothing swaps, so
+        // all the old impls are expected to be equal to `this`'s old impl_.
+        CHECK_EQ(old_impl, receivers_.SwapImplForTesting(id, new_impl));
+      }
+    }
+
+    return old_impl;
+  }
+
  private:
   // content::WebContentsObserver:
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override {
@@ -105,7 +132,7 @@ class CONTENT_EXPORT RenderFrameHostReceiverSet : public WebContentsObserver {
   raw_ptr<RenderFrameHost> current_target_frame_for_testing_ = nullptr;
 
   // Must outlive this class.
-  const raw_ptr<Interface> impl_;
+  raw_ptr<Interface> impl_;
 };
 
 }  // namespace content

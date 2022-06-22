@@ -31,6 +31,11 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
       mojo::PendingAssociatedReceiver<mojom::LocalFrameHost> receiver,
       content::RenderFrameHost* rfh);
 
+  content::RenderFrameHostReceiverSet<mojom::LocalFrameHost>&
+  receivers_for_testing() {
+    return receivers_;
+  }
+
   // mojom::LocalFrameHost:
   void RequestScriptInjectionPermission(
       const std::string& extension_id,

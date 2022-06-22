@@ -139,6 +139,8 @@ class ScopedSwapImplForTesting {
     std::ignore = receiver_.SwapImplForTesting(old_impl_);
   }
 
+  ImplPointerType old_impl() const { return old_impl_; }
+
   ScopedSwapImplForTesting(const ScopedSwapImplForTesting&) = delete;
   ScopedSwapImplForTesting& operator=(const ScopedSwapImplForTesting&) = delete;
 

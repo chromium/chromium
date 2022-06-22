@@ -10593,6 +10593,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="17" label="EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT"/>
   <int value="18" label="EMF_INVALID_PORT_CONTEXT"/>
   <int value="19" label="AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME"/>
+  <int value="20" label="EFD_INVALID_EXTENSION_ID_FOR_PROCESS"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">
