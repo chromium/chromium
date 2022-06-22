@@ -1022,12 +1022,11 @@ sk_sp<RecordPaintFilter> RecordPaintFilter::CreateScaledPaintRecord(
   // after PaintShader::CreateScaledPaintRecord.
   SkRect scaled_record_bounds =
       PaintRecord::GetFixedScaleBounds(ctm, record_bounds_, max_texture_size);
-  if (scaled_record_bounds.isEmpty())
-    return nullptr;
-
   gfx::SizeF raster_scale = {
       scaled_record_bounds.width() / record_bounds_.width(),
       scaled_record_bounds.height() / record_bounds_.height()};
+  if (raster_scale.IsEmpty())
+    return nullptr;
 
   return sk_make_sp<RecordPaintFilter>(record_, scaled_record_bounds,
                                        raster_scale,
