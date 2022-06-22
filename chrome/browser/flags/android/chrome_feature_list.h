@@ -79,6 +79,7 @@ extern const base::Feature kContextualSearchTranslations;
 extern const base::Feature kContextualTriggersSelectionHandles;
 extern const base::Feature kContextualTriggersSelectionMenu;
 extern const base::Feature kContextualTriggersSelectionSize;
+extern const base::Feature kDelayToolbarUpdateOnLoadStarted;
 extern const base::Feature kDirectActions;
 extern const base::Feature kDisableCompositedProgressBar;
 extern const base::Feature kDontPrefetchLibraries;
