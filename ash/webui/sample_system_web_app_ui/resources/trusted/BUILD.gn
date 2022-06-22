@@ -11,6 +11,15 @@ assert(!is_official_build,
        "Sample System Web App is only built for unofficial builds")
 
 generate_grd("trusted_grd") {
+  # Note: Don't forget to:
+  #
+  #  1. Allocate resource id in //tools/gritsettings/resource_ids.spec for the
+  #     .grd file
+  #  2. Generate the resource pack (a .pak file) from the .grd file generated
+  #     here in //ash/webui/resources/BUILD.gn
+  #  3. Add the generated pack (from step 1) to //chrome/chrome_paks.gni
+  #
+  # Otherwise you'll see network errors when loading the resources.
   grd_prefix = "ash_sample_system_web_app"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
