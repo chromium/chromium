@@ -72,6 +72,8 @@
 
     // Wait for :target to be detected.
     await new Promise(r => requestAnimationFrame(r));
+    // Wait again to avoid flaky test result. (https://crbug.com/1334635)
+    await new Promise(r => requestAnimationFrame(r));
 
     assert_true(fragment2.matches(":target"));
     assert_equals(getComputedStyle(parent2).color, GREEN, "parent2 should be green after re-appending :target child");
