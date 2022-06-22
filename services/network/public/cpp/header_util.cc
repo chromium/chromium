@@ -51,6 +51,9 @@ const char* kUnsafeHeaders[] = {
     // Forbidden by the fetch spec.
     net::HttpRequestHeaders::kTransferEncoding,
 
+    // Semantically a response header, so not useuful on requests.
+    "Set-Cookie",
+
     // TODO(mmenke): Figure out what to do about the remaining headers:
     // Connection, Cookie, Date, Expect, Referer, Via.
 };

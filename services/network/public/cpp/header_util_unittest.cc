@@ -67,6 +67,7 @@ TEST(HeaderUtilTest, AreRequestHeadersSafe) {
       {"Cookie2", "tastiness=5", false},
       {"Keep-Alive", "timeout=5, max=1000", false},
       {net::HttpRequestHeaders::kTransferEncoding, "gzip", false},
+      {"Set-Cookie", "foo=bar", false},
 
       {net::HttpRequestHeaders::kConnection, "Upgrade", false},
       {net::HttpRequestHeaders::kConnection, "Close", true},

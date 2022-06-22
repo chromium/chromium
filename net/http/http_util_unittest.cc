@@ -38,6 +38,7 @@ TEST(HttpUtilTest, IsSafeHeader) {
       "keep-alive",
       "origin",
       "referer",
+      "set-cookie",
       "te",
       "trailer",
       "transfer-encoding",

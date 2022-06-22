@@ -302,6 +302,7 @@ const char* const kForbiddenHeaderFields[] = {
     "keep-alive",
     "origin",
     "referer",
+    "set-cookie",
     "te",
     "trailer",
     "transfer-encoding",
