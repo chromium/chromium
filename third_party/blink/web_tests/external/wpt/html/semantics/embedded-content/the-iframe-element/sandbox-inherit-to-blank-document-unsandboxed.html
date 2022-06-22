@@ -41,7 +41,7 @@ test(test => {
 test(test => {
     // The navigation will be canceled (204 no content). As a result, the
     // document in the popup must still be the initial empty document.
-    const w = window.open("common/blank.html?pipe=status(204)")
+    const w = window.open("/common/blank.html?pipe=status(204)")
 
     // The about:blank document is sandboxed, because it inherited CSP from its
     // opener. However this is impossible to verify. There are cross-origin
