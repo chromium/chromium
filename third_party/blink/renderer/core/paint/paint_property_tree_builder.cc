@@ -2790,7 +2790,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       // Determine whether we're inside block fragmentation or not. OOF
       // descendants need special treatment inside block fragmentation.
       context_.current.is_in_block_fragmentation =
-          pre_paint_info_->fragmentainer_idx != WTF::kNotFound &&
+          pre_paint_info_->fragmentainer_is_oof_containing_block &&
           box->GetNGPaginationBreakability() != LayoutBox::kForbidBreaks;
     } else {
       // TODO(pdr): Several calls in this function walk back up the tree to
