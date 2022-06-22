@@ -35,7 +35,9 @@ class CORSRequestHandler(SimpleHTTPRequestHandler):
             "\n      ssh root@$DUT_IP -L " + \
             str(remote_port)+":localhost:" + str(remote_port)
         contents = bytes(contents, 'UTF-8')
-        self.send_response(400)
+        # Used error code 206 to prevent console logs every time
+        # connection is unsuccessful.
+        self.send_response(206)
 
       self.send_header("Content-type", "text/html")
       self.send_header("Content-length", len(contents))
