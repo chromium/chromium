@@ -45,70 +45,73 @@ VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
 
 # Get the target version as specified above.
 def GetPackageVersion():
-  from update import (CLANG_REVISION, CLANG_SUB_REVISION)
-  return '%s-%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION, CLANG_REVISION,
-                          CLANG_SUB_REVISION)
+    from update import (CLANG_REVISION, CLANG_SUB_REVISION)
+    return '%s-%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION, CLANG_REVISION,
+                            CLANG_SUB_REVISION)
 
 
 # Get the version of the toolchain package we already have.
 def GetStampVersion():
-  if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
-    with open(VERSION_STAMP_PATH) as version_file:
-      existing_stamp = version_file.readline().rstrip()
-    version_re = re.compile(r'rustc [0-9.]+-dev \((.+?) chromium\)')
-    return version_re.fullmatch(existing_stamp).group(1)
+    if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
+        with open(VERSION_STAMP_PATH) as version_file:
+            existing_stamp = version_file.readline().rstrip()
+        version_re = re.compile(r'rustc [0-9.]+-dev \((.+?) chromium\)')
+        return version_re.fullmatch(existing_stamp).group(1)
 
-  return None
+    return None
 
 
 def main():
-  parser = argparse.ArgumentParser(description='Update Rust package')
-  parser.add_argument('--print-rust-revision',
-                      action='store_true',
-                      help='Print Rust revision (without Clang revision) and '
-                      'quit. Can be run outside of a Chromium checkout.')
-  parser.add_argument('--print-package-version',
-                      action='store_true',
-                      help='Print Rust package version (including both the '
-                      'Rust and Clang revisions) and quit.')
-  args = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Update Rust package')
+    parser.add_argument(
+        '--print-rust-revision',
+        action='store_true',
+        help='Print Rust revision (without Clang revision) and '
+        'quit. Can be run outside of a Chromium checkout.')
+    parser.add_argument('--print-package-version',
+                        action='store_true',
+                        help='Print Rust package version (including both the '
+                        'Rust and Clang revisions) and quit.')
+    args = parser.parse_args()
 
-  if args.print_rust_revision:
-    print(f'{RUST_REVISION}-{RUST_SUB_REVISION}')
-    return 0
+    if args.print_rust_revision:
+        print(f'{RUST_REVISION}-{RUST_SUB_REVISION}')
+        return 0
 
-  if args.print_package_version:
-    print(GetPackageVersion())
-    return 0
+    if args.print_package_version:
+        print(GetPackageVersion())
+        return 0
 
-  from update import (DownloadAndUnpack, GetDefaultHostOs, GetPlatformUrlPrefix)
+    from update import (DownloadAndUnpack, GetDefaultHostOs,
+                        GetPlatformUrlPrefix)
 
-  # Exit early if the existing package is up-to-date. Note that we cannot simply
-  # call DownloadAndUnpack() every time: aside from unnecessarily downloading
-  # the toolchain if it hasn't changed, it also leads to multiple versions of
-  # the same rustlibs. build/rust/std/find_std_rlibs.py chokes in this case.
-  if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
-    if GetPackageVersion() == GetStampVersion():
-      return 0
+    # Exit early if the existing package is up-to-date. Note that we cannot
+    # simply call DownloadAndUnpack() every time: aside from unnecessarily
+    # downloading the toolchain if it hasn't changed, it also leads to multiple
+    # versions of the same rustlibs. build/rust/std/find_std_rlibs.py chokes in
+    # this case.
+    if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
+        if GetPackageVersion() == GetStampVersion():
+            return 0
 
-  if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
-    shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
+    if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
+        shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
 
-  try:
-    url = '%srust-toolchain-%s.tgz' % (GetPlatformUrlPrefix(
-        GetDefaultHostOs()), GetPackageVersion())
-    DownloadAndUnpack(url, THIRD_PARTY_DIR)
-  except urllib.error.HTTPError as e:
-    # Fail softly for now. This can happen if a Rust package was not produced,
-    # e.g. if the Rust build failed upon a Clang update, or if a Rust roll and
-    # a Clang roll raced against each other.
-    #
-    # TODO(https://crbug.com/1245714): reconsider how to handle this.
-    print(f'warning: could not download Rust package')
+    try:
+        url = '%srust-toolchain-%s.tgz' % (GetPlatformUrlPrefix(
+            GetDefaultHostOs()), GetPackageVersion())
+        DownloadAndUnpack(url, THIRD_PARTY_DIR)
+    except urllib.error.HTTPError as e:
+        # Fail softly for now. This can happen if a Rust package was not
+        # produced, e.g. if the Rust build failed upon a Clang update, or if a
+        # Rust roll and a Clang roll raced against each other.
+        #
+        # TODO(https://crbug.com/1245714): Reconsider how to handle this.
+        print(f'warning: could not download Rust package')
 
-  # Ensure the newly extracted package has the correct version.
-  assert GetPackageVersion() == GetStampVersion()
+    # Ensure the newly extracted package has the correct version.
+    assert GetPackageVersion() == GetStampVersion()
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+    sys.exit(main())
