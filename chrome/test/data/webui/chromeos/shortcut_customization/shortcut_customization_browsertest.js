@@ -32,7 +32,7 @@ ShortcutCustomizationAppBrowserTest.prototype = {
 
   browsePreload: 'chrome://shortcut-customization/test_loader.html' +
       '?module=chromeos/shortcut_customization/' +
-      'shortcut_customization_unified_test.js',
+      'shortcut_customization_unified_test.js&host=test',
 
   featureList: {enabled: ['features::kShortcutCustomizationApp']},
 };

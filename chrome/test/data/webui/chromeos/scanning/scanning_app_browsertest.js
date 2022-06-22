@@ -31,7 +31,7 @@ function ScanningAppBrowserTest() {}
 ScanningAppBrowserTest.prototype = {
   __proto__: PolymerTest.prototype,
   browsePreload: 'chrome://scanning/test_loader.html?module=chromeos/' +
-      'scanning/scanning_app_unified_test.js',
+      'scanning/scanning_app_unified_test.js&host=test',
 };
 
 // List of names of suites in unified test to register for individual debugging.

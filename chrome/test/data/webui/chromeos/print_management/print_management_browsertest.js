@@ -20,7 +20,7 @@ PrintManagementBrowserTest.prototype = {
   __proto__: PolymerTest.prototype,
 
   browsePreload: 'chrome://print-management/test_loader.html?module=chromeos/' +
-      'print_management/print_management_test.js',
+      'print_management/print_management_test.js&host=test',
 };
 
 TEST_F('PrintManagementBrowserTest', 'All', function() {
