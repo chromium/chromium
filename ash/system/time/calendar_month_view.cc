@@ -423,7 +423,8 @@ CalendarMonthView::CalendarMonthView(
   if (updated_is_fetched != is_fetched)
     UpdateIsFetchedAndRepaint(updated_is_fetched);
 
-  if (calendar_utils::GetDayOfWeekInt(current_date) == 1)
+  if (calendar_utils::GetDayOfWeek(current_date) ==
+      calendar_utils::kFirstDayOfWeekString)
     return;
 
   // Adds the first several days from the next month if the last day is not the
