@@ -30,14 +30,17 @@
 
 #include <google/protobuf/compiler/cpp/cpp_generator.h>
 #include <google/protobuf/compiler/java/java_generator.h>
+#include <google/protobuf/compiler/java/java_kotlin_generator.h>
 #include <google/protobuf/compiler/js/js_generator.h>
 #include <google/protobuf/compiler/command_line_interface.h>
 #include <google/protobuf/compiler/python/python_generator.h>
+#include <google/protobuf/compiler/python/python_pyi_generator.h>
 #include <google/protobuf/compiler/csharp/csharp_generator.h>
 #include <google/protobuf/compiler/objectivec/objectivec_generator.h>
 #include <google/protobuf/compiler/php/php_generator.h>
 #include <google/protobuf/compiler/ruby/ruby_generator.h>
 
+// Must be included last.
 #include <google/protobuf/port_def.inc>
 
 namespace google {
@@ -64,11 +67,20 @@ int ProtobufMain(int argc, char* argv[]) {
   cli.RegisterGenerator("--java_out", "--java_opt", &java_generator,
                         "Generate Java source file.");
 
+  // Proto2 Kotlin
+  java::KotlinGenerator kt_generator;
+  cli.RegisterGenerator("--kotlin_out", "--kotlin_opt", &kt_generator,
+                        "Generate Kotlin file.");
+
 
   // Proto2 Python
   python::Generator py_generator;
   cli.RegisterGenerator("--python_out", "--python_opt", &py_generator,
                         "Generate Python source file.");
+  // Python pyi
+  python::PyiGenerator pyi_generator;
+  cli.RegisterGenerator("--pyi_out", &pyi_generator,
+                        "Generate python pyi stub.");
 
   // PHP
   php::Generator php_generator;

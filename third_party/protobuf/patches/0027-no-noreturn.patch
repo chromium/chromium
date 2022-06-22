@@ -1,0 +1,14 @@
+diff --git a/src/google/protobuf/generated_message_tctable_impl.h b/src/google/protobuf/generated_message_tctable_impl.h
+index c2be089bc4a15..441a4293a9985 100644
+--- a/src/google/protobuf/generated_message_tctable_impl.h
++++ b/src/google/protobuf/generated_message_tctable_impl.h
+@@ -248,9 +248,6 @@ enum FieldType : uint16_t {
+ 
+ #ifndef NDEBUG
+ template <size_t align>
+-#ifndef _MSC_VER
+-[[noreturn]]
+-#endif
+ void AlignFail(uintptr_t address) {
+   GOOGLE_LOG(FATAL) << "Unaligned (" << align << ") access at " << address;
+ }

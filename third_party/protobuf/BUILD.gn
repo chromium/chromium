@@ -104,6 +104,13 @@ component("protobuf_lite") {
     ":protobuf_warnings",
   ]
 
+  # Build protobuf_lite with full optimizations so Clang can optimize the
+  # initializer out. See 0029-make-initializers-optimizable.patch.
+  if (!is_debug && is_android) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
   # Remove Sanitizers and coverage for a performance boost when fuzzing. This is
   # OK because the only fuzzers that use protobuf are libprotobuf-mutator based
   # fuzzers, and they don't actually target the protobuf code, they just use it.
@@ -277,16 +284,6 @@ if (current_toolchain == host_toolchain) {
 
 google_python_dir = "$root_out_dir/pyproto/google"
 
-copy("copy_google") {
-  sources = [ "__init__.py" ]
-  outputs = [ "$google_python_dir/{{source_file_part}}" ]
-}
-
-copy("copy_six") {
-  sources = [ "third_party/six/six.py" ]
-  outputs = [ "$google_python_dir/third_party/six/{{source_file_part}}" ]
-}
-
 copy("copy_google_protobuf") {
   # TODO(ncarter): protoc's python generator treats descriptor.proto
   # specially, but only when the input path is exactly
@@ -305,10 +302,8 @@ copy("copy_google_protobuf_internal") {
 # Build time dependency for action rules.
 group("py_proto") {
   public_deps = [
-    ":copy_google",
     ":copy_google_protobuf",
     ":copy_google_protobuf_internal",
-    ":copy_six",
   ]
 }
 
@@ -317,9 +312,7 @@ group("py_proto_runtime") {
   deps = [ ":py_proto" ]
 
   # Targets that depend on this should depend on the copied data files.
-  data = get_target_outputs(":copy_google")
-  data += get_target_outputs(":copy_six")
-  data += get_target_outputs(":copy_google_protobuf")
+  data = get_target_outputs(":copy_google_protobuf")
   data += get_target_outputs(":copy_google_protobuf_internal")
 }
 

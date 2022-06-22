@@ -38,6 +38,9 @@
 
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
+#include <google/protobuf/io/printer.h>
+#include <google/protobuf/stubs/strutil.h>
+#include <google/protobuf/stubs/substitute.h>
 #include <google/protobuf/compiler/java/java_context.h>
 #include <google/protobuf/compiler/java/java_enum_field.h>
 #include <google/protobuf/compiler/java/java_enum_field_lite.h>
@@ -50,9 +53,6 @@
 #include <google/protobuf/compiler/java/java_primitive_field_lite.h>
 #include <google/protobuf/compiler/java/java_string_field.h>
 #include <google/protobuf/compiler/java/java_string_field_lite.h>
-#include <google/protobuf/io/printer.h>
-#include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/stubs/substitute.h>
 
 
 namespace google {
@@ -258,6 +258,25 @@ void SetCommonFieldVariables(const FieldDescriptor* descriptor,
   // empty string.
   (*variables)["{"] = "";
   (*variables)["}"] = "";
+  (*variables)["kt_name"] =
+      IsForbiddenKotlin(info->name) ? info->name + "_" : info->name;
+  (*variables)["kt_capitalized_name"] = IsForbiddenKotlin(info->name)
+                                            ? info->capitalized_name + "_"
+                                            : info->capitalized_name;
+  if (!descriptor->is_repeated()) {
+    (*variables)["annotation_field_type"] = FieldTypeName(descriptor->type());
+  } else if (GetJavaType(descriptor) == JAVATYPE_MESSAGE &&
+             IsMapEntry(descriptor->message_type())) {
+    (*variables)["annotation_field_type"] =
+        std::string(FieldTypeName(descriptor->type())) + "MAP";
+  } else {
+    (*variables)["annotation_field_type"] =
+        std::string(FieldTypeName(descriptor->type())) + "_LIST";
+    if (descriptor->is_packed()) {
+      (*variables)["annotation_field_type"] =
+          (*variables)["annotation_field_type"] + "_PACKED";
+    }
+  }
 }
 
 void SetCommonOneofVariables(const FieldDescriptor* descriptor,
