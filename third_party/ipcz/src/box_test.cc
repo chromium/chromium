@@ -16,61 +16,21 @@ namespace {
 
 using Blob = reference_drivers::Blob;
 
-class BoxTestNode : public test::TestNode {
- protected:
-  // Creates a test driver Blob object with an inlined data payload and a shared
-  // memory object with an embedded message.
-  IpczDriverHandle CreateTestBlob(std::string_view inline_message,
-                                  std::string_view shm_message) {
-    IpczDriverHandle memory;
-    EXPECT_EQ(IPCZ_RESULT_OK,
-              GetDriver().AllocateSharedMemory(
-                  shm_message.size(), IPCZ_NO_FLAGS, nullptr, &memory));
-
-    void* address;
-    IpczDriverHandle mapping;
-    EXPECT_EQ(IPCZ_RESULT_OK,
-              GetDriver().MapSharedMemory(memory, IPCZ_NO_FLAGS, nullptr,
-                                          &address, &mapping));
-    memcpy(address, shm_message.data(), shm_message.size());
-    EXPECT_EQ(IPCZ_RESULT_OK,
-              GetDriver().Close(mapping, IPCZ_NO_FLAGS, nullptr));
-
-    return Blob::ReleaseAsHandle(MakeRefCounted<Blob>(
-        GetDriver(), inline_message, absl::MakeSpan(&memory, 1)));
-  }
-
-  bool BlobContentsMatch(IpczDriverHandle blob_handle,
-                         std::string_view expected_inline_message,
-                         std::string_view expected_shm_message) {
-    Ref<Blob> blob = Blob::TakeFromHandle(blob_handle);
-    if (expected_inline_message != blob->message()) {
-      return false;
-    }
-
-    ABSL_ASSERT(blob->handles().size() == 1);
-    ABSL_ASSERT(blob->handles()[0] != IPCZ_INVALID_DRIVER_HANDLE);
-
-    void* address;
-    IpczDriverHandle mapping;
-    EXPECT_EQ(IPCZ_RESULT_OK,
-              GetDriver().MapSharedMemory(blob->handles()[0], IPCZ_NO_FLAGS,
-                                          nullptr, &address, &mapping));
-    std::string_view shm_message(static_cast<char*>(address),
-                                 expected_shm_message.size());
-    const bool matched = (shm_message == expected_shm_message);
-    EXPECT_EQ(IPCZ_RESULT_OK,
-              GetDriver().Close(mapping, IPCZ_NO_FLAGS, nullptr));
-    return matched;
-  }
-};
-
+using BoxTestNode = test::TestNode;
 using BoxTest = test::MultinodeTest<BoxTestNode>;
+
+IpczDriverHandle CreateTestBlob(std::string_view message) {
+  return Blob::ReleaseAsHandle(MakeRefCounted<Blob>(message));
+}
+
+std::string GetBlobContents(IpczDriverHandle handle) {
+  Ref<Blob> blob = Blob::TakeFromHandle(handle);
+  return std::string(blob->message());
+}
 
 TEST_P(BoxTest, BoxAndUnbox) {
   constexpr const char kMessage[] = "Hello, world?";
-  IpczDriverHandle blob_handle =
-      Blob::ReleaseAsHandle(MakeRefCounted<Blob>(GetDriver(), kMessage));
+  IpczDriverHandle blob_handle = CreateTestBlob(kMessage);
 
   IpczHandle box;
   EXPECT_EQ(IPCZ_RESULT_OK,
@@ -79,13 +39,11 @@ TEST_P(BoxTest, BoxAndUnbox) {
   blob_handle = IPCZ_INVALID_DRIVER_HANDLE;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().Unbox(box, IPCZ_NO_FLAGS, nullptr, &blob_handle));
-
-  Ref<Blob> blob = Blob::TakeFromHandle(blob_handle);
-  EXPECT_EQ(kMessage, blob->message());
+  EXPECT_EQ(kMessage, GetBlobContents(blob_handle));
 }
 
 TEST_P(BoxTest, CloseBox) {
-  Ref<Blob> blob = MakeRefCounted<Blob>(GetDriver(), "meh");
+  Ref<Blob> blob = MakeRefCounted<Blob>("meh");
   Ref<Blob::RefCountedFlag> destroyed = blob->destruction_flag_for_testing();
   IpczDriverHandle blob_handle = Blob::ReleaseAsHandle(std::move(blob));
 
@@ -100,8 +58,7 @@ TEST_P(BoxTest, CloseBox) {
 
 TEST_P(BoxTest, Peek) {
   constexpr const char kMessage[] = "Hello, world?";
-  IpczDriverHandle blob_handle =
-      Blob::ReleaseAsHandle(MakeRefCounted<Blob>(GetDriver(), kMessage));
+  IpczDriverHandle blob_handle = CreateTestBlob(kMessage);
   IpczHandle box;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().Box(node(), blob_handle, IPCZ_NO_FLAGS, nullptr, &box));
@@ -126,7 +83,6 @@ TEST_P(BoxTest, Peek) {
 
 constexpr const char kMessage1[] = "Hello, world?";
 constexpr const char kMessage2[] = "Hello, world!";
-constexpr const char kMessage3[] = "Hello! World!";
 
 MULTINODE_TEST_NODE(BoxTestNode, TransferBoxClient) {
   IpczHandle b = ConnectToBroker();
@@ -134,12 +90,12 @@ MULTINODE_TEST_NODE(BoxTestNode, TransferBoxClient) {
   std::string message;
   IpczHandle box;
   EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, &message, {&box, 1}));
-  EXPECT_EQ(kMessage3, message);
+  EXPECT_EQ(kMessage2, message);
 
   IpczDriverHandle blob_handle;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().Unbox(box, IPCZ_NO_FLAGS, nullptr, &blob_handle));
-  EXPECT_TRUE(BlobContentsMatch(blob_handle, kMessage1, kMessage2));
+  EXPECT_EQ(kMessage1, GetBlobContents(blob_handle));
 
   Close(b);
 }
@@ -147,12 +103,12 @@ MULTINODE_TEST_NODE(BoxTestNode, TransferBoxClient) {
 TEST_P(BoxTest, TransferBox) {
   IpczHandle c = SpawnTestNode<TransferBoxClient>();
 
-  IpczDriverHandle blob_handle = CreateTestBlob(kMessage1, kMessage2);
+  IpczDriverHandle blob_handle = CreateTestBlob(kMessage1);
   IpczHandle box;
   EXPECT_EQ(IPCZ_RESULT_OK,
             ipcz().Box(node(), blob_handle, IPCZ_NO_FLAGS, nullptr, &box));
 
-  EXPECT_EQ(IPCZ_RESULT_OK, Put(c, kMessage3, {&box, 1}));
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(c, kMessage2, {&box, 1}));
 
   Close(c);
 }
@@ -165,11 +121,11 @@ MULTINODE_TEST_NODE(BoxTestNode, TransferBoxBetweenNonBrokersClient1) {
   EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, nullptr, {&q, 1}));
 
   for (size_t i = 0; i < TransferBoxBetweenNonBrokersNumIterations; ++i) {
-    IpczDriverHandle blob_handle = CreateTestBlob(kMessage1, kMessage2);
+    IpczDriverHandle blob_handle = CreateTestBlob(kMessage1);
     IpczHandle box;
     EXPECT_EQ(IPCZ_RESULT_OK,
               ipcz().Box(node(), blob_handle, IPCZ_NO_FLAGS, nullptr, &box));
-    EXPECT_EQ(IPCZ_RESULT_OK, Put(q, kMessage3, {&box, 1}));
+    EXPECT_EQ(IPCZ_RESULT_OK, Put(q, kMessage2, {&box, 1}));
     box = IPCZ_INVALID_DRIVER_HANDLE;
 
     std::string message;
@@ -177,7 +133,7 @@ MULTINODE_TEST_NODE(BoxTestNode, TransferBoxBetweenNonBrokersClient1) {
     EXPECT_EQ(kMessage1, message);
     EXPECT_EQ(IPCZ_RESULT_OK,
               ipcz().Unbox(box, IPCZ_NO_FLAGS, nullptr, &blob_handle));
-    EXPECT_TRUE(BlobContentsMatch(blob_handle, kMessage2, kMessage3));
+    EXPECT_EQ(kMessage2, GetBlobContents(blob_handle));
   }
 
   CloseAll({q, b});
@@ -193,12 +149,12 @@ MULTINODE_TEST_NODE(BoxTestNode, TransferBoxBetweenNonBrokersClient2) {
     IpczDriverHandle blob_handle;
     std::string message;
     EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(p, &message, {&box, 1}));
-    EXPECT_EQ(kMessage3, message);
+    EXPECT_EQ(kMessage2, message);
     EXPECT_EQ(IPCZ_RESULT_OK,
               ipcz().Unbox(box, IPCZ_NO_FLAGS, nullptr, &blob_handle));
-    EXPECT_TRUE(BlobContentsMatch(blob_handle, kMessage1, kMessage2));
+    EXPECT_EQ(kMessage1, GetBlobContents(blob_handle));
 
-    blob_handle = CreateTestBlob(kMessage2, kMessage3);
+    blob_handle = CreateTestBlob(kMessage2);
     EXPECT_EQ(IPCZ_RESULT_OK,
               ipcz().Box(node(), blob_handle, IPCZ_NO_FLAGS, nullptr, &box));
     EXPECT_EQ(IPCZ_RESULT_OK, Put(p, kMessage1, {&box, 1}));

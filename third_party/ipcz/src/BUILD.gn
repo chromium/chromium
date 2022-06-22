@@ -146,12 +146,16 @@ ipcz_source_set("reference_drivers") {
     public += [
       "reference_drivers/file_descriptor.h",
       "reference_drivers/memfd_memory.h",
+      "reference_drivers/multiprocess_reference_driver.h",
       "reference_drivers/socket_transport.h",
+      "reference_drivers/wrapped_file_descriptor.h",
     ]
     sources += [
       "reference_drivers/file_descriptor.cc",
       "reference_drivers/memfd_memory.cc",
+      "reference_drivers/multiprocess_reference_driver.cc",
       "reference_drivers/socket_transport.cc",
+      "reference_drivers/wrapped_file_descriptor.cc",
     ]
   }
 
@@ -333,6 +337,7 @@ ipcz_source_set("ipcz_tests_sources") {
   if (is_linux) {
     sources += [
       "reference_drivers/memfd_memory_test.cc",
+      "reference_drivers/multiprocess_reference_driver_test.cc",
       "reference_drivers/socket_transport_test.cc",
     ]
   }

@@ -5,6 +5,8 @@
 #ifndef IPCZ_SRC_REFERENCE_DRIVERS_FILE_DESCRIPTOR_H_
 #define IPCZ_SRC_REFERENCE_DRIVERS_FILE_DESCRIPTOR_H_
 
+#include <utility>
+
 namespace ipcz::reference_drivers {
 
 // Implements unique ownership of a single POSIX file descriptor.
@@ -22,6 +24,8 @@ class FileDescriptor {
   ~FileDescriptor();
 
   void reset();
+
+  [[nodiscard]] int release() { return std::exchange(fd_, -1); }
 
   // Duplicates the underlying descriptor, returning a new FileDescriptor object
   // to wrap it. This object must be valid before calling Clone().

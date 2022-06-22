@@ -4,14 +4,23 @@
 
 #include "test/multinode_test.h"
 
+#include <map>
+#include <string>
 #include <thread>
 
+#include "build/build_config.h"
 #include "ipcz/ipcz.h"
+#include "reference_drivers/file_descriptor.h"
 #include "reference_drivers/single_process_reference_driver.h"
+#include "reference_drivers/socket_transport.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "util/log.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "reference_drivers/multiprocess_reference_driver.h"
+#endif
 
 namespace ipcz::test {
 
@@ -79,6 +88,11 @@ const IpczDriver& TestNode::GetDriver() const {
   switch (driver_mode_) {
     case DriverMode::kSync:
       return reference_drivers::kSingleProcessReferenceDriver;
+
+#if BUILDFLAG(IS_LINUX)
+    case DriverMode::kMultiprocess:
+      return reference_drivers::kMultiprocessReferenceDriver;
+#endif
 
     default:
       // Other modes not yet supported.
@@ -164,21 +178,10 @@ Ref<TestNode::TestNodeController> TestNode::SpawnTestNodeImpl(
 
 TestNode::TransportPair TestNode::CreateTransports() {
   TransportPair transports;
-  switch (driver_mode_) {
-    case DriverMode::kSync: {
-      const IpczResult result =
-          reference_drivers::kSingleProcessReferenceDriver.CreateTransports(
-              IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE,
-              IPCZ_NO_FLAGS, nullptr, &transports.ours, &transports.theirs);
-      ABSL_ASSERT(result == IPCZ_RESULT_OK);
-      break;
-    }
-
-    default:
-      LOG(FATAL) << "DriverMode not yet supported.";
-      return {};
-  }
-
+  const IpczResult result = GetDriver().CreateTransports(
+      IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS,
+      nullptr, &transports.ours, &transports.theirs);
+  ABSL_ASSERT(result == IPCZ_RESULT_OK);
   return transports;
 }
 

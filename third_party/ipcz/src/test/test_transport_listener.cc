@@ -8,6 +8,7 @@
 
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
+#include "ipcz/message.h"
 #include "ipcz/node.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
@@ -57,7 +58,13 @@ void TestTransportListener::OnStringMessage(
 void TestTransportListener::OnError(ErrorHandler handler) {
   ABSL_ASSERT(!error_handler_);
   error_handler_ = std::move(handler);
-  ActivateTransportIfNecessary();
+
+  // Since the caller only cares about handling errors, ensure all valid
+  // messages are cleanly discarded. This also activates the transport.
+  OnRawMessage([this](const DriverTransport::RawMessage& message) {
+    Message m;
+    return m.DeserializeUnknownType(message, *transport_);
+  });
 }
 
 void TestTransportListener::ActivateTransportIfNecessary() {

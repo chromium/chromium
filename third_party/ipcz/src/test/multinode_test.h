@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "build/build_config.h"
 #include "ipcz/ipcz.h"
 #include "test/test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,8 +27,8 @@ class TestNode;
 template <typename TestNodeType>
 class MultinodeTest;
 
-// Selects which driver test nodes will use. Interconnecting nodes must always
-// use the same driver.
+// Selects which driver will be used by test nodes. Interconnecting nodes must
+// always use the same driver.
 //
 // Multinode tests are parameterized over these modes to provide coverage of
 // various interesting constraints encountered in production. Some platforms
@@ -39,27 +40,46 @@ class MultinodeTest;
 // all driver modes. The synchronous version is generally easier to debug in
 // such cases.
 enum class DriverMode {
-  // Use the fully synchronous, single-process reference driver. This driver
-  // does not create any background threads and all ipcz operations will
-  // complete synchronously from end-to-end.
+  // Use the synchronous, single-process reference driver. This driver does not
+  // create any background threads and all ipcz operations (e.g. message
+  // delivery, portal transfer, proxy elimination, etc) complete synchronously
+  // from end-to-end. Each test node runs its test body on a dedicated thread
+  // within the test process.
   kSync,
 
-  // Use the async multiprocess driver as-is. All nodes can allocate their own
-  // shared memory directly through the driver.
+  // Use the asynchronous single-process reference driver. Transport messages
+  // are received asynchronously, similar to how most production drivers are
+  // likely to operate in practice. Such asynchrony gives rise to
+  // non-determinism throughout ipcz proper and provides good coverage of
+  // potential race conditions.
+  //
+  // As with the kSync driver, each test node runs its test body on a dedicated
+  // thread within the test process.
   kAsync,
 
-  // Use the async multiprocess driver, and force non-broker nodes to delegate
-  // shared memory allocation to their broker.
+  // Use the same driver as kAsync, but non-broker nodes are forced to delegate
+  // shared memory allocation to their broker. This simulates the production
+  // constraints of some sandbox environments and exercises additional
+  // asynchrony in ipcz proper.
   kAsyncDelegatedAlloc,
 
-  // Use the async multiprocess driver, and force non-broker-to-non-broker
-  // transmission of driver objects to be relayed through a broker. All nodes
-  // can allocate their own shared memory directly through the driver.
+  // Use the same driver as kAsync, but driver objects cannot be transmitted
+  // directly between non-brokers and must instead be relayed by a broker. This
+  // simulates the production constraints of some sandbox environments and
+  // exercises additional asynchrony in ipcz proper.
   kAsyncObjectBrokering,
 
-  // Use the async multiprocess driver, forcing shared memory AND driver
-  // object relay both to be delegated to a broker.
+  // Use the same driver as kAsync, imposing the additional constraints of both
+  // kAsyncDelegatedAlloc and kAsyncObjectBrokering as described above.
   kAsyncObjectBrokeringAndDelegatedAlloc,
+
+#if BUILDFLAG(IS_LINUX)
+  // Use a multiprocess-capable driver (Linux only), with each test node running
+  // in its own isolated child process.
+  //
+  // TODO: Actually run nodes in child processes.
+  kMultiprocess,
+#endif
 };
 
 namespace internal {
@@ -256,9 +276,17 @@ class MultinodeTest : public TestNodeType,
   };                                                                       \
   void node_name::NodeBody()
 
+#if BUILDFLAG(IS_LINUX)
+#define IPCZ_EXTRA_DRIVER_MODES , ipcz::test::DriverMode::kMultiprocess
+#else
+#define IPCZ_EXTRA_DRIVER_MODES
+#endif
+
 // TODO: Add other DriverMode enumerators here as support is landed.
 #define INSTANTIATE_MULTINODE_TEST_SUITE_P(suite) \
-  INSTANTIATE_TEST_SUITE_P(, suite,               \
-                           ::testing::Values(ipcz::test::DriverMode::kSync))
+  INSTANTIATE_TEST_SUITE_P(                       \
+      , suite,                                    \
+      ::testing::Values(                          \
+          ipcz::test::DriverMode::kSync IPCZ_EXTRA_DRIVER_MODES))
 
 #endif  // IPCZ_SRC_TEST_MULTINODE_TEST_H_
