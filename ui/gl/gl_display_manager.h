@@ -72,10 +72,6 @@ class GL_EXPORT GLDisplayManager {
     return GetDisplay(system_device_id);
   }
 
-  GLDisplayPlatform* GetDefaultDisplay() {
-    return GetDisplay(GpuPreference::kDefault);
-  }
-
  private:
   friend class base::NoDestructor<GLDisplayManager<GLDisplayPlatform>>;
 #if defined(USE_EGL)
