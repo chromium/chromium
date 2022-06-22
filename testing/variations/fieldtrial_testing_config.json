@@ -6899,7 +6899,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithContinueSection_20220615",
+                    "name": "EnabledWithContinueSection_20220621",
                     "params": {
                         "enable_continue": "true"
                     },
@@ -6911,7 +6911,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledWithoutContinueSection_20220615",
+                    "name": "EnabledWithoutContinueSection_20220621",
                     "params": {
                         "enable_continue": "false"
                     },
@@ -6920,6 +6920,17 @@
                     ],
                     "disable_features": [
                         "LauncherItemSuggest"
+                    ]
+                },
+                {
+                    "name": "EnabledWithContinueAndMultipleQueries_20220621",
+                    "params": {
+                        "enable_continue": "true",
+                        "multiple_queries_per_session": "true"
+                    },
+                    "enable_features": [
+                        "LauncherItemSuggest",
+                        "ProductivityLauncher"
                     ]
                 }
             ]
