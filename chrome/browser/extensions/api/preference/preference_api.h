@@ -75,6 +75,11 @@ class PreferenceEventRouter : public ProfileObserver {
                        absl::optional<::base::Value> opt_value,
                        crosapi::mojom::PrefControlState control_state);
 
+  // Callback for lacros version of the prefs, to update ash in the event that
+  // they are changed.
+  void OnControlledPrefChanged(PrefService* pref_service,
+                               const std::string& browser_pref);
+
   std::vector<std::unique_ptr<crosapi::mojom::PrefObserver>>
       extension_pref_observers_;
 #endif
@@ -158,6 +163,9 @@ class PreferenceAPI : public PreferenceAPIBase,
 
   // EventRouter::Observer implementation.
   void OnListenerAdded(const EventListenerInfo& details) override;
+
+  // Ensures that a PreferenceEventRouter is created only once.
+  void EnsurePreferenceEventRouterCreated();
 
  private:
   friend class BrowserContextKeyedAPIFactory<PreferenceAPI>;
