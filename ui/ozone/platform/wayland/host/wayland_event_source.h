@@ -198,7 +198,7 @@ class WaylandEventSource : public PlatformEventSource,
   PointerDetails PointerDetailsForDispatching() const;
 
   // For touch events.
-  PointerDetails PointerDetailsForDispatching(PointerId pointer_id) const;
+  absl::optional<PointerDetails> AmendStylusData(PointerId pointer_id) const;
 
   // Wrap up method to support async touch release processing.
   void OnTouchReleaseInternal(PointerId id);
@@ -232,7 +232,6 @@ class WaylandEventSource : public PlatformEventSource,
   absl::optional<EventPointerType> last_pointer_stylus_tool_;
 
   // Last known touch stylus type (eg touch, pen or eraser).
-  // absl::optional<PointerId, EventPointerType> last_touch_stylus_tool_;
   base::flat_map<PointerId, absl::optional<EventPointerType>>
       last_touch_stylus_tool_;
 

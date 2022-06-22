@@ -352,7 +352,7 @@ void WaylandEventSource::OnTouchPressEvent(
     return;
   }
 
-  PointerDetails details(PointerDetailsForDispatching(id));
+  PointerDetails details(EventPointerType::kTouch, id);
   TouchEvent event(ET_TOUCH_PRESSED, location, location, timestamp, details,
                    keyboard_modifiers_);
   DCHECK_EQ(dispatch_policy, DispatchPolicy::kOnFrame);
@@ -424,7 +424,7 @@ void WaylandEventSource::OnTouchMotionEvent(
     return;
   }
   it->second->last_known_location = location;
-  PointerDetails details(PointerDetailsForDispatching(id));
+  PointerDetails details(EventPointerType::kTouch, id);
   TouchEvent event(ET_TOUCH_MOVED, location, location, timestamp, details,
                    keyboard_modifiers_);
   if (dispatch_policy == DispatchPolicy::kImmediate) {
@@ -462,6 +462,17 @@ void WaylandEventSource::OnTouchFrame() {
     auto touch_frame = std::move(touch_frames_.front());
     touch_frames_.pop_front();
 
+    // In case there are touch stylus information, override the current 'event'
+    // instance, given that PointerDetails is 'const'.
+    auto pointer_details_with_stylus_data =
+        AmendStylusData(touch_frame->event.pointer_details().id);
+    if (pointer_details_with_stylus_data) {
+      auto old_event = touch_frame->event;
+      touch_frame->event = TouchEvent(
+          old_event.type(), old_event.location_f(), old_event.root_location_f(),
+          old_event.time_stamp(), pointer_details_with_stylus_data.value(),
+          old_event.flags());
+    }
     DispatchEvent(&(touch_frame->event));
     if (!touch_frame->completion_cb.is_null())
       std::move(touch_frame->completion_cb).Run();
@@ -483,25 +494,6 @@ void WaylandEventSource::OnTouchStylusToolChanged(
     PointerId pointer_id,
     EventPointerType pointer_type) {
   last_touch_stylus_tool_[pointer_id] = pointer_type;
-
-  // Update in-transit touch frames.
-  for (auto& touch_frame : touch_frames_) {
-    const auto& old_pointer_details = touch_frame->event.pointer_details();
-    if (old_pointer_details.id != pointer_id)
-      continue;
-
-    if (old_pointer_details.pointer_type == pointer_type)
-      break;
-
-    // Override the previous 'event' instance, given that PointerDetails
-    // is 'const'.
-    auto old_event = touch_frame->event;
-    touch_frame->event =
-        TouchEvent(old_event.type(), old_event.location_f(),
-                   old_event.root_location_f(), old_event.time_stamp(),
-                   PointerDetailsForDispatching(pointer_id), old_event.flags());
-    break;
-  }
 }
 
 const WaylandWindow* WaylandEventSource::GetTouchTarget(PointerId id) const {
@@ -651,12 +643,12 @@ PointerDetails WaylandEventSource::PointerDetailsForDispatching() const {
   return PointerDetails(*last_pointer_stylus_tool_);
 }
 
-PointerDetails WaylandEventSource::PointerDetailsForDispatching(
+absl::optional<PointerDetails> WaylandEventSource::AmendStylusData(
     PointerId pointer_id) const {
   const auto it = last_touch_stylus_tool_.find(pointer_id);
   if (it == last_touch_stylus_tool_.end() || !it->second ||
       it->second == EventPointerType::kTouch) {
-    return PointerDetails(EventPointerType::kTouch, pointer_id);
+    return absl::nullopt;
   }
 
   return PointerDetails(it->second.value(), pointer_id);
