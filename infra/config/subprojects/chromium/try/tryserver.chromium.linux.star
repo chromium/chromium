@@ -378,6 +378,7 @@ try_.builder(
     # TODO(crbug/1144484): Remove this timeout once we figure out the
     # regression in compiler or toolchain.
     execution_timeout = 7 * time.hour,
+    ssd = True,
 )
 
 try_.builder(
