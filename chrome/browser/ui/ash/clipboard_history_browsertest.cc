@@ -1093,9 +1093,8 @@ class ClipboardHistoryMultiProfileBrowserTest
 
 // Verify that the clipboard data history is recorded as expected in the
 // Multiuser environment.
-// Test fails on ChromeOS. https://crbug.com/1338455
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryMultiProfileBrowserTest,
-                       DISABLED_VerifyClipboardHistoryAcrossMultiUser) {
+                       VerifyClipboardHistoryAcrossMultiUser) {
   EXPECT_TRUE(GetClipboardItems().empty());
 
   // Store text when the user1 is active.
