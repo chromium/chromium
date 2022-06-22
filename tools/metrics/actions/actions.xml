@@ -33488,7 +33488,7 @@ should be able to be added at any place in this file.
   <suffix name="AddToHomescreenMessage"
       label="For AddToHomescreen IPH feature."/>
   <suffix name="AddToHomescreenTextBubble"
-      label="For AddToHomescreen IPH feature."/>
+      label="For AddToHomescreen IPH feature using text bubble (obsolete)."/>
   <suffix name="AutoDarkOptOut" label="For AutoDarkOptOut dialog feature."/>
   <suffix name="AutoDarkUserEducationMessage"
       label="For AutoDarkUserEducationMessage feature."/>

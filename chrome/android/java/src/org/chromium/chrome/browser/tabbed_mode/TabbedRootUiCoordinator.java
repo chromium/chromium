@@ -640,10 +640,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         mAddToHomescreenIPHController = new AddToHomescreenIPHController(mActivity, mWindowAndroid,
-                mModalDialogManagerSupplier.get(), mAppMenuCoordinator.getAppMenuHandler(),
-                R.id.add_to_homescreen_id, () -> {
-                    return mToolbarManager.getMenuButtonView();
-                }, MessageDispatcherProvider.from(mWindowAndroid));
+                mModalDialogManagerSupplier.get(), MessageDispatcherProvider.from(mWindowAndroid));
         mLinkToTextIPHController = new LinkToTextIPHController(
                 mActivityTabProvider, mTabModelSelectorSupplier.get(), mProfileSupplier);
         mAddToHomescreenMostVisitedTileObserver = new AddToHomescreenMostVisitedTileClickObserver(

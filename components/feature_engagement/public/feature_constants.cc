@@ -76,8 +76,6 @@ const base::Feature
         base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHAddToHomescreenMessageFeature{
     "IPH_AddToHomescreenMessage", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kIPHAddToHomescreenTextBubbleFeature{
-    "IPH_AddToHomescreenTextBubble", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHAutoDarkOptOutFeature{"IPH_AutoDarkOptOut",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHAutoDarkUserEducationMessageFeature{
