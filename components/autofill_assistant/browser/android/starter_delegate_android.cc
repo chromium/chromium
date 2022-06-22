@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/android/trigger_script_bridge_android.h"
 #include "components/autofill_assistant/browser/android/ui_controller_android_utils.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
+#include "components/autofill_assistant/browser/headless/headless_script_controller_impl.h"
 #include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
@@ -295,6 +296,11 @@ void StarterDelegateAndroid::CreateJavaDependenciesIfNecessary() {
   java_onboarding_helper_ = *(++array.begin());
 }
 
+void StarterDelegateAndroid::HeadlessControllerDoneCallback(
+    HeadlessScriptController::ScriptResult result) {
+  headless_script_controller_.reset();
+}
+
 void StarterDelegateAndroid::Start(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
@@ -312,7 +318,20 @@ void StarterDelegateAndroid::Start(
       /* onboarding_shown = */ false, /* is_direct_action = */ false,
       jinitial_url, GetIsCustomTab());
 
-  starter_->Start(std::move(trigger_context));
+  if (trigger_context->GetScriptParameters().GetRunHeadless()) {
+    headless_script_controller_ =
+        std::make_unique<HeadlessScriptControllerImpl>(
+            &GetWebContents(), /*action_extension_delegate=*/nullptr);
+
+    headless_script_controller_->StartScript(
+        // Note: this ignores device-only parameters.
+        ui_controller_android_utils::CreateStringMapFromJava(
+            env, jparameter_names, jparameter_values),
+        base::BindOnce(&StarterDelegateAndroid::HeadlessControllerDoneCallback,
+                       base::Unretained(this)));
+  } else {
+    starter_->Start(std::move(trigger_context));
+  }
 }
 
 void StarterDelegateAndroid::StartScriptDefaultUi(

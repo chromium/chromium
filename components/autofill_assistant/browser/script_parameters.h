@@ -67,6 +67,7 @@ class ScriptParameters {
   std::vector<std::string> GetExperiments() const;
   absl::optional<bool> GetDisableRpcSigning() const;
   absl::optional<bool> GetSendAnnotateDomModelVersion() const;
+  absl::optional<bool> GetRunHeadless() const;
 
   // Details parameters.
   absl::optional<bool> GetDetailsShowInitial() const;
