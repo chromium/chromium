@@ -488,6 +488,14 @@ bool OpaqueBrowserFrameView::IsRegularOrGuestSession() const {
   return browser_view()->GetRegularOrGuestSession();
 }
 
+bool OpaqueBrowserFrameView::CanMaximize() const {
+  return browser_view()->CanMaximize();
+}
+
+bool OpaqueBrowserFrameView::CanMinimize() const {
+  return browser_view()->CanMinimize();
+}
+
 bool OpaqueBrowserFrameView::IsMaximized() const {
   return frame()->IsMaximized();
 }

@@ -95,6 +95,8 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   gfx::Size GetBrowserViewMinimumSize() const override;
   bool ShouldShowCaptionButtons() const override;
   bool IsRegularOrGuestSession() const override;
+  bool CanMaximize() const override;
+  bool CanMinimize() const override;
   bool IsMaximized() const override;
   bool IsMinimized() const override;
   bool IsFullscreen() const override;

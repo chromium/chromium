@@ -47,6 +47,9 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   virtual bool IsRegularOrGuestSession() const = 0;
 
   // Controls window state.
+  virtual bool CanMaximize() const = 0;
+  virtual bool CanMinimize() const = 0;
+
   virtual bool IsMaximized() const = 0;
   virtual bool IsMinimized() const = 0;
   virtual bool IsFullscreen() const = 0;
