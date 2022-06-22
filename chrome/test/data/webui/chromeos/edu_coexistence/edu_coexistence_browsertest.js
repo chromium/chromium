@@ -29,7 +29,7 @@ var EduCoexistenceAppTest = class extends EduCoexistenceTest {
   /** @override */
   get browsePreload() {
     return 'chrome://chrome-signin/test_loader.html?module=' +
-        'chromeos/edu_coexistence/edu_coexistence_app_test.js';
+        'chromeos/edu_coexistence/edu_coexistence_app_test.js&host=test';
   }
 
   /** @override */
@@ -103,7 +103,7 @@ var EduCoexistenceControllerTest = class extends EduCoexistenceTest {
   /** @override */
   get browsePreload() {
     return 'chrome://chrome-signin/test_loader.html?module=' +
-        'chromeos/edu_coexistence/edu_coexistence_controller_test.js';
+        'chromeos/edu_coexistence/edu_coexistence_controller_test.js&host=test';
   }
 
   /** @override */
@@ -121,7 +121,7 @@ var EduCoexistenceUiTest = class extends EduCoexistenceTest {
   /** @override */
   get browsePreload() {
     return 'chrome://chrome-signin/test_loader.html?module=' +
-        'chromeos/edu_coexistence/edu_coexistence_ui_test.js';
+        'chromeos/edu_coexistence/edu_coexistence_ui_test.js&host=test';
   }
 
   /** @override */

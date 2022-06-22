@@ -44,7 +44,7 @@ function registerTest(testName, module, caseName) {
     /** @override */
     get browsePreload() {
       return `chrome://nearby/test_loader.html?module=nearby_share/shared/${
-          module}`;
+          module}&host=test`;
     }
   };
 

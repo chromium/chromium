@@ -100,7 +100,8 @@ function registerTest(componentName, webuiHost, testName, module, caseName) {
       // TODO(jhawkins): Set up test_loader.html for internet-config-dialog
       // and use it here instead of os-settings.
       return `chrome://${
-          webuiHost}/test_loader.html?module=cr_components/chromeos/${module}`;
+          webuiHost}/test_loader.html?module=cr_components/chromeos/${
+          module}&host=test`;
     }
 
     /** @override */

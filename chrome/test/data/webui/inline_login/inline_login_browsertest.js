@@ -22,7 +22,7 @@ var InlineLoginBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     // See Reason enum in components/signin/public/base/signin_metrics.h.
-    return 'chrome://chrome-signin/test_loader.html?module=inline_login/inline_login_test.js&reason=5';
+    return 'chrome://chrome-signin/test_loader.html?module=inline_login/inline_login_test.js&reason=5&host=test';
   }
 
   get suiteName() {
@@ -97,7 +97,7 @@ var InlineLoginWelcomePageBrowserTest = class extends InlineLoginBrowserTest {
   /** @override */
   get browsePreload() {
     // See Reason enum in components/signin/public/base/signin_metrics.h.
-    return 'chrome://chrome-signin/test_loader.html?module=inline_login/inline_login_welcome_page_test.js&reason=5';
+    return 'chrome://chrome-signin/test_loader.html?module=inline_login/inline_login_welcome_page_test.js&reason=5&host=test';
   }
 
   get suiteName() {
@@ -190,7 +190,7 @@ var InlineLoginArcAccountPickerBrowserTest =
   /** @override */
   get browsePreload() {
     // See Reason enum in components/signin/public/base/signin_metrics.h.
-    return 'chrome://chrome-signin/test_loader.html?module=inline_login/arc_account_picker_page_test.js&reason=5';
+    return 'chrome://chrome-signin/test_loader.html?module=inline_login/arc_account_picker_page_test.js&reason=5&host=test';
   }
 
   get suiteName() {
@@ -242,7 +242,7 @@ var InlineLoginSigninBlockedByPolicyPageBrowserTest =
   get browsePreload() {
     // Reason 1: Add secondary account.
     // See Reason enum in components/signin/public/base/signin_metrics.h.
-    return 'chrome://chrome-signin/test_loader.html?module=inline_login/inline_login_signin_blocked_by_policy_page_test.js&reason=1';
+    return 'chrome://chrome-signin/test_loader.html?module=inline_login/inline_login_signin_blocked_by_policy_page_test.js&reason=1&host=test';
   }
 
   get suiteName() {

@@ -172,7 +172,7 @@ TEST_F('CustomElementModuleTest', 'All', function() {
 var StaticTypesTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/static_types_test.js';
+    return 'chrome://test/test_loader.html?module=js/static_types_test.js&host=test';
   }
 };
 
