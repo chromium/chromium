@@ -8,11 +8,18 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace web_app {
+
+const char UserUninstalledPreinstalledWebAppPrefs::
+    kUserUninstalledPreinstalledAppAction[] =
+        "WebApp.Preinstalled.UninstallByUser";
 
 UserUninstalledPreinstalledWebAppPrefs::UserUninstalledPreinstalledWebAppPrefs(
     PrefService* pref_service)
@@ -35,6 +42,11 @@ void UserUninstalledPreinstalledWebAppPrefs::Add(
 
   for (auto install_url : install_urls)
     url_list.Append(install_url.spec());
+
+  if (!DoesAppIdExist(app_id)) {
+    base::RecordAction(
+        base::UserMetricsAction(kUserUninstalledPreinstalledAppAction));
+  }
 
   DictionaryPrefUpdate update(pref_service_,
                               prefs::kUserUninstalledPreinstalledWebAppPref);
@@ -155,6 +167,45 @@ bool UserUninstalledPreinstalledWebAppPrefs::RemoveByInstallUrl(
 
   // Add the remaining URLs to the preinstalled prefs after deletion.
   update->SetKey(app_id, base::Value(std::move(install_urls)));
+  return true;
+}
+
+bool UserUninstalledPreinstalledWebAppPrefs::AppIdContainsAllUrls(
+    const AppId& app_id,
+    const base::flat_map<WebAppManagement::Type,
+                         WebApp::ExternalManagementConfig>& url_map,
+    const bool only_default) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (url_map.empty())
+    return false;
+
+  const base::Value* ids_to_urls = pref_service_->GetDictionary(
+      prefs::kUserUninstalledPreinstalledWebAppPref);
+  if (!ids_to_urls)
+    return false;
+
+  const base::Value::Dict* pref_info = ids_to_urls->GetIfDict();
+  if (!pref_info)
+    return false;
+
+  const base::Value::List* current_list = pref_info->FindList(app_id);
+  if (!current_list)
+    return false;
+
+  base::flat_set<std::string> existing_urls;
+  for (const base::Value& url : *current_list) {
+    existing_urls.emplace(url.GetString());
+  }
+
+  for (auto it : url_map) {
+    if (only_default && !(it.first == WebAppManagement::kDefault))
+      continue;
+
+    for (const GURL& url_to_insert : it.second.install_urls) {
+      if (!base::Contains(existing_urls, url_to_insert.spec()))
+        return false;
+    }
+  }
   return true;
 }
 

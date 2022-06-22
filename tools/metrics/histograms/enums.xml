@@ -50233,6 +50233,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="During the running time"/>
 </enum>
 
+<enum name="InstallURLMigrationState">
+  <int value="0"
+      label="install_url migrated from external prefs to web_app DB"/>
+  <int value="1"
+      label="install_url already in sync in between external prefs and
+             web_app DB, no migration happened"/>
+</enum>
+
 <enum name="InstanceIDResult">
   <int value="0" label="Success"/>
   <int value="1" label="Invalid parameter"/>
@@ -76300,6 +76308,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="24" label="PIPELINE_ERROR_DISCONNECTED"/>
 </enum>
 
+<enum name="PlaceholderMigrationState">
+  <int value="0"
+      label="is_placeholder field migrated from external prefs to web_app DB"/>
+  <int value="1"
+      label="is_placeholder field is in sync between external_prefs and
+             web_app DB, no migration happened"/>
+</enum>
+
 <enum name="Platform.BootMode.FirmwareWriteProtect">
   <int value="0" label="Off"/>
   <int value="1" label="On"/>
@@ -96333,6 +96349,18 @@ Full version information for the fingerprint enum values:
   <int value="0" label="Unknown (FATAL)"/>
   <int value="1" label="Regular user changed type to child"/>
   <int value="2" label="Child user changed type to regular"/>
+</enum>
+
+<enum name="UserUninstalledPreinstalledAppMigrationState">
+  <int value="0"
+      label="User uninstalled preinstalled apps migrated due to user
+             uninstalls"/>
+  <int value="1"
+      label="User uninstalled preinstalled apps migrated due to old pref
+             value update"/>
+  <int value="2"
+      label="User uninstalled preinstalled apps already in sync, no migration
+             happened"/>
 </enum>
 
 <enum name="UtilityProcessNameHash">

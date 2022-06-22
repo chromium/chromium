@@ -513,6 +513,14 @@ std::vector<AppId> WebAppRegistrar::GetAppsFromSyncAndPendingInstallation()
   return app_ids;
 }
 
+bool WebAppRegistrar::AppsExistWithExternalConfigData() const {
+  for (const WebApp& web_app : GetApps()) {
+    if (web_app.management_to_external_config_map().size() > 0)
+      return true;
+  }
+  return false;
+}
+
 void WebAppRegistrar::Start() {
   // Profile manager can be null in unit tests.
   if (g_browser_process->profile_manager())

@@ -101,10 +101,15 @@ class ExternallyInstalledWebAppPrefs {
       PrefService* pref_service,
       const WebAppRegistrar* registrar,
       const ParsedPrefs& parsed_data);
+
   static base::flat_set<GURL> MergeAllUrls(
       const base::flat_map<WebAppManagement::Type,
                            WebApp::ExternalManagementConfig>&
           source_config_map);
+
+  static void LogDataMetrics(bool data_exists_in_pref,
+                             bool data_exists_in_registrar);
+
   const raw_ptr<PrefService> pref_service_;
 };
 

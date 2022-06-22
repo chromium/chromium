@@ -32880,6 +32880,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebApp.Preinstalled.UninstallByUser">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The user uninstalled a preinstalled app which was previously not in
+    UserUninstalledPreinstalledWebAppPrefs, and has now been added to the prefs.
+  </description>
+</action>
+
 <action name="WebApp.SetWindowMode.Tab">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>

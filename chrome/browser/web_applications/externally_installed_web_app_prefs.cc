@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/web_applications/externally_installed_prefs_migration_metrics.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -279,26 +281,53 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
   ExternallyInstalledWebAppPrefs::ParsedPrefs pref_to_app_data =
       ParseExternalPrefsToWebAppData(pref_service);
 
-  // First migrate data to UserUninstalledPreinstalledWebAppPrefs.
-  MigrateExternalPrefDataToPreinstalledPrefs(
-      pref_service, &sync_bridge->registrar(), pref_to_app_data);
+  const WebAppRegistrar& registrar = sync_bridge->registrar();
 
+  LogDataMetrics(pref_to_app_data.size() != 0,
+                 registrar.AppsExistWithExternalConfigData());
+
+  // First migrate data to UserUninstalledPreinstalledWebAppPrefs.
+  MigrateExternalPrefDataToPreinstalledPrefs(pref_service, &registrar,
+                                             pref_to_app_data);
   ScopedRegistryUpdate update(sync_bridge);
   for (auto it : pref_to_app_data) {
-    WebApp* web_app = update->UpdateApp(it.first);
+    const WebApp* web_app = registrar.GetAppById(it.first);
     if (web_app) {
       // Sync data across externally installed prefs and web_app DB.
       for (auto parsed_info : it.second) {
-        if (!web_app->GetSources().test(parsed_info.first)) {
+        WebAppManagement::Type& source = parsed_info.first;
+        if (!web_app->GetSources().test(source))
           continue;
+
+        auto config_map = web_app->management_to_external_config_map();
+        // Placeholder migration and metrics logging.
+        if (base::Contains(config_map, source) &&
+            config_map[source].is_placeholder ==
+                parsed_info.second.is_placeholder) {
+          LogPlaceholderMigrationState(
+              PlaceholderMigrationState::kPlaceholderInfoAlreadyInSync);
+        } else {
+          WebApp* updated_app = update->UpdateApp(it.first);
+          updated_app->AddPlaceholderInfoToManagementExternalConfigMap(
+              source, parsed_info.second.is_placeholder);
+          LogPlaceholderMigrationState(
+              PlaceholderMigrationState::kPlaceholderInfoMigrated);
         }
-        web_app->AddPlaceholderInfoToManagementExternalConfigMap(
-            parsed_info.first, parsed_info.second.is_placeholder);
+
+        // Install URL migration and metrics logging.
         for (auto url : parsed_info.second.install_urls) {
-          // Do not migrate invalid URLs.
           DCHECK(url.is_valid());
-          web_app->AddInstallURLToManagementExternalConfigMap(parsed_info.first,
-                                                              url);
+          if (base::Contains(config_map, source) &&
+              base::Contains(config_map[source].install_urls, url)) {
+            LogInstallURLMigrationState(
+                InstallURLMigrationState::kInstallURLAlreadyInSync);
+          } else {
+            WebApp* updated_app = update->UpdateApp(it.first);
+            updated_app->AddInstallURLToManagementExternalConfigMap(
+                parsed_info.first, url);
+            LogInstallURLMigrationState(
+                InstallURLMigrationState::kInstallURLMigrated);
+          }
         }
       }
     }
@@ -322,7 +351,17 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefDataToPreinstalledPrefs(
     // it was preinstalled and then uninstalled by user.
     if (!registrar->IsInstalledByDefaultManagement(app_id) &&
         it != source_to_config_map.end()) {
-      preinstalled_prefs.Add(app_id, it->second.install_urls);
+      if (preinstalled_prefs.AppIdContainsAllUrls(app_id, source_to_config_map,
+                                                  /*only_default=*/true)) {
+        LogUserUninstalledPreinstalledAppMigration(
+            UserUninstalledPreinstalledAppMigrationState::
+                kPreinstalledAppDataAlreadyInSync);
+      } else {
+        preinstalled_prefs.Add(app_id, std::move(it->second.install_urls));
+        LogUserUninstalledPreinstalledAppMigration(
+            UserUninstalledPreinstalledAppMigrationState::
+                kPreinstalledAppDataMigratedByUser);
+      }
     }
     // 2. If the value corresponding to the app_id in
     // web_app::kWasExternalAppUninstalledByUser is true, then it was previously
@@ -331,7 +370,19 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefDataToPreinstalledPrefs(
     // app could have been installed as an app with a different source now.
     if (GetBoolWebAppPref(pref_service, app_id,
                           kWasExternalAppUninstalledByUser)) {
-      preinstalled_prefs.Add(app_id, MergeAllUrls(source_to_config_map));
+      if (preinstalled_prefs.AppIdContainsAllUrls(app_id, source_to_config_map,
+                                                  /*only_default=*/false)) {
+        LogUserUninstalledPreinstalledAppMigration(
+            UserUninstalledPreinstalledAppMigrationState::
+                kPreinstalledAppDataAlreadyInSync);
+      } else {
+        base::flat_set<GURL> urls_to_migrate =
+            MergeAllUrls(source_to_config_map);
+        preinstalled_prefs.Add(app_id, std::move(urls_to_migrate));
+        LogUserUninstalledPreinstalledAppMigration(
+            UserUninstalledPreinstalledAppMigrationState::
+                kPreinstalledAppDataMigratedByOldPref);
+      }
     }
   }
 }
@@ -347,8 +398,30 @@ base::flat_set<GURL> ExternallyInstalledWebAppPrefs::MergeAllUrls(
       urls.push_back(url);
     }
   }
-
   return urls;
+}
+
+// static
+void ExternallyInstalledWebAppPrefs::LogDataMetrics(
+    bool data_exists_in_pref,
+    bool data_exists_in_registrar) {
+  // Data in registry refers to the data stored in
+  // management_to_external_config_map per web_app. See
+  // WebApps::management_to_external_config_map() for more info.
+  if (!data_exists_in_pref && !data_exists_in_registrar) {
+    // Case 1: No external apps installed (prefs empty, empty data per web_app
+    // in the registry).
+    base::UmaHistogramBoolean(kPrefDataAbsentDBDataAbsent, /*sample=*/true);
+  } else if (!data_exists_in_pref && data_exists_in_registrar) {
+    // Case 2: prefs are empty, but data exists in registry.
+    base::UmaHistogramBoolean(kPrefDataAbsentDBDataPresent, /*sample=*/true);
+  } else if (data_exists_in_pref && !data_exists_in_registrar) {
+    // Case 3: prefs contain data, but data does not exist in the registry.
+    base::UmaHistogramBoolean(kPrefDataPresentDBDataAbsent, /*sample=*/true);
+  } else {
+    // Case 4: Data exists in both prefs and in the registry.
+    base::UmaHistogramBoolean(kPrefDataPresentDBDataPresent, /*sample=*/true);
+  }
 }
 
 }  // namespace web_app

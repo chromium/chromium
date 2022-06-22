@@ -289,6 +289,92 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.ExternalPrefs.InstallURLMigrationState"
+    enum="InstallURLMigrationState" expires_after="2023-07-15">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records whether the install_urls have been migrated or not because the data
+    is in sync in between the externally installed prefs and the web_app DB.
+    This is always measured on startup before the WebAppProvider subsystems
+    initialize.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.ExternalPrefs.PlaceholderMigrationState"
+    enum="PlaceholderMigrationState" expires_after="2023-07-15">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records whether the is_placeholder field has been migrated or not because
+    the data is in sync in between the externally installed prefs and the
+    web_app DB. This is always measured on startup before the WebAppProvider
+    subsystems initialize.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.ExternalPrefs.PrefDataAbsentDBDataAbsent" units="bool"
+    expires_after="2023-07-15">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records whether the data from external apps is absent both in the external
+    prefs and the web_app DB. This is recorded on startup just before the
+    WebAppProvider system initializes, when no externally installed apps are
+    found on the system.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.ExternalPrefs.PrefDataAbsentDBDataPresent" units="bool"
+    expires_after="2023-07-15">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records whether the data from external apps is absent in the external prefs
+    but exists in the web_app DB. This is recorded on startup just before the
+    WebAppProvider system initializes. This should not happen, because then
+    somewhere the data is out of sync and not being written properly.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.ExternalPrefs.PrefDataPresentDBDataAbsent" units="bool"
+    expires_after="2023-07-15">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records whether the data from external apps is present in the external prefs
+    but is absent in the web_app DB. This is recorded on startup just before the
+    WebAppProvider system initializes. This usually means a system where
+    migration does not happen, and should stop increasing at a point after all
+    systems have been migrated, or should increase slowly.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.ExternalPrefs.PrefDataPresentDBDataPresent"
+    units="bool" expires_after="2023-07-15">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records whether the data from external apps is present both in the external
+    prefs and the web_app DB. This is recorded on startup just before the
+    WebAppProvider system initializes. This should always be increasing, and
+    denotes the best case where migration has happened.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebApp.ExternalPrefs.UserUninstalledPreinstalledAppMigrationState"
+    enum="UserUninstalledPreinstalledAppMigrationState"
+    expires_after="2023-07-15">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records whether the user uninstalled preinstalled web app data is migrated
+    from the external prefs to the user uninstalled preinstalled prefs. This is
+    always measured on startup before the WebAppProvider subsystems initialize.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Icon.DownloadedHttpStatusCodeOnCreate"
     enum="HttpResponseCode" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>

@@ -35,6 +35,8 @@ source_set("web_applications") {
     "extension_status_utils.h",
     "external_install_options.cc",
     "external_install_options.h",
+    "externally_installed_prefs_migration_metrics.cc",
+    "externally_installed_prefs_migration_metrics.h",
     "externally_installed_web_app_prefs.cc",
     "externally_installed_web_app_prefs.h",
     "externally_managed_app_install_task.cc",

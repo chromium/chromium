@@ -7,6 +7,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -44,6 +46,7 @@ namespace web_app {
 // PreinstalledAppsUninstalledByUserConfigs json for debugging purposes.
 class UserUninstalledPreinstalledWebAppPrefs {
  public:
+  static const char kUserUninstalledPreinstalledAppAction[];
   explicit UserUninstalledPreinstalledWebAppPrefs(PrefService* pref_service);
   UserUninstalledPreinstalledWebAppPrefs(
       const UserUninstalledPreinstalledWebAppPrefs&) = delete;
@@ -58,6 +61,11 @@ class UserUninstalledPreinstalledWebAppPrefs {
                                          base::flat_set<GURL>& urls);
   int Size();
   bool RemoveByInstallUrl(const AppId& app_id, const GURL& install_url);
+  bool AppIdContainsAllUrls(
+      const AppId& app_id,
+      const base::flat_map<WebAppManagement::Type,
+                           WebApp::ExternalManagementConfig>& url_map,
+      const bool only_default);
 
  private:
   const raw_ptr<PrefService> pref_service_;
