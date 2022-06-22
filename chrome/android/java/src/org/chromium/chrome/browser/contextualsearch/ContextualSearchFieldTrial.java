@@ -82,11 +82,11 @@ public class ContextualSearchFieldTrial {
          */
         int IS_TRANSLATION_DISABLED = 0;
         /**
+         * @deprecated
          * Whether detection of device-online should be disabled (default false).
          * (safety switch for disabling online-detection also used to disable detection when
          * running tests).
          */
-        // TODO(donnd): Convert to test-only after launch and we have confidence it's robust.
         int IS_ONLINE_DETECTION_DISABLED = 1;
 
         /** @deprecated */
@@ -189,14 +189,12 @@ public class ContextualSearchFieldTrial {
     }
 
     @VisibleForTesting
-    static final String ONLINE_DETECTION_DISABLED = "disable_online_detection";
-    @VisibleForTesting
     static final String TRANSLATION_DISABLED = "disable_translation";
 
     // Indexed by ContextualSearchSwitch
     private static final String[] ContextualSearchSwitchNames = {
             TRANSLATION_DISABLED, // IS_TRANSLATION_DISABLED
-            ONLINE_DETECTION_DISABLED, // IS_ONLINE_DETECTION_DISABLED
+            "disable_online_detection", // IS_ONLINE_DETECTION_DISABLED
             "disable_search_term_resolution", // DISABLE_SEARCH_TERM_RESOLUTION
             "mandatory_promo_enabled", // IS_MANDATORY_PROMO_ENABLED
             "enable_english_target_translation", // IS_ENGLISH_TARGET_TRANSLATION_ENABLED
