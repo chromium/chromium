@@ -1105,6 +1105,8 @@ if (enable_java_templates) {
       # Depend on non-library deps and on __assetres subtargets of library deps.
       deps = filter_exclude(_deps, _lib_deps)
       foreach(_lib_dep, _lib_deps) {
+        # Expand //foo/java -> //foo/java:java
+        _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
         deps += [ "${_lib_dep}__assetres" ]
       }
 
@@ -1671,6 +1673,8 @@ if (enable_java_templates) {
                            java_resource_patterns)
         _other_deps = filter_exclude(invoker.deps, _lib_deps)
         foreach(_lib_dep, _lib_deps) {
+          # Expand //foo/java -> //foo/java:java
+          _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
           deps += [ "${_lib_dep}__header" ]
         }
         deps += _other_deps

@@ -48,31 +48,35 @@ _java_leaf_types = [
 
 # All _java_resource_types targets must conform to these patterns.
 java_resource_patterns = [
-  "*:*_assets",
+  "*_assets",
+  "*_grd",
+  "*_java_strings",
+  "*locale_paks",
+  "*_resources",
+  "*strings_java",
   "*android*:assets",
   "*:*_apk_*resources",
   "*android*:resources",
-  "*:*_resources",
-  "*:*_grd",
-  "*:*locale_paks",
-  "*:*_java_strings",
-  "*:*strings_java",
 ]
 
 # All _java_library_types targets must conform to these patterns. This includes
 # all non-leaf targets that use java_library_impl.
 java_library_patterns = [
-  "*:*_java",
-  "*:*_javalib",
-  "*:*_java_*",  # e.g. chrome_java_test_support
+  "*_java",
+  "*_javalib",
+  "*javatests",
+  "*_bundle_module",
+  "*:*_java_*",  # E.g. chrome_java_test_support
   "*:java",
+  "*/java",  # to allow filtering without expanding labels //a/java ->
+             # //a/java:java
   "*:junit",
+  "*/junit",
   "*:junit_*",
   "*:*_junit_*",
-  "*:*javatests",
-  "*:*_bundle_module",
 
-  # TODO(agrieve): Rename targets below to match above patterns.
+  # TODO(agrieve): Rename to glue_java
+  "//android_webview/glue",
   "//android_webview/glue:glue",
 ]
 
@@ -1004,6 +1008,8 @@ if (enable_java_templates) {
             filter_exclude(filter_include(invoker.deps, java_library_patterns),
                            java_resource_patterns)
         foreach(_lib_dep, _lib_deps) {
+          # Expand //foo/java -> //foo/java:java
+          _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
           deps += [
             "${_lib_dep}__assetres",
             "${_lib_dep}__header",
@@ -3461,6 +3467,9 @@ if (enable_java_templates) {
       _java_header_deps = []
       _java_impl_deps = []
       foreach(_lib_dep, _lib_deps) {
+        # Expand //foo/java -> //foo/java:java
+        _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
+
         # This is a java library dep, so it has header and impl targets.
         _java_header_deps += [ "${_lib_dep}__header" ]
         _java_impl_deps += [ "${_lib_dep}__impl" ]
