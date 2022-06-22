@@ -1073,6 +1073,20 @@
          null,
          {}
         ]
+       ],
+       "table-in-columns-004-crash.html": [
+        "daed42f00945ba98d8fbc7dae40e4a563832de3e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "table-in-columns-005-crash.html": [
+        "60d6f9d3a1f7e04a417b3f06b08663ece6f2f7d3",
+        [
+         null,
+         {}
+        ]
        ]
       }
      },
@@ -80294,6 +80308,19 @@
        {}
       ]
      ],
+     "abspos-inside-relpos-inside-monolithic.html": [
+      "879097f3fc2a7c933a1c2bea460beed1f6bc5e2b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "avoid-border-break.html": [
       "56f47e83c57f0914b87910870d67d5490d9e4eb3",
       [
@@ -86904,6 +86931,19 @@
        ]
       ],
       "repeated-section": {
+       "abspos-in-monolithic.tentative.html": [
+        "6ec70d030d233a8183bbf281503235e2cb005b66",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "abspos.tentative.html": [
         "a7297f1dd559f5bb38a1143d0371d17d4ee29bba",
         [
@@ -373371,7 +373411,7 @@
        ]
       ],
       "system-color-valid.html": [
-       "1174f496d6565fbc5a67416df5069b216667acf7",
+       "05447292b7843ae49b2e378911b987198bf13603",
        [
         null,
         {}
@@ -400578,7 +400618,7 @@
        ]
       ],
       "target-pseudo-in-has.html": [
-       "7b51508c25ff9d3b1fbc2d3fa873cf1f9b585ec2",
+       "3f0ea16a1cb5d804e1a301dfd6c2c0ee3db7b3ac",
        [
         null,
         {}
