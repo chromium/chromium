@@ -138,9 +138,9 @@ void DispatchOnStartupEventImpl(
     }
   }
 
-  std::unique_ptr<Event> event(new Event(events::RUNTIME_ON_STARTUP,
-                                         runtime::OnStartup::kEventName,
-                                         std::vector<base::Value>()));
+  auto event = std::make_unique<Event>(events::RUNTIME_ON_STARTUP,
+                                       runtime::OnStartup::kEventName,
+                                       base::Value::List());
   EventRouter::Get(browser_context)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -449,7 +449,7 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
     return;
   }
 
-  std::vector<base::Value> event_args;
+  base::Value::List event_args;
   base::Value info(base::Value::Type::DICTIONARY);
   if (old_version.IsValid()) {
     info.SetStringKey(kInstallReason, kInstallReasonUpdate);
@@ -459,12 +459,12 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
   } else {
     info.SetStringKey(kInstallReason, kInstallReasonInstall);
   }
-  event_args.push_back(std::move(info));
+  event_args.Append(std::move(info));
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
-  std::unique_ptr<Event> event(new Event(events::RUNTIME_ON_INSTALLED,
-                                         runtime::OnInstalled::kEventName,
-                                         std::move(event_args)));
+  auto event = std::make_unique<Event>(events::RUNTIME_ON_INSTALLED,
+                                       runtime::OnInstalled::kEventName,
+                                       std::move(event_args));
   event_router->DispatchEventWithLazyListener(extension_id, std::move(event));
 
   if (old_version.IsValid()) {
@@ -477,15 +477,15 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
       for (ExtensionSet::const_iterator i = dependents->begin();
            i != dependents->end();
            i++) {
-        std::vector<base::Value> sm_event_args;
+        base::Value::List sm_event_args;
         base::Value sm_info(base::Value::Type::DICTIONARY);
         sm_info.SetStringKey(kInstallReason, kInstallReasonSharedModuleUpdate);
         sm_info.SetStringKey(kInstallPreviousVersion, old_version.GetString());
         sm_info.SetStringKey(kInstallId, extension_id);
-        sm_event_args.push_back(std::move(sm_info));
-        std::unique_ptr<Event> sm_event(new Event(
+        sm_event_args.Append(std::move(sm_info));
+        auto sm_event = std::make_unique<Event>(
             events::RUNTIME_ON_INSTALLED, runtime::OnInstalled::kEventName,
-            std::move(sm_event_args)));
+            std::move(sm_event_args));
         event_router->DispatchEventWithLazyListener((*i)->id(),
                                                     std::move(sm_event));
       }
@@ -502,13 +502,13 @@ void RuntimeEventRouter::DispatchOnUpdateAvailableEvent(
   if (!system)
     return;
 
-  std::vector<base::Value> args;
-  args.push_back(manifest->Clone());
+  base::Value::List args;
+  args.Append(manifest->Clone());
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
-  std::unique_ptr<Event> event(new Event(events::RUNTIME_ON_UPDATE_AVAILABLE,
-                                         runtime::OnUpdateAvailable::kEventName,
-                                         std::move(args)));
+  auto event = std::make_unique<Event>(events::RUNTIME_ON_UPDATE_AVAILABLE,
+                                       runtime::OnUpdateAvailable::kEventName,
+                                       std::move(args));
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
 
@@ -521,10 +521,9 @@ void RuntimeEventRouter::DispatchOnBrowserUpdateAvailableEvent(
 
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
-  std::unique_ptr<Event> event(
-      new Event(events::RUNTIME_ON_BROWSER_UPDATE_AVAILABLE,
-                runtime::OnBrowserUpdateAvailable::kEventName,
-                std::vector<base::Value>()));
+  auto event = std::make_unique<Event>(
+      events::RUNTIME_ON_BROWSER_UPDATE_AVAILABLE,
+      runtime::OnBrowserUpdateAvailable::kEventName, base::Value::List());
   event_router->BroadcastEvent(std::move(event));
 }
 

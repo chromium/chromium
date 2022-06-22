@@ -548,15 +548,15 @@ void PrinterProviderAPIImpl::DispatchGetPrintersRequested(
   // be needed later on.
   int request_id = pending_get_printers_requests_.Add(callback);
 
-  std::vector<base::Value> internal_args;
+  base::Value::List internal_args;
   // Request id is not part of the public API, but it will be massaged out in
   // custom bindings.
-  internal_args.push_back(base::Value(request_id));
+  internal_args.Append(request_id);
 
-  std::unique_ptr<Event> event(
-      new Event(events::PRINTER_PROVIDER_ON_GET_PRINTERS_REQUESTED,
-                api::printer_provider::OnGetPrintersRequested::kEventName,
-                std::move(internal_args)));
+  auto event = std::make_unique<Event>(
+      events::PRINTER_PROVIDER_ON_GET_PRINTERS_REQUESTED,
+      api::printer_provider::OnGetPrintersRequested::kEventName,
+      std::move(internal_args));
   // This callback is called synchronously during |BroadcastEvent|, so
   // Unretained is safe.
   event->will_dispatch_callback =
@@ -587,11 +587,11 @@ void PrinterProviderAPIImpl::DispatchGetCapabilityRequested(
   int request_id =
       pending_capability_requests_[extension_id].Add(std::move(callback));
 
-  std::vector<base::Value> internal_args;
+  base::Value::List internal_args;
   // Request id is not part of the public API, but it will be massaged out in
   // custom bindings.
-  internal_args.push_back(base::Value(request_id));
-  internal_args.push_back(base::Value(internal_printer_id));
+  internal_args.Append(request_id);
+  internal_args.Append(internal_printer_id);
 
   std::unique_ptr<Event> event(
       new Event(events::PRINTER_PROVIDER_ON_GET_CAPABILITY_REQUESTED,
@@ -632,15 +632,15 @@ void PrinterProviderAPIImpl::DispatchPrintRequested(PrinterProviderPrintJob job,
   int request_id = pending_print_requests_[extension_id].Add(
       std::move(job), std::move(callback));
 
-  std::vector<base::Value> internal_args;
+  base::Value::List internal_args;
   // Request id is not part of the public API and it will be massaged out in
   // custom bindings.
-  internal_args.push_back(base::Value(request_id));
-  internal_args.push_back(base::Value::FromUniquePtrValue(print_job.ToValue()));
-  std::unique_ptr<Event> event(
-      new Event(events::PRINTER_PROVIDER_ON_PRINT_REQUESTED,
-                api::printer_provider::OnPrintRequested::kEventName,
-                std::move(internal_args)));
+  internal_args.Append(request_id);
+  internal_args.Append(base::Value::FromUniquePtrValue(print_job.ToValue()));
+  auto event = std::make_unique<Event>(
+      events::PRINTER_PROVIDER_ON_PRINT_REQUESTED,
+      api::printer_provider::OnPrintRequested::kEventName,
+      std::move(internal_args));
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
 
@@ -670,16 +670,15 @@ void PrinterProviderAPIImpl::DispatchGetUsbPrinterInfoRequested(
   api::usb::Device api_device;
   UsbDeviceManager::Get(browser_context_)->GetApiDevice(device, &api_device);
 
-  std::vector<base::Value> internal_args;
+  base::Value::List internal_args;
   // Request id is not part of the public API and it will be massaged out in
   // custom bindings.
-  internal_args.push_back(base::Value(request_id));
-  internal_args.push_back(
-      base::Value::FromUniquePtrValue(api_device.ToValue()));
-  std::unique_ptr<Event> event(
-      new Event(events::PRINTER_PROVIDER_ON_GET_USB_PRINTER_INFO_REQUESTED,
-                api::printer_provider::OnGetUsbPrinterInfoRequested::kEventName,
-                std::move(internal_args)));
+  internal_args.Append(request_id);
+  internal_args.Append(base::Value::FromUniquePtrValue(api_device.ToValue()));
+  auto event = std::make_unique<Event>(
+      events::PRINTER_PROVIDER_ON_GET_USB_PRINTER_INFO_REQUESTED,
+      api::printer_provider::OnGetUsbPrinterInfoRequested::kEventName,
+      std::move(internal_args));
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
 

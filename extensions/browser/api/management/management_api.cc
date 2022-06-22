@@ -1098,11 +1098,11 @@ void ManagementEventRouter::BroadcastEvent(
     const char* event_name) {
   if (!extension->ShouldExposeViaManagementAPI())
     return;
-  std::vector<base::Value> args;
+  base::Value::List args;
   if (event_name == management::OnUninstalled::kEventName) {
-    args.push_back(base::Value(extension->id()));
+    args.Append(extension->id());
   } else {
-    args.push_back(base::Value::FromUniquePtrValue(
+    args.Append(base::Value::FromUniquePtrValue(
         CreateExtensionInfo(nullptr, *extension, browser_context_).ToValue()));
   }
 

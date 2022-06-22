@@ -338,8 +338,8 @@ bool MimeHandlerViewGuest::PluginDoSave() {
   if (!attached() || !plugin_can_save_)
     return false;
 
-  base::ListValue::ListStorage args;
-  args.emplace_back(stream_->stream_url().spec());
+  base::ListValue::List args;
+  args.Append(stream_->stream_url().spec());
 
   auto event =
       std::make_unique<Event>(events::MIME_HANDLER_PRIVATE_SAVE,

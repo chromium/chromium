@@ -199,17 +199,17 @@ void StorageFrontend::OnSettingsChanged(const std::string& extension_id,
       event_router->ExtensionHasEventListener(extension_id, area_event_name);
 
   auto make_changed_event = [&namespace_string](base::Value changes) {
-    std::vector<base::Value> args;
-    args.emplace_back(std::move(changes));
-    args.emplace_back(base::Value(namespace_string));
+    base::Value::List args;
+    args.Append(std::move(changes));
+    args.Append(namespace_string);
     return std::make_unique<Event>(events::STORAGE_ON_CHANGED,
                                    api::storage::OnChanged::kEventName,
                                    std::move(args));
   };
   auto make_area_changed_event = [&storage_area,
                                   &area_event_name](base::Value changes) {
-    std::vector<base::Value> args;
-    args.push_back(std::move(changes));
+    base::Value::List args;
+    args.Append(std::move(changes));
     return std::make_unique<Event>(StorageAreaToEventHistogram(storage_area),
                                    area_event_name, std::move(args));
   };
