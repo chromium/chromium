@@ -24,6 +24,8 @@ class Profile;
 
 namespace apps {
 
+class WebsiteMetricsBrowserTest;
+
 // WebsiteMetrics monitors creation/deletion of Browser and its
 // TabStripModel to record the website usage time metrics.
 class WebsiteMetrics : public BrowserListObserver,
@@ -59,6 +61,8 @@ class WebsiteMetrics : public BrowserListObserver,
       history::HistoryService* history_service) override;
 
  private:
+  friend class WebsiteMetricsBrowserTest;
+
   // This class monitors the activated WebContent for the activated browser
   // window and notifies a navigation to the WebsiteMetrics.
   class ActiveTabWebContentsObserver : public content::WebContentsObserver {

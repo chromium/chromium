@@ -3443,6 +3443,7 @@ if (!is_android) {
         "../browser/apps/app_service/intent_util_browsertest.cc",
         "../browser/apps/app_service/media_access_browsertest.cc",
         "../browser/apps/app_service/metrics/app_platform_metrics_browsertest.cc",
+        "../browser/apps/app_service/metrics/website_metrics_browsertest.cc",
         "../browser/apps/app_service/notifications_browsertest.cc",
         "../browser/apps/app_service/publishers/web_apps_crosapi_browsertest.cc",
         "../browser/apps/app_service/webapk/webapk_policy_browsertest.cc",
