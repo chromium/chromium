@@ -16911,18 +16911,23 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "default value",
+        "policies": {},
+        "prefs": {
+          "net.explicitly_allowed_network_ports": {
+            "default_value": [],
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "no ports are currently allowed to be blocked, but policy remains in place for potential future use",
         "policies": {
-          "ExplicitlyAllowedNetworkPorts": [
-            "554",
-            "10080"
-          ]
+          "ExplicitlyAllowedNetworkPorts": []
         },
         "prefs": {
           "net.explicitly_allowed_network_ports": {
-            "value": [
-              554,
-              10080
-            ],
+            "value": [],
             "location": "local_state"
           }
         }
