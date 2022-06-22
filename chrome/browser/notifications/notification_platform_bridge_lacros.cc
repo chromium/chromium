@@ -184,10 +184,13 @@ void NotificationPlatformBridgeLacros::Display(
   auto pending_notification = std::make_unique<RemoteNotificationDelegate>(
       notification.id(), bridge_delegate_, weak_factory_.GetWeakPtr());
   // Display the notification, or update an existing one with the same ID.
-  // `profile` may be null in tests.
+  // `profile` may be null for e.g. system notifications.
   const auto* const color_provider =
-      profile ? ThemeServiceFactory::GetForProfile(profile)->GetColorProvider()
-              : nullptr;
+      profile
+          ? ThemeServiceFactory::GetForProfile(profile)->GetColorProvider()
+          : ui::ColorProviderManager::Get().GetColorProviderFor(
+                ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
+                    nullptr));
   (*message_center_remote_)
       ->DisplayNotification(ToMojo(notification, color_provider),
                             pending_notification->BindNotificationDelegate());
