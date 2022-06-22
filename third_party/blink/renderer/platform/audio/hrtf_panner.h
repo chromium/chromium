@@ -28,11 +28,12 @@
 
 #include "third_party/blink/renderer/platform/audio/audio_delay_dsp_kernel.h"
 #include "third_party/blink/renderer/platform/audio/fft_convolver.h"
-#include "third_party/blink/renderer/platform/audio/hrtf_database_loader.h"
 #include "third_party/blink/renderer/platform/audio/panner.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
+
+class HRTFDatabaseLoader;
 
 class PLATFORM_EXPORT HRTFPanner final : public Panner {
  public:
@@ -69,16 +70,6 @@ class PLATFORM_EXPORT HRTFPanner final : public Panner {
   unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
 
  private:
-  // Given an azimuth angle in the range -180 -> +180, returns the corresponding
-  // azimuth index for the database, and azimuthBlend which is an interpolation
-  // value from 0 -> 1.
-  int CalculateDesiredAzimuthIndexAndBlend(double azimuth,
-                                           double& azimuth_blend);
-
-  scoped_refptr<HRTFDatabaseLoader> database_loader_;
-
-  float sample_rate_;
-
   // We maintain two sets of convolvers for smooth cross-faded interpolations
   // when then azimuth and elevation are dynamically changing.  When the
   // azimuth and elevation are not changing, we simply process with one
@@ -94,21 +85,25 @@ class PLATFORM_EXPORT HRTFPanner final : public Panner {
   // (m_convolverL2, m_convolverR2).
   enum CrossfadeSelection { kCrossfadeSelection1, kCrossfadeSelection2 };
 
-  CrossfadeSelection crossfade_selection_;
+  scoped_refptr<HRTFDatabaseLoader> database_loader_;
+
+  float sample_rate_;
+
+  CrossfadeSelection crossfade_selection_ = kCrossfadeSelection1;
 
   // azimuth/elevation for CrossfadeSelection1.
   int azimuth_index1_;
-  double elevation1_;
+  double elevation1_ = 0.0;
 
   // azimuth/elevation for CrossfadeSelection2.
   int azimuth_index2_;
-  double elevation2_;
+  double elevation2_ = 0.0;
 
   // A crossfade value 0 <= m_crossfadeX <= 1.
-  float crossfade_x_;
+  float crossfade_x_ = 0.0;
 
   // Per-sample-frame crossfade value increment.
-  float crossfade_incr_;
+  float crossfade_incr_ = 0.0;
 
   FFTConvolver convolver_l1_;
   FFTConvolver convolver_r1_;

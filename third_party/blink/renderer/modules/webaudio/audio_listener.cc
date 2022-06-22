@@ -278,11 +278,11 @@ void AudioListener::UpdateState() {
   // to check for the audio thread.)
   DCHECK(!IsMainThread());
 
-  MutexTryLocker try_locker(listener_lock_);
+  const MutexTryLocker try_locker(listener_lock_);
   if (try_locker.Locked()) {
-    gfx::Point3F current_position = GetPosition();
-    gfx::Vector3dF current_forward = Orientation();
-    gfx::Vector3dF current_up = UpVector();
+    const gfx::Point3F current_position = GetPosition();
+    const gfx::Vector3dF current_forward = Orientation();
+    const gfx::Vector3dF current_up = UpVector();
 
     is_listener_dirty_ = current_position != last_position_ ||
                          current_forward != last_forward_ ||
@@ -332,9 +332,9 @@ void AudioListener::setPosition(const gfx::Point3F& position,
   DCHECK(IsMainThread());
 
   // This synchronizes with panner's process().
-  MutexLocker listener_locker(listener_lock_);
+  const MutexLocker listener_locker(listener_lock_);
 
-  double now = position_x_->Context()->currentTime();
+  const double now = position_x_->Context()->currentTime();
 
   position_x_->setValueAtTime(position.x(), now, exceptionState);
   position_y_->setValueAtTime(position.y(), now, exceptionState);
@@ -349,9 +349,9 @@ void AudioListener::setOrientation(const gfx::Vector3dF& orientation,
   DCHECK(IsMainThread());
 
   // This synchronizes with panner's process().
-  MutexLocker listener_locker(listener_lock_);
+  const MutexLocker listener_locker(listener_lock_);
 
-  double now = forward_x_->Context()->currentTime();
+  const double now = forward_x_->Context()->currentTime();
 
   forward_x_->setValueAtTime(orientation.x(), now, exceptionState);
   forward_y_->setValueAtTime(orientation.y(), now, exceptionState);
@@ -365,9 +365,9 @@ void AudioListener::SetUpVector(const gfx::Vector3dF& up_vector,
   DCHECK(IsMainThread());
 
   // This synchronizes with panner's process().
-  MutexLocker listener_locker(listener_lock_);
+  const MutexLocker listener_locker(listener_lock_);
 
-  double now = up_x_->Context()->currentTime();
+  const double now = up_x_->Context()->currentTime();
 
   up_x_->setValueAtTime(up_vector.x(), now, exceptionState);
   up_y_->setValueAtTime(up_vector.y(), now, exceptionState);

@@ -30,6 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_HRTF_DATABASE_H_
 
 #include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_elevation.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -62,7 +63,7 @@ class HRTFDatabase {
                                       HRTFKernel*& kernel_l,
                                       HRTFKernel*& kernel_r,
                                       double& frame_delay_l,
-                                      double& frame_delay_r);
+                                      double& frame_delay_r) const;
 
   // Returns the number of different azimuth angles.
   static unsigned NumberOfAzimuths() {

@@ -99,7 +99,7 @@ void PannerHandler::ProcessIfNecessary(uint32_t frames_to_process) {
   // inputs.  The first time we're called during this time slice we process, but
   // after that we don't want to re-process, instead our output(s) will already
   // have the results cached in their bus
-  double current_time = Context()->currentTime();
+  const double current_time = Context()->currentTime();
   if (last_processing_time_ != current_time) {
     // important to first update this time because of feedback loops in the
     // rendering graph.
@@ -107,7 +107,7 @@ void PannerHandler::ProcessIfNecessary(uint32_t frames_to_process) {
 
     PullInputs(frames_to_process);
 
-    bool silent_inputs = InputsAreSilent();
+    const bool silent_inputs = InputsAreSilent();
 
     {
       // Need to protect calls to PropagetesSilence (and Process) because the
@@ -201,7 +201,7 @@ void PannerHandler::Process(uint32_t frames_to_process) {
                    frames_to_process, InternalChannelInterpretation());
 
       // Get the distance and cone gain.
-      float total_gain = DistanceConeGain();
+      const float total_gain = DistanceConeGain();
 
       // Apply gain in-place.
       destination->CopyWithGainFrom(*destination, total_gain);
