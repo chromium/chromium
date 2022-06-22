@@ -15,6 +15,7 @@
             <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
           </template>
           <cr-link-row id="captions"
+              class="hr"
               label="$i18n{captionsPreferencesTitle}"
               sub-label="$i18n{captionsPreferencesSubtitle}"
               on-click="onCaptionsClick_"
@@ -23,6 +24,7 @@
         </template>
         <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
           <cr-link-row id="captions"
+              class="hr"
               label="$i18n{captionsTitle}"
               on-click="onCaptionsClick_"
               role-description="$i18n{subpageArrowRoleDescription}">
