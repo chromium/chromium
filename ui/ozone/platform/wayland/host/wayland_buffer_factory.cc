@@ -69,4 +69,14 @@ bool WaylandBufferFactory::SupportsDmabuf() const {
 #endif
 }
 
+bool WaylandBufferFactory::CanCreateDmabufImmed() const {
+#if defined(WAYLAND_GBM)
+  if (wayland_zwp_dmabuf_)
+    return wayland_zwp_dmabuf_->CanCreateBufferImmed();
+  else if (wayland_drm_)
+    return wayland_drm_->CanCreateBufferImmed();
+#endif
+  return false;
+}
+
 }  // namespace ui

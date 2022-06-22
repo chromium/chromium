@@ -32,7 +32,10 @@ class WaylandBufferFactory {
   // Requests to create a wl_buffer backed by the dmabuf prime |fd| descriptor.
   // The result is sent back via the |callback|. If buffer creation failed,
   // nullptr is sent back via the callback. Otherwise, a pointer to the
-  // |wl_buffer| is sent.
+  // |wl_buffer| is sent. Depending on the result of |CanCreateDmabufImmed|,
+  // a buffer can be created immediately which means the callback will be fired
+  // immediately and the client will not have to wait until the buffer is
+  // created.
   void CreateDmabufBuffer(const base::ScopedFD& fd,
                           const gfx::Size& size,
                           const std::vector<uint32_t>& strides,
@@ -59,6 +62,10 @@ class WaylandBufferFactory {
 
   // Returns true if dmabuf is supported.
   bool SupportsDmabuf() const;
+
+  // Returns true if a dmabuf buffer can be created immediately. If not, a
+  // dmabuf backed buffer is created asynchronously.
+  bool CanCreateDmabufImmed() const;
 
   // Returns wl_shm. This has to be unfortunately exposed as
   // WaylandCursorFactory uses wl_cursor_theme_load to load a cursor theme,

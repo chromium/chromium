@@ -88,8 +88,7 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(const base::ScopedFD& fd,
 
   // It's possible to avoid waiting until the buffer is created and have it
   // immediately. This method is only available since the protocol version 2.
-  if (wl::get_version_of_object(zwp_linux_dmabuf_.get()) >=
-      ZWP_LINUX_BUFFER_PARAMS_V1_CREATE_IMMED_SINCE_VERSION) {
+  if (CanCreateBufferImmed()) {
     wl::Object<wl_buffer> buffer(zwp_linux_buffer_params_v1_create_immed(
         params.get(), size.width(), size.height(), format, 0));
     std::move(callback).Run(std::move(buffer));
@@ -104,6 +103,11 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(const base::ScopedFD& fd,
     pending_params_.emplace(std::move(params), std::move(callback));
   }
   connection_->ScheduleFlush();
+}
+
+bool WaylandZwpLinuxDmabuf::CanCreateBufferImmed() const {
+  return wl::get_version_of_object(zwp_linux_dmabuf_.get()) >=
+         ZWP_LINUX_BUFFER_PARAMS_V1_CREATE_IMMED_SINCE_VERSION;
 }
 
 void WaylandZwpLinuxDmabuf::AddSupportedFourCCFormatAndModifier(

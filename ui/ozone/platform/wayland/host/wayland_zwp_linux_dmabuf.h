@@ -64,6 +64,10 @@ class WaylandZwpLinuxDmabuf
     return supported_buffer_formats_with_modifiers_;
   }
 
+  // Says if a new buffer can be created immediately. Depends on the version of
+  // the |zwp_linux_dmabuf| object.
+  bool CanCreateBufferImmed() const;
+
  private:
   // Receives supported |fourcc_format| from either ::Modifers or ::Format call
   // (depending on the protocol version), and stores it as gfx::BufferFormat to

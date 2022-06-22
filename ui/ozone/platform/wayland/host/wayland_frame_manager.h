@@ -169,6 +169,13 @@ class WaylandFrameManager {
   // feedbacks if the number is too big.
   void VerifyNumberOfSubmittedFrames();
 
+  // Verifies wl_buffers for the given |frame| exist. If they do not yet exist,
+  // a callback to |MaybeProcessPendingFrame| is set and false is returned.
+  // If the frame contains a buffer id for an invalid WaylandBufferHandle, the
+  // |frame::buffer_lost| is set and false is returned. That means that the
+  // frame must not be used for the further submission.
+  bool EnsureWlBuffersExist(WaylandFrame& frame);
+
   const raw_ptr<WaylandWindow> window_;
 
   // When RecordFrame() is called, a Frame is pushed to |pending_frames_|. See

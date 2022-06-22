@@ -65,6 +65,9 @@ class WaylandDrm : public wl::GlobalObjectRegistrar<WaylandDrm> {
     return supported_buffer_formats_;
   }
 
+  // Says if a new buffer can be created immediately.
+  bool CanCreateBufferImmed() const;
+
  private:
   // Resets the |wl_drm| and prints the error.
   void HandleDrmFailure(const std::string& error);

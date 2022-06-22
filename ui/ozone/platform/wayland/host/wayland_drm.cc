@@ -95,6 +95,12 @@ void WaylandDrm::CreateBuffer(const base::ScopedFD& fd,
   std::move(callback).Run(std::move(buffer));
 }
 
+bool WaylandDrm::CanCreateBufferImmed() const {
+  // Unlike the WaylandZwpLinuxDmabuf, the WaylandDrm always creates wl_buffers
+  // immediately.
+  return true;
+}
+
 void WaylandDrm::HandleDrmFailure(const std::string& error) {
   LOG(WARNING) << error;
   wl_drm_.reset();
