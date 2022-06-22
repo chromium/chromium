@@ -10,7 +10,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
-#include "chrome/chrome_elf/chrome_elf_constants.h"
+#include "chrome/chrome_elf/blocklist_constants.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/install_static/install_util.h"
 #include "components/variations/variations_associated_data.h"
