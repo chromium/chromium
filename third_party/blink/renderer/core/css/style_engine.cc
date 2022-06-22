@@ -2698,6 +2698,7 @@ void StyleEngine::RecalcStyleForNonLayoutNGContainerDescendants(
   if (cq_data->SkippedStyleRecalc()) {
     DecrementSkippedContainerRecalc();
     AllowMarkForReattachFromRebuildLayoutTreeScope allow_reattach(*this);
+    base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
     RecalcStyleForContainer(container, {});
   }
 }
