@@ -36,11 +36,13 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/delete_io_task.h"
+#include "chrome/browser/ash/file_manager/empty_trash_io_task.h"
 #include "chrome/browser/ash/file_manager/extract_io_task.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/restore_io_task.h"
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/zip_io_task.h"
@@ -402,10 +404,14 @@ absl::optional<file_manager::io_task::OperationType> IOTaskTypeToChromeEnum(
       return file_manager::io_task::OperationType::kCopy;
     case api::file_manager_private::IO_TASK_TYPE_DELETE:
       return file_manager::io_task::OperationType::kDelete;
+    case api::file_manager_private::IO_TASK_TYPE_EMPTY_TRASH:
+      return file_manager::io_task::OperationType::kEmptyTrash;
     case api::file_manager_private::IO_TASK_TYPE_EXTRACT:
       return file_manager::io_task::OperationType::kExtract;
     case api::file_manager_private::IO_TASK_TYPE_MOVE:
       return file_manager::io_task::OperationType::kMove;
+    case api::file_manager_private::IO_TASK_TYPE_RESTORE:
+      return file_manager::io_task::OperationType::kRestore;
     case api::file_manager_private::IO_TASK_TYPE_TRASH:
       return file_manager::io_task::OperationType::kTrash;
     case api::file_manager_private::IO_TASK_TYPE_ZIP:
@@ -1619,6 +1625,14 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
     }
   }
 
+  std::vector<std::string> restore_paths;
+  if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash) &&
+      params->params.restore_paths) {
+    for (const auto& path : *params->params.restore_paths) {
+      restore_paths.emplace_back(path);
+    }
+  }
+
   std::unique_ptr<file_manager::io_task::IOTask> task;
   switch (type.value()) {
     case file_manager::io_task::OperationType::kCopy:
@@ -1636,6 +1650,29 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
       task = std::make_unique<file_manager::io_task::DeleteIOTask>(
           std::move(source_urls), file_system_context);
       break;
+    case file_manager::io_task::OperationType::kEmptyTrash:
+      if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
+        task = std::make_unique<file_manager::io_task::EmptyTrashIOTask>(
+            blink::StorageKey(render_frame_host()->GetLastCommittedOrigin()),
+            profile, file_system_context,
+            /*base_path=*/base::FilePath());
+        break;
+      } else {
+        return RespondNow(Error("Invalid operation type"));
+      }
+    case file_manager::io_task::OperationType::kRestore:
+      if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
+        if (source_urls.size() != restore_paths.size()) {
+          return RespondNow(Error("Invalid number of restore paths"));
+        }
+        task = std::make_unique<file_manager::io_task::RestoreIOTask>(
+            std::move(source_urls), std::move(restore_paths), profile,
+            file_system_context,
+            /*base_path=*/base::FilePath());
+        break;
+      } else {
+        return RespondNow(Error("Invalid operation type"));
+      }
     case file_manager::io_task::OperationType::kTrash:
       if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
         task = std::make_unique<file_manager::io_task::TrashIOTask>(

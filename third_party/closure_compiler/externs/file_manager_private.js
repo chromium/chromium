@@ -319,8 +319,10 @@ chrome.fileManagerPrivate.IOTaskState = {
 chrome.fileManagerPrivate.IOTaskType = {
   COPY: 'copy',
   DELETE: 'delete',
+  EMPTY_TRASH: 'empty_trash',
   EXTRACT: 'extract',
   MOVE: 'move',
+  RESTORE: 'restore',
   TRASH: 'trash',
   ZIP: 'zip',
 };
@@ -706,6 +708,7 @@ chrome.fileManagerPrivate.GetVolumeRootOptions;
  * @typedef {{
  *   destinationFolder: (DirectoryEntry|undefined),
  *   password: (string|undefined),
+ *   restorePaths: (Array<string>|undefined),
  * }}
  */
 chrome.fileManagerPrivate.IOTaskParams;
@@ -954,9 +957,9 @@ chrome.fileManagerPrivate.getDisallowedTransfers = function(
  * Returns a list of files that are restricted by any Data Leak Prevention
  * (DLP) rule. |entries| list of source entries to be checked.
  * @param {!Array<!Entry>} entries
- * @param {function((!Array<!chrome.fileManagerPrivate.DlpMetadata>|undefined))} 
+ * @param {function((!Array<!chrome.fileManagerPrivate.DlpMetadata>|undefined))}
  * callback Callback with the list of chrome.fileManagerPrivate.DlpMetadata
- * containing DLP information about the entries.  
+ * containing DLP information about the entries.
  */
 chrome.fileManagerPrivate.getDlpMetadata = function(entries, callback) {};
 

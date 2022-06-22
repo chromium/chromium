@@ -359,8 +359,10 @@ enum IOTaskState {
 enum IOTaskType {
   copy,
   delete,
+  empty_trash,
   extract,
   move,
+  restore,
   trash,
   zip
 };
@@ -961,6 +963,9 @@ dictionary IOTaskParams {
 
   // Password used for unpacking encrypted archives.
   DOMString? password;
+
+  // List of paths to restore trashed files to.
+  DOMString[]? restorePaths;
 };
 
 // IO Task Progress status, see file_manager::io_task::ProgressStatus.

@@ -62,6 +62,12 @@ export class FileOperationHandler {
    * @private
    */
   async onIOTaskProgressStatus_(event) {
+    // The trash event will return progress, but this will be handled by a toast
+    // which shows an Undo button instead. Ignore the trash event here.
+    if (event.type === chrome.fileManagerPrivate.IOTaskType.TRASH) {
+      return;
+    }
+
     const taskId = String(event.taskId);
     let newItem = false;
     /** @type {ProgressCenterItem} */
@@ -441,10 +447,14 @@ function getTypeFromIOTaskType_(type) {
       return ProgressItemType.COPY;
     case chrome.fileManagerPrivate.IOTaskType.DELETE:
       return ProgressItemType.DELETE;
+    case chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH:
+      return ProgressItemType.EMPTY_TRASH;
     case chrome.fileManagerPrivate.IOTaskType.EXTRACT:
       return ProgressItemType.EXTRACT;
     case chrome.fileManagerPrivate.IOTaskType.MOVE:
       return ProgressItemType.MOVE;
+    case chrome.fileManagerPrivate.IOTaskType.RESTORE:
+      return ProgressItemType.RESTORE;
     case chrome.fileManagerPrivate.IOTaskType.ZIP:
       return ProgressItemType.ZIP;
     default:
