@@ -279,10 +279,6 @@ class ImeMenuListView : public ImeListView {
     // DetailedViewDelegate:
     void TransitionToMainView(bool restore_focus) override {}
     void CloseBubble() override {}
-
-    gfx::Insets GetInsetsForDetailedView() const override {
-      return gfx::Insets();
-    }
   };
 
   explicit ImeMenuListView(std::unique_ptr<Delegate> delegate)

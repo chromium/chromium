@@ -275,8 +275,7 @@ class ScrollContentsView : public views::View {
 TrayDetailedView::TrayDetailedView(DetailedViewDelegate* delegate)
     : delegate_(delegate) {
   box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      delegate->GetInsetsForDetailedView()));
+      views::BoxLayout::Orientation::kVertical));
   SetBackground(views::CreateSolidBackground(
       delegate_->GetBackgroundColor().value_or(SK_ColorTRANSPARENT)));
 }

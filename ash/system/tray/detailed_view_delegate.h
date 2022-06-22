@@ -51,9 +51,6 @@ class ASH_EXPORT DetailedViewDelegate {
   // Get the background color of the detailed view.
   virtual absl::optional<SkColor> GetBackgroundColor();
 
-  // Get the padding of the detailed view.
-  virtual gfx::Insets GetInsetsForDetailedView() const;
-
   // Return true if overflow indicator of ScrollView is enabled.
   virtual bool IsOverflowIndicatorEnabled() const;
 

@@ -104,10 +104,6 @@ absl::optional<SkColor> DetailedViewDelegate::GetBackgroundColor() {
   return absl::nullopt;
 }
 
-gfx::Insets DetailedViewDelegate::GetInsetsForDetailedView() const {
-  return kUnifiedDetailedViewPadding;
-}
-
 bool DetailedViewDelegate::IsOverflowIndicatorEnabled() const {
   return false;
 }
