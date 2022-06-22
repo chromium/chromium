@@ -52,9 +52,8 @@ The test verifies functionality of querying style information for document-trans
                                 value : block
                             }
                             [1] : {
-                                important : true
                                 name : page-transition-tag
-                                value : root !important
+                                value : root
                             }
                         ]
                         shorthandEntries : [

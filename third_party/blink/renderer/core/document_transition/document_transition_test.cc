@@ -130,7 +130,7 @@ class DocumentTransitionTest : public testing::Test,
     auto* transition =
         DocumentTransitionSupplement::EnsureDocumentTransition(GetDocument());
     return layout_object && transition &&
-           transition->IsTransitionParticipant(*layout_object);
+           transition->NeedsSharedElementEffectNode(*layout_object);
   }
 
   void ValidatePseudoElementTree(

@@ -155,8 +155,10 @@ class PropertyTreePrinterTraits<EffectPaintPropertyNodeOrAlias> {
       PropertyTreePrinter<EffectPaintPropertyNodeOrAlias>& printer) {
     auto* supplement =
         DocumentTransitionSupplement::FromIfExists(object.GetDocument());
+    // `NeedsSharedElementEffectNode` is an indirect way to see if the object is
+    // participating in the transition.
     if (!supplement ||
-        !supplement->GetTransition()->IsTransitionParticipant(object)) {
+        !supplement->GetTransition()->NeedsSharedElementEffectNode(object)) {
       return;
     }
 

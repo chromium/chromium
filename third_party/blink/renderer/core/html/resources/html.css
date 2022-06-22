@@ -25,7 +25,7 @@
 
 html {
     display: block;
-    page-transition-tag: root !important;
+    page-transition-tag: root;
 }
 
 /* generic block-level elements */

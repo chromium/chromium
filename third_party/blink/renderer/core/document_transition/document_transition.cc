@@ -311,10 +311,14 @@ DocumentTransition::TakePendingRequest() {
   return std::move(pending_request_);
 }
 
-bool DocumentTransition::IsTransitionParticipant(
+bool DocumentTransition::NeedsSharedElementEffectNode(
     const LayoutObject& object) const {
+  // Layout view always needs an effect node, even if root itself is not
+  // transitioning. The reason for this is that we want the root to have an
+  // effect which can be hoisted up be the sibling of the layout view. This
+  // simplifies calling code to have a consistent stacking context structure.
   if (auto* layout_view = DynamicTo<LayoutView>(object))
-    return style_tracker_ && style_tracker_->IsRootTransitioning();
+    return state_ != State::kIdle;
 
   // Otherwise check if the layout object has an active shared element.
   auto* element = DynamicTo<Element>(object.GetNode());
@@ -326,7 +330,7 @@ PaintPropertyChangeType DocumentTransition::UpdateEffect(
     const EffectPaintPropertyNodeOrAlias& current_effect,
     const ClipPaintPropertyNodeOrAlias* current_clip,
     const TransformPaintPropertyNodeOrAlias* current_transform) {
-  DCHECK(IsTransitionParticipant(object));
+  DCHECK(NeedsSharedElementEffectNode(object));
   DCHECK(current_transform);
   DCHECK(current_clip);
 
@@ -348,7 +352,8 @@ PaintPropertyChangeType DocumentTransition::UpdateEffect(
     style_tracker_->UpdateRootIndexAndSnapshotId(
         state.document_transition_shared_element_id,
         state.shared_element_resource_id);
-    DCHECK(state.document_transition_shared_element_id.valid());
+    DCHECK(state.document_transition_shared_element_id.valid() ||
+           !style_tracker_->IsRootTransitioning());
     return style_tracker_->UpdateRootEffect(std::move(state), current_effect);
   }
 
@@ -361,7 +366,7 @@ PaintPropertyChangeType DocumentTransition::UpdateEffect(
 
 EffectPaintPropertyNode* DocumentTransition::GetEffect(
     const LayoutObject& object) const {
-  DCHECK(IsTransitionParticipant(object));
+  DCHECK(NeedsSharedElementEffectNode(object));
 
   auto* element = DynamicTo<Element>(object.GetNode());
   if (!element)

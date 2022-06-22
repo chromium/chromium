@@ -112,6 +112,10 @@ class DocumentTransitionStyleTracker
   int CapturedTagCount() const { return captured_tag_count_; }
 
   bool IsSharedElement(Element* element) const;
+
+  // This function represents whether root itself is participating in the
+  // transition (i.e. it has a tag in the current phase). Note that we create an
+  // EffectNode for the root whether or not it's transitioning.
   bool IsRootTransitioning() const;
 
   std::vector<viz::SharedElementResourceId> TakeCaptureResourceIds() {

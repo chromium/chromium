@@ -259,10 +259,10 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
 
   if (auto* supplement =
           DocumentTransitionSupplement::FromIfExists(object.GetDocument())) {
-    // Note that `IsTransitionParticipant returns true for values that are in
-    // the non-transition-pseudo tree DOM. That is, things like layout view or
-    // the shared elements that we are transitioning.
-    if (supplement->GetTransition()->IsTransitionParticipant(object))
+    // Note that `NeedsSharedElementEffectNode` returns true for values that are
+    // in the non-transition-pseudo tree DOM. That is, things like layout view
+    // or the shared elements that we are transitioning.
+    if (supplement->GetTransition()->NeedsSharedElementEffectNode(object))
       reasons |= CompositingReason::kDocumentTransitionSharedElement;
   }
 

@@ -572,6 +572,9 @@ auto DocumentTransitionStyleTracker::GetCurrentRootData() const
 void DocumentTransitionStyleTracker::UpdateRootIndexAndSnapshotId(
     DocumentTransitionSharedElementId& index,
     viz::SharedElementResourceId& resource_id) const {
+  if (!IsRootTransitioning())
+    return;
+
   index.AddIndex(0);
   const auto& root_data = GetCurrentRootData();
   DCHECK(root_data);
@@ -626,6 +629,7 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
           MakeGarbageCollected<DocumentTransitionContentElement>(
               parent, pseudo_id, document_transition_tag, snapshot_id,
               /*is_live_content_element=*/false);
+      fprintf(stderr, "0setting intrinsic size %s\n", size.ToString().Utf8().c_str());
       pseudo_element->SetIntrinsicSize(size);
       return pseudo_element;
     }
@@ -647,6 +651,7 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
           MakeGarbageCollected<DocumentTransitionContentElement>(
               parent, pseudo_id, document_transition_tag, snapshot_id,
               /*is_live_content_element=*/true);
+      fprintf(stderr, "1setting intrinsic size %s\n", size.ToString().Utf8().c_str());
       pseudo_element->SetIntrinsicSize(size);
       return pseudo_element;
     }
@@ -732,6 +737,7 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
       // DocumentTransitionContentElement.
       bool use_cached_data = false;
       LayoutSize size = element_data->GetIntrinsicSize(use_cached_data);
+      fprintf(stderr, "2setting intrinsic size %s\n", size.ToString().Utf8().c_str());
       static_cast<DocumentTransitionContentElement*>(pseudo_element)
           ->SetIntrinsicSize(size);
     }

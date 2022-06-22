@@ -69,9 +69,9 @@ class CORE_EXPORT DocumentTransition
   // This uses std::move semantics to take the request from this object.
   std::unique_ptr<DocumentTransitionRequest> TakePendingRequest();
 
-  // Returns true if this object participates in an active transition (if there
-  // is one).
-  bool IsTransitionParticipant(const LayoutObject& object) const;
+  // Returns true if this object needs to create an EffectNode for the shared
+  // element transition.
+  bool NeedsSharedElementEffectNode(const LayoutObject& object) const;
 
   // Updates an effect node. This effect populates the shared element id and the
   // shared element resource id. The return value is a result of updating the
