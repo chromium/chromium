@@ -1092,11 +1092,8 @@ def main():
         'COMPILER_RT_ENABLE_IOS=ON',
         'COMPILER_RT_ENABLE_WATCHOS=OFF',
         'COMPILER_RT_ENABLE_TVOS=OFF',
-        # armv7 is A5 and earlier, armv7s is A6+ (2012 and later, before 64-bit
-        # iPhones). armv7k is Apple Watch, which we don't need.
-        'DARWIN_ios_ARCHS=armv7;armv7s;arm64',
-        'DARWIN_iossim_ARCHS=i386;x86_64;arm64',
-        # We don't need 32-bit intel support for macOS, we only ship 64-bit.
+        'DARWIN_ios_ARCHS=arm64',
+        'DARWIN_iossim_ARCHS=arm64;x86_64',
         'DARWIN_osx_ARCHS=arm64;x86_64',
     ] + compiler_rt_cmake_flags(sanitizers=True, profile=True)
     # compiler-rt is built for all platforms/arches with a single
