@@ -22,8 +22,8 @@ namespace gtk {
 // (gtk-immodule) as a bridge from/to underlying IMEs.
 class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
  public:
-  InputMethodContextImplGtk(ui::LinuxInputMethodContextDelegate* delegate,
-                            bool is_simple);
+  explicit InputMethodContextImplGtk(
+      ui::LinuxInputMethodContextDelegate* delegate);
 
   InputMethodContextImplGtk(const InputMethodContextImplGtk&) = delete;
   InputMethodContextImplGtk& operator=(const InputMethodContextImplGtk&) =
@@ -68,33 +68,29 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
                      OnPreeditStart,
                      GtkIMContext*);
 
-  // Called on getting focus.
-  void Focus();
-
-  // Called on loosing focus.
-  void Blur();
-
   // Only used on GTK3.
-  void SetContextClientWindow(GdkWindow* window);
+  void SetContextClientWindow(GdkWindow* window, GtkIMContext* gtk_context);
+
+  // Returns the IMContext depending on the currently connected input field
+  // type.
+  GtkIMContext* GetIMContext();
 
   // A set of callback functions.  Must not be nullptr.
   const raw_ptr<ui::LinuxInputMethodContextDelegate> delegate_;
 
-  // Input method context type flag.
-  //   - true if it supports table-based input methods
-  //   - false if it supports multiple, loadable input methods
-  const bool is_simple_;
-
-  // Keeps track of current focus state.
-  bool has_focus_ = false;
+  // Tracks the input field type.
+  ui::TextInputType type_ = ui::TEXT_INPUT_TYPE_NONE;
 
   // IME's input GTK context.
   raw_ptr<GtkIMContext> gtk_context_ = nullptr;
+  raw_ptr<GtkIMContext> gtk_simple_context_ = nullptr;
 
   // Only used on GTK3.
   gpointer gdk_last_set_client_window_ = nullptr;
+  gpointer gdk_last_set_client_window_for_simple_ = nullptr;
 
   // Last known caret bounds relative to the screen coordinates, in DIPs.
+  // Effective only on non-simple context.
   gfx::Rect last_caret_bounds_;
 };
 
