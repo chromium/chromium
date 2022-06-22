@@ -7,6 +7,7 @@ package org.chromium.ui.base;
 import android.content.Context;
 
 import androidx.annotation.UiThread;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -28,7 +29,8 @@ public class DeviceFormFactor {
     /**
      * Matches the value set in res/values-sw600dp/values.xml
      */
-    private static final int SCREEN_BUCKET_TABLET = 2;
+    @VisibleForTesting
+    public static final int SCREEN_BUCKET_TABLET = 2;
 
     /**
      * Matches the value set in res/values-sw720dp/values.xml
