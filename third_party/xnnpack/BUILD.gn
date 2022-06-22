@@ -21,6 +21,8 @@ config("xnnpack_config") {
     "src/src",
   ]
 
+  cflags = [ "-Wno-unused-function" ]
+
   defines = [
     # Don't enable this without first talking to Chrome Security!
     # XNNPACK runs in the browser process. The hardening and fuzzing needed
@@ -47,6 +49,7 @@ source_set("xnnpack") {
     "src/src/datatype-strings.c",
     "src/src/indirection.c",
     "src/src/init.c",
+    "src/src/log.c",
     "src/src/memory-planner.c",
     "src/src/memory.c",
     "src/src/mutex.c",
@@ -655,7 +658,7 @@ source_set("subgraph") {
     "src/src/subgraph/even-split.c",
     "src/src/subgraph/floor.c",
     "src/src/subgraph/fully-connected.c",
-    "src/src/subgraph/global-average-pooling-2d.c",
+    "src/src/subgraph/global-average-pooling.c",
     "src/src/subgraph/hardswish.c",
     "src/src/subgraph/leaky-relu.c",
     "src/src/subgraph/max-pooling-2d.c",

@@ -40,7 +40,6 @@ source_set("flatbuffers") {
 source_set("compiler_files") {
   include_dirs = [ "src/grpc" ]
   sources = [
-    "src/grpc/src/compiler/config.h",
     "src/grpc/src/compiler/cpp_generator.cc",
     "src/grpc/src/compiler/cpp_generator.h",
     "src/grpc/src/compiler/go_generator.cc",
@@ -64,9 +63,13 @@ source_set("compiler_files") {
     "src/include/flatbuffers/reflection.h",
     "src/include/flatbuffers/reflection_generated.h",
     "src/include/flatbuffers/registry.h",
+    "src/src/annotated_binary_text_gen.cpp",
+    "src/src/annotated_binary_text_gen.h",
     "src/src/bfbs_gen.h",
     "src/src/bfbs_gen_lua.cpp",
     "src/src/bfbs_gen_lua.h",
+    "src/src/binary_annotator.cpp",
+    "src/src/binary_annotator.h",
     "src/src/code_generators.cpp",
     "src/src/flatc.cpp",
     "src/src/idl_gen_cpp.cpp",
