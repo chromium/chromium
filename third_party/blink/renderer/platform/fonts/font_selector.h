@@ -56,8 +56,8 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   virtual scoped_refptr<FontData> GetFontData(const FontDescription&,
                                               const FontFamily&) = 0;
 
-  // TODO crbug.com/542629 - The String variant of this method shouldbe replaced
-  // with a better approach, now that we only have complex text.
+  // TODO(crbug.com/542629): The String variant of this method should be
+  // replaced with a better approach, now that we only have complex text.
   virtual void WillUseFontData(const FontDescription&,
                                const FontFamily& family,
                                const String& text) = 0;
