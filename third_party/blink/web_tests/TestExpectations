@@ -7043,3 +7043,6 @@ crbug.com/1313690 http/tests/devtools/elements/iframe-load-event.js [ Skip ]
 
 # Sheriff 2022-06-22
 crbug.com/1338420 [ Linux ] external/wpt/event-timing/interactionid-tap.html [ Skip ]
+
+# Flaky on Linux
+crbug.com/1338536 [ Linux ] http/tests/devtools/oopif/oopif-elements-nesting.js [ Skip ]
