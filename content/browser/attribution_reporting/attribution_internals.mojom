@@ -144,6 +144,7 @@ struct WebUITrigger {
   url.mojom.Origin destination_origin;
   url.mojom.Origin reporting_origin;
   map<string, array<string>> filters;
+  map<string, array<string>> not_filters;
   DebugKey? debug_key;
   array<WebUIEventTriggerData> event_triggers;
   array<WebUIAggregatableTriggerData> aggregatable_triggers;

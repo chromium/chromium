@@ -284,6 +284,7 @@ class Trigger {
   destinationOrigin: string;
   reportingOrigin: string;
   filters: string;
+  notFilters: string;
   debugKey: string;
   eventTriggers: string;
   eventLevelStatus: string;
@@ -296,6 +297,7 @@ class Trigger {
     this.destinationOrigin = originToText(mojo.destinationOrigin);
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.filters = JSON.stringify(mojo.filters, null, ' ');
+    this.notFilters = JSON.stringify(mojo.notFilters, null, ' ');
     this.debugKey = mojo.debugKey ? mojo.debugKey.value.toString() : '';
 
     this.eventTriggers = JSON.stringify(
@@ -354,9 +356,12 @@ class TriggerTableModel extends TableModel<Trigger> {
       new ValueColumn<Trigger, string>('Report To', (e) => e.reportingOrigin),
       new ValueColumn<Trigger, string>('Debug Key', (e) => e.debugKey),
       new CodeColumn<Trigger>('Filters', (e) => e.filters),
+      new CodeColumn<Trigger>('Negated Filters', (e) => e.notFilters),
       new CodeColumn<Trigger>('Event Triggers', (e) => e.eventTriggers),
-      new CodeColumn<Trigger>('Aggregatable Triggers', (e) => e.aggregatableTriggers),
-      new CodeColumn<Trigger>('Aggregatable Values', (e) => e.aggregatableValues),
+      new CodeColumn<Trigger>(
+          'Aggregatable Triggers', (e) => e.aggregatableTriggers),
+      new CodeColumn<Trigger>(
+          'Aggregatable Values', (e) => e.aggregatableValues),
     ];
 
     this.emptyRowText = 'No triggers.';

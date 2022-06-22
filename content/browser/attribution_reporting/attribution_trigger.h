@@ -104,6 +104,7 @@ class CONTENT_EXPORT AttributionTrigger {
       url::Origin destination_origin,
       url::Origin reporting_origin,
       AttributionFilterData filters,
+      AttributionFilterData not_filters,
       absl::optional<uint64_t> debug_key,
       std::vector<EventTriggerData> event_triggers,
       std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data,
@@ -120,6 +121,8 @@ class CONTENT_EXPORT AttributionTrigger {
   const url::Origin& reporting_origin() const { return reporting_origin_; }
 
   const AttributionFilterData& filters() const { return filters_; }
+
+  const AttributionFilterData& not_filters() const { return not_filters_; }
 
   absl::optional<uint64_t> debug_key() const { return debug_key_; }
 
@@ -147,6 +150,8 @@ class CONTENT_EXPORT AttributionTrigger {
   url::Origin reporting_origin_;
 
   AttributionFilterData filters_;
+
+  AttributionFilterData not_filters_;
 
   absl::optional<uint64_t> debug_key_;
 

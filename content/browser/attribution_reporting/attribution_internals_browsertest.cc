@@ -874,7 +874,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   const AttributionTrigger trigger(
       url::Origin::Create(GURL("https://d.test")),
       url::Origin::Create(GURL("https://r.test")),
-      AttributionFilterData::CreateForTesting({{"a", {"b"}}}),
+      /*filters=*/AttributionFilterData::CreateForTesting({{"a", {"b"}}}),
+      /*not_filters=*/AttributionFilterData::CreateForTesting({{"g", {"h"}}}),
       /*debug_key=*/1,
       {
           AttributionTrigger::EventTriggerData(
@@ -925,9 +926,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[0].children[4].innerText === "https://r.test" &&
             table.children[0].children[5].innerText === "1" &&
             table.children[0].children[6].innerText === '{ "a": [  "b" ]}' &&
-            table.children[0].children[7].innerText === $2 &&
-            table.children[0].children[8].innerText === $3 &&
-            table.children[0].children[9].innerText === '{ "a": 123, "b": 456}') {
+            table.children[0].children[7].innerText === '{ "g": [  "h" ]}' &&
+            table.children[0].children[8].innerText === $2 &&
+            table.children[0].children[9].innerText === $3 &&
+            table.children[0].children[10].innerText === '{ "a": 123, "b": 456}') {
           obs.disconnect();
           document.title = $1;
         }

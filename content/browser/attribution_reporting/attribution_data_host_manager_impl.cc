@@ -477,6 +477,16 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     return;
   }
 
+  absl::optional<AttributionFilterData> not_filters =
+      AttributionFilterData::FromTriggerFilterValues(
+          std::move(data->not_filters->filter_values));
+  if (!not_filters.has_value()) {
+    RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
+    mojo::ReportBadMessage(
+        "AttributionDataHost: Invalid top-level negated filters.");
+    return;
+  }
+
   if (data->event_triggers.size() > blink::kMaxAttributionEventTriggerData) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
     mojo::ReportBadMessage("AttributionDataHost: Too many event triggers.");
@@ -541,6 +551,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   AttributionTrigger trigger(
       /*destination_origin=*/context.context_origin,
       std::move(data->reporting_origin), std::move(*filters),
+      std::move(*not_filters),
       data->debug_key ? absl::make_optional(data->debug_key->value)
                       : absl::nullopt,
       std::move(event_triggers), std::move(*aggregatable_trigger_data),

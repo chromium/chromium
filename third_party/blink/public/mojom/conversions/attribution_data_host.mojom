@@ -106,6 +106,10 @@ struct AttributionTriggerData {
   // filter data matches.
   AttributionFilterData filters;
 
+  // If non-empty, this trigger will be ignored unless the attributed source's
+  // filter data does *NOT* match.
+  AttributionFilterData not_filters;
+
   // List of all aggregatable trigger data objects declared by the trigger
   // header.
   array<AttributionAggregatableTriggerData> aggregatable_trigger_data;

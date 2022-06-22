@@ -416,6 +416,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   web_ui_trigger->destination_origin = trigger.destination_origin();
   web_ui_trigger->reporting_origin = trigger.reporting_origin();
   web_ui_trigger->filters = trigger.filters().filter_values();
+  web_ui_trigger->not_filters = trigger.not_filters().filter_values();
   web_ui_trigger->debug_key = WebUIDebugKey(trigger.debug_key());
   web_ui_trigger->event_level_status =
       GetWebUITriggerStatus(result.event_level_status());

@@ -492,6 +492,13 @@ bool ParseTriggerRegistrationHeader(
     return false;
   }
 
+  trigger_data.not_filters = mojom::blink::AttributionFilterData::New();
+
+  if (!ParseAttributionFilterData(object->Get("not_filters"),
+                                  *trigger_data.not_filters)) {
+    return false;
+  }
+
   if (!ParseAttributionAggregatableTriggerData(
           object->Get("aggregatable_trigger_data"),
           trigger_data.aggregatable_trigger_data)) {

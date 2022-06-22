@@ -295,6 +295,7 @@ class AttributionSimulatorInputParser {
 
     absl::optional<uint64_t> debug_key;
     AttributionFilterData filters;
+    AttributionFilterData not_filters;
     std::vector<AttributionTrigger::EventTriggerData> event_triggers;
     std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data;
     AttributionAggregatableValues aggregatable_values;
@@ -307,6 +308,9 @@ class AttributionSimulatorInputParser {
                   debug_key = ParseOptionalUint64(dict, "debug_key");
                   filters = ParseFilterData(
                       dict, "filters",
+                      &AttributionFilterData::FromTriggerFilterValues);
+                  not_filters = ParseFilterData(
+                      dict, "not_filters",
                       &AttributionFilterData::FromTriggerFilterValues);
                   event_triggers = ParseEventTriggers(dict);
 
@@ -325,8 +329,8 @@ class AttributionSimulatorInputParser {
         AttributionTriggerAndTime{
             .trigger = AttributionTrigger(
                 std::move(destination_origin), std::move(reporting_origin),
-                std::move(filters), debug_key, std::move(event_triggers),
-                std::move(aggregatable_trigger_data),
+                std::move(filters), std::move(not_filters), debug_key,
+                std::move(event_triggers), std::move(aggregatable_trigger_data),
                 std::move(aggregatable_values)),
             .time = trigger_time,
         },

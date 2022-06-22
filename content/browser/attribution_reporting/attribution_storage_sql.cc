@@ -819,8 +819,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   const bool top_level_filters_match = AttributionFiltersMatch(
       source_to_attribute->source.common_info().filter_data(),
-      trigger.filters(),
-      /*trigger_not_filters=*/AttributionFilterData());
+      trigger.filters(), trigger.not_filters());
 
   AttributionInfo attribution_info(std::move(source_to_attribute->source),
                                    trigger_time, trigger.debug_key());

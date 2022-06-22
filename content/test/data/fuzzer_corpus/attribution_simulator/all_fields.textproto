@@ -259,6 +259,25 @@ object_value {
                     }
                   }
                   field {
+                    name: "not_filters"
+                    value {
+                      object_value {
+                        field {
+                          name: "i"
+                          value {
+                            array_value {
+                              value {
+                                string_value {
+                                  value: "j"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                  field {
                     name: "event_trigger_data"
                     value {
                       array_value {

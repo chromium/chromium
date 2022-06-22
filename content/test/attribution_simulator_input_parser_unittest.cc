@@ -309,6 +309,9 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
         "filters": {
           "a": ["b", "c"],
           "d": []
+        },
+        "not_filters": {
+          "e": ["f"]
         }
       }
     },
@@ -346,9 +349,14 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       url::Origin::Create(GURL("https://a.d1.test")),
                       /*reporting_origin=*/
                       url::Origin::Create(GURL("https://a.r.test")),
+                      /*filters=*/
                       *AttributionFilterData::FromTriggerFilterValues({
                           {"a", {"b", "c"}},
                           {"d", {}},
+                      }),
+                      /*not_filters=*/
+                      *AttributionFilterData::FromTriggerFilterValues({
+                          {"e", {"f"}},
                       }),
                       /*debug_key=*/14,
                       {
@@ -383,7 +391,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       url::Origin::Create(GURL("https://a.d2.test")),
                       /*reporting_origin=*/
                       url::Origin::Create(GURL("https://b.r.test")),
-                      AttributionFilterData(),
+                      /*filters=*/AttributionFilterData(),
+                      /*not_filters=*/AttributionFilterData(),
                       /*debug_key=*/absl::nullopt,
                       /*event_triggers=*/{},
                       /*aggregatable_trigger_data=*/{},
@@ -398,7 +407,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       url::Origin::Create(GURL("https://a.d2.test")),
                       /*reporting_origin=*/
                       url::Origin::Create(GURL("https://b.r.test")),
-                      AttributionFilterData(),
+                      /*filters=*/AttributionFilterData(),
+                      /*not_filters=*/AttributionFilterData(),
                       /*debug_key=*/absl::nullopt,
                       /*event_triggers=*/{},
                       {AttributionAggregatableTriggerData::CreateForTesting(

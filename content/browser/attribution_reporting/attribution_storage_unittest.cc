@@ -2262,6 +2262,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
             MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
                 origin, origin,
                 /*filters=*/AttributionFilterData(),
+                /*not_filters=*/AttributionFilterData(),
                 /*debug_key=*/absl::nullopt,
                 {AttributionTrigger::EventTriggerData(
                     /*data=*/11,
@@ -2352,6 +2353,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
             MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
                 origin, origin,
                 /*filters=*/AttributionFilterData(),
+                /*not_filters=*/AttributionFilterData(),
                 /*debug_key=*/absl::nullopt, event_triggers,
                 /*aggregatable_trigger_data=*/{},
                 /*aggregatable_values=*/AttributionAggregatableValues())));
@@ -2391,6 +2393,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
                               *AttributionFilterData::FromTriggerFilterValues({
                                   {"abc", {"456"}},
                               }),
+                              /*not_filters=*/AttributionFilterData(),
                               /*debug_key=*/absl::nullopt,
                               /*event_triggers=*/{}, aggregatable_trigger_data,
                               aggregatable_values);
@@ -2400,10 +2403,18 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
                               *AttributionFilterData::FromTriggerFilterValues({
                                   {"abc", {"123"}},
                               }),
+                              /*not_filters=*/AttributionFilterData(),
                               /*debug_key=*/absl::nullopt,
-                              /*event_triggers=*/{},
-                              std::move(aggregatable_trigger_data),
-                              std::move(aggregatable_values));
+                              /*event_triggers=*/{}, aggregatable_trigger_data,
+                              aggregatable_values);
+
+  AttributionTrigger trigger3(
+      origin, origin,
+      /*filters=*/AttributionFilterData(),
+      /*not_filters=*/
+      AttributionFilterData::ForSourceType(AttributionSourceType::kNavigation),
+      /*debug_key=*/absl::nullopt,
+      /*event_triggers=*/{}, aggregatable_trigger_data, aggregatable_values);
 
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger1),
               AllOf(CreateReportEventLevelStatusIs(
@@ -2412,6 +2423,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::
                             kNoMatchingSourceFilterData)));
+
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(trigger2),
       AllOf(
@@ -2419,6 +2431,14 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
               AttributionTrigger::EventLevelResult::kNoMatchingConfigurations),
           CreateReportAggregatableStatusIs(
               AttributionTrigger::AggregatableResult::kSuccess)));
+
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger3),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::
+                            kNoMatchingSourceFilterData),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::
+                            kNoMatchingSourceFilterData)));
 }
 
 TEST_F(AttributionStorageTest,
