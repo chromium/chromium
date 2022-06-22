@@ -8,10 +8,26 @@
     margin: 0;
     padding: 0;
   }
+
+   cr-expand-button {
+     padding-inline-start: 1em;
+   }
+
+   cr-expand-button:hover {
+     filter: contrast(1.1);
+     text-decoration: underline;
+   }
+
+  .unloaded {
+    opacity: 50%;
+  }
 </style>
-<h2>Profiles</h2>\
+<h2>Profiles</h2>
 <template is="dom-repeat" items="[[profilesList_]]">
-  <cr-expand-button expanded="{{item.expanded}}">
+  <cr-expand-button expanded="{{item.expanded}}"
+      class$="[[item.className]]"
+      style$="color: [[item.profileState.foregroundColor]];
+              background-color: [[item.profileState.backgroundColor]];">
     [[item.profileState.localProfileName]]
   </cr-expand-button>
   <iron-collapse opened="[[item.expanded]]">

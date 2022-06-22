@@ -15,8 +15,10 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_ui.h"
+#include "skia/ext/skia_utils_base.h"
 
 namespace {
 
@@ -52,6 +54,14 @@ base::Value CreateProfileEntry(
   profile_entry.SetBoolKey("isEphemeral", entry->IsEphemeral());
   profile_entry.SetBoolKey("userAcceptedAccountManagement",
                            entry->UserAcceptedAccountManagement());
+
+  SkColor highlight_color =
+      entry->GetProfileThemeColors().profile_highlight_color;
+  profile_entry.SetStringKey("backgroundColor",
+                             skia::SkColorToHexString(highlight_color));
+  profile_entry.SetStringKey(
+      "foregroundColor",
+      skia::SkColorToHexString(GetProfileForegroundTextColor(highlight_color)));
 
   base::Value keep_alives(base::Value::Type::LIST);
   std::map<ProfileKeepAliveOrigin, int> keep_alives_map =
