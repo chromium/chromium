@@ -695,6 +695,20 @@ chromium-metrics-reviews@google.com.
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
+<histogram name="Power.BatteryDischargeRateWhileHibernated" units="mW"
+    expires_after="2023-06-15">
+  <owner>puthik@chromium.org</owner>
+  <owner>evgreen@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    Chrome OS battery discharge rate in mW while the system was hibernated,
+    sampled at resume. Only reported if the system was on battery power both
+    before hibernating and after resuming, if the energy level didn't increase
+    while hibernated (which would indicate that an AC adapter was connected),
+    and if the system was hibernated for at least a minute.
+  </summary>
+</histogram>
+
 <histogram name="Power.BatteryDischargeRateWhileSuspended" units="mW"
     expires_after="2023-05-12">
   <owner>puthik@chromium.org</owner>
@@ -1402,6 +1416,35 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Power.HibernateAttemptsBeforeCancel" units="units"
+    expires_after="2023-06-15">
+  <owner>puthik@chromium.org</owner>
+  <owner>evgreen@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The number of hibernate attempts performed for a single hibernate request
+    (e.g. triggered by transition from suspend to hibernation) that was
+    eventually canceled on Chrome OS. This also includes requests that were
+    canceled due to the system eventually shutting down due to repeated
+    hibernation failures. This is recorded just after the SuspendDone signal is
+    emitted, while cleaning up from the canceled attempt.
+  </summary>
+</histogram>
+
+<histogram name="Power.HibernateAttemptsBeforeSuccess" units="units"
+    expires_after="2023-06-15">
+  <owner>puthik@chromium.org</owner>
+  <owner>evgreen@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The number of hibernation attempts performed for a single hibernation
+    request (e.g. triggered by transition from suspend to hibernation) that
+    eventually succeeded on Chrome OS. This includes the successful attempt.
+    This is recorded after the system resumes, just after the SuspendDone signal
+    is emitted, while unwinding the suspend preparations.
+  </summary>
+</histogram>
+
 <histogram name="Power.IdleCpuLoad.{ProcessType}" units="%"
     expires_after="2022-10-04">
   <owner>eseckler@chromium.org</owner>
@@ -1865,7 +1908,9 @@ chromium-metrics-reviews@google.com.
     The number of suspend attempts performed for a single suspend request (e.g.
     triggered by the lid being closed) that was eventually canceled on Chrome
     OS. This also includes requests that were canceled due to the system
-    eventually shutting down due to repeated suspend failures.
+    eventually shutting down due to repeated suspend failures. This is recorded
+    just after the SuspendDone signal is emitted, while cleaning up from the
+    canceled attempt.
   </summary>
 </histogram>
 
@@ -1876,7 +1921,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of suspend attempts performed for a single suspend request (e.g.
     triggered by the lid being closed) that eventually succeeded on Chrome OS.
-    This includes the successful attempt.
+    This includes the successful attempt. This is recorded after the system
+    resumes, just after the SuspendDone signal is emitted, while unwinding the
+    suspend preparations.
   </summary>
 </histogram>
 
