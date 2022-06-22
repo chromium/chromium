@@ -3171,6 +3171,30 @@
             ]
         }
     ],
+    "DesktopOmniboxRichAutocompletion": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "RichAutocompletionAutocompleteNonPrefixAll": "true",
+                        "RichAutocompletionAutocompleteTitles": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxRichAutocompletion",
+                        "OmniboxShortcutExpanding"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopReadingListAddFromDialog": [
         {
             "platforms": [
@@ -5724,8 +5748,6 @@
                         "OmniboxBookmarkPathsUiDynamicReplaceUrl": "true",
                         "OmniboxLocalZeroSuggestAgeThreshold": "60",
                         "OmniboxMaxURLMatches": "7",
-                        "RichAutocompletionAutocompleteNonPrefixAll": "true",
-                        "RichAutocompletionAutocompleteTitles": "true",
                         "ShortBookmarkSuggestionsByTotalInputLengthThreshold": "3",
                         "UIMaxAutocompleteMatches": "8",
                         "ZeroSuggestCacheCounterfactual": "true",
@@ -5745,7 +5767,6 @@
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxPreserveLongerShortcutsText",
                         "OmniboxRemoveSuggestionsFromClipboard",
-                        "OmniboxRichAutocompletion",
                         "OmniboxShortBookmarkSuggestionsByTotalInputLength",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
                         "ZeroSuggestPrefetching"
