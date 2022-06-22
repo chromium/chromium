@@ -1302,26 +1302,11 @@ Event::Event(events::HistogramValue histogram_value,
              content::BrowserContext* restrict_to_browser_context)
     : Event(histogram_value,
             event_name,
-            std::move(event_args),
+            std::move(base::Value(std::move(event_args)).GetList()),
             restrict_to_browser_context,
             GURL(),
             EventRouter::USER_GESTURE_UNKNOWN,
             mojom::EventFilteringInfo::New()) {}
-
-Event::Event(events::HistogramValue histogram_value,
-             const std::string& event_name,
-             std::vector<base::Value> event_args_tmp,
-             content::BrowserContext* restrict_to_browser_context,
-             const GURL& event_url,
-             EventRouter::UserGestureState user_gesture,
-             mojom::EventFilteringInfoPtr info)
-    : Event(histogram_value,
-            event_name,
-            std::move(base::Value(std::move(event_args_tmp)).GetList()),
-            restrict_to_browser_context,
-            event_url,
-            user_gesture,
-            std::move(info)) {}
 
 Event::~Event() = default;
 

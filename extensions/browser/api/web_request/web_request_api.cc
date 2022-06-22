@@ -314,8 +314,8 @@ void SendOnMessageEventOnUI(
   if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context))
     return;
 
-  std::vector<base::Value> event_args;
-  event_args.emplace_back(
+  base::Value::List event_args;
+  event_args.Append(
       base::Value::FromUniquePtrValue(event_details->GetAndClearDict()));
 
   EventRouter* event_router = EventRouter::Get(browser_context);
