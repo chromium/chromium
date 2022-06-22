@@ -302839,11 +302839,15 @@
          []
         ],
         "helper.sub.js": [
-         "ff446f5ee9d3c884f9867f05d2f736d3c752b100",
+         "4b42d91670252f929306fcda2e34dd4e61ea3265",
          []
         ],
         "inflight-fetch-helper.js": [
          "7832003b76b9518d5f3588bb5e9f6e0dbd8cea07",
+         []
+        ],
+        "service-worker.js": [
+         "60dceb0a6a6f5f2cf882610e3bd19e15e9533458",
          []
         ],
         "slow.py": [
@@ -311923,7 +311927,7 @@
       "bfcache": {
        "resources": {
         "common.js": [
-         "9c852bbfb3ed1d607b69de96fb3717cb4725e23e",
+         "5bb9642a83abe07612b43f35fd87f7ca00f6932c",
          []
         ]
        }
@@ -436178,6 +436182,42 @@
          }
         ]
        ],
+       "service-worker-clients-claim.https.html": [
+        "d9540c221bdf21e8e4256f30548aedbfee46e218",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "service-worker-clients-matchall.https.html": [
+        "069529dbe477c642e7396b0cd021d2f43d5e1e08",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "service-worker-controlled-after-restore.https.html": [
+        "a937eb85ac572d519bacfd265ac2f9bb7031b76b",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "service-worker-unregister.https.html": [
+        "1c3f81153c2a17a3dfc719d2cccca2079525b630",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
        "storage-events.html": [
         "6957496c3077acd5e87fa3127febfbcbbfb80099",
         [
@@ -467082,42 +467122,42 @@
      },
      "embedded-content": {
       "bfcache": {
-       "embeded-html.html": [
+       "embedded-html.html": [
         "0808538337710337f9dc8705bf1c951266b027f8",
         [
          null,
          {}
         ]
        ],
-       "embeded-img.html": [
+       "embedded-img.html": [
         "7e9d713c0a79cb64d99cb2b27c32c60713453d59",
         [
          null,
          {}
         ]
        ],
-       "embeded-js.html": [
+       "embedded-js.html": [
         "c3b027563d32e55ada6d45bfddc43afe0640e87a",
         [
          null,
          {}
         ]
        ],
-       "embeded-mp4.html": [
+       "embedded-mp4.html": [
         "fde560e5be95dfb067cd54aa5bad303e59b32e6e",
         [
          null,
          {}
         ]
        ],
-       "embeded-not-found.html": [
+       "embedded-not-found.html": [
         "0b56b5eadc536b131f386ab2724637d024e8f204",
         [
          null,
          {}
         ]
        ],
-       "embeded-type-only.html": [
+       "embedded-type-only.html": [
         "90c9d3311c3096c646d628c75402106afeb54470",
         [
          null,
