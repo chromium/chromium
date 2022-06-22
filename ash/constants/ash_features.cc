@@ -1123,8 +1123,8 @@ const base::Feature kOobeNewRecommendApps{"OobeNewRecommendApps",
 
 // Removes "Shut down" button from OOBE, except first login screen and
 // successful enrollment step.
-const base::Feature kOobeRemoveShutdownButton{
-    "OobeRemoveShutdownButton", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kOobeRemoveShutdownButton{"OobeRemoveShutdownButton",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables StartDemoModeSetupForTesting call.
 const base::Feature kOobeStartDemoModeForTesting{
