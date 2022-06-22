@@ -31,6 +31,7 @@
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/tween.h"
 
 namespace ash {
 
@@ -129,8 +130,10 @@ void AppListTestHelper::ToggleAndRunLoop(uint64_t display_id,
 void AppListTestHelper::StartSlideAnimationOnBubbleAppsPage(
     views::View* view,
     int vertical_offset,
-    base::TimeDelta duration) {
-  GetBubbleAppsPage()->SlideViewIntoPosition(view, vertical_offset, duration);
+    base::TimeDelta duration,
+    gfx::Tween::Type tween_type) {
+  GetBubbleAppsPage()->SlideViewIntoPosition(view, vertical_offset, duration,
+                                             tween_type);
 }
 
 void AppListTestHelper::CheckVisibility(bool visible) {

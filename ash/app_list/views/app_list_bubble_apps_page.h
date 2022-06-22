@@ -16,6 +16,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -214,7 +215,13 @@ class ASH_EXPORT AppListBubbleAppsPage
   // animates back to its original position with `duration`.
   void SlideViewIntoPosition(views::View* view,
                              int vertical_offset,
-                             base::TimeDelta duration);
+                             base::TimeDelta duration,
+                             gfx::Tween::Type tween_type);
+
+  // Animates `view` using a layer fade-in animation as part of the show
+  // continue section animation. Takes `view` because the same animation is used
+  // for continue tasks and for recent apps.
+  void FadeInContinueSectionView(views::View* view);
 
   // Pressed callback for `toggle_continue_section_button_`.
   void OnToggleContinueSection();

@@ -43,6 +43,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
@@ -88,10 +89,6 @@ constexpr auto kContinueSectionInsets = gfx::Insets::VH(0, 4);
 
 // Insets for the separator between the continue section and apps.
 constexpr auto kSeparatorInsets = gfx::Insets::VH(0, 16);
-
-// A slide animation's tween type.
-constexpr gfx::Tween::Type kSlideAnimationTweenType =
-    gfx::Tween::LINEAR_OUT_SLOW_IN;
 
 // Delay for the show page transform and opacity animations.
 constexpr base::TimeDelta kShowPageAnimationDelay = base::Milliseconds(50);
@@ -272,6 +269,7 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
   // Side-shelf uses faster animations.
   const base::TimeDelta slide_duration =
       is_side_shelf ? base::Milliseconds(150) : base::Milliseconds(250);
+  const gfx::Tween::Type tween_type = gfx::Tween::LINEAR_OUT_SLOW_IN;
 
   // Animate the views. Each section is initially offset down, then slides up
   // into its final position. For side shelf, each section is initially offset
@@ -286,7 +284,7 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
   if (animate_continue_label_container) {
     vertical_offset += section_offset;
     SlideViewIntoPosition(continue_label_container_, vertical_offset,
-                          slide_duration);
+                          slide_duration, tween_type);
   }
   if (continue_section_->GetVisible() &&
       continue_section_->GetTasksSuggestionsCount() > 0) {
@@ -294,19 +292,23 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
     // continue label container above.
     if (!animate_continue_label_container)
       vertical_offset += section_offset;
-    SlideViewIntoPosition(continue_section_, vertical_offset, slide_duration);
+    SlideViewIntoPosition(continue_section_, vertical_offset, slide_duration,
+                          tween_type);
   }
   if (recent_apps_->GetVisible() && recent_apps_->GetItemViewCount() > 0) {
     vertical_offset += section_offset;
-    SlideViewIntoPosition(recent_apps_, vertical_offset, slide_duration);
+    SlideViewIntoPosition(recent_apps_, vertical_offset, slide_duration,
+                          tween_type);
   }
   if (separator_->GetVisible()) {
     // The separator is not offset; it animates next to the view above it.
-    SlideViewIntoPosition(separator_, vertical_offset, slide_duration);
+    SlideViewIntoPosition(separator_, vertical_offset, slide_duration,
+                          tween_type);
   }
   if (toast_container_ && toast_container_->IsToastVisible()) {
     vertical_offset += section_offset;
-    SlideViewIntoPosition(toast_container_, vertical_offset, slide_duration);
+    SlideViewIntoPosition(toast_container_, vertical_offset, slide_duration,
+                          tween_type);
   }
 
   // The apps grid is always visible.
@@ -315,8 +317,7 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
   // animation. No need to use SlideViewIntoPosition() because this view always
   // has a layer.
   StartSlideInAnimation(
-      scrollable_apps_grid_view_, vertical_offset, slide_duration,
-      kSlideAnimationTweenType,
+      scrollable_apps_grid_view_, vertical_offset, slide_duration, tween_type,
       base::BindRepeating(&AppListBubbleAppsPage::OnAppsGridViewAnimationEnded,
                           weak_factory_.GetWeakPtr()));
 }
@@ -857,7 +858,8 @@ void AppListBubbleAppsPage::OnReorderAnimationEnded() {
 
 void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,
                                                   int vertical_offset,
-                                                  base::TimeDelta duration) {
+                                                  base::TimeDelta duration,
+                                                  gfx::Tween::Type tween_type) {
   // Animation spec:
   //
   // Y Position: Down (offset) → End position
@@ -872,14 +874,72 @@ void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,
                                     &AppListBubbleAppsPage::DestroyLayerForView,
                                     weak_factory_.GetWeakPtr(), view)
                               : base::DoNothing();
-  StartSlideInAnimation(view, vertical_offset, duration,
-                        kSlideAnimationTweenType, cleanup);
+  StartSlideInAnimation(view, vertical_offset, duration, tween_type, cleanup);
+}
+
+void AppListBubbleAppsPage::FadeInContinueSectionView(views::View* view) {
+  const bool create_layer = PrepareForLayerAnimation(view);
+
+  // If we created a layer for the view, undo that when the animation ends.
+  // The underlying views don't expose weak pointers directly, so use a weak
+  // pointer to this view, which owns its children.
+  auto cleanup = create_layer ? base::BindRepeating(
+                                    &AppListBubbleAppsPage::DestroyLayerForView,
+                                    weak_factory_.GetWeakPtr(), view)
+                              : base::DoNothing();
+
+  view->layer()->SetOpacity(0.0f);
+
+  // The animation has a delay to give the separator and apps grid time to
+  // partially slide out of the way.
+  views::AnimationBuilder()
+      .OnEnded(cleanup)
+      .OnAborted(cleanup)
+      .Once()
+      .At(base::Milliseconds(100))
+      .SetOpacity(view->layer(), 1.0f)
+      .SetDuration(base::Milliseconds(200));
 }
 
 void AppListBubbleAppsPage::OnToggleContinueSection() {
+  const int separator_initial_y = separator_->y();
+
+  // Toggle the section visibility.
   bool should_hide = !view_delegate_->ShouldHideContinueSection();
   view_delegate_->SetHideContinueSection(should_hide);
   // AppListControllerImpl will trigger UpdateContinueSectionVisibility().
+
+  // Layout() will change the position of the separator and apps grid based on
+  // the visibility of the continue section view and recent apps.
+  if (needs_layout())
+    Layout();
+
+  // The vertical offset for slide animations is the difference in separator
+  // position from before the Layout() versus its position now.
+  const int vertical_offset = separator_initial_y - separator_->y();
+  const base::TimeDelta duration = base::Milliseconds(300);
+  const gfx::Tween::Type tween_type = gfx::Tween::ACCEL_LIN_DECEL_100_3;
+
+  if (should_hide) {
+    // Don't try to fade out the continue section and recent apps because the
+    // view is already invisible. UX is OK with these sections not animating.
+
+    // The separator and apps grid slide up.
+    DCHECK_GE(vertical_offset, 0);
+    SlideViewIntoPosition(separator_, vertical_offset, duration, tween_type);
+    SlideViewIntoPosition(scrollable_apps_grid_view_, vertical_offset, duration,
+                          tween_type);
+  } else {
+    // The continue section and recent apps fade in.
+    FadeInContinueSectionView(continue_section_);
+    FadeInContinueSectionView(recent_apps_);
+
+    // The separator and apps grid slide down.
+    DCHECK_LE(vertical_offset, 0);
+    SlideViewIntoPosition(separator_, vertical_offset, duration, tween_type);
+    SlideViewIntoPosition(scrollable_apps_grid_view_, vertical_offset, duration,
+                          tween_type);
+  }
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)

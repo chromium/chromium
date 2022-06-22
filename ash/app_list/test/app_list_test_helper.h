@@ -12,6 +12,7 @@
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/test_app_list_client.h"
+#include "ui/gfx/animation/tween.h"
 
 namespace base {
 class TimeDelta;
@@ -81,7 +82,8 @@ class AppListTestHelper {
   // Slides a bubble apps page's component using a layer animation.
   void StartSlideAnimationOnBubbleAppsPage(views::View* view,
                                            int vertical_offset,
-                                           base::TimeDelta duration);
+                                           base::TimeDelta duration,
+                                           gfx::Tween::Type tween_type);
 
   // Check the visibility value of the app list and its target.
   // Fails in tests if either one doesn't match |visible|.

@@ -99,14 +99,15 @@ TEST_F(AppListBubbleAppsPageTest, SlideViewIntoPositionCleansUpLayers) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   constexpr int kVerticalOffset = 20;
   constexpr base::TimeDelta kSlideDuration = base::Milliseconds(100);
+  constexpr gfx::Tween::Type kTweenType = gfx::Tween::LINEAR;
   helper->StartSlideAnimationOnBubbleAppsPage(recent_apps, kVerticalOffset,
-                                              kSlideDuration);
+                                              kSlideDuration, kTweenType);
   ASSERT_TRUE(recent_apps->layer());
   EXPECT_TRUE(recent_apps->layer()->GetAnimator()->is_animating());
 
   // While that animation is running, run another animation.
   helper->StartSlideAnimationOnBubbleAppsPage(recent_apps, kVerticalOffset,
-                                              kSlideDuration);
+                                              kSlideDuration, kTweenType);
   auto* compositor = recent_apps->layer()->GetCompositor();
   while (recent_apps->layer() &&
          recent_apps->layer()->GetAnimator()->is_animating()) {
@@ -302,6 +303,36 @@ TEST_F(AppListBubbleAppsPageTest, CanHideContinueSection) {
   EXPECT_TRUE(apps_page->separator_for_test()->GetVisible());
 }
 
+TEST_F(AppListBubbleAppsPageTest, HideContinueSectionPlaysAnimation) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLauncherHideContinueSection);
+
+  // Open the app list without animation.
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Hide the continue section.
+  auto* apps_page = helper->GetBubbleAppsPage();
+  LeftClickOn(apps_page->toggle_continue_section_button_for_test());
+
+  // Separator and apps grid are animating.
+  auto* separator = apps_page->separator_for_test();
+  ASSERT_TRUE(separator->layer());
+  EXPECT_TRUE(separator->layer()->GetAnimator()->is_animating());
+
+  auto* apps_grid = apps_page->scrollable_apps_grid_view();
+  ASSERT_TRUE(apps_grid->layer());
+  EXPECT_TRUE(apps_grid->layer()->GetAnimator()->is_animating());
+}
+
 TEST_F(AppListBubbleAppsPageTest, CanShowContinueSectionByClickingButton) {
   base::test::ScopedFeatureList feature_list(
       features::kLauncherHideContinueSection);
@@ -337,6 +368,51 @@ TEST_F(AppListBubbleAppsPageTest, CanShowContinueSectionByClickingButton) {
   EXPECT_TRUE(helper->GetBubbleContinueSectionView()->GetVisible());
   EXPECT_TRUE(helper->GetBubbleRecentAppsView()->GetVisible());
   EXPECT_TRUE(apps_page->separator_for_test()->GetVisible());
+}
+
+TEST_F(AppListBubbleAppsPageTest, ShowContinueSectionPlaysAnimation) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLauncherHideContinueSection);
+
+  // Simulate a user with the continue section hidden on startup.
+  Shell::Get()->app_list_controller()->SetHideContinueSection(true);
+
+  // Show the app list with enough items to make the continue section and
+  // recent apps visible.
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Click the show continue section button.
+  auto* apps_page = helper->GetBubbleAppsPage();
+  LeftClickOn(apps_page->toggle_continue_section_button_for_test());
+
+  // Animations play for continue section, recent apps, separator and apps grid.
+  auto* continue_section = helper->GetBubbleContinueSectionView();
+  ASSERT_TRUE(continue_section->layer());
+  EXPECT_TRUE(continue_section->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(continue_section->layer()->opacity(), 0.0f);
+  EXPECT_EQ(continue_section->layer()->GetTargetOpacity(), 1.0f);
+
+  auto* recent_apps = helper->GetBubbleRecentAppsView();
+  ASSERT_TRUE(recent_apps->layer());
+  EXPECT_TRUE(recent_apps->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(recent_apps->layer()->opacity(), 0.0f);
+  EXPECT_EQ(recent_apps->layer()->GetTargetOpacity(), 1.0f);
+
+  auto* separator = apps_page->separator_for_test();
+  ASSERT_TRUE(separator->layer());
+  EXPECT_TRUE(separator->layer()->GetAnimator()->is_animating());
+
+  auto* apps_grid = apps_page->scrollable_apps_grid_view();
+  ASSERT_TRUE(apps_grid->layer());
+  EXPECT_TRUE(apps_grid->layer()->GetAnimator()->is_animating());
 }
 
 // Regression test for https://crbug.com/1329227
