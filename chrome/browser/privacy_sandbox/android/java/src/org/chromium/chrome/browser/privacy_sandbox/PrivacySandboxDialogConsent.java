@@ -127,14 +127,16 @@ public class PrivacySandboxDialogConsent extends Dialog implements View.OnClickL
     }
 
     private void updateDropdownControlContentDescription(View dropdownElement) {
-        // TODO(crbug.com/1286276): add CONCAT_TWO_STRINGS_WITH_PERIODS to Android strings and use
-        // that instead to avoid l10n issues.
-        String description = getContext().getResources().getString(
-                                     R.string.privacy_sandbox_consent_dropdown_button)
-                + ". "
-                + getContext().getResources().getString(mDropdownExpanded
-                                ? R.string.accessibility_expanded_group
-                                : R.string.accessibility_collapsed_group);
+        String dropdownButtonText = getContext().getResources().getString(
+                R.string.privacy_sandbox_consent_dropdown_button);
+
+        String collapseOrExpandedText = getContext().getResources().getString(mDropdownExpanded
+                        ? R.string.accessibility_expanded_group
+                        : R.string.accessibility_collapsed_group);
+
+        String description =
+                getContext().getResources().getString(R.string.concat_two_strings_with_periods,
+                        dropdownButtonText, collapseOrExpandedText);
         dropdownElement.setContentDescription(description);
     }
 
