@@ -2412,7 +2412,7 @@ if (!is_android) {
       deps += [ "//components/safe_browsing/content/common/proto:download_file_types_proto" ]
     }
 
-    if (enable_basic_printing) {
+    if (enable_basic_printing && enable_pdf) {
       sources +=
           [ "../browser/devtools/protocol/devtools_printtopdf_browsertest.cc" ]
     }
