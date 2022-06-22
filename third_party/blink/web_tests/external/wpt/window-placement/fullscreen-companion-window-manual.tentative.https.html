@@ -8,7 +8,7 @@
 <link rel="help" href="https://w3c.github.io/window-placement">
 This test uses multi-screen details to request fullscreen and open a pop-up<br>
 (companion window) in the same user activation.<br>
-It runs automated or manually with `wpt serve` and a compatible browser.<br><br>
+It runs manually with `wpt serve` and a compatible browser.<br><br>
 <button id="setUpButton">Request screen details</button>
 <ul id="popupButtons"></ul>
 <button id="cleanUpButton">Close any open popups</button><br>
@@ -54,8 +54,6 @@ promise_test(async setUpTest => {
   for (const [i, fullscreenScreen] of screenDetails.screens.entries()) {
     const popupScreen =
       screenDetails.screens[(i + 1) % screenDetails.screens.length];
-    // Fullscreen and popup are the same in single screen environments.
-    if (popupScreen === undefined) popupScreen = fullscreenScreen;
     let testName =
       `Fullscreen on '${fullscreenScreen.label}' and open popup on '${popupScreen.label}'`;
     promise_test(async popupTest => {
@@ -76,7 +74,7 @@ promise_test(async setUpTest => {
         { screen: fullscreenScreen }
       );
       await testPopupOnScreen(popupTest, popupScreen,
-        /*expectPopup=*/fullscreenScreen !== popupScreen);
+                             /*expectPopup=*/fullscreenScreen !== popupScreen);
     }, testName);
   }
 }, 'Use multi-screen details to request fullscreen and open a pop-up in the same user activation.');
