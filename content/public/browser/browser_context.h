@@ -157,6 +157,12 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   using StoragePartitionCallback =
       base::RepeatingCallback<void(StoragePartition*)>;
   void ForEachStoragePartition(StoragePartitionCallback callback);
+
+  // Disposes the given StoragePartition. Only in-memory storage partition
+  // disposal is supported. Caller needs to be careful that no outstanding
+  // references are left to access the disposed storage partition.
+  void DisposeStoragePartition(StoragePartition* storage_partition);
+
   // Returns the number of StoragePartitions that exist for `this`
   // BrowserContext.
   size_t GetStoragePartitionCount();

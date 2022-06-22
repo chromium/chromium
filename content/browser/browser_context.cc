@@ -157,6 +157,15 @@ void BrowserContext::ForEachStoragePartition(
   partition_map->ForEach(std::move(callback));
 }
 
+void BrowserContext::DisposeStoragePartition(
+    StoragePartition* storage_partition) {
+  StoragePartitionImplMap* partition_map = impl()->storage_partition_map();
+  if (!partition_map)
+    return;
+
+  partition_map->DisposeInMemory(storage_partition);
+}
+
 size_t BrowserContext::GetStoragePartitionCount() {
   StoragePartitionImplMap* partition_map = impl()->storage_partition_map();
   return partition_map ? partition_map->size() : 0;
