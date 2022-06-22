@@ -2669,7 +2669,8 @@ public class ExternalNavigationHandlerTest {
 
         @Override
         protected OverrideUrlLoadingResult startActivity(Intent intent, boolean proxy,
-                boolean requiresIntentChooser, List<ResolveInfo> resolvingInfos,
+                boolean requiresIntentChooser,
+                ExternalNavigationHandler.QueryIntentActivitiesSupplier resolvingInfos,
                 ResolveActivitySupplier resolveActivity, GURL browserFallbackUrl,
                 GURL intentDataUrl, GURL referrerUrl) {
             mStartActivityIntent = intent;
@@ -3181,7 +3182,6 @@ public class ExternalNavigationHandlerTest {
 
         @Override
         public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {
-            Assert.assertTrue((flags & PackageManager.MATCH_DEFAULT_ONLY) > 0);
             return mDelegate.queryIntentActivities(intent);
         }
 
