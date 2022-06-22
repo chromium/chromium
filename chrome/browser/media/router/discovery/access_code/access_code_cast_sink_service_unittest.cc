@@ -270,7 +270,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
 
   // Expect cast sink is NOT removed from the media router since it
   // is not an access code sink.
-  access_code_cast_sink_service_->HandleMediaRouteRemovedByAccessCode(
+  access_code_cast_sink_service_->HandleMediaRouteDiscoveredByAccessCode(
       &cast_sink1);
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               DisconnectAndRemoveSink(cast_sink1))
@@ -288,7 +288,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
       media_route_access.media_route_id());
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 
-  access_code_cast_sink_service_->HandleMediaRouteRemovedByAccessCode(
+  access_code_cast_sink_service_->HandleMediaRouteDiscoveredByAccessCode(
       &access_code_sink2);
   // Expect that there is a pending attempt to examine the sink to see if it
   // should be expired.
@@ -347,7 +347,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
 
   // Expect cast sink is NOT removed from the media router since it
   // is not an access code sink.
-  access_code_cast_sink_service_->HandleMediaRouteRemovedByAccessCode(
+  access_code_cast_sink_service_->HandleMediaRouteDiscoveredByAccessCode(
       &cast_sink1);
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               DisconnectAndRemoveSink(cast_sink1))
@@ -365,7 +365,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
       media_route_access.media_route_id());
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 
-  access_code_cast_sink_service_->HandleMediaRouteRemovedByAccessCode(
+  access_code_cast_sink_service_->HandleMediaRouteDiscoveredByAccessCode(
       &access_code_sink2);
   // Expect that there is a pending attempt to examine the sink to see if it
   // should be expired.
@@ -425,7 +425,7 @@ TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouterWithRoute) {
       access_code_cast_sink_service_->media_routes_observer_->removed_route_id_,
       media_route_cast.media_route_id());
 
-  access_code_cast_sink_service_->HandleMediaRouteRemovedByAccessCode(
+  access_code_cast_sink_service_->HandleMediaRouteDiscoveredByAccessCode(
       &cast_sink1);
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 }
@@ -930,55 +930,6 @@ TEST_F(AccessCodeCastSinkServiceTest, TestSetExpirationTimer) {
                    ->GetDict()
                    .empty());
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
-}
-
-TEST_F(AccessCodeCastSinkServiceTest,
-       TestExpirationTimerWithNoDelayStartedOnRouteAdded) {
-  // Test to see that an expiration timer will be started (and it will overwrite
-  // previous starts) IFF a route was successfully added for that sink.
-  // Otherwise the previous expiration timer with that given delay will hold.
-  MediaSinkInternal cast_sink1 = CreateCastSink(1);
-  cast_sink1.cast_data().discovery_type =
-      CastDiscoveryType::kAccessCodeManualEntry;
-  SetDeviceDurationPrefForTest(base::Seconds(1));
-  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink1);
-
-  access_code_cast_sink_service_->StoreSinkAndSetExpirationTimer(
-      cast_sink1.id());
-  FastForwardUiAndIoTasks();
-  content::RunAllTasksUntilIdle();
-  FastForwardUiAndIoTasks();
-
-  // Expect the session timer is running.
-  EXPECT_TRUE(access_code_cast_sink_service_
-                  ->current_session_expiration_timers_[cast_sink1.id()]
-                  ->IsRunning());
-
-  // Because we have a delay on timers started before a route is added, going
-  // forward less than that delay should not expire the sink yet.
-  task_environment_.FastForwardBy(
-      AccessCodeCastSinkService::kExpirationTimerDelay - base::Seconds(5));
-
-  // Add a cast sink discovered by access code to the list of routes.
-  MediaRoute media_route_access = CreateRouteForTesting(cast_sink1);
-  std::vector<MediaRoute> route_list = {media_route_access};
-
-  // Expect that the added_route_id_ member variable includes the newly added
-  // route.
-  access_code_cast_sink_service_->media_routes_observer_->OnRoutesUpdated(
-      route_list);
-  EXPECT_FALSE(access_code_cast_sink_service_->media_routes_observer_
-                   ->added_route_id_.empty());
-  FastForwardUiAndIoTasks();
-  content::RunAllTasksUntilIdle();
-  FastForwardUiAndIoTasks();
-
-  // The timer should now be reset to include no delay since the route was
-  // successfully added. We now expire it.
-  task_environment_.FastForwardBy(base::Seconds(2));
-  EXPECT_FALSE(access_code_cast_sink_service_
-                   ->current_session_expiration_timers_[cast_sink1.id()]
-                   ->IsRunning());
 }
 
 TEST_F(AccessCodeCastSinkServiceTest, TestResetExpirationTimersNetworkChange) {

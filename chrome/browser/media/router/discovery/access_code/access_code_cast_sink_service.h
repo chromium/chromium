@@ -101,22 +101,18 @@ class AccessCodeCastSinkService : public KeyedService,
                              TestChangeNetworkWithRouteActive);
     FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                              TestChangeNetworkWithRouteActiveExpiration);
-    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                             TestExpirationTimerWithNoDelayStartedOnRouteAdded);
     // media_router::MediaRoutesObserver:
     void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override;
 
     // Set of route ids that is updated whenever OnRoutesUpdated is called.
-    std::vector<MediaRoute::Id> previous_routes_;
+    std::vector<MediaRoute::Id> old_routes_;
 
     MediaRoute::Id removed_route_id_;
-    MediaRoute::Id added_route_id_;
 
     const raw_ptr<AccessCodeCastSinkService> access_code_sink_service_;
 
     base::WeakPtrFactory<AccessCodeMediaRoutesObserver> weak_ptr_factory_{this};
   };
-  // TODO(b/234892353): Remove friend class AccessCodeCastSinkServiceFactory
   friend class AccessCodeCastSinkServiceFactory;
   friend class AccessCodeCastSinkServiceTest;
   friend class AccessCodeCastHandlerTest;
@@ -172,8 +168,6 @@ class AccessCodeCastSinkService : public KeyedService,
                            TestChangeNetworkWithRouteActive);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            TestChangeNetworkWithRouteActiveExpiration);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestExpirationTimerWithNoDelayStartedOnRouteAdded);
 
   // Constructor used for testing.
   AccessCodeCastSinkService(
@@ -195,16 +189,7 @@ class AccessCodeCastSinkService : public KeyedService,
                              MediaSink::Id sink_id,
                              bool channel_opened);
 
-  bool IsSinkValidAccessCodeSink(const MediaSinkInternal* sink);
-
-  // Handles removal from media router via expiration if a route with an access
-  // code cast sink has ended.
-  void HandleMediaRouteRemovedByAccessCode(const MediaSinkInternal* sink);
-
-  // Handles starting of expiration timers if a access code cast route has been
-  // added via access code casting.
-  void HandleMediaRouteAddedByAccessCode(const MediaSinkInternal* sink);
-
+  void HandleMediaRouteDiscoveredByAccessCode(const MediaSinkInternal* sink);
   void OnAccessCodeRouteRemoved(const MediaSinkInternal* sink);
   void OpenChannelIfNecessary(const MediaSinkInternal& sink,
                               AddSinkResultCallback add_sink_callback,
@@ -216,7 +201,8 @@ class AccessCodeCastSinkService : public KeyedService,
 
   // Returns a MediaRoute if the given |sink_id| corresponds to a route
   // currently active in the media router.
-  absl::optional<const MediaRoute> GetActiveRoute(const MediaSink::Id& sink_id);
+  absl::optional<const MediaRoute::Id> GetActiveRouteId(
+      const MediaSink::Id& sink_id);
 
   void InitAllStoredDevices();
   void InitExpirationTimers(const std::vector<MediaSinkInternal> cast_sinks);
@@ -263,23 +249,12 @@ class AccessCodeCastSinkService : public KeyedService,
   cast_channel::CastSocketOpenParams CreateCastSocketOpenParams(
       const MediaSinkInternal& sink);
 
-  // This function checks if a timer already exists for the given sink and
-  // resets it given the new delay. Otherwise it will simply start the timer
-  // with the given delay.
-  void StartExpirationTimerWithDelay(const MediaSinkInternal* sink,
-                                     base::TimeDelta delay);
-
   // KeyedService.
   void Shutdown() override;
 
   void SetTaskRunnerForTest(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
     task_runner_ = task_runner;
-  }
-
-  const raw_ptr<media_router::CastMediaSinkServiceImpl>
-  GetCastMediaSinkServiceImpl() {
-    return cast_media_sink_service_impl_;
   }
 
   // Owns us via the KeyedService mechanism.
