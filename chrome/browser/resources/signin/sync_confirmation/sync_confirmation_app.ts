@@ -61,23 +61,6 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         type: Boolean,
         value: false,
       },
-
-      syncForced_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('syncForced');
-        }
-      },
-
-      syncOptionalClass_: {
-        type: String,
-        value() {
-          if (loadTimeData.getBoolean('syncForced')) {
-            return '';
-          }
-          return 'sync-optional';
-        },
-      },
     };
   }
 
@@ -85,8 +68,6 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private anyButtonClicked_: boolean;
   private isModalDialog_: boolean;
   private showEnterpriseBadge_: boolean;
-  private syncForced_: boolean;
-  private syncOptionalClass_: string;
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
       SyncConfirmationBrowserProxyImpl.getInstance();
 

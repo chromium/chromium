@@ -2370,14 +2370,12 @@ TEST_F(IdentityManagerTest, SetPrimaryAccount) {
   RecreateIdentityManager(AccountConsistencyMethod::kDisabled,
                           PrimaryAccountManagerSetup::kNoAuthenticatedAccount);
 
-  // We should have a Primary Account set up automatically.
-  ConsentLevel consent_level =
-      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)
-          ? ConsentLevel::kSignin
-          : ConsentLevel::kSync;
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(consent_level));
-  EXPECT_EQ(kTestGaiaId,
-            identity_manager()->GetPrimaryAccountInfo(consent_level).gaia);
+  // We should have a non-syncing Primary Account set up automatically.
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_EQ(
+      kTestGaiaId,
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia);
 }
 
 // TODO(https://crbug.com/1223364): Remove this when all the users are migrated.
@@ -2395,14 +2393,11 @@ TEST_F(IdentityManagerTest, SetPrimaryAccountClearsExistingPrimaryAccount) {
   // provided by the SigninClient.
   RecreateIdentityManager(AccountConsistencyMethod::kDisabled,
                           PrimaryAccountManagerSetup::kWithAuthenticatedAccout);
-
-  ConsentLevel consent_level =
-      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)
-          ? ConsentLevel::kSignin
-          : ConsentLevel::kSync;
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(consent_level));
-  EXPECT_EQ(kTestGaiaId2,
-            identity_manager()->GetPrimaryAccountInfo(consent_level).gaia);
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_EQ(
+      kTestGaiaId2,
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia);
 }
 #endif
 

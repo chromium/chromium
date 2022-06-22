@@ -24,9 +24,7 @@
     margin: auto 0;
   }
 
-  /* The settings button is at the start of the line (opposite to other buttons)
-     when sync is optional. */
-  .sync-optional #settingsButton {
+  #settingsButton {
     inset-inline-start: var(--action-container-padding);
     position: absolute;
   }
@@ -244,7 +242,7 @@
     </div>
     <div class="action-row">
       <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
-      <div class$="action-container [[syncOptionalClass_]]">
+      <div class="action-container">
         <cr-button class="action-button" id="confirmButton"
             on-click="onConfirm_" disabled="[[anyButtonClicked_]]"
             consent-confirmation autofocus>
@@ -257,7 +255,7 @@
           </cr-button>
         </if>
         <cr-button id="cancelButton" on-click="onUndo_"
-            disabled="[[anyButtonClicked_]]" hidden="[[syncForced_]]">
+            disabled="[[anyButtonClicked_]]">
           $i18n{syncConfirmationUndoLabel}
         </cr-button>
         <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
@@ -297,8 +295,7 @@
     </div>
     <div class="action-row">
       <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
-      <div id="buttonsContainer"
-          class$="action-container [[syncOptionalClass_]]">
+      <div id="buttonsContainer" class="action-container">
         <cr-button class="action-button" id="confirmButton"
             on-click="onConfirm_" disabled="[[anyButtonClicked_]]"
             consent-confirmation>
@@ -311,7 +308,7 @@
           </cr-button>
         </if>
         <cr-button id="notNowButton" on-click="onUndo_"
-          disabled="[[anyButtonClicked_]]" hidden="[[syncForced_]]">
+          disabled="[[anyButtonClicked_]]">
           $i18n{syncConfirmationUndoLabel}
         </cr-button>
         <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">

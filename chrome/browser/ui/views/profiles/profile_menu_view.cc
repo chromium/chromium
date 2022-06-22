@@ -54,7 +54,6 @@
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -634,9 +633,7 @@ void ProfileMenuView::BuildFeatureButtons() {
   bool add_sign_out_button = has_unconsented_account && !has_primary_account;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Clearing the primary account is not allowed in the main profile.
-  add_sign_out_button &=
-      (!profile->IsMainProfile() &&
-       base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles));
+  add_sign_out_button &= !profile->IsMainProfile();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   // The sign-out button is always at the bottom.
   if (add_sign_out_button) {

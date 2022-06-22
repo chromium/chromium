@@ -299,16 +299,6 @@ export class SettingsSyncAccountControlElement extends
         !this.getPref('signin.allowed_on_next_startup').value;
   }
 
-  private isNonSyncingProfilesSupported_(): boolean {
-    // <if expr="chromeos_lacros">
-    return loadTimeData.getBoolean('nonSyncingProfilesEnabled');
-    // </if>
-
-    // <if expr="not chromeos_lacros">
-    return true;
-    // </if>
-  }
-
   private shouldShowTurnOffButton_(): boolean {
     // <if expr="chromeos_ash">
     if (this.syncStatus.domain) {
@@ -318,10 +308,6 @@ export class SettingsSyncAccountControlElement extends
       return false;
     }
     // </if>
-
-    if (!this.isNonSyncingProfilesSupported_()) {
-      return false;
-    }
 
     return !this.hideButtons && !this.showSetupButtons_ &&
         !!this.syncStatus.signedIn;

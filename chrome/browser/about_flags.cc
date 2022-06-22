@@ -8447,11 +8447,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLacrosMergeIcuDataFileDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(base::i18n::kLacrosMergeIcuDataFile)},
 
-    {"lacros-non-syncing-profiles",
-     flag_descriptions::kLacrosNonSyncingProfilesName,
-     flag_descriptions::kLacrosNonSyncingProfilesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(switches::kLacrosNonSyncingProfiles)},
-
     {"lacros-screen-coordinates-enabled",
      flag_descriptions::kLacrosScreenCoordinatesEnabledName,
      flag_descriptions::kLacrosScreenCoordinatesEnabledDescription,

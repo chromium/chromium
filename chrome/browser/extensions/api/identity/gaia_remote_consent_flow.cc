@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "build/chromeos_buildflags.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/multilogin_parameters.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "content/public/browser/storage_partition.h"
@@ -71,8 +69,7 @@ void GaiaRemoteConsentFlow::Start() {
         WebAuthFlow::GET_AUTH_TOKEN);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // `profile_` may be nullptr in tests.
-    if (profile_ &&
-        base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
+    if (profile_) {
       AccountReconcilorFactory::GetForProfile(profile_)
           ->GetConsistencyCookieManager()
           ->AddExtraCookieManager(GetCookieManagerForPartition());
@@ -198,8 +195,7 @@ void GaiaRemoteConsentFlow::SetWebAuthFlowForTesting(
   web_flow_ = std::move(web_auth_flow);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // `profile_` may be nullptr in tests.
-  if (profile_ &&
-      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
+  if (profile_) {
     AccountReconcilorFactory::GetForProfile(profile_)
         ->GetConsistencyCookieManager()
         ->AddExtraCookieManager(GetCookieManagerForPartition());
@@ -260,8 +256,7 @@ void GaiaRemoteConsentFlow::DetachWebAuthFlow() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // `profile_` may be nullptr in tests.
-  if (profile_ &&
-      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
+  if (profile_) {
     AccountReconcilorFactory::GetForProfile(profile_)
         ->GetConsistencyCookieManager()
         ->RemoveExtraCookieManager(GetCookieManagerForPartition());

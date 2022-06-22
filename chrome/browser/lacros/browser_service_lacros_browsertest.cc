@@ -39,7 +39,6 @@
 #include "chromeos/startup/browser_init_params.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -535,8 +534,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   EXPECT_FALSE(profile->IsOffTheRecord());
 }
 
-// Tests for lacros-chrome that require `LacrosNonSyncingProfiles` to be
-// enabled.
+// Tests for non-syncing profiles.
 class BrowserServiceLacrosNonSyncingProfilesBrowserTest
     : public BrowserServiceLacrosBrowserTest {
  public:
@@ -563,8 +561,6 @@ class BrowserServiceLacrosNonSyncingProfilesBrowserTest
   // be triggered and completed before we enter the test body.
   base::HistogramTester histogram_tester_;
 
-  base::test::ScopedFeatureList feature_list_{
-      switches::kLacrosNonSyncingProfiles};
   profiles::testing::ScopedNonEnterpriseDomainSetterForTesting
       non_enterprise_domain_setter_;
 };

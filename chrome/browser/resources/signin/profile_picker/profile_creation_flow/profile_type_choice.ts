@@ -77,17 +77,6 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
         value: false,
       },
       // </if>
-
-      /**
-       * If true, it is possible to create local profiles without sign-in.
-       */
-      localProfileCreationFlowSupported_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('localProfileCreationFlowSupported');
-        },
-      },
-
     };
   }
 

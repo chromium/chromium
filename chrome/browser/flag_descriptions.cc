@@ -5698,11 +5698,6 @@ const char kLacrosMergeIcuDataFileName[] =
 const char kLacrosMergeIcuDataFileDescription[] =
     "Enables sharing common areas of icudtl.dat between Ash and Lacros.";
 
-const char kLacrosNonSyncingProfilesName[] =
-    "Enable non-syncing profiles on lacros";
-const char kLacrosNonSyncingProfilesDescription[] =
-    "Enables further types of profiles: (1) local, (2) signed-in non-syncing.";
-
 const char kLacrosScreenCoordinatesEnabledName[] =
     "Enable screen coordinates system in lacros-chrome";
 const char kLacrosScreenCoordinatesEnabledDescription[] =

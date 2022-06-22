@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -832,9 +831,6 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
       // On every platform except ash, revoke the Sync consent/Clear primary
       // account after a dashboard clear.
       if (!IsLocalSyncEnabled() &&
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-          base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles) &&
-#endif
           identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
         signin::PrimaryAccountMutator* account_mutator =
             identity_manager_->GetPrimaryAccountMutator();

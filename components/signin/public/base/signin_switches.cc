@@ -59,10 +59,4 @@ const base::Feature kTangibleSync{"TangibleSync",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Allows local (not signed-in) profiles on lacros.
-const base::Feature kLacrosNonSyncingProfiles{"LacrosNonSyncingProfiles",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 }  // namespace switches

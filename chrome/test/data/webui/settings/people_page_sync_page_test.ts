@@ -40,7 +40,6 @@ suite('SyncSettingsTests', function() {
   let encryptWithPassphrase: CrRadioButtonElement;
 
   function setupSyncPage() {
-    loadTimeData.overrideValues({nonSyncingProfilesEnabled: true});
     document.body.innerHTML = '';
     syncPage = document.createElement('settings-sync-page');
     const router = Router.getInstance();

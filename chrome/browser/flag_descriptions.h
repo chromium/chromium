@@ -3266,9 +3266,6 @@ extern const char kDesktopCaptureLacrosV2Description[];
 extern const char kLacrosMergeIcuDataFileName[];
 extern const char kLacrosMergeIcuDataFileDescription[];
 
-extern const char kLacrosNonSyncingProfilesName[];
-extern const char kLacrosNonSyncingProfilesDescription[];
-
 extern const char kLacrosScreenCoordinatesEnabledName[];
 extern const char kLacrosScreenCoordinatesEnabledDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)

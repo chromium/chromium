@@ -25,7 +25,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/signin/public/base/avatar_icon_util.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
@@ -38,16 +37,6 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/webui_generated_resources.h"
-
-namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool SyncForced() {
-  return !base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles);
-}
-#endif
-
-}  // namespace
 
 SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
     : SigninWebDialogUI(web_ui), profile_(Profile::FromWebUI(web_ui)) {
@@ -102,13 +91,7 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   int info_title_id = IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE;
   int confirm_label_id = IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (SyncForced()) {
-    title_id = IDS_SYNC_CONFIRMATION_TITLE_LACROS;
-    info_title_id = IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE_LACROS;
-    confirm_label_id = IDS_DONE;
-  } else {
-    title_id = IDS_SYNC_CONFIRMATION_TITLE_LACROS_NON_FORCED;
-  }
+  title_id = IDS_SYNC_CONFIRMATION_TITLE_LACROS_NON_FORCED;
 #endif
   AddStringResource(source, "syncConfirmationTitle", title_id);
   AddStringResource(source, "syncConfirmationSyncInfoTitle", info_title_id);
@@ -130,12 +113,6 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
 
   source->AddBoolean("isModalDialog", is_modal_dialog);
 
-  bool sync_forced = false;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (SyncForced())
-    sync_forced = true;
-#endif
-  source->AddBoolean("syncForced", sync_forced);
   source->AddString("accountPictureUrl",
                     profiles::GetPlaceholderAvatarIconUrl());
 

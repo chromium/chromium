@@ -88,7 +88,6 @@
 #include "chrome/browser/signin/signin_ui_delegate_impl_lacros.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
-#include "components/signin/public/base/signin_switches.h"
 #endif
 
 namespace {
@@ -215,10 +214,6 @@ class ProfileMenuViewTestBase {
 
  private:
   Browser* target_browser_ = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::test::ScopedFeatureList feature_list_{
-      switches::kLacrosNonSyncingProfiles};
-#endif
 };
 
 class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,

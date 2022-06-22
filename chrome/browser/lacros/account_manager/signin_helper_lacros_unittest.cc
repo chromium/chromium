@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -25,7 +24,6 @@
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/core/browser/consistency_cookie_manager.h"
 #include "components/signin/core/browser/mirror_landing_account_reconcilor_delegate.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -188,9 +186,6 @@ class SigninHelperLacrosTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kLacrosNonSyncingProfiles};
-
   content::BrowserTaskEnvironment task_environment;
   account_manager::MockAccountManagerFacade mock_facade_;
   sync_preferences::TestingPrefServiceSyncable prefs_;

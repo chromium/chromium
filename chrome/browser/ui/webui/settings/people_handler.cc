@@ -69,7 +69,6 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "components/signin/public/base/signin_switches.h"
 #endif
 
 using content::WebContents;
@@ -441,9 +440,7 @@ base::Value PeopleHandler::GetStoredAccountsList() {
   populate_accounts_list =
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  populate_accounts_list =
-      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles) &&
-      !profile_->IsMainProfile();
+  populate_accounts_list = !profile_->IsMainProfile();
 #endif
 
   if (populate_accounts_list) {
@@ -772,15 +769,9 @@ void PeopleHandler::CloseSyncSetup() {
           sync_service->StopAndClear();
 // ChromeOS ash doesn't support signing out.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-          bool should_revoke_sync_consent =
-              !sync_service->GetUserSettings()->IsFirstSetupComplete();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-          should_revoke_sync_consent &=
-              base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles);
-#endif
           // Revoke sync consent on desktop Chrome if they click cancel during
           // initial setup or close sync setup without confirming sync.
-          if (should_revoke_sync_consent) {
+          if (!sync_service->GetUserSettings()->IsFirstSetupComplete()) {
             IdentityManagerFactory::GetForProfile(profile_)
                 ->GetPrimaryAccountMutator()
                 ->RevokeSyncConsent(

@@ -72,7 +72,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -238,9 +237,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<SystemHandler>());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean("isSecondaryUser", !profile->IsMainProfile());
-  html_source->AddBoolean(
-      "nonSyncingProfilesEnabled",
-      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles));
 #endif
 
 #endif

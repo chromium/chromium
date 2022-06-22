@@ -14,31 +14,12 @@ GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "components/signin/public/base/signin_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-GEN('#if BUILDFLAG(IS_CHROMEOS_LACROS)');
-GEN('#include "components/signin/public/base/signin_switches.h"');
-GEN('#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)');
-
-GEN('#if BUILDFLAG(IS_CHROMEOS_LACROS)');
-GEN('#define MAYBE_LACROS_NON_SYNCING_PROFILES switches::kLacrosNonSyncingProfiles');
-GEN('#else');
-GEN('#define MAYBE_LACROS_NON_SYNCING_PROFILES');
-GEN('#endif // BUILDFLAG(IS_CHROMEOS_LACROS)');
-
 /* eslint-disable no-var */
 
 class SigninBrowserTest extends PolymerTest {
   /** @override */
   get browsePreload() {
     throw new Error('this is abstract and should be overriden by subclasses');
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'MAYBE_LACROS_NON_SYNCING_PROFILES',
-      ]
-    };
   }
 }
 

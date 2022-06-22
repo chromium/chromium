@@ -72,7 +72,6 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -1837,9 +1836,6 @@ class ProfilePickerLacrosFirstRunBrowserTest : public ProfilePickerTestBase {
   // Start tracking the logged histograms from the beginning, since the FRE can
   // be triggered and completed before we enter the test body.
   base::HistogramTester histogram_tester_;
-
-  base::test::ScopedFeatureList feature_list_{
-      switches::kLacrosNonSyncingProfiles};
 
   // Lifts the timeout to make sure it is not hiding errors where we don't get
   // the signal that the sync service started.

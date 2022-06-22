@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -37,7 +36,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -201,12 +199,6 @@ LacrosFirstRunService::~LacrosFirstRunService() = default;
 
 bool LacrosFirstRunService::ShouldOpenFirstRun() const {
   DCHECK(IsFirstRunEligibleProfile(profile_));
-
-  if (!base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
-    // Sync is already always forced, no point showing the FRE to ask the user
-    // to sync.
-    return false;
-  }
 
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();

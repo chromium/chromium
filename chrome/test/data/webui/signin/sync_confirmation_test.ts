@@ -17,79 +17,68 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
 
   const STANDARD_CONSENT_CONFIRMATION = 'Yes, I\'m in';
 
-  [true, false].forEach(syncForcedEnabled => {
-    const suiteForcedSuffix = syncForcedEnabled ? 'SyncForced' : 'SyncOptional';
+  suite(`SigninSyncConfirmationTest${suiteDesignSuffix}`, function() {
+    let app: SyncConfirmationAppElement;
+    let browserProxy: TestSyncConfirmationBrowserProxy;
 
-    suite(
-        `SigninSyncConfirmationTest${suiteDesignSuffix}${suiteForcedSuffix}`,
-        function() {
-          let app: SyncConfirmationAppElement;
-          let browserProxy: TestSyncConfirmationBrowserProxy;
+    function testButtonClick(buttonSelector: string) {
+      const allButtons =
+          Array.from(app.shadowRoot!.querySelectorAll('cr-button')) as
+          Array<CrButtonElement>;
+      const actionButton =
+          app.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+      const spinner = app.shadowRoot!.querySelector('paper-spinner-lite');
 
-          function testButtonClick(buttonSelector: string) {
-            const allButtons =
-                Array.from(app.shadowRoot!.querySelectorAll('cr-button')) as
-                Array<CrButtonElement>;
-            const actionButton = app.shadowRoot!.querySelector(
-                                     buttonSelector) as CrButtonElement;
-            const spinner = app.shadowRoot!.querySelector('paper-spinner-lite');
+      allButtons.forEach(button => assertFalse(button.disabled));
+      assertFalse(spinner!.active);
 
-            allButtons.forEach(button => assertFalse(button.disabled));
-            assertFalse(spinner!.active);
+      actionButton.click();
 
-            actionButton.click();
+      allButtons.forEach(button => assertTrue(button.disabled));
+      assertTrue(spinner!.active);
+    }
 
-            allButtons.forEach(button => assertTrue(button.disabled));
-            assertTrue(spinner!.active);
-          }
+    setup(async function() {
+      browserProxy = new TestSyncConfirmationBrowserProxy();
+      SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
+      loadTimeData.overrideValues({
+        isModalDialog: isModalDialogDesignEnabled,
+      });
+      document.body.innerHTML = '';
+      app = document.createElement('sync-confirmation-app');
+      document.body.append(app);
+      // Check that the account image is requested when the app element is
+      // attached to the document.
+      await browserProxy.whenCalled('requestAccountInfo');
+    });
 
-          setup(async function() {
-            browserProxy = new TestSyncConfirmationBrowserProxy();
-            SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
-            loadTimeData.overrideValues({
-              isModalDialog: isModalDialogDesignEnabled,
-              syncForced: syncForcedEnabled
-            });
-            document.body.innerHTML = '';
-            app = document.createElement('sync-confirmation-app');
-            document.body.append(app);
-            // Check that the account image is requested when the app element is
-            // attached to the document.
-            await browserProxy.whenCalled('requestAccountInfo');
-          });
+    // Tests that no DCHECKS are thrown during initialization of the UI.
+    test('LoadPage', function() {
+      const cancelButton =
+          app.shadowRoot!.querySelector(
+              isModalDialogDesignEnabled ? '#cancelButton' : '#notNowButton') as
+          HTMLElement;
+      assertFalse(cancelButton!.hidden);
+    });
 
-          // Tests that no DCHECKS are thrown during initialization of the UI.
-          test('LoadPage', function() {
-            const cancelButton = app.shadowRoot!.querySelector(
-                                     isModalDialogDesignEnabled ?
-                                         '#cancelButton' :
-                                         '#notNowButton') as HTMLElement;
-            if (syncForcedEnabled) {
-              assertTrue(cancelButton!.hidden);
-            } else {
-              assertFalse(cancelButton!.hidden);
-            }
-          });
+    // Tests clicking on confirm button.
+    test('ConfirmClicked', async function() {
+      testButtonClick('#confirmButton');
+      await browserProxy.whenCalled('confirm');
+    });
 
-          // Tests clicking on confirm button.
-          test('ConfirmClicked', async function() {
-            testButtonClick('#confirmButton');
-            await browserProxy.whenCalled('confirm');
-          });
+    // Tests clicking on cancel button.
+    test('CancelClicked', async function() {
+      testButtonClick(
+          isModalDialogDesignEnabled ? '#cancelButton' : '#notNowButton');
+      await browserProxy.whenCalled('undo');
+    });
 
-          // Tests clicking on cancel button.
-          test('CancelClicked', async function() {
-            testButtonClick(
-                isModalDialogDesignEnabled ? '#cancelButton' : '#notNowButton');
-            await browserProxy.whenCalled('undo');
-          });
-
-          // Tests clicking on settings button.
-          test('SettingsClicked', async function() {
-            testButtonClick('#settingsButton');
-            await browserProxy.whenCalled('goToSettings');
-          });
-        });
+    // Tests clicking on settings button.
+    test('SettingsClicked', async function() {
+      testButtonClick('#settingsButton');
+      await browserProxy.whenCalled('goToSettings');
+    });
   });
 
   // This test suite verifies that the consent strings recorded in various

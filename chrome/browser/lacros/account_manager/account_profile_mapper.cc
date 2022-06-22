@@ -23,23 +23,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "components/account_manager_core/account.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
-
-namespace {
-
-void DeleteProfile(const base::FilePath& profile_path,
-                   ProfileMetrics::ProfileDelete delete_metric) {
-  // Pass an empty callback because this should never delete the last profile.
-  // TODO(https://crbug.com/1257610): ensure that the user cannot cancel the
-  // profile deletion.
-  g_browser_process->profile_manager()->MaybeScheduleProfileForDeletion(
-      profile_path, base::DoNothing(), delete_metric);
-}
-
-}  // namespace
 
 AccountProfileMapper::AccountProfileMapper(
     account_manager::AccountManagerFacade* facade,
@@ -474,8 +460,12 @@ AccountProfileMapper::RemoveStaleAccounts() {
     if (entry_needs_update)
       entry->SetGaiaIds(entry_ids);
     if (ShouldDeleteProfile(entry)) {
-      DeleteProfile(
-          entry->GetPath(),
+      // Pass an empty callback because this should never delete the last
+      // profile.
+      // TODO(https://crbug.com/1257610): ensure that the user cannot cancel the
+      // profile deletion.
+      g_browser_process->profile_manager()->MaybeScheduleProfileForDeletion(
+          entry->GetPath(), base::DoNothing(),
           ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED_LACROS);
     }
   }
@@ -637,11 +627,6 @@ bool AccountProfileMapper::ShouldDeleteProfile(
     return false;
   }
 
-  // Secondary profile.
-  if (!base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
-    return primary_account_deleted;
-  }
-
   // If non syncing profiles enabled, only delete syncing managed profile.
   // For non managed profiles, the SigninManager will signout the profile if
   // there is no refresh token for the primary account as soon as the profile is
@@ -656,26 +641,16 @@ void AccountProfileMapper::MigrateOldProfiles() {
   for (ProfileAttributesEntry* entry :
        profile_attributes_storage_->GetAllProfilesAttributes()) {
     // Populate missing Gaia Ids.
-    // Note: If `kLacrosNonSyncingProfiles` is enabled, this code might
-    // re-insert the Gaia id of a profile that has not been loaded since its
-    // primary account removal from the OS (AuthInfo did not re-set).
-    // The account will be removed later if it does not exist in the OS in
-    // `RemoveStaleAccounts`.
+    // Note: this code might re-insert the Gaia id of a profile that has not
+    // been loaded since its primary account removal from the OS (AuthInfo did
+    // not re-set). The account will be removed later if it does not exist in
+    // the OS in `RemoveStaleAccounts`.
     std::string primary_gaia_id = entry->GetGAIAId();
     if (!primary_gaia_id.empty()) {
       base::flat_set<std::string> gaia_ids = entry->GetGaiaIds();
       auto inserted_result = gaia_ids.insert(primary_gaia_id);
       if (inserted_result.second)
         entry->SetGaiaIds(gaia_ids);
-    }
-
-    base::FilePath profile_path = entry->GetPath();
-    if (!base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles) &&
-        !entry->IsAuthenticated() &&
-        !Profile::IsMainProfilePath(profile_path)) {
-      DeleteProfile(
-          profile_path,
-          ProfileMetrics::DELETE_PROFILE_SIGNIN_REQUIRED_MIRROR_LACROS);
     }
   }
 }

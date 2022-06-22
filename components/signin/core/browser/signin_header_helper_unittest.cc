@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -19,7 +18,6 @@
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -173,8 +171,6 @@ class SigninHeaderHelperTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kLacrosNonSyncingProfiles};
   std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
       scoped_lacros_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
