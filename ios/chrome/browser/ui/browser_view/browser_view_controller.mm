@@ -419,7 +419,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // The user agent type used to load the currently visible page. User agent
 // type is NONE if there is no visible page.
-// TODO(crbug.com/1272534): Move BubblePresenter to BrowserCoordinator.
 @property(nonatomic, assign, readonly) web::UserAgentType userAgentType;
 
 // Returns the header views, all the chrome on top of the page, including the
@@ -3728,24 +3727,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // update helper function as part of the reading list API.
 - (void)addToReadingList:(ReadingListAddCommand*)command {
   [self addURLsToReadingList:command.URLs];
-}
-
-// TODO(crbug.com/1272534): Move this command implementation to
-// BrowserCoordinator, which should be owning bubblePresenter.
-- (void)showReadingListIPH {
-  [self.bubblePresenter presentReadingListBottomToolbarTipBubble];
-}
-
-// TODO(crbug.com/1272534): Move this command implementation to
-// BrowserCoordinator, which should be owning bubblePresenter.
-- (void)showFollowWhileBrowsingIPH {
-  [self.bubblePresenter presentFollowWhileBrowsingTipBubble];
-}
-
-// TODO(crbug.com/1272534): Move this command implementation to
-// BrowserCoordinator, which should be owning bubblePresenter.
-- (void)showDefaultSiteViewIPH {
-  [self.bubblePresenter presentDefaultSiteViewTipBubble];
 }
 
 // TODO(crbug.com/1329104): Move voice search handling to BrowserCoordinator
