@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
@@ -53,10 +52,6 @@ void CreateAndInitializeLocalCache() {
 }
 
 Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
-  ui_test_utils::BrowserChangeObserver browser_change_observer(
-      /*browser=*/nullptr,
-      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-
   EXPECT_TRUE(apps::AppServiceProxyFactory::GetForProfile(profile)
                   ->BrowserAppLauncher()
                   ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
@@ -65,12 +60,13 @@ Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
                       WindowOpenDisposition::CURRENT_TAB,
                       apps::mojom::LaunchSource::kFromTest)));
 
-  Browser* const browser = browser_change_observer.Wait();
-  DCHECK(browser);
-  ui_test_utils::BrowserActivationWaiter(browser).WaitForActivation();
-  EXPECT_EQ(web_app::GetAppIdFromApplicationName(browser->app_name()),
-            extension_app->id());
-  return browser;
+  Browser* browser = chrome::FindLastActive();
+  bool is_correct_app_browser =
+      browser && web_app::GetAppIdFromApplicationName(browser->app_name()) ==
+                     extension_app->id();
+  EXPECT_TRUE(is_correct_app_browser);
+
+  return is_correct_app_browser ? browser : nullptr;
 }
 
 content::WebContents* AddTab(Browser* browser, const GURL& url) {
