@@ -19,6 +19,7 @@
 -OmniboxPopupContentsViewTest.PopupMatchesLocationBarBackground
 -OutOfProcessPPAPITest.Printing
 -ProfileListDesktopBrowserTest.SwitchToProfile
+-SSLUITest.TestCloseTabWithUnsafePopup
 -TabHoverCardBubbleViewBrowserTest.WidgetNotVisibleOnMousePressAfterTabFocus
 -TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnKeyPressAfterTabFocus
 # crbug.com/1121486
