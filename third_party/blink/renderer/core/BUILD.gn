@@ -55,6 +55,7 @@ import("//third_party/blink/renderer/core/page/build.gni")
 import("//third_party/blink/renderer/core/paint/build.gni")
 import("//third_party/blink/renderer/core/permissions_policy/build.gni")
 import("//third_party/blink/renderer/core/resize_observer/build.gni")
+import("//third_party/blink/renderer/core/scheduler_integration_tests/build.gni")
 import("//third_party/blink/renderer/core/script/build.gni")
 import("//third_party/blink/renderer/core/scroll/build.gni")
 import("//third_party/blink/renderer/core/speculation_rules/build.gni")
@@ -1271,11 +1272,6 @@ source_set("unit_tests") {
     "exported/web_searchable_form_data_test.cc",
     "exported/web_selector_test.cc",
     "exported/web_view_test.cc",
-    "scheduler_integration_tests/frame_scheduler_test.cc",
-    "scheduler_integration_tests/frame_throttling_test.cc",
-    "scheduler_integration_tests/scheduler_affecting_features_test.cc",
-    "scheduler_integration_tests/throttling_test.cc",
-    "scheduler_integration_tests/virtual_time_test.cc",
   ]
 
   # If you create a new subdirectory 'foo' that contains unit tests, list them in
@@ -1323,6 +1319,9 @@ source_set("unit_tests") {
       rebase_path(blink_core_tests_permissions_policy, "", "permissions_policy")
   sources +=
       rebase_path(blink_core_tests_resize_observer, "", "resize_observer")
+  sources += rebase_path(blink_core_tests_scheduler_integration_tests,
+                         "",
+                         "scheduler_integration_tests")
   sources += rebase_path(blink_core_tests_script, "", "script")
   sources += rebase_path(blink_core_tests_scroll, "", "scroll")
   sources +=
