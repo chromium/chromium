@@ -7,6 +7,7 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/test_component_context_for_process.h"
 #include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -88,9 +89,17 @@ class AgentImplTest : public ::testing::Test {
 
   fuchsia::modular::AgentPtr CreateAgentAndConnect() {
     EXPECT_FALSE(agent_impl_);
-    agent_impl_ = std::make_unique<AgentImpl>(
-        &services_, base::BindRepeating(&AgentImplTest::OnComponentConnect,
-                                        base::Unretained(this)));
+    if (public_services_.empty()) {
+      agent_impl_ = std::make_unique<AgentImpl>(
+          &services_, base::BindRepeating(&AgentImplTest::OnComponentConnect,
+                                          base::Unretained(this)));
+    } else {
+      agent_impl_ = std::make_unique<AgentImpl>(
+          &services_,
+          base::BindRepeating(&AgentImplTest::OnComponentConnect,
+                              base::Unretained(this)),
+          public_services_);
+    }
     fuchsia::modular::AgentPtr agent;
     services_client_->Connect(agent.NewRequest());
     return agent;
@@ -98,6 +107,10 @@ class AgentImplTest : public ::testing::Test {
 
   void TeardownKeepAliveComponentState() {
     std::move(disconnect_clients_and_teardown_).Run();
+  }
+
+  void set_public_services(std::vector<std::string> services) {
+    public_services_ = std::move(services);
   }
 
  protected:
@@ -129,6 +142,10 @@ class AgentImplTest : public ::testing::Test {
   // Set only if a keep-alive component was connected, to allow the test to
   // forcibly teardown the ComponentState for it.
   base::OnceClosure disconnect_clients_and_teardown_;
+
+  // Service names passed to the AgentImpl constructor to publish from
+  // the process' outgoing directory.
+  std::vector<std::string> public_services_;
 };
 
 }  // namespace
@@ -374,6 +391,47 @@ TEST_F(AgentImplTest, DisconnectClientsAndTeardown) {
     base::RunLoop().RunUntilIdle();
     EXPECT_FALSE(test_interface);
   }
+}
+
+// Verify that the DefaultComponentState publishes the process' outgoing
+// service directory.
+TEST_F(AgentImplTest, PublicService) {
+  base::TestComponentContextForProcess test_context;
+
+  constexpr char kServiceName[] = "base.testfidl.TestInterface-public";
+
+  // Publish a dummy service for the DefaultComponentState to "see".
+  test_context.additional_services()
+      ->AddPublicService<base::testfidl::TestInterface>(
+          [](fidl::InterfaceRequest<base::testfidl::TestInterface> request) {
+            request.Close(ZX_OK);
+          },
+          kServiceName);
+
+  // Configure the AgentImpl to provide the "public" service.
+  set_public_services({kServiceName});
+  fuchsia::modular::AgentPtr agent = CreateAgentAndConnect();
+
+  // Connect to the ServiceProvider for the a dummy component.
+  fuchsia::sys::ServiceProviderPtr component_services;
+  agent->Connect(kAccumulatorComponentId1, component_services.NewRequest());
+  base::testfidl::TestInterfacePtr test_interface;
+  component_services->ConnectToService(
+      kServiceName, test_interface.NewRequest().TakeChannel());
+
+  // Wait for the service connection to be closed, and verify that the epitaph
+  // is the expected value, rather than ZX_ERR_PEER_CLOSED.
+  base::test::TestFuture<zx_status_t> service_disconnect_status;
+  test_interface.set_error_handler(cr_fuchsia::CallbackToFitFunction(
+      service_disconnect_status.GetCallback()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(service_disconnect_status.IsReady());
+  EXPECT_EQ(service_disconnect_status.Get(), ZX_OK);
+
+  // Close the ServiceProvider channel and spin the MessageLoop to let the
+  // AgentImpl clean up the component state.
+  component_services = nullptr;
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace cr_fuchsia

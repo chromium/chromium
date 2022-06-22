@@ -7,6 +7,7 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/bind.h"
+#include "base/fuchsia/process_context.h"
 
 namespace cr_fuchsia {
 
@@ -48,8 +49,17 @@ void AgentImpl::ComponentStateBase::TeardownIfUnused() {
 AgentImpl::AgentImpl(
     sys::OutgoingDirectory* outgoing_directory,
     CreateComponentStateCallback create_component_state_callback)
+    : AgentImpl(outgoing_directory,
+                std::move(create_component_state_callback),
+                {}) {}
+
+AgentImpl::AgentImpl(
+    sys::OutgoingDirectory* outgoing_directory,
+    CreateComponentStateCallback create_component_state_callback,
+    std::vector<std::string> public_service_names)
     : create_component_state_callback_(
           std::move(create_component_state_callback)),
+      public_service_names_(std::move(public_service_names)),
       agent_binding_(outgoing_directory, this) {}
 
 AgentImpl::~AgentImpl() {
@@ -66,6 +76,21 @@ void AgentImpl::Connect(
     if (!component_state)
       return;
 
+    // Add public services to the |component_state|.
+    const auto* outgoing = component_state->outgoing_directory();
+    for (const auto& service_name : public_service_names_) {
+      zx_status_t status = outgoing->AddPublicService(
+          std::make_unique<vfs::Service>(
+              [service_name](zx::channel request,
+                             async_dispatcher_t* dispatcher) {
+                base::ComponentContextForProcess()->svc()->Connect(
+                    service_name, std::move(request));
+              }),
+          service_name);
+      CHECK_EQ(status, ZX_OK);
+    }
+
+    // Register the new component's state.
     auto result =
         active_components_.emplace(requester_url, std::move(component_state));
     it = result.first;

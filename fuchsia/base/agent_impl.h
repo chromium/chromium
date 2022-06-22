@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
@@ -26,7 +27,7 @@ namespace cr_fuchsia {
 // Specializations of the ComponentStateBase returned by the factory function
 // can extend it to publish specific services, and to manage per-component
 // service state as desired.
-class AgentImpl : public ::fuchsia::modular::Agent {
+class AgentImpl final : public ::fuchsia::modular::Agent {
  public:
   // Common base for per-component services and state. The base provides an
   // outgoing directory into which specializations publish their services, to
@@ -110,6 +111,15 @@ class AgentImpl : public ::fuchsia::modular::Agent {
   AgentImpl(sys::OutgoingDirectory* outgoing_directory,
             CreateComponentStateCallback create_component_state_callback);
 
+  // As above, with the addition that |public_services| will be offered to all
+  // components, in addition to any services offered by the ComponentState
+  // implementations themselves. The agent process should publish the services
+  // to its outgoing-directory, and additionally list them here, to have them
+  // also available via calls by Mods to ConnectToAgentService().
+  AgentImpl(sys::OutgoingDirectory* outgoing_directory,
+            CreateComponentStateCallback create_component_state_callback,
+            std::vector<std::string> public_service_names);
+
   AgentImpl(const AgentImpl&) = delete;
   AgentImpl& operator=(const AgentImpl&) = delete;
 
@@ -128,6 +138,9 @@ class AgentImpl : public ::fuchsia::modular::Agent {
 
   // Returns a ComponentStateBase instance for a given component-Id.
   const CreateComponentStateCallback create_component_state_callback_;
+
+  // Set of service names to publish to all components.
+  const std::vector<std::string> public_service_names_;
 
   // Binds this Agent implementation into the |outgoing_directory|.
   base::ScopedServiceBinding<::fuchsia::modular::Agent> agent_binding_;
