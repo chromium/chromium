@@ -2,32 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
 
-class GuestOsInstallerApp extends PolymerElement {
+class GuestOsInstallerElement extends PolymerElement {
   static get is() {
-    return 'guest-os-installer-app';
+    return 'guest-os-installer';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   private listenerIds_: number[] = [];
 
   override connectedCallback() {
-    this.listenerIds_ = [];
     super.connectedCallback();
+    this.listenerIds_ = [];
   }
 
   override disconnectedCallback() {
+    super.disconnectedCallback();
     const callbackRouter = BrowserProxy.getInstance().callbackRouter;
     this.listenerIds_.forEach(
         (id: number) => callbackRouter.removeListener(id));
-    super.disconnectedCallback();
+    this.listenerIds_.length = 0;
   }
 }
 
-customElements.define('guest-os-installer-app', GuestOsInstallerApp);
+declare global {
+  interface HTMLElementTagNameMap {
+    'guest-os-installer': GuestOsInstallerElement;
+  }
+}
+
+customElements.define(GuestOsInstallerElement.is, GuestOsInstallerElement);
