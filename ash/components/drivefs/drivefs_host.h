@@ -71,6 +71,8 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost {
         mojom::ExtensionConnectionParamsPtr params,
         mojo::PendingReceiver<mojom::NativeMessagingPort> port,
         mojo::PendingRemote<mojom::NativeMessagingHost> host) = 0;
+    virtual const std::string GetMachineRootID() = 0;
+    virtual void PersistMachineRootID(const std::string& id) = 0;
   };
 
   DriveFsHost(const base::FilePath& profile_path,

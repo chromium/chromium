@@ -179,6 +179,10 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
         kExtensionNotFound;
   }
 
+  const std::string GetMachineRootID() override { return ""; }
+
+  void PersistMachineRootID(const std::string& id) override {}
+
   signin::IdentityManager* const identity_manager_;
   const AccountId account_id_;
   mojo::PendingRemote<mojom::DriveFsBootstrap> pending_bootstrap_;

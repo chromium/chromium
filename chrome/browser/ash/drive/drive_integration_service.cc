@@ -601,6 +601,21 @@ class DriveIntegrationService::DriveFsHolder
         profile_, params->extension_id, std::move(port), std::move(host));
   }
 
+  const std::string GetMachineRootID() override {
+    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+      return "";
+    }
+    return profile_->GetPrefs()->GetString(
+        prefs::kDriveFsMirrorSyncMachineRootId);
+  }
+
+  void PersistMachineRootID(const std::string& id) override {
+    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+      return;
+    }
+    profile_->GetPrefs()->SetString(prefs::kDriveFsMirrorSyncMachineRootId, id);
+  }
+
   Profile* const profile_;
   drivefs::DriveFsHost::MountObserver* const mount_observer_;
 

@@ -184,6 +184,14 @@ interface DriveFsDelegate {
   // calls the necessary callbacks on the |delegate|.
   ExecuteHttpRequest(
     HttpRequest request, pending_remote<HttpDelegate> delegate);
+
+  // On startup, retrieve the machine ID to ensure Chromebook is reassociated
+  // with an existing Computers root based on `doc_id`. If no ID is available it
+  // will return an empty string.
+  GetMachineRootID() => (string doc_id);
+
+  // Invoked when the machine ID is calculated to store in Chrome device prefs.
+  PersistMachineRootID(string doc_id);
 };
 
 // Next MinVersion: 7

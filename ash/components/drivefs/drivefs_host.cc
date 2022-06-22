@@ -199,6 +199,21 @@ class DriveFsHost::MountState : public DriveFsSession,
     http_client_->ExecuteHttpRequest(std::move(request), std::move(delegate));
   }
 
+  void GetMachineRootID(GetMachineRootIDCallback callback) override {
+    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+      std::move(callback).Run({});
+      return;
+    }
+    std::move(callback).Run(host_->delegate_->GetMachineRootID());
+  }
+
+  void PersistMachineRootID(const std::string& id) override {
+    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+      return;
+    }
+    host_->delegate_->PersistMachineRootID(std::move(id));
+  }
+
   // DriveNotificationObserver overrides:
   void OnNotificationReceived(
       const std::map<std::string, int64_t>& invalidations) override {
