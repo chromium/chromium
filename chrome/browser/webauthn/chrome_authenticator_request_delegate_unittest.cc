@@ -317,7 +317,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
     delegate.OnTransportAvailabilityEnumerated(
         AuthenticatorRequestDialogModel::TransportAvailabilityInfo());
     EXPECT_EQ(observer.last_step() ==
-                  AuthenticatorRequestDialogModel::Step::kLocationBarBubble,
+                  AuthenticatorRequestDialogModel::Step::kConditionalMediation,
               conditional_ui);
   }
 }

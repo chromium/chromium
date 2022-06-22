@@ -58,9 +58,9 @@ class AuthenticatorRequestDialogModel {
     // The UX flow has not started yet, the dialog should still be hidden.
     kNotStarted,
 
-    // A more subtle version of the dialog is being shown as an icon or bubble
-    // on the omnibox, prompting the user to tap their security key.
-    kLocationBarBubble,
+    // Conditionally mediated UI. No dialog is shown, instead credentials are
+    // offered to the user on the password autofill prompt.
+    kConditionalMediation,
 
     kMechanismSelection,
 
@@ -271,7 +271,7 @@ class AuthenticatorRequestDialogModel {
   bool should_dialog_be_closed() const {
     return current_step() == Step::kClosed ||
            current_step() == Step::kNotStarted ||
-           current_step() == Step::kLocationBarBubble;
+           current_step() == Step::kConditionalMediation;
   }
   const TransportAvailabilityInfo* transport_availability() const {
     return &transport_availability_;
@@ -640,7 +640,7 @@ class AuthenticatorRequestDialogModel {
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
   void ContactPhoneAfterBleIsPowered(std::string name);
 
-  void StartLocationBarBubbleRequest();
+  void StartConditionalMediationRequest();
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
   void DispatchRequestAsyncInternal(const std::string& authenticator_id);
@@ -719,7 +719,7 @@ class AuthenticatorRequestDialogModel {
 
   // True if this request should use the non-modal location bar bubble UI
   // instead of the page-modal, regular UI.
-  bool use_location_bar_bubble_ = false;
+  bool use_conditional_mediation_ = false;
 
   // offer_try_again_in_ui_ indicates whether a button to retry the request
   // should be included on the dialog sheet shown when encountering certain

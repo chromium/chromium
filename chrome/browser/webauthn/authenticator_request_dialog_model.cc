@@ -167,21 +167,20 @@ void AuthenticatorRequestDialogModel::HideDialog() {
 
 void AuthenticatorRequestDialogModel::StartFlow(
     TransportAvailabilityInfo transport_availability,
-    bool use_location_bar_bubble,
+    bool use_conditional_mediation,
     bool prefer_native_api) {
   DCHECK(!started_);
   DCHECK_EQ(current_step(), Step::kNotStarted);
 
   started_ = true;
   transport_availability_ = std::move(transport_availability);
-  use_location_bar_bubble_ = use_location_bar_bubble;
+  use_conditional_mediation_ = use_conditional_mediation;
 
   PopulateMechanisms(prefer_native_api);
 
-  if (use_location_bar_bubble_) {
-    // This is a conditional request so show a lightweight, non-modal dialog
-    // instead.
-    StartLocationBarBubbleRequest();
+  if (use_conditional_mediation_) {
+    // This is a conditional mediation request.
+    StartConditionalMediationRequest();
   } else {
     StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
   }
@@ -193,8 +192,8 @@ void AuthenticatorRequestDialogModel::StartOver() {
   for (auto& observer : observers_)
     observer.OnStartOver();
 
-  if (use_location_bar_bubble_) {
-    StartLocationBarBubbleRequest();
+  if (use_conditional_mediation_) {
+    StartConditionalMediationRequest();
     return;
   }
   current_mechanism_.reset();
@@ -365,7 +364,7 @@ void AuthenticatorRequestDialogModel::ShowCable() {
 
 void AuthenticatorRequestDialogModel::Cancel() {
   if (is_request_complete()) {
-    if (use_location_bar_bubble_) {
+    if (use_conditional_mediation_) {
       // Conditional UI requests are never cancelled, they restart silently.
       StartOver();
       return;
@@ -450,7 +449,7 @@ void AuthenticatorRequestDialogModel::OnAuthenticatorStorageFull() {
 }
 
 void AuthenticatorRequestDialogModel::OnUserConsentDenied() {
-  if (use_location_bar_bubble_) {
+  if (use_conditional_mediation_) {
     // Do not show a page-modal retry error sheet if the user cancelled out of
     // their platform authenticator during a conditional UI request.
     // Instead, retry silently.
@@ -462,7 +461,7 @@ void AuthenticatorRequestDialogModel::OnUserConsentDenied() {
 
 bool AuthenticatorRequestDialogModel::OnWinUserCancelled() {
 #if BUILDFLAG(IS_WIN)
-  if (use_location_bar_bubble_) {
+  if (use_conditional_mediation_) {
     // Do not show a page-modal retry error sheet if the user cancelled out of
     // their platform authenticator during a conditional UI request.
     // Instead, retry silently.
@@ -729,7 +728,7 @@ void AuthenticatorRequestDialogModel::RequestAttestationPermission(
 void AuthenticatorRequestDialogModel::GetCredentialListForConditionalUi(
     base::OnceCallback<void(
         const std::vector<device::DiscoverableCredentialMetadata>&)> callback) {
-  if (current_step() == Step::kLocationBarBubble) {
+  if (current_step() == Step::kConditionalMediation) {
     std::move(callback).Run(ephemeral_state_.creds_);
     return;
   }
@@ -902,7 +901,7 @@ void AuthenticatorRequestDialogModel::ContactPhoneAfterBleIsPowered(
   SetCurrentStep(Step::kCableActivate);
 }
 
-void AuthenticatorRequestDialogModel::StartLocationBarBubbleRequest() {
+void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
   ephemeral_state_.creds_ = {};
   for (const auto& cred :
        transport_availability_.recognized_platform_authenticator_credentials) {
@@ -913,7 +912,7 @@ void AuthenticatorRequestDialogModel::StartLocationBarBubbleRequest() {
     std::move(conditional_ui_user_list_callback_).Run(ephemeral_state_.creds_);
   }
 
-  SetCurrentStep(Step::kLocationBarBubble);
+  SetCurrentStep(Step::kConditionalMediation);
 }
 
 void AuthenticatorRequestDialogModel::DispatchRequestAsync(

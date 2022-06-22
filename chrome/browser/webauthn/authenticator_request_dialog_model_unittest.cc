@@ -738,7 +738,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
                   /*use_location_bar_bubble=*/true,
                   /*prefer_native_api=*/false);
   task_environment_.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
+  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
   EXPECT_TRUE(model.should_dialog_be_closed());
   EXPECT_EQ(preselect_num_called, 0);
   EXPECT_EQ(request_num_called, 0);
@@ -778,7 +778,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   model.StartFlow(std::move(transports_info),
                   /*is_location_bar_bubble_ui==*/true,
                   /*prefer_native_api=*/false);
-  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
+  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
   EXPECT_TRUE(model.should_dialog_be_closed());
   EXPECT_EQ(request_num_called, 0);
 
@@ -803,7 +803,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUICancelRequest) {
   model.StartFlow(std::move(TransportAvailabilityInfo()),
                   /*is_location_bar_bubble_ui==*/true,
                   /*prefer_native_api=*/false);
-  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
+  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Cancel an ongoing request. It should inform the observers to e.g. stop
@@ -819,7 +819,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUICancelRequest) {
   EXPECT_CALL(mock_observer, OnStepTransition()).Times(2);
   model.SetCurrentStepForTesting(Step::kKeyAlreadyRegistered);
   model.Cancel();
-  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
+  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
   model.RemoveObserver(&mock_observer);
 }
@@ -838,14 +838,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIWindowsCancel) {
   model.StartFlow(std::move(TransportAvailabilityInfo()),
                   /*is_location_bar_bubble_ui==*/true,
                   /*prefer_native_api=*/false);
-  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
+  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Simulate the Windows authenticator cancelling.
   EXPECT_CALL(mock_observer, OnStepTransition());
   EXPECT_CALL(mock_observer, OnStartOver());
   model.OnWinUserCancelled();
-  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
+  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
   model.RemoveObserver(&mock_observer);
 }
