@@ -87,6 +87,7 @@ export function shareDataPageTestSuite() {
     await initializePage();
     // Verify the title is in the page.
     assertEquals('Send feedback', getElementContent('.page-title'));
+    assertTrue(page.i18nExists('pageTitle'));
 
     // Verify the back button is in the page.
     assertEquals('Back', getElementContent('#buttonBack'));
