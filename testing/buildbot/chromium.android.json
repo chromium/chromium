@@ -19556,8 +19556,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
-          "--gtest_filter=-org.chromium.android_webview.test.devui.HomeFragmentTest.testLongPressCopy*"
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
         ],
         "merge": {
           "args": [
