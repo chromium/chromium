@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
@@ -40,7 +41,8 @@ class EducationalView;
 // DisplayOverlayController manages the input mapping view, view and edit mode,
 // menu, and educational dialog. It also handles the visibility of the
 // |ActionEditMenu| and |MessageView| by listening to the |LocatedEvent|.
-class DisplayOverlayController : public ui::EventHandler {
+class DisplayOverlayController : public ui::EventHandler,
+                                 public ash::ColorModeObserver {
  public:
   DisplayOverlayController(TouchInjector* touch_injector, bool first_launch);
   DisplayOverlayController(const DisplayOverlayController&) = delete;
@@ -78,6 +80,9 @@ class DisplayOverlayController : public ui::EventHandler {
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+
+  // ash::ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
 
  private:
   friend class ::arc::ArcInputOverlayManagerTest;

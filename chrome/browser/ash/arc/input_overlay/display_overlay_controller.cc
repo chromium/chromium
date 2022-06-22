@@ -60,9 +60,13 @@ DisplayOverlayController::DisplayOverlayController(
   AddOverlay(first_launch ? DisplayMode::kEducation : DisplayMode::kView);
   touch_injector_->set_display_overlay_controller(this);
   ash::Shell::Get()->AddPreTargetHandler(this);
+  if (ash::ColorProvider::Get())
+    ash::ColorProvider::Get()->AddObserver(this);
 }
 
 DisplayOverlayController::~DisplayOverlayController() {
+  if (ash::ColorProvider::Get())
+    ash::ColorProvider::Get()->RemoveObserver(this);
   ash::Shell::Get()->RemovePreTargetHandler(this);
   touch_injector_->set_display_overlay_controller(nullptr);
   RemoveOverlayIfAny();
@@ -348,6 +352,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
     case DisplayMode::kNone:
       RemoveMenuEntryView();
       RemoveInputMappingView();
+      RemoveEducationalView();
       RemoveEditFinishView();
       RemoveNudgeView();
       break;
@@ -495,6 +500,19 @@ void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
 void DisplayOverlayController::OnTouchEvent(ui::TouchEvent* event) {
   if (event->type() == ui::ET_TOUCH_PRESSED)
     ProcessPressedEvent(*event);
+}
+
+void DisplayOverlayController::OnColorModeChanged(bool dark_mode_enabled) {
+  // Only make the color mode change responsive when in
+  // |DisplayMode::kEducation| because:
+  // 1. Other modes like |DisplayMode::kEdit| and |DisplayMode::kView| only have
+  // one color mode.
+  // 2. When in |DisplayMode::kMenu| and changing the color mode, the menu is
+  // closed and it becomes |DisplayMode::kView| so no need to update color mode.
+  if (display_mode_ != DisplayMode::kEducation)
+    return;
+  SetDisplayMode(DisplayMode::kNone);
+  SetDisplayMode(DisplayMode::kEducation);
 }
 
 bool DisplayOverlayController::HasMenuView() const {
