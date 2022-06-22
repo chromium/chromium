@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/shell.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -34,6 +35,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/aura/window.h"
+#include "ui/display/test/display_manager_test_api.h"
 
 namespace ash {
 
@@ -197,6 +199,7 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
         "BlinkExtensionChromeOS,BlinkExtensionChromeOSWindowManagement");
   }
 
+ protected:
   void RunTest(base::StringPiece test_code) {
     // Initialize embedded test server.
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -240,7 +243,6 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
                      kPostTestStart));
   }
 
- protected:
   std::unique_ptr<web_app::TestSystemWebAppInstallation> installation_;
 
  private:
@@ -269,6 +271,22 @@ class CrosWindowExtensionBrowserTest : public InProcessBrowserTest {
 };
 
 }  // namespace
+
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosScreenWidthSampleTest) {
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay("0+0-1280x720,1280+600-1920x1080");
+
+  const char test_code[] = R"(
+async function cros_test() {
+  let screens = await chromeos.windowManagement.getScreens();
+
+  assert_equals(screens[0].width, 1280);
+  assert_equals(screens[1].width, 1920);
+}
+  )";
+
+  RunTest(test_code);
+}
 
 IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowMoveTo) {
   const char test_code[] = R"(

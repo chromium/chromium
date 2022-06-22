@@ -54,6 +54,11 @@ struct CrosWindowInfo {
   VisibilityState visibility_state;
 };
 
+// Represents a screen display.
+struct CrosScreenInfo {
+  int32 width;
+};
+
 // Chrome OS Window Management API for System Extensions.
 // Called by System Extensions Renderers and implemented by Ash Chrome.
 interface CrosWindowManagement {
@@ -89,6 +94,9 @@ interface CrosWindowManagement {
 
   // Closes the window identified by id if it exists, else do nothing.
   Close(mojo_base.mojom.UnguessableToken id) => (CrosWindowManagementStatus value);
+
+  // Returns all screens.
+  GetAllScreens() => (array<CrosScreenInfo> screens);
 };
 
 // Interface used by the browser to send the `start` event to Window Management

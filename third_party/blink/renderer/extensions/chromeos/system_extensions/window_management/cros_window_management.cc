@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/extensions/chromeos/event_target_chromeos.h"
+#include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_screen.h"
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window.h"
 
 namespace blink {
@@ -49,6 +50,7 @@ void CrosWindowManagement::Trace(Visitor* visitor) const {
   visitor->Trace(cros_window_management_);
   visitor->Trace(receiver_);
   visitor->Trace(windows_);
+  visitor->Trace(screens_);
   Supplement<ExecutionContext>::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
@@ -106,6 +108,31 @@ void CrosWindowManagement::WindowsCallback(
 
 const HeapVector<Member<CrosWindow>>& CrosWindowManagement::windows() {
   return windows_;
+}
+
+ScriptPromise CrosWindowManagement::getScreens(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* window_management = GetCrosWindowManagementOrNull();
+  if (window_management) {
+    window_management->GetAllScreens(
+        WTF::Bind(&CrosWindowManagement::ScreensCallback, WrapPersistent(this),
+                  WrapPersistent(resolver)));
+  }
+  return resolver->Promise();
+}
+
+void CrosWindowManagement::ScreensCallback(
+    ScriptPromiseResolver* resolver,
+    WTF::Vector<mojom::blink::CrosScreenInfoPtr> screens) {
+  HeapVector<Member<CrosScreen>> results;
+  results.ReserveInitialCapacity(screens.size());
+  for (auto& s : screens) {
+    results.push_back(MakeGarbageCollected<CrosScreen>(this, std::move(s)));
+  }
+
+  screens_.swap(results);
+
+  resolver->Resolve(std::move(screens_));
 }
 
 void CrosWindowManagement::DispatchStartEvent() {

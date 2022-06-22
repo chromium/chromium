@@ -57,6 +57,8 @@ class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
 
   void Close(const base::UnguessableToken& id, CloseCallback callback) override;
 
+  void GetAllScreens(GetAllScreensCallback callback) override;
+
  private:
   // Returns profile attached to the render process host id.
   Profile* GetProfile();
