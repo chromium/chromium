@@ -936,8 +936,6 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
   if (state.Style()->HasGlyphRelativeUnits())
     UseCounter::Count(GetDocument(), WebFeature::kHasGlyphRelativeUnits);
 
-  state.Style()->SetInlineStyleLostCascade(cascade.InlineStyleLost());
-
   state.LoadPendingResources();
 
   // Now return the style.
@@ -2062,6 +2060,10 @@ void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
     UseCountLegacyOverlapping(GetDocument(), *non_legacy_style,
                               state.StyleRef());
   }
+
+  // NOTE: This flag needs to be set before the entry is added to the
+  // matched properties cache, or it will be wrong on cache hits.
+  state.Style()->SetInlineStyleLostCascade(cascade.InlineStyleLost());
 
   MaybeAddToMatchedPropertiesCache(state, cache_success, result);
 
