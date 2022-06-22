@@ -33,7 +33,6 @@ using chromeos::string_matching::FuzzyTokenizedStringMatch;
 using chromeos::string_matching::TokenizedString;
 
 // Parameters for FuzzyTokenizedStringMatch.
-constexpr bool kUsePrefixOnly = false;
 constexpr bool kUseWeightedRatio = false;
 constexpr bool kUseEditDistance = false;
 constexpr double kRelevanceThreshold = 0.32;
@@ -64,7 +63,7 @@ double CalculateTitleRelevance(const TokenizedString& tokenized_query,
   // The return parameter is ignored here, but this method also implicitly
   // calculates the match relevance.
   match.IsRelevant(tokenized_query, tokenized_title, kRelevanceThreshold,
-                   kUsePrefixOnly, kUseWeightedRatio, kUseEditDistance,
+                   kUseWeightedRatio, kUseEditDistance,
                    kPartialMatchPenaltyRate);
   return match.relevance();
 }

@@ -94,9 +94,6 @@ class FuzzyTokenizedStringMatch {
   static double PrefixMatcher(const TokenizedString& query,
                               const TokenizedString& text);
 
-  // TODO(crbug.com/1336160): Consider removing |use_prefix_only|. It seems that
-  // there are no callers which set it to true.
-  //
   // TODO(crbug.com/1336160): Consider refactoring this method to directly
   // return the relevance score, instead of a bool. This would remove the need
   // to subsequently call relevance().
@@ -109,7 +106,6 @@ class FuzzyTokenizedStringMatch {
   bool IsRelevant(const TokenizedString& query,
                   const TokenizedString& text,
                   double relevance_threshold,
-                  bool use_prefix_only,
                   bool use_weighted_ratio,
                   bool use_edit_distance,
                   double partial_match_penalty_rate,

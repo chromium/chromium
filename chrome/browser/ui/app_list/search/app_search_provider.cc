@@ -63,7 +63,6 @@ constexpr double kEps = 1e-5;
 constexpr size_t kMinimumReservedAppsContainerCapacity = 60U;
 
 // Parameters for FuzzyTokenizedStringMatch.
-constexpr bool kUsePrefixOnly = false;
 constexpr bool kUseWeightedRatio = false;
 constexpr bool kUseEditDistance = false;
 constexpr double kRelevanceThreshold = 0.32;
@@ -221,8 +220,8 @@ class AppSearchProvider::App {
       FuzzyTokenizedStringMatch match;
       for (auto& curr_text : tokenized_indexed_searchable_text_) {
         if (match.IsRelevant(query, *curr_text, kRelevanceThreshold,
-                             kUsePrefixOnly, kUseWeightedRatio,
-                             kUseEditDistance, kPartialMatchPenaltyRate) &&
+                             kUseWeightedRatio, kUseEditDistance,
+                             kPartialMatchPenaltyRate) &&
             match.relevance() >= relevance_threshold()) {
           return true;
         }
@@ -608,7 +607,7 @@ void AppSearchProvider::UpdateQueriedResults() {
     } else {
       FuzzyTokenizedStringMatch match;
       if (match.IsRelevant(query_terms, *indexed_name, kRelevanceThreshold,
-                           kUsePrefixOnly, kUseWeightedRatio, kUseEditDistance,
+                           kUseWeightedRatio, kUseEditDistance,
                            kPartialMatchPenaltyRate) ||
           app->MatchSearchableText(query_terms, use_exact_match)) {
         std::unique_ptr<AppResult> result = app->data_source()->CreateResult(

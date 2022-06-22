@@ -227,22 +227,22 @@ TEST_F(FuzzyTokenizedStringMatchTest, ParamThresholdTest1) {
     std::u16string query(u"anonymous");
     std::u16string text(u"famous");
     EXPECT_FALSE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
-                                  0.4, false, true, false,
-                                  kPartialMatchPenaltyRate, 0.0));
+                                  0.4, true, false, kPartialMatchPenaltyRate,
+                                  0.0));
   }
   {
     std::u16string query(u"CC");
     std::u16string text(u"Clash Of Clan");
     EXPECT_FALSE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
-                                  0.25, false, true, false,
-                                  kPartialMatchPenaltyRate, 0.0));
+                                  0.25, true, false, kPartialMatchPenaltyRate,
+                                  0.0));
   }
   {
     std::u16string query(u"Clash.of.clan");
     std::u16string text(u"ClashOfTitan");
     EXPECT_TRUE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
-                                 0.4, false, true, false,
-                                 kPartialMatchPenaltyRate, 0.0));
+                                 0.4, true, false, kPartialMatchPenaltyRate,
+                                 0.0));
   }
 }
 
@@ -252,22 +252,21 @@ TEST_F(FuzzyTokenizedStringMatchTest, ParamThresholdTest2) {
     std::u16string query(u"anonymous");
     std::u16string text(u"famous");
     EXPECT_FALSE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
-                                  0.5, false, true, false,
-                                  kPartialMatchPenaltyRate, 0.0));
+                                  0.5, true, false, kPartialMatchPenaltyRate,
+                                  0.0));
   }
   {
     std::u16string query(u"CC");
     std::u16string text(u"Clash Of Clan");
     EXPECT_FALSE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
-                                  0.25, false, true, false,
-                                  kPartialMatchPenaltyRate));
+                                  0.25, true, false, kPartialMatchPenaltyRate));
   }
   {
     std::u16string query(u"Clash.of.clan");
     std::u16string text(u"ClashOfTitan");
     EXPECT_FALSE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
-                                  0.5, false, true, false,
-                                  kPartialMatchPenaltyRate, 0.0));
+                                  0.5, true, false, kPartialMatchPenaltyRate,
+                                  0.0));
   }
 }
 
@@ -276,8 +275,8 @@ TEST_F(FuzzyTokenizedStringMatchTest, OtherParamTest) {
   std::u16string query(u"anonymous");
   std::u16string text(u"famous");
   EXPECT_FALSE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
-                                0.35, false, false, true,
-                                kPartialMatchPenaltyRate, 0.0));
+                                0.35, false, true, kPartialMatchPenaltyRate,
+                                0.0));
   EXPECT_NEAR(match.relevance(), 0.33 / 2, 0.01);
 }
 
@@ -286,8 +285,8 @@ TEST_F(FuzzyTokenizedStringMatchTest, ExactTextMatchTest) {
   std::u16string query(u"yat");
   std::u16string text(u"YaT");
   EXPECT_TRUE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
-                               0.35, false, false, true,
-                               kPartialMatchPenaltyRate, 0.0));
+                               0.35, false, true, kPartialMatchPenaltyRate,
+                               0.0));
   EXPECT_DOUBLE_EQ(match.relevance(), 1.0);
   EXPECT_EQ(match.hits().size(), 1u);
   EXPECT_EQ(match.hits()[0].start(), 0u);

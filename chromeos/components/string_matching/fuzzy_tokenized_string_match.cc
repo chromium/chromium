@@ -253,7 +253,6 @@ double FuzzyTokenizedStringMatch::PrefixMatcher(const TokenizedString& query,
 bool FuzzyTokenizedStringMatch::IsRelevant(const TokenizedString& query,
                                            const TokenizedString& text,
                                            double relevance_threshold,
-                                           bool use_prefix_only,
                                            bool use_weighted_ratio,
                                            bool use_edit_distance,
                                            double partial_match_penalty_rate,
@@ -288,13 +287,6 @@ bool FuzzyTokenizedStringMatch::IsRelevant(const TokenizedString& query,
   }
 
   const double prefix_score = PrefixMatcher(query, text);
-
-  if (use_prefix_only && prefix_score >= relevance_threshold) {
-    // If the prefix score is already higher than |relevance_threshold|, use
-    // prefix score as final score.
-    relevance_ = prefix_score;
-    return true;
-  }
 
   if (use_weighted_ratio) {
     // If WeightedRatio is used, |relevance_| is the average of WeightedRatio

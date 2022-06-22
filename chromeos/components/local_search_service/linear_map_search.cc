@@ -53,7 +53,6 @@ bool IsItemRelevant(const TokenizedString& query,
   for (const auto& tag : search_tags) {
     FuzzyTokenizedStringMatch match;
     if (match.IsRelevant(query, *(tag.second), relevance_threshold,
-                         false /* use_prefix_only */,
                          true /* use_weighted_ratio */,
                          false /* use_edit_distance */,
                          0.9 /* partial_match_penalty_rate */, 0.1)) {
