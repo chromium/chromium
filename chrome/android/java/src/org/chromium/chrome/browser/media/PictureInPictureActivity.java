@@ -287,7 +287,11 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     public void onPictureInPictureModeChanged(
             boolean isInPictureInPictureMode, Configuration newConfig) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
-        if (!isInPictureInPictureMode) this.finish();
+        if (isInPictureInPictureMode) return;
+        if (sNativeOverlayWindowAndroid != 0) {
+            PictureInPictureActivityJni.get().onBackToTab(sNativeOverlayWindowAndroid);
+        }
+        this.finish();
     }
 
     @Override
@@ -462,5 +466,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         void compositorViewCreated(long nativeOverlayWindowAndroid, CompositorView compositorView);
 
         void onViewSizeChanged(long nativeOverlayWindowAndroid, int width, int height);
+        void onBackToTab(long nativeOverlayWindowAndroid);
     }
 }

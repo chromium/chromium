@@ -152,6 +152,10 @@ void OverlayWindowAndroid::OnViewSizeChanged(JNIEnv* env,
   controller_->UpdateLayerBounds();
 }
 
+void OverlayWindowAndroid::OnBackToTab(JNIEnv* env) {
+  Hide();
+}
+
 void OverlayWindowAndroid::Close() {
   CloseInternal();
   controller_->OnWindowDestroyed(/*should_pause_video=*/true);

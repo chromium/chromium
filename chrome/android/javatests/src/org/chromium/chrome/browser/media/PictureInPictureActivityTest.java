@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -138,6 +139,19 @@ public class PictureInPictureActivityTest {
         startPictureInPictureActivity();
         // The pip helper should not be called with trivially bad bounds.
         Assert.assertTrue(mBounds == null);
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    public void testExitOnBackToTab() throws Throwable {
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        Configuration newConfig = activity.getResources().getConfiguration();
+        testExitOn(activity,
+                ()
+                        -> activity.onPictureInPictureModeChanged(
+                                /*isInPictureInPictureMode=*/false, newConfig));
+        verify(mNativeMock, times(1)).onBackToTab(NATIVE_OVERLAY);
     }
 
     private WebContents getWebContents() {
