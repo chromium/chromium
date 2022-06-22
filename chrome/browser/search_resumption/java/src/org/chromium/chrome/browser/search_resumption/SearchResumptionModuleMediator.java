@@ -94,9 +94,9 @@ public class SearchResumptionModuleMediator implements OnSuggestionsReceivedList
     private int getPageClassification() {
         if (TemplateUrlServiceFactory.get().isSearchResultsPageFromDefaultSearchProvider(
                     mTabToTrackSuggestion.getUrl())) {
-            return PageClassification.NTP_SEARCH_RESUMPTION_SEARCH_RESULT_PAGE_VALUE;
+            return PageClassification.SEARCH_RESUMPTION_SEARCH_RESULT_PAGE_VALUE;
         } else {
-            return PageClassification.NTP_SEARCH_RESUMPTION_OTHER_VALUE;
+            return PageClassification.SEARCH_RESUMPTION_OTHER_VALUE;
         }
     }
 

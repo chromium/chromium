@@ -164,12 +164,12 @@ message OmniboxEventProto {
     // Android's Search Widget started directly from Launcher.
     ANDROID_SEARCH_WIDGET = 16;
 
-    // Android's Start surface homepage.
-    START_SURFACE_HOMEPAGE = 17;
+    START_SURFACE_HOMEPAGE = 17;  // DEPRECATED. Android's Start surface
+                                  // homepage.
 
-    // New Tab with Omnibox focused when Android's start surface finale is
-    // enabled.
-    START_SURFACE_NEW_TAB = 18;
+    START_SURFACE_NEW_TAB = 18;  // DEPRECATED. New Tab with Omnibox focused
+                                 // when Android's start surface finale is
+                                 // enabled.
 
     // Android's improved Search Widget with new suggestions.
     ANDROID_SHORTCUTS_WIDGET = 19;
@@ -180,15 +180,13 @@ message OmniboxEventProto {
     // Android's auxiliary search backend.
     ANDROID_AUXILIARY_SEARCH = 21;
 
-    // The user interacted with the search resumption module on the Android New
-    // Tab Page. This search resumption module offered suggestions based on a
+    // Android's search resumption module which offers suggestions based on a
     // search results page that the user was on.
-    NTP_SEARCH_RESUMPTION_SEARCH_RESULT_PAGE = 22;
+    SEARCH_RESUMPTION_SEARCH_RESULT_PAGE = 22;
 
-    // The user interacted with the search resumption module on the Android New
-    // Tab Page. This search resumption module offered suggestions based on a
+    // Android's search resumption module which offers suggestions based on a
     // non-search-results page that the user was on.
-    NTP_SEARCH_RESUMPTION_OTHER = 23;
+    SEARCH_RESUMPTION_OTHER = 23;
 
     // When adding new classifications, please consider adding them in
     // chromium's chrome/browser/resources/omnibox/omnibox.html

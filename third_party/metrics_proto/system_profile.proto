@@ -231,9 +231,9 @@ message SystemProfileProto {
   // Information on the user's hardware.
   // Next tag: 27
   message Hardware {
-    // OS CPU architecture. Taken from uname -m and modified in Chromium logic.
-    // Common options are: x86, x86_64, armv7l, armv8l, aarch64.
-    // Not recorded on iOS.
+    // OS CPU architecture. Common options are: x86, x86_64, armv7l, armv8l,
+    // and aarch64.
+    // Started being correctly recorded on iOS in M90: crrev/c/2723012.
     optional string cpu_architecture = 1;
 
     // Browser process CPU architecture. Will be different from
