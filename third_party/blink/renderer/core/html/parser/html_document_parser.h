@@ -30,6 +30,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
@@ -217,6 +218,9 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   std::unique_ptr<HTMLParserMetrics> metrics_reporter_;
   // A timer for how long we are inactive after yielding
   std::unique_ptr<base::ElapsedTimer> yield_timer_;
+
+  const bool timed_parser_budget_enabled_ =
+      base::FeatureList::IsEnabled(features::kTimedHTMLParserBudget);
 
   ThreadScheduler* scheduler_;
 };

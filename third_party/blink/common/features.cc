@@ -1535,5 +1535,8 @@ const base::Feature kFileSystemUrlNavigation{"FileSystemUrlNavigation",
 const base::Feature kEarlyExitOnNoopClassOrStyleChange{
     "EarlyExitOnNoopClassOrStyleChange", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kTimedHTMLParserBudget{"TimedHTMLParserBudget",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
