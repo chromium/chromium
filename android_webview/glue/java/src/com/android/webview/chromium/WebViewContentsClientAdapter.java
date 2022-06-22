@@ -511,7 +511,9 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                                             "onGeolocationPermissionsShowPrompt",
                                             String.class,
                                             GeolocationPermissions.Callback.class)) {
-                // This is only required for pre-M versions of android.
+                // The default WebChromeClient.onGeolocationPermissionsShowPrompt() implementation
+                // is a NOOP (does not invoke the callback). Explicitly invoke the callback in
+                // chromium code to deny the permission.
                 callback.invoke(origin, false, false);
                 return;
             }
