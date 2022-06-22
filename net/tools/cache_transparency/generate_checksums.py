@@ -107,14 +107,14 @@ def main():
       file.write(",\n".join(flat_list))
 
   elif args.format == "url_encoded":
-    concatenated = str(args.list_version)
+    concatenated = str(args.list_version) + ","
     concatenated += ",".join(flat_list)
     url_encoded_list = urllib.parse.quote_plus(concatenated)
     with open(args.output[0], mode="w") as file:
       file.write(url_encoded_list)
     print(
-        f"NOTE: To run the feature via commandline, use the following command:\n"
-        f"out/Default/chrome --enable-features='PervasivePayloadsList:pervasive-payloads/(url_encoded_list),CacheTransparency,SplitCacheByNetworkIsolationKey'"
+        "NOTE: To run the feature via commandline, use the following command:\n"
+        "out/Default/chrome --enable-features='PervasivePayloadsList:pervasive-payloads/(url_encoded_list),CacheTransparency,SplitCacheByNetworkIsolationKey'"
     )
 
 
