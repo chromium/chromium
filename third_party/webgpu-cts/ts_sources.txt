@@ -186,9 +186,9 @@ src/webgpu/api/operation/texture_view/write.spec.ts
 src/webgpu/api/operation/vertex_state/correctness.spec.ts
 src/webgpu/api/operation/vertex_state/index_format.spec.ts
 src/webgpu/api/validation/validation_test.ts
+src/webgpu/api/validation/compute_pipeline.spec.ts
 src/webgpu/api/validation/createBindGroup.spec.ts
 src/webgpu/api/validation/createBindGroupLayout.spec.ts
-src/webgpu/api/validation/createComputePipeline.spec.ts
 src/webgpu/api/validation/createPipelineLayout.spec.ts
 src/webgpu/api/validation/createSampler.spec.ts
 src/webgpu/api/validation/createTexture.spec.ts
