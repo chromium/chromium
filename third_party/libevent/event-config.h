@@ -6,17 +6,17 @@
 // event-config.h depending on your platform.
 
 #if defined(__APPLE__)
-#include "base/third_party/libevent/mac/event-config.h"
+#include "third_party/libevent/mac/event-config.h"
 #elif defined(ANDROID)
-#include "base/third_party/libevent/android/event-config.h"
+#include "third_party/libevent/android/event-config.h"
 #elif defined(__linux__)
-#include "base/third_party/libevent/linux/event-config.h"
+#include "third_party/libevent/linux/event-config.h"
 #elif defined(__FreeBSD__)
-#include "base/third_party/libevent/freebsd/event-config.h"
+#include "third_party/libevent/freebsd/event-config.h"
 #elif defined(__sun)
-#include "base/third_party/libevent/solaris/event-config.h"
+#include "third_party/libevent/solaris/event-config.h"
 #elif defined(_AIX)
-#include "base/third_party/libevent/aix/event-config.h"
+#include "third_party/libevent/aix/event-config.h"
 #else
 #error generate event-config.h for your platform
 #endif

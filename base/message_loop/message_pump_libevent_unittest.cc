@@ -25,12 +25,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
-#include "base/third_party/libevent/event.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/libevent/event.h"
 
 namespace base {
 

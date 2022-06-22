@@ -173,8 +173,6 @@ IGNORED_FILENAMES = (
 #
 # Case-insensitive, lower-case only.
 IGNORED_PATHS = (
-  'base/third_party/libevent/autogen.sh',
-  'base/third_party/libevent/test/test.sh',
   'native_client_sdk/src/build_tools/sdk_tools/third_party/fancy_urllib/'
       '__init__.py',
   'out/',

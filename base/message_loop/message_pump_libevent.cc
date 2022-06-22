@@ -16,10 +16,10 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/third_party/libevent/event.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
+#include "third_party/libevent/event.h"
 
 // Lifecycle of struct event
 // Libevent uses two main data structures:

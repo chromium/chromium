@@ -2265,7 +2265,7 @@ mixed_component("base") {
   }
 
   if (dep_libevent) {
-    deps += [ "//base/third_party/libevent" ]
+    deps += [ "//third_party/libevent" ]
   }
 
   if (use_libevent) {
@@ -3750,7 +3750,7 @@ test("base_unittests") {
 
   if (use_libevent) {
     sources += [ "message_loop/message_pump_libevent_unittest.cc" ]
-    deps += [ "//base/third_party/libevent" ]
+    deps += [ "//third_party/libevent" ]
   }
 
   if (is_fuchsia) {
