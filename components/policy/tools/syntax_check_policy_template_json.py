@@ -997,6 +997,26 @@ class PolicyTemplateChecker(object):
                 'documentation string in the messages dictionary.' % feature,
                 'policy', policy.get('name', policy))
 
+      can_be_recommended = self._CheckContains(features,
+                                               'can_be_recommended',
+                                               bool,
+                                               optional=True,
+                                               container_name='features')
+      can_be_mandatory = self._CheckContains(features,
+                                             'can_be_mandatory',
+                                             bool,
+                                             optional=True,
+                                             container_name='features')
+
+      can_be_recommended = False if (
+          can_be_recommended) is None else can_be_recommended
+      can_be_mandatory = True if can_be_mandatory is None else can_be_mandatory
+
+      if not can_be_recommended and not can_be_mandatory:
+        self._Error('Policy can not be mandatory or recommended.', 'policy',
+                    policy.get('name'))
+
+
       # All user policies must have a per_profile feature flag.
       if (not policy.get('device_only', False)
           and not policy.get('deprecated', False)
@@ -1042,12 +1062,10 @@ class PolicyTemplateChecker(object):
         if 'default_for_enterprise_users' not in policy:
           self._Error('default_for_enteprise_users should be set when '
                       'default_policy_level is set ')
-        if (default_policy_level == 'recommended'
-            and not features.get('can_be_recommended', False)):
+        if (default_policy_level == 'recommended' and not can_be_recommended):
           self._Error('can_be_recommended should be set to True when '
                       'default_policy_level is set to "recommended"')
-        if (default_policy_level == 'mandatory'
-            and not features.get('can_be_mandatory', True)):
+        if (default_policy_level == 'mandatory' and not can_be_mandatory):
           self._Error('can_be_mandatory should be set to True when '
                       'default_policy_level is set to "recommended"')
 
