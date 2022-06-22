@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
@@ -35,11 +36,26 @@ using base::Time;
 
 namespace {
 
-std::string RemoveQuotes(const std::string& has_quotes) {
-  std::string no_quotes;
-  // SQLite quotes: http://www.sqlite.org/lang_keywords.html
-  base::RemoveChars(has_quotes, "\"[]`", &no_quotes);
-  return no_quotes;
+// To make the comparison with golden files less whitespace sensitive:
+// - Remove SQLite quotes: http://www.sqlite.org/lang_keywords.html.
+// - Collapse multiple spaces into one.
+// - Ensure that there is no space before or after ',', '(' or ')'.
+std::string NormalizeSchemaForComparison(const std::string& schema) {
+  std::string normalized;
+  normalized.reserve(schema.size());
+  bool skip_following_spaces = false;
+  for (char c : schema) {
+    if (base::Contains("\"[]`", c))  // Quotes
+      continue;
+    if (c == ' ' && skip_following_spaces)
+      continue;
+    bool is_separator = base::Contains(",()", c);
+    if (is_separator && !normalized.empty() && normalized.back() == ' ')
+      normalized.pop_back();
+    normalized.push_back(c);
+    skip_following_spaces = c == ' ' || is_separator;
+  }
+  return normalized;
 }
 
 }  // anonymous namespace
@@ -143,16 +159,9 @@ TEST_F(WebDatabaseMigrationTest, VersionXxSqlFilesAreGolden) {
   DoMigration();
   sql::Database connection;
   ASSERT_TRUE(connection.Open(GetDatabasePath()));
-  const std::string& expected_schema = RemoveQuotes(connection.GetSchema());
+  const std::string& expected_schema = connection.GetSchema();
   for (int i = WebDatabase::kDeprecatedVersionNumber + 1;
        i < kCurrentTestedVersionNumber; ++i) {
-    // We don't test version 52 because there's a slight discrepancy in the
-    // initialization code and the migration code (relating to schema
-    // formatting). Fixing the bug is possible, but would require updating every
-    // version_nn.sql file.
-    if (i == 52)
-      continue;
-
     connection.Raze();
     const base::FilePath& file_name = base::FilePath::FromUTF8Unsafe(
         "version_" + base::NumberToString(i) + ".sql");
@@ -160,7 +169,8 @@ TEST_F(WebDatabaseMigrationTest, VersionXxSqlFilesAreGolden) {
         << "Failed to load " << file_name.MaybeAsASCII();
     DoMigration();
 
-    EXPECT_EQ(expected_schema, RemoveQuotes(connection.GetSchema()))
+    EXPECT_EQ(NormalizeSchemaForComparison(expected_schema),
+              NormalizeSchemaForComparison(connection.GetSchema()))
         << "For version " << i;
   }
 }
