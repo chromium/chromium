@@ -978,9 +978,9 @@ void EventRouter::DispatchEventToProcess(
     return;
   }
 
-  base::Value::List event_args_to_use =
-      modified_event_args ? std::move(*modified_event_args)
-                          : event.event_args->GetList().Clone();
+  base::Value::List event_args_to_use = modified_event_args
+                                            ? std::move(*modified_event_args)
+                                            : event.event_args.Clone();
 
   mojom::EventFilteringInfoPtr filter_info =
       modified_event_filter_info ? std::move(modified_event_filter_info)
@@ -1254,6 +1254,45 @@ void EventRouter::RemoveLazyEventListenerImpl(
 
 Event::Event(events::HistogramValue histogram_value,
              const std::string& event_name,
+             base::Value::List event_args)
+    : Event(histogram_value, event_name, std::move(event_args), nullptr) {}
+
+Event::Event(events::HistogramValue histogram_value,
+             const std::string& event_name,
+             base::Value::List event_args,
+             content::BrowserContext* restrict_to_browser_context)
+    : Event(histogram_value,
+            event_name,
+            std::move(event_args),
+            restrict_to_browser_context,
+            GURL(),
+            EventRouter::USER_GESTURE_UNKNOWN,
+            mojom::EventFilteringInfo::New()) {}
+
+Event::Event(events::HistogramValue histogram_value,
+             const std::string& event_name,
+             base::Value::List event_args_tmp,
+             content::BrowserContext* restrict_to_browser_context,
+             const GURL& event_url,
+             EventRouter::UserGestureState user_gesture,
+             mojom::EventFilteringInfoPtr info)
+    : histogram_value(histogram_value),
+      event_name(event_name),
+      event_args(std::move(event_args_tmp)),
+      restrict_to_browser_context(restrict_to_browser_context),
+      event_url(event_url),
+      user_gesture(user_gesture),
+      filter_info(std::move(info)) {
+  DCHECK_NE(events::UNKNOWN, histogram_value)
+      << "events::UNKNOWN cannot be used as a histogram value.\n"
+      << "If this is a test, use events::FOR_TEST.\n"
+      << "If this is production code, it is important that you use a realistic "
+      << "value so that we can accurately track event usage. "
+      << "See extension_event_histogram_value.h for inspiration.";
+}
+
+Event::Event(events::HistogramValue histogram_value,
+             const std::string& event_name,
              std::vector<base::Value> event_args)
     : Event(histogram_value, event_name, std::move(event_args), nullptr) {}
 
@@ -1276,29 +1315,21 @@ Event::Event(events::HistogramValue histogram_value,
              const GURL& event_url,
              EventRouter::UserGestureState user_gesture,
              mojom::EventFilteringInfoPtr info)
-    : histogram_value(histogram_value),
-      event_name(event_name),
-      event_args(std::make_unique<base::ListValue>(std::move(event_args_tmp))),
-      restrict_to_browser_context(restrict_to_browser_context),
-      event_url(event_url),
-      user_gesture(user_gesture),
-      filter_info(std::move(info)) {
-  DCHECK(event_args);
-  DCHECK_NE(events::UNKNOWN, histogram_value)
-      << "events::UNKNOWN cannot be used as a histogram value.\n"
-      << "If this is a test, use events::FOR_TEST.\n"
-      << "If this is production code, it is important that you use a realistic "
-      << "value so that we can accurately track event usage. "
-      << "See extension_event_histogram_value.h for inspiration.";
-}
+    : Event(histogram_value,
+            event_name,
+            std::move(base::Value(std::move(event_args_tmp)).GetList()),
+            restrict_to_browser_context,
+            event_url,
+            user_gesture,
+            std::move(info)) {}
 
 Event::~Event() = default;
 
 std::unique_ptr<Event> Event::DeepCopy() const {
-  auto copy = std::make_unique<Event>(histogram_value, event_name,
-                                      event_args->Clone().TakeListDeprecated(),
-                                      restrict_to_browser_context, event_url,
-                                      user_gesture, filter_info.Clone());
+  auto copy =
+      std::make_unique<Event>(histogram_value, event_name, event_args.Clone(),
+                              restrict_to_browser_context, event_url,
+                              user_gesture, filter_info.Clone());
   copy->will_dispatch_callback = will_dispatch_callback;
   return copy;
 }

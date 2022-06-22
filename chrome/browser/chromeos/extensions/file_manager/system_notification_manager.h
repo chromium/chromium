@@ -235,7 +235,7 @@ class SystemNotificationManager {
    */
   std::unique_ptr<message_center::Notification> MakeDriveSyncErrorNotification(
       const extensions::Event& event,
-      base::Value::ListView& event_arguments);
+      const base::Value::List& event_arguments);
 
   /**
    * Click handler for the Drive offline confirmation dialog notification.
@@ -247,7 +247,7 @@ class SystemNotificationManager {
    */
   std::unique_ptr<message_center::Notification>
   MakeDriveConfirmDialogNotification(const extensions::Event& event,
-                                     base::Value::ListView& event_arguments);
+                                     const base::Value::List& event_arguments);
 
   /**
    * Update/remove Drive sync progress notification.
@@ -257,7 +257,7 @@ class SystemNotificationManager {
    */
   std::unique_ptr<message_center::Notification> UpdateDriveSyncNotification(
       const extensions::Event& event,
-      base::Value::ListView& event_arguments);
+      const base::Value::List& event_arguments);
 
   /**
    * Click handler for the removable device notification.

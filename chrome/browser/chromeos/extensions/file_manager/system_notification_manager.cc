@@ -367,7 +367,7 @@ namespace file_manager_private = extensions::api::file_manager_private;
 std::unique_ptr<message_center::Notification>
 SystemNotificationManager::MakeDriveSyncErrorNotification(
     const extensions::Event& event,
-    base::Value::ListView& event_arguments) {
+    const base::Value::List& event_arguments) {
   std::unique_ptr<message_center::Notification> notification;
   file_manager_private::DriveSyncErrorEvent sync_error;
   const char* id;
@@ -440,7 +440,7 @@ void SystemNotificationManager::HandleDriveDialogClick(
 std::unique_ptr<message_center::Notification>
 SystemNotificationManager::MakeDriveConfirmDialogNotification(
     const extensions::Event& event,
-    base::Value::ListView& event_arguments) {
+    const base::Value::List& event_arguments) {
   std::unique_ptr<message_center::Notification> notification;
   file_manager_private::DriveConfirmDialogEvent dialog_event;
   std::u16string title =
@@ -473,7 +473,7 @@ constexpr char kDrivePinId[] = "swa-drive-pin";
 std::unique_ptr<message_center::Notification>
 SystemNotificationManager::UpdateDriveSyncNotification(
     const extensions::Event& event,
-    base::Value::ListView& event_arguments) {
+    const base::Value::List& event_arguments) {
   std::unique_ptr<message_center::Notification> notification;
   file_manager_private::FileTransferStatus transfer_status;
   if (!file_manager_private::FileTransferStatus::Populate(event_arguments[0],
@@ -529,9 +529,7 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
   if (!swa_enabled_) {
     return;
   }
-  base::Value::ListView event_arguments;
-
-  event_arguments = event.event_args->GetListDeprecated();
+  const base::Value::List& event_arguments = event.event_args;
   if (event_arguments.size() < 1) {
     return;
   }

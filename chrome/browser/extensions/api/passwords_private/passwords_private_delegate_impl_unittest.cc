@@ -171,7 +171,7 @@ void PasswordEventObserver::OnBroadcastEvent(const extensions::Event& event) {
   if (event.event_name != event_name_) {
     return;
   }
-  event_args_ = event.event_args->Clone();
+  event_args_ = base::Value(event.event_args.Clone());
 }
 
 std::unique_ptr<KeyedService> BuildPasswordsPrivateEventRouter(

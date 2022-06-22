@@ -96,7 +96,7 @@ class SafeBrowsingEventObserver : public TestEventRouter::EventObserver {
   // extensions::TestEventRouter::EventObserver:
   void OnBroadcastEvent(const extensions::Event& event) override {
     if (event.event_name == event_name_) {
-      event_args_ = event.event_args->Clone();
+      event_args_ = base::Value(event.event_args.Clone());
     }
   }
 

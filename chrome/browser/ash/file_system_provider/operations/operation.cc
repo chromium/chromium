@@ -51,7 +51,6 @@ bool DispatchEventImpl(extensions::EventRouter* event_router,
                        ProviderId provider_id,
                        const std::string& file_system_id,
                        int request_id,
-
                        extensions::events::HistogramValue histogram_value,
                        const std::string& event_name,
                        std::vector<base::Value> event_args) {

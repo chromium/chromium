@@ -533,7 +533,7 @@ struct Event {
   const std::string event_name;
 
   // Arguments to send to the event listener.
-  std::unique_ptr<base::ListValue> event_args;
+  base::Value::List event_args;
 
   // If non-null, then the event will not be sent to other BrowserContexts
   // unless the extension has permission (e.g. incognito tab update -> normal
@@ -568,13 +568,32 @@ struct Event {
   // related browser_contexts. See https://crbug.com/726022.
   Event(events::HistogramValue histogram_value,
         const std::string& event_name,
-        std::vector<base::Value> event_args);
+        base::Value::List event_args);
 
+  Event(events::HistogramValue histogram_value,
+        const std::string& event_name,
+        base::Value::List event_args,
+        content::BrowserContext* restrict_to_browser_context);
+
+  Event(events::HistogramValue histogram_value,
+        const std::string& event_name,
+        base::Value::List event_args,
+        content::BrowserContext* restrict_to_browser_context,
+        const GURL& event_url,
+        EventRouter::UserGestureState user_gesture,
+        mojom::EventFilteringInfoPtr info);
+
+  // Deprecated versions of the above methods.
+  //
+  // TODO(https://crbug.com/1338341): Remove these when no more callers use
+  // them, or once base::Value::ListStorage has been removed.
+  Event(events::HistogramValue histogram_value,
+        const std::string& event_name,
+        std::vector<base::Value> event_args);
   Event(events::HistogramValue histogram_value,
         const std::string& event_name,
         std::vector<base::Value> event_args,
         content::BrowserContext* restrict_to_browser_context);
-
   Event(events::HistogramValue histogram_value,
         const std::string& event_name,
         std::vector<base::Value> event_args,

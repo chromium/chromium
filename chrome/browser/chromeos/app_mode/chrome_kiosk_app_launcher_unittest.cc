@@ -58,10 +58,9 @@ class AppLaunchTracker : public extensions::TestEventRouter::EventObserver {
                                   const extensions::Event& event) override {
     ASSERT_EQ(event.event_name,
               extensions::api::app_runtime::OnLaunched::kEventName);
-    ASSERT_TRUE(event.event_args);
-    ASSERT_EQ(1u, event.event_args->GetListDeprecated().size());
+    ASSERT_EQ(1u, event.event_args.size());
 
-    const base::Value& launch_data = event.event_args->GetListDeprecated()[0];
+    const base::Value& launch_data = event.event_args[0];
     const base::Value* is_kiosk_session =
         launch_data.FindKeyOfType("isKioskSession", base::Value::Type::BOOLEAN);
     ASSERT_TRUE(is_kiosk_session);

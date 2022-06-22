@@ -100,8 +100,7 @@ class LockScreenEventObserver
         extensions::api::app_runtime::OnLaunched::kEventName) {
       return;
     }
-    ASSERT_TRUE(event.event_args);
-    const base::Value& arg_value = event.event_args->GetListDeprecated()[0];
+    const base::Value& arg_value = event.event_args[0];
     if (event.restrict_to_browser_context)
       EXPECT_EQ(context_, event.restrict_to_browser_context);
 

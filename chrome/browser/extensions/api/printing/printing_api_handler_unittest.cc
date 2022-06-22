@@ -82,7 +82,7 @@ class PrintingEventObserver : public TestEventRouter::EventObserver {
                                   const Event& event) override {
     if (event.event_name == event_name_) {
       extension_id_ = extension_id;
-      event_args_ = event.event_args->Clone();
+      event_args_ = base::Value(event.event_args.Clone());
     }
   }
 

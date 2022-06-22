@@ -99,8 +99,7 @@ bool LazyEventDispatcher::QueueEventDispatch(
       return true;
     }
     if (modified_event_args) {
-      dispatched_event->event_args = base::ListValue::From(
-          std::make_unique<base::Value>(std::move(*modified_event_args)));
+      dispatched_event->event_args = std::move(*modified_event_args);
     }
     if (modified_event_filter_info)
       dispatched_event->filter_info = std::move(modified_event_filter_info);

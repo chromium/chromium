@@ -208,7 +208,8 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
 
     Event* new_event = new Event(
         Profile::FromBrowserContext(event.restrict_to_browser_context),
-        event.event_name, *event.event_args.get(), base::Time::Now());
+        event.event_name, base::Value(event.event_args.Clone()),
+        base::Time::Now());
     events_.push_back(base::WrapUnique(new_event));
     if (waiting_ && waiting_for_.get() && new_event->Satisfies(*waiting_for_)) {
       waiting_ = false;
