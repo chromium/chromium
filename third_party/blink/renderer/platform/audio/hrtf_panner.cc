@@ -41,6 +41,31 @@ const double kMaxDelayTimeSeconds = 0.002;
 
 const int kUninitializedAzimuth = -1;
 
+int HRTFPanner::CalculateDesiredAzimuthIndexAndBlend(double azimuth,
+                                                     double& azimuth_blend) {
+  // Convert the azimuth angle from the range -180 -> +180 into the range 0 ->
+  // 360.  The azimuth index may then be calculated from this positive value.
+  if (azimuth < 0) {
+    azimuth += 360.0;
+  }
+
+  int number_of_azimuths = HRTFDatabase::NumberOfAzimuths();
+  const double angle_between_azimuths = 360.0 / number_of_azimuths;
+
+  // Calculate the azimuth index and the blend (0 -> 1) for interpolation.
+  double desired_azimuth_index_float = azimuth / angle_between_azimuths;
+  int desired_azimuth_index = static_cast<int>(desired_azimuth_index_float);
+  azimuth_blend =
+      desired_azimuth_index_float - static_cast<double>(desired_azimuth_index);
+
+  // We don't immediately start using this azimuth index, but instead approach
+  // this index from the last index we rendered at.  This minimizes the clicks
+  // and graininess for moving sources which occur otherwise.
+  desired_azimuth_index =
+      ClampTo(desired_azimuth_index, 0, number_of_azimuths - 1);
+  return desired_azimuth_index;
+}
+
 HRTFPanner::HRTFPanner(float sample_rate,
                        unsigned render_quantum_frames,
                        HRTFDatabaseLoader* database_loader)
@@ -108,31 +133,6 @@ void HRTFPanner::Reset() {
   convolver_r2_.Reset();
   delay_line_l_.Reset();
   delay_line_r_.Reset();
-}
-
-int HRTFPanner::CalculateDesiredAzimuthIndexAndBlend(double azimuth,
-                                                     double& azimuth_blend) {
-  // Convert the azimuth angle from the range -180 -> +180 into the range 0 ->
-  // 360.  The azimuth index may then be calculated from this positive value.
-  if (azimuth < 0) {
-    azimuth += 360.0;
-  }
-
-  int number_of_azimuths = HRTFDatabase::NumberOfAzimuths();
-  const double angle_between_azimuths = 360.0 / number_of_azimuths;
-
-  // Calculate the azimuth index and the blend (0 -> 1) for interpolation.
-  double desired_azimuth_index_float = azimuth / angle_between_azimuths;
-  int desired_azimuth_index = static_cast<int>(desired_azimuth_index_float);
-  azimuth_blend =
-      desired_azimuth_index_float - static_cast<double>(desired_azimuth_index);
-
-  // We don't immediately start using this azimuth index, but instead approach
-  // this index from the last index we rendered at.  This minimizes the clicks
-  // and graininess for moving sources which occur otherwise.
-  desired_azimuth_index =
-      ClampTo(desired_azimuth_index, 0, number_of_azimuths - 1);
-  return desired_azimuth_index;
 }
 
 void HRTFPanner::Pan(double desired_azimuth,

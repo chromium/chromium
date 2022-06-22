@@ -65,6 +65,39 @@ const int kElevationIndexTableSize = 10;
 const int kElevationIndexTable[kElevationIndexTableSize] = {
     0, 15, 30, 45, 60, 75, 90, 315, 330, 345};
 
+// The range of elevations for the IRCAM impulse responses varies depending on
+// azimuth, but the minimum elevation appears to always be -45.
+//
+// Here's how it goes:
+static int g_max_elevations[] = {
+    //  Azimuth
+    //
+    90,  // 0
+    45,  // 15
+    60,  // 30
+    45,  // 45
+    75,  // 60
+    45,  // 75
+    60,  // 90
+    45,  // 105
+    75,  // 120
+    45,  // 135
+    60,  // 150
+    45,  // 165
+    75,  // 180
+    45,  // 195
+    60,  // 210
+    45,  // 225
+    75,  // 240
+    45,  // 255
+    60,  // 270
+    45,  // 285
+    75,  // 300
+    45,  // 315
+    60,  // 330
+    45   //  345
+};
+
 // Lazily load a concatenated HRTF database for given subject and store it in a
 // local hash table to ensure quick efficient future retrievals.
 static scoped_refptr<AudioBus> GetConcatenatedImpulseResponsesForSubject(
@@ -189,39 +222,6 @@ bool HRTFElevation::CalculateKernelsForAzimuthElevation(
 
   return true;
 }
-
-// The range of elevations for the IRCAM impulse responses varies depending on
-// azimuth, but the minimum elevation appears to always be -45.
-//
-// Here's how it goes:
-static int g_max_elevations[] = {
-    //  Azimuth
-    //
-    90,  // 0
-    45,  // 15
-    60,  // 30
-    45,  // 45
-    75,  // 60
-    45,  // 75
-    60,  // 90
-    45,  // 105
-    75,  // 120
-    45,  // 135
-    60,  // 150
-    45,  // 165
-    75,  // 180
-    45,  // 195
-    60,  // 210
-    45,  // 225
-    75,  // 240
-    45,  // 255
-    60,  // 270
-    45,  // 285
-    75,  // 300
-    45,  // 315
-    60,  // 330
-    45   //  345
-};
 
 std::unique_ptr<HRTFElevation> HRTFElevation::CreateForSubject(
     int subject_resource_id,

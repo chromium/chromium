@@ -133,45 +133,6 @@ void EqualPowerPanner::Pan(double azimuth,
   }
 }
 
-void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
-                                            double& desired_gain_r,
-                                            double azimuth,
-                                            int number_of_input_channels) {
-  // Clamp azimuth to allowed range of -180 -> +180.
-  azimuth = ClampTo(azimuth, -180.0, 180.0);
-
-  // Alias the azimuth ranges behind us to in front of us:
-  // -90 -> -180 to -90 -> 0 and 90 -> 180 to 90 -> 0
-  if (azimuth < -90) {
-    azimuth = -180 - azimuth;
-  } else if (azimuth > 90) {
-    azimuth = 180 - azimuth;
-  }
-
-  double desired_pan_position;
-
-  if (number_of_input_channels == 1) {  // For mono source case.
-    // Pan smoothly from left to right with azimuth going from -90 -> +90
-    // degrees.
-    desired_pan_position = (azimuth + 90) / 180;
-  } else {               // For stereo source case.
-    if (azimuth <= 0) {  // from -90 -> 0
-      // sourceL -> destL and "equal-power pan" sourceR as in mono case
-      // by transforming the "azimuth" value from -90 -> 0 degrees into the
-      // range -90 -> +90.
-      desired_pan_position = (azimuth + 90) / 90;
-    } else {  // from 0 -> +90
-      // sourceR -> destR and "equal-power pan" sourceL as in mono case
-      // by transforming the "azimuth" value from 0 -> +90 degrees into the
-      // range -90 -> +90.
-      desired_pan_position = azimuth / 90;
-    }
-  }
-
-  desired_gain_l = fdlibm::cos(kPiOverTwoDouble * desired_pan_position);
-  desired_gain_r = fdlibm::sin(kPiOverTwoDouble * desired_pan_position);
-}
-
 void EqualPowerPanner::PanWithSampleAccurateValues(
     double* azimuth,
     double* /*elevation*/,
@@ -238,6 +199,45 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
       }
     }
   }
+}
+
+void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
+                                            double& desired_gain_r,
+                                            double azimuth,
+                                            int number_of_input_channels) {
+  // Clamp azimuth to allowed range of -180 -> +180.
+  azimuth = ClampTo(azimuth, -180.0, 180.0);
+
+  // Alias the azimuth ranges behind us to in front of us:
+  // -90 -> -180 to -90 -> 0 and 90 -> 180 to 90 -> 0
+  if (azimuth < -90) {
+    azimuth = -180 - azimuth;
+  } else if (azimuth > 90) {
+    azimuth = 180 - azimuth;
+  }
+
+  double desired_pan_position;
+
+  if (number_of_input_channels == 1) {  // For mono source case.
+    // Pan smoothly from left to right with azimuth going from -90 -> +90
+    // degrees.
+    desired_pan_position = (azimuth + 90) / 180;
+  } else {               // For stereo source case.
+    if (azimuth <= 0) {  // from -90 -> 0
+      // sourceL -> destL and "equal-power pan" sourceR as in mono case
+      // by transforming the "azimuth" value from -90 -> 0 degrees into the
+      // range -90 -> +90.
+      desired_pan_position = (azimuth + 90) / 90;
+    } else {  // from 0 -> +90
+      // sourceR -> destR and "equal-power pan" sourceL as in mono case
+      // by transforming the "azimuth" value from 0 -> +90 degrees into the
+      // range -90 -> +90.
+      desired_pan_position = azimuth / 90;
+    }
+  }
+
+  desired_gain_l = fdlibm::cos(kPiOverTwoDouble * desired_pan_position);
+  desired_gain_r = fdlibm::sin(kPiOverTwoDouble * desired_pan_position);
 }
 
 }  // namespace blink
