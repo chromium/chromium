@@ -216,6 +216,16 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // this.
   void RequestArcDataRemoval();
 
+  // Stops ARC instance without removing user ARC data.
+  // Unlike RequestDisable(), this doesn't clear user ARC prefs, and ARC is not
+  // supposed to restart within the same user session.
+  // NOTE: This method should be used only for the purpose of stopping ARC
+  //       under low disk space.
+  // TODO(b/236325019): Remove this once ArcSessionManager officially supports
+  //       a method to stop ARC without clearing user ARC prefs, or when we
+  //       remove ArcDiskSpaceMonitor after Storage Balloon is ready.
+  void RequestStopOnLowDiskSpace();
+
   // ArcSupportHost:::ErrorDelegate:
   void OnWindowClosed() override;
   void OnRetryClicked() override;

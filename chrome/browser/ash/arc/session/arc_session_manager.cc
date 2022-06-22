@@ -1576,6 +1576,10 @@ void ArcSessionManager::StartArc() {
   arc_session_runner_->RequestUpgrade(std::move(params));
 }
 
+void ArcSessionManager::RequestStopOnLowDiskSpace() {
+  arc_session_runner_->RequestStop();
+}
+
 void ArcSessionManager::StopArc() {
   // TODO(hidehiko): This STOPPED guard should be unnecessary. Remove it later.
   // |reenable_arc_| may be set in |StopAndEnableArc| in case enterprise

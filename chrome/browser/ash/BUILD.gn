@@ -471,6 +471,8 @@ source_set("ash") {
     "arc/session/arc_app_id_provider_impl.h",
     "arc/session/arc_demo_mode_preference_handler.cc",
     "arc/session/arc_demo_mode_preference_handler.h",
+    "arc/session/arc_disk_space_monitor.cc",
+    "arc/session/arc_disk_space_monitor.h",
     "arc/session/arc_play_store_enabled_preference_handler.cc",
     "arc/session/arc_play_store_enabled_preference_handler.h",
     "arc/session/arc_provisioning_result.cc",

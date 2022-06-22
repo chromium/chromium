@@ -80,6 +80,7 @@
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/ash/arc/screen_capture/arc_screen_capture_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_demo_mode_preference_handler.h"
+#include "chrome/browser/ash/arc/session/arc_disk_space_monitor.h"
 #include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/sharesheet/arc_sharesheet_bridge.h"
@@ -151,6 +152,9 @@ ArcServiceLauncher::ArcServiceLauncher(
     arc_demo_mode_preference_handler_ =
         ArcDemoModePreferenceHandler::Create(arc_session_manager_.get());
   }
+
+  if (base::FeatureList::IsEnabled(kEnableVirtioBlkForData))
+    arc_disk_space_monitor_ = std::make_unique<ArcDiskSpaceMonitor>();
 }
 
 ArcServiceLauncher::~ArcServiceLauncher() {
