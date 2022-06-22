@@ -716,8 +716,10 @@ bool CanHandleToggleResizeLockMenu() {
 }
 
 bool CanHandleToggleFloatingWindow() {
-  return chromeos::wm::features::IsFloatWindowEnabled() &&
-         !Shell::Get()->tablet_mode_controller()->InTabletMode();
+  if (!chromeos::wm::features::IsFloatWindowEnabled())
+    return false;
+
+  return window_util::GetActiveWindow() != nullptr;
 }
 
 // Enters capture mode image type with |source|.
@@ -854,12 +856,11 @@ void HandleToggleAppList(const ui::Accelerator& accelerator,
 
 void HandleToggleFloating() {
   DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
-  // Floating is currently not supported for tablet mode, see timeline here:
-  // https://crbug.com/1240411
-  DCHECK(!Shell::Get()->tablet_mode_controller()->InTabletMode());
-  aura::Window* window = ash::window_util::GetActiveWindow();
-  if (window)
-    chromeos::ToggleFloating(window);
+  aura::Window* window = window_util::GetActiveWindow();
+  DCHECK(window);
+  // TODO(sammiequon|shidi): Add some UI like a bounce if a window cannnot be
+  // floated.
+  chromeos::ToggleFloating(window);
   base::RecordAction(UserMetricsAction("Accel_Toggle_Floating"));
 }
 

@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -25,6 +26,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/compositor/layer.h"
@@ -97,6 +99,11 @@ gfx::Rect GetBoundsInTabletMode(WindowState* state_object) {
   if (state_object->GetStateType() == WindowStateType::kSecondarySnapped) {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow())
         ->GetSnappedWindowBoundsInParent(SplitViewController::RIGHT, window);
+  }
+
+  if (chromeos::wm::features::IsFloatWindowEnabled() &&
+      state_object->IsFloated()) {
+    return FloatController::GetPreferredFloatWindowTabletBounds(window);
   }
 
   gfx::Rect bounds_in_parent;
@@ -307,8 +314,13 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       }
       break;
     }
-    // TODO(shidi): Float is currently disabled for tablet mode.
     case WM_EVENT_FLOAT:
+      // Not all windows can be floated.
+      if (!FloatController::CanFloatWindowInTablet(window_state->window()))
+        return;
+
+      UpdateWindow(window_state, WindowStateType::kFloated,
+                   /*=animated=*/true);
       break;
     case WM_EVENT_SNAP_PRIMARY:
     case WM_EVENT_SNAP_SECONDARY:
@@ -432,10 +444,11 @@ void TabletModeWindowState::UpdateWindow(WindowState* window_state,
          target_state == WindowStateType::kTrustedPinned ||
          (target_state == WindowStateType::kNormal &&
           (!window_state->CanMaximize() ||
-           !!::wm::GetTransientParent(window_state->window()))) ||
+           !!wm::GetTransientParent(window_state->window()))) ||
          target_state == WindowStateType::kFullscreen ||
          target_state == WindowStateType::kPrimarySnapped ||
-         target_state == WindowStateType::kSecondarySnapped);
+         target_state == WindowStateType::kSecondarySnapped ||
+         target_state == WindowStateType::kFloated);
 
   if (current_state_type_ == target_state) {
     if (target_state == WindowStateType::kMinimized)
@@ -450,8 +463,15 @@ void TabletModeWindowState::UpdateWindow(WindowState* window_state,
   window_state->UpdateWindowPropertiesFromStateType();
   window_state->NotifyPreStateTypeChange(old_state_type);
 
+  if (target_state == WindowStateType::kFloated)
+    Shell::Get()->float_controller()->Float(window_state->window());
+
+  // Unfloat floated window when exiting float state to another state.
+  if (old_state_type == WindowStateType::kFloated)
+    Shell::Get()->float_controller()->Unfloat(window_state->window());
+
   if (target_state == WindowStateType::kMinimized) {
-    ::wm::SetWindowVisibilityAnimationType(
+    wm::SetWindowVisibilityAnimationType(
         window_state->window(), WINDOW_VISIBILITY_ANIMATION_TYPE_MINIMIZE);
     window_state->window()->Hide();
     if (window_state->IsActive())
@@ -518,9 +538,9 @@ void TabletModeWindowState::UpdateBounds(WindowState* window_state,
             bounds_in_parent, base::Seconds(1), gfx::Tween::ZERO);
         return;
       }
-      // If we animate (to) tablet mode, we want to use the cross fade to
-      // avoid flashing.
-      if (window_state->IsMaximized())
+      // Use cross fade in some cases to avoid flashing and/or for better
+      // performance.
+      if (window_state->IsMaximized() || window_state->IsFloated())
         window_state->SetBoundsDirectCrossFade(bounds_in_parent);
       else
         window_state->SetBoundsDirectAnimated(bounds_in_parent);
