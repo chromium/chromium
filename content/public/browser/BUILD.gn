@@ -287,6 +287,8 @@ source_set("browser_sources") {
     "picture_in_picture_window_controller.h",
     "platform_notification_context.h",
     "platform_notification_service.h",
+    "prefetch_service_delegate.cc",
+    "prefetch_service_delegate.h",
     "preloading.h",
     "preloading_data.h",
     "prerender_handle.h",

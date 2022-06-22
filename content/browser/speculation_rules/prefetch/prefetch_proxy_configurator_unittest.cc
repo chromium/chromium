@@ -25,6 +25,8 @@
 namespace content {
 namespace {
 
+const char kApiKey[] = "APIKEY";
+
 class TestCustomProxyConfigClient
     : public network::mojom::CustomProxyConfigClient {
  public:
@@ -57,6 +59,8 @@ class PrefetchProxyConfiguratorTest : public testing::Test {
     return std::move(config_client_->config_);
   }
 
+  GURL prefetch_proxy_url() { return GURL("https://prefetchproxy.com"); }
+
   void VerifyLatestProxyConfig(const GURL& proxy_url,
                                const net::HttpRequestHeaders& headers) {
     auto config = LatestProxyConfig();
@@ -81,7 +85,8 @@ class PrefetchProxyConfiguratorTest : public testing::Test {
   PrefetchProxyConfigurator* configurator() {
     if (!configurator_) {
       // Lazy construct and init so that any changed field trials can be used.
-      configurator_ = std::make_unique<PrefetchProxyConfigurator>();
+      configurator_ = std::make_unique<PrefetchProxyConfigurator>(
+          prefetch_proxy_url(), kApiKey);
       mojo::Remote<network::mojom::CustomProxyConfigClient> client_remote;
       config_client_ = std::make_unique<TestCustomProxyConfigClient>(
           client_remote.BindNewPipeAndPassReceiver());
@@ -109,8 +114,6 @@ TEST_F(PrefetchProxyConfiguratorTest, FeatureOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kPrefetchUseContentRefactor);
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      "isolated-prerender-tunnel-proxy", "https://testproxyhost.com");
 
   base::RunLoop loop;
   configurator()->UpdateCustomProxyConfig(loop.QuitClosure());
@@ -120,32 +123,29 @@ TEST_F(PrefetchProxyConfiguratorTest, FeatureOff) {
 }
 
 TEST_F(PrefetchProxyConfiguratorTest, ExperimentOverrides) {
-  GURL proxy_url("https://proxy.com");
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kPrefetchUseContentRefactor,
-      {{"proxy_host", proxy_url.spec()}, {"proxy_header_key", "test-header"}});
+      {{"proxy_header_key", "test-header"}});
 
   base::RunLoop loop;
   configurator()->UpdateCustomProxyConfig(loop.QuitClosure());
   loop.Run();
 
   net::HttpRequestHeaders headers;
-  headers.SetHeader("test-header", "");
-  VerifyLatestProxyConfig(proxy_url, headers);
+  headers.SetHeader("test-header", "key=" + std::string(kApiKey));
+  VerifyLatestProxyConfig(prefetch_proxy_url(), headers);
 }
 
 TEST_F(PrefetchProxyConfiguratorTest, Fallback_DoesRandomBackoff_ErrFailed) {
   base::HistogramTester histogram_tester;
-  GURL proxy_url("https://proxy.com");
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrefetchUseContentRefactor,
-      {{"proxy_host", proxy_url.spec()}});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPrefetchUseContentRefactor);
 
   net::ProxyServer proxy(
-      net::GetSchemeFromUriScheme(PrefetchProxyHost().scheme()),
-      net::HostPortPair::FromURL(PrefetchProxyHost()));
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
+      net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 
@@ -161,15 +161,13 @@ TEST_F(PrefetchProxyConfiguratorTest, Fallback_DoesRandomBackoff_ErrFailed) {
 
 TEST_F(PrefetchProxyConfiguratorTest, FallbackDoesRandomBackoff_ErrOK) {
   base::HistogramTester histogram_tester;
-  GURL proxy_url("https://proxy.com");
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrefetchUseContentRefactor,
-      {{"proxy_host", proxy_url.spec()}});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPrefetchUseContentRefactor);
 
   net::ProxyServer proxy(
-      net::GetSchemeFromUriScheme(PrefetchProxyHost().scheme()),
-      net::HostPortPair::FromURL(PrefetchProxyHost()));
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
+      net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 
@@ -185,14 +183,12 @@ TEST_F(PrefetchProxyConfiguratorTest, FallbackDoesRandomBackoff_ErrOK) {
 
 TEST_F(PrefetchProxyConfiguratorTest, Fallback_DifferentProxy) {
   base::HistogramTester histogram_tester;
-  GURL proxy_url("https://proxy.com");
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrefetchUseContentRefactor,
-      {{"proxy_host", proxy_url.spec()}});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPrefetchUseContentRefactor);
 
   net::ProxyServer proxy(
-      net::GetSchemeFromUriScheme(PrefetchProxyHost().scheme()),
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
       net::HostPortPair::FromURL(GURL("http://foo.com")));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
@@ -204,15 +200,13 @@ TEST_F(PrefetchProxyConfiguratorTest, Fallback_DifferentProxy) {
 
 TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_200OK) {
   base::HistogramTester histogram_tester;
-  GURL proxy_url("https://proxy.com");
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrefetchUseContentRefactor,
-      {{"proxy_host", proxy_url.spec()}});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPrefetchUseContentRefactor);
 
   net::ProxyServer proxy(
-      net::GetSchemeFromUriScheme(PrefetchProxyHost().scheme()),
-      net::HostPortPair::FromURL(PrefetchProxyHost()));
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
+      net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 
@@ -224,14 +218,12 @@ TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_200OK) {
 
 TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_DifferentProxy) {
   base::HistogramTester histogram_tester;
-  GURL proxy_url("https://proxy.com");
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrefetchUseContentRefactor,
-      {{"proxy_host", proxy_url.spec()}});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPrefetchUseContentRefactor);
 
   net::ProxyServer proxy(
-      net::GetSchemeFromUriScheme(PrefetchProxyHost().scheme()),
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
       net::HostPortPair::FromURL(GURL("http://foo.com")));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
@@ -244,15 +236,13 @@ TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_DifferentProxy) {
 
 TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_500NoRetryAfter) {
   base::HistogramTester histogram_tester;
-  GURL proxy_url("https://proxy.com");
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrefetchUseContentRefactor,
-      {{"proxy_host", proxy_url.spec()}});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPrefetchUseContentRefactor);
 
   net::ProxyServer proxy(
-      net::GetSchemeFromUriScheme(PrefetchProxyHost().scheme()),
-      net::HostPortPair::FromURL(PrefetchProxyHost()));
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
+      net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 
@@ -268,15 +258,13 @@ TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_500NoRetryAfter) {
 
 TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_500WithRetryAfter) {
   base::HistogramTester histogram_tester;
-  GURL proxy_url("https://proxy.com");
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrefetchUseContentRefactor,
-      {{"proxy_host", proxy_url.spec()}});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPrefetchUseContentRefactor);
 
   net::ProxyServer proxy(
-      net::GetSchemeFromUriScheme(PrefetchProxyHost().scheme()),
-      net::HostPortPair::FromURL(PrefetchProxyHost()));
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
+      net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 
@@ -296,12 +284,10 @@ TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_500WithRetryAfter) {
 }
 
 TEST_F(PrefetchProxyConfiguratorTest, ServerExperimentGroup) {
-  GURL proxy_url("https://proxy.com");
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kPrefetchUseContentRefactor,
-      {{"proxy_host", proxy_url.spec()},
-       {"proxy_header_key", "test-header"},
+      {{"proxy_header_key", "test-header"},
        {"server_experiment_group", "test_group"}});
 
   base::RunLoop loop;
@@ -309,8 +295,9 @@ TEST_F(PrefetchProxyConfiguratorTest, ServerExperimentGroup) {
   loop.Run();
 
   net::HttpRequestHeaders headers;
-  headers.SetHeader("test-header", "exp=test_group");
-  VerifyLatestProxyConfig(proxy_url, headers);
+  headers.SetHeader("test-header",
+                    "key=" + std::string(kApiKey) + ",exp=test_group");
+  VerifyLatestProxyConfig(prefetch_proxy_url(), headers);
 }
 
 }  // namespace

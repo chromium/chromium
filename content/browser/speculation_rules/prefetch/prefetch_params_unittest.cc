@@ -20,7 +20,8 @@ TEST_F(PrefetchParamsTest, DecoyProbabilityClampedZero) {
       {{"ineligible_decoy_request_probability", "-1"}});
 
   for (size_t i = 0; i < 100; i++) {
-    EXPECT_FALSE(PrefetchServiceSendDecoyRequestForIneligblePrefetch());
+    EXPECT_FALSE(PrefetchServiceSendDecoyRequestForIneligblePrefetch(
+        /* disabled_based_on_user_settings=*/false));
   }
 }
 
@@ -31,7 +32,8 @@ TEST_F(PrefetchParamsTest, DecoyProbabilityClampedOne) {
       {{"ineligible_decoy_request_probability", "2"}});
 
   for (size_t i = 0; i < 100; i++) {
-    EXPECT_TRUE(PrefetchServiceSendDecoyRequestForIneligblePrefetch());
+    EXPECT_TRUE(PrefetchServiceSendDecoyRequestForIneligblePrefetch(
+        /* disabled_based_on_user_settings=*/false));
   }
 }
 

@@ -87,6 +87,7 @@
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_navigation_throttle.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/prefetch/prefetch_proxy/chrome_prefetch_service_delegate.h"
 #include "chrome/browser/prefetch/prefetch_proxy/chrome_speculation_host_delegate.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service.h"
@@ -6494,6 +6495,12 @@ std::unique_ptr<content::SpeculationHostDelegate>
 ChromeContentBrowserClient::CreateSpeculationHostDelegate(
     content::RenderFrameHost& render_frame_host) {
   return std::make_unique<ChromeSpeculationHostDelegate>(render_frame_host);
+}
+
+std::unique_ptr<content::PrefetchServiceDelegate>
+ChromeContentBrowserClient::CreatePrefetchServiceDelegate(
+    content::BrowserContext* browser_context) {
+  return std::make_unique<ChromePrefetchServiceDelegate>(browser_context);
 }
 
 void ChromeContentBrowserClient::OnWebContentsCreated(

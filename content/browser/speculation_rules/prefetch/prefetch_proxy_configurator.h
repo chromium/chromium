@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_SPECULATION_RULES_PREFETCH_PREFETCH_PROXY_CONFIGURATOR_H_
 #define CONTENT_BROWSER_SPECULATION_RULES_PREFETCH_PREFETCH_PROXY_CONFIGURATOR_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -27,7 +29,14 @@ namespace content {
 class CONTENT_EXPORT PrefetchProxyConfigurator
     : public network::mojom::CustomProxyConnectionObserver {
  public:
-  PrefetchProxyConfigurator();
+  // Creates an instance of |PrefetchProxyConfigurator| when given a valid
+  // |proxy_url|.
+  static std::unique_ptr<PrefetchProxyConfigurator>
+  MaybeCreatePrefetchProxyConfigurator(const GURL& proxy_url,
+                                       const std::string& api_key);
+
+  explicit PrefetchProxyConfigurator(const GURL& proxy_url,
+                                     const std::string api_key);
   ~PrefetchProxyConfigurator() override;
 
   PrefetchProxyConfigurator(const PrefetchProxyConfigurator&) = delete;

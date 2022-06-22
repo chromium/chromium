@@ -22,6 +22,7 @@
 #include "content/browser/speculation_rules/prefetch/prefetched_mainframe_response_container.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
@@ -173,8 +174,14 @@ std::unique_ptr<PrefetchService> PrefetchService::CreateIfPossible(
 
 PrefetchService::PrefetchService(BrowserContext* browser_context)
     : browser_context_(browser_context),
+      delegate_(GetContentClient()->browser()->CreatePrefetchServiceDelegate(
+          browser_context_)),
       prefetch_proxy_configurator_(
-          std::make_unique<PrefetchProxyConfigurator>()) {}
+          PrefetchProxyConfigurator::MaybeCreatePrefetchProxyConfigurator(
+              PrefetchProxyHost(delegate_
+                                    ? delegate_->GetDefaultPrefetchProxyHost()
+                                    : GURL("")),
+              delegate_ ? delegate_->GetAPIKey() : "")) {}
 
 PrefetchService::~PrefetchService() = default;
 
@@ -182,6 +189,24 @@ void PrefetchService::PrefetchUrl(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   DCHECK(prefetch_container);
   auto prefetch_container_key = prefetch_container->GetPrefetchContainerKey();
+
+  // If the user has disabled pre* actions, then don't prefetch.
+  if (delegate_ && !delegate_->IsSomePreloadingEnabled()) {
+    return;
+  }
+
+  if (delegate_) {
+    bool allow_all_domains = PrefetchAllowAllDomains() ||
+                             (PrefetchAllowAllDomainsForExtendedPreloading() &&
+                              delegate_->IsExtendedPreloadingEnabled());
+    if (!allow_all_domains &&
+        !delegate_->IsDomainInPrefetchAllowList(
+            RenderFrameHost::FromID(
+                prefetch_container->GetReferringRenderFrameHostId())
+                ->GetLastCommittedURL())) {
+      return;
+    }
+  }
 
   DCHECK(all_prefetches_.find(prefetch_container_key) == all_prefetches_.end());
   all_prefetches_[prefetch_container_key] = prefetch_container;
@@ -248,7 +273,8 @@ void PrefetchService::CheckEligibilityOfPrefetch(
   }
 
   if (prefetch_container->GetPrefetchType().IsProxyRequired() &&
-      !prefetch_proxy_configurator_->IsPrefetchProxyAvailable()) {
+      (!prefetch_proxy_configurator_ ||
+       !prefetch_proxy_configurator_->IsPrefetchProxyAvailable())) {
     std::move(result_callback)
         .Run(prefetch_container, false,
              PrefetchStatus::kPrefetchProxyNotAvailable);
@@ -268,9 +294,15 @@ void PrefetchService::CheckEligibilityOfPrefetch(
     return;
   }
 
-  // TODO(https://crbug.com/1299059): Add a delegate to get information from
-  // |PrefetchProxyOriginDecider| about whether or not we can prefetch the given
-  // origin.
+  // If we have recently received a "retry-after" for the origin, then don't
+  // send new prefetches.
+  if (delegate_ && delegate_->IsOriginOutsideRetryAfterWindow(
+                       prefetch_container->GetURL())) {
+    std::move(result_callback)
+        .Run(prefetch_container, false,
+             PrefetchStatus::kPrefetchIneligibleRetryAfter);
+    return;
+  }
 
   // This service worker check assumes that the prefetch will only ever be
   // performed in a first-party context (main frame prefetch). At the moment
@@ -363,12 +395,12 @@ void PrefetchService::OnGotEligibilityResult(
     if (status && prefetch_container) {
       prefetch_container->SetPrefetchStatus(status.value());
 
-      // TODO(https://crbug.com/1299059): Check if we should send decoys based
-      // on prefs. This will need to be done via a delegate
       if (prefetch_container->GetPrefetchType().IsProxyRequired() &&
           ShouldConsiderDecoyRequestForStatus(
               prefetch_container->GetPrefetchStatus()) &&
-          PrefetchServiceSendDecoyRequestForIneligblePrefetch()) {
+          PrefetchServiceSendDecoyRequestForIneligblePrefetch(
+              delegate_ ? delegate_->DisableDecoysBasedOnUserSettings()
+                        : false)) {
         prefetch_container->SetIsDecoy(true);
         prefetch_queue_.push_back(prefetch_container);
         prefetch_container->SetPrefetchStatus(
@@ -722,9 +754,10 @@ void PrefetchService::HandlePrefetchedResponse(
       if (head->headers->EnumerateHeader(nullptr, "Retry-After",
                                          &retry_after_string) &&
           net::HttpUtil::ParseRetryAfterHeader(
-              retry_after_string, base::Time::Now(), &retry_after)) {
-        // TODO(https://crbug.com/1299059): Update |PrefetchProxyOriginDecider|
-        // of this response via a delegate.
+              retry_after_string, base::Time::Now(), &retry_after) &&
+          delegate_) {
+        delegate_->ReportOriginRetryAfter(prefetch_container->GetURL(),
+                                          retry_after);
       }
     }
     return;

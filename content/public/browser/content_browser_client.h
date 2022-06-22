@@ -216,6 +216,7 @@ class MediaObserver;
 class NavigationHandle;
 class NavigationThrottle;
 class NavigationUIData;
+class PrefetchServiceDelegate;
 class QuotaPermissionContext;
 class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
@@ -2219,6 +2220,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // `render_frame_host`.
   virtual std::unique_ptr<SpeculationHostDelegate>
   CreateSpeculationHostDelegate(RenderFrameHost& render_frame_host);
+
+  // Allows the embedder to provide a PrefetchServiceDelegate that will be used
+  // to make prefetches.
+  virtual std::unique_ptr<PrefetchServiceDelegate>
+  CreatePrefetchServiceDelegate(BrowserContext* browser_context);
 
   // Allows the embedder to show a dialog that will be used to control whether a
   // connection through the Direct Sockets API is permitted. If the connection

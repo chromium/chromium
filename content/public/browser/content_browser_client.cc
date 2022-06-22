@@ -37,6 +37,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/quota_permission_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/sms_fetcher.h"
@@ -1323,6 +1324,12 @@ bool ContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
 std::unique_ptr<SpeculationHostDelegate>
 ContentBrowserClient::CreateSpeculationHostDelegate(
     RenderFrameHost& render_frame_host) {
+  return nullptr;
+}
+
+std::unique_ptr<PrefetchServiceDelegate>
+ContentBrowserClient::CreatePrefetchServiceDelegate(
+    BrowserContext* browser_context) {
   return nullptr;
 }
 
