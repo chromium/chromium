@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
-#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -153,12 +152,8 @@ DownloadUIModel::DownloadUIModel(
 
 DownloadUIModel::~DownloadUIModel() = default;
 
-void DownloadUIModel::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void DownloadUIModel::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
+void DownloadUIModel::SetDelegate(Delegate* delegate) {
+  delegate_ = delegate;
 }
 
 base::WeakPtr<DownloadUIModel> DownloadUIModel::GetWeakPtr() {

@@ -197,11 +197,7 @@ void DownloadBubbleRowView::LoadIcon() {
   }
 }
 
-DownloadBubbleRowView::~DownloadBubbleRowView() {
-  if (model_.get()) {
-    model_->RemoveObserver(this);
-  }
-}
+DownloadBubbleRowView::~DownloadBubbleRowView() = default;
 
 DownloadBubbleRowView::DownloadBubbleRowView(
     DownloadUIModel::DownloadUIModelPtr model,
@@ -215,7 +211,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       row_list_view_(row_list_view),
       bubble_controller_(bubble_controller),
       navigation_handler_(navigation_handler) {
-  model_->AddObserver(this);
+  model_->SetDelegate(this);
   SetBorder(views::CreateEmptyBorder(kDownloadBubbleRowInsets));
 
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -484,7 +480,7 @@ void DownloadBubbleRowView::OnDownloadOpened() {
   bubble_controller_->RemoveContentIdFromPartialView(model_->GetContentId());
 }
 
-void DownloadBubbleRowView::OnDownloadDestroyed() {
+void DownloadBubbleRowView::OnDownloadDestroyed(const ContentId& id) {
   // This will return ownership and destroy this object at the end of the
   // method.
   std::unique_ptr<DownloadBubbleRowView> row_view_ptr =

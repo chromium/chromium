@@ -160,10 +160,7 @@ bool ShouldSendDownloadReport(download::DownloadDangerType danger_type) {
 // static
 DownloadUIModel::DownloadUIModelPtr DownloadItemModel::Wrap(
     download::DownloadItem* download) {
-  DownloadUIModel::DownloadUIModelPtr model(
-      new DownloadItemModel(download),
-      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
-  return model;
+  return std::make_unique<DownloadItemModel>(download);
 }
 
 // static
@@ -171,10 +168,8 @@ DownloadUIModel::DownloadUIModelPtr DownloadItemModel::Wrap(
     download::DownloadItem* download,
     std::unique_ptr<DownloadUIModel::StatusTextBuilderBase>
         status_text_builder) {
-  DownloadUIModel::DownloadUIModelPtr model(
-      new DownloadItemModel(download, std::move(status_text_builder)),
-      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
-  return model;
+  return std::make_unique<DownloadItemModel>(download,
+                                             std::move(status_text_builder));
 }
 
 DownloadItemModel::DownloadItemModel(DownloadItem* download)
@@ -618,19 +613,21 @@ bool DownloadItemModel::HasUserGesture() const {
 }
 
 void DownloadItemModel::OnDownloadUpdated(DownloadItem* download) {
-  for (auto& obs : observers_)
-    obs.OnDownloadUpdated();
+  if (delegate_)
+    delegate_->OnDownloadUpdated();
 }
 
 void DownloadItemModel::OnDownloadOpened(DownloadItem* download) {
-  for (auto& obs : observers_)
-    obs.OnDownloadOpened();
+  if (delegate_)
+    delegate_->OnDownloadOpened();
 }
 
 void DownloadItemModel::OnDownloadDestroyed(DownloadItem* download) {
-  for (auto& obs : observers_)
-    obs.OnDownloadDestroyed();
+  ContentId id = GetContentId();
   download_ = nullptr;
+  // The object could get deleted after this.
+  if (delegate_)
+    delegate_->OnDownloadDestroyed(id);
 }
 
 void DownloadItemModel::OpenUsingPlatformHandler() {

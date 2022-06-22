@@ -15,7 +15,6 @@ DownloadNotificationManager::~DownloadNotificationManager() {
     DownloadUIModel* model = download_notification->GetDownload();
     if (model->GetState() == download::DownloadItem::IN_PROGRESS)
       download_notification->DisablePopup();
-    download_notification->ShutDown();
   }
 }
 
@@ -29,9 +28,7 @@ void DownloadNotificationManager::OnNewDownloadReady(
       download_notification->DisablePopup();
   }
 
-  DownloadUIModel::DownloadUIModelPtr model(
-      new DownloadItemModel(item),
-      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
+  auto model = std::make_unique<DownloadItemModel>(item);
   ContentId contentId = model->GetContentId();
   items_.emplace(contentId,
                  new DownloadItemNotification(profile_, std::move(model)));

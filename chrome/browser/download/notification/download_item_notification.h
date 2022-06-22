@@ -32,7 +32,7 @@ class Notification;
 // Handles the notification on ChromeOS for one download item.
 class DownloadItemNotification : public ImageDecoder::ImageRequest,
                                  public message_center::NotificationObserver,
-                                 public DownloadUIModel::Observer {
+                                 public DownloadUIModel::Delegate {
  public:
   DownloadItemNotification(Profile* profile,
                            DownloadUIModel::DownloadUIModelPtr item);
@@ -53,9 +53,9 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
 
   DownloadUIModel* GetDownload();
 
-  // DownloadUIModel::Observer overrides.
+  // DownloadUIModel::Delegate overrides.
   void OnDownloadUpdated() override;
-  void OnDownloadDestroyed() override;
+  void OnDownloadDestroyed(const ContentId& id) override;
 
   // Disables popup by setting low priority.
   void DisablePopup();
@@ -64,8 +64,6 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
   void Close(bool by_user) override;
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
-
-  void ShutDown();
 
  private:
   friend class test::DownloadItemNotificationTest;

@@ -27,10 +27,7 @@ using offline_items_collection::OfflineItemState;
 DownloadUIModel::DownloadUIModelPtr OfflineItemModel::Wrap(
     OfflineItemModelManager* manager,
     const OfflineItem& offline_item) {
-  DownloadUIModel::DownloadUIModelPtr model(
-      new OfflineItemModel(manager, offline_item),
-      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
-  return model;
+  return std::make_unique<OfflineItemModel>(manager, offline_item);
 }
 
 // static
@@ -39,11 +36,8 @@ DownloadUIModel::DownloadUIModelPtr OfflineItemModel::Wrap(
     const OfflineItem& offline_item,
     std::unique_ptr<DownloadUIModel::StatusTextBuilderBase>
         status_text_builder) {
-  DownloadUIModel::DownloadUIModelPtr model(
-      new OfflineItemModel(manager, offline_item,
-                           std::move(status_text_builder)),
-      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
-  return model;
+  return std::make_unique<OfflineItemModel>(manager, offline_item,
+                                            std::move(status_text_builder));
 }
 
 OfflineItemModel::OfflineItemModel(OfflineItemModelManager* manager,
@@ -259,17 +253,18 @@ OfflineContentProvider* OfflineItemModel::GetProvider() const {
 }
 
 void OfflineItemModel::OnItemRemoved(const ContentId& id) {
-  for (auto& obs : observers_)
-    obs.OnDownloadDestroyed();
   offline_item_.reset();
+  // The object could get deleted after this.
+  if (delegate_)
+    delegate_->OnDownloadDestroyed(id);
 }
 
 void OfflineItemModel::OnItemUpdated(
     const OfflineItem& item,
     const absl::optional<UpdateDelta>& update_delta) {
   offline_item_ = std::make_unique<OfflineItem>(item);
-  for (auto& obs : observers_)
-    obs.OnDownloadUpdated();
+  if (delegate_)
+    delegate_->OnDownloadUpdated();
 }
 
 FailState OfflineItemModel::GetLastFailState() const {

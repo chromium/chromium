@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
@@ -142,8 +141,7 @@ class DownloadUIModel {
   };
 #endif
 
-  using DownloadUIModelPtr =
-      std::unique_ptr<DownloadUIModel, base::OnTaskRunnerDeleter>;
+  using DownloadUIModelPtr = std::unique_ptr<DownloadUIModel>;
 
   DownloadUIModel();
 
@@ -155,18 +153,17 @@ class DownloadUIModel {
 
   virtual ~DownloadUIModel();
 
-  // Observer for a single DownloadUIModel.
-  class Observer {
+  // Delegate for a single DownloadUIModel.
+  class Delegate {
    public:
     virtual void OnDownloadUpdated() {}
     virtual void OnDownloadOpened() {}
-    virtual void OnDownloadDestroyed() {}
+    virtual void OnDownloadDestroyed(const ContentId& id) {}
 
-    virtual ~Observer() {}
+    virtual ~Delegate() = default;
   };
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void SetDelegate(Delegate* delegate);
 
   base::WeakPtr<DownloadUIModel> GetWeakPtr();
 
@@ -485,7 +482,7 @@ class DownloadUIModel {
   // Returns the message, if any, to be displayed for file rerouted.
   virtual std::u16string GetWebDriveMessage(bool verbose) const;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
  private:
   friend class DownloadItemModelTest;

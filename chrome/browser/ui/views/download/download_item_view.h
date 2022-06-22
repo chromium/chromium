@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -67,7 +66,7 @@ class StyledLabel;
 // DownloadController that receives / writes data which lives in the Renderer.
 class DownloadItemView : public views::View,
                          public views::ContextMenuController,
-                         public DownloadUIModel::Observer,
+                         public DownloadUIModel::Delegate,
                          public views::AnimationDelegateViews {
  public:
   METADATA_HEADER(DownloadItemView);
@@ -92,10 +91,10 @@ class DownloadItemView : public views::View,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override;
 
-  // DownloadUIModel::Observer:
+  // DownloadUIModel::Delegate:
   void OnDownloadUpdated() override;
   void OnDownloadOpened() override;
-  void OnDownloadDestroyed() override;
+  void OnDownloadDestroyed(const ContentId& id) override;
 
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -316,9 +315,6 @@ class DownloadItemView : public views::View,
   bool announce_accessible_alert_soon_ = false;
 
   float current_scale_;
-
-  base::ScopedObservation<DownloadUIModel, DownloadUIModel::Observer>
-      observation_{this};
 
   // Whether or not a histogram has been emitted recording that the dropdown
   // button shown.

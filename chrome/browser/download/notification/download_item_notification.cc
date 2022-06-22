@@ -242,7 +242,7 @@ DownloadItemNotification::DownloadItemNotification(
     Profile* profile,
     DownloadUIModel::DownloadUIModelPtr item)
     : profile_(profile), item_(std::move(item)) {
-  item_->AddObserver(this);
+  item_->SetDelegate(this);
   // Creates the notification instance. |title|, |body| and |icon| will be
   // overridden by UpdateNotificationData() below.
   message_center::RichNotificationData rich_notification_data;
@@ -276,8 +276,6 @@ DownloadItemNotification::DownloadItemNotification(
 }
 
 DownloadItemNotification::~DownloadItemNotification() {
-  ShutDown();
-
   if (image_decode_status_ == IN_PROGRESS)
     ImageDecoder::Cancel(this);
 }
@@ -294,16 +292,16 @@ void DownloadItemNotification::OnDownloadUpdated() {
   Update();
 }
 
-void DownloadItemNotification::OnDownloadDestroyed() {
+void DownloadItemNotification::OnDownloadDestroyed(const ContentId& id) {
+  item_.reset();
   NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
-      NotificationHandler::Type::TRANSIENT, GetNotificationId());
+      NotificationHandler::Type::TRANSIENT, id.id);
   // |this| will be deleted before there's a chance for Close() to be called
   // through the delegate, so preemptively call it now.
   Close(false);
-  ShutDown();
 
   // This object may get deleted after this call.
-  observer_->OnDownloadDestroyed(item_->GetContentId());
+  observer_->OnDownloadDestroyed(id);
 }
 
 void DownloadItemNotification::DisablePopup() {
@@ -441,11 +439,6 @@ void DownloadItemNotification::Click(
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
       NOTREACHED();
   }
-}
-
-void DownloadItemNotification::ShutDown() {
-  if (item_)
-    item_->RemoveObserver(this);
 }
 
 std::string DownloadItemNotification::GetNotificationId() const {

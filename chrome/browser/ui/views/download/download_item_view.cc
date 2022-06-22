@@ -300,7 +300,7 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
                               base::Unretained(this))),
       current_scale_(/*AddedToWidget() set the right DPI*/ 1.0f) {
   views::InstallRectHighlightPathGenerator(this);
-  observation_.Observe(this->model());
+  model_->SetDelegate(this);
 
   // TODO(pkasting): Use bespoke file-scope subclasses for some of these child
   // views to localize functionality and simplify this class.
@@ -540,7 +540,8 @@ void DownloadItemView::OnDownloadOpened() {
   shelf_->AutoClose();
 }
 
-void DownloadItemView::OnDownloadDestroyed() {
+void DownloadItemView::OnDownloadDestroyed(const ContentId& id) {
+  context_menu_.OnDownloadDestroyed();
   shelf_->RemoveDownloadView(this);  // This will delete us!
 }
 

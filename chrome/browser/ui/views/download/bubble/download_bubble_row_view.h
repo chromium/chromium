@@ -31,7 +31,7 @@ class DownloadBubbleUIController;
 
 class DownloadBubbleRowView : public views::View,
                               public views::ContextMenuController,
-                              public DownloadUIModel::Observer {
+                              public DownloadUIModel::Delegate {
  public:
   METADATA_HEADER(DownloadBubbleRowView);
 
@@ -52,10 +52,10 @@ class DownloadBubbleRowView : public views::View,
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
 
-  // Overrides DownloadUIModel::Observer:
+  // Overrides DownloadUIModel::Delegate:
   void OnDownloadOpened() override;
   void OnDownloadUpdated() override;
-  void OnDownloadDestroyed() override;
+  void OnDownloadDestroyed(const ContentId& id) override;
 
   // Overrides views::ContextMenuController:
   void ShowContextMenuForViewImpl(View* source,
