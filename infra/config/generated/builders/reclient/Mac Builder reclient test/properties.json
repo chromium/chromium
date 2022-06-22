@@ -1,0 +1,60 @@
+{
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "reclient",
+              "builder": "Mac Builder reclient test",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-fyi-archive",
+              "builder_group": "chromium.reclient.fyi",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb",
+                  "goma_use_local"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage",
+                  "enable_reclient",
+                  "reclient_test"
+                ],
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "reclient",
+          "builder": "Mac Builder reclient test",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-trusted-test",
+    "metrics_project": "chromium-reclient-metrics"
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.reclient.fyi",
+  "recipe": "chromium"
+}
