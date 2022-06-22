@@ -105,6 +105,10 @@ class CORE_EXPORT DocumentParser : public GarbageCollected<DocumentParser>,
   // be parsed.
   virtual void CommitPreloadedData() {}
 
+  // Notifies the parser that this is a good time to send requests for any
+  // preloads that may be pending.
+  virtual void FlushPendingPreloads() {}
+
   void SetDocumentWasLoadedAsPartOfNavigation() {
     document_was_loaded_as_part_of_navigation_ = true;
   }

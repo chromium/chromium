@@ -193,15 +193,17 @@ class CORE_EXPORT HTMLPreloadScanner {
   ~HTMLPreloadScanner();
 
   void AppendToEnd(const SegmentedString&);
+
+  using TakePreloadFn = WTF::CrossThreadRepeatingFunction<void(
+      std::unique_ptr<PendingPreloadData>)>;
   std::unique_ptr<PendingPreloadData> Scan(
-      const KURL& document_base_element_url);
+      const KURL& document_base_element_url,
+      const TakePreloadFn& take_preload = TakePreloadFn());
 
   // Scans |source| and calls |take_preload| with the generated preload data.
-  using TakePreloadFn =
-      CrossThreadOnceFunction<void(std::unique_ptr<PendingPreloadData>)>;
   void ScanInBackground(const String& source,
                         const KURL& document_base_element_url,
-                        TakePreloadFn take_preload);
+                        const TakePreloadFn& take_preload);
 
  private:
   TokenPreloadScanner scanner_;

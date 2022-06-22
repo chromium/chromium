@@ -82,7 +82,7 @@ TEST_F(BackgroundHTMLScannerTest, InsideHTMLPreloadScanner) {
           parser, task_runner_));
   preload_scanner.ScanInBackground(
       "<script>foo</script>", GetDocument().ValidBaseElementURL(),
-      CrossThreadBindOnce([](std::unique_ptr<PendingPreloadData>) {}));
+      CrossThreadBindRepeating([](std::unique_ptr<PendingPreloadData>) {}));
   FlushTaskRunner();
   EXPECT_NE(parser->TakeInlineScriptStreamer("foo"), nullptr);
 }

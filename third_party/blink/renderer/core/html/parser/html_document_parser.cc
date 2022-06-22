@@ -1511,7 +1511,7 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
     background_scanner_.AsyncCall(&HTMLPreloadScanner::ScanInBackground)
         .WithArgs(
             source, GetDocument()->ValidBaseElementURL(),
-            CrossThreadBindOnce(
+            CrossThreadBindRepeating(
                 &HTMLDocumentParser::AddPreloadDataOnBackgroundThread,
                 WrapCrossThreadPersistent(this),
                 GetDocument()->GetTaskRunner(TaskType::kInternalLoading)));
@@ -1533,30 +1533,43 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
 void HTMLDocumentParser::AddPreloadDataOnBackgroundThread(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<PendingPreloadData> preload_data) {
+  DCHECK(!IsMainThread());
+  bool should_post_task = false;
   {
     base::AutoLock lock(pending_preload_lock_);
+    // Only post a task if the preload data is empty. Otherwise, a task has
+    // already been posted and will consume the new data.
+    should_post_task = pending_preload_data_.IsEmpty();
     pending_preload_data_.push_back(std::move(preload_data));
   }
 
-  PostCrossThreadTask(
-      *task_runner, FROM_HERE,
-      CrossThreadBindOnce(&HTMLDocumentParser::FlushPendingPreloads,
-                          WrapCrossThreadPersistent(this)));
+  if (should_post_task) {
+    PostCrossThreadTask(
+        *task_runner, FROM_HERE,
+        CrossThreadBindOnce(&HTMLDocumentParser::FlushPendingPreloads,
+                            WrapCrossThreadPersistent(this)));
+  }
 }
 
 void HTMLDocumentParser::FlushPendingPreloads() {
-  DCHECK(ThreadedPreloadScannerEnabled());
+  DCHECK(IsMainThread());
+  if (!ThreadedPreloadScannerEnabled())
+    return;
+
   if (IsDetached() || !preloader_)
     return;
 
-  Vector<std::unique_ptr<PendingPreloadData>> preload_data;
-  {
-    base::AutoLock lock(pending_preload_lock_);
-    preload_data = std::move(pending_preload_data_);
-  }
+  // Do this in a loop in case more preloads are added in the background.
+  while (HasPendingPreloads()) {
+    Vector<std::unique_ptr<PendingPreloadData>> preload_data;
+    {
+      base::AutoLock lock(pending_preload_lock_);
+      preload_data = std::move(pending_preload_data_);
+    }
 
-  for (auto& preload : preload_data)
-    ProcessPreloadData(std::move(preload));
+    for (auto& preload : preload_data)
+      ProcessPreloadData(std::move(preload));
+  }
 }
 
 }  // namespace blink

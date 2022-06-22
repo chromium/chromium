@@ -2650,6 +2650,9 @@ void DocumentLoader::CreateParserPostCommit() {
   document->MaybeHandleHttpRefresh(
       response_.HttpHeaderField(http_names::kRefresh),
       Document::kHttpRefreshFromHeader);
+
+  // The parser may have collected preloads in the background, flush them now.
+  parser_->FlushPendingPreloads();
 }
 
 const AtomicString& DocumentLoader::MimeType() const {

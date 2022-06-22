@@ -148,6 +148,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void CheckIfBlockingStylesheetAdded();
   void DocumentElementAvailable() override;
   void CommitPreloadedData() override;
+  void FlushPendingPreloads() override;
 
   // HTMLParserScriptRunnerHost
   void NotifyScriptLoaded() final;
@@ -199,9 +200,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void AddPreloadDataOnBackgroundThread(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<PendingPreloadData> preload_data);
-
-  // Processes preload data on the main thread from |background_scanner_|.
-  void FlushPendingPreloads();
 
   bool HasPendingPreloads() {
     base::AutoLock lock(pending_preload_lock_);

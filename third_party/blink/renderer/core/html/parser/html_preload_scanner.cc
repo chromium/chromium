@@ -1093,7 +1093,8 @@ void HTMLPreloadScanner::AppendToEnd(const SegmentedString& source) {
 }
 
 std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
-    const KURL& starting_base_element_url) {
+    const KURL& starting_base_element_url,
+    const TakePreloadFn& take_preload) {
   auto pending_data = std::make_unique<PendingPreloadData>();
 
   TRACE_EVENT1("blink", "HTMLPreloadScanner::scan", "source_length",
@@ -1132,15 +1133,20 @@ std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
       tokenizer_->Reset();
       return pending_data;
     }
+    // Incrementally add preloads when scanning in the background.
+    if (take_preload && !pending_data->requests.IsEmpty()) {
+      take_preload.Run(std::move(pending_data));
+      pending_data = std::make_unique<PendingPreloadData>();
+    }
   }
   return pending_data;
 }
 
 void HTMLPreloadScanner::ScanInBackground(const String& source,
                                           const KURL& document_base_element_url,
-                                          TakePreloadFn take_preload) {
+                                          const TakePreloadFn& take_preload) {
   source_.Append(source);
-  std::move(take_preload).Run(Scan(document_base_element_url));
+  take_preload.Run(Scan(document_base_element_url, take_preload));
 }
 
 CachedDocumentParameters::CachedDocumentParameters(Document* document) {
