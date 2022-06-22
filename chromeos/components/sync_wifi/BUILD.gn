@@ -35,6 +35,7 @@ static_library("sync_wifi") {
     "//base",
     "//chromeos/dbus/shill",
     "//chromeos/network",
+    "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
     "//components/device_event_log",
     "//components/keyed_service/core",

@@ -8,7 +8,7 @@
 #include "ash/public/cpp/screen_backlight_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -31,7 +31,7 @@ class SystemInfoProvider
     : public mojom::SystemInfoProvider,
       public ScreenBacklightObserver,
       public TabletModeObserver,
-      public chromeos::network_config::mojom::CrosNetworkConfigObserver {
+      public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   explicit SystemInfoProvider(
       std::unique_ptr<SystemInfo> system_info,
@@ -61,18 +61,10 @@ class SystemInfoProvider
 
   void SetTabletModeChanged(bool enabled);
 
-  // network_config::mojom::CrosNetworkConfigObserver overrides:
-  void OnActiveNetworksChanged(
-      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
-          networks) override {}
-  void OnDeviceStateListChanged() override {}
+  // network_config::CrosNetworkConfigObserver overrides:
   void OnNetworkStateChanged(
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network)
       override;
-  void OnNetworkStateListChanged() override {}
-  void OnVpnProvidersChanged() override {}
-  void OnNetworkCertificatesChanged() override {}
-  void OnPoliciesApplied(const std::string& userhash) override {}
 
   void FetchWifiNetworkList();
   void OnWifiNetworkList(

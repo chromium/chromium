@@ -9923,6 +9923,7 @@ if (!is_android) {
         "//chromeos/components/sync_wifi:test_support",
         "//chromeos/dbus/shill",
         "//chromeos/printing",
+        "//chromeos/services/network_config/public/cpp",
         "//components/desks_storage",
       ]
     }

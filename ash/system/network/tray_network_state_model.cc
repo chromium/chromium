@@ -13,8 +13,8 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -53,7 +53,7 @@ NetworkStatePropertiesPtr GetConnectingOrConnected(
 namespace ash {
 
 class TrayNetworkStateModel::Impl
-    : public chromeos::network_config::mojom::CrosNetworkConfigObserver {
+    : public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   explicit Impl(TrayNetworkStateModel* model) : model_(model) {
     GetNetworkConfigService(
@@ -116,10 +116,6 @@ class TrayNetworkStateModel::Impl
     model_->SendActiveNetworkStateChanged();
   }
 
-  void OnNetworkStateChanged(
-      chromeos::network_config::mojom::NetworkStatePropertiesPtr /* network */)
-      override {}
-
   void OnNetworkStateListChanged() override {
     model_->NotifyNetworkListChanged();
     GetVirtualNetworks();
@@ -128,8 +124,6 @@ class TrayNetworkStateModel::Impl
   void OnDeviceStateListChanged() override { GetDeviceStateList(); }
 
   void OnVpnProvidersChanged() override { model_->NotifyVpnProvidersChanged(); }
-
-  void OnNetworkCertificatesChanged() override {}
 
   void OnPoliciesApplied(const std::string& userhash) override {
     GetGlobalPolicy();

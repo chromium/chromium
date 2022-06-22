@@ -15,7 +15,7 @@
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "chromeos/components/sync_wifi/test_data_generator.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/nigori_test_utils.h"
@@ -62,7 +62,7 @@ void InjectKeystoreEncryptedServerWifiConfiguration(
 // becomes locally available.
 class LocalWifiConfigurationChecker
     : public StatusChangeChecker,
-      public chromeos::network_config::mojom::CrosNetworkConfigObserver {
+      public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   LocalWifiConfigurationChecker(
       mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>*
@@ -93,17 +93,6 @@ class LocalWifiConfigurationChecker
             base::BindOnce(&LocalWifiConfigurationChecker::OnGetNetworkList,
                            weak_ptr_factory_.GetWeakPtr()));
   }
-
-  void OnActiveNetworksChanged(
-      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
-          networks) override {}
-  void OnNetworkStateChanged(
-      chromeos::network_config::mojom::NetworkStatePropertiesPtr network)
-      override {}
-  void OnDeviceStateListChanged() override {}
-  void OnVpnProvidersChanged() override {}
-  void OnNetworkCertificatesChanged() override {}
-  void OnPoliciesApplied(const std::string& userhash) override {}
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {

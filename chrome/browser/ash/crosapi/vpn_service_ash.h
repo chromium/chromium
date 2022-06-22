@@ -25,7 +25,7 @@
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -48,28 +48,10 @@ namespace crosapi {
 
 namespace api_vpn = extensions::api::vpn_provider;
 
-class SimpleCrosNetworkObserver
-    : public chromeos::network_config::mojom::CrosNetworkConfigObserver {
- public:
-  // chromeos::network_config::mojom::CrosNetworkConfigObserver:
-  void OnVpnProvidersChanged() override {}
-
-  // We're not interested in these functions, but we still have to override them
-  // since they're purely virtual.
-  void OnActiveNetworksChanged(
-      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>)
-      final {}
-  void OnNetworkStateChanged(
-      chromeos::network_config::mojom::NetworkStatePropertiesPtr) final {}
-  void OnNetworkStateListChanged() final {}
-  void OnDeviceStateListChanged() final {}
-  void OnNetworkCertificatesChanged() final {}
-  void OnPoliciesApplied(const std::string&) final {}
-};
-
 // Listens to |OnVpnProvidersChanged| event and informs the delegate of the
 // current set of vpn extension.
-class VpnProvidersObserver : public SimpleCrosNetworkObserver {
+class VpnProvidersObserver
+    : public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   class Delegate {
    public:
@@ -82,7 +64,7 @@ class VpnProvidersObserver : public SimpleCrosNetworkObserver {
   explicit VpnProvidersObserver(Delegate*);
   ~VpnProvidersObserver() override;
 
-  // chromeos::network_config::mojom::CrosNetworkConfigObserver:
+  // chromeos::network_config::CrosNetworkConfigObserver:
   void OnVpnProvidersChanged() override;
 
  private:

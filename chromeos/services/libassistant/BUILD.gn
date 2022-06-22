@@ -139,6 +139,7 @@ source_set("internal") {
     "//chromeos/dbus/util:util",
     "//chromeos/services/assistant/public/proto",
     "//chromeos/services/libassistant/public/mojom",
+    "//chromeos/services/network_config/public/cpp",
     "//chromeos/strings:strings_grit",
     "//services/network/public/cpp",
     "//services/network/public/mojom",

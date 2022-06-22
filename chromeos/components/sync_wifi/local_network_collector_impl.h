@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/sync_wifi/local_network_collector.h"
 #include "chromeos/components/sync_wifi/synced_network_metrics_logger.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,7 +35,7 @@ namespace sync_wifi {
 // ShillServiceClient.
 class LocalNetworkCollectorImpl
     : public LocalNetworkCollector,
-      public chromeos::network_config::mojom::CrosNetworkConfigObserver {
+      public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   // LocalNetworkCollector:
 
@@ -68,17 +68,6 @@ class LocalNetworkCollectorImpl
 
   // CrosNetworkConfigObserver:
   void OnNetworkStateListChanged() override;
-  void OnActiveNetworksChanged(
-      std::vector<
-          network_config::mojom::NetworkStatePropertiesPtr> /* networks */)
-      override {}
-  void OnNetworkStateChanged(
-      chromeos::network_config::mojom::NetworkStatePropertiesPtr /* network */)
-      override {}
-  void OnDeviceStateListChanged() override {}
-  void OnVpnProvidersChanged() override {}
-  void OnNetworkCertificatesChanged() override {}
-  void OnPoliciesApplied(const std::string& userhash) override {}
 
  private:
   std::string InitializeRequest();

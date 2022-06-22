@@ -11,7 +11,7 @@
 
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/net/network_health/signal_strength_tracker.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -24,7 +24,7 @@ namespace network_health {
 
 class NetworkHealth
     : public chromeos::network_health::mojom::NetworkHealthService,
-      public chromeos::network_config::mojom::CrosNetworkConfigObserver {
+      public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   NetworkHealth();
 
@@ -59,9 +59,6 @@ class NetworkHealth
   void OnNetworkStateChanged(
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state)
       override;
-  void OnVpnProvidersChanged() override {}
-  void OnNetworkCertificatesChanged() override {}
-  void OnPoliciesApplied(const std::string& userhash) override {}
 
   // Signal strength changes larger than
   // |kMaxSignalStrengthFluctuationTolerance| trigger a signal strength change
