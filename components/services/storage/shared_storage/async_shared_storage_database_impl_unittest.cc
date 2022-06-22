@@ -844,7 +844,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, SyncOperations) {
   EXPECT_EQ(2, LengthSync(kOrigin1));
 
   EXPECT_EQ(OperationResult::kSuccess, DeleteSync(kOrigin1, u"key1"));
-  EXPECT_FALSE(GetSync(kOrigin1, u"key1").data);
+  EXPECT_EQ(OperationResult::kKeyNotFound, GetSync(kOrigin1, u"key1").result);
   EXPECT_EQ(1, LengthSync(kOrigin1));
 
   EXPECT_EQ(OperationResult::kSet, AppendSync(kOrigin1, u"key1", u"value1"));
@@ -1466,8 +1466,8 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest,
   EXPECT_FALSE(open1);
   EXPECT_EQ(InitStatus::kUnattempted, status1);
 
-  EXPECT_FALSE(value1.data);
-  EXPECT_EQ(OperationResult::kSuccess, value1.result);
+  EXPECT_TRUE(value1.data.empty());
+  EXPECT_EQ(OperationResult::kKeyNotFound, value1.result);
   EXPECT_EQ(!GetParam().in_memory_only, open2);
   EXPECT_EQ(InitStatus::kUnattempted, status2);
 

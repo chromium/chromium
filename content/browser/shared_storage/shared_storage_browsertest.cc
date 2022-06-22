@@ -1282,18 +1282,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInDocument) {
   ExecuteScriptInWorklet(shell(), R"(
       console.log(await sharedStorage.length());
       console.log(await sharedStorage.get('key0'));
-
-      // This won't be executed due to the error in the last get().
-      console.log(await sharedStorage.length());
     )");
 
   EXPECT_EQ(2u, console_observer.messages().size());
   EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[0].message));
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
             console_observer.messages()[0].log_level);
-  EXPECT_EQ("sharedStorage.get() failed",
+  EXPECT_EQ("undefined",
             base::UTF16ToUTF8(console_observer.messages()[1].message));
-  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
             console_observer.messages()[1].log_level);
 }
 
@@ -1389,9 +1386,6 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInWorklet) {
 
       console.log(await sharedStorage.length());
       console.log(await sharedStorage.get('key0'));
-
-      // This won't be executed due to the error in the last get().
-      console.log(await sharedStorage.length());
     )");
 
   EXPECT_EQ(4u, console_observer.messages().size());
@@ -1399,7 +1393,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInWorklet) {
   EXPECT_EQ("value0",
             base::UTF16ToUTF8(console_observer.messages()[1].message));
   EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[2].message));
-  EXPECT_EQ("sharedStorage.get() failed",
+  EXPECT_EQ("undefined",
             base::UTF16ToUTF8(console_observer.messages()[3].message));
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
             console_observer.messages()[0].log_level);
@@ -1407,7 +1401,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, DeleteOperationInWorklet) {
             console_observer.messages()[1].log_level);
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
             console_observer.messages()[2].log_level);
-  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
             console_observer.messages()[3].log_level);
 }
 

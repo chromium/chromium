@@ -13,6 +13,12 @@ import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+enum SharedStorageGetStatus {
+  kSuccess,
+  kNotFound,
+  kError,
+};
+
 // Used by the shared storage worklet environment to access the shared storage,
 // log messages, etc.
 interface SharedStorageWorkletServiceClient {
@@ -41,7 +47,8 @@ interface SharedStorageWorkletServiceClient {
   // Handle sharedStorage.get(): get the entry at `key`, or an empty string if
   // `key` is not present.
   SharedStorageGet(blink.mojom.SharedStorageKeyArgument key)
-    => (bool success, string error_message, mojo_base.mojom.String16 value);
+    => (SharedStorageGetStatus status, string error_message,
+      mojo_base.mojom.String16 value);
 
   // Returns (potentially in batches) the keys of the shared storage.
   SharedStorageKeys(pending_remote<SharedStorageEntriesListener> listener);

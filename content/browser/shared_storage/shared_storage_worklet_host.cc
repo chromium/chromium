@@ -376,24 +376,33 @@ void SharedStorageWorkletHost::SharedStorageGet(
 
   if (!IsSharedStorageAllowed()) {
     std::move(callback).Run(
-        /*success=*/false,
+        shared_storage_worklet::mojom::SharedStorageGetStatus::kError,
         /*error_message=*/kSharedStorageDisabledMessage, /*value=*/{});
     return;
   }
 
   auto operation_completed_callback = base::BindOnce(
       [](SharedStorageGetCallback callback, GetResult result) {
-        // We consider either database error or missing key to be a failure.
-        if (result.result != OperationResult::kSuccess || !result.data) {
+        // If the key is not found but there is no other error, the worklet will
+        // resolve the promise to undefined.
+        if (result.result == OperationResult::kKeyNotFound) {
           std::move(callback).Run(
-              /*success=*/false,
+              shared_storage_worklet::mojom::SharedStorageGetStatus::kNotFound,
+              /*error_message=*/"sharedStorage.get() could not find key",
+              /*value=*/{});
+          return;
+        }
+
+        if (result.result != OperationResult::kSuccess) {
+          std::move(callback).Run(
+              shared_storage_worklet::mojom::SharedStorageGetStatus::kError,
               /*error_message=*/"sharedStorage.get() failed", /*value=*/{});
           return;
         }
 
         std::move(callback).Run(
-            /*success=*/true,
-            /*error_message=*/{}, /*value=*/*result.data);
+            shared_storage_worklet::mojom::SharedStorageGetStatus::kSuccess,
+            /*error_message=*/{}, /*value=*/result.data);
       },
       std::move(callback));
 

@@ -116,7 +116,7 @@ class TestClient
         FROM_HERE,
         base::BindLambdaForTesting([callback = std::move(callback)]() mutable {
           std::move(callback).Run(
-              /*success=*/true,
+              shared_storage_worklet::mojom::SharedStorageGetStatus::kSuccess,
               /*error_message=*/{},
               /*value=*/u"test-value");
         }));

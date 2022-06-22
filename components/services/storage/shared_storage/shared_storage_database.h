@@ -100,12 +100,14 @@ class SharedStorageDatabase {
     // requesting origin.
     kInvalidAppend = 6,  // Result if the length of the value after appending
     // would exceed the maximum allowed length.
+    kKeyNotFound = 7,  // Result if a key could not be retrieved via `Get()`
+                       // because it doesn't exist in the database.
   };
 
   // Bundles a retrieved string from the database along with a field indicating
   // whether the transaction was free of SQL errors.
   struct GetResult {
-    absl::optional<std::u16string> data;
+    std::u16string data;
     OperationResult result = OperationResult::kSqlError;
     GetResult();
     GetResult(const GetResult&) = delete;
