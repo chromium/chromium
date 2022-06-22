@@ -361,6 +361,21 @@ std::string GetProductAndVersion(
   }
 }
 
+// Internal function to handle return the full or "reduced" user agent string,
+// depending on the UserAgentReduction enterprise policy.
+std::string GetUserAgentInternal(
+    ForceMajorVersionToMinorPosition force_major_to_minor,
+    UserAgentReductionEnterprisePolicyState user_agent_reduction) {
+  std::string product =
+      GetProductAndVersion(force_major_to_minor, user_agent_reduction);
+#if BUILDFLAG(IS_ANDROID)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseMobileUserAgent))
+    product += " Mobile";
+#endif
+  return content::BuildUserAgentFromProduct(product);
+}
+
 std::string GetUserAgent(
     ForceMajorVersionToMinorPosition force_major_to_minor,
     UserAgentReductionEnterprisePolicyState user_agent_reduction) {
@@ -373,12 +388,12 @@ std::string GetUserAgent(
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kFullUserAgent))
-    return GetFullUserAgent();
+    return GetFullUserAgent(force_major_to_minor);
 
   if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent))
     return GetReducedUserAgent(force_major_to_minor);
 
-  return GetFullUserAgent(force_major_to_minor, user_agent_reduction);
+  return GetUserAgentInternal(force_major_to_minor, user_agent_reduction);
 }
 
 std::string GetReducedUserAgent(
@@ -390,16 +405,10 @@ std::string GetReducedUserAgent(
 }
 
 std::string GetFullUserAgent(
-    ForceMajorVersionToMinorPosition force_major_to_minor,
-    UserAgentReductionEnterprisePolicyState user_agent_reduction) {
-  std::string product =
-      GetProductAndVersion(force_major_to_minor, user_agent_reduction);
-#if BUILDFLAG(IS_ANDROID)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseMobileUserAgent))
-    product += " Mobile";
-#endif
-  return content::BuildUserAgentFromProduct(product);
+    ForceMajorVersionToMinorPosition force_major_to_minor) {
+  return GetUserAgentInternal(
+      force_major_to_minor,
+      UserAgentReductionEnterprisePolicyState::kForceDisabled);
 }
 
 // Generate a pseudo-random permutation of the following brand/version pairs:

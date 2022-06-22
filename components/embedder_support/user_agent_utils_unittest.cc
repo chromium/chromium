@@ -325,6 +325,15 @@ bool ContainsBrandVersion(const blink::UserAgentBrandList& brand_list,
 class UserAgentUtilsTest : public testing::Test,
                            public testing::WithParamInterface<bool> {
  public:
+  // The minor version in the reduced UA string is always "0.0.0".
+  static constexpr char kReducedMinorVersion[] = "0.0.0";
+  // The minor version in the ReduceUserAgentMinorVersion experiment is always
+  // "0.X.0", where X is the frozen build version.
+  const std::string kReduceUserAgentMinorVersion =
+      "0." +
+      std::string(blink::features::kUserAgentFrozenBuildVersion.Get().data()) +
+      ".0";
+
   std::string MajorToMinorVersionNumber() {
     const base::Version version = version_info::GetVersion();
     std::string version_str;
@@ -340,6 +349,46 @@ class UserAgentUtilsTest : public testing::Test,
         version_str.append(base::NumberToString(components[i]));
     }
     return version_str;
+  }
+
+  std::string GetUserAgentMinorVersion(const std::string& user_agent_value) {
+    // A regular expression that matches Chrome/{major_version}.{minor_version}
+    // in the User-Agent string, where the {minor_version} is captured.
+    static constexpr char kChromeVersionRegex[] =
+        "Chrome/[0-9]+\\.([0-9]+\\.[0-9]+\\.[0-9]+)";
+    std::string minor_version;
+    EXPECT_TRUE(re2::RE2::PartialMatch(user_agent_value, kChromeVersionRegex,
+                                       &minor_version));
+    return minor_version;
+  }
+
+  void VerifyFullUserAgent() {
+    EXPECT_EQ(
+        GetUserAgent(ForceMajorVersionToMinorPosition::kForceEnabled),
+        GetFullUserAgent(ForceMajorVersionToMinorPosition::kForceEnabled));
+    EXPECT_EQ(
+        GetUserAgent(ForceMajorVersionToMinorPosition::kForceDisabled),
+        GetFullUserAgent(ForceMajorVersionToMinorPosition::kForceDisabled));
+    EXPECT_EQ(GetUserAgent(), GetFullUserAgent());
+    EXPECT_NE(GetUserAgentMinorVersion(GetFullUserAgent()),
+              kReducedMinorVersion);
+  }
+
+  void VerifyGetUserAgentFunctions() {
+    // 1) GetUserAgent should return user agent depends on
+    // kReduceUserAgentMinorVersion feature.
+    // 2) GetReducedUserAgent should return reduced user agent.
+    // 3) GetFullUserAgent should return full user agent.
+    if (base::FeatureList::IsEnabled(
+            blink::features::kReduceUserAgentMinorVersion)) {
+      EXPECT_EQ(GetUserAgentMinorVersion(GetUserAgent()), kReducedMinorVersion);
+    } else {
+      EXPECT_NE(GetUserAgentMinorVersion(GetUserAgent()), kReducedMinorVersion);
+    }
+    EXPECT_EQ(GetUserAgentMinorVersion(GetReducedUserAgent()),
+              kReducedMinorVersion);
+    EXPECT_NE(GetUserAgentMinorVersion(GetFullUserAgent()),
+              kReducedMinorVersion);
   }
 
  private:
@@ -489,7 +538,7 @@ TEST_F(UserAgentUtilsTest, UserAgentStringFull) {
       {blink::features::kFullUserAgent,
        blink::features::kForceMajorVersionInMinorPositionInUserAgent},
       {});
-  { EXPECT_EQ(GetUserAgent(), GetFullUserAgent()); }
+  { VerifyFullUserAgent(); }
 
   // Verify that the full user agent string when both reduced and full UA
   // feature enabled respects
@@ -499,7 +548,36 @@ TEST_F(UserAgentUtilsTest, UserAgentStringFull) {
       {blink::features::kFullUserAgent, blink::features::kReduceUserAgent,
        blink::features::kForceMajorVersionInMinorPositionInUserAgent},
       {});
-  { EXPECT_EQ(GetUserAgent(), GetFullUserAgent()); }
+  { VerifyFullUserAgent(); }
+
+  // Verify that the full user agent string still returns the full user agent
+  // even turns on kReduceUserAgentMinorVersion
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kFullUserAgent,
+       blink::features::kReduceUserAgentMinorVersion},
+      {});
+  { VerifyFullUserAgent(); }
+
+  // Verify that three user agent functions return the correct user agent string
+  // when kReduceUserAgentMinorVersion turns on.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgentMinorVersion}, {});
+  { VerifyGetUserAgentFunctions(); }
+
+  // Verify that three user agent functions return the correct user agent
+  // when kReduceUserAgentMinorVersion turns off.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {}, {blink::features::kReduceUserAgentMinorVersion});
+  { VerifyGetUserAgentFunctions(); }
+
+  // Verify that three user agent functions return the correct user agent
+  // without explicit features turn on.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures({}, {});
+  { VerifyGetUserAgentFunctions(); }
 }
 
 TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
