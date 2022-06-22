@@ -54,9 +54,6 @@ extern const base::FeatureParam<int> kVmBalloonPolicyCriticalKiB;
 extern const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB;
 extern const base::Feature kVmBroadcastPreNotifyANR;
 extern const base::Feature kVmGmsCoreLowMemoryKillerProtection;
-extern const base::FeatureParam<bool> kVmBalloonPolicyResponsive;
-extern const base::FeatureParam<int> kVmBalloonPolicyResponsiveTimeoutMs;
-extern const base::FeatureParam<int> kVmBalloonPolicyResponsiveMaxDeflateBytes;
 
 }  // namespace arc
 

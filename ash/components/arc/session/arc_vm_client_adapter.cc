@@ -492,11 +492,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     balloon_policy->set_moderate_target_cache(moderate_kib * 1024);
     balloon_policy->set_critical_target_cache(critical_kib * 1024);
     balloon_policy->set_reclaim_target_cache(reclaim_kib * 1024);
-    balloon_policy->set_responsive(kVmBalloonPolicyResponsive.Get());
-    balloon_policy->set_responsive_timeout_ms(
-        kVmBalloonPolicyResponsiveTimeoutMs.Get());
-    balloon_policy->set_responsive_max_deflate_bytes(
-        kVmBalloonPolicyResponsiveMaxDeflateBytes.Get());
     VLOG(1) << "Use LimitCacheBalloonPolicy. ModerateKiB=" << moderate_kib
             << ", CriticalKiB=" << critical_kib
             << ", ReclaimKiB=" << reclaim_kib;
