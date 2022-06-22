@@ -80,6 +80,10 @@
         on-ready="onReady"
         on-licensetypeselected="onLicenseTypeSelected">
     </gaia-dialog>
+    <oobe-loading-dialog title-key="gaiaLoading"
+        id="step-loading" for-step="loading">
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+    </oobe-loading-dialog>
 
     <!-- ENROLLMENT IN PROGRESS (SPINNER) DIALOG -->
     <oobe-loading-dialog title-key="[[getWorkingTitleKey_(licenseType_)]]"

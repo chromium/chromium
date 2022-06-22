@@ -39,7 +39,6 @@ const ScreenAuthMode = {
  */
 const DialogMode = {
   GAIA: 'online-gaia',
-  GAIA_LOADING: 'gaia-loading',
   LOADING: 'loading',
   PIN_DIALOG: 'pin',
   GAIA_ALLOWLIST_ERROR: 'allowlist-error',
@@ -50,7 +49,7 @@ const DialogMode = {
  * Steps that could be the first one in the flow.
  */
 const POSSIBLE_FIRST_SIGNIN_STEPS =
-    [DialogMode.GAIA, DialogMode.GAIA_LOADING, DialogMode.SAML_INTERSTITIAL];
+    [DialogMode.GAIA, DialogMode.LOADING, DialogMode.SAML_INTERSTITIAL];
 
 /**
  * @constructor
@@ -1091,11 +1090,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       return;
     }
     if (isLoading) {
-      if (mode == ScreenAuthMode.DEFAULT) {
-        this.setUIStep(DialogMode.GAIA_LOADING);
-      } else {
-        this.setUIStep(DialogMode.LOADING);
-      }
+      this.setUIStep(DialogMode.LOADING);
       return;
     }
     if (isAllowlistError) {

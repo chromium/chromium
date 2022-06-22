@@ -148,7 +148,7 @@ constexpr test::UIPath kSamlCloseButton = {"gaia-signin", "signin-frame-dialog",
                                            "saml-close-button"};
 constexpr test::UIPath kSamlBackButton = {"gaia-signin", "signin-frame-dialog",
                                           "saml-back-button"};
-const test::UIPath kGaiaLoading = {"gaia-signin", "gaia-loading"};
+const test::UIPath kGaiaLoading = {"gaia-signin", "step-loading"};
 const test::UIPath kSamlInterstitial = {"gaia-signin", "saml-interstitial"};
 
 constexpr test::UIPath kFatalErrorActionButton = {"signin-fatal-error",

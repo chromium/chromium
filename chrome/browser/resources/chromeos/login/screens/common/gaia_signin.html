@@ -53,8 +53,7 @@
       }
     </style>
     <gaia-dialog id="signin-frame-dialog"
-        transparent$="[[isLoadingUiShown_]]" class="flex"
-        for-step="online-gaia, gaia-loading"
+        for-step="online-gaia"
         is-saml-sso-visible="[[isSamlSsoVisible_]]"
         is-default-sso-provider="[[isDefaultSsoProvider_]]"
         is-closable="[[isClosable_]]"
@@ -119,10 +118,10 @@
         </div>
       </oobe-adaptive-dialog>
     </div>
-    <div id="gaia-loading" class="layout center center-justified vertical fit"
-        for-step="loading, gaia-loading">
-      <throbber-notice text-key="gaiaLoading"></throbber-notice>
-    </div>
+    <oobe-loading-dialog title-key="gaiaLoading"
+        id="step-loading" for-step="loading">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+    </oobe-loading-dialog>
     <notification-card id="gaia-allowlist-error" class="fit"
         for-step="allowlist-error"
         on-buttonclick="onAllowlistErrorTryAgainClick_"

@@ -171,6 +171,7 @@ OobeTypes.FatalErrorCode = {
  * @enum {string}
  */
 OobeTypes.EnrollmentStep = {
+  LOADING: 'loading',
   SIGNIN: 'signin',
   AD_JOIN: 'ad-join',
   WORKING: 'working',

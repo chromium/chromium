@@ -167,7 +167,7 @@ void RunEulaScreenChecks() {
 void WaitForGaiaSignInScreen(bool wait_for_arc_preloading) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   test::OobeJS()
-      .CreateFocusWaiter({"gaia-signin", "signin-frame-dialog", "signin-frame"})
+      .CreateVisibilityWaiter(true, {"gaia-signin", "signin-frame-dialog"})
       ->Wait();
 
   // Arc terms of service content gets preloaded when GAIA screen is shown,
