@@ -80,6 +80,7 @@ class FamilyInfoFetcher {
     virtual void OnGetFamilyMembersSuccess(
         const std::vector<FamilyMember>& members) {}
     virtual void OnFailure(ErrorCode error) {}
+    virtual ~Consumer() = default;
   };
 
   // Instantiates a fetcher, but doesn't start a fetch - use the StartGet*

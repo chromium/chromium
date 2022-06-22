@@ -75,6 +75,7 @@ public class ChromeFeedbackCollector
         sources.add(new ConnectivityFeedbackSource(initParams.profile));
         sources.add(new SystemInfoFeedbackSource());
         sources.add(new ProcessIdFeedbackSource());
+        sources.add(new FamilyInfoFeedbackSource(initParams.profile));
 
         return sources;
     }
