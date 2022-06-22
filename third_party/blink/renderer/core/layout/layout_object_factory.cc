@@ -187,6 +187,17 @@ LayoutObject* LayoutObjectFactory::CreateListMarker(Node& node,
                                                     LegacyLayout legacy) {
   const Node* parent = node.parentNode();
   const ComputedStyle* parent_style = parent->GetComputedStyle();
+
+  if (legacy == LegacyLayout::kForce) {
+    // A table inside an inline element with specified columns may end up
+    // marking a list-item ancestor with a size container-type for forced legacy
+    // without re-attaching it during interleaved style recalc. Enforce
+    // legacy/ng consistency between list-item and marker.
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGTableFragmentationEnabled());
+    DCHECK(parent->GetLayoutObject());
+    if (parent->GetLayoutObject()->IsLayoutNGObject())
+      legacy = LegacyLayout::kAuto;
+  }
   bool is_inside =
       parent_style->ListStylePosition() == EListStylePosition::kInside ||
       (IsA<HTMLLIElement>(parent) && !parent_style->IsInsideListElement());
