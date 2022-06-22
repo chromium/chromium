@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Jendela update firmware untuk perangkat eksternal terbuka. <ph name="NUM_UPDATES" /> update tersedia.</translation>
+<translation id="1145516343487477149">Temukan artikel bantuan dan jawaban atas pertanyaan umum tentang Chromebook</translation>
 <translation id="1165039591588034296">Kesalahan</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Standar (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Nonaktifkan tema gelap</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Nonaktifkan mode gelap</translation>
+<translation id="1881188606372070653">Buka <ph name="BEGIN_LINK1" />halaman Bantuan Hukum<ph name="END_LINK1" /> untuk meminta perubahan konten atas alasan hukum. Beberapa informasi akun dan sistem dapat dikirimkan ke Google. Kami akan menggunakan informasi yang Anda berikan untuk membantu mengatasi masalah teknis dan meningkatkan layanan kami, sesuai dengan <ph name="BEGIN_LINK2" />Kebijakan Privasi<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />Persyaratan Layanan<ph name="END_LINK3" /> kami.</translation>
 <translation id="1887850431809612466">Revisi hardware</translation>
 <translation id="1905710495812624430">Melebihi batas percobaan maksimum yang diizinkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
@@ -623,6 +625,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6379086450106841622">Layar sentuh</translation>
 <translation id="6381741036071372448">Uji keyboard Anda</translation>
 <translation id="6388847657025262518">Pengumpan dokumen pemindai macet. Periksa pengumpan, lalu coba lagi.</translation>
+<translation id="6394634179843537518">Tambahkan file</translation>
 <translation id="6410257289063177456">File Gambar</translation>
 <translation id="641081527798843608">Kecocokan subjek</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

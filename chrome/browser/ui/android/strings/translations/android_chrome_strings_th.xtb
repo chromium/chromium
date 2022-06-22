@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">ความช่วยเหลือแบบเสนอโดยไม่ต้องขอ</translation>
 <translation id="3285080554353377245">วิดีโอเกี่ยวกับวิธีใช้ Chrome</translation>
 <translation id="3288003805934695103">โหลดหน้าใหม่</translation>
-<translation id="3290991969712132877">หากต้องการไปที่หน้านี้ให้เร็วขึ้น ให้เพิ่มลงในหน้าจอหลักโดยใช้ปุ่ม "ตัวเลือกเพิ่มเติม"</translation>
 <translation id="3297344142967351106">เสียงผู้ช่วย</translation>
 <translation id="3303414029551471755">ต้องการดำเนินการดาวน์โหลดเนื้อหานี้ไหม</translation>
 <translation id="3321367458490630980">เพิ่มความสนใจแล้ว</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> แท็บ}other{<ph name="TAB_COUNT_MANY" /> แท็บ <ph name="TAB_COUNT_INCOGNITO" /> แท็บที่ไม่ระบุตัวตน}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">เชื่อมต่อด้วยสาย USB แล้ว</translation>
-<translation id="4557685098773234337">หากต้องการไปที่นี่ให้เร็วขึ้น ให้เพิ่มหน้านี้ในหน้าจอหลัก</translation>
 <translation id="4558311620361989323">แป้นพิมพ์ลัดสำหรับหน้าเว็บ</translation>
 <translation id="4561730552726921821">ลงทะเบียนสำเร็จ</translation>
 <translation id="4561979708150884304">ไม่มีการเชื่อมต่อ</translation>

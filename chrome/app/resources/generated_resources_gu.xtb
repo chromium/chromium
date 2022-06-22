@@ -1541,6 +1541,7 @@
 <translation id="2433836460518180625">માત્ર ઉપકરણને અનલૉક કરો</translation>
 <translation id="2434449159125086437">પ્રિન્ટર સેટ કરી શકાતું નથી. કૃપા કરીને ગોઠવણી ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="2434758125294431199">કોણ તમારી સાથે શેર કરી શકે, તે પસંદ કરો</translation>
+<translation id="2434915728183570229">હવે તમે તમારા ફોનની ઍપ જોઈ શકો છો</translation>
 <translation id="2435137177546457207">Google Chrome અને ChromeOS Flexની વધારાની શરતો</translation>
 <translation id="2435248616906486374">નેટવર્ક ડિસ્કનેક્ટ થયું</translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
@@ -2222,6 +2223,7 @@
 <translation id="3067198360141518313">આ પ્લગિન ચલાવો</translation>
 <translation id="3071624960923923138">એક નવું ટૅબ ખોલવા માટે તમે અહીં ક્લિક કરી શકો છો</translation>
 <translation id="3072775339180057696">સાઇટને <ph name="FILE_NAME" /> જોવાની મંજૂરી આપીએ?</translation>
+<translation id="3074499504015191586">આખા પેજનો અનુવાદ કરો</translation>
 <translation id="3075874217500066906">Powerwash પ્રક્રિયા શરૂ કરવા માટે પુનઃપ્રારંભ જરૂરી છે. પુનઃપ્રારંભ પછી તમે આગળ વધવા માંગો છો કે કેમ તે તમને પૂછવામાં આવશે.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">માત્ર આ ડિવાઇસ પર સાચવો</translation>
@@ -4224,6 +4226,7 @@
 <translation id="5072900412896857127">Google Playની સેવાની શરતો લોડ કરી શકાઈ નથી. કૃપા કરીને તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" /> અને વધુ #}other{<ph name="FILE1" />, <ph name="FILE2" /> અને વધુ #}}</translation>
 <translation id="5074318175948309511">નવા સેટિંગ પ્રભાવમાં આવે તે પહેલાં આ પેજને ફરીથી લોડ કરવાની જરૂર પડી શકે છે.</translation>
+<translation id="5074761966806028321">સેટઅપ પૂર્ણ કરવા માટે હજી પણ પરવાનગી જરૂરી છે</translation>
 <translation id="5075910247684008552">સુરક્ષિત સાઇટ પર અસુરક્ષિત કન્ટેન્ટને બ્લૉક કરેલું હોય છે</translation>
 <translation id="5078638979202084724">બધા ટૅબ્સ બુકમાર્ક કરો</translation>
 <translation id="5078796286268621944">ખોટો PIN</translation>
@@ -4587,6 +4590,7 @@
 <translation id="5449551289610225147">અમાન્ય પાસવર્ડ</translation>
 <translation id="5449588825071916739">તમામ ટૅબ્સ બુકમાર્ક કરો</translation>
 <translation id="5449716055534515760">Close Win&amp;dow</translation>
+<translation id="5452446625764825792">હવે તમે તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને ઍપ જોઈ શકો છો</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (ઑફલાઇન કાર્ય કરે છે)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> સાથે</translation>
 <translation id="545484289444831485">વધુ શોધ પરિણામો જુઓ</translation>
@@ -4647,6 +4651,7 @@
 <translation id="5499211612787418966">હાલમાં આ સંવાદ ફોકસમાં નથી. આ સંવાદને ફોકસમાં લાવવા માટે Alt-Shift A દબાવો.</translation>
 <translation id="5499313591153584299">આ ફાઇલ તમારા કમ્પ્યુટર માટે હાનિકારક હોઇ શકે છે.</translation>
 <translation id="5499453227627332024">તમારા Linux Container માટે કોઈ અપગ્રેડ ઉપલબ્ધ છે. તમે થોડા સમય પછી સેટિંગ ઍપમાંથી પણ અપગ્રેડ કરી શકશો.</translation>
+<translation id="5499476581866658341">હવે તમે તમારા ફોનના તાજેતરના ફોટા અને મીડિયા જોઈ શકો છો</translation>
 <translation id="549957179819296104">નવું આઇકન</translation>
 <translation id="5500168250243071806">જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK_SEARCH" />શોધ ઇતિહાસ<ph name="END_LINK_SEARCH" /> અને <ph name="BEGIN_LINK_GOOGLE" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK_GOOGLE" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.</translation>
 <translation id="5500709606820808700">સલામતી માટે તપાસ આજે કરવામાં આવી</translation>
@@ -5076,6 +5081,7 @@ USB ડિવાઇસ</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> દ્વારા તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરવામાં આવી રહ્યો છે</translation>
 <translation id="5935158534896975820">પ્રમાણપત્ર પર સહી કરવાની વિનંતી તૈયાર કરી રહ્યાં છીએ (સર્વર પર રાહ જુએ છે)</translation>
 <translation id="5935656526031444304">Safe Browsingને મેનેજ કરો</translation>
+<translation id="5936065461722368675">આખા પેજનો અનુવાદ કરો</translation>
 <translation id="5938002010494270685">સુરક્ષા અપગ્રેડ ઉપલબ્ધ</translation>
 <translation id="5939518447894949180">રીસેટ કરો</translation>
 <translation id="5939719276406088041">શૉર્ટકટ બનાવી શકતા નથી</translation>
@@ -6315,6 +6321,7 @@ USB ડિવાઇસ</translation>
 <translation id="7152478047064750137">આ એક્સટેન્શનને કોઈ વિશિષ્ટ પરવાનગીઓની જરૂર નથી</translation>
 <translation id="7154130902455071009">તમારા શરૂઆતના પેજને આનાથી બદલો: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">કૅમેરા અથવા ફાઇલમાંથી અસ્તિત્વમાંનો ફોટો</translation>
+<translation id="7160182524506337403">હવે તમે તમારા ફોનના નોટિફિકેશન જોઈ શકો છો</translation>
 <translation id="7163202347044721291">સક્રિયકરણનો કોડ ચકાસી રહ્યાં છીએ...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" આ તપાસાયેલા સ્થાનોમાં ફોટા, વીડિયો અને સાઉન્ડ ફાઇલોને વાંચી શકે છે.</translation>
 <translation id="7167486101654761064">આ પ્રકારની ફાઇલો &amp;હંમેશાં ખોલો</translation>
@@ -7324,6 +7331,7 @@ USB ડિવાઇસ</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> સ્ટેટસ</translation>
 <translation id="8139447493436036221">Google Drive ફાઇલો</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141418916163800697">ફોન હબના સેટિંગમાં તમે વધુ સુવિધાઓનું સેટઅપ કરી શકો છો</translation>
 <translation id="8141584439523427891">હવે વૈકલ્પિક બ્રાઉઝરમાં ખોલી રહ્યાં છીએ</translation>
 <translation id="8141725884565838206">તમારા પાસવર્ડ્સનું સંચાલન કરો</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{એક વીડિયો}one{# વીડિયો}other{# વીડિયો}}</translation>
@@ -7531,6 +7539,7 @@ USB ડિવાઇસ</translation>
 <translation id="833986336429795709">આ લિંક ખોલવા માટે, એક ઍપ પસંદ કરો</translation>
 <translation id="8342221978608739536">પ્રયાસ કર્યો ન હતો</translation>
 <translation id="8342861492835240085">સંગ્રહ પસંદ કરો</translation>
+<translation id="8345848587667658367">હવે તમે તમારા ફોનના તાજેતરના ફોટા, મીડિયા, નોટિફિકેશન અને ઍપ જોઈ શકો છો</translation>
 <translation id="8347227221149377169">પ્રિન્ટ કરવાના કામો</translation>
 <translation id="834785183489258869">જ્યારે છૂપા મોડમાં હો, ત્યારે અલગ-અલગ સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે સાઇટ તમારી કુકીનો ઉપયોગ કરી શકશે નહીં, ઉદાહરણ તરીકે, જાહેરાતોને વ્યક્તિગત બનાવવા માટે. અમુક સુવિધાઓ કેટલીક સાઇટ પર કામ કરી શકશે નહીં.</translation>
 <translation id="8350789879725387295">ડૉકમાં સ્ટાયલસના સાધનો બતાવો</translation>
@@ -8137,6 +8146,7 @@ USB ડિવાઇસ</translation>
 <translation id="8957757410289731985">પ્રોફાઇલ કસ્ટમાઇઝ કરો</translation>
 <translation id="895944840846194039">JavaScript મેમરી</translation>
 <translation id="8960208913905765425">ઝડપી જવાબોનું એકમ રૂપાંતરણ</translation>
+<translation id="8960638196855923532">હવે તમે તમારા ફોનના નોટિફિકેશન અને ઍપ જોઈ શકો છો</translation>
 <translation id="8962051932294470566">તમે એક સમયે ફક્ત એક જ ફાઇલ શેર કરી શકો છો. વર્તમાન ટ્રાન્સફર પૂર્ણ થાય પછી ફરીથી પ્રયાસ કરો.</translation>
 <translation id="8962083179518285172">વિગતો છુપાવો</translation>
 <translation id="8962918469425892674">આ સાઇટ મોશન અથવા લાઇટ સેન્સરનો ઉપયોગ કરી રહી છે.</translation>
@@ -8288,6 +8298,7 @@ USB ડિવાઇસ</translation>
 <translation id="9103868373786083162">પાછા જવા માટે દબાવો, ઇતિહાસ જોવા માટે સંદર્ભ મેનૂ પર જાઓ</translation>
 <translation id="9108035152087032312">નામ અને વિંડો…</translation>
 <translation id="9108072915170399168">ડેટા વપરાશના હાલના સેટિંગ ઇન્ટરનેટ વિના માટે સેટ છે</translation>
+<translation id="9108294543511800041">હવે તમે તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને નોટિફિકેશન જોઈ શકો છો</translation>
 <translation id="9108674852930645435">તમારા <ph name="DEVICE_TYPE" /> પર નવું શું છે તે જુઓ</translation>
 <translation id="9108808586816295166">સુરક્ષિત DNS હંમેશાં ઉપલબ્ધ ન હોઈ શકે</translation>
 <translation id="9109122242323516435">સ્પેસ ખાલી કરવા માટે, ડિવાઇસ સ્ટોરેજમાંથી ફાઇલો ડિલીટ કરો.</translation>
@@ -8412,7 +8423,6 @@ USB ડિવાઇસ</translation>
 <translation id="934503638756687833">જો જરૂર જણાય તો, જે આઇટમ અહીંની સૂચિમાં નથી તે પણ કાઢી નાખવામાં આવશે. Chrome ગોપનીયતા વ્હાઇટ પેપરમાં &lt;a href="<ph name="URL" />"&gt;ન જોઈતા સૉફ્ટવેર સામે રક્ષણ મેળવવા&lt;/a&gt; વિશે વધુ જાણો.</translation>
 <translation id="93480724622239549">ખામી અથવા ભૂલ</translation>
 <translation id="935854577147268200">Smart Lock ફોન બદલાયો. Smart Lock અપડેટ કરવા માટે તમારો પાસવર્ડ દાખલ કરો. આગલી વખતે, તમારો ફોન તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરશે. તમે સેટિંગમાં Smart Lock બંધ કરી શકો છો</translation>
-<translation id="93610034168535821">સાઇટ દ્વારા ઉપયોગમાં લેવાયેલો કુલ સ્ટોરેજ:</translation>
 <translation id="936646668635477464">કૅમેરા અને માઇક્રોફોન</translation>
 <translation id="936801553271523408">સિસ્ટમ ડાયગ્નોસ્ટિક ડેટા</translation>
 <translation id="93766956588638423">એક્સ્ટેન્શન સુધારો</translation>

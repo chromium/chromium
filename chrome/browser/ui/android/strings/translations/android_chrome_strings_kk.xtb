@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">Қажетті көмек</translation>
 <translation id="3285080554353377245">Chrome браузерін қалай қолдану керегі туралы бейнелер</translation>
 <translation id="3288003805934695103">Бетті қайта жүктеу</translation>
-<translation id="3290991969712132877">Бұл жерге жылдамырақ кіру үшін осы бетті "Қосымша опциялар" түймесінен негізгі экранға енгізіңіз.</translation>
 <translation id="3297344142967351106">Дауыстық көмек</translation>
 <translation id="3303414029551471755">Мазмұн жүктеуді жалғастырасыз ба?</translation>
 <translation id="3321367458490630980">Қызығушылық қосылды.</translation>
@@ -639,7 +638,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> қойынды}other{<ph name="TAB_COUNT_MANY" /> қойынды, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито қойындысы}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">USB кабелімен жалғанды</translation>
-<translation id="4557685098773234337">Бұл жерге жылдамырақ кіру үшін осы бетті негізгі экранға енгізіңіз.</translation>
 <translation id="4558311620361989323">Веббет пернелер тіркесімдері</translation>
 <translation id="4561730552726921821">Тіркелдіңіз</translation>
 <translation id="4561979708150884304">Байланыс жоқ</translation>

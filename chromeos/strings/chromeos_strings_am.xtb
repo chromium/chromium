@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ተጠቃሚ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ለውጫዊ መሣሪያዎች መስኮት ፊርምዌርን ማዘመን ክፍት ነው። <ph name="NUM_UPDATES" /> ዝማኔዎች ይገኛሉ።</translation>
+<translation id="1145516343487477149">ለተለመዱ የChromebook ጥያቄዎች የእገዛ ጽሑፎችን እና መልሶችን ያግኙ</translation>
 <translation id="1165039591588034296">ስህተት</translation>
 <translation id="1175697296044146566">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው።</translation>
 <translation id="1175951029573070619">መካከለኛ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">ጠቆር ያለ ገጽታን አጥፋ</translation>
 <translation id="1874612839560830905">ኤምቲዩ</translation>
 <translation id="188114911237521550">የጨለማ ሁነታን አጥፋ</translation>
+<translation id="1881188606372070653">በሕጋዊ ምክንያቶች የይዘት ለውጦችን ለመጠየቅ ወደ <ph name="BEGIN_LINK1" />የሕግ እገዛ ገጽ<ph name="END_LINK1" /> ይሂዱ። የተወሰነ የመለያ እና የስርዓት መረጃ ለGoogle ሊላክ ይችላል። በእኛ <ph name="BEGIN_LINK2" />የግላዊነት መመሪያ<ph name="END_LINK2" /> እና <ph name="BEGIN_LINK3" />የአገልግሎት ውል<ph name="END_LINK3" /> መሠረት ቴክኒካዊ ችግሮችን ለመፍታትና አገልግሎቶቻችንን ለማሻሻል እንዲያግዝ እርስዎ የሚሰጡንን መረጃ እንጠቀምበታለን።</translation>
 <translation id="1887850431809612466">የሃርድዌር ክለሳ</translation>
 <translation id="1905710495812624430">የሚፈቀደው ከፍተኛ የሙከራዎች ብዛት ታልፏል።</translation>
 <translation id="1908234395526491708">የ UDP ጥያቄ አለመሳካቶች</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">መነካት የሚችል ማያ</translation>
 <translation id="6381741036071372448">የቁልፍ ሰሌዳዎን ይሞክሩ</translation>
 <translation id="6388847657025262518">የቃኚው ሰነድ መጋቢ ተቀርቅሯል። መጋቢውን ይፈትሹ እና እንደገና ይሞክሩ።</translation>
+<translation id="6394634179843537518">ፋይል አክል</translation>
 <translation id="6410257289063177456">የምስል ፋይሎች</translation>
 <translation id="641081527798843608">የርዕሰ ጉዳይ ተዛማጅ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

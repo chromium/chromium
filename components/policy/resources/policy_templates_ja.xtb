@@ -82,6 +82,7 @@
       このポリシーを true に設定した場合、デバイスのバックライトに関する情報が報告されます。</translation>
 <translation id="1076751984131277498">取り外し可能な USB デバイスの許可リスト</translation>
 <translation id="1077675271127011209">使用状況とクラッシュ関連データのレポートを無効にする</translation>
+<translation id="1079120839835170592">M115 まで Event.path API を再度使用できるようにします。</translation>
 <translation id="1079425471279127373">このポリシーでは、自動インストールされたウェブ アプリケーションの一部のオリジンに Device Attributes API を使用したデバイス属性（シリアル番号、ホスト名など）の取得を許可するかどうかを設定します。
 
       Device Attributes API はウェブの API のリストです。詳しくは、https://wicg.github.io/WebApiDevice/device_attributes をご覧ください。これらの API は、<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> に沿って自動インストールされたウェブ アプリケーションと一致するオリジンまたはキオスク セッションで設定されたオリジンに対してのみ使用できます。</translation>
@@ -253,6 +254,7 @@
       このポリシーを未設定のままにした場合、<ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> で設定されたポリシー値に沿って、<ph name="CHROME_CLEANUP_NAME" /> で望ましくないソフトウェアのスキャンに関するレポートが Google に送信可能となります。<ph name="CHROME_CLEANUP_NAME" /> でクリーンアップを行うかどうかと、望ましくないソフトウェアの検出精度を向上するために、結果を Google と共有するかどうかをユーザーに確認します。これらの結果には、Chrome のプライバシー ホワイトペーパーで説明されているとおり、ファイルのメタデータのほか自動インストールされた拡張機能とレジストリキーが含まれます。
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。</translation>
+<translation id="1285819498003746288">Event.path API を使用不可にする。</translation>
 <translation id="1290634681382861275">USB、Bluetooth、ポリシーの更新、デベロッパー モードなど、その他の設定を制御します。</translation>
 <translation id="1291880496936992484">警告: <ph name="PRODUCT_NAME" /> ではバージョン 52 で RC4 のサポートを完全に終了し（2016 年 9 月頃）、このポリシーも機能しなくなります。
 
@@ -2412,6 +2414,7 @@
 <translation id="3652670852519271837">サイトが File System API を経由したファイルとディレクトリへの読み取りアクセスをユーザーに要求することを許可する</translation>
 <translation id="3653237928288822292">デフォルトの検索プロバイダ アイコン</translation>
 <translation id="3654906736796256792">音声処理のサンドボックス化を許可する</translation>
+<translation id="3655885297177292093">Event.path API をデフォルトのステータスにする（M109 まで使用可能、M109〜114 では使用不可）。</translation>
 <translation id="3659542706175323490">このポリシーを有効に設定した場合、デバイスが対応していれば AC 電源接続時の起動が有効になります。AC 電源接続時の起動が有効な場合、電源コードをコンセントに差し込むと、オフまたは休止状態のシステムが起動するようになります。
 
       このポリシーを無効に設定した場合、AC 電源接続時の起動は無効になります。
@@ -3863,6 +3866,7 @@
 
       このポリシーを設定しなかった場合、カードを表示するかどうかはユーザーが制御できます。デフォルトでは、カードが表示されます。
       </translation>
+<translation id="5449690328792750354">Event.path API を使用可能にする。</translation>
 <translation id="5455609857202311243">HTTP 認証時に KDC ポリシーの承認を無視する</translation>
 <translation id="5455888515928026628"><ph name="PRODUCT_OS_NAME" /> では、ロック画面でのログイン時に、サーバーに対して（オンラインで）、またはキャッシュに保存されたパスワードを使用して（オフラインで）、認証を行うことができます。
 
@@ -6460,6 +6464,15 @@
 <translation id="8410477879938914253">このポリシーは、管理対象ゲスト セッションにのみ適用されます。
       このポリシーを True に設定するか未設定のままにした場合は、最後のウィンドウを閉じたときに、ログアウトするかどうかを確認するダイアログが表示されます。
       このポリシーを False に設定した場合、ダイアログは表示されず、最後のウィンドウを閉じた後の自動ログアウトも無効になります。</translation>
+<translation id="8411050083243181286"> M109 以降、非標準の Event.path API はウェブの互換性を向上させるため削除されます。このポリシーでは、Event.path API を M115 まで再度使用できるようにします。
+
+      このポリシーを有効に設定した場合、Event.path API が使用可能になります。
+
+      このポリシーを無効に設定した場合、Event.path API は使用できなくなります。
+
+      このポリシーを設定しない場合、Event.path API はデフォルトのステータスになります（M109 まで使用可能、M109〜114 では使用不可）。
+
+      このポリシーは、Chrome 115 以降で削除されます。</translation>
 <translation id="8415953438346821074">この設定を有効にした場合は、<ph name="PRODUCT_NAME" /> プロフィールに保存されている設定（ブックマーク、自動入力データ、パスワードなど）が、「ローミング」ユーザー プロフィール フォルダまたは管理者が <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" /> ポリシーで指定した場所に保存されるファイルにも書き込まれます。このポリシーを有効にすると、クラウド同期は無効になります。
 
       このポリシーを無効にするか未設定のままにした場合は、通常のローカル プロフィールのみが使用されます。</translation>

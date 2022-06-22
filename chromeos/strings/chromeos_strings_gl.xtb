@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">A ventá de actualización do firmware dos dispositivos externos está aberta. Hai <ph name="NUM_UPDATES" /> actualizacións dispoñibles.</translation>
+<translation id="1145516343487477149">Atopa artigos de axuda e respostas a preguntas frecuentes en relación co Chromebook</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1175697296044146566">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Intermedia (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Quitar tema escuro</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Quitar modo escuro</translation>
+<translation id="1881188606372070653">Accede á <ph name="BEGIN_LINK1" />páxina Axuda legal<ph name="END_LINK1" /> para solicitar cambios de contido por razóns legais. Pódese enviar parte da información da conta e do sistema a Google. Utilizaremos os datos que nos indiques para solucionar problemas técnicos e mellorar os nosos servizos segundo o estipulado na <ph name="BEGIN_LINK2" />Política de privacidade<ph name="END_LINK2" /> e nas <ph name="BEGIN_LINK3" />Condicións de servizo<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Revisión do hardware</translation>
 <translation id="1905710495812624430">Superouse o número máximo de intentos.</translation>
 <translation id="1908234395526491708">Erros nas solicitudes de UDP</translation>
@@ -623,6 +625,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
 <translation id="6381741036071372448">Probar o teclado</translation>
 <translation id="6388847657025262518">O alimentador de documentos do escáner está atascado. Revísao e téntao de novo.</translation>
+<translation id="6394634179843537518">Engadir ficheiro</translation>
 <translation id="6410257289063177456">Ficheiros de imaxe</translation>
 <translation id="641081527798843608">Coincidencia do asunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

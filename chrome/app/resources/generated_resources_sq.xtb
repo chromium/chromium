@@ -1905,6 +1905,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Hiq 1 aplikacion të pambështetur}other{Hiq # aplikacione të pambështetura}}</translation>
 <translation id="2776560192867872731">Ndrysho emrin e pajisjes për <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Fshije këtë kontejner</translation>
+<translation id="2778471504622896352">Shto aplikacione në distancë te nisësi i ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Gabim në instalimin e aplikacionit Linux</translation>
 <translation id="2783298271312924866">U shkarkua</translation>
@@ -3540,6 +3541,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dhe <ph name="NUMBER_OF_OTHER_SWITCHES" /> çelësa të tjerë</translation>
 <translation id="439266289085815679">Konfigurimi i Bluetooth-it kontrollohet nga <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Modifiko skedarin e konfigurimit</translation>
+<translation id="4393713825278446281">Pajisjet me "Çiftimin e shpejtë" që janë ruajtur te <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Çaktivizo</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Hapi të gjitha}=1{&amp;Hap faqeshënuesin}other{&amp;Hapi të gjitha ({COUNT})}}</translation>
 <translation id="4397372003838952832">Nuk është nevoja ta kujtosh këtë fjalëkalim. Ai do të ruhet te <ph name="GOOGLE_PASSWORD_MANAGER" /> për <ph name="EMAIL" /></translation>
@@ -3769,6 +3771,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4615586811063744755">nuk është zgjedhur asnjë kuki</translation>
 <translation id="461661862154729886">Burimi i energjisë</translation>
 <translation id="4617001782309103936">Shumë i shkurtër</translation>
+<translation id="4617019240346358451">Ringarko faqen për të përdorur "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4617270414136722281">Opsionet e prapashtesës</translation>
 <translation id="4617880081511131945">Nuk mund të vendoset lidhja</translation>
 <translation id="4619564267100705184">Verifiko që je ti</translation>
@@ -3984,6 +3987,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4833683849865011483">U gjet 1 printer nga serveri i printimit</translation>
 <translation id="4836504898754963407">Menaxho gjurmët e gishtave</translation>
 <translation id="4837128290434901661">Të ndryshohet përsëri në "Kërko në Google"?</translation>
+<translation id="4837165100461973682">Ringarko faqen për të zbatuar ndryshimet</translation>
 <translation id="4837926214103741331">Nuk je i autorizuar të përdorësh këtë pajisje. Kontakto me zotëruesin e pajisjes për të marrë leje për identifikim.</translation>
 <translation id="4837952862063191349">Për të shkyçur dhe rivendosur të dhënat lokale, fut fjalëkalimin e vjetër të <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Shiko fotografitë, mediat dhe njoftimet e telefonit tënd</translation>
@@ -4293,6 +4297,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5150254825601720210">Emri i serverit SSL të certifikatës së Netscape</translation>
 <translation id="5151354047782775295">Liro hapësirë në disk ose të dhëna të caktuara mund të fshihen automatikisht</translation>
 <translation id="5153234146675181447">Harro telefonin</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Cilësimet e përparuara për <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Subjekti</translation>
 <translation id="5155327081870541046">Në shiritin e adresave, fut shkurtoren për sajtin në të cilin dëshiron të kërkosh, si p.sh. "@faqeshënuesit". Më pas shtyp shkurtoren e preferuar të tastierës dhe fut termin e kërkimit.</translation>
@@ -5928,6 +5933,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve"
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> u shtua në distancë</translation>
 <translation id="6790820461102226165">Shto person...</translation>
 <translation id="6793604637258913070">Thekso kursorin e tekstit kur shfaqet ose lëviz.</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Skanimi automatik të lejon të lëvizësh automatikisht nëpër artikujt në ekran. Kur një artikull është i theksuar, shtyp “Zgjidh” për ta aktivizuar atë.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Mos, ndodhi një gabim.</translation>
@@ -7798,6 +7804,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8642947597466641025">Bëje tekstin më të madh</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm. Të dërgohet te "Mbrojtja e përparuar" e Google për skanim?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Nuk ka kuki}=1{1 kuki është bllokuar}other{# kuki janë bllokuar}}</translation>
+<translation id="864423554496711319">Pajisjet e ruajtura në llogarinë tënde</translation>
 <translation id="8644655801811752511">Ky çelës sigurie nuk mund të rivendoset. Provo ta rivendosësh çelësin menjëherë pasi ta futësh.</translation>
 <translation id="8645354835496065562">Vazhdo të lejosh qasjen te sensorët</translation>
 <translation id="8645920082661222035">Parashikon dhe të paralajmëron rreth ngjarjeve të rrezikshme përpara se ato të ndodhin</translation>
@@ -8402,7 +8409,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="934503638756687833">Do të hiqen edhe artikuj që nuk janë listuar këtu, nëse është e nevojshme. Mëso më shumë për &lt;a href="<ph name="URL" />"&gt;mbrojtjen ndaj softuerëve të padëshiruar&lt;/a&gt; në dokumentin informues të privatësisë së Chrome.</translation>
 <translation id="93480724622239549">Defekt në kod ose gabim</translation>
 <translation id="935854577147268200">Telefoni i Smart Lock ndryshoi. Fut fjalëkalimin për të përditësuar Smart Lock. Herën tjetër, telefoni yt do të shkyçë pajisjen tënde <ph name="DEVICE_TYPE" />. Mund të çaktivizosh Smart Lock te "Cilësimet"</translation>
-<translation id="93610034168535821">Hapësira ruajtëse në total e përdorur nga sajtet:</translation>
 <translation id="936646668635477464">Kamera dhe mikrofoni</translation>
 <translation id="936801553271523408">Të dhënat diagnostikuese të sistemit</translation>
 <translation id="93766956588638423">Riparo shtesën</translation>

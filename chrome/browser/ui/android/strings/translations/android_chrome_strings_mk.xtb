@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">Проактивна помош</translation>
 <translation id="3285080554353377245">Видеа за користењето на Chrome</translation>
 <translation id="3288003805934695103">Повторно да ја вчитате страницата</translation>
-<translation id="3290991969712132877">За побрз пристап до страницава, додајте ја на почетниот екран преку копчето „Повеќе опции“</translation>
 <translation id="3297344142967351106">Гласовна помош</translation>
 <translation id="3303414029551471755">Продолжете со преземање на содржината?</translation>
 <translation id="3321367458490630980">Интересот е додаден</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка}one{<ph name="TAB_COUNT_MANY" /> картичка, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}other{<ph name="TAB_COUNT_MANY" /> картички, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Поврзано со USB-кабел</translation>
-<translation id="4557685098773234337">За побрз пристап до страницава, додајте ја на почетниот екран</translation>
 <translation id="4558311620361989323">Кратенки на веб-страница</translation>
 <translation id="4561730552726921821">Успешна регистрација</translation>
 <translation id="4561979708150884304">Нема интернет-врска</translation>

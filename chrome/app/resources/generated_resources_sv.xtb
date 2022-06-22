@@ -1923,6 +1923,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Ta bort 1 app som inte stöds}other{Ta bort # appar som inte stöds}}</translation>
 <translation id="2776560192867872731">Ändra enhetsnamn på <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Ta bort denna behållare</translation>
+<translation id="2778471504622896352">Lägg till fjärrappar i ChromeOS-startaren</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Ett fel uppstod när Linux-programmet skulle installeras</translation>
 <translation id="2783298271312924866">Nedladdad</translation>
@@ -3558,6 +3559,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> och <ph name="NUMBER_OF_OTHER_SWITCHES" /> brytare till</translation>
 <translation id="439266289085815679">Konfiguration av Bluetooth styrs av <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Redigera konfigurationsfilen</translation>
+<translation id="4393713825278446281">Enheter med Snabb parkoppling har sparats i <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Inaktivera</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Öppna alla}=1{&amp;Öppna bokmärke}other{&amp;Öppna alla ({COUNT})}}</translation>
 <translation id="4397372003838952832">Du behöver inte komma ihåg det här lösenordet. Det sparas i <ph name="GOOGLE_PASSWORD_MANAGER" /> för <ph name="EMAIL" />.</translation>
@@ -3788,6 +3790,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4615586811063744755">inga cookies har valts</translation>
 <translation id="461661862154729886">Energikälla</translation>
 <translation id="4617001782309103936">För kort</translation>
+<translation id="4617019240346358451">Läs in sidan igen för att använda <ph name="EXTENSION_NAME" /></translation>
 <translation id="4617270414136722281">Tilläggsalternativ</translation>
 <translation id="4617880081511131945">Det gick inte att upprätta en anslutning</translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>
@@ -4003,6 +4006,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4833683849865011483">1 skrivare från utskriftsservern hittades</translation>
 <translation id="4836504898754963407">Hantera fingeravtryck</translation>
 <translation id="4837128290434901661">Vill du byta tillbaka till Google Sök?</translation>
+<translation id="4837165100461973682">Läs in sidan igen för att tillämpa ändringarna</translation>
 <translation id="4837926214103741331">Du har inte behörighet att använda den här enheten. Kontakta enhetens ägare om du vill ha behörighet att logga in.</translation>
 <translation id="4837952862063191349">Lås upp och återställ lokal data genom att ange ditt gamla lösenord för <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Visa bilder, mediefiler och aviseringar från telefonen</translation>
@@ -4312,6 +4316,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5150254825601720210">SSL-servernamn för Netscape-certifikat</translation>
 <translation id="5151354047782775295">Frigör diskutrymme, annars tas en del data bort automatiskt.</translation>
 <translation id="5153234146675181447">Glöm mobil</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Avancerade inställningar för <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Ämne</translation>
 <translation id="5155327081870541046">Skriv genvägen till webbplatsen du vill söka på i adressfältet, till exempel @bookmarks. Tryck sedan på önskat kortkommando och ange söktermen.</translation>
@@ -5947,6 +5952,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> har lagts till via fjärranslutning</translation>
 <translation id="6790820461102226165">Lägg till person …</translation>
 <translation id="6793604637258913070">Markera textmarkören när den visas eller flyttas</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Med automatisk genomsökning kan du flytta mellan objekt på skärmen automatiskt. När ett objekt är markerat trycker du på Välj för att aktivera det.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hoppsan! Ett fel uppstod.</translation>
@@ -7820,6 +7826,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8642947597466641025">Förstora texten</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> kan vara farlig. Vill du skicka den till Avancerat skydd från Google för skanning?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Inga cookies}=1{1 cookie blockeras}other{# cookies blockeras}}</translation>
+<translation id="864423554496711319">Enheter som har sparats i kontot</translation>
 <translation id="8644655801811752511">Det går inte att återställa den här säkerhetsnyckeln. Testa att återställa nyckeln direkt när du sätter i den.</translation>
 <translation id="8645354835496065562">Fortsätt att tillåta sensoråtkomst</translation>
 <translation id="8645920082661222035">Förutser och varnar dig om farliga händelser innan de inträffar</translation>
@@ -8424,7 +8431,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="934503638756687833">Även objekt som inte står med här tas bort om det behövs. Läs mer om &lt;a href="<ph name="URL" />"&gt;skydd mot oönskad programvara&lt;/a&gt; i vitboken om integritet och Chrome.</translation>
 <translation id="93480724622239549">Problem eller fel</translation>
 <translation id="935854577147268200">Smart Lock används med en annan mobil än tidigare. Ange lösenordet och uppdatera Smart Lock. Nästa gång låser mobilen upp denna <ph name="DEVICE_TYPE" />. Du kan inaktivera Smart Lock i inställningarna</translation>
-<translation id="93610034168535821">Totalt lagringsutrymme som används av webbplatser:</translation>
 <translation id="936646668635477464">Kamera och mikrofon</translation>
 <translation id="936801553271523408">Systemets diagnostikresultat</translation>
 <translation id="93766956588638423">Reparera tillägg</translation>

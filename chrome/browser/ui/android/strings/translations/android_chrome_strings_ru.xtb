@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">Помощь в нужный момент</translation>
 <translation id="3285080554353377245">Видео о том, как пользоваться Chrome</translation>
 <translation id="3288003805934695103">Обновите страницу.</translation>
-<translation id="3290991969712132877">Для быстрого доступа добавьте эту страницу на главный экран, нажав кнопку настроек "Ещё".</translation>
 <translation id="3297344142967351106">Голосовой помощник</translation>
 <translation id="3303414029551471755">Скачать?</translation>
 <translation id="3321367458490630980">Интерес добавлен.</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладка инкогнито}few{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}many{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладок инкогнито}other{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Подключено с помощью USB-кабеля</translation>
-<translation id="4557685098773234337">Для быстрого доступа добавьте эту страницу на главный экран</translation>
 <translation id="4558311620361989323">Работа с веб-страницами</translation>
 <translation id="4561730552726921821">Регистрация выполнена</translation>
 <translation id="4561979708150884304">Нет подключения</translation>

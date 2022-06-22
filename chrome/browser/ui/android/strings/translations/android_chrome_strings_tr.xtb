@@ -437,7 +437,6 @@ Belirli bir siteye ait veya tüm tarama geçmişinizi sildiğinizde bununla ili�
 <translation id="3284510035090979597">Proaktif Yardım</translation>
 <translation id="3285080554353377245">Chrome'un nasıl kullanılacağıyla ilgili videolar</translation>
 <translation id="3288003805934695103">Sayfayı yeniden yükleme</translation>
-<translation id="3290991969712132877">Buraya daha hızlı ulaşmak için bu sayfayı Diğer seçenekler düğmesinden Ana ekranınıza ekleyin</translation>
 <translation id="3297344142967351106">Sesli yardım</translation>
 <translation id="3303414029551471755">İçeriği indirme işlemine başlansın mı?</translation>
 <translation id="3321367458490630980">İlgi alanı eklendi</translation>
@@ -639,7 +638,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> sekme}other{<ph name="TAB_COUNT_MANY" /> sekme, <ph name="TAB_COUNT_INCOGNITO" /> gizli mod}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">USB kablosuyla bağlandı</translation>
-<translation id="4557685098773234337">Buraya daha hızlı ulaşmak için bu sayfayı ana ekranınıza ekleyin</translation>
 <translation id="4558311620361989323">Web sayfası kısayolları</translation>
 <translation id="4561730552726921821">Kayıt başarılı oldu</translation>
 <translation id="4561979708150884304">Bağlantı yok</translation>

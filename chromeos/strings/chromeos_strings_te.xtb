@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">వినియోగదారు</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">బాహ్య పరికరాలకు ఫర్మ్‌వేర్‌‌ను అప్‌డేట్ చేసే విండో తెరిచి ఉంది. <ph name="NUM_UPDATES" /> అప్‌డేట్‌లు అందుబాటులో ఉన్నాయి.</translation>
+<translation id="1145516343487477149">సాధారణ Chromebook ప్రశ్నలకు సహాయక ఆర్టికల్స్, సమాధానాలను కనుగొంటుంది</translation>
 <translation id="1165039591588034296">ఎర్రర్</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> ద్వారా ఈ <ph name="DEVICE_TYPE" /> మేనేజ్ చేయబడుతోంది.</translation>
 <translation id="1175951029573070619">మోస్తరుగా ఉంది (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">ముదురు రంగు రూపాన్ని ఆఫ్ చేయండి</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">డార్క్ మోడ్‌ను ఆఫ్ చేయండి</translation>
+<translation id="1881188606372070653">చట్టపరమైన కారణాల దృష్ట్యా కంటెంట్‌కు మార్పులను రిక్వెస్ట్ చేయడానికి <ph name="BEGIN_LINK1" />చట్టపరమైన సహాయ పేజీకి<ph name="END_LINK1" /> వెళ్లండి. ఖాతా, సిస్టమ్‌కు సంబంధించిన కొంత సమాచారం Googleకు పంపబడవచ్చు. మీరు మాకు అందించే సమాచారాన్ని మా <ph name="BEGIN_LINK2" />గోప్యతా పాలసీ<ph name="END_LINK2" />, ఇంకా <ph name="BEGIN_LINK3" />సర్వీస్ నియమాలకు<ph name="END_LINK3" /> అనుగుణంగా, టెక్నికల్ సమస్యలను పరిష్కరించడానికి, మా సర్వీస్‌లను మరింత మెరుగుపరచడానికి మేము ఉపయోగిస్తాము.</translation>
 <translation id="1887850431809612466">హార్డ్‌వేర్ పునర్విమర్శ</translation>
 <translation id="1905710495812624430">అనుమతించిన గరిష్ట ప్రయత్నాలు మించిపోయారు.</translation>
 <translation id="1908234395526491708">UDP రిక్వెస్ట్ వైఫల్యాలు</translation>
@@ -350,7 +352,7 @@
 <translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
 <translation id="4140251671072434548">RMA సర్వర్‌ను అన్‌లాక్ చేయండి</translation>
 <translation id="4145784616224233563">HTTP ఫైర్‌వాల్</translation>
-<translation id="4147897805161313378">Google ఫోటోలు</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">డిస్‌ప్లే</translation>
 <translation id="4155551848414053977">స్కానర్ ఆన్ చేయబడి ఉందని, అలాగే నెట్‌వర్క్ లేదా ప్రత్యక్ష కనెక్షన్ ద్వారా అందుబాటులో ఉందని నిర్ధారించుకోండి</translation>
 <translation id="4159784952369912983">వంగపండు రంగు</translation>
@@ -622,6 +624,7 @@
 <translation id="6379086450106841622">టచ్‌స్క్రీన్</translation>
 <translation id="6381741036071372448">మీ కీబోర్డ్‌ను టెస్ట్ చేయండి</translation>
 <translation id="6388847657025262518">స్కానర్ డాక్యుమెంట్ ఫీడర్ ఇరుక్కుపోయింది. ఫీడర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
+<translation id="6394634179843537518">ఫైల్‌ను జోడించండి</translation>
 <translation id="6410257289063177456">చిత్రం ఫైళ్లు</translation>
 <translation id="641081527798843608">విషయ సరిపోలిక</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -634,7 +637,7 @@
 <translation id="649050271426829538">ఆగిపోయింది - కాగితం జామ్ అయింది</translation>
 <translation id="6494974875566443634">అనుకూలీకరణ</translation>
 <translation id="6500818810472529210">Google Searchలో ఫలితాన్ని చూడండి</translation>
-<translation id="650266656685499220">ఆల్బమ్‌లను క్రియేట్ చేయడానికి, 'Google ఫోటోలు'కు వెళ్లండి</translation>
+<translation id="650266656685499220">ఆల్బమ్‌లను క్రియేట్ చేయడానికి, 'Google Photos'కు వెళ్లండి</translation>
 <translation id="6516990319416533844">బ్యాటరీ ఛార్జ్ అయ్యే రేట్‌ను పరీక్షించడానికి, కొంత వ్యవధి పాటు మీ బ్యాటరీని తగ్గనివ్వండి</translation>
 <translation id="6517239166834772319">అన్వేషణ</translation>
 <translation id="6527081081771465939">తెలియని WiFi భద్రతా ప్రోటోకాల్</translation>

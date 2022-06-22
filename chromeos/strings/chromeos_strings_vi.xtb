@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Người dùng</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Đang mở cửa sổ cập nhật chương trình cơ sở cho các thiết bị bên ngoài. Có <ph name="NUM_UPDATES" /> bản cập nhật</translation>
+<translation id="1145516343487477149">Tìm bài viết trợ giúp và câu trả lời cho các câu hỏi phổ biến về Chromebook</translation>
 <translation id="1165039591588034296">Lỗi</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý.</translation>
 <translation id="1175951029573070619">Trung bình (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Tắt giao diện tối</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Tắt chế độ tối</translation>
+<translation id="1881188606372070653">Nếu bạn muốn yêu cầu thay đổi nội dung vì lý do pháp lý, hãy truy cập <ph name="BEGIN_LINK1" />trang Trợ giúp pháp lý<ph name="END_LINK1" />. Một số thông tin về tài khoản và hệ thống có thể được gửi đến Google. Chúng tôi sẽ dùng thông tin mà bạn cung cấp để giúp khắc phục các vấn đề kỹ thuật, đồng thời cải thiện các dịch vụ theo <ph name="BEGIN_LINK2" />Chính sách quyền riêng tư<ph name="END_LINK2" /> và <ph name="BEGIN_LINK3" />Điều khoản dịch vụ<ph name="END_LINK3" /> của chúng tôi.</translation>
 <translation id="1887850431809612466">Hiệu chỉnh phần cứng</translation>
 <translation id="1905710495812624430">Đã vượt quá số lần thử tối đa được phép.</translation>
 <translation id="1908234395526491708">Không gửi được yêu cầu UDP</translation>
@@ -623,6 +625,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6379086450106841622">Màn hình cảm ứng</translation>
 <translation id="6381741036071372448">Kiểm tra bàn phím</translation>
 <translation id="6388847657025262518">Khay nạp tài liệu của máy quét bị kẹt. Hãy kiểm tra khay nạp rồi thử lại.</translation>
+<translation id="6394634179843537518">Thêm tệp</translation>
 <translation id="6410257289063177456">Tệp hình ảnh</translation>
 <translation id="641081527798843608">Khớp với chủ đề</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

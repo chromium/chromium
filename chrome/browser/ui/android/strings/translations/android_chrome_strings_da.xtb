@@ -437,7 +437,6 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="3284510035090979597">Proaktiv hjælp</translation>
 <translation id="3285080554353377245">Videoer om, hvordan du bruger Chrome</translation>
 <translation id="3288003805934695103">Genindlæse siden</translation>
-<translation id="3290991969712132877">Føj denne side til din startskærm ved hjælp af knappen Flere valgmuligheder for hurtigt at vende tilbage hertil</translation>
 <translation id="3297344142967351106">Stemmesøgning</translation>
 <translation id="3303414029551471755">Vil du fortsætte og downloade indholdet?</translation>
 <translation id="3321367458490630980">Interessen er tilføjet</translation>
@@ -639,7 +638,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}one{<ph name="TAB_COUNT_MANY" /> fane og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofane}other{<ph name="TAB_COUNT_MANY" /> faner og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofaner}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Tilsluttet via USB-kabel</translation>
-<translation id="4557685098773234337">Føj dette website til din startskærm for hurtigere at vende tilbage hertil</translation>
 <translation id="4558311620361989323">Genveje på websider</translation>
 <translation id="4561730552726921821">Tilmeldingen blev fuldført</translation>
 <translation id="4561979708150884304">Der er ingen forbindelse</translation>

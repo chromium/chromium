@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">မေးစရာမလိုဘဲပြသော အကူအညီ</translation>
 <translation id="3285080554353377245">Chrome အသုံးပြုနည်းအကြောင်း ဗီဒီယိုများ</translation>
 <translation id="3288003805934695103">စာမျက်နှာကို ပြန်ဖွင့်နေသည်</translation>
-<translation id="3290991969712132877">ဤနေရာသို့အမြန်ဝင်ကြည့်ရန် ဤစာမျက်နှာကို 'နောက်ထပ်' ရွေးစရာများခလုတ်မှ သင့် 'ပင်မစာမျက်နှာ' သို့ ထည့်ပါ</translation>
 <translation id="3297344142967351106">အသံ အကူအညီ</translation>
 <translation id="3303414029551471755">အကြောင်းအရာအား ဒေါင်းလုပ်လုပ်ရန် ရှေ့ဆက်မလား?</translation>
 <translation id="3321367458490630980">စိတ်ဝင်စားမှု ထည့်လိုက်သည်</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခု, ရုပ်ဖျက်တဘ်<ph name="TAB_COUNT_INCOGNITO" /> ခု}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">USB ကြိုးနှင့် ချိတ်ဆက်ထားသည်</translation>
-<translation id="4557685098773234337">ဤနေရာသို့ ပိုမိုမြန်ဆန်စွာဝင်ကြည့်ရန် ဤစာမျက်နှာကို သင့် 'ပင်မစာမျက်နှာ' သို့ထည့်ပါ</translation>
 <translation id="4558311620361989323">ဝဘ်စာမျက်နှာ ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="4561730552726921821">မှတ်ပုံတင်ပြီးပြီ</translation>
 <translation id="4561979708150884304">ချိတ်ဆက်မှု မရှိပါ</translation>

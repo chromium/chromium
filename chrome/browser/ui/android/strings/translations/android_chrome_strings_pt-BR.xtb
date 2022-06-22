@@ -437,7 +437,6 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="3284510035090979597">Ajuda proativa</translation>
 <translation id="3285080554353377245">Vídeos sobre como usar o Chrome</translation>
 <translation id="3288003805934695103">Atualizar a página</translation>
-<translation id="3290991969712132877">Para chegar aqui mais rapidamente, adicione esta página à sua tela inicial usando o botão "Mais opções"</translation>
 <translation id="3297344142967351106">Assistente por voz</translation>
 <translation id="3303414029551471755">Continuar com o download do conteúdo?</translation>
 <translation id="3321367458490630980">Interesse adicionado</translation>
@@ -640,7 +639,6 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> guia}one{<ph name="TAB_COUNT_MANY" /> guia e <ph name="TAB_COUNT_INCOGNITO" /> guia anônima}other{<ph name="TAB_COUNT_MANY" /> guias e <ph name="TAB_COUNT_INCOGNITO" /> guia anônima}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Conectado com um cabo USB</translation>
-<translation id="4557685098773234337">Para chegar aqui mais rapidamente, adicione esta página à sua tela inicial</translation>
 <translation id="4558311620361989323">Atalhos de páginas da Web</translation>
 <translation id="4561730552726921821">Registro concluído</translation>
 <translation id="4561979708150884304">Sem conexão</translation>

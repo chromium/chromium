@@ -437,7 +437,6 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="3284510035090979597">Ajutor proactiv</translation>
 <translation id="3285080554353377245">Videoclipuri despre folosirea browserului Chrome</translation>
 <translation id="3288003805934695103">să reîncarci pagina;</translation>
-<translation id="3290991969712132877">Pentru a o accesa mai ușor, adaugă pagina pe ecranul de pornire, folosind butonul Mai multe opțiuni</translation>
 <translation id="3297344142967351106">Asistență vocală</translation>
 <translation id="3303414029551471755">Continui pentru descărcarea conținutului?</translation>
 <translation id="3321367458490630980">Categoria de interese a fost adăugată</translation>
@@ -639,7 +638,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> filă}few{<ph name="TAB_COUNT_MANY" /> file, <ph name="TAB_COUNT_INCOGNITO" /> incognito}other{<ph name="TAB_COUNT_MANY" /> de file, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Conectat cu un cablu USB</translation>
-<translation id="4557685098773234337">Pentru o a accesa mai ușor, adaugă pagina pe ecranul de pornire</translation>
 <translation id="4558311620361989323">Comenzi rapide pentru pagini web</translation>
 <translation id="4561730552726921821">S-a realizat înregistrarea</translation>
 <translation id="4561979708150884304">Nicio conexiune</translation>

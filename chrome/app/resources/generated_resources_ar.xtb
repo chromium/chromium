@@ -1546,6 +1546,7 @@
 <translation id="2433836460518180625">فتح قفل الجهاز فقط</translation>
 <translation id="2434449159125086437">تعذّر إعداد الطابعة. يُرجى التحقّق من الإعداد وإعادة المحاولة.</translation>
 <translation id="2434758125294431199">اختَر من يمكنه مشاركة الملفات مع جهازك.</translation>
+<translation id="2434915728183570229">يمكنك الآن الاطّلاع على تطبيقات هاتفك</translation>
 <translation id="2435137177546457207">‏الأحكام الإضافية لكلٍّ من متصفِّح Google Chrome ونظام التشغيل ChromeOS Flex</translation>
 <translation id="2435248616906486374">تم قطع الاتصال بالشبكة</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
@@ -4228,6 +4229,7 @@
 <translation id="5072900412896857127">‏يتعذّر تحميل بنود خدمة Google Play. يُرجى التحقُّق من الاتصال بالشبكة وإعادة المحاولة.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" /> و<ph name="FILE2" />}zero{<ph name="FILE1" /> و<ph name="FILE2" /> و# آخر}few{<ph name="FILE1" /> و<ph name="FILE2" /> و# أخرى}many{<ph name="FILE1" /> و<ph name="FILE2" /> و# آخر}other{<ph name="FILE1" /> و<ph name="FILE2" /> و# آخر}}</translation>
 <translation id="5074318175948309511">قد تحتاج هذه الصفحة إلى إعادة التحميل قبل تنفيذ الإعدادات الجديدة.</translation>
+<translation id="5074761966806028321">لا يزال مطلوب منح الإذن لإكمال عملية الإعداد</translation>
 <translation id="5075910247684008552">محتوى غير آمن محظور تلقائيًا على مواقع إلكترونية آمنة</translation>
 <translation id="5078638979202084724">وضع إشارات على كل علامات التبويب</translation>
 <translation id="5078796286268621944">رقم التعريف الشخصي غير صحيح</translation>
@@ -4591,6 +4593,7 @@
 <translation id="5449551289610225147">كلمة المرور غير صالحة</translation>
 <translation id="5449588825071916739">وضع إشارة على جميع علامات التبويب</translation>
 <translation id="5449716055534515760">إغلاق &amp;النافذة</translation>
+<translation id="5452446625764825792">يمكنك الآن الاطّلاع على أحدث الصور والوسائط والتطبيقات المتوفّرة على هاتفك</translation>
 <translation id="5452976525201205853">اللغة <ph name="LANGUAGE" /> متاحة بدون اتصال بالإنترنت.</translation>
 <translation id="5454166040603940656">مع <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">الاطّلاع على المزيد من نتائج البحث</translation>
@@ -4651,6 +4654,7 @@
 <translation id="5499211612787418966">‏مربّع الحوار هذا ليس محل التركيز حاليًا. اضغط على Alt+Shift+A لجعل مربّع الحوار هذا محل التركيز.</translation>
 <translation id="5499313591153584299">قد يلحق هذا الملف الضرر بجهاز الكمبيوتر.</translation>
 <translation id="5499453227627332024">‏هناك ترقية متاحة لحاوية نظام التشغيل Linux. يمكنك أيضًا الترقية لاحقًا من تطبيق "الإعدادات".</translation>
+<translation id="5499476581866658341">يمكنك الآن الاطّلاع على أحدث الصور والوسائط المتوفّرة على هاتفك</translation>
 <translation id="549957179819296104">رمز جديد</translation>
 <translation id="5500168250243071806">‏قد يتم حفظ <ph name="BEGIN_LINK_SEARCH" />سجلّ البحث<ph name="END_LINK_SEARCH" /> و<ph name="BEGIN_LINK_GOOGLE" />بيانات الأنشطة الأخرى<ph name="END_LINK_GOOGLE" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.</translation>
 <translation id="5500709606820808700">تم تفعيل ميزة "تأكيد السلامة" اليوم.</translation>
@@ -6324,6 +6328,7 @@
 <translation id="7152478047064750137">لا تتطلب هذه الإضافة أذونات خاصة</translation>
 <translation id="7154130902455071009">تغيير الصفحة الرئيسية إلى: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">صورة حالية من الكاميرا أو الملف</translation>
+<translation id="7160182524506337403">يمكنك الآن الاطّلاع على إشعارات هاتفك</translation>
 <translation id="7163202347044721291">جارٍ التحقّق من رمز التفعيل...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" يمكنها قراءة ملفات الصور والفيديو والصوت في المواقع المحددة.</translation>
 <translation id="7167486101654761064">فت&amp;ح هذا النوع من الملفّات دائمًا</translation>
@@ -7339,6 +7344,7 @@
 <translation id="8138997515734480534">حالة <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">‏ملفات Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" /> و<ph name="SECOND_DEVICE" /></translation>
+<translation id="8141418916163800697">يمكنك إعداد المزيد من الميزات في إعدادات "مركز التحكُّم بالهاتف".</translation>
 <translation id="8141584439523427891">جارٍ الفتح في متصفِّح بديل الآن</translation>
 <translation id="8141725884565838206">إدارة كلمات المرور</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{فيديو واحد}zero{# فيديو}two{فيديوهان}few{# فيديوهات}many{# فيديو}other{# فيديو}}</translation>
@@ -7547,6 +7553,7 @@
 <translation id="833986336429795709">لفتح هذا الرابط، اختر أحد التطبيقات.</translation>
 <translation id="8342221978608739536">لم أحاول</translation>
 <translation id="8342861492835240085">اختيار مجموعة</translation>
+<translation id="8345848587667658367">يمكنك الآن الاطّلاع على أحدث الصور والوسائط والإشعارات والتطبيقات المتوفّرة على هاتفك</translation>
 <translation id="8347227221149377169">مهام الطباعة</translation>
 <translation id="834785183489258869">في وضع التصفُّح المتخفي، لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح على المواقع الإلكترونية المختلفة، بهدف تقديم إعلانات مخصّصة لك مثلاً. قد لا تعمل الميزات على بعض المواقع الإلكترونية.</translation>
 <translation id="8350789879725387295">أدوات قلم الشاشة في لوحة الأدوات</translation>
@@ -8156,6 +8163,7 @@
 <translation id="8957757410289731985">تخصيص الملف الشخصي</translation>
 <translation id="895944840846194039">‏ذاكرة JavaScript</translation>
 <translation id="8960208913905765425">تحويل الوحدات باستخدام ميزة "معلومات سريعة"</translation>
+<translation id="8960638196855923532">يمكنك الآن الاطّلاع على الإشعارات والتطبيقات المتوفّرة على هاتفك</translation>
 <translation id="8962051932294470566">لا يمكنك مشاركة أكثر من ملف واحد في كل مرة. أعِد المحاولة عند انتهاء عملية النقل الحالية.</translation>
 <translation id="8962083179518285172">إخفاء التفاصيل</translation>
 <translation id="8962918469425892674">تم السماح لهذا الموقع باستخدام أجهزة استشعار الإضاءة أو الحركة.</translation>
@@ -8307,6 +8315,7 @@
 <translation id="9103868373786083162">اضغط للرجوع، وقائمة السياقات لمشاهدة السجلّ.</translation>
 <translation id="9108035152087032312">‏تسمية &amp;window...</translation>
 <translation id="9108072915170399168">إعداد استخدام البيانات الحالي هو "بدون إنترنت"</translation>
+<translation id="9108294543511800041">يمكنك الآن الاطّلاع على أحدث الصور والوسائط والإشعارات المتوفّرة على هاتفك</translation>
 <translation id="9108674852930645435">الاطّلاع على الميزات الجديدة على جهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="9108808586816295166">قد لا يكون نظام أسماء النطاقات الآمن متاحًا طوال الوقت.</translation>
 <translation id="9109122242323516435">لتفريغ مساحة، احذف الملفات من مساحة تخزين الجهاز.</translation>
@@ -8431,7 +8440,6 @@
 <translation id="934503638756687833">‏ستتم أيضًا إزالة العناصر غير المدرجة هنا إذا لزم الأمر. يمكنك الاطلاع على مزيد من المعلومات عن &lt;a href="<ph name="URL" />"&gt;الحماية من البرامج غير المرغوب فيها&lt;/a&gt; في المستند التقني لخصوصية Chrome.</translation>
 <translation id="93480724622239549">خلل أو خطأ</translation>
 <translation id="935854577147268200">‏تم تعديل إعدادات Smart Lock على هاتفك. يمكنك إدخال كلمة مرورك لتحديث هذه الإعدادات. وفي المرة القادمة، سيفتح هاتفك قفل جهاز <ph name="DEVICE_TYPE" />. ويمكنك إيقاف Smart Lock في "الإعدادات".</translation>
-<translation id="93610034168535821">مساحة التخزين المستخدمة من قِبل المواقع الإلكترونية:</translation>
 <translation id="936646668635477464">الكاميرا والميكروفون</translation>
 <translation id="936801553271523408">بيانات تشخيص النظام</translation>
 <translation id="93766956588638423">إصلاح الإضافة</translation>

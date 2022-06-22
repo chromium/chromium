@@ -437,7 +437,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="3284510035090979597">Ajuda proactiva</translation>
 <translation id="3285080554353377245">Vídeos sobre com s'utilitza Chrome</translation>
 <translation id="3288003805934695103">Torneu a carregar la pàgina</translation>
-<translation id="3290991969712132877">Per accedir aquí més ràpidament, afegeix aquesta pàgina a la pantalla d'inici amb el botó Més opcions</translation>
 <translation id="3297344142967351106">Assistència per veu</translation>
 <translation id="3303414029551471755">Voleu baixar el contingut?</translation>
 <translation id="3321367458490630980">S'ha afegit l'interès</translation>
@@ -639,7 +638,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestanya}other{<ph name="TAB_COUNT_MANY" /> pestanyes, <ph name="TAB_COUNT_INCOGNITO" /> d'incògnit}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Connectat amb un cable USB</translation>
-<translation id="4557685098773234337">Per accedir aquí ràpidament, afegeix aquesta pàgina a la teva pantalla d'inici</translation>
 <translation id="4558311620361989323">Dreceres per a pàgines web</translation>
 <translation id="4561730552726921821">S'ha registrat correctament</translation>
 <translation id="4561979708150884304">No hi ha connexió</translation>

@@ -437,7 +437,6 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="3284510035090979597">Proaktive Hilfe</translation>
 <translation id="3285080554353377245">Videos über die Verwendung von Chrome</translation>
 <translation id="3288003805934695103">Seite aktualisieren</translation>
-<translation id="3290991969712132877">Über die Schaltfläche „Weitere Optionen“ kannst du diese Seite zum Startbildschirm hinzufügen, um schneller zurückzukehren</translation>
 <translation id="3297344142967351106">Sprachassistent</translation>
 <translation id="3303414029551471755">Inhalt herunterladen?</translation>
 <translation id="3321367458490630980">Interesse hinzugefügt</translation>
@@ -639,7 +638,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> Tab}other{<ph name="TAB_COUNT_MANY" /> Tabs, <ph name="TAB_COUNT_INCOGNITO" /> Inkognitotabs}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Per USB-Kabel verbunden</translation>
-<translation id="4557685098773234337">Füge diese Seite zum Startbildschirm hinzu, um schneller zurückzukehren</translation>
 <translation id="4558311620361989323">Tastenkombinationen für Webseiten</translation>
 <translation id="4561730552726921821">Registrierung abgeschlossen</translation>
 <translation id="4561979708150884304">Keine Verbindung</translation>

@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">વપરાશકર્તા</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">બાહ્ય ડિવાઇસનું ફર્મવેયર અપડેટ કરવા માટેની વિન્ડો ખુલ્લી છે. <ph name="NUM_UPDATES" /> અપડેટ ઉપલબ્ધ છે.</translation>
+<translation id="1145516343487477149">સહાય લેખ અને Chromebook વિશેના સામાન્ય પ્રશ્નોના જવાબો શોધો</translation>
 <translation id="1165039591588034296">ભૂલ</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે.</translation>
 <translation id="1175951029573070619">સરેરાશ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">ઘેરી થીમ બંધ કરો</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">ઘેરો મોડ બંધ કરો</translation>
+<translation id="1881188606372070653">કાનૂની કારણોસર કન્ટેન્ટમાં ફેરફારની વિનંતી કરવા માટે <ph name="BEGIN_LINK1" />કાનૂની સહાય પેજ<ph name="END_LINK1" /> પર જાઓ. એકાઉન્ટ અને સિસ્ટમની અમુક માહિતી Googleને મોકલવામાં આવી શકે છે. તમે અમને જે માહિતી આપશો, તેનો ઉપયોગ અમે અમારી <ph name="BEGIN_LINK2" />પ્રાઇવસી પૉલિસી<ph name="END_LINK2" /> અને <ph name="BEGIN_LINK3" />સેવાની શરતો<ph name="END_LINK3" />ને આધીન રહીને ટેક્નિકલ સમસ્યાઓના નિવારણ માટે અને અમારી સેવાઓને બહેતર બનાવવા માટે કરીશું.</translation>
 <translation id="1887850431809612466">હાર્ડવેર પુનરાવર્તન</translation>
 <translation id="1905710495812624430">મહત્તમ મંજૂર પ્રયત્નોની સંખ્યા ઓળંગાઈ.</translation>
 <translation id="1908234395526491708">UDP વિનંતી નિષ્ફળ થઈ</translation>
@@ -622,6 +624,7 @@
 <translation id="6379086450106841622">ટચસ્ક્રીન</translation>
 <translation id="6381741036071372448">તમારા કીબોર્ડનું પરીક્ષણ કરો</translation>
 <translation id="6388847657025262518">સ્કૅનરનું દસ્તાવેજ ફીડર જામ થઈ ગયું છે. ફીડર ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="6394634179843537518">ફાઇલ ઉમેરો</translation>
 <translation id="6410257289063177456">છબી ફાઇલો</translation>
 <translation id="641081527798843608">વિષય મેળ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

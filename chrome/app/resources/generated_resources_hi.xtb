@@ -2240,6 +2240,7 @@
 <translation id="3067198360141518313">यह प्लग इन चलाएं</translation>
 <translation id="3071624960923923138">नया टैब खोलने के लिए, आप यहां क्लिक कर सकते हैं</translation>
 <translation id="3072775339180057696">क्या आप साइट को <ph name="FILE_NAME" /> देखने देना चाहते हैं?</translation>
+<translation id="3074499504015191586">पूरे पेज का अनुवाद करें</translation>
 <translation id="3075874217500066906">पावरवॉश प्रक्रिया शुरू करने के लिए फिर से प्रारंभ करने की आवश्‍यकता है. फिर से प्रारंभ करने के बाद आपसे इस बात की पुष्‍टि करने के लिए पूछा जाएगा कि क्या आप आगे बढ़ना चाहते हैं.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">सिर्फ़ इस डिवाइस में सेव करें</translation>
@@ -5095,6 +5096,7 @@
 <translation id="5933522550144185133"><ph name="APP_NAME" /> आपके कैमरे और माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="5935158534896975820">प्रमाणपत्र के लिए अनुरोध किया जा रहा है (सर्वर का इंतज़ार है)</translation>
 <translation id="5935656526031444304">सुरक्षित ब्राउज़िंग प्रबंधित करें</translation>
+<translation id="5936065461722368675">पूरे पेज का अनुवाद करें</translation>
 <translation id="5938002010494270685">सुरक्षा बेहतर बनाने की सुविधा मौजूद है</translation>
 <translation id="5939518447894949180">रीसेट करें</translation>
 <translation id="5939719276406088041">शॉर्टकट नहीं बनाए जा सकते</translation>
@@ -8441,7 +8443,6 @@
 <translation id="934503638756687833">ऐसे आइटम जिनके नाम यहां शामिल नहीं हैं, ज़रूरत पड़ने पर उन्हें भी हटाया जा सकता है. Chrome निजता श्वेत पत्र में &lt;a href="<ph name="URL" />"&gt;अनचाहे सॉफ़्टवेयर से सुरक्षा&lt;/a&gt; के बारे में ज़्यादा जानें.</translation>
 <translation id="93480724622239549">बग या गड़बड़ी</translation>
 <translation id="935854577147268200">Smart Lock वाला फ़ोन बदल गया है. Smart Lock अपडेट करने के लिए अपना पासवर्ड डालें. अगली बार, आपका फ़ोन आपके <ph name="DEVICE_TYPE" /> को अनलॉक कर देगा. आप सेटिंग में जाकर Smart Lock को बंद कर सकते हैं</translation>
-<translation id="93610034168535821">साइटों की इस्तेमाल की गई कुल मेमोरी:</translation>
 <translation id="936646668635477464">कैमरा और माइक्रोफ़ोन</translation>
 <translation id="936801553271523408">सिस्टम का गड़बड़ी संबंधी डेटा</translation>
 <translation id="93766956588638423">एक्‍सटेंशन को ठीक करें</translation>

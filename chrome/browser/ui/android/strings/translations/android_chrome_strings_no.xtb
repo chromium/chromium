@@ -437,7 +437,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="3284510035090979597">Proaktiv hjelp</translation>
 <translation id="3285080554353377245">Videoer om hvordan du bruker Chrome</translation>
 <translation id="3288003805934695103">Last inn siden på nytt</translation>
-<translation id="3290991969712132877">For å komme hit raskere, legg til denne siden på startskjermen via Flere alternativer-knappen</translation>
 <translation id="3297344142967351106">Talehjelp</translation>
 <translation id="3303414029551471755">Vil du gå videre med å laste ned innholdet?</translation>
 <translation id="3321367458490630980">Interessen er lagt til</translation>
@@ -639,7 +638,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}other{<ph name="TAB_COUNT_MANY" /> faner, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Tilkoblet med USB-kabel</translation>
-<translation id="4557685098773234337">For å komme hit raskere, legg til denne siden på startskjermen</translation>
 <translation id="4558311620361989323">Hurtigtaster for nettsider</translation>
 <translation id="4561730552726921821">Registreringen var vellykket</translation>
 <translation id="4561979708150884304">Ingen tilkobling</translation>

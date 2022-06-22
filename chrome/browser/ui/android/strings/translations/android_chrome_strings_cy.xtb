@@ -437,7 +437,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="3284510035090979597">Cymorth Rhagweithiol</translation>
 <translation id="3285080554353377245">Fideos am sut i ddefnyddio Chrome</translation>
 <translation id="3288003805934695103">Wrthi'n ail-lwytho'r dudalen</translation>
-<translation id="3290991969712132877">I gyrraedd yma'n gynt, ychwanegwch y dudalen hon at eich sgrîn hafan o'r botwm Rhagor o ddewisiadau</translation>
 <translation id="3297344142967351106">Cymorth llais</translation>
 <translation id="3303414029551471755">Parhau i lawrlwytho'r cynnwys?</translation>
 <translation id="3321367458490630980">Ychwanegwyd diddordeb</translation>
@@ -639,7 +638,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}zero{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> tab anhysbys}two{<ph name="TAB_COUNT_MANY" /> dab, <ph name="TAB_COUNT_INCOGNITO" /> dab anhysbys}few{<ph name="TAB_COUNT_MANY" /> thab, <ph name="TAB_COUNT_INCOGNITO" /> thab anhysbys}many{<ph name="TAB_COUNT_MANY" /> thab, <ph name="TAB_COUNT_INCOGNITO" /> thab anhysbys}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> tab anhysbys}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Wedi cysylltu â chebl USB</translation>
-<translation id="4557685098773234337">I gyrraedd yma ynghynt, ychwanegwch y dudalen hon at eich sgrîn Hafan</translation>
 <translation id="4558311620361989323">Llwybrau byr tudalen we</translation>
 <translation id="4561730552726921821">Wedi cofrestru'n llwyddiannus</translation>
 <translation id="4561979708150884304">Dim cysylltiad</translation>

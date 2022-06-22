@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">Превантивна помощ</translation>
 <translation id="3285080554353377245">Видеоклипове за използването на Chrome</translation>
 <translation id="3288003805934695103">Презаредете страницата.</translation>
-<translation id="3290991969712132877">За да отваряте тази страница по-бързо, добавете я към началния екран чрез бутона „Още опции“</translation>
 <translation id="3297344142967351106">Гласова помощ</translation>
 <translation id="3303414029551471755">Искате ли да продължите с изтеглянето на съдържанието?</translation>
 <translation id="3321367458490630980">Интересът е добавен</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела, <ph name="TAB_COUNT_INCOGNITO" /> в режим „инкогнито“}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Установена е връзка с USB кабел</translation>
-<translation id="4557685098773234337">За да отваряте тази страница по-бързо, добавете я към началния екран</translation>
 <translation id="4558311620361989323">Комбинации за уеб страници</translation>
 <translation id="4561730552726921821">Регистрацията бе успешна</translation>
 <translation id="4561979708150884304">Няма връзка</translation>

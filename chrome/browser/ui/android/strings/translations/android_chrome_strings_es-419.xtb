@@ -437,7 +437,6 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="3284510035090979597">Ayuda proactiva</translation>
 <translation id="3285080554353377245">Videos sobre cómo usar Chrome</translation>
 <translation id="3288003805934695103">Volver a cargar la página.</translation>
-<translation id="3290991969712132877">Para acceder aquí más rápido, agrega esta página a tu pantalla principal desde el botón Más opciones</translation>
 <translation id="3297344142967351106">Asistencia de voz</translation>
 <translation id="3303414029551471755">¿Deseas descargar el contenido?</translation>
 <translation id="3321367458490630980">Se agregó el interés.</translation>
@@ -639,7 +638,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña}other{<ph name="TAB_COUNT_MANY" /> pestañas, <ph name="TAB_COUNT_INCOGNITO" /> de incógnito}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Conectado con cable USB</translation>
-<translation id="4557685098773234337">Para acceder aquí más rápido, agrega esta página a la pantalla principal</translation>
 <translation id="4558311620361989323">Accesos directos a páginas web</translation>
 <translation id="4561730552726921821">Se completó correctamente el registro.</translation>
 <translation id="4561979708150884304">Sin conexión</translation>

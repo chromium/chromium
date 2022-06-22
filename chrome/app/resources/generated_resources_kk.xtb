@@ -1904,6 +1904,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Қолдау көрсетілмейтін 1 қолданбаны жою}other{Қолдау көрсетілмейтін # қолданбаны жою}}</translation>
 <translation id="2776560192867872731">Құрылғы атауын <ph name="DEVICE_NAME" /> деп өзгерту</translation>
 <translation id="2777251078198759550">Бұл контейнерді жою</translation>
+<translation id="2778471504622896352">ChromeOS іске қосу панеліне қашықтағы құрылғыларды қосу</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux қолданбасын орнату кезінде қате кетті</translation>
 <translation id="2783298271312924866">Жүктелген</translation>
@@ -3539,6 +3540,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> және тағы <ph name="NUMBER_OF_OTHER_SWITCHES" /> ауыстырғыш</translation>
 <translation id="439266289085815679">Bluetooth конфигурациясын <ph name="USER_EMAIL" /> басқарады.</translation>
 <translation id="4392896746540753732">Конфигурация файлын өзгерту</translation>
+<translation id="4393713825278446281"><ph name="PRIMARY_EMAIL" /> аккаунтына сақталған Fast Pair құрылғылары</translation>
 <translation id="4394049700291259645">Өшіру</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Барлығын ашу}=1{&amp;Бетбелгіні ашу}other{&amp;Барлығын ({COUNT}) ашу}}</translation>
 <translation id="4397372003838952832">Бұл құпия сөзді есте сақтаудың қажеті жоқ. <ph name="EMAIL" /> аккаунты үшін ол мына жерде сақталады: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -3768,6 +3770,7 @@
 <translation id="4615586811063744755">бірде-бір cookie файлы таңдалмады</translation>
 <translation id="461661862154729886">Қуат көзі</translation>
 <translation id="4617001782309103936">Тым қысқа</translation>
+<translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" кеңейтімін пайдалану үшін бетті қайта жүктеңіз</translation>
 <translation id="4617270414136722281">Кеңейтім опциялары</translation>
 <translation id="4617880081511131945">Байланыс орнату мүмкін емес</translation>
 <translation id="4619564267100705184">Жеке басыңызды растаңыз</translation>
@@ -3983,6 +3986,7 @@
 <translation id="4833683849865011483">Басып шығару серверінен 1 принтер табылды.</translation>
 <translation id="4836504898754963407">Саусақ іздерін басқару</translation>
 <translation id="4837128290434901661">Google Search іздеу жүйесіне қайта ораласыз ба?</translation>
+<translation id="4837165100461973682">Өзгерістер күшіне енуі үшін бетті қайта жүктеңіз</translation>
 <translation id="4837926214103741331">Бұл құрылғыны пайдалану рұқсатыңыз жоқ. Кіру рұқсатын алу үшін құрылғы иесіне хабарласыңыз.</translation>
 <translation id="4837952862063191349">Жергілікті деректердің құлпын ашып, қалпына келтіру үшін, ескі <ph name="DEVICE_TYPE" /> құпия сөзіңізді енгізіңіз.</translation>
 <translation id="4838170306476614339">Телефондағы фотосуреттерді, медиафайлдар мен хабарландыруларды көру</translation>
@@ -4292,6 +4296,7 @@
 <translation id="5150254825601720210">Netscape сертификат SSL сервер атауы</translation>
 <translation id="5151354047782775295">Дискіде орын босатпасаңыз, кейбір деректер автоматты түрде жойылады</translation>
 <translation id="5153234146675181447">Телефонды ұмыту</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> кеңейтілген параметрлері</translation>
 <translation id="5154702632169343078">Тақырыбы</translation>
 <translation id="5155327081870541046">Мекенжай жолағына іздегіңіз келген сайттың жылдам пәрменін (мысалы, "@bookmarks") енгізіңіз. Содан кейін қажетті перне тіркесімін басып, ізделетін сөзді енгізіңіз.</translation>
@@ -5924,6 +5929,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> қашықтан қосылды</translation>
 <translation id="6790820461102226165">Адам қосу…</translation>
 <translation id="6793604637258913070">Шыққанда не жылжығанда, курсорды бөлектеу</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">Автосканерлеу функциясы экрандағы элементтер арасында автоматты түрде жылжуға мүмкіндік береді. Элемент бөлектелген кезде, оны іске қосу үшін "Таңдау" пернесін басыңыз.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">Бір нәрсе дұрыс емес.</translation>
@@ -7795,6 +7801,7 @@
 <translation id="8642947597466641025">Мәтінді үлкейту</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> қауіпті болуы мүмкін. Сканерлеу үшін Google Күшейтілген қорғаныс қызметіне жіберілсін бе?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Ешқандай cookie файлы жоқ}=1{1 cookie файлы бөгелді}other{# cookie файлы бөгелді}}</translation>
+<translation id="864423554496711319">Аккаунтыңызға сақталған құрылғылар</translation>
 <translation id="8644655801811752511">Қауіпсіздік кілтін бастапқы күйіне қайтару мүмкін емес. Кілтті енгізгеннен кейін, дереу бастапқы қалпына қайтарып көріңіз.</translation>
 <translation id="8645354835496065562">Датчиктерді пайдалану рұқсатын беруді тоқтатпау</translation>
 <translation id="8645920082661222035">Қауіпті іс-шараларды алдын ала болжайды және олар туралы хабарлайды.</translation>
@@ -8399,7 +8406,6 @@
 <translation id="934503638756687833">Қажет болса, бұл тізімде жоқ элементтер де өшіріледі. <ph name="URL" />Қажетсіз бағдарламалық құралдан қорғану&lt;/a&gt; туралы ақпаратты Chrome құпиялылықты қорғау ақпараттық құжатынан таба аласыз.</translation>
 <translation id="93480724622239549">Қате</translation>
 <translation id="935854577147268200">Smart Lock телефоны өзгерді. Smart Lock функциясын жаңарту үшін құпия сөзіңізді енгізіңіз. Келесіде телефон <ph name="DEVICE_TYPE" /> құрылғысының құлпын аша алады. Smart Lock функциясын "Параметрлер" бөлімінен өшіруге болады.</translation>
-<translation id="93610034168535821">Сайт пайдаланатын жалпы жад көлемі:</translation>
 <translation id="936646668635477464">Камера және микрофон</translation>
 <translation id="936801553271523408">Жүйенің диагностикалық деректері</translation>
 <translation id="93766956588638423">Кеңейтімді жөндеу</translation>

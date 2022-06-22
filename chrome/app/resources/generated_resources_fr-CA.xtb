@@ -1910,6 +1910,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Retirer 1 application non prise en charge}one{Retirer # application non prise en charge}other{Retirer # applications non prises en charge}}</translation>
 <translation id="2776560192867872731">Modifier le nom de l'appareil pour <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Supprimer ce conteneur</translation>
+<translation id="2778471504622896352">Ajouter des applications distantes au lanceur ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Erreur lors de l'installation de l'application Linux</translation>
 <translation id="2783298271312924866">Téléchargé</translation>
@@ -3545,6 +3546,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et <ph name="NUMBER_OF_OTHER_SWITCHES" /> autres commutateurs</translation>
 <translation id="439266289085815679">La configuration du Bluetooth est contrôlée par <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Modifier le fichier de configuration</translation>
+<translation id="4393713825278446281">Appareils avec Association rapide enregistrés dans <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Désactiver</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Tout ouvrir}=1{&amp;Ouvrir le favori}one{&amp;Tout ouvrir ({COUNT})}other{&amp;Tout ouvrir ({COUNT})}}</translation>
 <translation id="4397372003838952832">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> pour <ph name="EMAIL" />.</translation>
@@ -3774,6 +3776,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4615586811063744755">aucun témoin sélectionné</translation>
 <translation id="461661862154729886">Source d'alimentation</translation>
 <translation id="4617001782309103936">Trop court</translation>
+<translation id="4617019240346358451">Actualisez la page pour utiliser « <ph name="EXTENSION_NAME" /> »</translation>
 <translation id="4617270414136722281">Options de l'extension</translation>
 <translation id="4617880081511131945">Impossible d'établir la connexion</translation>
 <translation id="4619564267100705184">Confirmer que c'est bien vous</translation>
@@ -3989,6 +3992,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4833683849865011483">1 imprimante a été trouvée sur le serveur d'impression</translation>
 <translation id="4836504898754963407">Gérer les empreintes digitales</translation>
 <translation id="4837128290434901661">Rétablir la recherche Google?</translation>
+<translation id="4837165100461973682">Actualisez la page pour appliquer vos modifications</translation>
 <translation id="4837926214103741331">Vous n'êtes pas autorisé(e) à utiliser cet appareil. Pour obtenir l'autorisation de vous y connecter, veuillez communiquer avec son propriétaire.</translation>
 <translation id="4837952862063191349">Pour déverrouiller et restaurer vos données locales, veuillez entrer votre ancien mot de passe <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4838170306476614339">Affichez les photos, les fichiers multimédias et les notifications de votre téléphone</translation>
@@ -4298,6 +4302,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5150254825601720210">Nom du serveur SSL du certificat Netscape</translation>
 <translation id="5151354047782775295">Libérez de l'espace disque ou certaines données pourront être supprimées automatiquement</translation>
 <translation id="5153234146675181447">Oublier le téléphone</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Paramètres avancés pour <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Destinataire</translation>
 <translation id="5155327081870541046">Dans la barre d'adresse, entrez le raccourci pour le site que vous voulez rechercher comme « @favoris ». Ensuite, appuyez sur votre raccourci-clavier favori et entrez votre terme de recherche.</translation>
@@ -5935,6 +5940,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> a été ajoutée à distance</translation>
 <translation id="6790820461102226165">Ajouter un personne...</translation>
 <translation id="6793604637258913070">Mettre le point d'insertion de texte en surbrillance lorsqu'il s'affiche ou se déplace</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">La recherche automatique vous permet de vous déplacer automatiquement entre les éléments affichés à l'écran. Lorsqu'un élément est mis en évidence, appuyez sur le commutateur « Sélectionner » pour l'activer.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Une erreur s'est produite.</translation>
@@ -7807,6 +7813,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8642947597466641025">Augmenter la taille du texte</translation>
 <translation id="8643443571868262066">Le fichier <ph name="FILE_NAME" /> pourrait être dangereux. Voulez-vous l'envoyer à la protection avancée de Google afin de le faire analyser?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Aucun témoin}=1{1 témoin est bloqué}one{# témoin est bloqué}other{# témoins sont bloqués}}</translation>
+<translation id="864423554496711319">Appareils enregistrés dans votre compte</translation>
 <translation id="8644655801811752511">Impossible de réinitialiser cette clé de sécurité. Essayez de réinitialiser la clé immédiatement après l'avoir insérée.</translation>
 <translation id="8645354835496065562">Continuer à autoriser l'accès aux capteurs</translation>
 <translation id="8645920082661222035">Il prédit les événements dangereux et vous en informe avant qu'ils ne surviennent</translation>
@@ -8412,7 +8419,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="934503638756687833">Les éléments qui ne sont pas affichés ici seront également supprimés si nécessaire. Pour en savoir plus sur la &lt;a href="<ph name="URL" />"&gt;protection contre les logiciels indésirables&lt;/a&gt;, consultez le livre blanc sur la confidentialité de Chrome.</translation>
 <translation id="93480724622239549">Bogue ou erreur</translation>
 <translation id="935854577147268200">Changement de téléphone Smart Lock. Entrez votre mot de passe pour mettre à jour Smart Lock. La prochaine fois, votre téléphone pourra déverrouiller votre <ph name="DEVICE_TYPE" />. Vous pouvez désactiver Smart Lock dans le menu Paramètres.</translation>
-<translation id="93610034168535821">Espace de stockage total utilisé par les sites :</translation>
 <translation id="936646668635477464">Caméra et microphone</translation>
 <translation id="936801553271523408">Données de diagnostic système</translation>
 <translation id="93766956588638423">Réparer l'extension</translation>

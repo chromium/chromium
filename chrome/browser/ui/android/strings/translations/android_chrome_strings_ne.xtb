@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">क्रियाशील मद्दत</translation>
 <translation id="3285080554353377245">Chrome प्रयोग गर्ने तरिका देखाउने भिडियोहरू</translation>
 <translation id="3288003805934695103">पृष्ठलाई पुनः लोड गर्नुहोस्</translation>
-<translation id="3290991969712132877">यही पेजमा अझ छिटो जान 'थप विकल्पहरू' बटनमा क्लिक गरी आफ्नो होम स्क्रिनमा सो पेज हाल्नुहोस्</translation>
 <translation id="3297344142967351106">आवाज सहायता</translation>
 <translation id="3303414029551471755">सामग्री डाउनलोड गर्न अगाडि बढ्ने हो?</translation>
 <translation id="3321367458490630980">रुचि थपियो</translation>
@@ -638,7 +637,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ट्याब}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब, <ph name="TAB_COUNT_INCOGNITO" /> वटा इन्कोग्निटो ट्याब}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">USB केबल प्रयोग गरी कनेक्ट गरिएको छ</translation>
-<translation id="4557685098773234337">यही पेजमा अझ छिटो जान आफ्नो होम स्क्रिनमा सो पेज हाल्नुहोस्</translation>
 <translation id="4558311620361989323">वेबपृष्ठका सर्टकटहरू</translation>
 <translation id="4561730552726921821">दर्ता गरियो</translation>
 <translation id="4561979708150884304">इन्टरनेट छैन</translation>

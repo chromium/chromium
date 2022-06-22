@@ -437,7 +437,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="3284510035090979597">Proaktiivinen avustus</translation>
 <translation id="3285080554353377245">Video-ohjeita Chromen käyttöön</translation>
 <translation id="3288003805934695103">Lataa sivu uudelleen.</translation>
-<translation id="3290991969712132877">Pääset tähän nopeammin, kun lisäät sivun aloitusnäytöllesi lisäasetuksista</translation>
 <translation id="3297344142967351106">Ääniapu</translation>
 <translation id="3303414029551471755">Jatketaanko sisällön lataamiseen?</translation>
 <translation id="3321367458490630980">Kiinnostuksen kohde lisätty</translation>
@@ -639,7 +638,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> välilehti}other{<ph name="TAB_COUNT_MANY" /> välilehteä, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Yhdistetty USB-johdolla</translation>
-<translation id="4557685098773234337">Lisää tämä sivu aloitusnäytölle, niin pääset tähän nopeammin</translation>
 <translation id="4558311620361989323">Verkkosivun pikanäppäimet</translation>
 <translation id="4561730552726921821">Rekisteröinti onnistui</translation>
 <translation id="4561979708150884304">Ei yhteyttä</translation>

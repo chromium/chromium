@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">സമയോചിത സഹായം</translation>
 <translation id="3285080554353377245">Chrome എങ്ങനെ ഉപയോഗിക്കാം എന്നതിനെക്കുറിച്ചുള്ള വീഡിയോകൾ</translation>
 <translation id="3288003805934695103">പേജ് റീലോഡുചെയ്യുന്നു</translation>
-<translation id="3290991969712132877">ഇവിടെ വേഗത്തിൽ എത്താൻ, കൂടുതൽ ഓപ്ഷനുകൾ മെനുവിൽ പോയി നിങ്ങളുടെ ഹോം സ്‌ക്രീനിലേക്ക് ഈ പേജ് ചേർക്കുക</translation>
 <translation id="3297344142967351106">ശബ്ദ സഹായം</translation>
 <translation id="3303414029551471755">ഉള്ളടക്കം ഡൗൺലോഡ് ചെയ്യുന്നതിലേക്ക് തുടരണോ?</translation>
 <translation id="3321367458490630980">താൽപ്പര്യം ചേർത്തു</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_COUNT_MANY" /> ടാബുകൾ, <ph name="TAB_COUNT_INCOGNITO" /> അദൃശ്യ മോഡ്}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">USB കേബിൾ ഉപയോഗിച്ച് കണക്റ്റ് ചെയ്തു</translation>
-<translation id="4557685098773234337">ഇവിടെ വേഗത്തിൽ എത്താൻ, നിങ്ങളുടെ ഹോം സ്ക്രീനിലേക്ക് ഈ പേജ് ചേർക്കുക</translation>
 <translation id="4558311620361989323">വെബ്‌പേജ് കുറുക്കുവഴികൾ</translation>
 <translation id="4561730552726921821">രജിസ്റ്റർ ചെയ്തു</translation>
 <translation id="4561979708150884304">കണക്ഷൻ ഇല്ല</translation>
@@ -921,7 +919,7 @@
 സ്വകാര്യതാ സാൻഡ്‌ബോക്‌സ് ട്രയലുകൾ ഇപ്പോഴും സജീവ വികസന ഘട്ടത്തിലാണ്, തിരഞ്ഞെടുത്ത പ്രദേശങ്ങളിൽ അത് ലഭ്യമാണ്. ഇപ്പോഴത്തേക്ക്, മൂന്നാം കക്ഷി കുക്കികൾ പോലുള്ള നിലവിലെ വെബ് സാങ്കേതിക വിദ്യകൾ ഉപയോഗിക്കുന്നത് തുടരുന്നതിനൊപ്പം സൈറ്റുകൾക്ക് സ്വകാര്യതാ സാൻഡ്‌ബോക്‌സ് പരീക്ഷിക്കാവുന്നതാണ്.</translation>
 <translation id="6039379616847168523">അടുത്ത ടാബിലേക്ക് പോകുക</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
-<translation id="604124094241169006">സ്വപ്രേരിതം</translation>
+<translation id="604124094241169006">സ്വയമേവ</translation>
 <translation id="6042308850641462728">കൂടുതൽ</translation>
 <translation id="604996488070107836">ഒരു അജ്ഞാതമായ പിശക് കാരണം <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="605721222689873409">YY</translation>

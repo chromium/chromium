@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Otvoren je prozor za ažuriranje opreme za vanjske uređaje. Dostupna ažuriranja: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1145516343487477149">Pronađite članke pomoći i odgovore na česta pitanja o Chromebooku</translation>
 <translation id="1165039591588034296">Pogreška</translation>
 <translation id="1175697296044146566">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Prosječan (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Isključivanje tamne teme</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Isključivanje tamnog načina</translation>
+<translation id="1881188606372070653">Idite na <ph name="BEGIN_LINK1" />stranicu za pravnu pomoć<ph name="END_LINK1" /> da biste zatražili izmjenu sadržaja zbog pravnih razloga. Neki podaci o računu i sustavu možda će se poslati Googleu. Podatke koje nam dostavite upotrijebit ćemo za rješavanje tehničkih problema i poboljšanje naših usluga, u skladu s našim <ph name="BEGIN_LINK2" />pravilima o privatnosti<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />uvjetima pružanja usluge<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Hardverska revizija</translation>
 <translation id="1905710495812624430">Premašen je maksimalan dopušteni broj pokušaja.</translation>
 <translation id="1908234395526491708">Neuspješni UDP zahtjevi</translation>
@@ -623,6 +625,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6379086450106841622">Dodirni zaslon</translation>
 <translation id="6381741036071372448">Testirajte tipkovnicu</translation>
 <translation id="6388847657025262518">Ulagač dokumenata u skener je zaglavljen. Provjerite ulagač i pokušajte ponovo.</translation>
+<translation id="6394634179843537518">Dodaj datoteku</translation>
 <translation id="6410257289063177456">Slikovne datoteke</translation>
 <translation id="641081527798843608">Podudaranje predmeta</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

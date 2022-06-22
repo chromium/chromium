@@ -437,7 +437,6 @@ Kada izbrišete historiju pregledanja, cijelu ili samo za određene web lokacije
 <translation id="3284510035090979597">Proaktivna pomoć</translation>
 <translation id="3285080554353377245">Videozapisi o načinu korištenja Chromea</translation>
 <translation id="3288003805934695103">Ponovno učitavanje stranice</translation>
-<translation id="3290991969712132877">Da brže dođete ovdje, dodajte ovu stranicu na početni ekran putem dugmeta Više opcija</translation>
 <translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3303414029551471755">Nastaviti s preuzimanjem sadržaja?</translation>
 <translation id="3321367458490630980">Interesovanje je dodano</translation>
@@ -639,7 +638,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica}one{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> anonimna}few{<ph name="TAB_COUNT_MANY" /> kartice, <ph name="TAB_COUNT_INCOGNITO" /> anonimne}other{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> anonimnih}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Povezano pomoću USB kabla</translation>
-<translation id="4557685098773234337">Da brže dođete ovdje, dodajte ovu stranicu na početni ekran</translation>
 <translation id="4558311620361989323">Prečice web stranice</translation>
 <translation id="4561730552726921821">Registracija je uspjela</translation>
 <translation id="4561979708150884304">Niste povezani na mrežu</translation>

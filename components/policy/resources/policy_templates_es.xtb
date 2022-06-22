@@ -148,6 +148,7 @@
 <translation id="1160939557934457296">Inhabilitar seguir navegando desde la página de advertencia sobre Navegación segura</translation>
 <translation id="1163080558183062209">Inhabilitar tipos de impresora en la lista de denegación</translation>
 <translation id="117059611145966538">Servidores de impresión externos</translation>
+<translation id="117080706484659953">Permitir detección del nivel de las políticas en <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171785618439752042">Si se establece esta política, se designará qué tipos de cifrado se admiten cuando se solicitan tickets de Kerberos de un servidor de <ph name="MS_AD_NAME" />.
 
       Estos son los efectos de cada valor:
@@ -947,6 +948,17 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1962864958436828230">Establecer un límite de tamaño mínimo para la restricción del portapapeles que previene la filtración de datos</translation>
 <translation id="1964634611280150550">Modo Incógnito inhabilitado</translation>
 <translation id="1964802606569741174">Esta política no influye en la aplicación YouTube para Android. Si se debe aplicar el modo Seguro en YouTube, deberás inhabilitar la descarga de la aplicación YouTube para Android.</translation>
+<translation id="1965363065727209968">setTimeout(…, 0) se suele usar para dividir tareas largas de JavaScript.
+          Si se habilita esta política, los valores de setTimeout y setInterval que tengan un intervalo inferior a 4 ms no se redondearán de forma tan agresiva.
+          Esto mejora el rendimiento a corto plazo. Sin embargo, en los sitios web que hagan un uso inadecuado de la API, se redondearán los valores de setTimeout de todos modos.
+
+          Es posible que esto cambie el orden de las tareas en una página web, lo que podría provocar un comportamiento inesperado en sitios que dependan, de algún modo, de un orden determinado.
+          También puede afectar a los sitios que usen mucho la función setTimeout() con un tiempo de espera de 0 ms (por ejemplo, podría aumentar la carga de la CPU).
+
+          Para los usuarios que no tengan esta política configurada, <ph name="PRODUCT_NAME" /> lanzará el cambio de forma gradual en el canal estable.
+
+          Se trata de una política temporal y se prevé que se elimine en la versión 107 de <ph name="PRODUCT_NAME" />. Este plazo puede ampliarse si lo necesitan las empresas.
+          </translation>
 <translation id="1967334955994230472">Inhabilitar Proyector</translation>
 <translation id="1969212217917526199">Anula las políticas de compilaciones de depuración del host de acceso remoto.
 
@@ -1492,6 +1504,14 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2497751676088107779">Secuencia de comandos de usuario</translation>
 <translation id="2497965601277442929">No permitir que los usuarios habiliten el modo solo‑HTTPS</translation>
+<translation id="249798396824949930"> Controla si el navegador puede detectar si el nivel de cada política es obligatorio en <ph name="MAC_OS_NAME" /> o no.
+
+      Si se habilita esta política o no se establece, el nivel de cada política lo determinará el nivel del perfil gestionado de <ph name="MAC_OS_NAME" />.
+      Si se inhabilita esta política, todas las políticas se reconocerán como políticas a nivel de equipo.
+
+      Esta política es temporal y sirve para facilitar la transición a políticas que se establezcan en el nivel adecuado en <ph name="MAC_OS_NAME" />. Se eliminará en la versión 107 de <ph name="PRODUCT_NAME" />.
+
+      </translation>
 <translation id="2498238926436517902">Ocultar siempre automáticamente los archivos</translation>
 <translation id="250022556568924228">Si se establece la política, <ph name="PRODUCT_OS_NAME" /> descargará los Términos del Servicio y se los mostrará a los usuarios siempre que se inicie sesión con una cuenta local del dispositivo. Para iniciar sesión, los usuarios deben aceptar los Términos del Servicio.
 
@@ -2717,6 +2737,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3838094946886335701">Si se establece esta política (solo según lo recomendado), podrás registrar una lista de controladores de protocolo, la cual se combinará con las listas que registre el usuario (se usarán ambos conjuntos). Establece la propiedad protocol según el esquema (por ejemplo, mailto) y la propiedad URL según el patrón de URL de la aplicación que controla el esquema especificado en el campo protocol. El patrón puede incluir un marcador de posición %s, que se sustituye por la URL controlada.
 
       Los usuarios no pueden quitar un controlador de protocolo registrado por la política. Sin embargo, si instalan un controlador predeterminado nuevo, podrán cambiar los controladores de protocolo instalados por la política.</translation>
+<translation id="3851443303439635700">Controlar el umbral de anidación antes del cual se empezará a redondear la función setTimeout() de JavaScript</translation>
 <translation id="3857816702027059082">Habilita <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> para obtener una lista de URLs.
 
       Si se establece esta política, se especificarán las URLs que podrán formar parte del flujo de atestación para obtener un conjunto de señales del equipo.
@@ -3248,6 +3269,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="4472740647327683596">Ancho de la página en micrómetros</translation>
 <translation id="4474167089968829729">Habilitar el almacenamiento de contraseñas en el gestor de contraseñas</translation>
 <translation id="4476769083125004742">Si se asigna el valor <ph name="BLOCK_GEOLOCATION_SETTING" /> a esta política, las aplicaciones para Android no tendrán acceso a la información sobre la ubicación. Si se le asigna cualquier otro valor o no se configura, el usuario tendrá que dar su consentimiento cuando una aplicación para Android quiera acceder a los datos de ubicación.</translation>
+<translation id="4478248026668918517">Bloquea la detección del nivel de las políticas.</translation>
 <translation id="4479671363221255277">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios pueden pedir a los usuarios que les concedan acceso de lectura a archivos o directorios del sistema de archivos del sistema operativo del host a través de la API File System.
 
       Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
@@ -4857,6 +4879,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6282799760374509080">Permitir o denegar captura de audio</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6287310684159482272">Configuración de cookies</translation>
+<translation id="6299147100249359151">Permite la detección del nivel de las políticas.</translation>
 <translation id="6300871921951390976">Solo se permite que los usuarios cambien el canal de lanzamiento del dispositivo si se le asigna el valor "True" a esta política. Si se le asigna el valor "False" o no se le asigna ninguno, los usuarios no podrán cambiar el canal.
 
       Definir <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tendrá efecto si se le asigna el valor "False" a <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" />.</translation>

@@ -2224,6 +2224,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3067198360141518313">Pokreni ovaj dodatak</translation>
 <translation id="3071624960923923138">Možete da kliknete ovde da biste otvorili novu karticu</translation>
 <translation id="3072775339180057696">Želite li da dozvolite sajtu da pregleda datoteku <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Prevedi celu stranicu</translation>
 <translation id="3075874217500066906">Potrebno je da ponovo pokrenete uređaj da bi započeo proces Powerwash-a. Kada ponovo pokrenete uređaj, zatražićemo da potvrdite da li želite da nastavite.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Sačuvaj samo na ovom uređaju</translation>
@@ -5079,6 +5080,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> koristi kameru i mikrofon</translation>
 <translation id="5935158534896975820">Priprema se zahtev za potpisivanje sertifikata (čeka na serveru)</translation>
 <translation id="5935656526031444304">Upravljajte bezbednim pregledanjem</translation>
+<translation id="5936065461722368675">Prevedi celu stranicu</translation>
 <translation id="5938002010494270685">Bezbednosna nadogradnja je dostupna</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="5939719276406088041">Pravljenje prečice nije uspelo</translation>
@@ -8428,7 +8430,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="934503638756687833">Ukloniće se i stavke koje nisu ovde navedene, ako je to potrebno. Saznajte više o &lt;a href="<ph name="URL" />"&gt;zaštiti od neželjenog softvera&lt;/a&gt; u beloj knjizi o privatnosti u Chrome-u.</translation>
 <translation id="93480724622239549">Problem ili greška</translation>
 <translation id="935854577147268200">Smart Lock telefon je promenjen. Unesite lozinku da biste ažurirali Smart Lock. Sledeći put će telefon otključati <ph name="DEVICE_TYPE" />. Možete da isključite Smart Lock u podešavanjima</translation>
-<translation id="93610034168535821">Ukupan memorijski prostor koji koriste sajtovi:</translation>
 <translation id="936646668635477464">Kamera i mikrofon</translation>
 <translation id="936801553271523408">Sistemski dijagnostički podaci</translation>
 <translation id="93766956588638423">Popravi dodatak</translation>

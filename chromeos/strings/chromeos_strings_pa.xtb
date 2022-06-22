@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ਵਰਤੋਂਕਾਰ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ਬਾਹਰੀ ਡੀਵਾਈਸਾਂ ਲਈ ਅੱਪਡੇਟ ਫ਼ਰਮਵੇਅਰ ਵਿੰਡੋ ਖੁੱਲ੍ਹੀ ਹੈ। <ph name="NUM_UPDATES" /> ਅੱਪਡੇਟ ਉਪਲਬਧ ਹਨ।</translation>
+<translation id="1145516343487477149">ਮਦਦ ਲੇਖ ਅਤੇ Chromebook ਸੰਬੰਧੀ ਆਮ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਲੱਭੋ</translation>
 <translation id="1165039591588034296">ਗੜਬੜ</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="1175951029573070619">ਔਸਤ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਕਰੋ</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">ਗੂੜ੍ਹਾ ਮੋਡ ਬੰਦ ਕਰੋ</translation>
+<translation id="1881188606372070653">ਕਨੂੰਨੀ ਕਾਰਨਾਂ ਕਰਕੇ ਸਮੱਗਰੀ ਵਿੱਚ ਤਬਦੀਲੀਆਂ ਕਰਨ ਦੀ ਬੇਨਤੀ ਕਰਨ ਲਈ <ph name="BEGIN_LINK1" />ਕਨੂੰਨੀ ਮਦਦ ਪੰਨੇ<ph name="END_LINK1" /> 'ਤੇ ਜਾਓ। ਖਾਤੇ ਅਤੇ ਸਿਸਟਮ ਦੀ ਕੁਝ ਜਾਣਕਾਰੀ Google ਨੂੰ ਭੇਜੀ ਜਾ ਸਕਦੀ ਹੈ। ਅਸੀਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਨੂੰ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਸਾਡੀ <ph name="BEGIN_LINK2" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK2" /> ਅਤੇ <ph name="BEGIN_LINK3" />ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK3" /> ਦੇ ਅਧੀਨ, ਤਕਨੀਕੀ ਸਮੱਸਿਆਵਾਂ ਨੂੰ ਹੱਲ ਕਰਨ ਅਤੇ ਸਾਡੀਆਂ ਸੇਵਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਵਰਤਾਂਗੇ।</translation>
 <translation id="1887850431809612466">ਹਾਰਡਵੇਅਰ ਸੰਸ਼ੋਧਨ</translation>
 <translation id="1905710495812624430">ਅਧਿਕਤਮ ਮਨਜ਼ੂਰ ਕੀਤੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਵਧੀਆਂ।</translation>
 <translation id="1908234395526491708">UDP ਬੇਨਤੀ ਦੀਆਂ ਅਸਫਲਤਾਵਾਂ</translation>
@@ -622,6 +624,7 @@
 <translation id="6379086450106841622">ਟੱਚਸਕ੍ਰੀਨ</translation>
 <translation id="6381741036071372448">ਆਪਣੇ ਕੀ-ਬੋਰਡ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਦੇਖੋ</translation>
 <translation id="6388847657025262518">ਸਕੈਨਰ ਦਾ ਦਸਤਾਵੇਜ਼ ਫ਼ੀਡਰ ਜਾਮ ਹੋ ਗਿਆ ਹੈ। ਫ਼ੀਡਰ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="6394634179843537518">ਫ਼ਾਈਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6410257289063177456">ਚਿੱਤਰ ਫਾਈਲਾਂ</translation>
 <translation id="641081527798843608">ਵਿਸ਼ਾ ਮਿਲਾਨ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

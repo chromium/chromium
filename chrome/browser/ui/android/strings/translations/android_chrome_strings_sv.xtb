@@ -437,7 +437,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="3284510035090979597">Proaktiv hjälp</translation>
 <translation id="3285080554353377245">Videor om hur du använder Chrome</translation>
 <translation id="3288003805934695103">läsa in sidan igen</translation>
-<translation id="3290991969712132877">Lägg till sidan på startskärmen med knappen Fler alternativ, så att du kommer åt den snabbare</translation>
 <translation id="3297344142967351106">Rösthjälp</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
 <translation id="3321367458490630980">Intresset har lagts till</translation>
@@ -640,7 +639,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flik}other{<ph name="TAB_COUNT_MANY" /> flikar, <ph name="TAB_COUNT_INCOGNITO" /> inkognitoflikar}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Ansluten med USB-kabel</translation>
-<translation id="4557685098773234337">Lägg till sidan på startskärmen så att du kommer åt den snabbare</translation>
 <translation id="4558311620361989323">Kortkommandon på webbsidor</translation>
 <translation id="4561730552726921821">Registreringen lyckades</translation>
 <translation id="4561979708150884304">Ingen anslutning</translation>

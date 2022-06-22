@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Uporabnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Okno za posodobitev vdelane programske opreme za zunanje naprave je odprto. Na voljo je toliko posodobitev: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1145516343487477149">Poiščite članke s pomočjo in odgovore na pogosta vprašanja o Chromebookih.</translation>
 <translation id="1165039591588034296">Napaka</translation>
 <translation id="1175697296044146566">To napravo <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Povprečna (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Izklop temne teme</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Izklop temnega načina</translation>
+<translation id="1881188606372070653">Če želite zahtevati spremembe vsebine zaradi pravnih razlogov, obiščite <ph name="BEGIN_LINK1" />stran s pravno pomočjo<ph name="END_LINK1" />. Nekateri podatki o računu in sistemu bodo morda poslani Googlu. Informacije, ki nam jih pošljete, bomo v skladu z našim <ph name="BEGIN_LINK2" />pravilnikom o zasebnosti<ph name="END_LINK2" /> in <ph name="BEGIN_LINK3" />pogoji storitve<ph name="END_LINK3" /> uporabljali za odpravljanje tehničnih težav in izboljševanje naših storitev.</translation>
 <translation id="1887850431809612466">Različica strojne opreme</translation>
 <translation id="1905710495812624430">Preseženo je največje dovoljeno število dovoljenih poskusov.</translation>
 <translation id="1908234395526491708">Neuspele zahteve UDP</translation>
@@ -623,6 +625,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6379086450106841622">Zaslon na dotik</translation>
 <translation id="6381741036071372448">Preizkusite tipkovnico</translation>
 <translation id="6388847657025262518">V podajalniku papirja optičnega bralnika se je zagozdil papir. Preverite podajalnik in poskusite znova.</translation>
+<translation id="6394634179843537518">Dodaj datoteko</translation>
 <translation id="6410257289063177456">Slikovne datoteke</translation>
 <translation id="641081527798843608">Ujemanje zadeve</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

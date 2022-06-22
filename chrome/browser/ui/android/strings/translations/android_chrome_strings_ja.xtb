@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">アクティブ サポート</translation>
 <translation id="3285080554353377245">Chrome の使い方に関する動画</translation>
 <translation id="3288003805934695103">ページを再読み込みする</translation>
-<translation id="3290991969712132877">このページにすばやくアクセスするには、[その他のオプション] からこのページをホーム画面に追加してください</translation>
 <translation id="3297344142967351106">音声アシスタント</translation>
 <translation id="3303414029551471755">コンテンツのダウンロードに進みますか？</translation>
 <translation id="3321367458490630980">興味 / 関心を追加しました</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個のタブ}other{<ph name="TAB_COUNT_MANY" /> 個のタブ、<ph name="TAB_COUNT_INCOGNITO" /> 個のシークレット タブ}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">USB ケーブルで接続しました</translation>
-<translation id="4557685098773234337">このページにすばやくアクセスするには、ホーム画面に追加してください</translation>
 <translation id="4558311620361989323">ウェブページのショートカット</translation>
 <translation id="4561730552726921821">登録が完了しました</translation>
 <translation id="4561979708150884304">接続されていません</translation>

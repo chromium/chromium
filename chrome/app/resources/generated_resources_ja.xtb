@@ -1538,6 +1538,7 @@
 <translation id="2433836460518180625">デバイスのロック解除のみ</translation>
 <translation id="2434449159125086437">プリンタをセットアップできません。設定を確認してもう一度お試しください。</translation>
 <translation id="2434758125294431199">あなたとファイルを共有できる相手を選択してください</translation>
+<translation id="2434915728183570229">スマートフォンのアプリを表示できるようになりました</translation>
 <translation id="2435137177546457207">Google Chrome および ChromeOS Flex 追加利用規約</translation>
 <translation id="2435248616906486374">ネットワークが切断されました</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
@@ -4214,6 +4215,7 @@
 <translation id="5072900412896857127">Google Play 利用規約を読み込めません。ネットワーク接続を確認してからもう一度お試しください。</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />、<ph name="FILE2" />}other{<ph name="FILE1" />、<ph name="FILE2" />、他 # 件}}</translation>
 <translation id="5074318175948309511">新しい設定を有効にするには、ページの再読み込みが必要な可能性があります。</translation>
+<translation id="5074761966806028321">設定を完了するには権限が必要です</translation>
 <translation id="5075910247684008552">保護されているサイトでは、保護されていないコンテンツはデフォルトでブロックされます。</translation>
 <translation id="5078638979202084724">すべてのタブをブックマークに追加する</translation>
 <translation id="5078796286268621944">PIN が正しくありません</translation>
@@ -4575,6 +4577,7 @@
 <translation id="5449551289610225147">パスワードが無効です</translation>
 <translation id="5449588825071916739">すべてのタブをブックマークに追加する</translation>
 <translation id="5449716055534515760">ウィンドウを閉じる(&amp;D)</translation>
+<translation id="5452446625764825792">スマートフォンの最近の写真、メディア、アプリを表示できるようになりました</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" />（オフラインで利用可能）</translation>
 <translation id="5454166040603940656">- <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">他の検索結果を表示</translation>
@@ -4635,6 +4638,7 @@
 <translation id="5499211612787418966">このダイアログは現在フォーカスされていません。このダイアログをフォーカスするには Alt+Shift+A キーを押してください。</translation>
 <translation id="5499313591153584299">このファイルはパソコンに危害を加える可能性があります。</translation>
 <translation id="5499453227627332024">Linux コンテナのアップグレードが可能です。後で設定アプリからアップグレードすることもできます。</translation>
+<translation id="5499476581866658341">スマートフォンの最近の写真やメディアを表示できるようになりました</translation>
 <translation id="549957179819296104">アイコンが新しくなりました</translation>
 <translation id="5500168250243071806">ログイン中は Google アカウントに<ph name="BEGIN_LINK_SEARCH" />検索履歴<ph name="END_LINK_SEARCH" />や<ph name="BEGIN_LINK_GOOGLE" />その他のアクティビティ<ph name="END_LINK_GOOGLE" />が保存される可能性があります。これらのデータはいつでも削除できます。</translation>
 <translation id="5500709606820808700">安全確認を今日実行しました</translation>
@@ -6294,6 +6298,7 @@
 <translation id="7152478047064750137">この拡張機能に特別な権限は必要ありません</translation>
 <translation id="7154130902455071009">スタート ページを次に変更します: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">カメラやファイルに保存されている写真</translation>
+<translation id="7160182524506337403">スマートフォンの通知を表示できるようになりました</translation>
 <translation id="7163202347044721291">アクティベーション コードを確認しています...</translation>
 <translation id="716640248772308851">「<ph name="EXTENSION" />」はチェックした場所にある画像、動画、音声の各ファイルを読み取ることができます。</translation>
 <translation id="7167486101654761064">この種類のファイルは常に開く(&amp;A)</translation>
@@ -7306,6 +7311,7 @@
 <translation id="8138997515734480534"><ph name="VM_NAME" /> ステータス</translation>
 <translation id="8139447493436036221">Google ドライブのファイル</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />、<ph name="SECOND_DEVICE" /></translation>
+<translation id="8141418916163800697">スマートフォン ハブではその他の機能も設定できます</translation>
 <translation id="8141584439523427891">まもなく代替ブラウザで開きます</translation>
 <translation id="8141725884565838206">パスワードを管理する</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{動画}other{# 件の動画}}</translation>
@@ -7513,6 +7519,7 @@
 <translation id="833986336429795709">このリンクを開くにはアプリを選択します</translation>
 <translation id="8342221978608739536">試していない</translation>
 <translation id="8342861492835240085">コレクションを選択</translation>
+<translation id="8345848587667658367">スマートフォンの最近の写真、メディア、通知、アプリを表示できるようになりました</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
 <translation id="834785183489258869">シークレット モードのとき、サイトは Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどを行えなくなります。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="8350789879725387295">Dock のタッチペン ツール</translation>
@@ -8118,6 +8125,7 @@
 <translation id="8957757410289731985">プロフィールをカスタマイズ</translation>
 <translation id="895944840846194039">JavaScript メモリ</translation>
 <translation id="8960208913905765425">クイック アンサーの単位変換</translation>
+<translation id="8960638196855923532">スマートフォンの通知とアプリを表示できるようになりました</translation>
 <translation id="8962051932294470566">一度に共有できるファイルは 1 つのみです。現在の転送が終わってから、もう一度お試しください。</translation>
 <translation id="8962083179518285172">詳細を非表示</translation>
 <translation id="8962918469425892674">このサイトはモーション センサーまたは光センサーを使用しています。</translation>
@@ -8269,6 +8277,7 @@
 <translation id="9103868373786083162">ボタンを押して前に戻ります。履歴を表示するにはコンテキスト メニューを選択します</translation>
 <translation id="9108035152087032312">ウィンドウに名前を付ける(&amp;W)...</translation>
 <translation id="9108072915170399168">現在のデータ使用設定は「インターネットを使用しない」です</translation>
+<translation id="9108294543511800041">スマートフォンの最近の写真、メディア、通知を表示できるようになりました</translation>
 <translation id="9108674852930645435"><ph name="DEVICE_TYPE" /> の新機能のご案内</translation>
 <translation id="9108808586816295166">セキュア DNS は使用できない場合があります</translation>
 <translation id="9109122242323516435">空き領域を確保するために、デバイスのストレージからファイルを削除してください。</translation>
@@ -8393,7 +8402,6 @@
 <translation id="934503638756687833">ここに表示されていないアイテムも、必要に応じて削除されます。&lt;a href="<ph name="URL" />"&gt;迷惑ソフトウェアからの保護&lt;/a&gt;について詳しくは、Chrome のプライバシーに関するホワイト ペーパーをご覧ください。</translation>
 <translation id="93480724622239549">バグまたはエラー</translation>
 <translation id="935854577147268200">Smart Lock に使用するスマートフォンが変更されました。パスワードを入力して Smart Lock を更新すると、次回から、新しいスマートフォンで <ph name="DEVICE_TYPE" /> のロックを解除できます。Smart Lock を無効にするには [設定] をご利用ください。</translation>
-<translation id="93610034168535821">サイトの合計ストレージ使用状況:</translation>
 <translation id="936646668635477464">カメラとマイク</translation>
 <translation id="936801553271523408">システム診断データ</translation>
 <translation id="93766956588638423">拡張機能を修復</translation>

@@ -437,7 +437,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="3284510035090979597">Proactive help</translation>
 <translation id="3285080554353377245">Videos about how to use Chrome</translation>
 <translation id="3288003805934695103">Reloading the page</translation>
-<translation id="3290991969712132877">To get here quicker, add this page to your home screen from the 'More options' button</translation>
 <translation id="3297344142967351106">Voice assistance</translation>
 <translation id="3303414029551471755">Proceed to download the content?</translation>
 <translation id="3321367458490630980">Interest added</translation>
@@ -639,7 +638,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tabs, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Connected with USB cable</translation>
-<translation id="4557685098773234337">To get here quicker, add this page to your home screen</translation>
 <translation id="4558311620361989323">Web page shortcuts</translation>
 <translation id="4561730552726921821">Registration succeeded</translation>
 <translation id="4561979708150884304">No connection</translation>

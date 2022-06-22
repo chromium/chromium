@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Пользователь</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Открыто окно со сведениями о доступных обновлениях (<ph name="NUM_UPDATES" />) встроенного ПО для внешних устройств.</translation>
+<translation id="1145516343487477149">Находите нужные справочные статьи и ответы на частые вопросы об устройствах Chromebook.</translation>
 <translation id="1165039591588034296">Ошибка</translation>
 <translation id="1175697296044146566">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Средний (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Выключить тёмную тему</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Выключить тёмную тему</translation>
+<translation id="1881188606372070653">Если контент нарушает закон, <ph name="BEGIN_LINK1" />отправьте запрос на исправление<ph name="END_LINK1" />. Некоторые сведения об аккаунте и системе могут быть отправлены в Google. Это помогает нам устранять технические неполадки и улучшать наши сервисы. Ваши данные будут обрабатываться в соответствии с <ph name="BEGIN_LINK2" />Политикой конфиденциальности<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />Условиями использования<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Версия оборудования</translation>
 <translation id="1905710495812624430">Превышено максимально допустимое число попыток.</translation>
 <translation id="1908234395526491708">Невыполненные запросы UDP.</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">Сенсорный экран</translation>
 <translation id="6381741036071372448">Проверьте свою клавиатуру</translation>
 <translation id="6388847657025262518">Автоподатчик документов заклинило. Устраните проблему и повторите попытку.</translation>
+<translation id="6394634179843537518">Добавить файл</translation>
 <translation id="6410257289063177456">Файлы изображений</translation>
 <translation id="641081527798843608">Совпадение тем</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

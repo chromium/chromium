@@ -2224,6 +2224,7 @@
 <translation id="3067198360141518313">Покрени овај додатак</translation>
 <translation id="3071624960923923138">Можете да кликнете овде да бисте отворили нову картицу</translation>
 <translation id="3072775339180057696">Желите ли да дозволите сајту да прегледа датотеку <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Преведи целу страницу</translation>
 <translation id="3075874217500066906">Потребно је да поново покренете уређај да би започео процес Powerwash-а. Када поново покренете уређај, затражићемо да потврдите да ли желите да наставите.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Сачувај само на овом уређају</translation>
@@ -5079,6 +5080,7 @@
 <translation id="5933522550144185133"><ph name="APP_NAME" /> користи камеру и микрофон</translation>
 <translation id="5935158534896975820">Припрема се захтев за потписивање сертификата (чека на серверу)</translation>
 <translation id="5935656526031444304">Управљајте безбедним прегледањем</translation>
+<translation id="5936065461722368675">Преведи целу страницу</translation>
 <translation id="5938002010494270685">Безбедносна надоградња је доступна</translation>
 <translation id="5939518447894949180">Ресетуј</translation>
 <translation id="5939719276406088041">Прављење пречице није успело</translation>
@@ -8428,7 +8430,6 @@
 <translation id="934503638756687833">Уклониће се и ставке које нису овде наведене, ако је то потребно. Сазнајте више о &lt;a href="<ph name="URL" />"&gt;заштити од нежељеног софтвера&lt;/a&gt; у белој књизи о приватности у Chrome-у.</translation>
 <translation id="93480724622239549">Проблем или грешка</translation>
 <translation id="935854577147268200">Smart Lock телефон је промењен. Унесите лозинку да бисте ажурирали Smart Lock. Следећи пут ће телефон откључати <ph name="DEVICE_TYPE" />. Можете да искључите Smart Lock у подешавањима</translation>
-<translation id="93610034168535821">Укупан меморијски простор који користе сајтови:</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>
 <translation id="936801553271523408">Системски дијагностички подаци</translation>
 <translation id="93766956588638423">Поправи додатак</translation>

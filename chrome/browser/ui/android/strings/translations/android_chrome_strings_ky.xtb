@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">Керектүү учурда жардам алуу</translation>
 <translation id="3285080554353377245">Chrome'ду кантип колдонуу жөнүндө видеолор</translation>
 <translation id="3288003805934695103">Баракты кайра жүктөп көрүңүз</translation>
-<translation id="3290991969712132877">Бул баракты тезирээк ачуу үчүн "Дагы параметрлер" баскычынын жардамы менен аны башкы экранга кошуңуз</translation>
 <translation id="3297344142967351106">Үн жардамчысы</translation>
 <translation id="3303414029551471755">Мазмун жүктөлүп алына берсинби?</translation>
 <translation id="3321367458490630980">Кызыккан нерсе кошулду</translation>
@@ -639,7 +638,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> өтмөк}other{<ph name="TAB_COUNT_MANY" /> өтмөк, <ph name="TAB_COUNT_INCOGNITO" /> жашыруун}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">USB кабели аркылуу туташты</translation>
-<translation id="4557685098773234337">Бул баракты тезирээк ачуу үчүн аны башкы экранга кошуңуз</translation>
 <translation id="4558311620361989323">Веб баракчасынын кыска жолдору</translation>
 <translation id="4561730552726921821">Ийгиликтүү катталды</translation>
 <translation id="4561979708150884304">Интернет жок</translation>

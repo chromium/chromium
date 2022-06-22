@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ଉପଯୋଗକର୍ତ୍ତା</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ଫାର୍ମୱେର ଅପଡେଟ ୱିଣ୍ଡୋ ଖୋଲା ଅଛି। <ph name="NUM_UPDATES" />ଟି ଅପଡେଟ ଉପଲବ୍ଧ ଅଛି।</translation>
+<translation id="1145516343487477149">ସହାୟତା ଆର୍ଟିକିଲ ଏବଂ ସାଧାରଣ Chromebook ପ୍ରଶ୍ନଗୁଡ଼ିକର ଉତ୍ତର ପାଆନ୍ତୁ</translation>
 <translation id="1165039591588034296">ତ୍ରୁଟି</translation>
 <translation id="1175697296044146566">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="1175951029573070619">ସାଧାରଣ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">ଗାଢ଼ା ଥିମ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">ଡାର୍କ ମୋଡ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="1881188606372070653">ଆଇନଗତ କାରଣଗୁଡ଼ିକ ପାଇଁ ବିଷୟବସ୍ତୁ ପରିବର୍ତ୍ତନର ଅନୁରୋଧ କରିବାକୁ <ph name="BEGIN_LINK1" />ଆଇନଗତ ସହାୟତା ପୃଷ୍ଠା<ph name="END_LINK1" />କୁ ଯାଆନ୍ତୁ। କିଛି ଆକାଉଣ୍ଟ ଏବଂ ସିଷ୍ଟମ ସୂଚନା Googleକୁ ପଠାଯାଇପାରେ। ଆମର <ph name="BEGIN_LINK2" />ଗୋପନୀୟତା ନୀତି<ph name="END_LINK2" /> ଏବଂ <ph name="BEGIN_LINK3" />ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK3" /> ଅନୁସାରେ, ଟେକନିକାଲ ସମସ୍ୟାର ସମାଧାନ କରିବା ଏବଂ ଆମର ସେବାଗୁଡ଼ିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣ ଆମକୁ ଦେଇଥିବା ସୂଚନାକୁ ଆମେ ବ୍ୟବହାର କରିବୁ।</translation>
 <translation id="1887850431809612466">ହାର୍ଡୱେୟାର୍ ପୁନରାବୃତ୍ତି</translation>
 <translation id="1905710495812624430">ସର୍ବାଧିକ ଅନୁମୋଦିତ ପ୍ରଚେଷ୍ଟା ସୀମା ଅତିକ୍ରମ କଲା।</translation>
 <translation id="1908234395526491708">UDP ଅନୁରୋଧ ବିଫଳ</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">ଟଚସ୍କ୍ରିନ୍</translation>
 <translation id="6381741036071372448">ଆପଣଙ୍କ କୀବୋର୍ଡକୁ ପରୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="6388847657025262518">ସ୍କାନରର ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ ଜାମ୍ ହୋଇଯାଇଛି। ଫିଡରକୁ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="6394634179843537518">ଫାଇଲ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6410257289063177456">ଛବି ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="641081527798843608">ବିଷୟ ମେଳ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

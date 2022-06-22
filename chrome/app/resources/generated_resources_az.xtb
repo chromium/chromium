@@ -2223,6 +2223,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3067198360141518313">Bu plagini işə salın</translation>
 <translation id="3071624960923923138">Yeni pəncərə açmaq üçün bura klikləyin</translation>
 <translation id="3072775339180057696">Sayta <ph name="FILE_NAME" /> faylına baxmaq üçün icazə verilsin?</translation>
+<translation id="3074499504015191586">Tam Səhifəni Tərcümə edin</translation>
 <translation id="3075874217500066906">Sıfırlama prosesinə başlamaq üçün yenidən başlanma tələb olunur. Yenidən başlanmadan sonra davam etdiyinizi təsdiq etməyiniz istəniləcək.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Yalnız bu cihazda saxlayın</translation>
@@ -5074,6 +5075,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> kameranızı və mikrofonunuzu istifadə edir</translation>
 <translation id="5935158534896975820">Sertifikat giriş sorğusu hazırlanır (serverdə gözlənilir)</translation>
 <translation id="5935656526031444304">Təhlükəsiz Baxışı idarə edin</translation>
+<translation id="5936065461722368675">Tam səhifəni tərcümə edin</translation>
 <translation id="5938002010494270685">Təhülkəsizlik yeniləməsi əlçatandır</translation>
 <translation id="5939518447894949180">Sıfırlayın</translation>
 <translation id="5939719276406088041">Qısayol yaratmaq olmur</translation>
@@ -8414,7 +8416,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="934503638756687833">Burada göstərilməyən elementlər lazım gələrsə silinə bilər. Chrome məxfilik səhifəsində &lt;a href="<ph name="URL" />"&gt;lazımsız proqram qoruması&lt;/a&gt; haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="93480724622239549">Baq və ya Xəta</translation>
 <translation id="935854577147268200">Smart Lock telefonu dəyişdirildi. Smart Lock'u yeniləmək üçün parolu daxil edin. Növbəti dəfə telefon <ph name="DEVICE_TYPE" /> cihazını kiliddən çıxaracaq. Ayarlardan Smart Lock'u deaktiv edə bilərsiniz</translation>
-<translation id="93610034168535821">Saytlar tərəfindən istifadə olunan cəmi yaddaş:</translation>
 <translation id="936646668635477464">Kamera və mikrofon</translation>
 <translation id="936801553271523408">Sistem diaqnostika datası</translation>
 <translation id="93766956588638423">Artırmanı bərpa edin</translation>

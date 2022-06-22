@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">பயனர்</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">வெளிப்புறச் சாதனங்களுக்கான நிலைபொருள் புதுப்பிப்புச் சாளரம் திறந்துள்ளது. <ph name="NUM_UPDATES" /> புதுப்பிப்புகள் உள்ளன.</translation>
+<translation id="1145516343487477149">உதவிக் கட்டுரைகளையும் Chromebook குறித்த பொதுவான கேள்விகளுக்கான பதில்களையும் கண்டறியலாம்</translation>
 <translation id="1165039591588034296">பிழை</translation>
 <translation id="1175697296044146566">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது.</translation>
 <translation id="1175951029573070619">சுமாராக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">டார்க் தீமினை முடக்குதல்</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">டார்க் பயன்முறையை முடக்குதல்</translation>
+<translation id="1881188606372070653">சட்டப்பூர்வக் காரணங்களுக்காக உள்ளடக்க மாற்றங்களைக் கோர, <ph name="BEGIN_LINK1" />சட்டப்பூர்வ உதவிப் பக்கத்திற்குச்<ph name="END_LINK1" /> செல்லவும். சில கணக்கு மற்றும் சிஸ்டம் தகவல்கள் Googleளுக்கு அனுப்பப்படக்கூடும். தொழில்நுட்பச் சிக்கல்களைச் சரிசெய்யவும் எங்கள் சேவைகளை மேம்படுத்தவும் நீங்கள் அளிக்கும் தகவல்களை எங்கள் <ph name="BEGIN_LINK2" />தனியுரிமைக் கொள்கை<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />சேவை விதிமுறைகள்<ph name="END_LINK3" /> ஆகியவற்றுக்கு உட்பட்டுப் பயன்படுத்துவோம்.</translation>
 <translation id="1887850431809612466">வன்பொருள் பதிப்பு</translation>
 <translation id="1905710495812624430">அனுமதிக்கப்பட்ட அதிகபட்ச முயற்சிகளைக் கடந்துவிட்டீர்கள்.</translation>
 <translation id="1908234395526491708">UDP கோரிக்கையை அனுப்ப முடியவில்லை</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">டச்ஸ்கிரீன்</translation>
 <translation id="6381741036071372448">கீபோர்டைச் சோதனை செய்தல்</translation>
 <translation id="6388847657025262518">ஸ்கேனரின் டாக்குமெண்ட் ஃபீடரில் தாள் சிக்கிக் கொண்டது. ஃபீடரைச் சரிசெய்துவிட்டு மீண்டும் முயலவும்.</translation>
+<translation id="6394634179843537518">ஃபைலைச் சேர்</translation>
 <translation id="6410257289063177456">பட ஃபைல்கள்</translation>
 <translation id="641081527798843608">சப்ஜெக்ட் மேட்ச்</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

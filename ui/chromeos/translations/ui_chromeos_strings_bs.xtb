@@ -159,7 +159,7 @@
 <translation id="2377319039870049694">Prebaci na prikaz liste</translation>
 <translation id="2377590462528165447">Broj foldera koji se dijele s Linuxom <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2378075407703503998">Broj odabranih fajlova: <ph name="SELCTED_FILE_COUNT" /></translation>
-<translation id="2387120140441437063">Datoteke u otpadu ne mogu se otvoriti. Vratite datoteke prije otvaranja.</translation>
+<translation id="2387120140441437063">Nije moguće otvoriti fajlove premještene u otpad. Vratite fajlove prije otvaranja.</translation>
 <translation id="2387458720915042159">Vrsta veze s proksi serverom</translation>
 <translation id="2389832672041313158">burmanski (Mijanmar)</translation>
 <translation id="2392369802118427583">Aktiviraj</translation>

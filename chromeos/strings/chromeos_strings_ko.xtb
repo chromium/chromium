@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">사용자</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">외부 기기용 펌웨어 업데이트 창이 열려 있습니다. 업데이트가 <ph name="NUM_UPDATES" />개 있습니다.</translation>
+<translation id="1145516343487477149">Chromebook과 관련된 일반적인 질문에 관한 도움말 및 답변 찾기</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1175697296044146566">이 <ph name="DEVICE_TYPE" /> 기기는 <ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="1175951029573070619">평균(<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">어두운 테마 사용 중지</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">어두운 모드 사용 중지</translation>
+<translation id="1881188606372070653">법적인 이유로 콘텐츠 변경을 요청하려면 <ph name="BEGIN_LINK1" />법률 도움말 페이지<ph name="END_LINK1" />로 이동하세요. 일부 계정 및 시스템 정보가 Google로 전송될 수 있습니다. 제공하신 정보는 기술적인 문제를 해결하고 서비스를 개선하는 데 사용되며, <ph name="BEGIN_LINK2" />개인정보처리방침<ph name="END_LINK2" /> 및 <ph name="BEGIN_LINK3" />서비스 약관<ph name="END_LINK3" />이 적용됩니다.</translation>
 <translation id="1887850431809612466">하드웨어 버전</translation>
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
 <translation id="1908234395526491708">UDP 요청 실패</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">터치스크린</translation>
 <translation id="6381741036071372448">키보드 테스트</translation>
 <translation id="6388847657025262518">스캐너의 급지대에 용지가 걸렸습니다. 급지대를 확인한 후 다시 시도해 보세요.</translation>
+<translation id="6394634179843537518">파일 추가</translation>
 <translation id="6410257289063177456">이미지 파일</translation>
 <translation id="641081527798843608">주제 일치</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

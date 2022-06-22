@@ -2226,6 +2226,7 @@
 <translation id="3067198360141518313">یہ پلگ ان چلائیں</translation>
 <translation id="3071624960923923138">ایک نیا ٹیب کھولنے کے لئے آپ یہاں کلک کر سکتے ہیں</translation>
 <translation id="3072775339180057696">سائٹ کو <ph name="FILE_NAME" /> دیکھنے دیں؟</translation>
+<translation id="3074499504015191586">مکمل صفحے کا ترجمہ کریں</translation>
 <translation id="3075874217500066906">‏Powerwash کارروائی شروع کرنے کیلئے ایک بار دوبارہ شروع کرنا درکار ہے۔ دوبارہ شروع کرنے کے بعد آپ سے یہ توثیق کرنے کیلئے پوچھا جائے گا کہ آپ جاری رکھنا چاہتے ہیں۔</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">صرف اس آلے پر محفوظ کریں</translation>
@@ -5080,6 +5081,7 @@
 <translation id="5933522550144185133"><ph name="APP_NAME" /> آپ کا کیمرا اور مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="5935158534896975820">سرٹیفکیٹ پر دستخط کرنے کی درخواست کی تیاری ہو رہی ہے (سرور پر انتظار)</translation>
 <translation id="5935656526031444304">محفوظ براؤزنگ کا نظم کریں</translation>
+<translation id="5936065461722368675">مکمل صفحے کا ترجمہ کریں</translation>
 <translation id="5938002010494270685">سیکورٹی اپ گریڈ دستیاب ہے</translation>
 <translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
 <translation id="5939719276406088041">شارٹ کٹ تخلیق نہیں کیا جا سکتا</translation>
@@ -8422,7 +8424,6 @@
 <translation id="934503638756687833">‏ضرورت پڑنے پر، یہاں غیر مندرج آئٹمز کو بھی ہٹا دیا جائے گا۔ Chrome رازداری کے وہائٹ پیپر میں &lt;a href‎="<ph name="URL" />"‎&gt;غیر مطلوبہ سافٹ وئیر کے تحفظ&lt;/a&gt; کے بارے میں مزید جانیں۔</translation>
 <translation id="93480724622239549">بگ یا خرابی</translation>
 <translation id="935854577147268200">‏Smart Lock کا فون تبدیل ہو گيا ہے۔ Smart Lock اپ ڈیٹ کرنے کے لیے اپنا پاس ورڈ درج کریں۔ اگلی بار آپ کے فون سے آپ کا <ph name="DEVICE_TYPE" /> غیر مقفل ہوگا۔ آپ ترتیبات میں Smart Lock کو آف کر سکتے ہیں</translation>
-<translation id="93610034168535821">سائٹس کے ذریعے استعمال کردہ کل اسٹوریج:</translation>
 <translation id="936646668635477464">کیمرا اور مائیکروفون</translation>
 <translation id="936801553271523408">سسٹم ڈائیگناسٹک ڈیٹا</translation>
 <translation id="93766956588638423">ایکسٹینشن کو درست کریں</translation>

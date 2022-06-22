@@ -437,7 +437,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="3284510035090979597">Proaktivní nápověda</translation>
 <translation id="3285080554353377245">Výuková videa o používání Chromu</translation>
 <translation id="3288003805934695103">Načíst stránku znovu</translation>
-<translation id="3290991969712132877">Přidejte si stránku na plochu pomocí tlačítka Další možnosti, abyste se sem dostali rychleji</translation>
 <translation id="3297344142967351106">Hlasová asistence</translation>
 <translation id="3303414029551471755">Chcete pokračovat ke stažení obsahu?</translation>
 <translation id="3321367458490630980">Zájem přidán</translation>
@@ -639,7 +638,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}many{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}other{<ph name="TAB_COUNT_MANY" /> karet, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Připojeno kabelem USB</translation>
-<translation id="4557685098773234337">Přidejte si stránku na plochu, abyste se na ni dostali rychleji</translation>
 <translation id="4558311620361989323">Zkratky webových stránek</translation>
 <translation id="4561730552726921821">Registrace proběhla úspěšně</translation>
 <translation id="4561979708150884304">Žádné připojení</translation>

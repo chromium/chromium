@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">Օգնություն՝ անհրաժեշտ պահին</translation>
 <translation id="3285080554353377245">Տեսանյութեր Chrome-ի օգտագործման մասին</translation>
 <translation id="3288003805934695103">Վերաբեռնել էջը</translation>
-<translation id="3290991969712132877">Այս էջն ավելի արագ բացելու համար ավելացրեք այն հիմնական էկրանին «Այլ ընտրանքներ» կոճակի օգնությամբ։</translation>
 <translation id="3297344142967351106">Ձայնային հուշումներ</translation>
 <translation id="3303414029551471755">Ներբեռնե՞լ բովանդակությունը:</translation>
 <translation id="3321367458490630980">Հետաքրքրությունն ավելացվեց</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ներդիր}one{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}other{<ph name="TAB_COUNT_MANY" /> ներդիր, <ph name="TAB_COUNT_INCOGNITO" /> ինկոգնիտո ներդիր}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Միացված է USB մալուխով</translation>
-<translation id="4557685098773234337">Այս կայքն ավելի արագ բացելու համար ավելացրեք այն հիմնական էկրանին</translation>
 <translation id="4558311620361989323">Վեբէջերի դյուրանցումներ</translation>
 <translation id="4561730552726921821">Գրանցումը կատարվեց</translation>
 <translation id="4561979708150884304">Կապ չկա</translation>

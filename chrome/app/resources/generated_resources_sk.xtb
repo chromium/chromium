@@ -1545,6 +1545,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2433836460518180625">Iba odomknúť zariadenie</translation>
 <translation id="2434449159125086437">Tlačiareň sa nepodarilo nastaviť. Skontrolujte konfiguráciu a skúste to znova.</translation>
 <translation id="2434758125294431199">Vyberte, kto s vami môže zdieľať obsah</translation>
+<translation id="2434915728183570229">Teraz si môžete zobraziť aplikácie svojho telefónu</translation>
 <translation id="2435137177546457207">Dodatočné zmluvné podmienky prehliadača Google Chrome a systému Chrome OS Flex</translation>
 <translation id="2435248616906486374">Sieť je odpojená</translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
@@ -4228,6 +4229,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5072900412896857127">Zmluvné podmienky služby Google Play sa nedajú načítať. Skontrolujte pripojenie k sieti a skúste to znova.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}few{<ph name="FILE1" />, <ph name="FILE2" /> a # ďalšie}many{<ph name="FILE1" />, <ph name="FILE2" />, and # more}other{<ph name="FILE1" />, <ph name="FILE2" /> a # ďalších}}</translation>
 <translation id="5074318175948309511">Na to, aby toto nové nastavenie nadobudlo platnosť, budete možno musieť znova načítať túto stránku.</translation>
+<translation id="5074761966806028321">Na dokončenie nastavenia je stále potrebné povolenie</translation>
 <translation id="5075910247684008552">Bezpečné weby predvolene blokujú nezabezpečený obsah</translation>
 <translation id="5078638979202084724">Uložiť všetky karty ako záložky</translation>
 <translation id="5078796286268621944">Nesprávny kód PIN</translation>
@@ -4591,6 +4593,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5449551289610225147">Neplatné heslo</translation>
 <translation id="5449588825071916739">Uložiť všetky karty ako záložky</translation>
 <translation id="5449716055534515760">Zavrieť o&amp;kno</translation>
+<translation id="5452446625764825792">Teraz si môžete zobraziť nedávne fotky, médiá a aplikácie svojho telefónu</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funguje offline)</translation>
 <translation id="5454166040603940656">s poskytovateľom <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">Zobraziť ďalšie výsledky vyhľadávania</translation>
@@ -4651,6 +4654,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5499211612787418966">Toto dialógové okno nie je momentálne označené. Označíte ho stlačením kombinácie klávesov Alt-Shift A.</translation>
 <translation id="5499313591153584299">Tento súbor môže poškodiť váš počítať.</translation>
 <translation id="5499453227627332024">Pre váš kontajner systému Linux je k dispozícii inovácia. Inovovať môžete aj neskôr v aplikácii Nastavenia.</translation>
+<translation id="5499476581866658341">Teraz si môžete zobraziť nedávne fotky a médiá svojho telefónu</translation>
 <translation id="549957179819296104">Nová ikona</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />História vyhľadávania<ph name="END_LINK_SEARCH" /> a <ph name="BEGIN_LINK_GOOGLE" />ďalšie formy aktivity<ph name="END_LINK_GOOGLE" /> sa môžu ukladať do vášho účtu Google, keď sa doň prihlásite. Môžete ich kedykoľvek odstrániť.</translation>
 <translation id="5500709606820808700">Kontrola bezpečnosti prebehla dnes</translation>
@@ -6319,6 +6323,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7152478047064750137">Toto rozšírenie nevyžaduje žiadne špeciálne povolenia</translation>
 <translation id="7154130902455071009">Zmeniť úvodnú stránku na: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Existujúca fotka z fotoaparátu alebo súboru</translation>
+<translation id="7160182524506337403">Teraz si môžete zobraziť upozornenia svojho telefónu</translation>
 <translation id="7163202347044721291">Overuje sa aktivačný kód…</translation>
 <translation id="716640248772308851">Rozšírenie <ph name="EXTENSION" /> môže čítať obrázky, video a zvukové súbory vo vybratých umiestneniach.</translation>
 <translation id="7167486101654761064">&amp;Vždy otvárať súbory tohto typu</translation>
@@ -7333,6 +7338,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8138997515734480534">Stav virtuálneho počítača <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Súbory na Disku Google</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141418916163800697">Ďalšie funkcie môžete nakonfigurovať v nastaveniach Telefónneho centra</translation>
 <translation id="8141584439523427891">Otvára sa alternatívny prehliadač</translation>
 <translation id="8141725884565838206">Správa hesiel</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}few{# videá}many{# videos}other{# videí}}</translation>
@@ -7540,6 +7546,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="833986336429795709">Ak chcete otvoriť tento odkaz, vyberte aplikáciu</translation>
 <translation id="8342221978608739536">Nepokúsil(a) som sa o to</translation>
 <translation id="8342861492835240085">Vybrať zbierku</translation>
+<translation id="8345848587667658367">Teraz si môžete zobraziť najnovšie fotky, médiá, upozornenia a aplikácie svojho telefónu</translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
 <translation id="834785183489258869">Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám). Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="8350789879725387295">Nástroje dotykového pera v doku</translation>
@@ -8147,6 +8154,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8957757410289731985">Prispôsobiť profil</translation>
 <translation id="895944840846194039">Pamäť JavaScript</translation>
 <translation id="8960208913905765425">Prevod jednotiek v rámci rýchlych odpovedí</translation>
+<translation id="8960638196855923532">Teraz si môžete zobraziť upozornenia a aplikácie svojho telefónu</translation>
 <translation id="8962051932294470566">Naraz môžete zdieľať iba jeden súbor. Skúste to znova po dokončení aktuálneho prenosu.</translation>
 <translation id="8962083179518285172">Skryť podrobnosti</translation>
 <translation id="8962918469425892674">Tento web používa senzory pohybu alebo svetla.</translation>
@@ -8298,6 +8306,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="9103868373786083162">Stlačením tohto tlačidla prejdete späť, históriu si zobrazíte pomocou kontextovej ponuky</translation>
 <translation id="9108035152087032312">Pomenovať okno...</translation>
 <translation id="9108072915170399168">Aktuálne nastavenie spotreby dát: bez internetu</translation>
+<translation id="9108294543511800041">Teraz si môžete zobraziť nedávne fotky, médiá a upozornenia svojho telefónu</translation>
 <translation id="9108674852930645435">Novinky v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="9108808586816295166">Zabezpečený systém DNS nemusí byť vždy k dispozícii</translation>
 <translation id="9109122242323516435">Miesto uvoľníte odstránením súborov z úložiska zariadenia.</translation>
@@ -8422,7 +8431,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="934503638756687833">Položky, ktoré tu nie sú uvedené, budú v prípade potreby tiež odstránené. Prečítajte si ďalšie informácie o &lt;a href="<ph name="URL" />"&gt;ochrane pred nežiaducim softvérom&lt;/a&gt; v bielej knihe ochrany súkromia v Chrome.</translation>
 <translation id="93480724622239549">Chyba</translation>
 <translation id="935854577147268200">Zmenil sa telefón spojený s funkciou Smart Lock. Ak chcete Smart Lock aktualizovať, zadajte heslo. Zariadenie <ph name="DEVICE_TYPE" /> nabudúce odomknete telefónom. Smart Lock vypnete v Nastaveniach.</translation>
-<translation id="93610034168535821">Celkový priestor v úložisku používaný webmi:</translation>
 <translation id="936646668635477464">Kamera a mikrofón</translation>
 <translation id="936801553271523408">Údaje o diagnostike systému</translation>
 <translation id="93766956588638423">Opraviť rozšírenie</translation>

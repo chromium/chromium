@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">능동적 지원</translation>
 <translation id="3285080554353377245">Chrome 사용 방법에 관한 동영상</translation>
 <translation id="3288003805934695103">페이지 새로고침</translation>
-<translation id="3290991969712132877">신속하게 여기를 방문하려면 '옵션 더보기' 버튼을 눌러 이 페이지를 홈 화면에 추가하세요.</translation>
 <translation id="3297344142967351106">음성 지원</translation>
 <translation id="3303414029551471755">콘텐츠를 다운로드하시겠습니까?</translation>
 <translation id="3321367458490630980">관심분야 추가됨</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개(시크릿 탭 <ph name="TAB_COUNT_INCOGNITO" />개)}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">USB 케이블로 연결됨</translation>
-<translation id="4557685098773234337">신속하게 여기를 방문하려면 이 페이지를 홈 화면에 추가하세요.</translation>
 <translation id="4558311620361989323">웹페이지 단축키</translation>
 <translation id="4561730552726921821">등록 성공</translation>
 <translation id="4561979708150884304">연결되지 않음</translation>

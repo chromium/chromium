@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Käyttäjä</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Ulkoisten laitteiden laiteohjelmistojen päivityksiä koskeva ikkuna on auki. <ph name="NUM_UPDATES" /> päivitystä saatavilla.</translation>
+<translation id="1145516343487477149">Etsi ohjeartikkeleita ja vastauksia yleisiin Chromebook-kysymyksiin</translation>
 <translation id="1165039591588034296">Virhe</translation>
 <translation id="1175697296044146566">Laitetta (<ph name="DEVICE_TYPE" />) ylläpitää <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Keskitasoa (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Laita tumma teema pois päältä</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Laita tumma tila pois päältä</translation>
+<translation id="1881188606372070653">Voit pyytää juridisiin syihin perustuvia sisältömuutoksia <ph name="BEGIN_LINK1" />Oikeudellinen apu ‑sivulla<ph name="END_LINK1" />. Joitakin tili- ja järjestelmätietoja voidaan lähettää Googlelle. Käytämme ilmoittamiasi tietoja teknisten ongelmien ratkaisemiseen ja palvelujemme kehittämiseen <ph name="BEGIN_LINK2" />tietosuojakäytäntömme<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />käyttöehtojemme<ph name="END_LINK3" /> mukaisesti.</translation>
 <translation id="1887850431809612466">Laitteistoversio</translation>
 <translation id="1905710495812624430">Yritysten enimmäismäärä ylitettiin.</translation>
 <translation id="1908234395526491708">Epäonnistuneita UDP-pyyntöjä</translation>
@@ -623,6 +625,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6379086450106841622">Kosketusnäyttö</translation>
 <translation id="6381741036071372448">Testaa näppäimistöä</translation>
 <translation id="6388847657025262518">Skannerin syöttölaite on tukossa. Tarkista syöttölaite ja yritä uudelleen.</translation>
+<translation id="6394634179843537518">Lisää tiedosto</translation>
 <translation id="6410257289063177456">Kuvatiedostot </translation>
 <translation id="641081527798843608">Aiheen vastaavuus</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

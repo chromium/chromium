@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ユーザー</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">外部デバイスのファームウェアを更新するためのウィンドウが開いています。<ph name="NUM_UPDATES" /> 件のアップデートがあります。</translation>
+<translation id="1145516343487477149">ヘルプ記事と Chromebook に関するよくある質問の回答を確認できます</translation>
 <translation id="1165039591588034296">エラー</translation>
 <translation id="1175697296044146566">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。</translation>
 <translation id="1175951029573070619">普通（<ph name="SIGNAL_STRENGTH" />）</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">ダークモードをオフにする</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">ダークモードをオフにする</translation>
+<translation id="1881188606372070653">法的理由によりコンテンツの変更をリクエストするには、<ph name="BEGIN_LINK1" />法的な問題に関するヘルプページ<ph name="END_LINK1" />をご覧ください。アカウント情報とシステム情報の一部が Google に送信されます。ご提供いただいた情報は、Google で技術的な問題の解決やサービスの改善を図るため、<ph name="BEGIN_LINK2" />プライバシー ポリシー<ph name="END_LINK2" />と<ph name="BEGIN_LINK3" />利用規約<ph name="END_LINK3" />に沿って使用されます。</translation>
 <translation id="1887850431809612466">ハードウェア リビジョン</translation>
 <translation id="1905710495812624430">最大試行回数を超えました。</translation>
 <translation id="1908234395526491708">UDP リクエストに失敗しました</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">タッチスクリーン</translation>
 <translation id="6381741036071372448">キーボードをテストする</translation>
 <translation id="6388847657025262518">スキャナの給紙トレイが詰まっています。トレイを確認してから、もう一度お試しください。</translation>
+<translation id="6394634179843537518">ファイルを追加</translation>
 <translation id="6410257289063177456">画像ファイル</translation>
 <translation id="641081527798843608">件名の一致</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

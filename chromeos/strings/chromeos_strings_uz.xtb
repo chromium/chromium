@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Foydalanuvchi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Tashqi qurilmalar uchun mikrodasturni yangilash oynasi ochiq. <ph name="NUM_UPDATES" /> ta yangilanish chiqdi.</translation>
+<translation id="1145516343487477149">Yordam maqolalari va umumiy Chromebook savollariga javoblar toping</translation>
 <translation id="1165039591588034296">Xatolik</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi.</translation>
 <translation id="1175951029573070619">Oʻrtacha (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Tungi mavzuni faolsizlantirish</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Tungi rejimdan chiqish</translation>
+<translation id="1881188606372070653">Agar bu kontent biror qonunni buzsa, shikoyat yuborish uchun <ph name="BEGIN_LINK1" />Huquqiy yordam sahifasiga<ph name="END_LINK1" /> kiring. Hisob va tizimga oid ayrim axborotlar Google kompaniyasiga yuborilishi mumkin. Bizga taqdim etilgan maʼlumotlardan texnik muammolarni hal qilish va xizmatlarimizni yaxshilashda foydalanamiz. Bunda <ph name="BEGIN_LINK2" />Maxfiylik siyosati<ph name="END_LINK2" /> va <ph name="BEGIN_LINK3" />Xizmat shartlariga<ph name="END_LINK3" /> rioya qilinadi.</translation>
 <translation id="1887850431809612466">Qurilma versiyasi</translation>
 <translation id="1905710495812624430">Urinishlar soni cheklovdan oshib ketdi.</translation>
 <translation id="1908234395526491708">Bajarilmagan UDP soʻrovlari</translation>
@@ -623,6 +625,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6379086450106841622">Sensorli ekran</translation>
 <translation id="6381741036071372448">Klaviaturangizni sinang</translation>
 <translation id="6388847657025262518">Skanerga joylanadigan qogʻozlar tiqilib qoldi. Hujjat joylash panelini tekshirib, qaytadan urining.</translation>
+<translation id="6394634179843537518">Fayl qoʻshish</translation>
 <translation id="6410257289063177456">Tasvir fayllar</translation>
 <translation id="641081527798843608">Mavzu mosligi</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">Актыўная дапамога</translation>
 <translation id="3285080554353377245">Відэа пра выкарыстанне Chrome</translation>
 <translation id="3288003805934695103">Перазагрузка старонкі</translation>
-<translation id="3290991969712132877">Каб вы маглі пераходзіць на гэты сайт хутчэй, дадайце яго на галоўны экран, выкарыстаўшы кнопку "Дадатковыя параметры"</translation>
 <translation id="3297344142967351106">Галасавая дапамога</translation>
 <translation id="3303414029551471755">Перайсці да спампоўкі змесціва?</translation>
 <translation id="3321367458490630980">Інтарэс дададзены</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка}one{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}few{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}many{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}other{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Падключана праз кабель USB</translation>
-<translation id="4557685098773234337">Каб пераходзіць на гэты сайт хутчэй, дадайце яго на галоўны экран</translation>
 <translation id="4558311620361989323">Ярлыкі вэб-старонак</translation>
 <translation id="4561730552726921821">Рэгістрацыя завершана</translation>
 <translation id="4561979708150884304">Няма падключэння</translation>

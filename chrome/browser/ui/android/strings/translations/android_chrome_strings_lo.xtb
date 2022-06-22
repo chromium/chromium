@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">ຄວາມຊ່ວຍເຫຼືອແບບບໍ່ຕ້ອງຮ້ອງຂໍ</translation>
 <translation id="3285080554353377245">ວິດີໂອກ່ຽວກັບວິທີໃຊ້ Chrome</translation>
 <translation id="3288003805934695103">ກຳລັງໂຫຼດໜ້າຄືນໃໝ່</translation>
-<translation id="3290991969712132877">ເພື່ອມາບ່ອນນີ້ໄດ້ໄວກວ່າ, ກະລຸນາເພີ່ມໜ້ານີ້ໃສ່ໜ້າຈໍຫຼັກຂອງທ່ານຈາກປຸມຕົວເລືອກເພີ່ມເຕີມ</translation>
 <translation id="3297344142967351106">ການຊ່ວຍເຫຼືອທາງສຽງ</translation>
 <translation id="3303414029551471755">ສືບ​ຕໍ່​ໄປດາວ​ໂຫຼດ​ເນື້ອ​ໃນ​ບໍ?</translation>
 <translation id="3321367458490630980">ເພີ່ມຄວາມສົນໃຈແລ້ວ</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ແຖບ}other{<ph name="TAB_COUNT_MANY" /> ແຖບ, <ph name="TAB_COUNT_INCOGNITO" /> ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">ເຊື່ອມຕໍ່ກັບສາຍ USB</translation>
-<translation id="4557685098773234337">ເພື່ອມາບ່ອນນີ້ໄດ້ໄວກວ່າ, ກະລຸນາເພີ່ມໜ້ານີ້ໃສ່ໜ້າຈໍຫຼັກຂອງທ່ານ</translation>
 <translation id="4558311620361989323">ທາງລັດໜ້າເວັບ</translation>
 <translation id="4561730552726921821">ລົງທະບຽນສຳເລັດແລ້ວ</translation>
 <translation id="4561979708150884304">ບໍ່ມີການເຊື່ອມຕໍ່</translation>

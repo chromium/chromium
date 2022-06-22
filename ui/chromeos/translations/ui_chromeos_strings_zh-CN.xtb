@@ -159,6 +159,7 @@
 <translation id="2377319039870049694">切换到列表视图</translation>
 <translation id="2377590462528165447">与 Linux 共享了 <ph name="NUMBER_OF_ITEMS" /> 个文件夹</translation>
 <translation id="2378075407703503998">已选择 <ph name="SELCTED_FILE_COUNT" /> 个文件</translation>
+<translation id="2387120140441437063">无法打开回收站中的文件。请先恢复相应文件，然后再打开。</translation>
 <translation id="2387458720915042159">代理连接类型</translation>
 <translation id="2389832672041313158">缅甸语</translation>
 <translation id="2392369802118427583">激活</translation>

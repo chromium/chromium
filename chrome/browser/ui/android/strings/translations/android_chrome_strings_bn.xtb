@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">আগেভাগে সহায়তা</translation>
 <translation id="3285080554353377245">Chrome কীভাবে ব্যবহার করবেন সেই সংক্রান্ত ভিডিও</translation>
 <translation id="3288003805934695103">পৃষ্ঠাটি আবার লোড করে দেখুন</translation>
-<translation id="3290991969712132877">এটি আরও তাড়াতাড়ি পেতে, এই পৃষ্ঠাটি 'আরও বিকল্প' বোতাম থেকে আপনার হোম স্ক্রিনে যোগ করুন</translation>
 <translation id="3297344142967351106">ভয়েস সহায়তা</translation>
 <translation id="3303414029551471755">কন্টেন্ট ডাউনলোড করার জন্য এগোতে চান?</translation>
 <translation id="3321367458490630980">আগ্রহ যোগ করা হয়েছে</translation>
@@ -641,7 +640,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ট্যাব}one{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">ইউএসবি কেবেলের সাথে কানেক্ট করা হয়েছে</translation>
-<translation id="4557685098773234337">এখানে তাড়াতাড়ি পৌঁছাতে এই পৃষ্ঠাটি আপনার হোম স্ক্রিনে যোগ করুন</translation>
 <translation id="4558311620361989323">ওয়েবপৃষ্ঠার শর্টকাটগুলি</translation>
 <translation id="4561730552726921821">রেজিস্ট্রেশন হয়ে গেছে</translation>
 <translation id="4561979708150884304">কোনও কানেকশন নেই</translation>

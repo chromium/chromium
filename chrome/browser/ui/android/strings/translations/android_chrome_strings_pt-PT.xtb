@@ -437,7 +437,6 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="3284510035090979597">Ajuda proativa</translation>
 <translation id="3285080554353377245">Vídeos sobre como utilizar o Chrome</translation>
 <translation id="3288003805934695103">Atualizar a página</translation>
-<translation id="3290991969712132877">Para aceder aqui mais rapidamente, adicione esta página ao ecrã principal a partir do botão Mais opções.</translation>
 <translation id="3297344142967351106">Assistente de voz</translation>
 <translation id="3303414029551471755">Pretende transferir o conteúdo?</translation>
 <translation id="3321367458490630980">Interesse adicionado</translation>
@@ -639,7 +638,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador}other{<ph name="TAB_COUNT_MANY" /> separadores, <ph name="TAB_COUNT_INCOGNITO" /> de navegação anónima}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Ligado com cabo USB</translation>
-<translation id="4557685098773234337">Adicione esta página ao ecrã principal para aceder à mesma mais rapidamente.</translation>
 <translation id="4558311620361989323">Atalhos da página Web</translation>
 <translation id="4561730552726921821">Registo efetuado com êxito</translation>
 <translation id="4561979708150884304">Sem ligação</translation>

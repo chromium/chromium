@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">主動提供協助</translation>
 <translation id="3285080554353377245">關於如何使用 Chrome 的影片</translation>
 <translation id="3288003805934695103">重新載入網頁</translation>
-<translation id="3290991969712132877">如要更快速開啟此網頁，請使用「更多選項」按鈕將此網頁新增到主畫面</translation>
 <translation id="3297344142967351106">語音助手</translation>
 <translation id="3303414029551471755">繼續下載內容？</translation>
 <translation id="3321367458490630980">已新增興趣</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁、<ph name="TAB_COUNT_INCOGNITO" /> 個無痕式分頁}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">已使用 USB 連接線連接</translation>
-<translation id="4557685098773234337">如要迅速開啟此網頁，請將此網頁新增至主畫面</translation>
 <translation id="4558311620361989323">網頁快速鍵</translation>
 <translation id="4561730552726921821">註冊成功</translation>
 <translation id="4561979708150884304">沒有連線</translation>

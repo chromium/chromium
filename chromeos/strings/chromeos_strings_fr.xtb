@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">La fenêtre de mise à jour du micrologiciel pour les appareils externes est ouverte. <ph name="NUM_UPDATES" /> mises à jour disponibles.</translation>
+<translation id="1145516343487477149">Trouvez des articles d'aide et des réponses aux questions fréquentes sur les Chromebooks</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1175697296044146566">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Moyenne (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Annuler le thème sombre</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Annuler le mode sombre</translation>
+<translation id="1881188606372070653">Accédez à la <ph name="BEGIN_LINK1" />page d'aide des demandes légales<ph name="END_LINK1" /> pour demander des modifications de contenu pour des raisons juridiques. Certaines informations concernant votre compte et votre système pourront être envoyées à Google. Nous utiliserons les données fournies pour résoudre des problèmes techniques et pour améliorer nos services, conformément à nos <ph name="BEGIN_LINK2" />Règles de confidentialité<ph name="END_LINK2" /> et à nos <ph name="BEGIN_LINK3" />Conditions d'utilisation<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Version du matériel</translation>
 <translation id="1905710495812624430">Vous avez atteint le nombre maximal autorisé de tentatives.</translation>
 <translation id="1908234395526491708">Échec de la requête UDP</translation>
@@ -623,6 +625,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6379086450106841622">Écran tactile</translation>
 <translation id="6381741036071372448">Testez le clavier</translation>
 <translation id="6388847657025262518">Le chargeur de document du scanner est bloqué. Vérifiez le chargeur, puis réessayez.</translation>
+<translation id="6394634179843537518">Ajouter un fichier</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
 <translation id="641081527798843608">Correspondance d'objet</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

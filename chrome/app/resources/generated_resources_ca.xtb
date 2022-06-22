@@ -1908,6 +1908,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Suprimeix 1 aplicació no admesa}other{Suprimeix # aplicacions no admeses}}</translation>
 <translation id="2776560192867872731">Canvia el nom del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Suprimeix aquest contenidor</translation>
+<translation id="2778471504622896352">Afegeix aplicacions remotes al menú d'aplicacions de ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">S'ha produït un error en instal·lar l'aplicació per a Linux</translation>
 <translation id="2783298271312924866">Baixat</translation>
@@ -2223,6 +2224,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3067198360141518313">Executa aquest connector</translation>
 <translation id="3071624960923923138">Pots fer clic aquí per obrir una pestanya nova</translation>
 <translation id="3072775339180057696">Vols permetre que el lloc web vegi <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Tradueix la pàgina completa</translation>
 <translation id="3075874217500066906">Per començar el procés de Powerwash, cal que reinicieu el dispositiu. Després de fer-ho, haureu de confirmar que voleu continuar.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Desa-la només en aquest dispositiu</translation>
@@ -3542,6 +3544,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i <ph name="NUMBER_OF_OTHER_SWITCHES" /> interruptors més</translation>
 <translation id="439266289085815679"><ph name="USER_EMAIL" /> controla la configuració del Bluetooth.</translation>
 <translation id="4392896746540753732">Edita el fitxer de configuració</translation>
+<translation id="4393713825278446281">Dispositius amb Vinculació ràpida desats a <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Desactiva</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Obre-les totes}=1{&amp;Obre l'adreça d'interès}other{&amp;Obre-les totes ({COUNT})}}</translation>
 <translation id="4397372003838952832">No caldrà que recordis aquesta contrasenya. Es desarà a <ph name="GOOGLE_PASSWORD_MANAGER" /> per a <ph name="EMAIL" />.</translation>
@@ -3771,6 +3774,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4615586811063744755">cap galeta seleccionada</translation>
 <translation id="461661862154729886">Font d'energia</translation>
 <translation id="4617001782309103936">És massa curt</translation>
+<translation id="4617019240346358451">Torna a carregar la pàgina per utilitzar <ph name="EXTENSION_NAME" /></translation>
 <translation id="4617270414136722281">Opcions d'extensió</translation>
 <translation id="4617880081511131945">No es pot establir la connexió</translation>
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
@@ -3986,6 +3990,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4833683849865011483">S'ha trobat 1 impressora al servidor d'impressió</translation>
 <translation id="4836504898754963407">Gestiona les empremtes digitals</translation>
 <translation id="4837128290434901661">Vols tornar a utilitzar la Cerca de Google?</translation>
+<translation id="4837165100461973682">Torna a carregar la pàgina perquè s'apliquin els canvis</translation>
 <translation id="4837926214103741331">No teniu autorització per fer servir aquest dispositiu. Contacteu amb el propietari del dispositiu per obtenir el permís d'inici de sessió.</translation>
 <translation id="4837952862063191349">Per desbloquejar i restaurar les dades locals, introduïu la contrasenya antiga de: <ph name="DEVICE_TYPE" /></translation>
 <translation id="4838170306476614339">Mostra les fotos, els fitxers multimèdia i les notificacions del telèfon</translation>
@@ -4295,6 +4300,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5150254825601720210">Nom del servidor SSL de certificats de Netscape</translation>
 <translation id="5151354047782775295">Si no alliberes espai de disc pot ser que algunes dades se suprimeixin automàticament</translation>
 <translation id="5153234146675181447">Oblida el telèfon</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Configuració avançada de <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Assumpte</translation>
 <translation id="5155327081870541046">A la barra d'adreces, introdueix la drecera del lloc web que vulguis cercar, com ara "@bookmarks". A continuació, prem la tecla de drecera que prefereixis i introdueix el terme de cerca.</translation>
@@ -5070,6 +5076,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> està utilitzant la càmera i el micròfon</translation>
 <translation id="5935158534896975820">S'està preparant la sol·licitud de signatura del certificat (en espera del servidor)</translation>
 <translation id="5935656526031444304">Gestiona Navegació segura</translation>
+<translation id="5936065461722368675">Tradueix la pàgina completa</translation>
 <translation id="5938002010494270685">Hi ha una actualització de seguretat disponible</translation>
 <translation id="5939518447894949180">Restableix</translation>
 <translation id="5939719276406088041">No es pot crear la drecera</translation>
@@ -5929,6 +5936,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> s'ha afegit de manera remota</translation>
 <translation id="6790820461102226165">Afegeix una persona...</translation>
 <translation id="6793604637258913070">Ressalta la marca d'inserció de text quan es mostri o es mogui</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">La cerca automàtica et permet moure't pels elements de la pantalla automàticament. Quan un element es marqui, prem Selecciona per activar-lo.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">S'ha produït un error.</translation>
@@ -7803,6 +7811,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8642947597466641025">Fa el text més gran</translation>
 <translation id="8643443571868262066">El fitxer <ph name="FILE_NAME" /> pot ser perillós. Vols enviar-lo a la Protecció avançada de Google perquè l'analitzi?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{No hi ha cap galeta}=1{S'ha bloquejat 1 galeta}other{S'han bloquejat # galetes}}</translation>
+<translation id="864423554496711319">Dispositius desats al teu compte</translation>
 <translation id="8644655801811752511">Aquesta clau de seguretat no es pot restablir. Prova de restablir la clau immediatament després d'inserir-la.</translation>
 <translation id="8645354835496065562">Continua permetent l'accés als sensors</translation>
 <translation id="8645920082661222035">Prediu esdeveniments perillosos abans que es produeixin i t'avisa</translation>
@@ -8407,7 +8416,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="934503638756687833">Si cal, també se suprimiran elements no inclosos en aquesta llista. Obtén més informació sobre la &lt;a href="<ph name="URL" />"&gt;protecció contra programari no desitjat&lt;/a&gt; a l'informe de privadesa de Chrome.</translation>
 <translation id="93480724622239549">Error</translation>
 <translation id="935854577147268200">El telèfon Smart Lock ha canviat. Introdueix la contrasenya per actualitzar Smart Lock. La propera vegada, <ph name="DEVICE_TYPE" /> es desbloquejarà amb el telèfon. Pots desactivar Smart Lock a Configuració.</translation>
-<translation id="93610034168535821">Emmagatzematge total utilitzat pels llocs web:</translation>
 <translation id="936646668635477464">Càmera i micròfon</translation>
 <translation id="936801553271523408">Dades de diagnòstic del sistema</translation>
 <translation id="93766956588638423">Repara l'extensió</translation>

@@ -1545,6 +1545,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2433836460518180625">Faqat qurilmani qulfdan chiqarsin</translation>
 <translation id="2434449159125086437">Printer sozlanmadi. Sozlamalarni tekshiring va qaytadan urining.</translation>
 <translation id="2434758125294431199">Sizga kim fayl yubora olishini tanlang</translation>
+<translation id="2434915728183570229">Endi siz telefoningizdagi ilovalarni koʻra olasiz</translation>
 <translation id="2435137177546457207">Google Chrome va ChromeOS Flex qoʻshimcha shartlari</translation>
 <translation id="2435248616906486374">Tarmoqqa ulanish yo‘q</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
@@ -2226,6 +2227,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3067198360141518313">Bu plaginni ishga tushirish</translation>
 <translation id="3071624960923923138">Yangi varaq ochish uchun bu yerni bosing</translation>
 <translation id="3072775339180057696">Saytga <ph name="FILE_NAME" /> faylini ochiga ruxsat berasizmi?</translation>
+<translation id="3074499504015191586">Toʻliq sahifani tarjima qilish</translation>
 <translation id="3075874217500066906">Powerwash amalini boshlash uchun qurilmani o‘chirib yoqish zarur. Keyin tasdiqlash so‘rovi paydo bo‘ladi.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Faqat shu qurilmada saqlansin</translation>
@@ -4229,6 +4231,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5072900412896857127">Google Play xizmat shartlari yuklanmadi. Internetga ulanishni tekshiring va qaytadan urining.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" />, va yana # ta}}</translation>
 <translation id="5074318175948309511">Sozlamalar kuchga kirishi uchun sahifani qayta yuklash kerak.</translation>
+<translation id="5074761966806028321">Sozlashni yakunlash uchun ruxsat kerak</translation>
 <translation id="5075910247684008552">Himoyalangan saytlarda zararli kontent avtomatik bloklanadi</translation>
 <translation id="5078638979202084724">Barcha ichki oynalarni xatcho‘plarga qo‘shish</translation>
 <translation id="5078796286268621944">Noto‘g‘ri PIN-kod</translation>
@@ -4592,6 +4595,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5449551289610225147">Parol noto‘g‘ri</translation>
 <translation id="5449588825071916739">Barcha ichki oynalarni xatcho‘pga qo‘shish</translation>
 <translation id="5449716055534515760">Oynani &amp;yopish</translation>
+<translation id="5452446625764825792">Endi siz telefoningizdagi oxirgi rasmlar, multimedia va ilovalarni koʻra olasiz</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (internetsiz ishlaydi)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> yordamida</translation>
 <translation id="545484289444831485">Boshqa qidiruv natijalari</translation>
@@ -4652,6 +4656,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5499211612787418966">Bu suhbat hozir fokuslanmagan. Bu suhbatni fokuslash uchun Alt+Shift+A tugmalarini bosing.</translation>
 <translation id="5499313591153584299">Bu fayl kompyuteringiz uchun zararli bo‘lishi mumkin.</translation>
 <translation id="5499453227627332024">Linux konteyneringiz uchun yangilanish chiqqan. Uni keyinroq Sozlamalar ilovasi orqali ham yangilash mumkin.</translation>
+<translation id="5499476581866658341">Endi siz telefoningizdagi oxirgi rasm va multimedia fayllarini koʻra olasiz</translation>
 <translation id="549957179819296104">Yangi belgi</translation>
 <translation id="5500168250243071806">Google hisobingizga kirganingizda <ph name="BEGIN_LINK_SEARCH" />Qidiruv tarixi<ph name="END_LINK_SEARCH" /> va <ph name="BEGIN_LINK_GOOGLE" />boshqa shakldagi harakatlaringiz<ph name="END_LINK_GOOGLE" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.</translation>
 <translation id="5500709606820808700">Xavfsizlik tekshiruvi bugun bajarilgan</translation>
@@ -5079,6 +5084,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5933522550144185133"><ph name="APP_NAME" /> kamera va mikrofondan foydalanmoqda</translation>
 <translation id="5935158534896975820">Sertifikatni imzolash talabi tayyorlanmoqda (server javobi kutilmoqda)</translation>
 <translation id="5935656526031444304">Saytlarni xavfsiz kezish rejimini boshqarish</translation>
+<translation id="5936065461722368675">Toʻliq sahifani tarjima qilish</translation>
 <translation id="5938002010494270685">Xavfsizlikka oid yangilanish mavjud</translation>
 <translation id="5939518447894949180">Asliga qaytarish</translation>
 <translation id="5939719276406088041">Yorliq yaratilmadi</translation>
@@ -6316,6 +6322,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7152478047064750137">Bu kengaytma hech qanday maxsus ruxsat talab qilmaydi</translation>
 <translation id="7154130902455071009">Boshlash sahifani quyidagisiga almashtirish: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Kamera yoki galereyadan olingan surat</translation>
+<translation id="7160182524506337403">Endi siz telefoningizdagi bildirishnomalarni koʻra olasiz</translation>
 <translation id="7163202347044721291">Aktivatsiya kodi tasdiqlanmoqda…</translation>
 <translation id="716640248772308851">“<ph name="EXTENSION" />” kengaytmasi belgilangan jildlardan rasm, audio va video fayllarni o‘qishi mumkin.</translation>
 <translation id="7167486101654761064">&amp;Bu turdagi fayllar har doim ochilsin</translation>
@@ -7329,6 +7336,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8138997515734480534"><ph name="VM_NAME" /> holati</translation>
 <translation id="8139447493436036221">Google Drive fayllari</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141418916163800697">Phone Hub sozlamalari orqali koʻplab funksiyalarni sozlashingiz mumkin</translation>
 <translation id="8141584439523427891">Hozir muqobil brauzerda ochiladi</translation>
 <translation id="8141725884565838206">Parollarni boshqarish</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{video}other{# ta video}}</translation>
@@ -7536,6 +7544,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="833986336429795709">Havolani ochish uchun ilova tanlang</translation>
 <translation id="8342221978608739536">Sinab koʻrmadim</translation>
 <translation id="8342861492835240085">To‘plamni tanlang</translation>
+<translation id="8345848587667658367">Endi siz telefoningizdagi oxirgi rasmlar, multimedia, bildirishnomalar va ilovalarni koʻra olasiz</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
 <translation id="834785183489258869">Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzata olmaydi. Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
 <translation id="8350789879725387295">Dokdagi stilus vositalari</translation>
@@ -8141,6 +8150,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8957757410289731985">Profilni moslash</translation>
 <translation id="895944840846194039">JavaScript xotirasi</translation>
 <translation id="8960208913905765425">Tezkor javoblardagi birliklar konvertori</translation>
+<translation id="8960638196855923532">Endi siz telefoningizdagi bildirishnoma va ilovalarni koʻra olasiz</translation>
 <translation id="8962051932294470566">Bir vaqtda faqat bitta fayl yubora olasiz. Joriy uzatish yakunidan keyin qaytadan urining.</translation>
 <translation id="8962083179518285172">Tafsilotlarni yopish</translation>
 <translation id="8962918469425892674">Bu sayt harakat yoki yorug‘lik sensorlaridan foydalanmoqda.</translation>
@@ -8292,6 +8302,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9103868373786083162">Ortga qaytish uchun bosing, brauzer tarixini ko‘rish uchun kontekst menyusini tanlang</translation>
 <translation id="9108035152087032312">Oynani &amp;nomlash...</translation>
 <translation id="9108072915170399168">Hozir internetsiz trafik sarflanishi sozlangan</translation>
+<translation id="9108294543511800041">Endi siz telefoningizdagi oxirgi rasmlar, multimedia va bildirishnomalarni koʻra olasiz</translation>
 <translation id="9108674852930645435"><ph name="DEVICE_TYPE" /> yangi funksiyalari bilan tanishing</translation>
 <translation id="9108808586816295166">Xavfsiz DNS xizmati har doim ham ishlamasligi mumkin</translation>
 <translation id="9109122242323516435">Joy ochish uchun qurilma xotirasidan fayllarni o‘chiring</translation>
@@ -8416,7 +8427,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="934503638756687833">Ro‘yxatda keltirilmagan fayllar olib tashlangan bo‘lishi mumkin. &lt;a href="<ph name="URL" />"&gt;Keraksiz dasturlardan himoyalanish&lt;/a&gt; haqida batafsil axborot oling.</translation>
 <translation id="93480724622239549">Nosozlik yoki xatolik</translation>
 <translation id="935854577147268200">Smart Lock funksiyasi yoqilgan telefon oʻzgardi. Smart Lock funksiyasini yangilash uchun parolni kiriting. Keyingi safar telefoningiz <ph name="DEVICE_TYPE" /> qurilmasini qulfdan chiqara oladi. Sozlamalar orqali Smart Lock funksiyasini faolsizlantirish mumkin.</translation>
-<translation id="93610034168535821">Saytlar ishlatgan jami xotira:</translation>
 <translation id="936646668635477464">Kamera va mikrofon</translation>
 <translation id="936801553271523408">Tizim diagnostik ma’lumotlari</translation>
 <translation id="93766956588638423">Kengaytmani ta’mirlash</translation>

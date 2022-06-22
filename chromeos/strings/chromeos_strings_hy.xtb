@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Օգտատեր</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Բացված է արտաքին սարքերի համար ներկառուցված ծրագրաշարի թարմացման պատուհանը։ Հասանելի է <ph name="NUM_UPDATES" /> թարմացում։</translation>
+<translation id="1145516343487477149">Գտեք օգնության հոդվածներ և Chromebook-ի վերաբերյալ հաճախ տրվող հարցերի պատասխաններ</translation>
 <translation id="1165039591588034296">Սխալ</translation>
 <translation id="1175697296044146566">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի կողմից։</translation>
 <translation id="1175951029573070619">Միջին (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Անջատել մուգ թեման</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Անջատել մուգ ռեժիմը</translation>
+<translation id="1881188606372070653">Իրավական հիմքերով բովանդակության փոփոխություն պահանջելու համար անցեք <ph name="BEGIN_LINK1" />Իրավական հարցերով օգնության էջ<ph name="END_LINK1" />։ Հաշվի և համակարգի որոշ տվյալներ կարող են ուղարկվել Google-ին։ Ձեր տրամադրած տեղեկությունները կօգտագործվեն տեխնիկական խնդիրները լուծելու և մեր ծառայությունների որակը բարելավելու նպատակով՝ մեր <ph name="BEGIN_LINK2" />Գաղտնիության քաղաքականության<ph name="END_LINK2" /> և <ph name="BEGIN_LINK3" />Օգտագործման պայմանների<ph name="END_LINK3" /> համաձայն։</translation>
 <translation id="1887850431809612466">Սարքի տարբերակը</translation>
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
 <translation id="1908234395526491708">Ձախողված UDP հարցումներ</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">հպէկրան</translation>
 <translation id="6381741036071372448">Փորձարկեք ձեր ստեղնաշարը</translation>
 <translation id="6388847657025262518">Սկաների փաստաթղթերի մատակարարը լռվել է։ Ստուգեք մատակարարը և նորից փորձեք։</translation>
+<translation id="6394634179843537518">Ավելացնել ֆայլ</translation>
 <translation id="6410257289063177456">Պատկերների ֆայլեր</translation>
 <translation id="641081527798843608">Թեմաների համընկնում</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

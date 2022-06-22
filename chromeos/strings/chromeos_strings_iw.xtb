@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">משתמש</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">החלון של עדכון הקושחה למכשירים חיצוניים פתוח. יש <ph name="NUM_UPDATES" /> עדכונים זמינים.</translation>
+<translation id="1145516343487477149">‏חיפוש של מאמרי עזרה ותשובות לשאלות נפוצות בנושא Chromebook</translation>
 <translation id="1165039591588034296">שגיאה</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">ממוצע (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">השבתת העיצוב הכהה</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">השבתת המצב הכהה</translation>
+<translation id="1881188606372070653">‏אפשר לעבור אל <ph name="BEGIN_LINK1" />דף העזרה המשפטית<ph name="END_LINK1" /> כדי לבקש שינויים בתוכן מסיבות משפטיות. פרטים מסוימים על החשבון והמערכת עשויים להישלח ל-Google. אנחנו נשתמש במידע שיתקבל ממך כדי לטפל בבעיות טכניות ולשפר את השירותים שלנו, בכפוף ל<ph name="BEGIN_LINK2" />מדיניות הפרטיות<ph name="END_LINK2" /> ו<ph name="BEGIN_LINK3" />לתנאים ולהגבלות<ph name="END_LINK3" /> שלנו.</translation>
 <translation id="1887850431809612466">שכתוב חומרה</translation>
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
 <translation id="1908234395526491708">‏בקשות UDP נכשלו</translation>
@@ -623,6 +625,7 @@
 <translation id="6379086450106841622">מסך מגע</translation>
 <translation id="6381741036071372448">בדיקת המקלדת</translation>
 <translation id="6388847657025262518">מזין המסמכים של הסורק תקוע. יש לבדוק אותו ולנסות שוב.</translation>
+<translation id="6394634179843537518">הוספה של קובץ</translation>
 <translation id="6410257289063177456">קובצי תמונה</translation>
 <translation id="641081527798843608">התאמת נושא</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

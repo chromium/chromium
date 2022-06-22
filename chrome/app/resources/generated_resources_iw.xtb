@@ -1557,6 +1557,7 @@
 <translation id="2433836460518180625">ביטול הנעילה של המכשיר בלבד</translation>
 <translation id="2434449159125086437">לא ניתן להגדיר את המדפסת. יש לבדוק את התצורה ולנסות שוב.</translation>
 <translation id="2434758125294431199">אנשי קשר לבחירתך שיוכלו לשתף איתך</translation>
+<translation id="2434915728183570229">עכשיו יש לך אפשרות לראות את האפליקציות שבטלפון</translation>
 <translation id="2435137177546457207">‏תנאים נוספים של Google Chrome ו-ChromeOS Flex</translation>
 <translation id="2435248616906486374">הרשת מנותקת</translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
@@ -4242,6 +4243,7 @@
 <translation id="5072900412896857127">‏לא ניתן לטעון את התנאים וההגבלות של Google Play. יש לבדוק את החיבור לרשת ולנסות שוב.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />,‏ <ph name="FILE2" />}many{<ph name="FILE1" />,‏ <ph name="FILE2" /> ועוד #}other{<ph name="FILE1" />,‏ <ph name="FILE2" /> ועוד #}}</translation>
 <translation id="5074318175948309511">ייתכן שיהיה צורך לטעון מחדש דף זה על מנת שההגדרות החדשות ייכנסו לתוקף.</translation>
+<translation id="5074761966806028321">עדיין נדרשת הרשאה כדי להשלים את ההגדרה</translation>
 <translation id="5075910247684008552">תוכן לא מאובטח נחסם כברירת מחדל באתרים מאובטחים</translation>
 <translation id="5078638979202084724">יצירת סימנייה לכל הכרטיסיות</translation>
 <translation id="5078796286268621944">‏PIN שגוי</translation>
@@ -4605,6 +4607,7 @@
 <translation id="5449551289610225147">סיסמה לא חוקית</translation>
 <translation id="5449588825071916739">הוספת סימנייה לכל הכרטיסיות</translation>
 <translation id="5449716055534515760">סגירת ח&amp;לון</translation>
+<translation id="5452446625764825792">עכשיו יש לך אפשרות לראות את התמונות, המדיה והאפליקציות האחרונות שבטלפון</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (פועלת אופליין)</translation>
 <translation id="5454166040603940656">עם <ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">הצגת תוצאות חיפוש נוספות</translation>
@@ -4665,6 +4668,7 @@
 <translation id="5499211612787418966">‏אין התמקדות בתיבת הדו-שיח הזו. כדי להתמקד בתיבת הדו-שיח הזו, צריך להקיש על Alt +‏ Shift A.</translation>
 <translation id="5499313591153584299">קובץ זה עלול להסב נזק למחשב שלך.</translation>
 <translation id="5499453227627332024">‏יש שדרוג זמין עבור קונטיינר Linux שלך. אפשר לשדרג גם במועד מאוחר יותר דרך אפליקציית ההגדרות.</translation>
+<translation id="5499476581866658341">עכשיו יש לך אפשרות לראות את המדיה והתמונות האחרונות שבטלפון</translation>
 <translation id="549957179819296104">הסמל החדש</translation>
 <translation id="5500168250243071806">‏<ph name="BEGIN_LINK_SEARCH" />היסטוריית החיפושים<ph name="END_LINK_SEARCH" /> ו<ph name="BEGIN_LINK_GOOGLE" />סוגי פעילות אחרים<ph name="END_LINK_GOOGLE" /> יכולים להישמר בחשבון Google אחרי שנכנסים. אפשר למחוק אותם בכל שלב.</translation>
 <translation id="5500709606820808700">בדיקת הבטיחות פעלה היום</translation>
@@ -6333,6 +6337,7 @@
 <translation id="7152478047064750137">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה</translation>
 <translation id="7154130902455071009">שינוי דף הפתיחה ל: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">תמונה קיימת ממצלמה או מקובץ</translation>
+<translation id="7160182524506337403">עכשיו יש לך אפשרות לראות את ההתראות שבטלפון</translation>
 <translation id="7163202347044721291">מתבצע אימות של קוד הפעלה...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" יכול לקרוא קובצי תמונות, וידאו ואודיו במיקומים המסומנים.</translation>
 <translation id="7167486101654761064">&amp;פתיחה תמיד של קבצים מסוג זה</translation>
@@ -7349,6 +7354,7 @@
 <translation id="8138997515734480534">הסטטוס של <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">‏קבצים ב-Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141418916163800697">‏אפשר להגדיר תכונות נוספות בהגדרות Phone Hub</translation>
 <translation id="8141584439523427891">נפתח עכשיו בדפדפן חלופי</translation>
 <translation id="8141725884565838206">ניהול הסיסמאות שלך</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{סרטון}two{# סרטונים}many{# סרטונים}other{# סרטונים}}</translation>
@@ -7556,6 +7562,7 @@
 <translation id="833986336429795709">צריך לבחור אפליקציה כדי לפתוח את הקישור הזה</translation>
 <translation id="8342221978608739536">לא ניסיתי</translation>
 <translation id="8342861492835240085">בחירת אוסף</translation>
+<translation id="8345848587667658367">עכשיו יש לך אפשרות לראות את התמונות, המדיה, ההתראות והאפליקציות האחרונות שבטלפון</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
 <translation id="834785183489258869">‏במצב אנונימי, אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים השונים, למשל לצורך הצגת מודעות בהתאמה אישית. ייתכן שתכונות באתרים מסוימים לא יפעלו.</translation>
 <translation id="8350789879725387295">כלי סטיילוס באזור המוצמד</translation>
@@ -8163,6 +8170,7 @@
 <translation id="8957757410289731985">התאמה אישית של הפרופיל</translation>
 <translation id="895944840846194039">‏זיכרון JavaScript</translation>
 <translation id="8960208913905765425">המרת יחידות של תשובות מהירות</translation>
+<translation id="8960638196855923532">עכשיו יש לך אפשרות לראות את ההתראות והאפליקציות שבטלפון</translation>
 <translation id="8962051932294470566">אפשר לשתף רק קובץ אחד בכל פעם. יש לנסות שוב כאשר ההעברה הנוכחית תסתיים.</translation>
 <translation id="8962083179518285172">הסתרת פרטים</translation>
 <translation id="8962918469425892674">האתר הזה משתמש בחיישני תנועה או תאורה.</translation>
@@ -8314,6 +8322,7 @@
 <translation id="9103868373786083162">יש ללחוץ כדי לחזור אחורה, תפריט הקשר להצגת ההיסטוריה</translation>
 <translation id="9108035152087032312">מתן &amp;שם לחלון…</translation>
 <translation id="9108072915170399168">ההגדרה הנוכחית של השימוש בחבילת הגלישה היא 'ללא אינטרנט'</translation>
+<translation id="9108294543511800041">עכשיו יש לך אפשרות לראות את התמונות, המדיה וההתראות האחרונות שבטלפון</translation>
 <translation id="9108674852930645435">מה חדש ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="9108808586816295166">‏ה-DNS המאובטח לא יהיה בהכרח זמין תמיד</translation>
 <translation id="9109122242323516435">כדי לפנות נפח אחסון, יש למחוק קבצים מאחסון המכשיר.</translation>
@@ -8438,7 +8447,6 @@
 <translation id="934503638756687833">‏במקרה הצורך ייתכן שיוסרו גם פריטים שלא מופיעים כאן. מידע נוסף על &lt;a href="<ph name="URL" />"&gt;הגנה מפני תוכנות לא רצויות&lt;/a&gt; זמין בסקירה הטכנית לגבי פרטיות ב-Chrome.</translation>
 <translation id="93480724622239549">באג או שגיאה</translation>
 <translation id="935854577147268200">‏הטלפון שהוגדר ב-Smart Lock השתנה. עליך להזין את הסיסמה כדי לעדכן את Smart Lock. בפעם הבאה, הטלפון יבטל את הנעילה של <ph name="DEVICE_TYPE" />. אפשר להשבית את Smart Lock בהגדרות.</translation>
-<translation id="93610034168535821">נפח האחסון הכולל שמנוצל על ידי אתרים:</translation>
 <translation id="936646668635477464">מצלמה ומיקרופון</translation>
 <translation id="936801553271523408">נתוני אבחון של מערכת</translation>
 <translation id="93766956588638423">תיקון התוסף</translation>

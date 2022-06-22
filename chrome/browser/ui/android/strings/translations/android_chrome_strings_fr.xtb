@@ -437,7 +437,6 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="3284510035090979597">Aide proactive</translation>
 <translation id="3285080554353377245">Vidéos sur l'utilisation de Chrome</translation>
 <translation id="3288003805934695103">Recharger la page</translation>
-<translation id="3290991969712132877">Pour accéder à ce site plus rapidement, ajoutez-le à l'écran d'accueil en cliquant sur le bouton "Plus d'options"</translation>
 <translation id="3297344142967351106">Assistance vocale</translation>
 <translation id="3303414029551471755">Poursuivre et télécharger le contenu ?</translation>
 <translation id="3321367458490630980">Centre d'intérêt ajouté</translation>
@@ -639,7 +638,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet, <ph name="TAB_COUNT_INCOGNITO" /> en navigation privée}other{<ph name="TAB_COUNT_MANY" /> onglets, <ph name="TAB_COUNT_INCOGNITO" /> en navigation privée}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Connecté avec un câble USB</translation>
-<translation id="4557685098773234337">Pour accéder à ce site plus rapidement, ajoutez-le à l'écran d'accueil</translation>
 <translation id="4558311620361989323">Raccourcis de pages Web</translation>
 <translation id="4561730552726921821">Enregistrement réussi</translation>
 <translation id="4561979708150884304">Aucune connexion</translation>

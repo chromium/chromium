@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">کمک کنش‌گرایانه</translation>
 <translation id="3285080554353377245">‏ویدیوهایی درباره نحوه استفاده از Chrome</translation>
 <translation id="3288003805934695103">تازه‌سازی صفحه</translation>
-<translation id="3290991969712132877">برای اینکه سریع‌تر به اینجا دسترسی پیدا کنید، این صفحه را از دکمه گزینه‌های «بیشتر» به صفحه اصلی اضافه کنید</translation>
 <translation id="3297344142967351106">دستیار صوتی</translation>
 <translation id="3303414029551471755">ادامه می‌دهید و محتوا را بارگیری می‌کنید؟</translation>
 <translation id="3321367458490630980">علاقه اضافه شد</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> برگه}one{<ph name="TAB_COUNT_MANY" /> برگه، <ph name="TAB_COUNT_INCOGNITO" /> برگه ناشناس}other{<ph name="TAB_COUNT_MANY" /> برگه، <ph name="TAB_COUNT_INCOGNITO" /> برگه ناشناس}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">‏بااستفاده از سیم USB متصل است</translation>
-<translation id="4557685098773234337">برای اینکه سریع‌تر به اینجا دسترسی پیدا کنید، این صفحه را به صفحه اصلی اضافه کنید</translation>
 <translation id="4558311620361989323">میان‌برهای صفحه وب</translation>
 <translation id="4561730552726921821">ثبت انجام شد</translation>
 <translation id="4561979708150884304">اتصال برقرار نیست</translation>

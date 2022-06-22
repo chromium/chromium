@@ -437,7 +437,6 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="3284510035090979597">Aide proactive</translation>
 <translation id="3285080554353377245">Vidéos sur l'utilisation de Chrome</translation>
 <translation id="3288003805934695103">D'actualiser la page</translation>
-<translation id="3290991969712132877">Pour revenir à cette page plus rapidement, ajoutez-la à votre écran d'accueil à l'aide du bouton Plus d'options</translation>
 <translation id="3297344142967351106">Assistance vocale</translation>
 <translation id="3303414029551471755">Lancer le téléchargement du contenu?</translation>
 <translation id="3321367458490630980">Centre d'intérêt ajouté</translation>
@@ -639,7 +638,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet, <ph name="TAB_COUNT_INCOGNITO" /> onglet de navigation privée}other{<ph name="TAB_COUNT_MANY" /> onglets, <ph name="TAB_COUNT_INCOGNITO" /> onglets de navigation privée}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Connecté à l'aide d'un câble USB</translation>
-<translation id="4557685098773234337">Pour revenir plus rapidement sur cette page, ajoutez-la à votre écran d'accueil</translation>
 <translation id="4558311620361989323">Raccourcis relatifs à la page Web</translation>
 <translation id="4561730552726921821">Inscription réussie</translation>
 <translation id="4561979708150884304">Aucune connexion</translation>

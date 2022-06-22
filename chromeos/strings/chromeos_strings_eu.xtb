@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Erabiltzailea</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Kanpoko gailuen firmwarea eguneratzeko leihoa irekita dago. <ph name="NUM_UPDATES" /> eguneratze daude.</translation>
+<translation id="1145516343487477149">Bilatu laguntza-artikuluak eta Chromebook-ei buruz egin ohi diren galderen erantzunak</translation>
 <translation id="1165039591588034296">Errorea</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua.</translation>
 <translation id="1175951029573070619">Normala (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Desaktibatu gai iluna</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Desaktibatu modu iluna</translation>
+<translation id="1881188606372070653">Legezko arrazoiak direla-eta edukian aldaketak eskatzeko, joan <ph name="BEGIN_LINK1" />legezko laguntzari buruzko orrira<ph name="END_LINK1" />. Baliteke kontuari eta sistemari buruzko zenbait datu bidaltzea Google-ri. Arazo teknikoak konpontzeko eta gure zerbitzuak hobetzeko erabiliko dugu ematen diguzun informazioa, gure <ph name="BEGIN_LINK2" />Pribatutasun-gidalerroei<ph name="END_LINK2" /> eta <ph name="BEGIN_LINK3" />Zerbitzu-baldintzei<ph name="END_LINK3" /> jarraikiz.</translation>
 <translation id="1887850431809612466">Hardwarearen berrikuspena</translation>
 <translation id="1905710495812624430">Saiakera-muga gainditu da.</translation>
 <translation id="1908234395526491708">UDP bidezko eskaeren hutsegiteak</translation>
@@ -623,6 +625,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6379086450106841622">Ukipen-pantaila</translation>
 <translation id="6381741036071372448">Probatu teklatua</translation>
 <translation id="6388847657025262518">Eskanerraren dokumentu-elikatzailea trabatuta dago. Egiazta ezazu eta saiatu berriro.</translation>
+<translation id="6394634179843537518">Gehitu fitxategi bat</translation>
 <translation id="6410257289063177456">Irudi-fitxategiak</translation>
 <translation id="641081527798843608">Gaiaren bat-etortzea</translation>
 <translation id="6423239382391657905">VPN irekia</translation>

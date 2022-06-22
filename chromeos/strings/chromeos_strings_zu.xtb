@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Umsebenzisi</translation>
 <translation id="1128128132059598906">I-EAP-TTLS</translation>
 <translation id="1145018782460575098">Iwindi lesibuyekezo se-firmware samadivayisi wangaphandle livuliwe. izibuyekezo ezitholakalayo <ph name="NUM_UPDATES" /></translation>
+<translation id="1145516343487477149">Thola izindaba ezichaza ngosizo nezimpendulo zemibuzo ye-Chromebook</translation>
 <translation id="1165039591588034296">Iphutha</translation>
 <translation id="1175697296044146566">Le-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Ngokusesilinganisweni (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Vala itimu emnyama</translation>
 <translation id="1874612839560830905">I-MTU</translation>
 <translation id="188114911237521550">Vala imodi emnyama</translation>
+<translation id="1881188606372070653">Yiya <ph name="BEGIN_LINK1" />ekhasini losizo lwezomthetho<ph name="END_LINK1" /> ukuze ucele izinguquko zokuqukethwe ngezizathu zezomthetho. Olunye ulwazi lwe-akhawunti nolwesistimu lungathunyelwa ku-Google. Sizosebenzisa ulwazi osinika lona ukulungisa izinkinga zobuchwepheshe futhi sithuthukise amasevisi, ngokuvumelana <ph name="BEGIN_LINK2" />Nenqubomgomo yethu Yobumfihlo<ph name="END_LINK2" /> kanye <ph name="BEGIN_LINK3" />Nemigomo Yesevisi<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Ukubuyekeza kwezingxenyekazi zekhompuyutha</translation>
 <translation id="1905710495812624430">Imizamo emikhulu evunyelwe idluliwe.</translation>
 <translation id="1908234395526491708">Ukwehluleka kwesicelo se-UDP</translation>
@@ -623,6 +625,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="6379086450106841622">Isikrini esithintwayo</translation>
 <translation id="6381741036071372448">Hlola ikhibhodi yakho</translation>
 <translation id="6388847657025262518">Okuphakelayo kweskena sedokhumenti kujemile. Hlola okuphakelayo bese uyazama futhi.</translation>
+<translation id="6394634179843537518">Engeza ifayela</translation>
 <translation id="6410257289063177456">Amafayela wesithombe</translation>
 <translation id="641081527798843608">Ukufana kwesihloko</translation>
 <translation id="6423239382391657905">I-OpenVPN</translation>

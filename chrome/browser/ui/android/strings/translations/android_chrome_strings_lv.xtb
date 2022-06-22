@@ -437,7 +437,6 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="3284510035090979597">Aktīva palīdzība</translation>
 <translation id="3285080554353377245">Video pamācības par Chrome lietošanu</translation>
 <translation id="3288003805934695103">Atkārtoti ielādējiet lapu.</translation>
-<translation id="3290991969712132877">Lai varētu šeit nokļūt ātrāk, pievienojiet šo lapu sākuma ekrānam, izmantojot pogu Citas opcijas</translation>
 <translation id="3297344142967351106">Balss palīgs</translation>
 <translation id="3303414029551471755">Vai turpināt ar satura lejupielādi?</translation>
 <translation id="3321367458490630980">Interese ir pievienota</translation>
@@ -639,7 +638,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> cilne}zero{<ph name="TAB_COUNT_MANY" /> ciļņu, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}one{<ph name="TAB_COUNT_MANY" /> cilne, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}other{<ph name="TAB_COUNT_MANY" /> cilnes, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Pievienots ar USB vadu</translation>
-<translation id="4557685098773234337">Lai varētu šeit nokļūt ātrāk, pievienojiet šo lapu sākuma ekrānam</translation>
 <translation id="4558311620361989323">Tīmekļa lapu īsinājumtaustiņi</translation>
 <translation id="4561730552726921821">Reģistrēšanās sekmīga</translation>
 <translation id="4561979708150884304">Nav savienojuma</translation>

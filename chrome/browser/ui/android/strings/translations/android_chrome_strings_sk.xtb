@@ -437,7 +437,6 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="3284510035090979597">Proaktívna pomoc</translation>
 <translation id="3285080554353377245">Videá, ako používať Chrome</translation>
 <translation id="3288003805934695103">Opätovne načítať stránku</translation>
-<translation id="3290991969712132877">Ak sa sem chcete dostať rýchlejšie, pridajte si túto stránku na plochu z tlačidla Ďalšie možnosti</translation>
 <translation id="3297344142967351106">Hlasová pomoc</translation>
 <translation id="3303414029551471755">Pokračovať a stiahnuť obsah?</translation>
 <translation id="3321367458490630980">Bol pridaný záujem</translation>
@@ -639,7 +638,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}many{<ph name="TAB_COUNT_MANY" /> tabs, <ph name="TAB_COUNT_INCOGNITO" /> incognito}other{<ph name="TAB_COUNT_MANY" /> kariet, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Pripojené káblom USB</translation>
-<translation id="4557685098773234337">Ak sa sem chcete dostať rýchlejšie, pridajte si túto stránku na plochu</translation>
 <translation id="4558311620361989323">Skratky pre webové stránky</translation>
 <translation id="4561730552726921821">Registrácia je úspešná</translation>
 <translation id="4561979708150884304">Bez pripojenia</translation>

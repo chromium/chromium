@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">Идэвхтэй тусламж</translation>
 <translation id="3285080554353377245">Chrome-г хэрхэн ашиглах тухай видео</translation>
 <translation id="3288003805934695103">Хуудсыг дахин ачаалж байна</translation>
-<translation id="3290991969712132877">Энд илүү шуурхай очихын тулд энэ хуудсыг Бусад сонголт товчлуураас Үндсэн нүүрэндээ нэмнэ үү</translation>
 <translation id="3297344142967351106">Дуут тусламж</translation>
 <translation id="3303414029551471755">Контентыг татаж авах үйлдлийг эхлүүлэх үү?</translation>
 <translation id="3321367458490630980">Сонирхол нэмсэн</translation>
@@ -639,7 +638,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> таб}other{<ph name="TAB_COUNT_MANY" /> таб, <ph name="TAB_COUNT_INCOGNITO" /> нууцлалтай}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">USB кабелиар холбогдсон</translation>
-<translation id="4557685098773234337">Энд илүү хурдан очихын тулд энэ хуудсыг Үндсэн нүүрэндээ нэмнэ үү</translation>
 <translation id="4558311620361989323">Веб хуудaсны товчлол</translation>
 <translation id="4561730552726921821">Бүртгэл амжилттай</translation>
 <translation id="4561979708150884304">Холболт алга</translation>

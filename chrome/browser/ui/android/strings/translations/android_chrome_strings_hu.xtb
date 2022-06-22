@@ -437,7 +437,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="3284510035090979597">Proaktív segítség</translation>
 <translation id="3285080554353377245">Videók a Chrome használatával kapcsolatban</translation>
 <translation id="3288003805934695103">Az oldal frissítése</translation>
-<translation id="3290991969712132877">Adja hozzá ezt az oldalt a kezdőképernyőhöz a További lehetőségek gomb segítségével, hogy gyorsabban megnyithassa.</translation>
 <translation id="3297344142967351106">Hangalapú segítség</translation>
 <translation id="3303414029551471755">Biztosan letölti a tartalmat?</translation>
 <translation id="3321367458490630980">Érdeklődési kör hozzáadva</translation>
@@ -639,7 +638,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> lap}other{<ph name="TAB_COUNT_MANY" /> lap, <ph name="TAB_COUNT_INCOGNITO" /> inkognitó módban}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Csatlakoztatva USB-kábellel</translation>
-<translation id="4557685098773234337">Adja hozzá ezt az oldalt a kezdőképernyőhöz, hogy gyorsabban megnyithassa</translation>
 <translation id="4558311620361989323">Weboldalakkal kapcsolatos billentyűparancsok</translation>
 <translation id="4561730552726921821">Sikeres regisztráció</translation>
 <translation id="4561979708150884304">Nincs kapcsolat</translation>

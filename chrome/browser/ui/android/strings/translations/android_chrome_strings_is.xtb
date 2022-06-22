@@ -437,7 +437,6 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="3284510035090979597">Hjálp að fyrra bragði</translation>
 <translation id="3285080554353377245">Myndskeið um hvernig á að nota Chrome</translation>
 <translation id="3288003805934695103">Endurhlaða síðuna</translation>
-<translation id="3290991969712132877">Bættu þessari síðu á heimaskjáinn með hnappinum „Fleiri valkostir“ til að komast þangað hraðar</translation>
 <translation id="3297344142967351106">Raddaðstoð</translation>
 <translation id="3303414029551471755">Viltu halda áfram og sækja efnið?</translation>
 <translation id="3321367458490630980">Áhugasviði bætt við</translation>
@@ -639,7 +638,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flipi}one{<ph name="TAB_COUNT_MANY" /> flipi, <ph name="TAB_COUNT_INCOGNITO" /> huliðsflipi}other{<ph name="TAB_COUNT_MANY" /> flipar, <ph name="TAB_COUNT_INCOGNITO" /> huliðsflipar}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Tengt með USB-snúru</translation>
-<translation id="4557685098773234337">Bættu þessari síðu við heimaskjáinn til að komast þangað hraðar</translation>
 <translation id="4558311620361989323">Flýtilyklar vefsíðu</translation>
 <translation id="4561730552726921821">Skráning tókst</translation>
 <translation id="4561979708150884304">Engin tenging</translation>

@@ -1899,6 +1899,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{移除 1 款不受支持的应用}other{移除 # 款不受支持的应用}}</translation>
 <translation id="2776560192867872731">更改“<ph name="DEVICE_NAME" />”的设备名称</translation>
 <translation id="2777251078198759550">删除此容器</translation>
+<translation id="2778471504622896352">将远程应用添加到 ChromeOS 启动器</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">安装 Linux 应用时出错</translation>
 <translation id="2783298271312924866">已下载</translation>
@@ -2214,6 +2215,7 @@
 <translation id="3067198360141518313">运行此插件</translation>
 <translation id="3071624960923923138">只需点击此处，即可打开一个新标签页</translation>
 <translation id="3072775339180057696">允许此网站查看“<ph name="FILE_NAME" />”？</translation>
+<translation id="3074499504015191586">翻译整页内容</translation>
 <translation id="3075874217500066906">必须重启才能开始 Powerwash 操作。重启后，系统将提示您确认是否要继续。</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">仅保存到此设备上</translation>
@@ -3531,6 +3533,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 <ph name="NUMBER_OF_OTHER_SWITCHES" /> 个开关键</translation>
 <translation id="439266289085815679">蓝牙配置由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="4392896746540753732">修改配置文件</translation>
+<translation id="4393713825278446281">快速配对设备已保存到 <ph name="PRIMARY_EMAIL" /> 中</translation>
 <translation id="4394049700291259645">停用</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{打开全部书签(&amp;O)}=1{打开书签(&amp;O)}other{打开全部（{COUNT} 个）书签(&amp;O)}}</translation>
 <translation id="4397372003838952832">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
@@ -3760,6 +3763,7 @@
 <translation id="4615586811063744755">未选择任何 Cookie</translation>
 <translation id="461661862154729886">电源</translation>
 <translation id="4617001782309103936">太短</translation>
+<translation id="4617019240346358451">刷新网页才能使用“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4617270414136722281">扩展程序选项</translation>
 <translation id="4617880081511131945">无法建立连接</translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
@@ -3975,6 +3979,7 @@
 <translation id="4833683849865011483">通过打印服务器找到了 1 台打印机</translation>
 <translation id="4836504898754963407">管理指纹</translation>
 <translation id="4837128290434901661">改回 Google 搜索？</translation>
+<translation id="4837165100461973682">请重新加载页面以应用更改</translation>
 <translation id="4837926214103741331">您无权使用此设备。请向此设备的所有者申请登录权限。</translation>
 <translation id="4837952862063191349">要解锁并恢复您的本地数据，请输入旧的<ph name="DEVICE_TYPE" />密码。</translation>
 <translation id="4838170306476614339">查看您手机上的照片、媒体内容和通知</translation>
@@ -4284,6 +4289,7 @@
 <translation id="5150254825601720210">Netscape 证书 SSL 服务器名称</translation>
 <translation id="5151354047782775295">请释放磁盘空间，否则系统可能会自动删除某些数据</translation>
 <translation id="5153234146675181447">移除手机</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" />高级设置</translation>
 <translation id="5154702632169343078">主题背景</translation>
 <translation id="5155327081870541046">在地址栏中，输入与您要用作搜索范围的网站对应的快捷字词，例如“@bookmarks”。然后，按您的首选键盘快捷键，并输入搜索字词。</translation>
@@ -5057,6 +5063,7 @@
 <translation id="5933522550144185133"><ph name="APP_NAME" /> 正在使用您的摄像头和麦克风</translation>
 <translation id="5935158534896975820">正在准备证书签名请求（正在等待服务器的帮助）</translation>
 <translation id="5935656526031444304">管理安全浏览设置</translation>
+<translation id="5936065461722368675">翻译整页内容</translation>
 <translation id="5938002010494270685">可进行安全性升级</translation>
 <translation id="5939518447894949180">重置</translation>
 <translation id="5939719276406088041">无法创建快捷方式</translation>
@@ -5916,6 +5923,7 @@
 <translation id="6790497603648687708">已远程添加“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6790820461102226165">添加用户…</translation>
 <translation id="6793604637258913070">文本插入符号出现或移动时突出显示</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">“自动扫描”功能让您能够自动在屏幕上的各项内容之间移动。当某项内容处于突出显示状态时，按“选择”即可启用它。</translation>
 <translation id="6795884519221689054">熊猫</translation>
 <translation id="6797493596609571643">糟糕，出问题了。</translation>
@@ -7788,6 +7796,7 @@
 <translation id="8642947597466641025">放大文字</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 高级保护进行扫描？</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{无 Cookie}=1{屏蔽了 1 个 Cookie}other{屏蔽了 # 个 Cookie}}</translation>
+<translation id="864423554496711319">设备已保存到您的帐号中</translation>
 <translation id="8644655801811752511">无法重置此安全密钥。请尝试在插入此密钥后立即重置它。</translation>
 <translation id="8645354835496065562">继续允许使用传感器</translation>
 <translation id="8645920082661222035">预测危险事件并在此类事件发生前向您发出警告</translation>
@@ -8392,7 +8401,6 @@
 <translation id="934503638756687833">如有必要，此处未列出的内容也会被移除。请参阅 Chrome 隐私权政策白皮书，详细了解&lt;a href="<ph name="URL" />"&gt;垃圾软件防护&lt;/a&gt;。</translation>
 <translation id="93480724622239549">问题或错误</translation>
 <translation id="935854577147268200">Smart Lock 所用的配对手机已更改。请输入您的密码以更新 Smart Lock。下次，您就能使用新的配对手机解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
-<translation id="93610034168535821">网站占用的总存储空间：</translation>
 <translation id="936646668635477464">摄像头和麦克风</translation>
 <translation id="936801553271523408">系统诊断数据</translation>
 <translation id="93766956588638423">修复扩展程序</translation>

@@ -437,7 +437,6 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="3284510035090979597">Ayuda proactiva</translation>
 <translation id="3285080554353377245">Vídeos sobre cómo usar Chrome</translation>
 <translation id="3288003805934695103">Volver a cargar la página</translation>
-<translation id="3290991969712132877">Para acceder a esta página más rápido, añádela a tu pantalla de inicio con el botón Más opciones</translation>
 <translation id="3297344142967351106">Asistente de voz</translation>
 <translation id="3303414029551471755">¿Quieres continuar para descargar el contenido?</translation>
 <translation id="3321367458490630980">Interés añadido</translation>
@@ -639,7 +638,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña}other{<ph name="TAB_COUNT_MANY" /> pestañas, <ph name="TAB_COUNT_INCOGNITO" /> de incógnito}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Conectado con cable USB</translation>
-<translation id="4557685098773234337">Para acceder a esta página más rápido, añádela a tu pantalla de inicio</translation>
 <translation id="4558311620361989323">Combinaciones de teclas en páginas web</translation>
 <translation id="4561730552726921821">Se ha registrado correctamente</translation>
 <translation id="4561979708150884304">No hay conexión</translation>

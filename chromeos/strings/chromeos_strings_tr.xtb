@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Kullanıcı</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Harici cihazlar için donanım yazılımını güncelleme penceresi açık. <ph name="NUM_UPDATES" /> güncelleme var.</translation>
+<translation id="1145516343487477149">Sık sorulan Chromebook sorularıyla ilgili yardım makaleleri ve yanıtlar bulun</translation>
 <translation id="1165039591588034296">Hata</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="1175951029573070619">Ortalama (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Koyu temayı kapat</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Koyu modu kapat</translation>
+<translation id="1881188606372070653">Yasal nedenlerden dolayı içerik değişikliği talebinde bulunmak istiyorsanız <ph name="BEGIN_LINK1" />Yasal Yardım sayfasını<ph name="END_LINK1" /> ziyaret edin. Bazı hesap ve sistem bilgileri Google'a gönderilebilir. Bizimle paylaştığınız bilgileri, <ph name="BEGIN_LINK2" />Gizlilik Politikası<ph name="END_LINK2" /> ve <ph name="BEGIN_LINK3" />Hizmet Şartları<ph name="END_LINK3" />'na uygun şekilde teknik sorunları gidermek ve size daha iyi hizmet sunmak için kullanırız.</translation>
 <translation id="1887850431809612466">Donanım düzeltmesi</translation>
 <translation id="1905710495812624430">İzin verilen maksimum deneme sayısı aşıldı.</translation>
 <translation id="1908234395526491708">UDP istek hataları</translation>
@@ -623,6 +625,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6379086450106841622">Dokunmatik ekran</translation>
 <translation id="6381741036071372448">Klavyenizi test edin</translation>
 <translation id="6388847657025262518">Tarayıcının doküman besleyicisi sıkıştı. Besleyiciyi kontrol edip tekrar deneyin.</translation>
+<translation id="6394634179843537518">Dosya ekle</translation>
 <translation id="6410257289063177456">Resim Dosyaları</translation>
 <translation id="641081527798843608">Konu eşleştirmesi</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

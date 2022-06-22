@@ -437,7 +437,6 @@
 <translation id="3284510035090979597">Активна допомога</translation>
 <translation id="3285080554353377245">Відеоінструкції щодо користування веб-переглядачем Chrome</translation>
 <translation id="3288003805934695103">перезавантажити сторінку</translation>
-<translation id="3290991969712132877">Щоб швидше переходити на цю сторінку, додайте її на головний екран через кнопку "Більше опцій"</translation>
 <translation id="3297344142967351106">Голосова допомога</translation>
 <translation id="3303414029551471755">Завантажити вміст?</translation>
 <translation id="3321367458490630980">Інтерес додано</translation>
@@ -572,7 +571,7 @@
 <translation id="4137746084635924146">Поточна мова пристрою</translation>
 <translation id="4141536112466364990">Ознайомтеся з Chrome</translation>
 <translation id="4162867837470729563">Список параметрів спільного доступу відкрито на всю висоту.</translation>
-<translation id="4165986682804962316">Налаштування сайту</translation>
+<translation id="4165986682804962316">Налаштування сайтів</translation>
 <translation id="4170011742729630528">Служба не доступна. Повторіть спробу пізніше.</translation>
 <translation id="4177222230309051052">Переглядайте всі закладки</translation>
 <translation id="4181841719683918333">Мови</translation>
@@ -639,7 +638,6 @@
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_COUNT_MANY" /> вкладка, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}few{<ph name="TAB_COUNT_MANY" /> вкладки, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}many{<ph name="TAB_COUNT_MANY" /> вкладок, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}other{<ph name="TAB_COUNT_MANY" /> вкладки, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}}</translation>
 <translation id="4549903594034243526">chrome_emotion_gif_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4554077758708533499">Підключено за допомогою кабелю USB</translation>
-<translation id="4557685098773234337">Щоб швидше переходити на цю сторінку, додайте її на головний екран</translation>
 <translation id="4558311620361989323">Комбінації клавіш для роботи з веб-сторінками</translation>
 <translation id="4561730552726921821">Реєстрацію виконано</translation>
 <translation id="4561979708150884304">Немає з’єднання</translation>

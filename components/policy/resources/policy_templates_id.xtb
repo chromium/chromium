@@ -86,6 +86,7 @@
       Jika ditetapkan ke true, informasi lampu latar perangkat akan dilaporkan.</translation>
 <translation id="1076751984131277498">Daftar perangkat USB dapat dilepas yang diizinkan</translation>
 <translation id="1077675271127011209">Nonaktifkan pelaporan data penggunaan dan yang terkait error</translation>
+<translation id="1079120839835170592">Mengaktifkan kembali Event.path API hingga M115.</translation>
 <translation id="1079425471279127373">Jika kebijakan disetel, beberapa asal dari aplikasi web yang diinstal otomatis akan diizinkan mendapatkan atribut perangkat (misalnya, nomor seri, nama host) dengan menggunakan Device Attributes API.
 
       Device Attributes API adalah daftar API web; harap lihat https://wicg.github.io/WebApiDevice/device_attributes. API ini hanya tersedia untuk asal yang sesuai dengan aplikasi web yang diinstal otomatis melalui <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> atau aplikasi web yang dikonfigurasi dalam sesi Kios.</translation>
@@ -265,6 +266,7 @@
       Jika kebijakan tidak disetel, <ph name="CHROME_CLEANUP_NAME" /> dapat melaporkan pemindaian deteksi software yang tidak diinginkan ke Google, sesuai dengan kebijakan yang disetel oleh <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> akan meminta izin pengguna untuk melakukan pembersihan dan membagikan hasilnya kepada Google guna membantu mendeteksi software yang tidak diinginkan di masa mendatang. Hasil ini berisi metadata file, ekstensi yang terinstal otomatis, dan kunci registry sebagaimana dijelaskan dalam Laporan Resmi Privasi Chrome.
 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="1285819498003746288">Event.path API tidak akan tersedia.</translation>
 <translation id="1290634681382861275">Mengontrol berbagai setelan antara lain USB, bluetooth, pembaruan kebijakan, mode developer, dan lainnya.</translation>
 <translation id="1291880496936992484">Peringatan: RC4 akan dihapus sepenuhnya dari <ph name="PRODUCT_NAME" /> setelah versi 52 (sekitar September 2016) dan sejak saat itu kebijakan ini tidak akan berlaku lagi.
 
@@ -2559,6 +2561,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3652670852519271837">Izinkan situs meminta pengguna memberikan akses baca ke file dan direktori melalui File System API</translation>
 <translation id="3653237928288822292">Ikon penyedia penelusuran default</translation>
 <translation id="3654906736796256792">Mengizinkan sandbox audio berjalan</translation>
+<translation id="3655885297177292093">Event.path API akan berada dalam status default: tersedia sebelum M109, dan tidak tersedia di M109 hingga 114.</translation>
 <translation id="3659542706175323490">Jika kebijakan disetel ke Aktif, booting pada tegangan AC akan diaktifkan jika didukung di perangkat. Booting pada tegangan AC memungkinkan sistem memulai ulang dari status Nonaktif atau Hibernasi setelah kabel listrik dihubungkan.
 
       Jika kebijakan disetel ke Nonaktif, booting pada tegangan AC akan dinonaktifkan.
@@ -4110,6 +4113,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan tidak disetel, pengguna dapat mengontrol visibilitas kartu. Default-nya adalah kartu terlihat.
       </translation>
+<translation id="5449690328792750354">Event.path API akan tersedia.</translation>
 <translation id="5455609857202311243">Abaikan persetujuan kebijakan KDC selama autentikasi HTTP</translation>
 <translation id="5455888515928026628">Saat login melalui layar kunci, <ph name="PRODUCT_OS_NAME" /> dapat melakukan autentikasi terhadap server (online) atau menggunakan sandi yang tersimpan di cache (offline).
 
@@ -6871,6 +6875,15 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 <translation id="8410477879938914253">Kebijakan ini hanya berlaku untuk sesi tamu terkelola.
       Jika kebijakan disetel ke Benar (True) atau tidak disetel, dialog yang meminta pengguna untuk mengonfirmasi atau menolak logout saat jendela terakhir ditutup akan ditampilkan.
       Jika kebijakan disetel ke Salah (False), dialog tidak akan ditampilkan sehingga logout otomatis akan dinonaktifkan setelah jendela terakhir ditutup.</translation>
+<translation id="8411050083243181286"> Mulai M109, Event.path API non-standar akan dihapus untuk meningkatkan kompatibilitas web. Kebijakan ini akan mengaktifkan kembali API tersebut hingga M115.
+
+      Jika kebijakan ini disetel ke aktif, Event.path API akan tersedia.
+
+      Jika kebijakan ini disetel ke nonaktif, Event.path API tidak akan tersedia.
+
+      Jika kebijakan ini tidak disetel, Event.path API akan berada dalam status default: tersedia sebelum M109, dan tidak tersedia di M109 hingga 114.
+
+      Kebijakan ini akan dihapus setelah Chrome 115.</translation>
 <translation id="8415953438346821074">Jika Anda mengaktifkan setelan ini, setelan yang disimpan di profil <ph name="PRODUCT_NAME" /> seperti bookmark, data isi otomatis, sandi, dan informasi lainnya juga akan ditulis ke file yang disimpan di folder profil pengguna Roaming atau lokasi yang ditentukan oleh Administrator melalui kebijakan <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Mengaktifkan kebijakan ini akan menonaktifkan sinkronisasi cloud.
 
       Jika kebijakan ini dinonaktifkan atau tidak disetel, hanya profil lokal reguler yang akan digunakan.</translation>

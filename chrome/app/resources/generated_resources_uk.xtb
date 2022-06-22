@@ -1926,6 +1926,7 @@
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Вилучити 1 додаток, що не підтримується}one{Вилучити # додаток, що не підтримується}few{Вилучити # додатки, що не підтримуються}many{Вилучити # додатків, що не підтримуються}other{Вилучити # додатка, що не підтримуються}}</translation>
 <translation id="2776560192867872731">Змінити назву пристрою "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2777251078198759550">Видалити цей контейнер</translation>
+<translation id="2778471504622896352">Додайте віддалені додатки на панель запуску ОС Chrome</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Не вдалося встановити додаток Linux</translation>
 <translation id="2783298271312924866">Завантажено</translation>
@@ -3561,6 +3562,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> і ще <ph name="NUMBER_OF_OTHER_SWITCHES" /></translation>
 <translation id="439266289085815679">Налаштуваннями Bluetooth керує <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Змінити файл конфігурації</translation>
+<translation id="4393713825278446281">Пристрої з функцією "Швидка пара" збережено в обліковому записі <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Вимкнути</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Відкрити всі}=1{&amp;Відкрити закладку}one{&amp;Відкрити всі ({COUNT})}few{&amp;Відкрити всі ({COUNT})}many{&amp;Відкрити всі ({COUNT})}other{&amp;Відкрити всі ({COUNT})}}</translation>
 <translation id="4397372003838952832">Пароль не потрібно запам’ятовувати. Його буде збережено в сервісі <ph name="GOOGLE_PASSWORD_MANAGER" /> для адреси <ph name="EMAIL" />.</translation>
@@ -3791,6 +3793,7 @@
 <translation id="4615586811063744755">файли cookie не вибрано</translation>
 <translation id="461661862154729886">Джерело живлення</translation>
 <translation id="4617001782309103936">Закороткий</translation>
+<translation id="4617019240346358451">Щоб використовувати розширення "<ph name="EXTENSION_NAME" />", оновіть сторінку</translation>
 <translation id="4617270414136722281">Параметри розширень</translation>
 <translation id="4617880081511131945">Не вдалося підключитися до телефона</translation>
 <translation id="4619564267100705184">Підтвердити особу</translation>
@@ -4006,6 +4009,7 @@
 <translation id="4833683849865011483">На сервері для друку знайдено 1 принтер</translation>
 <translation id="4836504898754963407">Керувати відбитками</translation>
 <translation id="4837128290434901661">Знову ввімкнути Пошук Google?</translation>
+<translation id="4837165100461973682">Щоб застосувати зміни, оновіть сторінку</translation>
 <translation id="4837926214103741331">Ви не маєте права використовувати цей пристрій. Зверніться до його власника, щоб отримати дозвіл на вхід.</translation>
 <translation id="4837952862063191349">Щоб розблокувати пристрій <ph name="DEVICE_TYPE" /> і відновити локальні дані, введіть старий пароль.</translation>
 <translation id="4838170306476614339">Переглядайте фотографії, медіафайли й сповіщення з телефона</translation>
@@ -4315,6 +4319,7 @@
 <translation id="5150254825601720210">Ім'я SSL-сервера сертифіката Netscape</translation>
 <translation id="5151354047782775295">Звільніть місце на диску, інакше деякі дані буде автоматично видалено</translation>
 <translation id="5153234146675181447">Забути телефон</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" />: розширені налаштування</translation>
 <translation id="5154702632169343078">Тема</translation>
 <translation id="5155327081870541046">В адресному рядку введіть команду для веб-сайту, на якому потрібно шукати, наприклад "@bookmarks". Потім натисніть вибрану комбінацію клавіш і введіть пошуковий термін.</translation>
@@ -5953,6 +5958,7 @@
 <translation id="6790497603648687708">Розширення <ph name="EXTENSION_NAME" /> додано віддалено</translation>
 <translation id="6790820461102226165">Додати користувача…</translation>
 <translation id="6793604637258913070">Виділяти місце введення тексту, коли воно з’являється або рухається</translation>
+<translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6795371939514004514">За допомогою автосканування можна автоматично переміщатися між елементами на екрані. Щоб активувати елемент, натисніть "Вибрати", коли його буде виділено.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">На жаль, сталася помилка.</translation>
@@ -7826,6 +7832,7 @@
 <translation id="8642947597466641025">Збільшити розмір тексту</translation>
 <translation id="8643443571868262066">Файл <ph name="FILE_NAME" /> може бути небезпечним. Надіслати його в Додатковий захист Google на перевірку?</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{Немає файлів cookie}=1{1 файл cookie заблоковано}one{# файл cookie заблоковано}few{# файли cookie заблоковано}many{# файлів cookie заблоковано}other{# файлу cookie заблоковано}}</translation>
+<translation id="864423554496711319">Пристрої, збережені в обліковому записі</translation>
 <translation id="8644655801811752511">Не вдається скинути цей ключ безпеки. Спробуйте зробити це, щойно вставите ключ.</translation>
 <translation id="8645354835496065562">Дозволяти доступ до датчиків</translation>
 <translation id="8645920082661222035">Передбачає небезпечні події та повідомляє про них ще до того, як вони відбудуться</translation>
@@ -8433,7 +8440,6 @@
 <translation id="934503638756687833">Якщо потрібно, можна також видалити елементи, не перелічені тут. Докладніше про &lt;a href="<ph name="URL" />"&gt;захист від небажаних програм&lt;/a&gt; читайте в інформаційному документі про конфіденційність Chrome.</translation>
 <translation id="93480724622239549">Помилка</translation>
 <translation id="935854577147268200">Телефон для Smart Lock змінено. Щоб оновити Smart Lock, введіть пароль. Наступного разу ви зможете розблокувати пристрій <ph name="DEVICE_TYPE" /> за допомогою свого телефона. Smart Lock можна вимкнути в налаштуваннях</translation>
-<translation id="93610034168535821">Загальний обсяг пам'яті, використаний сайтами:</translation>
 <translation id="936646668635477464">Камера та мікрофон</translation>
 <translation id="936801553271523408">Дані діагностики системи</translation>
 <translation id="93766956588638423">Полагодити розширення</translation>

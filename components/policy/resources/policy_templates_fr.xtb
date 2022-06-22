@@ -86,6 +86,7 @@
       Si elle est définie sur "True", les informations concernant le rétroéclairage de l'appareil sont transmises.</translation>
 <translation id="1076751984131277498">Liste d'autorisation des appareils USB amovibles</translation>
 <translation id="1077675271127011209">Désactiver la création de rapports sur l'utilisation et les plantages</translation>
+<translation id="1079120839835170592">API Event.path réactivée jusqu'à M115.</translation>
 <translation id="1079425471279127373">Si cette règle est configurée, certaines origines d'applis Web installées d'office sont autorisées à obtenir les attributs des appareils (ex. : numéro de série, nom d'hôte) à l'aide de l'API Device Attributes.
 
       Cette API est une liste d'API Web (voir https://wicg.github.io/WebApiDevice/device_attributes). Elles ne sont disponibles que pour les origines qui correspondent aux applis web installées d'office via la règle <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou celle configurée dans la session Kiosque.</translation>
@@ -147,6 +148,7 @@
 <translation id="1160939557934457296">Désactiver l'accès au site lors de l'affichage de la page d'avertissement par le service de navigation sécurisée</translation>
 <translation id="1163080558183062209">Permet de désactiver les types d'imprimantes figurant sur la liste deny</translation>
 <translation id="117059611145966538">Serveurs d'impression externes</translation>
+<translation id="117080706484659953">Autorisez la détection du champ d'application des règles sur <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171785618439752042">Cette règle permet de désigner les types de chiffrement autorisés lors de la demande de tickets Kerberos envoyés par un serveur <ph name="MS_AD_NAME" />.
 
       Configurations possibles :
@@ -259,6 +261,7 @@
       Si vous ne configurez pas cette règle, <ph name="CHROME_CLEANUP_NAME" /> peut, conformément à la règle définie par <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />, transmettre à Google les rapports d'analyse liés à la détection des logiciels indésirables. <ph name="CHROME_CLEANUP_NAME" /> demande aux utilisateurs s'ils souhaitent qu'un nettoyage soit effectué et que les résultats soient partagés avec Google pour améliorer la détection des logiciels indésirables. Ces résultats comprennent des métadonnées de fichiers, des extensions installées automatiquement et des clés de registre, tel que décrit dans le livre blanc sur la protection de la vie privée dans Google Chrome.
 
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="1285819498003746288">L'API Event.path sera indisponible.</translation>
 <translation id="1290634681382861275">Contrôle divers paramètres de type USB, Bluetooth, actualisation des stratégies, mode développeur et plus encore.</translation>
 <translation id="1291880496936992484">Avertissement : RC4 sera intégralement supprimé de <ph name="PRODUCT_NAME" /> après la version 52 (autour de septembre 2016) et cette règle ne sera plus valable.
 
@@ -939,6 +942,17 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1962864958436828230">Définir la taille minimale liée à la restriction du presse-papiers pour prévenir les fuites de données</translation>
 <translation id="1964634611280150550">Mode navigation privée désactivé</translation>
 <translation id="1964802606569741174">Cette règle n'a aucun effet sur l'application YouTube pour Android. Vous ne devez pas autoriser son installation si le mode sécurisé de YouTube doit être appliqué.</translation>
+<translation id="1965363065727209968">setTimeout(…, 0) est souvent utilisé pour décomposer les longues tâches JavaScript.
+          Lorsque cette règle est activée, les fonctions setTimeouts et setIntervals ayant un intervalle inférieur à 4 ms ne sont pas limitées de façon aussi agressive.
+          Les performances à court terme sont alors meilleures, mais les fonctions setTimeouts des sites abusant de l'API seront finalement encore limitées.
+
+          Cela peut modifier l'ordre d'exécution des tâches sur une page Web et provoquer ainsi un comportement inattendu sur les sites qui dépendent de cet ordre.
+          Les sites qui emploient de nombreuses fonctions setTimeout() avec un délai d'expiration de 0 ms peuvent aussi être affectés (par exemple, ils peuvent davantage solliciter le processeur).
+
+          Le changement sera déployé graduellement sur la version stable de <ph name="PRODUCT_NAME" /> pour les utilisateurs chez qui cette règle n'est pas configurée.
+
+          Cette règle est temporaire et devrait être supprimée dans <ph name="PRODUCT_NAME" /> 107. Néanmoins, cette échéance peut être repoussée si des entreprises le requièrent.
+          </translation>
 <translation id="1967334955994230472">Désactiver Projector</translation>
 <translation id="1969212217917526199">Remplace des règles sur les versions de débogage de l'hôte d'accès à distance.
 
@@ -1483,6 +1497,14 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="2497751676088107779">Script utilisateur</translation>
 <translation id="2497965601277442929">Ne pas autoriser les utilisateurs à activer le mode HTTPS uniquement</translation>
+<translation id="249798396824949930"> Détermine si le navigateur peut ou non détecter le champ d'application obligatoire des règles sur <ph name="MAC_OS_NAME" />.
+
+      Si cette règle est activée ou n'est pas configurée, la portée de chaque règle sera déterminée par la portée du profil <ph name="MAC_OS_NAME" /> géré.
+      Si elle est désactivée, toutes les règles sont considérées comme s'appliquant aux machines.
+
+      Cette règle est temporaire et vise à faciliter la transition vers une meilleure définition du champ d'application des règles sur <ph name="MAC_OS_NAME" />. Elle sera supprimée dans <ph name="PRODUCT_NAME" /> 107.
+
+      </translation>
 <translation id="2498238926436517902">Toujours masquer automatiquement l'étagère</translation>
 <translation id="250022556568924228">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> télécharge les conditions d'utilisation et les présente aux utilisateurs dès qu'une session d'un compte local de l'appareil s'ouvre. Les utilisateurs ne peuvent se connecter à cette session qu'après avoir accepté lesdites conditions d'utilisation.
 
@@ -2528,6 +2550,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3652670852519271837">Autoriser les sites à demander aux utilisateurs l'accès en lecture aux fichiers et répertoires via l'API File System</translation>
 <translation id="3653237928288822292">Icône du moteur de recherche par défaut</translation>
 <translation id="3654906736796256792">Autoriser l'exécution en bac à sable du processus audio</translation>
+<translation id="3655885297177292093">L'API Event.path aura l'état par défaut disponible avant M109 et indisponible de M109 à 114.</translation>
 <translation id="3659542706175323490">Si cette règle est activée, le démarrage au branchement de l'alimentation CA l'est également si l'appareil le permet. Une fois le cordon d'alimentation branché, le système, qui était alors complètement éteint ou en veille prolongée, redémarre.
 
       Si cette règle est désactivée, le démarrage au branchement de l'alimentation CA l'est également.
@@ -2700,6 +2723,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3838094946886335701">Cette règle (recommandation uniquement) permet d'enregistrer une liste de gestionnaires de protocoles combinée à ceux enregistrés par l'utilisateur, afin que les deux ensembles s'appliquent. Définissez la propriété "protocole" sur le schéma (par exemple, "mailto") et la propriété "URL" sur le format d'URL de l'application qui gère le schéma spécifié dans le champ "protocole". Le schéma peut inclure un espace réservé "%s" remplacé par l'URL gérée.
 
       Les utilisateurs ne peuvent pas supprimer un gestionnaire de protocoles enregistré par une règle. Toutefois, l'installation d'un nouveau gestionnaire par défaut leur permet de modifier les gestionnaires de protocoles installés par une règle.</translation>
+<translation id="3851443303439635700">Contrôlez le seuil d'imbrication avant que la fonction JavaScript setTimeout() commence à être limitée</translation>
 <translation id="3857816702027059082">Activer <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> pour une liste d'URL.
 
       Cette règle indique quelles URL doivent être autorisées à faire partie du parcours d'attestation visant à obtenir l'ensemble de signaux auprès de la machine.
@@ -3218,6 +3242,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4472740647327683596">Largeur de la page en micromètres.</translation>
 <translation id="4474167089968829729">Activer l'enregistrement des mots de passe dans le gestionnaire de mots de passe</translation>
 <translation id="4476769083125004742">Si cette règle est définie sur "<ph name="BLOCK_GEOLOCATION_SETTING" />", les applications Android n'ont pas accès aux informations de localisation. Si vous la définissez sur une autre valeur ou si vous ne la modifiez pas, l'utilisateur est invité à donner son autorisation lorsqu'une application Android requiert ces informations.</translation>
+<translation id="4478248026668918517">Bloquez la détection du champ d'application des règles.</translation>
 <translation id="4479671363221255277">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à demander aux utilisateurs l'accès en lecture aux fichiers ou répertoires figurant dans le système de fichiers du système d'exploitation hôte via l'API File System.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
@@ -4057,6 +4082,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle n'est pas configurée, l'utilisateur peut contrôler l'affichage des fiches. Par défaut, les fiches sont affichées.
       </translation>
+<translation id="5449690328792750354">L'API Event.path sera disponible.</translation>
 <translation id="5455609857202311243">Ignorer l'approbation par la règle KDC lors de l'authentification HTTP</translation>
 <translation id="5455888515928026628">Lors de la connexion via l'écran de verrouillage, l'authentification dans <ph name="PRODUCT_OS_NAME" /> peut s'effectuer sur un serveur (en ligne) ou à l'aide d'un mot de passe en cache (hors connexion).
 
@@ -4810,6 +4836,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6282799760374509080">Autoriser ou interdire la capture audio</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6287310684159482272">Paramètres des cookies</translation>
+<translation id="6299147100249359151">Autorisez la détection du champ d'application des règles.</translation>
 <translation id="6300871921951390976">Les utilisateurs ne sont autorisés à modifier la version de l'appareil que si cette règle est définie sur "True". Si elle est définie sur "False" ou si elle n'est pas configurée, les utilisateurs peuvent modifier la version.
 
       La configuration de la règle <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> n'est effective que si la règle <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> est définie sur "False".</translation>
@@ -6797,6 +6824,15 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8410477879938914253">Cette règle ne concerne que les sessions Invité gérées.
       Si elle est définie sur "True" ou si elle n'est pas configurée, une boîte de dialogue invitant l'utilisateur à confirmer ou à refuser la déconnexion s'affichera une fois la dernière fenêtre fermée.
       Si cette règle est définie sur "False", la boîte de dialogue ne pourra pas s'afficher et la fonctionnalité de déconnexion automatique une fois la dernière fenêtre fermée sera désactivée.</translation>
+<translation id="8411050083243181286"> À partir de M109, l'API non standard Event.path sera supprimée pour améliorer la compatibilité Web. Cette règle réactive l'API jusqu'à M115.
+
+      Si cette règle est activée, l'API Event.path sera disponible.
+
+      Si elle est désactivée, l'API Event.path sera indisponible.
+
+      Si cette règle n'est pas définie, l'API Event.path aura l'état par défaut disponible avant M109 et indisponible de M109 à 114.
+
+      Cette règle sera supprimée après Chrome 115.</translation>
 <translation id="8415953438346821074">Si vous activez cette règle, les paramètres stockés dans les profils <ph name="PRODUCT_NAME" />, comme les favoris, les données de saisie automatique et les mots de passe, entre autres, sont également enregistrés dans un fichier stocké dans le dossier des profils utilisateur itinérants ou à un emplacement défini par l'administrateur tel que spécifié dans la règle <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Si cette règle est activée, la synchronisation cloud est désactivée.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, seuls les profils locaux standards sont utilisés.</translation>
