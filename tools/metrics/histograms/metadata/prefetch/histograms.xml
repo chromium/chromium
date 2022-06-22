@@ -28,10 +28,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="PrefetchProxy.AfterClick.Mainframe.CookieWaitTime" units="ms"
-    expires_after="2022-11-13">
-  <owner>robertogden@chromium.org</owner>
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the amount of time that the navigation to a previously prefetched
     page was delayed because cookies had to be copied from the isolated cookie
@@ -41,9 +41,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrefetchProxy.AfterClick.Subresources.UsedCache"
     enum="BooleanCacheHit" expires_after="2021-12-26">
-  <owner>robertogden@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records whether a previously prefetched subresource from an Isolated
     Prerender was served from cache when its page was later navigated to.
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheEntryAge.{PrefetchProxyCanaryCheckerClient}"
     units="hours" expires_after="2023-04-25">
-  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
     How old a cached probe result was when it was used, in hours.
@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheLookupResult.{PrefetchProxyCanaryCheckerClient}"
     enum="CanaryCheckLookupResult" expires_after="2023-04-25">
-  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     Records the status of canary check cache lookups. A sample is recorded every
@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PrefetchProxy.CanaryChecker.FinalState.{PrefetchProxyCanaryCheckerClient}"
     enum="BooleanSuccess" expires_after="2023-04-25">
-  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
     Records the end state of a probe just before it goes inactive. This happens
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PrefetchProxy.CanaryChecker.GenerateCacheKey.{PrefetchProxyCanaryCheckerClient}"
     units="ms" expires_after="2023-04-25">
-  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
     Records the amount of time spent generating a cache key for the availability
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PrefetchProxy.CanaryChecker.NetError.{PrefetchProxyCanaryCheckerClient}"
     enum="NetErrorCodes" expires_after="2023-04-25">
-  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
     Records the net error of a completed or timed out probe. Note that if a HTTP
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PrefetchProxy.CanaryChecker.NumAttemptsBeforeSuccess.{PrefetchProxyCanaryCheckerClient}"
     units="count" expires_after="2023-04-25">
-  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
     Records the number of attempts that are made to achieve a successful canary
@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilFailure.{PrefetchProxyCanaryCheckerClient}"
     units="ms" expires_after="2023-04-25">
-  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
     Records the amount of time spent working on a single probe attempt to get to
@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilSuccess.{PrefetchProxyCanaryCheckerClient}"
     units="ms" expires_after="2023-04-25">
-  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
     Records the amount of time spent working on a single probe attempt to get to
@@ -163,10 +163,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.BodyLength" units="bytes"
-    expires_after="2022-10-23">
-  <owner>robertogden@chromium.org</owner>
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the response body length as cached in memory encountered when
     isolated prefetching a mainframe HTML resource from the Google Search Result
@@ -175,10 +175,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.ConnectTime" units="ms"
-    expires_after="2021-06-20">
-  <owner>robertogden@chromium.org</owner>
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the time taken to establish a socket connection when isolated
     prefetching a mainframe HTML resource from the Google Search Result Page.
@@ -187,10 +187,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.CookiesToCopy" units="count"
-    expires_after="2022-10-23">
-  <owner>robertogden@chromium.org</owner>
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the number of cookies that needed to be copied from the prefetch
     navigation to the user's profile after a prefetched link is navigated to.
@@ -198,10 +198,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.NetError"
-    enum="NetErrorCodes" expires_after="2021-06-20">
-  <owner>robertogden@chromium.org</owner>
+    enum="NetErrorCodes" expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the Net Error encountered when isolated prefetching a mainframe HTML
     resource from the Google Search Result Page. Recorded for every completed
@@ -210,10 +210,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.RespCode"
-    enum="HttpResponseCode" expires_after="2021-06-20">
-  <owner>robertogden@chromium.org</owner>
+    enum="HttpResponseCode" expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the HTTP response code encountered isolated prefetching a mainframe
     HTML resource from the Google Search Result Page. Recorded for non-network
@@ -222,10 +222,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.RetryAfter" units="ms"
-    expires_after="2021-06-20">
-  <owner>robertogden@chromium.org</owner>
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the duration of a Retry-After header on a 503 response to a
     mainframe prefetch request.
@@ -233,10 +233,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.TotalRedirects" units="count"
-    expires_after="2021-06-20">
-  <owner>robertogden@chromium.org</owner>
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the total number of redirects encountered while doing all the
     prefetches on an eligible Google Search Result page. Only recorded when at
@@ -245,10 +245,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.TotalTime" units="ms"
-    expires_after="2022-10-30">
-  <owner>robertogden@chromium.org</owner>
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the total time taken when isolated prefetching a mainframe HTML
     resource from the Google Search Result Page. Recorded for successful
@@ -257,10 +257,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Subresources.NetError"
-    enum="NetErrorCodes" expires_after="2021-12-26">
-  <owner>robertogden@chromium.org</owner>
+    enum="NetErrorCodes" expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the net error encountered when prefetching a single subresource
     during Isolated Prerenders.
@@ -269,9 +269,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrefetchProxy.Prefetch.Subresources.Quantity" units="count"
     expires_after="2021-06-20">
-  <owner>robertogden@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the number of subresources that were NoStatePrefetch'd during an
     Isolated Prerender. Recorded once for each page that is NoStatePrefetch'd
@@ -281,9 +281,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrefetchProxy.Prefetch.Subresources.RespCode"
     enum="HttpResponseCode" expires_after="2021-06-20">
-  <owner>robertogden@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the HTTP response code encountered when prefetching a single
     subresource during Isolated Prerenders.
@@ -291,10 +291,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Proxy.Fallback.NetError" enum="NetErrorCodes"
-    expires_after="2021-06-20">
-  <owner>robertogden@chromium.org</owner>
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the Net Error encountered when Chrome did a fallback from the
     prefetch proxy. Recorded only on fallbacks.
@@ -302,10 +302,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Proxy.RespCode" enum="HttpResponseCode"
-    expires_after="2021-06-20">
-  <owner>robertogden@chromium.org</owner>
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the HTTP response code encountered when connecting to the prefetch
     proxy CONNECT tunnel. Recorded every time Chrome gets CONNECT tunnel
@@ -314,10 +314,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.SpareRenderer.CountStartedOnSRP" units="count"
-    expires_after="2022-12-11">
-  <owner>robertogden@chromium.org</owner>
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Records the number of spare renderers that were attempted to be started on
     the SRP, when the feature param is enabled.
@@ -325,7 +325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.WasPrefetchTypeStateChangeValid"
-    enum="BooleanSupported" expires_after="2022-06-08">
+    enum="BooleanSupported" expires_after="2023-04-25">
   <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
