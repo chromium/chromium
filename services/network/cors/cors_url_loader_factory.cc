@@ -46,10 +46,10 @@ namespace {
 // where these operations are permitted (as specified by
 // URLLoaderFactoryParams::trust_token_redemption_policy).
 bool VerifyTrustTokenParamsIntegrityIfPresent(
-    const ResourceRequest& url_request,
+    const ResourceRequest& resource_request,
     const NetworkContext* context,
     mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy) {
-  if (!url_request.trust_token_params)
+  if (!resource_request.trust_token_params)
     return true;
 
   if (!context->trust_token_store()) {
@@ -70,7 +70,7 @@ bool VerifyTrustTokenParamsIntegrityIfPresent(
   if (trust_token_redemption_policy ==
           mojom::TrustTokenRedemptionPolicy::kForbid &&
       DoesTrustTokenOperationRequirePermissionsPolicy(
-          url_request.trust_token_params->type)) {
+          resource_request.trust_token_params->type)) {
     // Got a request configured for Trust Tokens redemption or signing from
     // a context in which this operation is prohibited.
     mojo::ReportBadMessage(
