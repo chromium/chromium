@@ -220,8 +220,8 @@ TEST_F(BrowserDownloadServiceTest, LegacyPixarUsdzMimeType) {
 // Type.
 TEST_F(BrowserDownloadServiceTest, PdfMimeType) {
   ASSERT_TRUE(download_controller()->GetDelegate());
-  auto task =
-      std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "application/pdf");
+  auto task = std::make_unique<web::FakeDownloadTask>(
+      GURL(kUrl), kAdobePortableDocumentFormatMimeType);
   web::DownloadTask* task_ptr = task.get();
   download_controller()->GetDelegate()->OnDownloadCreated(
       download_controller(), &web_state_, std::move(task));
@@ -230,7 +230,8 @@ TEST_F(BrowserDownloadServiceTest, PdfMimeType) {
   EXPECT_EQ(task_ptr, download_manager_tab_helper()->tasks()[0].get());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample>(DownloadMimeTypeResult::Other),
+      static_cast<base::HistogramBase::Sample>(
+          DownloadMimeTypeResult::AdobePortableDocumentFormat),
       1);
 }
 

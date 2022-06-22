@@ -27790,52 +27790,98 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="DownloadMimeTypeResult">
-  <int value="0" label="Other">MIME type other than those listed below.</int>
-  <int value="1" label="PK pass">application/vnd.apple.pkpass MIME type.</int>
-  <int value="2" label="iOS mobile config">
-    application/x-apple-aspen-config MIME type.
-  </int>
-  <int value="3" label="Zip Archive">application/zip MIME type.</int>
-  <int value="4" label="Microsoft Application (.exe file)">
-    application/x-msdownload MIME type.
-  </int>
-  <int value="5" label="Android Package Archive (.apk file)">
-    application/vnd.android.package-archive MIME type.
-  </int>
-  <int value="6" label="Virtual Contact File">text/vcard MIME type.</int>
-  <int value="7" label="iCalendar">text/calendar MIME type.</int>
-  <int value="8" label="Legacy Universal Scene Description (model/usd)">
-    model/usd MIME type.
-  </int>
-  <int value="9" label="Apple Disk Image">
-    application/x-apple-diskimage MIME type.
-  </int>
-  <int value="10" label="Apple Installer Package">
-    application/vnd.apple.installer+xml MIME type.
-  </int>
-  <int value="11" label="7 Zip Archive">
-    application/x-7z-compressed MIME type.
-  </int>
-  <int value="12" label="RAR Archive">
-    application/x-rar-compressed MIME type.
-  </int>
-  <int value="13" label="Tar Archive">application/x-tar MIME type.</int>
-  <int value="14" label="Adobe Flash">
-    application/x-shockwave-flash MIME type.
-  </int>
-  <int value="15" label="Amazon Kindle eBook">
-    application/vnd.amazon.ebook MIME type.
-  </int>
-  <int value="16" label="Binary Data">application/octet-stream MIME type.</int>
-  <int value="17" label="Bit Torrent">application/x-bittorrent MIME type.</int>
-  <int value="18" label="Java Archive">application/java-archive MIME type.</int>
+  <int value="0" label="Other"/>
+  <int value="1" label="PK pass"/>
+  <int value="2" label="iOS mobile config"/>
+  <int value="3" label="Zip Archive"/>
+  <int value="4" label="Microsoft Application (.exe file)"/>
+  <int value="5" label="Android Package Archive (.apk file)"/>
+  <int value="6" label="Virtual Contact File"/>
+  <int value="7" label="iCalendar"/>
+  <int value="8" label="Legacy Universal Scene Description (model/usd)"/>
+  <int value="9" label="Apple Disk Image"/>
+  <int value="10" label="Apple Installer Package"/>
+  <int value="11" label="7 Zip Archive"/>
+  <int value="12" label="RAR Archive"/>
+  <int value="13" label="Tar Archive"/>
+  <int value="14" label="Adobe Flash"/>
+  <int value="15" label="Amazon Kindle eBook"/>
+  <int value="16" label="Binary Data"/>
+  <int value="17" label="Bit Torrent"/>
+  <int value="18" label="Java Archive"/>
   <int value="19"
-      label="Legacy Pixar Universal Scene Description (model/vnd.pixar.usd)">
-    model/vnd.pixar.usd MIME type.
-  </int>
-  <int value="20" label="Universal Scene Description">
-    model/vnd.usdz+zip MIME type.
-  </int>
+      label="Legacy Pixar Universal Scene Description (model/vnd.pixar.usd)"/>
+  <int value="20" label="Universal Scene Description"/>
+  <int value="21" label="audio/aac"/>
+  <int value="22" label="application/x-abiword"/>
+  <int value="23" label="application/x-freearc"/>
+  <int value="24" label="image/avif"/>
+  <int value="25" label="video/x-msvideo"/>
+  <int value="26" label="image/bmp"/>
+  <int value="27" label="image/x-ms-bmp"/>
+  <int value="28" label="application/x-bzip"/>
+  <int value="29" label="application/x-bzip2"/>
+  <int value="30" label="application/x-cdf"/>
+  <int value="31" label="application/x-csh"/>
+  <int value="32" label="text/css"/>
+  <int value="33" label="text/csv"/>
+  <int value="34" label="application/msword"/>
+  <int value="35"
+      label="application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+  <int value="36" label="application/vnd.ms-fontobject"/>
+  <int value="37" label="application/epub+zip"/>
+  <int value="38" label="application/gzip"/>
+  <int value="39" label="image/gif"/>
+  <int value="40" label="text/html"/>
+  <int value="41" label="image/vnd.microsoft.icon"/>
+  <int value="42" label="image/jpeg"/>
+  <int value="43" label="text/javascript"/>
+  <int value="44" label="application/json"/>
+  <int value="45" label="application/ld+json"/>
+  <int value="46" label="audio/midi"/>
+  <int value="47" label="audio/x-midi"/>
+  <int value="48" label="audio/mpeg"/>
+  <int value="49" label="video/mp4"/>
+  <int value="50" label="video/mpeg"/>
+  <int value="51" label="application/vnd.oasis.opendocument.presentation"/>
+  <int value="52" label="application/vnd.oasis.opendocument.spreadsheet"/>
+  <int value="53" label="application/vnd.oasis.opendocument.text"/>
+  <int value="54" label="audio/ogg"/>
+  <int value="55" label="video/ogg"/>
+  <int value="56" label="application/ogg"/>
+  <int value="57" label="audio/opus"/>
+  <int value="58" label="font/otf"/>
+  <int value="59" label="image/png"/>
+  <int value="60" label="application/pdf"/>
+  <int value="61" label="application/x-httpd-php"/>
+  <int value="62" label="application/vnd.ms-powerpoint"/>
+  <int value="63"
+      label="application/vnd.openxmlformats-officedocument.presentationml.presentation"/>
+  <int value="64" label="application/vnd.rar"/>
+  <int value="65" label="application/rtf"/>
+  <int value="66" label="application/x-sh"/>
+  <int value="67" label="image/svg+xml"/>
+  <int value="68" label="image/tiff"/>
+  <int value="69" label="video/mp2t"/>
+  <int value="70" label="font/ttf"/>
+  <int value="71" label="text/plain"/>
+  <int value="72" label="application/vnd.visio"/>
+  <int value="73" label="audio/wav"/>
+  <int value="74" label="audio/webm"/>
+  <int value="75" label="video/webm"/>
+  <int value="76" label="image/webp"/>
+  <int value="77" label="font/woff"/>
+  <int value="78" label="font/woff2"/>
+  <int value="79" label="application/xhtml+xml"/>
+  <int value="80" label="application/vnd.ms-excel"/>
+  <int value="81"
+      label="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>
+  <int value="82" label="application/xml"/>
+  <int value="83" label="application/vnd.mozilla.xul+xml"/>
+  <int value="84" label="video/3gpp"/>
+  <int value="85" label="audio/3gpp"/>
+  <int value="86" label="video/3gpp2"/>
+  <int value="87" label="audio/3gpp2"/>
 </enum>
 
 <enum name="DownloadMobileConfigFileUI">
