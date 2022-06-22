@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -265,7 +266,8 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenBlockOfflineTest,
   test::OobeJS().ExpectVisiblePath(kErrorMessageOfflineSigninLink);
 }
 
-class DarkLightEnabledTest : public LoginManagerTest {
+class DarkLightEnabledTest : public LoginManagerTest,
+                             public ash::ColorModeObserver {
  public:
   DarkLightEnabledTest() {
     feature_list_.InitAndEnableFeature(chromeos::features::kDarkLightMode);
@@ -273,11 +275,15 @@ class DarkLightEnabledTest : public LoginManagerTest {
 
  protected:
   void StartLogin(const AccountId& account_id) {
+    ash::ColorProvider::Get()->AddObserver(this);
+    wait_for_color_mode_change_ = true;
     LoginDisplayHost::default_host()
         ->GetWizardContext()
         ->defer_oobe_flow_finished_for_tests = true;
     login_manager_mixin_.LoginWithDefaultContext(
         LoginManagerMixin::TestUserInfo(account_id));
+    WaitForColorModeChange();
+    ash::ColorProvider::Get()->RemoveObserver(this);
   }
   void FinishLogin() {
     LoginDisplayHost::default_host()
@@ -286,9 +292,28 @@ class DarkLightEnabledTest : public LoginManagerTest {
     login_manager_mixin_.SkipPostLoginScreens();
     login_manager_mixin_.WaitForActiveSession();
   }
+
+  void OnColorModeChanged(bool dark_mode_enabled) override {
+    wait_for_color_mode_change_ = false;
+    if (run_loop_)
+      run_loop_->Quit();
+  }
+
+  void OnColorModeThemed(bool is_themed) override {}
+
+  void WaitForColorModeChange() {
+    if (!wait_for_color_mode_change_)
+      return;
+
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    run_loop_.reset();
+  }
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   const AccountId user1{AccountId::FromUserEmailGaiaId(kUser1Email, kGaia1ID)};
   const AccountId user2{AccountId::FromUserEmailGaiaId(kUser2Email, kGaia2ID)};
+  bool wait_for_color_mode_change_ = false;
+  std::unique_ptr<base::RunLoop> run_loop_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -349,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_OobeLogin) {
 }
 
 // Test focusing different pods.
-IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, DISABLED_OobeLogin) {
+IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, OobeLogin) {
   ASSERT_EQ(LoginScreenTestApi::GetFocusedUser(), user2);
   EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
 
