@@ -1354,7 +1354,7 @@ class HostedAppIsolatedOriginTest : public HostedAppProcessModelTest {
 // origin but is outside the hosted app's extent, ends up in its own non-app
 // process. See https://crbug.com/799638.
 IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
-                       DISABLED_NestedIsolatedOriginStaysOutsideApp) {
+                       NestedIsolatedOriginStaysOutsideApp) {
   // Set up and launch the hosted app.
   GURL app_url =
       embedded_test_server()->GetURL("isolated.com", "/frame_tree/simple.htm");
@@ -1435,7 +1435,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
 // won't later allow another origin in the app's extent to share the same app
 // process.
 IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
-                       DISABLED_AppBroaderThanIsolatedOrigin) {
+                       AppBroaderThanIsolatedOrigin) {
   // Set up and launch the hosted app, with the launch URL being in an isolated
   // origin.
   GURL app_url =
