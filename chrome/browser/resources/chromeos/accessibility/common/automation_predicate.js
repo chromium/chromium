@@ -395,6 +395,19 @@ AutomationPredicate = class {
   }
 
   /**
+   * Matches against nodes visited during object navigation with a gesture.
+   * @param {!AutomationNode} node
+   * @return {boolean}
+   */
+  static gestureObject(node) {
+    if (node.role === Role.LIST_BOX) {
+      return false;
+    }
+    return AutomationPredicate.object(node);
+  }
+
+
+  /**
    * @param {!AutomationNode} first
    * @param {!AutomationNode} second
    * @return {boolean}

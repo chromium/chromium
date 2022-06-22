@@ -648,8 +648,10 @@ export class CommandHandler extends CommandHandlerInterface {
       case 'nextObject':
         skipSettingSelection = true;
         didNavigate = true;
-        unit = cursors.Unit.NODE;
-        current = current.move(cursors.Unit.NODE, dir);
+        unit = (EventSourceState.get() === EventSourceType.TOUCH_GESTURE) ?
+            cursors.Unit.GESTURE_NODE :
+            cursors.Unit.NODE;
+        current = current.move(unit, dir);
         current = this.skipLabelOrDescriptionFor(current, dir);
         break;
       case 'previousGroup':

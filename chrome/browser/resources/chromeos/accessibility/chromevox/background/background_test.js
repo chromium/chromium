@@ -3948,6 +3948,28 @@ TEST_F('ChromeVoxBackgroundTest', 'ListBoxItemsNavigation', async function() {
       .replay();
 });
 
+// Make sure navigation with touch to ListBox lands on options.
+TEST_F(
+    'ChromeVoxBackgroundTest', 'TouchListBoxItemsNavigation', async function() {
+      const mockFeedback = this.createMockFeedback();
+      await this.runWithLoadedTree(this.listBoxDoc);
+      mockFeedback
+          .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_RIGHT1))
+          .expectSpeech('Start')
+          .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_RIGHT1))
+          .expectSpeech(
+              'Listbox item one', ' 1 of 3 ', 'Select an item', 'List box')
+          .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_RIGHT1))
+          .expectSpeech('Listbox item two', ' 2 of 3 ')
+          .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_LEFT1))
+          .expectSpeech('Listbox item one', ' 1 of 3 ')
+          .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_RIGHT1))
+          .expectSpeech('Listbox item two', ' 2 of 3 ')
+          .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_RIGHT1))
+          .expectSpeech('Listbox item three', ' 3 of 3 ')
+          .replay();
+    });
+
 TEST_F(
     'ChromeVoxBackgroundTest', 'CrossWindowNextPreviousFocus',
     async function() {
