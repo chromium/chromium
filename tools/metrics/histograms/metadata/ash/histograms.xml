@@ -3426,6 +3426,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid"
+    enum="BooleanValid" expires_after="2023-06-15">
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emitted when the keyboard backlight is updated to a new wallpaper extracted
+    color. Non transparent colors are considered valid.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Personalization.Path" enum="PersonalizationPath"
     expires_after="2023-04-15">
   <owner>jasontt@chromium.org</owner>

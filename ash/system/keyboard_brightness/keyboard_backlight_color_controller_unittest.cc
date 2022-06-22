@@ -8,6 +8,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,10 +42,15 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
   }
 
  protected:
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
   KeyboardBacklightColorController* controller_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorUpdatesPref) {
@@ -64,6 +70,12 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
   SimulateUserLogin(account_id_1);
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kWallpaper,
             controller_->GetBacklightColor());
+  // Expect the Wallpaper color to be set twice. Once on login screen and once
+  // after the user logs in.
+  histogram_tester().ExpectBucketCount(
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", false, 2);
+  histogram_tester().ExpectTotalCount(
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", 2);
   controller_->SetBacklightColor(
       personalization_app::mojom::BacklightColor::kRainbow);
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kRainbow,

@@ -15,6 +15,7 @@
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_nudge_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -51,7 +52,19 @@ void KeyboardBacklightColorController::SetBacklightColor(
   DCHECK(rgb_keyboard_manager);
   DVLOG(3) << __func__ << " backlight_color=" << backlight_color;
   switch (backlight_color) {
-    case personalization_app::mojom::BacklightColor::kWallpaper:
+    case personalization_app::mojom::BacklightColor::kWallpaper: {
+      SkColor color = ConvertBacklightColorToSkColor(backlight_color);
+      bool valid_color = color != kInvalidWallpaperColor;
+      base::UmaHistogramBoolean(
+          "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid",
+          valid_color);
+      // Default to |kDefaultColor| if |color| is invalid.
+      if (!valid_color)
+        color = kDefaultColor;
+      rgb_keyboard_manager->SetStaticBackgroundColor(
+          SkColorGetR(color), SkColorGetG(color), SkColorGetB(color));
+      break;
+    }
     case personalization_app::mojom::BacklightColor::kWhite:
     case personalization_app::mojom::BacklightColor::kRed:
     case personalization_app::mojom::BacklightColor::kYellow:

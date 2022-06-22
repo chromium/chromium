@@ -10,7 +10,7 @@
 
 namespace ash {
 
-inline constexpr SkColor kInvalidColor = SK_ColorWHITE;
+inline constexpr SkColor kDefaultColor = SK_ColorWHITE;
 
 // Util method to convert the |BacklightColor| enum to a predefined SkColor
 // which will be set by rgb keyboard manager to change the color of the keyboard

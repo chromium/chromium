@@ -51,7 +51,7 @@ SkColor ConvertBacklightColorToSkColor(
     case personalization_app::mojom::BacklightColor::kPurple:
       return SkColorSetRGB(/*r=*/132, /*g=*/32, /*b=*/180);
     default:
-      return kInvalidColor;
+      return kDefaultColor;
   }
 }
 
@@ -83,7 +83,7 @@ SkColor ConvertBacklightColorToIconBackgroundColor(
       return ConvertBacklightColorToSkColor(
           personalization_app::mojom::BacklightColor::kWallpaper);
     default:
-      return kInvalidColor;
+      return kDefaultColor;
   }
 }
 
