@@ -3444,6 +3444,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_RESOURCES_EXPLORE_APP_DESCRIPTION" desc="Description of the explore app that links to some resourses like help articals and new features of Chromebook.">
         Find help articles and answers to common Chromebook questions
       </message>
+      <message name="IDS_FEEDBACK_TOOL_RESOURCES_EXPLORE_APP_LABEL" desc="Label of the explore app">
+        Explore app
+      </message>
       <message name="IDS_FEEDBACK_TOOL_RESOURCES_DIAGNOSTICS_APP_LABEL" desc="Label of the diagnostics app">
         Diagnostics app
       </message>

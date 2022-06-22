@@ -105,6 +105,7 @@ export function confirmationPageTest() {
     assertEquals(
         'help-resources:explore', getElement(exploreLink, '#startIcon').icon);
     assertEquals('Explore app', getElementContent(exploreLink, '#label'));
+    assertTrue(page.i18nExists('exploreAppLabel'));
     assertEquals(
         'Find help articles and answers to common Chromebook questions',
         getElementContent(exploreLink, '#subLabel'));

@@ -64,6 +64,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"confirmationTitleOnline", IDS_FEEDBACK_TOOL_PAGE_TITLE_AFTER_SENT},
       {"exploreAppDescription",
        IDS_FEEDBACK_TOOL_RESOURCES_EXPLORE_APP_DESCRIPTION},
+      {"exploreAppLabel", IDS_FEEDBACK_TOOL_RESOURCES_EXPLORE_APP_LABEL},
       {"diagnosticsAppLabel",
        IDS_FEEDBACK_TOOL_RESOURCES_DIAGNOSTICS_APP_LABEL},
       {"diagnosticsAppDescription",
