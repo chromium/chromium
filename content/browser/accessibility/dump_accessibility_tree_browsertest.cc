@@ -1176,8 +1176,17 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsList) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-list.html"));
 }
 
+// TODO(crbug.com/1338211): test timeout on Fuchsia
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityAriaOwnsWithRoleChange \
+  DISABLED_AccessibilityAriaOwnsWithRoleChange
+#else
+#define MAYBE_AccessibilityAriaOwnsWithRoleChange \
+  AccessibilityAriaOwnsWithRoleChange
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaOwnsWithRoleChange) {
+                       MAYBE_AccessibilityAriaOwnsWithRoleChange) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-with-role-change.html"));
 }
 
@@ -2755,7 +2764,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityOptgroup) {
   RunHtmlTest(FILE_PATH_LITERAL("optgroup.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityOpenModal) {
+// TODO(crbug.com/1338211): test timeouts on Fuchsia
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityOpenModal DISABLED_AccessibilityOpenModal
+#else
+#define MAYBE_AccessibilityOpenModal AccessibilityOpenModal
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityOpenModal) {
   RunHtmlTest(FILE_PATH_LITERAL("open-modal.html"));
 }
 

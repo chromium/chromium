@@ -317,13 +317,6 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
                  "platform.";
     return;
   }
-#if BUILDFLAG(IS_FUCHSIA)
-  else {
-    LOG(INFO) << "No expectation file present, ignoring test on this "
-                 "platform.";
-    return;
-  }
-#endif
 
   // Get the test URL.
   GURL url(embedded_test_server()->GetURL(
