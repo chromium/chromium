@@ -204,6 +204,10 @@ const base::Feature kAutoNightLight{"AutoNightLight",
 const base::Feature kAutoScreenBrightness{"AutoScreenBrightness",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables extended autocomplete results.
+const base::Feature kAutocompleteExtendedSuggestions{
+    "AutocompleteExtendedSuggestions", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables params tuning experiment for autocorrect on ChromeOS.
 const base::Feature kAutocorrectParamsTuning{"AutocorrectParamsTuning",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1646,6 +1650,10 @@ bool AreDesksTemplatesEnabled() {
 
 bool AreDesksTrackpadSwipeImprovementsEnabled() {
   return base::FeatureList::IsEnabled(kEnableDesksTrackpadSwipeImprovements);
+}
+
+bool IsAutocompleteExtendedSuggestionsEnabled() {
+  return base::FeatureList::IsEnabled(kAutocompleteExtendedSuggestions);
 }
 
 bool DoWindowsFollowCursor() {

@@ -56705,6 +56705,7 @@ from previous Chrome versions.
   <int value="-1034344165" label="V8NoTurbo:disabled"/>
   <int value="-1033738911" label="enable-mac-views-dialogs"/>
   <int value="-1032884201" label="HeavyAdPrivacyMitigations:enabled"/>
+  <int value="-1032265414" label="AutocompleteExtendedSuggestions:disabled"/>
   <int value="-1031350684" label="PdfIsolation:disabled"/>
   <int value="-1030530357" label="PwaInstallUseBottomSheet:disabled"/>
   <int value="-1030513821" label="DetectedSourceLanguageOption:disabled"/>
@@ -58552,6 +58553,7 @@ from previous Chrome versions.
   <int value="189777537" label="DisableInitialMostVisitedFadeIn:enabled"/>
   <int value="190282969" label="JXL:disabled"/>
   <int value="191737931" label="enable-mark-http-as"/>
+  <int value="191891628" label="AutocompleteExtendedSuggestions:enabled"/>
   <int value="192167036" label="LogJsConsoleMessages:disabled"/>
   <int value="192320180" label="ignore-gpu-blocklist"/>
   <int value="192693676"

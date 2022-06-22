@@ -93,6 +93,8 @@ extern const base::Feature kAutoNightLight;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAutoScreenBrightness;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kAutocompleteExtendedSuggestions;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAutocorrectParamsTuning;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAzureADIntegration;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBentoBar;
@@ -638,6 +640,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWindowsFollowCursor;
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreContextualNudgesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreDesksTemplatesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreDesksTrackpadSwipeImprovementsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAutocompleteExtendedSuggestionsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreImprovedScreenCaptureSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool DoWindowsFollowCursor();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdaptiveChargingEnabled();

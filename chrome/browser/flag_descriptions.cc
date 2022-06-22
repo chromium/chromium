@@ -4357,6 +4357,11 @@ const char kAutoFramingOverrideDescription[] =
     "Overrides the default to forcibly enable or disable the auto-framing "
     "feature";
 
+const char kAutocompleteExtendedSuggestionsName[] =
+    "Extended suggestions for CrOS autocomplete";
+const char kAutocompleteExtendedSuggestionsDescription[] =
+    "Enables extended autocomplete suggestions experiment on ChromeOS.";
+
 const char kAutocorrectParamsTuningName[] = "CrOS autocorrect params tuning";
 const char kAutocorrectParamsTuningDescription[] =
     "Enables params tuning experiment for autocorrect on ChromeOS.";

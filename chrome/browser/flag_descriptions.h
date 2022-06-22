@@ -2492,6 +2492,9 @@ extern const char kAudioUrlDescription[];
 extern const char kAutoFramingOverrideName[];
 extern const char kAutoFramingOverrideDescription[];
 
+extern const char kAutocompleteExtendedSuggestionsName[];
+extern const char kAutocompleteExtendedSuggestionsDescription[];
+
 extern const char kAutocorrectParamsTuningName[];
 extern const char kAutocorrectParamsTuningDescription[];
 
