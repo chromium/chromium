@@ -268,7 +268,11 @@ bool FillStateSelectControl(const std::u16string& value,
       for (const auto& alternative_name : state_entry->alternative_names())
         full_names.push_back(base::UTF8ToUTF16(alternative_name));
     } else {
-      full_names.push_back(value);
+      if (value.size() > 2) {
+        full_names.push_back(value);
+      } else {
+        abbreviations.push_back(value);
+      }
     }
   }
 
@@ -282,6 +286,17 @@ bool FillStateSelectControl(const std::u16string& value,
 
   if (!state_abbreviation.empty())
     abbreviations.push_back(std::move(state_abbreviation));
+
+  // Remove `abbreviations` from the `full_names` as a precautionary measure in
+  // case the `AlternativeStateNameMap` contains bad data.
+  base::ranges::sort(abbreviations);
+  full_names.erase(
+      base::ranges::remove_if(full_names,
+                              [&](const std::u16string& full_name) {
+                                return base::ranges::binary_search(
+                                    abbreviations, full_name);
+                              }),
+      full_names.end());
 
   // Try an exact match of the abbreviation first.
   for (const auto& abbreviation : abbreviations) {

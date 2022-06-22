@@ -2058,6 +2058,31 @@ TEST_F(AutofillFieldFillerTest, FillUpperCaseAbbreviationInStateTextField) {
   EXPECT_EQ(u"BY", field.value);
 }
 
+// Tests that Autofill does not fill the state when abbreviated data is stored
+// in the profile and none of the options match with the abbreviated state.
+TEST_F(AutofillFieldFillerTest,
+       DoNotFillStateFieldWhenAbbrStoredInProfileAndNotInOptionsList) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
+
+  test::ClearAlternativeStateNameMapForTesting();
+  std::vector<const char*> kState = {"Colombia", "Connecticut", "Colifornia"};
+
+  AutofillField field;
+  test::CreateTestSelectField(kState, &field);
+  field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_STATE);
+
+  AutofillProfile address;
+  address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kFill);
+  EXPECT_EQ(u"", field.value);
+}
+
 TEST_F(AutofillFieldFillerTest, PreviewVirtualMonth) {
   AutofillField field;
   field.form_control_type = "text";
