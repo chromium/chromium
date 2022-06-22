@@ -283,6 +283,11 @@ class VisitDatabase {
   // `originator_visit_id` columns.
   bool MigrateVisitsAutoincrementIdAndAddOriginatorColumns();
 
+  // Called by the derived classes to migrate the older visits table which
+  // doesn't have the `originator_from_visit` and `originator_opener_visit`
+  // columns.
+  bool MigrateVisitsAddOriginatorFromVisitAndOpenerVisitColumns();
+
   // Return true if the visits table's schema contains "AUTOINCREMENT".
   // false if table do not contain AUTOINCREMENT, or the table is not created.
   bool VisitTableContainsAutoincrement();
@@ -296,7 +301,7 @@ class VisitDatabase {
 #define HISTORY_VISIT_ROW_FIELDS                                        \
   " id,url,visit_time,from_visit,transition,segment_id,visit_duration," \
   "incremented_omnibox_typed_score,opener_visit,originator_cache_guid," \
-  "originator_visit_id "
+  "originator_visit_id,originator_from_visit,originator_opener_visit "
 
 }  // namespace history
 

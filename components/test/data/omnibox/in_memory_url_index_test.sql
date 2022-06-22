@@ -46,7 +46,9 @@
 --                     incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT NULL,
 --                     opener_visit INTEGER,
 --                     originator_cache_guid TEXT,
---                     originator_visit_id INTEGER)
+--                     originator_visit_id INTEGER,
+--                     originator_from_visit INTEGER,
+--                     originator_opener_visit INTEGER)
 INSERT INTO "urls" VALUES(1,'http://www.reuters.com/article/idUSN0839880620100708','UPDATE 1-US 30-yr mortgage rate drops to new record low | Reuters',3,1,2,0);  -- Qualifies
 INSERT INTO "urls" VALUES(2,'http://www.golfweek.com/news/2010/jul/08/goydos-opens-john-deere-classic-59/','Goydos opens John Deere Classic with 59',3,1,4,0);  -- Qualifies
 INSERT INTO "urls" VALUES(3,'http://www.businessandmedia.org/articles/2010/20100708120415.aspx','LeBronomics: Could High Taxes Influence James'' Team Decision?',4,1,2,0);  -- Qualifies
@@ -87,25 +89,25 @@ INSERT INTO "urls" VALUES(38,'http://svcs.cnn.com/hidden/weather/getForecast?tim
 -- This file creates some visits, enough to test (in InMemoryURLIndexTest)
 -- the visits functionality, certainly not as many visits as are implied
 -- by the visit counts associated with the URLs above.
-INSERT INTO "visits" VALUES(1, 1, 2, 4, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(2, 1, 5, 0, 1, 0, 1, TRUE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(3, 1, 12, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(4, 32, 1, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(5, 32, 2, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(6, 32, 3, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(7, 32, 4, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(8, 32, 5, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(9, 32, 6, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(10, 32, 7, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(11, 32, 8, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(12, 32, 9, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(13, 32, 10, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(14, 32, 11, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(15, 32, 12, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(16, 32, 13, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(17, 32, 14, 0, 0, 0, 1, FALSE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(18, 32, 15, 0, 1, 0, 1, TRUE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(19, 35, 0, 0, 1, 0, 1, TRUE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(20, 35, 7, 0, 1, 0, 1, TRUE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(21, 36, 1, 0, 1, 0, 1, TRUE, 0, NULL, NULL);
-INSERT INTO "visits" VALUES(22, 36, 2, 0, 1, 0, 1, TRUE, 0, NULL, NULL);
+INSERT INTO "visits" VALUES(1, 1, 2, 4, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(2, 1, 5, 0, 1, 0, 1, TRUE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(3, 1, 12, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(4, 32, 1, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(5, 32, 2, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(6, 32, 3, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(7, 32, 4, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(8, 32, 5, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(9, 32, 6, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(10, 32, 7, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(11, 32, 8, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(12, 32, 9, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(13, 32, 10, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(14, 32, 11, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(15, 32, 12, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(16, 32, 13, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(17, 32, 14, 0, 0, 0, 1, FALSE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(18, 32, 15, 0, 1, 0, 1, TRUE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(19, 35, 0, 0, 1, 0, 1, TRUE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(20, 35, 7, 0, 1, 0, 1, TRUE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(21, 36, 1, 0, 1, 0, 1, TRUE, 0, NULL, NULL, NULL, NULL);
+INSERT INTO "visits" VALUES(22, 36, 2, 0, 1, 0, 1, TRUE, 0, NULL, NULL, NULL, NULL);

@@ -128,7 +128,7 @@ bool VisitDatabase::InitVisitTable() {
             "visit_duration INTEGER DEFAULT 0 NOT NULL,"
             "incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT NULL,"
             "opener_visit INTEGER,"
-            // These two fields are non-null only for remote visits synced to
+            // These four fields are non-null only for remote visits synced to
             // the local machine. The `originator_cache_guid` is the unique
             // identifier for the originator machine the visit was originally
             // made on, and `originator_visit_id` is the `id` of the visit row
@@ -136,7 +136,9 @@ bool VisitDatabase::InitVisitTable() {
             // The tuple of (`originator_cache_guid`, `origin_visit_id`) is
             // globally unique.
             "originator_cache_guid TEXT,"
-            "originator_visit_id INTEGER)"))
+            "originator_visit_id INTEGER,"
+            "originator_from_visit INTEGER,"
+            "originator_opener_visit INTEGER)"))
       return false;
   }
 
@@ -192,6 +194,8 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
   visit->opener_visit = statement.ColumnInt64(8);
   visit->originator_cache_guid = statement.ColumnString(9);
   visit->originator_visit_id = statement.ColumnInt64(10);
+  visit->originator_referring_visit = statement.ColumnInt64(11);
+  visit->originator_opener_visit = statement.ColumnInt64(12);
 }
 
 // static
@@ -252,8 +256,9 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
       "INSERT INTO visits "
       "(url, visit_time, from_visit, transition, segment_id, "
       "visit_duration, incremented_omnibox_typed_score, opener_visit,"
-      "originator_cache_guid,originator_visit_id) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?)"));
+      "originator_cache_guid,originator_visit_id,originator_from_visit,"
+      "originator_opener_visit) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"));
   statement.BindInt64(0, visit->url_id);
   statement.BindInt64(1, visit->visit_time.ToInternalValue());
   statement.BindInt64(2, visit->referring_visit);
@@ -264,6 +269,8 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
   statement.BindInt64(7, visit->opener_visit);
   statement.BindString(8, visit->originator_cache_guid);
   statement.BindInt64(9, visit->originator_visit_id);
+  statement.BindInt64(10, visit->originator_referring_visit);
+  statement.BindInt64(11, visit->originator_opener_visit);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute visit insert statement:  "
@@ -1121,6 +1128,30 @@ bool VisitDatabase::MigrateVisitsAutoincrementIdAndAddOriginatorColumns() {
          GetDB().Execute("DROP TABLE visits") &&
          GetDB().Execute("ALTER TABLE visits_tmp RENAME TO visits") &&
          transaction.Commit();
+}
+
+bool VisitDatabase::MigrateVisitsAddOriginatorFromVisitAndOpenerVisitColumns() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+    return false;
+  }
+
+  // Old versions don't have the originator_from_visit or
+  // originator_opener_visit columns; modify the table to add those.
+  if (!GetDB().DoesColumnExist("visits", "originator_from_visit")) {
+    if (!GetDB().Execute("ALTER TABLE visits "
+                         "ADD COLUMN originator_from_visit INTEGER")) {
+      return false;
+    }
+  }
+  if (!GetDB().DoesColumnExist("visits", "originator_opener_visit")) {
+    if (!GetDB().Execute("ALTER TABLE visits "
+                         "ADD COLUMN originator_opener_visit INTEGER")) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 bool VisitDatabase::VisitTableContainsAutoincrement() {

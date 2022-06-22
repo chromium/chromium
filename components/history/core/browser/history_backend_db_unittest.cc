@@ -2669,6 +2669,60 @@ TEST_F(HistoryBackendDBTest,
   }
 }
 
+TEST_F(HistoryBackendDBTest,
+       MigrateVisitsAddOriginatorFromVisitAndOpenerVisitColumns) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(55));
+
+  constexpr VisitID visit_id = 1;
+  constexpr URLID url_id = 2;
+  const base::Time visit_time = base::Time::Now();
+
+  // Open the db for manual manipulation.
+  {
+    sql::Database sql_db;
+    ASSERT_TRUE(sql_db.Open(history_dir_.Append(kHistoryFilename)));
+
+    ASSERT_FALSE(sql_db.DoesColumnExist("visits", "originator_from_visit"));
+    ASSERT_FALSE(sql_db.DoesColumnExist("visits", "originator_opener_visit"));
+
+    const char kInsertVisitStatement[] =
+        "INSERT INTO visits "
+        "(id, url, visit_time) VALUES (?, ?, ?)";
+
+    // Add a row to `visits` table.
+    sql::Statement s(sql_db.GetUniqueStatement(kInsertVisitStatement));
+    s.BindInt64(0, visit_id);
+    s.BindInt64(1, url_id);
+    s.BindTime(2, visit_time);
+    ASSERT_TRUE(s.Run());
+  }
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The previously-added visit should still exist, with the new columns being
+  // empty (equal to 0).
+  {
+    VisitRow visit;
+    db_->GetRowForVisit(visit_id, &visit);
+    EXPECT_EQ(visit.url_id, url_id);
+    EXPECT_EQ(visit.visit_time, visit_time);
+    EXPECT_EQ(visit.originator_referring_visit, 0);
+    EXPECT_EQ(visit.originator_opener_visit, 0);
+  }
+
+  DeleteBackend();
+
+  // Open the db manually again and make sure the new columns exist.
+  {
+    sql::Database sql_db;
+    ASSERT_TRUE(sql_db.Open(history_dir_.Append(kHistoryFilename)));
+
+    EXPECT_TRUE(sql_db.DoesColumnExist("visits", "originator_from_visit"));
+    EXPECT_TRUE(sql_db.DoesColumnExist("visits", "originator_opener_visit"));
+  }
+}
+
 bool FilterURL(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS();
 }
