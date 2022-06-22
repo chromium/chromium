@@ -123,8 +123,6 @@ struct FormFieldData {
     return is_focusable && role != RoleAttribute::kPresentation;
   }
 
-  // These functions do not work for Autofill code.
-  // TODO(https://crbug.com/1006745): Fix this.
   bool DidUserType() const;
   bool HadFocus() const;
   bool WasAutofilled() const;
