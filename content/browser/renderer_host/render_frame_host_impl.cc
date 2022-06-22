@@ -8989,7 +8989,8 @@ void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
   // the renderer process is done handling the URL.
   // TODO(crbug.com/1254130): Remove the test dependency on this behavior.
   if (!url.SchemeIs(url::kJavaScriptScheme)) {
-    bool was_loading = frame_tree()->LoadingTree()->IsLoading();
+    bool was_loading =
+        frame_tree()->LoadingTree()->IsLoadingIncludingInnerFrameTrees();
     is_loading_ = true;
     frame_tree_node()->DidStartLoading(true /* should_show_loading_ui */,
                                        was_loading);
@@ -11344,7 +11345,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
             blink::mojom::SameDocumentNavigationType::
                 kNavigationApiTransitionWhile;
 
-    bool was_loading = frame_tree()->LoadingTree()->IsLoading();
+    bool was_loading =
+        frame_tree()->LoadingTree()->IsLoadingIncludingInnerFrameTrees();
     is_loading_ = true;
     frame_tree_node()->DidStartLoading(should_show_loading_ui, was_loading);
   }

@@ -290,7 +290,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
   PrerenderHost::LoadingOutcome WaitForLoadCompletionForTesting() {
     PrerenderHost::LoadingOutcome status =
         PrerenderHost::LoadingOutcome::kLoadingCompleted;
-    if (!frame_tree_->IsLoading())
+    if (!frame_tree_->IsLoadingIncludingInnerFrameTrees())
       return status;
 
     base::RunLoop loop;

@@ -1291,8 +1291,9 @@ IN_PROC_BROWSER_TEST_F(
     int current_request_count = GetRequestCount(k2ndUrl);
     ASSERT_EQ(nullptr, EvalJs(prerender_frame_host, "history.back()"));
     // Make sure that loading is not happening.
-    EXPECT_FALSE(
-        FrameTreeNode::GloballyFindByID(host_id)->frame_tree()->IsLoading());
+    EXPECT_FALSE(FrameTreeNode::GloballyFindByID(host_id)
+                     ->frame_tree()
+                     ->IsLoadingIncludingInnerFrameTrees());
 
     TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
                           /*expected_history_length=*/2);
@@ -1306,8 +1307,9 @@ IN_PROC_BROWSER_TEST_F(
     int current_request_count = GetRequestCount(k2ndUrl);
     ASSERT_EQ(nullptr, EvalJs(prerender_frame_host, "history.forward()"));
     // Make sure that loading is not happening.
-    EXPECT_FALSE(
-        FrameTreeNode::GloballyFindByID(host_id)->frame_tree()->IsLoading());
+    EXPECT_FALSE(FrameTreeNode::GloballyFindByID(host_id)
+                     ->frame_tree()
+                     ->IsLoadingIncludingInnerFrameTrees());
 
     TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
                           /*expected_history_length=*/2);

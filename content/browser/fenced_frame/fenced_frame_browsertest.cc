@@ -688,9 +688,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
 }
 
 // Test that when the documents inside the fenced frame tree are loading, then
-// `WebContents::IsLoading`, `FrameTree::IsLoading`, and
-// `FrameTreeNode::IsLoading` should return true. Primary `FrameTree::IsLoading`
-// value should reflect the loading state of descendant fenced frames.
+// `WebContents::IsLoading`, `FrameTree::IsLoadingIncludingInnerFrameTrees`, and
+// `FrameTreeNode::IsLoading` should return true. Primary
+// `FrameTree::IsLoadingIncludingInnerFrameTrees` value should reflect the
+// loading state of descendant fenced frames.
 IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, IsLoading) {
   // Create a HTTP response to control fenced frame navigation.
   net::test_server::ControllableHttpResponse fenced_frame_response(
@@ -719,14 +720,16 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, IsLoading) {
       inner_fenced_frame_rfh->frame_tree_node();
   FrameTree* fenced_frame_tree = fenced_frame_root_node->frame_tree();
 
-  // All WebContents::IsLoading, FrameTree::IsLoading, and
-  // FrameTreeNode::IsLoading should return true when the fenced frame is
-  // loading along with primary FrameTree::IsLoading as we check for inner frame
-  // trees loading state.
+  // All WebContents::IsLoading, FrameTree::IsLoadingIncludingInnerFrameTrees,
+  // and FrameTreeNode::IsLoading should return true when the fenced frame is
+  // loading along with primary FrameTree::IsLoadingIncludingInnerFrameTrees as
+  // we check for inner frame trees loading state.
   EXPECT_TRUE(web_contents()->IsLoading());
-  EXPECT_TRUE(primary_main_frame_host()->frame_tree()->IsLoading());
+  EXPECT_TRUE(primary_main_frame_host()
+                  ->frame_tree()
+                  ->IsLoadingIncludingInnerFrameTrees());
   EXPECT_TRUE(fenced_frame_root_node->IsLoading());
-  EXPECT_TRUE(fenced_frame_tree->IsLoading());
+  EXPECT_TRUE(fenced_frame_tree->IsLoadingIncludingInnerFrameTrees());
 
   // Complete the fenced frame response and finish fenced frame navigation.
   fenced_frame_response.WaitForRequest();
@@ -741,9 +744,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, IsLoading) {
   // frame stops loading.
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_FALSE(web_contents()->IsLoading());
-  EXPECT_FALSE(primary_main_frame_host()->frame_tree()->IsLoading());
+  EXPECT_FALSE(primary_main_frame_host()
+                   ->frame_tree()
+                   ->IsLoadingIncludingInnerFrameTrees());
   EXPECT_FALSE(fenced_frame_root_node->IsLoading());
-  EXPECT_FALSE(fenced_frame_tree->IsLoading());
+  EXPECT_FALSE(fenced_frame_tree->IsLoadingIncludingInnerFrameTrees());
 }
 
 // Test that when the documents inside the fenced frame tree are loading,

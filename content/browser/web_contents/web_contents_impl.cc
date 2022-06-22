@@ -1799,8 +1799,10 @@ void WebContentsImpl::SetUserAgentOverride(
   ForEachFrameTree(base::BindRepeating([](FrameTree* frame_tree) {
     // For prerendering, we don't want to activate a prerendered page loaded
     // with a stale UA and will handle it even if it finishes loading.
-    if (!frame_tree->IsLoading() && !frame_tree->is_prerendering())
+    if (!frame_tree->IsLoadingIncludingInnerFrameTrees() &&
+        !frame_tree->is_prerendering()) {
       return;
+    }
 
     NavigationEntry* entry = frame_tree->controller().GetVisibleEntry();
     if (!entry || !entry->GetIsOverridingUserAgent())
@@ -1928,7 +1930,7 @@ SiteInstanceImpl* WebContentsImpl::GetSiteInstance() {
 }
 
 bool WebContentsImpl::IsLoading() {
-  return primary_frame_tree_.IsLoading();
+  return primary_frame_tree_.IsLoadingIncludingInnerFrameTrees();
 }
 
 double WebContentsImpl::GetLoadProgress() {

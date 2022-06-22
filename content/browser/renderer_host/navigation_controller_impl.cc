@@ -4326,7 +4326,7 @@ void NavigationControllerImpl::DidAccessInitialMainDocument() {
   // We may have left a failed browser-initiated navigation in the address bar
   // to let the user edit it and try again.  Clear it now that content might
   // show up underneath it.
-  if (!frame_tree_.IsLoading() && GetPendingEntry())
+  if (!frame_tree_.IsLoadingIncludingInnerFrameTrees() && GetPendingEntry())
     DiscardPendingEntry(false);
 
   // Update the URL display.

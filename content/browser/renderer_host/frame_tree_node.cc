@@ -569,7 +569,8 @@ void FrameTreeNode::CreatedNavigationRequest(
   DCHECK(!navigation_request->common_params().url.SchemeIs(
       url::kJavaScriptScheme));
 
-  bool was_previously_loading = frame_tree()->LoadingTree()->IsLoading();
+  bool was_previously_loading =
+      frame_tree()->LoadingTree()->IsLoadingIncludingInnerFrameTrees();
 
   // There's no need to reset the state: there's still an ongoing load, and the
   // RenderFrameHostManager will take care of updates to the speculative
