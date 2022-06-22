@@ -126,24 +126,12 @@ class PasswordUIViewAndroid : public PasswordUIView {
   // ALIVE_SERIALIZATION_PENDING:
   //   * Destroy was not called, password serialization task on another task
   //     runner is running.
-  //   * All data members can be used on the main task runner, except for
-  //     |password_manager_presenter_| which can only be used inside
-  //     ObtainAndSerializePasswords, which is being run on a backend task
-  //     runner.
   // DELETION_PENDING:
   //   * Destroy() was called, a background task is pending and |this| should
   //     be deleted once the tasks complete.
   //   * This state should not be reached anywhere but in the completion call
   //     of the pending task.
   enum class State { ALIVE, ALIVE_SERIALIZATION_PENDING, DELETION_PENDING };
-
-  // Calls |password_manager_presenter_| to retrieve cached PasswordForm
-  // objects, then PasswordCSVWriter to serialize them, and finally writes them
-  // to a temporary file in |target_directory|. The steps involve a lot of
-  // memory allocation and copying, as well as I/O operations, so this method
-  // should be executed on a suitable task runner.
-  SerializationResult ObtainAndSerializePasswords(
-      const base::FilePath& target_directory);
 
   // Sends |serialization_result| to Java via |success_callback| or
   // |error_callback|, depending on whether the result is a success or an error.

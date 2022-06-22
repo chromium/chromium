@@ -37,13 +37,55 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+namespace {
+
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
-
 using IsInsecureCredential = CredentialEditBridge::IsInsecureCredential;
+
+PasswordUIViewAndroid::SerializationResult SerializePasswords(
+    const base::FilePath& target_directory,
+    std::vector<password_manager::CredentialUIEntry> credentials) {
+  // The UI should not trigger serialization if there are no passwords.
+  DCHECK(!credentials.empty());
+
+  // Creating a file will block the execution on I/O.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  // Ensure that the target directory exists.
+  base::File::Error error = base::File::FILE_OK;
+  if (!base::CreateDirectoryAndGetError(target_directory, &error)) {
+    return {0, std::string(), base::File::ErrorToString(error)};
+  }
+
+  // Create a temporary file in the target directory to hold the serialized
+  // passwords.
+  base::FilePath export_file;
+  if (!base::CreateTemporaryFileInDir(target_directory, &export_file)) {
+    return {
+        0, std::string(),
+        logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
+  }
+
+  // Write the serialized data in CSV.
+  std::string data =
+      password_manager::PasswordCSVWriter::SerializePasswords(credentials);
+  int bytes_written = base::WriteFile(export_file, data.data(), data.size());
+  if (bytes_written != base::checked_cast<int>(data.size())) {
+    return {
+        0, std::string(),
+        logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
+  }
+
+  return {static_cast<int>(credentials.size()), export_file.value(),
+          std::string()};
+}
+
+}  // namespace
 
 PasswordUIViewAndroid::PasswordUIViewAndroid(JNIEnv* env, jobject obj)
     : password_manager_presenter_(this), weak_java_ui_controller_(env, obj) {
@@ -187,6 +229,12 @@ void PasswordUIViewAndroid::HandleSerializePasswords(
       NOTREACHED();
       return;
   }
+  std::vector<password_manager::CredentialUIEntry> credentials =
+      saved_passwords_presenter_.GetSavedCredentials();
+  base::EraseIf(credentials, [](const auto& credential) {
+    return credential.blocked_by_user;
+  });
+
   // The tasks are posted with base::Unretained, because deletion is postponed
   // until the reply arrives (look for the occurrences of DELETION_PENDING in
   // this file). The background processing is not expected to take very long,
@@ -196,9 +244,9 @@ void PasswordUIViewAndroid::HandleSerializePasswords(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(
-          &PasswordUIViewAndroid::ObtainAndSerializePasswords,
-          base::Unretained(this),
-          base::FilePath(ConvertJavaStringToUTF8(env, java_target_directory))),
+          &SerializePasswords,
+          base::FilePath(ConvertJavaStringToUTF8(env, java_target_directory)),
+          std::move(credentials)),
       base::BindOnce(&PasswordUIViewAndroid::PostSerializedPasswords,
                      base::Unretained(this),
                      base::android::ScopedJavaGlobalRef<jobject>(
@@ -272,51 +320,6 @@ static jlong JNI_PasswordUIView_Init(JNIEnv* env,
                                      const JavaParamRef<jobject>& obj) {
   PasswordUIViewAndroid* controller = new PasswordUIViewAndroid(env, obj.obj());
   return reinterpret_cast<intptr_t>(controller);
-}
-
-PasswordUIViewAndroid::SerializationResult
-PasswordUIViewAndroid::ObtainAndSerializePasswords(
-    const base::FilePath& target_directory) {
-  std::vector<password_manager::CredentialUIEntry> credentials =
-      saved_passwords_presenter_.GetSavedCredentials();
-  base::EraseIf(credentials, [](const auto& credential) {
-    return credential.blocked_by_user;
-  });
-
-  // The UI should not trigger serialization if there are not passwords.
-  DCHECK(!credentials.empty());
-
-  // Creating a file will block the execution on I/O.
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  // Ensure that the target directory exists.
-  base::File::Error error = base::File::FILE_OK;
-  if (!base::CreateDirectoryAndGetError(target_directory, &error)) {
-    return {0, std::string(), base::File::ErrorToString(error)};
-  }
-
-  // Create a temporary file in the target directory to hold the serialized
-  // passwords.
-  base::FilePath export_file;
-  if (!base::CreateTemporaryFileInDir(target_directory, &export_file)) {
-    return {
-        0, std::string(),
-        logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
-  }
-
-  // Write the serialized data in CSV.
-  std::string data =
-      password_manager::PasswordCSVWriter::SerializePasswords(credentials);
-  int bytes_written = base::WriteFile(export_file, data.data(), data.size());
-  if (bytes_written != base::checked_cast<int>(data.size())) {
-    return {
-        0, std::string(),
-        logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
-  }
-
-  return {static_cast<int>(credentials.size()), export_file.value(),
-          std::string()};
 }
 
 void PasswordUIViewAndroid::PostSerializedPasswords(
