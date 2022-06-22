@@ -1079,7 +1079,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                     result |= Resource.AUDIO_CAPTURE;
                 } else if (resource.equals(PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID)) {
                     result |= Resource.PROTECTED_MEDIA_ID;
-                } else if (resource.equals(AwPermissionRequest.RESOURCE_MIDI_SYSEX)) {
+                } else if (resource.equals(PermissionRequest.RESOURCE_MIDI_SYSEX)) {
                     result |= Resource.MIDI_SYSEX;
                 }
             }
@@ -1098,7 +1098,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 result.add(PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID);
             }
             if ((resources & Resource.MIDI_SYSEX) != 0) {
-                result.add(AwPermissionRequest.RESOURCE_MIDI_SYSEX);
+                result.add(PermissionRequest.RESOURCE_MIDI_SYSEX);
             }
             String[] resource_array = new String[result.size()];
             return result.toArray(resource_array);
