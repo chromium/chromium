@@ -17,8 +17,6 @@ class LocationBarModel;
 - (void)locationBarDidBecomeFirstResponder;
 // Called when the location bar loses keyboard focus.
 - (void)locationBarDidResignFirstResponder;
-// Returns the location bar model.
-- (LocationBarModel*)locationBarModel;
 
 @end
 

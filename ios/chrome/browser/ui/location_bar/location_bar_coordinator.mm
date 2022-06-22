@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
+#import "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_consumer.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_mediator.h"
+#import "ios/chrome/browser/ui/location_bar/location_bar_model_delegate_ios.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view_consumer.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view_mediator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
@@ -73,6 +75,10 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+const size_t kMaxURLDisplayChars = 32 * 1024;
+}  // namespace
+
 @interface LocationBarCoordinator () <LoadQueryCommands,
                                       LocationBarDelegate,
                                       LocationBarViewControllerDelegate,
@@ -85,6 +91,11 @@
   std::unique_ptr<FullscreenUIUpdater> _omniboxFullscreenUIUpdater;
   // Observer that updates BadgeViewController for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _badgeFullscreenUIUpdater;
+
+  // Facade objects used by `_toolbarCoordinator`.
+  // Must outlive `_toolbarCoordinator`.
+  std::unique_ptr<LocationBarModelDelegateIOS> _locationBarModelDelegate;
+  std::unique_ptr<LocationBarModel> _locationBarModel;
 }
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -206,6 +217,11 @@
   self.mediator.consumer = self;
   self.mediator.webStateList = self.webStateList;
 
+  _locationBarModelDelegate.reset(
+      new LocationBarModelDelegateIOS(self.browser->GetWebStateList()));
+  _locationBarModel = std::make_unique<LocationBarModelImpl>(
+      _locationBarModelDelegate.get(), kMaxURLDisplayChars);
+
   self.steadyViewMediator = [[LocationBarSteadyViewMediator alloc]
       initWithLocationBarModel:[self locationBarModel]];
   self.steadyViewMediator.webStateList = self.browser->GetWebStateList();
@@ -238,6 +254,9 @@
   self.mediator = nil;
   [self.steadyViewMediator disconnect];
   self.steadyViewMediator = nil;
+
+  _locationBarModel = nullptr;
+  _locationBarModelDelegate = nullptr;
 
   _badgeFullscreenUIUpdater = nullptr;
   _omniboxFullscreenUIUpdater = nullptr;
@@ -369,7 +388,7 @@
 }
 
 - (LocationBarModel*)locationBarModel {
-  return [self.delegate locationBarModel];
+  return _locationBarModel.get();
 }
 
 - (void)locationBarRequestScribbleTargetFocus {

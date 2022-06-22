@@ -16,7 +16,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/omnibox/browser/location_bar_model_impl.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/sessions/core/tab_restore_service_helper.h"
 #import "components/signin/ios/browser/active_state_manager.h"
@@ -82,7 +81,6 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/infobars/infobar_positioner.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_model_delegate_ios.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui.h"
@@ -164,8 +162,6 @@
 using base::UserMetricsAction;
 
 namespace {
-
-const size_t kMaxURLDisplayChars = 32 * 1024;
 
 // When the tab strip moves beyond this origin offset, switch the status bar
 // appearance from light to dark.
@@ -265,11 +261,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                      WebStateListObserving> {
   // Identifier for each animation of an NTP opening.
   NSInteger _NTPAnimationIdentifier;
-
-  // Facade objects used by `_toolbarCoordinator`.
-  // Must outlive `_toolbarCoordinator`.
-  std::unique_ptr<LocationBarModelDelegateIOS> _locationBarModelDelegate;
-  std::unique_ptr<LocationBarModel> _locationBarModel;
 
   // Helper for the bvc.
   // TODO(crbug.com/1329102): Remove this property.
@@ -1327,8 +1318,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.secondaryToolbarCoordinator = nil;
     self.toolbarInterface = nil;
     _toolbarUIState = nil;
-    _locationBarModelDelegate = nil;
-    _locationBarModel = nil;
     _browserViewControllerHelper = nil;
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
       [self.tabStripCoordinator stop];
@@ -1709,15 +1698,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // or not browser state and browser are valid.
 - (void)buildToolbarAndTabStrip {
   DCHECK([self isViewLoaded]);
-  DCHECK(!_locationBarModelDelegate);
-
-  // Create the location bar model and controller.
-  // TODO(crbug.com/1329101): Move all of this to the coordinator which owns the
-  // location bar.
-  _locationBarModelDelegate.reset(
-      new LocationBarModelDelegateIOS(self.browser->GetWebStateList()));
-  _locationBarModel = std::make_unique<LocationBarModelImpl>(
-      _locationBarModelDelegate.get(), kMaxURLDisplayChars);
 
   // TODO(crbug.com/1329094): Move this coordinator to BrowserCoordinator
   self.popupMenuCoordinator =
@@ -1939,7 +1919,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // `self.browser`.
 - (void)addUIFunctionalityForBrowserAndBrowserState {
   DCHECK(self.browserState);
-  DCHECK(_locationBarModel);
   DCHECK(self.browser);
   DCHECK([self isViewLoaded]);
 
@@ -3678,12 +3657,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       }];
 
   [self.primaryToolbarCoordinator transitionToLocationBarFocusedState:NO];
-}
-
-// TODO(crbug.com/1329101): Remove this method, since the BVC will stop owning
-// the location bar model.
-- (LocationBarModel*)locationBarModel {
-  return _locationBarModel.get();
 }
 
 #pragma mark - BrowserCommands

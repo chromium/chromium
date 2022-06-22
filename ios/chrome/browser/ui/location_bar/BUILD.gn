@@ -22,6 +22,7 @@ source_set("location_bar") {
   ]
   deps = [
     ":constants",
+    ":location_bar_model_delegate",
     "resources:location_bar_connection_dangerous",
     "resources:location_bar_connection_info",
     "resources:location_bar_connection_offline",
