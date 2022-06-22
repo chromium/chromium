@@ -153,7 +153,6 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
             }
             if (TRACE) Log.i(TAG, "onReceivedError=" + request.url);
             if (mSupportLibClient.isFeatureAvailable(Features.RECEIVE_WEB_RESOURCE_ERROR)) {
-                // Note: we must pass AwWebResourceError, since this class was introduced after L.
                 mSupportLibClient.onReceivedError(
                         mWebView, new WebResourceRequestAdapter(request), error);
             } else {
