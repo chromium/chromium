@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+attribution_reporting_promise_test(async t => {
+  registerAttributionSrc('Attribution-Reporting-Register-Source', {
+    source_event_id: '1',
+    destination: `https://{{host}}`,
+    priority: '11',
+  });
+  registerAttributionSrc('Attribution-Reporting-Register-Source', {
+    source_event_id: '2',
+    destination: `https://{{host}}`,
+    priority: '13',
+  });
+  registerAttributionSrc('Attribution-Reporting-Register-Source', {
+    source_event_id: '3',
+    destination: `https://{{host}}`,
+    priority: '12',
+  });
+
+  registerAttributionSrc('Attribution-Reporting-Register-Trigger', {
+    event_trigger_data: [{trigger_data: '0'}],
+  });
+
+  const payload = await pollEventLevelReports();
+  assert_equals(payload.reports.length, 1);
+  const report = JSON.parse(payload.reports[0].body);
+  assert_equals(report.source_event_id, '2');
+}, 'Trigger is attributed to highest priority source.');
+</script>
