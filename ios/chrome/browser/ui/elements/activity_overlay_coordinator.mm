@@ -31,6 +31,8 @@
       addSubview:self.activityOverlayViewController.view];
   [self.activityOverlayViewController
       didMoveToParentViewController:self.baseViewController];
+  self.activityOverlayViewController.view
+      .translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.baseViewController.view,
                      self.activityOverlayViewController.view);
 }
