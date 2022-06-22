@@ -60,12 +60,19 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
      * @type {string}
      * @protected
      */
+    this.sysInfoCheckboxLabel_;
+
+    /**
+     * @type {string}
+     * @protected
+     */
     this.privacyNote_;
   }
 
   ready() {
     super.ready();
     this.setPrivacyNote_();
+    this.setSysInfoCheckboxLabelAndAttributes_();
 
     // Set up event listener for email change to retarget |this| to be the
     // ShareDataPageElement's context.
@@ -214,6 +221,17 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     this.openLinkInNewWindow_('#privacyPolicyUrl', FEEDBACK_PRIVACY_POLICY_URL);
     this.openLinkInNewWindow_(
         '#termsOfServiceUrl', FEEDBACK_TERMS_OF_SERVICE_URL);
+  }
+
+  /** @private */
+  setSysInfoCheckboxLabelAndAttributes_() {
+    this.sysInfoCheckboxLabel_ = this.i18nAdvanced(
+        'includeSystemInfoAndMetricsCheckboxLabel', {attrs: ['id']});
+
+    const sysInfoLink = this.shadowRoot.querySelector('#sysInfoLink');
+    sysInfoLink.setAttribute('href', '#');
+    const histogramsLink = this.shadowRoot.querySelector('#histogramsLink');
+    histogramsLink.setAttribute('href', '#');
   }
 }
 

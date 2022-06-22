@@ -129,7 +129,7 @@ export function shareDataPageTestSuite() {
     assertTrue(!!getElement('#pageUrlText'));
 
     // System info label is a localized string in HTML format.
-    assertTrue(getElementContent('#sysInfoLabel').length > 0);
+    assertTrue(getElementContent('#sysInfoCheckboxLabel').length > 0);
 
     // Privacy note is a long localized string in HTML format.
     assertTrue(page.i18nExists('privacyNote'));
