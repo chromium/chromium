@@ -81,10 +81,8 @@ class ExecutableTestRunner(TestRunner):
             child_args.append('--test-launcher-shard-index=%d' %
                               args.test_launcher_shard_index)
         if args.test_launcher_total_shards:
-            child_args.append([
-                '--test-launcher-total-shards=%d' %
-                args.test_launcher_total_shards
-            ])
+            child_args.append('--test-launcher-total-shards=%d' %
+                              args.test_launcher_total_shards)
         if args.test_launcher_summary_output:
             self._test_launcher_summary_output = \
                 args.test_launcher_summary_output
