@@ -204,7 +204,7 @@ void SavedDeskDialogController::ShowUnsupportedAppsDialog(
                   .PopulateIconContainerFromWindows(unsupported_apps))
           .Build();
   CreateDialogWidget(std::move(dialog), root_window);
-  RecordUnsupportedAppDialogShowHistogram();
+  RecordUnsupportedAppDialogShowHistogram(unsupported_apps_template_->type());
 }
 
 void SavedDeskDialogController::ShowReplaceDialog(

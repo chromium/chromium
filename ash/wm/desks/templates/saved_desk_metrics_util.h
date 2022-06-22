@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_METRICS_UTIL_H_
 
 #include "ash/public/cpp/desk_template.h"
+#include "base/time/time.h"
 #include "components/desks_storage/core/desk_model.h"
 
 namespace ash {
@@ -27,7 +28,7 @@ constexpr char kTemplateWindowAndTabCountHistogramName[] =
     "Ash.DeskTemplate.WindowAndTabCount";
 constexpr char kUserTemplateCountHistogramName[] =
     "Ash.DeskTemplate.UserTemplateCount";
-constexpr char kUnsupportedAppDialogShowHistogramName[] =
+constexpr char kTemplateUnsupportedAppDialogShowHistogramName[] =
     "Ash.DeskTemplate.UnsupportedAppDialogShow";
 constexpr char kReplaceTemplateHistogramName[] =
     "Ash.DeskTemplate.ReplaceTemplate";
@@ -47,20 +48,27 @@ constexpr char kSaveAndRecallWindowAndTabCountHistogramName[] =
     "Ash.DeskTemplate.SaveAndRecallWindowAndTabCount";
 constexpr char kUserSaveAndRecallCountHistogramName[] =
     "Ash.DeskTemplate.UserSaveAndRecallCount";
+constexpr char kReplaceSaveAndRecallHistogramName[] =
+    "Ash.DeskTemplate.ReplaceSaveAndRecall";
+constexpr char kTimeBetweenSaveAndRecallHistogramName[] =
+    "Ash.DeskTemplate.TimeBetweenSaveAndRecall";
+constexpr char kSaveAndRecallUnsupportedAppDialogShowHistogramName[] =
+    "Ash.DeskTemplate.SaveAndRecallUnsupportedAppDialogShow";
 
 // Wrappers calls base::uma with correct histogram name.
 void RecordLoadSavedDeskLibraryHistogram();
 void RecordDeleteSavedDeskHistogram(DeskTemplateType type);
 void RecordLaunchSavedDeskHistogram(DeskTemplateType type);
 void RecordNewSavedDeskHistogram(DeskTemplateType type);
+void RecordReplaceSavedDeskHistogram(DeskTemplateType type);
 void RecordAddOrUpdateTemplateStatusHistogram(
     desks_storage::DeskModel::AddOrUpdateEntryStatus status);
 void RecordUserSavedDeskCountHistogram(DeskTemplateType type,
                                        size_t entry_count,
                                        size_t max_entry_count);
 void RecordWindowAndTabCountHistogram(const DeskTemplate& desk_template);
-void RecordUnsupportedAppDialogShowHistogram();
-void RecordReplaceTemplateHistogram();
+void RecordUnsupportedAppDialogShowHistogram(DeskTemplateType type);
+void RecordTimeBetweenSaveAndRecall(base::TimeDelta duration);
 
 }  // namespace ash
 

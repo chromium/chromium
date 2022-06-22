@@ -36,6 +36,13 @@ void RecordNewSavedDeskHistogram(DeskTemplateType type) {
                             true);
 }
 
+void RecordReplaceSavedDeskHistogram(DeskTemplateType type) {
+  base::UmaHistogramBoolean(type == DeskTemplateType::kTemplate
+                                ? kReplaceTemplateHistogramName
+                                : kReplaceSaveAndRecallHistogramName,
+                            true);
+}
+
 void RecordAddOrUpdateTemplateStatusHistogram(
     desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
   base::UmaHistogramEnumeration(kAddOrUpdateTemplateStatusHistogramName,
@@ -99,12 +106,28 @@ void RecordWindowAndTabCountHistogram(const DeskTemplate& desk_template) {
   }
 }
 
-void RecordUnsupportedAppDialogShowHistogram() {
-  base::UmaHistogramBoolean(kUnsupportedAppDialogShowHistogramName, true);
+void RecordUnsupportedAppDialogShowHistogram(DeskTemplateType type) {
+  base::UmaHistogramBoolean(
+      type == DeskTemplateType::kTemplate
+          ? kTemplateUnsupportedAppDialogShowHistogramName
+          : kSaveAndRecallUnsupportedAppDialogShowHistogramName,
+      true);
 }
 
-void RecordReplaceTemplateHistogram() {
-  base::UmaHistogramBoolean(kReplaceTemplateHistogramName, true);
+void RecordTimeBetweenSaveAndRecall(base::TimeDelta duration) {
+  // Constants for the histogram. Do not change these values without also
+  // changing the histogram name.
+  constexpr size_t bucket_count = 50;
+  constexpr base::TimeDelta min_bucket = base::Seconds(1);
+  constexpr base::TimeDelta max_bucket = base::Hours(24 * 7);  // One week.
+
+  // Lazily construct the histogram.
+  static auto* histogram = base::Histogram::FactoryGet(
+      kTimeBetweenSaveAndRecallHistogramName, min_bucket.InSeconds(),
+      max_bucket.InSeconds(), bucket_count,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+
+  histogram->Add(duration.InSeconds());
 }
 
 }  // namespace ash

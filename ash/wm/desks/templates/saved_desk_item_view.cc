@@ -312,7 +312,7 @@ void SavedDeskItemView::ReplaceTemplate(const std::string& uuid) {
   saved_desk_util::GetSavedDeskPresenter()->DeleteEntry(
       uuid, /*record_for_type=*/absl::nullopt);
   UpdateTemplateName();
-  RecordReplaceTemplateHistogram();
+  RecordReplaceSavedDeskHistogram(desk_template_->type());
 }
 
 void SavedDeskItemView::RevertTemplateName() {

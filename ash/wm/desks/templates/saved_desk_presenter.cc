@@ -333,9 +333,9 @@ void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
 
   // For Save & Recall, the underlying desk definition is deleted on launch. We
   // store the template ID here since we're about to move the desk template.
-  const bool delete_template_on_launch =
-      desk_template->type() == DeskTemplateType::kSaveAndRecall;
-  const std::string template_uuid = desk_template->uuid().AsLowercaseString();
+  const auto saved_desk_type = desk_template->type();
+  const auto saved_desk_creation_time = desk_template->created_time();
+  const std::string uuid = desk_template->uuid().AsLowercaseString();
 
   // Copy the index of the newly created desk to the template. This ensures that
   // apps appear on the right desk even if the user switches to another.
@@ -349,10 +349,12 @@ void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
       overview_session_->GetGridWithRootWindow(root_window)->desks_bar_view());
   desks_bar_view->NudgeDeskName(desk_index);
 
-  if (delete_template_on_launch) {
+  if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
     // Passing nullopt as type since this indicates that we don't want to record
     // the `delete` metric for this operation.
-    DeleteEntry(template_uuid, /*record_for_type=*/absl::nullopt);
+    DeleteEntry(uuid, /*record_for_type=*/absl::nullopt);
+    RecordTimeBetweenSaveAndRecall(base::Time::Now() -
+                                   saved_desk_creation_time);
   }
 }
 

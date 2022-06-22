@@ -1981,6 +1981,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.ReplaceSaveAndRecall" enum="BooleanHit"
+    expires_after="2022-12-03">
+  <owner>dandersson@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>Recorded when the user replaces a Save and Recall desk.</summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.ReplaceTemplate" enum="BooleanHit"
     expires_after="2022-07-14">
   <owner>aprilzhou@chromium.org</owner>
@@ -1996,6 +2003,18 @@ chromium-metrics-reviews@google.com.
   <owner>janetmac@chromium.org</owner>
   <summary>
     Records the number of tabs in a Save and Recall desk when it is saved.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.SaveAndRecallUnsupportedAppDialogShow"
+    units="count" expires_after="2022-12-03">
+  <owner>dandersson@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the number of times the unsupported Apps dialog shows. This event is
+    triggered when a user attempts to save a Save and Recall desk that contains
+    an unsupported app type. Currently the saved desk feature only supports
+    PWAs, Extensions, and browser instances.
   </summary>
 </histogram>
 
@@ -2023,6 +2042,16 @@ chromium-metrics-reviews@google.com.
   <owner>richui@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>Records the number of tabs in a template when it is saved.</summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.TimeBetweenSaveAndRecall" units="seconds"
+    expires_after="2022-12-03">
+  <owner>dandersson@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    The number of seconds between the creation of a new Save and Recall desk and
+    its launch (and automatic deletion).
+  </summary>
 </histogram>
 
 <histogram name="Ash.DeskTemplate.TimeToLoadTemplate" units="ms"

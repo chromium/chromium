@@ -2878,8 +2878,8 @@ TEST_F(SavedDeskTest, UnsupportedAppDialogRecordsMetric) {
 
   // Now we assert that we've recorded the metric.
   constexpr int kExpectedDialogShows = 1;
-  histogram_tester.ExpectTotalCount(kUnsupportedAppDialogShowHistogramName,
-                                    kExpectedDialogShows);
+  histogram_tester.ExpectTotalCount(
+      kTemplateUnsupportedAppDialogShowHistogramName, kExpectedDialogShows);
 }
 
 // Tests that the window and tab counts are properly recorded in their
