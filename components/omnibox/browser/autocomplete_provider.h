@@ -277,7 +277,14 @@ class AutocompleteProvider
   // Returns the set of matches for the current query.
   const ACMatches& matches() const { return matches_; }
 
-  // Returns whether the provider is done processing the query.
+  // Returns whether the provider is done processing the last `Start()` request.
+  // Should not be set true for `StartPrefetch()` requests in order to remain
+  // consistent with `AutocompleteController::done()`; i.e., if `done_` is false
+  // for any provider, then the `AutocompleteController::done_` must also be
+  // false. This ensures the controller can determine when each provider
+  // finishes processing async requests. Should be true after either `Stop()` or
+  // `Start()` with `AutocompleteInput.want_asynchronous_matches` set to false
+  // are called.
   bool done() const { return done_; }
 
   // Returns this provider's type.

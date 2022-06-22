@@ -207,34 +207,40 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   if (result_type_running_ == NONE)
     return;
 
-  done_ = false;
+  if (is_prefetch)
+    prefetch_done_ = false;
+  else
+    done_ = false;
 
   const std::string original_response = MaybeUseStoredResponse();
 
   search_terms_args.current_page_url =
       result_type_running_ == REMOTE_SEND_URL ? current_query_ : std::string();
-  client()
-      ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
-      ->CreateSuggestionsRequest(
-          search_terms_args, client()->GetTemplateURLService(),
-          base::BindOnce(
-              &ZeroSuggestProvider::OnRemoteSuggestionsLoaderAvailable,
-              weak_ptr_factory_.GetWeakPtr(), is_prefetch),
-          base::BindOnce(&ZeroSuggestProvider::OnURLLoadComplete,
-                         weak_ptr_factory_.GetWeakPtr(), client()->GetWeakPtr(),
-                         search_terms_args, is_prefetch, original_response,
-                         base::TimeTicks::Now()));
+  // Grab ownership of the loader until results come in to
+  // `OnURLLoadComplete()`.
+  loader_ = client()
+                ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
+                ->StartSuggestionsRequest(
+                    search_terms_args, client()->GetTemplateURLService(),
+                    base::BindOnce(&ZeroSuggestProvider::OnURLLoadComplete,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   client()->GetWeakPtr(), search_terms_args,
+                                   is_prefetch, original_response,
+                                   base::TimeTicks::Now()));
+
+  LogOmniboxZeroSuggestRequest(ZERO_SUGGEST_REQUEST_SENT,
+                               /*is_prefetch=*/!prefetch_done_);
 }
 
 void ZeroSuggestProvider::Stop(bool clear_cached_results,
                                bool due_to_user_inactivity) {
   if (loader_) {
     LogOmniboxZeroSuggestRequest(ZERO_SUGGEST_REQUEST_INVALIDATED,
-                                 /*is_prefetch=*/is_prefetch_loader_);
+                                 /*is_prefetch=*/!prefetch_done_);
   }
   loader_.reset();
-  is_prefetch_loader_ = false;
   counterfactual_loader_.reset();
+  prefetch_done_ = true;
   done_ = true;
   result_type_running_ = NONE;
 
@@ -332,7 +338,7 @@ void ZeroSuggestProvider::OnURLLoadComplete(
     base::TimeTicks request_time,
     const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> response_body) {
-  DCHECK(!done_);
+  DCHECK(!done_ || !prefetch_done_);
   DCHECK_EQ(loader_.get(), source);
 
   LogOmniboxZeroSuggestRequestRoundTripTime(
@@ -350,16 +356,14 @@ void ZeroSuggestProvider::OnURLLoadComplete(
     // Make sure the request is not cacheable.
     search_terms_args.zero_suggest_cache_duration_sec = 0;
 
-    client->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
-        ->CreateSuggestionsRequest(
-            search_terms_args, client->GetTemplateURLService(),
-            base::BindOnce(&ZeroSuggestProvider::
-                               OnRemoteSuggestionsCounterfactualLoaderAvailable,
-                           weak_ptr_factory_.GetWeakPtr()),
-            base::BindOnce(
-                &ZeroSuggestProvider::OnCounterfactualURLLoadComplete,
-                weak_ptr_factory_.GetWeakPtr(), is_prefetch,
-                original_response));
+    counterfactual_loader_ =
+        client->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
+            ->StartSuggestionsRequest(
+                search_terms_args, client->GetTemplateURLService(),
+                base::BindOnce(
+                    &ZeroSuggestProvider::OnCounterfactualURLLoadComplete,
+                    weak_ptr_factory_.GetWeakPtr(), is_prefetch,
+                    original_response));
   }
 
   const bool response_received =
@@ -371,7 +375,7 @@ void ZeroSuggestProvider::OnURLLoadComplete(
       UpdateResults(SearchSuggestionParser::ExtractJsonData(
           source, std::move(response_body)));
   loader_.reset();
-  is_prefetch_loader_ = false;
+  prefetch_done_ = true;
   done_ = true;
   result_type_running_ = NONE;
 
@@ -451,22 +455,6 @@ AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
 
   match.subtypes = navigation.subtypes();
   return match;
-}
-
-void ZeroSuggestProvider::OnRemoteSuggestionsLoaderAvailable(
-    bool is_prefetch,
-    std::unique_ptr<network::SimpleURLLoader> loader) {
-  // RemoteSuggestionsService has already started |loader|, so here it's
-  // only necessary to grab its ownership until results come in to
-  // OnURLLoadComplete().
-  loader_ = std::move(loader);
-  is_prefetch_loader_ = is_prefetch;
-  LogOmniboxZeroSuggestRequest(ZERO_SUGGEST_REQUEST_SENT, is_prefetch);
-}
-
-void ZeroSuggestProvider::OnRemoteSuggestionsCounterfactualLoaderAvailable(
-    std::unique_ptr<network::SimpleURLLoader> loader) {
-  counterfactual_loader_ = std::move(loader);
 }
 
 void ZeroSuggestProvider::ConvertResultsToAutocompleteMatches() {

@@ -176,19 +176,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // page.
   AutocompleteMatch MatchForCurrentText();
 
-  // Called when RemoteSuggestionsService starts `loader` for the provider to
-  // take over its ownership. `is_prefetch` is bound to this callback and
-  // indicates if the request is a prefetch one. The value of `is_prefetch` is
-  // stored in `is_prefetch_loader_` for the duration of the loader's lifetime.
-  void OnRemoteSuggestionsLoaderAvailable(
-      bool is_prefetch,
-      std::unique_ptr<network::SimpleURLLoader> loader);
-
-  // Serves the same purpose as OnRemoteSuggestionsLoaderAvailable for the
-  // counterfactual requests.
-  void OnRemoteSuggestionsCounterfactualLoaderAvailable(
-      std::unique_ptr<network::SimpleURLLoader> loader);
-
   // Whether zero suggest suggestions are allowed in the given context.
   // Invoked early, confirms all the external conditions for ZeroSuggest are
   // met.
@@ -234,9 +221,10 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Loader used to retrieve results.
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
-  // Indicate whether `loader_` is retrieving prefetch results. Used for metrics
-  // when the provider is stopped.
-  bool is_prefetch_loader_;
+  // Like `AutocompleteProvider::done_`, but for prefetch requests. Used for
+  // metrics when the provider is stopped. `done_` and `prefetch_done_` should
+  // never both be true, a `Start()` request stops ongoing requests.
+  bool prefetch_done_;
 
   // Loader used to retrieve counterfactual results.
   std::unique_ptr<network::SimpleURLLoader> counterfactual_loader_;

@@ -66,10 +66,10 @@ GURL RemoteSuggestionsService::EndpointUrl(
                                                     search_terms_data));
 }
 
-void RemoteSuggestionsService::CreateSuggestionsRequest(
+std::unique_ptr<network::SimpleURLLoader>
+RemoteSuggestionsService::StartSuggestionsRequest(
     const TemplateURLRef::SearchTermsArgs& search_terms_args,
     const TemplateURLService* template_url_service,
-    StartCallback start_callback,
     CompletionCallback completion_callback) {
   const GURL suggest_url = EndpointUrl(search_terms_args, template_url_service);
   DCHECK(suggest_url.is_valid());
@@ -113,25 +113,12 @@ void RemoteSuggestionsService::CreateSuggestionsRequest(
   // Try to attach cookies for signed in user.
   request->site_for_cookies = net::SiteForCookies::FromUrl(suggest_url);
   AddVariationHeaders(request.get());
-  StartDownloadAndTransferLoader(std::move(request), std::string(),
-                                 traffic_annotation, std::move(start_callback),
-                                 std::move(completion_callback));
-}
 
-void RemoteSuggestionsService::StartDownloadAndTransferLoader(
-    std::unique_ptr<network::ResourceRequest> request,
-    std::string request_body,
-    net::NetworkTrafficAnnotationTag traffic_annotation,
-    StartCallback start_callback,
-    CompletionCallback completion_callback) {
+  // Make loader and start download.
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
-  if (!request_body.empty()) {
-    loader->AttachStringForUpload(request_body, "application/json");
-  }
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(std::move(completion_callback), loader.get()));
-
-  std::move(start_callback).Run(std::move(loader));
+  return loader;
 }

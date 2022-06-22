@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/load_flags.h"
@@ -36,8 +35,6 @@ class RemoteSuggestionsServiceTest : public testing::Test {
 
   void RunAndWait() { mock_task_runner_->FastForwardUntilNoTasksRemain(); }
 
-  void OnRequestStart(std::unique_ptr<network::SimpleURLLoader> loader) {}
-
   void OnRequestComplete(const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body) {}
 
@@ -59,10 +56,8 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies) {
   TemplateURLService template_url_service(nullptr, 0);
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
-  service.CreateSuggestionsRequest(
+  service.StartSuggestionsRequest(
       search_terms_args, &template_url_service,
-      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestStart,
-                     base::Unretained(this)),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
                      base::Unretained(this)));
 
@@ -87,10 +82,8 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   search_terms_args.bypass_cache = true;
-  service.CreateSuggestionsRequest(
+  service.StartSuggestionsRequest(
       search_terms_args, &template_url_service,
-      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestStart,
-                     base::Unretained(this)),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
                      base::Unretained(this)));
 
