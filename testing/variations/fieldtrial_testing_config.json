@@ -43,31 +43,6 @@
             ]
         }
     ],
-    "AddToHomescreenIPH": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledTextBubble_20210819",
-                    "params": {
-                        "availability": ">=0",
-                        "event_1": "name:add_to_homescreen_text_bubble_iph_trigger;comparator:==0;window:15;storage:90",
-                        "event_trigger": "name:add_to_homescreen_text_bubble_iph_trigger;comparator:<2;window:90;storage:90",
-                        "event_used": "name:add_to_homescreen_dialog_shown;comparator:==0;window:90;storage:90",
-                        "session_rate": "<1",
-                        "use_message": "false",
-                        "use_text_bubble": "true"
-                    },
-                    "enable_features": [
-                        "AddToHomescreenIPH",
-                        "IPH_AddToHomescreenTextBubble"
-                    ]
-                }
-            ]
-        }
-    ],
     "AlignWakeUps": [
         {
             "platforms": [

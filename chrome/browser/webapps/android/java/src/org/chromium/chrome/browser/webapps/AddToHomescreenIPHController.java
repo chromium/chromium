@@ -103,7 +103,7 @@ public class AddToHomescreenIPHController {
             showTextBubbleIPH();
         } else if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                            ChromeFeatureList.ADD_TO_HOMESCREEN_IPH, VARIATION_KEY_USE_MESSAGE,
-                           false)) {
+                           true)) {
             showMessageIPH(tab);
         }
     }
