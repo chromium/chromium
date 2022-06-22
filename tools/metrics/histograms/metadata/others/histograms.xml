@@ -2817,22 +2817,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ComponentUpdater.AndroidComponentLoader.LoadStatus"
-    enum="AndroidComponentLoaderLoadStatus" expires_after="2022-07-01">
-<!-- Name completed by histogram_suffixes
-     name="ComponentUpdater.AndroidComponentLoader.ComponentName" -->
-
+<histogram
+    name="ComponentUpdater.AndroidComponentLoader.LoadStatus.{Component}"
+    units="BooleanSuccess" expires_after="2022-12-15">
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <owner>src/components/component_updater/android/OWNERS</owner>
   <summary>
-    Records component loading success, or the failure reason if the component
-    loading fails using the EmbeddedComponentLoader. Note that success here just
-    means that the component has been fetched successfully from the components
-    provider service. However, this doesn't neccessary mean that the component
-    will be then loaded successfully in the system by its respective
+    Records {Component} component loading success, or the failure reason if the
+    component loading fails using the EmbeddedComponentLoader. Note that success
+    here just means that the component has been fetched successfully from the
+    components provider service. However, this doesn't neccessary mean that the
+    component will be then loaded successfully in the system by its respective
     ComponentLoaderPolicy implementation.
   </summary>
+  <token key="Component">
+    <variant name="ClientSidePhishing" summary="ClientSidePhishing"/>
+    <variant name="OriginTrials" summary="OriginTrials"/>
+    <variant name="TrustTokenKeyCommitments"
+        summary="TrustTokenKeyCommitments"/>
+    <variant name="WebViewAppsPackageNamesAllowlist"
+        summary="WebViewAppsPackageNamesAllowlist"/>
+    <variant name="WebViewEmptyComponent" summary="WebViewEmptyComponent"/>
+  </token>
 </histogram>
 
 <histogram name="ComponentUpdater.Calls" enum="ComponentUpdaterCalls"
