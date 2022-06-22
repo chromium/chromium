@@ -2,12 +2,15 @@
  * Helper functions for attribution reporting API tests.
  */
 
-attribution_reporting_promise_test = f => promise_test(async t => {
-  t.add_cleanup(() => internals.resetAttributionReporting());
-  t.add_cleanup(() => resetEventLevelReports());
-  t.add_cleanup(() => resetAggregatableReports());
-  return f(t);
-});
+const blankURL = () => new URL('/resources/blank.html', window.location);
+
+const attribution_reporting_promise_test = (f, name) =>
+    promise_test(async t => {
+      t.add_cleanup(() => internals.resetAttributionReporting());
+      t.add_cleanup(() => resetEventLevelReports());
+      t.add_cleanup(() => resetAggregatableReports());
+      return f(t);
+    }, name);
 
 const eventLevelReportsUrl =
     '/.well-known/attribution-reporting/report-event-attribution';
@@ -42,7 +45,7 @@ const encodeForPipe =
  * Registers either a source or trigger.
  */
 const registerAttributionSrc = (header, body, cookie = '') => {
-  const url = new URL('/resources/blank.html', window.location);
+  const url = blankURL();
   // , and ) in header values must be escaped with \
   const attributionHeader =
       `header(${header},${encodeForPipe(JSON.stringify(body))})`;
@@ -76,10 +79,18 @@ const pollEventLevelReports = interval =>
 const pollAggregatableReports = interval =>
     pollAttributionReports(aggregatableReportsUrl, interval);
 
-const validateReportHeaders = headers => {
-  assert_array_equals(headers['content-type'], ['application/json']);
-  assert_array_equals(headers['cache-control'], ['no-cache']);
-  assert_own_property(headers, 'user-agent');
-  assert_not_own_property(headers, 'cookie');
-  assert_not_own_property(headers, 'referer');
-}
+const validateReportHeaders =
+    headers => {
+      assert_array_equals(headers['content-type'], ['application/json']);
+      assert_array_equals(headers['cache-control'], ['no-cache']);
+      assert_own_property(headers, 'user-agent');
+      assert_not_own_property(headers, 'cookie');
+      assert_not_own_property(headers, 'referer');
+    }
+
+const clearCookie = name => {
+  const url = blankURL();
+  const cookieHeader = `header(Set-Cookie,${encodeForPipe(name)};Max-Age=0)`;
+  url.searchParams.set('pipe', cookieHeader);
+  return fetch(url);
+};
