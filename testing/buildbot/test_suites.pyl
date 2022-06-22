@@ -4439,6 +4439,9 @@
     'paeverywhere_common_tests': {
       # Run popular tests other than capture_unittests, crashpad_tests,
       # content_browsertests, and perfetto_unittests because they fail.
+      #
+      # browser_tests is said to be somewhat flaky for Mac
+      # (crbug.com/1201386), so we exclude that as well.
       'absl_hardening_tests': {},
       'angle_unittests': {
         'args': [
@@ -4456,11 +4459,6 @@
       'blink_unittests': {},
       'boringssl_crypto_tests': {},
       'boringssl_ssl_tests': {},
-      'browser_tests': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
       'cast_unittests': {},
       'components_browsertests': {},
       'components_unittests': {
