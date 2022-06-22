@@ -6779,11 +6779,6 @@ crbug.com/1285275 external/wpt/html/anonymous-iframe/cache-storage.tentative.htt
 crbug.com/1285275 virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/cache-storage.tentative.https.window.html [ Pass Timeout ]
 crbug.com/1285275 virtual/fenced-frame-shadow-dom/external/wpt/html/anonymous-iframe/cache-storage.tentative.https.window.html [ Pass Timeout ]
 crbug.com/1285275 virtual/partitioned-cookies/external/wpt/html/anonymous-iframe/cache-storage.tentative.https.window.html [ Pass Timeout ]
-#
-# The PolicyContainer's anonymous bit is unintendedly inherited toward the
-# fenced frame with the MPArch implementation. It causes:
-# Check failed: parent_ || !IsAnonymous().
-crbug.com/1287458 virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/fenced-frame.tentative.https.window.html [ Crash ]
 
 # Sheriff 2022-03-10
 crbug.com/1304956 storage/indexeddb/dont-wedge.html [ Failure Pass ]

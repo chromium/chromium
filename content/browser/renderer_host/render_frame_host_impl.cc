@@ -2938,15 +2938,46 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
   // Note 1: For normal document created from a navigation, the policy container
   // is computed from the NavigationRequest and assigned in
   // DidCommitNewDocument().
-  if (GetParentOrOuterDocument()) {
+  if (parent_) {
+    SetPolicyContainerHost(parent_->policy_container_host()->Clone());
+  } else if (GetParentOrOuterDocument()) {
+    // In the MPArch implementation of FencedFrame, this RenderFrameHost's
+    // SiteInstance has been adjusted to match its parent. During navigations,
+    // COOP and COEP are used to determine the SiteInstance. It means that if
+    // SiteInstance has been inherited, COOP/COEP must also be inherited to
+    // avoid creating inconsistencies. See:
+    // https://chromium-review.googlesource.com/c/chromium/src/+/3645368
+    //
+    // TODO(https://crbug.com/1338603): What makes sense for GuestView?
+    // TODO(https://crbug.com/1338601): What makes sense for Portals?
+    const PolicyContainerPolicies& parent_policies =
+        GetParentOrOuterDocument()->policy_container_host()->policies();
+
+    // Note: the full constructor is used, to force developers to make an
+    // explicit decision when adding new fields to the PolicyContainer.
     SetPolicyContainerHost(
-        GetParentOrOuterDocument()->policy_container_host()->Clone());
+        base::MakeRefCounted<PolicyContainerHost>(PolicyContainerPolicies(
+            network::mojom::ReferrerPolicy::kDefault,
+            network::mojom::IPAddressSpace::kUnknown,
+            /*is_web_secure_context=*/false,
+            std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+            parent_policies.cross_origin_opener_policy,
+            parent_policies.cross_origin_embedder_policy,
+            network::mojom::WebSandboxFlags::kNone,
+            /*anonymous=*/false)));
   } else if (frame_tree_node_->opener()) {
+    // During a `window.open(...)` without `noopener`, a new popup is created
+    // and always starts from the initial empty document. The opener has
+    // synchronous access toward its openee. So they must both share the same
+    // policies.
     SetPolicyContainerHost(frame_tree_node_->opener()
                                ->current_frame_host()
                                ->policy_container_host()
                                ->Clone());
   } else {
+    // In all the other cases, there is no environment to inherit policies
+    // from. This is "probably" a new top-level about:blank document created by
+    // the browser directly (omnibox, bookmarks, ...).
     PolicyContainerPolicies policies;
 
     // Main frames created by the browser are treated as belonging the `local`
