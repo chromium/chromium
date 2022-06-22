@@ -100,6 +100,7 @@ cast_test_group("cast_tests") {
     "//chromecast/ui/display_settings:cast_display_settings_unittests",
     "//chromecast/shared:cast_shared_unittests",
     "//chromecast/system/reboot:cast_reboot_unittests",
+    "//components/viz:viz_unittests",
     "//content/test:content_unittests",
     "//crypto:crypto_unittests",
     "//media:media_unittests",
@@ -318,6 +319,24 @@ cast_test_group("cast_tests") {
     }
   }
   filters += [ cc_unittests_filter ]
+
+  viz_unittests_filter = {
+    test_name = "viz_unittests"
+
+    # TODO(crbug.com/1338342): Make these tests pass.
+    gtest_excludes = [
+      "PromotedTrueFalse/MultiUnderlayPromotedTest.UnderlaysBlendPrimaryPlane/0",
+      "UnderlayCastTest.BlackOutsideOverlayContentBounds",
+      "UnderlayCastTest.FullScreenOverlayContentBounds",
+      "UnderlayCastTest.OverlayOccludedContentBounds",
+      "UnderlayCastTest.OverlayOccludedUnionContentBounds",
+      "UnderlayCastTest.OverlayPromotionWithMaskFilter",
+      "UnderlayCastTest.ReplacementQuad",
+      "UnderlayCastTest.RoundContentBounds",
+      "UnderlayCastTest.RoundOverlayContentBounds",
+    ]
+  }
+  filters += [ viz_unittests_filter ]
 
   content_unittests_filter = {
     test_name = "content_unittests"
