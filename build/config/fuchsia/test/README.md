@@ -47,8 +47,11 @@ https://fuchsia.dev/reference/fidl/fuchsia.web#CreateContextParams and
 https://fuchsia.dev/reference/fidl/fuchsia.web#ContextFeatureFlags.
 Any test-specific exceptions are documented for each file.
 
-#### audio_capabilities.test-cmx
-Corresponds to the `AUDIO` flag. Required for enabling audio input and output.
+#### audio_output.shard.test-cml
+Required by tests that need to enable audio output.
+
+#### platform_video_codecs.shard.test-cml
+Required by tests that need accelerated (e.g., hardware) video codecs.
 
 #### network.shard.test-cml
 For tests that need access to network services, including those that access a
