@@ -1,0 +1,17 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package org.chromium.chrome.browser.tab.proto;
+
+option java_package = "org.chromium.chrome.browser.tab.proto";
+
+message CouponPersistedTabDataProto {
+  // String representing the name of the coupon.
+  optional string name = 1;
+
+  // String representing the promotional code related to the coupon.
+  optional string code = 2;
+}

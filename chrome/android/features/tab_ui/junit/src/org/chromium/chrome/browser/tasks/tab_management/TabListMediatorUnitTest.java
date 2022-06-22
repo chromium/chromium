@@ -35,6 +35,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.COMMERCE_COUPONS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.STORE_HOURS;
@@ -1126,6 +1127,70 @@ public class TabListMediatorUnitTest {
      */
     private void prepareForPriceDrop() {
         setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
+        PersistedTabDataConfiguration.setUseTestConfig(true);
+        initAndAssertAllProperties();
+        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
+    }
+
+    @Test
+    public void testCouponFetcherActiveForForUngroupedTabs() {
+        prepareForCoupon();
+        resetWithRegularTabs(false);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(0).model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.CouponPersistedTabDataFetcher.class));
+        assertThat(mModel.get(1).model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.CouponPersistedTabDataFetcher.class));
+    }
+
+    @Test
+    public void testCouponFetcherInactiveForForGroupedTabs() {
+        prepareForCoupon();
+        resetWithRegularTabs(true);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertNull(mModel.get(0).model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER));
+        assertNull(mModel.get(1).model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER));
+    }
+
+    @Test
+    public void testCouponFetcherGroupedThenUngrouped() {
+        prepareForCoupon();
+        resetWithRegularTabs(true);
+        assertThat(mModel.size(), equalTo(2));
+        assertNull(mModel.get(0).model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER));
+        assertNull(mModel.get(1).model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER));
+        resetWithRegularTabs(false);
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(0).model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.CouponPersistedTabDataFetcher.class));
+        assertThat(mModel.get(1).model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.CouponPersistedTabDataFetcher.class));
+    }
+
+    @Test
+    public void testCouponFetcherUngroupedThenGrouped() {
+        prepareForCoupon();
+        resetWithRegularTabs(false);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(0).model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.CouponPersistedTabDataFetcher.class));
+        assertThat(mModel.get(1).model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.CouponPersistedTabDataFetcher.class));
+        resetWithRegularTabs(true);
+        assertThat(mModel.size(), equalTo(2));
+        assertNull(mModel.get(0).model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER));
+        assertNull(mModel.get(1).model.get(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER));
+    }
+
+    /**
+     * Set flags and initialize for verifying coupon annotations behavior
+     */
+    private void prepareForCoupon() {
+        CachedFeatureFlags.setForTesting(COMMERCE_COUPONS, true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PersistedTabDataConfiguration.setUseTestConfig(true);
         initAndAssertAllProperties();

@@ -57,6 +57,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.CCT_RESIZABLE_90_MAXIMUM_HEIGHT, false)
                     .put(ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE, false)
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES, true)
+                    .put(ChromeFeatureList.COMMERCE_COUPONS, false)
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES, false)
                     .put(ChromeFeatureList.CCT_TOOLBAR_CUSTOMIZATIONS, true)
                     .put(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS, false)
