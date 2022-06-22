@@ -10,12 +10,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -45,9 +43,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,14 +62,11 @@ public class ChromeFeedbackCollectorTest {
     private Activity mActivity;
     @Mock
     private Profile mProfile;
-    @Mock
-    private CoreAccountInfo mAccountInfo;
 
     // Test constants.
     private static final String CATEGORY_TAG = "category_tag";
     private static final String DESCRIPTION = "description";
     private static final String FEEDBACK_CONTEXT = "feedback_context";
-    private static final String ACCOUNT_IN_USE = "foo@gmail.com";
     private static final String KEY_1 = "key1";
     private static final String KEY_2 = "key2";
     private static final String KEY_3 = "key3";
@@ -249,8 +241,8 @@ public class ChromeFeedbackCollectorTest {
                 @Nullable String feedbackContext, @Nullable ScreenshotSource screenshotSource,
                 Callback<FeedbackCollector> callback) {
             super(activity, categoryTag, description, screenshotSource,
-                    new ChromeFeedbackCollector.InitParams(profile, url, feedbackContext), callback,
-                    null);
+                    new ChromeFeedbackCollector.InitParams(profile, url, feedbackContext),
+                    callback);
         }
 
         // ChromeFeedbackCollector implementation.
@@ -274,20 +266,11 @@ public class ChromeFeedbackCollectorTest {
     @Before
     public void setUp() {
         ThreadUtils.setUiThread(Looper.getMainLooper());
-
-        when(mAccountInfo.getEmail()).thenReturn(ACCOUNT_IN_USE);
-        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
-        when(IdentityServicesProvider.get().getIdentityManager(any()))
-                .thenReturn(mock(IdentityManager.class));
-        when(IdentityServicesProvider.get().getIdentityManager(any()).getPrimaryAccountInfo(
-                     anyInt()))
-                .thenReturn(mAccountInfo);
     }
 
     @After
     public void tearDown() {
         ThreadUtils.setUiThread(null);
-        IdentityServicesProvider.setInstanceForTests(null);
     }
 
     @Test
@@ -337,7 +320,6 @@ public class ChromeFeedbackCollectorTest {
             assertEquals(CATEGORY_TAG, collector.getCategoryTag());
             assertEquals(DESCRIPTION, collector.getDescription());
             assertNull(collector.getScreenshot());
-            assertEquals(ACCOUNT_IN_USE, collector.getAccountInUse());
         });
     }
 
