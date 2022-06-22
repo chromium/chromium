@@ -6668,6 +6668,24 @@
             ]
         }
     ],
+    "PrefetchFontLookupTables": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrefetchFontLookupTables"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreloadCookies": [
         {
             "platforms": [
