@@ -4,11 +4,6 @@
 
 package org.chromium.chrome.features.tasks;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -34,57 +29,61 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SU
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
+import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.EditText;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link TasksViewBinder}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class TasksViewBinderUnitTest {
     private final AtomicBoolean mViewClicked = new AtomicBoolean();
     private final View.OnClickListener mViewOnClickListener = (v) -> mViewClicked.set(true);
+    private Activity mActivity;
     private TasksView mTasksView;
     private PropertyModel mTasksViewPropertyModel;
+
     @Mock
     private IncognitoCookieControlsManager mCookieControlsManager;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @Before
+    public void setUp() throws Exception {
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         MockitoAnnotations.initMocks(this);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTasksView = (TasksView) getActivity().getLayoutInflater().inflate(
-                    R.layout.tasks_view_layout, null);
-            getActivity().setContentView(mTasksView);
+        mTasksView =
+                (TasksView) mActivity.getLayoutInflater().inflate(R.layout.tasks_view_layout, null);
+        mActivity.setContentView(mTasksView);
 
-            mTasksViewPropertyModel = new PropertyModel(TasksSurfaceProperties.ALL_KEYS);
-            PropertyModelChangeProcessor.create(
-                    mTasksViewPropertyModel, mTasksView, TasksViewBinder::bind);
-        });
+        mTasksViewPropertyModel = new PropertyModel(TasksSurfaceProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(
+                mTasksViewPropertyModel, mTasksView, TasksViewBinder::bind);
     }
 
     private boolean isViewVisible(int viewId) {
@@ -92,7 +91,6 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetTabCarouselMode() {
         mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, true);
@@ -103,7 +101,6 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetTabCarouselTitle() {
         mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, true);
@@ -137,20 +134,23 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
         };
 
         mViewClicked.set(false);
-        onView(withId(R.id.search_box_text)).perform(click());
+        mTasksView.findViewById(R.id.search_box_text).performClick();
         assertFalse(mViewClicked.get());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTasksViewPropertyModel.set(FAKE_SEARCH_BOX_CLICK_LISTENER, mViewOnClickListener);
         });
-        onView(withId(R.id.search_box_text)).perform(click());
+        mTasksView.findViewById(R.id.search_box_text).performClick();
         assertTrue(mViewClicked.get());
 
         textChanged.set(false);
-        onView(withId(R.id.search_box_text)).perform(replaceText("test"));
+        EditText searchBoxText = mTasksView.findViewById(R.id.search_box_text);
+        searchBoxText.setText("test");
+        searchBoxText.performClick();
         assertFalse(textChanged.get());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mTasksViewPropertyModel.set(FAKE_SEARCH_BOX_TEXT_WATCHER, textWatcher));
-        onView(withId(R.id.search_box_text)).perform(replaceText("test2"));
+        searchBoxText.setText("test2");
+        searchBoxText.performClick();
         assertTrue(textChanged.get());
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -160,7 +160,6 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1130093")
     public void testSetVoiceSearchButtonVisibilityAndClickListener() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
@@ -169,12 +168,12 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
         assertTrue(isViewVisible(R.id.voice_search_button));
 
         mViewClicked.set(false);
-        onView(withId(R.id.voice_search_button)).perform(click());
+        mTasksView.findViewById(R.id.voice_search_button).performClick();
         assertFalse(mViewClicked.get());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTasksViewPropertyModel.set(VOICE_SEARCH_BUTTON_CLICK_LISTENER, mViewOnClickListener);
         });
-        onView(withId(R.id.voice_search_button)).perform(click());
+        mTasksView.findViewById(R.id.voice_search_button).performClick();
         assertTrue(mViewClicked.get());
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -192,12 +191,12 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
         assertTrue(isViewVisible(R.id.lens_camera_button));
 
         mViewClicked.set(false);
-        onView(withId(R.id.lens_camera_button)).perform(click());
+        mTasksView.findViewById(R.id.lens_camera_button).performClick();
         assertFalse(mViewClicked.get());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTasksViewPropertyModel.set(LENS_BUTTON_CLICK_LISTENER, mViewOnClickListener);
         });
-        onView(withId(R.id.lens_camera_button)).perform(click());
+        mTasksView.findViewById(R.id.lens_camera_button).performClick();
         assertTrue(mViewClicked.get());
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -206,7 +205,6 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetMVTilesVisibility() {
         mTasksViewPropertyModel.set(MV_TILES_VISIBLE, true);
@@ -217,7 +215,6 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetMoreTabsClickListener() {
         mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, true);
@@ -235,16 +232,15 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetIncognitoMode() {
         mTasksViewPropertyModel.set(IS_INCOGNITO, true);
-        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getActivity(), true);
+        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(mActivity, true);
         ColorDrawable viewColor = (ColorDrawable) mTasksView.getBackground();
         assertEquals(backgroundColor, viewColor.getColor());
 
         mTasksViewPropertyModel.set(IS_INCOGNITO, false);
-        backgroundColor = ChromeColors.getPrimaryBackgroundColor(getActivity(), false);
+        backgroundColor = ChromeColors.getPrimaryBackgroundColor(mActivity, false);
         viewColor = (ColorDrawable) mTasksView.getBackground();
         assertEquals(backgroundColor, viewColor.getColor());
     }
@@ -268,7 +264,6 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetTasksSurfaceBodyTopMargin() {
         ViewGroup.MarginLayoutParams params =
@@ -281,7 +276,6 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetMVTilesContainerTopMargin() {
         ViewGroup.MarginLayoutParams params =
@@ -295,7 +289,6 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetTabSwitcherTitleTopMargin() {
         ViewGroup.MarginLayoutParams params =
@@ -309,7 +302,6 @@ public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetTopToolbarLayoutHeight() {
         ViewGroup.LayoutParams params =
