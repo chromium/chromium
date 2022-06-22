@@ -1516,6 +1516,13 @@
        {}
       ]
      ],
+     "float-becomes-inflow-crash.html": [
+      "c820b093ce332abc2bce9c58456cb67fe268f637",
+      [
+       null,
+       {}
+      ]
+     ],
      "inline-002-crash.html": [
       "a10eee9907f3ca27b3265452aeb19e2b9710b55d",
       [
@@ -1898,6 +1905,13 @@
       ],
       "nested-oof-multicol-with-padding.html": [
        "e4797581744e6530545aac116eae44fbcd580bdf",
+       [
+        null,
+        {}
+       ]
+      ],
+      "nested-spanner-with-negative-margin.html": [
+       "3a9b2e354ce50332e2b6ad845e0cd071cd59a770",
        [
         null,
         {}
@@ -99086,7 +99100,7 @@
       ]
      ],
      "quotes-030.html": [
-      "095c37fedb6bae93b3ae248289dca86e6b9cecf5",
+      "2c793eadf2f3aaa6db7871a3a79a06df7091fcf7",
       [
        null,
        [
@@ -162630,6 +162644,19 @@
      ],
      "absolute-tables-015.html": [
       "f0f19e2d66dea93c3cd56ea3bfba83a035903f3f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "absolute-tables-016.html": [
+      "f8eb1516ae4d725c5c1bda4abbe67cea346737ca",
       [
        null,
        [
@@ -264566,7 +264593,7 @@
        []
       ],
       "quotes-030-ref.html": [
-       "c06d85b9dd26f1133c809e1d09ec16071ec62fdc",
+       "36608c3f8b3438525f0a6dc4e2c36f8bc5faa9ca",
        []
       ],
       "quotes-031-ref.html": [
@@ -316746,7 +316773,7 @@
        []
       ],
       "structured-clone-battery-of-tests.js": [
-       "aefab049e63679065417d44b4364a2f0f9ee5dfe",
+       "580a81aaea6405cccc29f3651ce7c0ab19a6f3bd",
        []
       ]
      },
@@ -399968,7 +399995,7 @@
       ]
      ],
      "has-error-recovery.html": [
-      "143638c9e325f13576a02e19151a42eec4684408",
+      "b435d8c8f350e0b7afb93585d860276bcc803c6f",
       [
        null,
        {}
@@ -400725,7 +400752,7 @@
         {}
        ]
       ],
-      "parse-has-disallow-nesting-has-inside-has.tentative.html": [
+      "parse-has-disallow-nesting-has-inside-has.html": [
        "0a30718df04f61a6aad451daad841147b616dc38",
        [
         null,
