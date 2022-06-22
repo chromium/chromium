@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DATA_HOST_MANAGER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DATA_HOST_MANAGER_H_
 
+#include <string>
+
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -39,6 +41,15 @@ class AttributionDataHostManager {
   virtual bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) = 0;
+
+  // Notifies the manager that an attribution enabled navigation has registered
+  // a source header. May be called multiple times for the same navigation.
+  // Important: `header_value` is untrusted.
+  virtual void NotifyNavigationRedirectRegistation(
+      const blink::AttributionSrcToken& attribution_src_token,
+      const std::string& header_value,
+      url::Origin reporting_origin,
+      const url::Origin& source_origin) = 0;
 
   // Notifies the manager that we have received a navigation for a given data
   // host. This may arrive before or after the attribution configuration is

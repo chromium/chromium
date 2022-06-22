@@ -29,6 +29,7 @@
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -55,6 +56,9 @@ constexpr char kSourceDataHandleStatusMetric[] =
     "Conversions.SourceDataHandleStatus";
 constexpr char kTriggerDataHandleStatusMetric[] =
     "Conversions.TriggerDataHandleStatus";
+
+constexpr char kRegisterSourceJson[] =
+    R"json({"source_event_id":"5","destination":"https://destination.example"})json";
 
 struct ExpectedTriggerQueueEventCounts {
   base::HistogramBase::Count skipped_queue = 0;
@@ -108,6 +112,7 @@ class AttributionDataHostManagerImplTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   MockAttributionManager mock_manager_;
   AttributionDataHostManagerImpl data_host_manager_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
@@ -1215,6 +1220,280 @@ TEST_F(AttributionDataHostManagerImplTest,
                                                       {base::Seconds(5), 1},
                                                   },
                                           });
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationRedirectSource_SourceSiteTrustworthyChecksPerformed) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
+  auto reporter = url::Origin::Create(GURL("https://report.test"));
+  auto source_site = url::Origin::Create(GURL("http://source.test"));
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  data_host_manager_.NotifyNavigationForDataHost(
+      attribution_src_token, source_site,
+      url::Origin::Create(GURL("https://destination.example")));
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationRedirectSource_ReportingTrustworthyChecksPerformed) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
+  auto reporter = url::Origin::Create(GURL("http://report.test"));
+  auto source_site = url::Origin::Create(GURL("https://source.test"));
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  data_host_manager_.NotifyNavigationForDataHost(
+      attribution_src_token, source_site,
+      url::Origin::Create(GURL("https://destination.example")));
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationRedirectSource_RegistrationWithDestinationMismatchIgnored) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
+  auto reporter = url::Origin::Create(GURL("https://report.test"));
+  auto source_site = url::Origin::Create(GURL("https://source.test"));
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  data_host_manager_.NotifyNavigationForDataHost(
+      attribution_src_token, source_site,
+      url::Origin::Create(GURL("https://destination2.example")));
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationRedirectSource_NavigationFailed) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
+  auto reporter = url::Origin::Create(GURL("https://report.test"));
+  auto source_site = url::Origin::Create(GURL("https://source.test"));
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  data_host_manager_.NotifyNavigationFailure(attribution_src_token);
+
+  data_host_manager_.NotifyNavigationForDataHost(
+      attribution_src_token, source_site,
+      url::Origin::Create(GURL("https://destination.example")));
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationRedirectSource_NavigationFailedBeforeParsing) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
+  auto reporter = url::Origin::Create(GURL("https://report.test"));
+  auto source_site = url::Origin::Create(GURL("https://source.test"));
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+  data_host_manager_.NotifyNavigationFailure(attribution_src_token);
+
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationRedirectSource_ParsingFinishesBeforeAndAfterNav) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(2);
+
+  auto reporter = url::Origin::Create(GURL("https://report.test"));
+  auto source_site = url::Origin::Create(GURL("https://source.test"));
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+
+  data_host_manager_.NotifyNavigationForDataHost(
+      attribution_src_token, source_site,
+      url::Origin::Create(GURL("https://destination.example")));
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationRedirectSource_ParsingFailsBeforeAndSucceedsAfterNav) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(1);
+
+  auto reporter = url::Origin::Create(GURL("https://report.test"));
+  auto source_site = url::Origin::Create(GURL("https://source.test"));
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, "!!!invalid json", reporter, source_site);
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+
+  data_host_manager_.NotifyNavigationForDataHost(
+      attribution_src_token, source_site,
+      url::Origin::Create(GURL("https://destination.example")));
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationRedirectSource_TriggerDelayed) {
+  base::HistogramTester histograms;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleTrigger);
+  }
+
+  auto reporter = url::Origin::Create(GURL("https://report.test"));
+  auto source_site = url::Origin::Create(GURL("https://source.test"));
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  data_host_manager_.RegisterDataHost(
+      trigger_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page2.example")));
+
+  // Because there is a connected data host in source mode, this trigger should
+  // be delayed.
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin = reporter;
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote.FlushForTesting();
+
+  task_environment_.FastForwardBy(base::Seconds(5) - base::Microseconds(1));
+  checkpoint.Call(1);
+  task_environment_.FastForwardBy(base::Microseconds(1));
+
+  CheckTriggerQueueHistograms(histograms, {
+                                              .enqueued = 1,
+                                              .processed_with_delay = 1,
+                                              .delays =
+                                                  {
+                                                      {base::Seconds(5), 1},
+                                                  },
+                                          });
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationRedirectSource_NavigationFinishedQueueSkipped) {
+  base::HistogramTester histograms;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleSource).Times(2);
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleTrigger);
+  }
+
+  auto reporter = url::Origin::Create(GURL("https://report.test"));
+  auto source_site = url::Origin::Create(GURL("https://source.test"));
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+
+  // Wait for parsing.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  data_host_manager_.NotifyNavigationForDataHost(
+      attribution_src_token, source_site,
+      url::Origin::Create(GURL("https://destination.example")));
+
+  checkpoint.Call(1);
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  data_host_manager_.RegisterDataHost(
+      trigger_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page2.example")));
+
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin =
+      url::Origin::Create(GURL("https://report.test"));
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote.FlushForTesting();
+
+  CheckTriggerQueueHistograms(histograms, {.skipped_queue = 1});
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       NavigationRedirectSource_ParsingAfterNavigationFinishedQueueSkipped) {
+  base::HistogramTester histograms;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleSource).Times(2);
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleTrigger);
+  }
+
+  auto reporter = url::Origin::Create(GURL("https://report.test"));
+  auto source_site = url::Origin::Create(GURL("https://source.test"));
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+  data_host_manager_.NotifyNavigationRedirectRegistation(
+      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+
+  // Wait for parsing.
+  data_host_manager_.NotifyNavigationForDataHost(
+      attribution_src_token, source_site,
+      url::Origin::Create(GURL("https://destination.example")));
+  task_environment_.FastForwardBy(base::TimeDelta());
+  checkpoint.Call(1);
+
+  mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
+  data_host_manager_.RegisterDataHost(
+      trigger_data_host_remote.BindNewPipeAndPassReceiver(),
+      url::Origin::Create(GURL("https://page2.example")));
+
+  auto trigger_data = blink::mojom::AttributionTriggerData::New();
+  trigger_data->reporting_origin =
+      url::Origin::Create(GURL("https://report.test"));
+  trigger_data->filters = blink::mojom::AttributionFilterData::New();
+  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote.FlushForTesting();
+
+  CheckTriggerQueueHistograms(histograms, {.skipped_queue = 1});
 }
 
 TEST_F(AttributionDataHostManagerImplTest,

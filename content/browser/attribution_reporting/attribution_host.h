@@ -50,6 +50,7 @@ class CONTENT_EXPORT AttributionHost
 
   // WebContentsObserver:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
+  void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
   // Notifies the `AttributionDataHostManager` that a navigation with an

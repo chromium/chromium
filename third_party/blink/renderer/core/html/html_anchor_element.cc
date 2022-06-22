@@ -528,10 +528,21 @@ void HTMLAnchorElement::HandleClick(Event& event) {
 
     const AtomicString& attribution_src_value =
         FastGetAttribute(html_names::kAttributionsrcAttr);
-    if (!attribution_src_value.IsNull()) {
+    if (!attribution_src_value.IsEmpty()) {
       frame_request.SetImpression(
           frame->GetAttributionSrcLoader()->RegisterNavigation(
               GetDocument().CompleteURL(attribution_src_value), this));
+    }
+
+    // If the impression could not be set, or if the value was null, mark that
+    // the frame request is eligible for attribution by adding an impression.
+    if (!frame_request.Impression() &&
+        CanRegisterAttributionInContext(
+            frame, this,
+            /*request_id=*/absl::nullopt,
+            AttributionSrcLoader::RegisterContext::kAttributionSrc,
+            /*log_issues=*/false)) {
+      frame_request.SetImpression(blink::Impression());
     }
   }
 

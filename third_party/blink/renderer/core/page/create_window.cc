@@ -205,9 +205,24 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       // characters, such as '='.
       const String decoded = DecodeURLEscapeSequences(value_string.ToString(),
                                                       DecodeURLMode::kUTF8);
-      window_features.impression =
-          dom_window->GetFrame()->GetAttributionSrcLoader()->RegisterNavigation(
-              dom_window->CompleteURL(decoded));
+
+      if (!decoded.IsEmpty()) {
+        window_features.impression =
+            dom_window->GetFrame()
+                ->GetAttributionSrcLoader()
+                ->RegisterNavigation(dom_window->CompleteURL(decoded));
+      }
+
+      // If the impression could not be set, or if the value was empty, mark
+      // attribution eligibility by adding an impression.
+      if (!window_features.impression &&
+          CanRegisterAttributionInContext(
+              dom_window->GetFrame(), /*element=*/nullptr,
+              /*request_id=*/absl::nullopt,
+              AttributionSrcLoader::RegisterContext::kAttributionSrc,
+              /*log_issues=*/false)) {
+        window_features.impression = blink::Impression();
+      }
     }
   }
 
