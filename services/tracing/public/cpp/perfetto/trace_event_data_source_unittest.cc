@@ -71,9 +71,11 @@ constexpr const char kCategoryGroup[] = "browser";
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 std::unique_ptr<perfetto::TracingSession> g_tracing_session;
+constexpr const char kPrivacyFiltered[] = "";
 #else
 constexpr uint32_t kClockIdAbsolute = 64;
 constexpr uint32_t kClockIdIncremental = 65;
+constexpr const char kPrivacyFiltered[] = "PRIVACY_FILTERED";
 #endif
 
 class TraceEventDataSourceTest
@@ -473,7 +475,9 @@ class TraceEventDataSourceTest
     EXPECT_NE(packet->track_descriptor().process().pid(), 0);
 
     if (filtering_enabled) {
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
       EXPECT_FALSE(packet->track_descriptor().process().has_process_name());
+#endif
     } else {
       EXPECT_EQ(packet->track_descriptor().process().process_name(),
                 kTestProcess);
@@ -638,9 +642,9 @@ class TraceEventDataSourceTest
     }
 
     if (name.iid > 0) {
-      EXPECT_EQ(packet->track_event().name_iid(), name.iid);
+      EXPECT_EQ(name.iid, packet->track_event().name_iid());
     } else if (!name.value.empty()) {
-      EXPECT_EQ(packet->track_event().name(), name.value);
+      EXPECT_EQ(name.value, packet->track_event().name());
     }
 
     TrackEvent::Type track_event_type;
@@ -1915,7 +1919,6 @@ TEST_F(TraceEventDataSourceTest, InternedStrings) {
 }
 
 // TODO(skyostil): Implement post-process event filtering.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST_F(TraceEventDataSourceTest, FilteringSimpleTraceEvent) {
   StartTraceEventDataSource(/* privacy_filtering_enabled =*/true);
   TRACE_EVENT_BEGIN0(kCategoryGroup, "bar");
@@ -1935,8 +1938,13 @@ TEST_F(TraceEventDataSourceTest, FilteringSimpleTraceEvent) {
 
 TEST_F(TraceEventDataSourceTest, FilteringEventWithArgs) {
   StartTraceEventDataSource(/* privacy_filtering_enabled =*/true);
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  // New SDK does not accept TRACE_EVENT_FLAG values.
+  TRACE_EVENT_INSTANT(kCategoryGroup, "bar", "foo", 42, "bar", "string_val");
+#else
   TRACE_EVENT_INSTANT2(kCategoryGroup, "bar", TRACE_EVENT_SCOPE_THREAD, "foo",
                        42, "bar", "string_val");
+#endif
 
   size_t packet_index = ExpectStandardPreamble(
       /*start_packet_index=*/0u,
@@ -1956,6 +1964,18 @@ TEST_F(TraceEventDataSourceTest, FilteringEventWithArgs) {
 
 TEST_F(TraceEventDataSourceTest, FilteringEventWithFlagCopy) {
   StartTraceEventDataSource(/* privacy_filtering_enabled =*/true);
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  // 1). Perfetto SDK does not accept TRACE_EVENT_FLAG values.
+  // 2). To include dynamic event names despite privacy filtering, we need to
+  //     manually `set event()->set_name()`. Java names are a valid use case of
+  //     this.
+  TRACE_EVENT_INSTANT(kCategoryGroup, TRACE_STR_COPY(std::string("bar")), "arg1_name",
+                      "arg1_val", "arg2_name", "arg2_val");
+  TRACE_EVENT_INSTANT(
+      kCategoryGroup, nullptr,
+      [](perfetto::EventContext& ev) { ev.event()->set_name("javaName"); },
+      "arg1_name", "arg1_val", "arg2_name", "arg2_val");
+#else
   TRACE_EVENT_INSTANT2(kCategoryGroup, "bar",
                        TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_COPY,
                        "arg1_name", "arg1_val", "arg2_name", "arg2_val");
@@ -1963,13 +1983,14 @@ TEST_F(TraceEventDataSourceTest, FilteringEventWithFlagCopy) {
                        TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_COPY |
                            TRACE_EVENT_FLAG_JAVA_STRING_LITERALS,
                        "arg1_name", "arg1_val", "arg2_name", "arg2_val");
+#endif
 
   size_t packet_index = ExpectStandardPreamble(
       /*start_packet_index=*/0u,
       /*privacy_filtering_enabled=*/true);
 
   auto* e_packet = GetFinalizedPacket(packet_index++);
-  ExpectTraceEvent(e_packet, /*category_iid=*/1u, "PRIVACY_FILTERED",
+  ExpectTraceEvent(e_packet, /*category_iid=*/1u, kPrivacyFiltered,
                    TRACE_EVENT_PHASE_INSTANT, TRACE_EVENT_SCOPE_THREAD);
 
   const auto& annotations = e_packet->track_event().debug_annotations();
@@ -1987,7 +2008,6 @@ TEST_F(TraceEventDataSourceTest, FilteringEventWithFlagCopy) {
 
   ExpectInternedDebugAnnotationNames(e_packet, {});
 }
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 TEST_F(TraceEventDataSourceTest, FilteringMetadataSource) {
   auto* metadata_source = TraceEventMetadataSource::GetInstance();
