@@ -106,18 +106,7 @@ class SyncSetupChecker : public SingleClientStatusChangeChecker {
     if (HasAuthError(service())) {
       return true;
     }
-    // TODO(crbug.com/1010397): The verification of INITIALIZING is only needed
-    // due to SyncEncryptionHandlerImpl issuing an unnecessary
-    // OnPassphraseRequired() during initialization.
-    if (service()
-            ->GetUserSettings()
-            ->IsPassphraseRequiredForPreferredDataTypes() &&
-        transport_state != syncer::SyncService::TransportState::INITIALIZING) {
-      LOG(FATAL)
-          << "A passphrase is required for decryption but was not provided. "
-             "Waiting for sync to become available won't succeed. Make sure "
-             "to pass it when setting up sync.";
-    }
+
     // Still waiting on sync setup.
     return false;
   }

@@ -300,6 +300,10 @@ class SyncTest : public PlatformBrowserTest {
   // be provided to the client during initialization, before Sync starts. It is
   // an error to provide both a decryption and encryption passphrases for one
   // client.
+  // TODO(crbug.com/1338480): this and below are overused, most tests can use
+  // SyncUserSettings interface. Avoid usages, reintroduce logic in specific
+  // test that actually need it (if exists) and remove these functions together
+  // with relevant SyncTest SetupSync() code.
   void SetDecryptionPassphraseForClient(int index,
                                         const std::string& passphrase);
 
