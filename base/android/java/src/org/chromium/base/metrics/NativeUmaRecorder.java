@@ -70,6 +70,16 @@ import java.util.Map;
         NativeUmaRecorderJni.get().recordUserAction(name, millisSinceEvent);
     }
 
+    @Override
+    public int getHistogramValueCountForTesting(String name, int sample) {
+        return NativeUmaRecorderJni.get().getHistogramValueCountForTesting(name, sample, 0);
+    }
+
+    @Override
+    public int getHistogramTotalCountForTesting(String name) {
+        return NativeUmaRecorderJni.get().getHistogramTotalCountForTesting(name, 0);
+    }
+
     private long getNativeHint(String name) {
         Long hint = mNativeHints.get(name);
         // Note: If key is null, we don't have it cached. In that case, pass 0
@@ -87,7 +97,7 @@ import java.util.Map;
 
     /** Natives API to record metrics. */
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long recordBooleanHistogram(String name, long nativeHint, boolean sample);
         long recordExponentialHistogram(
                 String name, long nativeHint, int sample, int min, int max, int numBuckets);
@@ -105,5 +115,8 @@ import java.util.Map;
          *         Should be positive.
          */
         void recordUserAction(String name, long millisSinceEvent);
+
+        int getHistogramValueCountForTesting(String name, int sample, long snapshotPtr);
+        int getHistogramTotalCountForTesting(String name, long snapshotPtr);
     }
 }

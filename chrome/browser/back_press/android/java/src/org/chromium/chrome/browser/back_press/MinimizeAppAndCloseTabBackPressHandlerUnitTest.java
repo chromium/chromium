@@ -28,7 +28,6 @@ import org.chromium.base.Predicate;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
@@ -37,7 +36,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -48,9 +46,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public HistogramTestRule mHistogramTester = new HistogramTestRule();
 
     @Mock
     private TabModelSelector mTabModelSelector;
@@ -66,7 +61,6 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
 
     @BeforeClass
     public static void setUpClass() {
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         ObservableSupplierImpl.setIgnoreThreadChecksForTesting(true);
     }
 

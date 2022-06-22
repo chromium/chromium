@@ -554,4 +554,42 @@ import javax.annotation.concurrent.GuardedBy;
             mRwLock.readLock().unlock();
         }
     }
+
+    @VisibleForTesting
+    @Override
+    public int getHistogramValueCountForTesting(String name, int sample) {
+        mRwLock.readLock().lock();
+        try {
+            if (mDelegate != null) return mDelegate.getHistogramValueCountForTesting(name, sample);
+
+            Histogram histogram = mHistogramByName.get(name);
+            if (histogram == null) return 0;
+            int sampleCount = 0;
+            synchronized (histogram) {
+                for (int i = 0; i < histogram.mSamples.size(); i++) {
+                    if (histogram.mSamples.get(i) == sample) sampleCount++;
+                }
+            }
+            return sampleCount;
+        } finally {
+            mRwLock.readLock().unlock();
+        }
+    }
+
+    @VisibleForTesting
+    @Override
+    public int getHistogramTotalCountForTesting(String name) {
+        mRwLock.readLock().lock();
+        try {
+            if (mDelegate != null) return mDelegate.getHistogramTotalCountForTesting(name);
+
+            Histogram histogram = mHistogramByName.get(name);
+            if (histogram == null) return 0;
+            synchronized (histogram) {
+                return histogram.mSamples.size();
+            }
+        } finally {
+            mRwLock.readLock().unlock();
+        }
+    }
 }

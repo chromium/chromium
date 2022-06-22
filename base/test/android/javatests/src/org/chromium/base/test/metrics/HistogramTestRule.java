@@ -8,6 +8,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.metrics.NativeUmaRecorderJni;
 import org.chromium.base.metrics.RecordHistogramJni;
 
 /**
@@ -56,7 +57,7 @@ public class HistogramTestRule implements TestRule {
      */
     public int getHistogramValueCount(String name, int sample) {
         assert mSnapShotPtr != 0;
-        return RecordHistogramJni.get().getHistogramValueCountForTesting(
+        return NativeUmaRecorderJni.get().getHistogramValueCountForTesting(
                 name, sample, mSnapShotPtr);
     }
 
@@ -67,6 +68,6 @@ public class HistogramTestRule implements TestRule {
      */
     public int getHistogramTotalCount(String name) {
         assert mSnapShotPtr != 0;
-        return RecordHistogramJni.get().getHistogramTotalCountForTesting(name, mSnapShotPtr);
+        return NativeUmaRecorderJni.get().getHistogramTotalCountForTesting(name, mSnapShotPtr);
     }
 }

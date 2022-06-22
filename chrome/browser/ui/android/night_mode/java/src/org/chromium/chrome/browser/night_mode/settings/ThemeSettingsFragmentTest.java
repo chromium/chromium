@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.night_mode.settings;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING;
@@ -26,13 +25,11 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.metrics.UmaRecorder;
-import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
@@ -79,8 +76,6 @@ public class ThemeSettingsFragmentTest {
     public Profile mProfile;
     @Mock
     public Tracker mTracker;
-    @Mock
-    public UmaRecorder mUmaRecorder;
 
     private ThemeSettingsFragment mFragment;
     private RadioButtonGroupThemePreference mPreference;
@@ -99,7 +94,6 @@ public class ThemeSettingsFragmentTest {
 
         Profile.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
-        UmaRecorderHolder.setNonNativeDelegate(mUmaRecorder);
 
         // Default value for feature DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING.
         mForceDarkModeEnabled = true;
@@ -121,7 +115,6 @@ public class ThemeSettingsFragmentTest {
             SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
             Profile.setLastUsedProfileForTesting(null);
             TrackerFactory.setTrackerForTests(null);
-            UmaRecorderHolder.resetForTesting();
         });
     }
 
@@ -284,10 +277,14 @@ public class ThemeSettingsFragmentTest {
     }
 
     private void assertThemeSettingsEntryRecorded(int sample) {
-        ArgumentCaptor<Integer> sampleCaptor = ArgumentCaptor.forClass(Integer.class);
-        Mockito.verify(mUmaRecorder, Mockito.times(1))
-                .recordLinearHistogram(eq("Android.DarkTheme.ThemeSettingsEntry"),
-                        sampleCaptor.capture(), anyInt(), anyInt(), anyInt());
-        Assert.assertEquals(sample, sampleCaptor.getValue().intValue());
+        Assert.assertEquals("<Android.DarkTheme.ThemeSettingsEntry> should be recorded once.", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Android.DarkTheme.ThemeSettingsEntry"));
+        Assert.assertEquals(
+                "<Android.DarkTheme.ThemeSettingsEntry> should be recorded once for sample <"
+                        + sample + ">.",
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.DarkTheme.ThemeSettingsEntry", sample));
     }
 }

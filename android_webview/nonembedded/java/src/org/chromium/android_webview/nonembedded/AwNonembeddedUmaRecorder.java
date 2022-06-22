@@ -153,6 +153,16 @@ public class AwNonembeddedUmaRecorder implements UmaRecorder {
         recordHistogram(record);
     }
 
+    @Override
+    public int getHistogramValueCountForTesting(String name, int sample) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getHistogramTotalCountForTesting(String name) {
+        throw new UnsupportedOperationException();
+    }
+
     private final Object mLock = new Object();
     // Service stub object
     @GuardedBy("mLock")

@@ -9,17 +9,14 @@ import androidx.test.filters.SmallTest;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -28,9 +25,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class BackPressManagerTest {
-    @Rule
-    public HistogramTestRule mHistogramTester = new HistogramTestRule();
-
     private class EmptyBackPressHandler implements BackPressHandler {
         private ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
 
@@ -45,7 +39,6 @@ public class BackPressManagerTest {
 
     @BeforeClass
     public static void setUpClass() {
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         ObservableSupplierImpl.setIgnoreThreadChecksForTesting(true);
     }
 
