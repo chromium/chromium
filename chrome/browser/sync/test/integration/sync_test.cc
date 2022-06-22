@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -74,6 +75,7 @@
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/sync_scheduler_impl.h"
+#include "components/sync/invalidations/fcm_handler.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
 #include "components/sync/test/fake_server/fake_server_network_resources.h"
 #include "content/public/browser/navigation_entry.h"
@@ -512,7 +514,15 @@ void SyncTest::OnBrowserRemoved(Browser* browser) {
   for (size_t i = 0; i < browsers_.size(); ++i) {
     if (browsers_[i] == browser) {
       browsers_[i] = nullptr;
+      break;
     }
+  }
+
+  if (fake_server_sync_invalidation_sender_ &&
+      base::Contains(profile_to_fcm_handler_map_, browser->profile())) {
+    fake_server_sync_invalidation_sender_->RemoveFCMHandler(
+        profile_to_fcm_handler_map_[browser->profile()]);
+    profile_to_fcm_handler_map_.erase(browser->profile());
   }
 }
 #endif
@@ -650,13 +660,6 @@ bool SyncTest::SetupClients() {
     }
   }
 #endif
-
-  // Create the fake server sync invalidations sender.
-  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    fake_server_sync_invalidation_sender_ =
-        std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
-            GetFakeServer(), sync_invalidations_fcm_handlers_);
-  }
 
   LOG(INFO)
       << "SyncTest::SetupClients() completed; elapsed time since construction: "
@@ -955,6 +958,7 @@ void SyncTest::TearDownOnMainThread() {
              observer : fake_server_invalidation_observers_) {
       fake_server_->RemoveObserver(observer.get());
     }
+    profile_to_fcm_handler_map_.clear();
     fake_server_sync_invalidation_sender_.reset();
     fake_server_.reset();
   }
@@ -962,7 +966,7 @@ void SyncTest::TearDownOnMainThread() {
   // Delete things that unsubscribe in destructor before their targets are gone.
   configuration_refresher_.reset();
 
-  // Note: Closing all the browsers (see below) may destroy the Profiles, if
+  // Note: Closing all the browsers (see above) may destroy the Profiles, if
   // kDestroyProfileOnBrowserClose is enabled. So clear them out here, to make
   // sure they're not used anymore.
   profiles_.clear();
@@ -981,6 +985,7 @@ void SyncTest::TearDownOnMainThread() {
   }
   browsers_.clear();
 #endif
+
   PlatformBrowserTest::TearDownOnMainThread();
 }
 
@@ -1008,8 +1013,7 @@ void SyncTest::OnWillCreateBrowserContextServices(
                               &profile_to_instance_id_driver_map_));
   SyncInvalidationsServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&SyncTest::CreateSyncInvalidationsService,
-                                   &profile_to_instance_id_driver_map_,
-                                   &sync_invalidations_fcm_handlers_));
+                                   base::Unretained(this)));
   gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&FakeSyncGCMDriver::Build));
 }
@@ -1053,11 +1057,7 @@ std::unique_ptr<KeyedService> SyncTest::CreateProfileInvalidationProvider(
           }));
 }
 
-// static
 std::unique_ptr<KeyedService> SyncTest::CreateSyncInvalidationsService(
-    std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
-        profile_to_instance_id_driver_map,
-    std::vector<syncer::FCMHandler*>* sync_invalidations_fcm_handlers,
     content::BrowserContext* context) {
   if (!base::FeatureList::IsEnabled(syncer::kSyncSendInterestedDataTypes)) {
     return nullptr;
@@ -1068,12 +1068,19 @@ std::unique_ptr<KeyedService> SyncTest::CreateSyncInvalidationsService(
   gcm::GCMDriver* gcm_driver =
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
   instance_id::InstanceIDDriver* instance_id_driver =
-      GetOrCreateInstanceIDDriver(profile, profile_to_instance_id_driver_map);
+      GetOrCreateInstanceIDDriver(profile, &profile_to_instance_id_driver_map_);
   auto service = std::make_unique<syncer::SyncInvalidationsServiceImpl>(
       gcm_driver, instance_id_driver);
 
-  sync_invalidations_fcm_handlers->push_back(
-      service->GetFCMHandlerForTesting());
+  // If |fake_server_sync_invalidation_sender_| hasn't been created yet, it's
+  // likely for the profile which is used only on Android. Created FCM
+  // handlers will be added later once |fake_server_sync_invalidation_sender_|
+  // is initialized.
+  profile_to_fcm_handler_map_[profile] = service->GetFCMHandlerForTesting();
+  if (fake_server_sync_invalidation_sender_) {
+    fake_server_sync_invalidation_sender_->AddFCMHandler(
+        service->GetFCMHandlerForTesting());
+  }
 
   return std::move(service);
 }
@@ -1244,6 +1251,16 @@ void SyncTest::SetUpTestServerIfRequired() {
     base::FilePath user_data_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
     fake_server_ = std::make_unique<fake_server::FakeServer>(user_data_dir);
+    fake_server_sync_invalidation_sender_ =
+        std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
+            fake_server_.get());
+
+    // Subscribe to invalidations for all the profiles which were created
+    // before. This is mainly the case on Android platform.
+    for (const auto& profile_and_fcm_handler : profile_to_fcm_handler_map_) {
+      fake_server_sync_invalidation_sender_->AddFCMHandler(
+          profile_and_fcm_handler.second);
+    }
     SetupMockGaiaResponses();
   } else {
     LOG(FATAL) << "Don't know which server environment to run test in.";

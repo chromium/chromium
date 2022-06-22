@@ -72,6 +72,7 @@ class FakeServer;
 }  // namespace fake_server
 
 namespace syncer {
+class FCMHandler;
 class SyncServiceImpl;
 }  // namespace syncer
 
@@ -346,10 +347,7 @@ class SyncTest : public PlatformBrowserTest {
           profile_to_instance_id_driver_map,
       content::BrowserContext* context);
 
-  static std::unique_ptr<KeyedService> CreateSyncInvalidationsService(
-      std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
-          profile_to_instance_id_driver_map,
-      std::vector<syncer::FCMHandler*>* sync_invalidations_fcm_handlers,
+  std::unique_ptr<KeyedService> CreateSyncInvalidationsService(
       content::BrowserContext* context);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -474,6 +472,8 @@ class SyncTest : public PlatformBrowserTest {
   std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>
       profile_to_instance_id_driver_map_;
 
+  std::map<const Profile*, syncer::FCMHandler*> profile_to_fcm_handler_map_;
+
   // Triggers a GetUpdates via refresh after a configuration.
   std::unique_ptr<ConfigurationRefresher> configuration_refresher_;
 
@@ -505,7 +505,6 @@ class SyncTest : public PlatformBrowserTest {
       model_updater_factory_;
 #endif
 
-  std::vector<syncer::FCMHandler*> sync_invalidations_fcm_handlers_;
   std::unique_ptr<fake_server::FakeServerSyncInvalidationSender>
       fake_server_sync_invalidation_sender_;
 };

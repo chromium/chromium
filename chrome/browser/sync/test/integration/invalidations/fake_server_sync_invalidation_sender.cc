@@ -4,9 +4,9 @@
 
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "components/sync/invalidations/fcm_handler.h"
-#include "components/sync/protocol/sync_invalidations_payload.pb.h"
 
 namespace fake_server {
 
@@ -19,15 +19,38 @@ const char kSyncInvalidationsAppId[] = "com.google.chrome.sync.invalidations";
 }  // namespace
 
 FakeServerSyncInvalidationSender::FakeServerSyncInvalidationSender(
-    FakeServer* fake_server,
-    const std::vector<syncer::FCMHandler*>& fcm_handlers)
-    : fake_server_(fake_server), fcm_handlers_(fcm_handlers) {
+    FakeServer* fake_server)
+    : fake_server_(fake_server) {
   DCHECK(fake_server_);
   fake_server_->AddObserver(this);
 }
 
 FakeServerSyncInvalidationSender::~FakeServerSyncInvalidationSender() {
   fake_server_->RemoveObserver(this);
+
+  // Unsubscribe from all the remaining FCM handlers. This is mostly the case
+  // for Android platform.
+  for (syncer::FCMHandler* fcm_handler : fcm_handlers_) {
+    fcm_handler->RemoveTokenObserver(this);
+  }
+}
+
+void FakeServerSyncInvalidationSender::AddFCMHandler(
+    syncer::FCMHandler* fcm_handler) {
+  DCHECK(fcm_handler);
+  DCHECK(!base::Contains(fcm_handlers_, fcm_handler));
+
+  fcm_handlers_.push_back(fcm_handler);
+  fcm_handler->AddTokenObserver(this);
+}
+
+void FakeServerSyncInvalidationSender::RemoveFCMHandler(
+    syncer::FCMHandler* fcm_handler) {
+  DCHECK(fcm_handler);
+  DCHECK(base::Contains(fcm_handlers_, fcm_handler));
+
+  fcm_handler->RemoveTokenObserver(this);
+  base::Erase(fcm_handlers_, fcm_handler);
 }
 
 void FakeServerSyncInvalidationSender::OnCommit(
@@ -35,21 +58,17 @@ void FakeServerSyncInvalidationSender::OnCommit(
     syncer::ModelTypeSet committed_model_types) {
   const std::map<std::string, syncer::ModelTypeSet>
       token_to_interested_data_types_map = GetTokenToInterestedDataTypesMap();
-  // Pass a message to each FCMHandler to simulate a message from the
-  // GCMDriver.
-  // TODO(crbug.com/1082115): Implement reflection blocking.
-  for (syncer::FCMHandler* fcm_handler : fcm_handlers_) {
-    const std::string& token = fcm_handler->GetFCMRegistrationToken();
-    if (!token_to_interested_data_types_map.count(token)) {
-      continue;
-    }
+
+  for (const auto& token_and_data_types : token_to_interested_data_types_map) {
+    const std::string& token = token_and_data_types.first;
 
     // Send the invalidation only for interested types.
-    const syncer::ModelTypeSet invalidated_data_types = Intersection(
-        committed_model_types, token_to_interested_data_types_map.at(token));
+    const syncer::ModelTypeSet invalidated_data_types =
+        Intersection(committed_model_types, token_and_data_types.second);
     if (invalidated_data_types.Empty()) {
       continue;
     }
+
     sync_pb::SyncInvalidationsPayload payload;
     for (const syncer::ModelType data_type : invalidated_data_types) {
       payload.add_data_type_invalidations()->set_data_type_id(
@@ -61,10 +80,14 @@ void FakeServerSyncInvalidationSender::OnCommit(
     payload.set_version(base::Time::Now().ToJavaTime());
     payload.set_hint("hint");
 
-    gcm::IncomingMessage message;
-    message.raw_data = payload.SerializeAsString();
-    fcm_handler->OnMessage(kSyncInvalidationsAppId, message);
+    invalidations_to_deliver_[token].push_back(std::move(payload));
   }
+
+  DeliverInvalidationsToHandlers();
+}
+
+void FakeServerSyncInvalidationSender::OnFCMRegistrationTokenChanged() {
+  DeliverInvalidationsToHandlers();
 }
 
 std::map<std::string, syncer::ModelTypeSet>
@@ -90,6 +113,38 @@ FakeServerSyncInvalidationSender::GetTokenToInterestedDataTypesMap() {
     }
   }
   return result;
+}
+
+void FakeServerSyncInvalidationSender::DeliverInvalidationsToHandlers() {
+  for (auto& token_and_invalidations : invalidations_to_deliver_) {
+    const std::string& token = token_and_invalidations.first;
+    // Pass a message to each FCMHandler to simulate a message from the
+    // GCMDriver.
+    // TODO(crbug.com/1082115): Implement reflection blocking.
+    syncer::FCMHandler* fcm_handler = GetFCMHandlerByToken(token);
+    if (!fcm_handler) {
+      continue;
+    }
+
+    for (const sync_pb::SyncInvalidationsPayload& payload :
+         token_and_invalidations.second) {
+      gcm::IncomingMessage message;
+      message.raw_data = payload.SerializeAsString();
+      fcm_handler->OnMessage(kSyncInvalidationsAppId, message);
+    }
+
+    token_and_invalidations.second.clear();
+  }
+}
+
+syncer::FCMHandler* FakeServerSyncInvalidationSender::GetFCMHandlerByToken(
+    const std::string& fcm_registration_token) const {
+  for (syncer::FCMHandler* fcm_handler : fcm_handlers_) {
+    if (fcm_registration_token == fcm_handler->GetFCMRegistrationToken()) {
+      return fcm_handler;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace fake_server
