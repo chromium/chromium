@@ -29,6 +29,7 @@ RgbKeyboardManager::RgbKeyboardManager(ImeControllerImpl* ime_controller)
   g_instance = this;
 
   ime_controller_ptr_->AddObserver(this);
+  RgbkbdClient::Get()->AddObserver(this);
 
   VLOG(1) << "Initializing RGB Keyboard support";
   FetchRgbKeyboardSupport();
@@ -100,6 +101,15 @@ void RgbKeyboardManager::OnCapsLockChanged(bool enabled) {
 // static
 RgbKeyboardManager* RgbKeyboardManager::Get() {
   return g_instance;
+}
+
+void RgbKeyboardManager::OnCapabilityUpdatedForTesting(
+    rgbkbd::RgbKeyboardCapabilities capability) {
+  capabilities_ = capability;
+}
+
+void RgbKeyboardManager::OnShutdown() {
+  RgbkbdClient::Get()->RemoveObserver(this);
 }
 
 void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(

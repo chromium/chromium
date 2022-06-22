@@ -20,12 +20,13 @@ namespace ash {
 // of the rgbkbd DBus client.
 // This class is owned by ash/shell and should NOT be created by any other
 // means.
-class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer {
+class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer,
+                                      public RgbkbdClient::Observer {
  public:
   explicit RgbKeyboardManager(ImeControllerImpl* ime_controller);
   RgbKeyboardManager(const RgbKeyboardManager&) = delete;
   RgbKeyboardManager& operator=(const RgbKeyboardManager&) = delete;
-  virtual ~RgbKeyboardManager();
+  ~RgbKeyboardManager() override;
 
   rgbkbd::RgbKeyboardCapabilities GetRgbKeyboardCapabilities() const;
   void SetStaticBackgroundColor(uint8_t r, uint8_t g, uint8_t b);
@@ -43,6 +44,11 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer {
   // ImeControllerImpl::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string&) override {}
+
+  // RgbkbdClient::Observer:
+  void OnCapabilityUpdatedForTesting(
+      rgbkbd::RgbKeyboardCapabilities capability) override;
+  void OnShutdown() override;
 
   void FetchRgbKeyboardSupport();
 
