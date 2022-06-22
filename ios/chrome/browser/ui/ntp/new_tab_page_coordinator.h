@@ -83,6 +83,9 @@ class WebState;
 // feed.
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
 
+// Called when the given |feedType| has completed updates.
+- (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COORDINATOR_H_

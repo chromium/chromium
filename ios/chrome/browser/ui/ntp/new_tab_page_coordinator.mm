@@ -604,6 +604,18 @@ namespace {
   }
 }
 
+- (void)handleFeedModelDidEndUpdates:(FeedType)feedType {
+  DCHECK(self.ntpViewController);
+  if (!self.discoverFeedViewController) {
+    return;
+  }
+  // When the visible feed has been updated, recalculate the minimum NTP height.
+  if (![self isFollowingFeedAvailable] ||
+      ([self isFollowingFeedAvailable] && feedType == self.selectedFeed)) {
+    [self.ntpViewController updateFeedInsetsForMinimumHeight];
+  }
+}
+
 - (void)ntpDidChangeVisibility:(BOOL)visible {
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     if (visible && self.started) {
@@ -646,9 +658,11 @@ namespace {
   [self updateNTPForFeed];
   [self updateFeedLayout];
 
+  [self.ntpViewController updateFeedInsetsForMinimumHeight];
+
   // Scroll position resets when changing the feed, so we set it back to what it
   // was.
-  [self.ntpViewController setContentOffsetUpToTopOfFeed:scrollPosition];
+  [self.ntpViewController setContentOffsetToTopOfFeed:scrollPosition];
 }
 
 - (void)handleSortTypeForFollowingFeed:(FollowingFeedSortType)sortType {
@@ -1104,8 +1118,9 @@ namespace {
 
 // Creates, configures and returns a Discover feed view controller.
 - (UIViewController*)discoverFeed {
-  if (tests_hook::DisableDiscoverFeed())
+  if (tests_hook::DisableDiscoverFeed()) {
     return nil;
+  }
 
   UIViewController* discoverFeed =
       self.discoverFeedService->NewDiscoverFeedViewControllerWithConfiguration(
@@ -1115,8 +1130,9 @@ namespace {
 
 // Creates, configures and returns a Following feed view controller.
 - (UIViewController*)followingFeed {
-  if (tests_hook::DisableDiscoverFeed())
+  if (tests_hook::DisableDiscoverFeed()) {
     return nil;
+  }
 
   UIViewController* followingFeed =
       self.discoverFeedService->NewFollowingFeedViewControllerWithConfiguration(

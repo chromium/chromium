@@ -3778,6 +3778,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [_ntpCoordinator updateFollowingFeedHasUnseenContent:hasUnseenContent];
 }
 
+- (void)handleFeedModelDidEndUpdates:(FeedType)feedType {
+  [_ntpCoordinator handleFeedModelDidEndUpdates:feedType];
+}
+
 #pragma mark - WebStateListObserving methods
 
 // TODO(crbug.com/1329088): Move BVC's tab lifeceyle event updates to a
