@@ -578,6 +578,12 @@ try_.builder(
 
 try_.builder(
     name = "android_cronet",
+    mirrors = [
+        "ci/android-cronet-arm-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        is_compile_only = True,
+    ),
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
     main_list_view = "try",
