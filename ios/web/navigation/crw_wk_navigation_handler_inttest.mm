@@ -8,6 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "ios/web/common/features.h"
+#import "ios/web/public/navigation/https_upgrade_type.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
@@ -25,6 +26,7 @@
 #endif
 
 using base::test::ios::kWaitForPageLoadTimeout;
+using web::HttpsUpgradeType;
 
 namespace {
 
@@ -49,7 +51,8 @@ class FailedWebStateObserver : public web::WebStateObserver {
       web::WebState* web_state,
       web::NavigationContext* navigation_context) override {
     did_finish_ = true;
-    failed_https_upgrade_ = navigation_context->IsFailedHTTPSUpgrade();
+    failed_https_upgrade_type_ =
+        navigation_context->GetFailedHttpsUpgradeType();
 
     DCHECK_EQ(ErrorType::kNone, error_type_);
     NSError* error = navigation_context->GetError();
@@ -71,12 +74,15 @@ class FailedWebStateObserver : public web::WebStateObserver {
   void WebStateDestroyed(web::WebState* web_state) override { NOTREACHED(); }
 
   bool did_finish() const { return did_finish_; }
-  bool failed_https_upgrade() const { return failed_https_upgrade_; }
+  web::HttpsUpgradeType failed_https_upgrade_type() const {
+    return failed_https_upgrade_type_;
+  }
   ErrorType error_type() const { return error_type_; }
 
  private:
   bool did_finish_ = false;
-  bool failed_https_upgrade_ = false;
+  web::HttpsUpgradeType failed_https_upgrade_type_ =
+      web::HttpsUpgradeType::kNone;
   ErrorType error_type_ = ErrorType::kNone;
 };
 
@@ -96,18 +102,18 @@ class CRWKNavigationHandlerIntTest : public WebIntTest {
     return static_cast<FakeWebClient*>(WebIntTest::GetWebClient());
   }
 
-  // Tests IsFailedHTTPSUpgrade() status of a navigation. Navigates to `url`
-  // using `use_https_as_default` as the HTTPS upgrade status. Expects
-  // IsFailedHTTPSUpgrade() to be true if `expected_failed_upgrade` is true.
+  // Tests the failed HTTPS upgradestatus of a navigation. Navigates to `url`
+  // using `https_upgrade_type` as the HTTPS upgrade type. Expects
+  // GetFailedHTTPSUpgradeType() to be equal to `https_upgrade_type`.
   // Expects the navigation error to be of type `expected_error_type`.
   void TestFailedHttpsUpgrade(
       const GURL& url,
-      bool use_https_as_default,
-      bool expected_failed_upgrade,
+      HttpsUpgradeType https_upgrade_type,
+      HttpsUpgradeType expected_failed_upgrade_type,
       FailedWebStateObserver::ErrorType expected_error_type) {
     web::NavigationManager::WebLoadParams params(url);
     params.transition_type = ui::PAGE_TRANSITION_TYPED;
-    params.is_using_https_as_default_scheme = use_https_as_default;
+    params.https_upgrade_type = https_upgrade_type;
 
     FailedWebStateObserver observer;
     base::ScopedObservation<WebState, WebStateObserver> scoped_observer(
@@ -124,8 +130,8 @@ class CRWKNavigationHandlerIntTest : public WebIntTest {
           // instead of failing with an SSL error.
           base::RunLoop().RunUntilIdle();
           return observer_ptr->did_finish() &&
-                 (observer_ptr->failed_https_upgrade() ==
-                  expected_failed_upgrade);
+                 (observer_ptr->failed_https_upgrade_type() ==
+                  expected_failed_upgrade_type);
         }));
     EXPECT_EQ(expected_error_type, observer.error_type());
   }
@@ -166,8 +172,7 @@ TEST_F(CRWKNavigationHandlerIntTest, ReloadWithDifferentUserAgent) {
 TEST_F(CRWKNavigationHandlerIntTest, FailedHTTPSUpgrade_NotUpgraded_SSLError) {
   ASSERT_TRUE(https_server_.Start());
   GURL url(https_server_.GetURL("/"));
-  TestFailedHttpsUpgrade(url, /*use_https_as_default=*/false,
-                         /*expected_failed_upgrade=*/false,
+  TestFailedHttpsUpgrade(url, HttpsUpgradeType::kNone, HttpsUpgradeType::kNone,
                          FailedWebStateObserver::ErrorType::kSSLError);
 }
 
@@ -176,8 +181,8 @@ TEST_F(CRWKNavigationHandlerIntTest, FailedHTTPSUpgrade_NotUpgraded_SSLError) {
 TEST_F(CRWKNavigationHandlerIntTest, FailedHTTPSUpgrade_Upgraded_SSLError) {
   ASSERT_TRUE(https_server_.Start());
   GURL url(https_server_.GetURL("/"));
-  TestFailedHttpsUpgrade(url, /*use_https_as_default=*/true,
-                         /*expected_failed_upgrade=*/true,
+  TestFailedHttpsUpgrade(url, HttpsUpgradeType::kHttpsOnlyMode,
+                         HttpsUpgradeType::kHttpsOnlyMode,
                          FailedWebStateObserver::ErrorType::kSSLError);
 }
 
@@ -185,8 +190,7 @@ TEST_F(CRWKNavigationHandlerIntTest, FailedHTTPSUpgrade_Upgraded_SSLError) {
 // doesn't set the IsFailedHTTPSUpgrade() bit on the navigation context.
 TEST_F(CRWKNavigationHandlerIntTest, FailedHTTPSUpgrade_NotUpgraded_NetError) {
   GURL url("https://site.test");
-  TestFailedHttpsUpgrade(url, /*use_https_as_default=*/false,
-                         /*expected_failed_upgrade=*/false,
+  TestFailedHttpsUpgrade(url, HttpsUpgradeType::kNone, HttpsUpgradeType::kNone,
                          FailedWebStateObserver::ErrorType::kNetError);
 }
 
@@ -194,8 +198,8 @@ TEST_F(CRWKNavigationHandlerIntTest, FailedHTTPSUpgrade_NotUpgraded_NetError) {
 // sets the IsFailedHTTPSUpgrade() bit on the navigation context.
 TEST_F(CRWKNavigationHandlerIntTest, FailedHTTPSUpgrade_Upgraded_NetError) {
   GURL url("https://site.test");
-  TestFailedHttpsUpgrade(url, /*use_https_as_default=*/true,
-                         /*expected_failed_upgrade=*/true,
+  TestFailedHttpsUpgrade(url, HttpsUpgradeType::kHttpsOnlyMode,
+                         HttpsUpgradeType::kHttpsOnlyMode,
                          FailedWebStateObserver::ErrorType::kNetError);
 }
 

@@ -11,6 +11,7 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #import "ios/web/common/user_agent.h"
+#import "ios/web/public/navigation/https_upgrade_type.h"
 #import "ios/web/public/ui/page_display_state.h"
 #include "ui/base/page_transition_types.h"
 
@@ -129,16 +130,15 @@ class NavigationItem : public base::SupportsUserData {
   // Existing headers with the same key will be overridden.
   virtual void AddHttpRequestHeaders(NSDictionary* additional_headers) = 0;
 
-  // Returns true if the navigation was typed without a scheme and upgraded
-  // by the omnibox to use https:// as the scheme. (e.g. example.com is
-  // upgraded to https://example.com instead of http://example.com). This has
-  // the same purpose as
-  // ChromeNavigationUIData::is_using_https_as_default_scheme().
-  virtual bool IsUpgradedToHttps() const = 0;
-  // Sets the upgraded bit to true. Called from NavigationManager. Once this bit
-  // is set, it's never reset to false. Navigations defaulting to https but fail
-  // to load end up creating new navigations with this bit cleared.
-  virtual void SetUpgradedToHttps() = 0;
+  // Returns the type of the HTTPS upgrade that was applied to this navigation.
+  // If the navigation wasn't upgraded to HTTPS, returns kNone.
+  virtual HttpsUpgradeType GetHttpsUpgradeType() const = 0;
+  // Sets the type of the HTTPS upgrade that was applied to this navigation. If
+  // no upgrade was applied, should be kNone. This function is called from
+  // NavigationManager. Once this value is set, it's never reset. Navigations
+  // defaulting to https but fail to load end up creating new navigations with
+  // this value cleared.
+  virtual void SetHttpsUpgradeType(HttpsUpgradeType https_upgrade_type) = 0;
 };
 
 }  // namespace web

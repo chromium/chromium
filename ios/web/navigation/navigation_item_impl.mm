@@ -56,7 +56,7 @@ NavigationItemImpl::NavigationItemImpl()
       should_skip_serialization_(false),
       navigation_initiation_type_(web::NavigationInitiationType::NONE),
       is_untrusted_(false),
-      is_upgraded_to_https_(false) {}
+      https_upgrade_type_(HttpsUpgradeType::kNone) {}
 
 NavigationItemImpl::~NavigationItemImpl() {
 }
@@ -84,7 +84,7 @@ NavigationItemImpl::NavigationItemImpl(const NavigationItemImpl& item)
       navigation_initiation_type_(item.navigation_initiation_type_),
       is_untrusted_(item.is_untrusted_),
       cached_display_title_(item.cached_display_title_),
-      is_upgraded_to_https_(item.is_upgraded_to_https_) {}
+      https_upgrade_type_(item.https_upgrade_type_) {}
 
 int NavigationItemImpl::GetUniqueID() const {
   return unique_id_;
@@ -235,12 +235,13 @@ void NavigationItemImpl::AddHttpRequestHeaders(
     http_request_headers_ = [additional_headers mutableCopy];
 }
 
-void NavigationItemImpl::SetUpgradedToHttps() {
-  is_upgraded_to_https_ = true;
+void NavigationItemImpl::SetHttpsUpgradeType(
+    HttpsUpgradeType https_upgrade_type) {
+  https_upgrade_type_ = https_upgrade_type;
 }
 
-bool NavigationItemImpl::IsUpgradedToHttps() const {
-  return is_upgraded_to_https_;
+HttpsUpgradeType NavigationItemImpl::GetHttpsUpgradeType() const {
+  return https_upgrade_type_;
 }
 
 void NavigationItemImpl::SetSerializedStateObject(
@@ -353,7 +354,7 @@ NSString* NavigationItemImpl::GetDescription() const {
            "displayState:%@ userAgent:%s "
            "is_created_from_hash_change: %@ "
            "navigation_initiation_type: %d "
-           "is_upgraded_to_https: %@",
+           "https_upgrade_type: %s",
           url_.spec().c_str(), virtual_url_.spec().c_str(),
           original_request_url_.spec().c_str(), referrer_.url.spec().c_str(),
           base::UTF16ToUTF8(title_).c_str(), transition_type_,
@@ -361,7 +362,7 @@ NSString* NavigationItemImpl::GetDescription() const {
           GetUserAgentTypeDescription(user_agent_type_).c_str(),
           is_created_from_hash_change_ ? @"true" : @"false",
           navigation_initiation_type_,
-          is_upgraded_to_https_ ? @"true" : @"false"];
+          GetHttpsUpgradeTypeDescription(https_upgrade_type_).c_str()];
 }
 #endif
 

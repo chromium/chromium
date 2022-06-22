@@ -144,15 +144,14 @@ class NavigationManagerImpl : public NavigationManager {
   // nil if there isn't one. The item starts out as pending, and will be lost
   // unless |-commitPendingItem| is called.
   // |is_post_navigation| is true if the navigation is using a POST HTTP method.
-  //|is_using_https_as_default_scheme| must be true for navigations that use
-  // https:// as the default scheme
-  // in their URL, if the user typed the URL without a scheme.
+  // |https_upgrade_type| indicates the type of the HTTPS upgrade applied on
+  // this navigation.
   void AddPendingItem(const GURL& url,
                       const web::Referrer& referrer,
                       ui::PageTransition navigation_type,
                       NavigationInitiationType initiation_type,
                       bool is_post_navigation,
-                      bool is_using_https_as_default_scheme);
+                      web::HttpsUpgradeType https_upgrade_type);
 
   // Commits the pending item, if any.
   // TODO(crbug.com/936933): Remove this method.
@@ -369,7 +368,7 @@ class NavigationManagerImpl : public NavigationManager {
       const Referrer& referrer,
       ui::PageTransition transition,
       NavigationInitiationType initiation_type,
-      bool is_using_https_as_default_scheme,
+      HttpsUpgradeType https_upgrade_type,
       const GURL& previous_url,
       const std::vector<BrowserURLRewriter::URLRewriter>* url_rewriters) const;
 

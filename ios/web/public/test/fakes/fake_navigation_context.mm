@@ -78,8 +78,8 @@ bool FakeNavigationContext::IsRendererInitiated() const {
   return renderer_initiated_;
 }
 
-bool FakeNavigationContext::IsFailedHTTPSUpgrade() const {
-  return false;
+web::HttpsUpgradeType FakeNavigationContext::GetFailedHttpsUpgradeType() const {
+  return web::HttpsUpgradeType::kNone;
 }
 
 void FakeNavigationContext::SetWebState(std::unique_ptr<WebState> web_state) {

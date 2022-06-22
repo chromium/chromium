@@ -66,19 +66,25 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
 // Returns true if the navigation was upgraded to HTTPS but failed due to an
 // SSL or net error. This can happen when HTTPS-Only Mode feature automatically
 // upgrades a navigation to HTTPS.
-bool IsFailedHttpsUpgrade(NSError* error,
-                          web::NavigationContextImpl* context,
-                          NSError* cancellationError) {
+web::HttpsUpgradeType GetFailedHttpsUpgradeType(
+    NSError* error,
+    web::NavigationContextImpl* context,
+    NSError* cancellationError) {
   if (!context || !context->GetItem() ||
-      !context->GetItem()->IsUpgradedToHttps() || cancellationError) {
-    return false;
+      context->GetItem()->GetHttpsUpgradeType() ==
+          web::HttpsUpgradeType::kNone ||
+      cancellationError) {
+    return web::HttpsUpgradeType::kNone;
   }
   int error_code = 0;
   if (!web::GetNetErrorFromIOSErrorCode(
           error.code, &error_code, net::NSURLWithGURL(context->GetUrl()))) {
     error_code = net::ERR_FAILED;
   }
-  return (error_code != net::OK || web::IsWKWebViewSSLCertError(error));
+  if (error_code != net::OK || web::IsWKWebViewSSLCertError(error)) {
+    return context->GetItem()->GetHttpsUpgradeType();
+  }
+  return web::HttpsUpgradeType::kNone;
 }
 
 }  // namespace
@@ -1685,10 +1691,11 @@ bool IsFailedHttpsUpgrade(NSError* error,
 
   web::NavigationContextImpl* navigationContext =
       [self.navigationStates contextForNavigation:navigation];
-  if (IsFailedHttpsUpgrade(error, navigationContext,
-                           policyDecisionCancellationError)) {
+  web::HttpsUpgradeType failed_upgrade_type = GetFailedHttpsUpgradeType(
+      error, navigationContext, policyDecisionCancellationError);
+  if (failed_upgrade_type != web::HttpsUpgradeType::kNone) {
     navigationContext->SetError(contextError);
-    navigationContext->SetIsFailedHTTPSUpgrade();
+    navigationContext->SetFailedHttpsUpgradeType(failed_upgrade_type);
     [self handleCancelledError:error
                  forNavigation:navigation
                provisionalLoad:provisionalLoad];
@@ -1815,8 +1822,7 @@ bool IsFailedHttpsUpgrade(NSError* error,
   self.navigationManagerImpl->AddPendingItem(
       blockedURL, web::Referrer(), transition,
       web::NavigationInitiationType::BROWSER_INITIATED,
-      /*is_post_navigation=*/false,
-      /*is_using_https_as_default_scheme=*/false);
+      /*is_post_navigation=*/false, web::HttpsUpgradeType::kNone);
 
   // Create context.
   std::unique_ptr<web::NavigationContextImpl> context =
@@ -1880,9 +1886,10 @@ bool IsFailedHttpsUpgrade(NSError* error,
 - (void)handleCancelledError:(NSError*)error
                forNavigation:(WKNavigation*)navigation
              provisionalLoad:(BOOL)provisionalLoad {
-  if (!IsFailedHttpsUpgrade(
-          error, [self.navigationStates contextForNavigation:navigation],
-          self.pendingNavigationInfo.cancellationError) &&
+  web::HttpsUpgradeType failed_upgrade_type = GetFailedHttpsUpgradeType(
+      error, [self.navigationStates contextForNavigation:navigation],
+      self.pendingNavigationInfo.cancellationError);
+  if (failed_upgrade_type == web::HttpsUpgradeType::kNone &&
       ![self shouldCancelLoadForCancelledError:error
                                provisionalLoad:provisionalLoad]) {
     return;

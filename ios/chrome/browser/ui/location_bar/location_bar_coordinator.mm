@@ -322,8 +322,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     // call to load.
     web::NavigationManager::WebLoadParams web_params =
         web_navigation_util::CreateWebLoadParams(url, transition, postContent);
-    web_params.is_using_https_as_default_scheme =
-        destination_url_entered_without_scheme;
+    if (destination_url_entered_without_scheme) {
+      web_params.https_upgrade_type = web::HttpsUpgradeType::kOmnibox;
+    }
     NSMutableDictionary* combinedExtraHeaders =
         [[self variationHeadersForURL:url] mutableCopy];
     [combinedExtraHeaders addEntriesFromDictionary:web_params.extra_headers];

@@ -61,7 +61,7 @@ TEST_F(NavigationItemTest, Description) {
   EXPECT_TRUE(
       [description containsString:@"is_created_from_hash_change: false"]);
   EXPECT_TRUE([description containsString:@"navigation_initiation_type: 0"]);
-  EXPECT_TRUE([description containsString:@"is_upgraded_to_https: false"]);
+  EXPECT_TRUE([description containsString:@"https_upgrade_type: None"]);
 }
 #endif
 
