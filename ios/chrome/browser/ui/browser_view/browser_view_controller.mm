@@ -150,7 +150,6 @@
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
-#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/mac/url_conversions.h"
@@ -417,10 +416,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // A snapshot of the tab strip used on the thumb strip reveal/hide animation.
 @property(nonatomic, strong) UIView* tabStripSnapshot;
 
-// The user agent type used to load the currently visible page. User agent
-// type is NONE if there is no visible page.
-@property(nonatomic, assign, readonly) web::UserAgentType userAgentType;
-
 // Returns the header views, all the chrome on top of the page, including the
 // ones that cannot be scrolled off screen by full screen.
 @property(nonatomic, strong, readonly) NSArray<HeaderDefinition*>* headerViews;
@@ -641,18 +636,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (BOOL)canShowTabStrip {
   return IsRegularXRegularSizeClass(self);
-}
-
-- (web::UserAgentType)userAgentType {
-  web::WebState* webState = self.currentWebState;
-  if (!webState)
-    return web::UserAgentType::NONE;
-  web::NavigationItem* visibleItem =
-      webState->GetNavigationManager()->GetVisibleItem();
-  if (!visibleItem)
-    return web::UserAgentType::NONE;
-
-  return visibleItem->GetUserAgentType();
 }
 
 - (void)setVisible:(BOOL)visible {
