@@ -48,6 +48,7 @@ CrosWindowManagement::CrosWindowManagement(ExecutionContext& execution_context)
 void CrosWindowManagement::Trace(Visitor* visitor) const {
   visitor->Trace(cros_window_management_);
   visitor->Trace(receiver_);
+  visitor->Trace(windows_);
   Supplement<ExecutionContext>::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
@@ -95,10 +96,16 @@ void CrosWindowManagement::WindowsCallback(
   HeapVector<Member<CrosWindow>> results;
   results.ReserveInitialCapacity(windows.size());
   for (auto& w : windows) {
-    auto* result = MakeGarbageCollected<CrosWindow>(this, std::move(w));
-    results.push_back(result);
+    results.push_back(MakeGarbageCollected<CrosWindow>(this, std::move(w)));
   }
-  resolver->Resolve(results);
+
+  windows_.swap(results);
+
+  resolver->Resolve(windows_);
+}
+
+const HeapVector<Member<CrosWindow>>& CrosWindowManagement::windows() {
+  return windows_;
 }
 
 void CrosWindowManagement::DispatchStartEvent() {
