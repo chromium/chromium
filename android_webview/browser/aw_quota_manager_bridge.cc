@@ -193,8 +193,8 @@ void AwQuotaManagerBridge::DeleteAllData(JNIEnv* env,
           StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
           StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE |
           StoragePartition::REMOVE_DATA_MASK_WEBSQL,
-      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY, GURL(),
-      base::Time(), base::Time::Max(), base::DoNothing());
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY,
+      blink::StorageKey(), base::Time(), base::Time::Max(), base::DoNothing());
 }
 
 void AwQuotaManagerBridge::DeleteOrigin(JNIEnv* env,

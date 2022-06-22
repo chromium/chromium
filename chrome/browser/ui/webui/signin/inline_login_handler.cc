@@ -34,6 +34,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 const char kSignInPromoQueryKeyShowAccountManagement[] =
     "showAccountManagement";
@@ -97,8 +98,8 @@ void InlineLoginHandler::HandleInitializeMessage(const base::ListValue* args) {
         value == "0") {
       partition->ClearData(
           content::StoragePartition::REMOVE_DATA_MASK_ALL,
-          content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-          base::Time(), base::Time::Max(),
+          content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+          blink::StorageKey(), base::Time(), base::Time::Max(),
           base::BindOnce(&InlineLoginHandler::ContinueHandleInitializeMessage,
                          weak_ptr_factory_.GetWeakPtr()));
     } else {

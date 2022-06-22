@@ -17,9 +17,13 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
-}
+}  // namespace leveldb_proto
 
 namespace content {
 
@@ -35,7 +39,7 @@ class ZoomLevelDelegate;
 
 namespace mojom {
 class NetworkContext;
-}
+}  // namespace mojom
 
 // Fake implementation of StoragePartition.
 class TestStoragePartition : public StoragePartition {
@@ -186,7 +190,7 @@ class TestStoragePartition : public StoragePartition {
 
   void ClearData(uint32_t remove_mask,
                  uint32_t quota_storage_remove_mask,
-                 const GURL& storage_origin,
+                 const blink::StorageKey& storage_key,
                  const base::Time begin,
                  const base::Time end,
                  base::OnceClosure callback) override;

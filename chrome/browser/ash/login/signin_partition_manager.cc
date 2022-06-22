@@ -17,6 +17,7 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -34,8 +35,9 @@ void ClearStoragePartition(content::StoragePartition* storage_partition,
                            base::OnceClosure partition_data_cleared) {
   storage_partition->ClearData(
       content::StoragePartition::REMOVE_DATA_MASK_ALL,
-      content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-      base::Time(), base::Time::Max(), std::move(partition_data_cleared));
+      content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+      blink::StorageKey(), base::Time(), base::Time::Max(),
+      std::move(partition_data_cleared));
 }
 
 network::mojom::NetworkContext* GetSystemNetworkContext() {

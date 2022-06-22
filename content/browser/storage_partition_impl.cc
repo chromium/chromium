@@ -2156,7 +2156,7 @@ void StoragePartitionImpl::OnNewSCTAuditingReportSent() {
 void StoragePartitionImpl::ClearDataImpl(
     uint32_t remove_mask,
     uint32_t quota_storage_remove_mask,
-    const GURL& storage_origin,
+    const blink::StorageKey& storage_key,
     OriginMatcherFunction origin_matcher,
     CookieDeletionFilterPtr cookie_deletion_filter,
     bool perform_storage_cleanup,
@@ -2165,7 +2165,6 @@ void StoragePartitionImpl::ClearDataImpl(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const blink::StorageKey storage_key(url::Origin::Create(storage_origin));
   for (auto& observer : data_removal_observers_) {
     auto filter = CreateGenericOriginMatcher(storage_key, origin_matcher,
                                              special_storage_policy_);
@@ -2566,24 +2565,25 @@ void StoragePartitionImpl::ClearDataForOrigin(
   CookieDeletionFilterPtr deletion_filter = CookieDeletionFilter::New();
   if (!storage_origin.host().empty())
     deletion_filter->host_name = storage_origin.host();
-  ClearDataImpl(remove_mask, quota_storage_remove_mask, storage_origin,
+  ClearDataImpl(remove_mask, quota_storage_remove_mask,
+                blink::StorageKey(url::Origin::Create(storage_origin)),
                 OriginMatcherFunction(), std::move(deletion_filter), false,
                 base::Time(), base::Time::Max(), std::move(callback));
 }
 
 void StoragePartitionImpl::ClearData(uint32_t remove_mask,
                                      uint32_t quota_storage_remove_mask,
-                                     const GURL& storage_origin,
+                                     const blink::StorageKey& storage_key,
                                      const base::Time begin,
                                      const base::Time end,
                                      base::OnceClosure callback) {
   DCHECK(initialized_);
   CookieDeletionFilterPtr deletion_filter = CookieDeletionFilter::New();
-  if (!storage_origin.host().empty())
-    deletion_filter->host_name = storage_origin.host();
+  if (!storage_key.origin().host().empty())
+    deletion_filter->host_name = storage_key.origin().host();
   bool perform_storage_cleanup =
-      begin.is_null() && end.is_max() && storage_origin.is_empty();
-  ClearDataImpl(remove_mask, quota_storage_remove_mask, storage_origin,
+      begin.is_null() && end.is_max() && storage_key.origin().opaque();
+  ClearDataImpl(remove_mask, quota_storage_remove_mask, storage_key,
                 OriginMatcherFunction(), std::move(deletion_filter),
                 perform_storage_cleanup, begin, end, std::move(callback));
 }
@@ -2598,7 +2598,7 @@ void StoragePartitionImpl::ClearData(
     const base::Time end,
     base::OnceClosure callback) {
   DCHECK(initialized_);
-  ClearDataImpl(remove_mask, quota_storage_remove_mask, GURL(),
+  ClearDataImpl(remove_mask, quota_storage_remove_mask, blink::StorageKey(),
                 std::move(origin_matcher), std::move(cookie_deletion_filter),
                 perform_storage_cleanup, begin, end, std::move(callback));
 }

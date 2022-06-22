@@ -45,6 +45,7 @@
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/features.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -393,8 +394,8 @@ void StoragePartitionImplMap::AsyncObliterate(
     active_partition->ClearData(
         // All except shader cache.
         ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
-        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(), base::Time(),
-        base::Time::Max(), subtask_done_callback);
+        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, blink::StorageKey(),
+        base::Time(), base::Time::Max(), subtask_done_callback);
   }
 
   // Start a best-effort delete of the on-disk storage excluding paths that are

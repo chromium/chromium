@@ -208,7 +208,7 @@ class CONTENT_EXPORT StoragePartitionImpl
                           base::OnceClosure callback) override;
   void ClearData(uint32_t remove_mask,
                  uint32_t quota_storage_remove_mask,
-                 const GURL& storage_origin,
+                 const blink::StorageKey& storage_key,
                  const base::Time begin,
                  const base::Time end,
                  base::OnceClosure callback) override;
@@ -566,11 +566,12 @@ class CONTENT_EXPORT StoragePartitionImpl
   // state.
   void OnStorageServiceDisconnected();
 
-  // We will never have both remove_origin be populated and a cookie_matcher.
+  // Clears the data specified by the `storage_key` or `origin_matcher`.
+  // We will never have both `storage_key` be populated and a `origin_matcher`.
   void ClearDataImpl(
       uint32_t remove_mask,
       uint32_t quota_storage_remove_mask,
-      const GURL& remove_origin,
+      const blink::StorageKey& storage_key,
       OriginMatcherFunction origin_matcher,
       network::mojom::CookieDeletionFilterPtr cookie_deletion_filter,
       bool perform_storage_cleanup,

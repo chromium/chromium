@@ -159,7 +159,7 @@ class StoragePartitionRemovalTestStoragePartition
 
   void ClearData(uint32_t remove_mask,
                  uint32_t quota_storage_remove_mask,
-                 const GURL& storage_origin,
+                 const blink::StorageKey& storage_key,
                  const base::Time begin,
                  const base::Time end,
                  base::OnceClosure callback) override {

@@ -27,22 +27,26 @@ class GURL;
 namespace base {
 class FilePath;
 class Time;
-}
+}  // namespace base
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 class FileSystemContext;
-}
+}  // namespace storage
 
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
-}
+}  // namespace leveldb_proto
 
 namespace network {
 namespace mojom {
 class CookieManager;
 class NetworkContext;
 class URLLoaderNetworkServiceObserver;
-}
+}  // namespace mojom
 }  // namespace network
 
 namespace storage {
@@ -50,11 +54,11 @@ class QuotaManager;
 class SpecialStoragePolicy;
 struct QuotaSettings;
 class DatabaseTracker;
-}
+}  // namespace storage
 
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace content {
 
@@ -242,12 +246,12 @@ class CONTENT_EXPORT StoragePartition {
   };
 
   // Similar to ClearDataForOrigin().
-  // Deletes all data out for the StoragePartition if |storage_origin| is empty.
-  // |callback| is called when data deletion is done or at least the deletion is
-  // scheduled.
+  // Deletes all data out for the StoragePartition if |storage_key|'s origin is
+  // opaque. |callback| is called when data deletion is done or at least the
+  // deletion is scheduled.
   virtual void ClearData(uint32_t remove_mask,
                          uint32_t quota_storage_remove_mask,
-                         const GURL& storage_origin,
+                         const blink::StorageKey& storage_key,
                          const base::Time begin,
                          const base::Time end,
                          base::OnceClosure callback) = 0;
