@@ -2418,6 +2418,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT4" desc="Text for search result item which, when clicked, navigates the user to the personalization app page where they can change their device account image (visible on log-in screen). Alternate phrase for: 'Change device account image', 'Sign-in image', 'Login image', 'Profile picture'">
         Profile image
       </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT5" desc="Text for search result item which, when clicked, navigates the user to the personalization app page where they can change their device account image (visible on log-in screen). Alternative phrase for: 'Change device account image'">
+        Avatar image
+      </message>
       <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER" desc="Text for search result item which, when clicked, navigates the user to wallpaper settings. Alternate phrase for: 'Background', 'Desktop'">
         Change wallpaper
       </message>
