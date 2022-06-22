@@ -75,16 +75,11 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
                         bool show_stay_in_chrome,
                         BubbleType bubble_type,
                         const absl::optional<url::Origin>& initiating_origin) {
+    DCHECK(!app_info_.empty());
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     anchor_view_ =
         browser_view->toolbar()->AddChildView(std::make_unique<views::View>());
-
-    // Pushing a couple of fake apps just to check they are created on the UI.
-    app_info_.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
-                           "package_1", "dank app 1");
-    app_info_.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
-                           "package_2", "dank_app_2");
 
     if (use_icons)
       FillAppListWithDummyIcons();
@@ -124,6 +119,11 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
               const std::string& launch_name,
               const std::string& title) {
     app_info_.emplace_back(app_type, ui::ImageModel(), launch_name, title);
+  }
+
+  void AddDefaultApps() {
+    AddApp(apps::PickerEntryType::kArc, "package_1", "App 1");
+    AddApp(apps::PickerEntryType::kArc, "package_2", "App 2");
   }
 
   void FillAppListWithDummyIcons() {
@@ -186,6 +186,7 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
 
 // Verifies that we didn't set up an image for any LabelButton.
 TEST_F(IntentPickerBubbleViewTest, NullIcons) {
+  AddDefaultApps();
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
@@ -199,6 +200,7 @@ TEST_F(IntentPickerBubbleViewTest, NullIcons) {
 
 // Verifies that all the icons contain a non-null icon.
 TEST_F(IntentPickerBubbleViewTest, NonNullIcons) {
+  AddDefaultApps();
   CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
@@ -215,6 +217,7 @@ TEST_F(IntentPickerBubbleViewTest, NonNullIcons) {
 // shown to the user on the picker UI, so there could be a difference
 // represented by |chrome_package_repetitions|.
 TEST_F(IntentPickerBubbleViewTest, LabelsPtrVectorSize) {
+  AddDefaultApps();
   CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
@@ -226,6 +229,7 @@ TEST_F(IntentPickerBubbleViewTest, LabelsPtrVectorSize) {
 // Verifies that the first item is activated by default when creating a new
 // bubble.
 TEST_F(IntentPickerBubbleViewTest, VerifyStartingInkDrop) {
+  AddDefaultApps();
   CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
@@ -239,6 +243,7 @@ TEST_F(IntentPickerBubbleViewTest, VerifyStartingInkDrop) {
 // Press each button at a time and make sure it goes to ACTIVATED state,
 // followed by HIDDEN state after selecting other button.
 TEST_F(IntentPickerBubbleViewTest, InkDropStateTransition) {
+  AddDefaultApps();
   CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
@@ -252,6 +257,7 @@ TEST_F(IntentPickerBubbleViewTest, InkDropStateTransition) {
 
 // Arbitrary press a button twice, check that the InkDropState remains the same.
 TEST_F(IntentPickerBubbleViewTest, PressButtonTwice) {
+  AddDefaultApps();
   CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
@@ -266,6 +272,7 @@ TEST_F(IntentPickerBubbleViewTest, PressButtonTwice) {
 
 // Check that a non nullptr WebContents() has been created and observed.
 TEST_F(IntentPickerBubbleViewTest, WebContentsTiedToBubble) {
+  AddDefaultApps();
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
@@ -279,6 +286,7 @@ TEST_F(IntentPickerBubbleViewTest, WebContentsTiedToBubble) {
 
 // Check that that the correct window title is shown.
 TEST_F(IntentPickerBubbleViewTest, WindowTitle) {
+  AddDefaultApps();
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
@@ -295,6 +303,7 @@ TEST_F(IntentPickerBubbleViewTest, WindowTitle) {
 
 // Check that that the correct button labels are used.
 TEST_F(IntentPickerBubbleViewTest, ButtonLabels) {
+  AddDefaultApps();
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
@@ -316,6 +325,7 @@ TEST_F(IntentPickerBubbleViewTest, ButtonLabels) {
 }
 
 TEST_F(IntentPickerBubbleViewTest, InitiatingOriginView) {
+  AddDefaultApps();
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
@@ -402,6 +412,8 @@ TEST_P(IntentPickerBubbleViewLayoutTest, AcceptDialogWithRememberSelection) {
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
 
+  ClickApp(0);
+
   views::Checkbox* checkbox = static_cast<views::Checkbox*>(
       bubble_->GetViewByID(IntentPickerBubbleView::ViewId::kRememberCheckbox));
   checkbox->SetChecked(true);
@@ -447,10 +459,12 @@ TEST_P(IntentPickerBubbleViewLayoutTest, CloseDialog) {
 #define MAYBE_KeyboardNavigation KeyboardNavigation
 #endif
 TEST_P(IntentPickerBubbleViewLayoutTest, MAYBE_KeyboardNavigation) {
+  AddDefaultApps();
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
 
+  ClickApp(0);
   GetButtonAtIndex(0)->RequestFocus();
 
   event_generator_->PressAndReleaseKey(ui::VKEY_DOWN);
@@ -485,3 +499,29 @@ INSTANTIATE_TEST_SUITE_P(All,
                          IntentPickerBubbleViewLayoutTest,
                          testing::Values(BubbleInterfaceType::kListView,
                                          BubbleInterfaceType::kGridView));
+
+class IntentPickerBubbleViewGridLayoutTest : public IntentPickerBubbleViewTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      apps::features::kLinkCapturingUiUpdate};
+};
+
+TEST_F(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionOneApp) {
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
+  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                   BubbleType::kLinkCapturing,
+                   /*initiating_origin=*/absl::nullopt);
+
+  ASSERT_EQ(bubble_->GetSelectedIndex(), 0u);
+}
+
+TEST_F(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionTwoApps) {
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id_2", "Web App");
+
+  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                   BubbleType::kLinkCapturing,
+                   /*initiating_origin=*/absl::nullopt);
+
+  ASSERT_FALSE(bubble_->GetSelectedIndex().has_value());
+}

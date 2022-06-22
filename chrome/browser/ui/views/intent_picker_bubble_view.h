@@ -103,15 +103,20 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   BubbleType bubble_type() const { return bubble_type_; }
 
-  void SetSelectedIndex(size_t index);
-  size_t GetSelectedIndex() const;
+  // Selects the default app for the current configuration. Must be called after
+  // the Bubble is shown.
+  void SelectDefaultItem();
+
+  // Returns the index of the currently selected item. May return nullopt to
+  // indicate no selection.
+  absl::optional<size_t> GetSelectedIndex() const;
 
   // A ScrollView which contains a list of apps. This view manages the selection
   // state for the dialog.
   class IntentPickerAppsView : public views::ScrollView {
    public:
-    virtual void SetSelectedIndex(size_t index) = 0;
-    virtual size_t GetSelectedIndex() const = 0;
+    virtual void SetSelectedIndex(absl::optional<size_t> index) = 0;
+    virtual absl::optional<size_t> GetSelectedIndex() const = 0;
   };
 
   const std::vector<AppInfo>& app_info_for_testing() const { return app_info_; }
@@ -127,9 +132,11 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   // views::BubbleDialogDelegateView overrides:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // Called when the app at |index| is selected in the app list. If |accepted|
-  // is true, the dialog should be immediately accepted with that app selected.
-  void OnAppSelected(size_t index, bool accepted);
+  // Called when the app at |index| is selected in the app list. If
+  // |accepted| is true, the dialog should be immediately accepted with that app
+  // selected. If |index| is nullopt, no app is selected, and the Accept button
+  // will be disabled
+  void OnAppSelected(absl::optional<size_t> index, bool accepted);
 
   void Initialize();
 

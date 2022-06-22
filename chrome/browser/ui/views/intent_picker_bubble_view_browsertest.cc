@@ -456,6 +456,20 @@ class IntentPickerDialogGridViewTest : public IntentPickerDialogTest {
     feature_list_.InitAndEnableFeature(apps::features::kLinkCapturingUiUpdate);
   }
 
+  void ShowUi(const std::string& name) override {
+    IntentPickerDialogTest::ShowUi(name);
+
+    // Click the first item in the list so we can verify the selection state.
+    auto* bubble = IntentPickerBubbleView::intent_picker_bubble();
+    auto event_generator =
+        ui::test::EventGenerator(views::GetRootWindow(bubble->GetWidget()));
+    auto* button =
+        bubble->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
+            ->children()[0];
+    event_generator.MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+    event_generator.ClickLeftButton();
+  }
+
  private:
   views::Button* GetAnchorButton() override {
     return BrowserView::GetBrowserViewForBrowser(browser())
