@@ -7,6 +7,7 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
+import("//third_party/libgav1/options.gni")
 import("//tools/generate_stubs/rules.gni")
 import("//ui/gl/features.gni")
 
@@ -177,6 +178,9 @@ executable("v4l2_stateless_decoder") {
     "//media",
     "//media:test_support",
     "//media/gpu:common",
-    "//third_party/libgav1:libgav1",
   ]
+
+  if (enable_libgav1_decoder || use_libgav1_parser) {
+    deps += [ "//third_party/libgav1:libgav1" ]
+  }
 }
