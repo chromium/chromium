@@ -138,10 +138,6 @@ bool IsUsEnglishEngine(const std::string& engine_id) {
   return engine_id == "xkb:us::eng";
 }
 
-bool IsLacrosEnabled() {
-  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
-}
-
 void RecordTextInputStateMetric(AssistiveTextInputState state) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.MultiWord.InputState",
                                 state);
@@ -151,11 +147,6 @@ void RecordMultiWordTextInputState(
     PrefService* pref_service,
     const std::string& engine_id,
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
-  if (IsLacrosEnabled()) {
-    RecordTextInputStateMetric(AssistiveTextInputState::kUnsupportedClient);
-    return;
-  }
-
   if (!enabled_suggestions.multi_word_suggestions) {
     RecordTextInputStateMetric(
         AssistiveTextInputState::kFeatureBlockedByDenylist);

@@ -342,7 +342,7 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByUser) {
       AssistiveTextInputState::kFeatureBlockedByPreference, 1);
 }
 
-TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByLacros) {
+TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabledByLacros) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAssistMultiWord,
@@ -361,7 +361,7 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByLacros) {
       "InputMethod.Assistive.MultiWord.InputState", 1);
   histogram_tester_.ExpectUniqueSample(
       "InputMethod.Assistive.MultiWord.InputState",
-      AssistiveTextInputState::kUnsupportedClient, 1);
+      AssistiveTextInputState::kFeatureEnabled, 1);
 }
 
 TEST_F(AssistiveSuggesterTest,

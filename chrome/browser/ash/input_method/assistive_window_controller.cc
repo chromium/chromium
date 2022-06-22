@@ -36,10 +36,6 @@ gfx::NativeView GetParentView() {
   return parent;
 }
 
-bool IsLacrosEnabled() {
-  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
-}
-
 }  // namespace
 
 AssistiveWindowController::AssistiveWindowController(
