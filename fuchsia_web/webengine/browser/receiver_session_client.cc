@@ -20,7 +20,7 @@ ReceiverSessionClient::ReceiverSessionClient(
 
 ReceiverSessionClient::~ReceiverSessionClient() = default;
 
-void ReceiverSessionClient::SetCastStreamingReceiver(
+void ReceiverSessionClient::SetDemuxerConnector(
     mojo::AssociatedRemote<cast_streaming::mojom::DemuxerConnector>
         demuxer_connector) {
   DCHECK(message_port_request_);
@@ -48,4 +48,8 @@ void ReceiverSessionClient::SetCastStreamingReceiver(
           },
           std::move(message_port_request_)));
   receiver_session_->StartStreamingAsync(std::move(demuxer_connector));
+}
+
+bool ReceiverSessionClient::HasReceiverSession() {
+  return !!receiver_session_;
 }

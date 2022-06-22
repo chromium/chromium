@@ -24,16 +24,18 @@ class ReceiverSessionClient {
 
   ReceiverSessionClient& operator=(const ReceiverSessionClient&) = delete;
 
-  void SetCastStreamingReceiver(
+  void SetDemuxerConnector(
       mojo::AssociatedRemote<cast_streaming::mojom::DemuxerConnector>
           demuxer_connector);
 
+  bool HasReceiverSession();
+
  private:
   // Populated in the ctor, and removed when |receiver_session_| is created in
-  // SetCastStreamingReceiver().
+  // SetDemuxerConnector().
   fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request_;
 
-  // Created in SetCastStreamingReceiver(), and empty prior to that call.
+  // Created in SetDemuxerConnector(), and empty prior to that call.
   std::unique_ptr<cast_streaming::ReceiverSession> receiver_session_;
 
   const bool video_only_receiver_;
