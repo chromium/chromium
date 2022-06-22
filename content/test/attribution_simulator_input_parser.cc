@@ -404,13 +404,15 @@ class AttributionSimulatorInputParser {
     const std::string* v = dict.FindString(key);
     int64_t milliseconds;
 
-    if (!v || !base::StringToInt64(*v, &milliseconds)) {
-      *Error() << "must be an integer number of milliseconds since the Unix "
-                  "epoch formatted as a base-10 string";
-      return base::Time();
+    if (v && base::StringToInt64(*v, &milliseconds)) {
+      base::Time time = offset_time_ + base::Milliseconds(milliseconds);
+      if (!time.is_null() && !time.is_inf())
+        return time;
     }
 
-    return offset_time_ + base::Milliseconds(milliseconds);
+    *Error() << "must be an integer number of milliseconds since the Unix "
+                "epoch formatted as a base-10 string";
+    return base::Time();
   }
 
   uint64_t ParseUint64(const std::string* s, base::StringPiece key) {

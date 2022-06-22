@@ -1018,6 +1018,12 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"cookies": [{}]})json",
     },
     {
+        R"(["cookies"][0]["timestamp"]: must be an integer number of milliseconds)",
+        R"json({"cookies": [{
+          "timestamp": "9223372036854775"
+        }]})json",
+    },
+    {
         R"(["cookies"][0]["url"]: must be a valid URL)",
         R"json({"cookies": [{
         "timestamp": "1643235576000"
