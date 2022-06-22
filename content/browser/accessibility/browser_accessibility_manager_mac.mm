@@ -21,6 +21,7 @@
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
+#include "ui/base/cocoa/remote_accessibility_api.h"
 
 namespace {
 
@@ -250,25 +251,9 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       mac_notification = ui::NSAccessibilityLiveRegionCreatedNotification;
       break;
     case ui::AXEventGenerator::Event::LOAD_COMPLETE:
-      // On MacOS 10.15, firing AXLoadComplete causes focus to move to the
-      // webpage and read content, despite the "Automatically speak the webpage"
-      // checkbox in Voiceover utility being unchecked. The checkbox is
-      // unchecked by default in 10.15 so we don't fire AXLoadComplete events to
-      // support the default behavior.
-      if (base::mac::IsOS10_15())
+      if (!ShouldFireLoadCompleteNotification())
         return;
-
-      // |NSAccessibilityLoadCompleteNotification| should only be fired on the
-      // top document and when the document is not Chrome's new tab page.
-      if (IsRootTree() && !IsChromeNewTabPage()) {
-        mac_notification = ui::NSAccessibilityLoadCompleteNotification;
-      } else {
-        // Voiceover moves focus to the web content when it receives an
-        // AXLoadComplete event. On Chrome's new tab page, focus should stay
-        // in the omnibox, so we purposefully do not fire the AXLoadComplete
-        // event in this case.
-        return;
-      }
+      mac_notification = ui::NSAccessibilityLoadCompleteNotification;
       break;
     case ui::AXEventGenerator::Event::MENU_POPUP_END:
       // Calling NSAccessibilityPostNotification on a menu which is about to be
@@ -591,6 +576,68 @@ bool BrowserAccessibilityManagerMac::IsChromeNewTabPage() {
   return url == GURL("chrome://newtab/") ||
          url == GURL("chrome://new-tab-page") ||
          url == GURL("chrome-search://local-ntp/local-ntp.html");
+}
+
+bool BrowserAccessibilityManagerMac::ShouldFireLoadCompleteNotification() {
+  // If it's not the top-level document, we shouldn't fire AXLoadComplete.
+  if (!IsRootTree())
+    return false;
+
+  // On MacOS 10.15, firing AXLoadComplete causes focus to move to the
+  // webpage and read content, despite the "Automatically speak the webpage"
+  // checkbox in Voiceover utility being unchecked. The checkbox is
+  // unchecked by default in 10.15 so we don't fire AXLoadComplete events to
+  // support the default behavior.
+  if (base::mac::IsOS10_15())
+    return false;
+
+  // Voiceover moves focus to the web content when it receives an
+  // AXLoadComplete event. On Chrome's new tab page, focus should stay
+  // in the omnibox, so we purposefully do not fire the AXLoadComplete
+  // event in this case.
+  if (IsChromeNewTabPage())
+    return false;
+
+  // We also check that the window is focused because VoiceOver responds
+  // to this notification by changing focus and possibly reading the entire
+  // page contents, sometimes even when the window is minimized or another
+  // Chrome window is active/focused.
+  id window = GetWindow();
+  if (!window)
+    return false;
+
+  if ([NSApp isActive])
+    return window == [NSApp accessibilityFocusedWindow];
+
+  // TODO(accessibility): We need a solution to the problem described below.
+  // If the window is NSAccessibilityRemoteUIElement, there are some challenges:
+  // 1. NSApp is the browser which spawned the PWA, and what it considers the
+  //    accessibilityFocusedWindow is the last browser window which was focused
+  //    prior to the PWA gaining focus; not the potentially-focused PWA window.
+  // 2. Unlike the BrowserNativeWidgetWindow, NSAccessibilityRemoteUIElement is
+  //    not an NSWindow and doesn't respond to the selector isKeyWindow. So we
+  //    cannot simply verify we have the key window for the currently running
+  //    application.
+  // 3. NSAccessibilityRemoteUIElement does not conform to the NSAccessibility
+  //    protocol, so we cannot ask it for any properties that might let us
+  //    verify this window is focused.
+  // 4. AppKit does not allow us to access the actual NSWindow instances of
+  //    other NSRunningApplications (i.e. the shim process); just window
+  //    information, which does not appear to include details regarding what
+  //    is active/focused.
+  // 5. Attempting to get at the accessibility tree of the shim process via
+  //    AXUIElementCreateApplication is possible, but the objects retrieved
+  //    in that fashion do not conform to the NSAccessibility protocol.
+  // For now we'll return true to preserve current behavior. Note, however,
+  // that this does not necessarily mean the event will be presented by
+  // VoiceOver in the same way it would present a normal browser window.
+  // This may be due to the issues described above, or the fact that one
+  // cannot ascend the accessibility tree all the way to the parent window
+  // from within the app shim content.
+  if ([window isKindOfClass:[NSAccessibilityRemoteUIElement class]])
+    return true;
+
+  return false;
 }
 
 }  // namespace content

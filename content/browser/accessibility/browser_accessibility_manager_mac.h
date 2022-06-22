@@ -78,6 +78,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
   // Returns whether this page is a new tab page on Chrome.
   bool IsChromeNewTabPage();
 
+  bool ShouldFireLoadCompleteNotification();
+
   // Keeps track of any edits that have been made by the user during a tree
   // update. Used by NSAccessibilityValueChangedNotification.
   // Maps AXNode IDs to value attribute changes.
