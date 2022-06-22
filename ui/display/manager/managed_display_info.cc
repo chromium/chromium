@@ -168,10 +168,10 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   const int kDefaultHostWindowHeight = 768;
   gfx::Rect bounds_in_native(kDefaultHostWindowX, kDefaultHostWindowY,
                              kDefaultHostWindowWidth, kDefaultHostWindowHeight);
-  std::string main_spec = spec;
+  base::StringPiece main_spec = spec;
 
   float zoom_factor = 1.0f;
-  std::vector<std::string> parts = base::SplitString(
+  std::vector<base::StringPiece> parts = base::SplitStringPiece(
       main_spec, "@", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (parts.size() == 2) {
     double scale_in_double = 0;
@@ -180,17 +180,16 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
     main_spec = parts[0];
   }
 
-  parts = base::SplitString(main_spec, "/", base::KEEP_WHITESPACE,
-                            base::SPLIT_WANT_NONEMPTY);
+  parts = base::SplitStringPiece(main_spec, "/", base::KEEP_WHITESPACE,
+                                 base::SPLIT_WANT_NONEMPTY);
   Display::Rotation rotation(Display::ROTATE_0);
   bool has_overscan = false;
   bool has_hdr = false;
   if (!parts.empty()) {
     main_spec = parts[0];
     if (parts.size() >= 2) {
-      std::string options = parts[1];
-      for (size_t i = 0; i < options.size(); ++i) {
-        char c = options[i];
+      base::StringPiece options = parts[1];
+      for (char c : options) {
         switch (c) {
           case 'o':
             has_overscan = true;
@@ -216,32 +215,37 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   ManagedDisplayModeList display_modes;
 
   if (!main_spec.empty()) {
-    GetDisplayBounds(main_spec, &bounds_in_native, &device_scale_factor);
+    GetDisplayBounds(std::string(main_spec), &bounds_in_native,
+                     &device_scale_factor);
 
-    parts = base::SplitString(main_spec, "#", base::KEEP_WHITESPACE,
-                              base::SPLIT_WANT_NONEMPTY);
+    parts = base::SplitStringPiece(main_spec, "#", base::KEEP_WHITESPACE,
+                                   base::SPLIT_WANT_NONEMPTY);
     if (parts.size() == 2) {
       size_t native_mode = 0;
       int largest_area = -1;
       float highest_refresh_rate = -1.0f;
       main_spec = parts[0];
-      std::string resolution_list = parts[1];
-      parts = base::SplitString(resolution_list, "|", base::KEEP_WHITESPACE,
-                                base::SPLIT_WANT_NONEMPTY);
+      base::StringPiece resolution_list = parts[1];
+      parts =
+          base::SplitStringPiece(resolution_list, "|", base::KEEP_WHITESPACE,
+                                 base::SPLIT_WANT_NONEMPTY);
       for (size_t i = 0; i < parts.size(); ++i) {
         gfx::Size size;
         float refresh_rate = 60.0f;
         bool is_interlaced = false;
 
         gfx::Rect mode_bounds;
-        std::vector<std::string> resolution = base::SplitString(
+        std::vector<base::StringPiece> resolution = base::SplitStringPiece(
             parts[i], "%", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
         float device_scale_factor_for_mode = device_scale_factor;
-        GetDisplayBounds(resolution[0], &mode_bounds,
+        GetDisplayBounds(std::string(resolution[0]), &mode_bounds,
                          &device_scale_factor_for_mode);
         size = mode_bounds.size();
-        if (resolution.size() > 1)
-          sscanf(resolution[1].c_str(), "%f", &refresh_rate);
+        if (resolution.size() > 1) {
+          double refresh_rate_in_double = 0.0;
+          if (base::StringToDouble(resolution[1], &refresh_rate_in_double))
+            refresh_rate = refresh_rate_in_double;
+        }
         if (size.GetArea() >= largest_area &&
             refresh_rate > highest_refresh_rate) {
           // Use mode with largest area and highest refresh rate as native.
