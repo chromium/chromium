@@ -72,6 +72,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"userConsentLabel", IDS_FEEDBACK_TOOL_USER_CONSENT_LABEL},
       {"includeSystemInfoAndMetricsCheckboxLabel",
        IDS_FEEDBACK_TOOL_INCLUDE_SYSTEM_INFO_AND_METRICS_CHECKBOX_LABEL},
+      {"anonymousUser", IDS_FEEDBACK_TOOL_ANONYMOUS_EMAIL_OPTION},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);
