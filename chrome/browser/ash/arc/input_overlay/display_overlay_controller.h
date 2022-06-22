@@ -49,7 +49,7 @@ class DisplayOverlayController : public ui::EventHandler {
 
   void OnWindowBoundsChanged();
   void SetDisplayMode(DisplayMode mode);
-  // Get the bounds of |menu_entry_| in screen coordinates
+  // Get the bounds of |menu_entry_| in screen coordinates.
   absl::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 
   void AddActionEditMenu(ActionView* anchor, ActionType action_type);

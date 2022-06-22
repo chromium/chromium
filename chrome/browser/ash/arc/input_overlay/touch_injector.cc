@@ -394,6 +394,9 @@ bool TouchInjector::LocatedEventOnMenuEntry(const ui::Event& event,
 
   auto event_location = gfx::Point(event.AsLocatedEvent()->root_location());
   target_window_->GetHost()->ConvertPixelsToDIP(&event_location);
+  // Convert |event_location| from root window location to screen location.
+  auto origin = target_window_->GetRootWindow()->GetBoundsInScreen().origin();
+  event_location.Offset(origin.x(), origin.y());
 
   if (!press_required)
     return menu_anchor_bounds->Contains(event_location);

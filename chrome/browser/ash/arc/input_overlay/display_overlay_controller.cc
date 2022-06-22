@@ -538,6 +538,12 @@ void DisplayOverlayController::ProcessPressedEvent(
     return;
 
   auto root_location = event.root_location();
+  // Convert the LocatedEvent root location to screen location.
+  auto origin = touch_injector_->target_window()
+                    ->GetRootWindow()
+                    ->GetBoundsInScreen()
+                    .origin();
+  root_location.Offset(origin.x(), origin.y());
 
   if (action_edit_menu_) {
     auto bounds = action_edit_menu_->GetBoundsInScreen();
