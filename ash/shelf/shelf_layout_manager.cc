@@ -112,6 +112,9 @@ constexpr int kNotificationBubbleGapHeight = 6;
 // the auto-hidden shelf when the shelf is on the boundary between displays.
 constexpr int kMaxAutoHideShowShelfRegionSize = 10;
 
+// Delay before showing the shelf. This is after the mouse stops moving.
+constexpr int kShelfPalmRejectionSwipeOffset = 80;
+
 // Returns the `aura::client::DragDropClient` for the given `shelf_widget`. Note
 // that this may return `nullptr` if the browser is performing its shutdown
 // sequence.
@@ -291,11 +294,9 @@ bool IsInImmersiveFullscreen() {
 }
 
 int GetShelfSwipeOffset() {
-  if (!features::IsShelfPalmRejectionSwipeOffsetEnabled())
-    return 0;
-
-  return base::GetFieldTrialParamByFeatureAsInt(
-      ash::features::kShelfPalmRejectionSwipeOffset, "shelf_swipe_offset", 0);
+  return features::IsShelfPalmRejectionSwipeOffsetEnabled()
+             ? kShelfPalmRejectionSwipeOffset
+             : 0;
 }
 
 // Forwards gesture events to ShelfLayoutManager to hide the hotseat
@@ -2478,12 +2479,6 @@ bool ShelfLayoutManager::StartShelfDrag(const ui::LocatedEvent& event_in_screen,
   if (!is_tablet_mode && features::IsProductivityLauncherEnabled() &&
       CalculateShelfVisibility() != SHELF_AUTO_HIDE &&
       !IsInImmersiveFullscreen()) {
-    return false;
-  }
-
-  if (is_tablet_mode &&
-      !shelf_->hotseat_widget()->IsPointWithinGestureTouchArea(
-          event_in_screen.location())) {
     return false;
   }
 

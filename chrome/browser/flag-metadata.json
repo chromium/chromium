@@ -5532,12 +5532,7 @@
   {
     "name": "shelf-palm-rejection-swipe-offset",
     "owners": ["anasalazar", "//ash/shelf/OWNERS"],
-    "expiry_milestone": 105
-  },
-  {
-    "name": "shelf-palm-rejection-touch-area",
-    "owners": ["anasalazar", "//ash/shelf/OWNERS"],
-    "expiry_milestone": 105
+    "expiry_milestone": 107
   },
   {
     "name": "shimless-rma-disable-dark-mode",
