@@ -2766,20 +2766,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageScheduler.PageLifecycleStateTransition"
-    enum="PageLifecycleStateTransition" expires_after="M81">
-  <owner>panicker@chromium.org</owner>
-  <summary>
-    Tracks the transitions of the page between the various PageLifecycleStates:
-    active, hidden/backgrounded, hidden/foregrounded, and frozen. A page is
-    considered active if is visible. A page is considered backgrounded if not
-    visible and not currently providing a useful service, such as playing audio.
-    A page is considered foregrounded if it is not backgrounded. A page can be
-    frozen due to being hidden/backgrounded for a specified amount of time, or
-    frozen due to critical resources.
-  </summary>
-</histogram>
-
 <histogram
     name="PageSerialization.MhtmlGeneration.BrowserWaitForRendererTime.FrameTree"
     units="ms" expires_after="2020-12-01">

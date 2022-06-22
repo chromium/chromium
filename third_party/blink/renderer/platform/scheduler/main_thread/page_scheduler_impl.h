@@ -183,30 +183,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
     kMaxValue = kFrozenToHiddenBackgrounded,
   };
 
-  class PageLifecycleStateTracker {
-    USING_FAST_MALLOC(PageLifecycleStateTracker);
-
-   public:
-    explicit PageLifecycleStateTracker(PageLifecycleState);
-    PageLifecycleStateTracker(const PageLifecycleStateTracker&) = delete;
-    PageLifecycleStateTracker& operator=(const PageLifecycleStateTracker&) =
-        delete;
-    ~PageLifecycleStateTracker() = default;
-
-    void SetPageLifecycleState(PageLifecycleState);
-    PageLifecycleState GetPageLifecycleState() const;
-
-   private:
-    static absl::optional<PageLifecycleStateTransition>
-    ComputePageLifecycleStateTransition(PageLifecycleState old_state,
-                                        PageLifecycleState new_state);
-
-    static void RecordPageLifecycleStateTransition(
-        PageLifecycleStateTransition);
-
-    PageLifecycleState current_state_;
-  };
-
   void RegisterFrameSchedulerImpl(FrameSchedulerImpl* frame_scheduler);
 
   // A page cannot be throttled or frozen 30 seconds after playing audio.
@@ -217,11 +193,11 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // can be increased to 30 seconds without significantly affecting performance.
   static constexpr base::TimeDelta kRecentAudioDelay = base::Seconds(30);
 
-  static const char kHistogramPageLifecycleStateTransition[];
-
   // Support not issuing a notification to frames when we disable freezing as
   // a part of foregrounding the page.
   void SetPageFrozenImpl(bool frozen, NotificationPolicy notification_policy);
+
+  void SetPageLifecycleState(PageLifecycleState state);
 
   // Adds or removes a |task_queue| from the WakeUpBudgetPool. When the
   // FrameOriginType or visibility of a FrameScheduler changes, it should remove
@@ -371,7 +347,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   TaskHandle set_ipc_posted_handler_task_;
   base::TimeTicks stored_in_back_forward_cache_timestamp_;
 
-  std::unique_ptr<PageLifecycleStateTracker> page_lifecycle_state_tracker_;
+  PageLifecycleState current_lifecycle_state_ = kDefaultPageLifecycleState;
   base::WeakPtrFactory<PageSchedulerImpl> weak_factory_{this};
 };
 
