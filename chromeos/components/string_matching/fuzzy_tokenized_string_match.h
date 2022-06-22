@@ -15,11 +15,17 @@ namespace string_matching {
 // FuzzyTokenizedStringMatch takes two tokenized strings: one as the text and
 // the other one as the query. It matches the query against the text,
 // calculates a relevance score between [0, 1] and marks the matched portions
-// of text. A relevance of zero means the two are completely different to each
+// of text ("hits").
+//
+// A relevance of zero means the two strings are completely different to each
 // other. The higher the relevance score, the better the two strings are
 // matched. Matched portions of text are stored as index ranges.
+//
 // TODO(crbug.com/1018613): each of these functions have too many input params,
 // we should revise the structure and remove unnecessary ones.
+//
+// TODO(crbug.com/1336160): Terminology (for example: relevance vs. ratio) is
+// confusing and could be clarified.
 class FuzzyTokenizedStringMatch {
  public:
   typedef std::vector<gfx::Range> Hits;
@@ -32,11 +38,16 @@ class FuzzyTokenizedStringMatch {
 
   ~FuzzyTokenizedStringMatch();
 
+  // TODO(crbug.com/1336160): The Ratio() methods are called in sequence under
+  // certain conditions, and trigger much computation. These could potentially
+  // be streamlined or compressed.
+
   // TokenSetRatio takes two sets of tokens, finds their intersection and
   // differences. From the intersection and differences, it rewrites the |query|
   // and |text| and find the similarity ratio between them. This function
   // assumes that TokenizedString is already normalized (converted to lower
-  // case). Duplicates tokens will be removed for ratio computation.
+  // case). Duplicate tokens will be removed for ratio computation. The return
+  // score is in range [0, 1].
   static double TokenSetRatio(const TokenizedString& query,
                               const TokenizedString& text,
                               bool partial,
@@ -46,7 +57,8 @@ class FuzzyTokenizedStringMatch {
 
   // TokenSortRatio takes two set of tokens, sorts them and find the similarity
   // between two sorted strings. This function assumes that TokenizedString is
-  // already normalized (converted to lower case)
+  // already normalized (converted to lower case). The return score is in range
+  // [0, 1].
   static double TokenSortRatio(const TokenizedString& query,
                                const TokenizedString& text,
                                bool partial,
@@ -71,6 +83,9 @@ class FuzzyTokenizedStringMatch {
                               double partial_match_penalty_rate,
                               bool use_edit_distance,
                               double num_matching_blocks_penalty);
+  // TODO(crbug.com/1336160): Should prefix match always be favored over other
+  // matches? Reconsider this principle.
+  //
   // Since prefix match should always be favored over other matches, this
   // function is dedicated to calculate a prefix match score in range of [0, 1]
   // using PrefixMatcher class.
@@ -79,8 +94,18 @@ class FuzzyTokenizedStringMatch {
   static double PrefixMatcher(const TokenizedString& query,
                               const TokenizedString& text);
 
-  // Calculates the relevance of two strings. Returns true if two strings are
-  // somewhat matched, i.e. relevance score is greater than a threshold.
+  // TODO(crbug.com/1336160): Consider removing |use_prefix_only|. It seems that
+  // there are no callers which set it to true.
+  //
+  // TODO(crbug.com/1336160): Consider refactoring this method to directly
+  // return the relevance score, instead of a bool. This would remove the need
+  // to subsequently call relevance().
+  //
+  // Calculates the relevance score of |query| relative to |text|.
+  //
+  // Returns true if two strings are somewhat matched, i.e. relevance score is
+  // greater than |relevance_threshold|. The actual relevance score may
+  // subsequently be retrieved by calling relevance().
   bool IsRelevant(const TokenizedString& query,
                   const TokenizedString& text,
                   double relevance_threshold,

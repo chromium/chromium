@@ -56,7 +56,8 @@ double FuzzyTokenizedStringMatch::TokenSetRatio(
   std::vector<std::u16string> query_diff_text;
   std::vector<std::u16string> text_diff_query;
 
-  // Find the intersection and the differences between two set of tokens.
+  // Find the set intersection and the set differences between two sets of
+  // tokens.
   std::set_intersection(query_token.begin(), query_token.end(),
                         text_token.begin(), text_token.end(),
                         std::back_inserter(intersection));
@@ -183,11 +184,21 @@ double FuzzyTokenizedStringMatch::WeightedRatio(
     double partial_match_penalty_rate,
     bool use_edit_distance,
     double num_matching_blocks_penalty) {
+  // All token based comparisons are scaled by 0.95 (on top of any partial
+  // scalars), as per original implementation:
+  // https://github.com/seatgeek/fuzzywuzzy/blob/af443f918eebbccff840b86fa606ac150563f466/fuzzywuzzy/fuzz.py#L245
   const double unbase_scale = 0.95;
+
   // Since query.text() and text.text() is not normalized, we use query.tokens()
   // and text.tokens() instead.
   const std::u16string query_normalized(base::JoinString(query.tokens(), u" "));
   const std::u16string text_normalized(base::JoinString(text.tokens(), u" "));
+
+  // TODO(crbug.com/1336160): Refactor the calculation flow in this method to
+  // make it easier to understand. For example, there is a long chain of
+  // std::max calls which is difficult to read. And it is confusing to have a
+  // conditional called |use_partial| but to also see |partial_scale| seemingly
+  // unconditionally applied.
   double weighted_ratio =
       SequenceMatcher(query_normalized, text_normalized, use_edit_distance,
                       num_matching_blocks_penalty)
@@ -202,6 +213,9 @@ double FuzzyTokenizedStringMatch::WeightedRatio(
   double partial_scale = 1;
 
   if (use_partial) {
+    // TODO(crbug.com/1336160): Consider scaling |partial_scale| smoothly with
+    // |length_ratio|, instead of using a step function.
+    //
     // If one string is much much shorter than the other, set |partial_scale| to
     // be 0.6, otherwise set it to be 0.9.
     partial_scale = length_ratio > 8 ? 0.6 : 0.9;
@@ -212,12 +226,11 @@ double FuzzyTokenizedStringMatch::WeightedRatio(
                               num_matching_blocks_penalty) *
                      partial_scale);
   }
-  weighted_ratio =
-      std::max(weighted_ratio,
-               TokenSortRatio(query, text, use_partial /*partial*/,
-                              partial_match_penalty_rate, use_edit_distance,
-                              num_matching_blocks_penalty) *
-                   unbase_scale * partial_scale);
+  weighted_ratio = std::max(
+      weighted_ratio,
+      TokenSortRatio(query, text, use_partial, partial_match_penalty_rate,
+                     use_edit_distance, num_matching_blocks_penalty) *
+          unbase_scale * partial_scale);
 
   // Do not use partial match for token set because the match between the
   // intersection string and query/text rewrites will always return an extremely
