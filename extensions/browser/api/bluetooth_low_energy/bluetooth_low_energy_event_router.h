@@ -408,12 +408,12 @@ class BluetoothLowEnergyEventRouter
       const std::string& event_name,
       const device::BluetoothUUID& uuid,
       const std::string& characteristic_id,
-      std::vector<base::Value> args);
+      base::Value::List args);
 
   void DispatchEventToExtension(const std::string& extension_id,
                                 events::HistogramValue histogram_value,
                                 const std::string& event_name,
-                                std::vector<base::Value> args);
+                                base::Value::List args);
 
   // Returns a BluetoothRemoteGattService by its instance ID |instance_id|.
   // Returns

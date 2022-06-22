@@ -54,12 +54,12 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
   result_object.integer = 5;
   result_object.additional_properties["key"] = "value";
 
-  std::vector<base::Value> expected;
+  base::Value::List expected;
   {
     base::Value dict(base::Value::Type::DICTIONARY);
     dict.SetIntKey("integer", 5);
     dict.SetStringKey("key", "value");
-    expected.push_back(std::move(dict));
+    expected.Append(std::move(dict));
   }
 
   EXPECT_EQ(expected,

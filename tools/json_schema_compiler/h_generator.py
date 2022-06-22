@@ -441,7 +441,7 @@ class _Generator(object):
         c.Comment(param.description)
       declaration_list.append(cpp_util.GetParameterDeclaration(
           param, self._type_helper.GetCppType(param.type_)))
-    c.Append('std::vector<base::Value> Create(%s);' %
+    c.Append('base::Value::List Create(%s);' %
              ', '.join(declaration_list))
     return c
 

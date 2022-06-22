@@ -170,7 +170,7 @@ void HistoryEventRouter::OnURLsDeleted(
 void HistoryEventRouter::DispatchEvent(Profile* profile,
                                        events::HistogramValue histogram_value,
                                        const std::string& event_name,
-                                       std::vector<base::Value> event_args) {
+                                       base::Value::List event_args) {
   if (profile && EventRouter::Get(profile)) {
     auto event = std::make_unique<Event>(histogram_value, event_name,
                                          std::move(event_args), profile);

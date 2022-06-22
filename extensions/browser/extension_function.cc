@@ -680,6 +680,11 @@ ExtensionFunction::ResponseValue ExtensionFunction::TwoArguments(
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
+    base::Value::List results) {
+  return ResponseValue(new ArgumentListResponseValue(this, std::move(results)));
+}
+
+ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
     std::vector<base::Value> results) {
   base::Value::List list;
   for (auto&& value : results) {
@@ -717,14 +722,20 @@ ExtensionFunction::ResponseValue ExtensionFunction::Error(
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArguments(
+    base::Value::List args,
+    const std::string& error) {
+  return ResponseValue(
+      new ErrorWithArgumentsResponseValue(this, std::move(args), error));
+}
+
+ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArguments(
     std::vector<base::Value> args,
     const std::string& error) {
   base::Value::List list;
   for (auto&& value : args) {
     list.Append(std::move(value));
   }
-  return ResponseValue(
-      new ErrorWithArgumentsResponseValue(this, std::move(list), error));
+  return ErrorWithArguments(std::move(list), error);
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::BadMessage() {

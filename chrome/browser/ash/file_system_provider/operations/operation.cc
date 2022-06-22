@@ -111,10 +111,11 @@ void Operation::SetDispatchEventImplForTesting(
 bool Operation::SendEvent(int request_id,
                           extensions::events::HistogramValue histogram_value,
                           const std::string& event_name,
-                          std::vector<base::Value> event_args) {
+                          base::Value::List event_args) {
   return dispatch_event_impl_.Run(
       file_system_info_.provider_id(), file_system_info_.file_system_id(),
-      request_id, histogram_value, event_name, std::move(event_args));
+      request_id, histogram_value, event_name,
+      base::Value(std::move(event_args)).TakeListDeprecated());
 }
 
 }  // namespace operations

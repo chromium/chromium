@@ -63,15 +63,15 @@ TEST(IdlCompiler, Basics) {
 
   // Test functions that take a callback function as a parameter, with varying
   // callback signatures.
-  std::vector<base::Value> f4_results(Function4::Results::Create());
-  std::vector<base::Value> expected;
+  base::Value::List f4_results = Function4::Results::Create();
+  base::Value::List expected;
   EXPECT_EQ(expected, f4_results);
 
-  std::vector<base::Value> f5_results(Function5::Results::Create(13));
+  base::Value::List f5_results = Function5::Results::Create(13);
   ASSERT_EQ(1u, f5_results.size());
   EXPECT_TRUE(f5_results[0].is_int());
 
-  std::vector<base::Value> f6_results(Function6::Results::Create(a));
+  base::Value::List f6_results = Function6::Results::Create(a);
   ASSERT_EQ(1u, f6_results.size());
   MyType1 c;
   EXPECT_TRUE(MyType1::Populate(f6_results[0], &c));

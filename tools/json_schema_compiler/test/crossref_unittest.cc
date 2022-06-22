@@ -79,7 +79,7 @@ TEST(JsonSchemaCompilerCrossrefTest, GetTestType) {
   auto test_type = std::make_unique<simple_api::TestType>();
   EXPECT_TRUE(simple_api::TestType::Populate(value, test_type.get()));
 
-  std::vector<base::Value> results =
+  base::Value::List results =
       crossref::GetTestType::Results::Create(*test_type);
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(value, results[0]);

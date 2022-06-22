@@ -291,8 +291,8 @@ class ImeObserverChromeOS
       return;
     }
     // Note: this is a private API event.
-    std::vector<base::Value> args;
-    args.push_back(base::Value(is_projected));
+    base::Value::List args;
+    args.Append(is_projected);
 
     DispatchEventToExtension(
         extensions::events::INPUT_METHOD_PRIVATE_ON_SCREEN_PROJECTION_CHANGED,
@@ -412,7 +412,7 @@ class ImeObserverChromeOS
     }
 
     // Note: this is a private API event.
-    std::vector<base::Value> bounds_list;
+    base::Value::List bounds_list;
     bounds_list.reserve(bounds.size());
     for (const auto& bound : bounds) {
       base::Value bounds_value(base::Value::Type::DICTIONARY);
@@ -420,15 +420,15 @@ class ImeObserverChromeOS
       bounds_value.SetIntKey("y", bound.y());
       bounds_value.SetIntKey("w", bound.width());
       bounds_value.SetIntKey("h", bound.height());
-      bounds_list.push_back(std::move(bounds_value));
+      bounds_list.Append(std::move(bounds_value));
     }
 
-    std::vector<base::Value> args;
+    base::Value::List args;
 
     // The old extension code uses the first parameter to get the bounds of the
     // first composition character, so for backward compatibility, add it here.
-    args.push_back(bounds_list[0].Clone());
-    args.push_back(base::Value(std::move(bounds_list)));
+    args.Append(bounds_list[0].Clone());
+    args.Append(std::move(bounds_list));
 
     DispatchEventToExtension(
         extensions::events::INPUT_METHOD_PRIVATE_ON_COMPOSITION_BOUNDS_CHANGED,
@@ -594,7 +594,7 @@ class ImeObserverChromeOS
   void DispatchEventToExtension(
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::vector<base::Value> args) {
+      base::Value::List args) {
     if (event_name == input_ime::OnActivate::kEventName) {
       // Send onActivate event regardless of it's listened by the IME.
       auto event = std::make_unique<extensions::Event>(

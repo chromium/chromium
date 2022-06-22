@@ -40,8 +40,9 @@ TEST(JsonSchemaCompilerEnumsTest, EnumsAsTypes) {
     ASSERT_TRUE(params.get());
     EXPECT_EQ(enums::ENUMERATION_ONE, params->enumeration);
 
-    EXPECT_EQ(args, enums::ReturnsEnumAsType::Results::Create(
-                        enums::ENUMERATION_ONE));
+    EXPECT_EQ(
+        base::Value(std::move(args)).GetList(),
+        enums::ReturnsEnumAsType::Results::Create(enums::ENUMERATION_ONE));
   }
   {
     enums::HasEnumeration enumeration;

@@ -338,10 +338,9 @@ void ProcessesEventRouter::OnTaskUnresponsive(task_manager::TaskId id) {
                 api::processes::OnUnresponsive::Create(process));
 }
 
-void ProcessesEventRouter::DispatchEvent(
-    events::HistogramValue histogram_value,
-    const std::string& event_name,
-    std::vector<base::Value> event_args) const {
+void ProcessesEventRouter::DispatchEvent(events::HistogramValue histogram_value,
+                                         const std::string& event_name,
+                                         base::Value::List event_args) const {
   EventRouter* event_router = EventRouter::Get(browser_context_);
   if (event_router) {
     std::unique_ptr<Event> event(

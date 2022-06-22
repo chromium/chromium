@@ -83,7 +83,7 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
 
   void BroadcastEvent(extensions::events::HistogramValue histogram_value,
                       const std::string& event_name,
-                      std::vector<base::Value> event_args) override {
+                      base::Value::List event_args) override {
     BroadcastEventImpl(event_name, base::Value(std::move(event_args)));
   }
 

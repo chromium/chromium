@@ -175,7 +175,7 @@ TEST(JsonSchemaCompilerSimpleTest, GetTestType) {
     std::unique_ptr<base::DictionaryValue> value = CreateTestTypeDictionary();
     auto test_type = std::make_unique<simple_api::TestType>();
     EXPECT_TRUE(simple_api::TestType::Populate(*value, test_type.get()));
-    std::vector<base::Value> results =
+    base::Value::List results =
         simple_api::GetTestType::Results::Create(*test_type);
     ASSERT_EQ(1u, results.size());
     EXPECT_EQ(results[0], *value);

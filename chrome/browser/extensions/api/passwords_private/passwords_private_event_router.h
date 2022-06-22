@@ -91,9 +91,8 @@ class PasswordsPrivateEventRouter : public KeyedService {
 
   // Cached parameters which are saved so that when new listeners are added, the
   // most up-to-date lists can be sent to them immediately.
-  absl::optional<std::vector<base::Value>> cached_saved_password_parameters_;
-  absl::optional<std::vector<base::Value>>
-      cached_password_exception_parameters_;
+  absl::optional<base::Value::List> cached_saved_password_parameters_;
+  absl::optional<base::Value::List> cached_password_exception_parameters_;
 };
 
 }  // namespace extensions

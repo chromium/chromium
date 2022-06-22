@@ -88,7 +88,7 @@ class BookmarkEventRouter : public bookmarks::BookmarkModelObserver {
   // Helper to actually dispatch an event to extension listeners.
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     std::vector<base::Value> event_args);
+                     base::Value::List event_args);
 
   raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<bookmarks::BookmarkModel> model_;

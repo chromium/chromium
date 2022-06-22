@@ -48,7 +48,7 @@ class TabGroupsEventRouter : public TabStripModelObserver,
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     std::vector<base::Value> args);
+                     base::Value::List args);
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<EventRouter> event_router_ = nullptr;

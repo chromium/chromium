@@ -1243,9 +1243,9 @@ class _Generator(object):
     c = Code()
     c.Concat(self._GeneratePropertyFunctions(function_scope, params))
 
-    (c.Sblock('std::vector<base::Value> %(function_scope)s'
+    (c.Sblock('base::Value::List %(function_scope)s'
                   'Create(%(declaration_list)s) {')
-      .Append('std::vector<base::Value> create_results;')
+      .Append('base::Value::List create_results;')
       .Append('create_results.reserve(%d);' % len(params) if len(params)
               else '')
     )
@@ -1254,7 +1254,7 @@ class _Generator(object):
       declaration_list.append(cpp_util.GetParameterDeclaration(
           param, self._type_helper.GetCppType(param.type_)))
       c.Cblock(self._CreateValueFromType(
-          'create_results.push_back(base::Value::FromUniquePtrValue(%s));',
+          'create_results.Append(base::Value::FromUniquePtrValue(%s));',
           param.name,
           param.type_,
           param.unix_name))

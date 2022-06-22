@@ -353,8 +353,7 @@ void BluetoothSocketListenUsingRfcommFunction::CreateService(
                                std::move(error_callback));
 }
 
-std::vector<base::Value>
-BluetoothSocketListenUsingRfcommFunction::CreateResults() {
+base::Value::List BluetoothSocketListenUsingRfcommFunction::CreateResults() {
   return bluetooth_socket::ListenUsingRfcomm::Results::Create();
 }
 
@@ -401,8 +400,7 @@ void BluetoothSocketListenUsingL2capFunction::CreateService(
                               std::move(error_callback));
 }
 
-std::vector<base::Value>
-BluetoothSocketListenUsingL2capFunction::CreateResults() {
+base::Value::List BluetoothSocketListenUsingL2capFunction::CreateResults() {
   return bluetooth_socket::ListenUsingL2cap::Results::Create();
 }
 
