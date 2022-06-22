@@ -269,8 +269,7 @@ unsigned int GPUInfo::GpuCount() const {
   return gpu_count;
 }
 
-const GPUInfo::GPUDevice* GPUInfo::GetGpuByPreference(
-    gl::GpuPreference preference) const {
+GPUInfo::GPUDevice* GPUInfo::GetGpuByPreference(gl::GpuPreference preference) {
   DCHECK(preference == gl::GpuPreference::kHighPerformance ||
          preference == gl::GpuPreference::kLowPower);
   if (gpu.gpu_preference == preference)

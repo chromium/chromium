@@ -59,8 +59,6 @@ enum SharedImageUsage : uint32_t {
   // set a single (duplicated) fence for bunch of tiles instead of having the SI
   // framework creating fences for each single message when write access ends.
   SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING = 1 << 16,
-  // Image will be created on the high performance GPU if supported.
-  SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU = 1 << 17,
 };
 
 // Create a string to label SharedImageUsage.
