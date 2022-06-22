@@ -144,7 +144,11 @@ MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::
 
 void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
     const webrtc::VideoFrame& incoming_frame) {
-  const bool render_immediately = incoming_frame.timestamp_us() == 0;
+  const webrtc::VideoFrame::RenderParameters render_parameters =
+      incoming_frame.render_parameters();
+  const bool render_immediately = render_parameters.use_low_latency_rendering ||
+                                  incoming_frame.timestamp_us() == 0;
+
   const base::TimeTicks current_time = base::TimeTicks::Now();
   const base::TimeTicks render_time =
       render_immediately
@@ -201,9 +205,9 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
   if (!render_immediately)
     video_frame->metadata().reference_time = render_time;
 
-  if (incoming_frame.max_composition_delay_in_frames()) {
+  if (render_parameters.max_composition_delay_in_frames) {
     video_frame->metadata().maximum_composition_delay_in_frames =
-        *incoming_frame.max_composition_delay_in_frames();
+        render_parameters.max_composition_delay_in_frames;
   }
 
   video_frame->metadata().decode_end_time = current_time;
