@@ -45,6 +45,7 @@ BLINK_COMMON_EXPORT extern const char kChromeUIGpuJavaCrashURL[];
 #endif
 #if BUILDFLAG(IS_WIN)
 BLINK_COMMON_EXPORT extern const char kChromeUIBrowserHeapCorruptionURL[];
+BLINK_COMMON_EXPORT extern const char kChromeUICfgViolationCrashURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIHeapCorruptionCrashURL[];
 #endif
 

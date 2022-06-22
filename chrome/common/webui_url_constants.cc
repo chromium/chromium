@@ -774,6 +774,7 @@ const char* const kChromeDebugURLs[] = {
     blink::kChromeUIMemoryPressureModerateURL,
 #if BUILDFLAG(IS_WIN)
     blink::kChromeUIBrowserHeapCorruptionURL,
+    blink::kChromeUICfgViolationCrashURL,
     blink::kChromeUIHeapCorruptionCrashURL,
 #endif
 #if BUILDFLAG(IS_ANDROID)

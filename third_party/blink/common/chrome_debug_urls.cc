@@ -54,6 +54,7 @@ const char kChromeUIGpuJavaCrashURL[] = "chrome://gpu-java-crash/";
 #if BUILDFLAG(IS_WIN)
 const char kChromeUIBrowserHeapCorruptionURL[] =
     "chrome://inducebrowserheapcorruption/";
+const char kChromeUICfgViolationCrashURL[] = "chrome://crash/cfg";
 const char kChromeUIHeapCorruptionCrashURL[] = "chrome://heapcorruptioncrash/";
 #endif
 
@@ -102,6 +103,8 @@ bool IsRendererDebugURL(const GURL& url) {
 #endif
 
 #if BUILDFLAG(IS_WIN)
+  if (url == kChromeUICfgViolationCrashURL)
+    return true;
   if (url == kChromeUIHeapCorruptionCrashURL)
     return true;
 #endif
@@ -219,6 +222,11 @@ void HandleChromeDebugURL(const GURL& url) {
   }
 
 #if BUILDFLAG(IS_WIN)
+  if (url == kChromeUICfgViolationCrashURL) {
+    LOG(ERROR) << "Intentionally causing cfg crash because user navigated to "
+               << url.spec();
+    base::debug::win::TerminateWithControlFlowViolation();
+  }
   if (url == kChromeUIHeapCorruptionCrashURL) {
     LOG(ERROR)
         << "Intentionally causing heap corruption because user navigated to "
