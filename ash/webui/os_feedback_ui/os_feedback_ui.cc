@@ -66,6 +66,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_FEEDBACK_TOOL_RESOURCES_EXPLORE_APP_DESCRIPTION},
       {"diagnosticsAppLabel",
        IDS_FEEDBACK_TOOL_RESOURCES_DIAGNOSTICS_APP_LABEL},
+      {"diagnosticsAppDescription",
+       IDS_FEEDBACK_TOOL_RESOURCES_DIAGNOSTICS_APP_DESCRIPTION},
       {"userConsentLabel", IDS_FEEDBACK_TOOL_USER_CONSENT_LABEL},
       {"includeSystemInfoAndMetricsCheckboxLabel",
        IDS_FEEDBACK_TOOL_INCLUDE_SYSTEM_INFO_AND_METRICS_CHECKBOX_LABEL},

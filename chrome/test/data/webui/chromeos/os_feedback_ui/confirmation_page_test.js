@@ -122,6 +122,7 @@ export function confirmationPageTest() {
     assertEquals(
         'Run tests and troubleshooting for hardware issues',
         getElementContent(diagnosticsLink, '#subLabel'));
+    assertTrue(page.i18nExists('diagnosticsAppDescription'));
 
     // Verify the community link.
     const communityLink = helpLinks[2];
