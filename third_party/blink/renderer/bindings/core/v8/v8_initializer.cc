@@ -467,6 +467,25 @@ bool V8Initializer::WasmCodeGenerationCheckCallbackInMainThread(v8::Local<v8::Co
   return false;
 }
 
+void V8Initializer::WasmAsyncResolvePromiseCallback(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Promise::Resolver> resolver,
+    v8::Local<v8::Value> compilation_result,
+    v8::WasmAsyncSuccess success) {
+  if (!IsInParallelAlgorithmRunnable(ExecutionContext::From(context),
+                                     ScriptState::From(context))) {
+    return;
+  }
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+  if (success == v8::WasmAsyncSuccess::kSuccess) {
+    CHECK(resolver->Resolve(context, compilation_result).FromJust());
+  } else {
+    CHECK(resolver->Reject(context, compilation_result).FromJust());
+  }
+}
+
 namespace {
 bool SharedArrayBufferConstructorEnabledCallback(
     v8::Local<v8::Context> context) {
@@ -808,6 +827,7 @@ void V8Initializer::InitializeMainThread(
       CodeGenerationCheckCallbackInMainThread);
   isolate->SetAllowWasmCodeGenerationCallback(
       WasmCodeGenerationCheckCallbackInMainThread);
+  isolate->SetWasmAsyncResolvePromiseCallback(WasmAsyncResolvePromiseCallback);
   if (RuntimeEnabledFeatures::V8IdleTasksEnabled()) {
     V8PerIsolateData::EnableIdleTasks(
         isolate, std::make_unique<V8IdleTaskRunner>(scheduler));
@@ -844,6 +864,7 @@ void V8Initializer::InitializeWorker(v8::Isolate* isolate) {
       CodeGenerationCheckCallbackInMainThread);
   isolate->SetAllowWasmCodeGenerationCallback(
       WasmCodeGenerationCheckCallbackInMainThread);
+  isolate->SetWasmAsyncResolvePromiseCallback(WasmAsyncResolvePromiseCallback);
 }
 
 }  // namespace blink
