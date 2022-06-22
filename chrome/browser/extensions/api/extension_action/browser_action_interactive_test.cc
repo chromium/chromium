@@ -613,8 +613,9 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
 // TODO(crbug.com/1249851): Test crashes on Windows
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
-#elif BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-// TODO(crbug.com/1269076): Test is flaky for linux tsan builds
+#elif BUILDFLAG(IS_LINUX) && \
+    (defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER))
+// TODO(crbug.com/1269076): Test is flaky for linux tsan and asan builds
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
 #elif BUILDFLAG(IS_MAC)
 // TODO(crbug.com/1269076): Test is flaky on Mac as well.
