@@ -205,12 +205,7 @@ WebVector<WebFormElement> WebDocument::Forms() const {
   Vector<WebFormElement> form_elements;
   form_elements.ReserveCapacity(forms->length());
   for (Element* element : *forms) {
-    auto* html_form_element = blink::DynamicTo<HTMLFormElement>(element);
-    // TODO(https://crbug.com/1293602): Make this a To<> instead of a CHECK.
-    CHECK(html_form_element)
-        << "Document::forms() returned a non-form element! " << element;
-    if (html_form_element)
-      form_elements.emplace_back(html_form_element);
+    form_elements.emplace_back(blink::To<HTMLFormElement>(element));
   }
   return form_elements;
 }
