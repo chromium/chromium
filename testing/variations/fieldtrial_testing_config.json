@@ -1034,6 +1034,27 @@
             ]
         }
     ],
+    "AutofillFillCreditCardAsPerFormatString": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillFillCreditCardAsPerFormatString"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillFixServerQueriesIfPasswordManagerIsEnabled": [
         {
             "platforms": [
@@ -1170,29 +1191,6 @@
             ]
         }
     ],
-    "AutofillPlaceholderSupport": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "AutofillConsiderPlaceholderForParsing",
-                        "AutofillFillCreditCardAsPerFormatString"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillPreventOverridingPrefilledFieldValue": [
         {
             "platforms": [
@@ -1229,8 +1227,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Control",
-                    "disable_features": [
+                    "name": "Enabled",
+                    "enable_features": [
                         "AutofillRationalizeStreetAddressAndAddressLine"
                     ]
                 }
@@ -1250,8 +1248,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Control",
-                    "disable_features": [
+                    "name": "Enabled",
+                    "enable_features": [
                         "AutofillRefillModifiedCreditCardExpirationDates"
                     ]
                 }
