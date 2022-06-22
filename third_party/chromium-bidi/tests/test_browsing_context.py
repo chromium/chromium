@@ -17,20 +17,15 @@ from _helpers import *
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_getTree_contextReturned(websocket):
-    result = await execute_command(websocket,
-                                   {"method": "browsingContext.getTree",
-                                    "params": {}})
+async def test_browsingContext_getTree_contextReturned(websocket, context_id):
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}})
 
-    # Assert "browsingContext.getTree" command done.
-    [context] = result['contexts']
-    context_id = context['context']
-    assert isinstance(context_id, str)
-    assert len(context_id) > 1
     assert result == {
         "contexts": [{
             "context": context_id,
-            "children": None,
+            "children": [],
             "parent": None,
             "url": "about:blank"}]}
 
@@ -59,31 +54,42 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket,
             "context": new_context_id,
             "parent": None,
             "url": "about:blank",
-            "children": None
+            "children": []
         }]}
+
+
+# TODO(sadym): make offline.
+@pytest.mark.asyncio
+async def test_browsingContext_getTreeWithNestedContexts_contextsReturned(
+      websocket, context_id):
+    nested_iframe = 'https://example.com/'
+    page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
+                              f'<iframe src="{nested_iframe}" />'
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": page_with_nested_iframe,
+            "wait": "complete",
+            "context": context_id}})
 
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
-        "params": {
-            "root": context_id}})
+        "params": {}})
 
-    assert result == {
+    recursive_compare({
         "contexts": [{
             "context": context_id,
+            "children": [{
+                "context": any_string,
+                "parent": context_id,
+                "url": nested_iframe,
+                "children": []
+            }],
             "parent": None,
-            "url": "about:blank",
-            "children": None
-        }]}
+            "url": page_with_nested_iframe}]},
+        result)
 
 
-@pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_browsingContext_getTreeWithNestedContexts_contextReturned():
-    ignore = True
-    # TODO sadym: implement
-
-
-# noinspection PyUnusedLocal
 @pytest.mark.asyncio
 async def test_browsingContext_create_eventContextCreatedEmitted(
       websocket, context_id):
@@ -111,7 +117,7 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
         "params": {
             'context': new_context_id,
             'parent': None,
-            'children': [],
+            'children': None,
             'url': 'about:blank'}}
 
     # Assert command done.
@@ -142,7 +148,7 @@ async def test_browsingContext_close_browsingContext_closed(
             "context": context_id,
             "parent": None,
             "url": "about:blank",
-            "children": []}}
+            "children": None}}
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -401,21 +407,21 @@ async def test_PROTO_browsingContext_findElementMissingElement_missingElement(
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_type_textTyped():
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_navigateWithShortTimeout_timeoutOccurredAndEventPageLoadEmitted():
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_waitForSelector_success():
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
@@ -428,33 +434,33 @@ async def _ignore_test_browsingContext_waitForSelector_success_slow():
     # 4. Wait for newly created element.
     # 5. Assert element found.
 
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_waitForHiddenSelector_success():
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_waitForSelectorWithMinimumTimeout_failedWithTimeout():
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_waitForSelectorWithMissingElement_failedWithTimeout_slow():
-    ignore = True
+    pass
     # TODO sadym: implement
 
 
 @pytest.mark.asyncio
 # Not implemented yet.
 async def _ignore_test_browsingContext_clickElement_clickProcessed():
-    ignore = True
+    pass
     # TODO sadym: implement

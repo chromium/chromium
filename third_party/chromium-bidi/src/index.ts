@@ -102,6 +102,9 @@ async function _onNewBidiConnectionOpen(
     browserLaunchOptions
   );
 
+  // No need in Puppeteer being connected to browser.
+  browser.disconnect();
+
   // 2. Get `BiDi-CDP` mapper JS binaries using `mapperReader`.
   const bidiMapperScript = await mapperReader();
 

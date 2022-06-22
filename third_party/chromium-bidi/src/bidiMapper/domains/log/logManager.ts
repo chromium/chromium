@@ -19,7 +19,7 @@ import { CdpClient } from '../../../cdp';
 import { IBidiServer } from '../../utils/bidiServer';
 import { Log, Script } from '../protocol/bidiProtocolTypes';
 import { getRemoteValuesText } from './logHelper';
-import { ScriptEvaluator } from './scriptEvaluator';
+import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { Protocol } from 'devtools-protocol';
 
 export class LogManager {

@@ -17,130 +17,85 @@
 
 import { log } from '../../../utils/log';
 import { CdpClient, CdpConnection } from '../../../cdp';
-import { Context } from './context';
+import { TargetContext } from './targetContext';
 import { BrowsingContext, CDP, Script } from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
-import { NoSuchFrameException } from '../protocol/error';
+import { InvalidArgumentErrorResponse } from '../protocol/error';
+import { Context } from './context';
 
 const logContext = log('context');
 
 export class BrowsingContextProcessor {
-  private _contexts: Map<string, Context> = new Map();
-  private _sessionToTargets: Map<string, Context> = new Map();
-
-  // Set from outside.
-  private _cdpConnection: CdpConnection;
+  readonly #cdpConnection: CdpConnection;
+  readonly #selfTargetId: string;
+  readonly #bidiServer: IBidiServer;
+  readonly #eventManager: IEventManager;
 
   constructor(
     cdpConnection: CdpConnection,
-    private _selfTargetId: string,
-    private _bidiServer: IBidiServer,
-    private _eventManager: IEventManager
+    selfTargetId: string,
+    bidiServer: IBidiServer,
+    eventManager: IEventManager
   ) {
-    this._cdpConnection = cdpConnection;
+    this.#cdpConnection = cdpConnection;
+    this.#selfTargetId = selfTargetId;
+    this.#bidiServer = bidiServer;
+    this.#eventManager = eventManager;
 
-    this._setCdpEventListeners(this._cdpConnection.browserClient());
+    this.#setCdpEventListeners(this.#cdpConnection.browserClient());
   }
 
-  private _setCdpEventListeners(browserCdpClient: CdpClient) {
-    browserCdpClient.Target.on('attachedToTarget', async (params) => {
-      await this._handleAttachedToTargetEvent(params);
+  #setCdpEventListeners(cdpClient: CdpClient) {
+    cdpClient.Target.on('attachedToTarget', async (params) => {
+      await this.#handleAttachedToTargetEvent(params);
     });
-    browserCdpClient.Target.on('targetInfoChanged', (params) => {
-      this._handleInfoChangedEvent(params);
-    });
-    browserCdpClient.Target.on('detachedFromTarget', (params) => {
-      this._handleDetachedFromTargetEvent(params);
+    cdpClient.Target.on('detachedFromTarget', async (params) => {
+      await this.#handleDetachedFromTargetEvent(params);
     });
   }
 
-  private _getOrCreateContext(
-    contextId: string,
-    cdpSessionId: string
-  ): Context {
-    if (this._contexts.has(contextId)) {
-      return this._contexts.get(contextId)!;
-    }
-
-    const context = Context.create(
-      contextId,
-      this._cdpConnection.getCdpClient(cdpSessionId),
-      this._bidiServer,
-      this._eventManager
-    );
-    this._contexts.set(contextId, context);
-    return context;
-  }
-
-  private _hasKnownContext(contextId: string): boolean {
-    return this._contexts.has(contextId);
-  }
-
-  private _tryGetContext(contextId: string): Context | undefined {
-    return this._contexts.get(contextId);
-  }
-
-  private _getKnownContext(contextId: string): Context {
-    if (!this._hasKnownContext(contextId)) {
-      throw new NoSuchFrameException(`Context ${contextId} not found`);
-    }
-    return this._contexts.get(contextId)!;
-  }
-
-  private async _handleAttachedToTargetEvent(
+  async #handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent
   ) {
     logContext('AttachedToTarget event received: ' + JSON.stringify(params));
 
     const { sessionId, targetInfo } = params;
-    if (!this._isValidTarget(targetInfo)) {
+
+    // TODO(sadym): Set listeners only once per session.
+    this.#setCdpEventListeners(this.#cdpConnection.getCdpClient(sessionId));
+
+    if (!this.#isValidTarget(targetInfo)) {
+      // DevTools or some other not supported by BiDi target.
+      await this.#cdpConnection
+        .getCdpClient(sessionId)
+        .Runtime.runIfWaitingForDebugger();
+      await this.#cdpConnection.browserClient().Target.detachFromTarget(params);
       return;
     }
 
-    const context = this._getOrCreateContext(targetInfo.targetId, sessionId);
-    context.updateTargetInfo(targetInfo);
-    this._sessionToTargets.delete(sessionId);
-    this._sessionToTargets.set(sessionId, context);
-    context.setSessionId(sessionId);
-
-    await this._eventManager.sendEvent(
-      new BrowsingContext.ContextCreatedEvent({
-        context: context.id,
-        parent: targetInfo.openerId ? targetInfo.openerId : null,
-        // New-opened context `url` is always `about:blank`:
-        // https://github.com/w3c/webdriver-bidi/issues/220
-        url: 'about:blank',
-        // New-opened `children` are always empty:
-        // https://github.com/w3c/webdriver-bidi/issues/220
-        children: [],
-      }),
-      context.id
+    const context = await TargetContext.create(
+      targetInfo,
+      sessionId,
+      this.#cdpConnection,
+      this.#bidiServer,
+      this.#eventManager
     );
-  }
 
-  private _handleInfoChangedEvent(
-    params: Protocol.Target.TargetInfoChangedEvent
-  ) {
-    logContext('infoChangedEvent event received: ' + JSON.stringify(params));
+    Context.addContext(context);
 
-    const targetInfo = params.targetInfo;
-    if (!this._isValidTarget(targetInfo)) {
-      return;
-    }
-
-    const context = this._tryGetContext(targetInfo.targetId);
-    if (context) {
-      context.onInfoChangedEvent(targetInfo);
-    }
+    await this.#eventManager.sendEvent(
+      new BrowsingContext.ContextCreatedEvent(context.serializeToBidiValue(0)),
+      context.getContextId()
+    );
   }
 
   // { "method": "Target.detachedFromTarget",
   //   "params": {
   //     "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9",
   //     "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
-  private async _handleDetachedFromTargetEvent(
+  async #handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
     logContext('detachedFromTarget event received: ' + JSON.stringify(params));
@@ -148,60 +103,41 @@ export class BrowsingContextProcessor {
     // TODO: params.targetId is deprecated. Update this class to track using
     // params.sessionId instead.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
-    const targetId = params.targetId!;
-    const context = await this._tryGetContext(targetId);
-    if (context) {
-      if (context._sessionId) {
-        this._sessionToTargets.delete(context._sessionId);
-      }
-      this._contexts.delete(context.id);
-      await this._eventManager.sendEvent(
-        new BrowsingContext.ContextDestroyedEvent(
-          context.serializeToBidiValue()
-        ),
-        context.id
-      );
+    const contextId = params.targetId!;
+    if (!Context.hasKnownContext(contextId)) {
+      return;
     }
-  }
-
-  private static _targetToBiDiContext(
-    targetInfo: Protocol.Target.TargetInfo
-  ): BrowsingContext.Info {
-    return {
-      context: targetInfo.targetId,
-      parent: targetInfo.openerId ? targetInfo.openerId : null,
-      url: targetInfo.url,
-      // TODO sadym: implement.
-      children: null,
-    };
+    const context = Context.getKnownContext(contextId);
+    Context.removeContext(contextId);
+    await this.#eventManager.sendEvent(
+      new BrowsingContext.ContextDestroyedEvent(
+        context.serializeToBidiValue(0)
+      ),
+      contextId
+    );
   }
 
   async process_browsingContext_getTree(
     params: BrowsingContext.GetTreeParameters
   ): Promise<BrowsingContext.GetTreeResult> {
-    // TODO sadym: consider replacing with known targets.
-    const { targetInfos } = await this._cdpConnection
-      .browserClient()
-      .Target.getTargets();
-    // TODO sadym: implement.
-    if (params.maxDepth) {
-      throw new Error('not implemented yet');
-    }
-    const contexts = targetInfos
-      // Don't expose any information about the tab with Mapper running.
-      .filter((target) => this._isValidTarget(target))
-      // Filter by `root`, if specified.
-      .filter(
-        (target) => params.root === undefined || params.root === target.targetId
-      )
-      .map(BrowsingContextProcessor._targetToBiDiContext);
-    return { result: { contexts } };
+    const resultContexts =
+      params.root === undefined
+        ? Context.getTopLevelContexts()
+        : [Context.getKnownContext(params.root)];
+
+    return {
+      result: {
+        contexts: resultContexts.map((c) =>
+          c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE)
+        ),
+      },
+    };
   }
 
   async process_browsingContext_create(
     params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
-    const browserCdpClient = this._cdpConnection.browserClient();
+    const browserCdpClient = this.#cdpConnection.browserClient();
 
     const result = await browserCdpClient.Target.createTarget({
       url: 'about:blank',
@@ -221,7 +157,7 @@ export class BrowsingContextProcessor {
   async process_browsingContext_navigate(
     params: BrowsingContext.NavigateParameters
   ): Promise<BrowsingContext.NavigateResult> {
-    const context = await this._getKnownContext(params.context);
+    const context = Context.getKnownContext(params.context);
 
     return await context.navigate(
       params.url,
@@ -232,7 +168,7 @@ export class BrowsingContextProcessor {
   async process_script_evaluate(
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {
-    const context = await this._getKnownContext(
+    const context = Context.getKnownContext(
       (params.target as Script.ContextTarget).context
     );
     return await context.scriptEvaluate(
@@ -244,7 +180,7 @@ export class BrowsingContextProcessor {
   async process_script_callFunction(
     params: Script.CallFunctionParameters
   ): Promise<Script.CallFunctionResult> {
-    const context = await this._getKnownContext(
+    const context = Context.getKnownContext(
       (params.target as Script.ContextTarget).context
     );
     return await context.callFunction(
@@ -260,18 +196,19 @@ export class BrowsingContextProcessor {
   async process_PROTO_browsingContext_findElement(
     params: BrowsingContext.PROTO.FindElementParameters
   ): Promise<BrowsingContext.PROTO.FindElementResult> {
-    const context = await this._getKnownContext(params.context);
+    const context = Context.getKnownContext(params.context);
     return await context.findElement(params.selector);
   }
 
   async process_browsingContext_close(
     commandParams: BrowsingContext.CloseParameters
   ): Promise<BrowsingContext.CloseResult> {
-    const browserCdpClient = this._cdpConnection.browserClient();
+    const browserCdpClient = this.#cdpConnection.browserClient();
 
-    if (!this._hasKnownContext(commandParams.context)) {
-      throw new NoSuchFrameException(
-        `Context ${commandParams.context} not found`
+    const context = Context.getKnownContext(commandParams.context);
+    if (context.getParentId() !== null) {
+      throw new InvalidArgumentErrorResponse(
+        'Not a top-level browsing context cannot be closed.'
       );
     }
 
@@ -290,7 +227,7 @@ export class BrowsingContextProcessor {
       browserCdpClient.Target.on('detachedFromTarget', onContextDestroyed);
     });
 
-    await this._cdpConnection.browserClient().Target.closeTarget({
+    await this.#cdpConnection.browserClient().Target.closeTarget({
       targetId: commandParams.context,
     });
 
@@ -302,18 +239,15 @@ export class BrowsingContextProcessor {
     return { result: {} };
   }
 
-  private _isValidTarget(target: Protocol.Target.TargetInfo) {
-    if (target.targetId === this._selfTargetId) {
+  #isValidTarget(target: Protocol.Target.TargetInfo) {
+    if (target.targetId === this.#selfTargetId) {
       return false;
     }
-    if (!target.type || target.type !== 'page') {
-      return false;
-    }
-    return true;
+    return ['page', 'iframe'].includes(target.type);
   }
 
   async process_PROTO_cdp_sendCommand(params: CDP.PROTO.SendCommandParams) {
-    const sendCdpCommandResult = await this._cdpConnection.sendCommand(
+    const sendCdpCommandResult = await this.#cdpConnection.sendCommand(
       params.cdpMethod,
       params.cdpParams,
       params.cdpSession ?? null
@@ -323,7 +257,7 @@ export class BrowsingContextProcessor {
 
   async process_PROTO_cdp_getSession(params: CDP.PROTO.GetSessionParams) {
     const context = params.context;
-    const sessionId = (await this._getKnownContext(context))._sessionId;
+    const sessionId = Context.getKnownContext(context).getSessionId();
     if (sessionId === undefined) {
       return { result: { session: null } };
     }
