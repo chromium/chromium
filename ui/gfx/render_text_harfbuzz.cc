@@ -201,7 +201,7 @@ GraphemeProperties RetrieveGraphemeProperties(const base::StringPiece16& text,
         properties.block = ublock_getCode(codepoint);
     }
 
-    if (codepoint == '\n' || codepoint == ' ')
+    if (codepoint == '\n' || codepoint == '\r' || codepoint == ' ')
       properties.has_control = true;
     if (IsBracket(codepoint))
       properties.has_bracket = true;
