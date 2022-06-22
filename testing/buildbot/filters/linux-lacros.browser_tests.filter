@@ -27,7 +27,6 @@
 -All/HostedOrWebAppTest.CtrlClickLink/WebApp
 -AudioFocusWebContentsObserverBrowserTest.PlatformAppHasDifferentAudioFocus
 -ContentSettingsTest.AllowCookiesForASessionUsingExceptions
--CustomTabBarViewBrowserTest.BackToAppButtonIsNotVisibleInOutOfScopePopups
 -DevToolsTest.TestDispatchKeyEventShowsAutoFill
 # #TODO (b/235882005): These tests fail due to a NOT_IMPLEMENTED_LOG_ONCE()
 # within the  wayland_surface.cc implementation. This implementation is
