@@ -18,7 +18,6 @@
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/password_undo_helper.h"
 #include "url/gurl.h"
 
@@ -202,13 +201,8 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
 
 bool SavedPasswordsPresenter::EditSavedCredentials(
     const CredentialUIEntry& credential) {
-  const auto range =
-      sort_key_to_password_forms_.equal_range(credential.key().value());
-  std::vector<PasswordForm> forms_to_change;
-  base::ranges::transform(range.first, range.second,
-                          std::back_inserter(forms_to_change),
-                          [](const auto& pair) { return pair.second; });
-
+  std::vector<PasswordForm> forms_to_change =
+      GetCorrespondingPasswordForms(credential.key());
   if (forms_to_change.empty())
     return false;
 
@@ -349,6 +343,16 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()
       forms, std::back_inserter(credentials),
       [](const PasswordForm& form) { return CredentialUIEntry(form); });
   return credentials;
+}
+
+std::vector<PasswordForm>
+SavedPasswordsPresenter::GetCorrespondingPasswordForms(
+    const CredentialKey& key) const {
+  const auto range = sort_key_to_password_forms_.equal_range(key.value());
+  std::vector<PasswordForm> forms;
+  base::ranges::transform(range.first, range.second, std::back_inserter(forms),
+                          [](const auto& pair) { return pair.second; });
+  return forms;
 }
 
 void SavedPasswordsPresenter::AddObserver(Observer* observer) {

@@ -18,6 +18,7 @@ namespace password_manager {
 
 class PasswordFormManagerForUI;
 struct PasswordForm;
+struct CredentialUIEntry;
 
 // Reverses order of labels in hostname.
 std::string SplitByDotAndReverse(base::StringPiece host);
@@ -32,8 +33,14 @@ std::string SplitByDotAndReverse(base::StringPiece host);
 //  For Android credentials the returned origin is set to the Play Store name
 //  if available, otherwise it is the reversed package name (e.g.
 //  com.example.android gets transformed to android.example.com).
+// TODO(crbug.com/1330906) Replace the usage with GetShownOrigin and GetShownUrl
 std::pair<std::string, GURL> GetShownOriginAndLinkUrl(
     const PasswordForm& password_form);
+
+// Together have the same result as |GetShownOriginAndLinkUrl| but works with
+// |CredentialUIEntry|.
+std::string GetShownOrigin(const CredentialUIEntry& credential);
+GURL GetShownUrl(const CredentialUIEntry& credential);
 
 // Returns a string suitable for security display to the user (just like
 // |FormatUrlForSecurityDisplay| with OMIT_HTTP_AND_HTTPS) based on origin of

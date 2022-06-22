@@ -458,8 +458,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
                   base::UTF8ToUTF16(passwords[0].username));
       });
   delegate.GetSavedPasswordsList(callback.Get());
-  int sample_form_id = delegate.GetPasswordIdGeneratorForTesting().GenerateId(
-      password_manager::CreateSortKey(sample_form));
+  int sample_form_id = delegate.GetIdForCredential(
+      password_manager::CredentialUIEntry(sample_form));
 
   api::passwords_private::ChangeSavedPasswordParams params;
   params.password = "new_pass";
@@ -504,8 +504,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
                   base::UTF8ToUTF16(passwords[0].password_note));
       });
   delegate.GetSavedPasswordsList(callback.Get());
-  int sample_form_id = delegate.GetPasswordIdGeneratorForTesting().GenerateId(
-      password_manager::CreateSortKey(sample_form));
+  int sample_form_id = delegate.GetIdForCredential(
+      password_manager::CredentialUIEntry(sample_form));
 
   api::passwords_private::ChangeSavedPasswordParams params;
   params.password = "new_pass";
@@ -865,10 +865,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
 
   SetUpPasswordStores({form1, form2});
 
-  int first_id = delegate.GetPasswordIdGeneratorForTesting().GenerateId(
-      password_manager::CreateSortKey(form1));
-  int second_id = delegate.GetPasswordIdGeneratorForTesting().GenerateId(
-      password_manager::CreateSortKey(form2));
+  int first_id =
+      delegate.GetIdForCredential(password_manager::CredentialUIEntry(form1));
+  int second_id =
+      delegate.GetIdForCredential(password_manager::CredentialUIEntry(form2));
 
   delegate.MovePasswordsToAccount({first_id, second_id}, web_contents.get());
   base::RunLoop().RunUntilIdle();

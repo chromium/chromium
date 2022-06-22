@@ -15,11 +15,10 @@
 #include "base/strings/string_piece_forward.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
 
-struct PasswordForm;
-struct CredentialUIEntry;
 class PasswordUndoHelper;
 
 // This interface provides a way for clients to obtain a list of all saved
@@ -125,6 +124,10 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // TODO(crbug.com/1330906): Replace all API to work with CredentialUIEntry.
   std::vector<PasswordForm> GetUniquePasswordForms() const;
   std::vector<CredentialUIEntry> GetSavedCredentials() const;
+
+  // Returns PasswordForms corresponding to |key|.
+  std::vector<PasswordForm> GetCorrespondingPasswordForms(
+      const CredentialKey& key) const;
 
   // Allows clients and register and de-register themselves.
   void AddObserver(Observer* observer);

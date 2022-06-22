@@ -33,7 +33,6 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/test_password_store.h"
-#include "components/password_manager/core/browser/ui/plaintext_reason.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/test_sync_service.h"
@@ -59,10 +58,7 @@ constexpr char kPassword[] = "pass";
 constexpr char kPassword2[] = "pass2";
 constexpr char kUsername[] = "user";
 constexpr char kUsername2[] = "user2";
-#if !BUILDFLAG(IS_ANDROID)
-constexpr char kHistogramName[] = "PasswordManager.AccessPasswordInSettings";
-constexpr char16_t kPassword16[] = u"pass";
-#endif
+
 MATCHER(IsNotBlocked, "") {
   return !arg->blocked_by_user;
 }
@@ -320,50 +316,6 @@ TEST_F(PasswordManagerPresenterTest, BlocklistDoesNotPreventExporting) {
   ASSERT_EQ(1u, passwords_for_export.size());
   EXPECT_EQ(kSameOrigin, passwords_for_export[0]->url);
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPassword) {
-  base::HistogramTester histogram_tester;
-  password_manager::PasswordForm form =
-      AddPasswordEntry(GURL(kExampleCom), kUsername, kPassword);
-
-  EXPECT_CALL(GetUIController(), SetPasswordList(SizeIs(1)));
-  EXPECT_CALL(GetUIController(), SetPasswordExceptionList(IsEmpty()));
-  UpdatePasswordLists();
-  base::MockOnceCallback<void(absl::optional<std::u16string>)>
-      password_callback;
-  EXPECT_CALL(password_callback, Run(testing::Eq(kPassword16)));
-  std::string sort_key = password_manager::CreateSortKey(form);
-  GetUIController().GetPasswordManagerPresenter()->RequestPlaintextPassword(
-      sort_key, password_manager::PlaintextReason::kView,
-      password_callback.Get());
-
-  histogram_tester.ExpectUniqueSample(
-      kHistogramName, password_manager::metrics_util::ACCESS_PASSWORD_VIEWED,
-      1);
-}
-
-TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPasswordEdit) {
-  base::HistogramTester histogram_tester;
-  password_manager::PasswordForm form =
-      AddPasswordEntry(GURL(kExampleCom), kUsername, kPassword);
-
-  EXPECT_CALL(GetUIController(), SetPasswordList(SizeIs(1)));
-  EXPECT_CALL(GetUIController(), SetPasswordExceptionList(IsEmpty()));
-  UpdatePasswordLists();
-  base::MockOnceCallback<void(absl::optional<std::u16string>)>
-      password_callback;
-  EXPECT_CALL(password_callback, Run(testing::Eq(kPassword16)));
-  std::string sort_key = password_manager::CreateSortKey(form);
-  GetUIController().GetPasswordManagerPresenter()->RequestPlaintextPassword(
-      sort_key, password_manager::PlaintextReason::kEdit,
-      password_callback.Get());
-
-  histogram_tester.ExpectUniqueSample(
-      kHistogramName, password_manager::metrics_util::ACCESS_PASSWORD_EDITED,
-      1);
-}
-#endif
 
 TEST_F(PasswordManagerPresenterTest, TestPasswordRemovalAndUndo) {
   password_manager::PasswordForm password1 =

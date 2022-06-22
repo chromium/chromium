@@ -20,7 +20,6 @@
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
-#include "components/password_manager/core/browser/ui/plaintext_reason.h"
 #include "components/prefs/pref_member.h"
 #include "components/undo/undo_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -111,18 +110,6 @@ class PasswordManagerPresenter
   void MovePasswordsToAccountStore(
       const std::vector<std::string>& sort_keys,
       password_manager::PasswordManagerClient* client);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Requests to reveal the plain text password corresponding to |sort_key|. If
-  // |sort_key| is a valid key into |password_map_|, runs |callback| with the
-  // corresponding value, or nullopt otherwise.
-  // TODO(https://crbug.com/778146): Update this method to take a DisplayEntry
-  // instead.
-  void RequestPlaintextPassword(
-      const std::string& sort_key,
-      password_manager::PlaintextReason reason,
-      base::OnceCallback<void(absl::optional<std::u16string>)> callback) const;
-#endif
 
  private:
   // Convenience typedef for a map containing PasswordForms grouped into

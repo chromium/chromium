@@ -10,10 +10,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
@@ -22,22 +22,20 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/common/extensions/api/passwords_private.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_ui_utils.h"
-#include "components/password_manager/core/browser/ui/plaintext_reason.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -56,6 +54,8 @@
 #endif
 
 namespace {
+
+using password_manager::CredentialUIEntry;
 
 // The error message returned to the UI when Chrome refuses to start multiple
 // exports.
@@ -107,35 +107,20 @@ password_manager::ReauthPurpose GetReauthPurpose(
   return password_manager::ReauthPurpose::VIEW_PASSWORD;
 }
 
-password_manager::PlaintextReason ConvertPlaintextReason(
+password_manager::metrics_util::AccessPasswordInSettingsEvent
+ConvertPlaintextReason(
     extensions::api::passwords_private::PlaintextReason reason) {
   switch (reason) {
-    case extensions::api::passwords_private::PLAINTEXT_REASON_VIEW:
-      return password_manager::PlaintextReason::kView;
     case extensions::api::passwords_private::PLAINTEXT_REASON_COPY:
-      return password_manager::PlaintextReason::kCopy;
+      return password_manager::metrics_util::ACCESS_PASSWORD_COPIED;
+    case extensions::api::passwords_private::PLAINTEXT_REASON_VIEW:
+      return password_manager::metrics_util::ACCESS_PASSWORD_VIEWED;
     case extensions::api::passwords_private::PLAINTEXT_REASON_EDIT:
-      return password_manager::PlaintextReason::kEdit;
+      return password_manager::metrics_util::ACCESS_PASSWORD_EDITED;
     case extensions::api::passwords_private::PLAINTEXT_REASON_NONE:
-      break;
+      NOTREACHED();
+      return password_manager::metrics_util::ACCESS_PASSWORD_VIEWED;
   }
-
-  NOTREACHED();
-  return password_manager::PlaintextReason::kView;
-}
-
-// Gets all the existing keys in |generator| corresponding to |ids|. If no key
-// is found for an id, it is simply ignored.
-std::vector<std::string> GetSortKeys(
-    const extensions::IdGenerator<std::string>& generator,
-    const std::vector<int> ids) {
-  std::vector<std::string> sort_keys;
-  sort_keys.reserve(ids.size());
-  for (int id : ids) {
-    if (const std::string* sort_key = generator.TryGetKey(id))
-      sort_keys.emplace_back(*sort_key);
-  }
-  return sort_keys;
 }
 
 }  // namespace
@@ -144,8 +129,6 @@ namespace extensions {
 
 PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
     : profile_(profile),
-      password_manager_presenter_(
-          std::make_unique<PasswordManagerPresenter>(this)),
       saved_passwords_presenter_(PasswordStoreFactory::GetForProfile(
                                      profile,
                                      ServiceAccessType::EXPLICIT_ACCESS),
@@ -171,21 +154,14 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
                                   base::Unretained(this)))),
       password_check_delegate_(profile, &saved_passwords_presenter_),
       current_entries_initialized_(false),
-      current_exceptions_initialized_(false),
       is_initialized_(false),
       web_contents_(nullptr) {
-  password_manager_presenter_->Initialize();
-  password_manager_presenter_->UpdatePasswordLists();
+  saved_passwords_presenter_.AddObserver(this);
   saved_passwords_presenter_.Init();
 }
 
-PasswordsPrivateDelegateImpl::~PasswordsPrivateDelegateImpl() {}
-
-void PasswordsPrivateDelegateImpl::SendSavedPasswordsList() {
-  PasswordsPrivateEventRouter* router =
-      PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
-  if (router)
-    router->OnSavedPasswordsListChanged(current_entries_);
+PasswordsPrivateDelegateImpl::~PasswordsPrivateDelegateImpl() {
+  saved_passwords_presenter_.RemoveObserver(this);
 }
 
 void PasswordsPrivateDelegateImpl::GetSavedPasswordsList(
@@ -196,16 +172,9 @@ void PasswordsPrivateDelegateImpl::GetSavedPasswordsList(
     get_saved_passwords_list_callbacks_.push_back(std::move(callback));
 }
 
-void PasswordsPrivateDelegateImpl::SendPasswordExceptionsList() {
-  PasswordsPrivateEventRouter* router =
-      PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
-  if (router)
-    router->OnPasswordExceptionsListChanged(current_exceptions_);
-}
-
 void PasswordsPrivateDelegateImpl::GetPasswordExceptionsList(
     ExceptionEntriesCallback callback) {
-  if (current_exceptions_initialized_)
+  if (current_entries_initialized_)
     std::move(callback).Run(current_exceptions_);
   else
     get_password_exception_list_callbacks_.push_back(std::move(callback));
@@ -264,57 +233,57 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
 bool PasswordsPrivateDelegateImpl::ChangeSavedPassword(
     const std::vector<int>& ids,
     const api::passwords_private::ChangeSavedPasswordParams& params) {
-  const std::vector<std::string> sort_keys =
-      GetSortKeys(password_id_generator_, ids);
-
-  DCHECK(!sort_keys.empty());
-  if (ids.empty() || sort_keys.size() != ids.size())
+  DCHECK(!ids.empty());
+  DCHECK_LE(ids.size(), 2u);
+  // It may have 2 elements but only if it's the same password in two stores. In
+  // this case updating only one of them is enough as
+  // |saved_passwords_presenter_| will update both of them anyway.
+  const CredentialUIEntry* entry = credential_id_generator_.TryGetKey(ids[0]);
+  if (!entry)
     return false;
 
-  std::vector<password_manager::PasswordForm> forms_to_change;
-
-  for (const auto& key : sort_keys) {
-    auto forms_for_key = password_manager_presenter_->GetPasswordsForKey(key);
-    if (forms_for_key.empty())
-      return false;
-    for (const auto& form : forms_for_key)
-      forms_to_change.push_back(*form);
-  }
-
-  std::u16string username = base::UTF8ToUTF16(params.username);
-  std::u16string password = base::UTF8ToUTF16(params.password);
+  CredentialUIEntry to_edit = *entry;
+  to_edit.username = base::UTF8ToUTF16(params.username);
+  to_edit.password = base::UTF8ToUTF16(params.password);
   if (params.note) {
-    return saved_passwords_presenter_.EditSavedPasswords(
-        forms_to_change, username, password, base::UTF8ToUTF16(*params.note));
+    to_edit.note = password_manager::PasswordNote(
+        base::UTF8ToUTF16(*params.note), base::Time::Now());
   }
-  return saved_passwords_presenter_.EditSavedPasswords(forms_to_change,
-                                                       username, password);
+  return saved_passwords_presenter_.EditSavedCredentials(to_edit);
 }
 
 void PasswordsPrivateDelegateImpl::RemoveSavedPasswords(
     const std::vector<int>& ids) {
-  ExecuteFunction(base::BindOnce(
-      &PasswordsPrivateDelegateImpl::RemoveSavedPasswordsInternal,
-      base::Unretained(this), ids));
+  ExecuteFunction(
+      base::BindOnce(&PasswordsPrivateDelegateImpl::RemoveEntryInternal,
+                     base::Unretained(this), ids));
 }
 
-void PasswordsPrivateDelegateImpl::RemoveSavedPasswordsInternal(
+void PasswordsPrivateDelegateImpl::RemoveEntryInternal(
     const std::vector<int>& ids) {
-  password_manager_presenter_->RemoveSavedPasswords(
-      GetSortKeys(password_id_generator_, ids));
+  DCHECK(!ids.empty());
+  for (int id : ids) {
+    const CredentialUIEntry* entry = credential_id_generator_.TryGetKey(id);
+    if (!entry) {
+      continue;
+    }
+    saved_passwords_presenter_.RemoveCredential(*entry);
+
+    if (entry->blocked_by_user) {
+      base::RecordAction(
+          base::UserMetricsAction("PasswordManager_RemovePasswordException"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("PasswordManager_RemoveSavedPassword"));
+    }
+  }
 }
 
 void PasswordsPrivateDelegateImpl::RemovePasswordExceptions(
     const std::vector<int>& ids) {
-  ExecuteFunction(base::BindOnce(
-      &PasswordsPrivateDelegateImpl::RemovePasswordExceptionsInternal,
-      base::Unretained(this), ids));
-}
-
-void PasswordsPrivateDelegateImpl::RemovePasswordExceptionsInternal(
-    const std::vector<int>& ids) {
-  password_manager_presenter_->RemovePasswordExceptions(
-      GetSortKeys(exception_id_generator_, ids));
+  ExecuteFunction(
+      base::BindOnce(&PasswordsPrivateDelegateImpl::RemoveEntryInternal,
+                     base::Unretained(this), ids));
 }
 
 void PasswordsPrivateDelegateImpl::UndoRemoveSavedPasswordOrException() {
@@ -325,7 +294,7 @@ void PasswordsPrivateDelegateImpl::UndoRemoveSavedPasswordOrException() {
 
 void PasswordsPrivateDelegateImpl::
     UndoRemoveSavedPasswordOrExceptionInternal() {
-  password_manager_presenter_->UndoRemoveSavedPasswordOrException();
+  saved_passwords_presenter_.UndoLastRemoval();
 }
 
 void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
@@ -369,46 +338,78 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
 #endif
 }
 
-Profile* PasswordsPrivateDelegateImpl::GetProfile() {
-  return profile_;
-}
-
-void PasswordsPrivateDelegateImpl::SetPasswordList(
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-        password_list) {
-  // Create a list of PasswordUiEntry objects to send to observers.
+void PasswordsPrivateDelegateImpl::SetCredentials(
+    const std::vector<CredentialUIEntry>& credentials) {
+  // Create lists of PasswordUiEntry and ExceptionEntry objects to send to
+  // observers.
   current_entries_.clear();
+  current_exceptions_.clear();
 
-  for (const auto& form : password_list) {
-    api::passwords_private::PasswordUiEntry entry;
-    entry.urls = CreateUrlCollectionFromForm(*form);
-    entry.username = base::UTF16ToUTF8(form->username_value);
-    const auto& note_itr = base::ranges::find_if(
-        form->notes, &std::u16string::empty,
-        &password_manager::PasswordNote::unique_display_name);
-    entry.password_note =
-        note_itr == form->notes.end() ? "" : base::UTF16ToUTF8(note_itr->value);
-    entry.id = password_id_generator_.GenerateId(
-        password_manager::CreateSortKey(*form));
-    entry.frontend_id = password_frontend_id_generator_.GenerateId(
-        password_manager::CreateSortKey(*form,
-                                        password_manager::IgnoreStore(true)));
+  for (const CredentialUIEntry& credential : credentials) {
+    // TODO(crbug.com/1201643): A separate entity should be created for every
+    // store where the credential is stored. This can be removed when the UI
+    // will support the new model.
 
-    if (!form->federation_origin.opaque()) {
-      entry.federation_text =
-          std::make_unique<std::string>(l10n_util::GetStringFUTF8(
-              IDS_PASSWORDS_VIA_FEDERATION, GetDisplayFederation(*form)));
+    // Frontend id is used to group identical credentials no matter what
+    // storage they use. It should be generated from the original credential.
+    int frontend_id = credential_id_generator_.GenerateId(credential);
+    for (const password_manager::PasswordForm::Store& store :
+         credential.stored_in) {
+      // A copy of credential with a single storage should be created to obtain
+      // id. This is important because the credential can be removed only from
+      // one storage at a time. If credential is present only on one storage
+      // |frontend_id| and |id| are equal.
+      CredentialUIEntry copy_for_this_store = credential;
+      copy_for_this_store.stored_in = {store};
+      int id = credential_id_generator_.GenerateId(copy_for_this_store);
+      if (credential.blocked_by_user) {
+        api::passwords_private::ExceptionEntry current_exception_entry;
+        current_exception_entry.urls =
+            CreateUrlCollectionFromCredential(credential);
+        current_exception_entry.id = id;
+        current_exception_entry.frontend_id = frontend_id;
+
+        current_exception_entry.from_account_store =
+            store == password_manager::PasswordForm::Store::kAccountStore;
+        current_exceptions_.push_back(std::move(current_exception_entry));
+      } else {
+        api::passwords_private::PasswordUiEntry entry;
+        entry.urls = CreateUrlCollectionFromCredential(credential);
+        entry.username = base::UTF16ToUTF8(credential.username);
+        entry.password_note = base::UTF16ToUTF8(credential.note.value);
+        entry.id = id;
+        entry.frontend_id = frontend_id;
+
+        if (!credential.federation_origin.opaque()) {
+          std::u16string formatted_origin =
+              url_formatter::FormatOriginForSecurityDisplay(
+                  credential.federation_origin,
+                  url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+
+          entry.federation_text =
+              std::make_unique<std::string>(l10n_util::GetStringFUTF8(
+                  IDS_PASSWORDS_VIA_FEDERATION, formatted_origin));
+        }
+
+        entry.from_account_store =
+            store == password_manager::PasswordForm::Store::kAccountStore;
+
+        current_entries_.push_back(std::move(entry));
+      }
     }
-
-    entry.from_account_store = form->IsUsingAccountStore();
-
-    current_entries_.push_back(std::move(entry));
   }
 
-  SendSavedPasswordsList();
+  if (current_entries_initialized_) {
+    DCHECK(get_saved_passwords_list_callbacks_.empty());
+    DCHECK(get_password_exception_list_callbacks_.empty());
+  }
 
-  DCHECK(!current_entries_initialized_ ||
-         get_saved_passwords_list_callbacks_.empty());
+  PasswordsPrivateEventRouter* router =
+      PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
+  if (router) {
+    router->OnSavedPasswordsListChanged(current_entries_);
+    router->OnPasswordExceptionsListChanged(current_exceptions_);
+  }
 
   current_entries_initialized_ = true;
   InitializeIfNecessary();
@@ -416,36 +417,6 @@ void PasswordsPrivateDelegateImpl::SetPasswordList(
   for (auto& callback : get_saved_passwords_list_callbacks_)
     std::move(callback).Run(current_entries_);
   get_saved_passwords_list_callbacks_.clear();
-}
-
-void PasswordsPrivateDelegateImpl::SetPasswordExceptionList(
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-        password_exception_list) {
-  // Creates a list of exceptions to send to observers.
-  current_exceptions_.clear();
-
-  for (const auto& form : password_exception_list) {
-    api::passwords_private::ExceptionEntry current_exception_entry;
-    current_exception_entry.urls = CreateUrlCollectionFromForm(*form);
-    current_exception_entry.id = exception_id_generator_.GenerateId(
-        password_manager::CreateSortKey(*form));
-    current_exception_entry.frontend_id =
-        exception_frontend_id_generator_.GenerateId(
-            password_manager::CreateSortKey(
-                *form, password_manager::IgnoreStore(true)));
-
-    current_exception_entry.from_account_store = form->IsUsingAccountStore();
-    current_exceptions_.push_back(std::move(current_exception_entry));
-  }
-
-  SendPasswordExceptionsList();
-
-  DCHECK(!current_entries_initialized_ ||
-         get_saved_passwords_list_callbacks_.empty());
-
-  current_exceptions_initialized_ = true;
-  InitializeIfNecessary();
-
   for (auto& callback : get_password_exception_list_callbacks_)
     std::move(callback).Run(current_exceptions_);
   get_password_exception_list_callbacks_.clear();
@@ -456,12 +427,34 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
     content::WebContents* web_contents) {
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);
-  std::vector<std::string> sort_keys;
-  for (int id : ids) {
-    if (const std::string* sort_key = password_id_generator_.TryGetKey(id))
-      sort_keys.push_back(*sort_key);
+
+  if (!client->GetPasswordFeatureManager()->IsOptedInForAccountStorage() ||
+      SyncServiceFactory::GetForProfile(profile_)->IsSyncFeatureEnabled()) {
+    return;
   }
-  password_manager_presenter_->MovePasswordsToAccountStore(sort_keys, client);
+
+  std::vector<password_manager::PasswordForm> forms_to_move;
+  for (int id : ids) {
+    const CredentialUIEntry* entry = credential_id_generator_.TryGetKey(id);
+    if (!entry) {
+      continue;
+    }
+
+    std::vector<password_manager::PasswordForm> corresponding_forms =
+        saved_passwords_presenter_.GetCorrespondingPasswordForms(entry->key());
+    if (corresponding_forms.empty()) {
+      continue;
+    }
+
+    // password_manager::MovePasswordsToAccountStore() takes care of moving the
+    // entire equivalence class, so passing the first element is fine.
+    forms_to_move.push_back(std::move(corresponding_forms[0]));
+  }
+
+  password_manager::MovePasswordsToAccountStore(
+      forms_to_move, client,
+      password_manager::metrics_util::MoveToAccountStoreTrigger::
+          kExplicitlyTriggeredInSettings);
 }
 
 void PasswordsPrivateDelegateImpl::ImportPasswords(
@@ -612,35 +605,39 @@ void PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult(
     return;
   }
 
-  // Request the password. When it is retrieved, ShowPassword() will be called.
-  const std::string* sort_key = password_id_generator_.TryGetKey(id);
-  if (!sort_key) {
+  const CredentialUIEntry* entry = credential_id_generator_.TryGetKey(id);
+  if (!entry) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
 
   if (reason == api::passwords_private::PLAINTEXT_REASON_COPY) {
+    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteText(entry->password);
+    clipboard_writer.MarkAsConfidential();
     // In case of copy we don't need to give password back to UI. callback
     // will receive either empty string in case of success or null otherwise.
     // Copying occurs here so javascript doesn't need plaintext password.
-    callback = base::BindOnce(
-        [](PlaintextPasswordCallback callback,
-           absl::optional<std::u16string> password) {
-          if (!password) {
-            std::move(callback).Run(absl::nullopt);
-            return;
-          }
-          ui::ScopedClipboardWriter clipboard_writer(
-              ui::ClipboardBuffer::kCopyPaste);
-          clipboard_writer.WriteText(*password);
-          clipboard_writer.MarkAsConfidential();
-          std::move(callback).Run(std::u16string());
-        },
-        std::move(callback));
+    std::move(callback).Run(std::u16string());
+  } else {
+    std::move(callback).Run(entry->password);
   }
 
-  password_manager_presenter_->RequestPlaintextPassword(
-      *sort_key, ConvertPlaintextReason(reason), std::move(callback));
+  syncer::SyncService* sync_service = nullptr;
+  if (SyncServiceFactory::HasSyncService(profile_)) {
+    sync_service = SyncServiceFactory::GetForProfile(profile_);
+  }
+  if (password_manager::sync_util::IsSyncAccountCredential(
+          entry->url, entry->username, sync_service,
+          IdentityManagerFactory::GetForProfile(profile_))) {
+    base::RecordAction(
+        base::UserMetricsAction("PasswordManager_SyncCredentialShown"));
+  }
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "PasswordManager.AccessPasswordInSettings",
+      ConvertPlaintextReason(reason),
+      password_manager::metrics_util::ACCESS_PASSWORD_COUNT);
 }
 
 void PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult(
@@ -682,12 +679,6 @@ void PasswordsPrivateDelegateImpl::OnAccountStorageOptInStateChanged() {
 void PasswordsPrivateDelegateImpl::Shutdown() {
   password_account_storage_settings_watcher_.reset();
   password_manager_porter_.reset();
-  password_manager_presenter_.reset();
-}
-
-IdGenerator<std::string>&
-PasswordsPrivateDelegateImpl::GetPasswordIdGeneratorForTesting() {
-  return password_id_generator_;
 }
 
 void PasswordsPrivateDelegateImpl::ExecuteFunction(base::OnceClosure callback) {
@@ -699,9 +690,13 @@ void PasswordsPrivateDelegateImpl::ExecuteFunction(base::OnceClosure callback) {
   pre_initialization_callbacks_.emplace_back(std::move(callback));
 }
 
+void PasswordsPrivateDelegateImpl::OnSavedPasswordsChanged(
+    password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords) {
+  SetCredentials(saved_passwords_presenter_.GetSavedCredentials());
+}
+
 void PasswordsPrivateDelegateImpl::InitializeIfNecessary() {
-  if (is_initialized_ || !current_entries_initialized_ ||
-      !current_exceptions_initialized_)
+  if (is_initialized_ || !current_entries_initialized_)
     return;
 
   is_initialized_ = true;

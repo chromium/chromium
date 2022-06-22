@@ -44,7 +44,6 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/password_undo_helper.h"
-#include "components/password_manager/core/browser/ui/plaintext_reason.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
@@ -106,20 +105,6 @@ FormVector GetEntryList(const std::map<std::string, FormVector>& map) {
 
   return result;
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-password_manager::metrics_util::AccessPasswordInSettingsEvent
-ConvertPlaintextReason(password_manager::PlaintextReason reason) {
-  switch (reason) {
-    case password_manager::PlaintextReason::kCopy:
-      return password_manager::metrics_util::ACCESS_PASSWORD_COPIED;
-    case password_manager::PlaintextReason::kView:
-      return password_manager::metrics_util::ACCESS_PASSWORD_VIEWED;
-    case password_manager::PlaintextReason::kEdit:
-      return password_manager::metrics_util::ACCESS_PASSWORD_EDITED;
-  }
-}
-#endif
 
 }  // namespace
 
@@ -302,41 +287,6 @@ void PasswordManagerPresenter::MovePasswordsToAccountStore(
       password_manager::metrics_util::MoveToAccountStoreTrigger::
           kExplicitlyTriggeredInSettings);
 }
-
-#if !BUILDFLAG(IS_ANDROID)  // This is never called on Android.
-void PasswordManagerPresenter::RequestPlaintextPassword(
-    const std::string& sort_key,
-    password_manager::PlaintextReason reason,
-    base::OnceCallback<void(absl::optional<std::u16string>)> callback) const {
-  auto it = password_map_.find(sort_key);
-  if (it == password_map_.end()) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  DCHECK(!it->second.empty());
-  const auto& form = *it->second[0];
-  syncer::SyncService* sync_service = nullptr;
-  if (SyncServiceFactory::HasSyncService(password_view_->GetProfile())) {
-    sync_service =
-        SyncServiceFactory::GetForProfile(password_view_->GetProfile());
-  }
-  if (password_manager::sync_util::IsSyncAccountCredential(
-          form.url, form.username_value, sync_service,
-          IdentityManagerFactory::GetForProfile(
-              password_view_->GetProfile()))) {
-    base::RecordAction(
-        base::UserMetricsAction("PasswordManager_SyncCredentialShown"));
-  }
-
-  // Call back the front end to reveal the password.
-  std::move(callback).Run(form.password_value);
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordManager.AccessPasswordInSettings",
-      ConvertPlaintextReason(reason),
-      password_manager::metrics_util::ACCESS_PASSWORD_COUNT);
-}
-#endif
 
 bool PasswordManagerPresenter::TryRemovePasswordEntries(
     PasswordFormMap* form_map,

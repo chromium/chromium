@@ -256,7 +256,6 @@ static_library("browser") {
     "ui/password_check_referrer.h",
     "ui/password_undo_helper.cc",
     "ui/password_undo_helper.h",
-    "ui/plaintext_reason.h",
     "ui/post_save_compromised_helper.cc",
     "ui/post_save_compromised_helper.h",
     "ui/saved_passwords_presenter.cc",
