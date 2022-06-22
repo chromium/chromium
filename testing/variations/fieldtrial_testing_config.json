@@ -6620,6 +6620,31 @@
             ]
         }
     ],
+    "PrecompileInlineScripts": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "FirstScriptLazy_20220609",
+                    "params": {
+                        "compile-strategy": "first-script-lazy"
+                    },
+                    "enable_features": [
+                        "PrecompileInlineScripts"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreconnectToSearchDesktop": [
         {
             "platforms": [

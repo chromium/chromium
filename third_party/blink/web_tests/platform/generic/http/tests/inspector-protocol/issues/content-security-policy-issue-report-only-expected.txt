@@ -28,7 +28,7 @@ Inspector issue: {
                 sourceCodeLocation : {
                     columnNumber : 13
                     lineNumber : 4
-                    scriptId : 4
+                    scriptId : <string>
                     url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-report-only.php
                 }
                 violatedDirective : script-src
