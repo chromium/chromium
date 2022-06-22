@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/crostini/crostini_engagement_metrics_service.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
+#include "chrome/browser/ash/crostini/crostini_mount_provider.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_remover.h"
@@ -4061,15 +4062,24 @@ void CrostiniManager::RemoveStoppedContainer(
 }
 
 void CrostiniManager::RegisterContainer(const guest_os::GuestId& container_id) {
-  if (terminal_provider_ids_.find(container_id) !=
+  if (terminal_provider_ids_.find(container_id) ==
       terminal_provider_ids_.end()) {
-    // Already registered, do nothing.
-    return;
+    auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
+                         ->TerminalProviderRegistry();
+    terminal_provider_ids_[container_id] = registry->Register(
+        std::make_unique<CrostiniTerminalProvider>(container_id));
   }
-  auto* terminal_registry = guest_os::GuestOsService::GetForProfile(profile_)
-                                ->TerminalProviderRegistry();
-  terminal_provider_ids_[container_id] = terminal_registry->Register(
-      std::make_unique<CrostiniTerminalProvider>(container_id));
+  if (CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_) &&
+      container_id != DefaultContainerId()) {
+    // TODO(b/217469540): The default container is still using sshfs for now, so
+    // start off using this approach only for non-default.
+    if (mount_provider_ids_.find(container_id) == mount_provider_ids_.end()) {
+      auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
+                           ->MountProviderRegistry();
+      mount_provider_ids_[container_id] = registry->Register(
+          std::make_unique<CrostiniMountProvider>(profile_, container_id));
+    }
+  }
 }
 
 void CrostiniManager::UnregisterContainer(

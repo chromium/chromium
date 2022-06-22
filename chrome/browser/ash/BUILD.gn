@@ -792,6 +792,8 @@ source_set("ash") {
     "crostini/crostini_manager.h",
     "crostini/crostini_manager_factory.cc",
     "crostini/crostini_manager_factory.h",
+    "crostini/crostini_mount_provider.cc",
+    "crostini/crostini_mount_provider.h",
     "crostini/crostini_package_notification.cc",
     "crostini/crostini_package_notification.h",
     "crostini/crostini_package_operation_status.h",

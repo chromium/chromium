@@ -23,8 +23,8 @@ class GuestOsTerminalProvider {
   virtual std::string Label() = 0;
 
   // TODO(b/233287586): While we're migrating, some Crostini-specific code still
-  // needs a ContainerId. Eventually this should always be nullopt and then
-  // removed.
+  // needs a guest_os::GuestId. Eventually this should always be nullopt and
+  // then removed.
   virtual absl::optional<guest_os::GuestId> CrostiniContainerId() = 0;
 
  private:

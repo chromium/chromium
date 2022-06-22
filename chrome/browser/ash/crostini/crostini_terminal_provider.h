@@ -19,8 +19,8 @@ class CrostiniTerminalProvider : public guest_os::GuestOsTerminalProvider {
   std::string Label() override;
 
   // TODO(b/233287586): While we're migrating some Crostini-specific code still
-  // needs a ContainerId. Eventually this should always be nullopt and then
-  // removed.
+  // needs a guest_os::GuestId. Eventually this should always be nullopt and
+  // then removed.
   absl::optional<guest_os::GuestId> CrostiniContainerId() override;
 
  private:

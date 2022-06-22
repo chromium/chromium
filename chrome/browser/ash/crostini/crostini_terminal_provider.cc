@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/crostini/crostini_terminal_provider.h"
 
-#include "base/strings/strcat.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 
 namespace crostini {
@@ -15,11 +14,7 @@ CrostiniTerminalProvider::CrostiniTerminalProvider(
 CrostiniTerminalProvider::~CrostiniTerminalProvider() = default;
 
 std::string CrostiniTerminalProvider::Label() {
-  if (container_id_.vm_name == kCrostiniDefaultVmName) {
-    return container_id_.container_name;
-  }
-  return base::StrCat(
-      {container_id_.vm_name, ":", container_id_.container_name});
+  return crostini::FormatForUi(container_id_);
 }
 
 absl::optional<guest_os::GuestId>

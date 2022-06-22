@@ -202,6 +202,9 @@ void RecordAppLaunchResultHistogram(CrostiniAppLaunchAppType type,
 // VM. Returns true if the VM should be stopped.
 bool ShouldStopVm(Profile* profile, const guest_os::GuestId& container_id);
 
+// Formats a container id the way most UI surfaces identify Crostini containers.
+std::string FormatForUi(guest_os::GuestId container_id);
+
 }  // namespace crostini
 
 #endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_UTIL_H_

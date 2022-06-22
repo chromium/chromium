@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -506,6 +507,13 @@ bool ShouldStopVm(Profile* profile, const guest_os::GuestId& container_id) {
     }
   }
   return true;
+}
+
+std::string FormatForUi(guest_os::GuestId guest_id) {
+  if (guest_id.vm_name == kCrostiniDefaultVmName) {
+    return guest_id.container_name;
+  }
+  return base::StrCat({guest_id.vm_name, ":", guest_id.container_name});
 }
 
 }  // namespace crostini

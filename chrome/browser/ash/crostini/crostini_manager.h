@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/termina_installer.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/vm_shutdown_observer.h"
 #include "chrome/browser/ash/vm_starting_observer.h"
@@ -976,6 +977,9 @@ class CrostiniManager : public KeyedService,
   base::ScopedObservation<chromeos::NetworkStateHandler,
                           chromeos::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
+
+  base::flat_map<guest_os::GuestId, guest_os::GuestOsMountProviderRegistry::Id>
+      mount_provider_ids_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
