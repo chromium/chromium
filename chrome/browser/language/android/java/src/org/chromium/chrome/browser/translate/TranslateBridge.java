@@ -13,7 +13,6 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -128,14 +127,6 @@ public class TranslateBridge {
      */
     public static void setDefaultTargetLanguage(String targetLanguage) {
         TranslateBridgeJni.get().setDefaultTargetLanguage(targetLanguage);
-    }
-
-    /**
-     * @return The ordered set of all languages that the user's knows, ordered by how well they know
-     *         them with the most familiar listed first.
-     */
-    public static LinkedHashSet<String> getModelLanguages() {
-        return new LinkedHashSet<>(Arrays.asList(TranslateBridgeJni.get().getModelLanguages()));
     }
 
     @CalledByNative
@@ -275,7 +266,6 @@ public class TranslateBridge {
         String getCurrentLanguage(WebContents webContents);
         String getTargetLanguage();
         void setDefaultTargetLanguage(String targetLanguage);
-        String[] getModelLanguages();
         void resetAcceptLanguages(String defaultLocale);
         void getChromeAcceptLanguages(List<LanguageItem> list);
         String[] getUserAcceptLanguages();

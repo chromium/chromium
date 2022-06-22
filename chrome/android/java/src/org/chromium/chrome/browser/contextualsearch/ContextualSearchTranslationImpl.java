@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.translate.TranslateBridge;
 
-import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * Controls how Translation triggering is handled for the {@link ContextualSearchManager}.
@@ -51,7 +51,7 @@ public class ContextualSearchTranslationImpl implements ContextualSearchTranslat
     public boolean needsTranslation(@Nullable String sourceLanguage) {
         if (TextUtils.isEmpty(sourceLanguage)) return false;
 
-        LinkedHashSet<String> languages = mTranslateBridgeWrapper.getModelLanguages();
+        List<String> languages = mTranslateBridgeWrapper.getNeverTranslateLanguages();
         for (String language : languages) {
             if (language.equals(sourceLanguage)) return false;
         }
@@ -65,7 +65,7 @@ public class ContextualSearchTranslationImpl implements ContextualSearchTranslat
 
     @Override
     public String getTranslateServiceFluentLanguages() {
-        return TextUtils.join(",", mTranslateBridgeWrapper.getModelLanguages());
+        return TextUtils.join(",", mTranslateBridgeWrapper.getNeverTranslateLanguages());
     }
 
     /**
@@ -82,11 +82,11 @@ public class ContextualSearchTranslationImpl implements ContextualSearchTranslat
         }
 
         /**
-         * @return The {@link LinkedHashSet} of language code strings that the Chrome Language Model
-         *         thinks the user knows, in order of most familiar to least familiar.
+         * @return The {@link List} of languages the user has set to never translate, in
+         *         alphabetical order.
          */
-        public LinkedHashSet<String> getModelLanguages() {
-            return TranslateBridge.getModelLanguages();
+        public List<String> getNeverTranslateLanguages() {
+            return TranslateBridge.getNeverTranslateLanguages();
         }
     }
 }

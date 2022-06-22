@@ -167,11 +167,6 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public String[] getModelLanguages() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void moveAcceptLanguage(String language, int offset) {
         throw new UnsupportedOperationException();
     }
