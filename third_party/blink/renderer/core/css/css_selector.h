@@ -412,11 +412,6 @@ class CORE_EXPORT CSSSelector {
     is_last_in_selector_list_ = is_last;
   }
 
-  bool IsLastInOriginalList() const { return is_last_in_original_list_; }
-  void SetLastInOriginalList(bool is_last) {
-    is_last_in_original_list_ = is_last;
-  }
-
   bool IsLastInTagHistory() const { return is_last_in_tag_history_; }
   void SetLastInTagHistory(bool is_last) { is_last_in_tag_history_ = is_last; }
 
@@ -456,7 +451,6 @@ class CORE_EXPORT CSSSelector {
   unsigned has_rare_data_ : 1;
   unsigned is_for_page_ : 1;
   unsigned tag_is_implicit_ : 1;
-  unsigned is_last_in_original_list_ : 1;
 
   void SetPseudoType(PseudoType pseudo_type) {
     pseudo_type_ = pseudo_type;
@@ -600,7 +594,6 @@ inline CSSSelector::CSSSelector()
       has_rare_data_(false),
       is_for_page_(false),
       tag_is_implicit_(false),
-      is_last_in_original_list_(false),
       data_(DataUnion::kConstructEmptyValue) {}
 
 inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
@@ -613,7 +606,6 @@ inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
       has_rare_data_(false),
       is_for_page_(false),
       tag_is_implicit_(tag_is_implicit),
-      is_last_in_original_list_(false),
       data_(tag_q_name) {}
 
 inline CSSSelector::CSSSelector(const CSSSelector& o)
@@ -625,7 +617,6 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
       has_rare_data_(o.has_rare_data_),
       is_for_page_(o.is_for_page_),
       tag_is_implicit_(o.tag_is_implicit_),
-      is_last_in_original_list_(o.is_last_in_original_list_),
       data_(DataUnion::kConstructUninitialized) {
   if (o.match_ == kTag) {
     new (&data_.tag_q_name_) QualifiedName(o.data_.tag_q_name_);

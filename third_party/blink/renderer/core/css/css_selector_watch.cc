@@ -139,7 +139,7 @@ void CSSSelectorWatch::UpdateSelectorMatches(
 }
 
 static bool AllCompound(const CSSSelectorList& selector_list) {
-  for (const CSSSelector* selector = selector_list.FirstForCSSOM(); selector;
+  for (const CSSSelector* selector = selector_list.First(); selector;
        selector = selector_list.Next(*selector)) {
     if (!selector->IsCompound())
       return false;

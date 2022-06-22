@@ -232,7 +232,6 @@ TEST(CSSSelector, FirstInInvalidList) {
   CSSSelectorList list;
   EXPECT_FALSE(list.IsValid());
   EXPECT_FALSE(list.First());
-  EXPECT_FALSE(list.FirstForCSSOM());
 }
 
 }  // namespace blink

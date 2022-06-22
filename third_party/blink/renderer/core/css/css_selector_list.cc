@@ -84,21 +84,9 @@ CSSSelectorList CSSSelectorList::AdoptSelectorVector(
   }
   DCHECK_EQ(flattened_size, array_index);
   list.selector_array_[array_index - 1].SetLastInSelectorList(true);
-  list.selector_array_[array_index - 1].SetLastInOriginalList(true);
   selector_vector.clear();
 
   return list;
-}
-
-const CSSSelector* CSSSelectorList::FirstForCSSOM() const {
-  const CSSSelector* s = First();
-  if (!s)
-    return nullptr;
-  while (Next(*s))
-    s = Next(*s);
-  if (NextInFullList(*s))
-    return NextInFullList(*s);
-  return First();
 }
 
 unsigned CSSSelectorList::ComputeLength() const {
@@ -122,8 +110,8 @@ unsigned CSSSelectorList::MaximumSpecificity() const {
 String CSSSelectorList::SelectorsText() const {
   StringBuilder result;
 
-  for (const CSSSelector* s = FirstForCSSOM(); s; s = Next(*s)) {
-    if (s != FirstForCSSOM())
+  for (const CSSSelector* s = First(); s; s = Next(*s)) {
+    if (s != First())
       result.Append(", ");
     result.Append(s->SelectorText());
   }

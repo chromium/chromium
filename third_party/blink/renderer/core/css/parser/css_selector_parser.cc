@@ -1463,7 +1463,7 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
   if (context_->Mode() == kUASheetMode)
     return;
 
-  for (const CSSSelector* selector = selector_list.FirstForCSSOM(); selector;
+  for (const CSSSelector* selector = selector_list.First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
     for (const CSSSelector* current = selector; current;
          current = current->TagHistory()) {

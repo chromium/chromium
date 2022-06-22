@@ -84,9 +84,7 @@ class CORE_EXPORT CSSSelectorList {
 
   bool IsValid() const { return !!selector_array_; }
   const CSSSelector* First() const { return selector_array_.get(); }
-  const CSSSelector* FirstForCSSOM() const;
   static const CSSSelector* Next(const CSSSelector&);
-  static const CSSSelector* NextInFullList(const CSSSelector&);
 
   // The CSS selector represents a single sequence of simple selectors.
   bool HasOneSelector() const { return selector_array_ && !Next(*First()); }
@@ -128,15 +126,6 @@ class CORE_EXPORT CSSSelectorList {
 };
 
 inline const CSSSelector* CSSSelectorList::Next(const CSSSelector& current) {
-  // Skip subparts of compound selectors.
-  const CSSSelector* last = &current;
-  while (!last->IsLastInTagHistory())
-    last++;
-  return last->IsLastInOriginalList() ? nullptr : last + 1;
-}
-
-inline const CSSSelector* CSSSelectorList::NextInFullList(
-    const CSSSelector& current) {
   // Skip subparts of compound selectors.
   const CSSSelector* last = &current;
   while (!last->IsLastInTagHistory())
