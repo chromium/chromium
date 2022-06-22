@@ -755,11 +755,8 @@ def main():
     toolchain_hash = '2028cdaf24259d23adcff95393b8cc4f0eef714b'
     toolchain_name = 'debian_bullseye_amd64_sysroot'
     U = toolchain_bucket + toolchain_hash + '/' + toolchain_name + '.tar.xz'
-    sysroot = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
-    DownloadAndUnpack(U, sysroot)
-
-    # amd64 is the default toolchain, add it to base_cmake_args.
-    base_cmake_args.append('-DCMAKE_SYSROOT=' + sysroot)
+    sysroot_amd64 = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
+    DownloadAndUnpack(U, sysroot_amd64)
 
     # i386
     # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#23
@@ -784,6 +781,13 @@ def main():
     U = toolchain_bucket + toolchain_hash + '/' + toolchain_name + '.tar.xz'
     sysroot_arm64 = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
     DownloadAndUnpack(U, sysroot_arm64)
+
+    # Add the sysroot to base_cmake_args.
+    if platform.machine() == 'aarch64':
+      base_cmake_args.append('-DCMAKE_SYSROOT=' + sysroot_arm64)
+    else:
+      # amd64 is the default toolchain.
+      base_cmake_args.append('-DCMAKE_SYSROOT=' + sysroot_amd64)
 
   if sys.platform == 'win32':
     base_cmake_args.append('-DLLVM_USE_CRT_RELEASE=MT')
@@ -1055,7 +1059,7 @@ def main():
     runtimes_triples_args.append(
         ('x86_64-unknown-linux-gnu',
          compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
-             'CMAKE_SYSROOT=%s' % sysroot,
+             'CMAKE_SYSROOT=%s' % sysroot_amd64,
          ]))
     runtimes_triples_args.append(
         # Using "armv7a-unknown-linux-gnueabhihf" confuses the compiler-rt
