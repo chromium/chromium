@@ -152,6 +152,7 @@ component("policy") {
     ]
 
     deps += [
+      "//services/tracing/public/cpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
@@ -164,6 +165,7 @@ component("policy") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.perfetto",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
     ]
   }

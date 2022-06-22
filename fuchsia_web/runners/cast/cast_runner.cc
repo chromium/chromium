@@ -73,6 +73,7 @@ static constexpr const char* kServices[] = {
     "fuchsia.ui.composition.Flatland",
     "fuchsia.ui.input3.Keyboard",
     "fuchsia.ui.scenic.Scenic",
+    "fuchsia.tracing.perfetto.ProducerConnector",
     "fuchsia.vulkan.loader.Loader",
 };
 

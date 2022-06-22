@@ -19,6 +19,7 @@
 #include <fuchsia/memorypressure/cpp/fidl.h>
 #include <fuchsia/net/interfaces/cpp/fidl.h>
 #include <fuchsia/sysmem/cpp/fidl.h>
+#include <fuchsia/tracing/perfetto/cpp/fidl.h>
 #include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
@@ -45,6 +46,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 
 namespace sandbox {
 namespace policy {
@@ -211,7 +213,21 @@ SandboxPolicyFuchsia::SandboxPolicyFuchsia(sandbox::mojom::Sandbox type) {
         base::SequenceBound<base::FilteredServiceDirectory>(
             GetServiceDirectoryTaskRunner(),
             base::ComponentContextForProcess()->svc());
-    for (const char* service_name : kMinimalServices) {
+
+    std::vector<const char*> services(kMinimalServices.begin(),
+                                      kMinimalServices.end());
+
+    // Grant access to the services required by the process type.
+    std::copy(config->services.begin(), config->services.end(),
+              std::back_inserter(services));
+
+    // If system tracing is enabled, then allow child processes to also make
+    // use of it.
+    if (tracing::ShouldSetupSystemTracing()) {
+      services.push_back(fuchsia::tracing::perfetto::ProducerConnector::Name_);
+    }
+
+    for (const char* service_name : services) {
       // |service_name_|  points to a compile-time constant in
       // |kMinimalServices|. It will remain valid for the duration of the task.
       filtered_service_directory_
@@ -219,14 +235,7 @@ SandboxPolicyFuchsia::SandboxPolicyFuchsia(sandbox::mojom::Sandbox type) {
           .WithArgs(service_name)
           .Then(base::BindOnce(&AddServiceCallback, service_name));
     }
-    for (const char* service_name : config->services) {
-      // |service_name_| comes from |config|, which points to a compile-time
-      // constant. It will remain valid for the duration of the task.
-      filtered_service_directory_
-          .AsyncCall(&base::FilteredServiceDirectory::AddService)
-          .WithArgs(service_name)
-          .Then(base::BindOnce(&AddServiceCallback, service_name));
-    }
+
     filtered_service_directory_
         .AsyncCall(&base::FilteredServiceDirectory::ConnectClient)
         .WithArgs(service_directory_client_.NewRequest())
