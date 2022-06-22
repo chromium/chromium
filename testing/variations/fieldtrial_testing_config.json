@@ -3743,8 +3743,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220425",
+                    "name": "AsyncEarly_20220617",
                     "enable_features": [
+                        "EarlyEstablishGpuChannel",
                         "EstablishGpuChannelAsync"
                     ]
                 }
