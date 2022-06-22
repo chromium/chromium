@@ -591,6 +591,8 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
     copy.matches_opaque_src = decl.matches_opaque_src;
     web_app_info->permissions_policy.push_back(std::move(copy));
   }
+
+  web_app_info->tab_strip = manifest.tab_strip;
 }
 
 std::vector<GURL> GetValidIconUrlsToDownload(

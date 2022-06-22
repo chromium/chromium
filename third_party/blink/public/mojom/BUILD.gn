@@ -650,6 +650,11 @@ mojom("mojom_platform") {
           mojom = "blink.mojom.ManifestTranslationItem"
           cpp = "::blink::Manifest::TranslationItem"
         },
+
+        {
+          mojom = "blink.mojom.ManifestTabStrip"
+          cpp = "::blink::Manifest::TabStrip"
+        },
       ]
       traits_headers = [
         "//third_party/blink/public/common/common_export.h",

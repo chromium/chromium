@@ -1022,6 +1022,64 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_Translations) {
   EXPECT_FALSE(web_app_info.translations["language 3"].description);
 }
 
+TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_TabStrip) {
+  blink::mojom::Manifest manifest;
+  WebAppInstallInfo web_app_info;
+
+  {
+    TabStrip tab_strip;
+    tab_strip.home_tab = TabStrip::Visibility::kAbsent;
+    tab_strip.new_tab_button = TabStrip::Visibility::kAuto;
+    manifest.tab_strip = std::move(tab_strip);
+
+    const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
+    UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
+
+    EXPECT_TRUE(web_app_info.tab_strip.has_value());
+    EXPECT_EQ(absl::get<TabStrip::Visibility>(
+                  web_app_info.tab_strip.value().home_tab),
+              TabStrip::Visibility::kAbsent);
+    EXPECT_EQ(absl::get<TabStrip::Visibility>(
+                  web_app_info.tab_strip.value().new_tab_button),
+              TabStrip::Visibility::kAuto);
+  }
+
+  {
+    blink::Manifest::ImageResource icon;
+    const GURL kAppIcon("fav1.png");
+    icon.purpose = {Purpose::ANY};
+    icon.src = kAppIcon;
+
+    TabStrip tab_strip;
+    blink::Manifest::HomeTabParams home_tab_params;
+    home_tab_params.icons.push_back(icon);
+    tab_strip.home_tab = home_tab_params;
+
+    blink::Manifest::NewTabButtonParams new_tab_button_params;
+    new_tab_button_params.url = GURL("https://www.example.com/");
+    tab_strip.new_tab_button = new_tab_button_params;
+    manifest.tab_strip = std::move(tab_strip);
+
+    const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
+    UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
+
+    EXPECT_TRUE(web_app_info.tab_strip.has_value());
+    EXPECT_EQ(absl::get<blink::Manifest::HomeTabParams>(
+                  web_app_info.tab_strip.value().home_tab)
+                  .icons.size(),
+              1u);
+    EXPECT_EQ(absl::get<blink::Manifest::HomeTabParams>(
+                  web_app_info.tab_strip.value().home_tab)
+                  .icons[0]
+                  .src,
+              kAppIcon);
+    EXPECT_EQ(absl::get<blink::Manifest::NewTabButtonParams>(
+                  web_app_info.tab_strip.value().new_tab_button)
+                  .url,
+              GURL("https://www.example.com/"));
+  }
+}
+
 class FileHandlersFromManifestTest : public ::testing::TestWithParam<bool> {
  public:
   FileHandlersFromManifestTest() {

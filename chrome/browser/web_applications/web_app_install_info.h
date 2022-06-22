@@ -333,6 +333,10 @@ struct WebAppInstallInfo {
   // populated (especially for user installed or sync installed apps)
   // in which case the URL will not be written to the web_app DB.
   GURL install_url;
+
+  // Customisations to the tab strip. This field is only used when the
+  // display mode is set to 'tabbed'.
+  absl::optional<blink::Manifest::TabStrip> tab_strip;
 };
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);

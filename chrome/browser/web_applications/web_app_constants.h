@@ -242,6 +242,7 @@ enum class OsIntegrationState {
 };
 
 using LaunchHandler = blink::Manifest::LaunchHandler;
+using TabStrip = blink::Manifest::TabStrip;
 
 // A result how `WebAppIconDownloader` processed the list of icon urls.
 //
