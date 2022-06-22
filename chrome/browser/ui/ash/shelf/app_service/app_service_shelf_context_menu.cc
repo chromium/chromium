@@ -460,9 +460,14 @@ void AppServiceShelfContextMenu::BuildCrostiniAppMenu(
 
 void AppServiceShelfContextMenu::BuildChromeAppMenu(
     ui::SimpleMenuModel* menu_model) {
-  if (!BrowserShortcutShelfItemController::IsListOfActiveBrowserEmpty(
-          controller()->shelf_model()) ||
-      item().type == ash::TYPE_DIALOG || controller()->IsOpen(item().id)) {
+  // Don't check list of active browsers for lacros app because the list of
+  // browsers only tracks in-process browsers (i.e. instances of ash-chrome).
+  const bool has_active_browsers =
+      item().id.app_id != app_constants::kLacrosAppId &&
+      !BrowserShortcutShelfItemController::IsListOfActiveBrowserEmpty(
+          controller()->shelf_model());
+  if (has_active_browsers || item().type == ash::TYPE_DIALOG ||
+      controller()->IsOpen(item().id)) {
     AddContextMenuOption(menu_model, ash::MENU_CLOSE,
                          IDS_SHELF_CONTEXT_MENU_CLOSE);
   }
