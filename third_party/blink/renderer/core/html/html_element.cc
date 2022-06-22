@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -253,6 +254,12 @@ void HTMLElement::ApplyBorderAttributeToStyle(
 void HTMLElement::MapLanguageAttributeToLocale(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
+  // HTMLQuoteElement should ignore own lang attribute and use lang of parent.
+  // This is handled in CollectExtraStyleForPresentationAttribute().
+  // https://github.com/w3c/csswg-drafts/issues/5478
+  if (IsA<HTMLQuoteElement>(this)) {
+    return;
+  }
   if (!value.IsEmpty()) {
     // Have to quote so the locale id is treated as a string instead of as a CSS
     // keyword.

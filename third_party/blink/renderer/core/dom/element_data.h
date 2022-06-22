@@ -138,6 +138,7 @@ class ElementData : public GarbageCollected<ElementData> {
  private:
   friend class Element;
   friend class HTMLImageElement;
+  friend class HTMLQuoteElement;
   friend class ShareableElementData;
   friend class UniqueElementData;
   friend class SVGElement;

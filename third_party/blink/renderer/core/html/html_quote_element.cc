@@ -22,6 +22,8 @@
 
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
 
+#include "third_party/blink/renderer/core/css/css_markup.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/html_names.h"
 
@@ -32,6 +34,7 @@ HTMLQuoteElement::HTMLQuoteElement(const QualifiedName& tag_name,
     : HTMLElement(tag_name, document) {
   DCHECK(HasTagName(html_names::kQTag) ||
          HasTagName(html_names::kBlockquoteTag));
+  SetHasCustomStyleCallbacks();
 }
 
 bool HTMLQuoteElement::IsURLAttribute(const Attribute& attribute) const {
@@ -46,6 +49,29 @@ bool HTMLQuoteElement::HasLegalLinkAttribute(const QualifiedName& name) const {
 
 const QualifiedName& HTMLQuoteElement::SubResourceAttributeName() const {
   return html_names::kCiteAttr;
+}
+
+void HTMLQuoteElement::WillRecalcStyle(const StyleRecalcChange change) {
+  EnsureUniqueElementData().SetPresentationAttributeStyleIsDirty(true);
+}
+
+void HTMLQuoteElement::CollectExtraStyleForPresentationAttribute(
+    MutableCSSPropertyValueSet* style) {
+  HTMLElement::CollectExtraStyleForPresentationAttribute(style);
+
+  // <q> should ignore its own lang attribute and use lang of parent.
+  // https://github.com/w3c/csswg-drafts/issues/5478
+  Element* parent = parentElement();
+  if (parent) {
+    if (const AtomicString lang = parent->ComputeInheritedLanguage()) {
+      AddPropertyToPresentationAttributeStyle(
+          style, CSSPropertyID::kWebkitLocale, SerializeString(lang));
+      return;
+    }
+  }
+  // The empty string means the language is explicitly unknown.
+  AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWebkitLocale,
+                                          CSSValueID::kAuto);
 }
 
 }  // namespace blink
