@@ -5,12 +5,12 @@
 #ifndef UI_WM_CORE_COMPOUND_EVENT_FILTER_H_
 #define UI_WM_CORE_COMPOUND_EVENT_FILTER_H_
 
+#include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace ui {
 class GestureEvent;
@@ -31,7 +31,7 @@ namespace wm {
 // consumed by any of those filters. If an event is consumed by a filter, the
 // rest of the filter(s) and CompoundEventFilter will not see the consumed
 // event.
-class WM_CORE_EXPORT CompoundEventFilter : public ui::EventHandler {
+class COMPONENT_EXPORT(UI_WM) CompoundEventFilter : public ui::EventHandler {
  public:
   CompoundEventFilter();
 

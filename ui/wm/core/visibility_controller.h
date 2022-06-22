@@ -5,13 +5,13 @@
 #ifndef UI_WM_CORE_VISIBILITY_CONTROLLER_H_
 #define UI_WM_CORE_VISIBILITY_CONTROLLER_H_
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/visibility_client.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace wm {
 
-class WM_CORE_EXPORT VisibilityController
+class COMPONENT_EXPORT(UI_WM) VisibilityController
     : public aura::client::VisibilityClient {
  public:
   VisibilityController();
@@ -47,7 +47,7 @@ class WM_CORE_EXPORT VisibilityController
 //   // previous state.
 // }
 //
-class WM_CORE_EXPORT SuspendChildWindowVisibilityAnimations {
+class COMPONENT_EXPORT(UI_WM) SuspendChildWindowVisibilityAnimations {
  public:
   // Suspend visibility animations of child windows.
   explicit SuspendChildWindowVisibilityAnimations(aura::Window* window);
@@ -74,13 +74,14 @@ class WM_CORE_EXPORT SuspendChildWindowVisibilityAnimations {
 // whose animation is already enabled either by this function, or
 // via SetChildWindowVisibilityChangesAnimatedbelow below is allowed and
 // the animation stays enabled.
-void WM_CORE_EXPORT SetWindowVisibilityChangesAnimated(aura::Window* window);
+COMPONENT_EXPORT(UI_WM)
+void SetWindowVisibilityChangesAnimated(aura::Window* window);
 
 // Enable visibility change animation for all children of the |window|.
 // Typically applied to a container whose child windows should be animated
 // when their visibility changes.
-void WM_CORE_EXPORT
-SetChildWindowVisibilityChangesAnimated(aura::Window* window);
+COMPONENT_EXPORT(UI_WM)
+void SetChildWindowVisibilityChangesAnimated(aura::Window* window);
 
 }  // namespace wm
 

@@ -7,6 +7,7 @@ import("//build/config/ui.gni")
 import("//testing/test.gni")
 
 component("wm") {
+  output_name = "ui_wm"
   sources = [
     "core/accelerator_delegate.h",
     "core/accelerator_filter.cc",
@@ -54,7 +55,6 @@ component("wm") {
     "core/window_properties.h",
     "core/window_util.cc",
     "core/window_util.h",
-    "core/wm_core_export.h",
     "core/wm_core_switches.cc",
     "core/wm_core_switches.h",
     "core/wm_state.cc",
@@ -62,7 +62,7 @@ component("wm") {
   ]
 
   configs += [ "//build/config:precompiled_headers" ]
-  defines = [ "WM_CORE_IMPLEMENTATION" ]
+  defines = [ "IS_UI_WM_IMPL" ]
 
   deps = [
     "//base",

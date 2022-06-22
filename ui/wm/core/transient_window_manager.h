@@ -7,10 +7,10 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/window_observer.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace wm {
 
@@ -27,7 +27,8 @@ class TransientWindowObserver;
 // . If a transient parent is hidden, it hides all transient children.
 //   For show operation, please refer to |set_parent_controls_visibility(bool)|.
 // Transient windows are typically used for popups and menus.
-class WM_CORE_EXPORT TransientWindowManager : public aura::WindowObserver {
+class COMPONENT_EXPORT(UI_WM) TransientWindowManager
+    : public aura::WindowObserver {
  public:
   using Windows = std::vector<aura::Window*>;
 

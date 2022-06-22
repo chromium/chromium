@@ -7,12 +7,12 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace aura {
 class Env;
@@ -26,20 +26,22 @@ class LocatedEvent;
 namespace wm {
 
 // Sets the modal parent for the child.
-WM_CORE_EXPORT void SetModalParent(aura::Window* child, aura::Window* parent);
+COMPONENT_EXPORT(UI_WM)
+void SetModalParent(aura::Window* child, aura::Window* parent);
 
 // Returns the modal transient child of |window|, or NULL if |window| does not
 // have any modal transient children.
-WM_CORE_EXPORT aura::Window* GetModalTransient(aura::Window* window);
-WM_CORE_EXPORT const aura::Window* GetModalTransient(
-    const aura::Window* window);
+COMPONENT_EXPORT(UI_WM) aura::Window* GetModalTransient(aura::Window* window);
+COMPONENT_EXPORT(UI_WM)
+const aura::Window* GetModalTransient(const aura::Window* window);
 
 // WindowModalityController is an event filter that consumes events sent to
 // windows that are the transient parents of window-modal windows. This filter
 // must be added to the CompoundEventFilter so that activation works properly.
-class WM_CORE_EXPORT WindowModalityController : public ui::EventHandler,
-                                                public aura::EnvObserver,
-                                                public aura::WindowObserver {
+class COMPONENT_EXPORT(UI_WM) WindowModalityController
+    : public ui::EventHandler,
+      public aura::EnvObserver,
+      public aura::WindowObserver {
  public:
   explicit WindowModalityController(ui::EventTarget* event_target,
                                     aura::Env* env = nullptr);

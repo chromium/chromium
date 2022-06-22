@@ -5,14 +5,14 @@
 #ifndef UI_WM_CORE_TRANSIENT_WINDOW_STACKING_CLIENT_H_
 #define UI_WM_CORE_TRANSIENT_WINDOW_STACKING_CLIENT_H_
 
+#include "base/component_export.h"
 #include "ui/aura/client/window_stacking_client.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace wm {
 
 class TransientWindowManager;
 
-class WM_CORE_EXPORT TransientWindowStackingClient
+class COMPONENT_EXPORT(UI_WM) TransientWindowStackingClient
     : public aura::client::WindowStackingClient {
  public:
   TransientWindowStackingClient();

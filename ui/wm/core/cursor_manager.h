@@ -7,13 +7,13 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace ui {
 class KeyEvent;
@@ -32,8 +32,9 @@ class NativeCursorManager;
 // requests to queue any further changes until a later time. It sends changes
 // to the NativeCursorManager, which communicates back to us when these changes
 // were made through the NativeCursorManagerDelegate interface.
-class WM_CORE_EXPORT CursorManager : public aura::client::CursorClient,
-                                     public NativeCursorManagerDelegate {
+class COMPONENT_EXPORT(UI_WM) CursorManager
+    : public aura::client::CursorClient,
+      public NativeCursorManagerDelegate {
  public:
   explicit CursorManager(std::unique_ptr<NativeCursorManager> delegate);
 

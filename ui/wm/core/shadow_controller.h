@@ -7,9 +7,9 @@
 
 #include <map>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "ui/wm/core/wm_core_export.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
@@ -30,7 +30,8 @@ class ShadowControllerDelegate;
 // shadows as needed. ShadowController itself is light weight and per
 // ActivationClient. ShadowController delegates to its implementation class,
 // which observes all window creation.
-class WM_CORE_EXPORT ShadowController : public ActivationChangeObserver {
+class COMPONENT_EXPORT(UI_WM) ShadowController
+    : public ActivationChangeObserver {
  public:
   // Returns the shadow for the |window|, or NULL if no shadow exists.
   static ui::Shadow* GetShadowForWindow(aura::Window* window);

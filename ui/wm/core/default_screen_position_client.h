@@ -5,15 +5,15 @@
 #ifndef UI_WM_CORE_DEFAULT_SCREEN_POSITION_CLIENT_H_
 #define UI_WM_CORE_DEFAULT_SCREEN_POSITION_CLIENT_H_
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/screen_position_client.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace wm {
 
 // Client that always offsets by the toplevel RootWindow of the passed
 // in child NativeWidgetAura.
-class WM_CORE_EXPORT DefaultScreenPositionClient
+class COMPONENT_EXPORT(UI_WM) DefaultScreenPositionClient
     : public aura::client::ScreenPositionClient {
  public:
   explicit DefaultScreenPositionClient(aura::Window* root_window);
