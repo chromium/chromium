@@ -81,7 +81,8 @@ void HardwareInfoDelegate::Factory::SetForTesting(Factory* test_factory) {
 HardwareInfoDelegate::Factory::~Factory() = default;
 
 HardwareInfoDelegate::HardwareInfoDelegate()
-    : probe_service_(remote_probe_service_.BindNewPipeAndPassReceiver()) {}
+    : probe_service_(ash::ProbeService::Factory::Create(
+          remote_probe_service_.BindNewPipeAndPassReceiver())) {}
 
 HardwareInfoDelegate::~HardwareInfoDelegate() {
   remote_probe_service_.reset();

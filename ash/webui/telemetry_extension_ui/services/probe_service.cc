@@ -8,6 +8,7 @@
 
 #include "ash/webui/telemetry_extension_ui/services/probe_service_converters.h"
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -20,6 +21,26 @@ namespace {
 namespace cros_healthd = ::ash::cros_healthd;
 constexpr char kOemDataLogName[] = "oemdata";
 }  // namespace
+
+// static
+ProbeService::Factory* ProbeService::Factory::test_factory_ = nullptr;
+
+// static
+std::unique_ptr<health::mojom::ProbeService> ProbeService::Factory::Create(
+    mojo::PendingReceiver<health::mojom::ProbeService> receiver) {
+  if (test_factory_) {
+    return test_factory_->CreateInstance(std::move(receiver));
+  }
+
+  return base::WrapUnique<ProbeService>(new ProbeService(std::move(receiver)));
+}
+
+// static
+void ProbeService::Factory::SetForTesting(ProbeService::Factory* test_factory) {
+  test_factory_ = test_factory;
+}
+
+ProbeService::Factory::~Factory() = default;
 
 ProbeService::ProbeService(
     mojo::PendingReceiver<health::mojom::ProbeService> receiver)

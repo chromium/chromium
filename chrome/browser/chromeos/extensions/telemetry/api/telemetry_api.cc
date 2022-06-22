@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/webui/telemetry_extension_ui/services/probe_service.h"
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api_converters.h"
@@ -18,8 +19,12 @@
 
 namespace chromeos {
 
+// TelemetryApiFunctionBase ----------------------------------------------------
+
 TelemetryApiFunctionBase::TelemetryApiFunctionBase()
-    : probe_service_(remote_probe_service_.BindNewPipeAndPassReceiver()) {}
+    : probe_service_(ash::ProbeService::Factory::Create(
+          remote_probe_service_.BindNewPipeAndPassReceiver())) {}
+
 TelemetryApiFunctionBase::~TelemetryApiFunctionBase() = default;
 
 // OsTelemetryGetBatteryInfoFunction -------------------------------------------

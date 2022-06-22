@@ -49,7 +49,7 @@ class HardwareInfoDelegate {
                        std::string probe_service_result);
 
   mojo::Remote<ash::health::mojom::ProbeService> remote_probe_service_;
-  ash::ProbeService probe_service_;
+  std::unique_ptr<ash::health::mojom::ProbeService> probe_service_;
 };
 
 }  // namespace chromeos

@@ -52,8 +52,9 @@ class ProbeServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   mojo::Remote<health::mojom::ProbeService> remote_probe_service_;
-  ProbeService probe_service_{
-      remote_probe_service_.BindNewPipeAndPassReceiver()};
+  std::unique_ptr<ash::health::mojom::ProbeService> probe_service_{
+      ProbeService::Factory::Create(
+          remote_probe_service_.BindNewPipeAndPassReceiver())};
 
   FakeDebugDaemonClient* fake_debugd_client_ = nullptr;
 };
