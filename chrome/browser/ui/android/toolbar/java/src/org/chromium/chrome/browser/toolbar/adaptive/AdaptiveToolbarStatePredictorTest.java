@@ -109,21 +109,6 @@ public class AdaptiveToolbarStatePredictorTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-            ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void
-    testWorksWithDataCollectionFeatureFlag() {
-        ShadowChromeFeatureList.sParamValues.put("mode", "always-voice");
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(
-                true, AdaptiveToolbarButtonVariant.VOICE, true, AdaptiveToolbarButtonVariant.SHARE);
-        UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.VOICE,
-                AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.UNKNOWN);
-        statePredictor.recomputeUiState(verifyResultCallback(expected));
-    }
-
-    @Test
-    @SmallTest
     public void testManualOverride() {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);

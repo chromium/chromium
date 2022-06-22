@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
@@ -68,9 +67,7 @@ import java.util.Map;
                 AdaptiveToolbarButtonControllerTest.ShadowChromeFeatureList.class,
                 AdaptiveToolbarButtonControllerTest.ShadowVoiceRecognitionHandler.class})
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-        ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
-@DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
+@EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AdaptiveToolbarButtonControllerTest {
     // TODO(crbug.com/1199025): Remove this shadow.
     @Implements(ChromeFeatureList.class)
@@ -133,182 +130,6 @@ public class AdaptiveToolbarButtonControllerTest {
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
         SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void testDestroy_alwaysNone() {
-        setModeParam(AdaptiveToolbarFeatures.ALWAYS_NONE);
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-        adaptiveToolbarButtonController.destroy();
-
-        verify(mShareButtonController).destroy();
-        verify(mVoiceToolbarButtonController).destroy();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void testDestroy_alwaysNewTab() {
-        setModeParam(AdaptiveToolbarFeatures.ALWAYS_NEW_TAB);
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
-        adaptiveToolbarButtonController.destroy();
-
-        verify(mNewTabButtonController).destroy();
-        verify(mNewTabButtonController).removeObserver(adaptiveToolbarButtonController);
-        verify(mShareButtonController).destroy();
-        verify(mVoiceToolbarButtonController).destroy();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void testDestroy_alwaysShare() {
-        setModeParam(AdaptiveToolbarFeatures.ALWAYS_SHARE);
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
-        adaptiveToolbarButtonController.destroy();
-
-        verify(mNewTabButtonController).destroy();
-        verify(mShareButtonController).destroy();
-        verify(mShareButtonController).removeObserver(adaptiveToolbarButtonController);
-        verify(mVoiceToolbarButtonController).destroy();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void testDestroy_alwaysVoice() {
-        setModeParam(AdaptiveToolbarFeatures.ALWAYS_VOICE);
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
-        adaptiveToolbarButtonController.destroy();
-
-        verify(mNewTabButtonController).destroy();
-        verify(mShareButtonController).destroy();
-        verify(mVoiceToolbarButtonController).destroy();
-        verify(mVoiceToolbarButtonController).removeObserver(adaptiveToolbarButtonController);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void testGet_alwaysShare() {
-        setModeParam(AdaptiveToolbarFeatures.ALWAYS_SHARE);
-        mButtonData.setButtonSpec(makeButtonSpec(AdaptiveToolbarButtonVariant.SHARE));
-
-        when(mShareButtonController.get(any())).thenReturn(mButtonData);
-
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
-        ButtonData buttonData = adaptiveToolbarButtonController.get(mTab);
-        adaptiveToolbarButtonController.destroy();
-
-        Assert.assertEquals(101, buttonData.getButtonSpec().getContentDescriptionResId());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void testGet_alwaysVoice() {
-        setModeParam(AdaptiveToolbarFeatures.ALWAYS_VOICE);
-        mButtonData.setButtonSpec(makeButtonSpec(AdaptiveToolbarButtonVariant.VOICE));
-
-        when(mVoiceToolbarButtonController.get(any())).thenReturn(mButtonData);
-
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
-        ButtonData buttonData = adaptiveToolbarButtonController.get(mTab);
-        adaptiveToolbarButtonController.destroy();
-
-        Assert.assertEquals(101, buttonData.getButtonSpec().getContentDescriptionResId());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void testMetrics() {
-        setModeParam(AdaptiveToolbarFeatures.ALWAYS_SHARE);
-        mButtonData.setCanShow(true);
-        mButtonData.setEnabled(true);
-        mButtonData.setButtonSpec(makeButtonSpec(AdaptiveToolbarButtonVariant.SHARE));
-        when(mShareButtonController.get(any())).thenReturn(mButtonData);
-
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
-        ButtonData buttonData = adaptiveToolbarButtonController.get(mTab);
-
-        Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
-                        "Android.AdaptiveToolbarButton.SessionVariant",
-                        AdaptiveToolbarButtonVariant.SHARE));
-        Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.AdaptiveToolbarButton.SessionVariant"));
-
-        View view = mock(View.class);
-        buttonData.getButtonSpec().getOnClickListener().onClick(view);
-        buttonData.getButtonSpec().getOnClickListener().onClick(view);
-
-        Assert.assertEquals(2,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
-                        "Android.AdaptiveToolbarButton.Clicked",
-                        AdaptiveToolbarButtonVariant.SHARE));
-        Assert.assertEquals(2,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.AdaptiveToolbarButton.Clicked"));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void testAddObserver_alwaysShare() {
-        setModeParam(AdaptiveToolbarFeatures.ALWAYS_SHARE);
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
-        adaptiveToolbarButtonController.destroy();
-
-        verify(mShareButtonController).addObserver(adaptiveToolbarButtonController);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void testAddObserver_alwaysVoice() {
-        setModeParam(AdaptiveToolbarFeatures.ALWAYS_VOICE);
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
-        adaptiveToolbarButtonController.destroy();
-
-        verify(mVoiceToolbarButtonController).addObserver(adaptiveToolbarButtonController);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void testButtonDataChanged() {
-        setModeParam(AdaptiveToolbarFeatures.ALWAYS_VOICE);
-        ButtonDataObserver observer = mock(ButtonDataObserver.class);
-
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
-        adaptiveToolbarButtonController.addObserver(observer);
-        adaptiveToolbarButtonController.buttonDataChanged(true);
-        adaptiveToolbarButtonController.destroy();
-
-        verify(observer).buttonDataChanged(true);
     }
 
     @Test
@@ -448,40 +269,6 @@ public class AdaptiveToolbarButtonControllerTest {
 
         verify(settingsLauncher)
                 .launchSettingsActivity(activity, AdaptiveToolbarPreferenceFragment.class);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-            ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
-    public void
-    testLegacyVoiceToolbarFeature() {
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
-
-        Assert.assertEquals(mVoiceToolbarButtonController,
-                adaptiveToolbarButtonController.getSingleProviderForTesting());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-            ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
-    public void
-    testLegacyShareToolbarFeature() {
-        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
-
-        Assert.assertEquals(mShareButtonController,
-                adaptiveToolbarButtonController.getSingleProviderForTesting());
-    }
-
-    private static void setModeParam(String modeValue) {
-        ShadowChromeFeatureList.sParamValues.put("mode", modeValue);
     }
 
     private AdaptiveToolbarButtonController buildController() {

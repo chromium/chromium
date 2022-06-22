@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.signin.TangibleSyncCoordinator;
@@ -212,9 +211,7 @@ public class MainSettings extends PreferenceFragmentCompat
 
         new AdaptiveToolbarStatePredictor(null).recomputeUiState(uiState -> {
             // We don't show the toolbar shortcut settings page if disabled from finch.
-            // Note, we can still have the old data collection experiment running for which
-            // |canShowUi| might be true. In that case, just hide the settings page.
-            if (uiState.canShowUi && !AdaptiveToolbarFeatures.isSingleVariantModeEnabled()) return;
+            if (uiState.canShowUi) return;
             getPreferenceScreen().removePreference(findPreference(PREF_TOOLBAR_SHORTCUT));
         });
     }

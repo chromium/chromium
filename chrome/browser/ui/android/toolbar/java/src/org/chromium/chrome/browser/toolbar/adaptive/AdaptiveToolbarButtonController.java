@@ -219,11 +219,7 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
 
     @Override
     public void onFinishNativeInitialization() {
-        if (AdaptiveToolbarFeatures.isSingleVariantModeEnabled()) {
-            @AdaptiveToolbarButtonVariant
-            int variant = AdaptiveToolbarFeatures.getSingleVariantMode();
-            setSingleProvider(mButtonDataProviderMap.get(variant));
-        } else if (AdaptiveToolbarFeatures.isCustomizationEnabled()) {
+        if (AdaptiveToolbarFeatures.isCustomizationEnabled()) {
             mAdaptiveToolbarStatePredictor.recomputeUiState(uiState -> {
                 setSingleProvider(uiState.canShowUi
                                 ? mButtonDataProviderMap.get(uiState.toolbarButtonState)

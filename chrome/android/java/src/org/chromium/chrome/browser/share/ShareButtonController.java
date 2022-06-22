@@ -181,7 +181,7 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
 
     private void updateButtonVisibility(Tab tab) {
         if (tab == null || tab.getWebContents() == null || mTabProvider == null
-                || mTabProvider.get() == null || !isFeatureEnabled()) {
+                || mTabProvider.get() == null) {
             mButtonData.setCanShow(false);
             return;
         }
@@ -194,13 +194,6 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
         }
 
         mButtonData.setCanShow(mShareUtils.shouldEnableShare(tab));
-    }
-
-    private static boolean isFeatureEnabled() {
-        return (AdaptiveToolbarFeatures.isSingleVariantModeEnabled()
-                       && AdaptiveToolbarFeatures.getSingleVariantMode()
-                               == AdaptiveToolbarButtonVariant.SHARE)
-                || AdaptiveToolbarFeatures.isCustomizationEnabled();
     }
 
     private void notifyObservers(boolean hint) {
