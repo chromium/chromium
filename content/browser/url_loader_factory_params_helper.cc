@@ -222,11 +222,12 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       static_cast<StoragePartitionImpl*>(process->GetStoragePartition())
           ->CreateCookieAccessObserverForServiceWorker(),
       std::move(url_loader_network_observer), std::move(devtools_observer),
-      // Since ExecutionContext::IsFeatureEnabled returns
-      // false in non-Document contexts, no worker should ever
-      // execute a trust token redemption or signing operation,
-      // as these operations require the Permissions Policy feature.
-      network::mojom::TrustTokenRedemptionPolicy::kForbid, debug_tag);
+      // Trust Token redemption and signing operations require the Permissions
+      // Policy. It seems Permissions Policy in worker contexts
+      // is currently an open issue (as of 06/21/2022):
+      // https://github.com/w3c/webappsec-permissions-policy/issues/207.
+      network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit,
+      debug_tag);
 }
 
 // static

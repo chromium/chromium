@@ -58,7 +58,8 @@ blink::mojom::FetchAPIRequestPtr BackgroundFetchSettledFetch::CloneRequest(
       request->referrer.Clone(), request->credentials_mode, request->cache_mode,
       request->redirect_mode, request->integrity, request->priority,
       request->fetch_window_id, request->keepalive, request->is_reload,
-      request->is_history_navigation, request->devtools_stack_id);
+      request->is_history_navigation, request->devtools_stack_id,
+      request->trust_token_params.Clone());
 }
 
 }  // namespace content
