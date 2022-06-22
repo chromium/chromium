@@ -39,9 +39,6 @@ class HTMLQuoteElement final : public HTMLElement {
   bool IsURLAttribute(const Attribute&) const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
   const QualifiedName& SubResourceAttributeName() const override;
-  void WillRecalcStyle(const StyleRecalcChange) override;
-  void CollectExtraStyleForPresentationAttribute(
-      MutableCSSPropertyValueSet*) override;
 };
 
 inline bool IsHTMLQuoteElement(const HTMLElement& element) {
