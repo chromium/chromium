@@ -407,11 +407,6 @@ void URLRequestJob::NotifyHeadersComplete() {
   if (has_handled_response_)
     return;
 
-  // The URLRequest status should still be IO_PENDING, which it was set to
-  // before the URLRequestJob was started.  On error or cancellation, this
-  // method should not be called.
-  DCHECK_EQ(ERR_IO_PENDING, request_->status());
-
   // Initialize to the current time, and let the subclass optionally override
   // the time stamps if it has that information.  The default request_time is
   // set by URLRequest before it calls our Start method.

@@ -808,6 +808,7 @@ int URLRequest::NotifyConnected(const TransportInfo& info,
 
 void URLRequest::NotifyReceivedRedirect(const RedirectInfo& redirect_info,
                                         bool* defer_redirect) {
+  DCHECK_EQ(OK, status_);
   is_redirecting_ = true;
   OnCallToDelegate(NetLogEventType::URL_REQUEST_DELEGATE_RECEIVED_REDIRECT);
   delegate_->OnReceivedRedirect(this, redirect_info, defer_redirect);
@@ -1019,6 +1020,7 @@ void URLRequest::SetPriority(RequestPriority priority) {
 
 void URLRequest::NotifyAuthRequired(
     std::unique_ptr<AuthChallengeInfo> auth_info) {
+  DCHECK_EQ(OK, status_);
   DCHECK(auth_info);
   // Check that there are no callbacks to already failed or cancelled requests.
   DCHECK(!failed());
@@ -1080,6 +1082,10 @@ void URLRequest::NotifyReadCompleted(int bytes_read) {
 }
 
 void URLRequest::OnHeadersComplete() {
+  // The URLRequest status should still be IO_PENDING, which it was set to
+  // before the URLRequestJob was started.  On error or cancellation, this
+  // method should not be called.
+  DCHECK_EQ(ERR_IO_PENDING, status_);
   set_status(OK);
   // Cache load timing information now, as information will be lost once the
   // socket is closed and the ClientSocketHandle is Reset, which will happen
