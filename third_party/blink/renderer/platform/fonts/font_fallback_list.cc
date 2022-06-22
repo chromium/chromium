@@ -43,9 +43,7 @@
 namespace blink {
 
 FontFallbackList::FontFallbackList(FontFallbackMap& font_fallback_map)
-    : cached_primary_simple_font_data_(nullptr),
-      font_fallback_map_(font_fallback_map),
-      family_index_(0),
+    : font_fallback_map_(font_fallback_map),
       generation_(FontCache::Get().Generation()),
       has_loading_fallback_(false),
       has_custom_font_(false),
