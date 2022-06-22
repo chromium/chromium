@@ -310,6 +310,7 @@ tast_disabled_tests_from_chrome_all = [
 
   # http://b/236312054
   "crostini.AppGeditFilesharing",
+  "crostini.AppGeditFilesharing.stable",
 
   # http://crbug.com/1338038
   "arc.IMEBlockingVK",
