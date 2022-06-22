@@ -1825,9 +1825,10 @@ AttributionStorageSql::CapacityForStoringReport(
   if (!statement.Step())
     return ConversionCapacityStatus::kError;
   int64_t count = statement.ColumnInt64(0);
-  return count < delegate_->GetMaxAttributionsPerOrigin(report_type)
-             ? ConversionCapacityStatus::kHasCapacity
-             : ConversionCapacityStatus::kNoCapacity;
+  int max = delegate_->GetMaxReportsPerDestination(report_type);
+  DCHECK_GT(max, 0);
+  return count < max ? ConversionCapacityStatus::kHasCapacity
+                     : ConversionCapacityStatus::kNoCapacity;
 }
 
 std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {

@@ -204,7 +204,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   int GetMaxAttributionsPerSource(
       AttributionSourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
-  int GetMaxAttributionsPerOrigin(
+  int GetMaxReportsPerDestination(
       AttributionReport::ReportType report_type) const override;
   RateLimitConfig GetRateLimits() const override;
   int GetMaxDestinationsPerSourceSiteReportingOrigin() const override;
@@ -227,7 +227,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_max_sources_per_origin(int max);
 
-  void set_max_attributions_per_origin(
+  void set_max_reports_per_destination(
       AttributionReport::ReportType report_type,
       int max);
 
@@ -267,8 +267,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
  private:
   int max_attributions_per_source_ = INT_MAX;
   int max_sources_per_origin_ = INT_MAX;
-  int max_event_level_attributions_per_origin_ = INT_MAX;
-  int max_aggregatable_attributions_per_origin_ = INT_MAX;
+  int max_event_level_reports_per_destination_ = INT_MAX;
+  int max_aggregatable_reports_per_destination_ = INT_MAX;
   int max_destinations_per_source_site_reporting_origin_ = INT_MAX;
   int64_t aggregatable_budget_per_source_ = std::numeric_limits<int64_t>::max();
 

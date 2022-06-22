@@ -567,10 +567,10 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
                           SourceEventIdIs(7u), SourceEventIdIs(11u)));
 }
 
-TEST_F(AttributionStorageTest, MaxEventLevelAttributionsPerOrigin) {
+TEST_F(AttributionStorageTest, MaxEventLevelReportsPerDestination) {
   SourceBuilder source_builder = TestAggregatableSourceProvider().GetBuilder();
 
-  delegate()->set_max_attributions_per_origin(
+  delegate()->set_max_reports_per_destination(
       AttributionReport::ReportType::kEventLevel, 1);
   storage()->StoreSource(source_builder.Build());
   storage()->StoreSource(source_builder.Build());
@@ -582,7 +582,7 @@ TEST_F(AttributionStorageTest, MaxEventLevelAttributionsPerOrigin) {
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess)));
 
-  // Verify that MaxAttributionsPerOrigin is enforced.
+  // Verify that MaxReportsPerDestination is enforced.
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
                   DefaultAggregatableTriggerBuilder().Build()),
               AllOf(CreateReportEventLevelStatusIs(
@@ -593,10 +593,10 @@ TEST_F(AttributionStorageTest, MaxEventLevelAttributionsPerOrigin) {
                     ReplacedEventLevelReportIs(absl::nullopt)));
 }
 
-TEST_F(AttributionStorageTest, MaxAggregatableAttributionsPerOrigin) {
+TEST_F(AttributionStorageTest, MaxAggregatableReportsPerDestination) {
   SourceBuilder source_builder = TestAggregatableSourceProvider().GetBuilder();
 
-  delegate()->set_max_attributions_per_origin(
+  delegate()->set_max_reports_per_destination(
       AttributionReport::ReportType::kAggregatableAttribution, 1);
   storage()->StoreSource(source_builder.Build());
   storage()->StoreSource(source_builder.Build());
@@ -608,7 +608,7 @@ TEST_F(AttributionStorageTest, MaxAggregatableAttributionsPerOrigin) {
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess)));
 
-  // Verify that MaxAttributionsPerOrigin is enforced.
+  // Verify that MaxReportsPerDestination is enforced.
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
                   DefaultAggregatableTriggerBuilder().Build()),
               AllOf(CreateReportEventLevelStatusIs(

@@ -88,11 +88,11 @@ class AttributionStorageDelegate {
   virtual int GetMaxSourcesPerOrigin() const = 0;
 
   // Returns the maximum number of reports of the given type that can be in
-  // storage at any time for an attribution top-level origin. Note that since
+  // storage at any time for a destination site. Note that since
   // reporting origins are the actual entities that invoke attribution
   // registration, we could consider changing this limit to be keyed by an
   // <attribution origin, reporting origin> tuple.
-  virtual int GetMaxAttributionsPerOrigin(
+  virtual int GetMaxReportsPerDestination(
       AttributionReport::ReportType) const = 0;
 
   // Returns the maximum number of distinct attribution destinations that can
