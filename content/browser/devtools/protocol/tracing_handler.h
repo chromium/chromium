@@ -57,6 +57,9 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
 
   static std::vector<TracingHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
+  // Adds an additional process to tracing configuration, if tracing is active.
+  void AddProcess(base::ProcessId pid);
+
   // DevToolsDomainHandler implementation.
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
@@ -160,6 +163,7 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   std::unique_ptr<DevToolsVideoConsumer> video_consumer_;
   int number_of_screenshots_from_video_consumer_ = 0;
   perfetto::TraceConfig trace_config_;
+  std::unordered_set<base::ProcessId> pids_being_traced_;
   std::unique_ptr<PerfettoTracingSession> session_;
   base::WeakPtrFactory<TracingHandler> weak_factory_{this};
 

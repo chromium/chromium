@@ -1,5 +1,8 @@
 <script>
-for (var i = 0; i < 2; ++i) {
+iterLimit = 2;
+if (location.search !== '')
+  iterLimit = parseInt(location.search.substr(1));
+for (var i = 0; i < iterLimit; ++i) {
   navigator.joinAdInterestGroup({
     name: i,
     owner: "https://a.test:8443/",

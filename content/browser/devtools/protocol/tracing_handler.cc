@@ -782,6 +782,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
       buffer_usage_reporting_interval.fromMaybe(0);
   did_initiate_recording_ = true;
   trace_config_ = std::move(trace_config);
+  pids_being_traced_.clear();
 
   GpuProcessHost* gpu_process_host =
       GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED,
@@ -820,21 +821,21 @@ void TracingHandler::SetupProcessFilter(
     return;
 
   base::ProcessId browser_pid = base::Process::Current().Pid();
-  std::unordered_set<base::ProcessId> included_process_ids({browser_pid});
+  pids_being_traced_.insert(browser_pid);
 
   if (gpu_pid != base::kNullProcessId)
-    included_process_ids.insert(gpu_pid);
+    pids_being_traced_.insert(gpu_pid);
 
   if (new_render_frame_host)
-    AppendProcessId(new_render_frame_host, &included_process_ids);
+    AppendProcessId(new_render_frame_host, &pids_being_traced_);
 
   DCHECK(!frame_host_->GetParent());
   for (FrameTreeNode* node : frame_host_->frame_tree()->Nodes()) {
     if (RenderFrameHost* frame_host = node->current_frame_host())
-      AppendProcessId(frame_host, &included_process_ids);
+      AppendProcessId(frame_host, &pids_being_traced_);
   }
 
-  AddPidsToProcessFilter(included_process_ids, trace_config_);
+  AddPidsToProcessFilter(pids_being_traced_, trace_config_);
 }
 
 void TracingHandler::AppendProcessId(
@@ -851,13 +852,17 @@ void TracingHandler::AppendProcessId(
 }
 
 void TracingHandler::OnProcessReady(RenderProcessHost* process_host) {
+  AddProcess(process_host->GetProcess().Pid());
+}
+
+void TracingHandler::AddProcess(base::ProcessId pid) {
   if (!did_initiate_recording_)
     return;
-  std::unordered_set<base::ProcessId> included_process_ids(
-      {process_host->GetProcess().Pid()});
-
-  AddPidsToProcessFilter(included_process_ids, trace_config_);
-  session_->ChangeTraceConfig(trace_config_);
+  if (!pids_being_traced_.insert(pid).second)
+    return;
+  AddPidsToProcessFilter({pid}, trace_config_);
+  if (session_)
+    session_->ChangeTraceConfig(trace_config_);
 }
 
 void TracingHandler::AttemptAdoptStartupSession(

@@ -1,0 +1,7 @@
+Tracing of FLEDGE worklets.
+Recording started
+Auction winner:undefined
+Tracing complete
+Saw too few bidders:0
+Saw too few sellers:0
+

@@ -47,11 +47,6 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   // Returns true if the worklet should start in the paused state.
   bool should_pause_on_start() const { return should_pause_on_start_; }
 
-  // Looks up the PID the worklet is running in. If it's available immediately,
-  // it's returned. If not, nullopt is returned and |callback| will be invoked
-  // when it's available.
-  absl::optional<base::ProcessId> GetPid(PidCallback callback);
-
  private:
   friend class AuctionRunner;
   friend class AuctionWorkletManager;
@@ -77,6 +72,9 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   // NotifyDestroyed() observers.
   ~DebuggableAuctionWorklet();
 
+  void RequestPid();
+  void OnHavePid(base::ProcessId process_id);
+
   const raw_ptr<RenderFrameHostImpl> owning_frame_ = nullptr;
   const raw_ptr<AuctionProcessManager::ProcessHandle> process_handle_ = nullptr;
   const GURL url_;
@@ -86,6 +84,8 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   absl::variant<auction_worklet::mojom::BidderWorklet*,
                 auction_worklet::mojom::SellerWorklet*>
       worklet_;
+
+  base::WeakPtrFactory<DebuggableAuctionWorklet> weak_ptr_factory_{this};
 };
 
 }  // namespace content

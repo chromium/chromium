@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 
 #include "base/strings/strcat.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -32,11 +33,6 @@ void DebuggableAuctionWorklet::ConnectDevToolsAgent(
   }
 }
 
-absl::optional<base::ProcessId> DebuggableAuctionWorklet::GetPid(
-    PidCallback callback) {
-  return process_handle_->GetPid(std::move(callback));
-}
-
 DebuggableAuctionWorklet::DebuggableAuctionWorklet(
     RenderFrameHostImpl* owning_frame,
     AuctionProcessManager::ProcessHandle* process_handle,
@@ -48,6 +44,7 @@ DebuggableAuctionWorklet::DebuggableAuctionWorklet(
       worklet_(bidder_worklet) {
   DebuggableAuctionWorkletTracker::GetInstance()->NotifyCreated(
       this, should_pause_on_start_);
+  RequestPid();
 }
 
 DebuggableAuctionWorklet::DebuggableAuctionWorklet(
@@ -61,10 +58,24 @@ DebuggableAuctionWorklet::DebuggableAuctionWorklet(
       worklet_(seller_worklet) {
   DebuggableAuctionWorkletTracker::GetInstance()->NotifyCreated(
       this, should_pause_on_start_);
+  RequestPid();
 }
 
 DebuggableAuctionWorklet::~DebuggableAuctionWorklet() {
   DebuggableAuctionWorkletTracker::GetInstance()->NotifyDestroyed(this);
+}
+
+void DebuggableAuctionWorklet::RequestPid() {
+  absl::optional<base::ProcessId> maybe_pid = process_handle_->GetPid(
+      base::BindOnce(&DebuggableAuctionWorklet::OnHavePid,
+                     weak_ptr_factory_.GetWeakPtr()));
+  if (maybe_pid.has_value())
+    OnHavePid(maybe_pid.value());
+}
+
+void DebuggableAuctionWorklet::OnHavePid(base::ProcessId process_id) {
+  devtools_instrumentation::DidCreateProcessForAuctionWorklet(owning_frame_,
+                                                              process_id);
 }
 
 }  // namespace content

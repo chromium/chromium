@@ -1,0 +1,7 @@
+Tracing of FLEDGE worklets.
+Recording started
+Auction winner:urn:uuid:(randomized)
+Tracing complete
+Saw enough bidders
+Saw enough sellers
+

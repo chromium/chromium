@@ -37,6 +37,11 @@ http/tests/inspector-protocol/target/auto-attach-sub-sub-frame.js [ Skip ]
 http/tests/inspector-protocol/target/message-to-detached-session.js [ Skip ]
 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/fenced-frame-in-oopif-auto-attach.js [ Skip ]
 
+# Rely on OOPIF for an iframe to be a separate devtools target
+http/tests/inspector-protocol/timeline/auction-worklet-frame.js [ Skip ]
+virtual/fledge/http/tests/inspector-protocol/timeline/auction-worklet-frame.js [ Skip ]
+
+
 # Fix to unblock wpt-importer
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-multi-globals.sub.html [ Failure ]
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
