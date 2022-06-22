@@ -7,6 +7,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_header.h"
@@ -119,6 +120,11 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
   if (nudge_widget_)
     return;
 
+  // TODO(sammiequon): Tablet mode nudge will be different as there is no title
+  // bar with resize button.
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode())
+    return;
+
   // Only regular users can see the nudge.
   auto* session_controller = Shell::Get()->session_controller();
   const absl::optional<user_manager::UserType> user_type =
@@ -142,16 +148,17 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
     return;
   }
 
+  auto* frame_header = chromeos::FrameHeader::Get(
+      views::Widget::GetWidgetForNativeWindow(window));
+  // Frame might not be in tests.
+  if (!frame_header)
+    return;
+
   window_ = window;
   window_observation_.Observe(window_);
 
   // The anchor is the button on the header that serves as the maximize or
   // restore button (depending on the window state).
-  auto* frame_header = chromeos::FrameHeader::Get(
-      views::Widget::GetWidgetForNativeWindow(window_));
-  // Frame might not be in tests.
-  if (!frame_header)
-    return;
   anchor_view_ = frame_header->caption_button_container()->size_button();
   DCHECK(anchor_view_);
 
