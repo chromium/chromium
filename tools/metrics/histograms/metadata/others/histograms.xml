@@ -10039,44 +10039,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="PurgeAndSuspend.Experimental.MemoryGrowth"
-    units="KB" expires_after="M81">
-<!-- Name completed by histogram_suffixes name="PurgeAndSuspendExperiment" -->
-
-  <owner>tasak@google.com</owner>
-  <summary>
-    The growth of the background renderer's memory usage after a background
-    renderer is purged. This is recorded 5, 10 and 15 minutes after the purge.
-  </summary>
-</histogram>
-
-<histogram name="PurgeAndSuspend.Experimental.TimeToFirstActivePaint"
-    units="ms" expires_after="M81">
-  <obsolete>
-    Removed 2020-10.
-  </obsolete>
-  <owner>tasak@google.com</owner>
-  <summary>
-    Time elapsed from when the backgrounded and purged renderer is foregrounded
-    until the renderer is painted. This is recorded every time the backgrounded
-    and purged renderer is foregrounded.
-  </summary>
-</histogram>
-
-<histogram
-    name="PurgeAndSuspend.Experimental.TimeToFirstActivePaint.AfterBackgrounded.5min"
-    units="ms" expires_after="M81">
-  <obsolete>
-    Removed 2020-10.
-  </obsolete>
-  <owner>tasak@google.com</owner>
-  <summary>
-    Time elapsed from when the renderer, which is kept backgrounded for more
-    than 5 minutes, is foregrounded until the renderer is painted. This is
-    recorded every time such renderer is foregrounded.
-  </summary>
-</histogram>
-
 <histogram name="PushMessaging.BackgroundBudget" units="units"
     expires_after="2018-08-30">
   <owner>peter@chromium.org</owner>

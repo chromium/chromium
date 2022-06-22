@@ -8345,43 +8345,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PLT.BeginToFinish_NormalLoad"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PurgeAndSuspendExperiment" separator=".">
-  <suffix base="true" name="BlinkGCKB"
-      label="Constrained to the BlinkGC allocator"/>
-  <suffix base="true" name="DiscardableKB"
-      label="Constrained to discardable memory usage"/>
-  <suffix base="true" name="MallocKB" label="Constrained to malloc usage"/>
-  <suffix base="true" name="PartitionAllocKB"
-      label="Constrained to the ParitionAlloc allocator"/>
-  <suffix base="true" name="TotalAllocatedKB"
-      label="Summed over the PartitionAlloc, malloc, discardable memory,
-             mainThreadIsolate() and BlinkGC allocators"/>
-  <suffix base="true" name="V8MainThreadIsolateKB"
-      label="Constrained to memory usage by mainThreadIsolate()"/>
-  <affected-histogram name="PurgeAndSuspend.Experimental.MemoryGrowth"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PurgeAndSuspendExperimentPerHalfHour" separator=".">
-  <suffix name="30min"
-      label="Constrained to each allocator 30min after purging"/>
-  <suffix name="60min"
-      label="Constrained to each allocator 60min after purging"/>
-  <suffix name="90min"
-      label="Constrained to each allocator 90min after purging"/>
-  <affected-histogram
-      name="PurgeAndSuspend.Experimental.MemoryGrowth.BlinkGCKB"/>
-  <affected-histogram
-      name="PurgeAndSuspend.Experimental.MemoryGrowth.DiscardableKB"/>
-  <affected-histogram
-      name="PurgeAndSuspend.Experimental.MemoryGrowth.MallocKB"/>
-  <affected-histogram
-      name="PurgeAndSuspend.Experimental.MemoryGrowth.PartitionAllocKB"/>
-  <affected-histogram
-      name="PurgeAndSuspend.Experimental.MemoryGrowth.TotalAllocatedKB"/>
-  <affected-histogram
-      name="PurgeAndSuspend.Experimental.MemoryGrowth.V8MainThreadIsolateKB"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="QueryTimeSuffix" separator=".">
   <suffix name="0" label="N = 0"/>
   <suffix name="1" label="N = 1"/>
@@ -8630,51 +8593,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Event.Latency.Renderer"/>
   <affected-histogram name="Event.Latency.Renderer2"/>
   <affected-histogram name="Event.Latency.RendererImpl"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RendererMemoryAllocator" separator=".">
-  <suffix base="true" name="BlinkGC"
-      label="Constrained to the BlinkGC allocator"/>
-  <suffix base="true" name="Discardable"
-      label="Constrained to discardable memory usage"/>
-  <suffix base="true" name="Malloc" label="Constrained to malloc usage"/>
-  <suffix base="true" name="NonDiscardableTotalAllocated"
-      label="Summed over the PartitionAlloc, malloc, mainThreadIsolate() and
-             BlinkGC allocators"/>
-  <suffix base="true" name="PartitionAlloc"
-      label="Constrained to the PartitionAlloc allocator"/>
-  <suffix base="true" name="TotalAllocated"
-      label="Summed over the PartitionAlloc, malloc, discardable memory,
-             mainThreadIsolate() and BlinkGC allocators"/>
-  <suffix base="true" name="TotalAllocatedPerRenderView"
-      label="TotalAllocated divided by the number of RenderViews"/>
-  <suffix base="true" name="V8MainThreadIsolate"
-      label="Constrained to memory usage by mainThreadIsolate()"/>
-  <affected-histogram name="Memory.Experimental.Renderer"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RendererMemoryTiming" separator=".">
-  <suffix name="AfterBackgrounded.5min"
-      label="Recorded 5 minutes after backgrounded."/>
-  <suffix name="AfterBackgrounded.10min"
-      label="Recorded 10 minutes after backgrounded."/>
-  <suffix name="AfterBackgrounded.15min"
-      label="Recorded 15 minutes after backgrounded."/>
-  <suffix name="DidFinishLoad"
-      label="Recorded each time DidFinishLoad is called for *any* frame
-             within the page."/>
-  <suffix name="MainFrameDidFinishLoad"
-      label="Recorded when DidFinishLoad is called for the main frame."/>
-  <affected-histogram name="Memory.Experimental.Renderer.BlinkGC"/>
-  <affected-histogram name="Memory.Experimental.Renderer.Discardable"/>
-  <affected-histogram name="Memory.Experimental.Renderer.Malloc"/>
-  <affected-histogram
-      name="Memory.Experimental.Renderer.NonDiscardableTotalAllocated"/>
-  <affected-histogram name="Memory.Experimental.Renderer.PartitionAlloc"/>
-  <affected-histogram name="Memory.Experimental.Renderer.TotalAllocated"/>
-  <affected-histogram
-      name="Memory.Experimental.Renderer.TotalAllocatedPerRenderView"/>
-  <affected-histogram name="Memory.Experimental.Renderer.V8MainThreadIsolate"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="RendererScheduler_AfterNthMinuteInBackgroundSplit"
