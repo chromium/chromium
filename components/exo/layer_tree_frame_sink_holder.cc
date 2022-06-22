@@ -4,6 +4,7 @@
 
 #include "components/exo/layer_tree_frame_sink_holder.h"
 
+#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/trees/layer_tree_frame_sink.h"
@@ -11,6 +12,9 @@
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "gpu/command_buffer/client/context_support.h"
+#include "gpu/command_buffer/client/gles2_interface.h"
+#include "ui/gfx/gpu_fence.h"
 
 namespace exo {
 
@@ -19,9 +23,13 @@ namespace exo {
 
 LayerTreeFrameSinkHolder::LayerTreeFrameSinkHolder(
     SurfaceTreeHost* surface_tree_host,
-    std::unique_ptr<cc::LayerTreeFrameSink> frame_sink)
+    std::unique_ptr<cc::LayerTreeFrameSink> frame_sink,
+    scoped_refptr<viz::ContextProvider> context_provider)
     : surface_tree_host_(surface_tree_host),
-      frame_sink_(std::move(frame_sink)) {
+      frame_sink_(std::move(frame_sink)),
+      context_provider_(context_provider),
+      use_gpu_fence_(
+          context_provider_->ContextCapabilities().chromium_gpu_fence) {
   frame_sink_->BindToClient(this);
 }
 
@@ -110,17 +118,19 @@ LayerTreeFrameSinkHolder::BuildHitTestData() {
 
 void LayerTreeFrameSinkHolder::ReclaimResources(
     std::vector<viz::ReturnedResource> resources) {
-  for (auto& resource : resources) {
-    // Skip resources that are also in last frame. This can happen if
-    // the frame sink id changed.
-    if (base::Contains(last_frame_resources_, resource.id)) {
-      continue;
-    }
-    resource_manager_.ReclaimResource(std::move(resource));
+  if (!use_gpu_fence_) {
+    ReclaimResourcesInternal(std::move(resources), nullptr);
+    return;
   }
 
-  if (lifetime_manager_ && resource_manager_.HasNoCallbacks())
-    ScheduleDelete();
+  // See the comment at ReclaimResourcesInternal's declaration.
+  gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
+  auto gpu_fence_id = gles2->CreateGpuFenceCHROMIUM();
+  context_provider_->ContextSupport()->GetGpuFence(
+      gpu_fence_id,
+      base::BindOnce(&LayerTreeFrameSinkHolder::ReclaimResourcesInternal,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(resources)));
+  gles2->DestroyGpuFenceCHROMIUM(gpu_fence_id);
 }
 
 void LayerTreeFrameSinkHolder::DidReceiveCompositorFrameAck() {
@@ -164,6 +174,26 @@ void LayerTreeFrameSinkHolder::OnDestroyed() {
   frame_sink_->DetachFromClient();
   frame_sink_.reset();
   ScheduleDelete();
+}
+
+void LayerTreeFrameSinkHolder::ReclaimResourcesInternal(
+    std::vector<viz::ReturnedResource> resources,
+    std::unique_ptr<gfx::GpuFence> release_fence) {
+  for (auto& resource : resources) {
+    // Skip resources that are also in last frame. This can happen if
+    // the frame sink id changed.
+    if (base::Contains(last_frame_resources_, resource.id)) {
+      continue;
+    }
+
+    if (resource.release_fence.is_null() && release_fence)
+      resource.release_fence = release_fence->GetGpuFenceHandle().Clone();
+
+    resource_manager_.ReclaimResource(std::move(resource));
+  }
+
+  if (lifetime_manager_ && resource_manager_.HasNoCallbacks())
+    ScheduleDelete();
 }
 
 }  // namespace exo

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/exo/frame_sink_resource_manager.h"
 #include "components/exo/wm_helper.h"
@@ -14,7 +15,12 @@
 #include "components/viz/common/resources/release_callback.h"
 
 namespace viz {
+class ContextProvider;
 struct FrameTimingDetails;
+}
+
+namespace gfx {
+class GpuFence;
 }
 
 namespace cc {
@@ -30,8 +36,10 @@ class SurfaceTreeHost;
 class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
                                  public WMHelper::LifetimeManager::Observer {
  public:
-  LayerTreeFrameSinkHolder(SurfaceTreeHost* surface_tree_host,
-                           std::unique_ptr<cc::LayerTreeFrameSink> frame_sink);
+  LayerTreeFrameSinkHolder(
+      SurfaceTreeHost* surface_tree_host,
+      std::unique_ptr<cc::LayerTreeFrameSink> frame_sink,
+      scoped_refptr<viz::ContextProvider> context_provider);
 
   LayerTreeFrameSinkHolder(const LayerTreeFrameSinkHolder&) = delete;
   LayerTreeFrameSinkHolder& operator=(const LayerTreeFrameSinkHolder&) = delete;
@@ -78,8 +86,17 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   // WMHelper::LifetimeManager::Observer:
   void OnDestroyed() override;
 
+  // |release_fence| is a fence that is created when ReclaimResources call comes
+  // and that is used for those resources that do not have fences. That
+  // happens when resources are not overlaid, but rather composited.
+  // TODO(crbug.com/1310136): this should be managed by SkiaRenderer instead.
+  void ReclaimResourcesInternal(std::vector<viz::ReturnedResource> resources,
+                                std::unique_ptr<gfx::GpuFence> release_fence);
+
   SurfaceTreeHost* surface_tree_host_;
   std::unique_ptr<cc::LayerTreeFrameSink> frame_sink_;
+  scoped_refptr<viz::ContextProvider> context_provider_;
+  const bool use_gpu_fence_;
 
   FrameSinkResourceManager resource_manager_;
 
@@ -92,6 +109,8 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   bool delete_pending_ = false;
 
   WMHelper::LifetimeManager* lifetime_manager_ = nullptr;
+
+  base::WeakPtrFactory<LayerTreeFrameSinkHolder> weak_ptr_factory_{this};
 };
 
 }  // namespace exo
