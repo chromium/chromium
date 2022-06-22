@@ -2038,6 +2038,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.GuestView.ChangeOwnerWebContentsOnAttach"
+    enum="Boolean" expires_after="2023-02-01">
+  <owner>mcnee@chromium.org</owner>
+  <owner>src/components/guest_view/OWNERS</owner>
+  <summary>
+    It is possible for a Chrome Apps webview to be attached to a WebContents
+    that did not create it. This reports True if attachment involves a change to
+    the owner WebContents or False if attachment does not change the owner.
+
+    We'd like to understand how common this case is, as this is architecturally
+    complex to support.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.HasPermissions_Install3" enum="Boolean"
     expires_after="never">
 <!-- expires-never: Monitoring extension usage. -->
