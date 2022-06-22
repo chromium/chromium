@@ -456,8 +456,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   bool load_model_on_startup_ = true;
 };
 
+// Disabled. https://crbug.com/1338408
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       ModelExecutes) {
+                       DISABLED_ModelExecutes) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
