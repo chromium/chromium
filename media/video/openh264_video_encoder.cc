@@ -28,6 +28,7 @@ void SetUpOpenH264Params(const VideoEncoder::Options& options,
   params->iComplexityMode = MEDIUM_COMPLEXITY;
   params->iUsageType = CAMERA_VIDEO_REAL_TIME;
   params->bEnableDenoise = false;
+  params->eSpsPpsIdStrategy = SPS_LISTING;
   // Set to 1 due to https://crbug.com/583348
   params->iMultipleThreadIdc = 1;
   if (options.framerate.has_value())
