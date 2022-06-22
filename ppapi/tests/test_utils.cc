@@ -49,7 +49,8 @@ const PPB_Testing_Private* GetTestingInterface() {
 
 std::string ReportError(const char* method, int32_t error) {
   char error_as_string[12];
-  sprintf(error_as_string, "%d", static_cast<int>(error));
+  snprintf(error_as_string, sizeof(error_as_string), "%d",
+           static_cast<int>(error));
   std::string result = method + std::string(" failed with error: ") +
       error_as_string;
   return result;

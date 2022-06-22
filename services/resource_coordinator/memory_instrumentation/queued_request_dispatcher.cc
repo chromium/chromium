@@ -619,7 +619,7 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
       request->failed_memory_dump_count);
 
   char guid_str[20];
-  sprintf(guid_str, "0x%" PRIx64, request->dump_guid);
+  snprintf(guid_str, sizeof(guid_str), "0x%" PRIx64, request->dump_guid);
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       base::trace_event::MemoryDumpManager::kTraceCategory, "GlobalMemoryDump",
       TRACE_ID_LOCAL(request->dump_guid), "dump_guid", TRACE_STR_COPY(guid_str),
