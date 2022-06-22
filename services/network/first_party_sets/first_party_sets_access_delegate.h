@@ -80,15 +80,18 @@ class FirstPartySetsAccessDelegate
   [[nodiscard]] absl::optional<SetsByOwner> Sets(
       base::OnceCallback<void(SetsByOwner)> callback);
 
-  // Returns nullopt if First-Party Sets is disabled or if the input is not in
-  // a nontrivial set.
+  // Returns optional(nullopt) if First-Party Sets is disabled or if the input
+  // is not in a nontrivial set.
   // If FPS is enabled and the input site is in a nontrivial set, then this
-  // returns the owner site of that set.
+  // returns a non-empty optional containing the owner site of that set.
   //
   // This may return a result synchronously, or asynchronously invoke `callback`
   // with the result. The callback will be invoked iff the return value is
   // nullopt; i.e. a result will be provided via return value or callback, but
   // not both, and not neither.
+  //
+  // Note that there is a semantic difference between optional(nullopt) and
+  // nullopt.
   [[nodiscard]] absl::optional<OwnerResult> FindOwner(
       const net::SchemefulSite& site,
       base::OnceCallback<void(OwnerResult)> callback);
