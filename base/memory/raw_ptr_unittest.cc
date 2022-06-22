@@ -1398,6 +1398,26 @@ struct AsanStruct {
   void func() { ++x; }
 };
 
+#define ASAN_BRP_PROTECTED(x) "MiraclePtr Status: PROTECTED\\n.*" x
+#define ASAN_BRP_MANUAL_ANALYSIS(x) \
+  "MiraclePtr Status: MANUAL ANALYSIS REQUIRED\\n.*" x
+#define ASAN_BRP_NOT_PROTECTED(x) "MiraclePtr Status: NOT PROTECTED\\n.*" x
+
+const char* kAsanBrpProtected_Dereference =
+    ASAN_BRP_PROTECTED("dangling pointer was being dereferenced");
+const char* kAsanBrpMaybeProtected_Extraction = ASAN_BRP_MANUAL_ANALYSIS(
+    "pointer to the same region was extracted from a raw_ptr<T>");
+const char* kAsanBrpNotProtected_Instantiation = ASAN_BRP_NOT_PROTECTED(
+    "pointer to an already freed region was assigned to a raw_ptr<T>");
+const char* kAsanBrpNotProtected_EarlyAllocation = ASAN_BRP_NOT_PROTECTED(
+    "region was allocated before MiraclePtr was activated");
+const char* kAsanBrpNotProtected_NoRawPtrAccess =
+    ASAN_BRP_NOT_PROTECTED("No raw_ptr<T> access to this region was detected");
+
+#undef ASAN_BRP_PROTECTED
+#undef ASAN_BRP_MANUAL_ANALYSIS
+#undef ASAN_BRP_NOT_PROTECTED
+
 TEST(AsanBackupRefPtrImpl, Dereference) {
   if (RawPtrAsanService::GetInstance().mode() !=
       RawPtrAsanService::Mode::kEnabled) {
@@ -1420,13 +1440,13 @@ TEST(AsanBackupRefPtrImpl, Dereference) {
   delete protected_ptr.get();
 
   EXPECT_DEATH_IF_SUPPORTED((*protected_ptr).x = 1,
-                            "dangling pointer was being dereferenced");
+                            kAsanBrpProtected_Dereference);
   EXPECT_DEATH_IF_SUPPORTED((*protected_ptr).func(),
-                            "dangling pointer was being dereferenced");
+                            kAsanBrpProtected_Dereference);
   EXPECT_DEATH_IF_SUPPORTED(++(protected_ptr->x),
-                            "dangling pointer was being dereferenced");
+                            kAsanBrpProtected_Dereference);
   EXPECT_DEATH_IF_SUPPORTED(protected_ptr->func(),
-                            "dangling pointer was being dereferenced");
+                            kAsanBrpProtected_Dereference);
 }
 
 TEST(AsanBackupRefPtrImpl, Extraction) {
@@ -1452,7 +1472,7 @@ TEST(AsanBackupRefPtrImpl, Extraction) {
         AsanStruct* ptr2 = protected_ptr;
         ptr2->x = 1;
       },
-      "pointer to the same region was extracted from a raw_ptr<T>");
+      kAsanBrpMaybeProtected_Extraction);
 }
 
 TEST(AsanBackupRefPtrImpl, Instantiation) {
@@ -1475,7 +1495,7 @@ TEST(AsanBackupRefPtrImpl, Instantiation) {
 
   EXPECT_DEATH_IF_SUPPORTED(
       { [[maybe_unused]] raw_ptr<AsanStruct> protected_ptr2 = ptr; },
-      "pointer to an already freed region was assigned to a raw_ptr<T>");
+      kAsanBrpNotProtected_Instantiation);
 }
 
 TEST(AsanBackupRefPtrImpl, InstantiationInvalidPointer) {
@@ -1519,7 +1539,7 @@ TEST(AsanBackupRefPtrImpl, UserPoisoned) {
   delete ptr;  // Should crash now.
   EXPECT_DEATH_IF_SUPPORTED(
       { [[maybe_unused]] raw_ptr<AsanStruct> protected_ptr2 = ptr; },
-      "pointer to an already freed region was assigned to a raw_ptr<T>");
+      kAsanBrpNotProtected_Instantiation);
 }
 
 TEST(AsanBackupRefPtrImpl, EarlyAllocationDetection) {
@@ -1530,22 +1550,31 @@ TEST(AsanBackupRefPtrImpl, EarlyAllocationDetection) {
     return;
   }
 
-  AsanStruct* ptr1 = new AsanStruct;
+  raw_ptr<AsanStruct> unsafe_ptr = new AsanStruct;
 
   base::RawPtrAsanService::GetInstance().Configure(
       base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
       base::EnableInstantiationCheck(true));
 
-  AsanStruct* ptr2 = new AsanStruct;
+  raw_ptr<AsanStruct> safe_ptr = new AsanStruct;
 
-  EXPECT_FALSE(RawPtrAsanService::GetInstance().IsSupportedAllocation(ptr1));
-  EXPECT_TRUE(RawPtrAsanService::GetInstance().IsSupportedAllocation(ptr2));
+  EXPECT_FALSE(
+      RawPtrAsanService::GetInstance().IsSupportedAllocation(unsafe_ptr.get()));
+  EXPECT_TRUE(
+      RawPtrAsanService::GetInstance().IsSupportedAllocation(safe_ptr.get()));
 
-  delete ptr1;
-  delete ptr2;
+  delete safe_ptr.get();
+  delete unsafe_ptr.get();
 
-  EXPECT_FALSE(RawPtrAsanService::GetInstance().IsSupportedAllocation(ptr1));
-  EXPECT_TRUE(RawPtrAsanService::GetInstance().IsSupportedAllocation(ptr2));
+  EXPECT_FALSE(
+      RawPtrAsanService::GetInstance().IsSupportedAllocation(unsafe_ptr.get()));
+  EXPECT_TRUE(
+      RawPtrAsanService::GetInstance().IsSupportedAllocation(safe_ptr.get()));
+
+  EXPECT_DEATH_IF_SUPPORTED({ unsafe_ptr->func(); },
+                            kAsanBrpNotProtected_EarlyAllocation);
+  EXPECT_DEATH_IF_SUPPORTED({ safe_ptr->func(); },
+                            kAsanBrpProtected_Dereference);
 }
 
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
