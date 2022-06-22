@@ -45,11 +45,6 @@ static CGLPixelFormatObj GetPixelFormat() {
     attribs.push_back(kCGLPFAAllowOfflineRenderers);
     g_support_renderer_switching = true;
   }
-  if (GetGLImplementation() == kGLImplementationAppleGL) {
-    attribs.push_back(kCGLPFARendererID);
-    attribs.push_back((CGLPixelFormatAttribute) kCGLRendererGenericFloatID);
-    g_support_renderer_switching = false;
-  }
   if (GetGLImplementation() == kGLImplementationDesktopGLCoreProfile) {
     attribs.push_back(kCGLPFAOpenGLProfile);
     attribs.push_back((CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core);

@@ -66,7 +66,6 @@ std::vector<GLImplementationParts> GetAllowedGLImplementations() {
   impls.emplace_back(
       GLImplementationParts(kGLImplementationDesktopGLCoreProfile));
   impls.emplace_back(GLImplementationParts(kGLImplementationDesktopGL));
-  impls.emplace_back(GLImplementationParts(kGLImplementationAppleGL));
 #if defined(USE_EGL)
   impls.emplace_back(GLImplementationParts(kGLImplementationEGLGLES2));
   impls.emplace_back(GLImplementationParts(kGLImplementationEGLANGLE));
@@ -86,7 +85,6 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
   switch (GetGLImplementation()) {
     case kGLImplementationDesktopGL:
     case kGLImplementationDesktopGLCoreProfile:
-    case kGLImplementationAppleGL:
       return InitializeGLContext(new GLContextCGL(share_group),
                                  compatible_surface, attribs);
 #if defined(USE_EGL)
@@ -114,7 +112,6 @@ scoped_refptr<GLSurface> CreateViewGLSurface(gfx::AcceleratedWidget window) {
   switch (GetGLImplementation()) {
     case kGLImplementationDesktopGL:
     case kGLImplementationDesktopGLCoreProfile:
-    case kGLImplementationAppleGL:
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE: {
       NOTIMPLEMENTED() << "No onscreen support on Mac.";
@@ -135,7 +132,6 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
   switch (GetGLImplementation()) {
     case kGLImplementationDesktopGL:
     case kGLImplementationDesktopGLCoreProfile:
-    case kGLImplementationAppleGL:
       return InitializeGLSurfaceWithFormat(
           new NoOpGLSurface(size), format);
 #if defined(USE_EGL)

@@ -23,7 +23,6 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
   switch (gl::GetGLImplementation()) {
     case gl::kGLImplementationDesktopGL:
     case gl::kGLImplementationDesktopGLCoreProfile:
-    case gl::kGLImplementationAppleGL:
       return base::WrapRefCounted<gl::GLSurface>(
           new ImageTransportSurfaceOverlayMac(delegate));
 #if defined(USE_EGL)

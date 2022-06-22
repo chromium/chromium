@@ -52,11 +52,6 @@ bool InitializeOneOffForSandbox() {
     // format selection.
     attribs.push_back(kCGLPFAAllowOfflineRenderers);
   }
-  if (GetGLImplementation() == kGLImplementationAppleGL) {
-    attribs.push_back(kCGLPFARendererID);
-    attribs.push_back(
-        static_cast<CGLPixelFormatAttribute>(kCGLRendererGenericFloatID));
-  }
   attribs.push_back(static_cast<CGLPixelFormatAttribute>(0));
 
   CGLPixelFormatObj format;
@@ -175,7 +170,6 @@ GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
   switch (GetGLImplementation()) {
     case kGLImplementationDesktopGL:
     case kGLImplementationDesktopGLCoreProfile:
-    case kGLImplementationAppleGL:
       if (!InitializeOneOffForSandbox()) {
         LOG(ERROR) << "GLSurfaceCGL::InitializeOneOff failed.";
       }
@@ -212,7 +206,6 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
   switch (implementation.gl) {
     case kGLImplementationDesktopGL:
     case kGLImplementationDesktopGLCoreProfile:
-    case kGLImplementationAppleGL:
       return InitializeStaticCGLInternal(implementation.gl);
 #if defined(USE_EGL)
     case kGLImplementationEGLGLES2:

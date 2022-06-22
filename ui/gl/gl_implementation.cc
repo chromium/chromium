@@ -68,9 +68,6 @@ std::string GLImplementationParts::ToString() const {
     case GLImplementation::kGLImplementationDesktopGLCoreProfile:
       s << "desktop-gl-core-profile";
       break;
-    case GLImplementation::kGLImplementationAppleGL:
-      s << "apple-gl";
-      break;
     case GLImplementation::kGLImplementationEGLGLES2:
       s << "egl-gles2";
       break;
@@ -133,10 +130,6 @@ const struct {
 } kGLImplementationNamePairs[] = {
     {kGLImplementationDesktopName, kANGLEImplementationNoneName,
      GLImplementationParts(kGLImplementationDesktopGL)},
-#if BUILDFLAG(IS_APPLE)
-    {kGLImplementationAppleName, kANGLEImplementationNoneName,
-     GLImplementationParts(kGLImplementationAppleGL)},
-#endif
     {kGLImplementationEGLName, kANGLEImplementationNoneName,
      GLImplementationParts(kGLImplementationEGLGLES2)},
     {kGLImplementationANGLEName, kANGLEImplementationNoneName,
@@ -365,8 +358,7 @@ ANGLEImplementation GetANGLEImplementation() {
 
 bool HasDesktopGLFeatures() {
   return kGLImplementationDesktopGL == g_gl_implementation.gl ||
-         kGLImplementationDesktopGLCoreProfile == g_gl_implementation.gl ||
-         kGLImplementationAppleGL == g_gl_implementation.gl;
+         kGLImplementationDesktopGLCoreProfile == g_gl_implementation.gl;
 }
 
 void AddGLNativeLibrary(base::NativeLibrary library) {
