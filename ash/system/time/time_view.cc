@@ -382,15 +382,15 @@ void TimeView::SetupSubviews(ClockLayout clock_layout) {
       vertical_view_->AddChildView(std::make_unique<views::Label>());
   SetupLabel(vertical_label_hours_);
   vertical_label_hours_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(0, 0, 0, kVerticalDateClockHorizontalPadding)));
+      gfx::Insets::VH(0, kVerticalDateClockHorizontalPadding)));
 
   vertical_label_minutes_ =
       vertical_view_->AddChildView(std::make_unique<views::Label>());
   SetupLabel(vertical_label_minutes_);
   // Pull the minutes up closer to the hours by using a negative top border.
-  vertical_label_minutes_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kVerticalClockMinutesTopOffset, 0, 0,
-                        kVerticalDateClockHorizontalPadding)));
+  vertical_label_minutes_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kVerticalClockMinutesTopOffset, kVerticalDateClockHorizontalPadding, 0,
+      kVerticalDateClockHorizontalPadding)));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   AddChildView(clock_layout == ClockLayout::HORIZONTAL_CLOCK
