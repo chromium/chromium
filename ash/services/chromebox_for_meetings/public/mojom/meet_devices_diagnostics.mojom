@@ -4,7 +4,7 @@
 
 module chromeos.cfm.mojom;
 
-import "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom";
+import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom";
 
 // Interface defined by chromium specifically for the ChromeboxForMeetings
 // platform to query system diagnostics of devices in the fleet.

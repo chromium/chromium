@@ -16,9 +16,9 @@
 #include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

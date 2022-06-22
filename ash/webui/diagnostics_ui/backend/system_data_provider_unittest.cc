@@ -21,11 +21,11 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

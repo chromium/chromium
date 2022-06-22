@@ -115,6 +115,7 @@ test("chromeos_unittests") {
     deps += [
       ":test_support",
       "//chromeos/ash/components:unit_tests",
+      "//chromeos/ash/services:unit_tests",
       "//chromeos/crosapi/cpp:unit_tests",
       "//chromeos/crosapi/mojom:unit_tests",
       "//chromeos/dbus:test_support",

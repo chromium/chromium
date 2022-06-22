@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
 namespace ash {
 namespace diagnostics {

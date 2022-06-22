@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace policy {
@@ -45,8 +45,8 @@ class DeviceCommandRunRoutineJob : public RemoteCommandJob {
   // Which routine the DeviceCommandRunRoutineJob will run.
   chromeos::cros_healthd::mojom::DiagnosticRoutineEnum routine_enum_;
   // Parameters for the routine to be run. See
-  // chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom for details
-  // on the parameters accepted by each individual routine.
+  // chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details on the parameters accepted by each individual routine.
   base::Value params_dict_;
 
   base::WeakPtrFactory<DeviceCommandRunRoutineJob> weak_ptr_factory_{this};

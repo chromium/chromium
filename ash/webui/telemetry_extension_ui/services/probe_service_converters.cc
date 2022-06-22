@@ -10,7 +10,7 @@
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
 namespace ash {
 namespace converters {

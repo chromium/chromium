@@ -11,7 +11,7 @@ mojom("mojom") {
   sources = [ "wilco_dtc_supportd.mojom" ]
 
   public_deps = [
-    "//chromeos/services/cros_healthd/public/mojom",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
     "//mojo/public/mojom/base",
   ]
 }

@@ -5,8 +5,8 @@
 #ifndef ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_CROS_HEALTHD_HELPERS_H_
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_CROS_HEALTHD_HELPERS_H_
 
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-forward.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-forward.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
 
 namespace ash {
 namespace diagnostics {

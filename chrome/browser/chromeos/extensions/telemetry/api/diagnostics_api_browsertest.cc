@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

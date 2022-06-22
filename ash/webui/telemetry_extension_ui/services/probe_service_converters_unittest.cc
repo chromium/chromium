@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -6,7 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

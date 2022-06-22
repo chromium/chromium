@@ -5,7 +5,7 @@
 #include "ash/webui/telemetry_extension_ui/services/diagnostics_service_converters.h"
 
 #include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

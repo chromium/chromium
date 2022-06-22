@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/usb/usb_events_observer.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
 using UsbEventInfoPtr = chromeos::cros_healthd::mojom::UsbEventInfoPtr;

@@ -8,10 +8,10 @@
 
 #include "ash/webui/telemetry_extension_ui/services/probe_service_converters.h"
 #include "base/bind.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

@@ -6,7 +6,7 @@
 #define ASH_WEBUI_TELEMETRY_EXTENSION_UI_SERVICES_LID_OBSERVER_H_
 
 #include "ash/webui/telemetry_extension_ui/mojom/system_events_service.mojom-forward.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"

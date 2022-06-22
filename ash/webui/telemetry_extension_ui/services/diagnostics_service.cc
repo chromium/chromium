@@ -9,9 +9,9 @@
 
 #include "ash/webui/telemetry_extension_ui/services/diagnostics_service_converters.h"
 #include "base/bind.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 
 namespace ash {
 

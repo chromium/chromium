@@ -6,9 +6,9 @@
 
 #include <utility>
 
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {

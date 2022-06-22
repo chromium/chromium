@@ -9,7 +9,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/metrics/metrics_provider.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/metrics_proto/system_profile.pb.h"

@@ -11,9 +11,9 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

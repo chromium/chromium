@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {

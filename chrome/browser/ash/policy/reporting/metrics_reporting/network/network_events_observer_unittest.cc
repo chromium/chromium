@@ -9,8 +9,8 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"

@@ -961,7 +961,7 @@
       'filepath': 'devtools',
     },
     'diagnostics_mojo': {
-      'filepath': 'chromeos/services/cros_healthd/public/mojom/',
+      'filepath': 'chromeos/ash/services/cros_healthd/public/mojom/',
     },
     'diagnostics_ui': {
       'filepath': 'ash/webui/diagnostics_ui/',
