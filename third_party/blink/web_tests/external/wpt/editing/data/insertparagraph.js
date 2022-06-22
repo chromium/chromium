@@ -2095,4 +2095,201 @@ var browserTests = [
      "<div>a &nbsp;</div><div>&nbsp;&nbsp;b</div>"],
     [true,true],
     {"insertparagraph":[false,false,"",false,false,""]}],
+
+// insertparagraph with selecting all text in a <div> which is the only
+// block in the editing host.
+// In this case, the <div> should be unwrapped and a <br> element should be
+// put there, then, new paragraph should be created after it.
+["<div>[abc]</div>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""]],
+    "<br><div><br></div>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<div>[abc]</div>",
+    [["defaultparagraphseparator","p"],["insertparagraph",""]],
+    "<br><p><br></p>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+
+// insertparagraph with selecting all text in a <p> which is the only block in
+// the editing host.
+// In this case, the <p> element should become empty but stay here, and new <p>
+// element should be created.
+["<p>[abc]</p>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""]],
+    "<p><br></p><p><br></p>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<p>[abc]</p>",
+    [["defaultparagraphseparator","p"],["insertparagraph",""]],
+    "<p><br></p><p><br></p>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+
+// insertparagraph with selecting all text in a paragraph which is not only
+// block in the editing host.
+// In this case, new same element should be created rather than respecting the
+// default paragraph separator, and caret should be moved to the new paragraph.
+["<div>abc</div><div>[def]</div>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""]],
+    "<div>abc</div><div><br></div><div><br></div>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<div>abc</div><p>[def]</p>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""]],
+    "<div>abc</div><p><br></p><p><br></p>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<div>abc</div><div>[def]</div>",
+    [["defaultparagraphseparator","p"],["insertparagraph",""]],
+    "<div>abc</div><div><br></div><div><br></div>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<div>abc</div><p>[def]</p>",
+    [["defaultparagraphseparator","p"],["insertparagraph",""]],
+    "<div>abc</div><p><br></p><p><br></p>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<div>abc</div><div>[def]</div>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""],["inserttext","d"]],
+    ["<div>abc</div><div><br></div><div>d</div>",
+     "<div>abc</div><div><br></div><div>d<br></div>"],
+    [true,true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<div>abc</div><p>[def]</p>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""],["inserttext","d"]],
+    ["<div>abc</div><p><br></p><p>d</p>",
+     "<div>abc</div><p><br></p><p>d<br></p>"],
+    [true,true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+
+// insertparagraph with selecting all text in a list-item which is only one of
+// the list.
+// In this case, the list and list-item elements should be unwrapped and create
+// a new paragraph whose type conforms to the default paragraph separator.
+["<ol><li>[abc]</li></ol>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""]],
+    "<div><br></div>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<ol><li>[abc]</li></ol>",
+    [["defaultparagraphseparator","p"],["insertparagraph",""]],
+    "<p><br></p>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<ol><li>[abc]</li></ol>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""],["inserttext","d"]],
+    ["<div>d</div>",
+     "<div>d<br></div>"],
+    [true,true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+
+// insertparagraph with selecting all text in a list-item which is the last
+// list item in the list.
+// In this case, the last list item should be deleted and new paragraph should
+// be created after the list element.
+["<ol><li>abc</li><li>[def]</li></ol>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""]],
+    "<ol><li>abc</li></ol><div><br></div>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<ol><li>abc</li><li>[def]</li></ol>",
+    [["defaultparagraphseparator","p"],["insertparagraph",""]],
+    "<ol><li>abc</li></ol><p><br></p>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<ol><li>abc</li><li>[def]</li></ol>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""],["inserttext","d"]],
+    ["<ol><li>abc</li></ol><div>d</div>",
+     "<ol><li>abc</li></ol><div>d<br></div>"],
+    [true,true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+
+// insertparagraph with selecting all text in a list-item which is not a middle
+// list item in the list.
+// In this case, the list should be split at the list item, and new paragraph
+// should be created between the list elements.
+["<ol><li>abc</li><li>[def]</li><li>ghi</li></ol>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""]],
+    "<ol><li>abc</li></ol><div><br></div><ol><li>ghi</li></ol>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<ol><li>abc</li><li>[def]</li><li>ghi</li></ol>",
+    [["defaultparagraphseparator","p"],["insertparagraph",""]],
+    "<ol><li>abc</li></ol><p><br></p><ol><li>ghi</li></ol>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<ol><li>abc</li><li>[def]</li><li>ghi</li></ol>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""],["inserttext","d"]],
+    ["<ol><li>abc</li></ol><div>d</div><ol><li>ghi</li></ol>",
+     "<ol><li>abc</li></ol><div>d<br></div><ol><li>ghi</li></ol>"],
+    [true,true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+
+// insertparagraph with selecting all text in a list-item which is the first
+// list item in the list.
+// In this case, the first list item should be deleted and new paragraph should
+// be created before the list element.
+["<ol><li>[abc]</li><li>def</li></ol>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""]],
+    "<div><br></div><ol><li>def</li></ol>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<ol><li>[abc]</li><li>def</li></ol>",
+    [["defaultparagraphseparator","p"],["insertparagraph",""]],
+    "<p><br></p><ol><li>def</li></ol>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<ol><li>[abc]</li><li>def</li></ol>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""],["inserttext","a"]],
+    ["<div>a</div><ol><li>def</li></ol>",
+     "<div>a<br></div><ol><li>def</li></ol>"],
+    [true,true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+
+// insertparagraph with selecting all text in a heading element.
+// In this case, the heading element should become empty, but stay there, and
+// a new paragraph should be created after it.
+["<h3>[abc]</h3>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""]],
+    "<h3><br></h3><div><br></div>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<h3>[abc]</h3>",
+    [["defaultparagraphseparator","p"],["insertparagraph",""]],
+    "<h3><br></h3><p><br></p>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<h3>[abc]</h3>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""],["inserttext","a"]],
+    ["<h3><br></h3><div>a</div>",
+     "<h3><br></h3><div>a<br></div>"],
+    [true,true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+
+// insertparagraph with selecting all text in a heading element which is
+// followed by a paragraph.
+// In this case, the heading element should become empty, but stay there, and
+// insert a new paragraph immediately after the heading element.
+["<h3>[abc]</h3><div>def</div>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""]],
+    "<h3><br></h3><div><br></div><div>def</div>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<h3>[abc]</h3><div>def</div>",
+    [["defaultparagraphseparator","p"],["insertparagraph",""]],
+    "<h3><br></h3><p><br></p><div>def</div>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<h3>[abc]</h3><p>def</p>",
+    [["defaultparagraphseparator","div"],["insertparagraph",""]],
+    "<h3><br></h3><div><br></div><p>def</p>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+["<h3>[abc]</h3><p>def</p>",
+    [["defaultparagraphseparator","p"],["insertparagraph",""]],
+    "<h3><br></h3><p><br></p><p>def</p>",
+    [true,true],
+    {"insertparagraph":[false,false,"",false,false,""]}],
+
 ]

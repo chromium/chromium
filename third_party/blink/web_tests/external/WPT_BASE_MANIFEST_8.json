@@ -2864,6 +2864,13 @@
         null,
         {}
        ]
+      ],
+      "zero-perspective-001.html": [
+       "923794ed60cd5c25f93922eaa72b84e3a8357b84",
+       [
+        null,
+        {}
+       ]
       ]
      },
      "large-matrix-crash.html": [
@@ -298000,7 +298007,7 @@
       []
      ],
      "insertparagraph.js": [
-      "784678161243b4931a80e36bd302f73ed56aac63",
+      "24d16f873ab7952c778cc373a12df73b573a33b6",
       []
      ],
      "inserttext.js": [
@@ -470472,7 +470479,7 @@
         ]
        ],
        "sandbox-inherit-to-blank-document-unsandboxed.html": [
-        "f60ab0da30ad82ff9a87d41af60fe68c96d29939",
+        "26b30cf72b73dab37535253c22a6aac3b53be364",
         [
          null,
          {}
