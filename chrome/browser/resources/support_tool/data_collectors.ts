@@ -10,8 +10,11 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BrowserProxy, BrowserProxyImpl, DataCollectorItem} from './browser_proxy.js';
 import {getTemplate} from './data_collectors.html.js';
+import {SupportToolPageMixin} from './support_tool_page_mixin.js';
 
-export class DataCollectorsElement extends PolymerElement {
+const DataCollectorsElementBase = SupportToolPageMixin(PolymerElement);
+
+export class DataCollectorsElement extends DataCollectorsElementBase {
   static get is() {
     return 'data-collectors';
   }

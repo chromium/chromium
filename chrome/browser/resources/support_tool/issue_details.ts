@@ -13,10 +13,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BrowserProxy, BrowserProxyImpl, IssueDetails} from './browser_proxy.js';
 import {getTemplate} from './issue_details.html.js';
+import {SupportToolPageMixin} from './support_tool_page_mixin.js';
 
 const DONT_INCLUDE_EMAIL: string = 'Do not include email address';
 
-export class IssueDetailsElement extends PolymerElement {
+const IssueDetailsElementBase = SupportToolPageMixin(PolymerElement);
+
+export class IssueDetailsElement extends IssueDetailsElementBase {
   static get is() {
     return 'issue-details';
   }

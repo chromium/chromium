@@ -14,6 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BrowserProxy, BrowserProxyImpl, PIIDataItem} from './browser_proxy.js';
 import {getTemplate} from './pii_selection.html.js';
+import {SupportToolPageMixin} from './support_tool_page_mixin.js';
 
 // Names of the radio buttons which allow the user to choose to keep or remove
 // their PII data.
@@ -24,7 +25,9 @@ enum PiiRadioButtons {
   UNSELECTED = 'unselected',
 }
 
-export class PIISelectionElement extends PolymerElement {
+const PIISelectionElementBase = SupportToolPageMixin(PolymerElement);
+
+export class PIISelectionElement extends PIISelectionElementBase {
   static get is() {
     return 'pii-selection';
   }

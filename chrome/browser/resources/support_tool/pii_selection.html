@@ -65,28 +65,30 @@
   }
 </style>
 
-<h1>Step 3 of 4: Review personally identifiable information</h1>
-<div id="pii-warning-text" class="support-tool-title">
+<h1 tabindex="0">
+  Step 3 of 4: Review personally identifiable information
+</h1>
+<div id="pii-warning-text" class="support-tool-title" tabindex="0">
   Diagnostic data collection is complete. Some of your personal information is
   included in this data.
 </div>
 <div id="radio-group">
   <cr-radio-group selected="[[selectedRadioButton_]]"
       on-selected-changed="onSelectedRadioButtonChanged_">
-    <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_ALL]]">
+    <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_ALL]]" tabindex="0">
       Include all personal information
     </cr-radio-button>
-    <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_NONE]]">
+    <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_NONE]]" tabindex="0">
       Automatically remove most personal information
     </cr-radio-button>
     <iron-collapse id="privacy-disclaimer"
         opened$="[[showDisclaimer_(selectedRadioButton_)]]">
-      <div>
+      <div tabindex="0">
         Some personal information may still be included in the data. Make sure
-        to review the exported files. 
+        to review the exported files.
       </div>
     </iron-collapse>
-    <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_SOME]]">
+    <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_SOME]]" tabindex="0">
       Manually select personal information you want to include
     </cr-radio-button>
   </cr-radio-group>
@@ -96,13 +98,13 @@
     <template is="dom-repeat" items="[[detectedPIIItems_]]">
       <div id="detected-pii-item">
         <cr-expand-button expanded="{{item.expandDetails}}">
-          <cr-checkbox checked="{{item.keep}}">
+          <cr-checkbox checked="{{item.keep}}" tabindex="0">
             [[item.piiTypeDescription]]: [[item.count]]
           </cr-checkbox>
         </cr-expand-button>
         <iron-collapse class="pii-item-collapse"
             opened="[[item.expandDetails]]">
-          <div class="pii-details">[[item.detectedData]]</div>
+          <div class="pii-details" tabindex="0">[[item.detectedData]]</div>
         </iron-collapse>
       </div>
     </template>

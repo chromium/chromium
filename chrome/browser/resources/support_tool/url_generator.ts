@@ -100,6 +100,7 @@ export class UrlGeneratorElement extends PolymerElement {
       this.generatedURL_ = result.url;
       navigator.clipboard.writeText(this.generatedURL_.toString());
       this.$.copyToast.show();
+      this.$.copyToast.focus();
     } else {
       this.showErrorMessageToast_(result.errorMessage);
     }

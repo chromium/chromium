@@ -12,8 +12,11 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './data_export_done.html.js';
+import {SupportToolPageMixin} from './support_tool_page_mixin.js';
 
-export class DataExportDoneElement extends PolymerElement {
+const DataExportDoneElementBase = SupportToolPageMixin(PolymerElement);
+
+export class DataExportDoneElement extends DataExportDoneElementBase {
   static get is() {
     return 'data-export-done';
   }

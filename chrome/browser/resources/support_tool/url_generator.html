@@ -27,16 +27,18 @@
   }
 </style>
 
-<h1>Get a Support Tool link</h1>
+<h1 tabindex="0">Get a Support Tool link</h1>
 <div class="support-tool-title">Support Case ID</div>
 <cr-input id="caseIdInput" class="support-case-id" value="{{caseId_}}"
-  spellcheck="false" maxlength="20"">
+  spellcheck="false" maxlength="20" aria-label="Support Case ID">
 </cr-input>
-<div class="support-tool-title">Data sources to collect</div>
-<div class="data-collector-list">
+<div id="data-sources-title" class="support-tool-title" tabindex="0">
+  Data sources to collect
+</div>
+<div class="data-collector-list" aria-labelledby="data-sources-title">
   <template is="dom-repeat" items="[[dataCollectors_]]">
     <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}" 
-        on-click="onDataCollectorItemClicked_">
+        on-click="onDataCollectorItemClicked_" tabindex="0">
       [[item.name]]
     </cr-checkbox>
   </template>
@@ -44,18 +46,22 @@
 
 <div class="support-tool-title">Get a link</div>
 <div id="info-text">
-  Copy and send this link to the user to collect the logs.
+  <span tabindex="0">
+    Copy and send this link to the user to collect the logs.
+  </span>
   <cr-button id="copyURLButton" class="navigation-buttons action-button"
       on-click="onCopyURLClick_" disabled="[[buttonDisabled_]]">
     Copy link
   </cr-button>
 </div>
-<cr-toast id="copyToast" duration="5000">
-  <span>Link copied</span>
+<cr-toast id="copyToast" duration="5000" tabindex="0"
+    aria-labelledby="link-copied-message">
+  <span id="link-copied-message">Link copied</span>
 </cr-toast>
-<cr-toast id="errorMessageToast" duration="0">
-  <span>[[errorMessage_]]</span>
+<cr-toast id="errorMessageToast" duration="0" tabindex="0"
+    aria-labelledby="error-message">
+  <span id="error-message">[[errorMessage_]]</span>
   <cr-icon-button on-click="onErrorMessageToastCloseClicked_"
-      iron-icon="cr:close">
+      iron-icon="cr:close" aria-label="close">
   </cr-icon-button>
 </cr-toast>
