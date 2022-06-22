@@ -60,7 +60,7 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,
                             int32_t request_id,
                             uint32_t options,
-                            const ResourceRequest& url_request,
+                            const ResourceRequest& resource_request,
                             mojo::PendingRemote<mojom::URLLoaderClient> client,
                             const net::MutableNetworkTrafficAnnotationTag&
                                 traffic_annotation) override;
@@ -90,7 +90,7 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
       mojo::PendingReceiver<mojom::URLLoader> receiver,
       int32_t request_id,
       uint32_t options,
-      const ResourceRequest& url_request,
+      const ResourceRequest& resource_request,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
       base::WeakPtr<mojom::URLLoaderClient> sync_client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
