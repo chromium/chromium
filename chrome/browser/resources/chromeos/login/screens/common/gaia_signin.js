@@ -579,6 +579,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    */
   onBeforeHide() {
     this.isShown_ = false;
+    this.authenticator_.resetWebview();
   }
 
   /**
