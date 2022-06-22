@@ -84,6 +84,33 @@ std::vector<std::string> GetCorsExemptHeaders() {
       ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
 
+static constexpr char const* kRendererSwitchesToCopy[] = {
+    blink::switches::kSharedArrayBufferAllowedOrigins,
+    switches::kCorsExemptHeaders,
+    switches::kEnableCastStreamingReceiver,
+    switches::kEnableProtectedVideoBuffers,
+    switches::kUseOverlaysForVideo,
+
+    // TODO(crbug/1013412): Delete these two switches when fixed.
+    switches::kEnableWidevine,
+    switches::kPlayreadyKeySystem,
+
+    // Pass to the renderer process for consistency with Chrome.
+    network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+};
+
+static constexpr char const*
+    kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy[] = {
+        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+};
+
+// These are passed to every child process and should only be used when it is
+// not possible to narrow the scope down to a subset of processes.
+static constexpr char const* kAllProcessSwitchesToCopy[] = {
+    // This is used by every child process in WebEngineContentClient.
+    switches::kEnableContentDirectories,
+};
+
 }  // namespace
 
 WebEngineContentBrowserClient::WebEngineContentBrowserClient()
@@ -187,22 +214,30 @@ bool WebEngineContentBrowserClient::ShouldEnableStrictSiteIsolation() {
 void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
     base::CommandLine* command_line,
     int child_process_id) {
-  // TODO(https://crbug.com/1083520): Pass based on process type.
-  constexpr char const* kSwitchesToCopy[] = {
-      blink::switches::kSharedArrayBufferAllowedOrigins,
-      switches::kCorsExemptHeaders,
-      switches::kEnableCastStreamingReceiver,
-      switches::kEnableContentDirectories,
-      switches::kEnableProtectedVideoBuffers,
-      switches::kEnableWidevine,
-      switches::kMaxDecodedImageSizeMb,
-      switches::kPlayreadyKeySystem,
-      network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-      switches::kUseOverlaysForVideo,
-  };
+  const base::CommandLine& browser_command_line =
+      *base::CommandLine::ForCurrentProcess();
 
-  command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                 kSwitchesToCopy, std::size(kSwitchesToCopy));
+  command_line->CopySwitchesFrom(browser_command_line,
+                                 kAllProcessSwitchesToCopy,
+                                 std::size(kAllProcessSwitchesToCopy));
+
+  std::string process_type =
+      command_line->GetSwitchValueASCII(switches::kProcessType);
+
+  if (process_type == switches::kRendererProcess) {
+    command_line->CopySwitchesFrom(browser_command_line,
+                                   kRendererSwitchesToCopy,
+                                   std::size(kRendererSwitchesToCopy));
+  } else if (process_type == switches::kUtilityProcess) {
+    // Although only the Network process needs
+    // kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy, differentiating utility
+    // process sub-types is non-trivial. ChromeContentBrowserClient appends this
+    // switch to all Utility processes so do the same here.
+    // Do not add other switches here.
+    command_line->CopySwitchesFrom(
+        browser_command_line, kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy,
+        std::size(kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy));
+  }
 }
 
 std::string WebEngineContentBrowserClient::GetApplicationLocale() {
