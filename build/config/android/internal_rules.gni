@@ -734,9 +734,12 @@ template("test_runner_script") {
       deps = invoker.deps
     }
     data_deps = [
-      "//build/android:test_runner_py",
+      "//build/android:test_runner_core_py",
       "//testing:test_scripts_shared",
     ]
+    if (_test_type != "junit") {
+      data_deps += [ "//build/android:test_runner_device_support" ]
+    }
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
     }

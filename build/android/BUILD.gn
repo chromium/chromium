@@ -120,24 +120,38 @@ python_library("apk_operations_py") {
   deps = [ ":apk_installer_data" ]
 }
 
-python_library("test_runner_py") {
+group("test_runner_py") {
+  testonly = true
+  deps = [
+    ":test_runner_core_py",
+    ":test_runner_device_support",
+  ]
+}
+
+python_library("test_runner_core_py") {
   testonly = true
   pydeps_file = "test_runner.pydeps"
   data = [
     "pylib/gtest/filter/",
     "pylib/instrumentation/render_test.html.jinja",
     "test_wrapper/logdog_wrapper.py",
+    "//third_party/requests/",
+  ]
+  data_deps = [ ":logdog_wrapper_py" ]
+}
+
+group("test_runner_device_support") {
+  testonly = true
+  data = [
     "${android_sdk_build_tools}/aapt",
     "${android_sdk_build_tools}/dexdump",
     "${android_sdk_build_tools}/lib64/libc++.so",
     "${android_sdk_build_tools}/split-select",
     "${android_sdk_root}/platform-tools/adb",
-    "//third_party/requests/",
   ]
   data_deps = [
     ":apk_installer_data",
     ":devil_chromium_py",
-    ":logdog_wrapper_py",
     ":stack_tools",
   ]
 
@@ -152,7 +166,7 @@ python_library("test_runner_py") {
 
   # Proguard is needed only when using apks (rather than native executables).
   if (enable_java_templates) {
-    deps = [ "//build/android/stacktrace:java_deobfuscate" ]
+    data_deps += [ "//build/android/stacktrace:java_deobfuscate" ]
   }
 }
 
