@@ -2174,8 +2174,6 @@ source_set("browser") {
     "webtransport/web_transport_throttle_context.h",
     "webui/content_web_ui_configs.cc",
     "webui/content_web_ui_configs.h",
-    "webui/content_web_ui_controller_factory.cc",
-    "webui/content_web_ui_controller_factory.h",
     "webui/network_error_url_loader.cc",
     "webui/network_error_url_loader.h",
     "webui/shared_resources_data_source.cc",
