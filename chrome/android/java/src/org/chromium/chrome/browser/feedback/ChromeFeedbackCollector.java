@@ -38,9 +38,9 @@ public class ChromeFeedbackCollector
 
     public ChromeFeedbackCollector(Activity activity, @Nullable String categoryTag,
             @Nullable String description, @Nullable ScreenshotSource screenshotSource,
-            InitParams initParams, Callback<FeedbackCollector> callback, Profile profile) {
+            InitParams initParams, Callback<FeedbackCollector> callback) {
         super(categoryTag, description, callback);
-        init(activity, screenshotSource, initParams, profile);
+        init(activity, screenshotSource, initParams);
     }
 
     @VisibleForTesting
