@@ -131,7 +131,21 @@ void RestoreIOTask::ValidateTrashInfo(size_t idx) {
       trash_parent_path.Append(trash_relative_folder_path)
           .Append(kFilesFolderName)
           .Append(trash_info.BaseName().RemoveFinalExtension());
-  if (!base::PathExists(trashed_file_location)) {
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&base::PathExists, trashed_file_location),
+      base::BindOnce(&RestoreIOTask::OnTrashedFileExists,
+                     weak_ptr_factory_.GetWeakPtr(), idx, trash_parent_path,
+                     trashed_file_location));
+}
+
+void RestoreIOTask::OnTrashedFileExists(
+    size_t idx,
+    const base::FilePath& trash_parent_path,
+    const base::FilePath& trashed_file_location,
+    bool exists) {
+  if (!exists) {
     progress_.sources[idx].error = base::File::FILE_ERROR_NOT_FOUND;
     Complete(State::kError);
     return;
