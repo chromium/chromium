@@ -6,7 +6,6 @@
 #define FUCHSIA_WEB_RUNNERS_CAST_CAST_COMPONENT_H_
 
 #include <fuchsia/camera3/cpp/fidl.h>
-#include <fuchsia/legacymetrics/cpp/fidl.h>
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
@@ -26,6 +25,10 @@
 #include "fuchsia_web/runners/cast/named_message_port_connector_fuchsia.h"
 #include "fuchsia_web/runners/common/web_component.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace fuchsia::legacymetrics {
+class MetricsRecorder;
+}
 
 namespace cr_fuchsia {
 class AgentManager;

@@ -6,7 +6,6 @@
 #define FUCHSIA_WEB_RUNNERS_CAST_CAST_RUNNER_H_
 
 #include <fuchsia/camera3/cpp/fidl.h>
-#include <fuchsia/legacymetrics/cpp/fidl.h>
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
@@ -27,6 +26,10 @@
 namespace base {
 class FilteredServiceDirectory;
 }  // namespace base
+
+namespace fuchsia::legacymetrics {
+class MetricsRecorder;
+}
 
 namespace cr_fuchsia {
 class WebInstanceHost;

@@ -4,6 +4,7 @@
 
 #include "fuchsia_web/runners/cast/cast_runner.h"
 
+#include <fuchsia/legacymetrics/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fit/function.h>
