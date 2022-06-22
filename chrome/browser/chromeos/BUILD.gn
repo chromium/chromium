@@ -2469,6 +2469,7 @@ source_set("unit_tests") {
     "../ash/file_manager/copy_or_move_io_task_unittest.cc",
     "../ash/file_manager/delete_io_task_unittest.cc",
     "../ash/file_manager/documents_provider_root_manager_unittest.cc",
+    "../ash/file_manager/empty_trash_io_task_unittest.cc",
     "../ash/file_manager/file_tasks_notifier_unittest.cc",
     "../ash/file_manager/file_tasks_unittest.cc",
     "../ash/file_manager/file_watcher_unittest.cc",

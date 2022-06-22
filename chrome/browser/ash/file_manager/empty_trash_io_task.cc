@@ -4,19 +4,39 @@
 
 #include "chrome/browser/ash/file_manager/empty_trash_io_task.h"
 
+#include <memory>
+
 #include "base/callback.h"
+#include "base/task/bind_post_task.h"
+#include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace file_manager::io_task {
 
+namespace {
+
+storage::FileSystemOperationRunner::OperationID
+StartRemoveRecursivelyOnIOThread(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const storage::FileSystemURL url,
+    storage::FileSystemOperationRunner::StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  return file_system_context->operation_runner()->Remove(
+      url, /*recursive=*/true, std::move(callback));
+}
+
+}  // namespace
+
 EmptyTrashIOTask::EmptyTrashIOTask(
     blink::StorageKey storage_key,
     Profile* profile,
-    scoped_refptr<storage::FileSystemContext> file_system_context)
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    base::FilePath base_path)
     : file_system_context_(file_system_context),
       storage_key_(storage_key),
-      profile_(profile) {
+      profile_(profile),
+      base_path_(base_path) {
   progress_.state = State::kQueued;
   progress_.type = OperationType::kEmptyTrash;
   progress_.bytes_transferred = 0;
@@ -41,6 +61,75 @@ void EmptyTrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
                                IOTask::CompleteCallback complete_callback) {
   progress_callback_ = std::move(progress_callback);
   complete_callback_ = std::move(complete_callback);
+
+  enabled_trash_locations_ =
+      GenerateEnabledTrashLocationsForProfile(profile_, base_path_);
+  progress_.state = State::kInProgress;
+
+  TrashPathsMap::const_iterator it = enabled_trash_locations_.cbegin();
+  if (it == enabled_trash_locations_.end()) {
+    Complete(State::kSuccess);
+    return;
+  }
+
+  RemoveTrashDirectory(it);
+}
+
+void EmptyTrashIOTask::RemoveTrashDirectory(
+    TrashPathsMap::const_iterator& trash_location) {
+  const base::FilePath trash_path =
+      trash_location->second.trash_parent_path.Append(
+          trash_location->second.relative_folder_path);
+  const storage::FileSystemURL trash_url =
+      file_system_context_->CreateCrackedFileSystemURL(
+          storage_key_, storage::FileSystemType::kFileSystemTypeLocal,
+          trash_path);
+
+  progress_.outputs.emplace_back(trash_url, absl::nullopt);
+
+  auto complete_callback = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&EmptyTrashIOTask::OnRemoveTrashDirectory,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::OwnedRef(trash_location)));
+
+  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&StartRemoveRecursivelyOnIOThread, file_system_context_,
+                     trash_url, std::move(complete_callback)),
+      base::BindOnce(&EmptyTrashIOTask::SetCurrentOperationID,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void EmptyTrashIOTask::OnRemoveTrashDirectory(TrashPathsMap::const_iterator& it,
+                                              base::File::Error status) {
+  progress_.outputs[progress_.outputs.size() - 1].error = status;
+  if (status != base::File::FILE_OK) {
+    LOG(ERROR) << "Failed to remove trash directory " << status;
+    Complete(State::kError);
+    return;
+  }
+  it++;
+  if (it == enabled_trash_locations_.end()) {
+    Complete(State::kSuccess);
+    return;
+  }
+
+  RemoveTrashDirectory(it);
+}
+
+// Calls the completion callback for the task. `progress_` should not be
+// accessed after calling this.
+void EmptyTrashIOTask::Complete(State state) {
+  progress_.state = state;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(complete_callback_), std::move(progress_)));
+}
+
+void EmptyTrashIOTask::SetCurrentOperationID(
+    storage::FileSystemOperationRunner::OperationID id) {
+  operation_id_.emplace(id);
 }
 
 void EmptyTrashIOTask::Cancel() {
