@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
@@ -158,6 +159,41 @@ void BackForwardCacheMetrics::DidCommitNavigation(
         blocklisted_features_not_match) {
       CaptureTraceForNavigationDebugScenario(
           DebugScenario::kDebugBackForwardCacheMetricsMismatch);
+    }
+
+    // TODO(https://crbug.com/1338089): Remove this.
+    if (served_from_bfcache_not_match) {
+      SCOPED_CRASH_KEY_BOOL("BFCacheMismatch", "did_store", did_store);
+      SCOPED_CRASH_KEY_BOOL("BFCacheMismatch", "can_restore", can_restore);
+      SCOPED_CRASH_KEY_NUMBER(
+          "BFCacheMismatch", "not_restored",
+          page_store_result_->not_restored_reasons().ToEnumBitmask());
+      SCOPED_CRASH_KEY_NUMBER(
+          "BFCacheMismatch", "bi_swap",
+          page_store_result_->browsing_instance_swap_result().has_value()
+              ? static_cast<int>(
+                    page_store_result_->browsing_instance_swap_result().value())
+              : -1);
+      SCOPED_CRASH_KEY_NUMBER(
+          "BFCacheMismatch", "not_restored",
+          page_store_result_->blocklisted_features().ToEnumBitmask());
+      SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "disabled",
+                              page_store_result_->disabled_reasons().size());
+      SCOPED_CRASH_KEY_NUMBER(
+          "BFCacheMismatch", "disallow_activation",
+          page_store_result_->disallow_activation_reasons().size());
+      SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "navigation_type",
+                              navigation->navigation_type());
+      SCOPED_CRASH_KEY_BOOL("BFCacheMismatch", "did_replace",
+                            navigation->DidReplaceEntry());
+      SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "restore_type",
+                              static_cast<int>(navigation->GetRestoreType()));
+      SCOPED_CRASH_KEY_STRING256("BFCacheMismatch", "url",
+                                 navigation->GetURL().spec());
+      SCOPED_CRASH_KEY_STRING256(
+          "BFCacheMismatch", "previous_url",
+          navigation->GetPreviousPrimaryMainFrameURL().spec());
+      base::debug::DumpWithoutCrashing();
     }
 
     TRACE_EVENT1("navigation", "HistoryNavigationOutcome", "outcome",
