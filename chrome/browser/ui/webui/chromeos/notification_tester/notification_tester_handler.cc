@@ -51,7 +51,7 @@ void NotificationTesterHandler::GenerateNotification(
   message_center::RichNotificationData optional_fields;
 
   // Delegate does nothing.
-  scoped_refptr<message_center::NotificationDelegate> delegate =
+  auto delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating([](absl::optional<int> button_index) {}));
 
@@ -65,7 +65,7 @@ void NotificationTesterHandler::GenerateNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
           message, display_source, origin_url, notifier_id, optional_fields,
           delegate, kTerminalSshIcon,
-          message_center::SystemNotificationWarningLevel::WARNING);
+          message_center::SystemNotificationWarningLevel::NORMAL);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));

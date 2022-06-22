@@ -14,88 +14,151 @@
     text-align: center;
   }
 
-  .input-field {
-    margin: 2.5% 5%;
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    font-family: inherit;
   }
 
-  .input-field ol {
-    margin: 0 0 8px 0;
-    padding: 0 16px;
+  .page-container {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    line-height: 1.5;
   }
 
-  .input-field ol>li {
+  .config-form {
+    flex: 1;
+    margin: 0 auto;
+    max-width: 24rem;
+    width: 100%;
+  }
+
+  .form-item {
     align-items: center;
     border-bottom: none;
     display: flex;
+    font-size: 1rem;
     padding: 0 0 8px 0;
   }
 
-  .label {
-    margin: 2px;
+  .form-item>label {
+    flex: 1;
+    font-size: 1;
+  }
+
+  .form-item>select {
+    background: inherit;
+    border: 2px solid #666;
+    border-radius: .25rem;
+    flex: 2;
+    padding: .1rem;
+  }
+
+  #generateNotifBtn {
+    background: rgb(0, 134, 179);
+    border-radius: 0.25rem;
+    color: #f8f8f8;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 1em;
+    padding: 0.25em 0.5em;
+    width: max-content;
   }
 </style>
 <app-header>
   <app-toolbar>Notification Tester</app-toolbar>
 </app-header>
-<div class="input-field">
-  <ol>
-    <h2> Visual Configuration </h2>
-    <li>
-      <label> Title
-        <select id="title">
-          <option data-id="0" value="Sample Notification Title">Short sentence
-            (LTR)</option>
-          <option data-id="1" value="כותרת הודעה">Short sentence (RTL)</option>
-          <option data-id="2"
-            value="This is a very long notification title which is unncessarily long in order to increase it">
-            Long sentence (LTR) </option>
-          <option data-id="3"
-            value="המבורגרים: אבן הפינה של כל ארוחת בוקר מזינה. צ'יזבורגר">
-            Long sentence (RTL)
-          </option>
-          <option data-id="4"
-            value="sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh">
-            Repetitive characters (LTR)
-          </option>
-          <option data-id="5"
-            value="שששששששששששששששששששששששששששששששששששששששששששששששששששש">
-            Repetitive characters (RTL)
-          </option>
-          <option data-id="6" value="😁🚒❤😹🙋⌛❇🚅☎☺">Unicode smileys</option>
-          <option data-id="7" value="">Empty</option>
-          <option data-custom value="custom">Custom</option>
-        </select>
-      </label>
-    </li>
-    <li>
-      <label> Body
-        <select id="body">
-          <option data-id="0" value="Notification content">One sentence (LTR)
-          </option>
-          <option data-id="1" value="תוכן הודעה">One sentence (RTL)</option>
-          <option data-id="2"
-            value="This is the notification's message. It may be able to stretch over multiple lines, or become visible when the notification is expanded by the user, depending on the notification center that's being used.">
-            Multiple sentences (LTR)</option>
-          <option data-id="3"
-            value="זהו המסר של ההודעה. זה עשוי להיות מסוגל למתוח על קווים מרובים, או להיות גלוי, כאשר ההודעה מורחבת על ידי המשתמש, בהתאם להודעה שהמרכז נמצא בשימוש">
-            Multiple sentences (RTL)</option>
-          <option data-id="4"
-            value="sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh">
-            Repetitive characters (LTR)</option>
-          <option data-id="5"
-            value="ששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששש">
-            Repetitive characters (RTL)</option>
-          <option data-id="6" value="🌇😃🍈😆🍜🍻😋⛅⛳😚">Unicode smileys
-          </option>
-          <option data-id="7" value="">Empty</option>
-          <option data-custom value="custom">Custom</option>
-        </select>
-      </label>
-    </li>
-    <li>
-      <button type="button" id="generateBtn" on-click="onClickGenerate_">
-        Generate </button>
-      <button type="button" id="resetBtn"> Reset </button>
-    </li>
-  </ol>
+<div class="page-container">
+  <div class="config-form">
+    <h2> Visual Settings </h2>
+    <div class="form-item">
+      <label for="title">Title</label>
+      <select id="title">
+        <option data-id="0" value="Notification title">Short sentence
+          (LTR)
+        </option>
+        <option data-id="1" value="כותרת הודעה">Short sentence (RTL)
+        </option>
+        <option data-id="2"
+          value="Hamburgers: the cornerstone of any nutritious breakfast. Ch-cheeseburgers.">
+          Long sentence (LTR)</option>
+        <option data-id="3"
+          value="המבורגרים: אבן הפינה של כל ארוחת בוקר מזינה. צ'יזבורגר">
+          Long sentence (RTL)</option>
+        <option data-id="4"
+          value="sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh">
+          Repetitive characters (LTR)</option>
+        <option data-id="5"
+          value="שששששששששששששששששששששששששששששששששששששששששששששששששששש">
+          Repetitive characters (RTL)</option>
+        <option data-id="6" value="😁🚒❤😹🙋⌛❇🚅☎☺">Unicode smileys
+        </option>
+        <option data-id="7" value="">Empty</option>
+        <option data-custom value="custom">Custom</option>
+      </select>
+    </div>
+    <div class="form-item">
+      <label for="body">Body</label>
+      <select id="body">
+        <option data-id="0" value="Notification content">One sentence
+          (LTR)</option>
+        <option data-id="1" value="תוכן הודעה">One sentence (RTL)</option>
+        <option data-id="2"
+          value="This is the notification's message. It may be able to stretch over multiple lines, or become visible when the notification is expanded by the user, depending on the notification center that's being used.">
+          Multiple sentences (LTR)</option>
+        <option data-id="3"
+          value="זהו המסר של ההודעה. זה עשוי להיות מסוגל למתוח על קווים מרובים, או להיות גלוי, כאשר ההודעה מורחבת על ידי המשתמש, בהתאם להודעה שהמרכז נמצא בשימוש">
+          Multiple sentences (RTL)</option>
+        <option data-id="4"
+          value="sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh">
+          Repetitive characters (LTR)</option>
+        <option data-id="5"
+          value="ששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששש">
+          Repetitive characters (RTL)</option>
+        <option data-id="6" value="🌇😃🍈😆🍜🍻😋⛅⛳😚">Unicode smileys
+        </option>
+        <option data-id="7" value="">Empty</option>
+        <option data-custom value="custom">Custom</option>
+      </select>
+    </div>
+    <div class="form-item">
+      <label for="badge">Badge</label>
+      <select id="badge">
+        <option data-id="0" value="">Cat icon</option>
+        <option data-id="1" value="">No icon</option>
+        <option data-custom value="custom">Custom</option>
+      </select>
+    </div>
+    <div class="form-item">
+      <label for="image"> Image </label>
+      <select id="image">
+        <option data-id="0" value="">No image</option>
+        <option data-id="1" value="">Cat photo (JPEG, 3072x1728)</option>
+        <option data-custom value="custom">Custom</option>
+      </select>
+    </div>
+    <div class="form-item">
+      <label for="icon">Icon</label>
+      <select id="icon">
+        <option data-id="0" value="">No icon</option>
+        <option data-id="1" value="">Normal PNG icon
+          (256x256)</option>
+        <option data-id="2" value="">Normal JPEG
+          icon (256x256)</option>
+        <option data-id="3" value="">Static GIF
+          icon (256x256)</option>
+        <option data-id="4" value="">Animated GIF
+          icon (256x256)</option>
+        <option data-id="5" value="">Tiny icon
+          (PNG, 32x32)</option>
+        <option data-id="6" value="">Huge icon
+          (PNG, 3333x5230)</option>
+        <option data-custom value="custom">Custom</option>
+      </select>
+    </div>
+    <button type="button" id="generateNotifBtn"> Generate </button>
+  </div>
 </div>
