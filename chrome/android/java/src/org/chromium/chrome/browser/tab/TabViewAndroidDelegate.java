@@ -202,7 +202,8 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         @Override
         public Intent createLinkIntent(String urlString) {
             Intent intent = null;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_INSTANCE_FROM_DRAGGED_LINK)) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_INSTANCE_FROM_DRAGGED_LINK)
+                    && MultiWindowUtils.isMultiInstanceApi31Enabled()) {
                 intent = MultiWindowUtils.createNewWindowIntent(
                         mTab.getContext().getApplicationContext(),
                         MultiWindowUtils.getInstanceIdForViewIntent(), true, false);

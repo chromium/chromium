@@ -254,7 +254,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      */
     public static Intent createNewWindowIntent(
             Context context, int instanceId, boolean preferNew, boolean openAdjacently) {
-        assert instanceSwitcherEnabled();
+        assert isMultiInstanceApi31Enabled();
         Intent intent = new Intent(context, ChromeTabbedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
