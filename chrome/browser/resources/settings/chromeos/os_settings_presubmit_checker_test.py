@@ -7,7 +7,7 @@ import os
 import sys
 import unittest
 
-from typescript_preparation_checker import TypescriptPreparationChecker
+from os_settings_presubmit_checker import OSSettingsPresubmitChecker
 
 # Update system path to src/ so we can access src/PRESUBMIT_test_mocks.py.
 sys.path.append(
@@ -18,7 +18,7 @@ from PRESUBMIT_test_mocks import (MockInputApi, MockOutputApi,
                                   MockAffectedFile)
 
 
-class TypescriptPreparationCheckerTest(unittest.TestCase):
+class OSSettingsPresubmitCheckerTest(unittest.TestCase):
     def testAddSingletonGetterUsed(self):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
@@ -30,8 +30,8 @@ class TypescriptPreparationCheckerTest(unittest.TestCase):
         ]
         mock_output_api = MockOutputApi()
 
-        errors = TypescriptPreparationChecker.RunChecks(
-            mock_input_api, mock_output_api)
+        errors = OSSettingsPresubmitChecker.RunChecks(mock_input_api,
+                                                      mock_output_api)
         self.assertEqual(2, len(errors))
 
     def testAddSingletonGetterNotUsed(self):
@@ -48,8 +48,8 @@ class TypescriptPreparationCheckerTest(unittest.TestCase):
         ]
         mock_output_api = MockOutputApi()
 
-        errors = TypescriptPreparationChecker.RunChecks(
-            mock_input_api, mock_output_api)
+        errors = OSSettingsPresubmitChecker.RunChecks(mock_input_api,
+                                                      mock_output_api)
         self.assertEqual(0, len(errors))
 
     def testLegacyPolymerSyntaxUsed(self):
@@ -63,8 +63,8 @@ class TypescriptPreparationCheckerTest(unittest.TestCase):
         ]
         mock_output_api = MockOutputApi()
 
-        errors = TypescriptPreparationChecker.RunChecks(
-            mock_input_api, mock_output_api)
+        errors = OSSettingsPresubmitChecker.RunChecks(mock_input_api,
+                                                      mock_output_api)
         self.assertEqual(1, len(errors))
 
     def testLegacyPolymerSyntaxNotUsed(self):
@@ -80,9 +80,37 @@ class TypescriptPreparationCheckerTest(unittest.TestCase):
         ]
         mock_output_api = MockOutputApi()
 
-        errors = TypescriptPreparationChecker.RunChecks(
-            mock_input_api, mock_output_api)
+        errors = OSSettingsPresubmitChecker.RunChecks(mock_input_api,
+                                                      mock_output_api)
         self.assertEqual(0, len(errors))
+
+    def testSchemeSpecificURLsUsed(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/example_element.js', [
+                'import \'chrome://resources/utils.js\';',
+            ]),
+        ]
+        mock_output_api = MockOutputApi()
+
+        errors = OSSettingsPresubmitChecker.RunChecks(mock_input_api,
+                                                      mock_output_api)
+        self.assertEqual(0, len(errors))
+
+    def testSchemeSpecificURLsNotUsed(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/example_element.js', [
+                'import \'chrome://resources/good.js\';',
+                'import \'//resources/bad.js\';',
+                'import \'//resources/bad_again.js\';',
+            ]),
+        ]
+        mock_output_api = MockOutputApi()
+
+        errors = OSSettingsPresubmitChecker.RunChecks(mock_input_api,
+                                                      mock_output_api)
+        self.assertEqual(2, len(errors))
 
 
 if __name__ == '__main__':

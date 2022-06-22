@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 
-def _CheckNoAddSingletonGetter(file):
+def _TypeScriptPrepCheckNoAddSingletonGetter(file):
     """Checks that there are no uses of addSingletonGetter()
 
     Args:
@@ -27,7 +27,7 @@ def _CheckNoAddSingletonGetter(file):
     return error_messages
 
 
-def _CheckNoLegacyPolymerSyntax(file):
+def _TypeScriptPrepCheckNoLegacyPolymerSyntax(file):
     """Checks that there are no uses of the legacy Polymer element syntax
 
     Args:
@@ -52,17 +52,40 @@ def _CheckNoLegacyPolymerSyntax(file):
     return error_messages
 
 
-class TypescriptPreparationChecker(object):
-    """Checks that the changes are in line with the upcoming TypeScript
-    migrationfor ChromeOS Settings.
+def _EnforceSchemeSpecificURLs(file):
+    """Checks that only scheme-specific URLs are used and scheme relative URLs
+      are avoided. (i.e. 'chrome://' is preferred over '//')
+
+    Args:
+        file: A changed file
+
+    Returns:
+        A list of error messages (strings)
+    """
+
+    error_messages = []
+    if file.LocalPath().endswith('js'):
+        for line_num, line in file.ChangedContents():
+            if '\'//' in line:
+                error_messages.append(
+                    "%s:%d:\n%s\n\n"
+                    "Prefer using scheme-specific URLs (i.e. 'chrome://')" %
+                    (file.LocalPath(), line_num, line.strip()))
+
+    return error_messages
+
+
+class OSSettingsPresubmitChecker(object):
+    """Checks that the changes comply with ChromeOS Settings code style.
 
     Checks:
       - addSingletonGetter() is not used
+      - No legacy Polymer syntax (1.x, 2.x) is used
     """
 
     @staticmethod
     def RunChecks(input_api, output_api):
-        """Runs checks for compatibility with the upcoming TypeScript migration
+        """Runs checks for ChromeOS Settings
 
         Args:
             input_api: presubmit.InputApi containing information of the files
@@ -76,8 +99,9 @@ class TypescriptPreparationChecker(object):
 
         error_messages = []
         for file in input_api.AffectedFiles():
-            error_messages += _CheckNoAddSingletonGetter(file)
-            error_messages += _CheckNoLegacyPolymerSyntax(file)
+            error_messages += _TypeScriptPrepCheckNoAddSingletonGetter(file)
+            error_messages += _TypeScriptPrepCheckNoLegacyPolymerSyntax(file)
+            error_messages += _EnforceSchemeSpecificURLs(file)
 
         errors = list(map(output_api.PresubmitPromptWarning, error_messages))
         return errors

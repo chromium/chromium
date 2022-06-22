@@ -21,13 +21,13 @@ def _CheckSemanticCssColors(input_api, output_api):
         sys.path = original_sys_path
 
 
-def _CheckTypescriptPreparation(input_api, output_api):
+def _CheckOSSettings(input_api, output_api):
     original_sys_path = sys.path
     try:
         cwd = input_api.PresubmitLocalPath()
         sys.path.append(cwd)
-        from typescript_preparation_checker import TypescriptPreparationChecker
-        return TypescriptPreparationChecker.RunChecks(input_api, output_api)
+        from os_settings_presubmit_checker import OSSettingsPresubmitChecker
+        return OSSettingsPresubmitChecker.RunChecks(input_api, output_api)
     finally:
         sys.path = original_sys_path
 
@@ -36,7 +36,7 @@ def _CommonChecks(input_api, output_api):
     """Checks common to both upload and commit."""
     results = []
     results.extend(_CheckSemanticCssColors(input_api, output_api))
-    results.extend(_CheckTypescriptPreparation(input_api, output_api))
+    results.extend(_CheckOSSettings(input_api, output_api))
     return results
 
 
