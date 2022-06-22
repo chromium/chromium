@@ -55,28 +55,10 @@ android_resources("java_resources") {
   deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
 }
 
-android_library("javatests") {
-  testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/logo/LogoViewTest.java" ]
-
-  deps = [
-    ":java",
-    "//base:base_java_test_support",
-    "//chrome/browser/search_engines/android:java",
-    "//chrome/test/android:chrome_java_unit_test_support",
-    "//components/search_engines/android:java",
-    "//content/public/android:content_full_java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_java_test_support",
-  ]
-}
-
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/logo/LogoLoadHelperUnitTest.java",
+    "java/src/org/chromium/chrome/browser/logo/LogoViewTest.java",
   ]
 
   deps = [
@@ -95,5 +77,6 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
