@@ -4,8 +4,12 @@
 
 #include "components/user_notes/browser/user_note_service.h"
 
+#include "base/bind.h"
 #include "base/notreached.h"
+#include "components/user_notes/browser/frame_user_note_changes.h"
 #include "components/user_notes/browser/user_note_manager.h"
+#include "components/user_notes/browser/user_note_utils.h"
+#include "components/user_notes/interfaces/user_note_metadata_snapshot.h"
 #include "components/user_notes/interfaces/user_notes_ui.h"
 #include "components/user_notes/user_notes_features.h"
 #include "content/public/browser/render_frame_host.h"
@@ -14,8 +18,11 @@
 namespace user_notes {
 
 UserNoteService::UserNoteService(
-    std::unique_ptr<UserNoteServiceDelegate> delegate)
-    : delegate_(std::move(delegate)) {}
+    std::unique_ptr<UserNoteServiceDelegate> delegate,
+    std::unique_ptr<UserNoteStorage> storage)
+    : delegate_(std::move(delegate)), storage_(std::move(storage)) {
+  // TODO(gujen): Observe the storage.
+}
 
 UserNoteService::~UserNoteService() = default;
 
@@ -149,6 +156,7 @@ void UserNoteService::OnAddNoteRequested(content::RenderFrameHost* frame,
   // `OnNoteCreationCancelled`, in which the partial note will be finalized or
   // deleted, respectively.
   UserNotesUI* ui = delegate_->GetUICoordinatorForFrame(frame);
+  DCHECK(ui);
   ui->StartNoteCreation(instance_raw);
 }
 
@@ -182,9 +190,6 @@ void UserNoteService::OnNoteCreationDone(const base::UnguessableToken& id,
       << "Attempted to complete the creation of a note that doesn't exist";
   // TODO(gujen): Call
   // UserNoteStorage::UpdateNote(entry.model, content, /*is_creation=*/true).
-
-  // TODO(gujen): Make sure to transfer the model from the creation map to the
-  // model map in the OnNotesChanged() event sent by the storage layer.
 }
 
 void UserNoteService::OnNoteCreationCancelled(
@@ -208,6 +213,115 @@ void UserNoteService::OnNoteUpdated(const base::UnguessableToken& id,
                                     const std::string& note_content) {
   DCHECK(IsUserNotesEnabled());
   NOTIMPLEMENTED();
+}
+
+void UserNoteService::OnNotesChanged() {
+  std::vector<content::RenderFrameHost*> all_frames =
+      delegate_->GetAllFramesForUserNotes();
+  std::vector<GURL> urls;
+
+  for (content::RenderFrameHost* frame : all_frames) {
+    urls.emplace_back(frame->GetLastCommittedURL());
+  }
+
+  storage_->GetNoteMetadataForUrls(
+      urls, base::BindOnce(&UserNoteService::OnNoteMetadataFetched,
+                           weak_ptr_factory_.GetWeakPtr(), all_frames));
+}
+
+void UserNoteService::OnNoteMetadataFetched(
+    const std::vector<content::RenderFrameHost*>& all_frames,
+    UserNoteMetadataSnapshot metadata_snapshot) {
+  std::vector<std::unique_ptr<FrameUserNoteChanges>> note_changes =
+      CalculateNoteChanges(*this, all_frames, metadata_snapshot);
+
+  // All added and modified notes must be fetched from storage to eventually be
+  // put in the model map. For removed notes there is no need to update the
+  // model map at this point; it will be done later when applying the changes.
+  std::vector<base::UnguessableToken> notes_to_fetch;
+  std::unordered_set<base::UnguessableToken, base::UnguessableTokenHash>
+      new_notes;
+
+  for (const std::unique_ptr<FrameUserNoteChanges>& diff : note_changes) {
+    for (const base::UnguessableToken& note_id : diff->notes_added()) {
+      notes_to_fetch.emplace_back(note_id);
+      new_notes.emplace(note_id);
+    }
+    for (const base::UnguessableToken& note_id : diff->notes_modified()) {
+      notes_to_fetch.emplace_back(note_id);
+    }
+  }
+
+  storage_->GetNotesById(
+      notes_to_fetch, base::BindOnce(&UserNoteService::OnNoteModelsFetched,
+                                     weak_ptr_factory_.GetWeakPtr(), new_notes,
+                                     std::move(note_changes)));
+}
+
+void UserNoteService::OnNoteModelsFetched(
+    const IdSet& new_notes,
+    std::vector<std::unique_ptr<FrameUserNoteChanges>> note_changes,
+    std::vector<std::unique_ptr<UserNote>> notes) {
+  // Update the model map with the new models.
+  for (std::unique_ptr<UserNote>& note : notes) {
+    base::UnguessableToken id = note->id();
+    const auto& new_note_it = new_notes.find(id);
+    const auto& creation_entry_it = creation_map_.find(id);
+    const auto& model_entry_it = model_map_.find(id);
+
+    if (new_note_it == new_notes.end()) {
+      // This note was modified; simply update the existing model in the model
+      // map.
+      DCHECK(creation_entry_it == creation_map_.end());
+      DCHECK(model_entry_it != model_map_.end());
+      model_entry_it->second.model->Update(std::move(note));
+    } else {
+      DCHECK(model_entry_it == model_map_.end());
+
+      if (creation_entry_it == creation_map_.end()) {
+        // This is a new note that wasn't authored locally. Simply add the model
+        // to the model map.
+        UserNoteService::ModelMapEntry entry(std::move(note));
+        model_map_.emplace(id, std::move(entry));
+      } else {
+        // This is a new note that was authored locally, which means it has a
+        // partial model in the creation map. Update it with the new model from
+        // storage, then move it from the creation map to the model map. The new
+        // model from storage can't be used directly because the note instance
+        // for the page highlight has a reference to the partial model, and that
+        // connection must be maintained.
+        creation_entry_it->second.model->Update(std::move(note));
+        model_map_.emplace(id, std::move(creation_entry_it->second));
+        creation_map_.erase(creation_entry_it);
+      }
+    }
+  }
+
+  // Now that the creation and model maps have been updated, apply all the diffs
+  // to propagate the changes to the webpages and UI.
+  for (std::unique_ptr<FrameUserNoteChanges>& diff : note_changes) {
+    diff->Apply(base::BindOnce(&UserNoteService::OnFrameChangesApplied,
+                               weak_ptr_factory_.GetWeakPtr(), diff->id()));
+    note_changes_in_progress_.emplace(diff->id(), std::move(diff));
+  }
+}
+
+void UserNoteService::OnFrameChangesApplied(base::UnguessableToken change_id) {
+  const auto& changes_it = note_changes_in_progress_.find(change_id);
+  DCHECK(changes_it != note_changes_in_progress_.end());
+
+  // If this set of changes was for a page that's in an active tab, notify the
+  // UI to reload the notes it's displaying.
+  const std::unique_ptr<FrameUserNoteChanges>& frame_changes =
+      changes_it->second;
+  if (delegate_->IsFrameInActiveTab(frame_changes->render_frame_host())) {
+    UserNotesUI* ui =
+        delegate_->GetUICoordinatorForFrame(frame_changes->render_frame_host());
+    DCHECK(ui);
+    ui->Invalidate();
+  }
+
+  note_changes_in_progress_.erase(changes_it);
 }
 
 UserNoteService::ModelMapEntry::ModelMapEntry(std::unique_ptr<UserNote> model)

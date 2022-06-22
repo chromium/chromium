@@ -35,6 +35,9 @@ class UserNote {
   const UserNoteBody& body() const { return *body_; }
   const UserNoteTarget& target() const { return *target_; }
 
+  // Consumes the provided model to update this one.
+  void Update(std::unique_ptr<UserNote> new_model);
+
  private:
   // The unique (among the user's notes) ID for this note.
   base::UnguessableToken id_;

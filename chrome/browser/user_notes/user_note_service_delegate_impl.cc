@@ -34,4 +34,11 @@ UserNotesUI* UserNoteServiceDelegateImpl::GetUICoordinatorForFrame(
   return nullptr;
 }
 
+bool UserNoteServiceDelegateImpl::IsFrameInActiveTab(
+    const content::RenderFrameHost* rfh) {
+  // TODO(gujen): finish implementation.
+  NOTIMPLEMENTED();
+  return false;
+}
+
 }  // namespace user_notes

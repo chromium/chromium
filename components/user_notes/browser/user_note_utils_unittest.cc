@@ -227,8 +227,9 @@ class UserNoteUtilsTest
     content::RenderViewHostTestHarness::SetUp();
 
     // Create the note service and the note models that will be used in this
-    // test case. A service delegate isn't needed for these tests.
-    note_service_ = std::make_unique<UserNoteService>(/*delegate=*/nullptr);
+    // test case. A service delegate and storage aren't needed for these tests.
+    note_service_ = std::make_unique<UserNoteService>(/*delegate=*/nullptr,
+                                                      /*storage=*/nullptr);
     for (const NoteConfig& note : GetParam().notes) {
       CreateNewNoteAndAddToService(note);
     }
@@ -700,20 +701,20 @@ TEST_P(UserNoteUtilsTest, CalculateNoteChanges) {
 
   // Calculate the diff between the notes in the frames and the notes in the
   // metadata.
-  const std::vector<FrameUserNoteChanges>& actual_diffs =
+  const std::vector<std::unique_ptr<FrameUserNoteChanges>>& actual_diffs =
       CalculateNoteChanges(*note_service_, frame_hosts, metadata_snapshot);
 
   std::unordered_set<content::RenderFrameHost*> frames_with_diff;
-  for (const FrameUserNoteChanges& diff : actual_diffs) {
+  for (const std::unique_ptr<FrameUserNoteChanges>& diff : actual_diffs) {
     // Find the frame config for this diff's frame.
-    const auto config_it = frame_to_config_.find(diff.rfh_);
+    const auto config_it = frame_to_config_.find(diff->rfh_);
     DCHECK(config_it != frame_to_config_.end());
     FrameConfig frame_config = config_it->second;
 
     // Make sure there is at most one diff per frame.
-    EXPECT_TRUE(frames_with_diff.find(diff.rfh_) == frames_with_diff.end())
+    EXPECT_TRUE(frames_with_diff.find(diff->rfh_) == frames_with_diff.end())
         << "More than one diff generated for frame " << frame_config.test_id;
-    frames_with_diff.emplace(diff.rfh_);
+    frames_with_diff.emplace(diff->rfh_);
 
     // Verify that a diff was expected for this frame.
     EXPECT_TRUE(frame_config.expect_diff)
@@ -723,19 +724,19 @@ TEST_P(UserNoteUtilsTest, CalculateNoteChanges) {
     // Verify added, modified and removed notes are as expected. Use copies to
     // prevent any side effect of sorting in place.
     NoteIdList actual_added =
-        ConvertToSortedTestIds(diff.notes_added_, token_to_test_id_);
+        ConvertToSortedTestIds(diff->notes_added_, token_to_test_id_);
     NoteIdList expected_added = CopyAndSort(frame_config.added);
     EXPECT_EQ(actual_added, expected_added)
         << "Unexpected ADDED results for frame " << frame_config.test_id;
 
     NoteIdList actual_modified =
-        ConvertToSortedTestIds(diff.notes_modified_, token_to_test_id_);
+        ConvertToSortedTestIds(diff->notes_modified_, token_to_test_id_);
     NoteIdList expected_modified = CopyAndSort(frame_config.modified);
     EXPECT_EQ(actual_modified, expected_modified)
         << "Unexpected MODIFIED results for frame " << frame_config.test_id;
 
     NoteIdList actual_removed =
-        ConvertToSortedTestIds(diff.notes_removed_, token_to_test_id_);
+        ConvertToSortedTestIds(diff->notes_removed_, token_to_test_id_);
     NoteIdList expected_removed = CopyAndSort(frame_config.removed);
     EXPECT_EQ(actual_removed, expected_removed)
         << "Unexpected REMOVED results for frame " << frame_config.test_id;

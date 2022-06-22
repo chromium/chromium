@@ -23,7 +23,7 @@ class UserNoteService;
 // actually contain based on the provided metadata snapshot. A
 // `FrameUserNoteChanges` object is generated for each frame where notes
 // don't match the metadata.
-std::vector<FrameUserNoteChanges> CalculateNoteChanges(
+std::vector<std::unique_ptr<FrameUserNoteChanges>> CalculateNoteChanges(
     const UserNoteService& note_service,
     const std::vector<content::RenderFrameHost*>& rfhs,
     const UserNoteMetadataSnapshot& metadata_snapshot);

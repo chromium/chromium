@@ -38,13 +38,13 @@ class UserNoteStorage {
   // results are returned via `callback`, mapped by URL and by note
   // ID.
   virtual void GetNoteMetadataForUrls(
-      std::vector<GURL> urls,
+      const std::vector<GURL>& urls,
       base::OnceCallback<void(UserNoteMetadataSnapshot)> callback) = 0;
 
   // Fetches all `UserNotes` corresponding to the given IDs from disk. The
   // results are returned via `callback`.
   virtual void GetNotesById(
-      std::vector<base::UnguessableToken> ids,
+      const std::vector<base::UnguessableToken>& ids,
       base::OnceCallback<void(std::vector<std::unique_ptr<UserNote>>)>
           callback) = 0;
 

@@ -42,11 +42,16 @@ class FrameUserNoteChanges {
   FrameUserNoteChanges(FrameUserNoteChanges&& other);
   virtual ~FrameUserNoteChanges();
 
+  const base::UnguessableToken& id() const { return id_; }
+  const ChangeList& notes_added() const { return notes_added_; }
+  const ChangeList& notes_modified() const { return notes_modified_; }
+  const content::RenderFrameHost* render_frame_host() const { return rfh_; }
+
   // Kicks off the asynchronous logic to add and remove highlights in the frame
   // as necessary. Invokes the provided callback after the changes have fully
   // propagated to the note manager and the new notes have had their highlights
-  // created in the web page.
-  void Apply(base::OnceClosure callback);
+  // created in the web page. Marked virtual for tests to override.
+  virtual void Apply(base::OnceClosure callback);
 
  protected:
   // Called by `Apply()` to construct a new note instance pointing to the
@@ -57,6 +62,9 @@ class FrameUserNoteChanges {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UserNoteUtilsTest, CalculateNoteChanges);
+
+  // An internal ID for this change, so it can be stored and retrieved later.
+  base::UnguessableToken id_;
 
   base::SafeRef<UserNoteService> service_;
   raw_ptr<content::RenderFrameHost> rfh_;

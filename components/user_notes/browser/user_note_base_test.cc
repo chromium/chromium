@@ -5,6 +5,7 @@
 #include "components/user_notes/browser/user_note_base_test.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "components/user_notes/model/user_note_model_test_utils.h"
@@ -30,7 +31,12 @@ UserNoteBaseTest::~UserNoteBaseTest() = default;
 
 void UserNoteBaseTest::SetUp() {
   content::RenderViewHostTestHarness::SetUp();
-  note_service_ = std::make_unique<UserNoteService>(/*delegate=*/nullptr);
+  CreateService();
+}
+
+void UserNoteBaseTest::CreateService() {
+  note_service_ = std::make_unique<UserNoteService>(/*delegate=*/nullptr,
+                                                    /*storage=*/nullptr);
 }
 
 void UserNoteBaseTest::TearDown() {

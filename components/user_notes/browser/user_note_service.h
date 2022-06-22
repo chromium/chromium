@@ -11,12 +11,14 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/user_notes/interfaces/user_note_service_delegate.h"
+#include "components/user_notes/interfaces/user_note_storage.h"
 #include "components/user_notes/interfaces/user_notes_ui_delegate.h"
 #include "components/user_notes/model/user_note.h"
 
@@ -32,13 +34,21 @@ class Rect;
 
 namespace user_notes {
 
+class FrameUserNoteChanges;
 class UserNoteManager;
+class UserNoteMetadataSnapshot;
 
 // Keyed service coordinating the different parts (Renderer, UI layer, storage
 // layer) of the User Notes feature for the current user profile.
-class UserNoteService : public KeyedService, public UserNotesUIDelegate {
+class UserNoteService : public KeyedService,
+                        public UserNotesUIDelegate,
+                        public UserNoteStorage::Observer {
  public:
-  explicit UserNoteService(std::unique_ptr<UserNoteServiceDelegate> delegate);
+  using IdSet =
+      std::unordered_set<base::UnguessableToken, base::UnguessableTokenHash>;
+
+  UserNoteService(std::unique_ptr<UserNoteServiceDelegate> delegate,
+                  std::unique_ptr<UserNoteStorage> storage);
   ~UserNoteService() override;
   UserNoteService(const UserNoteService&) = delete;
   UserNoteService& operator=(const UserNoteService&) = delete;
@@ -92,6 +102,9 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   void OnNoteUpdated(const base::UnguessableToken& id,
                      const std::string& note_content) override;
 
+  // UserNoteStorage implementation
+  void OnNotesChanged() override;
+
  private:
   struct ModelMapEntry {
     explicit ModelMapEntry(std::unique_ptr<UserNote> m);
@@ -104,10 +117,25 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
     std::unordered_set<UserNoteManager*> managers;
   };
 
+  friend class MockUserNoteService;
   friend class UserNoteBaseTest;
   friend class UserNoteInstanceTest;
   friend class UserNoteUtilsTest;
   friend class ::UserNoteUICoordinatorTest;
+  FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest, OnNoteMetadataFetched);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest, OnNoteModelsFetched);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest, OnFrameChangesApplied);
+
+  // Private helpers used when processing note storage changes. Marked virtual
+  // for tests to override.
+  virtual void OnNoteMetadataFetched(
+      const std::vector<content::RenderFrameHost*>& all_frames,
+      UserNoteMetadataSnapshot metadata_snapshot);
+  virtual void OnNoteModelsFetched(
+      const IdSet& new_notes,
+      std::vector<std::unique_ptr<FrameUserNoteChanges>> note_changes,
+      std::vector<std::unique_ptr<UserNote>> notes);
+  virtual void OnFrameChangesApplied(base::UnguessableToken change_id);
 
   // Source of truth for the in-memory note models. Any note currently being
   // displayed in a tab is stored in this data structure. Each entry also
@@ -128,7 +156,15 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
                      base::UnguessableTokenHash>
       creation_map_;
 
+  // A place to store the user note changes of a frame while they are being
+  // applied.
+  std::unordered_map<base::UnguessableToken,
+                     std::unique_ptr<FrameUserNoteChanges>,
+                     base::UnguessableTokenHash>
+      note_changes_in_progress_;
+
   std::unique_ptr<UserNoteServiceDelegate> delegate_;
+  std::unique_ptr<UserNoteStorage> storage_;
   base::WeakPtrFactory<UserNoteService> weak_ptr_factory_{this};
 };
 

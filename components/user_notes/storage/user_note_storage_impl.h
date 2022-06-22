@@ -30,11 +30,11 @@ class UserNoteStorageImpl : public UserNoteStorage {
 
   // Implement UserNoteStorage
   void GetNoteMetadataForUrls(
-      std::vector<GURL> urls,
+      const std::vector<GURL>& urls,
       base::OnceCallback<void(UserNoteMetadataSnapshot)> callback) override;
 
   void GetNotesById(
-      std::vector<base::UnguessableToken> ids,
+      const std::vector<base::UnguessableToken>& ids,
       base::OnceCallback<void(std::vector<std::unique_ptr<UserNote>>)> callback)
       override;
 

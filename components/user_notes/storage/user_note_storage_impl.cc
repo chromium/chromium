@@ -4,6 +4,7 @@
 
 #include "components/user_notes/storage/user_note_storage_impl.h"
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -21,11 +22,16 @@ UserNoteStorageImpl::UserNoteStorageImpl(
                     {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
                      base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
                 path_to_database_dir) {
-  database_.AsyncCall(&UserNoteDatabase::Init);
+  // An empty `Then()` is needed to satisfy a DCHECK in `AsyncCall` because
+  // `UserNoteDatabase::Init` returns a value.
+  database_.AsyncCall(&UserNoteDatabase::Init)
+      .Then(base::BindOnce([](bool result) {}));
 }
 
+UserNoteStorageImpl::~UserNoteStorageImpl() = default;
+
 void UserNoteStorageImpl::GetNoteMetadataForUrls(
-    std::vector<GURL> urls,
+    const std::vector<GURL>& urls,
     base::OnceCallback<void(UserNoteMetadataSnapshot)> callback) {
   database_.AsyncCall(&UserNoteDatabase::GetNoteMetadataForUrls)
       .WithArgs(std::move(urls))
@@ -33,7 +39,7 @@ void UserNoteStorageImpl::GetNoteMetadataForUrls(
 }
 
 void UserNoteStorageImpl::GetNotesById(
-    std::vector<base::UnguessableToken> ids,
+    const std::vector<base::UnguessableToken>& ids,
     base::OnceCallback<void(std::vector<std::unique_ptr<UserNote>>)> callback) {
   database_.AsyncCall(&UserNoteDatabase::GetNotesById)
       .WithArgs(std::move(ids))

@@ -30,6 +30,10 @@ class UserNoteBaseTest : public content::RenderViewHostTestHarness {
 
   void TearDown() override;
 
+  // Called by SetUp. Creates a basic service with a null delegate and storage.
+  // Can be overridden to create a service with a delegate and / or storage.
+  virtual void CreateService();
+
   void AddNewNotesToService(size_t count);
 
   void AddPartialNotesToService(size_t count);

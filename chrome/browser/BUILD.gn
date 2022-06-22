@@ -4433,6 +4433,7 @@ static_library("browser") {
       "//components/user_notes:features",
       "//components/user_notes/browser",
       "//components/user_notes/interfaces",
+      "//components/user_notes/storage",
       "//components/web_modal",
       "//courgette:courgette_lib",
       "//services/device/public/cpp/hid",

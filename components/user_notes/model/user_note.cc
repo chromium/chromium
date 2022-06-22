@@ -21,4 +21,11 @@ base::SafeRef<UserNote> UserNote::GetSafeRef() const {
   return weak_ptr_factory_.GetSafeRef();
 }
 
+void UserNote::Update(std::unique_ptr<UserNote> new_model) {
+  DCHECK(new_model->id() == id_);
+  metadata_ = std::move(new_model->metadata_);
+  body_ = std::move(new_model->body_);
+  target_ = std::move(new_model->target_);
+}
+
 }  // namespace user_notes

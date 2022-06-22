@@ -18,7 +18,8 @@ FrameUserNoteChanges::FrameUserNoteChanges(
     const ChangeList& notes_added,
     const ChangeList& notes_modified,
     const ChangeList& notes_removed)
-    : service_(service),
+    : id_(base::UnguessableToken::Create()),
+      service_(service),
       rfh_(rfh),
       notes_added_(notes_added),
       notes_modified_(notes_modified),
@@ -34,7 +35,8 @@ FrameUserNoteChanges::FrameUserNoteChanges(
     ChangeList&& notes_added,
     ChangeList&& notes_modified,
     ChangeList&& notes_removed)
-    : service_(service),
+    : id_(base::UnguessableToken::Create()),
+      service_(service),
       rfh_(rfh),
       notes_added_(std::move(notes_added)),
       notes_modified_(std::move(notes_modified)),
