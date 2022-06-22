@@ -1273,6 +1273,9 @@ extern const char kQuicDescription[];
 extern const char kQuickDimName[];
 extern const char kQuickDimDescription[];
 
+extern const char kQuickIntensiveWakeUpThrottlingAfterLoadingName[];
+extern const char kQuickIntensiveWakeUpThrottlingAfterLoadingDescription[];
+
 extern const char kSettingsAppNotificationSettingsName[];
 extern const char kSettingsAppNotificationSettingsDescription[];
 

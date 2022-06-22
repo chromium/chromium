@@ -406,6 +406,12 @@ const base::Feature kIntensiveWakeUpThrottling{
 const char kIntensiveWakeUpThrottling_GracePeriodSeconds_Name[] =
     "grace_period_seconds";
 
+// If enabled, the grace period of features::kIntensiveWakeUpThrottling will be
+// 10 seconds when a background page is loaded.
+const base::Feature kQuickIntensiveWakeUpThrottlingAfterLoading{
+    "QuickIntensiveWakeUpThrottlingAfterLoading",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Throttles Javascript timer wake ups on foreground pages.
 const base::Feature kThrottleForegroundTimers{
     "ThrottleForegroundTimers", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -1974,6 +1974,9 @@
       status: "experimental",
     },
     {
+      name: "QuickIntensiveWakeUpThrottlingAfterLoading",
+    },
+    {
       name: "QuotaChange",
       status: "experimental",
     },

@@ -8781,6 +8781,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(device::features::kWebBluetoothConfirmPairingSupport)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
+    {"quick-intensive-throttling-after-loading",
+     flag_descriptions::kQuickIntensiveWakeUpThrottlingAfterLoadingName,
+     flag_descriptions::kQuickIntensiveWakeUpThrottlingAfterLoadingDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::kQuickIntensiveWakeUpThrottlingAfterLoading)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

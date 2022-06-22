@@ -3676,8 +3676,9 @@ class FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled
     : public FrameSchedulerImplTest {
  public:
   FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled()
-      : FrameSchedulerImplTest({kQuickIntensiveWakeUpThrottlingAfterLoading},
-                               {}) {}
+      : FrameSchedulerImplTest(
+            {features::kQuickIntensiveWakeUpThrottlingAfterLoading},
+            {}) {}
 };
 
 TEST_F(FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled,

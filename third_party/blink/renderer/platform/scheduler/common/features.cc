@@ -77,7 +77,7 @@ base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod(bool loading) {
       PolicyOverride::kNoOverride) {
     seconds = kIntensiveWakeUpThrottling_GracePeriodSeconds.Get();
     if (!loading && base::FeatureList::IsEnabled(
-                        kQuickIntensiveWakeUpThrottlingAfterLoading))
+                        features::kQuickIntensiveWakeUpThrottlingAfterLoading))
       seconds = kIntensiveWakeUpThrottling_GracePeriodSeconds_Loaded;
   }
   return base::Seconds(seconds);
