@@ -105,4 +105,15 @@ TEST(EllipseShapeTest, NonZeroRadiiWithMargin) {
   EXPECT_INVALID_EXCLUDED_INTERVAL(shape, 100, 1);
 }
 
+TEST(EllipseShapeTest, ShapeMarginLogicalBoundingBoxWithFloatValues) {
+  EXPECT_EQ(LayoutRect(LayoutUnit(-2.25f), LayoutUnit(-2.125f), LayoutUnit(7),
+                       LayoutUnit(9.75f)),
+            EllipseShape(gfx::PointF(1.25f, 2.75f), 3.5f, 4.875f)
+                .ShapeMarginLogicalBoundingBox());
+  EXPECT_EQ(LayoutRect(LayoutUnit::Min(), LayoutUnit(), LayoutUnit::Max(),
+                       LayoutUnit()),
+            EllipseShape(gfx::PointF(), 1e20f, 1e-20f)
+                .ShapeMarginLogicalBoundingBox());
+}
+
 }  // namespace blink

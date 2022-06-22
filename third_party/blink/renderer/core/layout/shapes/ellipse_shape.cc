@@ -40,9 +40,10 @@ LayoutRect EllipseShape::ShapeMarginLogicalBoundingBox() const {
   DCHECK_GE(ShapeMargin(), 0);
   float margin_radius_x = radius_x_ + ShapeMargin();
   float margin_radius_y = radius_y_ + ShapeMargin();
-  return LayoutRect(center_.x() - margin_radius_x,
-                    center_.y() - margin_radius_y, margin_radius_x * 2,
-                    margin_radius_y * 2);
+  return LayoutRect(LayoutUnit(center_.x() - margin_radius_x),
+                    LayoutUnit(center_.y() - margin_radius_y),
+                    LayoutUnit(margin_radius_x * 2),
+                    LayoutUnit(margin_radius_y * 2));
 }
 
 LineSegment EllipseShape::GetExcludedInterval(LayoutUnit logical_top,

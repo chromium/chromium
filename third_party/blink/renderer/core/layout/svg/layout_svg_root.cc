@@ -62,8 +62,9 @@ LayoutSVGRoot::LayoutSVGRoot(SVGElement* node)
   auto* svg = To<SVGSVGElement>(node);
   DCHECK(svg);
 
-  SetIntrinsicSize(LayoutSize(svg->IntrinsicWidth().value_or(kDefaultWidth),
-                              svg->IntrinsicHeight().value_or(kDefaultHeight)));
+  SetIntrinsicSize(
+      LayoutSize(LayoutUnit(svg->IntrinsicWidth().value_or(kDefaultWidth)),
+                 LayoutUnit(svg->IntrinsicHeight().value_or(kDefaultHeight))));
 }
 
 LayoutSVGRoot::~LayoutSVGRoot() = default;

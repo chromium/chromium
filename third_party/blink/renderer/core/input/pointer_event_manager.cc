@@ -368,7 +368,8 @@ void PointerEventManager::AdjustTouchPointerEvent(
          WebPointerProperties::PointerType::kTouch);
 
   LayoutSize hit_rect_size = GetHitTestRectForAdjustment(
-      *frame_, LayoutSize(pointer_event.width, pointer_event.height));
+      *frame_, LayoutSize(LayoutUnit(pointer_event.width),
+                          LayoutUnit(pointer_event.height)));
 
   if (hit_rect_size.IsEmpty())
     return;

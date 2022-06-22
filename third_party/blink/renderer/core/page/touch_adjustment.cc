@@ -51,8 +51,8 @@ namespace touch_adjustment {
 const float kZeroTolerance = 1e-6f;
 // The touch adjustment range (diameters) in dip, using same as the value in
 // gesture_configuration_android.cc
-constexpr float kMaxAdjustmentSizeDip = 32.f;
-constexpr float kMinAdjustmentSizeDip = 20.f;
+constexpr LayoutUnit kMaxAdjustmentSizeDip(32);
+constexpr LayoutUnit kMinAdjustmentSizeDip(20);
 
 // Class for remembering absolute quads of a target node and what node they
 // represent.

@@ -31,10 +31,10 @@ struct CORE_EXPORT PhysicalOffset {
   constexpr PhysicalOffset(LayoutUnit left, LayoutUnit top)
       : left(left), top(top) {}
 
-  // This is deleted to avoid unwanted lossy conversion from float to LayoutUnit
-  // or int. Use explicit LayoutUnit constructor for each parameter, or use
-  // FromPointFFloor etc. instead.
-  PhysicalOffset(float, float) = delete;
+  // This is deleted to avoid unwanted lossy conversion from float or double to
+  // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter,
+  // or use FromPointF*() instead.
+  PhysicalOffset(double, double) = delete;
 
   // For testing only. It's defined in core/testing/core_unit_test_helper.h.
   // 'constexpr' is to let compiler detect usage from production code.

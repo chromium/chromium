@@ -28,9 +28,10 @@ struct CORE_EXPORT LogicalRect {
                         LayoutUnit block_size)
       : offset(inline_offset, block_offset), size(inline_size, block_size) {}
 
-  // This is deleted to avoid unwanted lossy conversion from float to LayoutUnit
-  // or int. Use explicit LayoutUnit constructor for each parameter instead.
-  LogicalRect(float, float, float, float) = delete;
+  // This is deleted to avoid unwanted lossy conversion from float or double to
+  // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter
+  // instead.
+  LogicalRect(double, double, double, double) = delete;
 
   // For testing only. It's defined in core/testing/core_unit_test_helper.h.
   // 'constexpr' is to let compiler detect usage from production code.

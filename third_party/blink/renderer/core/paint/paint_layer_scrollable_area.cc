@@ -2175,8 +2175,7 @@ void PaintLayerScrollableArea::Resize(const gfx::Point& pos,
   LayoutSize current_size = GetLayoutBox()->Size();
   current_size.Scale(1 / zoom_factor);
 
-  LayoutSize adjusted_old_offset = LayoutSize(
-      old_offset.Width() / zoom_factor, old_offset.Height() / zoom_factor);
+  LayoutSize adjusted_old_offset = old_offset * (1.f / zoom_factor);
   if (GetLayoutBox()->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
     new_offset.set_x(-new_offset.x());
     adjusted_old_offset.SetWidth(-adjusted_old_offset.Width());
