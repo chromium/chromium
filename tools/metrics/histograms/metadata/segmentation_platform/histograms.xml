@@ -132,9 +132,9 @@ chromium-metrics-reviews@google.com.
     Time difference in days between when a new version of the model from
     optimization guide is available and when the model is initialized in the
     client for a given {SegmentID}. Recorded at startup for each model to
-    identify low values for new users. It can also be recorded during the
-    session when new version of the model was updated.
+    identify low values for new users.
   </summary>
+  <token key="SegmentID" variants="SegmentationModel"/>
 </histogram>
 
 <histogram
