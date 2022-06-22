@@ -71,7 +71,8 @@ class CONTENT_EXPORT PreloadingAttempt {
 class CONTENT_EXPORT PreloadingData {
  public:
   // This static function is implemented in PreloadingDataImpl.
-  // Please see content/browser/preloading_data_impl.cc for more details.
+  // Please see content/browser/preloading/preloading_data_impl.cc for more
+  // details.
   static PreloadingData* GetOrCreateForWebContents(WebContents* web_contents);
 
   // Creates a new PreloadingAttempt and returns a pointer associated with the

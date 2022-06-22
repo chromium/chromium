@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/preloading_data_impl.h"
+#include "content/browser/preloading/preloading_data_impl.h"
 
-#include "content/browser/preloading_attempt_impl.h"
-#include "content/browser/preloading_prediction.h"
+#include "content/browser/preloading/preloading_attempt_impl.h"
+#include "content/browser/preloading/preloading_prediction.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

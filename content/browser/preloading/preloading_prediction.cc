@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/preloading_prediction.h"
+#include "content/browser/preloading/preloading_prediction.h"
 
 #include "content/public/browser/page.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
