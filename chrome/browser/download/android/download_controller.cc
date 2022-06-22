@@ -185,6 +185,12 @@ static void JNI_DownloadController_OnAcquirePermissionResult(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(callback_id);
 
+  if (!DownloadController::GetInstance()
+           ->validator()
+           ->ValidateAndClearJavaCallback(callback_id)) {
+    return;
+  }
+
   std::string permission_to_update;
   if (jpermission_to_update) {
     permission_to_update =
@@ -316,7 +322,7 @@ void DownloadController::AcquireFileAccessPermission(
   // Make copy on the heap so we can pass the pointer through JNI.
   intptr_t callback_id = reinterpret_cast<intptr_t>(
       new AcquirePermissionCallback(std::move(callback)));
-
+  validator_.AddJavaCallback(callback_id);
   Java_DownloadController_requestFileAccess(env, callback_id, jwindow_android);
 }
 
