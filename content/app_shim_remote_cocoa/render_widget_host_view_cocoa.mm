@@ -2205,9 +2205,11 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 
 - (id)validRequestorForSendType:(NSString*)sendType
                      returnType:(NSString*)returnType {
+  NSString* const utf8Type = base::mac::CFToNSCast(kUTTypeUTF8PlainText);
+
   id requestor = nil;
-  BOOL sendTypeIsString = [sendType isEqual:NSStringPboardType];
-  BOOL returnTypeIsString = [returnType isEqual:NSStringPboardType];
+  BOOL sendTypeIsString = [sendType isEqualToString:utf8Type];
+  BOOL returnTypeIsString = [returnType isEqualToString:utf8Type];
   BOOL hasText = !_textSelectionRange.is_empty();
   BOOL takesText = _textInputType != ui::TEXT_INPUT_TYPE_NONE;
 
@@ -2316,21 +2318,24 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 @implementation RenderWidgetHostViewCocoa (NSServicesRequests)
 
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard*)pboard types:(NSArray*)types {
-  // NB: The NSServicesMenuRequestor protocol has not (as of 10.14) been
+  // NB: The NSServicesMenuRequestor protocol has not (as of macOS 12) been
   // upgraded to request UTIs rather than obsolete PboardType constants. Handle
   // either for when it is upgraded.
-  DCHECK([types containsObject:NSStringPboardType] ||
-         [types containsObject:base::mac::CFToNSCast(kUTTypeUTF8PlainText)]);
-  if (_textSelectionRange.is_empty())
-    return NO;
+  bool wasAbleToWriteAtLeastOneType = false;
 
-  NSString* text = base::SysUTF16ToNSString([self selectedText]);
-  return [pboard writeObjects:@[ text ]];
+  if (([types containsObject:NSStringPboardType] ||
+       [types containsObject:base::mac::CFToNSCast(kUTTypeUTF8PlainText)]) &&
+      !_textSelectionRange.is_empty()) {
+    NSString* text = base::SysUTF16ToNSString([self selectedText]);
+    wasAbleToWriteAtLeastOneType |= [pboard writeObjects:@[ text ]];
+  }
+
+  return wasAbleToWriteAtLeastOneType;
 }
 
 - (BOOL)readSelectionFromPasteboard:(NSPasteboard*)pboard {
-  NSArray* objects =
-      [pboard readObjectsForClasses:@[ [NSString class] ] options:0];
+  NSArray* objects = [pboard readObjectsForClasses:@[ [NSString class] ]
+                                           options:nil];
   if (![objects count])
     return NO;
 
