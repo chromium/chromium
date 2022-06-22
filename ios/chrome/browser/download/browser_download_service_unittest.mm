@@ -13,6 +13,7 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
+#import "ios/chrome/browser/download/download_mimetype_util.h"
 #include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/vcard_tab_helper.h"

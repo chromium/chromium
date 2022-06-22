@@ -66,6 +66,8 @@ source_set("download") {
 
 source_set("mime_types") {
   sources = [
+    "download_mimetype_util.cc",
+    "download_mimetype_util.h",
     "mime_type_util.cc",
     "mime_type_util.h",
   ]
