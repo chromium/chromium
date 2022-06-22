@@ -223,20 +223,18 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
     return true;
   }
 
-  static void SetDangerous(
-      content::DownloadTargetCallback callback,
-      const base::FilePath& target_path,
-      download::DownloadItem::TargetDisposition disp,
-      download::DownloadDangerType danger_type,
-      download::DownloadItem::MixedContentStatus mcs,
-      const base::FilePath& intermediate_path,
-      const base::FilePath& display_name,
-      const std::string& mime_type,
-      absl::optional<download::DownloadSchedule> download_schedule,
-      download::DownloadInterruptReason reason) {
-    std::move(callback).Run(
-        target_path, disp, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, mcs,
-        intermediate_path, display_name, mime_type, download_schedule, reason);
+  static void SetDangerous(content::DownloadTargetCallback callback,
+                           const base::FilePath& target_path,
+                           download::DownloadItem::TargetDisposition disp,
+                           download::DownloadDangerType danger_type,
+                           download::DownloadItem::MixedContentStatus mcs,
+                           const base::FilePath& intermediate_path,
+                           const base::FilePath& display_name,
+                           const std::string& mime_type,
+                           download::DownloadInterruptReason reason) {
+    std::move(callback).Run(target_path, disp,
+                            download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, mcs,
+                            intermediate_path, display_name, mime_type, reason);
   }
 };
 

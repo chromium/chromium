@@ -308,8 +308,7 @@ void OnCheckExistingDownloadPathDone(
       target_info->target_path, target_info->target_disposition,
       target_info->danger_type, target_info->mixed_content_status,
       target_info->intermediate_path, target_info->display_name,
-      target_info->mime_type, std::move(target_info->download_schedule),
-      target_info->result);
+      target_info->mime_type, target_info->result);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -322,13 +321,13 @@ void HandleMixedDownloadInfoBarResult(
     bool should_download) {
   // If the download should be blocked, we can call the callback directly.
   if (!should_download) {
-    std::move(callback).Run(
-        target_info->target_path, target_info->target_disposition,
-        download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-        DownloadItem::MixedContentStatus::SILENT_BLOCK,
-        target_info->intermediate_path, target_info->display_name,
-        target_info->mime_type, std::move(target_info->download_schedule),
-        download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
+    std::move(callback).Run(target_info->target_path,
+                            target_info->target_disposition,
+                            download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+                            DownloadItem::MixedContentStatus::SILENT_BLOCK,
+                            target_info->intermediate_path,
+                            target_info->display_name, target_info->mime_type,
+                            download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
     return;
   }
   target_info->mixed_content_status =
@@ -455,21 +454,14 @@ void ChromeDownloadManagerDelegate::ShowDownloadDialog(
     int64_t total_bytes,
     DownloadLocationDialogType dialog_type,
     const base::FilePath& suggested_path,
-    bool supports_later_dialog,
     DownloadDialogBridge::DialogCallback callback) {
   DCHECK(download_dialog_bridge_);
   auto connection_type = net::NetworkChangeNotifier::GetConnectionType();
-  bool show_date_time_picker = DownloadDialogBridge::ShouldShowDateTimePicker();
   bool is_incognito = profile_->IsOffTheRecord();
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          download::switches::kDownloadLaterDebugOnWifi)) {
-    connection_type = net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G;
-  }
   download_dialog_bridge_->ShowDialog(
       native_window, total_bytes, connection_type, dialog_type, suggested_path,
-      supports_later_dialog, show_date_time_picker, is_incognito,
-      std::move(callback));
+      is_incognito, std::move(callback));
 }
 
 void ChromeDownloadManagerDelegate::SetDownloadDialogBridgeForTesting(
@@ -1066,9 +1058,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
         return;
       }
 
-      bool show_download_later_dialog = ShouldShowDownloadLaterDialog(download);
-      if (!show_download_later_dialog &&
-          !download_prefs_->PromptForDownload()) {
+      if (!download_prefs_->PromptForDownload()) {
         DuplicateDownloadDialogBridgeDelegate::GetInstance()->CreateDialog(
             download, suggested_path, web_contents, std::move(callback));
         return;
@@ -1082,7 +1072,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
           base::BindOnce(
               &ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone,
               weak_ptr_factory_.GetWeakPtr(), native_window,
-              show_download_later_dialog, std::move(callback)));
+              std::move(callback)));
       return;
     }
 
@@ -1111,7 +1101,6 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
     ShowDownloadDialog(
         native_window, download->GetTotalBytes(), dialog_type, suggested_path,
-        ShouldShowDownloadLaterDialog(download),
         base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
     return;
 
@@ -1174,7 +1163,6 @@ void ChromeDownloadManagerDelegate::ShowFilePickerForDownload(
 #if BUILDFLAG(IS_ANDROID)
 void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
     gfx::NativeWindow native_window,
-    bool show_download_later_dialog,
     DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
     PathValidationResult result,
     const base::FilePath& target_path) {
@@ -1182,11 +1170,10 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
   // with the filename automatically set to be the unique filename.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (result == PathValidationResult::SUCCESS) {
-    if (download_prefs_->PromptForDownload() || show_download_later_dialog) {
+    if (download_prefs_->PromptForDownload()) {
       ShowDownloadDialog(
           native_window, 0 /* total_bytes */,
           DownloadLocationDialogType::NAME_CONFLICT, target_path,
-          show_download_later_dialog,
           base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
       return;
     }
@@ -1208,43 +1195,6 @@ void ChromeDownloadManagerDelegate::OnDownloadCanceled(
     download::DownloadItem* download,
     bool has_no_external_storage) {
   DownloadManagerService::OnDownloadCanceled(download, has_no_external_storage);
-}
-
-bool ChromeDownloadManagerDelegate::ShouldShowDownloadLaterDialog(
-    const download::DownloadItem* download) const {
-  if (!base::FeatureList::IsEnabled(download::features::kDownloadLater) ||
-      profile_->IsOffTheRecord() || !download_prefs_->PromptDownloadLater()) {
-    return false;
-  }
-
-  // Show download later dialog on slow network connection types.
-  using ConnectionType = net::NetworkChangeNotifier::ConnectionType;
-  auto network_type = net::NetworkChangeNotifier::GetConnectionType();
-  bool met_network_condition =
-      network_type == ConnectionType::CONNECTION_2G ||
-      network_type == ConnectionType::CONNECTION_BLUETOOTH;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          download::switches::kDownloadLaterDebugOnWifi)) {
-    met_network_condition = true;
-  }
-
-  if (met_network_condition)
-    return true;
-
-  // If the options to user are "download now" and "download on wifi" and the
-  // user is already on wifi, then don't show.
-  if (network_type == ConnectionType::CONNECTION_WIFI &&
-      !DownloadDialogBridge::ShouldShowDateTimePicker()) {
-    return false;
-  }
-
-  int64_t min_file_size_kb =
-      static_cast<int64_t>(DownloadDialogBridge::GetDownloadLaterMinFileSize());
-
-  // Show download later dialog on large download file.
-  bool met_file_size_condition =
-      download && download->GetTotalBytes() >= min_file_size_kb * 1024;
-  return met_file_size_condition;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

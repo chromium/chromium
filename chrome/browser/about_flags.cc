@@ -5647,15 +5647,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDownloadAutoResumptionNativeName,
      flag_descriptions::kDownloadAutoResumptionNativeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(download::features::kDownloadAutoResumptionNative)},
-
-    {"download-later", flag_descriptions::kDownloadLaterName,
-     flag_descriptions::kDownloadLaterDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(download::features::kDownloadLater)},
-
-    {"download-later-debug-on-wifi",
-     flag_descriptions::kDownloadLaterDebugOnWifiName,
-     flag_descriptions::kDownloadLaterDebugOnWifiNameDescription, kOsAndroid,
-     SINGLE_VALUE_TYPE(download::switches::kDownloadLaterDebugOnWifi)},
 #endif
 
     {"enable-new-download-backend",

@@ -78,7 +78,6 @@ class ChromeDownloadManagerDelegate
                           int64_t total_bytes,
                           DownloadLocationDialogType dialog_type,
                           const base::FilePath& suggested_path,
-                          bool supports_later_dialog,
                           DownloadDialogBridge::DialogCallback callback);
 
   void SetDownloadDialogBridgeForTesting(DownloadDialogBridge* bridge);
@@ -299,14 +298,9 @@ class ChromeDownloadManagerDelegate
   // TARGET_CONFLICT and the new file name should be displayed to the user.
   void GenerateUniqueFileNameDone(
       gfx::NativeWindow native_window,
-      bool show_download_later_dialog,
       DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
       download::PathValidationResult result,
       const base::FilePath& target_path);
-
-  // Returns whether to show download later dialog.
-  bool ShouldShowDownloadLaterDialog(
-      const download::DownloadItem* download) const;
 #endif
 
   raw_ptr<Profile> profile_;

@@ -541,7 +541,6 @@ class DownloadManagerTest : public testing::Test {
       const base::FilePath& intermediate_path,
       const base::FilePath& display_name,
       const std::string& mime_type,
-      absl::optional<download::DownloadSchedule> download_schedule,
       download::DownloadInterruptReason interrupt_reason) {
     callback_called_ = true;
     target_path_ = target_path;
@@ -549,7 +548,6 @@ class DownloadManagerTest : public testing::Test {
     danger_type_ = danger_type;
     intermediate_path_ = intermediate_path;
     mime_type_ = mime_type;
-    download_schedule_ = std::move(download_schedule);
     interrupt_reason_ = interrupt_reason;
   }
 
@@ -587,7 +585,6 @@ class DownloadManagerTest : public testing::Test {
   download::DownloadDangerType danger_type_;
   std::string mime_type_;
   base::FilePath intermediate_path_;
-  absl::optional<download::DownloadSchedule> download_schedule_;
   download::DownloadInterruptReason interrupt_reason_;
 
   std::vector<GURL> download_urls_;
@@ -797,9 +794,8 @@ TEST_F(DownloadManagerTest, OnInProgressDownloadsLoaded) {
       download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED, false, false, false,
       base::Time::Now(), true,
       std::vector<download::DownloadItem::ReceivedSlice>(),
-      download::DownloadItemRerouteInfo(), absl::nullopt /*download_schedule*/,
-      download::kInvalidRange, download::kInvalidRange,
-      nullptr /* download_entry */);
+      download::DownloadItemRerouteInfo(), download::kInvalidRange,
+      download::kInvalidRange, nullptr /* download_entry */);
   in_progress_manager->AddDownloadItem(std::move(in_progress_item));
   SetInProgressDownloadManager(std::move(in_progress_manager));
   EXPECT_CALL(GetMockObserver(), OnDownloadCreated(download_manager_.get(), _))

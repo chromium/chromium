@@ -855,8 +855,7 @@ void DownloadManagerService::CreateInterruptedDownloadForTest(
           download::DOWNLOAD_INTERRUPT_REASON_CRASH, false, false, false,
           base::Time(), false,
           std::vector<download::DownloadItem::ReceivedSlice>(),
-          download::DownloadItemRerouteInfo(),
-          absl::nullopt /*download_schedule*/, download::kInvalidRange,
+          download::DownloadItemRerouteInfo(), download::kInvalidRange,
           download::kInvalidRange, nullptr));
 }
 

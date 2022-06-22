@@ -193,8 +193,7 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
         start_time, end_time, etag, last_modified, received_bytes, total_bytes,
         auto_resume_count, hash, state, danger_type, interrupt_reason,
         false /* paused */, false /* allow_metered */, opened, last_access_time,
-        transient, received_slices, reroute_info,
-        absl::nullopt /*download_schedule*/, download::kInvalidRange,
+        transient, received_slices, reroute_info, download::kInvalidRange,
         download::kInvalidRange, nullptr /* download_entry */);
   }
 
@@ -501,7 +500,6 @@ void DownloadManagerImpl::DetermineDownloadTarget(
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
         download::DownloadItem::MixedContentStatus::UNKNOWN, target_path,
         base::FilePath(), std::string() /*mime_type*/,
-        absl::nullopt /*download_schedule*/,
         download::DOWNLOAD_INTERRUPT_REASON_NONE);
   }
 }
