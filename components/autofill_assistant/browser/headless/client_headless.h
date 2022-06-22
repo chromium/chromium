@@ -27,21 +27,23 @@
 
 namespace autofill_assistant {
 
+class ExternalScriptControllerImpl;
+
 // An Autofill Assistant client for headless runs.
 class ClientHeadless : public Client, public AccessTokenFetcher {
  public:
-  explicit ClientHeadless(content::WebContents* web_contents,
-                          const CommonDependencies* common_dependencies,
-                          ExternalActionDelegate* action_extension_delegate);
+  explicit ClientHeadless(
+      content::WebContents* web_contents,
+      const CommonDependencies* common_dependencies,
+      ExternalActionDelegate* action_extension_delegate,
+      ExternalScriptControllerImpl* external_script_controller);
   ClientHeadless(const ClientHeadless&) = delete;
   ClientHeadless& operator=(const ClientHeadless&) = delete;
 
   ~ClientHeadless() override;
 
   bool IsRunning() const;
-  void Start(const GURL& url,
-             std::unique_ptr<TriggerContext> trigger_context,
-             ControllerObserver* observer);
+  void Start(const GURL& url, std::unique_ptr<TriggerContext> trigger_context);
 
   // Overrides Client
   void AttachUI() override;
@@ -85,6 +87,7 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   void SafeDestroyController(Metrics::DropOutReason reason);
   void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
                                   signin::AccessTokenInfo access_token_info);
+  void NotifyScriptEnded(Metrics::DropOutReason reason);
 
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<Controller> controller_;
@@ -95,6 +98,7 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
   base::OnceCallback<void(bool, const std::string&)>
       fetch_access_token_callback_;
+  const raw_ptr<ExternalScriptControllerImpl> external_script_controller_;
 
   base::WeakPtrFactory<ClientHeadless> weak_ptr_factory_{this};
 };

@@ -194,7 +194,6 @@ class UiController : public ScriptExecutorUiDelegate,
   void OnStop() override;
   void OnResetState() override;
   void OnUiShownChanged(bool shown) override;
-  void OnShutdown(Metrics::DropOutReason reason) override;
   bool SupportsExternalActions() override;
   void ExecuteExternalAction(
       const external::Action& external_action,

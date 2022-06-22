@@ -20,7 +20,7 @@ ExternalScriptControllerImpl::ExternalScriptControllerImpl(
   if (starter) {
     client_ = std::make_unique<ClientHeadless>(web_contents,
                                                starter->GetCommonDependencies(),
-                                               action_extension_delegate);
+                                               action_extension_delegate, this);
   }
 }
 
@@ -69,43 +69,13 @@ void ExternalScriptControllerImpl::OnReadyToStart(
   }
   // TODO(b/201964911): At this point we should be sure no other Controller
   // exists on this tab. Add logic to the starter to check that's the case.
-  client_->Start(*url, std::move(trigger_context), this);
+  client_->Start(*url, std::move(trigger_context));
 }
 
-void ExternalScriptControllerImpl::OnShutdown(Metrics::DropOutReason reason) {
-  // TODO(b/201964911): since the Controller has not been destroyed yet, this
-  // could lead to a race condition if |StartScript| is called again right away
-  // after receiving this notification.
+void ExternalScriptControllerImpl::NotifyScriptEnded(
+    Metrics::DropOutReason reason) {
   std::move(script_ended_callback_)
       .Run({reason == Metrics::DropOutReason::SCRIPT_SHUTDOWN});
 }
 
-void ExternalScriptControllerImpl::OnStateChanged(
-    AutofillAssistantState new_state) {}
-void ExternalScriptControllerImpl::OnKeyboardSuppressionStateChanged(
-    bool should_suppress_keyboard) {}
-void ExternalScriptControllerImpl::CloseCustomTab() {}
-void ExternalScriptControllerImpl::OnError(const std::string& error_message,
-                                           Metrics::DropOutReason reason) {}
-void ExternalScriptControllerImpl::OnUserDataChanged(
-    const UserData& user_data,
-    UserDataFieldChange field_change) {}
-void ExternalScriptControllerImpl::OnTouchableAreaChanged(
-    const RectF& visual_viewport,
-    const std::vector<RectF>& touchable_areas,
-    const std::vector<RectF>& restricted_areas) {}
-void ExternalScriptControllerImpl::OnViewportModeChanged(ViewportMode mode) {}
-void ExternalScriptControllerImpl::OnOverlayColorsChanged(
-    const ExecutionDelegate::OverlayColors& colors) {}
-void ExternalScriptControllerImpl::OnClientSettingsChanged(
-    const ClientSettings& settings) {}
-void ExternalScriptControllerImpl::OnShouldShowOverlayChanged(
-    bool should_show) {}
-void ExternalScriptControllerImpl::OnExecuteScript(
-    const std::string& start_message) {}
-void ExternalScriptControllerImpl::OnStart(
-    const TriggerContext& trigger_context) {}
-void ExternalScriptControllerImpl::OnStop() {}
-void ExternalScriptControllerImpl::OnResetState() {}
-void ExternalScriptControllerImpl::OnUiShownChanged(bool shown) {}
 }  // namespace autofill_assistant

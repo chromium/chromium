@@ -119,7 +119,6 @@ class UiControllerAndroid : public ControllerObserver, UiControllerObserver {
   void OnStop() override;
   void OnResetState() override;
   void OnUiShownChanged(bool shown) override;
-  void OnShutdown(Metrics::DropOutReason reason) override;
 
   // Overrides UiControllerObserver:
   void OnStatusMessageChanged(const std::string& message) override;
