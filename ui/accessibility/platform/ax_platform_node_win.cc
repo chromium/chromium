@@ -7287,6 +7287,10 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       case ax::mojom::Role::kLabelText:
       case ax::mojom::Role::kListBoxOption:
       case ax::mojom::Role::kListItem:
+      // Treat the root of a MathML tree as content/control so that it is seen
+      // by UIA clients. The remainder of the tree remains as text for now until
+      // UIA mappings for MathML are defined (https://crbug.com/1260585).
+      case ax::mojom::Role::kMathMLMath:
       case ax::mojom::Role::kMeter:
       case ax::mojom::Role::kProgressIndicator:
       case ax::mojom::Role::kRow:

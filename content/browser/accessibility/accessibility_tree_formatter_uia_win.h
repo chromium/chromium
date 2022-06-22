@@ -28,6 +28,7 @@ class AccessibilityTreeFormatterUia : public ui::AXTreeFormatterBase {
   base::Value BuildTree(ui::AXPlatformNodeDelegate* start) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
+  base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
  protected:
   void AddDefaultFilters(

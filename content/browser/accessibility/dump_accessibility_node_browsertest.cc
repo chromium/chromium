@@ -30,6 +30,7 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
     // Enable MathMLCore for some MathML tests.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "MathMLCore");
+    DumpAccessibilityTestBase::SetUpCommandLine(command_line);
   }
 
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
