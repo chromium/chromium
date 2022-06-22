@@ -65,6 +65,8 @@
 #include "chromeos/system/statistics_provider.h"
 #include "components/version_info/version_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 
 namespace arc {
 namespace {
@@ -503,6 +505,25 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   request.set_enable_consumer_auto_update_toggle(base::FeatureList::IsEnabled(
       ash::features::kConsumerAutoUpdateToggleAllowed));
+
+  auto orientation = display::Display::ROTATE_0;
+  if (auto* screen = display::Screen::GetScreen())
+    orientation = screen->GetPrimaryDisplay().panel_rotation();
+  switch (orientation) {
+    using StartArcVmRequest = vm_tools::concierge::StartArcVmRequest;
+    case display::Display::ROTATE_0:
+      request.set_panel_orientation(StartArcVmRequest::ORIENTATION_0);
+      break;
+    case display::Display::ROTATE_90:
+      request.set_panel_orientation(StartArcVmRequest::ORIENTATION_90);
+      break;
+    case display::Display::ROTATE_180:
+      request.set_panel_orientation(StartArcVmRequest::ORIENTATION_180);
+      break;
+    case display::Display::ROTATE_270:
+      request.set_panel_orientation(StartArcVmRequest::ORIENTATION_270);
+      break;
+  }
 
   return request;
 }
