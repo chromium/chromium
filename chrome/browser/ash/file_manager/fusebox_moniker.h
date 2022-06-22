@@ -1,0 +1,109 @@
+// Copyright (c) 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_FILE_MANAGER_FUSEBOX_MONIKER_H_
+#define CHROME_BROWSER_ASH_FILE_MANAGER_FUSEBOX_MONIKER_H_
+
+#include "base/token.h"
+#include "storage/browser/file_system/file_system_url.h"
+
+namespace file_manager {
+
+// A moniker is an alternative name (an alias or symbolic link, of sorts) for a
+// FileSystemURL (a C++ object). That name is a filename on the Linux file
+// system, such as "/media/fuse/fusebox/moniker/1234etc", and is served by the
+// FuseBox FUSE server.
+//
+// It is like a symbolic link, "ln -s TARGET LINK_NAME", where TARGET is the
+// FileSystemURL and LINK_NAME is the "/media/fuse/fusebox/moniker/1234etc",
+// but differs from symlinks in three ways.
+//
+// First, the TARGET is itself not present in the file system (at the operating
+// system level). The purpose of a moniker is to provide a filename (in the OS
+// sense) for something that doesn't have one (such as an Android Content
+// Provider's "content://com.example.appname.provider/the/path/to/the/thing"
+// Content URL wrapped in a FileSystemURL). Separate processes can share a
+// filename (a plain old string) when they can't share a FileSystemURL.
+//
+// Second, the LINK_NAME is unguessable (essentially a randomly generated
+// 128-bit base::Token) and "ls /media/fuse/fusebox/moniker/" will show an
+// empty directory. Only the FuseBoxMoniker::Create caller (and whoever it
+// shares the resultant FuseBoxMoniker with, in C++ object, base::Token or
+// string filename form) has the capability to ask the FuseBox FUSE server to
+// resolve the LINK_NAME to read the original TARGET.
+//
+// Third, monikers always target individual files, never directories.
+//
+// All FuseBoxMoniker methods, static and non-static, must only be called on
+// the main (UI) thread.
+class FuseBoxMoniker {
+ public:
+  // Creates a randomly generated link name (available in both base::Token and
+  // string form) for the target. It is the caller's responsibility to call
+  // FuseBoxMoniker::Destroy when the moniker is no longer required but also to
+  // keep the FileSystemURL's backing content alive until that Destroy call.
+  static FuseBoxMoniker Create(storage::FileSystemURL target);
+
+  struct ExtractTokenResult {
+    enum class ResultType {
+      // The fs_url_as_string was a Moniker FileSystemURL (it started with the
+      // fusebox::kMonikerFileSystemURL prefix) and held a well-formed token.
+      OK = 0,
+      // The fs_url_as_string was not a Moniker FileSystemURL.
+      NOT_A_MONIKER_FS_URL = 1,
+      // The fs_url_as_string was a Moniker FileSystemURL but named the root of
+      // all such FileSystemURL's. It did not hold a well-formed token.
+      MONIKER_FS_URL_BUT_ONLY_ROOT = 2,
+      // The fs_url_as_string was a Moniker FileSystemURL but did not hold a
+      // well-formed token (and was not MONIKER_FS_URL_BUT_ONLY_ROOT).
+      MONIKER_FS_URL_BUT_NOT_WELL_FORMED = 3,
+    } result_type;
+
+    base::Token token;
+  };
+
+  // Returns the 1234etc base::Token from a storage::FileSystemURL in its
+  // string form (like "dummy://moniker/1234etc"), where "dummy://moniker" is
+  // the fusebox::kMonikerFileSystemURL prefix.
+  //
+  // This function does not resolve the base::Token (for that, use the Resolve
+  // function instead). It does not confirm the token's *validity* (that the
+  // token matches a previous call to Create), only its *well-formed-ness*
+  // (that it looks like a token, at the lexical level).
+  static ExtractTokenResult ExtractToken(std::string fs_url_as_string);
+
+  // Returns the target for the previously linked moniker, as identified by its
+  // base::Token. The return value's is_valid() will be false if there was no
+  // such moniker or if it was unlinked.
+  static storage::FileSystemURL Resolve(base::Token token);
+
+  // Tears down the link, so that Resolve and Target will return invalid
+  // FileSystemURL values.
+  void Destroy();
+
+  storage::FileSystemURL Target();
+  std::string LinkFilename();
+  base::Token LinkToken();
+
+ private:
+  explicit FuseBoxMoniker(base::Token token);
+
+  // This token (an 128-bit value) is randomly generated and unguessable, so in
+  // some sense, it is like a base::UnguessableToken (call that a b::UT). But
+  // an all-zero-bits b::UT is not just invalid, b::UT::Deserialize(0, 0) will
+  // actually DCHECK-crash. The design assumption is that b::UT values are only
+  // shared between trusted processes via trusted channels. Here, the token is
+  // parsed from the FUSE filename and all manner of processes (of various
+  // trustworthiness) can walk the file system. We don't want "ls
+  // /media/fuse/fusebox/moniker/00000000000000000000000000000000" to crash the
+  // Chrome process. So we use base::Token, a more forgiving type than
+  // base::UnguessableToken.
+  //
+  // See also the crrev.com/c/3645173 code review discussion.
+  base::Token token_;
+};
+
+}  // namespace file_manager
+
+#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_FUSEBOX_MONIKER_H_

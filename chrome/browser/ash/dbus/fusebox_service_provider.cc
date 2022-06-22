@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/fusebox_moniker.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -49,10 +50,19 @@ struct ParseResult {
   base::File::Error error_code;
   scoped_refptr<storage::FileSystemContext> fs_context;
   storage::FileSystemURL fs_url;
+
+  // is_moniker_root is used for the special case where
+  // fusebox::kMonikerFileSystemURL (also known as "dummy://moniker", with no
+  // trailing slash) is passed to ReadDir. There is no FileSystemURL linked to
+  // that fs_url_as_string (there is no base::Token in the string), so
+  // ParseCommonDBusMethodArguments (which returns a valid FileSystemURL on
+  // success) must return an error. However, ReadDir on "dummy://moniker"
+  // should succeed (but send an empty directory listing back over D-Bus).
+  bool is_moniker_root = false;
 };
 
 ParseResult::ParseResult(base::File::Error error_code_arg)
-    : error_code(error_code_arg), fs_context(), fs_url() {}
+    : error_code(error_code_arg) {}
 
 ParseResult::ParseResult(
     scoped_refptr<storage::FileSystemContext> fs_context_arg,
@@ -82,17 +92,43 @@ ParseResult ParseCommonDBusMethodArguments(dbus::MessageReader* reader) {
     return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
   }
 
-  storage::FileSystemURL fs_url =
-      fs_context->CrackURLInFirstPartyContext(GURL(fs_url_as_string));
-  if (!fs_url.is_valid()) {
-    LOG(ERROR) << "Invalid FileSystemURL";
-    return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
-  } else if (!fs_context->external_backend()->CanHandleType(fs_url.type())) {
+  storage::FileSystemURL fs_url;
+
+  // Intercept any moniker names and replace them by their linked target.
+  using ResultType =
+      file_manager::FuseBoxMoniker::ExtractTokenResult::ResultType;
+  auto moniker_parse_result =
+      file_manager::FuseBoxMoniker::ExtractToken(fs_url_as_string);
+  switch (moniker_parse_result.result_type) {
+    case ResultType::OK:
+      fs_url =
+          file_manager::FuseBoxMoniker::Resolve(moniker_parse_result.token);
+      if (!fs_url.is_valid()) {
+        LOG(ERROR) << "Unresolvable Moniker";
+        return ParseResult(base::File::Error::FILE_ERROR_NOT_FOUND);
+      }
+      break;
+    case ResultType::NOT_A_MONIKER_FS_URL:
+      fs_url = fs_context->CrackURLInFirstPartyContext(GURL(fs_url_as_string));
+      if (!fs_url.is_valid()) {
+        LOG(ERROR) << "Invalid FileSystemURL";
+        return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
+      }
+      break;
+    case ResultType::MONIKER_FS_URL_BUT_ONLY_ROOT: {
+      ParseResult result = ParseResult(base::File::Error::FILE_ERROR_NOT_FOUND);
+      result.is_moniker_root = true;
+      return result;
+    }
+    case ResultType::MONIKER_FS_URL_BUT_NOT_WELL_FORMED:
+      return ParseResult(base::File::Error::FILE_ERROR_NOT_FOUND);
+  }
+
+  if (!fs_context->external_backend()->CanHandleType(fs_url.type())) {
     LOG(ERROR) << "Backend cannot handle "
                << storage::GetFileSystemTypeString(fs_url.type());
     return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
   }
-
   return ParseResult(std::move(fs_context), std::move(fs_url));
 }
 
@@ -280,6 +316,15 @@ void CallReverseReplyToReadDir(
   }
 }
 
+void SendEmptyReverseReplyToReadDir(uint64_t cookie) {
+  constexpr bool has_more = false;
+  if (auto* client = FuseBoxReverseClient::Get(); client) {
+    client->ReplyToReadDir(cookie,
+                           static_cast<int32_t>(base::File::Error::FILE_OK),
+                           fusebox::DirEntryListProto(), has_more);
+  }
+}
+
 void ReplyToStat(scoped_refptr<storage::FileSystemContext> fs_context,
                  dbus::MethodCall* method_call,
                  dbus::ExportedObject::ResponseSender sender,
@@ -416,7 +461,8 @@ void FuseBoxServiceProvider::ReadDir(
 
   dbus::MessageReader reader(method_call);
   auto common = ParseCommonDBusMethodArguments(&reader);
-  if (common.error_code != base::File::Error::FILE_OK) {
+  if ((common.error_code != base::File::Error::FILE_OK) &&
+      !common.is_moniker_root) {
     ReplyToReadDir(method_call, std::move(sender), common.error_code);
     return;
   }
@@ -431,8 +477,13 @@ void FuseBoxServiceProvider::ReadDir(
 
   // The ReadDir D-Bus method call deserves a reply, even if we don't have any
   // directory entries yet. Those entries will be sent back separately, in
-  // batches, by CallReverseReplyToReadDir.
+  // batches, by CallReverseReplyToReadDir or SendEmptyReverseReplyToReadDir.
   ReplyToReadDir(method_call, std::move(sender), base::File::Error::FILE_OK);
+
+  if (common.is_moniker_root) {
+    SendEmptyReverseReplyToReadDir(cookie);
+    return;
+  }
 
   auto callback =
       base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
