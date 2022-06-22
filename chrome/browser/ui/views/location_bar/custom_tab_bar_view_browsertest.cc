@@ -260,7 +260,13 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   EXPECT_FALSE(custom_tab_bar_);
 }
 
-IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, IsNotCreatedInPopup) {
+// TODO(crbug.com/1338068): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IsNotCreatedInPopup DISABLED_IsNotCreatedInPopup
+#else
+#define MAYBE_IsNotCreatedInPopup IsNotCreatedInPopup
+#endif
+IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, MAYBE_IsNotCreatedInPopup) {
   Browser* popup = OpenPopup(browser_view_->GetActiveWebContents(),
                              GURL("http://example.com"));
   EXPECT_TRUE(popup);
