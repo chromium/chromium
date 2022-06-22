@@ -26,6 +26,7 @@ non_preprocessed_files = [
   "app_management/file_handling_item_test.ts",
   "app_management/permission_item_test.ts",
   "app_management/window_mode_item_test.ts",
+  "color_change_listener_test.ts",
   "customize_themes_test.ts",
   "history_clusters_test.ts",
   "localized_link_test.ts",
@@ -67,6 +68,7 @@ ts_library("build_ts") {
   in_files = non_preprocessed_files + preprocessed_files
   deps = [
     "//ui/webui/resources/cr_components/app_management:build_ts",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
     "//ui/webui/resources/cr_components/most_visited:build_ts",

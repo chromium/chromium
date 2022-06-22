@@ -32,7 +32,7 @@ var CrComponentsColorChangeListenerTest =
     class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_components/color_change_listener_test.js';
+    return 'chrome://test/test_loader.html?module=cr_components/color_change_listener_test.js&host=webui-test';
   }
 };
 
