@@ -44,7 +44,6 @@ class ContinueSectionView;
 class IconButton;
 class RecentAppsView;
 class RoundedScrollBar;
-class SearchResultPageDialogController;
 class SearchBoxView;
 class ScrollableAppsGridView;
 class ScrollViewGradientHelper;
@@ -68,7 +67,6 @@ class ASH_EXPORT AppListBubbleAppsPage
                         ApplicationDragAndDropHost* drag_and_drop_host,
                         AppListConfig* app_list_config,
                         AppListA11yAnnouncer* a11y_announcer,
-                        SearchResultPageDialogController* dialog_controller,
                         AppListFolderController* folder_controller,
                         SearchBoxView* search_box);
   AppListBubbleAppsPage(const AppListBubbleAppsPage&) = delete;
@@ -241,9 +239,6 @@ class ASH_EXPORT AppListBubbleAppsPage
   SearchBoxView* search_box_ = nullptr;
 
   std::unique_ptr<AppListNudgeController> app_list_nudge_controller_;
-
-  // Controller for showing a modal dialog in the continue section.
-  SearchResultPageDialogController* const dialog_controller_;
 
   // Adds fade in/out gradients to `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;

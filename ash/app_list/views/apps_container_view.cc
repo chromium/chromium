@@ -164,8 +164,7 @@ constexpr base::TimeDelta kZeroStateSearchTimeout = base::Milliseconds(16);
 class AppsContainerView::ContinueContainer : public views::View {
  public:
   ContinueContainer(AppsContainerView* apps_container,
-                    AppListViewDelegate* view_delegate,
-                    SearchResultPageDialogController* dialog_controller)
+                    AppListViewDelegate* view_delegate)
       : view_delegate_(view_delegate), separator_(apps_container->separator()) {
     DCHECK(view_delegate_);
     DCHECK(separator_);
@@ -175,7 +174,7 @@ class AppsContainerView::ContinueContainer : public views::View {
         ->SetOrientation(views::LayoutOrientation::kVertical);
 
     continue_section_ = AddChildView(std::make_unique<ContinueSectionView>(
-        view_delegate, dialog_controller, kContinueColumnCount,
+        view_delegate, kContinueColumnCount,
         /*tablet_mode=*/true));
     continue_section_->SetPaintToLayer();
     continue_section_->layer()->SetFillsBoundsOpaquely(false);
@@ -272,9 +271,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     dialog_controller_ = std::make_unique<SearchResultPageDialogController>(
         contents_view_->GetSearchBoxView());
 
-    continue_container_ =
-        scrollable_container_->AddChildView(std::make_unique<ContinueContainer>(
-            this, view_delegate, dialog_controller_.get()));
+    continue_container_ = scrollable_container_->AddChildView(
+        std::make_unique<ContinueContainer>(this, view_delegate));
     continue_container_->continue_section()->SetNudgeController(
         app_list_nudge_controller_.get());
     // Update the suggestion tasks after the app list nudge controller is set in

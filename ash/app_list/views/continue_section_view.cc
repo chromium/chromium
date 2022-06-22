@@ -19,7 +19,6 @@
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/app_list_view_util.h"
 #include "ash/app_list/views/continue_task_view.h"
-#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -85,14 +84,10 @@ void CleanupLayer(views::View* view) {
 
 }  // namespace
 
-ContinueSectionView::ContinueSectionView(
-    AppListViewDelegate* view_delegate,
-    SearchResultPageDialogController* dialog_controller,
-    int columns,
-    bool tablet_mode)
-    : view_delegate_(view_delegate),
-      dialog_controller_(dialog_controller),
-      tablet_mode_(tablet_mode) {
+ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
+                                         int columns,
+                                         bool tablet_mode)
+    : view_delegate_(view_delegate), tablet_mode_(tablet_mode) {
   DCHECK(view_delegate_);
 
   AppListModelProvider::Get()->AddObserver(this);
@@ -124,7 +119,7 @@ ContinueSectionView::ContinueSectionView(
           base::BindRepeating(
               &ContinueSectionView::OnSearchResultContainerResultsChanged,
               base::Unretained(this)),
-          dialog_controller_, tablet_mode));
+          tablet_mode));
   suggestions_container_->SetVisible(false);
 }
 

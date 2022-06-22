@@ -22,7 +22,6 @@ class MenuRunner;
 
 namespace ash {
 class AppListViewDelegate;
-class SearchResultPageDialogController;
 
 enum ContinueTaskCommandId {
   // Context Menu option to open the selected suggestion.
@@ -50,9 +49,7 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
 
   METADATA_HEADER(ContinueTaskView);
 
-  ContinueTaskView(AppListViewDelegate* view_delegate,
-                   SearchResultPageDialogController* dialog_controller,
-                   bool tablet_mode);
+  ContinueTaskView(AppListViewDelegate* view_delegate, bool tablet_mode);
   ContinueTaskView(const ContinueTaskView&) = delete;
   ContinueTaskView& operator=(const ContinueTaskView&) = delete;
   ~ContinueTaskView() override;
@@ -101,9 +98,6 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   // Removes the search result related to the view.
   void RemoveResult();
 
-  // Displays a dialog requesting for continue section feedback.
-  void ShowFeedbackDialog();
-
   // Builds and returns a raw pointer to `context_menu_model_`.
   ui::SimpleMenuModel* BuildMenuModel();
 
@@ -117,14 +111,6 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   // Record metrics at the moment when the ContinueTaskView result is removed.
   void LogMetricsOnResultRemoved();
 
-  // Returns true if the feedback dialog should be shown on task removal.
-  bool ShouldShowFeedbackDialog();
-
-  // Invoked when the remove feedback dialog for the task has been closed by the
-  // usser confirming the removal. This function handles removing the result and
-  // updating the remove feedback dialog pref if |has_feedback| is true.
-  void RemoveResultAndMaybeUpdateFeedbackPref(bool has_feedback);
-
   // The index of this view within a |SearchResultContainerView| that holds it.
   absl::optional<int> index_in_container_;
 
@@ -133,9 +119,6 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   views::Label* subtitle_ = nullptr;
   views::ImageView* icon_ = nullptr;
   SearchResult* result_ = nullptr;  // Owned by SearchModel::SearchResults.
-
-  // Controller for displaying a searchbox anchored dialog.
-  SearchResultPageDialogController* const dialog_controller_;
 
   const bool is_tablet_mode_;
 

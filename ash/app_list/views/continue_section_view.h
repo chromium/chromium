@@ -24,7 +24,6 @@ class AppListViewDelegate;
 class AppListToastView;
 class ContinueTaskContainerView;
 class ContinueTaskView;
-class SearchResultPageDialogController;
 
 // The "Continue" section of the bubble launcher. This view wraps around
 // suggestions with tasks to continue.
@@ -36,7 +35,6 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   METADATA_HEADER(ContinueSectionView);
 
   ContinueSectionView(AppListViewDelegate* view_delegate,
-                      SearchResultPageDialogController* dialog_controller,
                       int columns,
                       bool tablet_mode);
   ContinueSectionView(const ContinueSectionView&) = delete;
@@ -142,9 +140,6 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   void MaybeAnimateOutPrivacyNotice();
 
   AppListViewDelegate* const view_delegate_;
-
-  // Controller for showing a modal dialog in the continue section.
-  SearchResultPageDialogController* const dialog_controller_;
 
   bool tablet_mode_ = false;
 

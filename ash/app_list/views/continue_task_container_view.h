@@ -29,7 +29,6 @@ namespace ash {
 
 class AppListViewDelegate;
 class ContinueTaskView;
-class SearchResultPageDialogController;
 
 // The container for the Continue Tasks results view. The view contains a preset
 // number of ContinueTaskViews that get populated based on the list of results
@@ -46,7 +45,6 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   ContinueTaskContainerView(AppListViewDelegate* view_delegate,
                             int columns,
                             OnResultsChanged update_callback,
-                            SearchResultPageDialogController* dialog_controller,
                             bool tablet_mode);
   ContinueTaskContainerView(const ContinueTaskContainerView&) = delete;
   ContinueTaskContainerView& operator=(const ContinueTaskContainerView&) =
@@ -168,8 +166,6 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   // A callback to be invoked after an Update request finishes.
   OnResultsChanged update_callback_;
   SearchModel::SearchResults* results_ = nullptr;  // Owned by SearchModel.
-
-  SearchResultPageDialogController* const dialog_controller_;
 
   // Only one of the layouts is to be set.
   // `flex_layout_`  aligns the views as a single row centered in the container.

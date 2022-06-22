@@ -3237,9 +3237,6 @@ extern const char kWindowControlMenuDescription[];
 extern const char kLauncherGameSearchName[];
 extern const char kLauncherGameSearchDescription[];
 
-extern const char kLauncherFeedbackOnContinueSectionRemoveName[];
-extern const char kLauncherFeedbackOnContinueSectionRemoveDescription[];
-
 extern const char kLauncherHideContinueSectionName[];
 extern const char kLauncherHideContinueSectionDescription[];
 

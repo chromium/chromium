@@ -45,8 +45,6 @@ const base::Feature kDynamicSearchUpdateAnimation{
     "DynamicSearchUpdateAnimation", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kLauncherLacrosIntegration{
     "LauncherLacrosIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kFeedbackOnContinueSectionRemove{
-    "FeedbackOnContinueSectionRemove", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kCompactBubbleLauncher{"CompactBubbleLauncher",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kLauncherPlayStoreSearch{"LauncherPlayStoreSearch",
@@ -143,11 +141,6 @@ base::TimeDelta DynamicSearchUpdateAnimationDuration() {
 
 bool IsForceShowContinueSectionEnabled() {
   return base::FeatureList::IsEnabled(kForceShowContinueSection);
-}
-
-bool IsFeedbackOnContinueSectionRemoveEnabled() {
-  return ash::features::IsProductivityLauncherEnabled() &&
-         base::FeatureList::IsEnabled(kFeedbackOnContinueSectionRemove);
 }
 
 bool IsCompactBubbleLauncherEnabled() {
