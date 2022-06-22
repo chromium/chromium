@@ -15,6 +15,7 @@ from typing import List, Optional
 
 from common import get_component_uri, register_common_args, \
                    register_device_args, resolve_packages, run_ffx_command
+from compatible_utils import map_filter_file_to_package_file
 from ffx_integration import FfxTestRunner
 from test_runner import TestRunner
 
@@ -65,6 +66,10 @@ class ExecutableTestRunner(TestRunner):
             type=int,
             default=os.environ.get('GTEST_TOTAL_SHARDS'),
             help='Total number of swarming shards of this suite.')
+        parser.add_argument(
+            '--test-launcher-filter-file',
+            help='Filter file(s) passed to target test process. Use ";" to '
+            'separate multiple filter files.')
 
         args, child_args = parser.parse_known_args(self._test_args)
         if args.isolated_script_test_output:
@@ -86,6 +91,12 @@ class ExecutableTestRunner(TestRunner):
             child_args.append(
                 '--test-launcher-summary-output=/custom_artifacts/%s' %
                 os.path.basename(self._test_launcher_summary_output))
+        if args.test_launcher_filter_file:
+            test_launcher_filter_files = map(
+                map_filter_file_to_package_file,
+                args.test_launcher_filter_file.split(';'))
+            child_args.append('--test-launcher-filter-file=' +
+                              ';'.join(test_launcher_filter_files))
         return child_args
 
     def _postprocess(self, test_runner: FfxTestRunner) -> None:

@@ -20,6 +20,10 @@ from net_test_server import SetupTestServer
 from run_test_package import RunTestPackage, RunTestPackageArgs
 from runner_exceptions import HandleExceptionAndReturnExitCode
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
+from compatible_utils import map_filter_file_to_package_file
+
 DEFAULT_TEST_SERVER_CONCURRENCY = 4
 
 TEST_DATA_DIR = '/tmp'
@@ -240,15 +244,6 @@ def AddTestExecutionArgs(arg_parser):
                          help='Arguments for the test process.')
 
 
-def MapFilterFileToPackageFile(filter_file):
-  # TODO(crbug.com/1279803): Until one can send file to the device when running
-  # a test, filter files must be read from the test package.
-  if not FILTER_DIR in filter_file:
-    raise ValueError('CFv2 tests only support registered filter files present '
-                     ' in the test package')
-  return '/pkg/' + filter_file[filter_file.index(FILTER_DIR):]
-
-
 def main():
   parser = argparse.ArgumentParser()
   AddTestExecutionArgs(parser)
@@ -357,7 +352,7 @@ def main():
           # TODO(crbug.com/1279803): Until one can send file to the device when
           # running a test, filter files must be read from the test package.
           test_launcher_filter_files = map(
-              MapFilterFileToPackageFile,
+              map_filter_file_to_package_file,
               args.test_launcher_filter_file.split(';'))
           child_args.append('--test-launcher-filter-file=' +
                             ';'.join(test_launcher_filter_files))
