@@ -358,7 +358,15 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
                                               kSecTrustOptionAllowExpiredRoot));
 
       if (trust_domains == TrustStoreMac::TrustDomains::kUserAndAdmin &&
-          !find_certificate_default_search_list_certs.count(cert_der)) {
+          find_certificate_default_search_list_certs.count(cert_der) &&
+          find_certificate_system_roots_certs.count(cert_der)) {
+        // If the same certificate is present in both the System and User/Admin
+        // domains, and TrustStoreMac is only using trust settings from
+        // User/Admin, then it's not possible for this test to know whether the
+        // result from SecTrustEvaluate should match the TrustStoreMac result.
+        // Just ignore such certificates.
+      } else if (trust_domains == TrustStoreMac::TrustDomains::kUserAndAdmin &&
+                 !find_certificate_default_search_list_certs.count(cert_der)) {
         EXPECT_FALSE(is_trust_anchor);
       } else {
         SecTrustResultType trust_result;
