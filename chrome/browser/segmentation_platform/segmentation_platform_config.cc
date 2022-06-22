@@ -48,7 +48,7 @@ constexpr int kFeedUserSegmentUnknownSelectionTTLDays = 14;
 
 #if BUILDFLAG(IS_ANDROID)
 
-constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 28;
+constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 56;
 
 constexpr int kChromeStartDefaultSelectionTTLDays = 30;
 constexpr int kChromeStartDefaultUnknownTTLDays = 7;

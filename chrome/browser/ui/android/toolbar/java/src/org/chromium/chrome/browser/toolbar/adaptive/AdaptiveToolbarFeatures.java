@@ -58,6 +58,11 @@ public class AdaptiveToolbarFeatures {
     /** Default value to use in case finch param isn't available for default segment. */
     private static final String DEFAULT_PARAM_VALUE_DEFAULT_SEGMENT = NEW_TAB;
 
+    /**
+     * Default minimum width to show the optional button.
+     */
+    public static final int DEFAULT_MIN_WIDTH_DP = 360;
+
     @AdaptiveToolbarButtonVariant
     private static Integer sButtonVariant;
 
@@ -266,7 +271,7 @@ public class AdaptiveToolbarFeatures {
 
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-                VARIATION_PARAM_SHOW_UI_ONLY_AFTER_READY, false);
+                VARIATION_PARAM_SHOW_UI_ONLY_AFTER_READY, true);
     }
 
     @VisibleForTesting
@@ -327,4 +332,11 @@ public class AdaptiveToolbarFeatures {
     }
 
     private AdaptiveToolbarFeatures() {}
+
+    /** @return The minimum device width below which the toolbar button isn't shown. */
+    public static int getDeviceMinimumWidthForShowingButton() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
+                "minimum_width_dp", DEFAULT_MIN_WIDTH_DP);
+    }
 }

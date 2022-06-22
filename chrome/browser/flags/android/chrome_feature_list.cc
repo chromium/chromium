@@ -415,7 +415,7 @@ const base::Feature kAdaptiveButtonInTopToolbar{
 
 const base::Feature kAdaptiveButtonInTopToolbarCustomizationV2{
     "AdaptiveButtonInTopToolbarCustomizationV2",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAddToHomescreenIPH{"AddToHomescreenIPH",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

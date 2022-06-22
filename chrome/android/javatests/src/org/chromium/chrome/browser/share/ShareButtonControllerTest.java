@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -27,6 +28,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -46,6 +50,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests {@link ShareButtonController}. */
 
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @EnableFeatures(
         {ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR, ChromeFeatureList.START_SURFACE_ANDROID})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
@@ -67,15 +72,14 @@ public final class ShareButtonControllerTest {
 
     @Before
     public void setUp() {
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(AdaptiveToolbarButtonVariant.SHARE);
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        int minimumWidthDp = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR, "minimum_width",
-                ShareButtonController.MIN_WIDTH_DP);
         int deviceWidth =
                 mActivityTestRule.getActivity().getResources().getConfiguration().screenWidthDp;
 
-        mButtonExpected = deviceWidth >= minimumWidthDp;
+        mButtonExpected =
+                deviceWidth >= AdaptiveToolbarFeatures.getDeviceMinimumWidthForShowingButton();
     }
 
     @Test
