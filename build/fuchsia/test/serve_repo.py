@@ -16,6 +16,7 @@ from ffx_integration import get_config
 
 # Contains information about the active ephemeral repository.
 _REPO_CONFIG_FILE = os.path.join('/', 'tmp', 'fuchsia-repo-config')
+_REPO_NAME = 'chromium-test-package-server'
 
 
 def _ensure_ffx_config(key: str, value: str) -> bool:
@@ -89,7 +90,7 @@ def register_serve_args(arg_parser: argparse.ArgumentParser) -> None:
                             dest='repo',
                             help='Directory the repository is served from.')
     serve_args.add_argument('--repo-name',
-                            default='test',
+                            default=_REPO_NAME,
                             help='Name of the repository.')
 
 

@@ -14,7 +14,7 @@ from typing import Iterable, List, Optional
 
 DIR_SRC_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
-REPO_ALIAS = 'chromium-test-package-server'
+REPO_ALIAS = 'fuchsia.com'
 SDK_ROOT = os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk', 'sdk')
 
 
