@@ -112,7 +112,7 @@ js_library("files_metadata_entry") {
   ]
 }
 
-js_unittest("files_password_dialog_unittest.m") {
+js_unittest("files_password_dialog_unittest") {
   deps = [
     ":files_password_dialog",
     "//chrome/test/data/webui:chai_assert",
@@ -186,7 +186,7 @@ js_library("files_toggle_ripple") {
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.
-js_unittest("files_tooltip_unittest.m") {
+js_unittest("files_tooltip_unittest") {
   deps = [
     ":files_tooltip",
     "//chrome/test/data/webui:chai_assert",
@@ -200,14 +200,14 @@ js_library("files_tooltip") {
   ]
 }
 
-js_unittest("files_toast_unittest.m") {
+js_unittest("files_toast_unittest") {
   deps = [
     ":files_toast",
     "//chrome/test/data/webui:chai_assert",
   ]
 }
 
-js_unittest("files_xf_elements_unittest.m") {
+js_unittest("files_xf_elements_unittest") {
   deps = [
     ":xf_display_panel",
     "//chrome/test/data/webui:chai_assert",
@@ -240,10 +240,10 @@ js_library("xf_display_panel") {
 js_test_gen_html("js_test_gen_html_modules") {
   is_polymer3 = true
   deps = [
-    ":files_password_dialog_unittest.m",
-    ":files_toast_unittest.m",
-    ":files_tooltip_unittest.m",
-    ":files_xf_elements_unittest.m",
+    ":files_password_dialog_unittest",
+    ":files_toast_unittest",
+    ":files_tooltip_unittest",
+    ":files_xf_elements_unittest",
   ]
 
   closure_flags =

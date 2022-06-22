@@ -6,9 +6,9 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
-import { EntryList,FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
-import { MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.js';
+import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -19,7 +19,7 @@ import {DirectoryModel} from './directory_model.js';
 import {createFakeAndroidAppListModel} from './fake_android_app_list_model.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
 import {MockFolderShortcutDataModel} from './mock_folder_shortcut_data_model.js';
-import { NavigationListModel, NavigationModelAndroidAppItem,NavigationModelFakeItem, NavigationModelItemType, NavigationModelShortcutItem, NavigationModelVolumeItem, NavigationSection} from './navigation_list_model.js';
+import {NavigationListModel, NavigationModelAndroidAppItem, NavigationModelFakeItem, NavigationModelItemType, NavigationModelShortcutItem, NavigationModelVolumeItem, NavigationSection} from './navigation_list_model.js';
 
 /**
  * Mock Recent fake entry.

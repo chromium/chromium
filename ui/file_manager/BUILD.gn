@@ -83,10 +83,10 @@ preprocess_if_expr("preprocess_static") {
 
   deps = [
     "//ui/file_manager/file_manager/background/js:js_modules",
-    "//ui/file_manager/file_manager/background/js:main_background.m",
+    "//ui/file_manager/file_manager/background/js:main_background",
     "//ui/file_manager/file_manager/common/js:js_modules",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
-    "//ui/file_manager/file_manager/foreground/js:deferred_elements.m",
+    "//ui/file_manager/file_manager/foreground/js:deferred_elements",
     "//ui/file_manager/file_manager/foreground/js:main",
   ]
 }
@@ -100,7 +100,7 @@ preprocess_if_expr("preprocess_static_image_loader") {
 
   deps = [
     "//ui/file_manager/audio_player/js:js_modules",
-    "//ui/file_manager/image_loader:background.m",
+    "//ui/file_manager/image_loader:background",
     "//ui/file_manager/image_loader:js_modules",
   ]
 }
@@ -164,7 +164,7 @@ generate_grd("build_grd") {
     "audio_player/js/main.rollup.js",
     "audio_player/js/main_background.rollup.js",
     "audio_player/js/metadata_worker.rollup.js",
-    "audio_player/js/shared.m.rollup.js",
+    "audio_player/js/shared.rollup.js",
     "audio_player/js/runtime_loaded_test_util.rollup.js",
 
     # Fix broken images:
@@ -173,7 +173,7 @@ generate_grd("build_grd") {
     "file_manager/images/files/ui/warning_banner_icon.svg",
     "file_manager/images/files/ui/menu_ng.svg",
 
-    "image_loader/background.m.rollup.js",
+    "image_loader/background.rollup.js",
   ]
 
   resource_path_rewrites = [
@@ -181,18 +181,18 @@ generate_grd("build_grd") {
     "audio_player/js/main_background.rollup.js|audio_player/js/main_background.js",
     "audio_player/js/metadata_worker.rollup.js|audio_player/js/metadata_worker.js",
     "audio_player/js/runtime_loaded_test_util.rollup.js|audio_player/js/runtime_loaded_test_util.js",
-    "image_loader/background.m.rollup.js|image_loader/background.m.js",
+    "image_loader/background.rollup.js|image_loader/background.js",
   ]
 
   if (optimize_webui) {
     input_files += [
-      "file_manager/background/js/main_background.m.rollup.js",
+      "file_manager/background/js/main_background.rollup.js",
       "file_manager/background/js/runtime_loaded_test_util.rollup.js",
-      "file_manager/background/js/shared.m.rollup.js",
-      "file_manager/foreground/js/deferred_elements.m.rollup.js",
+      "file_manager/background/js/shared.rollup.js",
+      "file_manager/foreground/js/deferred_elements.rollup.js",
       "file_manager/foreground/js/main.rollup.js",
       "file_manager/foreground/js/metadata_dispatcher.rollup.js",
-      "file_manager/foreground/js/shared.m.rollup.js",
+      "file_manager/foreground/js/shared.rollup.js",
 
       "image_loader/image_orientation.js",
       "image_loader/lru_cache.js",
@@ -201,9 +201,9 @@ generate_grd("build_grd") {
     ]
 
     resource_path_rewrites += [
-      "file_manager/background/js/main_background.m.rollup.js|file_manager/background/js/main_background.m.js",
+      "file_manager/background/js/main_background.rollup.js|file_manager/background/js/main_background.js",
       "file_manager/background/js/runtime_loaded_test_util.rollup.js|file_manager/background/js/runtime_loaded_test_util.js",
-      "file_manager/foreground/js/deferred_elements.m.rollup.js|file_manager/foreground/js/deferred_elements.m.js",
+      "file_manager/foreground/js/deferred_elements.rollup.js|file_manager/foreground/js/deferred_elements.js",
       "file_manager/foreground/js/main.rollup.js|file_manager/foreground/js/main.js",
       "file_manager/foreground/js/metadata_dispatcher.rollup.js|file_manager/foreground/js/metadata/metadata_dispatcher.js",
     ]

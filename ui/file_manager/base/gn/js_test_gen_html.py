@@ -65,9 +65,9 @@ def main():
     args = parser.parse_args()
 
     # Convert from:
-    # gen/ui/file_manager/file_manager/common/js/example_unittest.m.js_library
+    # gen/ui/file_manager/file_manager/common/js/example_unittest.js_library
     # To:
-    # ui/file_manager/file_manager/common/js/example_unittest.m.js
+    # ui/file_manager/file_manager/common/js/example_unittest.js
     path_test_file = args.input.replace('gen/', '', 1)
     path_test_file = path_test_file.replace('.js_library', '.js')
     _process_js_module(path_test_file, args.output)

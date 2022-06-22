@@ -422,7 +422,7 @@ export function testVolumeEntryCreateReaderUnresolved(testReportCallback) {
     label: 'Fake Filesystem label',
     volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
     resolveDisplayRoot: (successCallback, errorCallback) => {
-      // Do nothing here.
+        // Do nothing here.
     },
   });
 

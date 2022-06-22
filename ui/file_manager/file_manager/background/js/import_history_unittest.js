@@ -6,7 +6,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 
 import {importer} from '../../common/js/importer_common.js';
 import {MockChromeStorageAPI} from '../../common/js/mock_chrome.js';
-import {MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.js';
+import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
 import {importerTest} from '../../common/js/test_importer_common.js';
 import {TestCallRecorder} from '../../common/js/unittest_util.js';

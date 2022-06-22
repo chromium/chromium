@@ -178,7 +178,7 @@ optimize_webui("build_background") {
   js_out_files = [
     "main_background.rollup.js",
     "runtime_loaded_test_util.rollup.js",
-    "shared.m.rollup.js",
+    "shared.rollup.js",
   ]
 
   external_paths = [

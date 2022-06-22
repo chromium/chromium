@@ -136,7 +136,7 @@ js_library("glitch") {
 js_library("dialog_type") {
 }
 
-js_unittest("files_app_entry_types_unittest.m") {
+js_unittest("files_app_entry_types_unittest") {
   deps = [
     ":files_app_entry_types",
     ":mock_entry",
@@ -177,7 +177,7 @@ js_library("file_type") {
   ]
 }
 
-js_unittest("file_type_unittest.m") {
+js_unittest("file_type_unittest") {
   deps = [
     ":file_type",
     ":mock_entry",
@@ -210,7 +210,7 @@ js_library("filtered_volume_manager") {
   ]
 }
 
-js_unittest("filtered_volume_manager_unittest.m") {
+js_unittest("filtered_volume_manager_unittest") {
   deps = [
     ":filtered_volume_manager",
     "//chrome/test/data/webui:chai_assert",
@@ -242,7 +242,7 @@ js_library("test_importer_common") {
   ]
 }
 
-js_unittest("importer_common_unittest.m") {
+js_unittest("importer_common_unittest") {
   deps = [
     ":importer_common",
     ":mock_entry",
@@ -259,7 +259,7 @@ js_unittest("importer_common_unittest.m") {
 js_library("lru_cache") {
 }
 
-js_unittest("lru_cache_unittest.m") {
+js_unittest("lru_cache_unittest") {
   deps = [
     ":lru_cache",
     "//chrome/test/data/webui:chai_assert",
@@ -309,7 +309,7 @@ js_library("recent_date_bucket") {
   ]
 }
 
-js_unittest("recent_date_bucket_unittest.m") {
+js_unittest("recent_date_bucket_unittest") {
   deps = [
     ":mock_chrome",
     ":recent_date_bucket",
@@ -322,7 +322,7 @@ js_library("storage_adapter") {
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
 
-js_unittest("storage_adapter_unittest.m") {
+js_unittest("storage_adapter_unittest") {
   deps = [
     ":storage_adapter",
     "//chrome/test/data/webui:chai_assert",
@@ -381,7 +381,7 @@ js_library("util") {
   ]
 }
 
-js_unittest("util_unittest.m") {
+js_unittest("util_unittest") {
   deps = [
     ":files_app_entry_types",
     ":mock_entry",
@@ -392,7 +392,7 @@ js_unittest("util_unittest.m") {
   ]
 }
 
-js_unittest("volume_manager_types_unittest.m") {
+js_unittest("volume_manager_types_unittest") {
   deps = [ ":volume_manager_types" ]
 }
 
@@ -409,15 +409,15 @@ js_library("icon_util") {
 
 js_test_gen_html("js_test_gen_html_modules") {
   deps = [
-    ":file_type_unittest.m",
-    ":files_app_entry_types_unittest.m",
-    ":filtered_volume_manager_unittest.m",
-    ":importer_common_unittest.m",
-    ":lru_cache_unittest.m",
-    ":recent_date_bucket_unittest.m",
-    ":storage_adapter_unittest.m",
-    ":util_unittest.m",
-    ":volume_manager_types_unittest.m",
+    ":file_type_unittest",
+    ":files_app_entry_types_unittest",
+    ":filtered_volume_manager_unittest",
+    ":importer_common_unittest",
+    ":lru_cache_unittest",
+    ":recent_date_bucket_unittest",
+    ":storage_adapter_unittest",
+    ":util_unittest",
+    ":volume_manager_types_unittest",
   ]
 
   closure_flags =

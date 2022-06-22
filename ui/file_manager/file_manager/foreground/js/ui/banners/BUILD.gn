@@ -121,7 +121,7 @@ js_library("educational_banner") {
   ]
 }
 
-js_unittest("educational_banner_unittest.m") {
+js_unittest("educational_banner_unittest") {
   deps = [
     ":educational_banner",
     "//chrome/test/data/webui:chai_assert",
@@ -156,7 +156,7 @@ js_library("state_banner") {
   ]
 }
 
-js_unittest("state_banner_unittest.m") {
+js_unittest("state_banner_unittest") {
   deps = [
     ":state_banner",
     "//chrome/test/data/webui:chai_assert",
@@ -180,7 +180,7 @@ js_library("warning_banner") {
   ]
 }
 
-js_unittest("warning_banner_unittest.m") {
+js_unittest("warning_banner_unittest") {
   deps = [
     ":warning_banner",
     "//chrome/test/data/webui:chai_assert",
@@ -191,9 +191,9 @@ js_unittest("warning_banner_unittest.m") {
 
 js_test_gen_html("js_test_gen_html_modules") {
   deps = [
-    ":educational_banner_unittest.m",
-    ":state_banner_unittest.m",
-    ":warning_banner_unittest.m",
+    ":educational_banner_unittest",
+    ":state_banner_unittest",
+    ":warning_banner_unittest",
   ]
   is_polymer3 = true
 
