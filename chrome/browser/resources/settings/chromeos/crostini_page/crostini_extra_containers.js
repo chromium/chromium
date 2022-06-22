@@ -51,7 +51,10 @@ class ExtraContainersElement extends ExtraContainersElementBase {
 
       allContainers_: {
         type: Array,
-        value: [],
+        notify: true,
+        value() {
+          return [];
+        },
       },
 
       lastMenuContainerInfo_: {
@@ -123,7 +126,7 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    * @param {!Array<!ContainerInfo>} containerInfos
    */
   onContainerInfo_(containerInfos) {
-    this.allContainers_ = containerInfos;
+    this.set('allContainers_', containerInfos);
   }
 
   /**
