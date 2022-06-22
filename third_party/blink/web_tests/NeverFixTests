@@ -156,9 +156,6 @@ virtual/conversions-debug-mode/wpt_internal/attribution-reporting/* [ Pass ]
 fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar-thumb-scaled.html [ Skip ]
 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar-thumb-scaled.html [ Pass ]
 
-# Android doesn't support plugins
-virtual/android/fullscreen/rendering/backdrop-object.html [ Skip ]
-
 # Missing Chrome Mac support, will start working when we move to harfbuzz on mac.
 [ Mac ] virtual/text-antialias/international/zerowidthjoiner.html [ Skip ]
 

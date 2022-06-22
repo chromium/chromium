@@ -75,6 +75,16 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
     return;
   if (!parent_layout_object->CanHaveChildren())
     return;
+
+  // If we are in the top layer and the parent layout object without top layer
+  // adjustment can't have children, then don't render.
+  // https://github.com/w3c/csswg-drafts/issues/6939#issuecomment-1016671534
+  if (node_->IsInTopLayer() && context_.parent &&
+      !context_.parent->CanHaveChildren() &&
+      node_->GetPseudoId() != kPseudoIdBackdrop) {
+    return;
+  }
+
   if (node_->IsPseudoElement() &&
       !CanHaveGeneratedChildren(*parent_layout_object))
     return;
