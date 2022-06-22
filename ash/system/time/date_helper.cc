@@ -177,16 +177,27 @@ void DateHelper::CalculateLocalWeekTitles() {
   // titles, since there are no daylight saving starts/ends in June worldwide.
   // If the `DCHECK` fails, use `Now()`.
   base::Time start_date = base::Time::Now();
-  DCHECK(base::Time::FromString("15 Jun 2021 10:00 GMT", &start_date));
+  bool result = base::Time::FromString("15 Jun 2021 10:00 GMT", &start_date);
+  DCHECK(result);
   start_date = GetLocalMidnight(start_date);
   std::u16string day_of_week =
       GetFormattedTime(&day_of_week_formatter_, start_date);
-  int safe_index = 0;
 
+  // For a few special locales the day of week is not in a number. In these
+  // cases, use the default week titles.
+  int day_int;
+  if (!base::StringToInt(day_of_week, &day_int)) {
+    week_titles_ = kDefaultWeekTitle;
+    return;
+  }
+
+  int safe_index = 0;
   // Find a first day of a week.
-  while (day_of_week != calendar_utils::kFirstDayOfWeekString) {
+  while (day_int != 1) {
     start_date += base::Hours(25);
     day_of_week = GetFormattedTime(&day_of_week_formatter_, start_date);
+    bool result = base::StringToInt(day_of_week, &day_int);
+    DCHECK(result);
     ++safe_index;
     // Should already find the first day within 7 times, since there are only 7
     // days in a week.

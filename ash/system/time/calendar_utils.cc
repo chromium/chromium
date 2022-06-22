@@ -22,13 +22,6 @@
 
 namespace ash {
 
-namespace {
-// Map of week index from string to number.
-std::map<std::u16string, int> kDayOfWeekMap = {{u"1", 1}, {u"2", 2}, {u"3", 3},
-                                               {u"4", 4}, {u"5", 5}, {u"6", 6},
-                                               {u"7", 7}};
-}  // namespace
-
 namespace calendar_utils {
 
 bool IsToday(const base::Time selected_date) {
@@ -252,10 +245,10 @@ base::TimeDelta GetTimeDifference(base::Time date) {
 }
 
 base::Time GetFirstDayOfWeekLocalMidnight(base::Time date) {
-  std::u16string day_of_week = GetDayOfWeek(date);
+  int day_of_week = calendar_utils::GetDayOfWeekInt(date);
   base::Time first_day_of_week =
       DateHelper::GetInstance()->GetLocalMidnight(date) -
-      base::Days(kDayOfWeekMap[day_of_week] - 1) + kDurationForAdjustingDST;
+      base::Days(day_of_week - 1) + kDurationForAdjustingDST;
   return DateHelper::GetInstance()->GetLocalMidnight(first_day_of_week);
 }
 
@@ -268,6 +261,20 @@ ASH_EXPORT const std::pair<base::Time, base::Time> GetFetchStartEndTimes(
       GetStartOfMonthUTC(start_of_month_local_midnight + base::Days(33));
   end -= DateHelper::GetInstance()->GetTimeDifference(end);
   return std::make_pair(start, end);
+}
+
+int GetDayOfWeekInt(const base::Time date) {
+  int day_int;
+  if (base::StringToInt(GetDayOfWeek(date), &day_int))
+    return day_int;
+
+  // For a few special locales the day of week is not in a number. In these
+  // cases, use the default day of week from time exploded. For example:
+  // 'pa-PK', it returns '۰۳' for the fourth day of week.
+  base::Time date_local = date + GetTimeDifference(date);
+  base::Time::Exploded local_date_exploded = GetExplodedUTC(date_local);
+  // Time exploded uses 0-based day of week (0 = Sunday, etc.)
+  return local_date_exploded.day_of_week + 1;
 }
 
 }  // namespace calendar_utils
