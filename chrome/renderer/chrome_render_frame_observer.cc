@@ -64,7 +64,9 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/renderer/accessibility/read_anything_app_controller.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
+#include "ui/accessibility/accessibility_features.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -315,6 +317,16 @@ void ChromeRenderFrameObserver::DidClearWindowObject() {
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(switches::kInstantProcess))
     SearchBoxExtension::Install(render_frame()->GetWebFrame());
+
+  // Install ReadAnythingAppController on render frames belonging to a WebUIs.
+  // ReadAnythingAppController installs v8 bindings in the chrome.readAnything
+  // namespace which are consumed by read_anything/app.ts, the resource of the
+  // Read Anything WebUI.
+  if (features::IsReadAnythingEnabled() &&
+      render_frame()->GetEnabledBindings() &
+          content::kWebUIBindingsPolicyMask) {
+    ReadAnythingAppController::Install(render_frame());
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

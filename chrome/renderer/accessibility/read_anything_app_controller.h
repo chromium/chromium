@@ -1,0 +1,91 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_
+#define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "gin/wrappable.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_tree_update_forward.h"
+
+namespace content {
+class RenderFrame;
+}  // namespace content
+
+namespace ui {
+class AXNode;
+class AXTree;
+}  // namespace ui
+
+class ReadAnythingAppControllerTest;
+
+///////////////////////////////////////////////////////////////////////////////
+// ReadAnythingAppController
+//
+//  A class that controls the Read Anything WebUI app. It serves two purposes:
+//  1. Communicate with ReadAnythingPageHandler (written in c++) via mojom.
+//  2. Communicate with ReadAnythingApp (written in ts) via gin bindings.
+//  The ReadAnythingAppController unserializes the AXTreeUpdate and exposes
+//  methods on it to the ts resource for accessing information about the AXTree.
+//  This class is owned by the ChromeRenderFrameObserver and has the same
+//  lifetime as the render frame.
+//
+class ReadAnythingAppController
+    : public gin::Wrappable<ReadAnythingAppController> {
+ public:
+  static gin::WrapperInfo kWrapperInfo;
+
+  ReadAnythingAppController(const ReadAnythingAppController&) = delete;
+  ReadAnythingAppController& operator=(const ReadAnythingAppController&) =
+      delete;
+
+  // Installs v8 context for Read Anything and adds chrome.readAnything binding
+  // to page.
+  static ReadAnythingAppController* Install(content::RenderFrame* render_frame);
+
+ private:
+  friend ReadAnythingAppControllerTest;
+
+  explicit ReadAnythingAppController(content::RenderFrame* render_frame);
+  ~ReadAnythingAppController() override;
+
+  // gin::WrappableBase:
+  gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
+      v8::Isolate* isolate) override;
+
+  // TODO(abigailbklein): Add these methods to read_anything::mojom::Page.
+  void OnAXTreeDistilled(const ui::AXTreeUpdate& snapshot,
+                         const std::vector<ui::AXNodeID>& content_node_ids);
+  void OnFontNameChange(const std::string& new_font_name);
+
+  // gin templates:
+  std::vector<ui::AXNodeID> ContentNodeIds();
+  std::string FontName();
+  std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id);
+  uint32_t GetHeadingLevel(ui::AXNodeID ax_node_id);
+  std::string GetTextContent(ui::AXNodeID ax_node_id);
+  std::string GetUrl(ui::AXNodeID ax_node_id);
+  bool IsHeading(ui::AXNodeID ax_node_id);
+  bool IsLink(ui::AXNodeID ax_node_id);
+  bool IsParagraph(ui::AXNodeID ax_node_id);
+  bool IsStaticText(ui::AXNodeID ax_node_id);
+  void OnConnected();
+
+  ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id);
+
+  content::RenderFrame* render_frame_;
+
+  // State
+  std::unique_ptr<ui::AXTree> tree_;
+  std::vector<ui::AXNodeID> content_node_ids_;
+  std::string font_name_;
+};
+
+#endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_

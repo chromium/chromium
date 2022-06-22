@@ -380,6 +380,8 @@ static_library("renderer") {
 
   if (!is_android) {
     sources += [
+      "accessibility/read_anything_app_controller.cc",
+      "accessibility/read_anything_app_controller.h",
       "media/chrome_speech_recognition_client.cc",
       "media/chrome_speech_recognition_client.h",
       "searchbox/searchbox.cc",
