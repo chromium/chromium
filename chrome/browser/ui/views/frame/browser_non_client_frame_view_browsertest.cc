@@ -32,6 +32,8 @@
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 
 class BrowserNonClientFrameViewBrowserTest
     : public extensions::ExtensionBrowserTest {
@@ -107,11 +109,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   const BrowserNonClientFrameView* frame_view =
       browser_view->frame()->GetFrameView();
-  const ui::ThemeProvider* theme_provider = frame_view->GetThemeProvider();
+  const ui::ColorProvider* color_provider = frame_view->GetColorProvider();
   const SkColor expected_active_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_FRAME_ACTIVE);
+      color_provider->GetColor(ui::kColorFrameActive);
   const SkColor expected_inactive_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_FRAME_INACTIVE);
+      color_provider->GetColor(ui::kColorFrameInactive);
 
   EXPECT_EQ(expected_active_color,
             frame_view->GetFrameColor(BrowserFrameActiveState::kActive));
