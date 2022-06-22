@@ -8,6 +8,7 @@
 #include <limits>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/policy/messaging_layer/upload/network_condition_service.h"
 #include "components/reporting/proto/synced/record.pb.h"
 
@@ -19,7 +20,18 @@ EventUploadSizeController::EventUploadSizeController(
     uint64_t remaining_storage_capacity)
     : new_events_rate_(new_events_rate > 0 ? new_events_rate : 1),
       remaining_storage_capacity_(remaining_storage_capacity),
-      max_upload_size_(ComputeMaxUploadSize(network_condition_service)) {}
+      max_upload_size_(ComputeMaxUploadSize(network_condition_service)) {
+  base::UmaHistogramCounts10000(
+      "Browser.ERP.EventUploadSizeAdjustment.NewEventsRate", new_events_rate_);
+  base::UmaHistogramCustomCounts(
+      "Browser.ERP.EventUploadSizeAdjustment.RemainingStorageCapacity",
+      /*sample=*/remaining_storage_capacity_,
+      /*min=*/1,
+      /*exclusive_max=*/80'000'000,
+      /*buckets=*/50);
+  base::UmaHistogramCounts10M(
+      "Browser.ERP.EventUploadSizeAdjustment.MaxUploadSize", max_upload_size_);
+}
 
 bool EventUploadSizeController::IsMaximumUploadSizeReached() const {
   return Enabler::Get() && uploaded_size_ >= max_upload_size_;

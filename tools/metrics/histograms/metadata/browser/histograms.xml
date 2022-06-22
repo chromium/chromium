@@ -119,6 +119,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.EventUploadSizeAdjustment.{Param}" units="bytes"
+    expires_after="2023-06-30">
+  <owner>xuhong@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    {Param} informed by the Missive daemon. Updated every time the Missive
+    daemon requests uploading.
+  </summary>
+  <token key="Param">
+    <variant name="MaxUploadSize"
+        summary="The maximum upload size computed based on new events rate
+                 and remaining storage capacity"/>
+    <variant name="NewEventsRate"
+        summary="The size of events enqueued every second"/>
+    <variant name="RemainingStorageCapacity"
+        summary="The remaining storage capacity"/>
+  </token>
+</histogram>
+
 <histogram name="Browser.PaintPreview.Capture.CompressedOnDiskSize" units="KB"
     expires_after="2022-12-11">
   <owner>ckitagawa@chromium.org</owner>
