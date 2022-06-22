@@ -247,7 +247,7 @@ void PowerStatusHelper::OnBatteryStatus(
   // converted to int.  We can only record ints in UMA.
   const int delta_int = static_cast<int>(delta);
   const base::TimeDelta elapsed = now - last_update_;
-  const int elapsed_msec = elapsed.InMilliseconds();
+  const int64_t elapsed_msec = elapsed.InMilliseconds();
   if (delta_int > 0 && elapsed_msec > 0) {
     // Record that we consumed |delta_int| battery percent in |elapsed_msec|.
     base::LinearHistogram::FactoryGet(
@@ -258,7 +258,7 @@ void PowerStatusHelper::OnBatteryStatus(
     base::LinearHistogram::FactoryGet(
         ElapsedTimeHistogram(), kMinUmaValue, kMaxUmaValue, kNumUmaBuckets,
         base::HistogramBase::kUmaTargetedHistogramFlag)
-        ->AddCount(*current_bucket_, elapsed_msec);
+        ->AddCount(*current_bucket_, static_cast<int>(elapsed_msec));
 
     // Update the baseline to |current_level|, but include any fractional
     // unrecorded amount so that we can record it later.

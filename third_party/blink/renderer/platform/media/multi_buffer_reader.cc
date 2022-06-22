@@ -94,12 +94,11 @@ int64_t MultiBufferReader::TryReadAt(int64_t pos, uint8_t* data, int64_t len) {
   for (auto& buffer : buffers) {
     if (buffer->end_of_stream())
       break;
-    size_t offset = pos & ((1LL << multibuffer_->block_size_shift()) - 1);
-    if (offset > static_cast<size_t>(buffer->data_size()))
+    int64_t offset = pos & ((1LL << multibuffer_->block_size_shift()) - 1);
+    if (offset > static_cast<int64_t>(buffer->data_size()))
       break;
-    size_t tocopy =
-        std::min<size_t>(len - bytes_read, buffer->data_size() - offset);
-    memcpy(data, buffer->data() + offset, tocopy);
+    int64_t tocopy = std::min(len - bytes_read, buffer->data_size() - offset);
+    memcpy(data, buffer->data() + offset, static_cast<size_t>(tocopy));
     data += tocopy;
     bytes_read += tocopy;
     if (bytes_read == len)

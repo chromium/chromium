@@ -135,7 +135,8 @@ double BufferedDataSourceHostImpl::DownloadRate() const {
   // data point that has the lowest download rate, we avoid over-estimating.
   const double kVeryLargeRate = 1.0E20;
   double download_rate = kVeryLargeRate;
-  for (int i = 0; i < std::min<int>(20, download_history_.size() - 3); i++) {
+  for (size_t i = 0; i < std::min<size_t>(20, download_history_.size() - 3);
+       i++) {
     int64_t downloaded_bytes =
         download_history_.back().second - download_history_[i].second;
     base::TimeTicks now = tick_clock_->NowTicks();

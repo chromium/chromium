@@ -389,15 +389,17 @@ void ResourceMultiBufferDataProvider::DidReceiveData(const char* data,
 
   while (data_length) {
     if (fifo_.empty() || fifo_.back()->data_size() == block_size()) {
-      fifo_.push_back(new media::DataBuffer(block_size()));
+      fifo_.push_back(new media::DataBuffer(static_cast<int>(block_size())));
       fifo_.back()->set_data_size(0);
     }
     int last_block_size = fifo_.back()->data_size();
-    int to_append = std::min<int>(data_length, block_size() - last_block_size);
+    auto to_append =
+        std::min<int64_t>(data_length, block_size() - last_block_size);
     DCHECK_GT(to_append, 0);
-    memcpy(fifo_.back()->writable_data() + last_block_size, data, to_append);
+    memcpy(fifo_.back()->writable_data() + last_block_size, data,
+           static_cast<size_t>(to_append));
     data += to_append;
-    fifo_.back()->set_data_size(last_block_size + to_append);
+    fifo_.back()->set_data_size(static_cast<int>(last_block_size + to_append));
     data_length -= to_append;
   }
 
