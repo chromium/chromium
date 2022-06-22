@@ -185,6 +185,11 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
   return sk_surface->getCanvas();
 }
 
+SkCanvas* FakeSkiaOutputSurface::RecordOverdrawForCurrentPaint() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 void FakeSkiaOutputSurface::EndPaint(
     base::OnceClosure on_finished,
     base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb) {

@@ -979,6 +979,9 @@ void SkiaRenderer::EnsureScissorTestDisabled() {
 
 void SkiaRenderer::BindFramebufferToOutputSurface() {
   current_canvas_ = skia_output_surface_->BeginPaintCurrentFrame();
+  if (debug_settings_->show_overdraw_feedback) {
+    current_canvas_ = skia_output_surface_->RecordOverdrawForCurrentPaint();
+  }
 }
 
 void SkiaRenderer::BindFramebufferToTexture(

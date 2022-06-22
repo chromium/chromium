@@ -125,6 +125,13 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
                                          bool is_overlay,
                                          const gpu::Mailbox& mailbox) = 0;
 
+  // Create an overdraw recorder for the current paint which will be drawn on
+  // top of the current canvas when EndPaint() is called. Returns the new
+  // wrapped SkCanvas to be used by SkiaRenderer.
+  // This should be called for the root render pass only when
+  // debug_settings.show_overdraw_feedback = true.
+  virtual SkCanvas* RecordOverdrawForCurrentPaint() = 0;
+
   // Finish painting the current frame or current render pass, depends on which
   // BeginPaint function is called last. This method will schedule a GPU task to
   // play the DDL back on GPU thread on a cached SkSurface.

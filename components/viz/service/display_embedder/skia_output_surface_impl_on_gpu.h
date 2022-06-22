@@ -172,6 +172,7 @@ class SkiaOutputSurfaceImplOnGpu
   void FinishPaintRenderPass(
       const gpu::Mailbox& mailbox,
       sk_sp<SkDeferredDisplayList> ddl,
+      sk_sp<SkDeferredDisplayList> overdraw_ddl,
       std::vector<ImageContextImpl*> image_contexts,
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
@@ -398,6 +399,10 @@ class SkiaOutputSurfaceImplOnGpu
       std::vector<GrBackendSemaphore>& end_semaphores);
 #endif
   gfx::GpuFenceHandle CreateReleaseFenceForGL();
+
+  // Draws `overdraw_ddl` to the target `canvas`.
+  void DrawOverdraw(sk_sp<SkDeferredDisplayList> overdraw_ddl,
+                    SkCanvas& canvas);
 
   class ReleaseCurrent {
    public:
