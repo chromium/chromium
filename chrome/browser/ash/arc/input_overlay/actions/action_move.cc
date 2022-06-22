@@ -163,9 +163,6 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     if (it == labels_.end())
       return;
 
-    if (ShouldShowErrorMsg(code, action_label))
-      return;
-
     const auto& binding = action_->GetCurrentDisplayedBinding();
     DCHECK(binding.keys().size() == kActionMoveKeysSize);
     std::vector<ui::DomCode> new_keys = binding.keys();

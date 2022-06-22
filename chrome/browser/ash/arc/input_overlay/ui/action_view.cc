@@ -132,6 +132,19 @@ void ActionView::OnResetBinding() {
                                                std::move(input_element));
 }
 
+bool ActionView::ShouldShowErrorMsg(ui::DomCode code,
+                                    ActionLabel* editing_label) {
+  if ((!action_->support_modifier_key() &&
+       ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
+      IsReservedDomCode(code)) {
+    ShowErrorMsg(l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS),
+                 editing_label);
+    return true;
+  }
+
+  return false;
+}
+
 void ActionView::AddEditButton() {
   if (!show_edit_button_ || !editable_ || menu_entry_)
     return;
@@ -152,19 +165,6 @@ void ActionView::RemoveEditButton() {
     return;
   RemoveChildViewT(menu_entry_);
   menu_entry_ = nullptr;
-}
-
-bool ActionView::ShouldShowErrorMsg(ui::DomCode code,
-                                    ActionLabel* editing_label) {
-  if ((!action_->support_modifier_key() &&
-       ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
-      IsReservedDomCode(code)) {
-    ShowErrorMsg(l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS),
-                 editing_label);
-    return true;
-  }
-
-  return false;
 }
 
 }  // namespace input_overlay

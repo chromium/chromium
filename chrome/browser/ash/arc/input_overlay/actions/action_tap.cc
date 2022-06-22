@@ -99,8 +99,6 @@ class ActionTap::ActionTapView : public ActionView {
 
   void OnKeyBindingChange(ActionLabel* action_label,
                           ui::DomCode code) override {
-    if (ShouldShowErrorMsg(code, action_label))
-      return;
     DCHECK(labels_.size() == 1 && labels_[0] == action_label);
     if (labels_.size() != 1 || labels_[0] != action_label)
       return;
