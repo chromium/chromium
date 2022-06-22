@@ -705,6 +705,12 @@
     "args": ["--force-color-profile=color-spin-gamma24"]
   },
   {
+    "prefix": "wide-gamut",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [],
+    "args": ["--force-color-profile=display-p3-d65"]
+  },
+  {
     "prefix": "split-cache-by-include-credentials",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/http-cache"],
