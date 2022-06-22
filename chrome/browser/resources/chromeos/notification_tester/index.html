@@ -3,22 +3,18 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file. -->
 
 <!DOCTYPE HTML>
-<html i18n-values="dir:textdirection">
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
 
 <head>
   <meta charset="utf-8">
   <title>Notification Tester</title>
-  <script type="module" src="index.js"></script>
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
   <script src="chrome://resources/js/cr.js"></script>
-  <script src="chrome://resources/js/load_time_data.js"></script>
-  <script src="chrome://resources/js/util.js"></script>
-  <script src="strings.js"></script>
 </head>
 
 <body>
-  <h1>Hello World</h1>
-  <p id="p1">test words</p>
-  <button type="button">Click Me!</button>
+  <notification-tester></notification-tester>
+  <script type="module" src="notification_tester.js"></script>
 </body>
 
 </html>

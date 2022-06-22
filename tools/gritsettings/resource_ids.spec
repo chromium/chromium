@@ -160,6 +160,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [1480],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/notification_tester/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [1490],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/commander/commander_resources.grd": {
     "META": {"sizes": {"includes": [15]}},
     "includes": [1500],

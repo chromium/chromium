@@ -1,0 +1,101 @@
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  app-header {
+    background-color: rgb(0, 134, 179);
+    color: white;
+    font-size: 200%;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .input-field {
+    margin: 2.5% 5%;
+  }
+
+  .input-field ol {
+    margin: 0 0 8px 0;
+    padding: 0 16px;
+  }
+
+  .input-field ol>li {
+    align-items: center;
+    border-bottom: none;
+    display: flex;
+    padding: 0 0 8px 0;
+  }
+
+  .label {
+    margin: 2px;
+  }
+</style>
+<app-header>
+  <app-toolbar>Notification Tester</app-toolbar>
+</app-header>
+<div class="input-field">
+  <ol>
+    <h2> Visual Configuration </h2>
+    <li>
+      <label> Title
+        <select id="title">
+          <option data-id="0" value="Sample Notification Title">Short sentence
+            (LTR)</option>
+          <option data-id="1" value="כותרת הודעה">Short sentence (RTL)</option>
+          <option data-id="2"
+            value="This is a very long notification title which is unncessarily long in order to increase it">
+            Long sentence (LTR) </option>
+          <option data-id="3"
+            value="המבורגרים: אבן הפינה של כל ארוחת בוקר מזינה. צ'יזבורגר">
+            Long sentence (RTL)
+          </option>
+          <option data-id="4"
+            value="sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh">
+            Repetitive characters (LTR)
+          </option>
+          <option data-id="5"
+            value="שששששששששששששששששששששששששששששששששששששששששששששששששששש">
+            Repetitive characters (RTL)
+          </option>
+          <option data-id="6" value="😁🚒❤😹🙋⌛❇🚅☎☺">Unicode smileys</option>
+          <option data-id="7" value="">Empty</option>
+          <option data-custom value="custom">Custom</option>
+        </select>
+      </label>
+    </li>
+    <li>
+      <label> Body
+        <select id="body">
+          <option data-id="0" value="Notification content">One sentence (LTR)
+          </option>
+          <option data-id="1" value="תוכן הודעה">One sentence (RTL)</option>
+          <option data-id="2"
+            value="This is the notification's message. It may be able to stretch over multiple lines, or become visible when the notification is expanded by the user, depending on the notification center that's being used.">
+            Multiple sentences (LTR)</option>
+          <option data-id="3"
+            value="זהו המסר של ההודעה. זה עשוי להיות מסוגל למתוח על קווים מרובים, או להיות גלוי, כאשר ההודעה מורחבת על ידי המשתמש, בהתאם להודעה שהמרכז נמצא בשימוש">
+            Multiple sentences (RTL)</option>
+          <option data-id="4"
+            value="sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh">
+            Repetitive characters (LTR)</option>
+          <option data-id="5"
+            value="ששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששש">
+            Repetitive characters (RTL)</option>
+          <option data-id="6" value="🌇😃🍈😆🍜🍻😋⛅⛳😚">Unicode smileys
+          </option>
+          <option data-id="7" value="">Empty</option>
+          <option data-custom value="custom">Custom</option>
+        </select>
+      </label>
+    </li>
+    <li>
+      <button type="button" id="generateBtn" on-click="onClickGenerate_">
+        Generate </button>
+      <button type="button" id="resetBtn"> Reset </button>
+    </li>
+  </ol>
+</div>

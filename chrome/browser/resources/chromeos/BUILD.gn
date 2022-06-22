@@ -24,6 +24,7 @@ group("resources") {
     "login:unconditional_resources",
     "multidevice_internals:resources",
     "network_ui:resources",
+    "notification_tester:resources",
   ]
 }
 
