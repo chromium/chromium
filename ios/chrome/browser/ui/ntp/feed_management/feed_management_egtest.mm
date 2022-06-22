@@ -55,6 +55,15 @@ void DismissSignOut() {
   }
 }
 
+void SelectFeedMenu() {
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(FeedMenuButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_tap()];
+}
+
 }  // namespace
 
 @interface FeedManagementTestCase : ChromeTestCase
@@ -69,8 +78,7 @@ void DismissSignOut() {
 }
 
 - (void)testSignedOutOpenAndCloseFeedMenu {
-  [[EarlGrey selectElementWithMatcher:FeedMenuButton()]
-      performAction:grey_tap()];
+  SelectFeedMenu();
 
   [[EarlGrey selectElementWithMatcher:TurnOffFeedMenuItem()]
       assertWithMatcher:grey_notNil()];
@@ -95,8 +103,7 @@ void DismissSignOut() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
 
-  [[EarlGrey selectElementWithMatcher:FeedMenuButton()]
-      performAction:grey_tap()];
+  SelectFeedMenu();
 
   [[EarlGrey selectElementWithMatcher:ManageFeedMenuItem()]
       assertWithMatcher:grey_notNil()];
@@ -121,8 +128,7 @@ void DismissSignOut() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
 
-  [[EarlGrey selectElementWithMatcher:FeedMenuButton()]
-      performAction:grey_tap()];
+  SelectFeedMenu();
   [[EarlGrey selectElementWithMatcher:ManageFeedMenuItem()]
       performAction:grey_tap()];
 
