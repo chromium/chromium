@@ -233,8 +233,8 @@ void PasswordGenerationAgent::BindPendingReceiver(
 
 void PasswordGenerationAgent::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
-  // Update stats for main frame navigation.
-  if (!render_frame()->GetWebFrame()->Parent()) {
+  // Update stats for primary main frame navigation.
+  if (render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
     if (current_generation_item_) {
       if (current_generation_item_->password_edited_) {
         password_generation::LogPasswordGenerationEvent(

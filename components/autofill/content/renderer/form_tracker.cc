@@ -162,8 +162,8 @@ void FormTracker::DidStartNavigation(
     absl::optional<blink::WebNavigationType> navigation_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   blink::WebLocalFrame* navigated_frame = render_frame()->GetWebFrame();
-  // Ony handle main frame.
-  if (navigated_frame->Parent())
+  // Ony handle primary main frame.
+  if (!navigated_frame->IsOutermostMainFrame())
     return;
 
   // Bug fix for crbug.com/368690. isProcessingUserGesture() is false when
