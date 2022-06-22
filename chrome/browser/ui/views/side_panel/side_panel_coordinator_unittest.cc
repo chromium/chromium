@@ -25,7 +25,12 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     base::test::ScopedFeatureList features;
-    features.InitWithFeatures({features::kUnifiedSidePanel}, {});
+    // Need to disable side search to prevent `UnifiedSideSearchController` from
+    // removing the entry due to side search requirement not met.
+    // TODO(crbug.com/1336417): Remove features::kSideSearch from disabled
+    // feature.
+    features.InitWithFeatures({features::kUnifiedSidePanel},
+                              {features::kSideSearch});
     TestWithBrowserView::SetUp();
 
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));

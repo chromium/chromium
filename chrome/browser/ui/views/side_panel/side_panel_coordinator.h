@@ -52,7 +52,11 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
     return current_entry_.get();
   }
 
+  absl::optional<SidePanelEntry::Id> GetCurrentEntryId() const;
+
   SidePanelEntry::Id GetComboboxDisplayedEntryIdForTesting() const;
+
+  bool IsSidePanelShowing();
 
  private:
   friend class SidePanelCoordinatorTest;

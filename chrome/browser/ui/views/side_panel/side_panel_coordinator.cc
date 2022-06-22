@@ -236,7 +236,7 @@ void SidePanelCoordinator::Close() {
 }
 
 void SidePanelCoordinator::Toggle() {
-  if (GetContentView() != nullptr) {
+  if (IsSidePanelShowing()) {
     Close();
   } else {
     Show();
@@ -252,9 +252,20 @@ void SidePanelCoordinator::SetNoDelaysForTesting() {
   no_delays_for_testing_ = true;
 }
 
+absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
+    const {
+  return current_entry_
+             ? absl::optional<SidePanelEntry::Id>(current_entry_->id())
+             : absl::nullopt;
+}
+
 SidePanelEntry::Id SidePanelCoordinator::GetComboboxDisplayedEntryIdForTesting()
     const {
   return combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex());
+}
+
+bool SidePanelCoordinator::IsSidePanelShowing() {
+  return GetContentView() != nullptr;
 }
 
 views::View* SidePanelCoordinator::GetContentView() const {
@@ -325,15 +336,17 @@ void SidePanelCoordinator::PopulateSidePanel(
     auto current_entry_view =
         content_wrapper->RemoveChildViewT(content_wrapper->children().front());
     current_entry_->CacheView(std::move(current_entry_view));
-    current_entry_->OnEntryHidden();
   }
   content_wrapper->AddChildView(content_view.has_value()
                                     ? std::move(content_view.value())
                                     : entry->GetContent());
   if (auto* contextual_registry = GetActiveContextualRegistry())
     contextual_registry->ResetActiveEntry();
+  auto* previous_entry = current_entry_.get();
   current_entry_ = entry->GetWeakPtr();
   entry->OnEntryShown();
+  if (previous_entry)
+    previous_entry->OnEntryHidden();
 }
 
 void SidePanelCoordinator::ClearCachedEntryViews() {

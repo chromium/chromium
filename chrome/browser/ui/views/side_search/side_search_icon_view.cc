@@ -10,9 +10,11 @@
 #include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
+#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
+#include "chrome/browser/ui/views/side_search/unified_side_search_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -22,6 +24,19 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/view_class_properties.h"
+
+namespace {
+
+bool IsSideSearchToggleOpen(BrowserView* browser_view) {
+  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    auto* coordinator = browser_view->side_panel_coordinator();
+    return coordinator->IsSidePanelShowing() &&
+           coordinator->GetCurrentEntryId() == SidePanelEntry::Id::kSideSearch;
+  }
+  return browser_view->side_search_controller()->GetSidePanelToggledOpen();
+}
+
+}  // namespace
 
 SideSearchIconView::SideSearchIconView(
     CommandUpdater* command_updater,
@@ -83,7 +98,7 @@ void SideSearchIconView::UpdateImpl() {
   const bool was_visible = GetVisible();
   const bool should_show =
       tab_contents_helper->CanShowSidePanelForCommittedNavigation() &&
-      !tab_contents_helper->toggled_open();
+      !IsSideSearchToggleOpen(browser_view);
   SetVisible(should_show);
 
   if (should_show && !was_visible) {
@@ -106,8 +121,6 @@ void SideSearchIconView::UpdateImpl() {
 }
 
 void SideSearchIconView::OnExecuting(PageActionIconView::ExecuteSource source) {
-  auto* side_search_browser_controller =
-      BrowserView::GetBrowserViewForBrowser(browser_)->side_search_controller();
   RecordSideSearchPageActionLabelVisibilityOnToggle(
       label()->GetVisible() ? SideSearchPageActionLabelVisibility::kVisible
                             : SideSearchPageActionLabelVisibility::kNotVisible);
@@ -115,8 +128,15 @@ void SideSearchIconView::OnExecuting(PageActionIconView::ExecuteSource source) {
   // Reset the slide animation if in progress.
   HidePageActionLabel();
 
-  side_search_browser_controller->ToggleSidePanel();
-
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    content::WebContents* active_contents =
+        browser_view->GetActiveWebContents();
+    UnifiedSideSearchController::FromWebContents(active_contents)
+        ->OpenSidePanel();
+  } else {
+    browser_view->side_search_controller()->ToggleSidePanel();
+  }
   auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
       browser_->profile());
   if (tracker)

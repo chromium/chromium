@@ -894,12 +894,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
 
-    right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
-    right_aligned_side_panel_separator_ =
-        AddChildView(std::make_unique<ContentsSeparator>());
-    if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-      side_panel_coordinator_ = std::make_unique<SidePanelCoordinator>(this);
-    }
+  right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
+  right_aligned_side_panel_separator_ =
+      AddChildView(std::make_unique<ContentsSeparator>());
+  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    side_panel_coordinator_ = std::make_unique<SidePanelCoordinator>(this);
+  }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (lens::features::IsLensSidePanelEnabled()) {
@@ -912,12 +912,13 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 #endif
 
   if (browser_->is_type_normal() && IsSideSearchEnabled(browser_->profile())) {
-    side_search_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
-    left_aligned_side_panel_separator_ =
-        AddChildView(std::make_unique<ContentsSeparator>());
-
-    side_search_controller_ = std::make_unique<SideSearchBrowserController>(
-        side_search_side_panel_, this);
+    if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+      side_search_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
+      left_aligned_side_panel_separator_ =
+          AddChildView(std::make_unique<ContentsSeparator>());
+      side_search_controller_ = std::make_unique<SideSearchBrowserController>(
+          side_search_side_panel_, this);
+    }
   }
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
