@@ -194,9 +194,7 @@ public class CustomTabObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onClosingStateChanged(Tab tab, boolean closing) {
-        if (!closing) return;
-
+    public void onDestroyed(Tab tab) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_RETAINING_STATE)) {
             TabInteractionRecorder observer = TabInteractionRecorder.getFromTab(tab);
             if (observer != null) observer.onTabClosing();

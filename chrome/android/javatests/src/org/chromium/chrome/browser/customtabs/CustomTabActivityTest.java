@@ -79,6 +79,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
@@ -158,6 +159,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * Instrumentation tests for app menu, context menu, and toolbar of a {@link CustomTabActivity}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DoNotBatch(reason = "Some tests are Testing CCT start up behavior. "
+                + "Unit test conversion tracked in crbug.com/1217031")
 public class CustomTabActivityTest {
     private static final int TIMEOUT_PAGE_LOAD_SECONDS = 10;
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
@@ -1368,15 +1371,16 @@ public class CustomTabActivityTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             final CustomTabActivity activity = mCustomTabActivityTestRule.getActivity();
-            activity.getComponent().resolveNavigationController().finish(FinishReason.OTHER);
+            activity.finish();
         });
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> SharedPreferencesManager.getInstance().contains(
-                                   ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION)
-                        && SharedPreferencesManager.getInstance().contains(
-                                ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP));
+        CriteriaHelper.pollUiThread(() -> getActivity().isDestroyed());
 
+        Assert.assertTrue("CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION not recorded.",
+                SharedPreferencesManager.getInstance().contains(
+                        ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION));
+        Assert.assertTrue("CUSTOM_TABS_LAST_CLOSE_TIMESTAMP not recorded.",
+                SharedPreferencesManager.getInstance().contains(
+                        ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP));
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "CustomTabs.HadInteractionOnClose"));
