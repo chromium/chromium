@@ -70,7 +70,6 @@ extern const base::Feature kContextMenuSearchAndShopWithGoogleLens;
 extern const base::Feature kContextMenuTranslateWithGoogleLens;
 extern const base::Feature kContextualSearchDebug;
 extern const base::Feature kContextualSearchDelayedIntelligence;
-extern const base::Feature kContextualSearchDisableOnlineDetection;
 extern const base::Feature kContextualSearchForceCaption;
 extern const base::Feature kContextualSearchMlTapSuppression;
 extern const base::Feature kContextualSearchTapDisableOverride;

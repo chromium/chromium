@@ -38,7 +38,7 @@ import java.util.List;
 @RunWith(BaseJUnit4ClassRunner.class)
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION})
+        ContextualSearchFieldTrial.ONLINE_DETECTION_DISABLED})
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrumentationBase {
