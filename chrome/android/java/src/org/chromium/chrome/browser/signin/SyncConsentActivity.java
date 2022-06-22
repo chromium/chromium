@@ -12,8 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
-import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -23,16 +22,11 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  * Allows the user to pick an account, sign in and enable sync. Started from Settings and various
  * sign-in promos. For more details see {@link SyncConsentFragmentBase}.
  */
-// TODO(https://crbug.com/820491): extend AsyncInitializationActivity.
-public class SyncConsentActivity extends ChromeBaseAppCompatActivity {
+public class SyncConsentActivity extends SynchronousInitializationActivity {
     private static final String ARGUMENT_FRAGMENT_ARGS = "SigninActivity.FragmentArgs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Make sure the native is initialized before calling super.onCreate(), as it might recreate
-        // SyncConsentFragment that currently depends on native. See https://crbug.com/983730.
-        ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signin_activity);
 

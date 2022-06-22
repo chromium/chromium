@@ -19,12 +19,12 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
  * background with the Activity visible.  One example is {@link BookmarkActivity} and its kin.
  */
 public abstract class SynchronousInitializationActivity extends ChromeBaseAppCompatActivity {
-    private static final String TAG = "SyncInitActivity";
-
     @CallSuper
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        // Make sure the native is initialized before calling super.onCreate(), as calling
+        // super.onCreate() will recreate fragments that might depend on the native code.
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+        super.onCreate(savedInstanceState);
     }
 }
