@@ -48,6 +48,7 @@ MEDIA_EXPORT extern const char kEnableExclusiveAudio[];
 MEDIA_EXPORT extern const char kForceWaveAudio[];
 MEDIA_EXPORT extern const char kTrySupportedChannelLayouts[];
 MEDIA_EXPORT extern const char kWaveOutBuffers[];
+MEDIA_EXPORT extern const char kUseFakeAudioCaptureTimestamps[];
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)

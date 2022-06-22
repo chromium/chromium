@@ -14,6 +14,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -421,6 +422,14 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
       // stats when the stream is closed.
       GetAudioCaptureEffects(uwp_device_id);
     }
+  }
+
+  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  use_fake_audio_capture_timestamps_ =
+      cmd_line->HasSwitch(switches::kUseFakeAudioCaptureTimestamps);
+  if (use_fake_audio_capture_timestamps_) {
+    SendLogMessage("%s => (WARNING: capture timestamps will be fake)",
+                   __func__);
   }
 
   // Obtain an IAudioClient interface which enables us to create and initialize
@@ -944,7 +953,9 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
     }
 
     base::TimeTicks capture_time;
-    if (!timestamp_error_was_detected) {
+    if (use_fake_audio_capture_timestamps_) {
+      capture_time = base::TimeTicks::Now();
+    } else if (!timestamp_error_was_detected) {
       // Use the latest |capture_time_100ns| since it is marked as valid.
       capture_time += base::Microseconds(capture_time_100ns / 10.0);
     }

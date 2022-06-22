@@ -300,6 +300,7 @@ bool UtilityProcessHost::StartProcess() {
       switches::kForceWaveAudio,
       switches::kRaiseTimerFrequency,
       switches::kTrySupportedChannelLayouts,
+      switches::kUseFakeAudioCaptureTimestamps,
       switches::kWaveOutBuffers,
       switches::kWebXrForceRuntime,
       sandbox::policy::switches::kAddXrAppContainerCaps,
