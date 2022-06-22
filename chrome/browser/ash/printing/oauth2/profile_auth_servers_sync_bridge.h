@@ -17,6 +17,10 @@
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace chromeos {
+class Uri;
+}
+
 namespace syncer {
 struct EntityData;
 class ModelTypeChangeProcessor;
@@ -58,6 +62,10 @@ class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
 
   ~ProfileAuthServersSyncBridge() override;
 
+  // This method must be called when new Authorization Server is added to the
+  // list of trusted Authorization Servers.
+  void AddAuthorizationServer(const chromeos::Uri& server);
+
  private:
   ProfileAuthServersSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
@@ -91,8 +99,17 @@ class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
+  // Callback to handle commit errors.
+  void OnCommit(const absl::optional<syncer::ModelError>& error);
+
+  // This is set to true when the object is ready to use. Use the callback
+  // from the Observer to check this. This field is used only for internal
+  // validation.
+  bool initialization_completed_ = false;
+
   // The current trusted list of Authorization Servers URIs.
   std::set<std::string> servers_uris_;
+
   // The local storage.
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
