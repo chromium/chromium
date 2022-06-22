@@ -20,13 +20,13 @@ class EnumValue extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    protected $name = '';
+    private $name = '';
     /**
      * Enum value number.
      *
      * Generated from protobuf field <code>int32 number = 2;</code>
      */
-    protected $number = 0;
+    private $number = 0;
     /**
      * Protocol buffer options.
      *

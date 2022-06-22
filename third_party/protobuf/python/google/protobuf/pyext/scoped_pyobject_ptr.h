@@ -35,7 +35,6 @@
 
 #include <google/protobuf/stubs/common.h>
 
-#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 namespace google {
 namespace protobuf {
@@ -48,7 +47,7 @@ class ScopedPythonPtr {
  public:
   // Takes the ownership of the specified object to ScopedPythonPtr.
   // The reference count of the specified py_object is not incremented.
-  explicit ScopedPythonPtr(PyObjectStruct* py_object = nullptr)
+  explicit ScopedPythonPtr(PyObjectStruct* py_object = NULL)
       : ptr_(py_object) {}
 
   // If a PyObject is owned, decrement its reference count.
@@ -60,7 +59,7 @@ class ScopedPythonPtr {
   // This function must be called with a reference that you own.
   //   this->reset(this->get()) is wrong!
   //   this->reset(this->release()) is OK.
-  PyObjectStruct* reset(PyObjectStruct* p = nullptr) {
+  PyObjectStruct* reset(PyObjectStruct* p = NULL) {
     Py_XDECREF(ptr_);
     ptr_ = p;
     return ptr_;
@@ -70,7 +69,7 @@ class ScopedPythonPtr {
   // The caller now owns the returned reference.
   PyObjectStruct* release() {
     PyObject* p = ptr_;
-    ptr_ = nullptr;
+    ptr_ = NULL;
     return p;
   }
 

@@ -36,7 +36,6 @@ import com.google.protobuf.Internal.EnumVerifier;
 import java.lang.reflect.Field;
 
 /** Information for a single field in a protobuf message class. */
-@CheckReturnValue
 @ExperimentalApi
 final class FieldInfo implements Comparable<FieldInfo> {
   private final Field field;

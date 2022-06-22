@@ -266,14 +266,12 @@ public abstract class GeneratedMessageLite<
     memoizedSerializedSize = size;
   }
 
-  @Override
   public void writeTo(CodedOutputStream output) throws IOException {
     Protobuf.getInstance()
         .schemaFor(this)
         .writeTo(this, CodedOutputStreamWriter.forCodedOutput(output));
   }
 
-  @Override
   public int getSerializedSize() {
     if (memoizedSerializedSize == -1) {
       memoizedSerializedSize = Protobuf.getInstance().schemaFor(this).getSerializedSize(this);
@@ -692,7 +690,7 @@ public abstract class GeneratedMessageLite<
       // The wire format for MessageSet is:
       //   message MessageSet {
       //     repeated group Item = 1 {
-      //       required uint32 typeId = 2;
+      //       required int32 typeId = 2;
       //       required bytes message = 3;
       //     }
       //   }
@@ -985,6 +983,7 @@ public abstract class GeneratedMessageLite<
 
     /** Get one element of a repeated extension. */
     @Override
+    @SuppressWarnings("unchecked")
     public final <Type> Type getExtension(
         final ExtensionLite<MessageType, List<Type>> extension, final int index) {
       return instance.getExtension(extension, index);
@@ -1341,6 +1340,7 @@ public abstract class GeneratedMessageLite<
      *
      * @return a GeneratedMessage of the type that was serialized
      */
+    @SuppressWarnings("unchecked")
     protected Object readResolve() throws ObjectStreamException {
       try {
         Class<?> messageClass = resolveMessageClass();
@@ -1535,18 +1535,11 @@ public abstract class GeneratedMessageLite<
       Schema<T> schema = Protobuf.getInstance().schemaFor(result);
       schema.mergeFrom(result, CodedInputStreamReader.forCodedInput(input), extensionRegistry);
       schema.makeImmutable(result);
-    } catch (InvalidProtocolBufferException e) {
-      if (e.getThrownFromInputStream()) {
-        e = new InvalidProtocolBufferException(e);
-      }
-      throw e.setUnfinishedMessage(result);
-    } catch (UninitializedMessageException e) {
-      throw e.asInvalidProtocolBufferException().setUnfinishedMessage(result);
     } catch (IOException e) {
       if (e.getCause() instanceof InvalidProtocolBufferException) {
         throw (InvalidProtocolBufferException) e.getCause();
       }
-      throw new InvalidProtocolBufferException(e).setUnfinishedMessage(result);
+      throw new InvalidProtocolBufferException(e.getMessage()).setUnfinishedMessage(result);
     } catch (RuntimeException e) {
       if (e.getCause() instanceof InvalidProtocolBufferException) {
         throw (InvalidProtocolBufferException) e.getCause();
@@ -1557,7 +1550,7 @@ public abstract class GeneratedMessageLite<
   }
 
   /** A static helper method for parsing a partial from byte array. */
-  private static <T extends GeneratedMessageLite<T, ?>> T parsePartialFrom(
+  static <T extends GeneratedMessageLite<T, ?>> T parsePartialFrom(
       T instance, byte[] input, int offset, int length, ExtensionRegistryLite extensionRegistry)
       throws InvalidProtocolBufferException {
     @SuppressWarnings("unchecked") // Guaranteed by protoc
@@ -1570,18 +1563,11 @@ public abstract class GeneratedMessageLite<
       if (result.memoizedHashCode != 0) {
         throw new RuntimeException();
       }
-    } catch (InvalidProtocolBufferException e) {
-      if (e.getThrownFromInputStream()) {
-        e = new InvalidProtocolBufferException(e);
-      }
-      throw e.setUnfinishedMessage(result);
-    } catch (UninitializedMessageException e) {
-      throw e.asInvalidProtocolBufferException().setUnfinishedMessage(result);
     } catch (IOException e) {
       if (e.getCause() instanceof InvalidProtocolBufferException) {
         throw (InvalidProtocolBufferException) e.getCause();
       }
-      throw new InvalidProtocolBufferException(e).setUnfinishedMessage(result);
+      throw new InvalidProtocolBufferException(e.getMessage()).setUnfinishedMessage(result);
     } catch (IndexOutOfBoundsException e) {
       throw InvalidProtocolBufferException.truncatedMessage().setUnfinishedMessage(result);
     }
@@ -1643,14 +1629,28 @@ public abstract class GeneratedMessageLite<
   private static <T extends GeneratedMessageLite<T, ?>> T parsePartialFrom(
       T defaultInstance, ByteString data, ExtensionRegistryLite extensionRegistry)
       throws InvalidProtocolBufferException {
-    CodedInputStream input = data.newCodedInput();
-    T message = parsePartialFrom(defaultInstance, input, extensionRegistry);
+    T message;
     try {
-      input.checkLastTagWas(0);
+      CodedInputStream input = data.newCodedInput();
+      message = parsePartialFrom(defaultInstance, input, extensionRegistry);
+      try {
+        input.checkLastTagWas(0);
+      } catch (InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(message);
+      }
+      return message;
     } catch (InvalidProtocolBufferException e) {
-      throw e.setUnfinishedMessage(message);
+      throw e;
     }
-    return message;
+  }
+
+  // This is a special case since we want to verify that the last tag is 0. We assume we exhaust the
+  // ByteString.
+  private static <T extends GeneratedMessageLite<T, ?>> T parsePartialFrom(
+      T defaultInstance, byte[] data, ExtensionRegistryLite extensionRegistry)
+      throws InvalidProtocolBufferException {
+    return checkMessageInitialized(
+        parsePartialFrom(defaultInstance, data, 0, data.length, extensionRegistry));
   }
 
   // Validates last tag.
@@ -1725,13 +1725,8 @@ public abstract class GeneratedMessageLite<
         return null;
       }
       size = CodedInputStream.readRawVarint32(firstByte, input);
-    } catch (InvalidProtocolBufferException e) {
-      if (e.getThrownFromInputStream()) {
-        e = new InvalidProtocolBufferException(e);
-      }
-      throw e;
     } catch (IOException e) {
-      throw new InvalidProtocolBufferException(e);
+      throw new InvalidProtocolBufferException(e.getMessage());
     }
     InputStream limitedInput = new LimitedInputStream(input, size);
     CodedInputStream codedInput = CodedInputStream.newInstance(limitedInput);

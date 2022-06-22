@@ -204,6 +204,7 @@ public enum FieldType {
    *
    * @return the {@link FieldType} or {@code null} if not found.
    */
+  /* @Nullable */
   public static FieldType forId(int id) {
     if (id < 0 || id >= VALUES.length) {
       return null;
@@ -227,6 +228,7 @@ public enum FieldType {
    *
    * @return the generic super class/interface, or {@code null} if not found.
    */
+  /* @Nullable */
   private static Type getGenericSuperList(Class<?> clazz) {
     // First look at interfaces.
     Type[] genericInterfaces = clazz.getGenericInterfaces();

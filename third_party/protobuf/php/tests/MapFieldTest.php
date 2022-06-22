@@ -1,6 +1,5 @@
 <?php
 
-require_once('test_base.php');
 require_once('test_util.php');
 
 use Google\Protobuf\Internal\GPBType;
@@ -8,7 +7,7 @@ use Google\Protobuf\Internal\MapField;
 use Foo\TestMessage;
 use Foo\TestMessage\Sub;
 
-class MapFieldTest extends TestBase {
+class MapFieldTest extends \PHPUnit\Framework\TestCase {
 
     #########################################################
     # Test int32 field.
@@ -258,15 +257,15 @@ class MapFieldTest extends TestBase {
 
         // Test set.
         $arr[0] = 1;
-        $this->assertFloatEquals(1.0, $arr[0], MAX_FLOAT_DIFF);
+        $this->assertEquals(1.0, $arr[0], '', MAX_FLOAT_DIFF);
 
         $arr[1] = 1.1;
-        $this->assertFloatEquals(1.1, $arr[1], MAX_FLOAT_DIFF);
+        $this->assertEquals(1.1, $arr[1], '', MAX_FLOAT_DIFF);
 
         $arr[2] = '2';
-        $this->assertFloatEquals(2.0, $arr[2], MAX_FLOAT_DIFF);
+        $this->assertEquals(2.0, $arr[2], '', MAX_FLOAT_DIFF);
         $arr[3] = '3.1';
-        $this->assertFloatEquals(3.1, $arr[3], MAX_FLOAT_DIFF);
+        $this->assertEquals(3.1, $arr[3], '', MAX_FLOAT_DIFF);
 
         $this->assertEquals(4, count($arr));
     }
@@ -280,15 +279,15 @@ class MapFieldTest extends TestBase {
 
         // Test set.
         $arr[0] = 1;
-        $this->assertFloatEquals(1.0, $arr[0], MAX_FLOAT_DIFF);
+        $this->assertEquals(1.0, $arr[0], '', MAX_FLOAT_DIFF);
 
         $arr[1] = 1.1;
-        $this->assertFloatEquals(1.1, $arr[1], MAX_FLOAT_DIFF);
+        $this->assertEquals(1.1, $arr[1], '', MAX_FLOAT_DIFF);
 
         $arr[2] = '2';
-        $this->assertFloatEquals(2.0, $arr[2], MAX_FLOAT_DIFF);
+        $this->assertEquals(2.0, $arr[2], '', MAX_FLOAT_DIFF);
         $arr[3] = '3.1';
-        $this->assertFloatEquals(3.1, $arr[3], MAX_FLOAT_DIFF);
+        $this->assertEquals(3.1, $arr[3], '', MAX_FLOAT_DIFF);
 
         $this->assertEquals(4, count($arr));
     }
@@ -478,8 +477,6 @@ class MapFieldTest extends TestBase {
         array_walk($values, function (&$value) {});
         $m = new TestMessage();
         $m->setMapInt32Message($values);
-
-        $this->assertTrue(true);
     }
 
     #########################################################
@@ -509,24 +506,6 @@ class MapFieldTest extends TestBase {
         $this->assertFalse(
             new MapField(GPBType::INT32, GPBType::MESSAGE, TestMessage::class) ==
             new MapField(GPBType::INT32, GPBType::MESSAGE, Sub::class));
-    }
-
-    #########################################################
-    # Test clone
-    #########################################################
-
-    public function testClone()
-    {
-        $map = new MapField(GPBType::INT32,
-            GPBType::MESSAGE, Sub::class);
-
-        // Test append.
-        $sub_m = new Sub();
-        $sub_m->setA(1);
-        $map[0] = $sub_m;
-
-        $map2 = clone $map;
-        $this->assertSame($map[0], $map2[0]);
     }
 
     #########################################################

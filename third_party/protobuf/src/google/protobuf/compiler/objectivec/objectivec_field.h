@@ -33,6 +33,7 @@
 
 #include <map>
 #include <string>
+#include <google/protobuf/compiler/objectivec/objectivec_helpers.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/printer.h>
 
@@ -43,7 +44,8 @@ namespace objectivec {
 
 class FieldGenerator {
  public:
-  static FieldGenerator* Make(const FieldDescriptor* field);
+  static FieldGenerator* Make(const FieldDescriptor* field,
+                              const Options& options);
 
   virtual ~FieldGenerator();
 
@@ -64,8 +66,7 @@ class FieldGenerator {
 
   // Exposed for subclasses, should always call it on the parent class also.
   virtual void DetermineForwardDeclarations(
-      std::set<std::string>* fwd_decls,
-      bool include_external_types) const;
+      std::set<std::string>* fwd_decls) const;
   virtual void DetermineObjectiveCClassDefinitions(
       std::set<std::string>* fwd_decls) const;
 
@@ -95,7 +96,7 @@ class FieldGenerator {
   std::string raw_field_name() const { return variable("raw_field_name"); }
 
  protected:
-  FieldGenerator(const FieldDescriptor* descriptor);
+  FieldGenerator(const FieldDescriptor* descriptor, const Options& options);
 
   virtual void FinishInitialization(void);
   bool WantsHasProperty(void) const;
@@ -111,15 +112,16 @@ class SingleFieldGenerator : public FieldGenerator {
   SingleFieldGenerator(const SingleFieldGenerator&) = delete;
   SingleFieldGenerator& operator=(const SingleFieldGenerator&) = delete;
 
-  virtual void GenerateFieldStorageDeclaration(io::Printer* printer) const override;
-  virtual void GeneratePropertyDeclaration(io::Printer* printer) const override;
+  virtual void GenerateFieldStorageDeclaration(io::Printer* printer) const;
+  virtual void GeneratePropertyDeclaration(io::Printer* printer) const;
 
-  virtual void GeneratePropertyImplementation(io::Printer* printer) const override;
+  virtual void GeneratePropertyImplementation(io::Printer* printer) const;
 
-  virtual bool RuntimeUsesHasBit(void) const override;
+  virtual bool RuntimeUsesHasBit(void) const;
 
  protected:
-  SingleFieldGenerator(const FieldDescriptor* descriptor);
+  SingleFieldGenerator(const FieldDescriptor* descriptor,
+                       const Options& options);
 };
 
 // Subclass with common support for when the field ends up as an ObjC Object.
@@ -130,11 +132,12 @@ class ObjCObjFieldGenerator : public SingleFieldGenerator {
   ObjCObjFieldGenerator(const ObjCObjFieldGenerator&) = delete;
   ObjCObjFieldGenerator& operator=(const ObjCObjFieldGenerator&) = delete;
 
-  virtual void GenerateFieldStorageDeclaration(io::Printer* printer) const override;
-  virtual void GeneratePropertyDeclaration(io::Printer* printer) const override;
+  virtual void GenerateFieldStorageDeclaration(io::Printer* printer) const;
+  virtual void GeneratePropertyDeclaration(io::Printer* printer) const;
 
  protected:
-  ObjCObjFieldGenerator(const FieldDescriptor* descriptor);
+  ObjCObjFieldGenerator(const FieldDescriptor* descriptor,
+                        const Options& options);
 };
 
 class RepeatedFieldGenerator : public ObjCObjFieldGenerator {
@@ -144,22 +147,23 @@ class RepeatedFieldGenerator : public ObjCObjFieldGenerator {
   RepeatedFieldGenerator(const RepeatedFieldGenerator&) = delete;
   RepeatedFieldGenerator& operator=(const RepeatedFieldGenerator&) = delete;
 
-  virtual void GenerateFieldStorageDeclaration(io::Printer* printer) const override;
-  virtual void GeneratePropertyDeclaration(io::Printer* printer) const override;
+  virtual void GenerateFieldStorageDeclaration(io::Printer* printer) const;
+  virtual void GeneratePropertyDeclaration(io::Printer* printer) const;
 
-  virtual void GeneratePropertyImplementation(io::Printer* printer) const override;
+  virtual void GeneratePropertyImplementation(io::Printer* printer) const;
 
-  virtual bool RuntimeUsesHasBit(void) const override;
+  virtual bool RuntimeUsesHasBit(void) const;
 
  protected:
-  RepeatedFieldGenerator(const FieldDescriptor* descriptor);
-  virtual void FinishInitialization(void) override;
+  RepeatedFieldGenerator(const FieldDescriptor* descriptor,
+                         const Options& options);
+  virtual void FinishInitialization(void);
 };
 
 // Convenience class which constructs FieldGenerators for a Descriptor.
 class FieldGeneratorMap {
  public:
-  FieldGeneratorMap(const Descriptor* descriptor);
+  FieldGeneratorMap(const Descriptor* descriptor, const Options& options);
   ~FieldGeneratorMap();
 
   FieldGeneratorMap(const FieldGeneratorMap&) = delete;

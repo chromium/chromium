@@ -31,7 +31,6 @@
 #include <google/protobuf/util/field_mask_util.h>
 
 #include <algorithm>
-#include <cstdint>
 #include <vector>
 
 #include <google/protobuf/field_mask.pb.h>
@@ -165,7 +164,7 @@ TEST(FieldMaskUtilTest, JsonStringFormat) {
 
 TEST(FieldMaskUtilTest, FromFieldNumbers) {
   FieldMask mask;
-  std::vector<int64_t> field_numbers = {
+  std::vector<int64> field_numbers = {
       TestAllTypes::kOptionalInt64FieldNumber,
       TestAllTypes::kOptionalBoolFieldNumber,
       TestAllTypes::kRepeatedStringFieldNumber,

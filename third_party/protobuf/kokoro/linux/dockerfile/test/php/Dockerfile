@@ -55,6 +55,36 @@ RUN mv composer.phar /usr/local/bin/composer
 # Download php source code
 RUN git clone https://github.com/php/php-src
 
+# php 5.5
+RUN cd php-src \
+  && git checkout PHP-5.5.38 \
+  && ./buildconf --force
+RUN cd php-src \
+  && ./configure \
+  --enable-bcmath \
+  --with-gmp \
+  --with-openssl \
+  --with-zlib \
+  --prefix=/usr/local/php-5.5 \
+  && make \
+  && make install \
+  && make clean
+RUN cd php-src \
+  && ./configure \
+  --enable-maintainer-zts \
+  --with-gmp \
+  --with-openssl \
+  --with-zlib \
+  --prefix=/usr/local/php-5.5-zts \
+  && make \
+  && make install \
+  && make clean
+
+RUN wget -O phpunit https://phar.phpunit.de/phpunit-4.phar \
+  && chmod +x phpunit \
+  && cp phpunit /usr/local/php-5.5/bin \
+  && mv phpunit /usr/local/php-5.5-zts/bin
+
 # php 5.6
 RUN cd php-src \
   && git checkout PHP-5.6.39 \
@@ -62,7 +92,6 @@ RUN cd php-src \
 RUN cd php-src \
   && ./configure \
   --enable-bcmath \
-  --enable-mbstring \
   --with-gmp \
   --with-openssl \
   --with-zlib \
@@ -70,10 +99,21 @@ RUN cd php-src \
   && make \
   && make install \
   && make clean
+RUN cd php-src \
+  && ./configure \
+  --enable-maintainer-zts \
+  --with-gmp \
+  --with-openssl \
+  --with-zlib \
+  --prefix=/usr/local/php-5.6-zts \
+  && make \
+  && make install \
+  && make clean
 
 RUN wget -O phpunit https://phar.phpunit.de/phpunit-5.phar \
   && chmod +x phpunit \
-  && mv phpunit /usr/local/php-5.6/bin
+  && cp phpunit /usr/local/php-5.6/bin \
+  && mv phpunit /usr/local/php-5.6-zts/bin
 
 # php 7.0
 RUN cd php-src \
@@ -82,7 +122,6 @@ RUN cd php-src \
 RUN cd php-src \
   && ./configure \
   --enable-bcmath \
-  --enable-mbstring \
   --with-gmp \
   --with-openssl \
   --with-zlib \
@@ -93,7 +132,6 @@ RUN cd php-src \
 RUN cd php-src \
   && ./configure \
   --enable-maintainer-zts \
-  --enable-mbstring \
   --with-gmp \
   --with-openssl \
   --with-zlib \
@@ -114,7 +152,6 @@ RUN cd php-src \
 RUN cd php-src \
   && ./configure \
   --enable-bcmath \
-  --enable-mbstring \
   --with-gmp \
   --with-openssl \
   --with-zlib \
@@ -125,7 +162,6 @@ RUN cd php-src \
 RUN cd php-src \
   && ./configure \
   --enable-maintainer-zts \
-  --enable-mbstring \
   --with-gmp \
   --with-openssl \
   --with-zlib \
@@ -134,7 +170,7 @@ RUN cd php-src \
   && make install \
   && make clean
 
-RUN wget -O phpunit https://phar.phpunit.de/phpunit-7.5.0.phar \
+RUN wget -O phpunit https://phar.phpunit.de/phpunit-7.phar \
   && chmod +x phpunit \
   && cp phpunit /usr/local/php-7.1/bin \
   && mv phpunit /usr/local/php-7.1-zts/bin
@@ -146,7 +182,6 @@ RUN cd php-src \
 RUN cd php-src \
   && ./configure \
   --enable-bcmath \
-  --enable-mbstring \
   --with-gmp \
   --with-openssl \
   --with-zlib \
@@ -157,7 +192,6 @@ RUN cd php-src \
 RUN cd php-src \
   && ./configure \
   --enable-maintainer-zts \
-  --enable-mbstring \
   --with-gmp \
   --with-openssl \
   --with-zlib \
@@ -166,7 +200,7 @@ RUN cd php-src \
   && make install \
   && make clean
 
-RUN wget -O phpunit https://phar.phpunit.de/phpunit-7.5.0.phar \
+RUN wget -O phpunit https://phar.phpunit.de/phpunit-7.phar \
   && chmod +x phpunit \
   && cp phpunit /usr/local/php-7.2/bin \
   && mv phpunit /usr/local/php-7.2-zts/bin
@@ -178,7 +212,6 @@ RUN cd php-src \
 RUN cd php-src \
   && ./configure \
   --enable-bcmath \
-  --enable-mbstring \
   --with-gmp \
   --with-openssl \
   --with-zlib \
@@ -189,7 +222,6 @@ RUN cd php-src \
 RUN cd php-src \
   && ./configure \
   --enable-maintainer-zts \
-  --enable-mbstring \
   --with-gmp \
   --with-openssl \
   --with-zlib \
@@ -198,7 +230,7 @@ RUN cd php-src \
   && make install \
   && make clean
 
-RUN wget -O phpunit https://phar.phpunit.de/phpunit-7.5.0.phar \
+RUN wget -O phpunit https://phar.phpunit.de/phpunit-7.phar \
   && chmod +x phpunit \
   && cp phpunit /usr/local/php-7.3/bin \
   && mv phpunit /usr/local/php-7.3-zts/bin
@@ -221,8 +253,6 @@ RUN cd /var/local/php-src-php-7.4.0 \
   && ./buildconf --force \
   && ./configure \
   --enable-bcmath \
-  --enable-mbstring \
-  --disable-mbregex \
   --with-gmp \
   --with-openssl \
   --with-zlib \
@@ -234,8 +264,6 @@ RUN cd /var/local/php-src-php-7.4.0 \
   && ./buildconf --force \
   && ./configure \
   --enable-maintainer-zts \
-  --enable-mbstring \
-  --disable-mbregex \
   --with-gmp \
   --with-openssl \
   --with-zlib \

@@ -30,9 +30,7 @@
 
 // Author: kenton@google.com (Kenton Varda)
 
-#include <cstdint>
 #include <vector>
-
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 
@@ -51,9 +49,9 @@ class ZipWriter {
  private:
   struct FileInfo {
     std::string name;
-    uint32_t offset;
-    uint32_t size;
-    uint32_t crc32;
+    uint32 offset;
+    uint32 size;
+    uint32 crc32;
   };
 
   io::ZeroCopyOutputStream* raw_output_;

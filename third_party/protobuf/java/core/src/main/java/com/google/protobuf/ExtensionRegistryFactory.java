@@ -46,6 +46,7 @@ final class ExtensionRegistryFactory {
   @Nullable */
   static final Class<?> EXTENSION_REGISTRY_CLASS = reflectExtensionRegistry();
 
+  /* @Nullable */
   static Class<?> reflectExtensionRegistry() {
     try {
       return Class.forName(FULL_REGISTRY_CLASS_NAME);
@@ -76,6 +77,7 @@ final class ExtensionRegistryFactory {
         && EXTENSION_REGISTRY_CLASS.isAssignableFrom(registry.getClass());
   }
 
+  /* @Nullable */
   private static final ExtensionRegistryLite invokeSubclassFactory(String methodName) {
     if (EXTENSION_REGISTRY_CLASS == null) {
       return null;

@@ -28,7 +28,6 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
 namespace google {
@@ -78,31 +77,48 @@ static const char kModuleDocstring[] =
     "constants defined in C, such that one can set defaults at compilation\n"
     "(e.g. with blaze flag --copt=-DPYTHON_PROTO2_CPP_IMPL_V2).";
 
+#if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef _module = {PyModuleDef_HEAD_INIT,
                                      kModuleName,
                                      kModuleDocstring,
                                      -1,
-                                     nullptr,
-                                     nullptr,
-                                     nullptr,
-                                     nullptr,
-                                     nullptr};
+                                     NULL,
+                                     NULL,
+                                     NULL,
+                                     NULL,
+                                     NULL};
+#define INITFUNC PyInit__api_implementation
+#define INITFUNC_ERRORVAL NULL
+#else
+#define INITFUNC init_api_implementation
+#define INITFUNC_ERRORVAL
+#endif
 
 extern "C" {
-PyMODINIT_FUNC PyInit__api_implementation() {
+PyMODINIT_FUNC INITFUNC() {
+#if PY_MAJOR_VERSION >= 3
   PyObject* module = PyModule_Create(&_module);
-  if (module == nullptr) {
-    return nullptr;
+#else
+  PyObject* module = Py_InitModule3(const_cast<char*>(kModuleName), NULL,
+                                    const_cast<char*>(kModuleDocstring));
+#endif
+  if (module == NULL) {
+    return INITFUNC_ERRORVAL;
   }
 
   // Adds the module variable "api_version".
   if (PyModule_AddIntConstant(module, const_cast<char*>(kImplVersionName),
-                              kImplVersion)) {
+                              kImplVersion))
+#if PY_MAJOR_VERSION < 3
+    return;
+#else
+  {
     Py_DECREF(module);
-    return nullptr;
+    return NULL;
   }
 
   return module;
+#endif
 }
 }
 

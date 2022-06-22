@@ -30,79 +30,71 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import protobuf_unittest.UnittestProto.TestAllExtensions;
 import protobuf_unittest.UnittestProto.TestAllTypes;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import junit.framework.TestCase;
 
-/** Unit test for {@link LazyField}. */
-@RunWith(JUnit4.class)
-public class LazyFieldTest {
-
-  @Test
+/**
+ * Unit test for {@link LazyField}.
+ *
+ * @author xiangl@google.com (Xiang Li)
+ */
+public class LazyFieldTest extends TestCase {
   public void testHashCode() {
     MessageLite message = TestUtil.getAllSet();
     LazyField lazyField = createLazyFieldFromMessage(message);
-    assertThat(message.hashCode()).isEqualTo(lazyField.hashCode());
+    assertEquals(message.hashCode(), lazyField.hashCode());
     lazyField.getValue();
-    assertThat(message.hashCode()).isEqualTo(lazyField.hashCode());
+    assertEquals(message.hashCode(), lazyField.hashCode());
     changeValue(lazyField);
     // make sure two messages have different hash code
     assertNotEqual(message.hashCode(), lazyField.hashCode());
   }
 
-  @Test
   public void testHashCodeEx() throws Exception {
     TestAllExtensions message = TestUtil.getAllExtensionsSet();
     LazyField lazyField = createLazyFieldFromMessage(message);
-    assertThat(message.hashCode()).isEqualTo(lazyField.hashCode());
+    assertEquals(message.hashCode(), lazyField.hashCode());
     lazyField.getValue();
-    assertThat(message.hashCode()).isEqualTo(lazyField.hashCode());
+    assertEquals(message.hashCode(), lazyField.hashCode());
     changeValue(lazyField);
     // make sure two messages have different hash code
     assertNotEqual(message.hashCode(), lazyField.hashCode());
   }
 
-  @Test
   public void testGetValue() {
     MessageLite message = TestUtil.getAllSet();
     LazyField lazyField = createLazyFieldFromMessage(message);
-    assertThat(message).isEqualTo(lazyField.getValue());
+    assertEquals(message, lazyField.getValue());
     changeValue(lazyField);
     assertNotEqual(message, lazyField.getValue());
   }
 
-  @Test
   public void testGetValueEx() throws Exception {
     TestAllExtensions message = TestUtil.getAllExtensionsSet();
     LazyField lazyField = createLazyFieldFromMessage(message);
-    assertThat(message).isEqualTo(lazyField.getValue());
+    assertEquals(message, lazyField.getValue());
     changeValue(lazyField);
     assertNotEqual(message, lazyField.getValue());
   }
 
-  @Test
   public void testEqualsObject() {
     MessageLite message = TestUtil.getAllSet();
     LazyField lazyField = createLazyFieldFromMessage(message);
-    assertThat(lazyField).isEqualTo(message);
+    assertTrue(lazyField.equals(message));
     changeValue(lazyField);
-    assertThat(lazyField).isNotEqualTo(message);
-    assertThat(message).isNotEqualTo(lazyField.getValue());
+    assertFalse(lazyField.equals(message));
+    assertFalse(message.equals(lazyField.getValue()));
   }
 
-  @Test
-  @SuppressWarnings("TruthIncompatibleType") // LazyField.equals() is not symmetric
+  @SuppressWarnings("EqualsIncompatibleType") // LazyField.equals() is not symmetric
   public void testEqualsObjectEx() throws Exception {
     TestAllExtensions message = TestUtil.getAllExtensionsSet();
     LazyField lazyField = createLazyFieldFromMessage(message);
-    assertThat(lazyField).isEqualTo(message);
+    assertTrue(lazyField.equals(message));
     changeValue(lazyField);
-    assertThat(lazyField).isNotEqualTo(message);
-    assertThat(message).isNotEqualTo(lazyField.getValue());
+    assertFalse(lazyField.equals(message));
+    assertFalse(message.equals(lazyField.getValue()));
   }
 
   // Help methods.
@@ -121,7 +113,6 @@ public class LazyFieldTest {
   }
 
   private void assertNotEqual(Object unexpected, Object actual) {
-    assertThat(unexpected).isNotSameInstanceAs(actual);
-    assertThat((unexpected != null && unexpected.equals(actual))).isFalse();
+    assertFalse(unexpected == actual || (unexpected != null && unexpected.equals(actual)));
   }
 }

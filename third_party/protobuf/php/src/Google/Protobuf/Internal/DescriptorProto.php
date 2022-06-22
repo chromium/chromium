@@ -252,11 +252,11 @@ class DescriptorProto extends \Google\Protobuf\Internal\Message
 
     /**
      * Generated from protobuf field <code>optional .google.protobuf.MessageOptions options = 7;</code>
-     * @return \Google\Protobuf\Internal\MessageOptions|null
+     * @return \Google\Protobuf\Internal\MessageOptions
      */
     public function getOptions()
     {
-        return $this->options;
+        return isset($this->options) ? $this->options : null;
     }
 
     public function hasOptions()

@@ -76,13 +76,13 @@ GeneratorContext::~GeneratorContext() {}
 
 io::ZeroCopyOutputStream* GeneratorContext::OpenForAppend(
     const std::string& filename) {
-  return nullptr;
+  return NULL;
 }
 
 io::ZeroCopyOutputStream* GeneratorContext::OpenForInsert(
     const std::string& filename, const std::string& insertion_point) {
   GOOGLE_LOG(FATAL) << "This GeneratorContext does not support insertion.";
-  return nullptr;  // make compiler happy
+  return NULL;  // make compiler happy
 }
 
 io::ZeroCopyOutputStream* GeneratorContext::OpenForInsertWithGeneratedCodeInfo(
@@ -120,15 +120,6 @@ void ParseGeneratorParameter(
       value.second = parts[i].substr(equals_pos + 1);
     }
     output->push_back(value);
-  }
-}
-
-// Strips ".proto" or ".protodevel" from the end of a filename.
-std::string StripProto(const std::string& filename) {
-  if (HasSuffixString(filename, ".protodevel")) {
-    return StripSuffixString(filename, ".protodevel");
-  } else {
-    return StripSuffixString(filename, ".proto");
   }
 }
 

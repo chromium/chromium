@@ -37,7 +37,6 @@
 #ifndef GOOGLE_PROTOBUF_MAP_H__
 #define GOOGLE_PROTOBUF_MAP_H__
 
-
 #include <functional>
 #include <initializer_list>
 #include <iterator>
@@ -51,22 +50,16 @@
 #include <string_view>
 #endif  // defined(__cpp_lib_string_view)
 
-#if !defined(GOOGLE_PROTOBUF_NO_RDTSC) && defined(__APPLE__)
-#include <mach/mach_time.h>
-#endif
-
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/arena.h>
 #include <google/protobuf/generated_enum_util.h>
 #include <google/protobuf/map_type_handler.h>
-#include <google/protobuf/port.h>
 #include <google/protobuf/stubs/hash.h>
 
 #ifdef SWIG
 #error "You cannot SWIG proto headers"
 #endif
 
-// Must be included last.
 #include <google/protobuf/port_def.inc>
 
 namespace google {
@@ -112,16 +105,11 @@ class MapAllocator {
   using size_type = size_t;
   using difference_type = ptrdiff_t;
 
-  constexpr MapAllocator() : arena_(nullptr) {}
-  explicit constexpr MapAllocator(Arena* arena) : arena_(arena) {}
+  MapAllocator() : arena_(nullptr) {}
+  explicit MapAllocator(Arena* arena) : arena_(arena) {}
   template <typename X>
   MapAllocator(const MapAllocator<X>& allocator)  // NOLINT(runtime/explicit)
       : arena_(allocator.arena()) {}
-
-  // MapAllocator does not support alignments beyond 8. Technically we should
-  // support up to std::max_align_t, but this fails with ubsan and tcmalloc
-  // debug allocation logic which assume 8 as default alignment.
-  static_assert(alignof(value_type) <= 8, "");
 
   pointer allocate(size_type n, const void* /* hint */ = nullptr) {
     // If arena is not given, malloc needs to be called which doesn't
@@ -130,13 +118,18 @@ class MapAllocator {
       return static_cast<pointer>(::operator new(n * sizeof(value_type)));
     } else {
       return reinterpret_cast<pointer>(
-          Arena::CreateArray<uint8_t>(arena_, n * sizeof(value_type)));
+          Arena::CreateArray<uint8>(arena_, n * sizeof(value_type)));
     }
   }
 
   void deallocate(pointer p, size_type n) {
     if (arena_ == nullptr) {
-      internal::SizedDelete(p, n * sizeof(value_type));
+#if defined(__GXX_DELETE_WITH_SIZE__) || defined(__cpp_sized_deallocation)
+      ::operator delete(p, n * sizeof(value_type));
+#else
+      (void)n;
+      ::operator delete(p);
+#endif
     }
   }
 
@@ -337,15 +330,13 @@ inline size_t SpaceUsedInValues(const void*) { return 0; }
 // std::pair as value_type, we use this class which provides us more control of
 // its process of construction and destruction.
 template <typename Key, typename T>
-struct PROTOBUF_ATTRIBUTE_STANDALONE_DEBUG MapPair {
+struct MapPair {
   using first_type = const Key;
   using second_type = T;
 
   MapPair(const Key& other_first, const T& other_second)
       : first(other_first), second(other_second) {}
   explicit MapPair(const Key& other_first) : first(other_first), second() {}
-  explicit MapPair(Key&& other_first)
-      : first(std::move(other_first)), second() {}
   MapPair(const MapPair& other) : first(other.first), second(other.second) {}
 
   ~MapPair() {}
@@ -389,7 +380,7 @@ class Map {
   using size_type = size_t;
   using hasher = typename internal::TransparentSupport<Key>::hash;
 
-  constexpr Map() : elements_(nullptr) {}
+  Map() : elements_(nullptr) {}
   explicit Map(Arena* arena) : elements_(arena) {}
 
   Map(const Map& other) : Map() { insert(other.begin(), other.end()); }
@@ -457,12 +448,12 @@ class Map {
   //    otherwise. This avoids unnecessary copies of string keys, for example.
   class InnerMap : private hasher {
    public:
-    explicit constexpr InnerMap(Arena* arena)
+    explicit InnerMap(Arena* arena)
         : hasher(),
           num_elements_(0),
           num_buckets_(internal::kGlobalEmptyTableSize),
-          seed_(0),
-          index_of_first_non_null_(internal::kGlobalEmptyTableSize),
+          seed_(Seed()),
+          index_of_first_non_null_(num_buckets_),
           table_(const_cast<void**>(internal::kGlobalEmptyTable)),
           alloc_(arena) {}
 
@@ -694,8 +685,7 @@ class Map {
 
     // Insert the key into the map, if not present. In that case, the value will
     // be value initialized.
-    template <typename K>
-    std::pair<iterator, bool> insert(K&& k) {
+    std::pair<iterator, bool> insert(const Key& k) {
       std::pair<const_iterator, size_type> p = FindHelper(k);
       // Case 1: key was already present.
       if (p.first.node_ != nullptr)
@@ -705,28 +695,22 @@ class Map {
         p = FindHelper(k);
       }
       const size_type b = p.second;  // bucket number
-      // If K is not key_type, make the conversion to key_type explicit.
-      using TypeToInit = typename std::conditional<
-          std::is_same<typename std::decay<K>::type, key_type>::value, K&&,
-          key_type>::type;
-      Node* node = Alloc<Node>(1);
-      // Even when arena is nullptr, CreateInArenaStorage is still used to
-      // ensure the arena of submessage will be consistent. Otherwise,
-      // submessage may have its own arena when message-owned arena is enabled.
-      Arena::CreateInArenaStorage(const_cast<Key*>(&node->kv.first),
-                                  alloc_.arena(),
-                                  static_cast<TypeToInit>(std::forward<K>(k)));
-      Arena::CreateInArenaStorage(&node->kv.second, alloc_.arena());
+      Node* node;
+      if (alloc_.arena() == nullptr) {
+        node = new Node{value_type(k), nullptr};
+      } else {
+        node = Alloc<Node>(1);
+        Arena::CreateInArenaStorage(const_cast<Key*>(&node->kv.first),
+                                    alloc_.arena(), k);
+        Arena::CreateInArenaStorage(&node->kv.second, alloc_.arena());
+      }
 
       iterator result = InsertUnique(b, node);
       ++num_elements_;
       return std::make_pair(result, true);
     }
 
-    template <typename K>
-    value_type& operator[](K&& k) {
-      return *insert(std::forward<K>(k)).first;
-    }
+    value_type& operator[](const Key& k) { return *insert(k).first; }
 
     void erase(iterator it) {
       GOOGLE_DCHECK_EQ(it.m_, this);
@@ -842,7 +826,7 @@ class Map {
     // non-determinism to the map ordering.
     bool ShouldInsertAfterHead(void* node) {
 #ifdef NDEBUG
-      (void)node;
+      (void) node;
       return false;
 #else
       // Doing modulo with a prime mixes the bits more.
@@ -924,7 +908,6 @@ class Map {
         // Just overwrite with a new one. No need to transfer or free anything.
         num_buckets_ = index_of_first_non_null_ = kMinTableSize;
         table_ = CreateEmptyTable(num_buckets_);
-        seed_ = Seed();
         return;
       }
 
@@ -1030,12 +1013,12 @@ class Map {
     size_type BucketNumber(const K& k) const {
       // We xor the hash value against the random seed so that we effectively
       // have a random hash function.
-      uint64_t h = hash_function()(k) ^ seed_;
+      uint64 h = hash_function()(k) ^ seed_;
 
       // We use the multiplication method to determine the bucket number from
       // the hash value. The constant kPhi (suggested by Knuth) is roughly
       // (sqrt(5) - 1) / 2 * 2^64.
-      constexpr uint64_t kPhi = uint64_t{0x9e3779b97f4a7c15};
+      constexpr uint64 kPhi = uint64{0x9e3779b97f4a7c15};
       return ((kPhi * h) >> 32) & (num_buckets_ - 1);
     }
 
@@ -1075,7 +1058,7 @@ class Map {
 
     void** CreateEmptyTable(size_type n) {
       GOOGLE_DCHECK(n >= kMinTableSize);
-      GOOGLE_DCHECK_EQ(n & (n - 1), 0u);
+      GOOGLE_DCHECK_EQ(n & (n - 1), 0);
       void** result = Alloc<void*>(n);
       memset(result, 0, n * sizeof(result[0]));
       return result;
@@ -1086,25 +1069,13 @@ class Map {
       // We get a little bit of randomness from the address of the map. The
       // lower bits are not very random, due to alignment, so we discard them
       // and shift the higher bits into their place.
-      size_type s = reinterpret_cast<uintptr_t>(this) >> 4;
-#if !defined(GOOGLE_PROTOBUF_NO_RDTSC)
-#if defined(__APPLE__)
-      // Use a commpage-based fast time function on Apple environments (MacOS,
-      // iOS, tvOS, watchOS, etc).
-      s += mach_absolute_time();
-#elif defined(__x86_64__) && defined(__GNUC__)
-      uint32_t hi, lo;
+      size_type s = reinterpret_cast<uintptr_t>(this) >> 12;
+#if defined(__x86_64__) && defined(__GNUC__) && \
+    !defined(GOOGLE_PROTOBUF_NO_RDTSC)
+      uint32 hi, lo;
       asm volatile("rdtsc" : "=a"(lo), "=d"(hi));
-      s += ((static_cast<uint64_t>(hi) << 32) | lo);
-#elif defined(__aarch64__) && defined(__GNUC__)
-      // There is no rdtsc on ARMv8. CNTVCT_EL0 is the virtual counter of the
-      // system timer. It runs at a different frequency than the CPU's, but is
-      // the best source of time-based entropy we get.
-      uint64_t virtual_timer_value;
-      asm volatile("mrs %0, cntvct_el0" : "=r"(virtual_timer_value));
-      s += virtual_timer_value;
+      s += ((static_cast<uint64>(hi) << 32) | lo);
 #endif
-#endif  // !defined(GOOGLE_PROTOBUF_NO_RDTSC)
       return s;
     }
 
@@ -1212,17 +1183,7 @@ class Map {
   bool empty() const { return size() == 0; }
 
   // Element access
-  template <typename K = key_type>
-  T& operator[](const key_arg<K>& key) {
-    return elements_[key].second;
-  }
-  template <
-      typename K = key_type,
-      // Disable for integral types to reduce code bloat.
-      typename = typename std::enable_if<!std::is_integral<K>::value>::type>
-  T& operator[](key_arg<K>&& key) {
-    return elements_[std::forward<K>(key)].second;
-  }
+  T& operator[](const key_type& key) { return elements_[key].second; }
 
   template <typename K = key_type>
   const T& at(const key_arg<K>& key) const {
@@ -1337,7 +1298,7 @@ class Map {
 
   void swap(Map& other) {
     if (arena() == other.arena()) {
-      InternalSwap(other);
+      elements_.Swap(&other.elements_);
     } else {
       // TODO(zuguang): optimize this. The temporary copy can be allocated
       // in the same arena as the other message, and the "other = copy" can
@@ -1347,8 +1308,6 @@ class Map {
       other = copy;
     }
   }
-
-  void InternalSwap(Map& other) { elements_.Swap(&other.elements_); }
 
   // Access to hasher.  Currently this returns a copy, but it may
   // be modified to return a const reference in the future.

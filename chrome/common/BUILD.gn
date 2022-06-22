@@ -410,6 +410,8 @@ static_library("common_lib") {
       "conflicts/module_watcher_win.h",
       "conflicts/remote_module_watcher_win.cc",
       "conflicts/remote_module_watcher_win.h",
+      "protobuf_init.cc",
+      "protobuf_init.h",
     ]
     deps += [
       "//chrome/chrome_elf:chrome_elf_main_include",

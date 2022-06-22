@@ -37,7 +37,6 @@
 
 #include <map>
 #include <string>
-
 #include <google/protobuf/compiler/java/java_field.h>
 
 namespace google {
@@ -86,9 +85,6 @@ class MessageGenerator {
   // Generate code to register all contained extensions with an
   // ExtensionRegistry.
   virtual void GenerateExtensionRegistrationCode(io::Printer* printer) = 0;
-  virtual void GenerateKotlinDsl(io::Printer* printer) const = 0;
-  virtual void GenerateKotlinMembers(io::Printer* printer) const = 0;
-  virtual void GenerateTopLevelKotlinMembers(io::Printer* printer) const = 0;
 
  protected:
   const Descriptor* descriptor_;
@@ -101,19 +97,16 @@ class MessageGenerator {
 class ImmutableMessageGenerator : public MessageGenerator {
  public:
   ImmutableMessageGenerator(const Descriptor* descriptor, Context* context);
-  ~ImmutableMessageGenerator() override;
+  virtual ~ImmutableMessageGenerator();
 
-  void Generate(io::Printer* printer) override;
-  void GenerateInterface(io::Printer* printer) override;
-  void GenerateExtensionRegistrationCode(io::Printer* printer) override;
-  void GenerateStaticVariables(io::Printer* printer,
-                               int* bytecode_estimate) override;
+  virtual void Generate(io::Printer* printer);
+  virtual void GenerateInterface(io::Printer* printer);
+  virtual void GenerateExtensionRegistrationCode(io::Printer* printer);
+  virtual void GenerateStaticVariables(io::Printer* printer,
+                                       int* bytecode_estimate);
 
   // Returns an estimate of the number of bytes the printed code will compile to
-  int GenerateStaticVariableInitializers(io::Printer* printer) override;
-  void GenerateKotlinDsl(io::Printer* printer) const override;
-  void GenerateKotlinMembers(io::Printer* printer) const override;
-  void GenerateTopLevelKotlinMembers(io::Printer* printer) const override;
+  virtual int GenerateStaticVariableInitializers(io::Printer* printer);
 
  private:
   void GenerateFieldAccessorTable(io::Printer* printer, int* bytecode_estimate);
@@ -135,9 +128,6 @@ class ImmutableMessageGenerator : public MessageGenerator {
   void GenerateEqualsAndHashCode(io::Printer* printer);
   void GenerateParser(io::Printer* printer);
   void GenerateParsingConstructor(io::Printer* printer);
-  void GenerateMutableCopy(io::Printer* printer);
-  void GenerateKotlinExtensions(io::Printer* printer) const;
-  void GenerateKotlinOrNull(io::Printer* printer) const;
   void GenerateAnyMethods(io::Printer* printer);
 
   Context* context_;

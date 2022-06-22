@@ -55,7 +55,6 @@
 #include <google/protobuf/stubs/stl_util.h>
 
 
-// Must be included last.
 #include <google/protobuf/port_def.inc>
 
 namespace google {
@@ -65,8 +64,7 @@ namespace io {
 // ===================================================================
 
 // A ZeroCopyInputStream backed by an in-memory array of bytes.
-class PROTOBUF_EXPORT ArrayInputStream PROTOBUF_FUTURE_FINAL
-    : public ZeroCopyInputStream {
+class PROTOBUF_EXPORT ArrayInputStream : public ZeroCopyInputStream {
  public:
   // Create an InputStream that returns the bytes pointed to by "data".
   // "data" remains the property of the caller but must remain valid until
@@ -86,7 +84,7 @@ class PROTOBUF_EXPORT ArrayInputStream PROTOBUF_FUTURE_FINAL
 
 
  private:
-  const uint8_t* const data_;  // The byte array.
+  const uint8* const data_;  // The byte array.
   const int size_;           // Total size of the array.
   const int block_size_;     // How many bytes to return at a time.
 
@@ -100,8 +98,7 @@ class PROTOBUF_EXPORT ArrayInputStream PROTOBUF_FUTURE_FINAL
 // ===================================================================
 
 // A ZeroCopyOutputStream backed by an in-memory array of bytes.
-class PROTOBUF_EXPORT ArrayOutputStream PROTOBUF_FUTURE_FINAL
-    : public ZeroCopyOutputStream {
+class PROTOBUF_EXPORT ArrayOutputStream : public ZeroCopyOutputStream {
  public:
   // Create an OutputStream that writes to the bytes pointed to by "data".
   // "data" remains the property of the caller but must remain valid until
@@ -119,7 +116,7 @@ class PROTOBUF_EXPORT ArrayOutputStream PROTOBUF_FUTURE_FINAL
   int64_t ByteCount() const override;
 
  private:
-  uint8_t* const data_;     // The byte array.
+  uint8* const data_;     // The byte array.
   const int size_;        // Total size of the array.
   const int block_size_;  // How many bytes to return at a time.
 
@@ -133,8 +130,7 @@ class PROTOBUF_EXPORT ArrayOutputStream PROTOBUF_FUTURE_FINAL
 // ===================================================================
 
 // A ZeroCopyOutputStream which appends bytes to a string.
-class PROTOBUF_EXPORT StringOutputStream PROTOBUF_FUTURE_FINAL
-    : public ZeroCopyOutputStream {
+class PROTOBUF_EXPORT StringOutputStream : public ZeroCopyOutputStream {
  public:
   // Create a StringOutputStream which appends bytes to the given string.
   // The string remains property of the caller, but it is mutated in arbitrary
@@ -240,11 +236,11 @@ class PROTOBUF_EXPORT CopyingInputStreamAdaptor : public ZeroCopyInputStream {
 
   // The current position of copying_stream_, relative to the point where
   // we started reading.
-  int64_t position_;
+  int64 position_;
 
   // Data is read into this buffer.  It may be NULL if no buffer is currently
   // in use.  Otherwise, it points to an array of size buffer_size_.
-  std::unique_ptr<uint8_t[]> buffer_;
+  std::unique_ptr<uint8[]> buffer_;
   const int buffer_size_;
 
   // Number of valid bytes currently in the buffer (i.e. the size last
@@ -311,8 +307,6 @@ class PROTOBUF_EXPORT CopyingOutputStreamAdaptor : public ZeroCopyOutputStream {
   bool Next(void** data, int* size) override;
   void BackUp(int count) override;
   int64_t ByteCount() const override;
-  bool WriteAliasedRaw(const void* data, int size) override;
-  bool AllowsAliasing() const override { return true; }
 
  private:
   // Write the current buffer, if it is present.
@@ -331,11 +325,11 @@ class PROTOBUF_EXPORT CopyingOutputStreamAdaptor : public ZeroCopyOutputStream {
 
   // The current position of copying_stream_, relative to the point where
   // we started writing.
-  int64_t position_;
+  int64 position_;
 
   // Data is written from this buffer.  It may be NULL if no buffer is
   // currently in use.  Otherwise, it points to an array of size buffer_size_.
-  std::unique_ptr<uint8_t[]> buffer_;
+  std::unique_ptr<uint8[]> buffer_;
   const int buffer_size_;
 
   // Number of valid bytes currently in the buffer (i.e. the size last
@@ -350,10 +344,9 @@ class PROTOBUF_EXPORT CopyingOutputStreamAdaptor : public ZeroCopyOutputStream {
 
 // A ZeroCopyInputStream which wraps some other stream and limits it to
 // a particular byte count.
-class PROTOBUF_EXPORT LimitingInputStream PROTOBUF_FUTURE_FINAL
-    : public ZeroCopyInputStream {
+class PROTOBUF_EXPORT LimitingInputStream : public ZeroCopyInputStream {
  public:
-  LimitingInputStream(ZeroCopyInputStream* input, int64_t limit);
+  LimitingInputStream(ZeroCopyInputStream* input, int64 limit);
   ~LimitingInputStream() override;
 
   // implements ZeroCopyInputStream ----------------------------------
@@ -365,8 +358,8 @@ class PROTOBUF_EXPORT LimitingInputStream PROTOBUF_FUTURE_FINAL
 
  private:
   ZeroCopyInputStream* input_;
-  int64_t limit_;  // Decreases as we go, becomes negative if we overshoot.
-  int64_t prior_bytes_read_;  // Bytes read on underlying stream at construction
+  int64 limit_;  // Decreases as we go, becomes negative if we overshoot.
+  int64 prior_bytes_read_;  // Bytes read on underlying stream at construction
 
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(LimitingInputStream);
 };

@@ -31,8 +31,6 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Google.Protobuf.Compatibility;
 
@@ -52,9 +50,7 @@ namespace Google.Protobuf.Reflection
         private readonly Action<IMessage> clearDelegate;
         private readonly Func<IMessage, bool> hasDelegate;
 
-        internal SingleFieldAccessor(
-            [DynamicallyAccessedMembers(GeneratedClrTypeInfo.MessageAccessibility)]
-            Type messageType, PropertyInfo property, FieldDescriptor descriptor) : base(property, descriptor)
+        internal SingleFieldAccessor(PropertyInfo property, FieldDescriptor descriptor) : base(property, descriptor)
         {
             if (!property.CanWrite)
             {
@@ -91,13 +87,13 @@ namespace Google.Protobuf.Reflection
             // Primitive fields always support presence in proto2, and support presence in proto3 for optional fields.
             else if (descriptor.File.Syntax == Syntax.Proto2 || descriptor.Proto.Proto3Optional)
             {
-                MethodInfo hasMethod = messageType.GetRuntimeProperty("Has" + property.Name).GetMethod;
+                MethodInfo hasMethod = property.DeclaringType.GetRuntimeProperty("Has" + property.Name).GetMethod;
                 if (hasMethod == null)
                 {
                     throw new ArgumentException("Not all required properties/methods are available");
                 }
                 hasDelegate = ReflectionUtil.CreateFuncIMessageBool(hasMethod);
-                MethodInfo clearMethod = messageType.GetRuntimeMethod("Clear" + property.Name, ReflectionUtil.EmptyTypes);
+                MethodInfo clearMethod = property.DeclaringType.GetRuntimeMethod("Clear" + property.Name, ReflectionUtil.EmptyTypes);
                 if (clearMethod == null)
                 {
                     throw new ArgumentException("Not all required properties/methods are available");
@@ -111,45 +107,13 @@ namespace Google.Protobuf.Reflection
                 hasDelegate = message => { throw new InvalidOperationException("Presence is not implemented for this field"); };
 
                 // While presence isn't supported, clearing still is; it's just setting to a default value.
-                object defaultValue = GetDefaultValue(descriptor);
-                clearDelegate = message => SetValue(message, defaultValue);
-            }
-        }
+                var clrType = property.PropertyType;
 
-        private static object GetDefaultValue(FieldDescriptor descriptor)
-        {
-            switch (descriptor.FieldType)
-            {
-                case FieldType.Bool:
-                    return false;
-                case FieldType.Bytes:
-                    return ByteString.Empty;
-                case FieldType.String:
-                    return "";
-                case FieldType.Double:
-                    return 0.0;
-                case FieldType.SInt32:
-                case FieldType.Int32:
-                case FieldType.SFixed32:
-                case FieldType.Enum:
-                    return 0;
-                case FieldType.Fixed32:
-                case FieldType.UInt32:
-                    return (uint)0;
-                case FieldType.Fixed64:
-                case FieldType.UInt64:
-                    return 0UL;
-                case FieldType.SFixed64:
-                case FieldType.Int64:
-                case FieldType.SInt64:
-                    return 0L;
-                case FieldType.Float:
-                    return 0f;
-                case FieldType.Message:
-                case FieldType.Group: // Never expect to get this, but...
-                    return null;
-                default:
-                    throw new ArgumentException("Invalid field type");
+                object defaultValue =
+                    clrType == typeof(string) ? ""
+                    : clrType == typeof(ByteString) ? ByteString.Empty
+                    : Activator.CreateInstance(clrType);
+                clearDelegate = message => SetValue(message, defaultValue);
             }
         }
 

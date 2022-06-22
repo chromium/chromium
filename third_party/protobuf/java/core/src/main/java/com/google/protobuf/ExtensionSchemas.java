@@ -30,7 +30,6 @@
 
 package com.google.protobuf;
 
-@CheckReturnValue
 final class ExtensionSchemas {
   private static final ExtensionSchema<?> LITE_SCHEMA = new ExtensionSchemaLite();
   private static final ExtensionSchema<?> FULL_SCHEMA = loadSchemaForFullRuntime();

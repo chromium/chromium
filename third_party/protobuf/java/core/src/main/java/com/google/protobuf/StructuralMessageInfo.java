@@ -41,7 +41,6 @@ import java.util.List;
  * contained within a message.
  */
 @ExperimentalApi
-@CheckReturnValue
 final class StructuralMessageInfo implements MessageInfo {
   private final ProtoSyntax syntax;
   private final boolean messageSetWireFormat;

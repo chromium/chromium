@@ -30,8 +30,6 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
 import static com.google.protobuf.TestUtil.TEST_REQUIRED_INITIALIZED;
 import static com.google.protobuf.TestUtil.TEST_REQUIRED_UNINITIALIZED;
 
@@ -46,13 +44,14 @@ import protobuf_unittest.UnittestProto.TestRequired;
 import protobuf_unittest.UnittestProto.TestRequiredForeign;
 import protobuf_unittest.UnittestProto.TestUnpackedTypes;
 import java.util.Map;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import junit.framework.TestCase;
 
-/** Unit test for {@link AbstractMessage}. */
-@RunWith(JUnit4.class)
-public class AbstractMessageTest {
+/**
+ * Unit test for {@link AbstractMessage}.
+ *
+ * @author kenton@google.com Kenton Varda
+ */
+public class AbstractMessageTest extends TestCase {
   /**
    * Extends AbstractMessage and wraps some other message object. The methods of the Message
    * interface which aren't explicitly implemented by AbstractMessage are forwarded to the wrapped
@@ -239,7 +238,6 @@ public class AbstractMessageTest {
       new TestUtil.ReflectionTester(
           TestAllExtensions.getDescriptor(), TestUtil.getFullExtensionRegistry());
 
-  @Test
   public void testClear() throws Exception {
     AbstractMessageWrapper message =
         new AbstractMessageWrapper.Builder(TestAllTypes.newBuilder(TestUtil.getAllSet()))
@@ -248,7 +246,6 @@ public class AbstractMessageTest {
     TestUtil.assertClear((TestAllTypes) message.wrappedMessage);
   }
 
-  @Test
   public void testCopy() throws Exception {
     AbstractMessageWrapper message =
         new AbstractMessageWrapper.Builder(TestAllTypes.newBuilder())
@@ -257,35 +254,28 @@ public class AbstractMessageTest {
     TestUtil.assertAllFieldsSet((TestAllTypes) message.wrappedMessage);
   }
 
-  @Test
   public void testSerializedSize() throws Exception {
     TestAllTypes message = TestUtil.getAllSet();
     Message abstractMessage = new AbstractMessageWrapper(TestUtil.getAllSet());
-    assertThat(message.getSerializedSize()).isEqualTo(abstractMessage.getSerializedSize());
+
+    assertEquals(message.getSerializedSize(), abstractMessage.getSerializedSize());
   }
 
-  @Test
   public void testSerialization() throws Exception {
     Message abstractMessage = new AbstractMessageWrapper(TestUtil.getAllSet());
-    TestUtil.assertAllFieldsSet(
-        TestAllTypes.parseFrom(
-            abstractMessage.toByteString(), ExtensionRegistryLite.getEmptyRegistry()));
-    assertThat(TestUtil.getAllSet().toByteString()).isEqualTo(abstractMessage.toByteString());
+
+    TestUtil.assertAllFieldsSet(TestAllTypes.parseFrom(abstractMessage.toByteString()));
+
+    assertEquals(TestUtil.getAllSet().toByteString(), abstractMessage.toByteString());
   }
 
-  @Test
   public void testParsing() throws Exception {
     AbstractMessageWrapper.Builder builder =
         new AbstractMessageWrapper.Builder(TestAllTypes.newBuilder());
-    AbstractMessageWrapper message =
-        builder
-            .mergeFrom(
-                TestUtil.getAllSet().toByteString(), ExtensionRegistryLite.getEmptyRegistry())
-            .build();
+    AbstractMessageWrapper message = builder.mergeFrom(TestUtil.getAllSet().toByteString()).build();
     TestUtil.assertAllFieldsSet((TestAllTypes) message.wrappedMessage);
   }
 
-  @Test
   public void testParsingUninitialized() throws Exception {
     TestRequiredForeign.Builder builder = TestRequiredForeign.newBuilder();
     builder.getOptionalMessageBuilder().setDummy2(10);
@@ -293,13 +283,10 @@ public class AbstractMessageTest {
     Message.Builder abstractMessageBuilder =
         new AbstractMessageWrapper.Builder(TestRequiredForeign.newBuilder());
     // mergeFrom() should not throw initialization error.
-    Message unused1 =
-        abstractMessageBuilder
-            .mergeFrom(bytes, ExtensionRegistryLite.getEmptyRegistry())
-            .buildPartial();
+    abstractMessageBuilder.mergeFrom(bytes).buildPartial();
     try {
-      abstractMessageBuilder.mergeFrom(bytes, ExtensionRegistryLite.getEmptyRegistry()).build();
-      assertWithMessage("shouldn't pass").fail();
+      abstractMessageBuilder.mergeFrom(bytes).build();
+      fail();
     } catch (UninitializedMessageException ex) {
       // pass
     }
@@ -308,140 +295,115 @@ public class AbstractMessageTest {
     Message.Builder dynamicMessageBuilder =
         DynamicMessage.newBuilder(TestRequiredForeign.getDescriptor());
     // mergeFrom() should not throw initialization error.
-    Message unused2 =
-        dynamicMessageBuilder
-            .mergeFrom(bytes, ExtensionRegistryLite.getEmptyRegistry())
-            .buildPartial();
+    dynamicMessageBuilder.mergeFrom(bytes).buildPartial();
     try {
-      dynamicMessageBuilder.mergeFrom(bytes, ExtensionRegistryLite.getEmptyRegistry()).build();
-      assertWithMessage("shouldn't pass").fail();
+      dynamicMessageBuilder.mergeFrom(bytes).build();
+      fail();
     } catch (UninitializedMessageException ex) {
       // pass
     }
   }
 
-  @Test
   public void testPackedSerialization() throws Exception {
     Message abstractMessage = new AbstractMessageWrapper(TestUtil.getPackedSet());
-    TestUtil.assertPackedFieldsSet(
-        TestPackedTypes.parseFrom(
-            abstractMessage.toByteString(), ExtensionRegistryLite.getEmptyRegistry()));
-    assertThat(TestUtil.getPackedSet().toByteString()).isEqualTo(abstractMessage.toByteString());
+
+    TestUtil.assertPackedFieldsSet(TestPackedTypes.parseFrom(abstractMessage.toByteString()));
+
+    assertEquals(TestUtil.getPackedSet().toByteString(), abstractMessage.toByteString());
   }
 
-  @Test
   public void testPackedParsing() throws Exception {
     AbstractMessageWrapper.Builder builder =
         new AbstractMessageWrapper.Builder(TestPackedTypes.newBuilder());
     AbstractMessageWrapper message =
-        builder
-            .mergeFrom(
-                TestUtil.getPackedSet().toByteString(), ExtensionRegistryLite.getEmptyRegistry())
-            .build();
+        builder.mergeFrom(TestUtil.getPackedSet().toByteString()).build();
     TestUtil.assertPackedFieldsSet((TestPackedTypes) message.wrappedMessage);
   }
 
-  @Test
   public void testUnpackedSerialization() throws Exception {
     Message abstractMessage = new AbstractMessageWrapper(TestUtil.getUnpackedSet());
-    TestUtil.assertUnpackedFieldsSet(
-        TestUnpackedTypes.parseFrom(
-            abstractMessage.toByteString(), ExtensionRegistryLite.getEmptyRegistry()));
-    assertThat(TestUtil.getUnpackedSet().toByteString()).isEqualTo(abstractMessage.toByteString());
+
+    TestUtil.assertUnpackedFieldsSet(TestUnpackedTypes.parseFrom(abstractMessage.toByteString()));
+
+    assertEquals(TestUtil.getUnpackedSet().toByteString(), abstractMessage.toByteString());
   }
 
-  @Test
   public void testParsePackedToUnpacked() throws Exception {
     AbstractMessageWrapper.Builder builder =
         new AbstractMessageWrapper.Builder(TestUnpackedTypes.newBuilder());
     AbstractMessageWrapper message =
-        builder
-            .mergeFrom(
-                TestUtil.getPackedSet().toByteString(), ExtensionRegistryLite.getEmptyRegistry())
-            .build();
+        builder.mergeFrom(TestUtil.getPackedSet().toByteString()).build();
     TestUtil.assertUnpackedFieldsSet((TestUnpackedTypes) message.wrappedMessage);
   }
 
-  @Test
   public void testParseUnpackedToPacked() throws Exception {
     AbstractMessageWrapper.Builder builder =
         new AbstractMessageWrapper.Builder(TestPackedTypes.newBuilder());
     AbstractMessageWrapper message =
-        builder
-            .mergeFrom(
-                TestUtil.getUnpackedSet().toByteString(), ExtensionRegistryLite.getEmptyRegistry())
-            .build();
+        builder.mergeFrom(TestUtil.getUnpackedSet().toByteString()).build();
     TestUtil.assertPackedFieldsSet((TestPackedTypes) message.wrappedMessage);
   }
 
-  @Test
   public void testUnpackedParsing() throws Exception {
     AbstractMessageWrapper.Builder builder =
         new AbstractMessageWrapper.Builder(TestUnpackedTypes.newBuilder());
     AbstractMessageWrapper message =
-        builder
-            .mergeFrom(
-                TestUtil.getUnpackedSet().toByteString(), ExtensionRegistryLite.getEmptyRegistry())
-            .build();
+        builder.mergeFrom(TestUtil.getUnpackedSet().toByteString()).build();
     TestUtil.assertUnpackedFieldsSet((TestUnpackedTypes) message.wrappedMessage);
   }
 
-  @Test
   public void testOptimizedForSize() throws Exception {
     // We're mostly only checking that this class was compiled successfully.
     TestOptimizedForSize message = TestOptimizedForSize.newBuilder().setI(1).build();
-    message =
-        TestOptimizedForSize.parseFrom(
-            message.toByteString(), ExtensionRegistryLite.getEmptyRegistry());
-    assertThat(message.getSerializedSize()).isEqualTo(2);
+    message = TestOptimizedForSize.parseFrom(message.toByteString());
+    assertEquals(2, message.getSerializedSize());
   }
 
   // -----------------------------------------------------------------
   // Tests for isInitialized().
 
-  @Test
   public void testIsInitialized() throws Exception {
     TestRequired.Builder builder = TestRequired.newBuilder();
     AbstractMessageWrapper.Builder abstractBuilder = new AbstractMessageWrapper.Builder(builder);
 
-    assertThat(abstractBuilder.isInitialized()).isFalse();
-    assertThat(abstractBuilder.getInitializationErrorString()).isEqualTo("a, b, c");
+    assertFalse(abstractBuilder.isInitialized());
+    assertEquals("a, b, c", abstractBuilder.getInitializationErrorString());
     builder.setA(1);
-    assertThat(abstractBuilder.isInitialized()).isFalse();
-    assertThat(abstractBuilder.getInitializationErrorString()).isEqualTo("b, c");
+    assertFalse(abstractBuilder.isInitialized());
+    assertEquals("b, c", abstractBuilder.getInitializationErrorString());
     builder.setB(1);
-    assertThat(abstractBuilder.isInitialized()).isFalse();
-    assertThat(abstractBuilder.getInitializationErrorString()).isEqualTo("c");
+    assertFalse(abstractBuilder.isInitialized());
+    assertEquals("c", abstractBuilder.getInitializationErrorString());
     builder.setC(1);
-    assertThat(abstractBuilder.isInitialized()).isTrue();
-    assertThat(abstractBuilder.getInitializationErrorString()).isEmpty();
+    assertTrue(abstractBuilder.isInitialized());
+    assertEquals("", abstractBuilder.getInitializationErrorString());
   }
 
-  @Test
   public void testForeignIsInitialized() throws Exception {
     TestRequiredForeign.Builder builder = TestRequiredForeign.newBuilder();
     AbstractMessageWrapper.Builder abstractBuilder = new AbstractMessageWrapper.Builder(builder);
 
-    assertThat(abstractBuilder.isInitialized()).isTrue();
-    assertThat(abstractBuilder.getInitializationErrorString()).isEmpty();
+    assertTrue(abstractBuilder.isInitialized());
+    assertEquals("", abstractBuilder.getInitializationErrorString());
 
     builder.setOptionalMessage(TEST_REQUIRED_UNINITIALIZED);
-    assertThat(abstractBuilder.isInitialized()).isFalse();
-    assertThat(abstractBuilder.getInitializationErrorString())
-        .isEqualTo("optional_message.b, optional_message.c");
+    assertFalse(abstractBuilder.isInitialized());
+    assertEquals(
+        "optional_message.b, optional_message.c", abstractBuilder.getInitializationErrorString());
 
     builder.setOptionalMessage(TEST_REQUIRED_INITIALIZED);
-    assertThat(abstractBuilder.isInitialized()).isTrue();
-    assertThat(abstractBuilder.getInitializationErrorString()).isEmpty();
+    assertTrue(abstractBuilder.isInitialized());
+    assertEquals("", abstractBuilder.getInitializationErrorString());
 
     builder.addRepeatedMessage(TEST_REQUIRED_UNINITIALIZED);
-    assertThat(abstractBuilder.isInitialized()).isFalse();
-    assertThat(abstractBuilder.getInitializationErrorString())
-        .isEqualTo("repeated_message[0].b, repeated_message[0].c");
+    assertFalse(abstractBuilder.isInitialized());
+    assertEquals(
+        "repeated_message[0].b, repeated_message[0].c",
+        abstractBuilder.getInitializationErrorString());
 
     builder.setRepeatedMessage(0, TEST_REQUIRED_INITIALIZED);
-    assertThat(abstractBuilder.isInitialized()).isTrue();
-    assertThat(abstractBuilder.getInitializationErrorString()).isEmpty();
+    assertTrue(abstractBuilder.isInitialized());
+    assertEquals("", abstractBuilder.getInitializationErrorString());
   }
 
   // -----------------------------------------------------------------
@@ -474,23 +436,21 @@ public class AbstractMessageTest {
           + "repeated_string: \"qux\"\n"
           + "repeated_string: \"bar\"\n";
 
-  @Test
   public void testMergeFrom() throws Exception {
     AbstractMessageWrapper result =
         new AbstractMessageWrapper.Builder(TestAllTypes.newBuilder(MERGE_DEST))
             .mergeFrom(MERGE_SOURCE)
             .build();
 
-    assertThat(result.toString()).isEqualTo(MERGE_RESULT_TEXT);
+    assertEquals(MERGE_RESULT_TEXT, result.toString());
   }
 
   // -----------------------------------------------------------------
   // Tests for equals and hashCode
 
-  @Test
   public void testEqualsAndHashCode() throws Exception {
     TestAllTypes a = TestUtil.getAllSet();
-    TestAllTypes b = TestAllTypes.getDefaultInstance();
+    TestAllTypes b = TestAllTypes.newBuilder().build();
     TestAllTypes c = TestAllTypes.newBuilder(b).addRepeatedString("x").build();
     TestAllTypes d = TestAllTypes.newBuilder(c).addRepeatedString("y").build();
     TestAllExtensions e = TestUtil.getAllExtensionsSet();
@@ -529,26 +489,23 @@ public class AbstractMessageTest {
     // Deserializing into the TestEmptyMessage such that every field
     // is an {@link UnknownFieldSet.Field}.
     UnittestProto.TestEmptyMessage eUnknownFields =
-        UnittestProto.TestEmptyMessage.parseFrom(
-            e.toByteArray(), ExtensionRegistryLite.getEmptyRegistry());
+        UnittestProto.TestEmptyMessage.parseFrom(e.toByteArray());
     UnittestProto.TestEmptyMessage fUnknownFields =
-        UnittestProto.TestEmptyMessage.parseFrom(
-            f.toByteArray(), ExtensionRegistryLite.getEmptyRegistry());
+        UnittestProto.TestEmptyMessage.parseFrom(f.toByteArray());
     checkNotEqual(eUnknownFields, fUnknownFields);
     checkEqualsIsConsistent(eUnknownFields);
     checkEqualsIsConsistent(fUnknownFields);
 
     // Subsequent reconstitutions should be identical
     UnittestProto.TestEmptyMessage eUnknownFields2 =
-        UnittestProto.TestEmptyMessage.parseFrom(
-            e.toByteArray(), ExtensionRegistryLite.getEmptyRegistry());
+        UnittestProto.TestEmptyMessage.parseFrom(e.toByteArray());
     checkEqualsIsConsistent(eUnknownFields, eUnknownFields2);
   }
 
   /** Asserts that the given proto has symmetric equals and hashCode methods. */
   private void checkEqualsIsConsistent(Message message) {
-    // Test equals explicitly.
-    assertThat(message.equals(message)).isTrue();
+    // Object should be equal to itself.
+    assertEquals(message, message);
 
     // Object should be equal to a dynamic copy of itself.
     DynamicMessage dynamic = DynamicMessage.newBuilder(message).build();
@@ -557,9 +514,9 @@ public class AbstractMessageTest {
 
   /** Asserts that the given protos are equal and have the same hash code. */
   private void checkEqualsIsConsistent(Message message1, Message message2) {
-    assertThat(message1).isEqualTo(message2);
-    assertThat(message2).isEqualTo(message1);
-    assertThat(message2.hashCode()).isEqualTo(message1.hashCode());
+    assertEquals(message1, message2);
+    assertEquals(message2, message1);
+    assertEquals(message2.hashCode(), message1.hashCode());
   }
 
   /**
@@ -570,33 +527,28 @@ public class AbstractMessageTest {
    */
   private void checkNotEqual(Message m1, Message m2) {
     String equalsError = String.format("%s should not be equal to %s", m1, m2);
-    assertWithMessage(equalsError).that(m1.equals(m2)).isFalse();
-    assertWithMessage(equalsError).that(m2.equals(m1)).isFalse();
+    assertFalse(equalsError, m1.equals(m2));
+    assertFalse(equalsError, m2.equals(m1));
 
-    assertWithMessage(String.format("%s should have a different hash code from %s", m1, m2))
-        .that(m1.hashCode())
-        .isNotEqualTo(m2.hashCode());
+    assertFalse(
+        String.format("%s should have a different hash code from %s", m1, m2),
+        m1.hashCode() == m2.hashCode());
   }
 
-  @Test
   public void testCheckByteStringIsUtf8OnUtf8() {
     ByteString byteString = ByteString.copyFromUtf8("some text");
     AbstractMessageLite.checkByteStringIsUtf8(byteString);
     // No exception thrown.
   }
 
-  @Test
   public void testCheckByteStringIsUtf8OnNonUtf8() {
     ByteString byteString =
         ByteString.copyFrom(new byte[] {(byte) 0x80}); // A lone continuation byte.
     try {
       AbstractMessageLite.checkByteStringIsUtf8(byteString);
-      assertWithMessage(
-              "Expected AbstractMessageLite.checkByteStringIsUtf8 to throw"
-                  + " IllegalArgumentException")
-          .fail();
+      fail("Expected AbstractMessageLite.checkByteStringIsUtf8 to throw IllegalArgumentException");
     } catch (IllegalArgumentException exception) {
-      assertThat(exception).hasMessageThat().isEqualTo("Byte string is not UTF-8.");
+      assertEquals("Byte string is not UTF-8.", exception.getMessage());
     }
   }
 }

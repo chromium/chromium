@@ -34,20 +34,18 @@
 #import "GPBDescriptor.h"
 
 @implementation GPBExtensionRegistry {
-  CFMutableDictionaryRef mutableClassMap_;
+  NSMutableDictionary *mutableClassMap_;
 }
 
 - (instancetype)init {
   if ((self = [super init])) {
-    // The keys are ObjC classes, so straight up ptr comparisons are fine.
-    mutableClassMap_ = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL,
-                                             &kCFTypeDictionaryValueCallBacks);
+    mutableClassMap_ = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
 
 - (void)dealloc {
-  CFRelease(mutableClassMap_);
+  [mutableClassMap_ release];
   [super dealloc];
 }
 
@@ -70,13 +68,14 @@
 
   Class containingMessageClass = extension.containingMessageClass;
   CFMutableDictionaryRef extensionMap = (CFMutableDictionaryRef)
-      CFDictionaryGetValue(mutableClassMap_, containingMessageClass);
+      [mutableClassMap_ objectForKey:containingMessageClass];
   if (extensionMap == nil) {
     // Use a custom dictionary here because the keys are numbers and conversion
     // back and forth from NSNumber isn't worth the cost.
     extensionMap = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL,
                                              &kCFTypeDictionaryValueCallBacks);
-    CFDictionarySetValue(mutableClassMap_, containingMessageClass, extensionMap);
+    [mutableClassMap_ setObject:(id)extensionMap
+                         forKey:(id<NSCopying>)containingMessageClass];
     CFRelease(extensionMap);
   }
 
@@ -88,7 +87,7 @@
                                        fieldNumber:(NSInteger)fieldNumber {
   Class messageClass = descriptor.messageClass;
   CFMutableDictionaryRef extensionMap = (CFMutableDictionaryRef)
-      CFDictionaryGetValue(mutableClassMap_, messageClass);
+      [mutableClassMap_ objectForKey:messageClass];
   ssize_t key = fieldNumber;
   GPBExtensionDescriptor *result =
       (extensionMap
@@ -102,28 +101,28 @@ static void CopyKeyValue(const void *key, const void *value, void *context) {
   CFDictionarySetValue(extensionMap, key, value);
 }
 
-static void CopySubDictionary(const void *key, const void *value, void *context) {
-  CFMutableDictionaryRef mutableClassMap = (CFMutableDictionaryRef)context;
-  Class containingMessageClass = key;
-  CFMutableDictionaryRef otherExtensionMap = (CFMutableDictionaryRef)value;
-
-  CFMutableDictionaryRef extensionMap = (CFMutableDictionaryRef)
-      CFDictionaryGetValue(mutableClassMap, containingMessageClass);
-  if (extensionMap == nil) {
-    extensionMap = CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, otherExtensionMap);
-    CFDictionarySetValue(mutableClassMap, containingMessageClass, extensionMap);
-    CFRelease(extensionMap);
-  } else {
-    CFDictionaryApplyFunction(otherExtensionMap, CopyKeyValue, extensionMap);
-  }
-}
-
 - (void)addExtensions:(GPBExtensionRegistry *)registry {
   if (registry == nil) {
     // In the case where there are no extensions just ignore.
     return;
   }
-  CFDictionaryApplyFunction(registry->mutableClassMap_, CopySubDictionary, mutableClassMap_);
+  NSMutableDictionary *otherClassMap = registry->mutableClassMap_;
+  [otherClassMap enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL * stop) {
+#pragma unused(stop)
+    Class containingMessageClass = key;
+    CFMutableDictionaryRef otherExtensionMap = (CFMutableDictionaryRef)value;
+
+    CFMutableDictionaryRef extensionMap = (CFMutableDictionaryRef)
+        [mutableClassMap_ objectForKey:containingMessageClass];
+    if (extensionMap == nil) {
+      extensionMap = CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, otherExtensionMap);
+      [mutableClassMap_ setObject:(id)extensionMap
+                           forKey:(id<NSCopying>)containingMessageClass];
+      CFRelease(extensionMap);
+    } else {
+      CFDictionaryApplyFunction(otherExtensionMap, CopyKeyValue, extensionMap);
+    }
+  }];
 }
 
 #pragma clang diagnostic pop

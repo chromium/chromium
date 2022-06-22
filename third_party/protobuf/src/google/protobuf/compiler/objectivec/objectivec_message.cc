@@ -171,10 +171,11 @@ const FieldDescriptor** SortFieldsByStorageSize(const Descriptor* descriptor) {
 }  // namespace
 
 MessageGenerator::MessageGenerator(const std::string& root_classname,
-                                   const Descriptor* descriptor)
+                                   const Descriptor* descriptor,
+                                   const Options& options)
     : root_classname_(root_classname),
       descriptor_(descriptor),
-      field_generators_(descriptor),
+      field_generators_(descriptor, options),
       class_name_(ClassName(descriptor_)),
       deprecated_attribute_(GetOptionalDeprecatedAttribute(
           descriptor, descriptor->file(), false, true)) {
@@ -196,7 +197,8 @@ MessageGenerator::MessageGenerator(const std::string& root_classname,
   for (int i = 0; i < descriptor_->nested_type_count(); i++) {
     MessageGenerator* generator =
         new MessageGenerator(root_classname_,
-                             descriptor_->nested_type(i));
+                             descriptor_->nested_type(i),
+                             options);
     nested_message_generators_.emplace_back(generator);
   }
 }
@@ -215,18 +217,17 @@ void MessageGenerator::GenerateStaticVariablesInitialization(
 }
 
 void MessageGenerator::DetermineForwardDeclarations(
-    std::set<std::string>* fwd_decls,
-    bool include_external_types) {
+    std::set<std::string>* fwd_decls) {
   if (!IsMapEntryMessage(descriptor_)) {
     for (int i = 0; i < descriptor_->field_count(); i++) {
       const FieldDescriptor* fieldDescriptor = descriptor_->field(i);
       field_generators_.get(fieldDescriptor)
-          .DetermineForwardDeclarations(fwd_decls, include_external_types);
+          .DetermineForwardDeclarations(fwd_decls);
     }
   }
 
   for (const auto& generator : nested_message_generators_) {
-    generator->DetermineForwardDeclarations(fwd_decls, include_external_types);
+    generator->DetermineForwardDeclarations(fwd_decls);
   }
 }
 
@@ -342,7 +343,7 @@ void MessageGenerator::GenerateMessageHeader(io::Printer* printer) {
   std::vector<char> seen_oneofs(oneof_generators_.size(), 0);
   for (int i = 0; i < descriptor_->field_count(); i++) {
     const FieldDescriptor* field = descriptor_->field(i);
-    const OneofDescriptor* oneof = field->real_containing_oneof();
+    const OneofDescriptor *oneof = field->real_containing_oneof();
     if (oneof) {
       const int oneof_index = oneof->index();
       if (!seen_oneofs[oneof_index]) {

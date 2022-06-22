@@ -30,8 +30,9 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 import com.google.protobuf.testing.Proto2Testing.Proto2Empty;
 import com.google.protobuf.testing.Proto2Testing.Proto2Message;
@@ -71,8 +72,8 @@ public abstract class AbstractProto2SchemaTest extends AbstractSchemaTest<Proto2
     byte[] data = output.toByteArray();
 
     Proto2Message merged = ExperimentalSerializationUtil.fromByteArray(data, Proto2Message.class);
-    assertThat(merged.getFieldMessage10().getFieldInt643()).isEqualTo(789);
-    assertThat(merged.getFieldMessage10().getFieldInt325()).isEqualTo(456);
+    assertEquals(789, merged.getFieldMessage10().getFieldInt643());
+    assertEquals(456, merged.getFieldMessage10().getFieldInt325());
   }
 
   @Test
@@ -124,10 +125,10 @@ public abstract class AbstractProto2SchemaTest extends AbstractSchemaTest<Proto2
     // Merge serialized bytes into an empty message, then reserialize and merge it to a new
     // Proto2Message. Make sure the two messages equal.
     byte[] roundtripBytes = ExperimentalSerializationUtil.toByteArray(empty);
-    assertThat(serializedBytes).hasLength(roundtripBytes.length);
+    assertEquals(serializedBytes.length, roundtripBytes.length);
     Proto2Message roundtripMessage =
         ExperimentalSerializationUtil.fromByteArray(roundtripBytes, Proto2Message.class);
-    assertThat(roundtripMessage).isEqualTo(expectedMessage);
+    assertEquals(expectedMessage, roundtripMessage);
   }
 
   @Test
@@ -135,7 +136,7 @@ public abstract class AbstractProto2SchemaTest extends AbstractSchemaTest<Proto2
     // Use unknown fields to hold invalid enum values.
     UnknownFieldSetLite unknowns = UnknownFieldSetLite.newInstance();
     final int outOfRange = 1000;
-    assertThat(TestEnum.forNumber(outOfRange)).isNull();
+    assertNull(TestEnum.forNumber(outOfRange));
     unknowns.storeField(
         WireFormat.makeTag(Proto2Message.FIELD_ENUM_13_FIELD_NUMBER, WireFormat.WIRETYPE_VARINT),
         (long) outOfRange);
@@ -176,17 +177,15 @@ public abstract class AbstractProto2SchemaTest extends AbstractSchemaTest<Proto2
     codedOutput.flush();
 
     Proto2Message parsed = ExperimentalSerializationUtil.fromByteArray(output, Proto2Message.class);
-    assertWithMessage("out-of-range singular enum should not be in message")
-        .that(parsed.hasFieldEnum13())
-        .isFalse();
+    assertFalse("out-of-range singular enum should not be in message", parsed.hasFieldEnum13());
     {
       List<Long> singularEnum =
           parsed
               .getUnknownFields()
               .getField(Proto2Message.FIELD_ENUM_13_FIELD_NUMBER)
               .getVarintList();
-      assertThat(singularEnum).hasSize(1);
-      assertThat((Long) (long) outOfRange).isEqualTo(singularEnum.get(0));
+      assertEquals(1, singularEnum.size());
+      assertEquals((Long) (long) outOfRange, singularEnum.get(0));
     }
     {
       List<Long> repeatedEnum =
@@ -194,8 +193,8 @@ public abstract class AbstractProto2SchemaTest extends AbstractSchemaTest<Proto2
               .getUnknownFields()
               .getField(Proto2Message.FIELD_ENUM_LIST_30_FIELD_NUMBER)
               .getVarintList();
-      assertThat(repeatedEnum).hasSize(1);
-      assertThat((Long) (long) outOfRange).isEqualTo(repeatedEnum.get(0));
+      assertEquals(1, repeatedEnum.size());
+      assertEquals((Long) (long) outOfRange, repeatedEnum.get(0));
     }
     {
       List<Long> packedRepeatedEnum =
@@ -203,19 +202,19 @@ public abstract class AbstractProto2SchemaTest extends AbstractSchemaTest<Proto2
               .getUnknownFields()
               .getField(Proto2Message.FIELD_ENUM_LIST_PACKED_44_FIELD_NUMBER)
               .getVarintList();
-      assertThat(packedRepeatedEnum).hasSize(1);
-      assertThat((Long) (long) outOfRange).isEqualTo(packedRepeatedEnum.get(0));
+      assertEquals(1, packedRepeatedEnum.size());
+      assertEquals((Long) (long) outOfRange, packedRepeatedEnum.get(0));
     }
-    assertWithMessage("out-of-range repeated enum should not be in message")
-        .that(parsed.getFieldEnumList30Count())
-        .isEqualTo(2);
-    assertThat(parsed.getFieldEnumList30(0)).isEqualTo(TestEnum.ONE);
-    assertThat(parsed.getFieldEnumList30(1)).isEqualTo(TestEnum.TWO);
-    assertWithMessage("out-of-range packed repeated enum should not be in message")
-        .that(parsed.getFieldEnumListPacked44Count())
-        .isEqualTo(2);
-    assertThat(parsed.getFieldEnumListPacked44(0)).isEqualTo(TestEnum.ONE);
-    assertThat(parsed.getFieldEnumListPacked44(1)).isEqualTo(TestEnum.TWO);
+    assertEquals(
+        "out-of-range repeated enum should not be in message", 2, parsed.getFieldEnumList30Count());
+    assertEquals(TestEnum.ONE, parsed.getFieldEnumList30(0));
+    assertEquals(TestEnum.TWO, parsed.getFieldEnumList30(1));
+    assertEquals(
+        "out-of-range packed repeated enum should not be in message",
+        2,
+        parsed.getFieldEnumListPacked44Count());
+    assertEquals(TestEnum.ONE, parsed.getFieldEnumListPacked44(0));
+    assertEquals(TestEnum.TWO, parsed.getFieldEnumListPacked44(1));
   }
 
   @Override

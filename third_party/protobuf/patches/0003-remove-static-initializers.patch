@@ -1,0 +1,60 @@
+unchanged:
+--- protobuf-cleaned/src/google/protobuf/stubs/status.cc	2015-12-30 13:21:46.000000000 -0800
++++ protobuf-patched/src/google/protobuf/stubs/status.cc	2016-03-31 13:25:40.888006485 -0700
+@@ -82,9 +82,9 @@
+ }
+ }  // namespace error.
+ 
+-const Status Status::OK = Status();
+-const Status Status::CANCELLED = Status(error::CANCELLED, "");
+-const Status Status::UNKNOWN = Status(error::UNKNOWN, "");
++const StatusPod Status::OK = { error::OK };
++const StatusPod Status::CANCELLED = { error::CANCELLED };
++const StatusPod Status::UNKNOWN = { error::UNKNOWN };
+ 
+ Status::Status() : error_code_(error::OK) {
+ }
+@@ -100,6 +100,9 @@
+     : error_code_(other.error_code_), error_message_(other.error_message_) {
+ }
+ 
++Status::Status(const StatusPod& status_pod) : error_code_(status_pod.code) {
++}
++
+ Status& Status::operator=(const Status& other) {
+   error_code_ = other.error_code_;
+   error_message_ = other.error_message_;
+unchanged:
+--- protobuf-cleaned/src/google/protobuf/stubs/status.h	2015-12-30 13:21:46.000000000 -0800
++++ protobuf-patched/src/google/protobuf/stubs/status.h	2016-03-31 13:25:40.888006485 -0700
+@@ -62,6 +62,10 @@
+ };
+ }  // namespace error
+ 
++struct StatusPod {
++  error::Code code;
++};
++
+ class PROTOBUF_EXPORT Status {
+  public:
+   // Creates a "successful" status.
+@@ -73,13 +77,14 @@
+   // constructed.
+   Status(error::Code error_code, StringPiece error_message);
+   Status(const Status&);
++  Status(const StatusPod&);
+   Status& operator=(const Status& x);
+   ~Status() {}
+ 
+   // Some pre-defined Status objects
+-  static const Status OK;             // Identical to 0-arg constructor
+-  static const Status CANCELLED;
+-  static const Status UNKNOWN;
++  static const StatusPod OK;
++  static const StatusPod CANCELLED;
++  static const StatusPod UNKNOWN;
+ 
+   // Accessor
+   bool ok() const {
+only in patch2:
+unchanged:

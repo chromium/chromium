@@ -70,7 +70,7 @@ using google::protobuf::io::win32::open;
 #endif
 #endif
 
-std::string TestSourceDir() {
+string TestSourceDir() {
 #ifndef GOOGLE_THIRD_PARTY_PROTOBUF
 #ifdef GOOGLE_PROTOBUF_TEST_SOURCE_PATH
   return GOOGLE_PROTOBUF_TEST_SOURCE_PATH;
@@ -84,7 +84,7 @@ std::string TestSourceDir() {
 #endif  // _MSC_VER
 
   // Look for the "src" directory.
-  std::string prefix = ".";
+  string prefix = ".";
 
   // Keep looking further up the directory tree until we find
   // src/.../descriptor.cc. It is important to look for a particular file,
@@ -107,12 +107,12 @@ std::string TestSourceDir() {
 
 namespace {
 
-std::string GetTemporaryDirectoryName() {
+string GetTemporaryDirectoryName() {
   // Tests run under Bazel "should not" use /tmp. Bazel sets this environment
   // variable for tests to use instead.
   char *from_environment = getenv("TEST_TMPDIR");
   if (from_environment != NULL && from_environment[0] != '\0') {
-    return std::string(from_environment) + "/protobuf_tmpdir";
+    return string(from_environment) + "/protobuf_tmpdir";
   }
 
   // tmpnam() is generally not considered safe but we're only using it for
@@ -121,7 +121,7 @@ std::string GetTemporaryDirectoryName() {
   char b[L_tmpnam + 1];     // HPUX multithread return 0 if s is 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  std::string result = tmpnam(b);
+  string result = tmpnam(b);
 #pragma GCC diagnostic pop
 #ifdef _WIN32
   // Avoid a trailing dot by changing it to an underscore. On Win32 the names of
@@ -166,7 +166,7 @@ class TempDirDeleter {
     }
   }
 
-  std::string GetTempDir() {
+  string GetTempDir() {
     if (name_.empty()) {
       name_ = GetTemporaryDirectoryName();
       GOOGLE_CHECK(mkdir(name_.c_str(), 0777) == 0) << strerror(errno);
@@ -179,19 +179,21 @@ class TempDirDeleter {
   }
 
  private:
-  std::string name_;
+  string name_;
 };
 
 TempDirDeleter temp_dir_deleter_;
 
 }  // namespace
 
-std::string TestTempDir() { return temp_dir_deleter_.GetTempDir(); }
+string TestTempDir() {
+  return temp_dir_deleter_.GetTempDir();
+}
 
 // TODO(kenton):  Share duplicated code below.  Too busy/lazy for now.
 
-static std::string stdout_capture_filename_;
-static std::string stderr_capture_filename_;
+static string stdout_capture_filename_;
+static string stderr_capture_filename_;
 static int original_stdout_ = -1;
 static int original_stderr_ = -1;
 
@@ -225,14 +227,14 @@ void CaptureTestStderr() {
   close(fd);
 }
 
-std::string GetCapturedTestStdout() {
+string GetCapturedTestStdout() {
   GOOGLE_CHECK_NE(original_stdout_, -1) << "Not capturing.";
 
   close(1);
   dup2(original_stdout_, 1);
   original_stdout_ = -1;
 
-  std::string result;
+  string result;
   File::ReadFileToStringOrDie(stdout_capture_filename_, &result);
 
   remove(stdout_capture_filename_.c_str());
@@ -240,14 +242,14 @@ std::string GetCapturedTestStdout() {
   return result;
 }
 
-std::string GetCapturedTestStderr() {
+string GetCapturedTestStderr() {
   GOOGLE_CHECK_NE(original_stderr_, -1) << "Not capturing.";
 
   close(2);
   dup2(original_stderr_, 2);
   original_stderr_ = -1;
 
-  std::string result;
+  string result;
   File::ReadFileToStringOrDie(stderr_capture_filename_, &result);
 
   remove(stderr_capture_filename_.c_str());
@@ -268,14 +270,14 @@ ScopedMemoryLog::~ScopedMemoryLog() {
   active_log_ = NULL;
 }
 
-const std::vector<std::string>& ScopedMemoryLog::GetMessages(LogLevel level) {
+const std::vector<string>& ScopedMemoryLog::GetMessages(LogLevel level) {
   GOOGLE_CHECK(level == ERROR ||
                level == WARNING);
   return messages_[level];
 }
 
-void ScopedMemoryLog::HandleLog(LogLevel level, const char* filename, int line,
-                                const std::string& message) {
+void ScopedMemoryLog::HandleLog(LogLevel level, const char* filename,
+                                int line, const string& message) {
   GOOGLE_CHECK(active_log_ != NULL);
   if (level == ERROR || level == WARNING) {
     active_log_->messages_[level].push_back(message);

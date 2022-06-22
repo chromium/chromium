@@ -100,7 +100,6 @@
 #ifndef GOOGLE_PROTOBUF_SERVICE_H__
 #define GOOGLE_PROTOBUF_SERVICE_H__
 
-
 #include <string>
 #include <google/protobuf/stubs/callback.h>
 #include <google/protobuf/stubs/common.h>
@@ -109,7 +108,6 @@
 #error "You cannot SWIG proto headers"
 #endif
 
-// Must be included last.
 #include <google/protobuf/port_def.inc>
 
 namespace google {

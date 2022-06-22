@@ -30,11 +30,7 @@ mv ../protobuf/composer.json composer.json
 sed -i 's|php/src|src|g' composer.json
 git add .
 git commit -m "$VERSION"
-if [ $(git tag -l "$VERSION") ]; then
-  echo "tag $VERSION already exists"
-else
-  git tag "$VERSION"
-fi
+git tag "$VERSION"
 popd
 
 # Clean up

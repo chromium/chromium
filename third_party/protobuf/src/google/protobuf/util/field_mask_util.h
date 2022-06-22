@@ -33,12 +33,11 @@
 #ifndef GOOGLE_PROTOBUF_UTIL_FIELD_MASK_UTIL_H__
 #define GOOGLE_PROTOBUF_UTIL_FIELD_MASK_UTIL_H__
 
-#include <cstdint>
 #include <string>
 
 #include <google/protobuf/field_mask.pb.h>
-#include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/descriptor.h>
+#include <google/protobuf/stubs/strutil.h>
 
 // Must be included last.
 #include <google/protobuf/port_def.inc>
@@ -59,7 +58,7 @@ class PROTOBUF_EXPORT FieldMaskUtil {
   // Populates the FieldMask with the paths corresponding to the fields with the
   // given numbers, after checking that all field numbers are valid.
   template <typename T>
-  static void FromFieldNumbers(const std::vector<int64_t>& field_numbers,
+  static void FromFieldNumbers(const std::vector<int64>& field_numbers,
                                FieldMask* out) {
     for (const auto field_number : field_numbers) {
       const FieldDescriptor* field_desc =
@@ -96,9 +95,8 @@ class PROTOBUF_EXPORT FieldMaskUtil {
   template <typename T>
   static bool IsValidFieldMask(const FieldMask& mask) {
     for (int i = 0; i < mask.paths_size(); ++i) {
-      if (!GetFieldDescriptors(T::descriptor(), mask.paths(i), nullptr)) {
+      if (!GetFieldDescriptors(T::descriptor(), mask.paths(i), nullptr))
         return false;
-      }
     }
     return true;
   }
@@ -246,7 +244,7 @@ class PROTOBUF_EXPORT FieldMaskUtil::TrimOptions {
   // When trimming message fields, the default behavior is to trim required
   // fields of the present message if they are not specified in the field mask.
   // If you instead want to keep required fields of the present message even
-  // when they are not specified in the field mask, set this flag to true.
+  // they are not specified in the field mask, set this flag to true.
   void set_keep_required_fields(bool value) { keep_required_fields_ = value; }
   bool keep_required_fields() const { return keep_required_fields_; }
 

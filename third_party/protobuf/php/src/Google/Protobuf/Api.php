@@ -28,7 +28,7 @@ class Api extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    protected $name = '';
+    private $name = '';
     /**
      * The methods of this interface, in unspecified order.
      *
@@ -62,14 +62,14 @@ class Api extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string version = 4;</code>
      */
-    protected $version = '';
+    private $version = '';
     /**
      * Source context for the protocol buffer service represented by this
      * message.
      *
      * Generated from protobuf field <code>.google.protobuf.SourceContext source_context = 5;</code>
      */
-    protected $source_context = null;
+    private $source_context = null;
     /**
      * Included interfaces. See [Mixin][].
      *
@@ -81,7 +81,7 @@ class Api extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.Syntax syntax = 7;</code>
      */
-    protected $syntax = 0;
+    private $syntax = 0;
 
     /**
      * Constructor.
@@ -271,21 +271,11 @@ class Api extends \Google\Protobuf\Internal\Message
      * message.
      *
      * Generated from protobuf field <code>.google.protobuf.SourceContext source_context = 5;</code>
-     * @return \Google\Protobuf\SourceContext|null
+     * @return \Google\Protobuf\SourceContext
      */
     public function getSourceContext()
     {
         return $this->source_context;
-    }
-
-    public function hasSourceContext()
-    {
-        return isset($this->source_context);
-    }
-
-    public function clearSourceContext()
-    {
-        unset($this->source_context);
     }
 
     /**

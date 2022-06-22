@@ -70,6 +70,7 @@ public class TypeRegistry {
   /**
    * Find a type by its typeUrl. Returns null if it cannot be found in this {@link TypeRegistry}.
    */
+  /* @Nullable */
   public final Descriptor getDescriptorForTypeUrl(String typeUrl)
       throws InvalidProtocolBufferException {
     return find(getTypeName(typeUrl));

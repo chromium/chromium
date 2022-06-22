@@ -40,7 +40,6 @@
 #include <string>
 #include <google/protobuf/compiler/code_generator.h>
 
-// Must be included last.
 #include <google/protobuf/port_def.inc>
 
 namespace google {
@@ -55,7 +54,7 @@ namespace java {
 class PROTOC_EXPORT JavaGenerator : public CodeGenerator {
  public:
   JavaGenerator();
-  ~JavaGenerator() override;
+  ~JavaGenerator();
 
   // implements CodeGenerator ----------------------------------------
   bool Generate(const FileDescriptor* file, const std::string& parameter,

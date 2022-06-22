@@ -83,6 +83,7 @@ struct GeneratorOptions {
         add_require_for_enums(false),
         testonly(false),
         library(""),
+        error_on_name_conflict(false),
         extension(".js"),
         one_output_file_per_input_file(false),
         annotate_code(false) {}
@@ -118,6 +119,8 @@ struct GeneratorOptions {
   // Create a library with name <name>_lib.js rather than a separate .js file
   // per type?
   std::string library;
+  // Error if there are two types that would generate the same output file?
+  bool error_on_name_conflict;
   // The extension to use for output file names.
   std::string extension;
   // Create a separate output file for each input file?

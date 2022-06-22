@@ -75,11 +75,11 @@ class OneofDescriptorProto extends \Google\Protobuf\Internal\Message
 
     /**
      * Generated from protobuf field <code>optional .google.protobuf.OneofOptions options = 2;</code>
-     * @return \Google\Protobuf\Internal\OneofOptions|null
+     * @return \Google\Protobuf\Internal\OneofOptions
      */
     public function getOptions()
     {
-        return $this->options;
+        return isset($this->options) ? $this->options : null;
     }
 
     public function hasOptions()

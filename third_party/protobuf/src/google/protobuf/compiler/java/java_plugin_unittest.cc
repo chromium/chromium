@@ -36,12 +36,13 @@
 
 #include <memory>
 
-#include <google/protobuf/testing/file.h>
-#include <google/protobuf/testing/file.h>
 #include <google/protobuf/compiler/java/java_generator.h>
 #include <google/protobuf/compiler/command_line_interface.h>
 #include <google/protobuf/io/printer.h>
 #include <google/protobuf/io/zero_copy_stream.h>
+
+#include <google/protobuf/testing/file.h>
+#include <google/protobuf/testing/file.h>
 #include <google/protobuf/testing/googletest.h>
 #include <gtest/gtest.h>
 
@@ -54,10 +55,11 @@ namespace {
 class TestGenerator : public CodeGenerator {
  public:
   TestGenerator() {}
-  ~TestGenerator() override {}
+  ~TestGenerator() {}
 
-  bool Generate(const FileDescriptor* file, const std::string& parameter,
-                GeneratorContext* context, std::string* error) const override {
+  virtual bool Generate(const FileDescriptor* file,
+                        const std::string& parameter, GeneratorContext* context,
+                        std::string* error) const {
     std::string filename = "Test.java";
     TryInsert(filename, "outer_class_scope", context);
     TryInsert(filename, "class_scope:foo.Bar", context);

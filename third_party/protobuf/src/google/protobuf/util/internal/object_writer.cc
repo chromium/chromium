@@ -74,7 +74,7 @@ void ObjectWriter::RenderDataPieceTo(const DataPiece& data,
       break;
     }
     case DataPiece::TYPE_BYTES: {
-      ow->RenderBytes(name, data.ToBytes().value());
+      ow->RenderBytes(name, data.ToBytes().ValueOrDie());
       break;
     }
     case DataPiece::TYPE_NULL: {

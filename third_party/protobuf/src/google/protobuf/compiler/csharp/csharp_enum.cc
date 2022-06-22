@@ -48,7 +48,7 @@ namespace compiler {
 namespace csharp {
 
 EnumGenerator::EnumGenerator(const EnumDescriptor* descriptor, const Options* options) :
-    SourceGeneratorBase(options),
+    SourceGeneratorBase(descriptor->file(), options),
     descriptor_(descriptor) {
 }
 

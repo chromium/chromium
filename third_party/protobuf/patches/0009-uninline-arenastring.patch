@@ -1,0 +1,68 @@
+diff --git a/src/google/protobuf/arenastring.cc b/src/google/protobuf/arenastring.cc
+new file mode 100644
+index 000000000..70ca00ffa
+--- /dev/null
++++ b/src/google/protobuf/arenastring.cc
+@@ -0,0 +1,45 @@
++// Protocol Buffers - Google's data interchange format
++// Copyright 2008 Google Inc.  All rights reserved.
++// https://developers.google.com/protocol-buffers/
++//
++// Redistribution and use in source and binary forms, with or without
++// modification, are permitted provided that the following conditions are
++// met:
++//
++//     * Redistributions of source code must retain the above copyright
++// notice, this list of conditions and the following disclaimer.
++//     * Redistributions in binary form must reproduce the above
++// copyright notice, this list of conditions and the following disclaimer
++// in the documentation and/or other materials provided with the
++// distribution.
++//     * Neither the name of Google Inc. nor the names of its
++// contributors may be used to endorse or promote products derived from
++// this software without specific prior written permission.
++//
++// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
++// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
++// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
++// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
++// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
++// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
++// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++
++#include <google/protobuf/arenastring.h>
++
++namespace google {
++namespace protobuf {
++namespace internal {
++
++void ArenaStringPtr::DestroyNoArena(const ::std::string* default_value) {
++  if (ptr_ != default_value) {
++    delete ptr_;
++  }
++}
++
++}  // namespace internal
++}  // namespace protobuf
++}  // namespace google
+diff --git a/src/google/protobuf/arenastring.h b/src/google/protobuf/arenastring.h
+index b87be8e39..ce63ce9e6 100644
+--- a/src/google/protobuf/arenastring.h
++++ b/src/google/protobuf/arenastring.h
+@@ -257,11 +257,7 @@ struct PROTOBUF_EXPORT ArenaStringPtr {
+   }
+ 
+   // Destroy the string. Assumes `arena == nullptr`.
+-  inline void DestroyNoArena(const ::std::string* default_value) {
+-    if (ptr_ != default_value) {
+-      delete ptr_;
+-    }
+-  }
++  void DestroyNoArena(const ::std::string* default_value);
+ 
+   // Internal accessor used only at parse time to provide direct access to the
+   // raw pointer from the shared parse routine (in the non-arenas case). The

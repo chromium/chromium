@@ -18,13 +18,9 @@ use Google\Protobuf\Internal\CodedOutputStream;
  * Please note, this test is only intended to be run without the protobuf C
  * extension.
  */
-class PhpImplementationTest extends TestBase
+class ImplementationTest extends TestBase
 {
-    /**
-     * Avoid calling setUp, which has void return type (not avalialbe in php7.0).
-     * @before
-     */
-    public function skipTestsForExtension()
+    public function setUp()
     {
         if (extension_loaded('protobuf')) {
             $this->markTestSkipped();
@@ -310,8 +306,6 @@ class PhpImplementationTest extends TestBase
         $m = new TestMessage();
         $m->mergeFromString(TestUtil::getGoldenTestMessage());
         TestUtil::assertTestMessage($m);
-
-        $this->assertTrue(true);
     }
 
     public function testDescriptorDecode()
@@ -531,23 +525,23 @@ class PhpImplementationTest extends TestBase
         $this->assertSame(166, $m->byteSize());
     }
 
+    /**
+     * @expectedException UnexpectedValueException
+     * @expectedExceptionMessage Invalid message property: optionalInt32
+     */
     public function testArrayConstructorJsonCaseThrowsException()
     {
-        $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage(
-            'Invalid message property: optionalInt32');
-
         $m = new TestMessage([
             'optionalInt32' => -42,
         ]);
     }
 
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage Expect Foo\TestMessage\Sub.
+     */
     public function testArraysForMessagesThrowsException()
     {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage(
-            'Expect Foo\TestMessage\Sub.');
-
         $m = new TestMessage([
             'optional_message' => [
                 'a' => 33
@@ -574,11 +568,10 @@ class PhpImplementationTest extends TestBase
 
     /**
      * @dataProvider provideArrayConstructorWithNullValuesThrowsException
+     * @expectedException Exception
      */
     public function testArrayConstructorWithNullValuesThrowsException($requestData)
     {
-        $this->expectException(Exception::class);
-
         $m = new TestMessage($requestData);
     }
 

@@ -30,7 +30,6 @@
 
 package com.google.protobuf;
 
-@CheckReturnValue
 final class NewInstanceSchemas {
   private static final NewInstanceSchema FULL_SCHEMA = loadSchemaForFullRuntime();
   private static final NewInstanceSchema LITE_SCHEMA = new NewInstanceSchemaLite();

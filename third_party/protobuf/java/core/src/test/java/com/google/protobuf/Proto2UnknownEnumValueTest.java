@@ -30,19 +30,14 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import protobuf_unittest.UnittestProto;
 import protobuf_unittest.UnittestProto.TestAllExtensions;
 import protobuf_unittest.UnittestProto.TestAllTypes;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import junit.framework.TestCase;
 
 /** Unit tests for proto2 that treats unknown enum values as unknown fields. */
-@RunWith(JUnit4.class)
-public class Proto2UnknownEnumValueTest {
+public class Proto2UnknownEnumValueTest extends TestCase {
   FieldDescriptor singularField =
       TestAllTypes.getDescriptor().findFieldByName("optional_nested_enum");
   FieldDescriptor repeatedField =
@@ -69,47 +64,48 @@ public class Proto2UnknownEnumValueTest {
     return builder.build().toByteArray();
   }
 
-  @Test
   public void testUnknownEnumValues() throws Exception {
     TestAllTypes message = TestAllTypes.parseFrom(payload);
 
     // Known enum values should be preserved.
-    assertThat(message.getOptionalNestedEnum()).isEqualTo(TestAllTypes.NestedEnum.BAR);
-    assertThat(message.getRepeatedNestedEnumList().size()).isEqualTo(2);
-    assertThat(message.getRepeatedNestedEnum(0)).isEqualTo(TestAllTypes.NestedEnum.FOO);
-    assertThat(message.getRepeatedNestedEnum(1)).isEqualTo(TestAllTypes.NestedEnum.BAZ);
+    assertEquals(TestAllTypes.NestedEnum.BAR, message.getOptionalNestedEnum());
+    assertEquals(2, message.getRepeatedNestedEnumList().size());
+    assertEquals(TestAllTypes.NestedEnum.FOO, message.getRepeatedNestedEnum(0));
+    assertEquals(TestAllTypes.NestedEnum.BAZ, message.getRepeatedNestedEnum(1));
 
     // Unknown enum values should be found in UnknownFieldSet.
     UnknownFieldSet unknown = message.getUnknownFields();
-    assertThat(unknown.getField(singularField.getNumber()).getVarintList().get(0).longValue())
-        .isEqualTo(1901);
-    assertThat(unknown.getField(repeatedField.getNumber()).getVarintList().get(0).longValue())
-        .isEqualTo(1902);
-    assertThat(unknown.getField(repeatedField.getNumber()).getVarintList().get(1).longValue())
-        .isEqualTo(1903);
+    assertEquals(
+        1901, unknown.getField(singularField.getNumber()).getVarintList().get(0).longValue());
+    assertEquals(
+        1902, unknown.getField(repeatedField.getNumber()).getVarintList().get(0).longValue());
+    assertEquals(
+        1903, unknown.getField(repeatedField.getNumber()).getVarintList().get(1).longValue());
   }
 
-  @Test
   public void testExtensionUnknownEnumValues() throws Exception {
     ExtensionRegistry registry = ExtensionRegistry.newInstance();
     UnittestProto.registerAllExtensions(registry);
     TestAllExtensions message = TestAllExtensions.parseFrom(payload, registry);
 
-    assertThat(message.getExtension(UnittestProto.optionalNestedEnumExtension))
-        .isEqualTo(TestAllTypes.NestedEnum.BAR);
-    assertThat(message.getExtension(UnittestProto.repeatedNestedEnumExtension).size()).isEqualTo(2);
-    assertThat(message.getExtension(UnittestProto.repeatedNestedEnumExtension, 0))
-        .isEqualTo(TestAllTypes.NestedEnum.FOO);
-    assertThat(message.getExtension(UnittestProto.repeatedNestedEnumExtension, 1))
-        .isEqualTo(TestAllTypes.NestedEnum.BAZ);
+    assertEquals(
+        TestAllTypes.NestedEnum.BAR,
+        message.getExtension(UnittestProto.optionalNestedEnumExtension));
+    assertEquals(2, message.getExtension(UnittestProto.repeatedNestedEnumExtension).size());
+    assertEquals(
+        TestAllTypes.NestedEnum.FOO,
+        message.getExtension(UnittestProto.repeatedNestedEnumExtension, 0));
+    assertEquals(
+        TestAllTypes.NestedEnum.BAZ,
+        message.getExtension(UnittestProto.repeatedNestedEnumExtension, 1));
 
     // Unknown enum values should be found in UnknownFieldSet.
     UnknownFieldSet unknown = message.getUnknownFields();
-    assertThat(unknown.getField(singularField.getNumber()).getVarintList().get(0).longValue())
-        .isEqualTo(1901);
-    assertThat(unknown.getField(repeatedField.getNumber()).getVarintList().get(0).longValue())
-        .isEqualTo(1902);
-    assertThat(unknown.getField(repeatedField.getNumber()).getVarintList().get(1).longValue())
-        .isEqualTo(1903);
+    assertEquals(
+        1901, unknown.getField(singularField.getNumber()).getVarintList().get(0).longValue());
+    assertEquals(
+        1902, unknown.getField(repeatedField.getNumber()).getVarintList().get(0).longValue());
+    assertEquals(
+        1903, unknown.getField(repeatedField.getNumber()).getVarintList().get(1).longValue());
   }
 }

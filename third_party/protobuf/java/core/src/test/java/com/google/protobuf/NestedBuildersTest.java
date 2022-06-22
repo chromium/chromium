@@ -30,25 +30,21 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import protobuf_unittest.Engine;
 import protobuf_unittest.Vehicle;
 import protobuf_unittest.Wheel;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import junit.framework.TestCase;
 
 /**
  * Test cases that exercise end-to-end use cases involving {@link SingleFieldBuilder} and {@link
  * RepeatedFieldBuilder}.
+ *
+ * @author jonp@google.com (Jon Perlow)
  */
-@RunWith(JUnit4.class)
-public class NestedBuildersTest {
+public class NestedBuildersTest extends TestCase {
 
-  @Test
   public void testMessagesAndBuilders() {
     Vehicle.Builder vehicleBuilder = Vehicle.newBuilder();
     vehicleBuilder.addWheelBuilder().setRadius(4).setWidth(1);
@@ -58,13 +54,13 @@ public class NestedBuildersTest {
     vehicleBuilder.getEngineBuilder().setLiters(10);
 
     Vehicle vehicle = vehicleBuilder.build();
-    assertThat(vehicle.getWheelCount()).isEqualTo(4);
+    assertEquals(4, vehicle.getWheelCount());
     for (int i = 0; i < 4; i++) {
       Wheel wheel = vehicle.getWheel(i);
-      assertThat(wheel.getRadius()).isEqualTo(4);
-      assertThat(wheel.getWidth()).isEqualTo(i + 1);
+      assertEquals(4, wheel.getRadius());
+      assertEquals(i + 1, wheel.getWidth());
     }
-    assertThat(vehicle.getEngine().getLiters()).isEqualTo(10);
+    assertEquals(10, vehicle.getEngine().getLiters());
 
     for (int i = 0; i < 4; i++) {
       vehicleBuilder.getWheelBuilder(i).setRadius(5).setWidth(i + 10);
@@ -74,17 +70,16 @@ public class NestedBuildersTest {
     vehicle = vehicleBuilder.build();
     for (int i = 0; i < 4; i++) {
       Wheel wheel = vehicle.getWheel(i);
-      assertThat(wheel.getRadius()).isEqualTo(5);
-      assertThat(wheel.getWidth()).isEqualTo(i + 10);
+      assertEquals(5, wheel.getRadius());
+      assertEquals(i + 10, wheel.getWidth());
     }
-    assertThat(vehicle.getEngine().getLiters()).isEqualTo(20);
-    assertThat(vehicle.hasEngine()).isTrue();
+    assertEquals(20, vehicle.getEngine().getLiters());
+    assertTrue(vehicle.hasEngine());
 
     engineBuilder.setLiters(50);
-    assertThat(vehicleBuilder.getEngine().getLiters()).isEqualTo(50);
+    assertEquals(50, vehicleBuilder.getEngine().getLiters());
   }
 
-  @Test
   public void testMessagesAreCached() {
     Vehicle.Builder vehicleBuilder = Vehicle.newBuilder();
     vehicleBuilder.addWheelBuilder().setRadius(1).setWidth(2);
@@ -95,7 +90,7 @@ public class NestedBuildersTest {
     // Make sure messages are cached.
     List<Wheel> wheels = new ArrayList<Wheel>(vehicleBuilder.getWheelList());
     for (int i = 0; i < wheels.size(); i++) {
-      assertThat(wheels.get(i)).isSameInstanceAs(vehicleBuilder.getWheel(i));
+      assertSame(wheels.get(i), vehicleBuilder.getWheel(i));
     }
 
     // Now get builders and check they didn't change.
@@ -103,7 +98,7 @@ public class NestedBuildersTest {
       vehicleBuilder.getWheel(i);
     }
     for (int i = 0; i < wheels.size(); i++) {
-      assertThat(wheels.get(i)).isSameInstanceAs(vehicleBuilder.getWheel(i));
+      assertSame(wheels.get(i), vehicleBuilder.getWheel(i));
     }
 
     // Change just one
@@ -112,36 +107,33 @@ public class NestedBuildersTest {
     // Now get wheels and check that only that one changed
     for (int i = 0; i < wheels.size(); i++) {
       if (i < 3) {
-        assertThat(wheels.get(i)).isSameInstanceAs(vehicleBuilder.getWheel(i));
+        assertSame(wheels.get(i), vehicleBuilder.getWheel(i));
       } else {
-        assertThat(wheels.get(i)).isNotSameInstanceAs(vehicleBuilder.getWheel(i));
+        assertNotSame(wheels.get(i), vehicleBuilder.getWheel(i));
       }
     }
   }
 
-  @Test
   public void testRemove_WithNestedBuilders() {
     Vehicle.Builder vehicleBuilder = Vehicle.newBuilder();
     vehicleBuilder.addWheelBuilder().setRadius(1).setWidth(1);
     vehicleBuilder.addWheelBuilder().setRadius(2).setWidth(2);
     vehicleBuilder.removeWheel(0);
 
-    assertThat(vehicleBuilder.getWheelCount()).isEqualTo(1);
-    assertThat(vehicleBuilder.getWheel(0).getRadius()).isEqualTo(2);
+    assertEquals(1, vehicleBuilder.getWheelCount());
+    assertEquals(2, vehicleBuilder.getWheel(0).getRadius());
   }
 
-  @Test
   public void testRemove_WithNestedMessages() {
     Vehicle.Builder vehicleBuilder = Vehicle.newBuilder();
     vehicleBuilder.addWheel(Wheel.newBuilder().setRadius(1).setWidth(1));
     vehicleBuilder.addWheel(Wheel.newBuilder().setRadius(2).setWidth(2));
     vehicleBuilder.removeWheel(0);
 
-    assertThat(vehicleBuilder.getWheelCount()).isEqualTo(1);
-    assertThat(vehicleBuilder.getWheel(0).getRadius()).isEqualTo(2);
+    assertEquals(1, vehicleBuilder.getWheelCount());
+    assertEquals(2, vehicleBuilder.getWheel(0).getRadius());
   }
 
-  @Test
   public void testMerge() {
     Vehicle vehicle1 =
         Vehicle.newBuilder()
@@ -151,17 +143,16 @@ public class NestedBuildersTest {
 
     Vehicle vehicle2 = Vehicle.newBuilder().mergeFrom(vehicle1).build();
     // List should be the same -- no allocation
-    assertThat(vehicle1.getWheelList()).isSameInstanceAs(vehicle2.getWheelList());
+    assertSame(vehicle1.getWheelList(), vehicle2.getWheelList());
 
     Vehicle vehicle3 = vehicle1.toBuilder().build();
-    assertThat(vehicle1.getWheelList()).isSameInstanceAs(vehicle3.getWheelList());
+    assertSame(vehicle1.getWheelList(), vehicle3.getWheelList());
   }
 
-  @Test
   public void testGettingBuilderMarksFieldAsHaving() {
     Vehicle.Builder vehicleBuilder = Vehicle.newBuilder();
     vehicleBuilder.getEngineBuilder();
     Vehicle vehicle = vehicleBuilder.buildPartial();
-    assertThat(vehicle.hasEngine()).isTrue();
+    assertTrue(vehicle.hasEngine());
   }
 }

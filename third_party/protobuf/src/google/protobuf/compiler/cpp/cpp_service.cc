@@ -33,10 +33,9 @@
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
 #include <google/protobuf/compiler/cpp/cpp_service.h>
-
+#include <google/protobuf/compiler/cpp/cpp_helpers.h>
 #include <google/protobuf/io/printer.h>
 #include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/compiler/cpp/cpp_helpers.h>
 
 namespace google {
 namespace protobuf {
@@ -242,12 +241,12 @@ void ServiceGenerator::GenerateCallMethod(io::Printer* printer) {
 
   for (int i = 0; i < descriptor_->method_count(); i++) {
     const MethodDescriptor* method = descriptor_->method(i);
-    Formatter format_method(printer, vars_);
-    InitMethodVariables(method, options_, &format_method);
+    Formatter format(printer, vars_);
+    InitMethodVariables(method, options_, &format);
 
     // Note:  down_cast does not work here because it only works on pointers,
     //   not references.
-    format_method(
+    format(
         "    case $1$:\n"
         "      $name$(controller,\n"
         "             ::$proto_ns$::internal::DownCast<const $input_type$*>(\n"

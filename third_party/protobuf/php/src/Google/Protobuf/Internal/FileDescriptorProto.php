@@ -371,11 +371,11 @@ class FileDescriptorProto extends \Google\Protobuf\Internal\Message
 
     /**
      * Generated from protobuf field <code>optional .google.protobuf.FileOptions options = 8;</code>
-     * @return \Google\Protobuf\Internal\FileOptions|null
+     * @return \Google\Protobuf\Internal\FileOptions
      */
     public function getOptions()
     {
-        return $this->options;
+        return isset($this->options) ? $this->options : null;
     }
 
     public function hasOptions()
@@ -408,11 +408,11 @@ class FileDescriptorProto extends \Google\Protobuf\Internal\Message
      * development tools.
      *
      * Generated from protobuf field <code>optional .google.protobuf.SourceCodeInfo source_code_info = 9;</code>
-     * @return \Google\Protobuf\Internal\SourceCodeInfo|null
+     * @return \Google\Protobuf\Internal\SourceCodeInfo
      */
     public function getSourceCodeInfo()
     {
-        return $this->source_code_info;
+        return isset($this->source_code_info) ? $this->source_code_info : null;
     }
 
     public function hasSourceCodeInfo()

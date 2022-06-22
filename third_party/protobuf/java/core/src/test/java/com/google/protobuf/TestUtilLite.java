@@ -142,8 +142,8 @@ public final class TestUtilLite {
   private TestUtilLite() {}
 
   /** Helper to convert a String to ByteString. */
-  public static ByteString toBytes(String str) {
-    return ByteString.copyFromUtf8(str);
+  static ByteString toBytes(String str) {
+    return ByteString.copyFrom(str.getBytes(Internal.UTF_8));
   }
 
   /**

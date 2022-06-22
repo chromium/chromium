@@ -35,6 +35,7 @@
 #include <set>
 #include <vector>
 #include <google/protobuf/compiler/objectivec/objectivec_field.h>
+#include <google/protobuf/compiler/objectivec/objectivec_helpers.h>
 #include <google/protobuf/compiler/objectivec/objectivec_oneof.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/printer.h>
@@ -50,7 +51,7 @@ class EnumGenerator;
 class MessageGenerator {
  public:
   MessageGenerator(const std::string& root_classname,
-                   const Descriptor* descriptor);
+                   const Descriptor* descriptor, const Options& options);
   ~MessageGenerator();
 
   MessageGenerator(const MessageGenerator&) = delete;
@@ -62,8 +63,7 @@ class MessageGenerator {
   void GenerateSource(io::Printer* printer);
   void GenerateExtensionRegistrationSource(io::Printer* printer);
   void DetermineObjectiveCClassDefinitions(std::set<std::string>* fwd_decls);
-  void DetermineForwardDeclarations(std::set<std::string>* fwd_decls,
-                                    bool include_external_types);
+  void DetermineForwardDeclarations(std::set<std::string>* fwd_decls);
 
   // Checks if the message or a nested message includes a oneof definition.
   bool IncludesOneOfDefinition() const;

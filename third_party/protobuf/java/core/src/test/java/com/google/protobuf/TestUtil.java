@@ -239,7 +239,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-import org.junit.Assert;
+import junit.framework.Assert;
 
 /**
  * Contains methods for setting all fields of {@code TestAllTypes} to some values as well as
@@ -260,8 +260,8 @@ public final class TestUtil {
       TestRequired.newBuilder().setA(1).setB(2).setC(3).build();
 
   /** Helper to convert a String to ByteString. */
-  public static ByteString toBytes(String str) {
-    return ByteString.copyFromUtf8(str);
+  static ByteString toBytes(String str) {
+    return ByteString.copyFrom(str.getBytes(Internal.UTF_8));
   }
 
   // BEGIN FULL-RUNTIME
@@ -901,8 +901,8 @@ public final class TestUtil {
     Assert.assertEquals(208L, message.getRepeatedFixed64(0));
     Assert.assertEquals(209, message.getRepeatedSfixed32(0));
     Assert.assertEquals(210L, message.getRepeatedSfixed64(0));
-    Assert.assertEquals(211F, message.getRepeatedFloat(0), 0.0);
-    Assert.assertEquals(212D, message.getRepeatedDouble(0), 0.0);
+    Assert.assertEquals(211F, message.getRepeatedFloat(0));
+    Assert.assertEquals(212D, message.getRepeatedDouble(0));
     Assert.assertEquals(true, message.getRepeatedBool(0));
     Assert.assertEquals("215", message.getRepeatedString(0));
     Assert.assertEquals(toBytes("216"), message.getRepeatedBytes(0));
@@ -931,8 +931,8 @@ public final class TestUtil {
     Assert.assertEquals(508L, message.getRepeatedFixed64(1));
     Assert.assertEquals(509, message.getRepeatedSfixed32(1));
     Assert.assertEquals(510L, message.getRepeatedSfixed64(1));
-    Assert.assertEquals(511F, message.getRepeatedFloat(1), 0.0);
-    Assert.assertEquals(512D, message.getRepeatedDouble(1), 0.0);
+    Assert.assertEquals(511F, message.getRepeatedFloat(1));
+    Assert.assertEquals(512D, message.getRepeatedDouble(1));
     Assert.assertEquals(true, message.getRepeatedBool(1));
     Assert.assertEquals("515", message.getRepeatedString(1));
     Assert.assertEquals(toBytes("516"), message.getRepeatedBytes(1));
@@ -3758,9 +3758,7 @@ public final class TestUtil {
 
   /** @param filePath The path relative to {@link #getTestDataDir}. */
   public static String readTextFromFile(String filePath) {
-    return readBytesFromFile(filePath)
-        .toStringUtf8()
-        .replace(System.getProperty("line.separator"), "\n");
+    return readBytesFromFile(filePath).toStringUtf8();
   }
 
   private static File getTestDataDir() {
@@ -3772,19 +3770,8 @@ public final class TestUtil {
     } catch (IOException e) {
       throw new RuntimeException("Couldn't get canonical name of working directory.", e);
     }
-
-    String srcRootCheck = "src/google/protobuf";
-
-    // If we're running w/ Bazel on Windows, we're not in a sandbox, so we
-    // we must change our source root check condition to find the true test data dir.
-    String testBinaryName = System.getenv("TEST_BINARY");
-    if (testBinaryName != null && testBinaryName.endsWith(".exe")) {
-      srcRootCheck = srcRootCheck + "/descriptor.cc";
-    }
-
     while (ancestor != null && ancestor.exists()) {
-      // Identify the true source root.
-      if (new File(ancestor, srcRootCheck).exists()) {
+      if (new File(ancestor, "src/google/protobuf").exists()) {
         return new File(ancestor, "src/google/protobuf/testdata");
       }
       ancestor = ancestor.getParentFile();
@@ -3815,7 +3802,8 @@ public final class TestUtil {
 
   private static ByteString readBytesFromResource(String name) {
     try {
-      return ByteString.readFrom(TestUtil.class.getResourceAsStream(name));
+      return ByteString.copyFrom(
+          com.google.common.io.ByteStreams.toByteArray(TestUtil.class.getResourceAsStream(name)));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

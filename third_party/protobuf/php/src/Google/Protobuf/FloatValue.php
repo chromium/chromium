@@ -21,7 +21,7 @@ class FloatValue extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>float value = 1;</code>
      */
-    protected $value = 0.0;
+    private $value = 0.0;
 
     /**
      * Constructor.

@@ -30,21 +30,13 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
-
 import any_test.AnyTestProto.TestAny;
 import protobuf_unittest.UnittestProto.TestAllTypes;
 import java.util.Objects;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import junit.framework.TestCase;
 
 /** Unit tests for Any message. */
-@RunWith(JUnit4.class)
-public class AnyTest {
-
-  @Test
+public class AnyTest extends TestCase {
   public void testAnyGeneratedApi() throws Exception {
     TestAllTypes.Builder builder = TestAllTypes.newBuilder();
     TestUtil.setAllFields(builder);
@@ -52,8 +44,8 @@ public class AnyTest {
 
     TestAny container = TestAny.newBuilder().setValue(Any.pack(message)).build();
 
-    assertThat(container.getValue().is(TestAllTypes.class)).isTrue();
-    assertThat(container.getValue().is(TestAny.class)).isFalse();
+    assertTrue(container.getValue().is(TestAllTypes.class));
+    assertFalse(container.getValue().is(TestAny.class));
 
     TestAllTypes result = container.getValue().unpack(TestAllTypes.class);
     TestUtil.assertAllFieldsSet(result);
@@ -62,7 +54,7 @@ public class AnyTest {
     // Unpacking to a wrong type will throw an exception.
     try {
       container.getValue().unpack(TestAny.class);
-      assertWithMessage("Exception is expected.").fail();
+      fail("Exception is expected.");
     } catch (InvalidProtocolBufferException e) {
       // expected.
     }
@@ -73,13 +65,12 @@ public class AnyTest {
     container = containerBuilder.build();
     try {
       container.getValue().unpack(TestAllTypes.class);
-      assertWithMessage("Exception is expected.").fail();
+      fail("Exception is expected.");
     } catch (InvalidProtocolBufferException e) {
       // expected.
     }
   }
 
-  @Test
   public void testCustomTypeUrls() throws Exception {
     TestAllTypes.Builder builder = TestAllTypes.newBuilder();
     TestUtil.setAllFields(builder);
@@ -87,39 +78,38 @@ public class AnyTest {
 
     TestAny container = TestAny.newBuilder().setValue(Any.pack(message, "xxx.com")).build();
 
-    assertThat(container.getValue().getTypeUrl())
-        .isEqualTo("xxx.com/" + TestAllTypes.getDescriptor().getFullName());
+    assertEquals(
+        "xxx.com/" + TestAllTypes.getDescriptor().getFullName(), container.getValue().getTypeUrl());
 
-    assertThat(container.getValue().is(TestAllTypes.class)).isTrue();
-    assertThat(container.getValue().is(TestAny.class)).isFalse();
+    assertTrue(container.getValue().is(TestAllTypes.class));
+    assertFalse(container.getValue().is(TestAny.class));
 
     TestAllTypes result = container.getValue().unpack(TestAllTypes.class);
     TestUtil.assertAllFieldsSet(result);
 
     container = TestAny.newBuilder().setValue(Any.pack(message, "yyy.com/")).build();
 
-    assertThat(container.getValue().getTypeUrl())
-        .isEqualTo("yyy.com/" + TestAllTypes.getDescriptor().getFullName());
+    assertEquals(
+        "yyy.com/" + TestAllTypes.getDescriptor().getFullName(), container.getValue().getTypeUrl());
 
-    assertThat(container.getValue().is(TestAllTypes.class)).isTrue();
-    assertThat(container.getValue().is(TestAny.class)).isFalse();
+    assertTrue(container.getValue().is(TestAllTypes.class));
+    assertFalse(container.getValue().is(TestAny.class));
 
     result = container.getValue().unpack(TestAllTypes.class);
     TestUtil.assertAllFieldsSet(result);
 
     container = TestAny.newBuilder().setValue(Any.pack(message, "")).build();
 
-    assertThat(container.getValue().getTypeUrl())
-        .isEqualTo("/" + TestAllTypes.getDescriptor().getFullName());
+    assertEquals(
+        "/" + TestAllTypes.getDescriptor().getFullName(), container.getValue().getTypeUrl());
 
-    assertThat(container.getValue().is(TestAllTypes.class)).isTrue();
-    assertThat(container.getValue().is(TestAny.class)).isFalse();
+    assertTrue(container.getValue().is(TestAllTypes.class));
+    assertFalse(container.getValue().is(TestAny.class));
 
     result = container.getValue().unpack(TestAllTypes.class);
     TestUtil.assertAllFieldsSet(result);
   }
 
-  @Test
   public void testCachedUnpackResult() throws Exception {
     TestAllTypes.Builder builder = TestAllTypes.newBuilder();
     TestUtil.setAllFields(builder);
@@ -127,10 +117,10 @@ public class AnyTest {
 
     TestAny container = TestAny.newBuilder().setValue(Any.pack(message)).build();
 
-    assertThat(container.getValue().is(TestAllTypes.class)).isTrue();
+    assertTrue(container.getValue().is(TestAllTypes.class));
 
     TestAllTypes result1 = container.getValue().unpack(TestAllTypes.class);
     TestAllTypes result2 = container.getValue().unpack(TestAllTypes.class);
-    assertThat(Objects.equals(result1, result2)).isTrue();
+    assertTrue(Objects.equals(result1, result2));
   }
 }

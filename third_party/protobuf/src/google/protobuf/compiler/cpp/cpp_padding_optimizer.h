@@ -53,8 +53,7 @@ class PaddingOptimizer : public MessageLayoutHelper {
   ~PaddingOptimizer() override {}
 
   void OptimizeLayout(std::vector<const FieldDescriptor*>* fields,
-                      const Options& options,
-                      MessageSCCAnalyzer* scc_analyzer) override;
+                      const Options& options) override;
 };
 
 }  // namespace cpp

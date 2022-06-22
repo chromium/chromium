@@ -34,7 +34,6 @@ using Google.Protobuf.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -64,8 +63,6 @@ namespace Google.Protobuf.Reflection
     /// </remarks>
     public sealed class CustomOptions
     {
-        private const string UnreferencedCodeMessage = "CustomOptions is incompatible with trimming.";
-
         private static readonly object[] EmptyParameters = new object[0];
         private readonly IDictionary<int, IExtensionValue> values;
 
@@ -80,7 +77,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetBool(int field, out bool value) => TryGetPrimitiveValue(field, out value);
 
         /// <summary>
@@ -89,7 +85,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetInt32(int field, out int value) => TryGetPrimitiveValue(field, out value);
 
         /// <summary>
@@ -98,7 +93,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetInt64(int field, out long value) => TryGetPrimitiveValue(field, out value);
 
         /// <summary>
@@ -108,7 +102,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetFixed32(int field, out uint value) => TryGetUInt32(field, out value);
 
         /// <summary>
@@ -118,7 +111,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetFixed64(int field, out ulong value) => TryGetUInt64(field, out value);
 
         /// <summary>
@@ -128,7 +120,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetSFixed32(int field, out int value) => TryGetInt32(field, out value);
 
         /// <summary>
@@ -138,7 +129,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetSFixed64(int field, out long value) => TryGetInt64(field, out value);
 
         /// <summary>
@@ -148,7 +138,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetSInt32(int field, out int value) => TryGetPrimitiveValue(field, out value);
 
         /// <summary>
@@ -158,7 +147,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetSInt64(int field, out long value) => TryGetPrimitiveValue(field, out value);
 
         /// <summary>
@@ -167,7 +155,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetUInt32(int field, out uint value) => TryGetPrimitiveValue(field, out value);
 
         /// <summary>
@@ -176,7 +163,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetUInt64(int field, out ulong value) => TryGetPrimitiveValue(field, out value);
 
         /// <summary>
@@ -185,7 +171,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetFloat(int field, out float value) => TryGetPrimitiveValue(field, out value);
 
         /// <summary>
@@ -194,7 +179,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetDouble(int field, out double value) => TryGetPrimitiveValue(field, out value);
 
         /// <summary>
@@ -203,7 +187,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetString(int field, out string value) => TryGetPrimitiveValue(field, out value);
 
         /// <summary>
@@ -212,7 +195,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetBytes(int field, out ByteString value) => TryGetPrimitiveValue(field, out value);
 
         /// <summary>
@@ -221,7 +203,6 @@ namespace Google.Protobuf.Reflection
         /// <param name="field">The field to fetch the value for.</param>
         /// <param name="value">The output variable to populate.</param>
         /// <returns><c>true</c> if a suitable value for the field was found; <c>false</c> otherwise.</returns>
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         public bool TryGetMessage<T>(int field, out T value) where T : class, IMessage, new()
         {
             if (values == null)
@@ -259,7 +240,6 @@ namespace Google.Protobuf.Reflection
             return false;
         }
 
-        [RequiresUnreferencedCode(UnreferencedCodeMessage)]
         private bool TryGetPrimitiveValue<T>(int field, out T value)
         {
             if (values == null)

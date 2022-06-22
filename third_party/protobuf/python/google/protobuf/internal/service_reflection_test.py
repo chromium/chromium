@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+#
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
 # https://developers.google.com/protocol-buffers/
@@ -33,7 +35,10 @@
 __author__ = 'petar@google.com (Petar Petrov)'
 
 
-import unittest
+try:
+  import unittest2 as unittest  #PY26
+except ImportError:
+  import unittest
 
 from google.protobuf import unittest_pb2
 from google.protobuf import service_reflection

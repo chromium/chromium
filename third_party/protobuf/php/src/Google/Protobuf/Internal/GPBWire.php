@@ -50,8 +50,8 @@ class GPBWire
 
     public static function getTagFieldNumber($tag)
     {
-        // We have to mask because PHP has no arithmetic shift.
-        return ($tag >> self::TAG_TYPE_BITS) & 0x1fffffff;
+        return ($tag >> self::TAG_TYPE_BITS) &
+            (1 << ((PHP_INT_SIZE * 8) - self::TAG_TYPE_BITS)) - 1;
     }
 
     public static function getTagWireType($tag)
@@ -146,7 +146,7 @@ class GPBWire
                 return bcsub(bcmul(bcsub(0, $int64), 2), 1);
             }
         } else {
-            return ((int)$int64 << 1) ^ ((int)$int64 >> 63);
+            return ($int64 << 1) ^ ($int64 >> 63);
         }
     }
 

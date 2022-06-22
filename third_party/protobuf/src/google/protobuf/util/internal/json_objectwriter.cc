@@ -31,15 +31,14 @@
 #include <google/protobuf/util/internal/json_objectwriter.h>
 
 #include <cmath>
-#include <cstdint>
 #include <limits>
 
 #include <google/protobuf/stubs/casts.h>
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/util/internal/utility.h>
-#include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/util/internal/json_escaping.h>
+#include <google/protobuf/stubs/strutil.h>
 
 namespace google {
 namespace protobuf {
@@ -87,17 +86,17 @@ JsonObjectWriter* JsonObjectWriter::RenderBool(StringPiece name,
 }
 
 JsonObjectWriter* JsonObjectWriter::RenderInt32(StringPiece name,
-                                                int32_t value) {
+                                                int32 value) {
   return RenderSimple(name, StrCat(value));
 }
 
 JsonObjectWriter* JsonObjectWriter::RenderUint32(StringPiece name,
-                                                 uint32_t value) {
+                                                 uint32 value) {
   return RenderSimple(name, StrCat(value));
 }
 
 JsonObjectWriter* JsonObjectWriter::RenderInt64(StringPiece name,
-                                                int64_t value) {
+                                                int64 value) {
   WritePrefix(name);
   WriteChar('"');
   WriteRawString(StrCat(value));
@@ -106,7 +105,7 @@ JsonObjectWriter* JsonObjectWriter::RenderInt64(StringPiece name,
 }
 
 JsonObjectWriter* JsonObjectWriter::RenderUint64(StringPiece name,
-                                                 uint64_t value) {
+                                                 uint64 value) {
   WritePrefix(name);
   WriteChar('"');
   WriteRawString(StrCat(value));

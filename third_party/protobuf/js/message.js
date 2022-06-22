@@ -31,7 +31,6 @@
 /**
  * @fileoverview Definition of jspb.Message.
  *
- * @suppress {missingRequire} TODO(b/152540451): this shouldn't be needed
  * @author mwr@google.com (Mark Rawling)
  */
 

@@ -42,7 +42,7 @@ verify_pep425_tag: [
 #   build/android/pylib/local/emulator/avd.py
 wheel: <
   name: "infra/python/wheels/protobuf-py3"
-  version: "version:3.20.0"
+  version: "version:3.19.3"
 >
 
 # TODO(https://crbug.com/898348): Add in necessary wheels as Python3 versions

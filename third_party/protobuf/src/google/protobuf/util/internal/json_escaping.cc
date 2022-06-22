@@ -30,8 +30,6 @@
 
 #include <google/protobuf/util/internal/json_escaping.h>
 
-#include <cstdint>
-
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
 
@@ -79,7 +77,7 @@ static const char kCommonEscapes[160][7] = {
 
 // Determines if the given char value is a unicode surrogate code unit (either
 // high-surrogate or low-surrogate).
-inline bool IsSurrogate(uint32_t c) {
+inline bool IsSurrogate(uint32 c) {
   // Optimized form of:
   // return c >= kMinHighSurrogate && c <= kMaxLowSurrogate;
   // (Reduced from 3 ALU instructions to 2 ALU instructions)
@@ -88,13 +86,13 @@ inline bool IsSurrogate(uint32_t c) {
 
 // Returns true if the given unicode code point cp is a valid
 // unicode code point (i.e. in the range 0 <= cp <= kMaxCodePoint).
-inline bool IsValidCodePoint(uint32_t cp) {
+inline bool IsValidCodePoint(uint32 cp) {
   return cp <= JsonEscaping::kMaxCodePoint;
 }
 
 // Returns the low surrogate for the given unicode code point. The result is
 // meaningless if the given code point is not a supplementary character.
-inline uint16_t ToLowSurrogate(uint32_t cp) {
+inline uint16 ToLowSurrogate(uint32 cp) {
   return (cp &
           (JsonEscaping::kMaxLowSurrogate - JsonEscaping::kMinLowSurrogate)) +
          JsonEscaping::kMinLowSurrogate;
@@ -102,7 +100,7 @@ inline uint16_t ToLowSurrogate(uint32_t cp) {
 
 // Returns the high surrogate for the given unicode code point. The result is
 // meaningless if the given code point is not a supplementary character.
-inline uint16_t ToHighSurrogate(uint32_t cp) {
+inline uint16 ToHighSurrogate(uint32 cp) {
   return (cp >> 10) + (JsonEscaping::kMinHighSurrogate -
                        (JsonEscaping::kMinSupplementaryCodePoint >> 10));
 }
@@ -127,11 +125,11 @@ inline uint16_t ToHighSurrogate(uint32_t cp) {
 // Returns false if we encounter an invalid UTF-8 string. Returns true
 // otherwise, including the case when we reach the end of the input (str)
 // before a complete unicode code point is read.
-bool ReadCodePoint(StringPiece str, int index, uint32_t* cp,
-                   int* num_left, int* num_read) {
+bool ReadCodePoint(StringPiece str, int index, uint32* cp, int* num_left,
+                   int* num_read) {
   if (*num_left == 0) {
     // Last read was complete. Start reading a new unicode code point.
-    *cp = static_cast<uint8_t>(str[index++]);
+    *cp = static_cast<uint8>(str[index++]);
     *num_read = 1;
     // The length of the code point is determined from reading the first byte.
     //
@@ -180,7 +178,7 @@ bool ReadCodePoint(StringPiece str, int index, uint32_t* cp,
     *num_read = 0;
   }
   while (*num_left > 0 && index < str.size()) {
-    uint32_t ch = static_cast<uint8_t>(str[index++]);
+    uint32 ch = static_cast<uint8>(str[index++]);
     --(*num_left);
     ++(*num_read);
     *cp = (*cp << 6) | (ch & 0x3f);
@@ -192,7 +190,7 @@ bool ReadCodePoint(StringPiece str, int index, uint32_t* cp,
 // Stores the 16-bit unicode code point as its hexadecimal digits in buffer
 // and returns a StringPiece that points to this buffer. The input buffer needs
 // to be at least 6 bytes long.
-StringPiece ToHex(uint16_t cp, char* buffer) {
+StringPiece ToHex(uint16 cp, char* buffer) {
   buffer[5] = kHex[cp & 0x0f];
   cp >>= 4;
   buffer[4] = kHex[cp & 0x0f];
@@ -206,9 +204,9 @@ StringPiece ToHex(uint16_t cp, char* buffer) {
 // Stores the 32-bit unicode code point as its hexadecimal digits in buffer
 // and returns a StringPiece that points to this buffer. The input buffer needs
 // to be at least 12 bytes long.
-StringPiece ToSurrogateHex(uint32_t cp, char* buffer) {
-  uint16_t low = ToLowSurrogate(cp);
-  uint16_t high = ToHighSurrogate(cp);
+StringPiece ToSurrogateHex(uint32 cp, char* buffer) {
+  uint16 low = ToLowSurrogate(cp);
+  uint16 high = ToHighSurrogate(cp);
 
   buffer[11] = kHex[low & 0x0f];
   low >>= 4;
@@ -236,7 +234,7 @@ StringPiece ToSurrogateHex(uint32_t cp, char* buffer) {
 //
 // If the given unicode code point does not need escaping, an empty
 // StringPiece is returned.
-StringPiece EscapeCodePoint(uint32_t cp, char* buffer) {
+StringPiece EscapeCodePoint(uint32 cp, char* buffer) {
   if (cp < 0xa0) return kCommonEscapes[cp];
   switch (cp) {
     // These are not required by json spec
@@ -274,8 +272,7 @@ StringPiece EscapeCodePoint(uint32_t cp, char* buffer) {
 // Tries to escape the given code point first. If the given code point
 // does not need to be escaped, but force_output is true, then render
 // the given multi-byte code point in UTF8 in the buffer and returns it.
-StringPiece EscapeCodePoint(uint32_t cp, char* buffer,
-                                  bool force_output) {
+StringPiece EscapeCodePoint(uint32 cp, char* buffer, bool force_output) {
   StringPiece sp = EscapeCodePoint(cp, buffer);
   if (force_output && sp.empty()) {
     buffer[5] = (cp & 0x3f) | 0x80;
@@ -304,7 +301,7 @@ StringPiece EscapeCodePoint(uint32_t cp, char* buffer,
 void JsonEscaping::Escape(strings::ByteSource* input,
                           strings::ByteSink* output) {
   char buffer[12] = "\\udead\\ubee";
-  uint32_t cp = 0;   // Current unicode code point.
+  uint32 cp = 0;     // Current unicode code point.
   int num_left = 0;  // Num of chars to read to complete the code point.
   while (input->Available() > 0) {
     StringPiece str = input->Peek();

@@ -1,5 +1,7 @@
 <?php
 
+require_once('generated/Descriptors/TestDescriptorsEnum.php');
+require_once('generated/Descriptors/TestDescriptorsMessage.php');
 require_once('test_base.php');
 require_once('test_util.php');
 
@@ -203,20 +205,22 @@ class DescriptorsTest extends TestBase
         $this->assertSame(self::GPBTYPE_ENUM, $mapDesc->getField(1)->getType());
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testFieldDescriptorEnumException()
     {
-        $this->expectException(Exception::class);
-
         $pool = DescriptorPool::getGeneratedPool();
         $desc = $pool->getDescriptorByClassName(get_class(new TestDescriptorsMessage()));
         $fieldDesc = $desc->getField(0);
         $fieldDesc->getEnumType();
     }
 
+    /**
+     * @expectedException \Exception
+     */
     public function testFieldDescriptorMessageException()
     {
-        $this->expectException(Exception::class);
-
         $pool = DescriptorPool::getGeneratedPool();
         $desc = $pool->getDescriptorByClassName(get_class(new TestDescriptorsMessage()));
         $fieldDesc = $desc->getField(0);

@@ -21,7 +21,7 @@ class UInt64Value extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>uint64 value = 1;</code>
      */
-    protected $value = 0;
+    private $value = 0;
 
     /**
      * Constructor.

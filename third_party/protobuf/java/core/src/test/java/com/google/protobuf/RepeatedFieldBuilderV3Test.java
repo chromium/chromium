@@ -30,77 +30,70 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
-
 import protobuf_unittest.UnittestProto.TestAllTypes;
 import protobuf_unittest.UnittestProto.TestAllTypesOrBuilder;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import junit.framework.TestCase;
 
 /**
  * Tests for {@link RepeatedFieldBuilderV3}. This tests basic functionality. More extensive testing is
  * provided via other tests that exercise the builder.
+ *
+ * @author jonp@google.com (Jon Perlow)
  */
-@RunWith(JUnit4.class)
-public class RepeatedFieldBuilderV3Test {
+public class RepeatedFieldBuilderV3Test extends TestCase {
 
-  @Test
   public void testBasicUse() {
     TestUtil.MockBuilderParent mockParent = new TestUtil.MockBuilderParent();
     RepeatedFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder> builder =
         newRepeatedFieldBuilderV3(mockParent);
     builder.addMessage(TestAllTypes.newBuilder().setOptionalInt32(0).build());
     builder.addMessage(TestAllTypes.newBuilder().setOptionalInt32(1).build());
-    assertThat(builder.getMessage(0).getOptionalInt32()).isEqualTo(0);
-    assertThat(builder.getMessage(1).getOptionalInt32()).isEqualTo(1);
+    assertEquals(0, builder.getMessage(0).getOptionalInt32());
+    assertEquals(1, builder.getMessage(1).getOptionalInt32());
 
     List<TestAllTypes> list = builder.build();
-    assertThat(list).hasSize(2);
-    assertThat(list.get(0).getOptionalInt32()).isEqualTo(0);
-    assertThat(list.get(1).getOptionalInt32()).isEqualTo(1);
+    assertEquals(2, list.size());
+    assertEquals(0, list.get(0).getOptionalInt32());
+    assertEquals(1, list.get(1).getOptionalInt32());
     assertIsUnmodifiable(list);
 
     // Make sure it doesn't change.
     List<TestAllTypes> list2 = builder.build();
-    assertThat(list).isSameInstanceAs(list2);
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(0);
+    assertSame(list, list2);
+    assertEquals(0, mockParent.getInvalidationCount());
   }
 
-  @Test
   public void testGoingBackAndForth() {
     TestUtil.MockBuilderParent mockParent = new TestUtil.MockBuilderParent();
     RepeatedFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder> builder =
         newRepeatedFieldBuilderV3(mockParent);
     builder.addMessage(TestAllTypes.newBuilder().setOptionalInt32(0).build());
     builder.addMessage(TestAllTypes.newBuilder().setOptionalInt32(1).build());
-    assertThat(builder.getMessage(0).getOptionalInt32()).isEqualTo(0);
-    assertThat(builder.getMessage(1).getOptionalInt32()).isEqualTo(1);
+    assertEquals(0, builder.getMessage(0).getOptionalInt32());
+    assertEquals(1, builder.getMessage(1).getOptionalInt32());
 
     // Convert to list
     List<TestAllTypes> list = builder.build();
-    assertThat(list).hasSize(2);
-    assertThat(list.get(0).getOptionalInt32()).isEqualTo(0);
-    assertThat(list.get(1).getOptionalInt32()).isEqualTo(1);
+    assertEquals(2, list.size());
+    assertEquals(0, list.get(0).getOptionalInt32());
+    assertEquals(1, list.get(1).getOptionalInt32());
     assertIsUnmodifiable(list);
 
     // Update 0th item
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(0);
+    assertEquals(0, mockParent.getInvalidationCount());
     builder.getBuilder(0).setOptionalString("foo");
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(1);
+    assertEquals(1, mockParent.getInvalidationCount());
     list = builder.build();
-    assertThat(list).hasSize(2);
-    assertThat(list.get(0).getOptionalInt32()).isEqualTo(0);
-    assertThat(list.get(0).getOptionalString()).isEqualTo("foo");
-    assertThat(list.get(1).getOptionalInt32()).isEqualTo(1);
+    assertEquals(2, list.size());
+    assertEquals(0, list.get(0).getOptionalInt32());
+    assertEquals("foo", list.get(0).getOptionalString());
+    assertEquals(1, list.get(1).getOptionalInt32());
     assertIsUnmodifiable(list);
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(1);
+    assertEquals(1, mockParent.getInvalidationCount());
   }
 
-  @Test
   public void testVariousMethods() {
     TestUtil.MockBuilderParent mockParent = new TestUtil.MockBuilderParent();
     RepeatedFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder> builder =
@@ -110,64 +103,63 @@ public class RepeatedFieldBuilderV3Test {
     builder.addBuilder(0, TestAllTypes.getDefaultInstance()).setOptionalInt32(0);
     builder.addBuilder(TestAllTypes.getDefaultInstance()).setOptionalInt32(3);
 
-    assertThat(builder.getMessage(0).getOptionalInt32()).isEqualTo(0);
-    assertThat(builder.getMessage(1).getOptionalInt32()).isEqualTo(1);
-    assertThat(builder.getMessage(2).getOptionalInt32()).isEqualTo(2);
-    assertThat(builder.getMessage(3).getOptionalInt32()).isEqualTo(3);
+    assertEquals(0, builder.getMessage(0).getOptionalInt32());
+    assertEquals(1, builder.getMessage(1).getOptionalInt32());
+    assertEquals(2, builder.getMessage(2).getOptionalInt32());
+    assertEquals(3, builder.getMessage(3).getOptionalInt32());
 
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(0);
+    assertEquals(0, mockParent.getInvalidationCount());
     List<TestAllTypes> messages = builder.build();
-    assertThat(messages).hasSize(4);
-    assertThat(messages).isSameInstanceAs(builder.build()); // expect same list
+    assertEquals(4, messages.size());
+    assertSame(messages, builder.build()); // expect same list
 
     // Remove a message.
     builder.remove(2);
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(1);
-    assertThat(builder.getCount()).isEqualTo(3);
-    assertThat(builder.getMessage(0).getOptionalInt32()).isEqualTo(0);
-    assertThat(builder.getMessage(1).getOptionalInt32()).isEqualTo(1);
-    assertThat(builder.getMessage(2).getOptionalInt32()).isEqualTo(3);
+    assertEquals(1, mockParent.getInvalidationCount());
+    assertEquals(3, builder.getCount());
+    assertEquals(0, builder.getMessage(0).getOptionalInt32());
+    assertEquals(1, builder.getMessage(1).getOptionalInt32());
+    assertEquals(3, builder.getMessage(2).getOptionalInt32());
 
     // Remove a builder.
     builder.remove(0);
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(1);
-    assertThat(builder.getCount()).isEqualTo(2);
-    assertThat(builder.getMessage(0).getOptionalInt32()).isEqualTo(1);
-    assertThat(builder.getMessage(1).getOptionalInt32()).isEqualTo(3);
+    assertEquals(1, mockParent.getInvalidationCount());
+    assertEquals(2, builder.getCount());
+    assertEquals(1, builder.getMessage(0).getOptionalInt32());
+    assertEquals(3, builder.getMessage(1).getOptionalInt32());
 
     // Test clear.
     builder.clear();
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(1);
-    assertThat(builder.getCount()).isEqualTo(0);
-    assertThat(builder.isEmpty()).isTrue();
+    assertEquals(1, mockParent.getInvalidationCount());
+    assertEquals(0, builder.getCount());
+    assertTrue(builder.isEmpty());
   }
 
-  @Test
   public void testLists() {
     TestUtil.MockBuilderParent mockParent = new TestUtil.MockBuilderParent();
     RepeatedFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder> builder =
         newRepeatedFieldBuilderV3(mockParent);
     builder.addMessage(TestAllTypes.newBuilder().setOptionalInt32(1).build());
     builder.addMessage(0, TestAllTypes.newBuilder().setOptionalInt32(0).build());
-    assertThat(builder.getMessage(0).getOptionalInt32()).isEqualTo(0);
-    assertThat(builder.getMessage(1).getOptionalInt32()).isEqualTo(1);
+    assertEquals(0, builder.getMessage(0).getOptionalInt32());
+    assertEquals(1, builder.getMessage(1).getOptionalInt32());
 
     // Use list of builders.
     List<TestAllTypes.Builder> builders = builder.getBuilderList();
-    assertThat(builders.get(0).getOptionalInt32()).isEqualTo(0);
-    assertThat(builders.get(1).getOptionalInt32()).isEqualTo(1);
+    assertEquals(0, builders.get(0).getOptionalInt32());
+    assertEquals(1, builders.get(1).getOptionalInt32());
     builders.get(0).setOptionalInt32(10);
     builders.get(1).setOptionalInt32(11);
 
     // Use list of protos
     List<TestAllTypes> protos = builder.getMessageList();
-    assertThat(protos.get(0).getOptionalInt32()).isEqualTo(10);
-    assertThat(protos.get(1).getOptionalInt32()).isEqualTo(11);
+    assertEquals(10, protos.get(0).getOptionalInt32());
+    assertEquals(11, protos.get(1).getOptionalInt32());
 
     // Add an item to the builders and verify it's updated in both
     builder.addMessage(TestAllTypes.newBuilder().setOptionalInt32(12).build());
-    assertThat(builders).hasSize(3);
-    assertThat(protos).hasSize(3);
+    assertEquals(3, builders.size());
+    assertEquals(3, protos.size());
   }
 
   private void assertIsUnmodifiable(List<?> list) {
@@ -176,7 +168,7 @@ public class RepeatedFieldBuilderV3Test {
     } else {
       try {
         list.clear();
-        assertWithMessage("List wasn't immutable").fail();
+        fail("List wasn't immutable");
       } catch (UnsupportedOperationException e) {
         // good
       }
@@ -184,7 +176,7 @@ public class RepeatedFieldBuilderV3Test {
   }
 
   private RepeatedFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder>
-      newRepeatedFieldBuilderV3(AbstractMessage.BuilderParent parent) {
+      newRepeatedFieldBuilderV3(GeneratedMessage.BuilderParent parent) {
     return new RepeatedFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder>(
         Collections.<TestAllTypes>emptyList(), false, parent, false);
   }

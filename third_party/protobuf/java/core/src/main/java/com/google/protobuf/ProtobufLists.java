@@ -39,7 +39,6 @@ import com.google.protobuf.Internal.ProtobufList;
 
 /** Utility class for construction of lists that extend {@link ProtobufList}. */
 @ExperimentalApi
-@CheckReturnValue
 final class ProtobufLists {
   private ProtobufLists() {}
 

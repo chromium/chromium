@@ -46,7 +46,6 @@ public class RubyProtobuf {
         RubyModule mGoogle = runtime.getModule("Google");
         RubyModule mProtobuf = mGoogle.defineModuleUnder("Protobuf");
         mProtobuf.defineAnnotatedMethods(RubyProtobuf.class);
-        RubyModule mInternal = mProtobuf.defineModuleUnder("Internal");
     }
 
     /*
@@ -65,18 +64,5 @@ public class RubyProtobuf {
         } else {
             return ((RubyMap) message).deepCopy(context);
         }
-    }
-
-    /*
-     * call-seq:
-     *     Google::Protobuf.discard_unknown(msg)
-     *
-     * Discard unknown fields in the given message object and recursively discard
-     * unknown fields in submessages.
-     */
-    @JRubyMethod(name = "discard_unknown", meta = true)
-    public static IRubyObject discardUnknown(ThreadContext context, IRubyObject self, IRubyObject message) {
-        ((RubyMessage) message).discardUnknownFields(context);
-        return context.nil;
     }
 }

@@ -30,17 +30,11 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import com.google.protobuf.wrapperstest.WrappersTestProto.TopLevelMessage;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import junit.framework.TestCase;
 
-@RunWith(JUnit4.class)
-public class WrappersLiteOfMethodTest {
+public class WrappersLiteOfMethodTest extends TestCase {
 
-  @Test
   public void testOf() throws Exception {
     TopLevelMessage.Builder builder = TopLevelMessage.newBuilder();
     builder.setFieldDouble(DoubleValue.of(2.333));
@@ -54,14 +48,14 @@ public class WrappersLiteOfMethodTest {
     builder.setFieldBytes(BytesValue.of(ByteString.wrap("233".getBytes(Internal.UTF_8))));
 
     TopLevelMessage message = builder.build();
-    assertThat(message.getFieldDouble().getValue()).isEqualTo(2.333);
-    assertThat(message.getFieldFloat().getValue()).isEqualTo(2.333F);
-    assertThat(message.getFieldInt32().getValue()).isEqualTo(2333);
-    assertThat(message.getFieldInt64().getValue()).isEqualTo(23333333333333L);
-    assertThat(message.getFieldUint32().getValue()).isEqualTo(2333);
-    assertThat(message.getFieldUint64().getValue()).isEqualTo(23333333333333L);
-    assertThat(true).isSameInstanceAs(message.getFieldBool().getValue());
-    assertThat(message.getFieldString().getValue().equals("23333")).isTrue();
-    assertThat(message.getFieldBytes().getValue().toStringUtf8().equals("233")).isTrue();
+    assertTrue(2.333 == message.getFieldDouble().getValue());
+    assertTrue(2.333f == message.getFieldFloat().getValue());
+    assertTrue(2333 == message.getFieldInt32().getValue());
+    assertTrue(23333333333333L == message.getFieldInt64().getValue());
+    assertTrue(2333 == message.getFieldUint32().getValue());
+    assertTrue(23333333333333L == message.getFieldUint64().getValue());
+    assertTrue(true == message.getFieldBool().getValue());
+    assertTrue(message.getFieldString().getValue().equals("23333"));
+    assertTrue(message.getFieldBytes().getValue().toStringUtf8().equals("233"));
   }
 }

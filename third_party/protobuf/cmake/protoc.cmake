@@ -2,7 +2,7 @@ set(protoc_files
   ${protobuf_source_dir}/src/google/protobuf/compiler/main.cc
 )
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+if (MSVC)
 set(protoc_rc_files
   ${CMAKE_CURRENT_BINARY_DIR}/version.rc
 )

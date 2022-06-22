@@ -48,7 +48,6 @@ import java.util.Map;
  * A {@link Reader} that reads from a buffer containing a message serialized with the binary
  * protocol.
  */
-@CheckReturnValue
 @ExperimentalApi
 abstract class BinaryReader implements Reader {
   private static final int FIXED32_MULTIPLE_MASK = FIXED32_SIZE - 1;
@@ -272,7 +271,6 @@ abstract class BinaryReader implements Reader {
       }
     }
 
-    @Deprecated
     @Override
     public <T> T readGroup(Class<T> clazz, ExtensionRegistryLite extensionRegistry)
         throws IOException {
@@ -280,7 +278,6 @@ abstract class BinaryReader implements Reader {
       return readGroup(Protobuf.getInstance().schemaFor(clazz), extensionRegistry);
     }
 
-    @Deprecated
     @Override
     public <T> T readGroupBySchemaWithCheck(
         Schema<T> schema, ExtensionRegistryLite extensionRegistry) throws IOException {
@@ -959,7 +956,6 @@ abstract class BinaryReader implements Reader {
       }
     }
 
-    @Deprecated
     @Override
     public <T> void readGroupList(
         List<T> target, Class<T> targetType, ExtensionRegistryLite extensionRegistry)
@@ -968,7 +964,6 @@ abstract class BinaryReader implements Reader {
       readGroupList(target, schema, extensionRegistry);
     }
 
-    @Deprecated
     @Override
     public <T> void readGroupList(
         List<T> target, Schema<T> schema, ExtensionRegistryLite extensionRegistry)

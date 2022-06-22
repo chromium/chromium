@@ -37,7 +37,6 @@ import java.io.InputStream;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.InvalidMarkException;
@@ -110,7 +109,7 @@ final class NioByteString extends ByteString.LeafByteString {
   protected void copyToInternal(
       byte[] target, int sourceOffset, int targetOffset, int numberToCopy) {
     ByteBuffer slice = buffer.slice();
-    ((Buffer) slice).position(sourceOffset);
+    slice.position(sourceOffset);
     slice.get(target, targetOffset, numberToCopy);
   }
 
@@ -286,8 +285,8 @@ final class NioByteString extends ByteString.LeafByteString {
     }
 
     ByteBuffer slice = buffer.slice();
-    ((Buffer) slice).position(beginIndex - buffer.position());
-    ((Buffer) slice).limit(endIndex - buffer.position());
+    slice.position(beginIndex - buffer.position());
+    slice.limit(endIndex - buffer.position());
     return slice;
   }
 }

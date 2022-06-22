@@ -304,6 +304,12 @@
 - (void)testOneofDescriptor {
   GPBDescriptor *descriptor = [TestOneof2 descriptor];
 
+  // All fields should be listed.
+  XCTAssertEqual(descriptor.fields.count, 17U);
+
+  // There are two oneofs in there.
+  XCTAssertEqual(descriptor.oneofs.count, 2U);
+
   GPBFieldDescriptor *fooStringField =
       [descriptor fieldWithNumber:TestOneof2_FieldNumber_FooString];
   XCTAssertNotNil(fooStringField);
@@ -311,24 +317,22 @@
       [descriptor fieldWithNumber:TestOneof2_FieldNumber_BarString];
   XCTAssertNotNil(barStringField);
 
-  // Check the oneofs to have what is expected but not other onesofs
+  // Check the oneofs to have what is expected.
 
   GPBOneofDescriptor *oneofFoo = [descriptor oneofWithName:@"foo"];
   XCTAssertNotNil(oneofFoo);
-  XCTAssertNotNil([oneofFoo fieldWithName:@"fooString"]);
-  XCTAssertNil([oneofFoo fieldWithName:@"barString"]);
+  XCTAssertEqual(oneofFoo.fields.count, 9U);
 
-  GPBOneofDescriptor *oneofBar = [descriptor oneofWithName:@"bar"];
-  XCTAssertNotNil(oneofBar);
-  XCTAssertNil([oneofBar fieldWithName:@"fooString"]);
-  XCTAssertNotNil([oneofBar fieldWithName:@"barString"]);
-
-  // Pointer comparisons against lookups from message.
-
+  // Pointer comparisons.
   XCTAssertEqual([oneofFoo fieldWithNumber:TestOneof2_FieldNumber_FooString],
                  fooStringField);
   XCTAssertEqual([oneofFoo fieldWithName:@"fooString"], fooStringField);
 
+  GPBOneofDescriptor *oneofBar = [descriptor oneofWithName:@"bar"];
+  XCTAssertNotNil(oneofBar);
+  XCTAssertEqual(oneofBar.fields.count, 6U);
+
+  // Pointer comparisons.
   XCTAssertEqual([oneofBar fieldWithNumber:TestOneof2_FieldNumber_BarString],
                  barStringField);
   XCTAssertEqual([oneofBar fieldWithName:@"barString"], barStringField);

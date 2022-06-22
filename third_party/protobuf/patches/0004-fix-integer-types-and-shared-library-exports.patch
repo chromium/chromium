@@ -1,0 +1,58 @@
+--- a/src/google/protobuf/port_def.inc
++++ b/src/google/protobuf/port_def.inc
+@@ -275,8 +275,8 @@
+ #define PROTOBUF_LL_FORMAT "I64"  // As in printf("%I64d", ...)
+ #else
+ // By long long, we actually mean int64.
+-#define PROTOBUF_LONGLONG(x) x##LL
+-#define PROTOBUF_ULONGLONG(x) x##ULL
++#define PROTOBUF_LONGLONG(x) INT64_C(x)
++#define PROTOBUF_ULONGLONG(x) UINT64_C(x)
+ // Used to format real long long integers.
+ #define PROTOBUF_LL_FORMAT \
+   "ll"  // As in "%lld". Note that "q" is poor form also.
+--- a/src/google/protobuf/stubs/port.h
++++ b/src/google/protobuf/stubs/port.h
+@@ -87,18 +87,31 @@
+ 
+ // Legacy: some users reference these (internal-only) macros even though we
+ // don't need them any more.
+-#if defined(_MSC_VER) && defined(PROTOBUF_USE_DLLS)
+-  #ifdef LIBPROTOBUF_EXPORTS
+-    #define LIBPROTOBUF_EXPORT __declspec(dllexport)
+-  #else
+-    #define LIBPROTOBUF_EXPORT __declspec(dllimport)
++#if defined(COMPONENT_BUILD) && defined(PROTOBUF_USE_DLLS)
++  #if defined(_MSC_VER)
++    #ifdef LIBPROTOBUF_EXPORTS
++      #define LIBPROTOBUF_EXPORT __declspec(dllexport)
++    #else
++      #define LIBPROTOBUF_EXPORT __declspec(dllimport)
++    #endif
++    #ifdef LIBPROTOC_EXPORTS
++      #define LIBPROTOC_EXPORT   __declspec(dllexport)
++    #else
++      #define LIBPROTOC_EXPORT   __declspec(dllimport)
++    #endif
++  #else  // defined(_MSC_VER)
++    #ifdef LIBPROTOBUF_EXPORTS
++      #define LIBPROTOBUF_EXPORT __attribute__((visibility("default")))
++    #else
++      #define LIBPROTOBUF_EXPORT
++    #endif
++    #ifdef LIBPROTOC_EXPORTS
++      #define LIBPROTOC_EXPORT   __attribute__((visibility("default")))
++    #else
++      #define LIBPROTOC_EXPORT
++    #endif
+   #endif
+-  #ifdef LIBPROTOC_EXPORTS
+-    #define LIBPROTOC_EXPORT   __declspec(dllexport)
+-  #else
+-    #define LIBPROTOC_EXPORT   __declspec(dllimport)
+-  #endif
+-#else
++#else  // defined(COMPONENT_BUILD) && defined(PROTOBUF_USE_DLLS)
+   #define LIBPROTOBUF_EXPORT
+   #define LIBPROTOC_EXPORT
+ #endif

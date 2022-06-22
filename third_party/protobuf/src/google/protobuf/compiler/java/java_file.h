@@ -38,7 +38,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/compiler/java/java_options.h>
 
@@ -78,12 +77,6 @@ class FileGenerator {
   bool Validate(std::string* error);
 
   void Generate(io::Printer* printer);
-
-  std::string GetKotlinClassname();
-  void GenerateKotlinSiblings(const std::string& package_dir,
-                              GeneratorContext* generator_context,
-                              std::vector<std::string>* file_list,
-                              std::vector<std::string>* annotation_list);
 
   // If we aren't putting everything into one file, this will write all the
   // files other than the outer file (i.e. one for each message, enum, and

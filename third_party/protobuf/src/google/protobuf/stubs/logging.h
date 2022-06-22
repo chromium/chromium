@@ -33,8 +33,6 @@
 
 #include <google/protobuf/stubs/macros.h>
 #include <google/protobuf/stubs/port.h>
-#include <google/protobuf/stubs/status.h>
-#include <google/protobuf/stubs/stringpiece.h>
 
 #include <google/protobuf/port_def.inc>
 
@@ -65,6 +63,10 @@ enum LogLevel {
 #endif
 };
 
+class StringPiece;
+namespace util {
+class Status;
+}
 class uint128;
 namespace internal {
 

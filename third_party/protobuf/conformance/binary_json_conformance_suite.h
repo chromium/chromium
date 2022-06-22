@@ -42,7 +42,7 @@ class BinaryAndJsonConformanceSuite : public ConformanceTestSuite {
   BinaryAndJsonConformanceSuite() {}
 
  private:
-  void RunSuiteImpl() override;
+  void RunSuiteImpl();
   void RunJsonTests();
   void RunJsonTestsForFieldNameConvention();
   void RunJsonTestsForNonRepeatedTypes();

@@ -38,7 +38,6 @@
 
 #include <float.h>
 
-#include <cstdint>
 #include <limits>
 #include <unordered_map>
 #include <unordered_set>
@@ -46,11 +45,11 @@
 #include <google/protobuf/stubs/casts.h>
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/descriptor.h>
 #include <google/protobuf/descriptor.pb.h>
 #include <google/protobuf/io/tokenizer.h>
+#include <google/protobuf/descriptor.h>
 #include <google/protobuf/wire_format.h>
+#include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/map_util.h>
 #include <google/protobuf/stubs/hash.h>
 
@@ -97,19 +96,19 @@ std::string MapEntryName(const std::string& field_name) {
   static const char kSuffix[] = "Entry";
   result.reserve(field_name.size() + sizeof(kSuffix));
   bool cap_next = true;
-  for (const char field_name_char : field_name) {
-    if (field_name_char == '_') {
+  for (int i = 0; i < field_name.size(); ++i) {
+    if (field_name[i] == '_') {
       cap_next = true;
     } else if (cap_next) {
       // Note: Do not use ctype.h due to locales.
-      if ('a' <= field_name_char && field_name_char <= 'z') {
-        result.push_back(field_name_char - 'a' + 'A');
+      if ('a' <= field_name[i] && field_name[i] <= 'z') {
+        result.push_back(field_name[i] - 'a' + 'A');
       } else {
-        result.push_back(field_name_char);
+        result.push_back(field_name[i]);
       }
       cap_next = false;
     } else {
-      result.push_back(field_name_char);
+      result.push_back(field_name[i]);
     }
   }
   result.append(kSuffix);
@@ -131,8 +130,8 @@ bool IsUpperCamelCase(const std::string& name) {
     return false;
   }
   // Must not contains underscore.
-  for (const char c : name) {
-    if (c == '_') {
+  for (int i = 1; i < name.length(); i++) {
+    if (name[i] == '_') {
       return false;
     }
   }
@@ -140,7 +139,8 @@ bool IsUpperCamelCase(const std::string& name) {
 }
 
 bool IsUpperUnderscore(const std::string& name) {
-  for (const char c : name) {
+  for (int i = 0; i < name.length(); i++) {
+    const char c = name[i];
     if (!IsUppercase(c) && c != '_' && !IsNumber(c)) {
       return false;
     }
@@ -149,7 +149,8 @@ bool IsUpperUnderscore(const std::string& name) {
 }
 
 bool IsLowerUnderscore(const std::string& name) {
-  for (const char c : name) {
+  for (int i = 0; i < name.length(); i++) {
+    const char c = name[i];
     if (!IsLowercase(c) && c != '_' && !IsNumber(c)) {
       return false;
     }
@@ -180,9 +181,9 @@ bool IsNumberFollowUnderscore(const std::string& name) {
 // ===================================================================
 
 Parser::Parser()
-    : input_(nullptr),
-      error_collector_(nullptr),
-      source_location_table_(nullptr),
+    : input_(NULL),
+      error_collector_(NULL),
+      source_location_table_(NULL),
       had_errors_(false),
       require_syntax_identifier_(false),
       stop_after_syntax_identifier_(false) {
@@ -221,8 +222,12 @@ bool Parser::Consume(const char* text, const char* error) {
 }
 
 bool Parser::Consume(const char* text) {
-  std::string error = "Expected \"" + std::string(text) + "\".";
-  return Consume(text, error.c_str());
+  if (TryConsume(text)) {
+    return true;
+  } else {
+    AddError("Expected \"" + std::string(text) + "\".");
+    return false;
+  }
 }
 
 bool Parser::ConsumeIdentifier(std::string* output, const char* error) {
@@ -238,9 +243,8 @@ bool Parser::ConsumeIdentifier(std::string* output, const char* error) {
 
 bool Parser::ConsumeInteger(int* output, const char* error) {
   if (LookingAtType(io::Tokenizer::TYPE_INTEGER)) {
-    uint64_t value = 0;
-    if (!io::Tokenizer::ParseInteger(input_->current().text,
-                                     std::numeric_limits<int32_t>::max(),
+    uint64 value = 0;
+    if (!io::Tokenizer::ParseInteger(input_->current().text, kint32max,
                                      &value)) {
       AddError("Integer out of range.");
       // We still return true because we did, in fact, parse an integer.
@@ -256,19 +260,19 @@ bool Parser::ConsumeInteger(int* output, const char* error) {
 
 bool Parser::ConsumeSignedInteger(int* output, const char* error) {
   bool is_negative = false;
-  uint64_t max_value = std::numeric_limits<int32_t>::max();
+  uint64 max_value = kint32max;
   if (TryConsume("-")) {
     is_negative = true;
     max_value += 1;
   }
-  uint64_t value = 0;
+  uint64 value = 0;
   DO(ConsumeInteger64(max_value, &value, error));
   if (is_negative) value *= -1;
   *output = value;
   return true;
 }
 
-bool Parser::ConsumeInteger64(uint64_t max_value, uint64_t* output,
+bool Parser::ConsumeInteger64(uint64 max_value, uint64* output,
                               const char* error) {
   if (LookingAtType(io::Tokenizer::TYPE_INTEGER)) {
     if (!io::Tokenizer::ParseInteger(input_->current().text, max_value,
@@ -292,9 +296,8 @@ bool Parser::ConsumeNumber(double* output, const char* error) {
     return true;
   } else if (LookingAtType(io::Tokenizer::TYPE_INTEGER)) {
     // Also accept integers.
-    uint64_t value = 0;
-    if (!io::Tokenizer::ParseInteger(input_->current().text,
-                                     std::numeric_limits<uint64_t>::max(),
+    uint64 value = 0;
+    if (!io::Tokenizer::ParseInteger(input_->current().text, kuint64max,
                                      &value)) {
       AddError("Integer out of range.");
       // We still return true because we did, in fact, parse a number.
@@ -343,7 +346,7 @@ bool Parser::TryConsumeEndOfDeclaration(const char* text,
     // from last time.
     leading.swap(upcoming_doc_comments_);
 
-    if (location != nullptr) {
+    if (location != NULL) {
       upcoming_detached_comments_.swap(detached);
       location->AttachComments(&leading, &trailing, &detached);
     } else if (strcmp(text, "}") == 0) {
@@ -376,7 +379,7 @@ bool Parser::ConsumeEndOfDeclaration(const char* text,
 // -------------------------------------------------------------------
 
 void Parser::AddError(int line, int column, const std::string& error) {
-  if (error_collector_ != nullptr) {
+  if (error_collector_ != NULL) {
     error_collector_->AddError(line, column, error);
   }
   had_errors_ = true;
@@ -469,7 +472,7 @@ void Parser::LocationRecorder::EndAt(const io::Tokenizer::Token& token) {
 void Parser::LocationRecorder::RecordLegacyLocation(
     const Message* descriptor,
     DescriptorPool::ErrorCollector::ErrorLocation location) {
-  if (parser_->source_location_table_ != nullptr) {
+  if (parser_->source_location_table_ != NULL) {
     parser_->source_location_table_->Add(
         descriptor, location, location_->span(0), location_->span(1));
   }
@@ -512,7 +515,7 @@ void Parser::SkipStatement() {
     if (AtEnd()) {
       return;
     } else if (LookingAtType(io::Tokenizer::TYPE_SYMBOL)) {
-      if (TryConsumeEndOfDeclaration(";", nullptr)) {
+      if (TryConsumeEndOfDeclaration(";", NULL)) {
         return;
       } else if (TryConsume("{")) {
         SkipRestOfBlock();
@@ -530,7 +533,7 @@ void Parser::SkipRestOfBlock() {
     if (AtEnd()) {
       return;
     } else if (LookingAtType(io::Tokenizer::TYPE_SYMBOL)) {
-      if (TryConsumeEndOfDeclaration("}", nullptr)) {
+      if (TryConsumeEndOfDeclaration("}", NULL)) {
         return;
       } else if (TryConsume("{")) {
         SkipRestOfBlock();
@@ -624,7 +627,7 @@ bool Parser::Parse(io::Tokenizer* input, FileDescriptorProto* file) {
 
   if (LookingAtType(io::Tokenizer::TYPE_START)) {
     // Advance to first token.
-    input_->NextWithComments(nullptr, &upcoming_detached_comments_,
+    input_->NextWithComments(NULL, &upcoming_detached_comments_,
                              &upcoming_doc_comments_);
   }
 
@@ -640,7 +643,7 @@ bool Parser::Parse(io::Tokenizer* input, FileDescriptorProto* file) {
         return false;
       }
       // Store the syntax into the file.
-      if (file != nullptr) file->set_syntax(syntax_identifier_);
+      if (file != NULL) file->set_syntax(syntax_identifier_);
     } else if (!stop_after_syntax_identifier_) {
       GOOGLE_LOG(WARNING) << "No syntax specified for the proto file: " << file->name()
                    << ". Please use 'syntax = \"proto2\";' "
@@ -660,16 +663,16 @@ bool Parser::Parse(io::Tokenizer* input, FileDescriptorProto* file) {
 
         if (LookingAt("}")) {
           AddError("Unmatched \"}\".");
-          input_->NextWithComments(nullptr, &upcoming_detached_comments_,
+          input_->NextWithComments(NULL, &upcoming_detached_comments_,
                                    &upcoming_doc_comments_);
         }
       }
     }
   }
 
-  input_ = nullptr;
-  source_code_info_ = nullptr;
-  assert(file != nullptr);
+  input_ = NULL;
+  source_code_info_ = NULL;
+  assert(file != NULL);
   source_code_info.Swap(file->mutable_source_code_info());
   return !had_errors_;
 }
@@ -702,7 +705,7 @@ bool Parser::ParseSyntaxIdentifier(const LocationRecorder& parent) {
 
 bool Parser::ParseTopLevelStatement(FileDescriptorProto* file,
                                     const LocationRecorder& root_location) {
-  if (TryConsumeEndOfDeclaration(";", nullptr)) {
+  if (TryConsumeEndOfDeclaration(";", NULL)) {
     // empty statement; ignore
     return true;
   } else if (LookingAt("message")) {
@@ -826,9 +829,8 @@ bool IsMessageSetWireFormatMessage(const DescriptorProto& message) {
 // tag number can only be determined after all options have been parsed.
 void AdjustExtensionRangesWithMaxEndNumber(DescriptorProto* message) {
   const bool is_message_set = IsMessageSetWireFormatMessage(*message);
-  const int max_extension_number = is_message_set
-                                       ? std::numeric_limits<int32_t>::max()
-                                       : FieldDescriptor::kMaxNumber + 1;
+  const int max_extension_number =
+      is_message_set ? kint32max : FieldDescriptor::kMaxNumber + 1;
   for (int i = 0; i < message->extension_range_size(); ++i) {
     if (message->extension_range(i).end() == kMaxRangeSentinel) {
       message->mutable_extension_range(i)->set_end(max_extension_number);
@@ -841,9 +843,8 @@ void AdjustExtensionRangesWithMaxEndNumber(DescriptorProto* message) {
 // tag number can only be determined after all options have been parsed.
 void AdjustReservedRangesWithMaxEndNumber(DescriptorProto* message) {
   const bool is_message_set = IsMessageSetWireFormatMessage(*message);
-  const int max_field_number = is_message_set
-                                   ? std::numeric_limits<int32_t>::max()
-                                   : FieldDescriptor::kMaxNumber + 1;
+  const int max_field_number =
+      is_message_set ? kint32max : FieldDescriptor::kMaxNumber + 1;
   for (int i = 0; i < message->reserved_range_size(); ++i) {
     if (message->reserved_range(i).end() == kMaxRangeSentinel) {
       message->mutable_reserved_range(i)->set_end(max_field_number);
@@ -858,7 +859,7 @@ bool Parser::ParseMessageBlock(DescriptorProto* message,
                                const FileDescriptorProto* containing_file) {
   DO(ConsumeEndOfDeclaration("{", &message_location));
 
-  while (!TryConsumeEndOfDeclaration("}", nullptr)) {
+  while (!TryConsumeEndOfDeclaration("}", NULL)) {
     if (AtEnd()) {
       AddError("Reached end of input in message definition (missing '}').");
       return false;
@@ -883,7 +884,7 @@ bool Parser::ParseMessageBlock(DescriptorProto* message,
 bool Parser::ParseMessageStatement(DescriptorProto* message,
                                    const LocationRecorder& message_location,
                                    const FileDescriptorProto* containing_file) {
-  if (TryConsumeEndOfDeclaration(";", nullptr)) {
+  if (TryConsumeEndOfDeclaration(";", NULL)) {
     // empty statement; ignore
     return true;
   } else if (LookingAt("message")) {
@@ -941,7 +942,7 @@ bool Parser::ParseMessageField(FieldDescriptorProto* field,
                                const FileDescriptorProto* containing_file) {
   {
     FieldDescriptorProto::Label label;
-    if (ParseLabel(&label, field_location)) {
+    if (ParseLabel(&label, field_location, containing_file)) {
       field->set_label(label);
       if (label == FieldDescriptorProto::LABEL_OPTIONAL &&
           syntax_identifier_ == "proto3") {
@@ -1259,11 +1260,11 @@ bool Parser::ParseDefaultAssignment(
     case FieldDescriptorProto::TYPE_SINT64:
     case FieldDescriptorProto::TYPE_SFIXED32:
     case FieldDescriptorProto::TYPE_SFIXED64: {
-      uint64_t max_value = std::numeric_limits<int64_t>::max();
+      uint64 max_value = kint64max;
       if (field->type() == FieldDescriptorProto::TYPE_INT32 ||
           field->type() == FieldDescriptorProto::TYPE_SINT32 ||
           field->type() == FieldDescriptorProto::TYPE_SFIXED32) {
-        max_value = std::numeric_limits<int32_t>::max();
+        max_value = kint32max;
       }
 
       // These types can be negative.
@@ -1273,7 +1274,7 @@ bool Parser::ParseDefaultAssignment(
         ++max_value;
       }
       // Parse the integer to verify that it is not out-of-range.
-      uint64_t value;
+      uint64 value;
       DO(ConsumeInteger64(max_value, &value,
                           "Expected integer for field default value."));
       // And stringify it again.
@@ -1285,10 +1286,10 @@ bool Parser::ParseDefaultAssignment(
     case FieldDescriptorProto::TYPE_UINT64:
     case FieldDescriptorProto::TYPE_FIXED32:
     case FieldDescriptorProto::TYPE_FIXED64: {
-      uint64_t max_value = std::numeric_limits<uint64_t>::max();
+      uint64 max_value = kuint64max;
       if (field->type() == FieldDescriptorProto::TYPE_UINT32 ||
           field->type() == FieldDescriptorProto::TYPE_FIXED32) {
-        max_value = std::numeric_limits<uint32_t>::max();
+        max_value = kuint32max;
       }
 
       // Numeric, not negative.
@@ -1296,7 +1297,7 @@ bool Parser::ParseDefaultAssignment(
         AddError("Unsigned field can't have negative default value.");
       }
       // Parse the integer to verify that it is not out-of-range.
-      uint64_t value;
+      uint64 value;
       DO(ConsumeInteger64(max_value, &value,
                           "Expected integer for field default value."));
       // And stringify it again.
@@ -1454,7 +1455,7 @@ bool Parser::ParseOption(Message* options,
   // Create an entry in the uninterpreted_option field.
   const FieldDescriptor* uninterpreted_option_field =
       options->GetDescriptor()->FindFieldByName("uninterpreted_option");
-  GOOGLE_CHECK(uninterpreted_option_field != nullptr)
+  GOOGLE_CHECK(uninterpreted_option_field != NULL)
       << "No field named \"uninterpreted_option\" in the Options proto.";
 
   const Reflection* reflection = options->GetReflection();
@@ -1514,13 +1515,6 @@ bool Parser::ParseOption(Message* options,
         AddError("Unexpected end of stream while parsing option value.");
         return false;
 
-      case io::Tokenizer::TYPE_WHITESPACE:
-      case io::Tokenizer::TYPE_NEWLINE:
-        GOOGLE_CHECK(!input_->report_whitespace() && !input_->report_newlines())
-            << "Whitespace tokens were not requested.";
-        GOOGLE_LOG(FATAL) << "Tokenizer reported whitespace.";
-        return false;
-
       case io::Tokenizer::TYPE_IDENTIFIER: {
         value_location.AddPath(
             UninterpretedOption::kIdentifierValueFieldNumber);
@@ -1535,17 +1529,15 @@ bool Parser::ParseOption(Message* options,
       }
 
       case io::Tokenizer::TYPE_INTEGER: {
-        uint64_t value;
-        uint64_t max_value =
-            is_negative
-                ? static_cast<uint64_t>(std::numeric_limits<int64_t>::max()) + 1
-                : std::numeric_limits<uint64_t>::max();
+        uint64 value;
+        uint64 max_value =
+            is_negative ? static_cast<uint64>(kint64max) + 1 : kuint64max;
         DO(ConsumeInteger64(max_value, &value, "Expected integer."));
         if (is_negative) {
           value_location.AddPath(
               UninterpretedOption::kNegativeIntValueFieldNumber);
           uninterpreted_option->set_negative_int_value(
-              static_cast<int64_t>(0 - value));
+              static_cast<int64>(-value));
         } else {
           value_location.AddPath(
               UninterpretedOption::kPositiveIntValueFieldNumber);
@@ -1783,12 +1775,12 @@ bool Parser::ParseReserved(EnumDescriptorProto* message,
   DO(Consume("reserved"));
   if (LookingAtType(io::Tokenizer::TYPE_STRING)) {
     LocationRecorder location(message_location,
-                              EnumDescriptorProto::kReservedNameFieldNumber);
+                              DescriptorProto::kReservedNameFieldNumber);
     location.StartAt(start_token);
     return ParseReservedNames(message, location);
   } else {
     LocationRecorder location(message_location,
-                              EnumDescriptorProto::kReservedRangeFieldNumber);
+                              DescriptorProto::kReservedRangeFieldNumber);
     location.StartAt(start_token);
     return ParseReservedNumbers(message, location);
   }
@@ -1902,7 +1894,7 @@ bool Parser::ParseExtend(RepeatedPtrField<FieldDescriptorProto>* extensions,
       // other statements.
       SkipStatement();
     }
-  } while (!TryConsumeEndOfDeclaration("}", nullptr));
+  } while (!TryConsumeEndOfDeclaration("}", NULL));
 
   return true;
 }
@@ -1966,7 +1958,7 @@ bool Parser::ParseOneof(OneofDescriptorProto* oneof_decl,
       // other statements.
       SkipStatement();
     }
-  } while (!TryConsumeEndOfDeclaration("}", nullptr));
+  } while (!TryConsumeEndOfDeclaration("}", NULL));
 
   return true;
 }
@@ -1999,7 +1991,7 @@ bool Parser::ParseEnumBlock(EnumDescriptorProto* enum_type,
                             const FileDescriptorProto* containing_file) {
   DO(ConsumeEndOfDeclaration("{", &enum_location));
 
-  while (!TryConsumeEndOfDeclaration("}", nullptr)) {
+  while (!TryConsumeEndOfDeclaration("}", NULL)) {
     if (AtEnd()) {
       AddError("Reached end of input in enum definition (missing '}').");
       return false;
@@ -2018,7 +2010,7 @@ bool Parser::ParseEnumBlock(EnumDescriptorProto* enum_type,
 bool Parser::ParseEnumStatement(EnumDescriptorProto* enum_type,
                                 const LocationRecorder& enum_location,
                                 const FileDescriptorProto* containing_file) {
-  if (TryConsumeEndOfDeclaration(";", nullptr)) {
+  if (TryConsumeEndOfDeclaration(";", NULL)) {
     // empty statement; ignore
     return true;
   } else if (LookingAt("option")) {
@@ -2116,7 +2108,7 @@ bool Parser::ParseServiceBlock(ServiceDescriptorProto* service,
                                const FileDescriptorProto* containing_file) {
   DO(ConsumeEndOfDeclaration("{", &service_location));
 
-  while (!TryConsumeEndOfDeclaration("}", nullptr)) {
+  while (!TryConsumeEndOfDeclaration("}", NULL)) {
     if (AtEnd()) {
       AddError("Reached end of input in service definition (missing '}').");
       return false;
@@ -2135,7 +2127,7 @@ bool Parser::ParseServiceBlock(ServiceDescriptorProto* service,
 bool Parser::ParseServiceStatement(ServiceDescriptorProto* service,
                                    const LocationRecorder& service_location,
                                    const FileDescriptorProto* containing_file) {
-  if (TryConsumeEndOfDeclaration(";", nullptr)) {
+  if (TryConsumeEndOfDeclaration(";", NULL)) {
     // empty statement; ignore
     return true;
   } else if (LookingAt("option")) {
@@ -2173,6 +2165,7 @@ bool Parser::ParseServiceMethod(MethodDescriptorProto* method,
                                     DescriptorPool::ErrorCollector::OTHER);
       method->set_client_streaming(true);
       DO(Consume("stream"));
+
     }
     LocationRecorder location(method_location,
                               MethodDescriptorProto::kInputTypeFieldNumber);
@@ -2193,6 +2186,7 @@ bool Parser::ParseServiceMethod(MethodDescriptorProto* method,
                                     DescriptorPool::ErrorCollector::OTHER);
       DO(Consume("stream"));
       method->set_server_streaming(true);
+
     }
     LocationRecorder location(method_location,
                               MethodDescriptorProto::kOutputTypeFieldNumber);
@@ -2214,19 +2208,20 @@ bool Parser::ParseServiceMethod(MethodDescriptorProto* method,
   return true;
 }
 
+
 bool Parser::ParseMethodOptions(const LocationRecorder& parent_location,
                                 const FileDescriptorProto* containing_file,
                                 const int optionsFieldNumber,
                                 Message* mutable_options) {
   // Options!
   ConsumeEndOfDeclaration("{", &parent_location);
-  while (!TryConsumeEndOfDeclaration("}", nullptr)) {
+  while (!TryConsumeEndOfDeclaration("}", NULL)) {
     if (AtEnd()) {
       AddError("Reached end of input in method options (missing '}').");
       return false;
     }
 
-    if (TryConsumeEndOfDeclaration(";", nullptr)) {
+    if (TryConsumeEndOfDeclaration(";", NULL)) {
       // empty statement; ignore
     } else {
       LocationRecorder location(parent_location, optionsFieldNumber);
@@ -2245,7 +2240,8 @@ bool Parser::ParseMethodOptions(const LocationRecorder& parent_location,
 // -------------------------------------------------------------------
 
 bool Parser::ParseLabel(FieldDescriptorProto::Label* label,
-                        const LocationRecorder& field_location) {
+                        const LocationRecorder& field_location,
+                        const FileDescriptorProto* containing_file) {
   if (!LookingAt("optional") && !LookingAt("repeated") &&
       !LookingAt("required")) {
     return false;
@@ -2342,8 +2338,8 @@ bool Parser::ParsePackage(FileDescriptorProto* file,
 }
 
 bool Parser::ParseImport(RepeatedPtrField<std::string>* dependency,
-                         RepeatedField<int32_t>* public_dependency,
-                         RepeatedField<int32_t>* weak_dependency,
+                         RepeatedField<int32>* public_dependency,
+                         RepeatedField<int32>* weak_dependency,
                          const LocationRecorder& root_location,
                          const FileDescriptorProto* containing_file) {
   LocationRecorder location(root_location,
@@ -2389,7 +2385,7 @@ bool SourceLocationTable::Find(
     int* column) const {
   const std::pair<int, int>* result =
       FindOrNull(location_map_, std::make_pair(descriptor, location));
-  if (result == nullptr) {
+  if (result == NULL) {
     *line = -1;
     *column = 0;
     return false;

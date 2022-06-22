@@ -66,20 +66,20 @@ bool FileExists(const std::string& path) {
 class MockErrorCollector : public MultiFileErrorCollector {
  public:
   MockErrorCollector() {}
-  ~MockErrorCollector() override {}
+  ~MockErrorCollector() {}
 
   std::string text_;
   std::string warning_text_;
 
   // implements ErrorCollector ---------------------------------------
   void AddError(const std::string& filename, int line, int column,
-                const std::string& message) override {
+                const std::string& message) {
     strings::SubstituteAndAppend(&text_, "$0:$1:$2: $3\n", filename, line, column,
                               message);
   }
 
   void AddWarning(const std::string& filename, int line, int column,
-                  const std::string& message) override {
+                  const std::string& message) {
     strings::SubstituteAndAppend(&warning_text_, "$0:$1:$2: $3\n", filename, line,
                               column, message);
   }
@@ -91,23 +91,23 @@ class MockErrorCollector : public MultiFileErrorCollector {
 class MockSourceTree : public SourceTree {
  public:
   MockSourceTree() {}
-  ~MockSourceTree() override {}
+  ~MockSourceTree() {}
 
   void AddFile(const std::string& name, const char* contents) {
     files_[name] = contents;
   }
 
   // implements SourceTree -------------------------------------------
-  io::ZeroCopyInputStream* Open(const std::string& filename) override {
+  io::ZeroCopyInputStream* Open(const std::string& filename) {
     const char* contents = FindPtrOrNull(files_, filename);
-    if (contents == nullptr) {
-      return nullptr;
+    if (contents == NULL) {
+      return NULL;
     } else {
       return new io::ArrayInputStream(contents, strlen(contents));
     }
   }
 
-  std::string GetLastErrorMessage() override { return "File not found."; }
+  std::string GetLastErrorMessage() { return "File not found."; }
 
  private:
   std::unordered_map<std::string, const char*> files_;
@@ -139,7 +139,7 @@ TEST_F(ImporterTest, Import) {
 
   const FileDescriptor* file = importer_.Import("foo.proto");
   EXPECT_EQ("", error_collector_.text_);
-  ASSERT_TRUE(file != nullptr);
+  ASSERT_TRUE(file != NULL);
 
   ASSERT_EQ(1, file->message_type_count());
   EXPECT_EQ("Foo", file->message_type(0)->name());
@@ -168,8 +168,8 @@ TEST_F(ImporterTest, ImportNested) {
   const FileDescriptor* foo = importer_.Import("foo.proto");
   const FileDescriptor* bar = importer_.Import("bar.proto");
   EXPECT_EQ("", error_collector_.text_);
-  ASSERT_TRUE(foo != nullptr);
-  ASSERT_TRUE(bar != nullptr);
+  ASSERT_TRUE(foo != NULL);
+  ASSERT_TRUE(bar != NULL);
 
   // Check that foo's dependency is the same object as bar.
   ASSERT_EQ(1, foo->dependency_count());
@@ -187,7 +187,7 @@ TEST_F(ImporterTest, ImportNested) {
 
 TEST_F(ImporterTest, FileNotFound) {
   // Error:  Parsing a file that doesn't exist.
-  EXPECT_TRUE(importer_.Import("foo.proto") == nullptr);
+  EXPECT_TRUE(importer_.Import("foo.proto") == NULL);
   EXPECT_EQ("foo.proto:-1:0: File not found.\n", error_collector_.text_);
 }
 
@@ -197,7 +197,7 @@ TEST_F(ImporterTest, ImportNotFound) {
           "syntax = \"proto2\";\n"
           "import \"bar.proto\";\n");
 
-  EXPECT_TRUE(importer_.Import("foo.proto") == nullptr);
+  EXPECT_TRUE(importer_.Import("foo.proto") == NULL);
   EXPECT_EQ(
       "bar.proto:-1:0: File not found.\n"
       "foo.proto:1:0: Import \"bar.proto\" was not found or had errors.\n",
@@ -214,7 +214,7 @@ TEST_F(ImporterTest, RecursiveImport) {
           "syntax = \"proto2\";\n"
           "import \"recursive1.proto\";\n");
 
-  EXPECT_TRUE(importer_.Import("recursive1.proto") == nullptr);
+  EXPECT_TRUE(importer_.Import("recursive1.proto") == NULL);
   EXPECT_EQ(
       "recursive1.proto:2:0: File recursively imports itself: "
       "recursive1.proto "
@@ -262,7 +262,7 @@ TEST_F(ImporterTest, LiteRuntimeImport) {
 
 class DiskSourceTreeTest : public testing::Test {
  protected:
-  void SetUp() override {
+  virtual void SetUp() {
     dirnames_.push_back(TestTempDir() + "/test_proto2_import_path_1");
     dirnames_.push_back(TestTempDir() + "/test_proto2_import_path_2");
 
@@ -274,7 +274,7 @@ class DiskSourceTreeTest : public testing::Test {
     }
   }
 
-  void TearDown() override {
+  virtual void TearDown() {
     for (int i = 0; i < dirnames_.size(); i++) {
       if (FileExists(dirnames_[i])) {
         File::DeleteRecursively(dirnames_[i], NULL, NULL);
@@ -294,7 +294,7 @@ class DiskSourceTreeTest : public testing::Test {
                           const char* expected_contents) {
     std::unique_ptr<io::ZeroCopyInputStream> input(source_tree_.Open(filename));
 
-    ASSERT_FALSE(input == nullptr);
+    ASSERT_FALSE(input == NULL);
 
     // Read all the data from the file.
     std::string file_contents;
@@ -310,7 +310,7 @@ class DiskSourceTreeTest : public testing::Test {
   void ExpectCannotOpenFile(const std::string& filename,
                             const std::string& error_message) {
     std::unique_ptr<io::ZeroCopyInputStream> input(source_tree_.Open(filename));
-    EXPECT_TRUE(input == nullptr);
+    EXPECT_TRUE(input == NULL);
     EXPECT_EQ(error_message, source_tree_.GetLastErrorMessage());
   }
 
@@ -537,8 +537,8 @@ TEST_F(DiskSourceTreeTest, VirtualFileToDiskFile) {
   EXPECT_EQ("not touched", not_touched);
 
   // Accept NULL as output parameter.
-  EXPECT_TRUE(source_tree_.VirtualFileToDiskFile("bar/foo", nullptr));
-  EXPECT_FALSE(source_tree_.VirtualFileToDiskFile("baz/foo", nullptr));
+  EXPECT_TRUE(source_tree_.VirtualFileToDiskFile("bar/foo", NULL));
+  EXPECT_FALSE(source_tree_.VirtualFileToDiskFile("baz/foo", NULL));
 }
 
 }  // namespace

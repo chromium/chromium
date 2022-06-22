@@ -35,6 +35,7 @@
 
 #include "arena.h"
 #include "array.h"
+#include "bundled_php.h"
 #include "convert.h"
 #include "def.h"
 #include "map.h"
@@ -62,11 +63,11 @@ ZEND_BEGIN_MODULE_GLOBALS(protobuf)
   // that all descriptors are loaded from the main thread.
   zval generated_pool;
 
-  // A upb_DefPool that we are saving for the next request so that we don't have
+  // A upb_symtab that we are saving for the next request so that we don't have
   // to rebuild it from scratch. When keep_descriptor_pool_after_request==true,
-  // we steal the upb_DefPool from the global DescriptorPool object just before
+  // we steal the upb_symtab from the global DescriptorPool object just before
   // destroying it.
-  upb_DefPool *global_symtab;
+  upb_symtab *saved_symtab;
 
   // Object cache (see interface in protobuf.h).
   HashTable object_cache;
@@ -74,20 +75,7 @@ ZEND_BEGIN_MODULE_GLOBALS(protobuf)
   // Name cache (see interface in protobuf.h).
   HashTable name_msg_cache;
   HashTable name_enum_cache;
-
-  // An array of descriptor objects constructed during this request. These are
-  // logically referenced by the corresponding class entry, but since we can't
-  // actually write a class entry destructor, we reference them here, to be
-  // destroyed on request shutdown.
-  HashTable descriptors;
 ZEND_END_MODULE_GLOBALS(protobuf)
-
-void free_protobuf_globals(zend_protobuf_globals *globals) {
-  zend_hash_destroy(&globals->name_msg_cache);
-  zend_hash_destroy(&globals->name_enum_cache);
-  upb_DefPool_Free(globals->global_symtab);
-  globals->global_symtab = NULL;
-}
 
 ZEND_DECLARE_MODULE_GLOBALS(protobuf)
 
@@ -153,14 +141,14 @@ const zval *get_generated_pool() {
 //     discouraged by the documentation: https://serverfault.com/a/231660
 
 static PHP_GSHUTDOWN_FUNCTION(protobuf) {
-  if (protobuf_globals->global_symtab) {
-    free_protobuf_globals(protobuf_globals);
+  if (protobuf_globals->saved_symtab) {
+    upb_symtab_free(protobuf_globals->saved_symtab);
   }
 }
 
 static PHP_GINIT_FUNCTION(protobuf) {
   ZVAL_NULL(&protobuf_globals->generated_pool);
-  protobuf_globals->global_symtab = NULL;
+  protobuf_globals->saved_symtab = NULL;
 }
 
 /**
@@ -171,16 +159,16 @@ static PHP_GINIT_FUNCTION(protobuf) {
 static PHP_RINIT_FUNCTION(protobuf) {
   // Create the global generated pool.
   // Reuse the symtab (if any) left to us by the last request.
-  upb_DefPool *symtab = PROTOBUF_G(global_symtab);
-  if (!symtab) {
-    PROTOBUF_G(global_symtab) = symtab = upb_DefPool_New();
-    zend_hash_init(&PROTOBUF_G(name_msg_cache), 64, NULL, NULL, 0);
-    zend_hash_init(&PROTOBUF_G(name_enum_cache), 64, NULL, NULL, 0);
-  }
+  upb_symtab *symtab = PROTOBUF_G(saved_symtab);
   DescriptorPool_CreateWithSymbolTable(&PROTOBUF_G(generated_pool), symtab);
 
+  // Set up autoloader for bundled sources.
+  zend_eval_string("spl_autoload_register('protobuf_internal_loadbundled');",
+                   NULL, "autoload_register.php");
+
   zend_hash_init(&PROTOBUF_G(object_cache), 64, NULL, NULL, 0);
-  zend_hash_init(&PROTOBUF_G(descriptors), 64, NULL, ZVAL_PTR_DTOR, 0);
+  zend_hash_init(&PROTOBUF_G(name_msg_cache), 64, NULL, NULL, 0);
+  zend_hash_init(&PROTOBUF_G(name_enum_cache), 64, NULL, NULL, 0);
 
   return SUCCESS;
 }
@@ -192,29 +180,50 @@ static PHP_RINIT_FUNCTION(protobuf) {
  */
 static PHP_RSHUTDOWN_FUNCTION(protobuf) {
   // Preserve the symtab if requested.
-  if (!PROTOBUF_G(keep_descriptor_pool_after_request)) {
-    free_protobuf_globals(ZEND_MODULE_GLOBALS_BULK(protobuf));
+  if (PROTOBUF_G(keep_descriptor_pool_after_request)) {
+    zval *zv = &PROTOBUF_G(generated_pool);
+    PROTOBUF_G(saved_symtab) = DescriptorPool_Steal(zv);
   }
 
   zval_dtor(&PROTOBUF_G(generated_pool));
   zend_hash_destroy(&PROTOBUF_G(object_cache));
-  zend_hash_destroy(&PROTOBUF_G(descriptors));
+  zend_hash_destroy(&PROTOBUF_G(name_msg_cache));
+  zend_hash_destroy(&PROTOBUF_G(name_enum_cache));
 
   return SUCCESS;
 }
 
 // -----------------------------------------------------------------------------
-// Object Cache.
+// Bundled PHP sources
 // -----------------------------------------------------------------------------
 
-void Descriptors_Add(zend_object *desc) {
-  // The hash table will own a ref (it will destroy it when the table is
-  // destroyed), but for some reason the insert operation does not add a ref, so
-  // we do that here with ZVAL_OBJ_COPY().
-  zval zv;
-  ZVAL_OBJ_COPY(&zv, desc);
-  zend_hash_next_index_insert(&PROTOBUF_G(descriptors), &zv);
+// We bundle PHP sources for well-known types into the C extension. There is no
+// need to implement these in C.
+
+static PHP_FUNCTION(protobuf_internal_loadbundled) {
+  char *name = NULL;
+  zend_long size;
+  BundledPhp_File *file;
+
+  if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &name, &size) != SUCCESS) {
+    return;
+  }
+
+  for (file = bundled_files; file->filename; file++) {
+    if (strcmp(file->filename, name) == 0) {
+      zend_eval_string((char*)file->contents, NULL, (char*)file->filename);
+      return;
+    }
+  }
 }
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_load_bundled_source, 0, 0, 1)
+  ZEND_ARG_INFO(0, class_name)
+ZEND_END_ARG_INFO()
+
+// -----------------------------------------------------------------------------
+// Object Cache.
+// -----------------------------------------------------------------------------
 
 void ObjCache_Add(const void *upb_obj, zend_object *php_obj) {
   zend_ulong k = (zend_ulong)upb_obj;
@@ -234,7 +243,8 @@ bool ObjCache_Get(const void *upb_obj, zval *val) {
   zend_object *obj = zend_hash_index_find_ptr(&PROTOBUF_G(object_cache), k);
 
   if (obj) {
-    ZVAL_OBJ_COPY(val, obj);
+    GC_ADDREF(obj);
+    ZVAL_OBJ(val, obj);
     return true;
   } else {
     ZVAL_NULL(val);
@@ -246,20 +256,20 @@ bool ObjCache_Get(const void *upb_obj, zval *val) {
 // Name Cache.
 // -----------------------------------------------------------------------------
 
-void NameMap_AddMessage(const upb_MessageDef *m) {
-  char *k = GetPhpClassname(upb_MessageDef_File(m), upb_MessageDef_FullName(m));
+void NameMap_AddMessage(const upb_msgdef *m) {
+  char *k = GetPhpClassname(upb_msgdef_file(m), upb_msgdef_fullname(m));
   zend_hash_str_add_ptr(&PROTOBUF_G(name_msg_cache), k, strlen(k), (void*)m);
   free(k);
 }
 
-void NameMap_AddEnum(const upb_EnumDef *e) {
-  char *k = GetPhpClassname(upb_EnumDef_File(e), upb_EnumDef_FullName(e));
+void NameMap_AddEnum(const upb_enumdef *e) {
+  char *k = GetPhpClassname(upb_enumdef_file(e), upb_enumdef_fullname(e));
   zend_hash_str_add_ptr(&PROTOBUF_G(name_enum_cache), k, strlen(k), (void*)e);
   free(k);
 }
 
-const upb_MessageDef *NameMap_GetMessage(zend_class_entry *ce) {
-  const upb_MessageDef *ret =
+const upb_msgdef *NameMap_GetMessage(zend_class_entry *ce) {
+  const upb_msgdef *ret =
       zend_hash_find_ptr(&PROTOBUF_G(name_msg_cache), ce->name);
 
   if (!ret && ce->create_object) {
@@ -282,8 +292,8 @@ const upb_MessageDef *NameMap_GetMessage(zend_class_entry *ce) {
   return ret;
 }
 
-const upb_EnumDef *NameMap_GetEnum(zend_class_entry *ce) {
-  const upb_EnumDef *ret =
+const upb_enumdef *NameMap_GetEnum(zend_class_entry *ce) {
+  const upb_enumdef *ret =
       zend_hash_find_ptr(&PROTOBUF_G(name_enum_cache), ce->name);
   return ret;
 }
@@ -293,6 +303,7 @@ const upb_EnumDef *NameMap_GetEnum(zend_class_entry *ce) {
 // -----------------------------------------------------------------------------
 
 zend_function_entry protobuf_functions[] = {
+  PHP_FE(protobuf_internal_loadbundled, arginfo_load_bundled_source)
   ZEND_FE_END
 };
 
@@ -303,7 +314,7 @@ static const zend_module_dep protobuf_deps[] = {
 
 PHP_INI_BEGIN()
 STD_PHP_INI_ENTRY("protobuf.keep_descriptor_pool_after_request", "0",
-                  PHP_INI_ALL, OnUpdateBool,
+                  PHP_INI_SYSTEM, OnUpdateBool,
                   keep_descriptor_pool_after_request, zend_protobuf_globals,
                   protobuf_globals)
 PHP_INI_END()
@@ -320,7 +331,6 @@ static PHP_MINIT_FUNCTION(protobuf) {
 }
 
 static PHP_MSHUTDOWN_FUNCTION(protobuf) {
-  UNREGISTER_INI_ENTRIES();
   return SUCCESS;
 }
 
@@ -335,7 +345,7 @@ zend_module_entry protobuf_module_entry = {
   PHP_RINIT(protobuf),      // request shutdown
   PHP_RSHUTDOWN(protobuf),  // request shutdown
   NULL,                     // extension info
-  PHP_PROTOBUF_VERSION,     // extension version
+  "3.13.0",                 // extension version
   PHP_MODULE_GLOBALS(protobuf),  // globals descriptor
   PHP_GINIT(protobuf),      // globals ctor
   PHP_GSHUTDOWN(protobuf),  // globals dtor

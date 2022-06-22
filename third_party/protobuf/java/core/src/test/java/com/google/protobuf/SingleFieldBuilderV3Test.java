@@ -30,103 +30,100 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import protobuf_unittest.UnittestProto.TestAllTypes;
 import protobuf_unittest.UnittestProto.TestAllTypesOrBuilder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import junit.framework.TestCase;
 
 /**
  * Tests for {@link SingleFieldBuilderV3}. This tests basic functionality. More extensive testing is
  * provided via other tests that exercise the builder.
+ *
+ * @author jonp@google.com (Jon Perlow)
  */
-@RunWith(JUnit4.class)
-public class SingleFieldBuilderV3Test {
+public class SingleFieldBuilderV3Test extends TestCase {
 
-  @Test
   public void testBasicUseAndInvalidations() {
     TestUtil.MockBuilderParent mockParent = new TestUtil.MockBuilderParent();
     SingleFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder> builder =
-        new SingleFieldBuilderV3<>(TestAllTypes.getDefaultInstance(), mockParent, false);
-    assertThat(builder.getMessage()).isSameInstanceAs(TestAllTypes.getDefaultInstance());
-    assertThat(builder.getBuilder().buildPartial()).isEqualTo(TestAllTypes.getDefaultInstance());
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(0);
+        new SingleFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder>(
+            TestAllTypes.getDefaultInstance(), mockParent, false);
+    assertSame(TestAllTypes.getDefaultInstance(), builder.getMessage());
+    assertEquals(TestAllTypes.getDefaultInstance(), builder.getBuilder().buildPartial());
+    assertEquals(0, mockParent.getInvalidationCount());
 
     builder.getBuilder().setOptionalInt32(10);
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(0);
+    assertEquals(0, mockParent.getInvalidationCount());
     TestAllTypes message = builder.build();
-    assertThat(message.getOptionalInt32()).isEqualTo(10);
+    assertEquals(10, message.getOptionalInt32());
 
     // Test that we receive invalidations now that build has been called.
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(0);
+    assertEquals(0, mockParent.getInvalidationCount());
     builder.getBuilder().setOptionalInt32(20);
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(1);
+    assertEquals(1, mockParent.getInvalidationCount());
 
     // Test that we don't keep getting invalidations on every change
     builder.getBuilder().setOptionalInt32(30);
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(1);
+    assertEquals(1, mockParent.getInvalidationCount());
   }
 
-  @Test
   public void testSetMessage() {
     TestUtil.MockBuilderParent mockParent = new TestUtil.MockBuilderParent();
     SingleFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder> builder =
-        new SingleFieldBuilderV3<>(TestAllTypes.getDefaultInstance(), mockParent, false);
+        new SingleFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder>(
+            TestAllTypes.getDefaultInstance(), mockParent, false);
     builder.setMessage(TestAllTypes.newBuilder().setOptionalInt32(0).build());
-    assertThat(builder.getMessage().getOptionalInt32()).isEqualTo(0);
+    assertEquals(0, builder.getMessage().getOptionalInt32());
 
     // Update message using the builder
     builder.getBuilder().setOptionalInt32(1);
-    assertThat(mockParent.getInvalidationCount()).isEqualTo(0);
-    assertThat(builder.getBuilder().getOptionalInt32()).isEqualTo(1);
-    assertThat(builder.getMessage().getOptionalInt32()).isEqualTo(1);
+    assertEquals(0, mockParent.getInvalidationCount());
+    assertEquals(1, builder.getBuilder().getOptionalInt32());
+    assertEquals(1, builder.getMessage().getOptionalInt32());
     builder.build();
     builder.getBuilder().setOptionalInt32(2);
-    assertThat(builder.getBuilder().getOptionalInt32()).isEqualTo(2);
-    assertThat(builder.getMessage().getOptionalInt32()).isEqualTo(2);
+    assertEquals(2, builder.getBuilder().getOptionalInt32());
+    assertEquals(2, builder.getMessage().getOptionalInt32());
 
     // Make sure message stays cached
-    assertThat(builder.getMessage()).isSameInstanceAs(builder.getMessage());
+    assertSame(builder.getMessage(), builder.getMessage());
   }
 
-  @Test
   public void testClear() {
     TestUtil.MockBuilderParent mockParent = new TestUtil.MockBuilderParent();
     SingleFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder> builder =
-        new SingleFieldBuilderV3<>(TestAllTypes.getDefaultInstance(), mockParent, false);
+        new SingleFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder>(
+            TestAllTypes.getDefaultInstance(), mockParent, false);
     builder.setMessage(TestAllTypes.newBuilder().setOptionalInt32(0).build());
-    assertThat(TestAllTypes.getDefaultInstance()).isNotSameInstanceAs(builder.getMessage());
+    assertNotSame(TestAllTypes.getDefaultInstance(), builder.getMessage());
     builder.clear();
-    assertThat(builder.getMessage()).isSameInstanceAs(TestAllTypes.getDefaultInstance());
+    assertSame(TestAllTypes.getDefaultInstance(), builder.getMessage());
 
     builder.getBuilder().setOptionalInt32(1);
-    assertThat(TestAllTypes.getDefaultInstance()).isNotSameInstanceAs(builder.getMessage());
+    assertNotSame(TestAllTypes.getDefaultInstance(), builder.getMessage());
     builder.clear();
-    assertThat(builder.getMessage()).isSameInstanceAs(TestAllTypes.getDefaultInstance());
+    assertSame(TestAllTypes.getDefaultInstance(), builder.getMessage());
   }
 
-  @Test
   public void testMerge() {
     TestUtil.MockBuilderParent mockParent = new TestUtil.MockBuilderParent();
     SingleFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder> builder =
-        new SingleFieldBuilderV3<>(TestAllTypes.getDefaultInstance(), mockParent, false);
+        new SingleFieldBuilderV3<TestAllTypes, TestAllTypes.Builder, TestAllTypesOrBuilder>(
+            TestAllTypes.getDefaultInstance(), mockParent, false);
 
     // Merge into default field.
     builder.mergeFrom(TestAllTypes.getDefaultInstance());
-    assertThat(builder.getMessage()).isSameInstanceAs(TestAllTypes.getDefaultInstance());
+    assertSame(TestAllTypes.getDefaultInstance(), builder.getMessage());
 
     // Merge into non-default field on existing builder.
     builder.getBuilder().setOptionalInt32(2);
     builder.mergeFrom(TestAllTypes.newBuilder().setOptionalDouble(4.0).buildPartial());
-    assertThat(builder.getMessage().getOptionalInt32()).isEqualTo(2);
-    assertThat(builder.getMessage().getOptionalDouble()).isEqualTo(4.0);
+    assertEquals(2, builder.getMessage().getOptionalInt32());
+    assertEquals(4.0, builder.getMessage().getOptionalDouble(), 0.0);
 
     // Merge into non-default field on existing message
     builder.setMessage(TestAllTypes.newBuilder().setOptionalInt32(10).buildPartial());
     builder.mergeFrom(TestAllTypes.newBuilder().setOptionalDouble(5.0).buildPartial());
-    assertThat(builder.getMessage().getOptionalInt32()).isEqualTo(10);
-    assertThat(builder.getMessage().getOptionalDouble()).isEqualTo(5.0);
+    assertEquals(10, builder.getMessage().getOptionalInt32());
+    assertEquals(5.0, builder.getMessage().getOptionalDouble(), 0.0);
   }
 }

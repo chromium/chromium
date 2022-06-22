@@ -31,8 +31,6 @@
 #ifndef GOOGLE_PROTOBUF_COMPILER_JAVA_MAP_FIELD_LITE_H__
 #define GOOGLE_PROTOBUF_COMPILER_JAVA_MAP_FIELD_LITE_H__
 
-#include <cstdint>
-
 #include <google/protobuf/compiler/java/java_field.h>
 
 namespace google {
@@ -45,19 +43,18 @@ class ImmutableMapFieldLiteGenerator : public ImmutableFieldLiteGenerator {
   explicit ImmutableMapFieldLiteGenerator(const FieldDescriptor* descriptor,
                                           int messageBitIndex,
                                           Context* context);
-  ~ImmutableMapFieldLiteGenerator() override;
+  ~ImmutableMapFieldLiteGenerator();
 
   // implements ImmutableFieldLiteGenerator ------------------------------------
-  int GetNumBitsForMessage() const override;
-  void GenerateInterfaceMembers(io::Printer* printer) const override;
-  void GenerateMembers(io::Printer* printer) const override;
-  void GenerateBuilderMembers(io::Printer* printer) const override;
-  void GenerateInitializationCode(io::Printer* printer) const override;
+  int GetNumBitsForMessage() const;
+  void GenerateInterfaceMembers(io::Printer* printer) const;
+  void GenerateMembers(io::Printer* printer) const;
+  void GenerateBuilderMembers(io::Printer* printer) const;
+  void GenerateInitializationCode(io::Printer* printer) const;
   void GenerateFieldInfo(io::Printer* printer,
-                         std::vector<uint16_t>* output) const override;
-  void GenerateKotlinDslMembers(io::Printer* printer) const override;
+                         std::vector<uint16>* output) const;
 
-  std::string GetBoxedType() const override;
+  std::string GetBoxedType() const;
 
  private:
   const FieldDescriptor* descriptor_;

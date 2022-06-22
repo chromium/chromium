@@ -30,7 +30,8 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 import com.google.protobuf.Descriptors.Descriptor;
 import protobuf_unittest.UnittestProto;
@@ -44,26 +45,26 @@ public final class TypeRegistryTest {
   @Test
   public void findDescriptorByFullName() throws Exception {
     Descriptor descriptor = UnittestProto.TestAllTypes.getDescriptor();
-    assertThat(TypeRegistry.getEmptyTypeRegistry().find(descriptor.getFullName())).isNull();
+    assertNull(TypeRegistry.getEmptyTypeRegistry().find(descriptor.getFullName()));
 
-    assertThat(TypeRegistry.newBuilder().add(descriptor).build().find(descriptor.getFullName()))
-        .isSameInstanceAs(descriptor);
+    assertSame(
+        descriptor,
+        TypeRegistry.newBuilder().add(descriptor).build().find(descriptor.getFullName()));
   }
 
   @Test
   public void findDescriptorByTypeUrl() throws Exception {
     Descriptor descriptor = UnittestProto.TestAllTypes.getDescriptor();
-    assertThat(
-            TypeRegistry.getEmptyTypeRegistry()
-                .getDescriptorForTypeUrl("type.googleapis.com/" + descriptor.getFullName()))
-        .isNull();
+    assertNull(
+        TypeRegistry.getEmptyTypeRegistry()
+            .getDescriptorForTypeUrl("type.googleapis.com/" + descriptor.getFullName()));
 
-    assertThat(
-            TypeRegistry.newBuilder()
-                .add(descriptor)
-                .build()
-                .getDescriptorForTypeUrl("type.googleapis.com/" + descriptor.getFullName()))
-        .isSameInstanceAs(descriptor);
+    assertSame(
+        descriptor,
+        TypeRegistry.newBuilder()
+            .add(descriptor)
+            .build()
+            .getDescriptorForTypeUrl("type.googleapis.com/" + descriptor.getFullName()));
   }
 
 }

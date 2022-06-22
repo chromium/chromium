@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+#
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
 # https://developers.google.com/protocol-buffers/
@@ -34,8 +36,12 @@ __author__ = 'matthewtoia@google.com (Matt Toia)'
 
 import copy
 import os
-import unittest
 import warnings
+
+try:
+  import unittest2 as unittest  #PY26
+except ImportError:
+  import unittest
 
 from google.protobuf import unittest_import_pb2
 from google.protobuf import unittest_import_public_pb2
@@ -401,19 +407,9 @@ class DescriptorPoolTestBase(object):
         # TODO(jieluo): Fix python and cpp extension diff.
         return
     self.pool = descriptor_pool.DescriptorPool()
-    file1 = self.pool.AddSerializedFile(
-        self.factory_test1_fd.SerializeToString())
-    file2 = self.pool.AddSerializedFile(
-        self.factory_test2_fd.SerializeToString())
-    self.assertEqual(file1.name,
-                     'google/protobuf/internal/factory_test1.proto')
-    self.assertEqual(file2.name,
-                     'google/protobuf/internal/factory_test2.proto')
+    self.pool.AddSerializedFile(self.factory_test1_fd.SerializeToString())
+    self.pool.AddSerializedFile(self.factory_test2_fd.SerializeToString())
     self.testFindMessageTypeByName()
-    file_json = self.pool.AddSerializedFile(
-        more_messages_pb2.DESCRIPTOR.serialized_pb)
-    field = file_json.message_types_by_name['class'].fields_by_name['int_field']
-    self.assertEqual(field.json_name, 'json_int')
 
 
   def testEnumDefaultValue(self):
@@ -541,13 +537,7 @@ class DescriptorPoolTestBase(object):
       pool._AddExtensionDescriptor(
           file_descriptor.extensions_by_name['optional_int32_extension'])
       pool.Add(unittest_fd)
-      with warnings.catch_warnings(record=True) as w:
-        warnings.simplefilter('always')
-        pool.Add(conflict_fd)
-        self.assertTrue(len(w))
-        self.assertIs(w[0].category, RuntimeWarning)
-        self.assertIn('Conflict register for file "other_file": ',
-                      str(w[0].message))
+      pool.Add(conflict_fd)
       pool.FindFileByName(unittest_fd.name)
       with self.assertRaises(TypeError):
         pool.FindFileByName(conflict_fd.name)
@@ -654,11 +644,11 @@ class SecondaryDescriptorFromDescriptorDB(DescriptorPoolTestBase,
     enum_value.number = 0
     self.db.Add(file_proto)
 
-    self.assertRaisesRegex(KeyError, 'SubMessage',
-                           self.pool.FindMessageTypeByName,
-                           'collector.ErrorMessage')
-    self.assertRaisesRegex(KeyError, 'SubMessage', self.pool.FindFileByName,
-                           'error_file')
+    self.assertRaisesRegexp(KeyError, 'SubMessage',
+                            self.pool.FindMessageTypeByName,
+                            'collector.ErrorMessage')
+    self.assertRaisesRegexp(KeyError, 'SubMessage',
+                            self.pool.FindFileByName, 'error_file')
     with self.assertRaises(KeyError) as exc:
       self.pool.FindFileByName('none_file')
     self.assertIn(str(exc.exception), ('\'none_file\'',

@@ -30,10 +30,11 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import com.google.protobuf.testing.Proto2Testing.Proto2Message;
 import com.google.protobuf.testing.Proto3Testing.Proto3Message;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,15 +58,15 @@ public final class BinaryProtocolTest {
     // Deserialize with BinaryReader and verify that the message matches the original.
     Proto3Message result =
         ExperimentalSerializationUtil.fromByteArray(expectedBytes, Proto3Message.class);
-    assertThat(result).isEqualTo(expected);
+    assertEquals(expected, result);
 
     // Now write it back out using BinaryWriter and verify the output length.
     byte[] actualBytes = ExperimentalSerializationUtil.toByteArray(result);
-    assertThat(actualBytes).hasLength(expectedBytes.length);
+    Assert.assertEquals(expectedBytes.length, actualBytes.length);
 
     // Read back in the bytes and verify that it matches the original message.
     Proto3Message actual = Proto3Message.parseFrom(actualBytes);
-    assertThat(actual).isEqualTo(expected);
+    assertEquals(expected, actual);
   }
 
   @Test
@@ -76,14 +77,14 @@ public final class BinaryProtocolTest {
     // Deserialize with BinaryReader and verify that the message matches the original.
     Proto2Message result =
         ExperimentalSerializationUtil.fromByteArray(expectedBytes, Proto2Message.class);
-    assertThat(result).isEqualTo(expected);
+    assertEquals(expected, result);
 
     // Now write it back out using BinaryWriter and verify the output length.
     byte[] actualBytes = ExperimentalSerializationUtil.toByteArray(result);
-    assertThat(actualBytes).hasLength(expectedBytes.length);
+    Assert.assertEquals(expectedBytes.length, actualBytes.length);
 
     // Read back in the bytes and verify that it matches the original message.
     Proto2Message actual = Proto2Message.parseFrom(actualBytes);
-    assertThat(actual).isEqualTo(expected);
+    assertEquals(expected, actual);
   }
 }

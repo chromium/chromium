@@ -176,11 +176,11 @@ class MethodDescriptorProto extends \Google\Protobuf\Internal\Message
 
     /**
      * Generated from protobuf field <code>optional .google.protobuf.MethodOptions options = 4;</code>
-     * @return \Google\Protobuf\Internal\MethodOptions|null
+     * @return \Google\Protobuf\Internal\MethodOptions
      */
     public function getOptions()
     {
-        return $this->options;
+        return isset($this->options) ? $this->options : null;
     }
 
     public function hasOptions()

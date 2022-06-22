@@ -41,26 +41,30 @@ namespace compiler {
 namespace objectivec {
 
 class PrimitiveFieldGenerator : public SingleFieldGenerator {
-  friend FieldGenerator* FieldGenerator::Make(const FieldDescriptor* field);
+  friend FieldGenerator* FieldGenerator::Make(const FieldDescriptor* field,
+                                              const Options& options);
 
  protected:
-  PrimitiveFieldGenerator(const FieldDescriptor* descriptor);
+  PrimitiveFieldGenerator(const FieldDescriptor* descriptor,
+                          const Options& options);
   virtual ~PrimitiveFieldGenerator();
 
   PrimitiveFieldGenerator(const PrimitiveFieldGenerator&) = delete;
   PrimitiveFieldGenerator& operator=(const PrimitiveFieldGenerator&) = delete;
 
-  virtual void GenerateFieldStorageDeclaration(io::Printer* printer) const override;
+  virtual void GenerateFieldStorageDeclaration(io::Printer* printer) const;
 
-  virtual int ExtraRuntimeHasBitsNeeded(void) const override;
-  virtual void SetExtraRuntimeHasBitsBase(int index_base) override;
+  virtual int ExtraRuntimeHasBitsNeeded(void) const;
+  virtual void SetExtraRuntimeHasBitsBase(int index_base);
 };
 
 class PrimitiveObjFieldGenerator : public ObjCObjFieldGenerator {
-  friend FieldGenerator* FieldGenerator::Make(const FieldDescriptor* field);
+  friend FieldGenerator* FieldGenerator::Make(const FieldDescriptor* field,
+                                              const Options& options);
 
  protected:
-  PrimitiveObjFieldGenerator(const FieldDescriptor* descriptor);
+  PrimitiveObjFieldGenerator(const FieldDescriptor* descriptor,
+                             const Options& options);
   virtual ~PrimitiveObjFieldGenerator();
 
   PrimitiveObjFieldGenerator(const PrimitiveObjFieldGenerator&) = delete;
@@ -69,10 +73,12 @@ class PrimitiveObjFieldGenerator : public ObjCObjFieldGenerator {
 };
 
 class RepeatedPrimitiveFieldGenerator : public RepeatedFieldGenerator {
-  friend FieldGenerator* FieldGenerator::Make(const FieldDescriptor* field);
+  friend FieldGenerator* FieldGenerator::Make(const FieldDescriptor* field,
+                                              const Options& options);
 
  protected:
-  RepeatedPrimitiveFieldGenerator(const FieldDescriptor* descriptor);
+  RepeatedPrimitiveFieldGenerator(const FieldDescriptor* descriptor,
+                                  const Options& options);
   virtual ~RepeatedPrimitiveFieldGenerator();
 
   RepeatedPrimitiveFieldGenerator(const RepeatedPrimitiveFieldGenerator&) =

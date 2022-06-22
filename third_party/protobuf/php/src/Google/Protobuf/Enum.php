@@ -20,7 +20,7 @@ class Enum extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    protected $name = '';
+    private $name = '';
     /**
      * Enum value definitions.
      *
@@ -38,13 +38,13 @@ class Enum extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.SourceContext source_context = 4;</code>
      */
-    protected $source_context = null;
+    private $source_context = null;
     /**
      * The source syntax.
      *
      * Generated from protobuf field <code>.google.protobuf.Syntax syntax = 5;</code>
      */
-    protected $syntax = 0;
+    private $syntax = 0;
 
     /**
      * Constructor.
@@ -151,21 +151,11 @@ class Enum extends \Google\Protobuf\Internal\Message
      * The source context.
      *
      * Generated from protobuf field <code>.google.protobuf.SourceContext source_context = 4;</code>
-     * @return \Google\Protobuf\SourceContext|null
+     * @return \Google\Protobuf\SourceContext
      */
     public function getSourceContext()
     {
         return $this->source_context;
-    }
-
-    public function hasSourceContext()
-    {
-        return isset($this->source_context);
-    }
-
-    public function clearSourceContext()
-    {
-        unset($this->source_context);
     }
 
     /**

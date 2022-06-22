@@ -85,7 +85,7 @@ public class MapField<K, V> implements MutabilityOracle {
 
   private volatile boolean isMutable;
   private volatile StorageMode mode;
-  private MutabilityAwareMap<K, V> mapData;
+  private MutatabilityAwareMap<K, V> mapData;
   private List<Message> listData;
 
   // Convert between a map entry Message and a key-value pair.
@@ -129,7 +129,7 @@ public class MapField<K, V> implements MutabilityOracle {
     this.converter = converter;
     this.isMutable = true;
     this.mode = mode;
-    this.mapData = new MutabilityAwareMap<K, V>(this, mapData);
+    this.mapData = new MutatabilityAwareMap<K, V>(this, mapData);
     this.listData = null;
   }
 
@@ -154,11 +154,12 @@ public class MapField<K, V> implements MutabilityOracle {
     return converter.convertKeyAndValueToMessage(key, value);
   }
 
+  @SuppressWarnings("unchecked")
   private void convertMessageToKeyAndValue(Message message, Map<K, V> map) {
     converter.convertMessageToKeyAndValue(message, map);
   }
 
-  private List<Message> convertMapToList(MutabilityAwareMap<K, V> mapData) {
+  private List<Message> convertMapToList(MutatabilityAwareMap<K, V> mapData) {
     List<Message> listData = new ArrayList<Message>();
     for (Map.Entry<K, V> entry : mapData.entrySet()) {
       listData.add(convertKeyAndValueToMessage(entry.getKey(), entry.getValue()));
@@ -166,12 +167,12 @@ public class MapField<K, V> implements MutabilityOracle {
     return listData;
   }
 
-  private MutabilityAwareMap<K, V> convertListToMap(List<Message> listData) {
+  private MutatabilityAwareMap<K, V> convertListToMap(List<Message> listData) {
     Map<K, V> mapData = new LinkedHashMap<K, V>();
     for (Message item : listData) {
       convertMessageToKeyAndValue(item, mapData);
     }
-    return new MutabilityAwareMap<K, V>(this, mapData);
+    return new MutatabilityAwareMap<K, V>(this, mapData);
   }
 
   /** Returns the content of this MapField as a read-only Map. */
@@ -204,7 +205,7 @@ public class MapField<K, V> implements MutabilityOracle {
   }
 
   public void clear() {
-    mapData = new MutabilityAwareMap<K, V>(this, new LinkedHashMap<K, V>());
+    mapData = new MutatabilityAwareMap<K, V>(this, new LinkedHashMap<K, V>());
     mode = StorageMode.MAP;
   }
 
@@ -282,11 +283,11 @@ public class MapField<K, V> implements MutabilityOracle {
   }
 
   /** An internal map that checks for mutability before delegating. */
-  private static class MutabilityAwareMap<K, V> implements Map<K, V> {
+  private static class MutatabilityAwareMap<K, V> implements Map<K, V> {
     private final MutabilityOracle mutabilityOracle;
     private final Map<K, V> delegate;
 
-    MutabilityAwareMap(MutabilityOracle mutabilityOracle, Map<K, V> delegate) {
+    MutatabilityAwareMap(MutabilityOracle mutabilityOracle, Map<K, V> delegate) {
       this.mutabilityOracle = mutabilityOracle;
       this.delegate = delegate;
     }
@@ -348,17 +349,17 @@ public class MapField<K, V> implements MutabilityOracle {
 
     @Override
     public Set<K> keySet() {
-      return new MutabilityAwareSet<K>(mutabilityOracle, delegate.keySet());
+      return new MutatabilityAwareSet<K>(mutabilityOracle, delegate.keySet());
     }
 
     @Override
     public Collection<V> values() {
-      return new MutabilityAwareCollection<V>(mutabilityOracle, delegate.values());
+      return new MutatabilityAwareCollection<V>(mutabilityOracle, delegate.values());
     }
 
     @Override
     public Set<java.util.Map.Entry<K, V>> entrySet() {
-      return new MutabilityAwareSet<Entry<K, V>>(mutabilityOracle, delegate.entrySet());
+      return new MutatabilityAwareSet<Entry<K, V>>(mutabilityOracle, delegate.entrySet());
     }
 
     @Override
@@ -377,11 +378,11 @@ public class MapField<K, V> implements MutabilityOracle {
     }
 
     /** An internal collection that checks for mutability before delegating. */
-    private static class MutabilityAwareCollection<E> implements Collection<E> {
+    private static class MutatabilityAwareCollection<E> implements Collection<E> {
       private final MutabilityOracle mutabilityOracle;
       private final Collection<E> delegate;
 
-      MutabilityAwareCollection(MutabilityOracle mutabilityOracle, Collection<E> delegate) {
+      MutatabilityAwareCollection(MutabilityOracle mutabilityOracle, Collection<E> delegate) {
         this.mutabilityOracle = mutabilityOracle;
         this.delegate = delegate;
       }
@@ -403,7 +404,7 @@ public class MapField<K, V> implements MutabilityOracle {
 
       @Override
       public Iterator<E> iterator() {
-        return new MutabilityAwareIterator<E>(mutabilityOracle, delegate.iterator());
+        return new MutatabilityAwareIterator<E>(mutabilityOracle, delegate.iterator());
       }
 
       @Override
@@ -474,11 +475,11 @@ public class MapField<K, V> implements MutabilityOracle {
     }
 
     /** An internal set that checks for mutability before delegating. */
-    private static class MutabilityAwareSet<E> implements Set<E> {
+    private static class MutatabilityAwareSet<E> implements Set<E> {
       private final MutabilityOracle mutabilityOracle;
       private final Set<E> delegate;
 
-      MutabilityAwareSet(MutabilityOracle mutabilityOracle, Set<E> delegate) {
+      MutatabilityAwareSet(MutabilityOracle mutabilityOracle, Set<E> delegate) {
         this.mutabilityOracle = mutabilityOracle;
         this.delegate = delegate;
       }
@@ -500,7 +501,7 @@ public class MapField<K, V> implements MutabilityOracle {
 
       @Override
       public Iterator<E> iterator() {
-        return new MutabilityAwareIterator<E>(mutabilityOracle, delegate.iterator());
+        return new MutatabilityAwareIterator<E>(mutabilityOracle, delegate.iterator());
       }
 
       @Override
@@ -571,11 +572,11 @@ public class MapField<K, V> implements MutabilityOracle {
     }
 
     /** An internal iterator that checks for mutability before delegating. */
-    private static class MutabilityAwareIterator<E> implements Iterator<E> {
+    private static class MutatabilityAwareIterator<E> implements Iterator<E> {
       private final MutabilityOracle mutabilityOracle;
       private final Iterator<E> delegate;
 
-      MutabilityAwareIterator(MutabilityOracle mutabilityOracle, Iterator<E> delegate) {
+      MutatabilityAwareIterator(MutabilityOracle mutabilityOracle, Iterator<E> delegate) {
         this.mutabilityOracle = mutabilityOracle;
         this.delegate = delegate;
       }

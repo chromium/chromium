@@ -256,11 +256,11 @@ class PROTOBUF_EXPORT GrowingArrayByteSink : public strings::ByteSink {
 //
 class PROTOBUF_EXPORT StringByteSink : public ByteSink {
  public:
-  explicit StringByteSink(std::string* dest) : dest_(dest) {}
+  explicit StringByteSink(string* dest) : dest_(dest) {}
   virtual void Append(const char* data, size_t n) override;
 
  private:
-  std::string* dest_;
+  string* dest_;
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(StringByteSink);
 };
 

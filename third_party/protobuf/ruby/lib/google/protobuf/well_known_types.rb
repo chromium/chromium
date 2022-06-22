@@ -82,14 +82,9 @@ module Google
         end
       end
 
-      def self.from_time(time)
-        new.from_time(time)
-      end
-
       def from_time(time)
         self.seconds = time.to_i
         self.nanos = time.nsec
-        self
       end
 
       def to_i
@@ -137,14 +132,10 @@ module Google
         end
       end
 
-      def self.from_ruby(value)
-        self.new.from_ruby(value)
-      end
-
       def from_ruby(value)
         case value
         when NilClass
-          self.null_value = :NULL_VALUE
+          self.null_value = 0
         when Numeric
           self.number_value = value
         when String
@@ -164,8 +155,6 @@ module Google
         else
           raise UnexpectedStructType
         end
-
-        self
       end
     end
 
@@ -236,5 +225,6 @@ module Google
         ret
       end
     end
+
   end
 end

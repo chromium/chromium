@@ -34,14 +34,11 @@ syntax = "proto2";
 
 package google.protobuf.internal;
 
+
 message TopLevelMessage {
-  optional ExtendedMessage submessage = 1 [lazy = true];
-  optional NestedMessage nested_message = 2 [lazy = true];
+  optional ExtendedMessage submessage = 1;
 }
 
-message NestedMessage {
-  optional ExtendedMessage submessage = 1 [lazy = true];
-}
 
 message ExtendedMessage {
   optional int32 optional_int32 = 1001;
@@ -49,9 +46,11 @@ message ExtendedMessage {
   extensions 1 to 999;
 }
 
+
 message ForeignMessage {
   optional int32 foreign_message_int = 1;
 }
+
 
 extend ExtendedMessage {
   optional int32 optional_int_extension = 1;

@@ -22,7 +22,7 @@ class SourceContext extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string file_name = 1;</code>
      */
-    protected $file_name = '';
+    private $file_name = '';
 
     /**
      * Constructor.

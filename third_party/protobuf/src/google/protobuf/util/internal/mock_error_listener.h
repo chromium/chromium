@@ -44,7 +44,7 @@ namespace converter {
 class MockErrorListener : public ErrorListener {
  public:
   MockErrorListener() {}
-  ~MockErrorListener() override {}
+  virtual ~MockErrorListener() {}
 
   MOCK_METHOD(void, InvalidName,
               (const LocationTrackerInterface& loc,

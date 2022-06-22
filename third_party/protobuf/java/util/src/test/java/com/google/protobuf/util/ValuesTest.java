@@ -38,25 +38,19 @@ import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import junit.framework.TestCase;
 
-@RunWith(JUnit4.class)
-public final class ValuesTest {
-  @Test
+public final class ValuesTest extends TestCase {
   public void testOfNull_IsNullValue() throws Exception {
     assertThat(Values.ofNull())
         .isEqualTo(Value.newBuilder().setNullValue(NullValue.NULL_VALUE).build());
   }
 
-  @Test
   public void testOfBoolean_ConstructsValue() {
     assertThat(Values.of(true)).isEqualTo(Value.newBuilder().setBoolValue(true).build());
     assertThat(Values.of(false)).isEqualTo(Value.newBuilder().setBoolValue(false).build());
   }
 
-  @Test
   public void testOfNumeric_ConstructsValue() {
     assertThat(Values.of(100)).isEqualTo(Value.newBuilder().setNumberValue(100).build());
     assertThat(Values.of(1000L)).isEqualTo(Value.newBuilder().setNumberValue(1000).build());
@@ -64,13 +58,11 @@ public final class ValuesTest {
     assertThat(Values.of(10000.23)).isEqualTo(Value.newBuilder().setNumberValue(10000.23).build());
   }
 
-  @Test
   public void testOfString_ConstructsValue() {
     assertThat(Values.of("")).isEqualTo(Value.newBuilder().setStringValue("").build());
     assertThat(Values.of("foo")).isEqualTo(Value.newBuilder().setStringValue("foo").build());
   }
 
-  @Test
   public void testOfStruct_ConstructsValue() {
     Struct.Builder builder = Struct.newBuilder();
     builder.putFields("a", Values.of("a"));
@@ -80,7 +72,6 @@ public final class ValuesTest {
         .isEqualTo(Value.newBuilder().setStructValue(builder.build()).build());
   }
 
-  @Test
   public void testOfListValue_ConstructsInstance() {
     ListValue.Builder builder = ListValue.newBuilder();
     builder.addValues(Values.of(1));
@@ -90,7 +81,6 @@ public final class ValuesTest {
         .isEqualTo(Value.newBuilder().setListValue(builder.build()).build());
   }
 
-  @Test
   public void testOfIterable_ReturnsTheValue() {
     ListValue.Builder builder = ListValue.newBuilder();
     builder.addValues(Values.of(1));

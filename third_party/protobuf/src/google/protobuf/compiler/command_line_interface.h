@@ -38,7 +38,6 @@
 #ifndef GOOGLE_PROTOBUF_COMPILER_COMMAND_LINE_INTERFACE_H__
 #define GOOGLE_PROTOBUF_COMPILER_COMMAND_LINE_INTERFACE_H__
 
-#include <cstdint>
 #include <map>
 #include <memory>
 #include <set>
@@ -49,8 +48,6 @@
 #include <vector>
 
 #include <google/protobuf/stubs/common.h>
-
-// Must be included last.
 #include <google/protobuf/port_def.inc>
 
 namespace google {
@@ -229,10 +226,15 @@ class PROTOC_EXPORT CommandLineInterface {
   bool MakeInputsBeProtoPathRelative(DiskSourceTree* source_tree,
                                      DescriptorDatabase* fallback_database);
 
+  // Is this .proto file whitelisted, or do we have a command-line flag allowing
+  // us to use proto3 optional? This is a temporary control to avoid people from
+  // using proto3 optional until code generators have implemented it.
+  bool AllowProto3Optional(const FileDescriptor& file) const;
+
   // Fails if these files use proto3 optional and the code generator doesn't
   // support it. This is a permanent check.
   bool EnforceProto3OptionalSupport(
-      const std::string& codegen_name, uint64_t supported_features,
+      const std::string& codegen_name, uint64 supported_features,
       const std::vector<const FileDescriptor*>& parsed_files) const;
 
 
@@ -395,9 +397,6 @@ class PROTOC_EXPORT CommandLineInterface {
 
   ErrorFormat error_format_ = ERROR_FORMAT_GCC;
 
-  // True if we should treat warnings as errors that fail the compilation.
-  bool fatal_warnings_ = false;
-
   std::vector<std::pair<std::string, std::string> >
       proto_path_;                        // Search path for proto files.
   std::vector<std::string> input_files_;  // Names of the input proto files.
@@ -449,8 +448,8 @@ class PROTOC_EXPORT CommandLineInterface {
   // Was the --disallow_services flag used?
   bool disallow_services_ = false;
 
-  // When using --encode, this will be passed to SetSerializationDeterministic.
-  bool deterministic_output_ = false;
+  // Was the --experimental_allow_proto3_optional flag used?
+  bool allow_proto3_optional_ = false;
 
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(CommandLineInterface);
 };

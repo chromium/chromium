@@ -1,0 +1,63 @@
+diff --git a/src/google/protobuf/util/delimited_message_util.cc b/src/google/protobuf/util/delimited_message_util.cc
+index 425dc2cfdff8..80cab309be3d 100644
+--- a/src/google/protobuf/util/delimited_message_util.cc
++++ b/src/google/protobuf/util/delimited_message_util.cc
+@@ -74,12 +74,18 @@ bool ParseDelimitedFromCodedStream(MessageLite* message,
+     return false;
+   }
+ 
++  // Get the position after any size bytes have been read (and only the message
++  // itself remains).
++  int position_after_size = input->CurrentPosition();
++
+   // Tell the stream not to read beyond that size.
+   io::CodedInputStream::Limit limit = input->PushLimit(size);
+ 
+   // Parse the message.
+   if (!message->MergeFromCodedStream(input)) return false;
+   if (!input->ConsumedEntireMessage()) return false;
++  if (input->CurrentPosition() - position_after_size != static_cast<int>(size))
++    return false;
+ 
+   // Release the limit.
+   input->PopLimit(limit);
+diff --git a/src/google/protobuf/util/delimited_message_util_test.cc b/src/google/protobuf/util/delimited_message_util_test.cc
+index 9ed67784ee1c..9483a646e738 100644
+--- a/src/google/protobuf/util/delimited_message_util_test.cc
++++ b/src/google/protobuf/util/delimited_message_util_test.cc
+@@ -82,6 +82,35 @@ TEST(DelimitedMessageUtilTest, DelimitedMessages) {
+   }
+ }
+ 
++TEST(DelimitedMessageUtilTest, FailsAtEndOfStream) {
++  std::stringstream full_stream;
++  std::stringstream partial_stream;
++
++  {
++    protobuf_unittest::ForeignMessage message;
++    message.set_c(42);
++    message.set_d(24);
++    EXPECT_TRUE(SerializeDelimitedToOstream(message, &full_stream));
++
++    std::string full_output = full_stream.str();
++    ASSERT_GT(full_output.size(), size_t{2});
++    ASSERT_EQ(full_output[0], 4);
++
++    partial_stream << full_output[0] << full_output[1] << full_output[2];
++  }
++
++  {
++    bool clean_eof;
++    io::IstreamInputStream zstream(&partial_stream);
++
++    protobuf_unittest::ForeignMessage message;
++    clean_eof = true;
++    EXPECT_FALSE(ParseDelimitedFromZeroCopyStream(&message,
++        &zstream, &clean_eof));
++    EXPECT_FALSE(clean_eof);
++  }
++}
++
+ }  // namespace util
+ }  // namespace protobuf
+ }  // namespace google

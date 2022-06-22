@@ -30,17 +30,16 @@
 
 #include <google/protobuf/compiler/annotation_test_util.h>
 
-#include <cstdint>
 #include <memory>
-
-#include <google/protobuf/testing/file.h>
-#include <google/protobuf/testing/file.h>
 #include <google/protobuf/compiler/code_generator.h>
 #include <google/protobuf/compiler/command_line_interface.h>
 #include <google/protobuf/io/printer.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <google/protobuf/descriptor.pb.h>
+
+#include <google/protobuf/testing/file.h>
+#include <google/protobuf/testing/file.h>
 #include <google/protobuf/testing/googletest.h>
 #include <gtest/gtest.h>
 
@@ -58,8 +57,9 @@ class DescriptorCapturingGenerator : public CodeGenerator {
   explicit DescriptorCapturingGenerator(FileDescriptorProto* file)
       : file_(file) {}
 
-  bool Generate(const FileDescriptor* file, const std::string& parameter,
-                GeneratorContext* context, std::string* error) const override {
+  virtual bool Generate(const FileDescriptor* file,
+                        const std::string& parameter, GeneratorContext* context,
+                        std::string* error) const {
     file->CopyTo(file_);
     return true;
   }
@@ -127,7 +127,7 @@ const GeneratedCodeInfo::Annotation* FindAnnotationOnPath(
   std::vector<const GeneratedCodeInfo::Annotation*> annotations;
   FindAnnotationsOnPath(info, source_file, path, &annotations);
   if (annotations.empty()) {
-    return nullptr;
+    return NULL;
   }
   return annotations[0];
 }
@@ -141,8 +141,8 @@ bool AtLeastOneAnnotationMatchesSubstring(
            e = annotations.end();
        i != e; ++i) {
     const GeneratedCodeInfo::Annotation* annotation = *i;
-    uint32_t begin = annotation->begin();
-    uint32_t end = annotation->end();
+    uint32 begin = annotation->begin();
+    uint32 end = annotation->end();
     if (end < begin || end > file_content.size()) {
       return false;
     }

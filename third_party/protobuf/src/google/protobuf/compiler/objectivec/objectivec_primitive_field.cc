@@ -125,8 +125,8 @@ void SetPrimitiveVariables(const FieldDescriptor* descriptor,
 }  // namespace
 
 PrimitiveFieldGenerator::PrimitiveFieldGenerator(
-    const FieldDescriptor* descriptor)
-    : SingleFieldGenerator(descriptor) {
+    const FieldDescriptor* descriptor, const Options& options)
+    : SingleFieldGenerator(descriptor, options) {
   SetPrimitiveVariables(descriptor, &variables_);
 }
 
@@ -159,8 +159,8 @@ void PrimitiveFieldGenerator::SetExtraRuntimeHasBitsBase(int has_base) {
 }
 
 PrimitiveObjFieldGenerator::PrimitiveObjFieldGenerator(
-    const FieldDescriptor* descriptor)
-    : ObjCObjFieldGenerator(descriptor) {
+    const FieldDescriptor* descriptor, const Options& options)
+    : ObjCObjFieldGenerator(descriptor, options) {
   SetPrimitiveVariables(descriptor, &variables_);
   variables_["property_storage_attribute"] = "copy";
 }
@@ -168,8 +168,8 @@ PrimitiveObjFieldGenerator::PrimitiveObjFieldGenerator(
 PrimitiveObjFieldGenerator::~PrimitiveObjFieldGenerator() {}
 
 RepeatedPrimitiveFieldGenerator::RepeatedPrimitiveFieldGenerator(
-    const FieldDescriptor* descriptor)
-    : RepeatedFieldGenerator(descriptor) {
+    const FieldDescriptor* descriptor, const Options& options)
+    : RepeatedFieldGenerator(descriptor, options) {
   SetPrimitiveVariables(descriptor, &variables_);
 
   std::string base_name = PrimitiveArrayTypeName(descriptor);

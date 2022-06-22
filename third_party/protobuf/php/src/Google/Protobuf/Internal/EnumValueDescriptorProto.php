@@ -112,11 +112,11 @@ class EnumValueDescriptorProto extends \Google\Protobuf\Internal\Message
 
     /**
      * Generated from protobuf field <code>optional .google.protobuf.EnumValueOptions options = 3;</code>
-     * @return \Google\Protobuf\Internal\EnumValueOptions|null
+     * @return \Google\Protobuf\Internal\EnumValueOptions
      */
     public function getOptions()
     {
-        return $this->options;
+        return isset($this->options) ? $this->options : null;
     }
 
     public function hasOptions()

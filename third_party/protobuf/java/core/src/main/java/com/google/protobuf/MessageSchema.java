@@ -82,7 +82,6 @@ import java.util.List;
 import java.util.Map;
 
 /** Schema used for standard messages. */
-@CheckReturnValue
 final class MessageSchema<T> implements Schema<T> {
   private static final int INTS_PER_FIELD = 3;
   private static final int OFFSET_BITS = 20;
@@ -2534,6 +2533,7 @@ final class MessageSchema<T> implements Schema<T> {
     return (List<?>) UnsafeUtil.getObject(message, offset);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   // TODO(nathanmittler): Consider serializing oneof fields last so that only one entry per
   // oneof is actually serialized. This would mean that we would violate the serialization order
@@ -2572,7 +2572,7 @@ final class MessageSchema<T> implements Schema<T> {
 
       int presenceMaskAndOffset = 0;
       int presenceMask = 0;
-      if (fieldType <= 17) {
+      if (!proto3 && fieldType <= 17) {
         presenceMaskAndOffset = buffer[pos + 2];
         final int presenceFieldOffset = presenceMaskAndOffset & OFFSET_MASK;
         if (presenceFieldOffset != currentPresenceFieldOffset) {
@@ -4875,7 +4875,6 @@ final class MessageSchema<T> implements Schema<T> {
    * group (endGroup != 0), parsing ends when a tag == endGroup is encountered and the position
    * after that tag is returned.
    */
-  @CanIgnoreReturnValue
   int parseProto2Message(
       T message, byte[] data, int position, int limit, int endGroup, Registers registers)
       throws IOException {
@@ -5185,7 +5184,6 @@ final class MessageSchema<T> implements Schema<T> {
   }
 
   /** Parses a proto3 message and returns the limit if parsing is successful. */
-  @CanIgnoreReturnValue
   private int parseProto3Message(
       T message, byte[] data, int position, int limit, Registers registers) throws IOException {
     final sun.misc.Unsafe unsafe = UNSAFE;
@@ -5810,9 +5808,9 @@ final class MessageSchema<T> implements Schema<T> {
       final long offset = offset(typeAndOffset);
       switch (type(typeAndOffset)) {
         case 0: // DOUBLE:
-            return Double.doubleToRawLongBits(UnsafeUtil.getDouble(message, offset)) != 0L;
+          return UnsafeUtil.getDouble(message, offset) != 0D;
         case 1: // FLOAT:
-            return Float.floatToRawIntBits(UnsafeUtil.getFloat(message, offset)) != 0;
+          return UnsafeUtil.getFloat(message, offset) != 0F;
         case 2: // INT64:
           return UnsafeUtil.getLong(message, offset) != 0L;
         case 3: // UINT64:

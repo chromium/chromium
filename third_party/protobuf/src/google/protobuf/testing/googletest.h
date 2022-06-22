@@ -49,19 +49,19 @@ namespace google {
 namespace protobuf {
 
 // When running unittests, get the directory containing the source code.
-std::string TestSourceDir();
+string TestSourceDir();
 
 // When running unittests, get a directory where temporary files may be
 // placed.
-std::string TestTempDir();
+string TestTempDir();
 
 // Capture all text written to stdout or stderr.
 void CaptureTestStdout();
 void CaptureTestStderr();
 
 // Stop capturing stdout or stderr and return the text captured.
-std::string GetCapturedTestStdout();
-std::string GetCapturedTestStderr();
+string GetCapturedTestStdout();
+string GetCapturedTestStderr();
 
 // For use with ScopedMemoryLog::GetMessages().  Inside Google the LogLevel
 // constants don't have the LOGLEVEL_ prefix, so the code that used
@@ -84,14 +84,14 @@ class ScopedMemoryLog {
   virtual ~ScopedMemoryLog();
 
   // Fetches all messages with the given severity level.
-  const std::vector<std::string>& GetMessages(LogLevel error);
+  const std::vector<string>& GetMessages(LogLevel error);
 
  private:
-  std::map<LogLevel, std::vector<std::string> > messages_;
+  std::map<LogLevel, std::vector<string> > messages_;
   LogHandler* old_handler_;
 
   static void HandleLog(LogLevel level, const char* filename, int line,
-                        const std::string& message);
+                        const string& message);
 
   static ScopedMemoryLog* active_log_;
 

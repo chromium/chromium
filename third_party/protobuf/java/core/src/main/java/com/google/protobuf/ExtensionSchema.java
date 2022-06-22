@@ -33,7 +33,6 @@ package com.google.protobuf;
 import java.io.IOException;
 import java.util.Map;
 
-@CheckReturnValue
 abstract class ExtensionSchema<T extends FieldSet.FieldDescriptorLite<T>> {
 
   /** Returns true for messages that support extensions. */

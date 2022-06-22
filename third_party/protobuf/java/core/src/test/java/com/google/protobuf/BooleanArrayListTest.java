@@ -30,22 +30,20 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
 import static java.util.Arrays.asList;
 
 import com.google.protobuf.Internal.BooleanList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import junit.framework.TestCase;
 
-/** Tests for {@link BooleanArrayList}. */
-@RunWith(JUnit4.class)
-public class BooleanArrayListTest {
+/**
+ * Tests for {@link BooleanArrayList}.
+ *
+ * @author dweis@google.com (Daniel Weis)
+ */
+public class BooleanArrayListTest extends TestCase {
 
   private static final BooleanArrayList UNARY_LIST = newImmutableBooleanArrayList(true);
   private static final BooleanArrayList TERTIARY_LIST =
@@ -53,22 +51,19 @@ public class BooleanArrayListTest {
 
   private BooleanArrayList list;
 
-  @Before
-  public void setUp() throws Exception {
+  @Override
+  protected void setUp() throws Exception {
     list = new BooleanArrayList();
   }
 
-  @Test
   public void testEmptyListReturnsSameInstance() {
-    assertThat(BooleanArrayList.emptyList()).isSameInstanceAs(BooleanArrayList.emptyList());
+    assertSame(BooleanArrayList.emptyList(), BooleanArrayList.emptyList());
   }
 
-  @Test
   public void testEmptyListIsImmutable() {
     assertImmutable(BooleanArrayList.emptyList());
   }
 
-  @Test
   public void testMakeImmutable() {
     list.addBoolean(true);
     list.addBoolean(false);
@@ -78,20 +73,19 @@ public class BooleanArrayListTest {
     assertImmutable(list);
   }
 
-  @Test
   public void testModificationWithIteration() {
     list.addAll(asList(true, false, true, false));
     Iterator<Boolean> iterator = list.iterator();
-    assertThat(list).hasSize(4);
-    assertThat((boolean) list.get(0)).isEqualTo(true);
-    assertThat((boolean) iterator.next()).isEqualTo(true);
+    assertEquals(4, list.size());
+    assertEquals(true, (boolean) list.get(0));
+    assertEquals(true, (boolean) iterator.next());
     list.set(0, true);
-    assertThat((boolean) iterator.next()).isEqualTo(false);
+    assertEquals(false, (boolean) iterator.next());
 
     list.remove(0);
     try {
       iterator.next();
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (ConcurrentModificationException e) {
       // expected
     }
@@ -100,211 +94,191 @@ public class BooleanArrayListTest {
     list.add(0, false);
     try {
       iterator.next();
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (ConcurrentModificationException e) {
       // expected
     }
   }
 
-  @Test
   public void testGet() {
-    assertThat((boolean) TERTIARY_LIST.get(0)).isEqualTo(true);
-    assertThat((boolean) TERTIARY_LIST.get(1)).isEqualTo(false);
-    assertThat((boolean) TERTIARY_LIST.get(2)).isEqualTo(true);
+    assertEquals(true, (boolean) TERTIARY_LIST.get(0));
+    assertEquals(false, (boolean) TERTIARY_LIST.get(1));
+    assertEquals(true, (boolean) TERTIARY_LIST.get(2));
 
     try {
       TERTIARY_LIST.get(-1);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (IndexOutOfBoundsException e) {
       // expected
     }
 
     try {
       TERTIARY_LIST.get(3);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (IndexOutOfBoundsException e) {
       // expected
     }
   }
 
-  @Test
   public void testGetBoolean() {
-    assertThat(TERTIARY_LIST.getBoolean(0)).isEqualTo(true);
-    assertThat(TERTIARY_LIST.getBoolean(1)).isEqualTo(false);
-    assertThat(TERTIARY_LIST.getBoolean(2)).isEqualTo(true);
+    assertEquals(true, TERTIARY_LIST.getBoolean(0));
+    assertEquals(false, TERTIARY_LIST.getBoolean(1));
+    assertEquals(true, TERTIARY_LIST.getBoolean(2));
 
     try {
       TERTIARY_LIST.get(-1);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (IndexOutOfBoundsException e) {
       // expected
     }
 
     try {
       TERTIARY_LIST.get(3);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (IndexOutOfBoundsException e) {
       // expected
     }
   }
 
-  @Test
   public void testIndexOf_nullElement() {
-    assertThat(TERTIARY_LIST.indexOf(null)).isEqualTo(-1);
+    assertEquals(-1, TERTIARY_LIST.indexOf(null));
   }
 
-  @Test
   public void testIndexOf_incompatibleElementType() {
-    assertThat(TERTIARY_LIST.indexOf(new Object())).isEqualTo(-1);
+    assertEquals(-1, TERTIARY_LIST.indexOf(new Object()));
   }
 
-  @Test
   public void testIndexOf_notInList() {
-    assertThat(UNARY_LIST.indexOf(false)).isEqualTo(-1);
+    assertEquals(-1, UNARY_LIST.indexOf(false));
   }
 
-  @Test
   public void testIndexOf_notInListWithDuplicates() {
     BooleanArrayList listWithDupes = newImmutableBooleanArrayList(true, true);
-    assertThat(listWithDupes.indexOf(false)).isEqualTo(-1);
+    assertEquals(-1, listWithDupes.indexOf(false));
   }
 
-  @Test
   public void testIndexOf_inList() {
-    assertThat(TERTIARY_LIST.indexOf(false)).isEqualTo(1);
+    assertEquals(1, TERTIARY_LIST.indexOf(false));
   }
 
-  @Test
   public void testIndexOf_inListWithDuplicates_matchAtHead() {
     BooleanArrayList listWithDupes = newImmutableBooleanArrayList(true, true, false);
-    assertThat(listWithDupes.indexOf(true)).isEqualTo(0);
+    assertEquals(0, listWithDupes.indexOf(true));
   }
 
-  @Test
   public void testIndexOf_inListWithDuplicates_matchMidList() {
     BooleanArrayList listWithDupes = newImmutableBooleanArrayList(false, true, true, false);
-    assertThat(listWithDupes.indexOf(true)).isEqualTo(1);
+    assertEquals(1, listWithDupes.indexOf(true));
   }
 
-  @Test
   public void testContains_nullElement() {
-    assertThat(TERTIARY_LIST).doesNotContain(null);
+    assertEquals(false, TERTIARY_LIST.contains(null));
   }
 
-  @Test
   public void testContains_incompatibleElementType() {
-    assertThat(TERTIARY_LIST).doesNotContain(new Object());
+    assertEquals(false, TERTIARY_LIST.contains(new Object()));
   }
 
-  @Test
   public void testContains_notInList() {
-    assertThat(UNARY_LIST).doesNotContain(false);
+    assertEquals(false, UNARY_LIST.contains(false));
   }
 
-  @Test
   public void testContains_notInListWithDuplicates() {
     BooleanArrayList listWithDupes = newImmutableBooleanArrayList(true, true);
-    assertThat(listWithDupes).doesNotContain(false);
+    assertEquals(false, listWithDupes.contains(false));
   }
 
-  @Test
   public void testContains_inList() {
-    assertThat(TERTIARY_LIST).contains(false);
+    assertEquals(true, TERTIARY_LIST.contains(false));
   }
 
-  @Test
   public void testContains_inListWithDuplicates_matchAtHead() {
     BooleanArrayList listWithDupes = newImmutableBooleanArrayList(true, true, false);
-    assertThat(listWithDupes).contains(true);
+    assertEquals(true, listWithDupes.contains(true));
   }
 
-  @Test
   public void testContains_inListWithDuplicates_matchMidList() {
     BooleanArrayList listWithDupes = newImmutableBooleanArrayList(false, true, true, false);
-    assertThat(listWithDupes).contains(true);
+    assertEquals(true, listWithDupes.contains(true));
   }
 
-  @Test
   public void testSize() {
-    assertThat(BooleanArrayList.emptyList()).isEmpty();
-    assertThat(UNARY_LIST).hasSize(1);
-    assertThat(TERTIARY_LIST).hasSize(3);
+    assertEquals(0, BooleanArrayList.emptyList().size());
+    assertEquals(1, UNARY_LIST.size());
+    assertEquals(3, TERTIARY_LIST.size());
 
     list.addBoolean(true);
     list.addBoolean(false);
     list.addBoolean(false);
     list.addBoolean(false);
-    assertThat(list).hasSize(4);
+    assertEquals(4, list.size());
 
     list.remove(0);
-    assertThat(list).hasSize(3);
+    assertEquals(3, list.size());
 
     list.add(true);
-    assertThat(list).hasSize(4);
+    assertEquals(4, list.size());
   }
 
-  @Test
   public void testSet() {
     list.addBoolean(false);
     list.addBoolean(false);
 
-    assertThat((boolean) list.set(0, true)).isEqualTo(false);
-    assertThat(list.getBoolean(0)).isEqualTo(true);
+    assertEquals(false, (boolean) list.set(0, true));
+    assertEquals(true, list.getBoolean(0));
 
-    assertThat((boolean) list.set(1, false)).isEqualTo(false);
-    assertThat(list.getBoolean(1)).isEqualTo(false);
+    assertEquals(false, (boolean) list.set(1, false));
+    assertEquals(false, list.getBoolean(1));
 
     try {
       list.set(-1, false);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (IndexOutOfBoundsException e) {
       // expected
     }
 
     try {
       list.set(2, false);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (IndexOutOfBoundsException e) {
       // expected
     }
   }
 
-  @Test
   public void testSetBoolean() {
     list.addBoolean(true);
     list.addBoolean(true);
 
-    assertThat(list.setBoolean(0, false)).isEqualTo(true);
-    assertThat(list.getBoolean(0)).isEqualTo(false);
+    assertEquals(true, list.setBoolean(0, false));
+    assertEquals(false, list.getBoolean(0));
 
-    assertThat(list.setBoolean(1, false)).isEqualTo(true);
-    assertThat(list.getBoolean(1)).isEqualTo(false);
+    assertEquals(true, list.setBoolean(1, false));
+    assertEquals(false, list.getBoolean(1));
 
     try {
       list.setBoolean(-1, false);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (IndexOutOfBoundsException e) {
       // expected
     }
 
     try {
       list.setBoolean(2, false);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (IndexOutOfBoundsException e) {
       // expected
     }
   }
 
-  @Test
   public void testAdd() {
-    assertThat(list).isEmpty();
+    assertEquals(0, list.size());
 
-    assertThat(list.add(false)).isTrue();
-    assertThat(list).containsExactly(false);
+    assertTrue(list.add(false));
+    assertEquals(asList(false), list);
 
-    assertThat(list.add(true)).isTrue();
+    assertTrue(list.add(true));
     list.add(0, false);
-    assertThat(list).containsExactly(false, false, true).inOrder();
+    assertEquals(asList(false, false, true), list);
 
     list.add(0, true);
     list.add(0, false);
@@ -312,9 +286,8 @@ public class BooleanArrayListTest {
     for (int i = 0; i < 6; i++) {
       list.add(i % 2 == 0);
     }
-    assertThat(list)
-        .containsExactly(false, true, false, false, true, true, false, true, false, true, false)
-        .inOrder();
+    assertEquals(
+        asList(false, true, false, false, true, true, false, true, false, true, false), list);
 
     try {
       list.add(-1, true);
@@ -329,247 +302,237 @@ public class BooleanArrayListTest {
     }
   }
 
-  @Test
   public void testAddBoolean() {
-    assertThat(list).isEmpty();
+    assertEquals(0, list.size());
 
     list.addBoolean(false);
-    assertThat(list).containsExactly(false);
+    assertEquals(asList(false), list);
 
     list.addBoolean(true);
-    assertThat(list).containsExactly(false, true).inOrder();
+    assertEquals(asList(false, true), list);
   }
 
-  @Test
   public void testAddAll() {
-    assertThat(list).isEmpty();
+    assertEquals(0, list.size());
 
-    assertThat(list.addAll(Collections.singleton(true))).isTrue();
-    assertThat(list).hasSize(1);
-    assertThat((boolean) list.get(0)).isEqualTo(true);
-    assertThat(list.getBoolean(0)).isEqualTo(true);
+    assertTrue(list.addAll(Collections.singleton(true)));
+    assertEquals(1, list.size());
+    assertEquals(true, (boolean) list.get(0));
+    assertEquals(true, list.getBoolean(0));
 
-    assertThat(list.addAll(asList(false, true, false, true, false))).isTrue();
-    assertThat(list).containsExactly(true, false, true, false, true, false).inOrder();
+    assertTrue(list.addAll(asList(false, true, false, true, false)));
+    assertEquals(asList(true, false, true, false, true, false), list);
 
-    assertThat(list.addAll(TERTIARY_LIST)).isTrue();
-    assertThat(list)
-        .containsExactly(true, false, true, false, true, false, true, false, true)
-        .inOrder();
+    assertTrue(list.addAll(TERTIARY_LIST));
+    assertEquals(asList(true, false, true, false, true, false, true, false, true), list);
 
-    assertThat(list.addAll(Collections.<Boolean>emptyList())).isFalse();
-    assertThat(list.addAll(BooleanArrayList.emptyList())).isFalse();
+    assertFalse(list.addAll(Collections.<Boolean>emptyList()));
+    assertFalse(list.addAll(BooleanArrayList.emptyList()));
   }
 
-  @Test
   public void testEquals() {
     BooleanArrayList list1 = new BooleanArrayList();
     BooleanArrayList list2 = new BooleanArrayList();
 
-    assertThat(list1).isEqualTo(list2);
+    assertEquals(list1, list2);
   }
 
-  @Test
   public void testRemove() {
     list.addAll(TERTIARY_LIST);
-    assertThat((boolean) list.remove(0)).isEqualTo(true);
-    assertThat(list).containsExactly(false, true).inOrder();
+    assertEquals(true, (boolean) list.remove(0));
+    assertEquals(asList(false, true), list);
 
-    assertThat(list.remove(Boolean.TRUE)).isTrue();
-    assertThat(list).containsExactly(false);
+    assertTrue(list.remove(Boolean.TRUE));
+    assertEquals(asList(false), list);
 
-    assertThat(list.remove(Boolean.TRUE)).isFalse();
-    assertThat(list).containsExactly(false);
+    assertFalse(list.remove(Boolean.TRUE));
+    assertEquals(asList(false), list);
 
-    assertThat((boolean) list.remove(0)).isEqualTo(false);
-    assertThat(list).isEmpty();
+    assertEquals(false, (boolean) list.remove(0));
+    assertEquals(asList(), list);
 
     try {
       list.remove(-1);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (IndexOutOfBoundsException e) {
       // expected
     }
 
     try {
       list.remove(0);
-      assertWithMessage("expected exception").fail();
     } catch (IndexOutOfBoundsException e) {
       // expected
     }
   }
 
-  @Test
   public void testRemoveEnd_listAtCapacity() {
     BooleanList toRemove = BooleanArrayList.emptyList().mutableCopyWithCapacity(1);
     toRemove.addBoolean(true);
     toRemove.remove(0);
-    assertThat(toRemove).isEmpty();
+    assertEquals(0, toRemove.size());
   }
 
-  @Test
   public void testRemove_listAtCapacity() {
     BooleanList toRemove = BooleanArrayList.emptyList().mutableCopyWithCapacity(2);
     toRemove.addBoolean(true);
     toRemove.addBoolean(false);
     toRemove.remove(0);
-    assertThat(toRemove).hasSize(1);
-    assertThat((boolean) toRemove.get(0)).isEqualTo(false);
+    assertEquals(1, toRemove.size());
+    assertEquals(false, (boolean) toRemove.get(0));
   }
 
-  @Test
   public void testSublistRemoveEndOfCapacity() {
     BooleanList toRemove = BooleanArrayList.emptyList().mutableCopyWithCapacity(1);
     toRemove.addBoolean(true);
     toRemove.subList(0, 1).clear();
-    assertThat(toRemove).isEmpty();
+    assertEquals(0, toRemove.size());
   }
 
   private void assertImmutable(BooleanList list) {
 
     try {
       list.add(true);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.add(0, true);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.addAll(Collections.<Boolean>emptyList());
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.addAll(Collections.singletonList(true));
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.addAll(new BooleanArrayList());
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.addAll(UNARY_LIST);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.addAll(0, Collections.singleton(true));
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.addAll(0, UNARY_LIST);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.addAll(0, Collections.<Boolean>emptyList());
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.addBoolean(false);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.clear();
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.remove(1);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.remove(new Object());
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.removeAll(Collections.<Boolean>emptyList());
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.removeAll(Collections.singleton(Boolean.TRUE));
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.removeAll(UNARY_LIST);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.retainAll(Collections.<Boolean>emptyList());
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.removeAll(Collections.singleton(Boolean.TRUE));
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.retainAll(UNARY_LIST);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.set(0, false);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }
 
     try {
       list.setBoolean(0, false);
-      assertWithMessage("expected exception").fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       // expected
     }

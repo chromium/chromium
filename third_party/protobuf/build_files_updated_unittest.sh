@@ -58,5 +58,5 @@ bash "${test_dir}/update_file_lists.sh"
 
 # Test whether there are any differences
 for file in ${generated_files[@]}; do
-  diff -du "${golden_dir}/${file}" "${test_dir}/${file}"
+  diff "${golden_dir}/${file}" "${test_dir}/${file}"
 done

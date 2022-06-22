@@ -32,7 +32,6 @@ package com.google.protobuf;
 
 import java.util.Map;
 
-@CheckReturnValue
 interface MapFieldSchema {
   /** Returns the map data for mutation. */
   Map<?, ?> forMutableMapData(Object mapField);
@@ -57,7 +56,6 @@ interface MapFieldSchema {
   MapEntryLite.Metadata<?, ?> forMapMetadata(Object mapDefaultEntry);
 
   /** Merges {@code srcMapField} into {@code destMapField}, and returns the merged instance. */
-  @CanIgnoreReturnValue
   Object mergeFrom(Object destMapField, Object srcMapField);
 
   /** Compute the serialized size for the map with a given field number. */

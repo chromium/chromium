@@ -62,12 +62,12 @@ namespace protobuf {
 // Note that NewCallback() is a bit touchy regarding argument types.  Generally,
 // the values you provide for the parameter bindings must exactly match the
 // types accepted by the callback function.  For example:
-//   void Foo(std::string s);
+//   void Foo(string s);
 //   NewCallback(&Foo, "foo");          // WON'T WORK:  const char* != string
-//   NewCallback(&Foo, std::string("foo"));  // WORKS
+//   NewCallback(&Foo, string("foo"));  // WORKS
 // Also note that the arguments cannot be references:
-//   void Foo(const std::string& s);
-//   std::string my_str;
+//   void Foo(const string& s);
+//   string my_str;
 //   NewCallback(&Foo, my_str);  // WON'T WORK:  Can't use references.
 // However, correctly-typed pointers will work just fine.
 class PROTOBUF_EXPORT Closure {

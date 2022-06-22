@@ -118,39 +118,40 @@ void SetCommonFieldVariables(const FieldDescriptor* descriptor,
 
 }  // namespace
 
-FieldGenerator* FieldGenerator::Make(const FieldDescriptor* field) {
+FieldGenerator* FieldGenerator::Make(const FieldDescriptor* field,
+                                     const Options& options) {
   FieldGenerator* result = NULL;
   if (field->is_repeated()) {
     switch (GetObjectiveCType(field)) {
       case OBJECTIVECTYPE_MESSAGE: {
         if (field->is_map()) {
-          result = new MapFieldGenerator(field);
+          result = new MapFieldGenerator(field, options);
         } else {
-          result = new RepeatedMessageFieldGenerator(field);
+          result = new RepeatedMessageFieldGenerator(field, options);
         }
         break;
       }
       case OBJECTIVECTYPE_ENUM:
-        result = new RepeatedEnumFieldGenerator(field);
+        result = new RepeatedEnumFieldGenerator(field, options);
         break;
       default:
-        result = new RepeatedPrimitiveFieldGenerator(field);
+        result = new RepeatedPrimitiveFieldGenerator(field, options);
         break;
     }
   } else {
     switch (GetObjectiveCType(field)) {
       case OBJECTIVECTYPE_MESSAGE: {
-        result = new MessageFieldGenerator(field);
+        result = new MessageFieldGenerator(field, options);
         break;
       }
       case OBJECTIVECTYPE_ENUM:
-        result = new EnumFieldGenerator(field);
+        result = new EnumFieldGenerator(field, options);
         break;
       default:
         if (IsReferenceType(field)) {
-          result = new PrimitiveObjFieldGenerator(field);
+          result = new PrimitiveObjFieldGenerator(field, options);
         } else {
-          result = new PrimitiveFieldGenerator(field);
+          result = new PrimitiveFieldGenerator(field, options);
         }
         break;
     }
@@ -159,7 +160,8 @@ FieldGenerator* FieldGenerator::Make(const FieldDescriptor* field) {
   return result;
 }
 
-FieldGenerator::FieldGenerator(const FieldDescriptor* descriptor)
+FieldGenerator::FieldGenerator(const FieldDescriptor* descriptor,
+                               const Options& options)
     : descriptor_(descriptor) {
   SetCommonFieldVariables(descriptor, &variables_);
 }
@@ -183,8 +185,7 @@ void FieldGenerator::GenerateCFunctionImplementations(
 }
 
 void FieldGenerator::DetermineForwardDeclarations(
-    std::set<std::string>* fwd_decls,
-    bool include_external_types) const {
+    std::set<std::string>* fwd_decls) const {
   // Nothing
 }
 
@@ -245,7 +246,7 @@ void FieldGenerator::SetExtraRuntimeHasBitsBase(int index_base) {
 }
 
 void FieldGenerator::SetOneofIndexBase(int index_base) {
-  const OneofDescriptor* oneof = descriptor_->real_containing_oneof();
+  const OneofDescriptor *oneof = descriptor_->real_containing_oneof();
   if (oneof != NULL) {
     int index = oneof->index() + index_base;
     // Flip the sign to mark it as a oneof.
@@ -265,8 +266,9 @@ void FieldGenerator::FinishInitialization(void) {
   }
 }
 
-SingleFieldGenerator::SingleFieldGenerator(const FieldDescriptor* descriptor)
-    : FieldGenerator(descriptor) {
+SingleFieldGenerator::SingleFieldGenerator(const FieldDescriptor* descriptor,
+                                           const Options& options)
+    : FieldGenerator(descriptor, options) {
   // Nothing
 }
 
@@ -308,8 +310,9 @@ bool SingleFieldGenerator::RuntimeUsesHasBit(void) const {
   return true;
 }
 
-ObjCObjFieldGenerator::ObjCObjFieldGenerator(const FieldDescriptor* descriptor)
-    : SingleFieldGenerator(descriptor) {
+ObjCObjFieldGenerator::ObjCObjFieldGenerator(const FieldDescriptor* descriptor,
+                                             const Options& options)
+    : SingleFieldGenerator(descriptor, options) {
   variables_["property_storage_attribute"] = "strong";
   if (IsRetainedName(variables_["name"])) {
     variables_["storage_attribute"] = " NS_RETURNS_NOT_RETAINED";
@@ -350,8 +353,8 @@ void ObjCObjFieldGenerator::GeneratePropertyDeclaration(
 }
 
 RepeatedFieldGenerator::RepeatedFieldGenerator(
-    const FieldDescriptor* descriptor)
-    : ObjCObjFieldGenerator(descriptor) {
+    const FieldDescriptor* descriptor, const Options& options)
+    : ObjCObjFieldGenerator(descriptor, options) {
   // Default to no comment and let the cases needing it fill it in.
   variables_["array_comment"] = "";
 }
@@ -404,18 +407,19 @@ bool RepeatedFieldGenerator::RuntimeUsesHasBit(void) const {
   return false;  // The array (or map/dict) having anything is what is used.
 }
 
-FieldGeneratorMap::FieldGeneratorMap(const Descriptor* descriptor)
+FieldGeneratorMap::FieldGeneratorMap(const Descriptor* descriptor,
+                                     const Options& options)
     : descriptor_(descriptor),
       field_generators_(descriptor->field_count()),
       extension_generators_(descriptor->extension_count()) {
   // Construct all the FieldGenerators.
   for (int i = 0; i < descriptor->field_count(); i++) {
     field_generators_[i].reset(
-        FieldGenerator::Make(descriptor->field(i)));
+        FieldGenerator::Make(descriptor->field(i), options));
   }
   for (int i = 0; i < descriptor->extension_count(); i++) {
     extension_generators_[i].reset(
-        FieldGenerator::Make(descriptor->extension(i)));
+        FieldGenerator::Make(descriptor->extension(i), options));
   }
 }
 

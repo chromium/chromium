@@ -35,7 +35,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 /** Schema used for proto2 messages using message_set_wireformat. */
-@CheckReturnValue
 final class MessageSetSchema<T> implements Schema<T> {
   private final MessageLite defaultInstance;
   private final UnknownFieldSchema<?, ?> unknownFieldSchema;
@@ -232,6 +231,7 @@ final class MessageSetSchema<T> implements Schema<T> {
    * A helper method for wildcard capture of {@code unknownFieldSchema}. See:
    * https://docs.oracle.com/javase/tutorial/java/generics/capture.html
    */
+  @SuppressWarnings("unchecked")
   private <UT, UB, ET extends FieldSet.FieldDescriptorLite<ET>> void mergeFromHelper(
       UnknownFieldSchema<UT, UB> unknownFieldSchema,
       ExtensionSchema<ET> extensionSchema,
@@ -300,7 +300,7 @@ final class MessageSetSchema<T> implements Schema<T> {
     // The wire format for MessageSet is:
     //   message MessageSet {
     //     repeated group Item = 1 {
-    //       required uint32 typeId = 2;
+    //       required int32 typeId = 2;
     //       required bytes message = 3;
     //     }
     //   }

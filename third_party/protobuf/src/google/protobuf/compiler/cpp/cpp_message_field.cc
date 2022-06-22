@@ -33,9 +33,8 @@
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
 #include <google/protobuf/compiler/cpp/cpp_message_field.h>
-
-#include <google/protobuf/io/printer.h>
 #include <google/protobuf/compiler/cpp/cpp_helpers.h>
+#include <google/protobuf/io/printer.h>
 
 #include <google/protobuf/stubs/strutil.h>
 
@@ -61,16 +60,11 @@ void SetMessageVariables(const FieldDescriptor* descriptor,
   SetCommonFieldVariables(descriptor, variables, options);
   (*variables)["type"] = FieldMessageTypeName(descriptor, options);
   (*variables)["casted_member"] = ReinterpretCast(
-      (*variables)["type"] + "*", (*variables)["field"], implicit_weak);
-  (*variables)["casted_member_const"] =
-      ReinterpretCast("const " + (*variables)["type"] + "&",
-                      "*" + (*variables)["field"], implicit_weak);
+      (*variables)["type"] + "*", (*variables)["name"] + "_", implicit_weak);
   (*variables)["type_default_instance"] =
       QualifiedDefaultInstanceName(descriptor->message_type(), options);
-  (*variables)["type_default_instance_ptr"] = ReinterpretCast(
-      "const ::PROTOBUF_NAMESPACE_ID::MessageLite*",
-      QualifiedDefaultInstancePtr(descriptor->message_type(), options),
-      implicit_weak);
+  (*variables)["type_default_instance_ptr"] =
+      QualifiedDefaultInstancePtr(descriptor->message_type(), options);
   (*variables)["type_reference_function"] =
       implicit_weak ? ("  ::" + (*variables)["proto_ns"] +
                        "::internal::StrongReference(reinterpret_cast<const " +
@@ -93,9 +87,7 @@ MessageFieldGenerator::MessageFieldGenerator(const FieldDescriptor* descriptor,
                                              MessageSCCAnalyzer* scc_analyzer)
     : FieldGenerator(descriptor, options),
       implicit_weak_field_(
-          IsImplicitWeakField(descriptor, options, scc_analyzer)),
-      has_required_fields_(
-          scc_analyzer->HasRequiredFields(descriptor->message_type())) {
+          IsImplicitWeakField(descriptor, options, scc_analyzer)) {
   SetMessageVariables(descriptor, options, implicit_weak_field_, &variables_);
 }
 
@@ -117,8 +109,7 @@ void MessageFieldGenerator::GenerateAccessorDeclarations(
     format(
         "$deprecated_attr$const $type$& ${1$$name$$}$() const { "
         "__builtin_trap(); }\n"
-        "PROTOBUF_NODISCARD $deprecated_attr$$type$* "
-        "${1$$release_name$$}$() { "
+        "$deprecated_attr$$type$* ${1$$release_name$$}$() { "
         "__builtin_trap(); }\n"
         "$deprecated_attr$$type$* ${1$mutable_$name$$}$() { "
         "__builtin_trap(); }\n"
@@ -134,8 +125,7 @@ void MessageFieldGenerator::GenerateAccessorDeclarations(
   }
   format(
       "$deprecated_attr$const $type$& ${1$$name$$}$() const;\n"
-      "PROTOBUF_NODISCARD $deprecated_attr$$type$* "
-      "${1$$release_name$$}$();\n"
+      "$deprecated_attr$$type$* ${1$$release_name$$}$();\n"
       "$deprecated_attr$$type$* ${1$mutable_$name$$}$();\n"
       "$deprecated_attr$void ${1$set_allocated_$name$$}$"
       "($type$* $name$);\n",
@@ -171,7 +161,7 @@ void MessageFieldGenerator::GenerateInlineAccessorDefinitions(
       "      $type_default_instance$);\n"
       "}\n"
       "inline const $type$& $classname$::$name$() const {\n"
-      "$annotate_get$"
+      "$annotate_accessor$"
       "  // @@protoc_insertion_point(field_get:$full_name$)\n"
       "  return _internal_$name$();\n"
       "}\n");
@@ -179,16 +169,18 @@ void MessageFieldGenerator::GenerateInlineAccessorDefinitions(
   format(
       "inline void $classname$::unsafe_arena_set_allocated_$name$(\n"
       "    $type$* $name$) {\n"
+      "$annotate_accessor$"
       // If we're not on an arena, free whatever we were holding before.
       // (If we are on arena, we can just forget the earlier pointer.)
-      "  if (GetArenaForAllocation() == nullptr) {\n"
-      "    delete reinterpret_cast<::$proto_ns$::MessageLite*>($field$);\n"
+      "  if (GetArena() == nullptr) {\n"
+      "    delete reinterpret_cast<::$proto_ns$::MessageLite*>($name$_);\n"
       "  }\n");
   if (implicit_weak_field_) {
     format(
-        "  $field$ = reinterpret_cast<::$proto_ns$::MessageLite*>($name$);\n");
+        "  $name$_ = "
+        "reinterpret_cast<::$proto_ns$::MessageLite*>($name$);\n");
   } else {
-    format("  $field$ = $name$;\n");
+    format("  $name$_ = $name$;\n");
   }
   format(
       "  if ($name$) {\n"
@@ -196,35 +188,27 @@ void MessageFieldGenerator::GenerateInlineAccessorDefinitions(
       "  } else {\n"
       "    $clear_hasbit$\n"
       "  }\n"
-      "$annotate_set$"
       "  // @@protoc_insertion_point(field_unsafe_arena_set_allocated"
       ":$full_name$)\n"
       "}\n");
   format(
       "inline $type$* $classname$::$release_name$() {\n"
       "$type_reference_function$"
-      "$annotate_release$"
       "  $clear_hasbit$\n"
       "  $type$* temp = $casted_member$;\n"
-      "  $field$ = nullptr;\n"
-      "#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE\n"
-      "  auto* old =  reinterpret_cast<::$proto_ns$::MessageLite*>(temp);\n"
-      "  temp = ::$proto_ns$::internal::DuplicateIfNonNull(temp);\n"
-      "  if (GetArenaForAllocation() == nullptr) { delete old; }\n"
-      "#else  // PROTOBUF_FORCE_COPY_IN_RELEASE\n"
-      "  if (GetArenaForAllocation() != nullptr) {\n"
+      "  $name$_ = nullptr;\n"
+      "  if (GetArena() != nullptr) {\n"
       "    temp = ::$proto_ns$::internal::DuplicateIfNonNull(temp);\n"
       "  }\n"
-      "#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE\n"
       "  return temp;\n"
       "}\n"
       "inline $type$* $classname$::unsafe_arena_release_$name$() {\n"
-      "$annotate_release$"
+      "$annotate_accessor$"
       "  // @@protoc_insertion_point(field_release:$full_name$)\n"
       "$type_reference_function$"
       "  $clear_hasbit$\n"
       "  $type$* temp = $casted_member$;\n"
-      "  $field$ = nullptr;\n"
+      "  $name$_ = nullptr;\n"
       "  return temp;\n"
       "}\n");
 
@@ -232,35 +216,35 @@ void MessageFieldGenerator::GenerateInlineAccessorDefinitions(
       "inline $type$* $classname$::_internal_mutable_$name$() {\n"
       "$type_reference_function$"
       "  $set_hasbit$\n"
-      "  if ($field$ == nullptr) {\n"
-      "    auto* p = CreateMaybeMessage<$type$>(GetArenaForAllocation());\n");
+      "  if ($name$_ == nullptr) {\n"
+      "    auto* p = CreateMaybeMessage<$type$>(GetArena());\n");
   if (implicit_weak_field_) {
-    format("    $field$ = reinterpret_cast<::$proto_ns$::MessageLite*>(p);\n");
+    format("    $name$_ = reinterpret_cast<::$proto_ns$::MessageLite*>(p);\n");
   } else {
-    format("    $field$ = p;\n");
+    format("    $name$_ = p;\n");
   }
   format(
       "  }\n"
       "  return $casted_member$;\n"
       "}\n"
       "inline $type$* $classname$::mutable_$name$() {\n"
-      "  $type$* _msg = _internal_mutable_$name$();\n"
-      "$annotate_mutable$"
+      "$annotate_accessor$"
       "  // @@protoc_insertion_point(field_mutable:$full_name$)\n"
-      "  return _msg;\n"
+      "  return _internal_mutable_$name$();\n"
       "}\n");
 
   // We handle the most common case inline, and delegate less common cases to
   // the slow fallback function.
   format(
       "inline void $classname$::set_allocated_$name$($type$* $name$) {\n"
-      "  ::$proto_ns$::Arena* message_arena = GetArenaForAllocation();\n");
+      "$annotate_accessor$"
+      "  ::$proto_ns$::Arena* message_arena = GetArena();\n");
   format("  if (message_arena == nullptr) {\n");
   if (IsCrossFileMessage(descriptor_)) {
     format(
-        "    delete reinterpret_cast< ::$proto_ns$::MessageLite*>($field$);\n");
+        "    delete reinterpret_cast< ::$proto_ns$::MessageLite*>($name$_);\n");
   } else {
-    format("    delete $field$;\n");
+    format("    delete $name$_;\n");
   }
   format(
       "  }\n"
@@ -270,14 +254,12 @@ void MessageFieldGenerator::GenerateInlineAccessorDefinitions(
     // isn't defined in this file.
     format(
         "    ::$proto_ns$::Arena* submessage_arena =\n"
-        "        ::$proto_ns$::Arena::InternalGetOwningArena(\n"
-        "                reinterpret_cast<::$proto_ns$::MessageLite*>("
-        "$name$));\n");
+        "      "
+        "reinterpret_cast<::$proto_ns$::MessageLite*>($name$)->GetArena();\n");
   } else {
     format(
         "    ::$proto_ns$::Arena* submessage_arena =\n"
-        "        ::$proto_ns$::Arena::InternalGetOwningArena("
-        "$name$);\n");
+        "      ::$proto_ns$::Arena::GetArena($name$);\n");
   }
   format(
       "    if (message_arena != submessage_arena) {\n"
@@ -289,12 +271,11 @@ void MessageFieldGenerator::GenerateInlineAccessorDefinitions(
       "    $clear_hasbit$\n"
       "  }\n");
   if (implicit_weak_field_) {
-    format("  $field$ = reinterpret_cast<MessageLite*>($name$);\n");
+    format("  $name$_ = reinterpret_cast<MessageLite*>($name$);\n");
   } else {
-    format("  $field$ = $name$;\n");
+    format("  $name$_ = $name$;\n");
   }
   format(
-      "$annotate_set$"
       "  // @@protoc_insertion_point(field_set_allocated:$full_name$)\n"
       "}\n");
 }
@@ -326,31 +307,35 @@ void MessageFieldGenerator::GenerateInternalAccessorDefinitions(
     format(
         "const ::$proto_ns$::MessageLite& $classname$::_Internal::$name$(\n"
         "    const $classname$* msg) {\n"
-        "  if (msg->$field$ != nullptr) {\n"
-        "    return *msg->$field$;\n"
+        "  if (msg->$name$_ != nullptr) {\n"
+        "    return *msg->$name$_;\n"
+        "  } else if ($type_default_instance_ptr$ != nullptr) {\n"
+        "    return *reinterpret_cast<const ::$proto_ns$::MessageLite*>(\n"
+        "        $type_default_instance_ptr$);\n"
         "  } else {\n"
-        "    return *$type_default_instance_ptr$;\n"
+        "    return "
+        "*::$proto_ns$::internal::ImplicitWeakMessage::default_instance();\n"
         "  }\n"
         "}\n");
     format(
         "::$proto_ns$::MessageLite*\n"
         "$classname$::_Internal::mutable_$name$($classname$* msg) {\n");
-    if (HasHasbit(descriptor_)) {
+    if (HasFieldPresence(descriptor_->file())) {
       format("  msg->$set_hasbit$\n");
     }
-    if (descriptor_->real_containing_oneof() == nullptr) {
-      format("  if (msg->$field$ == nullptr) {\n");
-    } else {
-      format(
-          "  if (!msg->_internal_has_$name$()) {\n"
-          "    msg->clear_$oneof_name$();\n"
-          "    msg->set_has_$name$();\n");
-    }
     format(
-        "    msg->$field$ = $type_default_instance_ptr$->New(\n"
-        "        msg->GetArenaForAllocation());\n"
+        "  if (msg->$name$_ == nullptr) {\n"
+        "    if ($type_default_instance_ptr$ == nullptr) {\n"
+        "      msg->$name$_ = ::$proto_ns$::Arena::CreateMessage<\n"
+        "          ::$proto_ns$::internal::ImplicitWeakMessage>(\n"
+        "              msg->GetArena());\n"
+        "    } else {\n"
+        "      msg->$name$_ = reinterpret_cast<const "
+        "::$proto_ns$::MessageLite*>(\n"
+        "          $type_default_instance_ptr$)->New(msg->GetArena());\n"
+        "    }\n"
         "  }\n"
-        "  return msg->$field$;\n"
+        "  return msg->$name$_;\n"
         "}\n");
   } else {
     // This inline accessor directly returns member field and is used in
@@ -359,7 +344,7 @@ void MessageFieldGenerator::GenerateInternalAccessorDefinitions(
     format(
         "const $type$&\n"
         "$classname$::_Internal::$name$(const $classname$* msg) {\n"
-        "  return *msg->$field$;\n"
+        "  return *msg->$field_member$;\n"
         "}\n");
   }
 }
@@ -368,16 +353,16 @@ void MessageFieldGenerator::GenerateClearingCode(io::Printer* printer) const {
   GOOGLE_CHECK(!IsFieldStripped(descriptor_, options_));
 
   Formatter format(printer, variables_);
-  if (!HasHasbit(descriptor_)) {
+  if (!HasFieldPresence(descriptor_->file())) {
     // If we don't have has-bits, message presence is indicated only by ptr !=
-    // nullptr. Thus on clear, we need to delete the object.
+    // NULL. Thus on clear, we need to delete the object.
     format(
-        "if (GetArenaForAllocation() == nullptr && $field$ != nullptr) {\n"
-        "  delete $field$;\n"
+        "if (GetArena() == nullptr && $name$_ != nullptr) {\n"
+        "  delete $name$_;\n"
         "}\n"
-        "$field$ = nullptr;\n");
+        "$name$_ = nullptr;\n");
   } else {
-    format("if ($field$ != nullptr) $field$->Clear();\n");
+    format("if ($name$_ != nullptr) $name$_->Clear();\n");
   }
 }
 
@@ -386,18 +371,18 @@ void MessageFieldGenerator::GenerateMessageClearingCode(
   GOOGLE_CHECK(!IsFieldStripped(descriptor_, options_));
 
   Formatter format(printer, variables_);
-  if (!HasHasbit(descriptor_)) {
+  if (!HasFieldPresence(descriptor_->file())) {
     // If we don't have has-bits, message presence is indicated only by ptr !=
-    // nullptr. Thus on clear, we need to delete the object.
+    // NULL. Thus on clear, we need to delete the object.
     format(
-        "if (GetArenaForAllocation() == nullptr && $field$ != nullptr) {\n"
-        "  delete $field$;\n"
+        "if (GetArena() == nullptr && $name$_ != nullptr) {\n"
+        "  delete $name$_;\n"
         "}\n"
-        "$field$ = nullptr;\n");
+        "$name$_ = nullptr;\n");
   } else {
     format(
-        "$DCHK$($field$ != nullptr);\n"
-        "$field$->Clear();\n");
+        "$DCHK$($name$_ != nullptr);\n"
+        "$name$_->Clear();\n");
   }
 }
 
@@ -420,7 +405,7 @@ void MessageFieldGenerator::GenerateSwappingCode(io::Printer* printer) const {
   GOOGLE_CHECK(!IsFieldStripped(descriptor_, options_));
 
   Formatter format(printer, variables_);
-  format("swap($field$, other->$field$);\n");
+  format("swap($name$_, other->$name$_);\n");
 }
 
 void MessageFieldGenerator::GenerateDestructorCode(io::Printer* printer) const {
@@ -435,7 +420,7 @@ void MessageFieldGenerator::GenerateDestructorCode(io::Printer* printer) const {
     // care when handling them.
     format("if (this != internal_default_instance()) ");
   }
-  format("delete $field$;\n");
+  format("delete $name$_;\n");
 }
 
 void MessageFieldGenerator::GenerateConstructorCode(
@@ -443,7 +428,7 @@ void MessageFieldGenerator::GenerateConstructorCode(
   GOOGLE_CHECK(!IsFieldStripped(descriptor_, options_));
 
   Formatter format(printer, variables_);
-  format("$field$ = nullptr;\n");
+  format("$name$_ = nullptr;\n");
 }
 
 void MessageFieldGenerator::GenerateCopyConstructorCode(
@@ -453,9 +438,9 @@ void MessageFieldGenerator::GenerateCopyConstructorCode(
   Formatter format(printer, variables_);
   format(
       "if (from._internal_has_$name$()) {\n"
-      "  $field$ = new $type$(*from.$field$);\n"
+      "  $name$_ = new $type$(*from.$name$_);\n"
       "} else {\n"
-      "  $field$ = nullptr;\n"
+      "  $name$_ = nullptr;\n"
       "}\n");
 }
 
@@ -464,18 +449,11 @@ void MessageFieldGenerator::GenerateSerializeWithCachedSizesToArray(
   GOOGLE_CHECK(!IsFieldStripped(descriptor_, options_));
 
   Formatter format(printer, variables_);
-  if (descriptor_->type() == FieldDescriptor::TYPE_MESSAGE) {
-    format(
-        "target = ::$proto_ns$::internal::WireFormatLite::\n"
-        "  InternalWrite$declared_type$($number$, _Internal::$name$(this),\n"
-        "    _Internal::$name$(this).GetCachedSize(), target, stream);\n");
-  } else {
-    format(
-        "target = stream->EnsureSpace(target);\n"
-        "target = ::$proto_ns$::internal::WireFormatLite::\n"
-        "  InternalWrite$declared_type$(\n"
-        "    $number$, _Internal::$name$(this), target, stream);\n");
-  }
+  format(
+      "target = stream->EnsureSpace(target);\n"
+      "target = ::$proto_ns$::internal::WireFormatLite::\n"
+      "  InternalWrite$declared_type$(\n"
+      "    $number$, _Internal::$name$(this), target, stream);\n");
 }
 
 void MessageFieldGenerator::GenerateByteSize(io::Printer* printer) const {
@@ -485,25 +463,7 @@ void MessageFieldGenerator::GenerateByteSize(io::Printer* printer) const {
   format(
       "total_size += $tag_size$ +\n"
       "  ::$proto_ns$::internal::WireFormatLite::$declared_type$Size(\n"
-      "    *$field$);\n");
-}
-
-void MessageFieldGenerator::GenerateIsInitialized(io::Printer* printer) const {
-  GOOGLE_CHECK(!IsFieldStripped(descriptor_, options_));
-
-  if (!has_required_fields_) return;
-
-  Formatter format(printer, variables_);
-  format(
-      "if (_internal_has_$name$()) {\n"
-      "  if (!$field$->IsInitialized()) return false;\n"
-      "}\n");
-}
-
-void MessageFieldGenerator::GenerateConstinitInitializer(
-    io::Printer* printer) const {
-  Formatter format(printer, variables_);
-  format("$name$_(nullptr)");
+      "    *$field_member$);\n");
 }
 
 // ===================================================================
@@ -522,7 +482,8 @@ void MessageOneofFieldGenerator::GenerateNonInlineAccessorDefinitions(
   Formatter format(printer, variables_);
   format(
       "void $classname$::set_allocated_$name$($type$* $name$) {\n"
-      "  ::$proto_ns$::Arena* message_arena = GetArenaForAllocation();\n"
+      "$annotate_accessor$"
+      "  ::$proto_ns$::Arena* message_arena = GetArena();\n"
       "  clear_$oneof_name$();\n"
       "  if ($name$) {\n");
   if (descriptor_->file() != descriptor_->message_type()->file()) {
@@ -530,13 +491,12 @@ void MessageOneofFieldGenerator::GenerateNonInlineAccessorDefinitions(
     // isn't defined in this file.
     format(
         "    ::$proto_ns$::Arena* submessage_arena =\n"
-        "        ::$proto_ns$::Arena::InternalGetOwningArena(\n"
-        "                reinterpret_cast<::$proto_ns$::MessageLite*>("
-        "$name$));\n");
+        "      "
+        "reinterpret_cast<::$proto_ns$::MessageLite*>($name$)->GetArena();\n");
   } else {
     format(
         "    ::$proto_ns$::Arena* submessage_arena =\n"
-        "      ::$proto_ns$::Arena::InternalGetOwningArena($name$);\n");
+        "      ::$proto_ns$::Arena::GetArena($name$);\n");
   }
   format(
       "    if (message_arena != submessage_arena) {\n"
@@ -544,9 +504,8 @@ void MessageOneofFieldGenerator::GenerateNonInlineAccessorDefinitions(
       "          message_arena, $name$, submessage_arena);\n"
       "    }\n"
       "    set_has_$name$();\n"
-      "    $field$ = $name$;\n"
+      "    $field_member$ = $name$;\n"
       "  }\n"
-      "$annotate_set$"
       "  // @@protoc_insertion_point(field_set_allocated:$full_name$)\n"
       "}\n");
 }
@@ -556,16 +515,15 @@ void MessageOneofFieldGenerator::GenerateInlineAccessorDefinitions(
   Formatter format(printer, variables_);
   format(
       "inline $type$* $classname$::$release_name$() {\n"
-      "$annotate_release$"
+      "$annotate_accessor$"
       "  // @@protoc_insertion_point(field_release:$full_name$)\n"
-      "$type_reference_function$"
       "  if (_internal_has_$name$()) {\n"
       "    clear_has_$oneof_name$();\n"
-      "    $type$* temp = $casted_member$;\n"
-      "    if (GetArenaForAllocation() != nullptr) {\n"
+      "      $type$* temp = $field_member$;\n"
+      "    if (GetArena() != nullptr) {\n"
       "      temp = ::$proto_ns$::internal::DuplicateIfNonNull(temp);\n"
       "    }\n"
-      "    $field$ = nullptr;\n"
+      "    $field_member$ = nullptr;\n"
       "    return temp;\n"
       "  } else {\n"
       "    return nullptr;\n"
@@ -574,25 +532,23 @@ void MessageOneofFieldGenerator::GenerateInlineAccessorDefinitions(
 
   format(
       "inline const $type$& $classname$::_internal_$name$() const {\n"
-      "$type_reference_function$"
       "  return _internal_has_$name$()\n"
-      "      ? $casted_member_const$\n"
+      "      ? *$field_member$\n"
       "      : reinterpret_cast< $type$&>($type_default_instance$);\n"
       "}\n"
       "inline const $type$& $classname$::$name$() const {\n"
-      "$annotate_get$"
+      "$annotate_accessor$"
       "  // @@protoc_insertion_point(field_get:$full_name$)\n"
       "  return _internal_$name$();\n"
       "}\n"
       "inline $type$* $classname$::unsafe_arena_release_$name$() {\n"
-      "$annotate_release$"
+      "$annotate_accessor$"
       "  // @@protoc_insertion_point(field_unsafe_arena_release"
       ":$full_name$)\n"
-      "$type_reference_function$"
       "  if (_internal_has_$name$()) {\n"
       "    clear_has_$oneof_name$();\n"
-      "    $type$* temp = $casted_member$;\n"
-      "    $field$ = nullptr;\n"
+      "    $type$* temp = $field_member$;\n"
+      "    $field_member$ = nullptr;\n"
       "    return temp;\n"
       "  } else {\n"
       "    return nullptr;\n"
@@ -600,49 +556,30 @@ void MessageOneofFieldGenerator::GenerateInlineAccessorDefinitions(
       "}\n"
       "inline void $classname$::unsafe_arena_set_allocated_$name$"
       "($type$* $name$) {\n"
+      "$annotate_accessor$"
       // We rely on the oneof clear method to free the earlier contents of
       // this oneof. We can directly use the pointer we're given to set the
       // new value.
       "  clear_$oneof_name$();\n"
       "  if ($name$) {\n"
-      "    set_has_$name$();\n");
-  if (implicit_weak_field_) {
-    format(
-        "    $field$ = "
-        "reinterpret_cast<::$proto_ns$::MessageLite*>($name$);\n");
-  } else {
-    format("    $field$ = $name$;\n");
-  }
-  format(
+      "    set_has_$name$();\n"
+      "    $field_member$ = $name$;\n"
       "  }\n"
-      "$annotate_set$"
       "  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:"
       "$full_name$)\n"
       "}\n"
       "inline $type$* $classname$::_internal_mutable_$name$() {\n"
-      "$type_reference_function$"
       "  if (!_internal_has_$name$()) {\n"
       "    clear_$oneof_name$();\n"
-      "    set_has_$name$();\n");
-  if (implicit_weak_field_) {
-    format(
-        "    $field$ = "
-        "reinterpret_cast<::$proto_ns$::MessageLite*>(CreateMaybeMessage< "
-        "$type$ >(GetArenaForAllocation()));\n");
-  } else {
-    format(
-        "    $field$ = CreateMaybeMessage< $type$ "
-        ">(GetArenaForAllocation());\n");
-  }
-  format(
+      "    set_has_$name$();\n"
+      "    $field_member$ = CreateMaybeMessage< $type$ >(GetArena());\n"
       "  }\n"
-      "  return $casted_member$;\n"
+      "  return $field_member$;\n"
       "}\n"
       "inline $type$* $classname$::mutable_$name$() {\n"
-      "  $type$* _msg = _internal_mutable_$name$();\n"
-      "$annotate_mutable$"
+      "$annotate_accessor$"
       "  // @@protoc_insertion_point(field_mutable:$full_name$)\n"
-      "  return _msg;\n"
+      "  return _internal_mutable_$name$();\n"
       "}\n");
 }
 
@@ -652,8 +589,8 @@ void MessageOneofFieldGenerator::GenerateClearingCode(
 
   Formatter format(printer, variables_);
   format(
-      "if (GetArenaForAllocation() == nullptr) {\n"
-      "  delete $field$;\n"
+      "if (GetArena() == nullptr) {\n"
+      "  delete $field_member$;\n"
       "}\n");
 }
 
@@ -679,17 +616,6 @@ void MessageOneofFieldGenerator::GenerateConstructorCode(
   // space only when this field is used.
 }
 
-void MessageOneofFieldGenerator::GenerateIsInitialized(
-    io::Printer* printer) const {
-  if (!has_required_fields_) return;
-
-  Formatter format(printer, variables_);
-  format(
-      "if (_internal_has_$name$()) {\n"
-      "  if (!$field$->IsInitialized()) return false;\n"
-      "}\n");
-}
-
 // ===================================================================
 
 RepeatedMessageFieldGenerator::RepeatedMessageFieldGenerator(
@@ -697,9 +623,7 @@ RepeatedMessageFieldGenerator::RepeatedMessageFieldGenerator(
     MessageSCCAnalyzer* scc_analyzer)
     : FieldGenerator(descriptor, options),
       implicit_weak_field_(
-          IsImplicitWeakField(descriptor, options, scc_analyzer)),
-      has_required_fields_(
-          scc_analyzer->HasRequiredFields(descriptor->message_type())) {
+          IsImplicitWeakField(descriptor, options, scc_analyzer)) {
   SetMessageVariables(descriptor, options, implicit_weak_field_, &variables_);
 }
 
@@ -761,25 +685,25 @@ void RepeatedMessageFieldGenerator::GenerateInlineAccessorDefinitions(
 
   format(
       "inline $type$* $classname$::mutable_$name$(int index) {\n"
-      "$annotate_mutable$"
+      "$annotate_accessor$"
       // TODO(dlj): move insertion points
       "  // @@protoc_insertion_point(field_mutable:$full_name$)\n"
       "$type_reference_function$"
-      "  return $field$$weak$.Mutable(index);\n"
+      "  return $name$_$weak$.Mutable(index);\n"
       "}\n"
       "inline ::$proto_ns$::RepeatedPtrField< $type$ >*\n"
       "$classname$::mutable_$name$() {\n"
-      "$annotate_mutable_list$"
+      "$annotate_accessor$"
       "  // @@protoc_insertion_point(field_mutable_list:$full_name$)\n"
       "$type_reference_function$"
-      "  return &$field$$weak$;\n"
+      "  return &$name$_$weak$;\n"
       "}\n");
 
   if (options_.safe_boundary_check) {
     format(
         "inline const $type$& $classname$::_internal_$name$(int index) const "
         "{\n"
-        "  return $field$$weak$.InternalCheckedGet(index,\n"
+        "  return $name$_$weak$.InternalCheckedGet(index,\n"
         "      reinterpret_cast<const $type$&>($type_default_instance$));\n"
         "}\n");
   } else {
@@ -787,33 +711,32 @@ void RepeatedMessageFieldGenerator::GenerateInlineAccessorDefinitions(
         "inline const $type$& $classname$::_internal_$name$(int index) const "
         "{\n"
         "$type_reference_function$"
-        "  return $field$$weak$.Get(index);\n"
+        "  return $name$_$weak$.Get(index);\n"
         "}\n");
   }
 
   format(
       "inline const $type$& $classname$::$name$(int index) const {\n"
-      "$annotate_get$"
+      "$annotate_accessor$"
       "  // @@protoc_insertion_point(field_get:$full_name$)\n"
       "  return _internal_$name$(index);\n"
       "}\n"
       "inline $type$* $classname$::_internal_add_$name$() {\n"
-      "  return $field$$weak$.Add();\n"
+      "  return $name$_$weak$.Add();\n"
       "}\n"
       "inline $type$* $classname$::add_$name$() {\n"
-      "  $type$* _add = _internal_add_$name$();\n"
-      "$annotate_add_mutable$"
+      "$annotate_accessor$"
       "  // @@protoc_insertion_point(field_add:$full_name$)\n"
-      "  return _add;\n"
+      "  return _internal_add_$name$();\n"
       "}\n");
 
   format(
       "inline const ::$proto_ns$::RepeatedPtrField< $type$ >&\n"
       "$classname$::$name$() const {\n"
-      "$annotate_list$"
+      "$annotate_accessor$"
       "  // @@protoc_insertion_point(field_list:$full_name$)\n"
       "$type_reference_function$"
-      "  return $field$$weak$;\n"
+      "  return $name$_$weak$;\n"
       "}\n");
 }
 
@@ -822,7 +745,7 @@ void RepeatedMessageFieldGenerator::GenerateClearingCode(
   GOOGLE_CHECK(!IsFieldStripped(descriptor_, options_));
 
   Formatter format(printer, variables_);
-  format("$field$.Clear();\n");
+  format("$name$_.Clear();\n");
 }
 
 void RepeatedMessageFieldGenerator::GenerateMergingCode(
@@ -830,7 +753,7 @@ void RepeatedMessageFieldGenerator::GenerateMergingCode(
   GOOGLE_CHECK(!IsFieldStripped(descriptor_, options_));
 
   Formatter format(printer, variables_);
-  format("$field$.MergeFrom(from.$field$);\n");
+  format("$name$_.MergeFrom(from.$name$_);\n");
 }
 
 void RepeatedMessageFieldGenerator::GenerateSwappingCode(
@@ -838,7 +761,7 @@ void RepeatedMessageFieldGenerator::GenerateSwappingCode(
   GOOGLE_CHECK(!IsFieldStripped(descriptor_, options_));
 
   Formatter format(printer, variables_);
-  format("$field$.InternalSwap(&other->$field$);\n");
+  format("$name$_.InternalSwap(&other->$name$_);\n");
 }
 
 void RepeatedMessageFieldGenerator::GenerateConstructorCode(
@@ -853,41 +776,23 @@ void RepeatedMessageFieldGenerator::GenerateSerializeWithCachedSizesToArray(
   Formatter format(printer, variables_);
   if (implicit_weak_field_) {
     format(
-        "for (auto it = this->$field$.pointer_begin(),\n"
-        "          end = this->$field$.pointer_end(); it < end; ++it) {\n");
-    if (descriptor_->type() == FieldDescriptor::TYPE_MESSAGE) {
-      format(
-          "  target = ::$proto_ns$::internal::WireFormatLite::\n"
-          "    InternalWrite$declared_type$($number$, "
-          "**it, (**it).GetCachedSize(), target, stream);\n");
-    } else {
-      format(
-          "  target = stream->EnsureSpace(target);\n"
-          "  target = ::$proto_ns$::internal::WireFormatLite::\n"
-          "    InternalWrite$declared_type$($number$, **it, target, "
-          "stream);\n");
-    }
-    format("}\n");
+        "for (auto it = this->$name$_.pointer_begin(),\n"
+        "          end = this->$name$_.pointer_end(); it < end; ++it) {\n"
+        "  target = stream->EnsureSpace(target);\n"
+        "  target = ::$proto_ns$::internal::WireFormatLite::\n"
+        "    InternalWrite$declared_type$($number$, **it, target, stream);\n"
+        "}\n");
   } else {
     format(
-        "for (unsigned i = 0,\n"
-        "    n = static_cast<unsigned>(this->_internal_$name$_size());"
-        " i < n; i++) {\n");
-    if (descriptor_->type() == FieldDescriptor::TYPE_MESSAGE) {
-      format(
-          "  const auto& repfield = this->_internal_$name$(i);\n"
-          "  target = ::$proto_ns$::internal::WireFormatLite::\n"
-          "      InternalWrite$declared_type$($number$, "
-          "repfield, repfield.GetCachedSize(), target, stream);\n"
-          "}\n");
-    } else {
-      format(
-          "  target = stream->EnsureSpace(target);\n"
-          "  target = ::$proto_ns$::internal::WireFormatLite::\n"
-          "    InternalWrite$declared_type$($number$, "
-          "this->_internal_$name$(i), target, stream);\n"
-          "}\n");
-    }
+        "for (unsigned int i = 0,\n"
+        "    n = static_cast<unsigned int>(this->_internal_$name$_size()); i < "
+        "n; i++) "
+        "{\n"
+        "  target = stream->EnsureSpace(target);\n"
+        "  target = ::$proto_ns$::internal::WireFormatLite::\n"
+        "    InternalWrite$declared_type$($number$, "
+        "this->_internal_$name$(i), target, stream);\n"
+        "}\n");
   }
 }
 
@@ -898,34 +803,10 @@ void RepeatedMessageFieldGenerator::GenerateByteSize(
   Formatter format(printer, variables_);
   format(
       "total_size += $tag_size$UL * this->_internal_$name$_size();\n"
-      "for (const auto& msg : this->$field$) {\n"
+      "for (const auto& msg : this->$name$_) {\n"
       "  total_size +=\n"
       "    ::$proto_ns$::internal::WireFormatLite::$declared_type$Size(msg);\n"
       "}\n");
-}
-
-void RepeatedMessageFieldGenerator::GenerateIsInitialized(
-    io::Printer* printer) const {
-  GOOGLE_CHECK(!IsFieldStripped(descriptor_, options_));
-
-  if (!has_required_fields_) return;
-
-  Formatter format(printer, variables_);
-  if (implicit_weak_field_) {
-    format(
-        "if (!::$proto_ns$::internal::AllAreInitializedWeak($field$.weak))\n"
-        "  return false;\n");
-  } else {
-    format(
-        "if (!::$proto_ns$::internal::AllAreInitialized($field$))\n"
-        "  return false;\n");
-  }
-}
-
-void RepeatedMessageFieldGenerator::GenerateConstinitInitializer(
-    io::Printer* printer) const {
-  Formatter format(printer, variables_);
-  format("$name$_()");
 }
 
 }  // namespace cpp

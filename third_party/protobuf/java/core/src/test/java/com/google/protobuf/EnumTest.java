@@ -30,56 +30,47 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import com.google.protobuf.UnittestLite.ForeignEnumLite;
 import com.google.protobuf.UnittestLite.TestAllTypesLite;
 import protobuf_unittest.UnittestProto.ForeignEnum;
 import protobuf_unittest.UnittestProto.TestAllTypes;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import junit.framework.TestCase;
 
-@RunWith(JUnit4.class)
-public class EnumTest {
+public class EnumTest extends TestCase {
 
-  @Test
   public void testForNumber() {
     ForeignEnum e = ForeignEnum.forNumber(ForeignEnum.FOREIGN_BAR.getNumber());
-    assertThat(e).isEqualTo(ForeignEnum.FOREIGN_BAR);
+    assertEquals(ForeignEnum.FOREIGN_BAR, e);
 
     e = ForeignEnum.forNumber(1000);
-    assertThat(e).isNull();
+    assertNull(e);
   }
 
-  @Test
   public void testForNumber_oneof() {
     TestAllTypes.OneofFieldCase e =
         TestAllTypes.OneofFieldCase.forNumber(
             TestAllTypes.OneofFieldCase.ONEOF_NESTED_MESSAGE.getNumber());
-    assertThat(e).isEqualTo(TestAllTypes.OneofFieldCase.ONEOF_NESTED_MESSAGE);
+    assertEquals(TestAllTypes.OneofFieldCase.ONEOF_NESTED_MESSAGE, e);
 
     e = TestAllTypes.OneofFieldCase.forNumber(1000);
-    assertThat(e).isNull();
+    assertNull(e);
   }
 
-  @Test
   public void testForNumberLite() {
     ForeignEnumLite e = ForeignEnumLite.forNumber(ForeignEnumLite.FOREIGN_LITE_BAR.getNumber());
-    assertThat(e).isEqualTo(ForeignEnumLite.FOREIGN_LITE_BAR);
+    assertEquals(ForeignEnumLite.FOREIGN_LITE_BAR, e);
 
     e = ForeignEnumLite.forNumber(1000);
-    assertThat(e).isNull();
+    assertNull(e);
   }
 
-  @Test
   public void testForNumberLite_oneof() {
     TestAllTypesLite.OneofFieldCase e =
         TestAllTypesLite.OneofFieldCase.forNumber(
             TestAllTypesLite.OneofFieldCase.ONEOF_NESTED_MESSAGE.getNumber());
-    assertThat(e).isEqualTo(TestAllTypesLite.OneofFieldCase.ONEOF_NESTED_MESSAGE);
+    assertEquals(TestAllTypesLite.OneofFieldCase.ONEOF_NESTED_MESSAGE, e);
 
     e = TestAllTypesLite.OneofFieldCase.forNumber(1000);
-    assertThat(e).isNull();
+    assertNull(e);
   }
 }

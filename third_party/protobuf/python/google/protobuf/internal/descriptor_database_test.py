@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+#
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
 # https://developers.google.com/protocol-buffers/
@@ -32,7 +34,10 @@
 
 __author__ = 'matthewtoia@google.com (Matt Toia)'
 
-import unittest
+try:
+  import unittest2 as unittest  #PY26
+except ImportError:
+  import unittest
 import warnings
 
 from google.protobuf import unittest_pb2
@@ -100,7 +105,7 @@ class DescriptorDatabaseTest(unittest.TestCase):
     self.assertEqual(file_desc_proto2, db.FindFileContainingSymbol(
         'protobuf_unittest.TestAllTypes.none_field'))
 
-    with self.assertRaisesRegex(KeyError, r'\'protobuf_unittest\.NoneMessage\''):
+    with self.assertRaisesRegexp(KeyError, r'\'protobuf_unittest\.NoneMessage\''):
       db.FindFileContainingSymbol('protobuf_unittest.NoneMessage')
 
   def testConflictRegister(self):

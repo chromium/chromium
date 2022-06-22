@@ -65,7 +65,6 @@ import java.util.Queue;
  * The {@link #getTotalBytesWritten()} will continue to reflect the total of the write and will not
  * be reset.
  */
-@CheckReturnValue
 @ExperimentalApi
 abstract class BinaryWriter extends ByteOutput implements Writer {
   public static final int DEFAULT_CHUNK_SIZE = 4096;
@@ -163,7 +162,6 @@ abstract class BinaryWriter extends ByteOutput implements Writer {
    * <p>After calling this method, the writer can not be reused. Create a new writer for future
    * writes.
    */
-  @CanIgnoreReturnValue
   public final Queue<AllocatedBuffer> complete() {
     finishCurrentBuffer();
     return buffers;
@@ -810,7 +808,6 @@ abstract class BinaryWriter extends ByteOutput implements Writer {
     }
   }
 
-  @Deprecated
   @Override
   public final void writeGroupList(int fieldNumber, List<?> list) throws IOException {
     for (int i = list.size() - 1; i >= 0; i--) {
@@ -818,7 +815,6 @@ abstract class BinaryWriter extends ByteOutput implements Writer {
     }
   }
 
-  @Deprecated
   @Override
   public final void writeGroupList(int fieldNumber, List<?> list, Schema schema)
       throws IOException {
@@ -1084,7 +1080,6 @@ abstract class BinaryWriter extends ByteOutput implements Writer {
       writeTag(fieldNumber, WIRETYPE_LENGTH_DELIMITED);
     }
 
-    @Deprecated
     @Override
     public void writeGroup(int fieldNumber, Object value) throws IOException {
       writeTag(fieldNumber, WIRETYPE_END_GROUP);
@@ -1502,8 +1497,8 @@ abstract class BinaryWriter extends ByteOutput implements Writer {
       this.allocatedBuffer = allocatedBuffer;
       this.buffer = allocatedBuffer.array();
       int arrayOffset = allocatedBuffer.arrayOffset();
-      this.limit = (long) arrayOffset + allocatedBuffer.limit();
-      this.offset = (long) arrayOffset + allocatedBuffer.position();
+      this.limit = arrayOffset + allocatedBuffer.limit();
+      this.offset = arrayOffset + allocatedBuffer.position();
       this.offsetMinusOne = offset - 1;
       this.limitMinusOne = limit - 1;
       this.pos = limitMinusOne;
@@ -2153,7 +2148,6 @@ abstract class BinaryWriter extends ByteOutput implements Writer {
       writeTag(fieldNumber, WIRETYPE_LENGTH_DELIMITED);
     }
 
-    @Deprecated
     @Override
     public void writeGroup(int fieldNumber, Object value) throws IOException {
       writeTag(fieldNumber, WIRETYPE_END_GROUP);
@@ -2168,13 +2162,11 @@ abstract class BinaryWriter extends ByteOutput implements Writer {
       writeTag(fieldNumber, WIRETYPE_START_GROUP);
     }
 
-    @Deprecated
     @Override
     public void writeStartGroup(int fieldNumber) {
       writeTag(fieldNumber, WIRETYPE_START_GROUP);
     }
 
-    @Deprecated
     @Override
     public void writeEndGroup(int fieldNumber) {
       writeTag(fieldNumber, WIRETYPE_END_GROUP);
@@ -2727,13 +2719,11 @@ abstract class BinaryWriter extends ByteOutput implements Writer {
       writeTag(fieldNumber, WIRETYPE_START_GROUP);
     }
 
-    @Deprecated
     @Override
     public void writeStartGroup(int fieldNumber) {
       writeTag(fieldNumber, WIRETYPE_START_GROUP);
     }
 
-    @Deprecated
     @Override
     public void writeEndGroup(int fieldNumber) {
       writeTag(fieldNumber, WIRETYPE_END_GROUP);

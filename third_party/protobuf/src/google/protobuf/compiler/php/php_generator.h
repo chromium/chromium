@@ -43,8 +43,6 @@ namespace protobuf {
 namespace compiler {
 namespace php {
 
-struct Options;
-
 class PROTOC_EXPORT Generator : public CodeGenerator {
  public:
   virtual bool Generate(
@@ -65,7 +63,9 @@ class PROTOC_EXPORT Generator : public CodeGenerator {
  private:
   bool Generate(
       const FileDescriptor* file,
-      const Options& options,
+      bool is_descriptor,
+      bool aggregate_metadata,
+      const std::set<std::string>& aggregate_metadata_prefixes,
       GeneratorContext* generator_context,
       std::string* error) const;
 };

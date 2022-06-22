@@ -50,7 +50,6 @@
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/stubs/mutex.h>
 #include <google/protobuf/wire_format.h>
-#include <gmock/gmock.h>
 #include <google/protobuf/testing/googletest.h>
 #include <gtest/gtest.h>
 #include <google/protobuf/stubs/time.h>
@@ -63,7 +62,7 @@ using internal::WireFormat;
 
 class UnknownFieldSetTest : public testing::Test {
  protected:
-  void SetUp() override {
+  virtual void SetUp() {
     descriptor_ = unittest::TestAllTypes::descriptor();
     TestUtil::SetAllFields(&all_fields_);
     all_fields_.SerializeToString(&all_fields_data_);
@@ -73,13 +72,13 @@ class UnknownFieldSetTest : public testing::Test {
 
   const UnknownField* GetField(const std::string& name) {
     const FieldDescriptor* field = descriptor_->FindFieldByName(name);
-    if (field == nullptr) return nullptr;
+    if (field == NULL) return NULL;
     for (int i = 0; i < unknown_fields_->field_count(); i++) {
       if (unknown_fields_->field(i).number() == field->number()) {
         return &unknown_fields_->field(i);
       }
     }
-    return nullptr;
+    return NULL;
   }
 
   // Constructs a protocol buffer which contains fields with all the same
@@ -131,12 +130,12 @@ TEST_F(UnknownFieldSetTest, AllFieldsPresent) {
     }
   }
 
-  std::unordered_set<uint32_t> unknown_tags;
+  std::unordered_set<uint32> unknown_tags;
   for (int i = 0; i < unknown_fields_->field_count(); i++) {
     unknown_tags.insert(unknown_fields_->field(i).number());
   }
 
-  for (uint32_t t : unknown_tags) {
+  for (uint32 t : unknown_tags) {
     EXPECT_NE(descriptor_->FindFieldByNumber(t), nullptr);
   }
 
@@ -146,7 +145,7 @@ TEST_F(UnknownFieldSetTest, AllFieldsPresent) {
 
 TEST_F(UnknownFieldSetTest, Varint) {
   const UnknownField* field = GetField("optional_int32");
-  ASSERT_TRUE(field != nullptr);
+  ASSERT_TRUE(field != NULL);
 
   ASSERT_EQ(UnknownField::TYPE_VARINT, field->type());
   EXPECT_EQ(all_fields_.optional_int32(), field->varint());
@@ -154,7 +153,7 @@ TEST_F(UnknownFieldSetTest, Varint) {
 
 TEST_F(UnknownFieldSetTest, Fixed32) {
   const UnknownField* field = GetField("optional_fixed32");
-  ASSERT_TRUE(field != nullptr);
+  ASSERT_TRUE(field != NULL);
 
   ASSERT_EQ(UnknownField::TYPE_FIXED32, field->type());
   EXPECT_EQ(all_fields_.optional_fixed32(), field->fixed32());
@@ -162,7 +161,7 @@ TEST_F(UnknownFieldSetTest, Fixed32) {
 
 TEST_F(UnknownFieldSetTest, Fixed64) {
   const UnknownField* field = GetField("optional_fixed64");
-  ASSERT_TRUE(field != nullptr);
+  ASSERT_TRUE(field != NULL);
 
   ASSERT_EQ(UnknownField::TYPE_FIXED64, field->type());
   EXPECT_EQ(all_fields_.optional_fixed64(), field->fixed64());
@@ -170,7 +169,7 @@ TEST_F(UnknownFieldSetTest, Fixed64) {
 
 TEST_F(UnknownFieldSetTest, LengthDelimited) {
   const UnknownField* field = GetField("optional_string");
-  ASSERT_TRUE(field != nullptr);
+  ASSERT_TRUE(field != NULL);
 
   ASSERT_EQ(UnknownField::TYPE_LENGTH_DELIMITED, field->type());
   EXPECT_EQ(all_fields_.optional_string(), field->length_delimited());
@@ -178,7 +177,7 @@ TEST_F(UnknownFieldSetTest, LengthDelimited) {
 
 TEST_F(UnknownFieldSetTest, Group) {
   const UnknownField* field = GetField("optionalgroup");
-  ASSERT_TRUE(field != nullptr);
+  ASSERT_TRUE(field != NULL);
 
   ASSERT_EQ(UnknownField::TYPE_GROUP, field->type());
   ASSERT_EQ(1, field->group().field_count());
@@ -186,7 +185,7 @@ TEST_F(UnknownFieldSetTest, Group) {
   const UnknownField& nested_field = field->group().field(0);
   const FieldDescriptor* nested_field_descriptor =
       unittest::TestAllTypes::OptionalGroup::descriptor()->FindFieldByName("a");
-  ASSERT_TRUE(nested_field_descriptor != nullptr);
+  ASSERT_TRUE(nested_field_descriptor != NULL);
 
   EXPECT_EQ(nested_field_descriptor->number(), nested_field.number());
   ASSERT_EQ(UnknownField::TYPE_VARINT, nested_field.type());
@@ -201,9 +200,8 @@ TEST_F(UnknownFieldSetTest, SerializeFastAndSlowAreEquivalent) {
   slow_buffer.resize(size);
   fast_buffer.resize(size);
 
-  uint8_t* target =
-      reinterpret_cast<uint8_t*>(::google::protobuf::string_as_array(&fast_buffer));
-  uint8_t* result = WireFormat::SerializeUnknownFieldsToArray(
+  uint8* target = reinterpret_cast<uint8*>(::google::protobuf::string_as_array(&fast_buffer));
+  uint8* result = WireFormat::SerializeUnknownFieldsToArray(
       empty_message_.unknown_fields(), target);
   EXPECT_EQ(size, result - target);
 
@@ -458,8 +456,8 @@ TEST_F(UnknownFieldSetTest, UnknownEnumValue) {
       TestAllTypes::descriptor()->FindFieldByName("optional_nested_enum");
   const FieldDescriptor* repeated_field =
       TestAllTypes::descriptor()->FindFieldByName("repeated_nested_enum");
-  ASSERT_TRUE(singular_field != nullptr);
-  ASSERT_TRUE(repeated_field != nullptr);
+  ASSERT_TRUE(singular_field != NULL);
+  ASSERT_TRUE(repeated_field != NULL);
 
   std::string data;
 
@@ -648,7 +646,6 @@ TEST_F(UnknownFieldSetTest, DeleteByNumber) {
                       MAKE_VECTOR(kExpectedFieldNumbers5));
 }
 #undef MAKE_VECTOR
-
 }  // namespace
 
 }  // namespace protobuf

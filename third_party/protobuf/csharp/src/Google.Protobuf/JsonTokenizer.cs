@@ -471,18 +471,9 @@ namespace Google.Protobuf
                 // TODO: What exception should we throw if the value can't be represented as a double?
                 try
                 {
-                    double result = double.Parse(builder.ToString(),
+                    return double.Parse(builder.ToString(),
                         NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent,
                         CultureInfo.InvariantCulture);
-
-                    // .NET Core 3.0 and later returns infinity if the number is too large or small to be represented.
-                    // For compatibility with other Protobuf implementations the tokenizer should still throw.
-                    if (double.IsInfinity(result))
-                    {
-                        throw reader.CreateException("Numeric value out of range: " + builder);
-                    }
-
-                    return result;
                 }
                 catch (OverflowException)
                 {

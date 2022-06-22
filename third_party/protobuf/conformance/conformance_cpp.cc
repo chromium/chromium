@@ -36,7 +36,6 @@
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/util/json_util.h>
 #include <google/protobuf/util/type_resolver_util.h>
-#include <google/protobuf/stubs/status.h>
 #include "conformance.pb.h"
 #include <google/protobuf/test_messages_proto2.pb.h>
 #include <google/protobuf/test_messages_proto3.pb.h>
@@ -55,7 +54,6 @@ using google::protobuf::util::JsonToBinaryString;
 using google::protobuf::util::NewTypeResolverForDescriptorPool;
 using google::protobuf::util::TypeResolver;
 using protobuf_test_messages::proto3::TestAllTypesProto3;
-using protobuf_test_messages::proto2::TestAllTypesProto2;
 using std::string;
 
 static const char kTypeUrlPrefix[] = "type.googleapis.com";
@@ -103,8 +101,6 @@ void CheckedWrite(int fd, const void *buf, size_t len) {
 
 void DoTest(const ConformanceRequest& request, ConformanceResponse* response) {
   Message *test_message;
-  google::protobuf::LinkMessageReflection<TestAllTypesProto2>();
-  google::protobuf::LinkMessageReflection<TestAllTypesProto3>();
   const Descriptor *descriptor = DescriptorPool::generated_pool()->FindMessageTypeByName(
       request.message_type());
   if (!descriptor) {
@@ -129,12 +125,12 @@ void DoTest(const ConformanceRequest& request, ConformanceResponse* response) {
       options.ignore_unknown_fields =
           (request.test_category() ==
               conformance::JSON_IGNORE_UNKNOWN_PARSING_TEST);
-      util::Status status =
-          JsonToBinaryString(type_resolver, *type_url, request.json_payload(),
-                             &proto_binary, options);
+      Status status = JsonToBinaryString(type_resolver, *type_url,
+                                         request.json_payload(), &proto_binary,
+                                         options);
       if (!status.ok()) {
         response->set_parse_error(string("Parse error: ") +
-                                  std::string(status.message()));
+                                  std::string(status.error_message()));
         return;
       }
 
@@ -183,13 +179,12 @@ void DoTest(const ConformanceRequest& request, ConformanceResponse* response) {
     case conformance::JSON: {
       string proto_binary;
       GOOGLE_CHECK(test_message->SerializeToString(&proto_binary));
-      util::Status status =
-          BinaryToJsonString(type_resolver, *type_url, proto_binary,
-                             response->mutable_json_payload());
+      Status status = BinaryToJsonString(type_resolver, *type_url, proto_binary,
+                                         response->mutable_json_payload());
       if (!status.ok()) {
         response->set_serialize_error(
             string("Failed to serialize JSON output: ") +
-            std::string(status.message()));
+            std::string(status.error_message()));
         return;
       }
       break;

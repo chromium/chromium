@@ -30,8 +30,9 @@
 
 package com.google.protobuf;
 
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 import com.google.protobuf.testing.Proto2Testing;
 import com.google.protobuf.testing.Proto2Testing.Proto2Message;
@@ -52,6 +53,7 @@ public class Proto2ExtensionLookupSchemaTest {
   public void setup() {
     TestSchemas.registerGenericProto2Schemas();
 
+    Protobuf.getInstance().schemaFor(Proto2MessageWithExtensions.class);
     data = new Proto2MessageFactory(10, 20, 1, 1).newMessage().toByteArray();
     extensionRegistry = ExtensionRegistry.newInstance();
     Proto2Testing.registerAllExtensions(extensionRegistry);
@@ -65,14 +67,14 @@ public class Proto2ExtensionLookupSchemaTest {
     Proto2MessageWithExtensions message =
         ExperimentalSerializationUtil.fromByteArray(
             data, Proto2MessageWithExtensions.class, extensionRegistry);
-    assertThat(message).isEqualTo(base);
+    assertEquals(base, message);
 
     Proto2MessageWithExtensions roundtripMessage =
         ExperimentalSerializationUtil.fromByteArray(
             ExperimentalSerializationUtil.toByteArray(message),
             Proto2MessageWithExtensions.class,
             extensionRegistry);
-    assertThat(roundtripMessage).isEqualTo(base);
+    assertEquals(base, roundtripMessage);
   }
 
   @Test
@@ -80,7 +82,7 @@ public class Proto2ExtensionLookupSchemaTest {
     // Use unknown fields to hold invalid enum values.
     UnknownFieldSetLite unknowns = UnknownFieldSetLite.newInstance();
     final int outOfRange = 1000;
-    assertThat(TestEnum.forNumber(outOfRange)).isNull();
+    assertNull(TestEnum.forNumber(outOfRange));
     unknowns.storeField(
         WireFormat.makeTag(Proto2Message.FIELD_ENUM_13_FIELD_NUMBER, WireFormat.WIRETYPE_VARINT),
         (long) outOfRange);
@@ -123,17 +125,17 @@ public class Proto2ExtensionLookupSchemaTest {
     Proto2MessageWithExtensions parsed =
         ExperimentalSerializationUtil.fromByteArray(
             output, Proto2MessageWithExtensions.class, extensionRegistry);
-    assertWithMessage("out-of-range singular enum should not be in message")
-        .that(parsed.hasExtension(Proto2Testing.fieldEnum13))
-        .isFalse();
+    assertFalse(
+        "out-of-range singular enum should not be in message",
+        parsed.hasExtension(Proto2Testing.fieldEnum13));
     {
       List<Long> singularEnum =
           parsed
               .getUnknownFields()
               .getField(Proto2Message.FIELD_ENUM_13_FIELD_NUMBER)
               .getVarintList();
-      assertThat(singularEnum).hasSize(1);
-      assertThat(singularEnum.get(0)).isEqualTo((Long) (long) outOfRange);
+      assertEquals(1, singularEnum.size());
+      assertEquals((Long) (long) outOfRange, singularEnum.get(0));
     }
     {
       List<Long> repeatedEnum =
@@ -141,8 +143,8 @@ public class Proto2ExtensionLookupSchemaTest {
               .getUnknownFields()
               .getField(Proto2Message.FIELD_ENUM_LIST_30_FIELD_NUMBER)
               .getVarintList();
-      assertThat(repeatedEnum).hasSize(1);
-      assertThat(repeatedEnum.get(0)).isEqualTo((Long) (long) outOfRange);
+      assertEquals(1, repeatedEnum.size());
+      assertEquals((Long) (long) outOfRange, repeatedEnum.get(0));
     }
     {
       List<Long> packedRepeatedEnum =
@@ -150,18 +152,20 @@ public class Proto2ExtensionLookupSchemaTest {
               .getUnknownFields()
               .getField(Proto2Message.FIELD_ENUM_LIST_PACKED_44_FIELD_NUMBER)
               .getVarintList();
-      assertThat(packedRepeatedEnum).hasSize(1);
-      assertThat(packedRepeatedEnum.get(0)).isEqualTo((Long) (long) outOfRange);
+      assertEquals(1, packedRepeatedEnum.size());
+      assertEquals((Long) (long) outOfRange, packedRepeatedEnum.get(0));
     }
-    assertWithMessage("out-of-range repeated enum should not be in message")
-        .that(parsed.getExtension(Proto2Testing.fieldEnumList30).size())
-        .isEqualTo(2);
-    assertThat(parsed.getExtension(Proto2Testing.fieldEnumList30, 0)).isEqualTo(TestEnum.ONE);
-    assertThat(parsed.getExtension(Proto2Testing.fieldEnumList30, 1)).isEqualTo(TestEnum.TWO);
-    assertWithMessage("out-of-range packed repeated enum should not be in message")
-        .that(parsed.getExtension(Proto2Testing.fieldEnumListPacked44).size())
-        .isEqualTo(2);
-    assertThat(parsed.getExtension(Proto2Testing.fieldEnumListPacked44, 0)).isEqualTo(TestEnum.ONE);
-    assertThat(parsed.getExtension(Proto2Testing.fieldEnumListPacked44, 1)).isEqualTo(TestEnum.TWO);
+    assertEquals(
+        "out-of-range repeated enum should not be in message",
+        2,
+        parsed.getExtension(Proto2Testing.fieldEnumList30).size());
+    assertEquals(TestEnum.ONE, parsed.getExtension(Proto2Testing.fieldEnumList30, 0));
+    assertEquals(TestEnum.TWO, parsed.getExtension(Proto2Testing.fieldEnumList30, 1));
+    assertEquals(
+        "out-of-range packed repeated enum should not be in message",
+        2,
+        parsed.getExtension(Proto2Testing.fieldEnumListPacked44).size());
+    assertEquals(TestEnum.ONE, parsed.getExtension(Proto2Testing.fieldEnumListPacked44, 0));
+    assertEquals(TestEnum.TWO, parsed.getExtension(Proto2Testing.fieldEnumListPacked44, 1));
   }
 }
