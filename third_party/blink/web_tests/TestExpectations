@@ -30,7 +30,6 @@ accessibility/slot-poison.html [ Failure ]
 crbug.com/1304217 http/tests/devtools/text-source-map.js [ Skip ]
 crbug.com/1304217 http/tests/devtools/runtime/runtime-getProperties.js [ Skip ] # Bug 1325812
 crbug.com/1304217 http/tests/devtools/runtime/runtime-localStorage-getProperties.js [ Skip ] # Bug 1325812
-crbug.com/1334930 http/tests/devtools/sources/debugger/debugger-disable-enable.js [ Skip ]
 
 # Expected to time out.
 external/wpt/infrastructure/expected-fail/timeout.html [ Timeout ]
