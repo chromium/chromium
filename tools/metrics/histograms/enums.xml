@@ -94922,11 +94922,20 @@ Full version information for the fingerprint enum values:
 
 <enum name="TrustedVaultDownloadKeysStatus">
   <int value="0" label="Success"/>
-  <int value="1" label="Member not found or corrupted"/>
+  <int value="1" label="Member not found or corrupted (deprecated)"/>
   <int value="2" label="No new keys"/>
   <int value="3" label="Key proof verification failed"/>
   <int value="4" label="Access token fetching failed"/>
   <int value="5" label="Other error"/>
+  <int value="6" label="Member not found"/>
+  <int value="7" label="Membership not found"/>
+  <int value="8" label="Membership corrupted"/>
+  <int value="9" label="Membership empty"/>
+  <int value="10" label="No primary account"/>
+  <int value="11" label="Device not registered"/>
+  <int value="12" label="Throttled client side"/>
+  <int value="13" label="Corrupted local device registration"/>
+  <int value="14" label="Aborted"/>
 </enum>
 
 <enum name="TrustedVaultFetchKeysAttempt">
