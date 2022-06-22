@@ -52,6 +52,16 @@ class AutofillMetricsBaseTest : public testing::Test {
                            bool include_full_server_credit_card,
                            bool masked_card_is_enrolled_for_virtual_card);
 
+  // Creates a local card to existing card deck or clear them all and then add a
+  // new local card.
+  // The GUID for the card created is returned as a string.
+  std::string CreateLocalMasterCard(bool clear_existing_cards = false);
+
+  // Creates a local card and then a duplicate server card with the same
+  // credentials/info.
+  // The GUIDs for the cards crated are returned as a vector of strings.
+  std::vector<std::string> CreateLocalAndDuplicateServerCreditCard();
+
   void AddMaskedServerCreditCardWithOffer(std::string guid,
                                           std::string offer_reward_amount,
                                           GURL url,

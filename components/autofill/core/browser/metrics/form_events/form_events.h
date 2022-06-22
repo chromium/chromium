@@ -135,6 +135,10 @@ enum FormEvent {
   FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_FULL_FILL_BUT_EXPDATE_MISSING = 54,
   FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_PARTIAL_FILL = 55,
 
+  // Metric logged when a local card with a matching deduplicated server
+  // suggestion was filled.
+  FORM_EVENT_LOCAL_SUGGESTION_FILLED_FOR_AN_EXISTING_SERVER_CARD_ONCE = 56,
+
   NUM_FORM_EVENTS,
 };
 

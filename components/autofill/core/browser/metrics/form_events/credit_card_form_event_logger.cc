@@ -150,6 +150,12 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
         record_type == CreditCard::VIRTUAL_CARD;
     switch (record_type) {
       case CreditCard::LOCAL_CARD:
+        // Check if the local card is a duplicate of an existing server card
+        // and log an additional metric if so.
+        if (IsLocalDuplicateOfServerCard(credit_card)) {
+          Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_FOR_AN_EXISTING_SERVER_CARD_ONCE,
+              form);
+        }
         Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, form);
         break;
       case CreditCard::MASKED_SERVER_CARD:
@@ -282,6 +288,17 @@ void CreditCardFormEventLogger::OnLog(const std::string& name,
   if (has_eligible_offer_) {
     base::UmaHistogramEnumeration(name + ".WithOffer", event, NUM_FORM_EVENTS);
   }
+}
+
+bool CreditCardFormEventLogger::IsLocalDuplicateOfServerCard(
+    const CreditCard& credit_card) {
+  // Get the list of all the server credit cards for the user and see if any
+  // card in the list matches/isDuplicateOf the local card.
+  return base::ranges::any_of(
+      personal_data_manager_->GetServerCreditCards(),
+      [&credit_card](CreditCard* card_from_list) {
+        return credit_card.IsLocalDuplicateOfServerCard(*card_from_list);
+      });
 }
 
 FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(
