@@ -153,6 +153,7 @@
 #include "chrome/browser/ash/printing/printer_metrics_provider.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/ash/web_applications/personalization_app/keyboard_backlight_color_metrics_provider.h"
 #include "chrome/browser/metrics/ambient_mode_metrics_provider.h"
 #include "chrome/browser/metrics/assistant_service_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_family_link_user_metrics_provider.h"
@@ -840,6 +841,9 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
     metrics_service_->RegisterMetricsProvider(
         std::make_unique<UserTypeByDeviceTypeMetricsProvider>());
   }
+
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<KeyboardBacklightColorMetricsProvider>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
