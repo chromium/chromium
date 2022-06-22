@@ -708,8 +708,7 @@ TEST_F(BluetoothAdapterTest, StartDiscoverySessionError_Destroy) {
 }
 
 // TODO(scheib): Enable BluetoothTest fixture tests on all platforms.
-// Flaky on Mac. See crbug.com/1334462
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_ConstructDefaultAdapter ConstructDefaultAdapter
 #else
 #define MAYBE_ConstructDefaultAdapter DISABLED_ConstructDefaultAdapter
@@ -721,24 +720,14 @@ TEST_P(BluetoothTestWinrt, ConstructDefaultAdapter) {
 TEST_F(BluetoothTest, MAYBE_ConstructDefaultAdapter) {
 #endif
   InitWithDefaultAdapter();
-  if (!adapter_->IsPresent()) {
-    LOG(WARNING) << "Bluetooth adapter not present; skipping unit test.";
+  if (!adapter_->IsPresent() || !adapter_->IsPowered()) {
+    LOG(WARNING)
+        << "Bluetooth adapter not present or not powered; skipping unit test.";
     return;
   }
 
-  bool expected = false;
-// MacOS returns empty for name and address if the adapter is off.
-#if BUILDFLAG(IS_MAC)
-  expected = !adapter_->IsPowered();
-#endif  // BUILDFLAG(IS_MAC)
-
-  EXPECT_EQ(expected, adapter_->GetAddress().empty());
-  EXPECT_EQ(expected, adapter_->GetName().empty());
-
-  EXPECT_TRUE(adapter_->IsPresent());
-  // Don't know on test machines if adapter will be powered or not, but
-  // the call should be safe to make and consistent.
-  EXPECT_EQ(adapter_->IsPowered(), adapter_->IsPowered());
+  EXPECT_FALSE(adapter_->GetAddress().empty());
+  EXPECT_FALSE(adapter_->GetName().empty());
   EXPECT_FALSE(adapter_->IsDiscoverable());
   EXPECT_FALSE(adapter_->IsDiscovering());
 }  // namespace device
