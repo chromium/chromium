@@ -1739,22 +1739,6 @@ void QuotaManagerImpl::GetBucketUsageWithBreakdown(
   usage_tracker->GetBucketUsageWithBreakdown(bucket, std::move(callback));
 }
 
-void QuotaManagerImpl::GetHostUsageForInternals(
-    const std::string& host,
-    storage::mojom::StorageType storage_type,
-    GetHostUsageForInternalsCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EnsureDatabaseOpened();
-
-  StorageType type = GetBlinkStorageType(storage_type);
-  UsageTracker* usage_tracker = GetUsageTracker(type);
-  DCHECK(usage_tracker);
-
-  usage_tracker->GetHostUsageWithBreakdown(
-      host, base::BindOnce(&QuotaManagerImpl::OnGetHostUsageForInternals,
-                           weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 bool QuotaManagerImpl::IsSessionOnly(const StorageKey& storage_key,
                                      StorageType type) const {
   return type == StorageType::kTemporary && special_storage_policy_ &&
@@ -1984,16 +1968,6 @@ UsageTracker* QuotaManagerImpl::GetUsageTracker(StorageType type) const {
       NOTREACHED();
   }
   return nullptr;
-}
-
-void QuotaManagerImpl::OnGetHostUsageForInternals(
-    GetHostUsageForInternalsCallback callback,
-    int64_t usage,
-    blink::mojom::UsageBreakdownPtr usage_breakdown) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(usage, -1);
-
-  std::move(callback).Run(usage);
 }
 
 void QuotaManagerImpl::NotifyStorageAccessed(const StorageKey& storage_key,

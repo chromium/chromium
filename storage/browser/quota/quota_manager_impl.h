@@ -387,10 +387,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       GetDiskAvailabilityAndTempPoolSizeCallback callback) override;
   void GetStatistics(GetStatisticsCallback callback) override;
   void RetrieveBucketsTable(RetrieveBucketsTableCallback callback) override;
-  void GetHostUsageForInternals(
-      const std::string& host,
-      storage::mojom::StorageType storage_type,
-      GetHostUsageForInternalsCallback callback) override;
   void GetGlobalUsageForInternals(
       storage::mojom::StorageType storage_type,
       GetGlobalUsageForInternalsCallback callback) override;
@@ -584,10 +580,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   UsageTracker* GetUsageTracker(blink::mojom::StorageType type) const;
 
   void DumpBucketTable(DumpBucketTableCallback callback);
-  void OnGetHostUsageForInternals(
-      GetHostUsageForInternalsCallback callback,
-      int64_t usage,
-      blink::mojom::UsageBreakdownPtr usage_breakdown);
   void UpdateQuotaInternalsDiskAvailability(base::OnceClosure barrier_callback,
                                             AccumulateQuotaInternalsInfo* info,
                                             int64_t total_space,

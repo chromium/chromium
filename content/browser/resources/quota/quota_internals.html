@@ -56,14 +56,13 @@
 
         <div id="usage-tabpanel" slot="panel">
           <!-- Usage and Quota -->
-          <h2>Host Usage Data</h2>
+          <h2>Bucket Usage Data</h2>
           <table>
             <thead>
-              <th>Host</th>
-              <th>Total Usage</th>
-              <th>Storage Type</th>
               <th>Storage Key</th>
+              <th>Storage Type</th>
               <th>Bucket</th>
+              <th>Usage (B)</th>
               <th>Use Count</th>
               <th>Last Accessed</th>
               <th>Last Modified</th>
@@ -93,11 +92,10 @@
     </template>
     <template id="usage-and-quota-row">
         <tr class="usage-and-quota-template-row">
-          <td class="host"></td>
-          <td class="total-usage"></td>
-          <td class="storage-type"></td>
           <td class="storage-key"></td>
+          <td class="storage-type"></td>
           <td class="bucket"></td>
+          <td class="usage"></td>
           <td class="use-count"></td>
           <td class="last-accessed"></td>
           <td class="last-modified"></td>

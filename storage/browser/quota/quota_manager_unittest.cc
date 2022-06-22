@@ -2927,32 +2927,6 @@ TEST_F(QuotaManagerImplTest, FindAndDeleteBucketDataWithDBError) {
              .usage);
 }
 
-TEST_F(QuotaManagerImplTest, GetHostUsageForInternals) {
-  static const ClientBucketData kData[] = {
-      {"http://example.com/", kDefaultBucketName, kTemp, 400},
-      {"http://example.com/", kDefaultBucketName, kPerm, 2},
-  };
-  MockQuotaClient* client =
-      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
-  RegisterClientBucketData(client, kData);
-
-  base::test::TestFuture<int64_t> temp_future;
-  quota_manager_impl()->GetHostUsageForInternals(
-      "example.com", storage::mojom::StorageType::kTemporary,
-      temp_future.GetCallback());
-  int64_t temp_result = temp_future.Take();
-
-  EXPECT_EQ(400, temp_result);
-
-  base::test::TestFuture<int64_t> perm_future;
-  quota_manager_impl()->GetHostUsageForInternals(
-      "example.com", storage::mojom::StorageType::kPersistent,
-      perm_future.GetCallback());
-  int64_t perm_result = perm_future.Take();
-
-  EXPECT_EQ(2, perm_result);
-}
-
 TEST_F(QuotaManagerImplTest, GetDiskAvailabilityAndTempPoolSize) {
   const int kPoolSize = 1000;
   const int kPerHostQuota = kPoolSize / 5;
