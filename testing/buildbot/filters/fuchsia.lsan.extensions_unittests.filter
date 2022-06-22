@@ -5,6 +5,8 @@
 -APILastErrorTest*
 -APIRequestHandlerTest.SettingLastError
 -All/ResponseValidationNativeExtensionBindingsSystemUnittest.ResponseValidation*
+-All/SignatureValidationNativeExtensionBindingsSystemUnittest.EventArgumentValidation*
+-All/SignatureValidationNativeExtensionBindingsSystemUnittest.ResponseValidation*
 -DeclarativeEventTest.TestRulesSchema
 -DeclarativeEventWithSchemaTest.TestAllMethods
 -EventEmitterUnittest.ListenersDestroyingContext
