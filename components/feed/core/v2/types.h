@@ -50,11 +50,11 @@ struct RequestMetadata {
 
   feedwire::ClientInfo ToClientInfo() const;
 
-  ChromeInfo chrome_info;
+  ChromeInfo chrome_info{};
   std::string language_tag;
   std::string client_instance_id;
   std::string session_id;
-  DisplayMetrics display_metrics;
+  DisplayMetrics display_metrics{};
   ContentOrder content_order = ContentOrder::kUnspecified;
   bool notice_card_acknowledged = false;
   bool autoplay_enabled = false;
