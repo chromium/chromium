@@ -3231,6 +3231,28 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   bool handled = false;
 
+  if (event.type() == ui::ET_MOUSE_DRAGGED) {
+    POINT point;
+    point.x = event.x();
+    point.y = event.y();
+    ::ClientToScreen(hwnd(), &point);
+    // Windows sometimes sends spurious WM_MOUSEMOVEs at 0,0. If this happens
+    // after a mouse down on a tab, it can cause a detach of the tab to 0,0.
+    // In general, it would cause weird behavior while dragging, so ignore
+    // these events if they're fairly far from the cursor.
+    if (point.x == 0 && point.y == 0) {
+      POINT cursor_pos;
+      ::GetCursorPos(&cursor_pos);
+      constexpr int kMinSpuriousDistance = 200;
+      auto distance = sqrt(pow(static_cast<float>(abs(cursor_pos.x)), 2) +
+                           pow(static_cast<float>(abs(cursor_pos.y)), 2));
+      if (distance > kMinSpuriousDistance) {
+        SetMsgHandled(true);
+        return 0;
+      }
+    }
+  }
+
   // Don't send right mouse button up to the delegate when displaying system
   // command menu. This prevents left clicking in the upper left hand corner of
   // an app window and then right clicking from sending the right click to the
