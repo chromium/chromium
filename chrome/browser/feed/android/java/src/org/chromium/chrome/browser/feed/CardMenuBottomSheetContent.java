@@ -60,11 +60,6 @@ public class CardMenuBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public boolean handleBackPress() {
-        return false;
-    }
-
-    @Override
     public int getSheetContentDescriptionStringId() {
         return R.string.feed_card_menu_description;
     }
