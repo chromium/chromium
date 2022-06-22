@@ -393,6 +393,8 @@ crbug.com/841567 [ Mac12 ] virtual/threaded-prefer-compositing/fast/scrolling/ov
 crbug.com/841567 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
 crbug.com/841567 [ Debug Mac11 ] virtual/threaded-prefer-compositing/fast/scrolling/same-page-navigate.html [ Failure Pass ]
 
+crbug.com/1335172 [ Mac11-arm64 ] virtual/threaded-prefer-compositing/fast/scrolling/inertial-scrolling-with-pointer-events-none-overlay.html [ Failure Pass ]
+
 crbug.com/915926 fast/events/touch/multi-touch-user-gesture.html [ Failure Pass ]
 
 crbug.com/736052 [ Mac ] compositing/overflow/composited-scroll-with-fractional-translation.html [ Failure Pass ]
