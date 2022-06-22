@@ -244,9 +244,18 @@ const AllowedListForLazyLoading& AllowedWebsitesForLazyLoading() {
   return allowed_websites;
 }
 
+// Checks if the passed url is the same origin with the document.
+// This is called in order to limit LazyEmbeds/Ads to apply only cross-origin
+// frames.
+// We're not sure if this is 100% needed, and we should move the check closer
+// to context->GetSecurityOrigin()->CanAccess check.
+bool AreSameOrigin(const Document& document, const KURL& url) {
+  return SecurityOrigin::AreSameOrigin(url, document.Url());
+}
+
 // Checks if the passed `url` is in the allowlist for automatic
 // lazy-loading. Returns true if the url is in the list.
-bool IsEligibleForLazyEmbeds(KURL url) {
+bool IsEligibleForLazyEmbeds(const KURL& url, const Document& document) {
 #if DCHECK_IS_ON()
   if (base::FeatureList::IsEnabled(
           features::kAutomaticLazyFrameLoadingToEmbeds)) {
@@ -256,6 +265,12 @@ bool IsEligibleForLazyEmbeds(KURL url) {
            "kAutomaticLazyFrameLoadingToEmbeds is enabled.";
   }
 #endif  // DCHECK_IS_ON()
+
+  // LazyEmbeds targets are third-party frames.
+  // Not eligible if the frame url is a same-origin as the parent url.
+  if (AreSameOrigin(document, url)) {
+    return false;
+  }
 
   scoped_refptr<const SecurityOrigin> origin = SecurityOrigin::Create(url);
   for (const auto& it : AllowedWebsitesForLazyLoading()) {
@@ -664,13 +679,14 @@ bool HTMLFrameOwnerElement::LazyLoadIfPossible(
   if (CheckAndRecordIfShouldLazilyLoadFrame(
           GetDocument(),
           /*is_loading_attr_lazy=*/loading_lazy_set,
-          /*is_eligible_for_lazy_embeds=*/IsEligibleForLazyEmbeds(url),
-          /*is_eligible_for_lazy_ads=*/IsAdRelated(),
+          /*is_eligible_for_lazy_embeds=*/
+          IsEligibleForLazyEmbeds(url, GetDocument()),
+          /*is_eligible_for_lazy_ads=*/IsEligibleForLazyAds(url),
           /*record_uma=*/true)) {
     lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
                                                           frame_load_type);
     MaybeSetTimeoutToStartAdFrameLoading(
-        /*is_loading_attr_lazy=*/loading_lazy_set);
+        url, /*is_loading_attr_lazy=*/loading_lazy_set);
 
     return true;
   }
@@ -872,13 +888,20 @@ void HTMLFrameOwnerElement::LoadIfLazyOnIdle(base::TimeTicks deadline) {
   LoadImmediatelyIfLazy();
 }
 
+bool HTMLFrameOwnerElement::IsEligibleForLazyAds(const KURL& url) {
+  // LazyAds targets are third-party frames.
+  // Not eligible if the frame url is a same-origin as the parent url.
+  return IsAdRelated() && !AreSameOrigin(GetDocument(), url);
+}
+
 void HTMLFrameOwnerElement::MaybeSetTimeoutToStartAdFrameLoading(
+    const KURL& url,
     bool is_loading_attr_lazy) {
   if (!base::FeatureList::IsEnabled(
           features::kAutomaticLazyFrameLoadingToAds)) {
     return;
   }
-  if (!IsAdRelated()) {
+  if (!IsEligibleForLazyAds(url)) {
     return;
   }
   // Even if the frame is ad related, respect the explicit loading="lazy"

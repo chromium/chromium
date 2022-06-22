@@ -1300,13 +1300,18 @@ IN_PROC_BROWSER_TEST_P(AutomaticLazyLoadFrameBrowserTest, UKM) {
       ukm::builders::Blink_AutomaticLazyLoadFrame::kEntryName,
       ukm_loop.QuitClosure());
 
+  const std::string kMainFrameOrigin = "a_main_frame.com";
   const GURL kMainFrameUrl(embedded_test_server()->GetURL(
-      "a_main_frame.com", "/ads_observer/blank_with_adiframe_writer.html"));
+      kMainFrameOrigin, "/ads_observer/blank_with_adiframe_writer.html"));
   const GURL kAdUrl(embedded_test_server()->GetURL("ad.com", "/title1.html"));
   const GURL kEmbedUrl(
       embedded_test_server()->GetURL("embed.com", "/title1.html"));
   const GURL kNonAdNonEmbed(
       embedded_test_server()->GetURL("non_ad_non_embed.com", "/title1.html"));
+  const GURL kSameOriginAdUrl(
+      embedded_test_server()->GetURL(kMainFrameOrigin, "/title1.html"));
+  const GURL kSameOriginEmbedUrl(
+      embedded_test_server()->GetURL(kMainFrameOrigin, "/title1.html"));
 
   content::RenderFrameHost* render_frame_host =
       ui_test_utils::NavigateToURL(browser(), kMainFrameUrl);
@@ -1328,6 +1333,11 @@ IN_PROC_BROWSER_TEST_P(AutomaticLazyLoadFrameBrowserTest, UKM) {
 
   // Add iframe that is not detected as an ad-frame nor an embed.
   AddIframe(render_frame_host, kNonAdNonEmbed);
+
+  // Add same-origin iframe that is specified to lazy-load or ad-frame should
+  // not be counted as LazyAdsFrameCount and LazyEmbedFrameCount.
+  AddAdIframe(render_frame_host, kSameOriginAdUrl);
+  AddIframe(render_frame_host, kSameOriginEmbedUrl);
 
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
