@@ -355,7 +355,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     await flushAsync();
   });
 
-  test('Device becomes unavailable while viewing page.', async function() {
+  test('Device becomes unavailable while viewing pages.', async function() {
     init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
@@ -387,11 +387,28 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     const params = new URLSearchParams();
     params.append('id', '12345/6789&');
     Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICE_DETAIL, params);
-
     await flushAsync();
     assertEquals('device1', bluetoothDeviceDetailPage.parentNode.pageTitle);
+    assertTrue(!!bluetoothDeviceDetailPage.getDeviceIdForTest());
+
+    // Device becomes unavailable in the devices list subpage. We should still
+    // have a device id present since the device id would not be reset to an
+    // empty string.
+    Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES, params);
+    await flushAsync();
     bluetoothConfig.removePairedDevice(device1);
+    await flushAsync();
+    assertTrue(!!bluetoothDeviceDetailPage.getDeviceIdForTest());
+
+    // Add device back and check for when device becomes unavailable in
+    // the device detail subpage.
+    bluetoothConfig.appendToPairedDeviceList([device1]);
+    Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICE_DETAIL, params);
+    bluetoothConfig.removePairedDevice(device1);
+
+    // Device id is removed and navigation backward should occur.
     await windowPopstatePromise;
+    assertFalse(!!bluetoothDeviceDetailPage.getDeviceIdForTest());
   });
 
   test('Device UI states test', async function() {

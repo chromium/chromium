@@ -166,13 +166,15 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
             (device) => device.deviceProperties.id === this.deviceId_) ||
         null;
 
-    // Special case where the device was turned off or becomes unavailable
-    // while user is vewing the page, return back to previous page.
-    if (!this.device_) {
-      this.deviceId_ = '';
-      Router.getInstance().navigateToPreviousRoute();
+    if (this.device_ ||
+        Router.getInstance().currentRoute !== routes.BLUETOOTH_DEVICE_DETAIL) {
       return;
     }
+
+    // Special case where the device was turned off or becomes unavailable
+    // while user is vewing the page, return back to previous page.
+    this.deviceId_ = '';
+    Router.getInstance().navigateToPreviousRoute();
   }
 
   /**
