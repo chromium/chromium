@@ -1471,7 +1471,7 @@ class NetworkServiceNetworkDelegateTest : public NetworkServiceTest {
 
 class ClearSiteDataAuthCertObserver : public TestURLLoaderNetworkObserver {
  public:
-  explicit ClearSiteDataAuthCertObserver() = default;
+  ClearSiteDataAuthCertObserver() = default;
   ~ClearSiteDataAuthCertObserver() override = default;
 
   void OnClearSiteData(
