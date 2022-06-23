@@ -109,7 +109,8 @@ void WaylandOutputManager::InitWaylandScreen(WaylandScreen* screen) {
           output.second->output_id(), output.second->origin(),
           output.second->logical_size(), output.second->physical_size(),
           output.second->insets(), output.second->scale_factor(),
-          output.second->panel_transform(), output.second->logical_transform());
+          output.second->panel_transform(), output.second->logical_transform(),
+          output.second->label());
     }
   }
 }
@@ -135,11 +136,12 @@ void WaylandOutputManager::OnOutputHandleMetrics(uint32_t output_id,
                                                  const gfx::Insets& insets,
                                                  float scale_factor,
                                                  int32_t panel_transform,
-                                                 int32_t logical_transform) {
+                                                 int32_t logical_transform,
+                                                 const std::string& label) {
   if (wayland_screen_) {
-    wayland_screen_->OnOutputAddedOrUpdated(output_id, origin, logical_size,
-                                            physical_size, insets, scale_factor,
-                                            panel_transform, logical_transform);
+    wayland_screen_->OnOutputAddedOrUpdated(
+        output_id, origin, logical_size, physical_size, insets, scale_factor,
+        panel_transform, logical_transform, label);
   }
   auto* wayland_window_manager = connection_->wayland_window_manager();
   for (auto* window : wayland_window_manager->GetWindowsOnOutput(output_id))

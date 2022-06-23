@@ -8,6 +8,7 @@
 #include <xdg-output-unstable-v1-client-protocol.h>
 
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "ui/display/display.h"
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -113,6 +114,9 @@ gfx::Size WaylandOutput::logical_size() const {
 gfx::Insets WaylandOutput::insets() const {
   return aura_output_ ? aura_output_->insets() : gfx::Insets();
 }
+const std::string& WaylandOutput::label() const {
+  return xdg_output_ ? xdg_output_->description() : base::EmptyString();
+}
 
 zaura_output* WaylandOutput::get_zaura_output() {
   return aura_output_ ? aura_output_->wl_object() : nullptr;
@@ -132,9 +136,9 @@ void WaylandOutput::TriggerDelegateNotifications() {
       scale_factor_ = max_physical_side / max_logical_side;
     }
   }
-  delegate_->OnOutputHandleMetrics(output_id_, origin(), logical_size(),
-                                   physical_size_, insets(), scale_factor_,
-                                   panel_transform_, logical_transform());
+  delegate_->OnOutputHandleMetrics(
+      output_id_, origin(), logical_size(), physical_size_, insets(),
+      scale_factor_, panel_transform_, logical_transform(), label());
 }
 
 // static

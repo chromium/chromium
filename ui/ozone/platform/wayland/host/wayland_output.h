@@ -40,7 +40,8 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
                                        const gfx::Insets& insets,
                                        float scale_factor,
                                        int32_t panel_transform,
-                                       int32_t logical_transform) = 0;
+                                       int32_t logical_transform,
+                                       const std::string& label) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -69,6 +70,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   gfx::Size logical_size() const;
   gfx::Size physical_size() const { return physical_size_; }
   gfx::Insets insets() const;
+  const std::string& label() const;
 
   // Tells if the output has already received physical screen dimensions in the
   // global compositor space.

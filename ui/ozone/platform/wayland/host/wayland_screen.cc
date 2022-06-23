@@ -114,9 +114,10 @@ void WaylandScreen::OnOutputAddedOrUpdated(uint32_t output_id,
                                            const gfx::Insets& insets,
                                            float scale,
                                            int32_t panel_transform,
-                                           int32_t logical_transform) {
+                                           int32_t logical_transform,
+                                           const std::string& label) {
   AddOrUpdateDisplay(output_id, origin, logical_size, physical_size, insets,
-                     scale, panel_transform, logical_transform);
+                     scale, panel_transform, logical_transform, label);
 }
 
 void WaylandScreen::OnOutputRemoved(uint32_t output_id) {
@@ -152,7 +153,8 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
                                        const gfx::Insets& insets,
                                        float scale_factor,
                                        int32_t panel_transform,
-                                       int32_t logical_transform) {
+                                       int32_t logical_transform,
+                                       const std::string& label) {
   display::Display changed_display(output_id);
 
   DCHECK_GE(panel_transform, WL_OUTPUT_TRANSFORM_NORMAL);
@@ -209,6 +211,8 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
     if (changed_dist < nearest_dist || changed_origin == nearest_origin)
       type = display::DisplayList::Type::PRIMARY;
   }
+
+  changed_display.set_label(label);
 
   display_list_.AddOrUpdateDisplay(changed_display, type);
 }
