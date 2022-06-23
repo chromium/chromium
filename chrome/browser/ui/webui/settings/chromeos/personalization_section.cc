@@ -259,8 +259,6 @@ void PersonalizationSection::AddLoadTimeData(
       l10n_util::GetStringFUTF16(
           IDS_OS_SETTINGS_AMBIENT_MODE_ALBUMS_SUBPAGE_GOOGLE_PHOTOS_NO_ALBUM,
           base::UTF8ToUTF16(GetGooglePhotosURL().spec())));
-  html_source->AddBoolean("isPersonalizationHubEnabled",
-                          ash::features::IsPersonalizationHubEnabled());
 }
 
 void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
