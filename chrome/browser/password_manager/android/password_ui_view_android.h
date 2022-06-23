@@ -18,8 +18,6 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/passwords/settings/password_manager_presenter.h"
-#include "chrome/browser/ui/passwords/settings/password_ui_view.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
@@ -28,9 +26,9 @@ class CredentialProviderInterface;
 }
 
 // PasswordUIView for Android, contains jni hooks that allows Android UI to
-// display passwords and route UI commands back to native
-// PasswordManagerPresenter.
-class PasswordUIViewAndroid : public PasswordUIView {
+// display passwords and route UI commands back to SavedPasswordsPresenter.
+class PasswordUIViewAndroid
+    : public password_manager::SavedPasswordsPresenter::Observer {
  public:
   // Result of transforming a vector of PasswordForms into their CSV
   // description and writing that to disk.
@@ -53,15 +51,6 @@ class PasswordUIViewAndroid : public PasswordUIView {
   PasswordUIViewAndroid& operator=(const PasswordUIViewAndroid&) = delete;
 
   ~PasswordUIViewAndroid() override;
-
-  // PasswordUIView implementation.
-  Profile* GetProfile() override;
-  void SetPasswordList(
-      const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-          password_list) override;
-  void SetPasswordExceptionList(
-      const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-          password_exception_list) override;
 
   // Calls from Java.
   base::android::ScopedJavaLocalRef<jobject> GetSavedPasswordEntry(
@@ -126,12 +115,23 @@ class PasswordUIViewAndroid : public PasswordUIView {
   // ALIVE_SERIALIZATION_PENDING:
   //   * Destroy was not called, password serialization task on another task
   //     runner is running.
+  //   * All data members can be used on the main task runner, except for
+  //     |saved_passwords_presenter_| which can only be used inside
+  //     ObtainAndSerializePasswords, which is being run on a backend task
+  //     runner.
   // DELETION_PENDING:
   //   * Destroy() was called, a background task is pending and |this| should
   //     be deleted once the tasks complete.
   //   * This state should not be reached anywhere but in the completion call
   //     of the pending task.
   enum class State { ALIVE, ALIVE_SERIALIZATION_PENDING, DELETION_PENDING };
+
+  // password_manager::SavedPasswordsPresenter::Observer implementation.
+  void OnSavedPasswordsChanged(
+      password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords)
+      override;
+
+  void UpdatePasswordLists();
 
   // Sends |serialization_result| to Java via |success_callback| or
   // |error_callback|, depending on whether the result is a success or an error.
@@ -148,9 +148,7 @@ class PasswordUIViewAndroid : public PasswordUIView {
   // remain null in production code.
   raw_ptr<SerializationResult> export_target_for_testing_ = nullptr;
 
-  PasswordManagerPresenter password_manager_presenter_;
-
-  // Handle to the password store, powering `saved_passwords_presenter_`
+  // Pointer to the password store, powering |saved_passwords_presenter_|.
   scoped_refptr<password_manager::PasswordStoreInterface> password_store_ =
       PasswordStoreFactory::GetForProfile(ProfileManager::GetLastUsedProfile(),
                                           ServiceAccessType::EXPLICIT_ACCESS);
@@ -159,9 +157,13 @@ class PasswordUIViewAndroid : public PasswordUIView {
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
       password_store_};
 
+  // Cached passwords and blocked sites.
+  std::vector<password_manager::CredentialUIEntry> passwords_;
+  std::vector<password_manager::CredentialUIEntry> blocked_sites_;
+
   // If not null, passwords for exporting will be obtained from
   // |*credential_provider_for_testing_|, otherwise from
-  // |password_manager_presenter_|. This must remain null in production code.
+  // |saved_passwords_presenter_|. This must remain null in production code.
   raw_ptr<password_manager::CredentialProviderInterface>
       credential_provider_for_testing_ = nullptr;
 

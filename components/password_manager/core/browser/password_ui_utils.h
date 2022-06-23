@@ -54,6 +54,15 @@ void UpdatePasswordFormUsernameAndPassword(
     const std::u16string& password,
     PasswordFormManagerForUI* form_manager);
 
+// Returns all the usernames for credentials saved for `signon_realm`. If
+// `is_using_account_store` is true, this method will only consider
+// credentials saved in the account store. Otherwise it will only consider
+// credentials saved in the profile store.
+std::vector<std::u16string> GetUsernamesForRealm(
+    const std::vector<password_manager::CredentialUIEntry>& credentials,
+    const std::string& signon_realm,
+    bool is_using_account_store);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_UI_UTILS_H_

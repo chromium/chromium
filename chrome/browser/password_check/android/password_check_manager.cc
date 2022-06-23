@@ -35,27 +35,6 @@ std::u16string GetDisplayUsername(const std::u16string& username) {
              : username;
 }
 
-// Returns all the usernames for credentials saved for `signon_realm`. If
-// `is_using_account_store` is true, this method will only consider
-// credentials saved in the account store. Otherwiser it will only consider
-// credentials saved in the profile store.
-std::vector<std::u16string> GetUsernamesForRealm(
-    const std::vector<password_manager::CredentialUIEntry>& credentials,
-    const std::string& signon_realm,
-    bool is_using_account_store) {
-  std::vector<std::u16string> usernames;
-  PasswordForm::Store store = is_using_account_store
-                                  ? PasswordForm::Store::kAccountStore
-                                  : PasswordForm::Store::kProfileStore;
-  for (const auto& credential : credentials) {
-    if (credential.signon_realm == signon_realm &&
-        credential.stored_in.contains(store)) {
-      usernames.push_back(credential.username);
-    }
-  }
-  return usernames;
-}
-
 }  // namespace
 
 using CredentialsView =

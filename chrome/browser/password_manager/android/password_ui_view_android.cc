@@ -15,10 +15,13 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
@@ -88,12 +91,14 @@ PasswordUIViewAndroid::SerializationResult SerializePasswords(
 }  // namespace
 
 PasswordUIViewAndroid::PasswordUIViewAndroid(JNIEnv* env, jobject obj)
-    : password_manager_presenter_(this), weak_java_ui_controller_(env, obj) {
-  password_manager_presenter_.Initialize();
+    : weak_java_ui_controller_(env, obj) {
+  saved_passwords_presenter_.AddObserver(this);
   saved_passwords_presenter_.Init();
 }
 
-PasswordUIViewAndroid::~PasswordUIViewAndroid() {}
+PasswordUIViewAndroid::~PasswordUIViewAndroid() {
+  saved_passwords_presenter_.RemoveObserver(this);
+}
 
 void PasswordUIViewAndroid::Destroy(JNIEnv*, const JavaRef<jobject>&) {
   switch (state_) {
@@ -109,32 +114,6 @@ void PasswordUIViewAndroid::Destroy(JNIEnv*, const JavaRef<jobject>&) {
     case State::DELETION_PENDING:
       NOTREACHED();
       break;
-  }
-}
-
-Profile* PasswordUIViewAndroid::GetProfile() {
-  return ProfileManager::GetLastUsedProfile();
-}
-
-void PasswordUIViewAndroid::SetPasswordList(
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-        password_list) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> ui_controller = weak_java_ui_controller_.get(env);
-  if (!ui_controller.is_null()) {
-    Java_PasswordUIView_passwordListAvailable(
-        env, ui_controller, static_cast<int>(password_list.size()));
-  }
-}
-
-void PasswordUIViewAndroid::SetPasswordExceptionList(
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-        password_exception_list) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> ui_controller = weak_java_ui_controller_.get(env);
-  if (!ui_controller.is_null()) {
-    Java_PasswordUIView_passwordExceptionListAvailable(
-        env, ui_controller, static_cast<int>(password_exception_list.size()));
   }
 }
 
@@ -155,7 +134,7 @@ void PasswordUIViewAndroid::InsertPasswordEntryForTesting(
 void PasswordUIViewAndroid::UpdatePasswordLists(JNIEnv* env,
                                                 const JavaRef<jobject>&) {
   DCHECK_EQ(State::ALIVE, state_);
-  password_manager_presenter_.UpdatePasswordLists();
+  UpdatePasswordLists();
 }
 
 ScopedJavaLocalRef<jobject> PasswordUIViewAndroid::GetSavedPasswordEntry(
@@ -163,9 +142,7 @@ ScopedJavaLocalRef<jobject> PasswordUIViewAndroid::GetSavedPasswordEntry(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  const password_manager::PasswordForm* form =
-      password_manager_presenter_.GetPassword(index);
-  if (!form) {
+  if ((size_t)index >= passwords_.size()) {
     return Java_PasswordUIView_createSavedPasswordEntry(
         env, ConvertUTF8ToJavaString(env, std::string()),
         ConvertUTF16ToJavaString(env, std::u16string()),
@@ -174,9 +151,9 @@ ScopedJavaLocalRef<jobject> PasswordUIViewAndroid::GetSavedPasswordEntry(
   return Java_PasswordUIView_createSavedPasswordEntry(
       env,
       ConvertUTF8ToJavaString(
-          env, password_manager::GetShownOriginAndLinkUrl(*form).first),
-      ConvertUTF16ToJavaString(env, form->username_value),
-      ConvertUTF16ToJavaString(env, form->password_value));
+          env, password_manager::GetShownOrigin(passwords_[index])),
+      ConvertUTF16ToJavaString(env, passwords_[index].username),
+      ConvertUTF16ToJavaString(env, passwords_[index].password));
 }
 
 ScopedJavaLocalRef<jstring> PasswordUIViewAndroid::GetSavedPasswordException(
@@ -184,12 +161,10 @@ ScopedJavaLocalRef<jstring> PasswordUIViewAndroid::GetSavedPasswordException(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  const password_manager::PasswordForm* form =
-      password_manager_presenter_.GetPasswordException(index);
-  if (!form)
+  if ((size_t)index >= blocked_sites_.size())
     return ConvertUTF8ToJavaString(env, std::string());
   return ConvertUTF8ToJavaString(
-      env, password_manager::GetShownOriginAndLinkUrl(*form).first);
+      env, password_manager::GetShownOrigin(blocked_sites_[index]));
 }
 
 void PasswordUIViewAndroid::HandleRemoveSavedPasswordEntry(
@@ -197,7 +172,12 @@ void PasswordUIViewAndroid::HandleRemoveSavedPasswordEntry(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  password_manager_presenter_.RemoveSavedPassword(index);
+  if ((size_t)index >= passwords_.size())
+    return;
+  if (saved_passwords_presenter_.RemoveCredential(passwords_[index])) {
+    base::RecordAction(
+        base::UserMetricsAction("PasswordManager_RemoveSavedPassword"));
+  }
 }
 
 void PasswordUIViewAndroid::HandleRemoveSavedPasswordException(
@@ -205,7 +185,12 @@ void PasswordUIViewAndroid::HandleRemoveSavedPasswordException(
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
-  password_manager_presenter_.RemovePasswordException(index);
+  if ((size_t)index >= passwords_.size())
+    return;
+  if (saved_passwords_presenter_.RemoveCredential(passwords_[index])) {
+    base::RecordAction(
+        base::UserMetricsAction("PasswordManager_RemovePasswordException"));
+  }
 }
 
 void PasswordUIViewAndroid::HandleSerializePasswords(
@@ -261,17 +246,20 @@ void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
     const base::android::JavaRef<jobject>& settings_launcher,
     int index,
     const JavaParamRef<jobject>& obj) {
-  const password_manager::PasswordForm* form =
-      password_manager_presenter_.GetPassword(index);
-  if (form && !credential_edit_bridge_) {
-    credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
-        password_manager::CredentialUIEntry(*form), IsInsecureCredential(false),
-        password_manager_presenter_.GetUsernamesForRealm(index),
-        &saved_passwords_presenter_,
-        base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
-                       base::Unretained(this)),
-        context, settings_launcher);
+  if ((size_t)index >= passwords_.size() || credential_edit_bridge_) {
+    return;
   }
+  bool is_using_account_store = passwords_[index].stored_in.contains(
+      password_manager::PasswordForm::Store::kAccountStore);
+  credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
+      passwords_[index], IsInsecureCredential(false),
+      GetUsernamesForRealm(saved_passwords_presenter_.GetSavedCredentials(),
+                           passwords_[index].signon_realm,
+                           is_using_account_store),
+      &saved_passwords_presenter_,
+      base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
+                     base::Unretained(this)),
+      context, settings_launcher);
 }
 
 void PasswordUIViewAndroid::HandleShowBlockedCredentialView(
@@ -280,16 +268,15 @@ void PasswordUIViewAndroid::HandleShowBlockedCredentialView(
     const base::android::JavaRef<jobject>& settings_launcher,
     int index,
     const JavaParamRef<jobject>& obj) {
-  const password_manager::PasswordForm* form =
-      password_manager_presenter_.GetPasswordException(index);
-  if (form && !credential_edit_bridge_) {
-    credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
-        password_manager::CredentialUIEntry(*form), IsInsecureCredential(false),
-        std::vector<std::u16string>(), &saved_passwords_presenter_,
-        base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
-                       base::Unretained(this)),
-        context, settings_launcher);
+  if ((size_t)index >= blocked_sites_.size() || credential_edit_bridge_) {
+    return;
   }
+  credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
+      blocked_sites_[index], IsInsecureCredential(false),
+      std::vector<std::u16string>(), &saved_passwords_presenter_,
+      base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
+                     base::Unretained(this)),
+      context, settings_launcher);
 }
 
 void PasswordUIViewAndroid::OnEditUIDismissed() {
@@ -320,6 +307,31 @@ static jlong JNI_PasswordUIView_Init(JNIEnv* env,
                                      const JavaParamRef<jobject>& obj) {
   PasswordUIViewAndroid* controller = new PasswordUIViewAndroid(env, obj.obj());
   return reinterpret_cast<intptr_t>(controller);
+}
+
+void PasswordUIViewAndroid::OnSavedPasswordsChanged(
+    password_manager::SavedPasswordsPresenter::SavedPasswordsView passwords) {
+  UpdatePasswordLists();
+}
+
+void PasswordUIViewAndroid::UpdatePasswordLists() {
+  passwords_.clear();
+  blocked_sites_.clear();
+  for (auto& credential : saved_passwords_presenter_.GetSavedCredentials()) {
+    if (credential.blocked_by_user) {
+      blocked_sites_.push_back(std::move(credential));
+    } else {
+      passwords_.push_back(std::move(credential));
+    }
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> ui_controller = weak_java_ui_controller_.get(env);
+  if (!ui_controller.is_null()) {
+    Java_PasswordUIView_passwordListAvailable(
+        env, ui_controller, static_cast<int>(passwords_.size()));
+    Java_PasswordUIView_passwordExceptionListAvailable(
+        env, ui_controller, static_cast<int>(blocked_sites_.size()));
+  }
 }
 
 void PasswordUIViewAndroid::PostSerializedPasswords(
