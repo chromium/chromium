@@ -105356,9 +105356,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Windows-10-19042"
-            },
-            {
+              "os": "Windows-10-19042",
               "pool": "chromium.tests.finch"
             }
           ],
@@ -105381,9 +105379,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Windows-10-19042"
-            },
-            {
+              "os": "Windows-10-19042",
               "pool": "chromium.tests.finch"
             }
           ],
@@ -105405,9 +105401,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Windows-10-19042"
-            },
-            {
+              "os": "Windows-10-19042",
               "pool": "chromium.tests.finch"
             }
           ],
@@ -105429,9 +105423,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Windows-10-19042"
-            },
-            {
+              "os": "Windows-10-19042",
               "pool": "chromium.tests.finch"
             }
           ],
@@ -105453,9 +105445,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Windows-10-19042"
-            },
-            {
+              "os": "Windows-10-19042",
               "pool": "chromium.tests.finch"
             }
           ],
@@ -105477,9 +105467,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Windows-10-19042"
-            },
-            {
+              "os": "Windows-10-19042",
               "pool": "chromium.tests.finch"
             }
           ],
@@ -105509,9 +105497,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Windows-10-19042"
-            },
-            {
+              "os": "Windows-10-19042",
               "pool": "chromium.tests.finch"
             }
           ],
@@ -105539,9 +105525,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Windows-10-19042"
-            },
-            {
+              "os": "Windows-10-19042",
               "pool": "chromium.tests.finch"
             }
           ],
