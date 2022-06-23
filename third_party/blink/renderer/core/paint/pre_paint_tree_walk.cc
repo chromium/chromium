@@ -364,6 +364,15 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
 
   FragmentData* fragment_data = &object.GetMutableForPainting().FirstFragment();
 
+  // BR elements never fragment. While there are parts of the code that depend
+  // on the correct paint offset (getBoundingClientRect(), etc.), we don't need
+  // to set fragmentation info (nor create multiple FragmentData entries). BR
+  // elements aren't necessarily marked for invalidation when laid out (which
+  // means that allow_update won't be set when it should, and the code below
+  // would get confused).
+  if (object.IsBR())
+    return fragment_data;
+
   // The need for paint properties is the same across all fragments, so if the
   // first FragmentData needs it, so do all the others.
   bool needs_paint_properties = fragment_data->PaintProperties();
