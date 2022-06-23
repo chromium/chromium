@@ -1579,6 +1579,97 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_BOTTOM_SUMMARY" desc="A conclusion paragraph for the entire page. It sits beneath the “More control over the ads you see” subtitle but it’s no more associated with that topic than “Limit sharing between sites”. * “in Chrome settings”: The URL is chrome://settings/privacySandbox. We don’t make it a live link because we need the users to stay in this moment until they make a choice.">
         You can learn more about these features in Chrome settings.
       </message>
+
+      <!-- GoogleUpdater Strings -->
+      <if expr="is_win">
+        <message name="IDS_FRIENDLY_COMPANY_NAME" desc="Company name">
+          Google
+        </message>
+        <message name="IDS_NO_UPDATE_RESPONSE" desc="Updater response for no updates when handling install result.">
+          No update is available.
+        </message>
+        <message name="IDS_INSTALL_UPDATER_FAILED" desc="Updater response for failure when handling install result.">
+          Installation failed. Please try again.
+        </message>
+        <message name="IDS_INSTALLER_DISPLAY_NAME" desc="Name for the updater metainstaller.">
+          <ph name="COMPANY_NAME">$1<ex>Google</ex></ph> Installer
+        </message>
+        <message name="IDS_CLOSE_BUTTON" desc="Close button tooltip">
+          Close
+        </message>
+        <message name="IDS_MINIMIZE_BUTTON" desc="Minimize button tooltip">
+          Minimize
+        </message>
+        <message name="IDS_INITIALIZING" desc="Initial message for the progress window.">
+          Initializing...
+        </message>
+        <message name="IDS_WAITING_TO_CONNECT" desc="Message to show while checking for updates.">
+          Connecting to the Internet...
+        </message>
+        <message name="IDS_DOWNLOADING_SHORT" desc="Shows how many seconds are remaining in the download.">
+          Downloading... <ph name="SECONDS">$1<ex>0</ex></ph> second(s) remaining
+        </message>
+        <message name="IDS_DOWNLOADING_LONG" desc="Shows how many minutes are remaining in the download.">
+          Downloading... <ph name="MINUTE">$1<ex>0</ex></ph> minute(s) remaining
+        </message>
+        <message name="IDS_DOWNLOADING_VERY_LONG" desc="Shows how many hours are remaining in the download.">
+          Downloading... <ph name="HOURS">$1<ex>0</ex></ph> hour(s) remaining
+        </message>
+        <message name="IDS_DOWNLOADING_COMPLETED" desc="For when donwload is completed.">
+          Download complete.
+        </message>
+        <message name="IDS_DOWNLOADING" desc="For when time remaining is less than 0.">
+          Downloading...
+        </message>
+        <message name="IDS_WAITING_TO_INSTALL" desc="While waiting to install between downloading and installing.">
+          Waiting to install...
+        </message>
+        <message name="IDS_INSTALLING" desc="Message shown during install.">
+          Installing...
+        </message>
+        <message name="IDS_CANCELING" desc="For when requesting to cancel the installation.">
+          Canceling...
+        </message>
+        <message name="IDS_TEXT_RESTART_BROWSER" desc="For when a browser must be restarted to complete the installation.">
+          Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME">$1<ex>Chrome</ex></ph>.
+        </message>
+        <message name="IDS_TEXT_RESTART_ALL_BROWSERS" desc="For when all browsers must be restarted to complete the installation.">
+          Thanks for installing. You must restart all your browsers before using <ph name="BUNDLE_NAME">$1<ex>Chrome</ex></ph>.
+        </message>
+        <message name="IDS_TEXT_RESTART_COMPUTER" desc="For when the computer must be restarted to complete the installation.">
+          Thanks for installing. You must restart your computer before using <ph name="BUNDLE_NAME">$1<ex>Chrome</ex></ph>.
+        </message>
+        <message name="IDS_UPDATER_CLOSE" desc="For close button on the UI post install completion.">
+          Close
+        </message>
+        <message name="IDS_RESTART_NOW" desc="For button to restart now to complete installation.">
+          Restart Now
+        </message>
+        <message name="IDS_RESTART_LATER" desc="For button to restart later to complete installation.">
+          Restart Later
+        </message>
+        <message name="IDS_GET_HELP_TEXT" desc="For button to get help.">
+          Help
+        </message>
+        <message name="IDS_INSTALLATION_STOPPED_WINDOW_TITLE" desc="For dialog when user chooses to close the installation window.">
+          Installation Stopped.
+        </message>
+        <message name="IDS_INSTALL_STOPPED" desc="Message of the dialog when user chooses to close the installation window.">
+          Installation not complete. Are you sure you want to cancel?
+        </message>
+        <message name="IDS_RESUME_INSTALLATION" desc="For button to resume the installation.">
+          Resume Installation
+        </message>
+        <message name="IDS_CANCEL_INSTALLATION" desc="For button to cancel the installation.">
+          Cancel Installation
+        </message>
+        <message name="IDS_SPLASH_SCREEN_MESSAGE" desc="Main message on the splash screen.">
+          On your marks...
+        </message>
+        <message name="IDS_BUNDLE_INSTALLED_SUCCESSFULLY" desc="Installation complete message.">
+          Installation complete.
+        </message>
+      </if>
     </messages>
   </release>
 </grit>
