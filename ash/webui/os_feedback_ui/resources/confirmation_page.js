@@ -86,9 +86,7 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
     if (this.isOffline_()) {
       return this.i18n('thankYouNoteOffline');
     }
-    return 'Your feedback helps improve ChromeOS and will be reviewed by ' +
-        'our team. Because of the large number of reports, we won\’t be able ' +
-        ' to send a reply.';
+    return this.i18n('thankYouNoteOnline');
   }
 
   /**
