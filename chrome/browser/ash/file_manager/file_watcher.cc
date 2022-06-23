@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
@@ -77,7 +76,6 @@ std::unique_ptr<guest_os::GuestOsFileWatcher> GetForPath(
 FileWatcher::FileWatcher(const base::FilePath& virtual_path)
     : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
-      local_file_watcher_(nullptr),
       virtual_path_(virtual_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
