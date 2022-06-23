@@ -527,29 +527,29 @@ TODO(crbug.com/1331030): Implement differential update support.
 
 ### Update Timing
 The updater runs periodic tasks every hour, checking its own status, detecting
-application uninstalls, and potential checking for updates (if it has been at
-least 5 hours since the last update check).
+application uninstalls, and potentially checking for updates.
 
-TODO(crbug.com/1329868): implement the following algorithm.
-The updater scatters its routine updates:
-* Two updaters installed in identical situations and at the same time, after
-  some period of time, do not have synchronized times at which they check
-  for updates.
-  * For example, the updater may randomly choose to wait 6 hours instead of 5 to
-    perform the next check. The probability of choosing 6 hours is .1.
-  * The change only applies to users who have not overridden their
-    `UpdateCheckMs` feature.
-  * For testing purposes, the feature can be disabled by creating an
-    DWORD value `DisableUpdateAppsHourlyJitter` in `UpdateDev`.
-  * For testing purposes, an `UpdateDev` value can set the jitter time to a
-    constant value, in the same [0, 60) seconds range. The name of the value is
-    `AutoUpdateJitterMs` and it represents the time to wait before an update
-    check is made in milliseconds.
-* The global load from updaters is scattered among the minutes of the hour, the
-  seconds of the minute, and the milliseconds of the second.
-  * For example, load spikes on the first minute of the hour, or
-    the first second of every minute, or even the first millisecond of every
-    second are undesirable.
+The updater has a base update check period of 4.5 hours (though this can be
+overridden by policy). Each time the updater runs routine tasks, the update
+check is only run if the period has elapsed since the last check.
+
+Since the updater's periodic tasks are run every hour, in practice the update
+check period is always rounded up to the nearest hour.
+
+To prevent multiple updaters from synchronizing their update checks (for
+example, if a large cohort of machines is powered on at the the same time),
+the updater will randomly use a longer update check period (120% of the normal
+period) with 10% probability.
+
+The updater will always check for updates if the time since the last check is
+negative (e.g. due to clock wander).
+
+Once the updater commits to checking for updates, it will delay the actual
+check by a random number of milliseconds up to one minute. This avoids
+sychronizing traffic to the first second of each minute (or the first
+millisecond of each second).
+
+Background updates can be disabled entirely through policy.
 
 #### Windows Scheduling of Updates
 The update tasks are scheduled using the OS task scheduler.

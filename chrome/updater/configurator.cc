@@ -80,7 +80,7 @@ int Configurator::NextCheckDelay() const {
   int minutes = 0;
   return policy_service_->GetLastCheckPeriodMinutes(nullptr, &minutes)
              ? minutes * kDelayOneMinute
-             : 5 * kDelayOneHour;
+             : 4 * kDelayOneHour + 30 * kDelayOneMinute;
 }
 
 int Configurator::OnDemandDelay() const {
