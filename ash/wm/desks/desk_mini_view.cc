@@ -93,6 +93,7 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
   desk_name_view->AddObserver(this);
   desk_name_view->set_controller(this);
   desk_name_view->SetText(desk_->name());
+  desk_name_view->SetAccessibleName(desk_->name());
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
