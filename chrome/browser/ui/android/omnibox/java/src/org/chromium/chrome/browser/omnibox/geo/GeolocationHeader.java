@@ -305,7 +305,11 @@ public class GeolocationHeader {
     @Nullable
     public static String getGeoHeader(String url, Tab tab) {
         Profile profile = Profile.fromWebContents(tab.getWebContents());
-        if (profile == null) return null;
+        Log.i(TAG, "[getGeoHeader] getGeoHeader for url " + url);
+        if (profile == null) {
+            Log.i(TAG, "[getGeoHeader] getGeoHeader failed because of a null profile");
+            return null;
+        }
 
         return getGeoHeader(url, profile, tab);
     }
@@ -356,6 +360,7 @@ public class GeolocationHeader {
             long locationAge = Long.MAX_VALUE;
             @HeaderState
             int headerState = geoHeaderStateForUrl(profile, url, true);
+            Log.i(TAG, "[getGeoHeader] headerState: " + headerState);
             if (headerState == HeaderState.HEADER_ENABLED) {
                 locationToAttach = GeolocationTracker.getLastKnownLocation(
                         ContextUtils.getApplicationContext());
@@ -407,6 +412,10 @@ public class GeolocationHeader {
             String locationProtoEncoding = encodeProtoLocation(locationToAttach);
             String visibleNetworksProtoEncoding =
                     encodeProtoVisibleNetworks(visibleNetworksToAttach);
+
+            Log.i(TAG, "[getGeoHeader] locationProtoEncoding: " + locationProtoEncoding);
+            Log.i(TAG,
+                    "[getGeoHeader] visibleNetworksProtoEncoding: " + visibleNetworksProtoEncoding);
 
             if (locationProtoEncoding == null && visibleNetworksProtoEncoding == null) return null;
 
