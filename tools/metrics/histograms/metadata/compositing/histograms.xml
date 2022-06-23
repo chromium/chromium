@@ -533,7 +533,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Renderer.LayerSkippedForDrawPropertiesDueToBackface"
-    units="boolean" expires_after="2022-08-01">
+    units="boolean" expires_after="2023-01-31">
   <owner>chrishtr@chromium.org</owner>
   <owner>dbaron@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.LayerUpdateSkippedDueToBackface"
-    units="boolean" expires_after="2022-08-01">
+    units="boolean" expires_after="2023-01-31">
   <owner>chrishtr@chromium.org</owner>
   <owner>dbaron@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
