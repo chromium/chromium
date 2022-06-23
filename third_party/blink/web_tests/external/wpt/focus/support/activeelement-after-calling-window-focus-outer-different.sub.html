@@ -7,8 +7,12 @@ let outerlog = "outerlog:";
 
 let iframe = document.querySelector("iframe");
 window.onmessage = function(e) {
-   if (e.data == "ready") {
+  if (e.data == "ready") {
     opener.postMessage(e.data, "*");
+  } else if (e.data == "start") {
+    window.onfocus = function() {
+      outerlog += "windowfocus,";
+    };
   } else if (e.data == "focusinnerinput" || e.data == "focusinner" || e.data == "focusmiddle" || e.data == "getlog") {
     iframe.contentWindow.postMessage(e.data, "*");
   } else if (e.data == "focusouter") {

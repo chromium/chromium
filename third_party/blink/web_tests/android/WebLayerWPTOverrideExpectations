@@ -944,8 +944,6 @@ crbug.com/1050754 external/wpt/focus/activeelement-after-focusing-different-site
 crbug.com/1050754 external/wpt/focus/activeelement-after-focusing-same-site-iframe-contentwindow.html [ Pass ]
 crbug.com/1050754 external/wpt/focus/activeelement-after-focusing-same-site-iframe.html [ Pass ]
 crbug.com/1050754 external/wpt/focus/focus-already-focused-iframe-deep-different-site.html [ Pass ]
-crbug.com/1050754 external/wpt/focus/focus-event-after-focusing-iframes.html [ Pass ]
-crbug.com/1050754 external/wpt/focus/focus-event-after-iframe-gets-focus.html [ Pass ]
 crbug.com/1050754 external/wpt/focus/focus-restoration-in-different-site-iframes-window.html [ Pass ]
 crbug.com/1050754 external/wpt/focus/focus-restoration-in-different-site-iframes.html [ Pass ]
 crbug.com/1050754 external/wpt/focus/focus-restoration-in-same-site-iframes-window.html [ Pass ]
