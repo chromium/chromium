@@ -52,7 +52,6 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -67,7 +66,6 @@
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
@@ -1068,38 +1066,39 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
   ASSERT_EQ(kEmptyReferrer, page_referrer);
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInWebApp) {
-  const GURL start_url(kAppUrl1);
-  InstallTestWebApp(start_url);
+// Verify that "Open link in [App Name]" opens a new App window.
+// TODO(crbug.com/1180790): Test is flaky on Linux and Windows.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_OpenLinkInWebApp DISABLED_OpenLinkInWebApp
+#else
+#define MAYBE_OpenLinkInWebApp OpenLinkInWebApp
+#endif
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInWebApp) {
+  InstallTestWebApp(GURL(kAppUrl1));
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
   size_t num_browsers = chrome::GetBrowserCount(browser()->profile());
-  const int num_tabs = browser()->tab_strip_model()->count();
+  int num_tabs = browser()->tab_strip_model()->count();
   content::WebContents* initial_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   const GURL initial_url = initial_tab->GetLastCommittedURL();
-  ui_test_utils::BrowserChangeObserver browser_change_observer(
-      /*browser=*/nullptr,
-      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
 
-  {
-    ui_test_utils::UrlLoadObserver url_observer(
-        start_url, content::NotificationService::AllSources());
-    content::ContextMenuParams params;
-    params.page_url = GURL("https://www.example.com/");
-    params.link_url = start_url;
-    TestRenderViewContextMenu menu(*initial_tab->GetPrimaryMainFrame(), params);
-    menu.Init();
-    menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP,
-                        0 /* event_flags */);
-    url_observer.Wait();
-  }
+  const GURL start_url(kAppUrl1);
+  ui_test_utils::UrlLoadObserver url_observer(
+      start_url, content::NotificationService::AllSources());
+  content::ContextMenuParams params;
+  params.page_url = GURL("https://www.example.com/");
+  params.link_url = start_url;
+  TestRenderViewContextMenu menu(*initial_tab->GetPrimaryMainFrame(), params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP,
+                      0 /* event_flags */);
+  url_observer.Wait();
 
-  Browser* const app_browser = browser_change_observer.Wait();
-  ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
   EXPECT_EQ(num_tabs, browser()->tab_strip_model()->count());
   EXPECT_EQ(++num_browsers, chrome::GetBrowserCount(browser()->profile()));
+  Browser* app_browser = chrome::FindLastActive();
   EXPECT_NE(browser(), app_browser);
   EXPECT_EQ(initial_url, initial_tab->GetLastCommittedURL());
   EXPECT_EQ(start_url, app_browser->tab_strip_model()
