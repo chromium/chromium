@@ -1825,6 +1825,80 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SuggestTiles.DeletedTilePosition" units="position"
+    expires_after="2023-06-01">
+  <owner>ender@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    The index of the item in the MostVisited carousel that the user deleted.
+    Zero-based: the first item in the carousel is recorded in bucket 0, second
+    in bucket 1 and so on. Items beyond 16 will be stored in the overflow bucket
+    (15).
+
+    Recorded every time the user initiates deletion of a suggest tile, even if
+    the operation is later canceled.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SuggestTiles.DeletedTileType" enum="SuggestTileType"
+    expires_after="2023-06-01">
+  <owner>ender@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    Records the type of the SuggestTile that the user deleted. Most Visited URLs
+    record a URL, and Organic Repeatable Queries record a Search type.
+
+    Recorded every time the user initiates deletion of a suggest tile, that
+    results with tile removal. Not recorded if the user chooses to cancel the
+    action.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SuggestTiles.SelectedTilePosition" units="position"
+    expires_after="2023-06-01">
+  <owner>ender@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    The index of the item in the MostVisited carousel that the user opened.
+    Zero-based: the first item in the carousel is recorded in bucket 0, second
+    in bucket 1 and so on. Items beyond 16 will be stored in the overflow bucket
+    (15).
+
+    Recorded every time the user selects the tile to initiate navigation, even
+    if the navigation could not be completed (eg. target site did not load).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SuggestTiles.SelectedTileType" enum="SuggestTileType"
+    expires_after="2023-06-01">
+  <owner>ender@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    Records the type of the SuggestTile that the user interacted with. Most
+    Visited URLs record a URL, and Organic Repeatable Queries record a Search
+    type.
+
+    Recorded every time the user selects the tile to initiate navigation, even
+    if the navigation could not be completed (eg. target site did not load).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SuggestTiles.TileTypeCount.{SuggestTileType}"
+    units="count" expires_after="2023-06-01">
+  <owner>ender@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    Total count of offered {SuggestTileType} tile types.
+
+    Recorded every time the current context is eligible to receive
+    MostVisitedTiles, even if there were no tiles of any kind to show.
+  </summary>
+  <token key="SuggestTileType">
+    <variant name="Search"/>
+    <variant name="URL"/>
+  </token>
+</histogram>
+
 <histogram name="Omnibox.TabMatchTime" units="microseconds"
     expires_after="2022-10-23">
   <owner>gangwu@chromium.org</owner>

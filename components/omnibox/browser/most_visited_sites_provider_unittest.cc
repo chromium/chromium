@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -132,6 +133,7 @@ class MostVisitedSitesProviderTest : public testing::Test,
   // AutocompleteProviderListener:
   void OnProviderUpdate(bool updated_matches) override;
 
+  base::HistogramTester histogram_;
   std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
   scoped_refptr<FakeTopSites> top_sites_;
   scoped_refptr<MostVisitedSitesProvider> provider_;
@@ -366,9 +368,19 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
 
   // Commence delete.
   if (GetParam()) {
+    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.TileTypeCount.Search", 1);
+    histogram_.ExpectBucketCount("Omnibox.SuggestTiles.TileTypeCount.Search", 0,
+                                 1);
+    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.TileTypeCount.URL", 1);
+    histogram_.ExpectBucketCount("Omnibox.SuggestTiles.TileTypeCount.URL", 5,
+                                 1);
+    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.DeletedTileIndex", 0);
     auto* match = GetMatch(AutocompleteMatchType::TILE_NAVSUGGEST, 0);
     ASSERT_NE(nullptr, match) << "No TILE_NAVSUGGEST Match found";
     controller_->DeleteMatchElement(*match, 1);
+    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.DeletedTileIndex", 1);
+    histogram_.ExpectBucketCount("Omnibox.SuggestTiles.DeletedTileIndex", 1, 1);
+    // Note: TileTypeCounts are not emitted after deletion.
   } else {
     auto* match = GetMatch(AutocompleteMatchType::NAVSUGGEST, 1);
     ASSERT_NE(nullptr, match) << "No NAVSUGGEST Match found";
@@ -395,9 +407,19 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
 
   // Commence delete of the only item that we have.
   if (GetParam()) {
+    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.TileTypeCount.Search", 1);
+    histogram_.ExpectBucketCount("Omnibox.SuggestTiles.TileTypeCount.Search", 0,
+                                 1);
+    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.TileTypeCount.URL", 1);
+    histogram_.ExpectBucketCount("Omnibox.SuggestTiles.TileTypeCount.URL", 1,
+                                 1);
+    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.DeletedTileIndex", 0);
     auto* match = GetMatch(AutocompleteMatchType::TILE_NAVSUGGEST, 0);
     ASSERT_NE(nullptr, match) << "No TILE_NAVSUGGEST Match found";
     controller_->DeleteMatchElement(*match, 0);
+    histogram_.ExpectTotalCount("Omnibox.SuggestTiles.DeletedTileIndex", 1);
+    histogram_.ExpectBucketCount("Omnibox.SuggestTiles.DeletedTileIndex", 0, 1);
+    // Note: TileTypeCounts are not emitted after deletion.
   } else {
     auto* match = GetMatch(AutocompleteMatchType::NAVSUGGEST, 0);
     ASSERT_NE(nullptr, match) << "No NAVSUGGEST Match found";

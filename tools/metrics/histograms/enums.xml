@@ -91025,6 +91025,12 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Valid response received from the server."/>
 </enum>
 
+<enum name="SuggestTileType">
+  <int value="0" label="Other"/>
+  <int value="1" label="URL"/>
+  <int value="2" label="Search"/>
+</enum>
+
 <enum name="SupervisedUserExtension">
   <obsolete>
     Renamed to SupervisedUserExtension2.

@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -84,14 +86,20 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
         for (int elementIndex = 0; elementIndex < tilesCount; elementIndex++) {
             final PropertyModel tileModel = new PropertyModel(TileViewProperties.ALL_KEYS);
-            final String title = tiles.get(elementIndex).title;
-            final GURL url = tiles.get(elementIndex).url;
+            final SuggestTile tile = tiles.get(elementIndex);
+            final String title = tile.title;
+            final GURL url = tile.url;
+            final boolean isSearch = tile.isSearch;
+            final int itemIndex = elementIndex;
+
             tileModel.set(TileViewProperties.TITLE, title);
             tileModel.set(TileViewProperties.TITLE_LINES, 1);
             tileModel.set(TileViewProperties.ON_FOCUS_VIA_SELECTION,
                     () -> mSuggestionHost.setOmniboxEditingText(url.getSpec()));
-            tileModel.set(TileViewProperties.ON_CLICK,
-                    v -> mSuggestionHost.onSuggestionClicked(suggestion, matchIndex, url));
+            tileModel.set(TileViewProperties.ON_CLICK, v -> {
+                SuggestionsMetrics.recordSuggestTileTypeUsed(itemIndex, isSearch);
+                mSuggestionHost.onSuggestionClicked(suggestion, matchIndex, url);
+            });
 
             final int elementIndexForDeletion = elementIndex;
             tileModel.set(TileViewProperties.ON_LONG_CLICK, v -> {
@@ -100,7 +108,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                 return true;
             });
 
-            if (tiles.get(elementIndex).isSearch) {
+            if (isSearch) {
                 // Note: we should never show most visited tiles in incognito mode. Catch this early
                 // if we ever do.
                 assert model.get(SuggestionCommonProperties.COLOR_SCHEME)

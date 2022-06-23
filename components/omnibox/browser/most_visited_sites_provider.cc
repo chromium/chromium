@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -25,6 +26,21 @@ namespace {
 // The relevance score for suggest tiles.
 // Suggest tiles should be positioned below the Query Tiles object.
 constexpr const int kMostVisitedTilesRelevance = 1500;
+constexpr const int kMaxRecordedTileIndex = 15;
+
+constexpr char kHistogramTileTypeCountSearch[] =
+    "Omnibox.SuggestTiles.TileTypeCount.Search";
+constexpr char kHistogramTileTypeCountURL[] =
+    "Omnibox.SuggestTiles.TileTypeCount.URL";
+constexpr char kHistogramDeletedTileType[] =
+    "Omnibox.SuggestTiles.DeletedTileType";
+constexpr char kHistogramDeletedTileIndex[] =
+    "Omnibox.SuggestTiles.DeletedTileIndex";
+
+// GENERATED_JAVA_ENUM_PACKAGE: (
+// org.chromium.chrome.browser.omnibox.suggestions.mostvisited)
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: SuggestTileType
+enum SuggestTileType { kOther = 0, kURL = 1, kSearch = 2, kCount = 3 };
 
 // Constructs an AutocompleteMatch from supplied details.
 AutocompleteMatch BuildMatch(AutocompleteProvider* provider,
@@ -60,8 +76,13 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
                       AutocompleteProviderClient* const client,
                       const TileContainer& container,
                       ACMatches& matches) {
-  if (container.empty())
+  if (container.empty()) {
+    base::UmaHistogramExactLinear(kHistogramTileTypeCountSearch, 0,
+                                  kMaxRecordedTileIndex);
+    base::UmaHistogramExactLinear(kHistogramTileTypeCountURL, 0,
+                                  kMaxRecordedTileIndex);
     return false;
+  }
 
   if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
     AutocompleteMatch match = BuildMatch(
@@ -71,15 +92,31 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
     match.suggest_tiles.reserve(container.size());
     auto* const url_service = client->GetTemplateURLService();
 
+    size_t num_search_tiles = 0;
+    size_t num_url_tiles = 0;
+
     for (const auto& tile : container) {
+      bool is_search =
+          url_service->IsSearchResultsPageFromDefaultSearchProvider(tile.url);
+
       match.suggest_tiles.push_back({
           .url = tile.url,
           .title = tile.title,
-          .is_search =
-              url_service->IsSearchResultsPageFromDefaultSearchProvider(
-                  tile.url),
+          .is_search = is_search,
       });
+
+      if (is_search) {
+        num_search_tiles++;
+      } else {
+        num_url_tiles++;
+      }
     }
+
+    base::UmaHistogramExactLinear(kHistogramTileTypeCountSearch,
+                                  num_search_tiles, kMaxRecordedTileIndex);
+    base::UmaHistogramExactLinear(kHistogramTileTypeCountURL, num_url_tiles,
+                                  kMaxRecordedTileIndex);
+
     matches.push_back(std::move(match));
   } else {
     int relevance = 600;
@@ -211,11 +248,20 @@ void MostVisitedSitesProvider::DeleteMatchElement(
     return;
   }
 
-  const auto& url_to_delete = source_match.suggest_tiles[element_index].url;
-  BlockURL(url_to_delete);
+  const auto& tile_to_delete = source_match.suggest_tiles[element_index];
+
+  base::UmaHistogramExactLinear(kHistogramDeletedTileIndex, element_index,
+                                kMaxRecordedTileIndex);
+  base::UmaHistogramExactLinear(kHistogramDeletedTileType,
+                                tile_to_delete.is_search
+                                    ? SuggestTileType::kSearch
+                                    : SuggestTileType::kURL,
+                                SuggestTileType::kCount);
+
+  BlockURL(tile_to_delete.url);
   auto& tiles_to_update = matches_[0].suggest_tiles;
-  base::EraseIf(tiles_to_update, [&url_to_delete](const auto& tile) {
-    return tile.url == url_to_delete;
+  base::EraseIf(tiles_to_update, [&tile_to_delete](const auto& tile) {
+    return tile.url == tile_to_delete.url;
   });
 
   if (tiles_to_update.empty()) {
