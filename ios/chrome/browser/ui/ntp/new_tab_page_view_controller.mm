@@ -285,6 +285,9 @@
                       completion:^(
                           id<UIViewControllerTransitionCoordinatorContext>) {
                         [self updateNTPLayout];
+                        if (self.isFeedVisible) {
+                          [self updateFeedInsetsForMinimumHeight];
+                        }
                       }];
 }
 
@@ -493,11 +496,33 @@
   return self.collectionView.contentOffset.y;
 }
 
-- (void)setContentOffsetUpToTopOfFeed:(CGFloat)contentOffset {
+- (void)setContentOffsetToTopOfFeed:(CGFloat)contentOffset {
   if (contentOffset < [self offsetWhenScrolledIntoFeed]) {
     [self setContentOffset:contentOffset];
   } else {
     [self scrollIntoFeed];
+  }
+}
+
+- (void)updateFeedInsetsForMinimumHeight {
+  DCHECK(self.isFeedVisible);
+  CGFloat minimumNTPHeight =
+      self.collectionView.bounds.size.height +
+      self.discoverFeedWrapperViewController.view.safeAreaInsets.top;
+  minimumNTPHeight -= [self feedHeaderHeight];
+  if ([self shouldPinFakeOmnibox]) {
+    minimumNTPHeight -= ([self.headerController headerHeight] +
+                         ntp_header::kScrolledToTopOmniboxBottomMargin);
+  }
+
+  if (self.collectionView.contentSize.height > minimumNTPHeight) {
+    self.collectionView.contentInset =
+        UIEdgeInsetsMake(self.collectionView.contentInset.top, 0, 0, 0);
+  } else {
+    CGFloat bottomInset =
+        minimumNTPHeight - self.collectionView.contentSize.height;
+    self.collectionView.contentInset = UIEdgeInsetsMake(
+        self.collectionView.contentInset.top, 0, bottomInset, 0);
   }
 }
 
@@ -827,8 +852,8 @@
 // then place the content above the feed in this space.
 - (void)updateFeedInsetsForContentAbove {
   // Adds inset to feed to create space for content above feed.
-  self.collectionView.contentInset =
-      UIEdgeInsetsMake([self heightAboveFeed], 0, 0, 0);
+  self.collectionView.contentInset = UIEdgeInsetsMake(
+      [self heightAboveFeed], 0, self.collectionView.contentInset.bottom, 0);
 
   // Sets the frame for feed header, top section and content suggestions within
   // the space from the inset.

@@ -75,6 +75,7 @@
   UICollectionView* emptyCollectionView =
       [[UICollectionView alloc] initWithFrame:CGRectZero
                          collectionViewLayout:layout];
+  [emptyCollectionView setShowsVerticalScrollIndicator:NO];
   [self.view addSubview:emptyCollectionView];
   self.contentCollectionView = emptyCollectionView;
   self.contentCollectionView.backgroundColor = ntp_home::kNTPBackgroundColor();

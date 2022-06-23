@@ -132,7 +132,11 @@
 // Sets the NTP collection view's scroll position to |contentOffset|, unless it
 // is beyond the top of the feed. In that case, sets the scroll position to the
 // top of the feed.
-- (void)setContentOffsetUpToTopOfFeed:(CGFloat)contentOffset;
+- (void)setContentOffsetToTopOfFeed:(CGFloat)contentOffset;
+
+// Checks the content size of the feed and updates the bottom content inset to
+// ensure the feed is still scrollable to the minimum height.
+- (void)updateFeedInsetsForMinimumHeight;
 
 @end
 

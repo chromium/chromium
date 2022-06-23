@@ -19,6 +19,9 @@
 // feed.
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
 
+// Notifies the new tab page that the |feedType|'s model has completed updates.
+- (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_NEW_TAB_PAGE_COMMANDS_H_
