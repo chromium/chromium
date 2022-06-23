@@ -386,8 +386,8 @@ source_set("web_applications_test_support") {
   testonly = true
 
   sources = [
-    "system_web_apps/test/test_system_web_app_installation.cc",
-    "system_web_apps/test/test_system_web_app_installation.h",
+    # TODO(crbug.com/1321984): Move these files to
+    # chrome/browser/ash/system_web_apps/test_support/ directory.
     "system_web_apps/test/test_system_web_app_manager.cc",
     "system_web_apps/test/test_system_web_app_manager.h",
     "system_web_apps/test/test_system_web_app_url_data_source.cc",
@@ -670,6 +670,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",

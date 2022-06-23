@@ -314,6 +314,7 @@ source_set("browser_tests") {
     sources += [ "extension_policy_browsertest.cc" ]
 
     deps += [
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/webapps/browser:browser",

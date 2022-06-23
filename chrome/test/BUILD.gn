@@ -679,6 +679,7 @@ static_library("test_support") {
 
     deps += [
       "//build:chromeos_buildflags",
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/webapps/browser",
       "//third_party/zlib/google:zip",
@@ -1189,6 +1190,7 @@ if (!is_android) {
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/ash/system_web_apps:browser_tests",
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/breadcrumbs:browser_tests",
@@ -4650,6 +4652,7 @@ if (is_chromeos_lacros) {
       ":test_support",
       ":test_support_ui",
       "//chrome/app:command_ids",
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/metrics/structured",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -6835,6 +6838,7 @@ test("unit_tests") {
       "//chrome:packed_resources_integrity_hash",
       "//chrome/browser:cart_db_content_proto",
       "//chrome/browser:coupon_db_content_proto",
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/autofill_assistant/password_change/proto:proto",
       "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/media/router:test_support",
@@ -8735,6 +8739,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/devtools",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
@@ -9090,6 +9095,7 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/browser",
       "//chrome/browser:unexpire_flags",
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
@@ -9807,6 +9813,7 @@ source_set("sync_integration_test_support") {
     deps += [ ":sync_integration_test_support_jni_headers" ]
   } else {
     deps += [
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/send_tab_to_self",
       "//components/webapps/browser",
@@ -9843,6 +9850,7 @@ if (!is_android) {
       "//chrome:strings",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common",

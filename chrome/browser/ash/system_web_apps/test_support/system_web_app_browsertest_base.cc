@@ -171,7 +171,7 @@ SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(
     : TestProfileTypeMixin<SystemWebAppBrowserTestBase>(install_mock) {
   if (install_mock) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
+        TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
   }
 }
 

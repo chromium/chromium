@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -95,7 +95,7 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   size_t GetSystemWebAppBrowserCount(SystemWebAppType type);
 
  protected:
-  std::unique_ptr<web_app::TestSystemWebAppInstallation> maybe_installation_;
+  std::unique_ptr<TestSystemWebAppInstallation> maybe_installation_;
 
  private:
   std::unique_ptr<KeyedService> CreateWebAppProvider(Profile* profile);

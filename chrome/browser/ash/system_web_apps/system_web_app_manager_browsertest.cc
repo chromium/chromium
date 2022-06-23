@@ -24,6 +24,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,7 +35,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -252,7 +252,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
     : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
   using IncludeLaunchDirectory =
-      web_app::TestSystemWebAppInstallation::IncludeLaunchDirectory;
+      TestSystemWebAppInstallation::IncludeLaunchDirectory;
 
   explicit SystemWebAppManagerFileHandlingBrowserTestBase(
       IncludeLaunchDirectory include_launch_directory)
@@ -262,7 +262,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
         {blink::features::kFileHandlingAPI}, {});
 
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpAppThatReceivesLaunchFiles(
+        TestSystemWebAppInstallation::SetUpAppThatReceivesLaunchFiles(
             include_launch_directory);
   }
 
@@ -828,7 +828,7 @@ class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
   SystemWebAppManagerFileHandlingOriginTrialsBrowserTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
+        TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
             OriginTrialsMap({{GetOrigin(GURL("chrome://test-system-app/")),
                               {"FileHandling"}}}));
   }
@@ -894,7 +894,7 @@ class SystemWebAppManagerNotShownInLauncherTest
   SystemWebAppManagerNotShownInLauncherTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpAppNotShownInLauncher();
+        TestSystemWebAppInstallation::SetUpAppNotShownInLauncher();
   }
 };
 
@@ -932,7 +932,7 @@ class SystemWebAppManagerNotShownInSearchTest
   SystemWebAppManagerNotShownInSearchTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpAppNotShownInSearch();
+        TestSystemWebAppInstallation::SetUpAppNotShownInSearch();
   }
 };
 
@@ -959,8 +959,8 @@ class SystemWebAppManagerHandlesFileOpenIntentsTest
  public:
   SystemWebAppManagerHandlesFileOpenIntentsTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ = web_app::TestSystemWebAppInstallation::
-        SetUpAppThatHandlesFileOpenIntents();
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpAppThatHandlesFileOpenIntents();
   }
 };
 
@@ -987,8 +987,8 @@ class SystemWebAppManagerAdditionalSearchTermsTest
  public:
   SystemWebAppManagerAdditionalSearchTermsTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ = web_app::TestSystemWebAppInstallation::
-        SetUpAppWithAdditionalSearchTerms();
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpAppWithAdditionalSearchTerms();
   }
 };
 
@@ -1017,7 +1017,7 @@ class SystemWebAppManagerHasTabStripTest
   SystemWebAppManagerHasTabStripTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpAppWithTabStrip(true);
+        TestSystemWebAppInstallation::SetUpAppWithTabStrip(true);
   }
 };
 
@@ -1037,7 +1037,7 @@ class SystemWebAppManagerHasNoTabStripTest
   SystemWebAppManagerHasNoTabStripTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpAppWithTabStrip(false);
+        TestSystemWebAppInstallation::SetUpAppWithTabStrip(false);
   }
 };
 
@@ -1059,8 +1059,7 @@ class SystemWebAppManagerDefaultBoundsTest
   SystemWebAppManagerDefaultBoundsTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpAppWithDefaultBounds(
-            kDefaultBounds);
+        TestSystemWebAppInstallation::SetUpAppWithDefaultBounds(kDefaultBounds);
   }
 
  protected:
@@ -1086,13 +1085,13 @@ class SystemWebAppManagerUninstallBrowserTest
     if (content::IsPreTest()) {
       // Use an app with FileHandling enabled since it will perform extra setup
       // steps.
-      maybe_installation_ = web_app::TestSystemWebAppInstallation::
-          SetUpAppWithEnabledOriginTrials(OriginTrialsMap(
-              {{url::Origin::Create(GURL("chrome://test-system-app/")),
-                {"FileHandling"}}}));
-    } else {
       maybe_installation_ =
-          web_app::TestSystemWebAppInstallation::SetUpWithoutApps();
+          TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
+              OriginTrialsMap(
+                  {{url::Origin::Create(GURL("chrome://test-system-app/")),
+                    {"FileHandling"}}}));
+    } else {
+      maybe_installation_ = TestSystemWebAppInstallation::SetUpWithoutApps();
     }
   }
   ~SystemWebAppManagerUninstallBrowserTest() override = default;
@@ -1268,7 +1267,7 @@ class SystemWebAppManagerChromeUntrustedTest
   SystemWebAppManagerChromeUntrustedTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpChromeUntrustedApp();
+        TestSystemWebAppInstallation::SetUpChromeUntrustedApp();
   }
 };
 
@@ -1306,7 +1305,7 @@ class SystemWebAppManagerOriginTrialsBrowserTest
   SystemWebAppManagerOriginTrialsBrowserTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
+        TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
             OriginTrialsMap({{GetOrigin(main_url_), main_url_trials_},
                              {GetOrigin(trial_url_), trial_url_trials_}}));
   }
@@ -1569,8 +1568,7 @@ class SystemWebAppManagerShortcutTest : public SystemWebAppManagerBrowserTest {
  public:
   SystemWebAppManagerShortcutTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpAppWithShortcuts();
+    maybe_installation_ = TestSystemWebAppInstallation::SetUpAppWithShortcuts();
   }
 };
 
@@ -1634,7 +1632,7 @@ class SystemWebAppManagerBackgroundTaskTest
   SystemWebAppManagerBackgroundTaskTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpAppWithBackgroundTask();
+        TestSystemWebAppInstallation::SetUpAppWithBackgroundTask();
   }
 
   void WaitForSystemAppsBackgroundTasksStart() {
@@ -1692,7 +1690,7 @@ class SystemWebAppManagerContextMenuBrowserTest
   SystemWebAppManagerContextMenuBrowserTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpAppsForContestMenuTest();
+        TestSystemWebAppInstallation::SetUpAppsForContestMenuTest();
   }
   ~SystemWebAppManagerContextMenuBrowserTest() override = default;
 
@@ -1714,7 +1712,7 @@ class SystemWebAppManagerContextMenuBrowserTest
     return menu;
   }
 
-  // See web_app::TestSystemWebAppInstallation::SetUpAppsForContestMenuTest.
+  // See TestSystemWebAppInstallation::SetUpAppsForContestMenuTest.
   const SystemWebAppType kAppTypeSingleWindow = SystemWebAppType::SETTINGS;
   const SystemWebAppType kAppTypeMultiWindow = SystemWebAppType::FILE_MANAGER;
   const SystemWebAppType kAppTypeSingleWindowTabStrip = SystemWebAppType::MEDIA;
@@ -1831,7 +1829,7 @@ class SystemWebAppAccessibilityTest : public SystemWebAppManagerBrowserTest {
   SystemWebAppAccessibilityTest()
       : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
+        TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
   }
   ~SystemWebAppAccessibilityTest() override = default;
 
@@ -1877,7 +1875,7 @@ class SystemWebAppAbortsLaunchTest : public SystemWebAppManagerBrowserTest {
   SystemWebAppAbortsLaunchTest()
       : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
     maybe_installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpAppThatAbortsLaunch();
+        TestSystemWebAppInstallation::SetUpAppThatAbortsLaunch();
   }
   ~SystemWebAppAbortsLaunchTest() override = default;
 };

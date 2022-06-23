@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -53,7 +54,6 @@
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -354,12 +354,12 @@ class BackgroundColorChangeWebAppBrowserTest
     switch (GetBackgroundColorChangeTestMode()) {
       case BackgroundColorChangeTestMode::kSWA:
         system_web_app_installation_ =
-            TestSystemWebAppInstallation::SetUpAppWithColors(
+            ash::TestSystemWebAppInstallation::SetUpAppWithColors(
                 /*theme_color=*/SK_ColorWHITE,
                 /*dark_mode_theme_color=*/SK_ColorBLACK,
                 /*background_color=*/SK_ColorWHITE,
                 /*dark_mode_background_color=*/SK_ColorBLACK);
-        static_cast<UnittestingSystemAppDelegate*>(
+        static_cast<ash::UnittestingSystemAppDelegate*>(
             system_web_app_installation_->GetDelegate())
             ->SetPreferManifestBackgroundColor(PreferManifestBackgroundColor());
         break;
@@ -399,7 +399,8 @@ class BackgroundColorChangeWebAppBrowserTest
   }
 
  private:
-  std::unique_ptr<TestSystemWebAppInstallation> system_web_app_installation_;
+  std::unique_ptr<ash::TestSystemWebAppInstallation>
+      system_web_app_installation_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

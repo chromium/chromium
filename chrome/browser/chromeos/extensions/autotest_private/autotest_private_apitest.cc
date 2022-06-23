@@ -26,11 +26,11 @@
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -396,12 +396,12 @@ class AutotestPrivateSystemWebAppsTest : public AutotestPrivateApiTest {
  public:
   AutotestPrivateSystemWebAppsTest() {
     installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
+        ash::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
   }
   ~AutotestPrivateSystemWebAppsTest() override = default;
 
  private:
-  std::unique_ptr<web_app::TestSystemWebAppInstallation> installation_;
+  std::unique_ptr<ash::TestSystemWebAppInstallation> installation_;
 };
 
 // TODO(crbug.com/1201545): Fix flakiness.

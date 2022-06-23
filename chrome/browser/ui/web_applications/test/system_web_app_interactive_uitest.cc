@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
@@ -82,7 +82,7 @@ class SystemWebAppLinkCaptureBrowserTest
     EnableSystemWebAppsInLacrosForTesting();
 #endif
     maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
+        ash::TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
   }
   ~SystemWebAppLinkCaptureBrowserTest() override = default;
 
@@ -485,8 +485,8 @@ class SystemWebAppManagerWindowSizeControlsTest
  public:
   SystemWebAppManagerWindowSizeControlsTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpNonResizeableAndNonMaximizableApp();
+    maybe_installation_ = ash::TestSystemWebAppInstallation::
+        SetUpNonResizeableAndNonMaximizableApp();
   }
   ~SystemWebAppManagerWindowSizeControlsTest() override = default;
 };
@@ -527,7 +527,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;
     installation_ =
-        TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
+        ash::TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
   }
 
   ~SystemWebAppManagerMultiDesktopLaunchBrowserTest() override = default;
@@ -586,7 +586,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
   }
 
  protected:
-  std::unique_ptr<TestSystemWebAppInstallation> installation_;
+  std::unique_ptr<ash::TestSystemWebAppInstallation> installation_;
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
   AccountId account_id1_;
   AccountId account_id2_;
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
   WaitForSystemWebAppInstall(profile1);
 
   installation_ =
-      TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
+      ash::TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
   ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   base::RunLoop().RunUntilIdle();
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
   WaitForSystemWebAppInstall(profile1);
 
   installation_ =
-      TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
+      ash::TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
   ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   base::RunLoop().RunUntilIdle();
@@ -961,9 +961,8 @@ class SystemWebAppManagerCloseFromScriptsTest
  public:
   SystemWebAppManagerCloseFromScriptsTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ =
-        TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
-            true);
+    maybe_installation_ = ash::TestSystemWebAppInstallation::
+        SetupAppWithAllowScriptsToCloseWindows(true);
   }
   ~SystemWebAppManagerCloseFromScriptsTest() override = default;
 };
@@ -993,9 +992,8 @@ class SystemWebAppManagerShouldNotCloseFromScriptsTest
  public:
   SystemWebAppManagerShouldNotCloseFromScriptsTest()
       : ash::SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ =
-        TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
-            false);
+    maybe_installation_ = ash::TestSystemWebAppInstallation::
+        SetupAppWithAllowScriptsToCloseWindows(false);
   }
   ~SystemWebAppManagerShouldNotCloseFromScriptsTest() override = default;
 };
@@ -1033,7 +1031,7 @@ class SystemWebAppNewWindowMenuItemTest
   SystemWebAppNewWindowMenuItemTest()
       : ash::SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpAppWithNewWindowMenuItem();
+        ash::TestSystemWebAppInstallation::SetUpAppWithNewWindowMenuItem();
   }
   ~SystemWebAppNewWindowMenuItemTest() override = default;
 

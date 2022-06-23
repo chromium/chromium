@@ -50,6 +50,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_io_data.h"
@@ -88,7 +89,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -164,12 +164,12 @@ class BrowserNonClientFrameViewChromeOSThemeChangeTest
     switch (GetThemeChangeTestMode()) {
       case ThemeChangeTestMode::kSWA: {
         system_web_app_installation_ =
-            web_app::TestSystemWebAppInstallation::SetUpAppWithColors(
+            ash::TestSystemWebAppInstallation::SetUpAppWithColors(
                 /*theme_color=*/SK_ColorWHITE,
                 /*dark_mode_theme_color=*/SK_ColorBLACK,
                 /*background_color=*/SK_ColorWHITE,
                 /*dark_mode_background_color=*/SK_ColorBLACK);
-        auto* delegate = static_cast<web_app::UnittestingSystemAppDelegate*>(
+        auto* delegate = static_cast<ash::UnittestingSystemAppDelegate*>(
             system_web_app_installation_->GetDelegate());
         delegate->SetPreferManifestBackgroundColor(
             PreferManifestBackgroundColor());
@@ -242,7 +242,7 @@ class BrowserNonClientFrameViewChromeOSThemeChangeTest
   Profile* profile() { return browser()->profile(); }
 
  private:
-  std::unique_ptr<web_app::TestSystemWebAppInstallation>
+  std::unique_ptr<ash::TestSystemWebAppInstallation>
       system_web_app_installation_;
   std::unique_ptr<net::EmbeddedTestServer> test_server_;
 };

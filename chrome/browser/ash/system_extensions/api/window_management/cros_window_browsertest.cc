@@ -17,12 +17,12 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -184,7 +184,7 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
     feature_list_.InitAndEnableFeature(features::kSystemExtensions);
 
     installation_ =
-        web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
+        TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
   }
   ~CrosWindowBrowserTest() override = default;
 
@@ -243,7 +243,7 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
                      kPostTestStart));
   }
 
-  std::unique_ptr<web_app::TestSystemWebAppInstallation> installation_;
+  std::unique_ptr<TestSystemWebAppInstallation> installation_;
 
  private:
   base::test::ScopedFeatureList feature_list_;

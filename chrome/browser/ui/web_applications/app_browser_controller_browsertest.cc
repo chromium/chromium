@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -93,7 +93,7 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
  public:
   AppBrowserControllerBrowserTest()
       : test_system_web_app_installation_(
-            TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {
+            ash::TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     EnableSystemWebAppsInLacrosForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -173,7 +173,7 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
   GURL tabbed_app_url_;
 
  private:
-  std::unique_ptr<TestSystemWebAppInstallation>
+  std::unique_ptr<ash::TestSystemWebAppInstallation>
       test_system_web_app_installation_;
 };
 
@@ -361,7 +361,7 @@ class AppBrowserControllerChromeUntrustedBrowserTest
  public:
   AppBrowserControllerChromeUntrustedBrowserTest()
       : test_system_web_app_installation_(
-            TestSystemWebAppInstallation::SetUpChromeUntrustedApp()) {
+            ash::TestSystemWebAppInstallation::SetUpChromeUntrustedApp()) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     EnableSystemWebAppsInLacrosForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -379,7 +379,7 @@ class AppBrowserControllerChromeUntrustedBrowserTest
   }
 
  private:
-  std::unique_ptr<TestSystemWebAppInstallation>
+  std::unique_ptr<ash::TestSystemWebAppInstallation>
       test_system_web_app_installation_;
 };
 

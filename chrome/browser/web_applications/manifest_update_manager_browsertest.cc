@@ -33,6 +33,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -45,7 +46,6 @@
 #include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_sync_test_utils.h"
@@ -1956,8 +1956,8 @@ class ManifestUpdateManagerSystemAppBrowserTest
     : public ManifestUpdateManagerBrowserTest {
  public:
   ManifestUpdateManagerSystemAppBrowserTest()
-      : system_app_(
-            TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp()) {
+      : system_app_(ash::TestSystemWebAppInstallation::
+                        SetUpStandaloneSingleWindowApp()) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     EnableSystemWebAppsInLacrosForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1966,7 +1966,7 @@ class ManifestUpdateManagerSystemAppBrowserTest
   void SetUpOnMainThread() override { system_app_->WaitForAppInstall(); }
 
  protected:
-  std::unique_ptr<TestSystemWebAppInstallation> system_app_;
+  std::unique_ptr<ash::TestSystemWebAppInstallation> system_app_;
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerSystemAppBrowserTest,
