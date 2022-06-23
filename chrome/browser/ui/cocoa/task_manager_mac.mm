@@ -312,9 +312,19 @@ NSString* ColumnIdentifier(int id) {
   NSTableHeaderCell* headerCell = [column.get() headerCell];
   id dataCell = [column.get() dataCell];
 
-  NSTextAlignment textAlignment = (columnData.align == ui::TableColumn::LEFT)
-                                      ? NSTextAlignmentLeft
-                                      : NSTextAlignmentRight;
+  NSTextAlignment textAlignment;
+  // There are no "leading" and "trailing" constants in `NSTextAlignment` so do
+  // it manually.
+  if ([NSApp userInterfaceLayoutDirection] ==
+      NSUserInterfaceLayoutDirectionRightToLeft) {
+    textAlignment = (columnData.align == ui::TableColumn::LEFT)
+                        ? NSTextAlignmentRight
+                        : NSTextAlignmentLeft;
+  } else {
+    textAlignment = (columnData.align == ui::TableColumn::LEFT)
+                        ? NSTextAlignmentLeft
+                        : NSTextAlignmentRight;
+  }
 
   NSString* columnTitle = l10n_util::GetNSStringWithFixup(columnData.id);
   [headerCell setStringValue:columnTitle];
