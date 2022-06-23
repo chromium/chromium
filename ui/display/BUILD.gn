@@ -184,8 +184,6 @@ static_library("test_support") {
     sources += [
       "mac/test/test_screen_mac.h",
       "mac/test/test_screen_mac.mm",
-      "mac/test/virtual_display_mac_util.h",
-      "mac/test/virtual_display_mac_util.mm",
     ]
   }
 
