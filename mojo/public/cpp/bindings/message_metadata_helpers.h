@@ -18,6 +18,9 @@ using MessageToStableIPCHashCallback = uint32_t (*)(Message&);
 // Alias for a function taking mojo::Message and returning method name.
 using MessageToMethodNameCallback = const char* (*)(Message&);
 
+// Alias for a function taking mojo::Message and returning method address.
+using MessageToMethodAddressCallback = const void* (*)(Message&);
+
 }  // namespace mojo
 
 #endif  // MOJO_PUBLIC_CPP_BINDINGS_MESSAGE_METADATA_HELPERS_H_

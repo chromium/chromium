@@ -517,10 +517,10 @@ TEST_F(TracingProfileBuilderTest, InvalidModule) {
 
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-TEST_F(TracingProfileBuilderTest, MangleELFModuleID) {
+TEST_F(TracingProfileBuilderTest, TransformELFModuleIDToBreakpadFormat) {
   base::TestModule module;
   // See explanation for the module_id mangling in
-  // TracingSamplerProfiler::TracingProfileBuilder::GetCallstackIDAndMaybeEmit.
+  // base::TransformModuleIDToBreakpadFormat implementation.
   module.set_id("7F0715C286F8B16C10E4AD349CDA3B9B56C7A773");
 
   TracingSamplerProfiler::TracingProfileBuilder profile_builder(

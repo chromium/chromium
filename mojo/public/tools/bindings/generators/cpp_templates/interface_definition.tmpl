@@ -92,6 +92,19 @@ const char* {{interface.name}}::MessageToMethodName_(mojo::Message& message) {
 #endif // BUILDFLAG(MOJO_TRACE_ENABLED)
 }
 
+const void* {{interface.name}}::MessageToMethodAddress_(mojo::Message& message) {
+{%- if interface.methods %}
+  switch (message.name()) {
+{%-   for method in interface.methods %}
+    case internal::k{{interface.name}}_{{method.name}}_Name: {
+        return reinterpret_cast<const void*>(&{{interface.name}}::{{method.name}}_Sym::IPCSymbol);
+    }
+{%-   endfor %}
+  }
+{%- endif %}
+  return nullptr;
+}
+
 {%- for method in interface.methods %}
 {%-   if method.sync %}
 bool {{class_name}}::{{method.name}}({{interface_macros.declare_sync_method_params("", method)}}) {

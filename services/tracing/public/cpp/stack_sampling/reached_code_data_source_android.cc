@@ -70,11 +70,9 @@ void ReachedCodeDataSource::WriteProfileData() {
   base::debug::ElfBuildIdBuffer buf;
   size_t size = base::debug::ReadElfBuildId(&__ehdr_start, true, buf);
   if (size > 0) {
-    std::string module_id(buf, size);
-    TracingSamplerProfiler::MangleModuleIDIfNeeded(&module_id);
     auto* str = interned_data->add_build_ids();
     str->set_iid(0);
-    str->set_str(module_id);
+    str->set_str(base::TransformModuleIDToBreakpadFormat({buf, size}));
   }
 
   absl::optional<base::StringPiece> library_name =

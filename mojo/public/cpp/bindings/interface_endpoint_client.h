@@ -53,15 +53,17 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   // called the constructor.
   //
   // `receiver` may be null, but if non-null it must outlive this object.
-  InterfaceEndpointClient(ScopedInterfaceEndpointHandle handle,
-                          MessageReceiverWithResponderStatus* receiver,
-                          std::unique_ptr<MessageReceiver> payload_validator,
-                          bool expect_sync_requests,
-                          scoped_refptr<base::SequencedTaskRunner> task_runner,
-                          uint32_t interface_version,
-                          const char* interface_name,
-                          MessageToStableIPCHashCallback ipc_hash_callback,
-                          MessageToMethodNameCallback method_name_callback);
+  InterfaceEndpointClient(
+      ScopedInterfaceEndpointHandle handle,
+      MessageReceiverWithResponderStatus* receiver,
+      std::unique_ptr<MessageReceiver> payload_validator,
+      bool expect_sync_requests,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      uint32_t interface_version,
+      const char* interface_name,
+      MessageToStableIPCHashCallback ipc_hash_callback,
+      MessageToMethodNameCallback method_name_callback,
+      MessageToMethodAddressCallback method_address_callback);
 
   InterfaceEndpointClient(const InterfaceEndpointClient&) = delete;
   InterfaceEndpointClient& operator=(const InterfaceEndpointClient&) = delete;
@@ -199,6 +201,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   MessageToMethodNameCallback method_name_callback() const {
     return method_name_callback_;
   }
+  MessageToMethodAddressCallback method_address_callback() const {
+    return method_address_callback_;
+  }
 
 #if DCHECK_IS_ON()
   void SetNextCallLocation(const base::Location& location) {
@@ -329,6 +334,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   const char* interface_name_;
   const MessageToStableIPCHashCallback ipc_hash_callback_;
   const MessageToMethodNameCallback method_name_callback_;
+  const MessageToMethodAddressCallback method_address_callback_;
 
 #if DCHECK_IS_ON()
   // The code location of the the most recent call into a method on this

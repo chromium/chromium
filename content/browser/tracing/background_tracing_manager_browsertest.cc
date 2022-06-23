@@ -1225,8 +1225,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       module_cache.GetModuleForAddress(reinterpret_cast<uintptr_t>(&DummyFunc));
   ASSERT_TRUE(this_module);
 
-  std::string module_id = this_module->GetId();
-  tracing::TracingSamplerProfiler::MangleModuleIDIfNeeded(&module_id);
+  std::string module_id =
+      base::TransformModuleIDToBreakpadFormat(this_module->GetId());
 
   std::string desired_frame_pattern = base::StrCat(
       {"0x[[:xdigit:]]+ - /?", this_module->GetDebugBasename().MaybeAsASCII(),

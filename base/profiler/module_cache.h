@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -21,6 +22,10 @@
 #endif
 
 namespace base {
+
+// Converts module id to match the id that Breakpad outputs.
+BASE_EXPORT std::string TransformModuleIDToBreakpadFormat(
+    StringPiece module_id);
 
 // Supports cached lookup of modules by address, with caching based on module
 // address ranges.

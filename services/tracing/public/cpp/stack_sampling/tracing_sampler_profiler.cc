@@ -604,7 +604,8 @@ TracingSamplerProfiler::StackProfileWriter::GetCallstackIDAndMaybeEmit(
       frame_details.FillWithDummyFields(frame.instruction_pointer);
     }
 
-    MangleModuleIDIfNeeded(&frame_details.module_id);
+    frame_details.module_id =
+        base::TransformModuleIDToBreakpadFormat(frame_details.module_id);
 
     // We never emit frame names in privacy filtered mode.
     bool should_emit_frame_names =
@@ -694,27 +695,6 @@ void TracingSamplerProfiler::StackProfileWriter::ResetEmittedState() {
   interned_module_names_.ResetEmittedState();
   interned_module_ids_.ResetEmittedState();
   interned_modules_.ResetEmittedState();
-}
-
-// static
-void TracingSamplerProfiler::MangleModuleIDIfNeeded(std::string* module_id) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Linux ELF module IDs are 160bit integers, which we need to mangle
-  // down to 128bit integers to match the id that Breakpad outputs.
-  // Example on version '66.0.3359.170' x64:
-  //   Build-ID: "7f0715c2 86f8 b16c 10e4ad349cda3b9b 56c7a773
-  //   Debug-ID  "C215077F F886 6CB1 10E4AD349CDA3B9B 0"
-  if (module_id->size() < 32) {
-    module_id->resize(32, '0');
-  }
-
-  *module_id =
-      base::StrCat({module_id->substr(6, 2), module_id->substr(4, 2),
-                    module_id->substr(2, 2), module_id->substr(0, 2),
-                    module_id->substr(10, 2), module_id->substr(8, 2),
-                    module_id->substr(14, 2), module_id->substr(12, 2),
-                    module_id->substr(16, 16), "0"});
-#endif
 }
 
 // static

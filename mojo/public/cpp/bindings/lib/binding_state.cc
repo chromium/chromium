@@ -111,7 +111,8 @@ void BindingStateBase::BindInternal(
     MessageReceiverWithResponderStatus* stub,
     uint32_t interface_version,
     MessageToStableIPCHashCallback ipc_hash_callback,
-    MessageToMethodNameCallback method_name_callback) {
+    MessageToMethodNameCallback method_name_callback,
+    MessageToMethodAddressCallback method_address_callback) {
   DCHECK(!is_bound()) << "Attempting to bind interface that is already bound: "
                       << interface_name;
 
@@ -133,7 +134,7 @@ void BindingStateBase::BindInternal(
       router_->CreateLocalEndpointHandle(kPrimaryInterfaceId), stub,
       std::move(request_validator), has_sync_methods,
       std::move(sequenced_runner), interface_version, interface_name,
-      ipc_hash_callback, method_name_callback);
+      ipc_hash_callback, method_name_callback, method_address_callback);
   endpoint_client_->SetIdleTrackingEnabledCallback(
       base::BindOnce(&MultiplexRouter::SetConnectionGroup, router_));
 

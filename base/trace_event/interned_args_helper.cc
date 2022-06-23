@@ -6,12 +6,26 @@
 
 #include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
 #include "third_party/perfetto/protos/perfetto/trace/interned_data/interned_data.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/profiling/profile_common.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/log_message.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/task_execution.pbzero.h"
 
 namespace base {
 namespace trace_event {
+
+namespace {
+
+base::ModuleCache& GetThreadLocalModuleCache() {
+  static base::NoDestructor<base::ThreadLocalOwnedPointer<base::ModuleCache>>
+      instance;
+  if (!instance->Get()) {
+    instance->Set(WrapUnique(new base::ModuleCache()));
+  }
+  return *instance->Get();
+}
+
+}  // namespace
 
 //  static
 void InternedSourceLocation::Add(
@@ -42,6 +56,78 @@ void InternedLogMessage::Add(
   auto* msg = interned_data->add_log_message_body();
   msg->set_iid(iid);
   msg->set_body(log_message);
+}
+
+// static
+void InternedBuildId::Add(perfetto::protos::pbzero::InternedData* interned_data,
+                          size_t iid,
+                          const std::string& build_id) {
+  auto* msg = interned_data->add_build_ids();
+  msg->set_iid(iid);
+  msg->set_str(build_id);
+}
+
+// static
+void InternedMappingPath::Add(
+    perfetto::protos::pbzero::InternedData* interned_data,
+    size_t iid,
+    const std::string& mapping_path) {
+  auto* msg = interned_data->add_mapping_paths();
+  msg->set_iid(iid);
+  msg->set_str(mapping_path);
+}
+
+// static
+size_t InternedMapping::Get(perfetto::EventContext* ctx,
+                            const base::ModuleCache::Module* module) {
+  auto* index_for_field = GetOrCreateIndexForField(ctx->GetIncrementalState());
+  size_t iid;
+  if (index_for_field->index_.LookUpOrInsert(&iid, module)) {
+    return iid;
+  }
+  InternedMapping::Add(ctx, iid, module);
+  return iid;
+}
+
+// static
+void InternedMapping::Add(perfetto::EventContext* ctx,
+                          size_t iid,
+                          const base::ModuleCache::Module* module) {
+  const auto build_id = InternedBuildId::Get(
+      ctx, base::TransformModuleIDToBreakpadFormat(module->GetId()));
+  const auto path_id =
+      InternedMappingPath::Get(ctx, module->GetDebugBasename().MaybeAsASCII());
+
+  auto* msg =
+      ctx->GetIncrementalState()->serialized_interned_data->add_mappings();
+  msg->set_iid(iid);
+  msg->set_build_id(build_id);
+  msg->add_path_string_ids(path_id);
+}
+
+// static
+void InternedUnsymbolizedSourceLocation::Add(
+    perfetto::protos::pbzero::InternedData* interned_data,
+    size_t iid,
+    const UnsymbolizedSourceLocation& location) {
+  auto* msg = interned_data->add_unsymbolized_source_locations();
+  msg->set_iid(iid);
+  msg->set_mapping_id(location.mapping_id);
+  msg->set_rel_pc(location.rel_pc);
+}
+
+absl::optional<size_t> InternUnsymbolizedSourceLocation(
+    uintptr_t address,
+    perfetto::EventContext& ctx) {
+  const base::ModuleCache::Module* module =
+      GetThreadLocalModuleCache().GetModuleForAddress(address);
+  if (!module) {
+    return absl::nullopt;
+  }
+  const auto mapping_id = InternedMapping::Get(&ctx, module);
+  const uintptr_t rel_pc = address - module->GetBaseAddress();
+  return InternedUnsymbolizedSourceLocation::Get(
+      &ctx, base::trace_event::UnsymbolizedSourceLocation(mapping_id, rel_pc));
 }
 
 }  // namespace trace_event

@@ -19,6 +19,8 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/thread_local.h"
+#include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
@@ -423,7 +425,8 @@ InterfaceEndpointClient::InterfaceEndpointClient(
     uint32_t interface_version,
     const char* interface_name,
     MessageToStableIPCHashCallback ipc_hash_callback,
-    MessageToMethodNameCallback method_name_callback)
+    MessageToMethodNameCallback method_name_callback,
+    MessageToMethodAddressCallback method_address_callback)
     : expect_sync_requests_(expect_sync_requests),
       handle_(std::move(handle)),
       incoming_receiver_(receiver),
@@ -432,7 +435,8 @@ InterfaceEndpointClient::InterfaceEndpointClient(
       control_message_handler_(this, interface_version),
       interface_name_(interface_name),
       ipc_hash_callback_(ipc_hash_callback),
-      method_name_callback_(method_name_callback) {
+      method_name_callback_(method_name_callback),
+      method_address_callback_(method_address_callback) {
   DCHECK(handle_.is_valid());
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -847,6 +851,15 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
                 auto* info = ctx.event()->set_chrome_mojo_event_info();
                 info->set_mojo_interface_tag(interface_name_);
                 info->set_ipc_hash(ipc_hash_callback_(*message));
+
+                const auto method_address = reinterpret_cast<uintptr_t>(
+                    method_address_callback_(*message));
+                const absl::optional<size_t> location_iid =
+                    base::trace_event::InternUnsymbolizedSourceLocation(
+                        method_address, ctx);
+                if (location_iid) {
+                  info->set_mojo_interface_method_iid(*location_iid);
+                }
 
                 static const uint8_t* flow_enabled =
                     TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("toplevel.flow");

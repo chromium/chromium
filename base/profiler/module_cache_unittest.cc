@@ -474,5 +474,15 @@ TEST(ModuleCacheTest, UnregisterAuxiliaryModuleProvider) {
   EXPECT_EQ(nullptr, cache.GetModuleForAddress(1));
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+TEST(ModuleCacheTest, TransformELFModuleIDToBreakpadFormat) {
+  // See explanation for the module_id mangling in
+  // base::TransformModuleIDToBreakpadFormat implementation.
+  EXPECT_EQ(TransformModuleIDToBreakpadFormat(
+                "7F0715C286F8B16C10E4AD349CDA3B9B56C7A773"),
+            "C215077FF8866CB110E4AD349CDA3B9B0");
+}
+#endif
+
 }  // namespace
 }  // namespace base

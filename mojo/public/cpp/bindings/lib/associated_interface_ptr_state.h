@@ -88,7 +88,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedInterfacePtrStateBase {
             scoped_refptr<base::SequencedTaskRunner> runner,
             const char* interface_name,
             MessageToStableIPCHashCallback ipc_hash_callback,
-            MessageToMethodNameCallback method_name_callback);
+            MessageToMethodNameCallback method_name_callback,
+            MessageToMethodAddressCallback method_address_callback);
   ScopedInterfaceEndpointHandle PassHandle();
 
   InterfaceEndpointClient* endpoint_client() { return endpoint_client_.get(); }
@@ -129,7 +130,7 @@ class AssociatedInterfacePtrState : public AssociatedInterfacePtrStateBase {
         info.PassHandle(), info.version(),
         std::make_unique<typename Interface::ResponseValidator_>(),
         std::move(runner), Interface::Name_, Interface::MessageToStableIPCHash_,
-        Interface::MessageToMethodName_);
+        Interface::MessageToMethodName_, Interface::MessageToMethodAddress_);
     proxy_ = std::make_unique<Proxy>(endpoint_client());
   }
 

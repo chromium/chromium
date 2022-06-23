@@ -18,6 +18,7 @@ class {{export_attribute}} {{interface.name}}
   static const char Name_[];
   static uint32_t MessageToStableIPCHash_(mojo::Message& message);
   static const char* MessageToMethodName_(mojo::Message& message);
+  static const void* MessageToMethodAddress_(mojo::Message& message);
 
 {%-  if interface.uuid %}
   static constexpr base::Token Uuid_{ {{interface.uuid[0]}}ULL,
@@ -53,6 +54,13 @@ class {{export_attribute}} {{interface.name}}
     k{{method.name}}MinVersion = {{method.min_version|default(0, true)}},
 {%- endfor %}
   };
+
+{#--- Per method symbols #}
+{%- for method in interface.methods %}
+  struct {{method.name}}_Sym {
+    static void IPCSymbol() {};
+  };
+{%- endfor %}
 
 {#--- Enums #}
 {%- for enum in interface.enums %}

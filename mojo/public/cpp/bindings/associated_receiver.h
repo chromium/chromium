@@ -65,7 +65,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedReceiverBase {
                 uint32_t interface_version,
                 const char* interface_name,
                 MessageToStableIPCHashCallback ipc_hash_callback,
-                MessageToMethodNameCallback method_name_callback);
+                MessageToMethodNameCallback method_name_callback,
+                MessageToMethodAddressCallback method_address_callback);
 
   std::unique_ptr<InterfaceEndpointClient> endpoint_client_;
 };
@@ -204,7 +205,8 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
                Interface::HasSyncMethods_, std::move(task_runner),
                Interface::Version_, Interface::Name_,
                Interface::MessageToStableIPCHash_,
-               Interface::MessageToMethodName_);
+               Interface::MessageToMethodName_,
+               Interface::MessageToMethodAddress_);
     } else {
       reset();
     }
