@@ -42,8 +42,7 @@ constexpr char kAP[] = "ap";    // Key for storing ap.
 
 constexpr char kHadApps[] = "had_apps";
 
-// TODO(crbug.com/1292189): rename "updater_time" to "last_checked".
-constexpr char kLastChecked[] = "update_time";
+constexpr char kLastChecked[] = "last_checked";
 constexpr char kLastStarted[] = "last_started";
 constexpr char kLastOSVersion[] = "last_os_version";
 
