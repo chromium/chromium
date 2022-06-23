@@ -746,7 +746,7 @@ class ValueWaiter {
 // 9. document.getElementById('id').value = "bar";
 //
 // Then `ListenForValueChange("id", "unblock", rfh).Wait(base::Seconds(5)) ==
-// "bar"` the ListenForValueChange() call happens any point before Event 9 and
+// "bar"`. The ListenForValueChange() call happens any point before Event 9, and
 // Event 9 happens no later than 5 seconds after that.
 [[nodiscard]] ValueWaiter ListenForValueChange(
     const std::string& id,
@@ -892,7 +892,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    InProcessBrowserTest::SetUp();
+    AutofillUiTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -926,6 +926,9 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     cert_verifier_.SetUpCommandLine(command_line);
     // Needed to allow input before commit on various builders.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+    // HTTPS server only serves a valid cert for localhost, so this is needed to
+    // load pages from "a.com" without an interstitial.
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     // TODO(crbug.com/1258185): Migrate to a better mechanism for testing around
     // language detection.
     command_line->AppendSwitch(switches::kOverrideLanguageDetection);
@@ -939,6 +942,16 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   void TearDownInProcessBrowserTestFixture() override {
     cert_verifier_.TearDownInProcessBrowserTestFixture();
     AutofillUiTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  // Skips AutofillUiTest::TearDownOnMainThread() and instead calls the
+  // grandparent's TearDownOnMainThread(). The reason is:
+  // After autofilling a credit card, there is a delayed task of recording its
+  // use on the db. If we reenable the services, the config would be deleted and
+  // we won't be able to encrypt the cc number. There will be a crash while
+  // encrypting the cc number.
+  void TearDownOnMainThread() override {
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleTestURL(
@@ -1143,6 +1156,8 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   static const char kTestUrlPath[];
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   net::EmbeddedTestServer https_server_;
 
@@ -1165,6 +1180,8 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   std::string test_url_content_;
 
   base::test::ScopedFeatureList feature_list_;
+
+  base::HistogramTester histogram_tester_;
 };
 
 const char AutofillInteractiveTestBase::kTestUrlPath[] =
@@ -1216,10 +1233,7 @@ class AutofillInteractiveTestWithHistogramTester
     command_line->AppendSwitch(switches::kNoProxyServer);
   }
 
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
  private:
-  base::HistogramTester histogram_tester_;
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
 };
 
@@ -2772,38 +2786,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FieldsChangeName) {
   EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
-class AutofillInteractiveTestCreditCard : public AutofillInteractiveTestBase {
- public:
-  AutofillInteractiveTestCreditCard() = default;
-  AutofillInteractiveTestCreditCard(const AutofillInteractiveTestCreditCard&) =
-      delete;
-  AutofillInteractiveTestCreditCard& operator=(
-      const AutofillInteractiveTestCreditCard&) = delete;
-  ~AutofillInteractiveTestCreditCard() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    AutofillInteractiveTestBase::SetUpCommandLine(command_line);
-    // HTTPS server only serves a valid cert for localhost, so this is needed to
-    // load pages from "a.com" without an interstitial.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
-  // After autofilling the credit card, there is a delayed task of recording its
-  // use on the db. If we reenable the services, the config would be deleted and
-  // we won't be able to encrypt the cc number. There will be a crash while
-  // encrypting the cc number.
-  void TearDownOnMainThread() override {}
-
-  const base::HistogramTester& histogram_tester() const {
-    return histogram_tester_;
-  }
-
- private:
-  base::HistogramTester histogram_tester_;
-};
-
 // Test that credit card autofill works.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestCreditCard, FillLocalCreditCard) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, FillLocalCreditCard) {
   CreateTestCreditCart();
   GURL url = https_server()->GetURL("a.com",
                                     "/autofill/autofill_creditcard_form.html");
@@ -2819,7 +2803,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestCreditCard, FillLocalCreditCard) {
 // Test that we do not fill formless non-checkout forms when we enable the
 // formless form restrictions.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, NoAutocomplete) {
-  base::HistogramTester histogram;
   CreateTestProfile();
   GURL url =
       embedded_test_server()->GetURL("/autofill/formless_no_autocomplete.html");
@@ -2832,7 +2815,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, NoAutocomplete) {
   // If only some form fields are tagged with autocomplete types, then the
   // number of input elements will not match the number of fields when autofill
   // triees to preview or fill.
-  histogram.ExpectUniqueSample("Autofill.NumElementsMatchesNumFields", true, 2);
+  histogram_tester().ExpectUniqueSample("Autofill.NumElementsMatchesNumFields",
+                                        true, 2);
 
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
   EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));
@@ -2850,7 +2834,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, NoAutocomplete) {
 // of the form.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, SomeAutocomplete) {
   CreateTestProfile();
-  base::HistogramTester histogram;
   GURL url = embedded_test_server()->GetURL(
       "/autofill/formless_some_autocomplete.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2862,7 +2845,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, SomeAutocomplete) {
   // If only some form fields are tagged with autocomplete types, then the
   // number of input elements will not match the number of fields when autofill
   // triees to preview or fill.
-  histogram.ExpectUniqueSample("Autofill.NumElementsMatchesNumFields", true, 2);
+  histogram_tester().ExpectUniqueSample("Autofill.NumElementsMatchesNumFields",
+                                        true, 2);
 
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
   EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));
@@ -2878,7 +2862,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, SomeAutocomplete) {
 // TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   CreateTestProfile();
-  base::HistogramTester histogram;
   GURL url = embedded_test_server()->GetURL(
       "/autofill/formless_all_autocomplete.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2889,7 +2872,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
 
   // If all form fields are tagged with autocomplete types, we make them all
   // available to be filled.
-  histogram.ExpectUniqueSample("Autofill.NumElementsMatchesNumFields", true, 2);
+  histogram_tester().ExpectUniqueSample("Autofill.NumElementsMatchesNumFields",
+                                        true, 2);
 
   EXPECT_EQ("Milton", GetFieldValueById("firstname"));
   EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));
@@ -2898,67 +2882,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   EXPECT_EQ("Initech", GetFieldValueById("company"));
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
   EXPECT_EQ("15125551234", GetFieldValueById("phone"));
-}
-
-// Some websites have JavaScript handlers that mess with the input of the user
-// and autofill. A common problem is that the date "09/2999" gets reformatted
-// into "09 / 20" instead of "09 / 99".
-// In these tests, the following steps will happen:
-// 1) Autofill recognizes an expiration date field with maxlength=7, will infer
-//    that it is supposed to fill 09/2999 and will fill that value.
-// 2) The website sees the content 09/2999 and reformats it to 09 / 29 because
-//    this is what websites do sometimes.
-// 3) The AutofillAgent recognizes that it failed to fill 09/2999 and fills
-//    09 / 99 instead.
-// 4) The promise waits to see 09 / 99 and resolved.
-// Flaky on Win https://crbug.com/1337757.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FillCardOnReformatingForm DISABLED_FillCardOnReformatingForm
-#else
-#define MAYBE_FillCardOnReformatingForm FillCardOnReformatingForm
-#endif
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestCreditCard,
-                       MAYBE_FillCardOnReformatingForm) {
-  CreateTestCreditCart();
-  GURL url = https_server()->GetURL(
-      "a.com", "/autofill/autofill_creditcard_form_with_date_formatter.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  ASSERT_TRUE(AutofillFlow(GetElementById("CREDIT_CARD_NAME_FULL"), this));
-
-  std::string script = R"(
-    new Promise(function (resolve) {
-      (function waitForCorrectExpirationDate(){
-        const e = document.getElementById('CREDIT_CARD_EXP_DATE');
-        if (e && e.value === '09 / 99') {
-          return resolve(e.value);
-        }
-        setTimeout(waitForCorrectExpirationDate, 30);
-      })();  // <-- This defines and calls waitForCorrectExpirationDate().
-    });
-  )";
-  EXPECT_EQ("09 / 99", content::EvalJs(GetWebContents(), script));
-  content::LoadStopObserver load_stop_observer(GetWebContents());
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(), "document.getElementById('testform').submit();"));
-  load_stop_observer.Wait();
-
-  // Short hand for ExpectbucketCount:
-  auto expect_count = [&](base::StringPiece name,
-                          base::HistogramBase::Sample sample,
-                          base::HistogramBase::Count expected_count) {
-    histogram_tester().ExpectBucketCount(name, sample, expected_count);
-  };
-  expect_count("Autofill.KeyMetrics.FillingReadiness.CreditCard", 1, 1);
-  expect_count("Autofill.KeyMetrics.FillingAcceptance.CreditCard", 1, 1);
-  expect_count("Autofill.KeyMetrics.FillingCorrectness.CreditCard", 1, 1);
-  expect_count("Autofill.KeyMetrics.FillingAssistance.CreditCard", 1, 1);
-  // Ensure that refills don't count as edits.
-  expect_count("Autofill.NumberOfEditedAutofilledFieldsAtSubmission", 0, 1);
-  expect_count("Autofill.PerfectFilling.CreditCards", 1, 1);
-  // Bucket 0 = edited, 1 = accepted; 3 samples for 3 fields.
-  expect_count("Autofill.EditedAutofilledFieldAtSubmission.Aggregate", 0, 0);
-  expect_count("Autofill.EditedAutofilledFieldAtSubmission.Aggregate", 1, 3);
 }
 
 // An extension of the test fixture for tests with site isolation.
@@ -3199,13 +3122,6 @@ class AutofillInteractiveTestDynamicForm
       const MAYBE_AutofillInteractiveTestDynamicForm&) = delete;
   ~MAYBE_AutofillInteractiveTestDynamicForm() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    AutofillInteractiveTestBase::SetUpCommandLine(command_line);
-    // HTTPS server only serves a valid cert for localhost, so this is needed to
-    // load pages from "a.com" without an interstitial.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
   ValueWaiter ListenForRefill(
       const std::string& id,
       absl::optional<std::string> unblock_variable = "refill") {
@@ -3214,8 +3130,10 @@ class AutofillInteractiveTestDynamicForm
 
   // Refills only happen within `kLimitBeforeRefill` second of the initial fill.
   // Slow bots may exceed this limit and thus cause flakiness.
-  void AdvanceClockBetweenFillAndRefill(
-      base::TimeDelta delta = kLimitBeforeRefill / 10) {
+  static constexpr base::TimeDelta kLessThanLimitBeforeRefill =
+      kLimitBeforeRefill / 10;
+
+  void AdvanceClock(base::TimeDelta delta) {
     clock_.Advance(delta);
     tick_clock_.Advance(delta);
   }
@@ -3226,6 +3144,10 @@ class AutofillInteractiveTestDynamicForm
   TestAutofillClock clock_{AutofillClock::Now()};
   TestAutofillTickClock tick_clock_{AutofillTickClock::NowTicks()};
 };
+
+INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
+                         MAYBE_AutofillInteractiveTestDynamicForm,
+                         testing::Bool());
 
 // Test that we can Autofill dynamically generated forms.
 // TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
@@ -3238,7 +3160,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("firstname_form1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3261,7 +3183,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("firstname_form1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname_form1"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3275,7 +3197,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   refill = ListenForRefill("firstname_form2");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname_form2"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3298,7 +3220,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("firstname_form2");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_FALSE(std::move(refill).Wait());
 
   // Make sure the new form was not filled.
@@ -3321,7 +3243,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("firstname_form1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill(kLimitBeforeRefill + base::Milliseconds(1));
+  AdvanceClock(kLimitBeforeRefill + base::Milliseconds(1));
   ASSERT_FALSE(std::move(refill).Wait());
 
   // Make sure that the new form was not filled.
@@ -3345,7 +3267,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("firstname_form1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // The fields present in the initial fill should be filled.
@@ -3376,7 +3298,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("firstname");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3401,7 +3323,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("firstname");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3427,7 +3349,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("address1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3452,7 +3374,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("address1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3478,7 +3400,7 @@ IN_PROC_BROWSER_TEST_P(
 
   ValueWaiter refill = ListenForRefill("address1_7");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname_5"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the second form was filled correctly, and the first form was left
@@ -3504,7 +3426,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("address1_7");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname_5"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the second form was filled correctly, and the first form was left
@@ -3532,7 +3454,7 @@ IN_PROC_BROWSER_TEST_P(
 
   ValueWaiter refill = ListenForRefill("address1_7");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname_5"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the second form was filled correctly, and the first form was left
@@ -3557,7 +3479,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("address1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3580,7 +3502,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
   ValueWaiter refill = ListenForRefill("cc-name");
   ASSERT_TRUE(AutofillFlow(GetElementById("cc-name"), this,
                            {.show_method = ShowMethod::ByChar('M')}));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   EXPECT_EQ("Milton Waddams", GetFieldValueById("cc-name"));
@@ -3601,7 +3523,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("firstname");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3626,7 +3548,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
   ValueWaiter refill1 = ListenForRefill("address1", "refill1");
   ValueWaiter refill2 = ListenForRefill("firstname", "refill2");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill1).Wait());
   ASSERT_FALSE(std::move(refill2).Wait());
 
@@ -3653,7 +3575,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("firstname_form1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3680,7 +3602,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("firstname");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3705,7 +3627,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("firstname_syntheticform1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3731,7 +3653,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
 
   ValueWaiter refill = ListenForRefill("firstname");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClockBetweenFillAndRefill();
+  AdvanceClock(kLessThanLimitBeforeRefill);
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
@@ -3742,6 +3664,60 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("Initech", GetFieldValueById("company"));
   EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
   EXPECT_EQ("15125551234", GetFieldValueById("phone"));
+}
+
+// Some websites have JavaScript handlers that mess with the input of the user
+// and autofill. A common problem is that the date "09/2999" gets reformatted
+// into "09 / 20" instead of "09 / 99".
+// In these tests, the following steps will happen:
+// 1) Autofill recognizes an expiration date field with maxlength=7, will infer
+//    that it is supposed to fill 09/2999 and will fill that value.
+// 2) The website sees the content 09/2999 and reformats it to 09 / 29 because
+//    this is what websites do sometimes.
+// 3) The AutofillAgent recognizes that it failed to fill 09/2999 and fills
+//    09 / 99 instead.
+// 4) The promise waits to see 09 / 99 and resolved.
+// Flaky on Win https://crbug.com/1337757.
+IN_PROC_BROWSER_TEST_P(MAYBE_AutofillInteractiveTestDynamicForm,
+                       FillCardOnReformattingForm) {
+  CreateTestCreditCart();
+  GURL url = https_server()->GetURL(
+      "a.com", "/autofill/autofill_creditcard_form_with_date_formatter.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ValueWaiter reformat_waiter =
+      ListenForValueChange("CREDIT_CARD_EXP_DATE", "unblock", GetWebContents());
+  ASSERT_TRUE(AutofillFlow(GetElementById("CREDIT_CARD_NAME_FULL"), this));
+  AdvanceClock(kLessThanLimitBeforeRefill);
+  ASSERT_TRUE(std::move(reformat_waiter).Wait());
+  EXPECT_EQ("09 / 99", GetFieldValue(GetElementById("CREDIT_CARD_EXP_DATE")));
+
+  // The timestamp from BrowserAutofillManager::OnDidFillAutofillFormData()
+  // comes from the renderer process and thus from an actual clock. Since this
+  // interaction timestamp must be before the submission timestamp, we advance
+  // the browser by a lot.
+  AdvanceClock(base::Minutes(10));
+  content::LoadStopObserver load_stop_observer(GetWebContents());
+  ASSERT_TRUE(content::ExecuteScript(
+      GetWebContents(), "document.getElementById('testform').submit();"));
+  load_stop_observer.Wait();
+
+  // Short hand for ExpectbucketCount:
+  auto expect_count = [&](base::StringPiece name,
+                          base::HistogramBase::Sample sample,
+                          base::HistogramBase::Count expected_count) {
+    histogram_tester().ExpectBucketCount(name, sample, expected_count);
+  };
+  expect_count("Autofill.KeyMetrics.FillingReadiness.CreditCard", 1, 1);
+  expect_count("Autofill.KeyMetrics.FillingAcceptance.CreditCard", 1, 1);
+  expect_count("Autofill.KeyMetrics.FillingCorrectness.CreditCard", 1, 1);
+  expect_count("Autofill.KeyMetrics.FillingAssistance.CreditCard", 1, 1);
+  // Ensure that refills don't count as edits.
+  expect_count("Autofill.NumberOfEditedAutofilledFieldsAtSubmission", 0, 1);
+  expect_count("Autofill.PerfectFilling.CreditCards", 1, 1);
+  // Bucket 0 = edited, 1 = accepted; 3 samples for 3 fields.
+  expect_count("Autofill.EditedAutofilledFieldAtSubmission.Aggregate", 0, 0);
+  expect_count("Autofill.EditedAutofilledFieldAtSubmission.Aggregate", 1, 3);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ShadowDOM) {
@@ -3763,10 +3739,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ShadowDOM) {
   EXPECT_EQ("78744", Js("getZip()"));
 }
 
-INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
-                         MAYBE_AutofillInteractiveTestDynamicForm,
-                         testing::Bool());
-
 // ChromeVox is only available on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -3780,6 +3752,7 @@ class AutofillInteractiveTestChromeVox : public AutofillInteractiveTestBase {
     // in-flight requests during test shutdown. https://crbug.com/923090
     ash::AccessibilityManager::Get()->EnableSpokenFeedback(false);
     AutomationManagerAura::GetInstance()->Disable();
+    AutofillInteractiveTestBase::TearDownOnMainThread();
   }
 
   void EnableChromeVox() {

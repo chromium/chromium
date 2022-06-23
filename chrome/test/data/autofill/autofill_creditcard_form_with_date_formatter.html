@@ -48,9 +48,12 @@ const element = document.getElementById('CREDIT_CARD_EXP_DATE');
 document.getElementById('CREDIT_CARD_EXP_DATE').addEventListener('change',
   () => {
     const matches = [...element.value.match(/(\d+)\s*\/\s*(\d+)/)];
-    const formatedValue = matches[1] + ' / ' + matches[2].substr(0,2);
-    if (element.value !== formatedValue) {
-      element.value = formatedValue;
+    const formattedValue = matches[1] + ' / ' + matches[2].substr(0,2);
+    if (formattedValue === '09 / 99') {
+      window.unblock = true;  // Unblocks the C++ call ListenForValueChange().
+    }
+    if (element.value !== formattedValue) {
+      element.value = formattedValue;
     }
   });
 </script>

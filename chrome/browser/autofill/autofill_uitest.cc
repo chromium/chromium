@@ -157,6 +157,7 @@ void AutofillUiTest::TearDownOnMainThread() {
   BrowserAutofillManager* autofill_manager = GetBrowserAutofillManager();
   if (autofill_manager)
     autofill_manager->client()->HideAutofillPopup(PopupHidingReason::kTabGone);
+  InProcessBrowserTest::TearDownOnMainThread();
 }
 
 bool AutofillUiTest::SendKeyToPageAndWait(
