@@ -42,7 +42,7 @@ public class DangerousDownloadDialogBridge {
      */
     @CalledByNative
     public void showDialog(WindowAndroid windowAndroid, String guid, String fileName,
-            long totalBytes, int iconId, boolean isOffTheRecord) {
+            long totalBytes, int iconId) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             onCancel(guid);
@@ -51,7 +51,7 @@ public class DangerousDownloadDialogBridge {
 
         new DangerousDownloadDialog().show(activity,
                 ((ModalDialogManagerHolder) activity).getModalDialogManager(), fileName, totalBytes,
-                iconId, isOffTheRecord, (accepted) -> {
+                iconId, (accepted) -> {
                     if (accepted) {
                         onAccepted(guid);
                     } else {

@@ -990,7 +990,6 @@ void ChromeDownloadManagerDelegate::ReserveVirtualPath(
 #if BUILDFLAG(IS_ANDROID)
 void ChromeDownloadManagerDelegate::RequestIncognitoWarningConfirmation(
     IncognitoWarningConfirmationCallback callback) {
-
   download_message_bridge_->ShowIncognitoDownloadMessage(std::move(callback));
 }
 #endif

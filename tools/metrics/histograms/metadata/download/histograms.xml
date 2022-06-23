@@ -373,6 +373,16 @@ chromium-metrics-reviews@google.com.
   <summary>The count of HTTP Response codes for download requests.</summary>
 </histogram>
 
+<histogram name="Download.Incognito.Message" enum="IncognitoMessageEvent"
+    expires_after="2022-12-31">
+  <owner>tommasin@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records the clicks on Incognito download message in Android, when users
+    click download or dismiss the message.
+  </summary>
+</histogram>
+
 <histogram name="Download.InProgressDB.Counts"
     enum="DownloadInProgressDBCountType" expires_after="M83">
   <owner>qinmin@chromium.org</owner>

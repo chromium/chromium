@@ -14,7 +14,6 @@ import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
-import org.chromium.base.Callback;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -23,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;

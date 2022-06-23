@@ -122,34 +122,6 @@ public class DownloadDialogIncognitoTest {
 
     @Test
     @LargeTest
-    public void testDangerousDownloadForOffTheRecordProfile() throws Exception {
-        // Showing a dangerous download dialog with an off-the-record profile.
-        showDangerousDialog(/*isOffTheRecord=*/true);
-
-        // Verify the Incognito warning message is shown.
-        waitForWarningVisibilityToBe(VISIBLE);
-
-        // Accept the dialog and verify the callback is called with true.
-        onView(withId(R.id.positive_button)).perform(ViewActions.click());
-        verify(mResultCallback).onResult(true);
-    }
-
-    @Test
-    @LargeTest
-    public void testDangerousDownloadForRegularProfile() throws Exception {
-        // Showing a dangerous download dialog with a regular profile.
-        showDangerousDialog(/*isOffTheRecord=*/false);
-
-        // Verify the Incognito warning message is NOT shown.
-        waitForWarningVisibilityToBe(GONE);
-
-        // Dismiss the dialog and verify the callback is called with false.
-        onView(withId(R.id.negative_button)).perform(ViewActions.click());
-        verify(mResultCallback).onResult(false);
-    }
-
-    @Test
-    @LargeTest
     public void testMixedContentDownloadForOffTheRecordProfile() throws Exception {
         // Showing a mixed content download dialog with an off-the-record profile.
         showMixedContentDialog(/*isOffTheRecord=*/true);
@@ -181,14 +153,6 @@ public class DownloadDialogIncognitoTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new DuplicateDownloadDialog().show(mContext, mModalDialogManager, DOWNLOAD_PATH,
                     PAGE_URL, TOTAL_BYTES, true, otrProfileID, mResultCallback);
-        });
-    }
-
-    private void showDangerousDialog(boolean isOffTheRecord) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Context mContext = mActivityTestRule.getActivity().getApplicationContext();
-            new DangerousDownloadDialog().show(mContext, mModalDialogManager, FILE_NAME,
-                    TOTAL_BYTES, ICON_ID, isOffTheRecord, mResultCallback);
         });
     }
 

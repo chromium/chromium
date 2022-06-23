@@ -49518,6 +49518,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Incognito switch and forced"/>
 </enum>
 
+<enum name="IncognitoMessageEvent">
+  <int value="0" label="Download message shown"/>
+  <int value="1" label="Download message accepted"/>
+  <int value="2" label="Download message dismissed with gesture"/>
+  <int value="3" label="Download message dismissed with timer"/>
+  <int value="4" label="Download message dismissed with different reason"/>
+</enum>
+
 <enum name="Inconsistencies">
   <int value="1" label="RangeChecksum"/>
   <int value="2" label="BucketOrder"/>

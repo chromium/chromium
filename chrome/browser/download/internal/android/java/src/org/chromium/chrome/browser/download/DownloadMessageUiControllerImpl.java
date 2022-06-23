@@ -150,6 +150,24 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     /**
+     * Represents the values for the histogram Download.Incognito.Message.
+     */
+    @IntDef({IncognitoMessageEvent.SHOWN, IncognitoMessageEvent.ACCEPTED,
+            IncognitoMessageEvent.DISMISSED_WITH_GESTURE,
+            IncognitoMessageEvent.DISMISSED_WITH_TIMER, IncognitoMessageEvent.NUM_ENTRIES,
+            IncognitoMessageEvent.DISMISSED_WITH_DIFFERENT_REASON})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface IncognitoMessageEvent {
+        int SHOWN = 0;
+        int ACCEPTED = 1;
+        int DISMISSED_WITH_GESTURE = 2;
+        int DISMISSED_WITH_TIMER = 3;
+        int DISMISSED_WITH_DIFFERENT_REASON = 4;
+
+        int NUM_ENTRIES = 5;
+    }
+
+    /**
      * Represents the data required to show UI elements of the message.
      */
     public static class DownloadProgressMessageUiData {
@@ -342,15 +360,25 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mPropertyModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                 context.getString(R.string.incognito_download_message_button));
         mPropertyModel.set(MessageBannerProperties.ICON,
-                AppCompatResources.getDrawable(context, R.drawable.infobar_download_complete));
+                AppCompatResources.getDrawable(context, R.drawable.ic_incognito_download_message));
         mPropertyModel.set(MessageBannerProperties.ON_PRIMARY_ACTION, () -> {
             callback.onResult(/*accepted=*/true);
+            recordIncognitoDownloadMessage(IncognitoMessageEvent.ACCEPTED);
             return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
         });
-        mPropertyModel.set(MessageBannerProperties.ON_DISMISSED,
-                (dismissReason) -> callback.onResult(/*accepted=*/false));
-
+        mPropertyModel.set(MessageBannerProperties.ON_DISMISSED, (dismissReason) -> {
+            if (dismissReason == DismissReason.TIMER) {
+                recordIncognitoDownloadMessage(IncognitoMessageEvent.DISMISSED_WITH_TIMER);
+            } else if (dismissReason == DismissReason.GESTURE) {
+                recordIncognitoDownloadMessage(IncognitoMessageEvent.DISMISSED_WITH_GESTURE);
+            } else {
+                recordIncognitoDownloadMessage(
+                        IncognitoMessageEvent.DISMISSED_WITH_DIFFERENT_REASON);
+            }
+            callback.onResult(/*accepted=*/false);
+        });
         getMessageDispatcher().enqueueWindowScopedMessage(mPropertyModel, /*highPriority=*/true);
+        recordIncognitoDownloadMessage(IncognitoMessageEvent.SHOWN);
     }
 
     /** Associates a notification ID with the tracked download for future usage. */
@@ -1049,5 +1077,14 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         } else {
             RecordUserAction.record("Android.Download.InfoBar.LinkClicked.OpenDownloadHome");
         }
+    }
+
+    /**
+     * Collects incognito download message event metrics.
+     * @param event The UI event to collect.
+     */
+    private static void recordIncognitoDownloadMessage(@IncognitoMessageEvent int event) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Download.Incognito.Message", event, IncognitoMessageEvent.NUM_ENTRIES);
     }
 }
