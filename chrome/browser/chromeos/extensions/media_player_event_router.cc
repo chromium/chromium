@@ -20,7 +20,7 @@ void BroadcastEvent(content::BrowserContext* context,
                     const std::string& event_name) {
   if (context && EventRouter::Get(context)) {
     std::unique_ptr<Event> event(
-        new Event(histogram_value, event_name, std::vector<base::Value>()));
+        new Event(histogram_value, event_name, base::Value::List()));
     EventRouter::Get(context)->BroadcastEvent(std::move(event));
   }
 }
