@@ -1308,7 +1308,7 @@ void WizardController::SkipToLoginForTesting() {
     return;
   wizard_context_->skip_to_login_for_tests = true;
 
-  if (!chromeos::features::IsOobeConsolidatedConsentEnabled())
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
     StartupUtils::MarkEulaAccepted();
 
   PerformPostEulaActions();
