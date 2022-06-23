@@ -8620,4 +8620,15 @@ TEST_F(RenderTextTest, Clusterfuzz_Issue_1287804) {
   EXPECT_EQ(RangeF(0, 0), render_text->GetCursorSpan(Range(0, 0)));
 }
 
+TEST_F(RenderTextTest, Clusterfuzz_Issue_1193815) {
+  RenderText* render_text = GetRenderText();
+  gfx::FontList font_list;
+  render_text->SetFontList(font_list);
+  render_text->Draw(canvas());
+  render_text->SetText(u"F\r");
+  render_text->SetMaxLines(1);
+  render_text->SetMultiline(true);
+  render_text->Draw(canvas());
+}
+
 }  // namespace gfx
