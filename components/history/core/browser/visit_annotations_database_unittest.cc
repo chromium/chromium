@@ -215,6 +215,15 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   EXPECT_EQ(final.alternative_title, "New alternative title");
 }
 
+TEST_F(VisitAnnotationsDatabaseTest, GetRecentClusterIds) {
+  AddCluster(
+      {AddVisitWithTime(IntToTime(11)), AddVisitWithTime(IntToTime(12))});
+
+  EXPECT_EQ(GetRecentClusterIds(IntToTime(13)), std::vector<int64_t>({}));
+  EXPECT_EQ(GetRecentClusterIds(IntToTime(12)), std::vector<int64_t>({1}));
+  EXPECT_EQ(GetRecentClusterIds(IntToTime(10)), std::vector<int64_t>({1}));
+}
+
 TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
   AddCluster(
       {AddVisitWithTime(IntToTime(11)), AddVisitWithTime(IntToTime(12))});
