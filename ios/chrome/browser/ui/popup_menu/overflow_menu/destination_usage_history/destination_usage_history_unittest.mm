@@ -192,7 +192,54 @@ TEST_F(DestinationUsageHistoryTest, HandlesNewDestinationClickAndAddToPrefs) {
   ASSERT_NE(target, nullptr);
   EXPECT_TRUE(destination_usage_history.prefService->HasPrefPath(
       prefs::kOverflowMenuDestinationUsageHistory));
-  EXPECT_EQ(1, target->GetInt());
+  EXPECT_EQ(21, target->GetInt());
+}
+
+// Tests that each destination in the history is populated with a default number
+// of clicks.
+TEST_F(DestinationUsageHistoryTest, InjectsDefaultNumClicksForAllDestinations) {
+  DestinationUsageHistory* destination_usage_history =
+      CreateDestinationUsageHistory();
+
+  // Click bookmarks destination.
+  [destination_usage_history
+         trackDestinationClick:overflow_menu::Destination::Bookmarks
+      numAboveFoldDestinations:numAboveFoldDestinations];
+
+  // Fetch saved destination usage history.
+  const base::Value* history =
+      destination_usage_history.prefService->GetDictionary(
+          prefs::kOverflowMenuDestinationUsageHistory);
+  ASSERT_NE(history, nullptr);
+  ASSERT_TRUE(history->is_dict());
+
+  const base::Value::Dict* history_dict = history->GetIfDict();
+  ASSERT_NE(history, nullptr);
+
+  EXPECT_TRUE(destination_usage_history.prefService->HasPrefPath(
+      prefs::kOverflowMenuDestinationUsageHistory));
+
+  std::vector<overflow_menu::Destination> destinations = {
+      overflow_menu::Destination::Bookmarks,
+      overflow_menu::Destination::History,
+      overflow_menu::Destination::ReadingList,
+      overflow_menu::Destination::Passwords,
+      overflow_menu::Destination::Downloads,
+      overflow_menu::Destination::RecentTabs,
+      overflow_menu::Destination::SiteInfo,
+      overflow_menu::Destination::Settings,
+  };
+
+  int today = TodaysDay();
+  for (overflow_menu::Destination destination : destinations) {
+    const base::Value* target =
+        history_dict->FindByDottedPath(DottedPath(today, destination));
+    int expected_count =
+        destination == overflow_menu::Destination::Bookmarks ? 21 : 20;
+
+    EXPECT_NE(target, nullptr);
+    EXPECT_EQ(expected_count, target->GetInt());
+  }
 }
 
 // Tests that an existing destination click is incremented and written to Chrome
