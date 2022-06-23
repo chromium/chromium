@@ -289,8 +289,8 @@ void WaylandKeyboard::OnKey(uint32_t serial,
   }
 
   DispatchKey(key, 0 /*scan_code*/, down, false /*repeat*/,
-              down ? absl::make_optional(serial) : absl::nullopt,
-              EventTimeForNow(), device_id(), EF_NONE, kind);
+              absl::make_optional(serial), EventTimeForNow(), device_id(),
+              EF_NONE, kind);
 }
 
 void WaylandKeyboard::DispatchKey(unsigned int key,
