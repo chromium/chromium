@@ -232,8 +232,12 @@ class WaylandEventSource : public PlatformEventSource,
   absl::optional<EventPointerType> last_pointer_stylus_tool_;
 
   // Last known touch stylus type (eg touch, pen or eraser).
-  base::flat_map<PointerId, absl::optional<EventPointerType>>
-      last_touch_stylus_tool_;
+  struct StylusData {
+    EventPointerType type = EventPointerType::kUnknown;
+    gfx::Vector2dF tilt;
+    float force = std::numeric_limits<float>::quiet_NaN();
+  };
+  base::flat_map<PointerId, absl::optional<StylusData>> last_touch_stylus_data_;
 
   // Recent pointer frames to compute fling scroll.
   // Front is newer, and back is older.

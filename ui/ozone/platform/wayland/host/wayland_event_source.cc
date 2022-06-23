@@ -407,9 +407,9 @@ void WaylandEventSource::OnTouchReleaseInternal(PointerId id) {
   touch_points_.erase(it);
 
   // Clean up stylus touch tracking, if any.
-  const auto stylus_it = last_touch_stylus_tool_.find(id);
-  if (stylus_it != last_touch_stylus_tool_.end())
-    last_touch_stylus_tool_.erase(stylus_it);
+  const auto stylus_data_it = last_touch_stylus_data_.find(id);
+  if (stylus_data_it != last_touch_stylus_data_.end())
+    last_touch_stylus_data_.erase(stylus_data_it);
 }
 
 void WaylandEventSource::OnTouchMotionEvent(
@@ -453,7 +453,7 @@ void WaylandEventSource::OnTouchCancelEvent() {
     HandleTouchFocusChange(touch_point.second->window, false);
   }
   touch_points_.clear();
-  last_touch_stylus_tool_.clear();
+  last_touch_stylus_data_.clear();
 }
 
 void WaylandEventSource::OnTouchFrame() {
@@ -493,7 +493,12 @@ std::vector<PointerId> WaylandEventSource::GetActiveTouchPointIds() {
 void WaylandEventSource::OnTouchStylusToolChanged(
     PointerId pointer_id,
     EventPointerType pointer_type) {
-  last_touch_stylus_tool_[pointer_id] = pointer_type;
+  StylusData stylus_data = {.type = pointer_type,
+                            .tilt = gfx::Vector2dF(),
+                            .force = std::numeric_limits<float>::quiet_NaN()};
+  bool inserted =
+      last_touch_stylus_data_.try_emplace(pointer_id, stylus_data).second;
+  DCHECK(inserted);
 }
 
 const WaylandWindow* WaylandEventSource::GetTouchTarget(PointerId id) const {
@@ -645,13 +650,13 @@ PointerDetails WaylandEventSource::PointerDetailsForDispatching() const {
 
 absl::optional<PointerDetails> WaylandEventSource::AmendStylusData(
     PointerId pointer_id) const {
-  const auto it = last_touch_stylus_tool_.find(pointer_id);
-  if (it == last_touch_stylus_tool_.end() || !it->second ||
-      it->second == EventPointerType::kTouch) {
+  const auto it = last_touch_stylus_data_.find(pointer_id);
+  if (it == last_touch_stylus_data_.end() || !it->second ||
+      it->second->type == EventPointerType::kTouch) {
     return absl::nullopt;
   }
 
-  return PointerDetails(it->second.value(), pointer_id);
+  return PointerDetails(it->second->type, pointer_id);
 }
 
 }  // namespace ui
