@@ -1976,7 +1976,8 @@
       },
       'ozone_gl_unittests': {
         'args': [
-          '--child-arg=--ozone-platform=headless',
+          '--',
+          '--ozone-platform=headless',
         ],
       },
       'ozone_unittests': {},
@@ -5319,7 +5320,8 @@
       'web_engine_browsertests': {},
       'web_engine_integration_tests': {
         'args': [
-          '--child-arg=--vmodule=test_navigation_listener=1',
+          '--',
+          '--vmodule=test_navigation_listener=1',
         ],
       },
       'web_engine_unittests': {},

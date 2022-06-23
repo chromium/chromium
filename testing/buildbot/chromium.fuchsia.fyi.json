@@ -741,7 +741,8 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless"
+          "--",
+          "--ozone-platform=headless"
         ],
         "merge": {
           "args": [],
@@ -1019,7 +1020,8 @@
       },
       {
         "args": [
-          "--child-arg=--vmodule=test_navigation_listener=1"
+          "--",
+          "--vmodule=test_navigation_listener=1"
         ],
         "merge": {
           "args": [],
@@ -1997,7 +1999,8 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless"
+          "--",
+          "--ozone-platform=headless"
         ],
         "merge": {
           "args": [],
@@ -2324,7 +2327,8 @@
       },
       {
         "args": [
-          "--child-arg=--vmodule=test_navigation_listener=1"
+          "--",
+          "--vmodule=test_navigation_listener=1"
         ],
         "merge": {
           "args": [],
@@ -3284,7 +3288,8 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless"
+          "--",
+          "--ozone-platform=headless"
         ],
         "merge": {
           "args": [],
@@ -3608,7 +3613,8 @@
       },
       {
         "args": [
-          "--child-arg=--vmodule=test_navigation_listener=1"
+          "--",
+          "--vmodule=test_navigation_listener=1"
         ],
         "merge": {
           "args": [],

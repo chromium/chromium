@@ -232,9 +232,6 @@ def AddTestExecutionArgs(arg_parser):
                          help='Directory to place code coverage information. '
                          'Only relevant when --code-coverage set to true. '
                          'Defaults to current directory.')
-  test_args.add_argument('--child-arg',
-                         action='append',
-                         help='Arguments for the test process.')
   test_args.add_argument('--gtest_also_run_disabled_tests',
                          default=False,
                          action='store_true',
@@ -319,8 +316,6 @@ def main():
   if args.gtest_also_run_disabled_tests:
     child_args.append('--gtest_also_run_disabled_tests')
 
-  if args.child_arg:
-    child_args.extend(args.child_arg)
   if args.child_args:
     child_args.extend(args.child_args)
 

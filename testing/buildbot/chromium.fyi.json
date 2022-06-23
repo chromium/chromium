@@ -20633,7 +20633,8 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless",
+          "--",
+          "--ozone-platform=headless",
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
@@ -21049,7 +21050,8 @@
       },
       {
         "args": [
-          "--child-arg=--vmodule=test_navigation_listener=1",
+          "--",
+          "--vmodule=test_navigation_listener=1",
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
@@ -22137,7 +22139,8 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless"
+          "--",
+          "--ozone-platform=headless"
         ],
         "merge": {
           "args": [],
@@ -22495,7 +22498,8 @@
       },
       {
         "args": [
-          "--child-arg=--vmodule=test_navigation_listener=1"
+          "--",
+          "--vmodule=test_navigation_listener=1"
         ],
         "merge": {
           "args": [],
@@ -23518,7 +23522,8 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless"
+          "--",
+          "--ozone-platform=headless"
         ],
         "merge": {
           "args": [],
@@ -23842,7 +23847,8 @@
       },
       {
         "args": [
-          "--child-arg=--vmodule=test_navigation_listener=1"
+          "--",
+          "--vmodule=test_navigation_listener=1"
         ],
         "merge": {
           "args": [],
@@ -25025,7 +25031,8 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless",
+          "--",
+          "--ozone-platform=headless",
           "--gtest_also_run_disabled_tests",
           "--gtest_filter=*DISABLE*"
         ],
