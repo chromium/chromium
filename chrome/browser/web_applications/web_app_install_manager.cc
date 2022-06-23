@@ -407,7 +407,7 @@ void WebAppInstallManager::MaybeWriteErrorLog() {
     return;
 
   WriteErrorLog(GetWebAppsRootDirectory(profile_), kWebAppInstallManagerName,
-                base::Value(*error_log_),
+                base::Value(error_log_->Clone()),
                 base::BindOnce(&WebAppInstallManager::OnWriteErrorLog,
                                weak_ptr_factory_.GetWeakPtr()));
 
@@ -427,19 +427,20 @@ void WebAppInstallManager::OnReadErrorLog(Result result,
     return;
 
   ErrorLog early_error_log = std::move(*error_log_);
-  *error_log_ = std::move(error_log).TakeListDeprecated();
+  *error_log_ = std::move(error_log.GetList());
 
   // Appends the `early_error_log` at the end.
-  error_log_->insert(error_log_->end(),
-                     std::make_move_iterator(early_error_log.begin()),
-                     std::make_move_iterator(early_error_log.end()));
+  error_log_->reserve(error_log_->size() + early_error_log.size());
+  for (auto& error : early_error_log) {
+    error_log_->Append(std::move(error));
+  }
 }
 
 void WebAppInstallManager::LogErrorObject(base::Value object) {
   if (!error_log_)
     return;
 
-  error_log_->push_back(std::move(object));
+  error_log_->Append(std::move(object));
   error_log_updated_ = true;
   MaybeWriteErrorLog();
 }

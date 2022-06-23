@@ -101,7 +101,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
 
   // Collects icon read/write errors (unbounded) if the |kRecordWebAppDebugInfo|
   // flag is enabled to be used by: chrome://web-app-internals
-  using ErrorLog = base::Value::ListStorage;
+  using ErrorLog = base::Value::List;
   const ErrorLog* error_log() const { return error_log_.get(); }
 
   using DataRetrieverFactory =
