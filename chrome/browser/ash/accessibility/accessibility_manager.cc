@@ -630,7 +630,7 @@ void AccessibilityManager::OnTwoFingerTouchStart() {
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_TWO_FINGER_TOUCH_START,
       extensions::api::accessibility_private::OnTwoFingerTouchStart::kEventName,
-      std::vector<base::Value>());
+      base::Value::List());
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -644,7 +644,7 @@ void AccessibilityManager::OnTwoFingerTouchStop() {
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_TWO_FINGER_TOUCH_STOP,
       extensions::api::accessibility_private::OnTwoFingerTouchStop::kEventName,
-      std::vector<base::Value>());
+      base::Value::List());
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -665,15 +665,15 @@ void AccessibilityManager::HandleAccessibilityGesture(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
 
-  std::vector<base::Value> event_args;
-  event_args.push_back(base::Value(ui::ToString(gesture)));
-  event_args.push_back(base::Value(location.x()));
-  event_args.push_back(base::Value(location.y()));
-  std::unique_ptr<extensions::Event> event(new extensions::Event(
+  base::Value::List event_args;
+  event_args.Append(ui::ToString(gesture));
+  event_args.Append(location.x());
+  event_args.Append(location.y());
+  auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_ACCESSIBILITY_GESTURE,
       extensions::api::accessibility_private::OnAccessibilityGesture::
           kEventName,
-      std::move(event_args)));
+      std::move(event_args));
   event_router->DispatchEventWithLazyListener(
       extension_misc::kChromeVoxExtensionId, std::move(event));
 }
@@ -1064,7 +1064,7 @@ void AccessibilityManager::RequestSelectToSpeakStateChange() {
           ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_STATE_CHANGE_REQUESTED,
       extensions::api::accessibility_private::
           OnSelectToSpeakStateChangeRequested::kEventName,
-      std::vector<base::Value>()));
+      base::Value::List()));
   event_router->DispatchEventWithLazyListener(
       extension_misc::kSelectToSpeakExtensionId, std::move(event));
 }
@@ -1604,7 +1604,7 @@ void AccessibilityManager::PostLoadChromeVox() {
   std::unique_ptr<extensions::Event> event(new extensions::Event(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_INTRODUCE_CHROME_VOX,
       extensions::api::accessibility_private::OnIntroduceChromeVox::kEventName,
-      std::vector<base::Value>()));
+      base::Value::List()));
   event_router->DispatchEventWithLazyListener(extension_id, std::move(event));
 
   if (!chromevox_panel_ && spoken_feedback_enabled_)
@@ -1778,8 +1778,8 @@ bool AccessibilityManager::ToggleDictation() {
   dictation_active_ = !dictation_active_;
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
-  auto event_args = std::vector<base::Value>();
-  event_args.emplace_back(dictation_active_);
+  base::Value::List event_args;
+  event_args.Append(dictation_active_);
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_TOGGLE_DICTATION,
       extensions::api::accessibility_private::OnToggleDictation::kEventName,
@@ -1962,10 +1962,10 @@ void AccessibilityManager::OnSelectToSpeakPanelAction(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
 
-  std::vector<base::Value> event_args;
-  event_args.push_back(base::Value(AccessibilityPrivateEnumForAction(action)));
+  base::Value::List event_args;
+  event_args.Append(AccessibilityPrivateEnumForAction(action));
   if (value != 0.0) {
-    event_args.push_back(base::Value(value));
+    event_args.Append(value);
   }
 
   auto event = std::make_unique<extensions::Event>(

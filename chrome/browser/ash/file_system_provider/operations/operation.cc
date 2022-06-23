@@ -57,9 +57,14 @@ bool DispatchEventImpl(extensions::EventRouter* event_router,
   // If ash has a matching extension, forward the event. This should not be
   // needed once Lacros is the only browser on all devices.
   if (event_router->ExtensionHasEventListener(extension_id, event_name)) {
+    // TODO(https://crbug.com/1338341): Constructing a base::Value from a
+    // std::vector is deprecated. Update this method to take a base::Value::List
+    // instead.
+    base::Value event_args_value = base::Value(std::move(event_args));
     event_router->DispatchEventToExtension(
         extension_id, std::make_unique<extensions::Event>(
-                          histogram_value, event_name, std::move(event_args)));
+                          histogram_value, event_name,
+                          std::move(event_args_value.GetList())));
     return true;
   }
 
@@ -100,8 +105,12 @@ void Operation::SetDispatchEventImplForTesting(
          const std::string& file_system_id, int request_id,
          extensions::events::HistogramValue histogram_value,
          const std::string& event_name, std::vector<base::Value> event_args) {
+        // TODO(https://crbug.com/1338341): Constructing a base::Value from a
+        // std::vector is deprecated. Update this method to take a
+        // base::Value::List instead.
+        base::Value event_args_value = base::Value(std::move(event_args));
         auto event = std::make_unique<extensions::Event>(
-            histogram_value, event_name, std::move(event_args));
+            histogram_value, event_name, std::move(event_args_value.GetList()));
         return callback.Run(std::move(event));
       },
       callback);
