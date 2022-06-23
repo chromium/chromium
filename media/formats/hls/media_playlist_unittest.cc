@@ -1240,6 +1240,21 @@ TEST(HlsMediaPlaylistTest, XServerControlTag) {
   fork.ExpectPlaylist(CanBlockReload, false);
   fork.ExpectOk();
 
+  // The 'HOLD-BACK' attribute must be at least three times the playlist's
+  // target duration
+  fork = builder;
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:HOLD-BACK=18");
+  fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(18));
+  fork.ExpectOk();
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:HOLD-BACK=17");
+  fork.ExpectError(ParseStatusCode::kHoldBackDistanceTooLow);
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:HOLD-BACK=17.999");
+  fork.ExpectError(ParseStatusCode::kHoldBackDistanceTooLow);
+
   // The 'EXT-X-PART-INF' tag requires the 'PART-HOLD-BACK' field
   fork = builder;
   fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=0.2");
