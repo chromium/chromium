@@ -980,6 +980,17 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/android_lint': {
+      'packages': [
+          {
+               'package': 'chromium/third_party/android_lint',
+               'version': 'f5g1G8eyExIUPHk4lH3xx_xV4pza9WSBaITgmLPgF2cC',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/android_sdk/androidx_browser/src': {
       'url': Var('chromium_git') + '/external/gob/android/platform/frameworks/support/browser.git' + '@' + '65086eb5e52c16778fa7b4f157156d17b176fcb3',
       'condition': 'checkout_android',

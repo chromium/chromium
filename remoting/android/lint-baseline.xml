@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<issues format="6" by="lint 7.1.0" type="baseline" client="" dependencies="true" name="" variant="all" version="7.1.0">
+<issues format="6" by="lint 7.4.0-alpha05" type="baseline" client="" dependencies="true" name="" variant="all" version="7.4.0-alpha05">
 
     <issue id="WrongConstant" message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END, Gravity.NO_GRAVITY" errorLine1="        if (mDrawerLayout.isDrawerOpen(Gravity.START)) {" errorLine2="                                       ~~~~~~~~~~~~~">
         <location file="remoting/android/java/src/org/chromium/chromoting/Chromoting.java" />
@@ -71,6 +71,10 @@
 
     <issue id="ObsoleteSdkInt" message="Unnecessary; SDK_INT is always &gt;= 23" errorLine1="        if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.KITKAT) {" errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location file="remoting/android/java/src/org/chromium/chromoting/Desktop.java" />
+    </issue>
+
+    <issue id="MonochromeLauncherIcon" message="The application adaptive icon is missing a monochrome tag" errorLine1="&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;" errorLine2="^">
+        <location file="remoting/android/java/res/mipmap-anydpi-v26/ic_launcher.xml" />
     </issue>
 
     <issue id="ClickableViewAccessibility" message="Custom view `DesktopView` overrides `onTouchEvent` but not `performClick`" errorLine1="    public final boolean onTouchEvent(MotionEvent event) {" errorLine2="                         ~~~~~~~~~~~~">

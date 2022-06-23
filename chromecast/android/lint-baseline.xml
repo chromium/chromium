@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<issues format="6" by="lint 7.1.0" type="baseline" client="" dependencies="true" name="" variant="all" version="7.1.0">
+<issues format="6" by="lint 7.4.0-alpha05" type="baseline" client="" dependencies="true" name="" variant="all" version="7.4.0-alpha05">
 
     <issue id="MissingVersion" message="Should set `android:versionCode` to specify the application version" errorLine1="&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; package=&quot;org.chromium.chromecast.shell&quot;&gt;" errorLine2=" ~~~~~~~~">
         <location file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml" />
