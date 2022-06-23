@@ -37,7 +37,10 @@ ClientHintsFactory* ClientHintsFactory::GetInstance() {
 ClientHintsFactory::ClientHintsFactory()
     : BrowserContextKeyedServiceFactory(
           "ClientHints",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(CookieSettingsFactory::GetInstance());
+}
 
 ClientHintsFactory::~ClientHintsFactory() = default;
 
