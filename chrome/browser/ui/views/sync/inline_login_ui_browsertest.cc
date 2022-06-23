@@ -721,7 +721,14 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   ASSERT_FALSE(entry->IsSigninRequired());
 }
 
-IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest, InvokeUi_default) {
+// https://crbug.com/1271819: Added Mac and Win due to excessive flakiness
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
