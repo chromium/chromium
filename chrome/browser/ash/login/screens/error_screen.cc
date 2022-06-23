@@ -363,7 +363,7 @@ void ErrorScreen::OnConfigureCerts() {
   gfx::NativeWindow native_window =
       LoginDisplayHost::default_host()->GetNativeWindow();
   CertificateManagerDialog* dialog =
-      new CertificateManagerDialog(GetAppProfile(), native_window);
+      new CertificateManagerDialog(GetAppProfile(), NULL, native_window);
   dialog->Show();
 }
 
