@@ -13,3 +13,5 @@ dawn_swiftshader_dir = "//third_party/swiftshader"
 dawn_vulkan_loader_dir = "//third_party/vulkan-deps/vulkan-loader/src"
 dawn_vulkan_validation_layers_dir =
     "//third_party/vulkan-deps/vulkan-validation-layers/src"
+
+dawn_version_file = "//gpu/webgpu/DAWN_VERSION"

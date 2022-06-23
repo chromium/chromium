@@ -3893,6 +3893,14 @@ hooks = [
                '-s', 'src/third_party/skia',
                '--header', 'src/skia/ext/skia_commit_hash.h'],
   },
+  {
+    # Update dawn_version.h.
+    'name': 'lastchange_dawn',
+    'pattern': '.',
+    'action': ['python3', 'src/build/util/lastchange.py',
+               '-s', 'src/third_party/dawn',
+               '--revision', 'src/gpu/webgpu/DAWN_VERSION'],
+  },
   # Pull dsymutil binaries using checked-in hashes.
   {
     'name': 'dsymutil_mac_arm64',
