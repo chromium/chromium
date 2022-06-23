@@ -87,16 +87,17 @@ inline NSString* UnmodifiedTextFromEvent(NSEvent* event) {
 
 int ModifiersFromEvent(NSEvent* event) {
   int modifiers = 0;
+  NSEventModifierFlags modifier_flags = [event modifierFlags];
 
-  if ([event modifierFlags] & NSEventModifierFlagControl)
+  if (modifier_flags & NSEventModifierFlagControl)
     modifiers |= blink::WebInputEvent::kControlKey;
-  if ([event modifierFlags] & NSEventModifierFlagShift)
+  if (modifier_flags & NSEventModifierFlagShift)
     modifiers |= blink::WebInputEvent::kShiftKey;
-  if ([event modifierFlags] & NSEventModifierFlagOption)
+  if (modifier_flags & NSEventModifierFlagOption)
     modifiers |= blink::WebInputEvent::kAltKey;
-  if ([event modifierFlags] & NSEventModifierFlagCommand)
+  if (modifier_flags & NSEventModifierFlagCommand)
     modifiers |= blink::WebInputEvent::kMetaKey;
-  if ([event modifierFlags] & NSEventModifierFlagCapsLock)
+  if (modifier_flags & NSEventModifierFlagCapsLock)
     modifiers |= blink::WebInputEvent::kCapsLockOn;
 
   // The return value of 1 << 0 corresponds to the left mouse button,
