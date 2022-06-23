@@ -634,6 +634,7 @@ source_set("browser_tests") {
     "commands/fetch_manifest_and_install_command_browsertest.cc",
     "commands/install_from_info_command_browsertest.cc",
     "commands/install_from_sync_command_browsertest.cc",
+    "commands/install_isolated_app_command_browsertest.cc",
     "commands/install_web_app_with_params_command_browsertest.cc",
     "externally_installed_web_app_prefs_browsertest.cc",
     "externally_managed_app_manager_impl_browsertest.cc",
