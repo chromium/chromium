@@ -549,6 +549,9 @@ FontSelector* OffscreenCanvas::GetFontSelector() {
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     return window->document()->GetStyleEngine().GetFontSelector();
   }
+  // TODO(crbug.com/1334864): Temporary mitigation.  Remove the following
+  // CHECK once a more comprehensive solution has been implemented.
+  CHECK(GetExecutionContext()->IsWorkerGlobalScope());
   return To<WorkerGlobalScope>(GetExecutionContext())->GetFontSelector();
 }
 
