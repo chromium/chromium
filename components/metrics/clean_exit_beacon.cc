@@ -288,20 +288,6 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
     return;
 
   UpdateLastLiveTimestamp();
-#if BUILDFLAG(IS_ANDROID)
-  if (!extended_monitoring_stage_start_time_.is_null()) {
-    // The time exists, so this is the transition from the extended browser
-    // crash monitoring stage to the status quo stage.
-    //
-    // TODO(crbug/1321989): Clean up this metric and
-    // |extended_monitoring_stage_start_time_| once Android Chrome
-    // stakeholders have enough data on the duration.
-    base::UmaHistogramLongTimes(
-        "UMA.CleanExitBeacon.ExtendedMonitoringStageDuration",
-        base::TimeTicks::Now() - extended_monitoring_stage_start_time_);
-    extended_monitoring_stage_start_time_ = base::TimeTicks();  // Null time.
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   if (has_exited_cleanly_ && has_exited_cleanly_.value() == exited_cleanly) {
     // It is possible to call WriteBeaconValue() with the same value for
@@ -325,10 +311,6 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
     // Extended Variations Safe Mode, the only valid value for |exited_cleanly|
     // is `false`. `true` signals that Chrome should stop watching for crashes.
     DCHECK(!exited_cleanly);
-#if BUILDFLAG(IS_ANDROID)
-    extended_monitoring_stage_start_time_ = base::TimeTicks::Now();
-#endif
-
     WriteBeaconFile(exited_cleanly);
   } else {
     local_state_->SetBoolean(prefs::kStabilityExitedCleanly, exited_cleanly);
