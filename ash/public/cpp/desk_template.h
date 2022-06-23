@@ -36,6 +36,10 @@ enum class ASH_PUBLIC_EXPORT DeskTemplateType {
 
   // Desk saved for Save & Recall.
   kSaveAndRecall,
+
+  // Unknown desk type. This desk is probably created by a later version and
+  // should be ignored.
+  kUnknown,
 };
 
 // Class to represent a desk template. It can be used to create a desk with

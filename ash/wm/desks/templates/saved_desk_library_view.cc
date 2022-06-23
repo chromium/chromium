@@ -21,6 +21,7 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/rounded_label.h"
+#include "base/notreached.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -82,6 +83,9 @@ SavedDesks Group(const std::vector<const DeskTemplate*>& saved_desks) {
         break;
       case DeskTemplateType::kSaveAndRecall:
         grouped.save_and_recall.push_back(saved_desk);
+        break;
+      case DeskTemplateType::kUnknown:
+        NOTREACHED();
         break;
     }
   }

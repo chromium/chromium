@@ -52,6 +52,7 @@ constexpr char kDesk[] = "desk";
 constexpr char kDeskType[] = "desk_type";
 constexpr char kDeskTypeTemplate[] = "TEMPLATE";
 constexpr char kDeskTypeSaveAndRecall[] = "SAVE_AND_RECALL";
+constexpr char kDeskTypeUnknown[] = "UNKNOWN";
 constexpr char kDisplayId[] = "display_id";
 constexpr char kEventFlag[] = "event_flag";
 constexpr char kIsAppTypeBrowser[] = "is_app";
@@ -962,6 +963,9 @@ std::string SerializeDeskTypeAsString(ash::DeskTemplateType desk_type) {
       return kDeskTypeTemplate;
     case ash::DeskTemplateType::kSaveAndRecall:
       return kDeskTypeSaveAndRecall;
+    case ash::DeskTemplateType::kUnknown:
+      NOTREACHED();
+      return kDeskTypeUnknown;
   }
 }
 
