@@ -21,14 +21,11 @@
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
+#include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-
-namespace content {
-class BackgroundTracingManager;
-}  // namespace content
 
 namespace performance_manager {
 
@@ -183,7 +180,7 @@ class ProcessNodeImpl
   void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
   static void FireBackgroundTracingTriggerOnUIForTesting(
       const std::string& trigger_name,
-      content::BackgroundTracingManager* manager);
+      content::BackgroundTracingManager& manager);
 
   base::WeakPtr<ProcessNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<ProcessNodeImpl> GetWeakPtr();

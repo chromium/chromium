@@ -15,7 +15,6 @@
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
-#include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -25,26 +24,24 @@ namespace {
 
 void FireBackgroundTracingTriggerOnUI(
     const std::string& trigger_name,
-    content::BackgroundTracingManager* manager) {
+    content::BackgroundTracingManager& manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Don't fire a trigger unless we're in an active tracing scenario.
   // Renderer-initiated background tracing triggers are always "preemptive"
   // traces so we expect a scenario to be active.
-  if (!manager)
-    manager = &content::BackgroundTracingManager::GetInstance();
-  if (!manager->HasActiveScenario())
+  if (!manager.HasActiveScenario())
     return;
 
   static content::BackgroundTracingManager::TriggerHandle trigger_handle = -1;
   if (trigger_handle == -1) {
-    trigger_handle = manager->RegisterTriggerType(
+    trigger_handle = manager.RegisterTriggerType(
         content::BackgroundTracingManager::kContentTriggerConfig);
   }
 
   // Actually fire the trigger. We don't need to know when the trace is being
   // finalized so pass an empty callback.
-  manager->TriggerNamedEvent(
+  manager.TriggerNamedEvent(
       trigger_handle,
       content::BackgroundTracingManager::StartedFinalizingCallback());
 }
@@ -152,7 +149,9 @@ void ProcessNodeImpl::FireBackgroundTracingTrigger(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&FireBackgroundTracingTriggerOnUI, trigger_name, nullptr));
+      base::BindOnce(
+          &FireBackgroundTracingTriggerOnUI, trigger_name,
+          std::ref(content::BackgroundTracingManager::GetInstance())));
 }
 
 void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {
@@ -247,7 +246,7 @@ void ProcessNodeImpl::add_hosted_content_type(ContentType content_type) {
 // static
 void ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(
     const std::string& trigger_name,
-    content::BackgroundTracingManager* manager) {
+    content::BackgroundTracingManager& manager) {
   FireBackgroundTracingTriggerOnUI(trigger_name, manager);
 }
 
