@@ -94,6 +94,11 @@ V4L2VideoDecoderDelegateH264::H264DPBToV4L2DPB(const H264DPB& dpb) {
       entry.frame_num = pic->frame_num;
       entry.pic_num = pic->pic_num;
     }
+
+    DCHECK_EQ(pic->field, H264Picture::FIELD_NONE)
+        << "Interlacing not supported";
+    entry.fields = V4L2_H264_FRAME_REF;
+
     entry.top_field_order_cnt = pic->top_field_order_cnt;
     entry.bottom_field_order_cnt = pic->bottom_field_order_cnt;
     entry.flags = V4L2_H264_DPB_ENTRY_FLAG_VALID |
