@@ -9,7 +9,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}",
           "--flag-specific=force-renderer-accessibility"
         ],

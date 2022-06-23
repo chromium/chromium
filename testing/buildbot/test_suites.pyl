@@ -1240,7 +1240,6 @@
         # retry 3 times, so we explicitly specify it.
         'args': [
           '--num-retries=3',
-          '--fuzzy-diff',
         ],
         'isolate_name': 'blink_web_tests',
         'merge': {
@@ -1287,7 +1286,6 @@
           # passed, but 0 times when '--test-list' is passed. We want to always
           # retry 3 times, so we explicitly specify it.
           '--num-retries=3',
-          '--fuzzy-diff',
         ],
         'isolate_name': 'blink_web_tests',
         'merge': {
@@ -1318,7 +1316,6 @@
         # retry 3 times, so we explicitly specify it.
         'args': [
           '--num-retries=3',
-          '--fuzzy-diff',
         ],
         'isolate_name': 'blink_web_tests',
         'merge': {
@@ -1542,7 +1539,6 @@
         # retry 3 times, so we explicitly specify it.
         'args': [
           '--num-retries=3',
-          '--fuzzy-diff',
         ],
         'isolate_name': 'blink_web_tests',
         'merge': {
@@ -1636,7 +1632,6 @@
         # retry 3 times, so we explicitly specify it.
         'args': [
           '--num-retries=3',
-          '--fuzzy-diff',
         ],
         'isolate_name': 'blink_web_tests',
         'merge': {
@@ -4216,7 +4211,6 @@
           # passed, but 0 times when '--test-list' is passed. We want to always
           # retry 3 times, so we explicitly specify it.
           '--num-retries=3',
-          '--fuzzy-diff',
         ],
         'isolate_name': 'blink_web_tests',
         'merge': {

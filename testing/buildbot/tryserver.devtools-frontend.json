@@ -29,7 +29,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}",
           "http/tests/devtools"
         ],
@@ -123,7 +122,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}",
           "http/tests/devtools"
         ],
@@ -194,7 +192,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "check_flakiness_for_new_tests": false,

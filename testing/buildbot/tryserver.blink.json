@@ -6,7 +6,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "check_flakiness_for_new_tests": false,
@@ -67,7 +66,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "check_flakiness_for_new_tests": false,
@@ -108,7 +106,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "check_flakiness_for_new_tests": false,
@@ -149,7 +146,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}",
           "--target",
           "Release_x64"

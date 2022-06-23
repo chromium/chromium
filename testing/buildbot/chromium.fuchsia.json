@@ -2460,7 +2460,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}",
           "--platform=fuchsia",
           "--jobs=1"

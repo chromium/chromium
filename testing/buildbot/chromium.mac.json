@@ -1480,7 +1480,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "check_flakiness_for_new_tests": false,
@@ -3237,7 +3236,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "check_flakiness_for_new_tests": false,
@@ -5002,7 +5000,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "check_flakiness_for_new_tests": false,
@@ -6843,7 +6840,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "check_flakiness_for_new_tests": false,
@@ -8643,7 +8639,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}",
           "--debug"
         ],
@@ -20879,7 +20874,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "check_flakiness_for_new_tests": false,
@@ -22669,7 +22663,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "check_flakiness_for_new_tests": false,
