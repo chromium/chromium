@@ -30,6 +30,7 @@ import("//third_party/blink/renderer/core/dom/build.gni")
 import("//third_party/blink/renderer/core/editing/build.gni")
 import("//third_party/blink/renderer/core/events/build.gni")
 import("//third_party/blink/renderer/core/execution_context/build.gni")
+import("//third_party/blink/renderer/core/exported/build.gni")
 import("//third_party/blink/renderer/core/fetch/build.gni")
 import("//third_party/blink/renderer/core/fileapi/build.gni")
 import("//third_party/blink/renderer/core/fragment_directive/build.gni")
@@ -1254,30 +1255,11 @@ fuzzer_test("text_resource_decoder_fuzzer") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "exported/web_document_subresource_filter_test.cc",
-    "exported/web_document_test.cc",
-    "exported/web_drag_data_test.cc",
-    "exported/web_element_test.cc",
-    "exported/web_frame_serializer_sanitization_test.cc",
-    "exported/web_frame_serializer_test.cc",
-    "exported/web_frame_serializer_test_helper.cc",
-    "exported/web_frame_serializer_test_helper.h",
-    "exported/web_image_test.cc",
-    "exported/web_meaningful_layouts_test.cc",
-    "exported/web_node_test.cc",
-    "exported/web_plugin_container_test.cc",
-    "exported/web_range_test.cc",
-    "exported/web_scoped_window_focus_allowed_indicator_test.cc",
-    "exported/web_searchable_form_data_test.cc",
-    "exported/web_selector_test.cc",
-    "exported/web_view_test.cc",
-  ]
 
   # If you create a new subdirectory 'foo' that contains unit tests, list them in
   # 'foo/build.gni' to define blink_core_tests_foo, and add any dependencies in
   # the deps section below.
-  sources += rebase_path(blink_core_tests_accessibility, "", "accessibility")
+  sources = rebase_path(blink_core_tests_accessibility, "", "accessibility")
   sources += rebase_path(blink_core_tests_animation, "", "animation")
   sources += rebase_path(blink_core_tests_annotation, "", "annotation")
   sources += rebase_path(blink_core_tests_clipboard, "", "clipboard")
@@ -1293,6 +1275,7 @@ source_set("unit_tests") {
   sources += rebase_path(blink_core_tests_events, "", "events")
   sources +=
       rebase_path(blink_core_tests_execution_context, "", "execution_context")
+  sources += rebase_path(blink_core_tests_exported, "", "exported")
   sources += rebase_path(blink_core_tests_fetch, "", "fetch")
   sources += rebase_path(blink_core_tests_fileapi, "", "fileapi")
   sources +=
