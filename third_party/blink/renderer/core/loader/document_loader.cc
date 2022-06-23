@@ -2404,7 +2404,9 @@ void DocumentLoader::CommitNavigation() {
   RecordConsoleMessagesForCommit();
 
   // Clear the user activation state.
-  frame_->ClearUserActivation();
+  // TODO(crbug.com/736415): Clear this bit unconditionally for all frames.
+  if (frame_->IsMainFrame())
+    frame_->ClearUserActivation();
 
   // The DocumentLoader was flagged as activated if it needs to notify the frame
   // that it was activated before navigation. Update the frame state based on
