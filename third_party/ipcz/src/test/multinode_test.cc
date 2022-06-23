@@ -8,18 +8,19 @@
 #include <string>
 #include <thread>
 
-#include "build/build_config.h"
 #include "ipcz/ipcz.h"
-#include "reference_drivers/file_descriptor.h"
 #include "reference_drivers/single_process_reference_driver.h"
-#include "reference_drivers/socket_transport.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/ipcz/src/test_buildflags.h"
 #include "util/log.h"
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
+#include "reference_drivers/file_descriptor.h"
 #include "reference_drivers/multiprocess_reference_driver.h"
+#include "reference_drivers/socket_transport.h"
+#include "test/test_child_launcher.h"
 #endif
 
 namespace ipcz::test {
@@ -68,6 +69,30 @@ class InProcessTestNodeController : public TestNode::TestNodeController {
   absl::optional<std::thread> client_thread_;
 };
 
+#if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
+// Controls a node running within an isolated child process.
+class ChildProcessTestNodeController : public TestNode::TestNodeController {
+ public:
+  explicit ChildProcessTestNodeController(pid_t pid) : pid_(pid) {}
+  ~ChildProcessTestNodeController() override {
+    ABSL_ASSERT(result_.has_value());
+  }
+
+  // TestNode::TestNodeController:
+  bool WaitForShutdown() override {
+    if (result_.has_value()) {
+      return *result_;
+    }
+
+    result_ = TestChildLauncher::WaitForSuccessfulProcessTermination(pid_);
+    return *result_;
+  }
+
+  const pid_t pid_;
+  absl::optional<bool> result_;
+};
+#endif
+
 }  // namespace
 
 TestNode::~TestNode() {
@@ -89,7 +114,7 @@ const IpczDriver& TestNode::GetDriver() const {
     case DriverMode::kSync:
       return reference_drivers::kSingleProcessReferenceDriver;
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
     case DriverMode::kMultiprocess:
       return reference_drivers::kMultiprocessReferenceDriver;
 #endif
@@ -165,13 +190,23 @@ Ref<TestNode::TestNodeController> TestNode::SpawnTestNodeImpl(
   Connect connect(*this);
   IpczDriverHandle their_transport = absl::visit(connect, portals_or_transport);
 
-  // TODO: Support a multiprocess mode which launches the new node in a child
-  // child process, passing the transport there.
-  std::unique_ptr<TestNode> test_node = details.factory();
-  test_node->SetTransport(their_transport);
-  Ref<TestNodeController> controller =
-      MakeRefCounted<InProcessTestNodeController>(driver_mode_,
-                                                  std::move(test_node));
+  Ref<TestNodeController> controller;
+#if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
+  if (driver_mode_ == DriverMode::kMultiprocess) {
+    reference_drivers::FileDescriptor socket =
+        reference_drivers::TakeMultiprocessTransportDescriptor(their_transport);
+    controller = MakeRefCounted<ChildProcessTestNodeController>(
+        child_launcher_.Launch(details.name, std::move(socket)));
+  }
+#endif
+
+  if (!controller) {
+    std::unique_ptr<TestNode> test_node = details.factory();
+    test_node->SetTransport(their_transport);
+    controller = MakeRefCounted<InProcessTestNodeController>(
+        driver_mode_, std::move(test_node));
+  }
+
   spawned_nodes_.push_back(controller);
   return controller;
 }
@@ -188,6 +223,24 @@ TestNode::TransportPair TestNode::CreateTransports() {
 void TestNode::SetTransport(IpczDriverHandle transport) {
   ABSL_ASSERT(transport_ == IPCZ_INVALID_DRIVER_HANDLE);
   transport_ = transport;
+}
+
+int TestNode::RunAsChild() {
+#if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
+  auto transport = std::make_unique<reference_drivers::SocketTransport>(
+      TestChildLauncher::TakeChildSocketDescriptor());
+  SetTransport(
+      reference_drivers::CreateMultiprocessTransport(std::move(transport)));
+  Initialize(DriverMode::kMultiprocess, IPCZ_NO_FLAGS);
+  NodeBody();
+
+  const int exit_code = ::testing::Test::HasFailure() ? 1 : 0;
+  return exit_code;
+#else
+  // Not supported outside of Linux.
+  ABSL_ASSERT(false);
+  return 0;
+#endif
 }
 
 }  // namespace ipcz::test

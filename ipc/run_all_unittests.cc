@@ -7,11 +7,19 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_io_thread.h"
 #include "base/test/test_suite.h"
-#include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "third_party/ipcz/src/test_buildflags.h"
+
+#if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
+#include "third_party/ipcz/src/test/test_child_launcher.h"
+#endif
 
 int main(int argc, char** argv) {
+#if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
+  ipcz::test::TestChildLauncher::Initialize(argc, argv);
+#endif
+
   base::TestSuite test_suite(argc, argv);
   mojo::core::Init();
   base::TestIOThread test_io_thread(base::TestIOThread::kAutoStart);

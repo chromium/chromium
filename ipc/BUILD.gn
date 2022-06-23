@@ -253,6 +253,8 @@ if (!is_ios) {
       "//base/test:test_support",
       "//mojo/core/embedder",
       "//mojo/core/test:test_support",
+      "//third_party/ipcz/src:ipcz_tests_sources_chromium",
+      "//third_party/ipcz/src:test_buildflags",
     ]
   }
 

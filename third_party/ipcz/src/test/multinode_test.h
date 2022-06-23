@@ -11,14 +11,19 @@
 #include <type_traits>
 #include <vector>
 
-#include "build/build_config.h"
 #include "ipcz/ipcz.h"
 #include "test/test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/multiprocess_func_list.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/ipcz/src/test_buildflags.h"
 #include "util/ref_counted.h"
+
+#if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
+#include "test/test_child_launcher.h"
+#endif
 
 namespace ipcz::test {
 
@@ -73,11 +78,9 @@ enum class DriverMode {
   // kAsyncDelegatedAlloc and kAsyncObjectBrokering as described above.
   kAsyncObjectBrokeringAndDelegatedAlloc,
 
-#if BUILDFLAG(IS_LINUX)
-  // Use a multiprocess-capable driver (Linux only), with each test node running
-  // in its own isolated child process.
-  //
-  // TODO: Actually run nodes in child processes.
+#if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
+  // Use a multiprocess-capable driver (Linux only for now), with each test node
+  // running in its own isolated child process.
   kMultiprocess,
 #endif
 };
@@ -207,6 +210,9 @@ class TestNode : public internal::TestBase {
   };
   TransportPair CreateTransports();
 
+  // Helper used to support multiprocess TestNode invocation.
+  int RunAsChild();
+
  private:
   // Sets the transport to use when connecting to a broker via ConnectBroker.
   // Must only be called once.
@@ -238,6 +244,10 @@ class TestNode : public internal::TestBase {
   IpczHandle node_ = IPCZ_INVALID_HANDLE;
   IpczDriverHandle transport_ = IPCZ_INVALID_DRIVER_HANDLE;
   std::vector<Ref<TestNodeController>> spawned_nodes_;
+
+#if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
+  TestChildLauncher child_launcher_;
+#endif
 };
 
 // Actual parameterized GTest Test fixture for multinode tests. This or a
@@ -257,6 +267,15 @@ class MultinodeTest : public TestNodeType,
 
 }  // namespace ipcz::test
 
+#define MULTINODE_TEST_CHILD_MAIN_HELPER(func, node_name) \
+  MULTIPROCESS_TEST_MAIN(func) {                          \
+    node_name node;                                       \
+    return node.RunAsChild();                             \
+  }
+
+#define MULTINODE_TEST_CHILD_MAIN(fixture, node_name) \
+  MULTINODE_TEST_CHILD_MAIN_HELPER(fixture##_##node_name##_Node, node_name)
+
 // Defines the main body of a non-broker test node for a multinode test. The
 // named node can be spawned by another node using SpawnTestNode<T> where T is
 // the unique name given by `node_name` here. `fixture` must be
@@ -274,9 +293,10 @@ class MultinodeTest : public TestNodeType,
     };                                                                     \
     void NodeBody() override;                                              \
   };                                                                       \
+  MULTINODE_TEST_CHILD_MAIN(fixture, node_name);                           \
   void node_name::NodeBody()
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
 #define IPCZ_EXTRA_DRIVER_MODES , ipcz::test::DriverMode::kMultiprocess
 #else
 #define IPCZ_EXTRA_DRIVER_MODES

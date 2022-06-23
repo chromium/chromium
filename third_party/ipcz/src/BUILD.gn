@@ -2,8 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build_overrides/ipcz.gni")
 import("//testing/test.gni")
+
+enable_multiprocess_tests = is_linux
+
+buildflag_header("test_buildflags") {
+  header = "test_buildflags.h"
+  flags = [ "ENABLE_IPCZ_MULTIPROCESS_TESTS=$enable_multiprocess_tests" ]
+}
 
 shared_library("ipcz_shared") {
   output_name = "ipcz"
@@ -142,9 +150,10 @@ ipcz_source_set("reference_drivers") {
     "reference_drivers/single_process_reference_driver.cc",
   ]
 
-  if (is_linux) {
+  if (enable_multiprocess_tests) {
     public += [
       "reference_drivers/file_descriptor.h",
+      "reference_drivers/handle_eintr.h",
       "reference_drivers/memfd_memory.h",
       "reference_drivers/multiprocess_reference_driver.h",
       "reference_drivers/socket_transport.h",
@@ -164,7 +173,7 @@ ipcz_source_set("reference_drivers") {
     ":util",
   ]
   public_deps = [ ":ipcz_header" ]
-  configs = [ ":ipcz_include_src_dir" ]
+  public_configs = [ ":ipcz_include_src_dir" ]
 
   deps = []
   if (is_fuchsia) {
@@ -334,11 +343,13 @@ ipcz_source_set("ipcz_tests_sources") {
     "util/stack_trace_test.cc",
   ]
 
-  if (is_linux) {
+  if (enable_multiprocess_tests) {
+    public = [ "test/test_child_launcher.h" ]
     sources += [
       "reference_drivers/memfd_memory_test.cc",
       "reference_drivers/multiprocess_reference_driver_test.cc",
       "reference_drivers/socket_transport_test.cc",
+      "test/test_child_launcher.cc",
     ]
   }
 
@@ -347,12 +358,13 @@ ipcz_source_set("ipcz_tests_sources") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
+  public_deps = [ ":test_buildflags" ]
   ipcz_deps = [
     ":impl",
     ":ipcz",
-    ":reference_drivers",
     ":util",
   ]
+  ipcz_public_deps = [ ":reference_drivers" ]
 
   configs = [ ":ipcz_include_src_dir" ]
 }
@@ -365,6 +377,7 @@ test("ipcz_tests") {
   sources = [ "test/run_all_tests.cc" ]
   deps = [
     ":ipcz_tests_sources_standalone",
+    ":test_buildflags",
     "${ipcz_src_root}/standalone",
     "//testing/gtest",
   ]

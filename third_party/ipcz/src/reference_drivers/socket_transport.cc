@@ -19,20 +19,12 @@
 #include <vector>
 
 #include "reference_drivers/file_descriptor.h"
+#include "reference_drivers/handle_eintr.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/log.h"
 #include "util/safe_math.h"
-
-#define HANDLE_EINTR(x)                                     \
-  ({                                                        \
-    decltype(x) eintr_wrapper_result;                       \
-    do {                                                    \
-      eintr_wrapper_result = (x);                           \
-    } while (eintr_wrapper_result == -1 && errno == EINTR); \
-    eintr_wrapper_result;                                   \
-  })
 
 namespace ipcz::reference_drivers {
 
