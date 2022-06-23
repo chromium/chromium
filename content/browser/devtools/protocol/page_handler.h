@@ -180,6 +180,8 @@ class PageHandler : public DevToolsDomainHandler,
   Response AddCompilationCache(const std::string& url,
                                const Binary& data) override;
 
+  Response AssureTopLevelActiveFrame();
+
  private:
   enum EncodingFormat { PNG, JPEG };
 
