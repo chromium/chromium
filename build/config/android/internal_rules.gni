@@ -758,6 +758,7 @@ template("test_runner_script") {
       _test_type,
       "--output-directory",
       "@WrappedPath(.)",
+      "--wrapper-script-args",
     ]
 
     if (_runtime_deps) {
