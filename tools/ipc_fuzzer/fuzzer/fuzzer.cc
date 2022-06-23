@@ -27,6 +27,7 @@
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/ipc_sync_message.h"
 #include "media/gpu/ipc/common/media_param_traits.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom-shared.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
@@ -1365,6 +1366,7 @@ struct FuzzTraits<net::IPEndPoint> {
   }
 };
 
+#if BUILDFLAG(ENABLE_PLUGINS)
 // PP_ traits.
 template <>
 struct FuzzTraits<PP_Bool> {
@@ -1526,6 +1528,7 @@ struct FuzzTraits<ppapi::SocketOptionData> {
     return true;
   }
 };
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 template <>
 struct FuzzTraits<printing::mojom::MarginType> {
