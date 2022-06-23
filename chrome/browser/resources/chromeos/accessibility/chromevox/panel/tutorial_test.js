@@ -549,41 +549,23 @@ TEST_F('ChromeVoxTutorialTest', 'RestartNudges', async function() {
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
   const tutorial = this.getTutorial();
-  let restart = false;
   // Swap in below function to track when nudges get restarted.
-  tutorial.restartNudges = () => {
-    restart = true;
-  };
-  const waitForRestartNudges = async () => {
-    return new Promise(resolve => {
-      let intervalId;
-      const nudgesRestarted = () => {
-        return restart;
-      };
-      if (nudgesRestarted()) {
-        resolve();
-      } else {
-        intervalId = setInterval(() => {
-          if (nudgesRestarted()) {
-            clearInterval(intervalId);
-            resolve();
-          }
-        }, 500);
-      }
-    });
-  };
-  restart = false;
+  const reset = () => new Promise(resolve => tutorial.restartNudges = resolve);
+
+  let nudgesHaveRestarted = reset();
   CommandHandlerInterface.instance.onCommand('nextObject');
-  await waitForRestartNudges();
+  await nudgesHaveRestarted;
+
   // Show a lesson.
   tutorial.curriculum = 'essential_keys';
   tutorial.showLesson_(0);
-  restart = false;
+  nudgesHaveRestarted = reset();
   CommandHandlerInterface.instance.onCommand('nextObject');
-  await waitForRestartNudges();
-  restart = false;
+  await nudgesHaveRestarted;
+
+  nudgesHaveRestarted = reset();
   CommandHandlerInterface.instance.onCommand('nextObject');
-  await waitForRestartNudges();
+  await nudgesHaveRestarted;
 });
 
 // Tests that the tutorial closes and ChromeVox navigates to a resource link.
