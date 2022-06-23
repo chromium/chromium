@@ -179,20 +179,6 @@ std::string FormatElapsedTime(base::Time time) {
       TimeFormat::FORMAT_ELAPSED, TimeFormat::LENGTH_LONG, elapsed_time, true));
 }
 
-base::Time GetTimeWhenWasPhishedOrLeaked(const CredentialUIEntry& entry) {
-  base::Time compromise_time;
-  if (entry.IsLeaked()) {
-    compromise_time =
-        entry.password_issues.at(InsecureType::kLeaked).create_time;
-  }
-  if (entry.IsPhished()) {
-    compromise_time =
-        std::max(compromise_time,
-                 entry.password_issues.at(InsecureType::kPhished).create_time);
-  }
-  return compromise_time;
-}
-
 api::passwords_private::CompromiseType GetCompromiseType(
     const CredentialUIEntry& entry) {
   if (entry.IsLeaked() && entry.IsPhished()) {
@@ -235,8 +221,7 @@ void OrderInsecureCredentials(std::vector<CredentialUIEntry>& credentials) {
   // |results|. Now sort both groups by their creation date so that most recent
   // compromises appear first in both lists.
   auto create_time_cmp = [](auto& lhs, auto& rhs) {
-    return GetTimeWhenWasPhishedOrLeaked(lhs) >
-           GetTimeWhenWasPhishedOrLeaked(rhs);
+    return lhs.GetLastLeakedOrPhishedTime() > rhs.GetLastLeakedOrPhishedTime();
   };
   std::sort(credentials.begin(), non_phished, create_time_cmp);
   std::sort(non_phished, credentials.end(), create_time_cmp);
@@ -246,9 +231,9 @@ api::passwords_private::CompromisedInfo CreateCompromiseInfo(
     const CredentialUIEntry& form) {
   api::passwords_private::CompromisedInfo compromise_info;
   compromise_info.compromise_time =
-      GetTimeWhenWasPhishedOrLeaked(form).ToJsTimeIgnoringNull();
+      form.GetLastLeakedOrPhishedTime().ToJsTimeIgnoringNull();
   compromise_info.elapsed_time_since_compromise =
-      FormatElapsedTime(GetTimeWhenWasPhishedOrLeaked(form));
+      FormatElapsedTime(form.GetLastLeakedOrPhishedTime());
   compromise_info.compromise_type = GetCompromiseType(form);
   compromise_info.is_muted = IsCredentialMuted(form);
   return compromise_info;

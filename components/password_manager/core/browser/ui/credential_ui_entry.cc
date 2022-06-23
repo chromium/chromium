@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 
 namespace password_manager {
@@ -18,6 +19,7 @@ CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
       federation_origin(form.federation_origin),
       password_issues(form.password_issues),
       blocked_by_user(form.blocked_by_user),
+      last_used_time(form.date_last_used),
       key_(CredentialKey(CreateSortKey(form, IgnoreStore(true)))) {
   // Only one-note with an empty `unique_display_name` is supported in the
   // settings UI.
@@ -47,6 +49,20 @@ bool CredentialUIEntry::IsLeaked() const {
 
 bool CredentialUIEntry::IsPhished() const {
   return password_issues.contains(InsecureType::kPhished);
+}
+
+const base::Time CredentialUIEntry::GetLastLeakedOrPhishedTime() const {
+  DCHECK(IsLeaked() || IsPhished());
+  base::Time compromise_time;
+  if (IsLeaked()) {
+    compromise_time = password_issues.at(InsecureType::kLeaked).create_time;
+  }
+  if (IsPhished()) {
+    compromise_time =
+        std::max(compromise_time,
+                 password_issues.at(InsecureType::kPhished).create_time);
+  }
+  return compromise_time;
 }
 
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {

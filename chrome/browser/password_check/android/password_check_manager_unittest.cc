@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -25,6 +26,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -49,11 +51,14 @@ using password_manager::TestPasswordStore;
 using password_manager::prefs::kLastTimePasswordCheckCompleted;
 using testing::_;
 using testing::AtLeast;
+using testing::Each;
 using testing::ElementsAre;
 using testing::Field;
 using testing::Invoke;
 using testing::IsEmpty;
+using testing::Key;
 using testing::NiceMock;
+using testing::Property;
 using testing::Return;
 
 using CompromisedCredentialForUI =
@@ -72,6 +77,28 @@ constexpr char16_t kUsername2[] = u"bob";
 constexpr char16_t kPassword1[] = u"s3cre3t";
 
 constexpr char kTestEmail[] = "user@gmail.com";
+
+InsecureCredentialTypeFlags InsecureTypeFlagFromInsecureType(
+    InsecureType type) {
+  switch (type) {
+    case InsecureType::kLeaked:
+      return InsecureCredentialTypeFlags::kCredentialLeaked;
+    case InsecureType::kPhished:
+      return InsecureCredentialTypeFlags::kCredentialPhished;
+    case InsecureType::kWeak:
+      return InsecureCredentialTypeFlags::kWeakCredential;
+    case InsecureType::kReused:
+      return InsecureCredentialTypeFlags::kReusedCredential;
+  }
+  NOTREACHED() << "Unexpected InsecureType value";
+}
+
+MATCHER_P(MatchInsecureTypeFlag,
+          insecure_type_flag,
+          base::StrCat({negation ? "does not " : "", "match the type flag"})) {
+  return ((insecure_type_flag & InsecureTypeFlagFromInsecureType(arg)) !=
+          InsecureCredentialTypeFlags::kSecure);
+}
 
 class MockPasswordCheckManagerObserver : public PasswordCheckManager::Observer {
  public:
@@ -200,7 +227,13 @@ auto ExpectCompromisedCredentialForUI(
       Field(&CompromisedCredentialForUI::display_origin, display_origin),
       Field(&CompromisedCredentialForUI::url, url), package_name_field_matcher,
       change_password_url_field_matcher,
-      Field(&CompromisedCredentialForUI::insecure_type, insecure_type),
+      Field(&CompromisedCredentialForUI::password_issues,
+            Each(Key(MatchInsecureTypeFlag(insecure_type)))),
+      Property(&CompromisedCredentialForUI::IsLeaked,
+               insecure_type == InsecureCredentialTypeFlags::kCredentialLeaked),
+      Property(
+          &CompromisedCredentialForUI::IsPhished,
+          insecure_type == InsecureCredentialTypeFlags::kCredentialPhished),
       Field(&CompromisedCredentialForUI::has_startable_script,
             has_startable_script),
       Field(&CompromisedCredentialForUI::has_auto_change_button,

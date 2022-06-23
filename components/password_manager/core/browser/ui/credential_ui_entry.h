@@ -54,7 +54,7 @@ struct CredentialUIEntry {
   // it is an Android credential. Otherwise, the string is empty.
   std::string app_display_name;
 
-  // The current password.
+  // The current username.
   std::u16string username;
 
   // The current password.
@@ -79,11 +79,17 @@ struct CredentialUIEntry {
   // Tracks if the user opted to never remember passwords for this website.
   bool blocked_by_user;
 
+  // Indicates when the credential was last used by the user to login to the
+  // site. Defaults to |date_created|.
+  base::Time last_used_time;
+
   const CredentialKey& key() const { return key_; }
 
   // Information about password insecurities.
   bool IsLeaked() const;
   bool IsPhished() const;
+
+  const base::Time GetLastLeakedOrPhishedTime() const;
 
  private:
   // Key which is constructed from an original PasswordForm.
