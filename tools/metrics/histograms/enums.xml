@@ -38118,7 +38118,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2017" label="ClientHintsDeviceMemory_DEPRECATED"/>
   <int value="2018" label="CSSRegisterProperty"/>
   <int value="2019" label="RelativeOrientationSensorConstructor"/>
-  <int value="2020" label="SmoothScrollJSInterventionActivated"/>
+  <int value="2020" label="OBSOLETE_kSmoothScrollJSInterventionActivated"/>
   <int value="2021" label="BudgetAPIGetCost"/>
   <int value="2022" label="BudgetAPIGetBudget"/>
   <int value="2023" label="CrossOriginMainFrameNulledNonEmptyNameAccessed"/>
@@ -40507,6 +40507,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4283" label="V8PendingBeacon_SendNow_Method"/>
   <int value="4284" label="TabSharingBarSwitchToCapturer"/>
   <int value="4285" label="TabSharingBarSwitchToCapturee"/>
+  <int value="4286" label="AutomaticLazyAds"/>
+  <int value="4287" label="AutomaticLazyEmbeds"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

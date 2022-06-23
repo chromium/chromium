@@ -187,11 +187,15 @@ bool CheckAndRecordIfShouldLazilyLoadFrame(const Document& document,
                   : AutomaticLazyLoadFrame::kTargetFramesNotFound);
   }
 
-  if (is_eligible_for_lazy_embeds)
-    document.TopDocument().IncrementLazyEmbedsFrameCount();
+  if (is_eligible_for_lazy_embeds) {
+    top_document.IncrementLazyEmbedsFrameCount();
+    UseCounter::Count(top_document, WebFeature::kAutomaticLazyEmbeds);
+  }
 
-  if (is_eligible_for_lazy_ads)
-    document.TopDocument().IncrementLazyAdsFrameCount();
+  if (is_eligible_for_lazy_ads) {
+    top_document.IncrementLazyAdsFrameCount();
+    UseCounter::Count(top_document, WebFeature::kAutomaticLazyAds);
+  }
 
   if (is_eligible_for_lazy_embeds &&
       base::FeatureList::IsEnabled(
