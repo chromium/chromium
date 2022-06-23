@@ -149,6 +149,7 @@ void AutofillClient::ShowVirtualCardErrorDialog(bool is_permanent_error) {
 }
 
 void AutofillClient::ShowAutofillProgressDialog(
+    AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClient (Chrome Desktop & Android) implements this.

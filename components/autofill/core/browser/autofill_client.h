@@ -66,6 +66,7 @@ class AutofillProfile;
 class AutocompleteHistoryManager;
 class AutofillOfferManager;
 class AutofillPopupDelegate;
+enum class AutofillProgressDialogType;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
 class CreditCard;
@@ -661,7 +662,9 @@ class AutofillClient : public RiskDataLoader {
 
   // Show/dismiss the progress dialog which contains a throbber and a text
   // message indicating that something is in progress.
-  virtual void ShowAutofillProgressDialog(base::OnceClosure cancel_callback);
+  virtual void ShowAutofillProgressDialog(
+      AutofillProgressDialogType autofill_progress_dialog_type,
+      base::OnceClosure cancel_callback);
   virtual void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing);
 

@@ -62,6 +62,12 @@ const base::Feature
         "AutofillEnableGetDetailsForEnrollParsingInUploadCardResponse",
         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, a progress dialog will display while authenticating with FIDO.
+// TODO(crbug.com/1337380): Clean up kAutofillEnableFIDOProgressDialog when it's
+// fully rolled out.
+const base::Feature kAutofillEnableFIDOProgressDialog{
+    "AutofillEnableFIDOProgressDialog", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, enable manual falling component for virtual cards on Android.
 const base::Feature kAutofillEnableManualFallbackForVirtualCards{
     "AutofillEnableManualFallbackForVirtualCards",

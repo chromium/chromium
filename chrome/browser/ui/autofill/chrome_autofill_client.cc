@@ -892,9 +892,11 @@ void ChromeAutofillClient::ShowVirtualCardErrorDialog(bool is_permanent_error) {
 }
 
 void ChromeAutofillClient::ShowAutofillProgressDialog(
+    AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {
   DCHECK(autofill_progress_dialog_controller_);
-  autofill_progress_dialog_controller_->ShowDialog(std::move(cancel_callback));
+  autofill_progress_dialog_controller_->ShowDialog(
+      autofill_progress_dialog_type, std::move(cancel_callback));
 }
 
 void ChromeAutofillClient::CloseAutofillProgressDialog(

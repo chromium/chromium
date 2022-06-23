@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
@@ -636,7 +637,15 @@ bool CreditCardAccessManager::UserOptedInToFidoFromSettingsPageOnMobile()
 #if !BUILDFLAG(IS_IOS)
 void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     const CreditCardFIDOAuthenticator::FidoAuthenticationResponse& response) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableFIDOProgressDialog)) {
+    // Close the progress dialog when the authentication for getting the full
+    // card completes.
+    client_->CloseAutofillProgressDialog(
+        /*show_confirmation_before_closing=*/true);
+  }
+#else
   // Close the Webauthn verify pending dialog. If FIDO authentication succeeded,
   // card is filled to the form, otherwise fall back to CVC authentication which
   // does not need the verify pending dialog either.
@@ -969,6 +978,7 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
 void CreditCardAccessManager::FetchVirtualCard() {
   is_authentication_in_progress_ = true;
   client_->ShowAutofillProgressDialog(
+      AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
       base::BindOnce(&CreditCardAccessManager::OnVirtualCardUnmaskCancelled,
                      weak_ptr_factory_.GetWeakPtr()));
 

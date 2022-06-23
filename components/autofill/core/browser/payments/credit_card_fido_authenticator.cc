@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
+#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/fido_authentication_strike_database.h"
@@ -439,6 +440,18 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
       last_committed_url_origin =
           autofill_client_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
     }
+
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableFIDOProgressDialog)) {
+      // Open the progress dialog when authenticating and getting the full card
+      // from FIDO.
+      autofill_client_->ShowAutofillProgressDialog(
+          AutofillProgressDialogType::kAndroidFIDOProgressDialog,
+          base::BindOnce(&CreditCardFIDOAuthenticator::CancelVerification,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+#endif
 
     full_card_request_->GetFullCardViaFIDO(
         *card_, AutofillClient::UnmaskCardReason::kAutofill,

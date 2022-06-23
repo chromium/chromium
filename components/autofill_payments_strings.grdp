@@ -414,6 +414,9 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE" desc="Message displayed after tapping a Virtual Card, and the response from the bank indicates that no further verification is required.">
     Your card is confirmed
   </message>
+  <message name="IDS_AUTOFILL_FIDO_AUTHENTICATION_PROMPT_TITLE" desc="Title for FIDO authentication progress dialog">
+      Verifying...
+  </message>
 
   <!-- WebAuthn fingerprint opt-in dialog -->
   <!-- Desktop only -->
