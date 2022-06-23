@@ -817,6 +817,7 @@ dependencies = [
 name = "toml"
 version = "0.5.9"
 dependencies = [
+ "indexmap",
  "serde",
 ]
 

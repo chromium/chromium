@@ -4,16 +4,18 @@
 
 //! Utilities for parsing and generating Cargo.toml and related manifest files.
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
 /// Set of dependencies for a particular usage: final artifacts, tests, or
 /// build scripts.
-pub type DependencySet = HashMap<String, Dependency>;
-
-pub type CargoPatchSet = HashMap<String, CargoPatch>;
+pub type DependencySet = BTreeMap<String, Dependency>;
+/// Set of patches to replace upstream dependencies with local crates. Maps
+/// arbitrary patch names to `CargoPatch` which includes the actual package name
+/// and the local path.
+pub type CargoPatchSet = BTreeMap<String, CargoPatch>;
 
 /// A crate version in a dependency specification.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -105,7 +107,7 @@ pub struct CargoManifest {
     #[serde(flatten)]
     pub dependency_spec: DependencySpec,
     #[serde(default, rename = "patch")]
-    pub patches: HashMap<String, CargoPatchSet>,
+    pub patches: BTreeMap<String, CargoPatchSet>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -171,7 +173,7 @@ pub fn generate_fake_cargo_toml<Iter: IntoIterator<Item = PatchSpecification>>(
         }
     }
 
-    let mut patch_sections: HashMap<String, CargoPatch> = HashMap::new();
+    let mut patch_sections = CargoPatchSet::new();
     // Generate patch section.
     for PatchSpecification { package_name, patch_name, path } in patches {
         patch_sections.insert(

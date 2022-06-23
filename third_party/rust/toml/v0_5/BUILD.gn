@@ -17,5 +17,12 @@ cargo_crate("test_support") {
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "toml"
   cargo_pkg_description = "A native Rust encoder and decoder of TOML-formatted files and streams. Providesimplementations of the standard Serialize/Deserialize traits for TOML data tofacilitate deserializing and serializing Rust structures."
-  deps = [ "//third_party/rust/serde/v1:lib" ]
+  deps = [
+    "//third_party/rust/indexmap/v1:lib",
+    "//third_party/rust/serde/v1:lib",
+  ]
+  features = [
+    "indexmap",
+    "preserve_order",
+  ]
 }
