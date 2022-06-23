@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 
 namespace remoting {
 namespace protocol {
@@ -56,8 +57,19 @@ cricket::PortAllocatorSession* PortAllocator::CreateSessionInternal(
     int component,
     const std::string& ice_username_fragment,
     const std::string& ice_password) {
-  return new PortAllocatorSession(this, content_name, component,
-                                  ice_username_fragment, ice_password);
+  return CreateSessionInternal(absl::string_view(content_name), component,
+                               absl::string_view(ice_username_fragment),
+                               absl::string_view(ice_password));
+}
+
+cricket::PortAllocatorSession* PortAllocator::CreateSessionInternal(
+    absl::string_view content_name,
+    int component,
+    absl::string_view ice_username_fragment,
+    absl::string_view ice_password) {
+  return new PortAllocatorSession(this, std::string(content_name), component,
+                                  std::string(ice_username_fragment),
+                                  std::string(ice_password));
 }
 
 PortAllocatorSession::PortAllocatorSession(PortAllocator* allocator,

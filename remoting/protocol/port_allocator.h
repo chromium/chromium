@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/ice_config.h"
 #include "remoting/protocol/transport_context.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
 
 namespace remoting {
@@ -27,11 +28,18 @@ class PortAllocator : public cricket::BasicPortAllocator {
     return transport_context_;
   }
 
+  // TODO(crbug.com/1337249): Remove std::string version once WebRTC has fully
+  // adopted the absl::string_view version.
   cricket::PortAllocatorSession* CreateSessionInternal(
       const std::string& content_name,
       int component,
       const std::string& ice_ufrag,
       const std::string& ice_pwd) override;
+  cricket::PortAllocatorSession* CreateSessionInternal(
+      absl::string_view content_name,
+      int component,
+      absl::string_view ice_ufrag,
+      absl::string_view ice_pwd) override;
 
  private:
   std::unique_ptr<rtc::NetworkManager> network_manager_;
