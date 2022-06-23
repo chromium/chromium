@@ -745,6 +745,8 @@ const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
 
 // Deprecated 06/2022.
 const char kBackgroundTracingLastUpload[] = "background_tracing.last_upload";
+const char kStabilityGpuCrashCount[] =
+    "user_experience_metrics.stability.gpu_crash_count";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -802,6 +804,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 06/2022.
   registry->RegisterInt64Pref(kBackgroundTracingLastUpload, 0);
+  registry->RegisterIntegerPref(kStabilityGpuCrashCount, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1655,6 +1658,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 06/2022.
   local_state->ClearPref(kBackgroundTracingLastUpload);
+  local_state->ClearPref(kStabilityGpuCrashCount);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

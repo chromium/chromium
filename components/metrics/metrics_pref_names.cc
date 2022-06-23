@@ -169,11 +169,6 @@ const char kStabilityFileMetricsUnsentFilesCount[] =
 const char kStabilityGmsCoreVersion[] =
     "user_experience_metrics.stability.gms_core_version";
 
-// Number of times a gpu process crashed since the last report. Currently only
-// recorded on Android.
-const char kStabilityGpuCrashCount[] =
-    "user_experience_metrics.stability.gpu_crash_count";
-
 #if BUILDFLAG(IS_ANDROID)
 // Number of times the application was launched since last report. Used on
 // Android platforms as WebView may still be interested in this metric.

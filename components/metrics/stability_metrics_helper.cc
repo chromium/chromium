@@ -86,12 +86,6 @@ void StabilityMetricsHelper::ProvideStabilityMetrics(
     local_state_->SetInteger(prefs::kStabilityPageLoadCount, 0);
   }
 
-  count = local_state_->GetInteger(prefs::kStabilityGpuCrashCount);
-  if (count) {
-    stability_proto->set_gpu_crash_count(count);
-    local_state_->SetInteger(prefs::kStabilityGpuCrashCount, 0);
-  }
-
   count = local_state_->GetInteger(prefs::kStabilityRendererCrashCount);
   if (count) {
     stability_proto->set_renderer_crash_count(count);
@@ -117,7 +111,6 @@ void StabilityMetricsHelper::ProvideStabilityMetrics(
 void StabilityMetricsHelper::ClearSavedStabilityMetrics() {
   // Clear all the prefs used in this class in UMA reports.
   local_state_->SetInteger(prefs::kStabilityExtensionRendererCrashCount, 0);
-  local_state_->SetInteger(prefs::kStabilityGpuCrashCount, 0);
   local_state_->SetInteger(prefs::kStabilityPageLoadCount, 0);
   local_state_->SetInteger(prefs::kStabilityRendererCrashCount, 0);
 #if BUILDFLAG(IS_ANDROID)
@@ -129,7 +122,6 @@ void StabilityMetricsHelper::ClearSavedStabilityMetrics() {
 void StabilityMetricsHelper::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kStabilityExtensionRendererCrashCount,
                                 0);
-  registry->RegisterIntegerPref(prefs::kStabilityGpuCrashCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityPageLoadCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityRendererCrashCount, 0);
 #if BUILDFLAG(IS_ANDROID)
@@ -143,7 +135,6 @@ void StabilityMetricsHelper::IncreaseRendererCrashCount() {
 }
 
 void StabilityMetricsHelper::IncreaseGpuCrashCount() {
-  IncrementPrefValue(prefs::kStabilityGpuCrashCount);
   RecordStabilityEvent(StabilityEventType::kGpuCrash);
 }
 

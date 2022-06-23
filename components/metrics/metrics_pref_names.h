@@ -56,7 +56,6 @@ extern const char kStabilityExtensionRendererCrashCount[];
 extern const char kStabilityFileMetricsUnsentSamplesCount[];
 extern const char kStabilityFileMetricsUnsentFilesCount[];
 extern const char kStabilityGmsCoreVersion[];
-extern const char kStabilityGpuCrashCount[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kStabilityLaunchCount[];
 extern const char kStabilityRendererLaunchCount[];
