@@ -296,7 +296,7 @@ class SecurePaymentConfirmationDialogViewTest
 
     views::StyledLabel* opt_out_label = static_cast<views::StyledLabel*>(
         test_delegate_->dialog_view()->GetFootnoteViewForTesting());
-    opt_out_label->ClickLinkForTesting();
+    opt_out_label->ClickFirstLinkForTesting();
 
     event_waiter_->Wait();
 

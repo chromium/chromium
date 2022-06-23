@@ -326,12 +326,16 @@ void StyledLabel::ClearStyleRanges() {
   PreferredSizeChanged();
 }
 
-void StyledLabel::ClickLinkForTesting() {
+void StyledLabel::ClickFirstLinkForTesting() {
+  GetFirstLinkForTesting()->OnKeyPressed(  // IN-TEST
+      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));
+}
+
+views::Link* StyledLabel::GetFirstLinkForTesting() {
   const auto it =
       base::ranges::find(children(), Link::kViewClassName, &View::GetClassName);
   DCHECK(it != children().cend());
-  (*it)->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));
+  return static_cast<views::Link*>(*it);
 }
 
 int StyledLabel::StartX(int excess_space) const {

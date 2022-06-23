@@ -38,19 +38,6 @@ views::Widget* ShowBubble(Browser* browser) {
   return waiter.WaitIfNeededAndGet();
 }
 
-void ClickButton(views::BubbleDialogDelegate* bubble_delegate,
-                 views::View* button) {
-  // Reset the timer to make sure that test click isn't discarded as possibly
-  // unintended.
-  bubble_delegate->ResetViewShownTimeStampForTesting();
-  gfx::Point center(button->width() / 2, button->height() / 2);
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, center, center,
-                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                             ui::EF_LEFT_MOUSE_BUTTON);
-  button->OnMousePressed(event);
-  button->OnMouseReleased(event);
-}
-
 }  // namespace
 
 class PrivacySandboxNoticeBubbleBrowserTest : public DialogBrowserTest {
@@ -75,23 +62,6 @@ class PrivacySandboxNoticeBubbleBrowserTest : public DialogBrowserTest {
 
   MockPrivacySandboxService* mock_service() { return mock_service_; }
 
-  void VerifyBubbleWasClosed(views::Widget* bubble) {
-    EXPECT_TRUE(bubble->IsClosed());
-
-    // While IsClosed updated immediately, the widget will only actually close,
-    // and thus inform the service asynchronously so must be waited for.
-    base::RunLoop().RunUntilIdle();
-
-    // Shutting down the browser test will naturally shut the bubble, verify
-    // expectations before that happens.
-    testing::Mock::VerifyAndClearExpectations(mock_service());
-  }
-
-  ui::TrackedElement* GetElement(ui::ElementIdentifier id) {
-    return ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-        id, browser()->window()->GetElementContext());
-  }
-
  private:
   raw_ptr<MockPrivacySandboxService> mock_service_;
   base::test::ScopedFeatureList feature_list_;
@@ -107,110 +77,4 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeBubbleBrowserTest,
       PromptActionOccurred(
           PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction));
   ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeBubbleBrowserTest,
-                       EscapeClosesNotice) {
-  // Check that when the escape key is pressed, the notice bubble is closed.
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown));
-  EXPECT_CALL(*mock_service(),
-              PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kNoticeDismiss));
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
-      .Times(0);
-  auto* bubble = ShowBubble(browser());
-  bubble->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
-  VerifyBubbleWasClosed(bubble);
-}
-
-// TODO(crbug.com/1321587): Figure out what to do with the bubble when the app
-// menu is shown. Update the test to test that.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeBubbleBrowserTest,
-                       DISABLED_AppMenuClosesNotice) {
-  // Check that when the app menu is opened, the notice bubble is closed.
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown));
-  EXPECT_CALL(*mock_service(),
-              PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kNoticeDismiss));
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
-      .Times(0);
-  auto* bubble = ShowBubble(browser());
-  chrome::ShowAppMenu(browser());
-  VerifyBubbleWasClosed(bubble);
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeBubbleBrowserTest,
-                       AcknowledgeNotice) {
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown));
-  EXPECT_CALL(*mock_service(),
-              PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kNoticeAcknowledge));
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
-      .Times(0);
-
-  auto* bubble = ShowBubble(browser());
-  auto* bubble_delegate = bubble->widget_delegate()->AsBubbleDialogDelegate();
-  ClickButton(bubble_delegate, bubble_delegate->GetOkButton());
-  VerifyBubbleWasClosed(bubble);
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeBubbleBrowserTest,
-                       OpenSettingsNotice) {
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown));
-  EXPECT_CALL(*mock_service(),
-              PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kNoticeOpenSettings));
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
-      .Times(0);
-
-  auto* bubble = ShowBubble(browser());
-  auto* bubble_delegate = bubble->widget_delegate()->AsBubbleDialogDelegate();
-  ClickButton(bubble_delegate, bubble_delegate->GetExtraView());
-  // TODO(crbug.com/1321587): Bubble should be closed. Figure out why opening
-  // settings page doesn't take over the focus (only in tests).
-}
-
-// TODO(crbug.com/1321587, crbug.com/1327190): Update how the link is accessed
-// after the API for DialogModel is added.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeBubbleBrowserTest,
-                       OpenLearnMoreNotice) {
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown));
-  EXPECT_CALL(*mock_service(),
-              PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kNoticeLearnMore));
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
-      .Times(0);
-
-  ShowBubble(browser());
-  auto* view = GetElement(kPrivacySandboxLearnMoreTextForTesting)
-                   ->AsA<views::TrackedElementViews>()
-                   ->view();
-  static_cast<views::StyledLabel*>(view)->ClickLinkForTesting();
-  // TODO(crbug.com/1321587): Bubble should be closed. Figure out why opening
-  // settings page doesn't take over the focus (only in tests).
 }

@@ -317,7 +317,7 @@ TEST_F(DeviceChooserContentViewTest, ClickAdapterOffHelpLink) {
   widget()->LayoutRootViewIfNecessary();
   EXPECT_CALL(*controller(), OpenAdapterOffHelpUrl()).Times(1);
   static_cast<views::StyledLabel*>(adapter_off_view()->children().front())
-      ->ClickLinkForTesting();
+      ->ClickFirstLinkForTesting();
 }
 
 TEST_F(DeviceChooserContentViewTest, ClickRescanButton) {

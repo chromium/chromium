@@ -346,7 +346,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     static_cast<views::StyledLabel*>(
         page_info->GetViewByID(
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL))
-        ->ClickLinkForTesting();
+        ->ClickFirstLinkForTesting();
     EXPECT_EQ(chrome::kSafetyTipHelpCenterURL,
               new_tab_observer.GetWebContents()->GetVisibleURL());
   }
@@ -367,7 +367,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
       static_cast<views::StyledLabel*>(
           page_info->GetViewByID(
               PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL))
-          ->ClickLinkForTesting();
+          ->ClickFirstLinkForTesting();
       EXPECT_EQ(chrome::kPageInfoHelpCenterURL,
                 new_tab_observer.GetWebContents()->GetVisibleURL());
     }

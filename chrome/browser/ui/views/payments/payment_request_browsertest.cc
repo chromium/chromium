@@ -636,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSettingsLinkTest, ClickSettingsLink) {
           static_cast<int>(DialogViewID::DATA_SOURCE_LABEL)));
   EXPECT_TRUE(styled_label);
   content::WebContentsAddedObserver web_contents_added_observer;
-  styled_label->ClickLinkForTesting();
+  styled_label->ClickFirstLinkForTesting();
   content::WebContents* new_tab_contents =
       web_contents_added_observer.GetWebContents();
 
@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSettingsLinkWithBasicCardDisabledTest,
           static_cast<int>(DialogViewID::DATA_SOURCE_LABEL)));
   EXPECT_TRUE(styled_label);
   content::WebContentsAddedObserver web_contents_added_observer;
-  styled_label->ClickLinkForTesting();
+  styled_label->ClickFirstLinkForTesting();
   content::WebContents* new_tab_contents =
       web_contents_added_observer.GetWebContents();
 

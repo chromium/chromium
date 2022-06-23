@@ -181,7 +181,10 @@ class VIEWS_EXPORT StyledLabel : public View {
 
   // Sends a space keypress to the first child that is a link.  Assumes at least
   // one such child exists.
-  void ClickLinkForTesting();
+  void ClickFirstLinkForTesting();
+
+  // Get the first child that is a link.
+  views::Link* GetFirstLinkForTesting();
 
  private:
   struct StyleRange {

@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest, OptOut) {
 
   // Now click the Opt Out link and make sure that the expected events occur.
   ResetEventWaiter(DialogEvent::OPT_OUT_CLICKED);
-  opt_out_label->ClickLinkForTesting();
+  opt_out_label->ClickFirstLinkForTesting();
 
   // If we make it past this wait, the delegate was correctly called.
   event_waiter_->Wait();
