@@ -76,7 +76,6 @@
 
 namespace autofill {
 
-using structured_address::HonorificPrefixEnabled;
 using structured_address::StructuredAddressesEnabled;
 using structured_address::StructuredNamesEnabled;
 
@@ -1668,43 +1667,34 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   // Make sure everything is set up correctly.
   EXPECT_EQ(1U, personal_data_->GetProfiles().size());
 
-  personal_data_->GetNonEmptyTypes(&non_empty_types);
+  std::vector<ServerFieldType> expected_types{NAME_FIRST,
+                                              NAME_LAST,
+                                              NAME_FULL,
+                                              EMAIL_ADDRESS,
+                                              ADDRESS_HOME_LINE1,
+                                              ADDRESS_HOME_STREET_ADDRESS,
+                                              ADDRESS_HOME_CITY,
+                                              ADDRESS_HOME_STATE,
+                                              ADDRESS_HOME_ZIP,
+                                              ADDRESS_HOME_COUNTRY,
+                                              PHONE_HOME_NUMBER,
+                                              PHONE_HOME_COUNTRY_CODE,
+                                              PHONE_HOME_CITY_CODE,
+                                              PHONE_HOME_CITY_AND_NUMBER,
+                                              PHONE_HOME_WHOLE_NUMBER};
   // For structured names and addresses, there are more non-empty types.
   // TODO(crbug.com/1103421): Clean once launched.
-  unsigned int non_empty_types_expectation = 15;
   if (StructuredNamesEnabled())
-    non_empty_types_expectation += 1;
-  // TODO(crbug.com/1130194): Clean once launched.
-  if (StructuredAddressesEnabled())
-    non_empty_types_expectation += 2;
-  if (HonorificPrefixEnabled())
-    non_empty_types_expectation += 1;
-
-  EXPECT_EQ(non_empty_types_expectation, non_empty_types.size());
-
-  EXPECT_TRUE(non_empty_types.count(NAME_FIRST));
-  EXPECT_TRUE(non_empty_types.count(NAME_LAST));
-  // TODO(crbug.com/1103421): Clean once launched.
-  if (StructuredNamesEnabled())
-    EXPECT_TRUE(non_empty_types.count(NAME_LAST_SECOND));
-  EXPECT_TRUE(non_empty_types.count(NAME_FULL));
-  EXPECT_TRUE(non_empty_types.count(EMAIL_ADDRESS));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE1));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_ADDRESS));
+    expected_types.push_back(NAME_LAST_SECOND);
   // TODO(crbug.com/1130194): Clean once launched.
   if (StructuredAddressesEnabled()) {
-    EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_NAME));
-    EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_HOUSE_NUMBER));
+    expected_types.insert(expected_types.end(), {ADDRESS_HOME_STREET_NAME,
+                                                 ADDRESS_HOME_HOUSE_NUMBER});
   }
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_CITY));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STATE));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_ZIP));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_COUNTRY));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_NUMBER));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_COUNTRY_CODE));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_CITY_CODE));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_CITY_AND_NUMBER));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_WHOLE_NUMBER));
+
+  personal_data_->GetNonEmptyTypes(&non_empty_types);
+  EXPECT_THAT(non_empty_types,
+              testing::UnorderedElementsAreArray(expected_types));
 
   // Test with multiple profiles stored.
   AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
@@ -1722,44 +1712,13 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
 
   EXPECT_EQ(3U, personal_data_->GetProfiles().size());
 
+  expected_types.insert(
+      expected_types.end(),
+      {NAME_MIDDLE, NAME_MIDDLE_INITIAL, ADDRESS_HOME_LINE2, COMPANY_NAME});
+
   personal_data_->GetNonEmptyTypes(&non_empty_types);
-  non_empty_types_expectation = 19;
-  // For structured names, there is one more non-empty type.
-  // TODO(crbug.com/1103421): Clean once launched.
-  if (StructuredNamesEnabled())
-    non_empty_types_expectation += 1;
-  if (HonorificPrefixEnabled())
-    non_empty_types_expectation += 1;
-  // TODO(crbug.com/1130194): Clean once launched.
-  if (StructuredAddressesEnabled())
-    non_empty_types_expectation += 2;
-  EXPECT_EQ(non_empty_types_expectation, non_empty_types.size());
-  EXPECT_TRUE(non_empty_types.count(NAME_FIRST));
-  EXPECT_TRUE(non_empty_types.count(NAME_MIDDLE));
-  EXPECT_TRUE(non_empty_types.count(NAME_MIDDLE_INITIAL));
-  // TODO(crbug.com/1103421): Clean once launched.
-  if (StructuredNamesEnabled())
-    EXPECT_TRUE(non_empty_types.count(NAME_LAST));
-  EXPECT_TRUE(non_empty_types.count(NAME_FULL));
-  EXPECT_TRUE(non_empty_types.count(EMAIL_ADDRESS));
-  EXPECT_TRUE(non_empty_types.count(COMPANY_NAME));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE1));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE2));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_ADDRESS));
-  // TODO(crbug.com/1130194): Clean once launched.
-  if (StructuredAddressesEnabled()) {
-    EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_NAME));
-    EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_HOUSE_NUMBER));
-  }
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_CITY));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STATE));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_ZIP));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_COUNTRY));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_NUMBER));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_CITY_CODE));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_COUNTRY_CODE));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_CITY_AND_NUMBER));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_THAT(non_empty_types,
+              testing::UnorderedElementsAreArray(expected_types));
 
   // Test with credit card information also stored.
   CreditCard credit_card(base::GenerateGUID(), test::kEmptyOrigin);
@@ -1770,54 +1729,16 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   WaitForOnPersonalDataChanged();
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
+  expected_types.insert(
+      expected_types.end(),
+      {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NAME_LAST,
+       CREDIT_CARD_NUMBER, CREDIT_CARD_TYPE, CREDIT_CARD_EXP_MONTH,
+       CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_EXP_4_DIGIT_YEAR,
+       CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR});
+
   personal_data_->GetNonEmptyTypes(&non_empty_types);
-  // For structured names, there is one more non-empty type.
-  // TODO(crbug.com/1103421): Clean once launched.
-  non_empty_types_expectation = 29;
-  if (StructuredNamesEnabled())
-    non_empty_types_expectation += 1;
-  if (HonorificPrefixEnabled())
-    non_empty_types_expectation += 1;
-  // TODO(crbug.com/1130194): Clean once launched.
-  if (StructuredAddressesEnabled())
-    non_empty_types_expectation += 2;
-  EXPECT_EQ(non_empty_types_expectation, non_empty_types.size());
-  EXPECT_TRUE(non_empty_types.count(NAME_FIRST));
-  EXPECT_TRUE(non_empty_types.count(NAME_MIDDLE));
-  EXPECT_TRUE(non_empty_types.count(NAME_MIDDLE_INITIAL));
-  EXPECT_TRUE(non_empty_types.count(NAME_LAST));
-  EXPECT_TRUE(non_empty_types.count(NAME_FULL));
-  if (StructuredNamesEnabled())
-    EXPECT_TRUE(non_empty_types.count(NAME_LAST));
-  EXPECT_TRUE(non_empty_types.count(EMAIL_ADDRESS));
-  EXPECT_TRUE(non_empty_types.count(COMPANY_NAME));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE1));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE2));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_ADDRESS));
-  // TODO(crbug.com/1130194): Clean once launched.
-  if (StructuredAddressesEnabled()) {
-    EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_NAME));
-    EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_HOUSE_NUMBER));
-  }
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_CITY));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STATE));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_ZIP));
-  EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_COUNTRY));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_NUMBER));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_CITY_CODE));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_COUNTRY_CODE));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_CITY_AND_NUMBER));
-  EXPECT_TRUE(non_empty_types.count(PHONE_HOME_WHOLE_NUMBER));
-  EXPECT_TRUE(non_empty_types.count(CREDIT_CARD_NAME_FULL));
-  EXPECT_TRUE(non_empty_types.count(CREDIT_CARD_NAME_FIRST));
-  EXPECT_TRUE(non_empty_types.count(CREDIT_CARD_NAME_LAST));
-  EXPECT_TRUE(non_empty_types.count(CREDIT_CARD_NUMBER));
-  EXPECT_TRUE(non_empty_types.count(CREDIT_CARD_TYPE));
-  EXPECT_TRUE(non_empty_types.count(CREDIT_CARD_EXP_MONTH));
-  EXPECT_TRUE(non_empty_types.count(CREDIT_CARD_EXP_2_DIGIT_YEAR));
-  EXPECT_TRUE(non_empty_types.count(CREDIT_CARD_EXP_4_DIGIT_YEAR));
-  EXPECT_TRUE(non_empty_types.count(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR));
-  EXPECT_TRUE(non_empty_types.count(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR));
+  EXPECT_THAT(non_empty_types,
+              testing::UnorderedElementsAreArray(expected_types));
 }
 
 TEST_F(PersonalDataManagerTest, IncognitoReadOnly) {
