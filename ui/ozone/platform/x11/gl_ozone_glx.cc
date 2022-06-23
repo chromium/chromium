@@ -98,6 +98,7 @@ std::unique_ptr<NativePixmapGLBinding> GLOzoneGLX::ImportNativePixmap(
     gfx::BufferFormat plane_format,
     gfx::BufferPlane plane,
     gfx::Size plane_size,
+    const gfx::ColorSpace& color_space,
     GLenum target,
     GLuint texture_id) {
   return NativePixmapGLXBinding::Create(pixmap, plane_format, plane, plane_size,

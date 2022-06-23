@@ -20,6 +20,7 @@ class NativePixmapEGLBinding : public NativePixmapGLBinding {
       gfx::BufferFormat plane_format,
       gfx::BufferPlane plane,
       gfx::Size plane_size,
+      const gfx::ColorSpace& color_space,
       GLenum target,
       GLuint texture_id);
 };

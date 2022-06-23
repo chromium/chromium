@@ -65,10 +65,11 @@ std::unique_ptr<NativePixmapGLBinding> GLOzoneEGL::ImportNativePixmap(
     gfx::BufferFormat plane_format,
     gfx::BufferPlane plane,
     gfx::Size plane_size,
+    const gfx::ColorSpace& color_space,
     GLenum target,
     GLuint texture_id) {
   return NativePixmapEGLBinding::Create(pixmap, plane_format, plane, plane_size,
-                                        target, texture_id);
+                                        color_space, target, texture_id);
 }
 
 bool GLOzoneEGL::GetGLWindowSystemBindingInfo(

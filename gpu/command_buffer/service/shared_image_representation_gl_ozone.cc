@@ -95,8 +95,8 @@ SharedImageRepresentationGLOzoneShared::GetBinding(
 
   std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
       gl_ozone->ImportNativePixmap(std::move(pixmap), buffer_format, plane,
-                                   backing->size(), target,
-                                   gl_texture_service_id);
+                                   backing->size(), backing->color_space(),
+                                   target, gl_texture_service_id);
   if (!np_gl_binding) {
     DLOG(ERROR) << "Failed to create NativePixmapGLBinding.";
     api->glDeleteTexturesFn(1, &gl_texture_service_id);
