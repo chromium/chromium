@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "reference_drivers/single_process_reference_driver.h"
+#include "reference_drivers/sync_reference_driver.h"
 
 #include <cstddef>
 #include <functional>
@@ -77,8 +77,8 @@ class TransportReceiver
   const TransportHandlers handlers_;
 };
 
-TEST(SingleProcessReferenceDriverTest, CreateTransports) {
-  const IpczDriver& driver = kSingleProcessReferenceDriver;
+TEST(SyncReferenceDriverTest, CreateTransports) {
+  const IpczDriver& driver = kSyncReferenceDriver;
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -88,8 +88,8 @@ TEST(SingleProcessReferenceDriverTest, CreateTransports) {
   EXPECT_EQ(IPCZ_RESULT_OK, driver.Close(b, IPCZ_NO_FLAGS, nullptr));
 }
 
-TEST(SingleProcessReferenceDriverTest, TransmitBeforeActive) {
-  const IpczDriver& driver = kSingleProcessReferenceDriver;
+TEST(SyncReferenceDriverTest, TransmitBeforeActive) {
+  const IpczDriver& driver = kSyncReferenceDriver;
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -122,8 +122,8 @@ TEST(SingleProcessReferenceDriverTest, TransmitBeforeActive) {
   EXPECT_EQ(IPCZ_RESULT_OK, driver.Close(b, IPCZ_NO_FLAGS, nullptr));
 }
 
-TEST(SingleProcessReferenceDriverTest, TransmitWhileActive) {
-  const IpczDriver& driver = kSingleProcessReferenceDriver;
+TEST(SyncReferenceDriverTest, TransmitWhileActive) {
+  const IpczDriver& driver = kSyncReferenceDriver;
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -155,8 +155,8 @@ TEST(SingleProcessReferenceDriverTest, TransmitWhileActive) {
   EXPECT_EQ(IPCZ_RESULT_OK, driver.Close(b, IPCZ_NO_FLAGS, nullptr));
 }
 
-TEST(SingleProcessReferenceDriverTest, Deactivate) {
-  const IpczDriver& driver = kSingleProcessReferenceDriver;
+TEST(SyncReferenceDriverTest, Deactivate) {
+  const IpczDriver& driver = kSyncReferenceDriver;
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -179,8 +179,8 @@ TEST(SingleProcessReferenceDriverTest, Deactivate) {
   EXPECT_EQ(IPCZ_RESULT_OK, driver.Close(b, IPCZ_NO_FLAGS, nullptr));
 }
 
-TEST(SingleProcessReferenceDriverTest, TransmitAfterDeactivated) {
-  const IpczDriver& driver = kSingleProcessReferenceDriver;
+TEST(SyncReferenceDriverTest, TransmitAfterDeactivated) {
+  const IpczDriver& driver = kSyncReferenceDriver;
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -217,8 +217,8 @@ TEST(SingleProcessReferenceDriverTest, TransmitAfterDeactivated) {
   EXPECT_EQ(IPCZ_RESULT_OK, driver.Close(b, IPCZ_NO_FLAGS, nullptr));
 }
 
-TEST(SingleProcessReferenceDriverTest, NotifyError) {
-  const IpczDriver& driver = kSingleProcessReferenceDriver;
+TEST(SyncReferenceDriverTest, NotifyError) {
+  const IpczDriver& driver = kSyncReferenceDriver;
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,
@@ -255,8 +255,8 @@ TEST(SingleProcessReferenceDriverTest, NotifyError) {
   EXPECT_EQ(IPCZ_RESULT_OK, driver.Close(b, IPCZ_NO_FLAGS, nullptr));
 }
 
-TEST(SingleProcessReferenceDriverTest, SharedMemory) {
-  const IpczDriver& driver = kSingleProcessReferenceDriver;
+TEST(SyncReferenceDriverTest, SharedMemory) {
+  const IpczDriver& driver = kSyncReferenceDriver;
 
   const size_t kSize = 64;
   IpczDriverHandle memory;
@@ -297,8 +297,8 @@ TEST(SingleProcessReferenceDriverTest, SharedMemory) {
   EXPECT_EQ(IPCZ_RESULT_OK, driver.Close(memory, IPCZ_NO_FLAGS, nullptr));
 }
 
-TEST(SingleProcessReferenceDriverTest, TransmitHandles) {
-  const IpczDriver& driver = kSingleProcessReferenceDriver;
+TEST(SyncReferenceDriverTest, TransmitHandles) {
+  const IpczDriver& driver = kSyncReferenceDriver;
   IpczDriverHandle a, b;
   EXPECT_EQ(IPCZ_RESULT_OK,
             driver.CreateTransports(IPCZ_INVALID_DRIVER_HANDLE,

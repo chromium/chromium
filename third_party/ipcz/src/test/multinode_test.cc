@@ -9,7 +9,7 @@
 #include <thread>
 
 #include "ipcz/ipcz.h"
-#include "reference_drivers/single_process_reference_driver.h"
+#include "reference_drivers/sync_reference_driver.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -112,7 +112,7 @@ const IpczDriver& TestNode::GetDriver() const {
   static IpczDriver kInvalidDriver = {};
   switch (driver_mode_) {
     case DriverMode::kSync:
-      return reference_drivers::kSingleProcessReferenceDriver;
+      return reference_drivers::kSyncReferenceDriver;
 
 #if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
     case DriverMode::kMultiprocess:

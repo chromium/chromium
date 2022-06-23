@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "reference_drivers/single_process_reference_driver.h"
+#include "reference_drivers/sync_reference_driver.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -12,12 +12,10 @@
 #include <tuple>
 #include <vector>
 
-#include "ipcz/driver_object.h"
-#include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
-#include "ipcz/message.h"
 #include "reference_drivers/object.h"
 #include "reference_drivers/random.h"
+#include "reference_drivers/single_process_reference_driver_base.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
@@ -161,27 +159,11 @@ class InProcessTransport
     }
 
     if (peer) {
-      // Kind of a hack so we can deserialize messages as if they were read
-      // and deserialized by the peer. We want to do this because the serialized
-      // messages may encode driver objects with live resources that would
-      // otherwise leak. This is particularly problematic in test environments
-      // where we want to exercise various edge cases that can result in
-      // dropped connections and dropped messages, within a single test process
-      // that may run multiple such tests in succession.
-      //
-      // We construct a temporary DriverObject which wraps `this`, as needed
-      // for Message deserialization. This must be released when done, as it
-      // does not actually own a handle to the peer.
-      auto peer_transport = MakeRefCounted<DriverTransport>(
-          DriverObject(kSingleProcessReferenceDriver, peer->handle()));
       for (SavedMessage& m : saved_messages) {
-        ipcz::Message message;
-        message.DeserializeUnknownType(
-            ipcz::DriverTransport::RawMessage{m.data, m.handles},
-            *peer_transport);
+        for (IpczDriverHandle handle : m.handles) {
+          Object::TakeFromHandle(handle)->Close();
+        }
       }
-
-      std::ignore = peer_transport->Release();
 
       // NOTE: Although nothing should ever call back into `this` after Close(),
       // for consistency with other methods we still take precaution not to call
@@ -337,94 +319,6 @@ class InProcessTransport
   std::vector<SavedMessage> saved_messages_ ABSL_GUARDED_BY(mutex_);
 };
 
-// Shared memory regions for the single-process driver are just regular private
-// heap allocations.
-class InProcessMemory : public ObjectImpl<InProcessMemory, Object::kMemory> {
- public:
-  explicit InProcessMemory(size_t size)
-      : size_(size), data_(new uint8_t[size]) {
-    memset(&data_[0], 0, size_);
-  }
-
-  size_t size() const { return size_; }
-  void* address() const { return &data_[0]; }
-
- private:
-  ~InProcessMemory() override = default;
-
-  const size_t size_;
-  const std::unique_ptr<uint8_t[]> data_;
-};
-
-class InProcessMapping : public ObjectImpl<InProcessMapping, Object::kMapping> {
- public:
-  explicit InProcessMapping(Ref<InProcessMemory> memory)
-      : memory_(std::move(memory)) {}
-
-  size_t size() const { return memory_->size(); }
-  void* address() const { return memory_->address(); }
-
- private:
-  ~InProcessMapping() override = default;
-
-  const Ref<InProcessMemory> memory_;
-};
-
-IpczResult IPCZ_API Close(IpczDriverHandle handle,
-                          uint32_t flags,
-                          const void* options) {
-  Ref<Object> object = Object::TakeFromHandle(handle);
-  if (!object) {
-    return IPCZ_RESULT_INVALID_ARGUMENT;
-  }
-
-  return object->Close();
-}
-
-IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
-                              IpczDriverHandle transport,
-                              uint32_t flags,
-                              const void* options,
-                              void* data,
-                              size_t* num_bytes,
-                              IpczDriverHandle* handles,
-                              size_t* num_handles) {
-  Object* object = Object::FromHandle(handle);
-  if (!object) {
-    return IPCZ_RESULT_INVALID_ARGUMENT;
-  }
-
-  if (num_bytes) {
-    *num_bytes = 0;
-  }
-
-  // Since this is all in-process, all driver handles can be transmitted as-is.
-  const size_t handle_capacity = num_handles ? *num_handles : 0;
-  if (num_handles) {
-    *num_handles = 1;
-  }
-  if (handle_capacity < 1) {
-    return IPCZ_RESULT_RESOURCE_EXHAUSTED;
-  }
-
-  handles[0] = handle;
-  return IPCZ_RESULT_OK;
-}
-
-IpczResult IPCZ_API Deserialize(const void* data,
-                                size_t num_bytes,
-                                const IpczDriverHandle* handles,
-                                size_t num_handles,
-                                IpczDriverHandle transport,
-                                uint32_t flags,
-                                const void* options,
-                                IpczDriverHandle* driver_handle) {
-  ABSL_ASSERT(num_bytes == 0);
-  ABSL_ASSERT(num_handles == 1);
-  *driver_handle = handles[0];
-  return IPCZ_RESULT_OK;
-}
-
 IpczResult IPCZ_API CreateTransports(IpczDriverHandle transport0,
                                      IpczDriverHandle transport1,
                                      uint32_t flags,
@@ -468,78 +362,22 @@ IpczResult IPCZ_API Transmit(IpczDriverHandle driver_transport,
                  absl::MakeSpan(handles, num_handles));
 }
 
-IpczResult IPCZ_API AllocateSharedMemory(size_t num_bytes,
-                                         uint32_t flags,
-                                         const void* options,
-                                         IpczDriverHandle* driver_memory) {
-  if (num_bytes > std::numeric_limits<size_t>::max()) {
-    return IPCZ_RESULT_RESOURCE_EXHAUSTED;
-  }
-
-  auto memory = MakeRefCounted<InProcessMemory>(static_cast<size_t>(num_bytes));
-  *driver_memory = Object::ReleaseAsHandle(std::move(memory));
-  return IPCZ_RESULT_OK;
-}
-
-IpczResult GetSharedMemoryInfo(IpczDriverHandle driver_memory,
-                               uint32_t flags,
-                               const void* options,
-                               IpczSharedMemoryInfo* info) {
-  Object* object = Object::FromHandle(driver_memory);
-  if (!object || object->type() != Object::kMemory || !info ||
-      info->size < sizeof(IpczSharedMemoryInfo)) {
-    return IPCZ_RESULT_INVALID_ARGUMENT;
-  }
-
-  info->region_num_bytes = static_cast<InProcessMemory*>(object)->size();
-  return IPCZ_RESULT_OK;
-}
-
-IpczResult IPCZ_API DuplicateSharedMemory(IpczDriverHandle driver_memory,
-                                          uint32_t flags,
-                                          const void* options,
-                                          IpczDriverHandle* new_driver_memory) {
-  Ref<InProcessMemory> memory(InProcessMemory::FromHandle(driver_memory));
-  *new_driver_memory = Object::ReleaseAsHandle(std::move(memory));
-  return IPCZ_RESULT_OK;
-}
-
-IpczResult IPCZ_API MapSharedMemory(IpczDriverHandle driver_memory,
-                                    uint32_t flags,
-                                    const void* options,
-                                    void** address,
-                                    IpczDriverHandle* driver_mapping) {
-  Ref<InProcessMemory> memory(InProcessMemory::FromHandle(driver_memory));
-  auto mapping = MakeRefCounted<InProcessMapping>(std::move(memory));
-  *address = mapping->address();
-  *driver_mapping = Object::ReleaseAsHandle(std::move(mapping));
-  return IPCZ_RESULT_OK;
-}
-
-IpczResult IPCZ_API GenerateRandomBytes(size_t num_bytes,
-                                        uint32_t flags,
-                                        const void* options,
-                                        void* buffer) {
-  RandomBytes(absl::MakeSpan(static_cast<uint8_t*>(buffer), num_bytes));
-  return IPCZ_RESULT_OK;
-}
-
 }  // namespace
 
-const IpczDriver kSingleProcessReferenceDriver = {
-    sizeof(kSingleProcessReferenceDriver),
-    Close,
-    Serialize,
-    Deserialize,
+const IpczDriver kSyncReferenceDriver = {
+    sizeof(kSyncReferenceDriver),
+    kSingleProcessReferenceDriverBase.Close,
+    kSingleProcessReferenceDriverBase.Serialize,
+    kSingleProcessReferenceDriverBase.Deserialize,
     CreateTransports,
     ActivateTransport,
     DeactivateTransport,
     Transmit,
-    AllocateSharedMemory,
-    GetSharedMemoryInfo,
-    DuplicateSharedMemory,
-    MapSharedMemory,
-    GenerateRandomBytes,
+    kSingleProcessReferenceDriverBase.AllocateSharedMemory,
+    kSingleProcessReferenceDriverBase.GetSharedMemoryInfo,
+    kSingleProcessReferenceDriverBase.DuplicateSharedMemory,
+    kSingleProcessReferenceDriverBase.MapSharedMemory,
+    kSingleProcessReferenceDriverBase.GenerateRandomBytes,
 };
 
 }  // namespace ipcz::reference_drivers

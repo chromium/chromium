@@ -138,7 +138,7 @@ ipcz_source_set("reference_drivers") {
 
   public = [
     "reference_drivers/blob.h",
-    "reference_drivers/single_process_reference_driver.h",
+    "reference_drivers/sync_reference_driver.h",
   ]
 
   sources = [
@@ -147,7 +147,9 @@ ipcz_source_set("reference_drivers") {
     "reference_drivers/object.h",
     "reference_drivers/random.cc",
     "reference_drivers/random.h",
-    "reference_drivers/single_process_reference_driver.cc",
+    "reference_drivers/single_process_reference_driver_base.cc",
+    "reference_drivers/single_process_reference_driver_base.h",
+    "reference_drivers/sync_reference_driver.cc",
   ]
 
   if (enable_multiprocess_tests) {
@@ -327,7 +329,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "ipcz/node_link_test.cc",
     "ipcz/parcel_queue_test.cc",
     "ipcz/sequenced_queue_test.cc",
-    "reference_drivers/single_process_reference_driver_test.cc",
+    "reference_drivers/sync_reference_driver_test.cc",
     "remote_portal_test.cc",
     "test/mock_driver.cc",
     "test/mock_driver.h",

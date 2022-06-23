@@ -10,7 +10,7 @@
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_memory_mapping.h"
 #include "ipcz/node.h"
-#include "reference_drivers/single_process_reference_driver.h"
+#include "reference_drivers/sync_reference_driver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
@@ -27,7 +27,7 @@ class BufferPoolTest : public testing::Test {
  private:
   const Ref<Node> node_{
       MakeRefCounted<Node>(Node::Type::kBroker,
-                           reference_drivers::kSingleProcessReferenceDriver,
+                           reference_drivers::kSyncReferenceDriver,
                            IPCZ_INVALID_DRIVER_HANDLE)};
 };
 

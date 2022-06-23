@@ -13,7 +13,7 @@
 #include "ipcz/node_messages.h"
 #include "ipcz/portal.h"
 #include "ipcz/router.h"
-#include "reference_drivers/single_process_reference_driver.h"
+#include "reference_drivers/sync_reference_driver.h"
 #include "test/test.h"
 #include "test/test_transport_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +22,7 @@
 namespace ipcz {
 namespace {
 
-const IpczDriver& kDriver = reference_drivers::kSingleProcessReferenceDriver;
+const IpczDriver& kDriver = reference_drivers::kSyncReferenceDriver;
 
 class NodeConnectorTest : public test::Test {
  protected:

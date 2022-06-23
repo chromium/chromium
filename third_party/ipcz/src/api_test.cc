@@ -5,15 +5,14 @@
 #include <string>
 
 #include "ipcz/ipcz.h"
-#include "reference_drivers/single_process_reference_driver.h"
+#include "reference_drivers/sync_reference_driver.h"
 #include "test/test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ipcz {
 namespace {
 
-const IpczDriver& kDefaultDriver =
-    reference_drivers::kSingleProcessReferenceDriver;
+const IpczDriver& kDefaultDriver = reference_drivers::kSyncReferenceDriver;
 
 using APITest = test::Test;
 
