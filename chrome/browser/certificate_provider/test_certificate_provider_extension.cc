@@ -216,12 +216,12 @@ void TestCertificateProviderExtension::TriggerSetCertificates() {
     cert_info_values.Append(MakeClientCertificateInfoValue(*certificate_));
   message_data.SetKey("certificateInfoList", std::move(cert_info_values));
 
-  auto message = std::make_unique<base::Value>(base::Value::Type::LIST);
-  message->Append(std::move(message_data));
+  base::Value::List message;
+  message.Append(std::move(message_data));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::FOR_TEST,
-      extensions::api::test::OnMessage::kEventName,
-      std::move(*message).TakeListDeprecated(), browser_context_);
+      extensions::api::test::OnMessage::kEventName, std::move(message),
+      browser_context_);
   extensions::EventRouter::Get(browser_context_)
       ->DispatchEventToExtension(extension_id(), std::move(event));
 }
