@@ -43,6 +43,10 @@ uint64_t TestThreadSnapshot::ThreadID() const {
   return thread_id_;
 }
 
+std::string TestThreadSnapshot::ThreadName() const {
+  return thread_name_;
+}
+
 int TestThreadSnapshot::SuspendCount() const {
   return suspend_count_;
 }

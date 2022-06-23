@@ -26,6 +26,7 @@
 #include "minidump/minidump_module_writer.h"
 #include "minidump/minidump_system_info_writer.h"
 #include "minidump/minidump_thread_id_map.h"
+#include "minidump/minidump_thread_name_list_writer.h"
 #include "minidump/minidump_thread_writer.h"
 #include "minidump/minidump_unloaded_module_writer.h"
 #include "minidump/minidump_user_extension_stream_data_source.h"
@@ -34,6 +35,7 @@
 #include "snapshot/exception_snapshot.h"
 #include "snapshot/module_snapshot.h"
 #include "snapshot/process_snapshot.h"
+#include "snapshot/thread_snapshot.h"
 #include "util/file/file_writer.h"
 #include "util/numeric/safe_assignment.h"
 
@@ -93,6 +95,21 @@ void MinidumpFileWriter::InitializeFromSnapshot(
                                       &thread_id_map);
   add_stream_result = AddStream(std::move(thread_list));
   DCHECK(add_stream_result);
+
+  bool has_thread_name = false;
+  for (const ThreadSnapshot* thread_snapshot : process_snapshot->Threads()) {
+    if (!thread_snapshot->ThreadName().empty()) {
+      has_thread_name = true;
+      break;
+    }
+  }
+  if (has_thread_name) {
+    auto thread_name_list = std::make_unique<MinidumpThreadNameListWriter>();
+    thread_name_list->InitializeFromSnapshot(process_snapshot->Threads(),
+                                             thread_id_map);
+    add_stream_result = AddStream(std::move(thread_name_list));
+    DCHECK(add_stream_result);
+  }
 
   const ExceptionSnapshot* exception_snapshot = process_snapshot->Exception();
   if (exception_snapshot) {

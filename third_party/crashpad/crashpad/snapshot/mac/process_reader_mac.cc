@@ -75,6 +75,7 @@ ProcessReaderMac::Thread::Thread()
     : thread_context(),
       float_context(),
       debug_context(),
+      name(),
       id(0),
       stack_region_address(0),
       stack_region_size(0),
@@ -363,6 +364,20 @@ void ProcessReaderMac::InitializeThreads() {
       // This address is the internal pthread’s _pthread::tsd[], an array of
       // void* values that can be indexed by pthread_key_t values.
       thread.thread_specific_data_address = identifier_info.thread_handle;
+    }
+
+    thread_extended_info extended_info;
+    count = THREAD_EXTENDED_INFO_COUNT;
+    kr = thread_info(thread.port,
+                     THREAD_EXTENDED_INFO,
+                     reinterpret_cast<thread_info_t>(&extended_info),
+                     &count);
+    if (kr != KERN_SUCCESS) {
+      MACH_LOG(WARNING, kr) << "thread_info(THREAD_EXTENDED_INFO)";
+    } else {
+      thread.name.assign(
+          extended_info.pth_name,
+          strnlen(extended_info.pth_name, sizeof(extended_info.pth_name)));
     }
 
     thread_precedence_policy precedence;

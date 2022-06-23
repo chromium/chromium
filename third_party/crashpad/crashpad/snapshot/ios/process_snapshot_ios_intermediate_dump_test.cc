@@ -392,6 +392,7 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
               Key::kThreadContextMemoryRegionData, "string", 6));
         }
       }
+      EXPECT_TRUE(writer->AddPropertyBytes(Key::kThreadName, "ariadne", 7));
     }
   }
 
@@ -411,6 +412,7 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     uint64_t thread_id = 1;
     for (auto thread : threads) {
       EXPECT_EQ(thread->ThreadID(), thread_id);
+      EXPECT_EQ(thread->ThreadName(), "ariadne");
       EXPECT_EQ(thread->SuspendCount(), 666);
       EXPECT_EQ(thread->Priority(), 5);
       EXPECT_EQ(thread->ThreadSpecificDataAddress(), thread_id++);

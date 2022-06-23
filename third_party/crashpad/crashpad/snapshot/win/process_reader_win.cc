@@ -21,13 +21,16 @@
 
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "snapshot/win/cpu_context_win.h"
 #include "util/misc/capture_context.h"
 #include "util/misc/time.h"
+#include "util/win/get_function.h"
 #include "util/win/nt_internals.h"
 #include "util/win/ntstatus_logging.h"
 #include "util/win/process_structs.h"
 #include "util/win/scoped_handle.h"
+#include "util/win/scoped_local_alloc.h"
 
 namespace crashpad {
 
@@ -232,12 +235,9 @@ bool ProcessReaderWin::ThreadContext::InitializeWow64(HANDLE thread_handle) {
 bool ProcessReaderWin::ThreadContext::InitializeXState(
     HANDLE thread_handle,
     ULONG64 XStateCompactionMask) {
-  static auto initialize_context_2 = []() {
-    // InitializeContext2 needs Windows 10 build 20348.
-    HINSTANCE kernel32 = GetModuleHandle(L"Kernel32.dll");
-    return reinterpret_cast<decltype(InitializeContext2)*>(
-        GetProcAddress(kernel32, "InitializeContext2"));
-  }();
+  // InitializeContext2 needs Windows 10 build 20348.
+  static const auto initialize_context_2 =
+      GET_FUNCTION(L"kernel32.dll", ::InitializeContext2);
   if (!initialize_context_2)
     return false;
   // We want CET_U xstate to get the ssp, only possible when supported.
@@ -276,6 +276,7 @@ bool ProcessReaderWin::ThreadContext::InitializeXState(
 
 ProcessReaderWin::Thread::Thread()
     : context(),
+      name(),
       id(0),
       teb_address(0),
       teb_size(0),
@@ -458,6 +459,21 @@ void ProcessReaderWin::ReadThreadData(bool is_64_reading_32) {
         thread.stack_region_size = 0;
       } else {
         thread.stack_region_size = base - limit;
+      }
+    }
+    // On Windows 10 build 1607 and later, read the thread name.
+    static const auto get_thread_description =
+        GET_FUNCTION(L"kernel32.dll", ::GetThreadDescription);
+    if (get_thread_description) {
+      wchar_t* thread_description;
+      HRESULT hr =
+          get_thread_description(thread_handle.get(), &thread_description);
+      if (SUCCEEDED(hr)) {
+        ScopedLocalAlloc thread_description_owner(thread_description);
+        thread.name = base::WideToUTF8(thread_description);
+      } else {
+        LOG(WARNING) << "GetThreadDescription: "
+                     << logging::SystemErrorCodeToString(hr);
       }
     }
     threads_.push_back(thread);

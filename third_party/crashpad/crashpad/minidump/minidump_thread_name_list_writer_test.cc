@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_file_writer.h"
+#include "minidump/minidump_system_info_writer.h"
 #include "minidump/test/minidump_file_writer_test_util.h"
 #include "minidump/test/minidump_string_writer_test_util.h"
 #include "minidump/test/minidump_writable_test_util.h"
@@ -125,6 +126,64 @@ TEST(MinidumpThreadNameListWriter, OneThread) {
   const MINIDUMP_THREAD_NAME_LIST* thread_name_list = nullptr;
   ASSERT_NO_FATAL_FAILURE(
       GetThreadNameListStream(string_file.string(), &thread_name_list));
+
+  EXPECT_EQ(thread_name_list->NumberOfThreadNames, 1u);
+
+  MINIDUMP_THREAD_NAME expected = {};
+  expected.ThreadId = kThreadID;
+
+  ASSERT_NO_FATAL_FAILURE(ExpectThreadName(&expected,
+                                           &thread_name_list->ThreadNames[0],
+                                           string_file.string(),
+                                           kThreadName));
+}
+
+TEST(MinidumpThreadNameListWriter, OneThreadWithLeadingPadding) {
+  MinidumpFileWriter minidump_file_writer;
+
+  // Add a stream before the MINIDUMP_THREAD_NAME_LIST to ensure the thread name
+  // MINIDUMP_STRING requires leading padding to align to a 4-byte boundary.
+  auto system_info_writer = std::make_unique<MinidumpSystemInfoWriter>();
+  system_info_writer->SetCSDVersion("");
+  ASSERT_TRUE(minidump_file_writer.AddStream(std::move(system_info_writer)));
+
+  auto thread_list_writer = std::make_unique<MinidumpThreadNameListWriter>();
+
+  constexpr uint32_t kThreadID = 0x11111111;
+  const std::string kThreadName = "ariadne";
+
+  auto thread_name_list_writer =
+      std::make_unique<MinidumpThreadNameListWriter>();
+  auto thread_name_writer = std::make_unique<MinidumpThreadNameWriter>();
+  thread_name_writer->SetThreadId(kThreadID);
+  thread_name_writer->SetThreadName(kThreadName);
+  thread_name_list_writer->AddThreadName(std::move(thread_name_writer));
+
+  ASSERT_TRUE(
+      minidump_file_writer.AddStream(std::move(thread_name_list_writer)));
+
+  StringFile string_file;
+  ASSERT_TRUE(minidump_file_writer.WriteEverything(&string_file));
+
+  ASSERT_GT(string_file.string().size(),
+            sizeof(MINIDUMP_HEADER) + sizeof(MINIDUMP_DIRECTORY) +
+                sizeof(MINIDUMP_THREAD_NAME_LIST) +
+                1 * sizeof(MINIDUMP_THREAD_NAME));
+
+  const uint32_t kExpectedStreams = 2;
+  const MINIDUMP_DIRECTORY* directory;
+  const MINIDUMP_HEADER* header =
+      MinidumpHeaderAtStart(string_file.string(), &directory);
+  ASSERT_NO_FATAL_FAILURE(VerifyMinidumpHeader(header, kExpectedStreams, 0));
+  ASSERT_TRUE(directory);
+
+  ASSERT_EQ(directory[0].StreamType, kMinidumpStreamTypeSystemInfo);
+  ASSERT_EQ(directory[1].StreamType, kMinidumpStreamTypeThreadNameList);
+
+  const MINIDUMP_THREAD_NAME_LIST* thread_name_list =
+      MinidumpWritableAtLocationDescriptor<MINIDUMP_THREAD_NAME_LIST>(
+          string_file.string(), directory[1].Location);
+  ASSERT_TRUE(thread_name_list);
 
   EXPECT_EQ(thread_name_list->NumberOfThreadNames, 1u);
 
