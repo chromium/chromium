@@ -275,7 +275,7 @@ PopularSitesImpl::PopularSitesImpl(
       url_loader_factory_(std::move(url_loader_factory)),
       is_fallback_(false),
       sections_(
-          ParseSites(*prefs->GetValueList(prefs::kPopularSitesJsonPref),
+          ParseSites(prefs->GetValueList(prefs::kPopularSitesJsonPref),
                      prefs_->GetInteger(prefs::kPopularSitesVersionPref))) {}
 
 PopularSitesImpl::~PopularSitesImpl() {}

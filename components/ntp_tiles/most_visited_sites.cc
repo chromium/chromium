@@ -765,11 +765,9 @@ bool MostVisitedSites::IsNtpTileFromPreinstalledApp(GURL url) {
 
 // static
 bool MostVisitedSites::WasNtpAppMigratedToWebApp(PrefService* prefs, GURL url) {
-  const base::Value::List* migrated_apps =
+  const base::Value::List& migrated_apps =
       prefs->GetValueList(webapps::kWebAppsMigratedPreinstalledApps);
-  if (!migrated_apps)
-    return false;
-  for (const auto& val : *migrated_apps) {
+  for (const auto& val : migrated_apps) {
     if (val.is_string() && val.GetString() == url.host())
       return true;
   }

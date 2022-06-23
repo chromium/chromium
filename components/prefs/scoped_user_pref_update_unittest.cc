@@ -85,11 +85,11 @@ TEST_F(ScopedUserPrefUpdateTest, UpdatingListPrefWithDefaults) {
 
   std::string pref_name = "mypref";
   prefs_.registry()->RegisterListPref(pref_name, std::move(defaults));
-  EXPECT_EQ(2u, prefs_.GetValueList(pref_name)->size());
+  EXPECT_EQ(2u, prefs_.GetValueList(pref_name).size());
 
   ListPrefUpdate update(&prefs_, pref_name);
   update->Append("thirdvalue");
-  EXPECT_EQ(3u, prefs_.GetValueList(pref_name)->size());
+  EXPECT_EQ(3u, prefs_.GetValueList(pref_name).size());
 }
 
 TEST_F(ScopedUserPrefUpdateTest, UpdatingDictionaryPrefWithDefaults) {

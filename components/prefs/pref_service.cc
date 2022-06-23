@@ -222,70 +222,38 @@ void PrefService::SchedulePendingLossyWrites() {
 }
 
 bool PrefService::GetBoolean(const std::string& path) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value || !value->is_bool())
+  const base::Value& value = GetValue(path);
+  if (!value.is_bool())
     return false;
-  return value->GetBool();
+  return value.GetBool();
 }
 
 int PrefService::GetInteger(const std::string& path) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value || !value->is_int())
+  const base::Value& value = GetValue(path);
+  if (!value.is_int())
     return 0;
-  return value->GetInt();
+  return value.GetInt();
 }
 
 double PrefService::GetDouble(const std::string& path) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value || !value->is_double())
+  const base::Value& value = GetValue(path);
+  if (!value.is_double())
     return 0.0;
-  return value->GetDouble();
+  return value.GetDouble();
 }
 
 std::string PrefService::GetString(const std::string& path) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value || !value->is_string())
+  const base::Value& value = GetValue(path);
+  if (!value.is_string())
     return std::string();
-  return value->GetString();
+  return value.GetString();
 }
 
 base::FilePath PrefService::GetFilePath(const std::string& path) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value)
-    return base::FilePath();
-  absl::optional<base::FilePath> result = base::ValueToFilePath(*value);
+  const base::Value& value = GetValue(path);
+  absl::optional<base::FilePath> result = base::ValueToFilePath(value);
   DCHECK(result);
   return *result;
-}
-
-const base::Value::Dict* PrefService::GetValueDict(
-    const std::string& path) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const base::Value* value = GetDictionary(path);
-  if (!value)
-    return nullptr;
-  return &value->GetDict();
-}
-
-const base::Value::List* PrefService::GetValueList(
-    const std::string& path) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const base::Value* value = GetList(path);
-  if (!value)
-    return nullptr;
-  return &value->GetList();
 }
 
 bool PrefService::HasPrefPath(const std::string& path) const {
@@ -380,21 +348,30 @@ bool PrefService::IsUserModifiablePreference(
 }
 
 const base::Value* PrefService::Get(const std::string& path) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetPreferenceValueChecked(path);
+  return &GetValue(path);
 }
 
 const base::Value* PrefService::GetDictionary(const std::string& path) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const base::Value& value = GetValue(path);
+  DCHECK(value.is_dict());
+  return &value;
+}
 
-  const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value)
-    return nullptr;
-  if (value->type() != base::Value::Type::DICTIONARY) {
-    NOTREACHED();
-    return nullptr;
-  }
-  return value;
+const base::Value& PrefService::GetValue(const std::string& path) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return *GetPreferenceValueChecked(path);
+}
+
+const base::Value::Dict& PrefService::GetValueDict(
+    const std::string& path) const {
+  const base::Value& value = GetValue(path);
+  return value.GetDict();
+}
+
+const base::Value::List& PrefService::GetValueList(
+    const std::string& path) const {
+  const base::Value& value = GetValue(path);
+  return value.GetList();
 }
 
 const base::Value* PrefService::GetUserPrefValue(
@@ -438,16 +415,9 @@ const base::Value* PrefService::GetDefaultPrefValue(
 }
 
 const base::Value* PrefService::GetList(const std::string& path) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value)
-    return nullptr;
-  if (value->type() != base::Value::Type::LIST) {
-    NOTREACHED();
-    return nullptr;
-  }
-  return value;
+  const base::Value& value = GetValue(path);
+  DCHECK(value.is_list());
+  return &value;
 }
 
 void PrefService::AddPrefObserver(const std::string& path, PrefObserver* obs) {
@@ -585,7 +555,7 @@ void PrefService::SetInt64(const std::string& path, int64_t value) {
 }
 
 int64_t PrefService::GetInt64(const std::string& path) const {
-  const base::Value* value = GetPreferenceValueChecked(path);
+  const base::Value& value = GetValue(path);
   absl::optional<int64_t> integer = base::ValueToInt64(value);
   DCHECK(integer);
   return integer.value_or(0);
@@ -596,14 +566,12 @@ void PrefService::SetUint64(const std::string& path, uint64_t value) {
 }
 
 uint64_t PrefService::GetUint64(const std::string& path) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const base::Value* value = GetPreferenceValueChecked(path);
-  if (!value || !value->is_string())
+  const base::Value& value = GetValue(path);
+  if (!value.is_string())
     return 0;
 
   uint64_t result;
-  base::StringToUint64(value->GetString(), &result);
+  base::StringToUint64(value.GetString(), &result);
   return result;
 }
 
@@ -612,7 +580,7 @@ void PrefService::SetTime(const std::string& path, base::Time value) {
 }
 
 base::Time PrefService::GetTime(const std::string& path) const {
-  const base::Value* value = GetPreferenceValueChecked(path);
+  const base::Value& value = GetValue(path);
   absl::optional<base::Time> time = base::ValueToTime(value);
   DCHECK(time);
   return time.value_or(base::Time());
@@ -623,7 +591,7 @@ void PrefService::SetTimeDelta(const std::string& path, base::TimeDelta value) {
 }
 
 base::TimeDelta PrefService::GetTimeDelta(const std::string& path) const {
-  const base::Value* value = GetPreferenceValueChecked(path);
+  const base::Value& value = GetValue(path);
   absl::optional<base::TimeDelta> time_delta = base::ValueToTimeDelta(value);
   DCHECK(time_delta);
   return time_delta.value_or(base::TimeDelta());

@@ -241,17 +241,29 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   double GetDouble(const std::string& path) const;
   std::string GetString(const std::string& path) const;
   base::FilePath GetFilePath(const std::string& path) const;
-  const base::Value::Dict* GetValueDict(const std::string& path) const;
-  const base::Value::List* GetValueList(const std::string& path) const;
 
+  // DEPRECATED: Prefer GetValue(), GetValueDict(), and GetValueList().
   // Returns the branch if it exists, or the registered default value otherwise.
   // Note that |path| must point to a registered preference. In that case, these
   // functions will never return NULL.
-  const base::Value* Get(const std::string& path) const;
-  // DEPRECATED: Prefer Get(), GetValueDict(), and GetValueList().
   // TODO(https://crbug.com/1334665): Remove these methods.
+  const base::Value* Get(const std::string& path) const;
   const base::Value* GetDictionary(const std::string& path) const;
   const base::Value* GetList(const std::string& path) const;
+
+  // Returns the branch if it exists, or the registered default value otherwise.
+  // `path` must point to a registered preference (DCHECK).
+  const base::Value& GetValue(const std::string& path) const;
+
+  // Returns the branch if it exists, or the registered default value otherwise.
+  // `path` must point to a registered preference whose value and registered
+  // default are of type `base::Value::Type::DICT (DCHECK).
+  const base::Value::Dict& GetValueDict(const std::string& path) const;
+
+  // Returns the branch if it exists, or the registered default value otherwise.
+  // `path` must point to a registered preference whose value and registered
+  // default are of type `base::Value::Type::LIST (DCHECK).
+  const base::Value::List& GetValueList(const std::string& path) const;
 
   // Removes a user pref and restores the pref to its default value.
   void ClearPref(const std::string& path);

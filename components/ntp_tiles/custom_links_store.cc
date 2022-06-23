@@ -34,10 +34,10 @@ CustomLinksStore::~CustomLinksStore() = default;
 std::vector<CustomLinksManager::Link> CustomLinksStore::RetrieveLinks() {
   std::vector<CustomLinksManager::Link> links;
 
-  const base::Value::List* stored_links =
+  const base::Value::List& stored_links =
       prefs_->GetValueList(prefs::kCustomLinksList);
 
-  for (const base::Value& link : *stored_links) {
+  for (const base::Value& link : stored_links) {
     const std::string* url_string =
         link.GetDict().FindString(kDictionaryKeyUrl);
     const std::string* title_string =
