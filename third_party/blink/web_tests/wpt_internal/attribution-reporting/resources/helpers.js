@@ -41,30 +41,18 @@ const encodeForPipe =
       return urlString.replace(pipeHeaderPattern, '\\$&');
     }
 
-const attributionSrcURL = (header, body, cookie = '') => {
+/**
+ * Registers either a source or trigger.
+ */
+const registerAttributionSrc = (header, body, cookie = '') => {
   const url = blankURL();
   // , and ) in header values must be escaped with \
   const attributionHeader =
       `header(${header},${encodeForPipe(JSON.stringify(body))})`;
   const cookieHeader = `header(Set-Cookie,${encodeForPipe(cookie)})`;
   url.searchParams.set('pipe', `${attributionHeader}|${cookieHeader}`);
-  return url.toString();
-};
-
-/**
- * Registers either a source or trigger.
- */
-const registerAttributionSrc = (header, body, cookie = '') => {
-  const url = attributionSrcURL(header, body, cookie);
   const image = document.createElement('img');
   image.setAttribute('attributionsrc', url);
-};
-
-const registerAttributionSrcWithOpen = (header, body, cookie = '') => {
-  const url = attributionSrcURL(header, body, cookie);
-  return test_driver.bless('open window', () => {
-    open(blankURL(), '_blank', `attributionsrc=${encodeURIComponent(url)}`);
-  });
 };
 
 /**
