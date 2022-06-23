@@ -383,8 +383,8 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
     // If the flag is enabled, attach the prediction to the field.
     if (attach_predictions_to_dom) {
       constexpr size_t kMaxLabelSize = 100;
-      const std::u16string truncated_label = field_data.label.substr(
-          0, std::min(field_data.label.length(), kMaxLabelSize));
+      const std::u16string truncated_label =
+          field_data.label.substr(0, kMaxLabelSize);
 
       std::string form_id =
           base::NumberToString(form.data.unique_renderer_id.value());
@@ -419,6 +419,12 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
                                         form_id,
                                         "\nfield renderer id: ",
                                         field_id_str});
+
+      WebString kAutocomplete = WebString::FromASCII("autocomplete");
+      if (element.HasAttribute(kAutocomplete)) {
+        title += "\nautocomplete: " +
+                 element.GetAttribute(kAutocomplete).Utf8().substr(0, 100);
+      }
 
       // Set this debug string to the title so that a developer can easily debug
       // by hovering the mouse over the input field.
