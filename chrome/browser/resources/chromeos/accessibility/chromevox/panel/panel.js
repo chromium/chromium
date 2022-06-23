@@ -1215,7 +1215,8 @@ export class Panel extends PanelInterface {
 
   static onCurrentRangeChanged() {
     if (Panel.mode_ === PanelMode.FULLSCREEN_TUTORIAL) {
-      if (Panel.tutorial && Panel.tutorial.restartNudges) {
+      if (Panel.tutorial && Panel.tutorial.restartNudges &&
+          !Panel.disableRestartTutorialNudgesForTesting) {
         Panel.tutorial.restartNudges();
       }
     }

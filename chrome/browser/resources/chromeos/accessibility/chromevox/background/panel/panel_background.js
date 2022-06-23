@@ -35,6 +35,7 @@ export class PanelBackground {
     window.panelBackground = PanelBackground.instance;
 
     PanelBackground.stateObserver_ = new PanelStateObserver();
+    ChromeVoxState.addObserver(PanelBackground.stateObserver_);
 
     BridgeHelper.registerHandler(
         BridgeTargets.PANEL_BACKGROUND, BridgeActions.CLEAR_SAVED_NODE,

@@ -207,6 +207,7 @@ TEST_F(
 // Afterward, general hints will be given about using ChromeVox. Lastly,
 // we will give a hint for exiting the tutorial.
 TEST_F('ChromeVoxTutorialTest', 'GeneralNudgesTest', async function() {
+  this.getPanel().disableRestartTutorialNudgesForTesting = true;
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -745,6 +746,7 @@ TEST_F('ChromeVoxTutorialTest', 'DISABLED_TouchOrientation', async function() {
 });
 
 TEST_F('ChromeVoxTutorialTest', 'GeneralTouchNudges', async function() {
+  this.getPanel().disableRestartTutorialNudgesForTesting = true;
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
