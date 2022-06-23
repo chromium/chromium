@@ -13,8 +13,6 @@
 
 namespace content {
 
-const size_t kInspectNodeMaxSize = 16 * 1024 * 1024;
-
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
@@ -40,7 +38,7 @@ BrowserAccessibilityManagerFuchsia::BrowserAccessibilityManagerFuchsia(
   if (accessibility_bridge) {
     inspect_node_ = accessibility_bridge->GetInspectNode();
     tree_dump_node_ = inspect_node_.CreateLazyNode("tree-data", [this]() {
-      inspect::Inspector inspector{{.maximum_size = kInspectNodeMaxSize}};
+      inspect::Inspector inspector;
 
       auto str = ax_tree()->ToString();
       auto str_capacity = str.capacity();
