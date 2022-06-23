@@ -76,8 +76,8 @@ void Windows10CaptionButton::OnPaintBackground(gfx::Canvas* canvas) {
   // Paint the background of the button (the semi-transparent rectangle that
   // appears when you hover or press the button).
   const ui::ThemeProvider* theme_provider = GetThemeProvider();
-  const SkColor bg_color = theme_provider->GetColor(
-      ThemeProperties::COLOR_CONTROL_BUTTON_BACKGROUND);
+  const SkColor bg_color =
+      GetColorProvider()->GetColor(kColorCaptionButtonBackground);
   const SkAlpha theme_alpha = SkColorGetA(bg_color);
   gfx::Rect bounds = GetContentsBounds();
   bounds.Inset(gfx::Insets::TLBR(0, GetBetweenButtonSpacing(), 0, 0));

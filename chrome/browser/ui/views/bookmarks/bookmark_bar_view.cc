@@ -96,6 +96,7 @@
 #include "ui/base/theme_provider.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
@@ -938,7 +939,7 @@ void BookmarkBarView::PaintChildren(const views::PaintInfo& paint_info) {
     // TODO(sky/glen): make me pretty!
     recorder.canvas()->FillRect(
         indicator_bounds,
-        GetThemeProvider()->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT));
+        GetColorProvider()->GetColor(kColorBookmarkBarForeground));
   }
 }
 
@@ -1580,11 +1581,11 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
   button->SetText(node->GetTitle());
   button->SetAccessibleName(node->GetTitle());
   button->SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
-  // We don't always have a theme provider (ui tests, for example).
+  // We don't always have a color provider (ui tests, for example).
   SkColor text_color = gfx::kPlaceholderColor;
-  const ui::ThemeProvider* const tp = GetThemeProvider();
-  if (tp) {
-    text_color = tp->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT);
+  const ui::ColorProvider* const cp = GetColorProvider();
+  if (cp) {
+    text_color = cp->GetColor(kColorBookmarkBarForeground);
     button->SetEnabledTextColors(text_color);
     if (node->is_folder()) {
       button->SetImageModel(
@@ -1602,7 +1603,7 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
     bool themify_icon = node->url().SchemeIs(content::kChromeUIScheme);
     gfx::ImageSkia favicon = bookmark_model_->GetFavicon(node).AsImageSkia();
     if (favicon.isNull()) {
-      if (ui::TouchUiController::Get()->touch_ui() && tp) {
+      if (ui::TouchUiController::Get()->touch_ui() && cp) {
         // This favicon currently does not match the default favicon icon used
         // elsewhere in the codebase.
         // See https://crbug/814447
@@ -1619,9 +1620,8 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
       themify_icon = true;
     }
 
-    if (themify_icon && tp) {
-      SkColor favicon_color =
-          tp->GetColor(ThemeProperties::COLOR_BOOKMARK_FAVICON);
+    if (themify_icon && cp) {
+      SkColor favicon_color = cp->GetColor(kColorBookmarkFavicon);
       if (favicon_color != SK_ColorTRANSPARENT) {
         favicon =
             gfx::ImageSkiaOperations::CreateColorMask(favicon, favicon_color);
@@ -1949,17 +1949,16 @@ views::Button* BookmarkBarView::DetermineViewToThrobFromRemove(
 }
 
 void BookmarkBarView::UpdateAppearanceForTheme() {
-  // We don't always have a theme provider (ui tests, for example).
-  const ui::ThemeProvider* theme_provider = GetThemeProvider();
-  if (!theme_provider)
+  // We don't always have a color provider (ui tests, for example).
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  if (!color_provider)
     return;
   for (size_t i = 0; i < bookmark_buttons_.size(); ++i) {
     ConfigureButton(bookmark_model_->bookmark_bar_node()->children()[i].get(),
                     bookmark_buttons_[i]);
   }
 
-  const SkColor color =
-      theme_provider->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT);
+  const SkColor color = color_provider->GetColor(kColorBookmarkBarForeground);
   other_bookmarks_button_->SetEnabledTextColors(color);
   managed_bookmarks_button_->SetEnabledTextColors(color);
   other_bookmarks_button_->SetImageModel(
@@ -1975,7 +1974,7 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
     apps_page_shortcut_->SetEnabledTextColors(color);
 
   const SkColor overflow_color =
-      GetColorProvider()->GetColor(kColorBookmarkButtonIcon);
+      color_provider->GetColor(kColorBookmarkButtonIcon);
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   overflow_button_->SetImageModel(
       views::Button::STATE_NORMAL,
