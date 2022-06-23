@@ -9285,7 +9285,7 @@
           'primary_account_signin',
         ]
       },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:103-'],
       'features': {
         # The case where a user is already signed in as a secondary account and the policy is dynamically refreshed to not allow secondary sign-ins cannot be handled right now. Hence this is not dynamic.
         'dynamic_refresh': False,
