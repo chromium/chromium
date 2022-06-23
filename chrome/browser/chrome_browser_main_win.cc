@@ -47,10 +47,12 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/critical_policy_section_metrics_win.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/os_crypt/app_bound_encryption_metrics_win.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/settings_resetter_win.h"
@@ -650,6 +652,12 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   // Use a delayed task to minimize the impact on startup time.
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, base::BindOnce(&DetectFaultTolerantHeap), base::Minutes(1));
+
+  // Query feature first, to include full population in field trial.
+  if (base::FeatureList::IsEnabled(features::kAppBoundEncryptionMetrics) &&
+      install_static::IsSystemInstall()) {
+    os_crypt::MeasureAppBoundEncryptionStatus(g_browser_process->local_state());
+  }
 
   // Record Processor Metrics. This is very low priority, hence posting as
   // BEST_EFFORT to start after Chrome startup has completed. This metric is

@@ -68,6 +68,10 @@ extern const base::Feature kRestartNetworkServiceUnsandboxedForFailedLaunch;
 
 extern const base::Feature kKeyPinningComponentUpdater;
 
+#if BUILDFLAG(IS_WIN)
+extern const base::Feature kAppBoundEncryptionMetrics;
+#endif
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

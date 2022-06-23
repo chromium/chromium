@@ -8789,6 +8789,76 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.AppBoundEncryption.Decrypt.ResultCode" enum="Hresult"
+    expires_after="M106">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The result code of the application-bound Decrypt operation. This is logged
+    once during browser startup on a background thread for system-level installs
+    on Windows only.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBoundEncryption.Decrypt.ResultLastError"
+    enum="WinGetLastError" expires_after="M106">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The GetLastError code for a failed application-bound Decrypt operation. This
+    is logged once during browser startup on a background thread for
+    system-level installs on Windows only, if the call to Decrypt failed.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBoundEncryption.Decrypt.Time" units="ms"
+    expires_after="M106">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The amount of time, in ms, that it takes to perform an application-bound
+    Decrypt call. This is logged once during browser startup on a background
+    thread for system-level installs on Windows only.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBoundEncryption.Encrypt.ResultCode" enum="Hresult"
+    expires_after="M106">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The result code of the application-bound Encrypt operation. This is logged
+    once during browser startup on a background thread for system-level installs
+    on Windows only, for a client that is initializing a new local state or a
+    previously failing client.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBoundEncryption.Encrypt.ResultLastError"
+    enum="WinGetLastError" expires_after="M106">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The GetLastError code for a failed application-bound Encrypt operation. This
+    is logged once during browser startup on a background thread for
+    system-level installs on Windows only, if the call to Encrypt failed, for a
+    client that is initializing a new local state or a previously failing
+    client.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBoundEncryption.Encrypt.Time" units="ms"
+    expires_after="M106">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The amount of time, in ms, that it takes to perform an application-bound
+    Encrypt call. This is logged once during browser startup on a background
+    thread for system-level installs on Windows only, for a client that is
+    initializing a new local state or a previously failing client.
+  </summary>
+</histogram>
+
 <histogram name="OSCrypt.BackendUsage" enum="LinuxPasswordStoreUsage"
     expires_after="2023-01-09">
   <owner>cfroussios@chromium.org</owner>

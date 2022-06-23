@@ -59,6 +59,14 @@ executable("elevation_service") {
   ]
 }
 
+source_set("public_headers") {
+  sources = [ "elevator.h" ]
+
+  deps = [ "//base" ]
+
+  public_deps = [ ":elevation_service_idl" ]
+}
+
 source_set("lib") {
   visibility = [ ":*" ]
 
@@ -68,7 +76,6 @@ source_set("lib") {
     "elevated_recovery_impl.cc",
     "elevated_recovery_impl.h",
     "elevator.cc",
-    "elevator.h",
     "service_main.cc",
     "service_main.h",
   ]
@@ -78,12 +85,14 @@ source_set("lib") {
   configs += [ ":winver" ]
 
   deps = [
-    ":elevation_service_idl",
     "//base",
     "//chrome/install_static:install_static_util",
     "//components/crx_file:crx_file",
     "//third_party/zlib/google:zip",
   ]
+
+  public_deps = [ ":public_headers" ]
+
   libs = [
     "crypt32.lib",
     "rpcrt4.lib",

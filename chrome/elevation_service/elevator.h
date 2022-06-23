@@ -13,9 +13,21 @@
 #include <wrl/module.h>
 
 #include "base/gtest_prod_util.h"
+#include "base/win/windows_types.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 
 namespace elevation_service {
+
+constexpr IID kTestElevatorClsid = {
+    0x416C51AC,
+    0x4DEF,
+    0x43CA,
+    {0xE7, 0x35, 0xE7, 0x35, 0x21, 0x0A, 0xB2,
+     0x57}};  // Elevator Test CLSID. {416C51AC-4DEF-43CA-96E8-E735210AB257}
+
+namespace switches {
+constexpr char kElevatorClsIdForTestingSwitch[] = "elevator-clsid-for-testing";
+}  // namespace switches
 
 class Elevator
     : public Microsoft::WRL::RuntimeClass<
