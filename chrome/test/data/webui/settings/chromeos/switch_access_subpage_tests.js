@@ -48,7 +48,7 @@ class TestSwitchAccessSubpageBrowserProxy extends TestBrowserProxy {
   }
 }
 
-suite('ManageAccessibilityPageTests', function() {
+suite('SwitchAccessSubpageTests', function() {
   let page = null;
   let browserProxy = null;
 
