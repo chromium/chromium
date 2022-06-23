@@ -48,6 +48,11 @@ bool HaveIdenticalFormattingStyle(const chrome_screen_ai::WordBox& word_1,
                                   const chrome_screen_ai::WordBox& word_2) {
   if (word_1.language() != word_2.language())
     return false;
+
+  // The absence of reliable color information makes the two words have unequal
+  // style, because it could indicate vastly different colors between them.
+  if (word_1.estimate_color_success() != word_2.estimate_color_success())
+    return false;
   if (word_1.estimate_color_success() && word_2.estimate_color_success()) {
     if (word_1.foreground_rgb_value() != word_2.foreground_rgb_value())
       return false;
