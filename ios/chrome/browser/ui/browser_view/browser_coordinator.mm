@@ -323,6 +323,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   std::unique_ptr<base::ScopedObservation<WebStateList, WebStateListObserver>>
       _scopedWebStateListObservation;
+  BrowserViewControllerDependencies _viewControllerDependencies;
   PrerenderService* _prerenderService;
   BubblePresenter* _bubblePresenter;
   ToolbarCoordinatorAdaptor* _toolbarCoordinatorAdaptor;
@@ -337,93 +338,13 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
 #pragma mark - ChromeCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
-  if (self = [super initWithBaseViewController:viewController
-                                       browser:browser]) {
-    _dispatcher = browser->GetCommandDispatcher();
-
-    ChromeBrowserState* browserState = browser->GetBrowserState();
-
-    _prerenderService =
-        PrerenderServiceFactory::GetForBrowserState(browserState);
-    if (!browserState->IsOffTheRecord()) {
-      DCHECK(_prerenderService);
-      _prerenderService->SetDelegate(self);
-    }
-
-    _bubblePresenter =
-        [[BubblePresenter alloc] initWithBrowserState:browserState];
-
-    _primaryToolbarCoordinator =
-        [[PrimaryToolbarCoordinator alloc] initWithBrowser:browser];
-
-    _secondaryToolbarCoordinator =
-        [[SecondaryToolbarCoordinator alloc] initWithBrowser:browser];
-
-    _toolbarCoordinatorAdaptor =
-        [[ToolbarCoordinatorAdaptor alloc] initWithDispatcher:_dispatcher];
-
-    [_toolbarCoordinatorAdaptor
-        addToolbarCoordinator:_primaryToolbarCoordinator];
-    [_toolbarCoordinatorAdaptor
-        addToolbarCoordinator:_secondaryToolbarCoordinator];
-
-    _sideSwipeController =
-        [[SideSwipeController alloc] initWithBrowser:browser];
-    _sideSwipeController.toolbarInteractionHandler = _toolbarCoordinatorAdaptor;
-    _sideSwipeController.primaryToolbarSnapshotProvider =
-        _primaryToolbarCoordinator;
-    _sideSwipeController.secondaryToolbarSnapshotProvider =
-        _secondaryToolbarCoordinator;
-
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      if (base::FeatureList::IsEnabled(kModernTabStrip)) {
-        _tabStripCoordinator =
-            [[TabStripCoordinator alloc] initWithBrowser:browser];
-      } else {
-        _legacyTabStripCoordinator =
-            [[TabStripLegacyCoordinator alloc] initWithBrowser:browser];
-        _legacyTabStripCoordinator.animationWaitDuration =
-            kLegacyFullscreenControllerToolbarAnimationDuration.InSecondsF();
-
-        [_sideSwipeController setTabStripDelegate:_legacyTabStripCoordinator];
-      }
-    }
-  }
-  return self;
-}
 - (void)start {
   if (self.started)
     return;
 
   DCHECK(!self.viewController);
 
-  // Add commands protocols handled by this class in this array to let the
-  // dispatcher know where to dispatch such commands. This must be done before
-  // starting any child coordinator, otherwise they won't be able to resolve
-  // handlers.
-  NSArray<Protocol*>* protocols = @[
-    @protocol(ActivityServiceCommands),
-    @protocol(BrowserCoordinatorCommands),
-    @protocol(DefaultPromoCommands),
-    @protocol(DefaultBrowserPromoNonModalCommands),
-    @protocol(FeedCommands),
-    @protocol(FindInPageCommands),
-    @protocol(PageInfoCommands),
-    @protocol(PasswordBreachCommands),
-    @protocol(PasswordProtectionCommands),
-    @protocol(PasswordSuggestionCommands),
-    @protocol(PolicyChangeCommands),
-    @protocol(TextZoomCommands),
-  ];
-
-  for (Protocol* protocol in protocols) {
-    [self.dispatcher startDispatchingToTarget:self forProtocol:protocol];
-  }
-
-  [self startBrowserContainer];
-  [self startDownloadManagerCoordinator];
+  [self createViewControllerDependencies];
   [self createViewController];
   // Mediators should start before coordinators so model state is accurate for
   // any UI that starts up.
@@ -449,9 +370,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   [self.dispatcher stopDispatchingToTarget:self];
   [self stopChildCoordinators];
   [self destroyViewController];
-  [self stopDownloadManagerCoordinator];
-  [self stopBrowserContainer];
-  self.dispatcher = nil;
+  [self destroyViewControllerDependencies];
   self.started = NO;
 }
 
@@ -553,9 +472,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
       [[BrowserViewControllerHelper alloc] init];
   KeyCommandsProvider* keyCommandsProvider = [[KeyCommandsProvider alloc] init];
 
-  BrowserViewControllerDependencies dependencies =
-      [self createBrowserViewControllerDependencies];
-
   _viewController = [[BrowserViewController alloc]
                      initWithBrowser:self.browser
       browserContainerViewController:self.browserContainerCoordinator
@@ -563,7 +479,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
          browserViewControllerHelper:browserViewControllerHelper
                           dispatcher:self.dispatcher
                  keyCommandsProvider:keyCommandsProvider
-                        dependencies:dependencies];
+                        dependencies:_viewControllerDependencies];
 
   WebNavigationBrowserAgent::FromBrowser(self.browser)
       ->SetDelegate(_viewController);
@@ -580,33 +496,138 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _viewController = nil;
 }
 
-// Starts the browser container.
-- (void)startBrowserContainer {
+// Creates the browser view controller dependencies.
+- (void)createViewControllerDependencies {
+  _dispatcher = self.browser->GetCommandDispatcher();
+
+  // Add commands protocols handled by this class in this array to let the
+  // dispatcher know where to dispatch such commands. This must be done before
+  // starting any child coordinator, otherwise they won't be able to resolve
+  // handlers.
+  NSArray<Protocol*>* protocols = @[
+    @protocol(ActivityServiceCommands),
+    @protocol(BrowserCoordinatorCommands),
+    @protocol(DefaultPromoCommands),
+    @protocol(DefaultBrowserPromoNonModalCommands),
+    @protocol(FeedCommands),
+    @protocol(FindInPageCommands),
+    @protocol(PageInfoCommands),
+    @protocol(PasswordBreachCommands),
+    @protocol(PasswordProtectionCommands),
+    @protocol(PasswordSuggestionCommands),
+    @protocol(PolicyChangeCommands),
+    @protocol(TextZoomCommands),
+  ];
+
+  for (Protocol* protocol in protocols) {
+    [_dispatcher startDispatchingToTarget:self forProtocol:protocol];
+  }
+
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+
+  _prerenderService = PrerenderServiceFactory::GetForBrowserState(browserState);
+  if (!browserState->IsOffTheRecord()) {
+    DCHECK(_prerenderService);
+    _prerenderService->SetDelegate(self);
+  }
+
+  _bubblePresenter =
+      [[BubblePresenter alloc] initWithBrowserState:browserState];
+
+  _primaryToolbarCoordinator =
+      [[PrimaryToolbarCoordinator alloc] initWithBrowser:self.browser];
+
+  _secondaryToolbarCoordinator =
+      [[SecondaryToolbarCoordinator alloc] initWithBrowser:self.browser];
+
+  _toolbarCoordinatorAdaptor =
+      [[ToolbarCoordinatorAdaptor alloc] initWithDispatcher:_dispatcher];
+
+  [_toolbarCoordinatorAdaptor addToolbarCoordinator:_primaryToolbarCoordinator];
+  [_toolbarCoordinatorAdaptor
+      addToolbarCoordinator:_secondaryToolbarCoordinator];
+
+  _sideSwipeController =
+      [[SideSwipeController alloc] initWithBrowser:self.browser];
+  _sideSwipeController.toolbarInteractionHandler = _toolbarCoordinatorAdaptor;
+  _sideSwipeController.primaryToolbarSnapshotProvider =
+      _primaryToolbarCoordinator;
+  _sideSwipeController.secondaryToolbarSnapshotProvider =
+      _secondaryToolbarCoordinator;
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+      _tabStripCoordinator =
+          [[TabStripCoordinator alloc] initWithBrowser:self.browser];
+    } else {
+      _legacyTabStripCoordinator =
+          [[TabStripLegacyCoordinator alloc] initWithBrowser:self.browser];
+      _legacyTabStripCoordinator.animationWaitDuration =
+          kLegacyFullscreenControllerToolbarAnimationDuration.InSecondsF();
+
+      [_sideSwipeController setTabStripDelegate:_legacyTabStripCoordinator];
+    }
+  }
+
   self.browserContainerCoordinator = [[BrowserContainerCoordinator alloc]
       initWithBaseViewController:nil
                          browser:self.browser];
   [self.browserContainerCoordinator start];
-}
 
-// Starts the download manager coordinator.
-- (void)startDownloadManagerCoordinator {
   self.downloadManagerCoordinator = [[DownloadManagerCoordinator alloc]
       initWithBaseViewController:self.browserContainerCoordinator.viewController
                          browser:self.browser];
   self.downloadManagerCoordinator.presenter =
       [[VerticalAnimationContainer alloc] init];
+
+  _viewControllerDependencies.prerenderService = _prerenderService;
+  _viewControllerDependencies.bubblePresenter = _bubblePresenter;
+  _viewControllerDependencies.downloadManagerCoordinator =
+      self.downloadManagerCoordinator;
+  _viewControllerDependencies.toolbarInterface = _toolbarCoordinatorAdaptor;
+  _viewControllerDependencies.UIUpdater = _toolbarCoordinatorAdaptor;
+  _viewControllerDependencies.primaryToolbarCoordinator =
+      _primaryToolbarCoordinator;
+  _viewControllerDependencies.secondaryToolbarCoordinator =
+      _secondaryToolbarCoordinator;
+  _viewControllerDependencies.tabStripCoordinator = _tabStripCoordinator;
+  _viewControllerDependencies.legacyTabStripCoordinator =
+      _legacyTabStripCoordinator;
+  _viewControllerDependencies.sideSwipeController = _sideSwipeController;
 }
 
-// Stops the browser container.
-- (void)stopBrowserContainer {
-  [self.browserContainerCoordinator stop];
-  self.browserContainerCoordinator = nil;
+- (void)updateViewControllerDependencies {
 }
 
-// Stops the download manager coordinator.
-- (void)stopDownloadManagerCoordinator {
+// Destroys the browser view controller dependencies.
+- (void)destroyViewControllerDependencies {
+  _viewControllerDependencies.prerenderService = nil;
+  _viewControllerDependencies.bubblePresenter = nil;
+  _viewControllerDependencies.downloadManagerCoordinator = nil;
+  _viewControllerDependencies.toolbarInterface = nil;
+  _viewControllerDependencies.UIUpdater = nil;
+  _viewControllerDependencies.primaryToolbarCoordinator = nil;
+  _viewControllerDependencies.secondaryToolbarCoordinator = nil;
+  _viewControllerDependencies.tabStripCoordinator = nil;
+  _viewControllerDependencies.legacyTabStripCoordinator = nil;
+  _viewControllerDependencies.sideSwipeController = nil;
+
+  _legacyTabStripCoordinator = nil;
+  _tabStripCoordinator = nil;
+  _sideSwipeController = nil;
+  _toolbarCoordinatorAdaptor = nil;
+  _secondaryToolbarCoordinator = nil;
+  _primaryToolbarCoordinator = nil;
+  _bubblePresenter = nil;
+  _prerenderService = nil;
+
   [self.downloadManagerCoordinator stop];
   self.downloadManagerCoordinator = nil;
+
+  [self.browserContainerCoordinator stop];
+  self.browserContainerCoordinator = nil;
+
+  _dispatcher = nil;
 }
 
 // Starts child coordinators.
@@ -868,22 +889,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
         [[IncognitoReauthMediator alloc] initWithConsumer:browserViewController
                                               reauthAgent:reauthAgent];
   }
-}
-
-- (BrowserViewControllerDependencies)createBrowserViewControllerDependencies {
-  BrowserViewControllerDependencies dependencies;
-  dependencies.prerenderService = _prerenderService;
-  dependencies.bubblePresenter = _bubblePresenter;
-  dependencies.downloadManagerCoordinator = self.downloadManagerCoordinator;
-  dependencies.toolbarInterface = _toolbarCoordinatorAdaptor;
-  dependencies.UIUpdater = _toolbarCoordinatorAdaptor;
-  dependencies.primaryToolbarCoordinator = _primaryToolbarCoordinator;
-  dependencies.secondaryToolbarCoordinator = _secondaryToolbarCoordinator;
-  dependencies.tabStripCoordinator = _tabStripCoordinator;
-  dependencies.legacyTabStripCoordinator = _legacyTabStripCoordinator;
-  dependencies.sideSwipeController = _sideSwipeController;
-
-  return dependencies;
 }
 
 #pragma mark - ActivityServiceCommands
