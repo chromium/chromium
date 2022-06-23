@@ -1494,8 +1494,10 @@ std::string HTMLDocumentParser::GetPreloadHistogramSuffix() {
 }
 
 void HTMLDocumentParser::ScanInBackground(const String& source) {
+  if (task_runner_state_->IsSynchronous() || !GetDocument()->Url().IsValid())
+    return;
+
   if (ThreadedPreloadScannerEnabled() && preloader_ &&
-      !task_runner_state_->IsSynchronous() && GetDocument()->Url().IsValid() &&
       // TODO(crbug.com/1329535): Support scanning prefetch documents in the
       // background.
       !GetDocument()->IsPrefetchOnly() &&
