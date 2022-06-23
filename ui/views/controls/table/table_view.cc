@@ -31,6 +31,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -980,38 +981,42 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
     else if (alternate_bg_color != default_bg_color && (i % 2))
       canvas->FillRect(GetRowBounds(i), alternate_bg_color);
     for (int j = region.min_column; j < region.max_column; ++j) {
-      const gfx::Rect cell_bounds(GetCellBounds(i, j));
-      int text_x = cell_margin + cell_bounds.x();
+      const gfx::Rect cell_bounds = GetCellBounds(i, j);
+      gfx::Rect text_bounds = cell_bounds;
+      text_bounds.Inset(gfx::Insets::VH(0, cell_margin));
 
       // Provide space for the grouping indicator, but draw it separately.
-      if (j == 0 && grouper_)
-        text_x += kGroupingIndicatorSize + cell_element_spacing;
+      if (j == 0 && grouper_) {
+        text_bounds.Inset(gfx::Insets().set_left(kGroupingIndicatorSize +
+                                                 cell_element_spacing));
+      }
 
       // Always paint the icon in the first visible column.
       if (j == 0 && table_type_ == ICON_AND_TEXT) {
         gfx::ImageSkia image =
             model_->GetIcon(model_index).Rasterize(GetColorProvider());
         if (!image.isNull()) {
-          int image_x =
-              GetMirroredXWithWidthInView(text_x, ui::TableModel::kIconSize);
+          int image_x = GetMirroredXWithWidthInView(text_bounds.x(),
+                                                    ui::TableModel::kIconSize);
           canvas->DrawImageInt(
               image, 0, 0, image.width(), image.height(), image_x,
               cell_bounds.y() +
                   (cell_bounds.height() - ui::TableModel::kIconSize) / 2,
               ui::TableModel::kIconSize, ui::TableModel::kIconSize, true);
         }
-        text_x += ui::TableModel::kIconSize + cell_element_spacing;
+        text_bounds.Inset(gfx::Insets().set_left(ui::TableModel::kIconSize +
+                                                 cell_element_spacing));
       }
-      if (text_x < cell_bounds.right() - cell_margin) {
+
+      // Paint text if there is still room for it after all that insetting.
+      if (!text_bounds.IsEmpty()) {
         canvas->DrawStringRectWithFlags(
             model_->GetText(model_index, visible_columns_[j].column.id),
             font_list_, is_selected ? selected_fg_color : fg_color,
-            gfx::Rect(GetMirroredXWithWidthInView(
-                          text_x, cell_bounds.right() - text_x - cell_margin),
-                      cell_bounds.y(), cell_bounds.right() - text_x,
-                      row_height_),
+            GetMirroredRect(text_bounds),
             TableColumnAlignmentToCanvasAlignment(
-                visible_columns_[j].column.alignment));
+                GetMirroredTableColumnAlignment(
+                    visible_columns_[j].column.alignment)));
       }
     }
   }
