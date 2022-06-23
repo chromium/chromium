@@ -1634,9 +1634,15 @@ void RenderViewContextMenu::AppendSearchLensForImageItems() {
       !provider->image_url_ref().IsValid(service->search_terms_data())) {
     return;
   }
+  std::u16string provider_name = std::u16string(kGoogleLens);
+  if (lens::features::UseGoogleAsVisualSearchProvider()) {
+    provider_name = std::u16string(kGoogle);
+  }
 
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE,
-                                  IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE);
+  menu_model_.AddItem(
+      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE,
+      l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE,
+                                 provider_name));
 }
 
 void RenderViewContextMenu::AppendAudioItems() {
@@ -2128,27 +2134,25 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
   // IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT4 is the currently launched
   // string for the regions search menu item.
   int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT4;
-  std::u16string provider_name = std::u16string(kGoogleLens);
+
   if (lens::features::UseRegionSearchMenuItemAltText1()) {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
   } else if (lens::features::UseRegionSearchMenuItemAltText2()) {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT2;
-  } else if (lens::features::UseRegionSearchMenuItemAltText3()) {
-    // Uses `Google` instead of `Google Lens` like the first alternative string.
-    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
-    provider_name = std::u16string(kGoogle);
-  } else if (lens::features::UseRegionSearchMenuItemAltText4()) {
-    // This string is the same as currently launched but uses `Google` instead
-    // of `Google Lens` as the provider name.
-    provider_name = std::u16string(kGoogle);
   } else if (lens::features::IsLensFullscreenSearchEnabled()) {
     // Default text for fullscreen search when enabled. This is the same string
     // as the third alternative text option.
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
-    provider_name = std::u16string(kGoogle);
   }
 
   if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
+    // Check if string should use `Google Lens` as visual search provider or
+    // `Google`.
+    std::u16string provider_name = std::u16string(kGoogleLens);
+    if (lens::features::UseGoogleAsVisualSearchProvider()) {
+      provider_name = std::u16string(kGoogle);
+    }
+
     menu_model_.AddItem(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
                         l10n_util::GetStringFUTF16(resource_id, provider_name));
   } else {
