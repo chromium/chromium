@@ -60,6 +60,16 @@ source_set("item_icons") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("settings_icons") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "settings_icon.h",
+    "settings_icon.mm",
+  ]
+  deps = [ ":symbols" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("symbols") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
