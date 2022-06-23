@@ -227,7 +227,7 @@ void ScreenTimeController::ForceScreenLockByPolicy() {
     return;
   }
 
-  chromeos::SessionManagerClient::Get()->RequestLockScreen();
+  SessionManagerClient::Get()->RequestLockScreen();
 }
 
 void ScreenTimeController::OnAccessCodeValidation(

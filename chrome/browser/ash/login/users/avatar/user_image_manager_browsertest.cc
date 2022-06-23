@@ -559,7 +559,7 @@ class UserImageManagerPolicyTest : public UserImageManagerTestBase,
     owner_key_util_->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
     // Override FakeSessionManagerClient. This will be shut down by the browser.
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
     FakeSessionManagerClient::Get()->set_device_policy(
         device_policy_.GetBlob());
 

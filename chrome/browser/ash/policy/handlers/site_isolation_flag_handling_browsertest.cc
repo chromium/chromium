@@ -181,7 +181,7 @@ class SiteIsolationFlagHandlingTest
                                                    "1111111111")) {}
 
   void SetUpInProcessBrowserTestFixture() override {
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    ash::SessionManagerClient::InitializeFakeInMemory();
 
     // Mark that chrome restart can be requested.
     // Note that AttemptRestart() is mocked out in UserSessionManager through

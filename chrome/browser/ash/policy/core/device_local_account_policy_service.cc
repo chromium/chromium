@@ -82,7 +82,7 @@ void DeleteObsoleteExtensionCache(const std::string& account_id_to_delete) {
 }  // namespace
 
 DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
-    chromeos::SessionManagerClient* session_manager_client,
+    ash::SessionManagerClient* session_manager_client,
     ash::DeviceSettingsService* device_settings_service,
     ash::CrosSettings* cros_settings,
     AffiliatedInvalidationServiceProvider* invalidation_service_provider,

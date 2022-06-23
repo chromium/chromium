@@ -280,7 +280,7 @@ void SessionControllerClientImpl::EmitAshInitialized() {
   // purely by emitting D-Bus signals, and thus has to be run whenever Ash is
   // started so Ash (DetachableBaseHandler in particular) gets the proper view
   // of the current detachable base state.
-  chromeos::SessionManagerClient::Get()->EmitAshInitialized();
+  ash::SessionManagerClient::Get()->EmitAshInitialized();
 }
 
 PrefService* SessionControllerClientImpl::GetSigninScreenPrefService() {
@@ -411,7 +411,7 @@ void SessionControllerClientImpl::DoLockScreen() {
     return;
 
   VLOG(1) << "Requesting screen lock from SessionControllerClientImpl";
-  chromeos::SessionManagerClient::Get()->RequestLockScreen();
+  ash::SessionManagerClient::Get()->RequestLockScreen();
 }
 
 // static

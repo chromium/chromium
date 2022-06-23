@@ -74,7 +74,7 @@ class BrowserDataMigratorOnSignIn : public ash::LoginManagerTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
   }
 
  protected:
@@ -112,10 +112,10 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorCopyMigrateOnSignIn,
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
   LoginAsRegularUser();
   run_loop.Run();
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_called());
+  EXPECT_TRUE(
+      FakeSessionManagerClient::Get()->request_browser_data_migration_called());
   // Migration should be triggered in copy mode and not move mode.
-  EXPECT_FALSE(chromeos::FakeSessionManagerClient::Get()
+  EXPECT_FALSE(FakeSessionManagerClient::Get()
                    ->request_browser_data_migration_for_move_called());
 };
 
@@ -160,9 +160,9 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByPolicy,
   SetLacrosAvailability(crosapi::browser_util::LacrosAvailability::kLacrosOnly);
   LoginAsRegularUser();
   run_loop.Run();
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_called());
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
+  EXPECT_TRUE(
+      FakeSessionManagerClient::Get()->request_browser_data_migration_called());
+  EXPECT_TRUE(FakeSessionManagerClient::Get()
                   ->request_browser_data_migration_for_move_called());
 };
 
@@ -199,9 +199,9 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByFeature,
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
   LoginAsRegularUser();
   run_loop.Run();
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_called());
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
+  EXPECT_TRUE(
+      FakeSessionManagerClient::Get()->request_browser_data_migration_called());
+  EXPECT_TRUE(FakeSessionManagerClient::Get()
                   ->request_browser_data_migration_for_move_called());
 };
 
@@ -240,9 +240,9 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorResumeOnSignIn, ForceResumeOnLogin) {
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
   LoginAsRegularUser();
   run_loop.Run();
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_called());
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
+  EXPECT_TRUE(
+      FakeSessionManagerClient::Get()->request_browser_data_migration_called());
+  EXPECT_TRUE(FakeSessionManagerClient::Get()
                   ->request_browser_data_migration_for_move_called());
 }
 
@@ -288,7 +288,7 @@ class BrowserDataMigratorRestartInSession
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
   }
 
  protected:
@@ -326,9 +326,9 @@ class BrowserDataMigratorMoveMigrateOnRestartInSessionByFeature
 IN_PROC_BROWSER_TEST_F(
     BrowserDataMigratorMoveMigrateOnRestartInSessionByFeature,
     RunMoveMigration) {
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_called());
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
+  EXPECT_TRUE(
+      FakeSessionManagerClient::Get()->request_browser_data_migration_called());
+  EXPECT_TRUE(FakeSessionManagerClient::Get()
                   ->request_browser_data_migration_for_move_called());
 }
 
@@ -362,9 +362,9 @@ class BrowserDataMigratorMoveMigrateOnRestartInSessionByPolicy
 // restart.
 IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnRestartInSessionByPolicy,
                        RunMoveMigration) {
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_called());
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
+  EXPECT_TRUE(
+      FakeSessionManagerClient::Get()->request_browser_data_migration_called());
+  EXPECT_TRUE(FakeSessionManagerClient::Get()
                   ->request_browser_data_migration_for_move_called());
 }
 
@@ -393,9 +393,9 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorResumeRestartInSession,
                        ResumeMigration) {
   // Test `MaybeForceResumeMoveMigration()` in
   // `ChromeBrowserMainPartsAsh::PreProfileInit()`.
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_called());
-  EXPECT_TRUE(chromeos::FakeSessionManagerClient::Get()
+  EXPECT_TRUE(
+      FakeSessionManagerClient::Get()->request_browser_data_migration_called());
+  EXPECT_TRUE(FakeSessionManagerClient::Get()
                   ->request_browser_data_migration_for_move_called());
 }
 

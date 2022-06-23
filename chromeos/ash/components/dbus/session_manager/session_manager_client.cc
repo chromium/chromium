@@ -43,7 +43,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -708,8 +708,8 @@ class SessionManagerClientImpl : public SessionManagerClient {
     session_manager_proxy_ = bus->GetObjectProxy(
         login_manager::kSessionManagerServiceName,
         dbus::ObjectPath(login_manager::kSessionManagerServicePath));
-    blocking_method_caller_ =
-        std::make_unique<BlockingMethodCaller>(bus, session_manager_proxy_);
+    blocking_method_caller_ = std::make_unique<chromeos::BlockingMethodCaller>(
+        bus, session_manager_proxy_);
 
     // Signals emitted on the session manager's interface.
     session_manager_proxy_->ConnectToSignal(
@@ -1143,7 +1143,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
   }
 
   dbus::ObjectProxy* session_manager_proxy_ = nullptr;
-  std::unique_ptr<BlockingMethodCaller> blocking_method_caller_;
+  std::unique_ptr<chromeos::BlockingMethodCaller> blocking_method_caller_;
   base::ObserverList<Observer>::Unchecked observers_{
       SessionManagerClient::kObserverListPolicy};
 
@@ -1200,4 +1200,4 @@ SessionManagerClient* SessionManagerClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -21,7 +21,7 @@ bool CheckIdleStateIsLocked() {
   if (IdleStateForTesting().has_value())
     return IdleStateForTesting().value() == IDLE_STATE_LOCKED;
 
-  return chromeos::SessionManagerClient::Get()->IsScreenLocked();
+  return ash::SessionManagerClient::Get()->IsScreenLocked();
 }
 
 }  // namespace ui

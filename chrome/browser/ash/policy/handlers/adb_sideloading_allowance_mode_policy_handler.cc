@@ -176,9 +176,9 @@ void AdbSideloadingAllowanceModePolicyHandler::CheckSideloadingStatus(
     return;
   }
 
-  using ResponseCode = chromeos::SessionManagerClient::AdbSideloadResponseCode;
+  using ResponseCode = ash::SessionManagerClient::AdbSideloadResponseCode;
 
-  auto* client = chromeos::SessionManagerClient::Get();
+  auto* client = ash::SessionManagerClient::Get();
   client->QueryAdbSideload(base::BindOnce(
       [](base::OnceCallback<void(bool)> callback, ResponseCode response_code,
          bool enabled) {

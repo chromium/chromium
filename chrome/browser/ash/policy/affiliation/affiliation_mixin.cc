@@ -82,7 +82,7 @@ void AffiliationMixin::SetIsForActiveDirectory(bool is_for_active_directory) {
 }
 
 AffiliationTestHelper AffiliationMixin::GetAffiliationTestHelper() const {
-  auto* session_manager_client = chromeos::FakeSessionManagerClient::Get();
+  auto* session_manager_client = ash::FakeSessionManagerClient::Get();
   CHECK(session_manager_client);
   if (is_for_active_directory_) {
     auto* fake_auth_policy_client = ash::FakeAuthPolicyClient::Get();

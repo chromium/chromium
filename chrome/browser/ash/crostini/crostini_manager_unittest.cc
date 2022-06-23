@@ -1701,8 +1701,8 @@ TEST_F(CrostiniManagerRestartTest, VmStoppedDuringRestart) {
 }
 
 TEST_F(CrostiniManagerRestartTest, RestartTriggersArcSideloadIfEnabled) {
-  chromeos::SessionManagerClient::InitializeFake();
-  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(true);
+  ash::SessionManagerClient::InitializeFake();
+  ash::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(true);
 
   vm_tools::cicerone::ConfigureForArcSideloadResponse fake_response;
   fake_response.set_status(
@@ -1720,8 +1720,8 @@ TEST_F(CrostiniManagerRestartTest, RestartTriggersArcSideloadIfEnabled) {
 }
 
 TEST_F(CrostiniManagerRestartTest, RestartDoesNotTriggerArcSideloadIfDisabled) {
-  chromeos::SessionManagerClient::InitializeFake();
-  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(false);
+  ash::SessionManagerClient::InitializeFake();
+  ash::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(false);
 
   vm_tools::cicerone::ConfigureForArcSideloadResponse fake_response;
   fake_response.set_status(

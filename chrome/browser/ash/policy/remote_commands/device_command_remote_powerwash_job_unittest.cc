@@ -93,7 +93,7 @@ class DeviceCommandRemotePowerwashJobTest : public testing::Test {
 
   const std::unique_ptr<MockCloudPolicyClient> client_;
   const std::unique_ptr<TestingRemoteCommandsService> service_;
-  chromeos::ScopedFakeInMemorySessionManagerClient scoped_session_manager_;
+  ash::ScopedFakeInMemorySessionManagerClient scoped_session_manager_;
 };
 
 DeviceCommandRemotePowerwashJobTest::DeviceCommandRemotePowerwashJobTest()
@@ -120,8 +120,8 @@ TEST_F(DeviceCommandRemotePowerwashJobTest, TestCommandAckStartsPowerwash) {
       CreateRemotePowerwashJob(kCommandAge, service_.get());
 
   // No powerwash at this point.
-  EXPECT_EQ(0, chromeos::FakeSessionManagerClient::Get()
-                   ->start_device_wipe_call_count());
+  EXPECT_EQ(
+      0, ash::FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
                        run_loop_.QuitClosure()));
@@ -134,7 +134,7 @@ TEST_F(DeviceCommandRemotePowerwashJobTest, TestCommandAckStartsPowerwash) {
   // server the powerwash would start.
 
   base::RunLoop run_loop2;
-  chromeos::FakeSessionManagerClient::Get()->set_on_start_device_wipe_callback(
+  ash::FakeSessionManagerClient::Get()->set_on_start_device_wipe_callback(
       base::BindLambdaForTesting([&]() { run_loop2.Quit(); }));
 
   // Simulate a response from the server by posting a task and waiting for
@@ -144,8 +144,8 @@ TEST_F(DeviceCommandRemotePowerwashJobTest, TestCommandAckStartsPowerwash) {
   run_loop2.Run();
 
   // One powerwash coming up.
-  EXPECT_EQ(1, chromeos::FakeSessionManagerClient::Get()
-                   ->start_device_wipe_call_count());
+  EXPECT_EQ(
+      1, ash::FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 }
 
 // Make sure that the failsafe timer starts the powerwash in case of no ACK.
@@ -154,8 +154,8 @@ TEST_F(DeviceCommandRemotePowerwashJobTest, TestFailsafeTimerStartsPowerwash) {
       CreateRemotePowerwashJob(kCommandAge, service_.get());
 
   // No powerwash at this point.
-  EXPECT_EQ(0, chromeos::FakeSessionManagerClient::Get()
-                   ->start_device_wipe_call_count());
+  EXPECT_EQ(
+      0, ash::FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 
   // Run job + succeeded_callback.
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
@@ -164,13 +164,13 @@ TEST_F(DeviceCommandRemotePowerwashJobTest, TestFailsafeTimerStartsPowerwash) {
 
   // After 5s the timer is not run yet.
   task_runner_->FastForwardBy(base::Seconds(5));
-  EXPECT_EQ(0, chromeos::FakeSessionManagerClient::Get()
-                   ->start_device_wipe_call_count());
+  EXPECT_EQ(
+      0, ash::FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 
   // After 10s the timer is run.
   task_runner_->FastForwardBy(base::Seconds(5));
-  EXPECT_EQ(1, chromeos::FakeSessionManagerClient::Get()
-                   ->start_device_wipe_call_count());
+  EXPECT_EQ(
+      1, ash::FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 }
 
 }  // namespace policy

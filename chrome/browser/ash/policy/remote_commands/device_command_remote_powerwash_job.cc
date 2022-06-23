@@ -29,7 +29,7 @@ constexpr base::TimeDelta kRemotePowerwashCommandExpirationTime =
 constexpr base::TimeDelta kFailsafeTimerTimeout = base::Seconds(10);
 
 void StartPowerwash(enterprise_management::SignedData signed_command) {
-  chromeos::SessionManagerClient::Get()->StartRemoteDeviceWipe(signed_command);
+  ash::SessionManagerClient::Get()->StartRemoteDeviceWipe(signed_command);
 }
 
 }  // namespace

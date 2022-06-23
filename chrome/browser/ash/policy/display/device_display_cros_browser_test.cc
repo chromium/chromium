@@ -95,7 +95,7 @@ void DeviceDisplayCrosTestHelper::ToggleSecondDisplay() {
 }
 
 void DeviceDisplayPolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture() {
-  chromeos::SessionManagerClient::InitializeFakeInMemory();
+  ash::SessionManagerClient::InitializeFakeInMemory();
   ash::DisplayConfigurationController::DisableAnimatorForTest();
   DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
 }

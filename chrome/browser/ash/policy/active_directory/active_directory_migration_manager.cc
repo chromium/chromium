@@ -186,8 +186,7 @@ void ActiveDirectoryMigrationManager::StartPowerwash() {
                         base::Time::Now());
 
   // Unsigned remote powerwash requests are allowed in AD mode.
-  chromeos::SessionManagerClient::Get()->StartRemoteDeviceWipe(
-      em::SignedData());
+  ash::SessionManagerClient::Get()->StartRemoteDeviceWipe(em::SignedData());
 }
 
 void ActiveDirectoryMigrationManager::MaybeRunStatusCallback(bool started,

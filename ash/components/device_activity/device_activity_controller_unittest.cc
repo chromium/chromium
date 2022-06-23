@@ -45,7 +45,7 @@ class DeviceActivityControllerTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
-    chromeos::SessionManagerClient::InitializeFake();
+    SessionManagerClient::InitializeFake();
     chromeos::system::StatisticsProvider::SetTestProvider(
         &statistics_provider_);
 

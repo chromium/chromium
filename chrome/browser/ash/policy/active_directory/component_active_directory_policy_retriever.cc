@@ -77,7 +77,7 @@ void ComponentActiveDirectoryPolicyRetriever::RetrievePolicyForNextNamespace() {
   descriptor.set_domain(MapPolicyDomain(ns.domain));
   descriptor.set_component_id(ns.component_id);
 
-  chromeos::SessionManagerClient::Get()->RetrievePolicy(
+  ash::SessionManagerClient::Get()->RetrievePolicy(
       descriptor,
       base::BindOnce(
           &ComponentActiveDirectoryPolicyRetriever::OnPolicyRetrieved,

@@ -64,8 +64,8 @@ class ArcMetricsServiceTest : public testing::Test {
     prefs::RegisterLocalStatePrefs(local_state_.registry());
     StabilityMetricsManager::Initialize(&local_state_);
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
-    chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
+    ash::SessionManagerClient::InitializeFakeInMemory();
+    ash::FakeSessionManagerClient::Get()->set_arc_available(true);
     chromeos::ConciergeClient::InitializeFake();
 
     // Changing the command line needs to be done here and not in
@@ -98,7 +98,7 @@ class ArcMetricsServiceTest : public testing::Test {
     arc_service_manager_.reset();
 
     chromeos::ConciergeClient::Shutdown();
-    chromeos::SessionManagerClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     StabilityMetricsManager::Shutdown();
   }
@@ -108,8 +108,7 @@ class ArcMetricsServiceTest : public testing::Test {
   void SetArcStartTimeInMs(uint64_t arc_start_time_in_ms) {
     const base::TimeTicks arc_start_time =
         base::Milliseconds(arc_start_time_in_ms) + base::TimeTicks();
-    chromeos::FakeSessionManagerClient::Get()->set_arc_start_time(
-        arc_start_time);
+    ash::FakeSessionManagerClient::Get()->set_arc_start_time(arc_start_time);
   }
 
   std::vector<mojom::BootProgressEventPtr> GetBootProgressEvents(

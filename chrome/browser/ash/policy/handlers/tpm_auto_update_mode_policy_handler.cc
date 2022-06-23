@@ -138,8 +138,7 @@ void TPMAutoUpdateModePolicyHandler::OnUpdateAvailableCheckResult(
   if (!update_available)
     return;
 
-  chromeos::SessionManagerClient::Get()->StartTPMFirmwareUpdate(
-      "preserve_stateful");
+  ash::SessionManagerClient::Get()->StartTPMFirmwareUpdate("preserve_stateful");
 }
 
 void TPMAutoUpdateModePolicyHandler::SetUpdateCheckerCallbackForTesting(

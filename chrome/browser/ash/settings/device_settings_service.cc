@@ -96,7 +96,7 @@ DeviceSettingsService::~DeviceSettingsService() {
 }
 
 void DeviceSettingsService::SetSessionManager(
-    chromeos::SessionManagerClient* session_manager_client,
+    SessionManagerClient* session_manager_client,
     scoped_refptr<OwnerKeyUtil> owner_key_util) {
   DCHECK(session_manager_client);
   DCHECK(owner_key_util.get());

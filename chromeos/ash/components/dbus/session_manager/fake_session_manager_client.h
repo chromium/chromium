@@ -18,7 +18,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of session_manager. Accepts policy blobs to be set and
 // returns them unmodified.
@@ -444,11 +444,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) ScopedFakeInMemorySessionManagerClient {
   ~ScopedFakeInMemorySessionManagerClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::FakeSessionManagerClient;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::FakeSessionManagerClient;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SESSION_MANAGER_FAKE_SESSION_MANAGER_CLIENT_H_

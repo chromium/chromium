@@ -298,9 +298,9 @@ void ApplySigninProfileModifications(Profile* profile) {
 }
 
 #if !defined(USE_REAL_DBUS_CLIENTS)
-chromeos::FakeSessionManagerClient* FakeSessionManagerClient() {
-  chromeos::FakeSessionManagerClient* fake_session_manager_client =
-      chromeos::FakeSessionManagerClient::Get();
+ash::FakeSessionManagerClient* FakeSessionManagerClient() {
+  ash::FakeSessionManagerClient* fake_session_manager_client =
+      ash::FakeSessionManagerClient::Get();
   DCHECK(fake_session_manager_client);
   return fake_session_manager_client;
 }

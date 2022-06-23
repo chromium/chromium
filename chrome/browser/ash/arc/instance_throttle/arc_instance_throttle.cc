@@ -176,7 +176,7 @@ void SetArcCpuRestrictionCallback(
 }
 
 void SetArcContainerCpuRestriction(CpuRestrictionState cpu_restriction_state) {
-  if (!chromeos::SessionManagerClient::Get()) {
+  if (!ash::SessionManagerClient::Get()) {
     LOG(WARNING) << "SessionManagerClient is not available";
     return;
   }
@@ -190,7 +190,7 @@ void SetArcContainerCpuRestriction(CpuRestrictionState cpu_restriction_state) {
       state = login_manager::CONTAINER_CPU_RESTRICTION_BACKGROUND;
       break;
   }
-  chromeos::SessionManagerClient::Get()->SetArcCpuRestriction(
+  ash::SessionManagerClient::Get()->SetArcCpuRestriction(
       state, base::BindOnce(SetArcCpuRestrictionCallback, state));
 }
 

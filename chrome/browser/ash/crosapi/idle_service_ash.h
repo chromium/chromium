@@ -25,7 +25,7 @@ class IdleServiceAsh : public mojom::IdleService {
   // Helper to observe changes in relevant quantities, read these values, and
   // manage / dispatch to observers for IdleServiceAsh.
   class Dispatcher : public ui::UserActivityObserver,
-                     public chromeos::SessionManagerClient::Observer {
+                     public ash::SessionManagerClient::Observer {
    public:
     Dispatcher();
     Dispatcher(const Dispatcher&) = delete;
@@ -35,7 +35,7 @@ class IdleServiceAsh : public mojom::IdleService {
     // ui::UserActivityObserver:
     void OnUserActivity(const ui::Event* event) override;
 
-    // chromeos::SessionManagerClient::Observer:
+    // SessionManagerClient::Observer:
     void ScreenLockedStateUpdated() override;
 
    private:

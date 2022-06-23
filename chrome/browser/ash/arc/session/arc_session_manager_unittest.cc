@@ -163,7 +163,7 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    ash::SessionManagerClient::InitializeFakeInMemory();
 
     ArcSessionManager::SetUiEnabledForTesting(false);
     SetArcBlockedDueToIncompatibleFileSystemForTesting(false);
@@ -183,7 +183,7 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
     arc_session_manager_->Shutdown();
     arc_session_manager_.reset();
     arc_service_manager_.reset();
-    chromeos::SessionManagerClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
@@ -213,7 +213,7 @@ TEST_F(ArcSessionManagerInLoginScreenTest, EmitLoginPromptVisible) {
 
   SetArcAvailableCommandLineForTesting(base::CommandLine::ForCurrentProcess());
 
-  chromeos::SessionManagerClient::Get()->EmitLoginPromptVisible();
+  ash::SessionManagerClient::Get()->EmitLoginPromptVisible();
   ASSERT_TRUE(arc_session());
   EXPECT_FALSE(arc_session()->is_running());
   EXPECT_EQ(ArcSessionManager::State::NOT_INITIALIZED,
@@ -225,7 +225,7 @@ TEST_F(ArcSessionManagerInLoginScreenTest, EmitLoginPromptVisible) {
 TEST_F(ArcSessionManagerInLoginScreenTest, EmitLoginPromptVisible_NoOp) {
   EXPECT_FALSE(arc_session());
 
-  chromeos::SessionManagerClient::Get()->EmitLoginPromptVisible();
+  ash::SessionManagerClient::Get()->EmitLoginPromptVisible();
   EXPECT_FALSE(arc_session());
   EXPECT_EQ(ArcSessionManager::State::NOT_INITIALIZED,
             arc_session_manager()->state());
@@ -240,7 +240,7 @@ TEST_F(ArcSessionManagerInLoginScreenTest, EmitLoginPromptVisibleManualStart) {
   command_line.GetProcessCommandLine()->AppendSwitchASCII("arc-start-mode",
                                                           "manual");
 
-  chromeos::SessionManagerClient::Get()->EmitLoginPromptVisible();
+  ash::SessionManagerClient::Get()->EmitLoginPromptVisible();
   EXPECT_FALSE(arc_session());
   EXPECT_EQ(ArcSessionManager::State::NOT_INITIALIZED,
             arc_session_manager()->state());
@@ -252,7 +252,7 @@ TEST_F(ArcSessionManagerInLoginScreenTest, StopMiniArcIfNecessary) {
 
   SetArcAvailableCommandLineForTesting(base::CommandLine::ForCurrentProcess());
 
-  chromeos::SessionManagerClient::Get()->EmitLoginPromptVisible();
+  ash::SessionManagerClient::Get()->EmitLoginPromptVisible();
   EXPECT_TRUE(arc_session());
 
   arc_session_manager()->StopMiniArcIfNecessary();
@@ -278,7 +278,7 @@ class ArcSessionManagerTestBase : public testing::Test {
     chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    ash::SessionManagerClient::InitializeFakeInMemory();
     ash::UpstartClient::InitializeFake();
 
     SetArcAvailableCommandLineForTesting(
@@ -308,7 +308,7 @@ class ArcSessionManagerTestBase : public testing::Test {
     arc_session_manager_.reset();
     arc_service_manager_.reset();
     ash::UpstartClient::Shutdown();
-    chromeos::SessionManagerClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();

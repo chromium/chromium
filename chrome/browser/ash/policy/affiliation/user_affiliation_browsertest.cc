@@ -149,7 +149,7 @@ class UserAffiliationBrowserTest
 
     // Initialize clients here so they are available during setup. They will be
     // shutdown in ChromeBrowserMain.
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    ash::SessionManagerClient::InitializeFakeInMemory();
     ash::UpstartClient::InitializeFake();
     if (GetParam().active_directory) {
       ash::AuthPolicyClient::InitializeFake();

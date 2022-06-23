@@ -636,7 +636,7 @@ class PublicAccountArcTermsOfServiceScreenTest
 
   void SetUpInProcessBrowserTestFixture() override {
     ArcTermsOfServiceScreenTest::SetUpInProcessBrowserTestFixture();
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
     InitializePolicy();
   }
 
@@ -698,8 +698,8 @@ class PublicAccountArcTermsOfServiceScreenTest
   }
 
  private:
-  chromeos::FakeSessionManagerClient* session_manager_client() {
-    return chromeos::FakeSessionManagerClient::Get();
+  FakeSessionManagerClient* session_manager_client() {
+    return FakeSessionManagerClient::Get();
   }
 
   void RefreshDevicePolicy() { policy_helper()->RefreshDevicePolicy(); }

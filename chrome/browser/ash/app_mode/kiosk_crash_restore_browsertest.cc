@@ -53,8 +53,8 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
         *device_policy_.GetSigningKey());
 
     // SessionManagerClient will be destroyed in ChromeBrowserMain.
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
-    chromeos::FakeSessionManagerClient::Get()->set_device_policy(
+    SessionManagerClient::InitializeFakeInMemory();
+    FakeSessionManagerClient::Get()->set_device_policy(
         device_policy_.GetBlob());
   }
 

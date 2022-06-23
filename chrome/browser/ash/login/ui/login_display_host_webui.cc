@@ -691,7 +691,7 @@ void LoginDisplayHostWebUI::PrimaryMainFrameRenderProcessGone(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// LoginDisplayHostWebUI, chromeos::SessionManagerClient::Observer:
+// LoginDisplayHostWebUI, SessionManagerClient::Observer:
 
 void LoginDisplayHostWebUI::EmitLoginPromptVisibleCalled() {
   OnLoginPromptVisible();

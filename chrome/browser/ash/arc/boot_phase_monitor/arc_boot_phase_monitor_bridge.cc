@@ -116,7 +116,7 @@ void ArcBootPhaseMonitorBridge::OnBootCompleted() {
   VLOG(2) << "OnBootCompleted";
   boot_completed_ = true;
 
-  chromeos::SessionManagerClient::Get()->EmitArcBooted(
+  ash::SessionManagerClient::Get()->EmitArcBooted(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_),
       base::BindOnce(&OnEmitArcBooted));
 

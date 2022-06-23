@@ -143,7 +143,7 @@ class ComponentActiveDirectoryPolicyTest
     builder_.set_payload(policy);
     builder_.Build();
     base::RunLoop run_loop;
-    chromeos::FakeSessionManagerClient::Get()->StorePolicy(
+    ash::FakeSessionManagerClient::Get()->StorePolicy(
         descriptor, builder_.GetBlob(),
         base::BindOnce(&ExpectSuccess, run_loop.QuitClosure()));
     run_loop.Run();

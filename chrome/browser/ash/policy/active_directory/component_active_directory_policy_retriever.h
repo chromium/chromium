@@ -22,8 +22,7 @@ namespace policy {
 class ComponentActiveDirectoryPolicyRetriever {
  public:
   // Response type from a policy retrieval request for a single namespace.
-  using ResponseType =
-      chromeos::SessionManagerClient::RetrievePolicyResponseType;
+  using ResponseType = ash::SessionManagerClient::RetrievePolicyResponseType;
 
   // Result from a policy retrieval request for a single policy namespace.
   struct RetrieveResult {

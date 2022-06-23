@@ -100,11 +100,11 @@ void PlatformKeysTestBase::SetUpCommandLine(base::CommandLine* command_line) {
 void PlatformKeysTestBase::SetUpInProcessBrowserTestFixture() {
   extensions::MixinBasedExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
-  chromeos::SessionManagerClient::InitializeFakeInMemory();
+  ash::SessionManagerClient::InitializeFakeInMemory();
 
   policy::AffiliationTestHelper affiliation_helper =
       policy::AffiliationTestHelper::CreateForCloud(
-          chromeos::FakeSessionManagerClient::Get());
+          ash::FakeSessionManagerClient::Get());
 
   if (enrollment_status() == EnrollmentStatus::ENROLLED) {
     std::set<std::string> device_affiliation_ids;

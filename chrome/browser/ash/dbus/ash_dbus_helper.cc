@@ -153,7 +153,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::PowerManagerClient>(bus);
   InitializeDBusClient<chromeos::ResourcedClient>(bus);
   InitializeDBusClient<SeneschalClient>(bus);
-  InitializeDBusClient<chromeos::SessionManagerClient>(bus);
+  InitializeDBusClient<SessionManagerClient>(bus);
   InitializeDBusClient<SpacedClient>(bus);
   InitializeDBusClient<SystemClockClient>(bus);
   InitializeDBusClient<SystemProxyClient>(bus);
@@ -229,7 +229,7 @@ void ShutdownDBus() {
   SystemProxyClient::Shutdown();
   SystemClockClient::Shutdown();
   SpacedClient::Shutdown();
-  chromeos::SessionManagerClient::Shutdown();
+  SessionManagerClient::Shutdown();
   SeneschalClient::Shutdown();
   chromeos::ResourcedClient::Shutdown();
   if (ash::features::IsRgbKeyboardEnabled()) {

@@ -566,8 +566,8 @@ ArcSessionManager::ArcSessionManager(
   arc_session_runner_->AddObserver(this);
   arc_session_runner_->SetDemoModeDelegate(
       std::make_unique<ArcDemoModeDelegateImpl>());
-  if (chromeos::SessionManagerClient::Get())
-    chromeos::SessionManagerClient::Get()->AddObserver(this);
+  if (ash::SessionManagerClient::Get())
+    ash::SessionManagerClient::Get()->AddObserver(this);
   ResetStabilityMetrics();
   ash::ConciergeClient::Get()->AddVmObserver(this);
   arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
@@ -579,8 +579,8 @@ ArcSessionManager::~ArcSessionManager() {
 
   ash::ConciergeClient::Get()->RemoveVmObserver(this);
 
-  if (chromeos::SessionManagerClient::Get())
-    chromeos::SessionManagerClient::Get()->RemoveObserver(this);
+  if (ash::SessionManagerClient::Get())
+    ash::SessionManagerClient::Get()->RemoveObserver(this);
 
   Shutdown();
   arc_session_runner_->RemoveObserver(this);

@@ -113,7 +113,7 @@ class PublicSessionTosScreenTest : public OobeBaseTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     OobeBaseTest::SetUpInProcessBrowserTestFixture();
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
     InitializePolicy();
   }
 
@@ -206,8 +206,8 @@ class PublicSessionTosScreenTest : public OobeBaseTest {
     original_callback_.Run(result_.value());
   }
 
-  chromeos::FakeSessionManagerClient* session_manager_client() {
-    return chromeos::FakeSessionManagerClient::Get();
+  FakeSessionManagerClient* session_manager_client() {
+    return FakeSessionManagerClient::Get();
   }
 
   absl::optional<TermsOfServiceScreen::Result> result_;
@@ -361,8 +361,8 @@ class ManagedUserTosScreenTestBase : public OobeBaseTest {
     original_callback_.Run(result_.value());
   }
 
-  chromeos::FakeSessionManagerClient* session_manager_client() {
-    return chromeos::FakeSessionManagerClient::Get();
+  FakeSessionManagerClient* session_manager_client() {
+    return FakeSessionManagerClient::Get();
   }
 
   bool TosFileExists() {

@@ -54,7 +54,7 @@ class ComponentActiveDirectoryPolicyRetrieverTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::vector<RetrieveResult> results_;
-  chromeos::ScopedFakeInMemorySessionManagerClient scoped_session_manager_;
+  ash::ScopedFakeInMemorySessionManagerClient scoped_session_manager_;
   bool policy_stored_ = false;
   bool callback_called_ = false;
 };
@@ -97,8 +97,8 @@ TEST_F(ComponentActiveDirectoryPolicyRetrieverTest, RetrievePolicies) {
   descriptor.set_account_type(login_manager::ACCOUNT_TYPE_DEVICE);
   descriptor.set_domain(login_manager::POLICY_DOMAIN_EXTENSIONS);
   descriptor.set_component_id(kExtensionId);
-  chromeos::SessionManagerClient::Get()->StorePolicy(descriptor, policy_blob,
-                                                     CreateStoredCallback());
+  ash::SessionManagerClient::Get()->StorePolicy(descriptor, policy_blob,
+                                                CreateStoredCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(policy_stored_);
 

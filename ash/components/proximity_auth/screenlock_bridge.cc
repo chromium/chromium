@@ -148,7 +148,7 @@ bool ScreenlockBridge::IsLocked() const {
 }
 
 void ScreenlockBridge::Lock() {
-  chromeos::SessionManagerClient::Get()->RequestLockScreen();
+  ash::SessionManagerClient::Get()->RequestLockScreen();
 }
 
 void ScreenlockBridge::Unlock(const AccountId& account_id) {

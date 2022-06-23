@@ -48,7 +48,7 @@ enum class FeatureFlagsMigrationStatus {
 // (crbug.com/230018).
 class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
                                 public ProfileManagerObserver,
-                                public chromeos::SessionManagerClient::Observer,
+                                public SessionManagerClient::Observer,
                                 public DeviceSettingsService::Observer {
  public:
   struct ManagementSettings {

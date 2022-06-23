@@ -42,7 +42,7 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
   // is only set when install attributes are locked into Active Directory mode.
   UserCloudPolicyStoreAsh(
       chromeos::CryptohomeMiscClient* cryptohome_misc_client,
-      chromeos::SessionManagerClient* session_manager_client,
+      ash::SessionManagerClient* session_manager_client,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const AccountId& account_id,
       const base::FilePath& user_policy_key_dir,
@@ -80,7 +80,7 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
 
   // Called back from SessionManagerClient for policy load operations.
   void OnPolicyRetrieved(
-      chromeos::SessionManagerClient::RetrievePolicyResponseType response,
+      ash::SessionManagerClient::RetrievePolicyResponseType response,
       const std::string& policy_blob);
 
   // Starts validation of the loaded |policy| before installing it.
@@ -94,7 +94,7 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
   std::unique_ptr<UserCloudPolicyValidator> CreateValidatorForLoad(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
 
-  chromeos::SessionManagerClient* session_manager_client_;
+  ash::SessionManagerClient* session_manager_client_;
   const AccountId account_id_;
   bool is_active_directory_;
 

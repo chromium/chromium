@@ -69,7 +69,7 @@ void ForceInstalledAffiliatedExtensionApiTest::
     SetUpInProcessBrowserTestFixture() {
   // Initialize clients here so they are available during setup. They will be
   // shutdown in ChromeBrowserMain.
-  chromeos::SessionManagerClient::InitializeFakeInMemory();
+  ash::SessionManagerClient::InitializeFakeInMemory();
 
   // Init the user policy provider.
   policy_provider_.SetDefaultReturns(

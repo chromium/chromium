@@ -456,7 +456,7 @@ void ArcMetricsService::ReportBootProgress(
   }
 
   // Retrieve ARC full container's start time from session manager.
-  chromeos::SessionManagerClient::Get()->GetArcStartTime(base::BindOnce(
+  ash::SessionManagerClient::Get()->GetArcStartTime(base::BindOnce(
       &ArcMetricsService::OnArcStartTimeRetrieved,
       weak_ptr_factory_.GetWeakPtr(), std::move(events), boot_type));
 
@@ -588,7 +588,7 @@ void ArcMetricsService::ReportArcCorePriAbiMigBootTime(
   // time, which is fetched from session manager.
   const base::TimeTicks durationTicks = duration + base::TimeTicks();
   // Retrieve ARC full container's start time from session manager.
-  chromeos::SessionManagerClient::Get()->GetArcStartTime(
+  ash::SessionManagerClient::Get()->GetArcStartTime(
       base::BindOnce(&ArcMetricsService::OnArcStartTimeForPriAbiMigration,
                      weak_ptr_factory_.GetWeakPtr(), durationTicks));
 }

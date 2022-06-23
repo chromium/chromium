@@ -42,8 +42,8 @@ void UserPolicyMixin::SetUpInProcessBrowserTestFixture() {
 
   // Make sure session manager client has been initialized as in-memory. This is
   // requirement for setting policy blobs.
-  if (!chromeos::SessionManagerClient::Get())
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+  if (!SessionManagerClient::Get())
+    SessionManagerClient::InitializeFakeInMemory();
 
   session_manager_initialized_ = true;
 

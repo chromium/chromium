@@ -48,7 +48,7 @@ class SessionManagerOperation;
 //
 // DeviceSettingsService generates notifications for key and policy update
 // events so interested parties can reload state as appropriate.
-class DeviceSettingsService : public chromeos::SessionManagerClient::Observer {
+class DeviceSettingsService : public SessionManagerClient::Observer {
  public:
   // Indicates ownership status of the device (listed in upgrade order).
   enum OwnershipStatus {
@@ -112,7 +112,7 @@ class DeviceSettingsService : public chromeos::SessionManagerClient::Observer {
   ~DeviceSettingsService() override;
 
   // To be called on startup once threads are initialized and D-Bus is ready.
-  void SetSessionManager(chromeos::SessionManagerClient* session_manager_client,
+  void SetSessionManager(SessionManagerClient* session_manager_client,
                          scoped_refptr<ownership::OwnerKeyUtil> owner_key_util);
 
   // Prevents the service from making further calls to session_manager_client
@@ -259,7 +259,7 @@ class DeviceSettingsService : public chromeos::SessionManagerClient::Observer {
   // Processes pending callbacks from GetOwnershipStatusAsync().
   void RunPendingOwnershipStatusCallbacks();
 
-  chromeos::SessionManagerClient* session_manager_client_ = nullptr;
+  SessionManagerClient* session_manager_client_ = nullptr;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
 
   Status store_status_ = STORE_SUCCESS;

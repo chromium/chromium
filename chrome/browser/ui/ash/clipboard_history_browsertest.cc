@@ -1497,7 +1497,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 
   // Lock the screen.
-  chromeos::SessionManagerClient::Get()->RequestLockScreen();
+  ash::SessionManagerClient::Get()->RequestLockScreen();
   ash::SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();
 
   // Verify that the item was not pasted.

@@ -16,7 +16,7 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/prefs/pref_change_registrar.h"
 
-namespace chromeos {
+namespace ash {
 class FakeSessionManagerClient;
 }
 
@@ -124,7 +124,7 @@ class DevicePolicyCrosBrowserTest : public MixinBasedInProcessBrowserTest {
     return policy_helper()->device_policy();
   }
 
-  chromeos::FakeSessionManagerClient* session_manager_client();
+  ash::FakeSessionManagerClient* session_manager_client();
 
   ash::DeviceStateMixin device_state_{
       &mixin_host_,

@@ -159,7 +159,7 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
               device_active_directory_policy_manager_));
     } else {
       state_keys_broker_ = std::make_unique<ServerBackedStateKeysBroker>(
-          chromeos::SessionManagerClient::Get());
+          ash::SessionManagerClient::Get());
 
       const base::FilePath device_policy_external_data_path =
           base::PathService::CheckedGet(ash::DIR_DEVICE_POLICY_EXTERNAL_DATA);
@@ -211,8 +211,8 @@ void BrowserPolicyConnectorAsh::Init(
   if (!ash::InstallAttributes::Get()->IsActiveDirectoryManaged()) {
     device_local_account_policy_service_ =
         std::make_unique<DeviceLocalAccountPolicyService>(
-            chromeos::SessionManagerClient::Get(),
-            ash::DeviceSettingsService::Get(), ash::CrosSettings::Get(),
+            ash::SessionManagerClient::Get(), ash::DeviceSettingsService::Get(),
+            ash::CrosSettings::Get(),
             affiliated_invalidation_service_provider_.get(),
             CreateBackgroundTaskRunner(), CreateBackgroundTaskRunner(),
             CreateBackgroundTaskRunner(), url_loader_factory);
@@ -221,7 +221,7 @@ void BrowserPolicyConnectorAsh::Init(
     // Initialize state keys and enrollment ID upload mechanisms to DM Server in
     // Active Directory mode.
     state_keys_broker_ = std::make_unique<ServerBackedStateKeysBroker>(
-        chromeos::SessionManagerClient::Get());
+        ash::SessionManagerClient::Get());
     active_directory_device_state_uploader_ =
         std::make_unique<ActiveDirectoryDeviceStateUploader>(
             /*client_id=*/GetInstallAttributes()->GetDeviceId(),

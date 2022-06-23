@@ -194,11 +194,10 @@ void DeviceActivityController::Start(
 
   // Wrap with callback from |psm_device_active_secret_| retrieval using
   // |SessionManagerClient| DBus.
-  chromeos::SessionManagerClient::Get()->GetPsmDeviceActiveSecret(
-      base::BindOnce(&device_activity::DeviceActivityController::
-                         OnPsmDeviceActiveSecretFetched,
-                     weak_factory_.GetWeakPtr(), local_state,
-                     url_loader_factory));
+  SessionManagerClient::Get()->GetPsmDeviceActiveSecret(base::BindOnce(
+      &device_activity::DeviceActivityController::
+          OnPsmDeviceActiveSecretFetched,
+      weak_factory_.GetWeakPtr(), local_state, url_loader_factory));
 }
 
 void DeviceActivityController::OnPsmDeviceActiveSecretFetched(

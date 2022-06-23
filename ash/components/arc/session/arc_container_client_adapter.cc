@@ -93,13 +93,12 @@ ToLoginManagerDalvikMemoryProfile(
 
 }  // namespace
 
-class ArcContainerClientAdapter
-    : public ArcClientAdapter,
-      public chromeos::SessionManagerClient::Observer {
+class ArcContainerClientAdapter : public ArcClientAdapter,
+                                  public ash::SessionManagerClient::Observer {
  public:
   ArcContainerClientAdapter() {
-    if (chromeos::SessionManagerClient::Get())
-      chromeos::SessionManagerClient::Get()->AddObserver(this);
+    if (ash::SessionManagerClient::Get())
+      ash::SessionManagerClient::Get()->AddObserver(this);
   }
 
   ArcContainerClientAdapter(const ArcContainerClientAdapter&) = delete;
@@ -107,8 +106,8 @@ class ArcContainerClientAdapter
       delete;
 
   ~ArcContainerClientAdapter() override {
-    if (chromeos::SessionManagerClient::Get())
-      chromeos::SessionManagerClient::Get()->RemoveObserver(this);
+    if (ash::SessionManagerClient::Get())
+      ash::SessionManagerClient::Get()->RemoveObserver(this);
   }
 
   login_manager::StartArcMiniContainerRequest
@@ -151,7 +150,7 @@ class ArcContainerClientAdapter
 
     auto request =
         ConvertStartParamsToStartArcMiniContainerRequest(std::move(params));
-    chromeos::SessionManagerClient::Get()->StartArcMiniContainer(
+    ash::SessionManagerClient::Get()->StartArcMiniContainer(
         request, std::move(callback));
   }
 
@@ -182,14 +181,14 @@ class ArcContainerClientAdapter
   void UpgradeArc(UpgradeParams params,
                   chromeos::VoidDBusMethodCallback callback) override {
     auto request = ConvertUpgradeParamsToUpgradeArcContainerRequest(params);
-    chromeos::SessionManagerClient::Get()->UpgradeArcContainer(
-        request, std::move(callback));
+    ash::SessionManagerClient::Get()->UpgradeArcContainer(request,
+                                                          std::move(callback));
   }
 
   void StopArcInstance(bool on_shutdown, bool should_backup_log) override {
     // Since we have the ArcInstanceStopped() callback, we don't need to do
     // anything when StopArcInstance completes.
-    chromeos::SessionManagerClient::Get()->StopArcInstance(
+    ash::SessionManagerClient::Get()->StopArcInstance(
         cryptohome_id_.id(), should_backup_log, base::DoNothing());
   }
 
@@ -215,7 +214,7 @@ class ArcContainerClientAdapter
                        /*failure_reason=*/"ARC container is not supported."));
   }
 
-  // chromeos::SessionManagerClient::Observer overrides:
+  // ash::SessionManagerClient::Observer overrides:
   void ArcInstanceStopped(
       login_manager::ArcContainerStopReason reason) override {
     const bool is_system_shutdown =

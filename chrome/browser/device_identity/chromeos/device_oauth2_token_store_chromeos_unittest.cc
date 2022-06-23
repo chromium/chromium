@@ -116,7 +116,7 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
   ash::ScopedTestDeviceSettingsService scoped_device_settings_service_;
   ash::ScopedTestCrosSettings scoped_test_cros_settings_{
       scoped_testing_local_state_.Get()};
-  chromeos::FakeSessionManagerClient session_manager_client_;
+  ash::FakeSessionManagerClient session_manager_client_;
   policy::DevicePolicyBuilder device_policy_;
 };
 

@@ -42,7 +42,7 @@ class GuestOsEngagementMetricsTest : public testing::Test {
 
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    ash::SessionManagerClient::InitializeFakeInMemory();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
     matched_window_.reset(aura::test::CreateTestWindowWithId(0, nullptr));
@@ -63,7 +63,7 @@ class GuestOsEngagementMetricsTest : public testing::Test {
     non_matched_window_.reset();
     matched_window_.reset();
     pref_service_.reset();
-    chromeos::SessionManagerClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
 

@@ -21,7 +21,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 
 using RetrievePolicyResponseType =
-    chromeos::SessionManagerClient::RetrievePolicyResponseType;
+    ash::SessionManagerClient::RetrievePolicyResponseType;
 
 namespace em = enterprise_management;
 
@@ -38,7 +38,7 @@ std::string ExtractDomain(const std::string& username) {
 
 UserCloudPolicyStoreAsh::UserCloudPolicyStoreAsh(
     chromeos::CryptohomeMiscClient* cryptohome_misc_client,
-    chromeos::SessionManagerClient* session_manager_client,
+    ash::SessionManagerClient* session_manager_client,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const AccountId& account_id,
     const base::FilePath& user_policy_key_dir,

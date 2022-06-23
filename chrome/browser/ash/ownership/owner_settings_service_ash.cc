@@ -202,8 +202,8 @@ OwnerSettingsServiceAsh::OwnerSettingsServiceAsh(
     : ownership::OwnerSettingsService(owner_key_util),
       device_settings_service_(device_settings_service),
       profile_(profile) {
-  if (chromeos::SessionManagerClient::Get())
-    chromeos::SessionManagerClient::Get()->AddObserver(this);
+  if (SessionManagerClient::Get())
+    SessionManagerClient::Get()->AddObserver(this);
 
   if (device_settings_service_)
     device_settings_service_->AddObserver(this);
@@ -242,8 +242,8 @@ OwnerSettingsServiceAsh::~OwnerSettingsServiceAsh() {
   if (device_settings_service_)
     device_settings_service_->RemoveObserver(this);
 
-  if (chromeos::SessionManagerClient::Get())
-    chromeos::SessionManagerClient::Get()->RemoveObserver(this);
+  if (SessionManagerClient::Get())
+    SessionManagerClient::Get()->RemoveObserver(this);
 }
 
 OwnerSettingsServiceAsh* OwnerSettingsServiceAsh::FromWebUI(

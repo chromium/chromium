@@ -49,7 +49,7 @@ class ServerBackedStateKeysBrokerTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedMockTimeMessageLoopTaskRunner mocked_main_runner_;
-  chromeos::FakeSessionManagerClient fake_session_manager_client_;
+  ash::FakeSessionManagerClient fake_session_manager_client_;
   ServerBackedStateKeysBroker broker_;
   std::vector<std::string> state_keys_;
   bool updated_;

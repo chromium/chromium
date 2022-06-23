@@ -1093,8 +1093,8 @@ void CrostiniManager::SetContainerOsRelease(
 }
 
 void CrostiniManager::ConfigureForArcSideload() {
-  chromeos::SessionManagerClient* session_manager_client =
-      chromeos::SessionManagerClient::Get();
+  ash::SessionManagerClient* session_manager_client =
+      ash::SessionManagerClient::Get();
   if (!base::FeatureList::IsEnabled(features::kCrostiniArcSideload) ||
       !session_manager_client)
     return;
@@ -1103,11 +1103,11 @@ void CrostiniManager::ConfigureForArcSideload() {
       // avoid header pollution. This means we have to manually check the weak
       // pointer is alive.
       [](base::WeakPtr<CrostiniManager> manager,
-         chromeos::SessionManagerClient::AdbSideloadResponseCode response_code,
+         ash::SessionManagerClient::AdbSideloadResponseCode response_code,
          bool is_allowed) {
         if (!manager || !is_allowed ||
-            response_code != chromeos::SessionManagerClient::
-                                 AdbSideloadResponseCode::SUCCESS) {
+            response_code !=
+                ash::SessionManagerClient::AdbSideloadResponseCode::SUCCESS) {
           return;
         }
         vm_tools::cicerone::ConfigureForArcSideloadRequest request;

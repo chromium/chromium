@@ -1222,7 +1222,7 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
     // Override FakeSessionManagerClient. This will be shut down by the browser.
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
     device_policy_builder_.Build();
     FakeSessionManagerClient::Get()->set_device_policy(
         device_policy_builder_.GetBlob());

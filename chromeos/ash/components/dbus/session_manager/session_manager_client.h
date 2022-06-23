@@ -36,7 +36,7 @@ class StartArcMiniContainerRequest;
 class UpgradeArcContainerRequest;
 }  // namespace login_manager
 
-namespace chromeos {
+namespace ash {
 
 // SessionManagerClient is used to communicate with the session manager.
 class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
@@ -502,11 +502,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   virtual ~SessionManagerClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::SessionManagerClient;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ash::SessionManagerClient;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SESSION_MANAGER_SESSION_MANAGER_CLIENT_H_

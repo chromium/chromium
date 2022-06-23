@@ -51,7 +51,7 @@ class WebUILoginView;
 class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public session_manager::SessionManagerObserver,
                               public content::WebContentsObserver,
-                              public chromeos::SessionManagerClient::Observer,
+                              public SessionManagerClient::Observer,
                               public CrasAudioHandler::AudioObserver,
                               public chromeos::OobeConfiguration::Observer,
                               public display::DisplayObserver,
@@ -129,7 +129,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
-  // chromeos::SessionManagerClient::Observer:
+  // SessionManagerClient::Observer:
   void EmitLoginPromptVisibleCalled() override;
 
   // chromeos::OobeConfiguration::Observer:

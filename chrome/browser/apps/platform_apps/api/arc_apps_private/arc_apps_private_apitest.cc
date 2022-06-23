@@ -54,8 +54,8 @@ class ArcAppsPrivateApiTest : public extensions::ExtensionApiTest {
     extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
     arc::ArcSessionManager::SetUiEnabledForTesting(false);
     // SessionManagerClient will be destroyed in ChromeBrowserMain.
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
-    chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
+    ash::SessionManagerClient::InitializeFakeInMemory();
+    ash::FakeSessionManagerClient::Get()->set_arc_available(true);
   }
 
   void SetUpOnMainThread() override {

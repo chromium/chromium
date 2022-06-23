@@ -138,7 +138,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
   FakeCfmServiceContext context_;
   FakeServiceConnectionImpl fake_service_connection_;
   ScopedTestDeviceSettingsService scoped_device_settings_service_;
-  chromeos::FakeSessionManagerClient session_manager_client_;
+  FakeSessionManagerClient session_manager_client_;
   chromeos::system::FakeStatisticsProvider fake_statistics_provider_;
   mojo::ReceiverSet<mojom::CfmServiceContext> context_receiver_set_;
   mojo::Remote<mojom::CfmServiceAdaptor> adaptor_remote_;

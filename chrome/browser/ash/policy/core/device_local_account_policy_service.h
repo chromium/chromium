@@ -25,15 +25,12 @@ static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
 namespace ash {
 class DeviceSettingsService;
+class SessionManagerClient;
 }  // namespace ash
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
-
-namespace chromeos {
-class SessionManagerClient;
-}  // namespace chromeos
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -64,7 +61,7 @@ class DeviceLocalAccountPolicyService {
   };
 
   DeviceLocalAccountPolicyService(
-      chromeos::SessionManagerClient* session_manager_client,
+      ash::SessionManagerClient* session_manager_client,
       ash::DeviceSettingsService* device_settings_service,
       ash::CrosSettings* cros_settings,
       AffiliatedInvalidationServiceProvider* invalidation_service_provider,
@@ -141,7 +138,7 @@ class DeviceLocalAccountPolicyService {
 
   base::ObserverList<Observer, true>::Unchecked observers_;
 
-  raw_ptr<chromeos::SessionManagerClient> session_manager_client_;
+  raw_ptr<ash::SessionManagerClient> session_manager_client_;
   raw_ptr<ash::DeviceSettingsService> device_settings_service_;
   raw_ptr<ash::CrosSettings> cros_settings_;
   raw_ptr<AffiliatedInvalidationServiceProvider> invalidation_service_provider_;

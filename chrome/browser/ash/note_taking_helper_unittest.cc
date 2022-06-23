@@ -171,8 +171,8 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   ~NoteTakingHelperTest() override = default;
 
   void SetUp() override {
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
-    chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
+    SessionManagerClient::InitializeFakeInMemory();
+    FakeSessionManagerClient::Get()->set_arc_available(true);
 
     BrowserWithTestWindowTest::SetUp();
     InitExtensionService(profile());
@@ -196,7 +196,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     }
     extensions::ExtensionSystem::Get(profile())->Shutdown();
     BrowserWithTestWindowTest::TearDown();
-    chromeos::SessionManagerClient::Shutdown();
+    SessionManagerClient::Shutdown();
   }
 
  protected:

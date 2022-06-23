@@ -190,7 +190,7 @@ class DisplayRotationBootTest
   ~DisplayRotationBootTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    ash::SessionManagerClient::InitializeFakeInMemory();
     ash::DisplayConfigurationController::DisableAnimatorForTest();
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
@@ -222,9 +222,9 @@ IN_PROC_BROWSER_TEST_P(DisplayRotationBootTest, PRE_Reboot) {
           ash::kDisplayRotationDefault, run_loop.QuitClosure());
   device_policy->SetDefaultSigningKey();
   device_policy->Build();
-  chromeos::FakeSessionManagerClient::Get()->set_device_policy(
+  ash::FakeSessionManagerClient::Get()->set_device_policy(
       device_policy->GetBlob());
-  chromeos::FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
+  ash::FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
   run_loop.Run();
   // Allow tasks posted by CrosSettings observers to complete:
   base::RunLoop().RunUntilIdle();

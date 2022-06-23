@@ -104,7 +104,7 @@ class ShillProfileLoadingTest : public LoginManagerTest {
   void SetUpInProcessBrowserTestFixture() override {
     LoginManagerTest::SetUpInProcessBrowserTestFixture();
 
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
   }
 
   const LoginManagerMixin::TestUserInfo unmanaged_user_{

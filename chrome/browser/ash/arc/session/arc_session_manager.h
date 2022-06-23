@@ -56,7 +56,7 @@ enum class ArcStopReason;
 // This class is responsible for handing stages of ARC life-cycle.
 class ArcSessionManager : public ArcSessionRunner::Observer,
                           public ArcSupportHost::ErrorDelegate,
-                          public chromeos::SessionManagerClient::Observer,
+                          public ash::SessionManagerClient::Observer,
                           public ash::ConciergeClient::VmObserver,
                           public policy::PolicyService::Observer {
  public:
@@ -431,7 +431,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
                                bool should_show_send_feedback,
                                bool should_show_run_network_tests);
 
-  // chromeos::SessionManagerClient::Observer:
+  // ash::SessionManagerClient::Observer:
   void EmitLoginPromptVisibleCalled() override;
 
   // Called when the first part of ExpandPropertyFilesAndReadSalt is done.

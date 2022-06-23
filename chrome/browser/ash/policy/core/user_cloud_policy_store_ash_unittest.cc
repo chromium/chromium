@@ -37,7 +37,7 @@
 namespace em = enterprise_management;
 
 using RetrievePolicyResponseType =
-    chromeos::SessionManagerClient::RetrievePolicyResponseType;
+    ash::SessionManagerClient::RetrievePolicyResponseType;
 
 using testing::_;
 using testing::AllOf;
@@ -76,7 +76,7 @@ bool StoreUserPolicyKey(const base::FilePath& user_policy_dir,
 
 // For detailed test for UserCloudPolicyStoreAsh, this supports
 // public key file update emulation.
-class FakeSessionManagerClient : public chromeos::FakeSessionManagerClient {
+class FakeSessionManagerClient : public ash::FakeSessionManagerClient {
  public:
   explicit FakeSessionManagerClient(const base::FilePath& user_policy_dir)
       : user_policy_dir_(user_policy_dir) {}
@@ -88,7 +88,7 @@ class FakeSessionManagerClient : public chromeos::FakeSessionManagerClient {
   void StorePolicyForUser(const cryptohome::AccountIdentifier& cryptohome_id,
                           const std::string& policy_blob,
                           chromeos::VoidDBusMethodCallback callback) override {
-    chromeos::FakeSessionManagerClient::StorePolicyForUser(
+    ash::FakeSessionManagerClient::StorePolicyForUser(
         cryptohome_id, policy_blob,
         base::BindOnce(&FakeSessionManagerClient::OnStorePolicyForUser,
                        weak_ptr_factory_.GetWeakPtr(), cryptohome_id,

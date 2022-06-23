@@ -174,7 +174,7 @@ void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
   if (session_manager::SessionManager::Get()->IsScreenLocked())
     return;
 
-  chromeos::SessionManagerClient::Get()->RequestLockScreen();
+  SessionManagerClient::Get()->RequestLockScreen();
   SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();
 }
 

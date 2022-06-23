@@ -166,7 +166,7 @@ class TestingDeviceCloudPolicyManagerAsh : public DeviceCloudPolicyManagerAsh {
 
 class DeviceCloudPolicyManagerAshTest
     : public ash::DeviceSettingsTestBase,
-      public chromeos::SessionManagerClient::Observer {
+      public ash::SessionManagerClient::Observer {
  public:
   DeviceCloudPolicyManagerAshTest(const DeviceCloudPolicyManagerAshTest&) =
       delete;

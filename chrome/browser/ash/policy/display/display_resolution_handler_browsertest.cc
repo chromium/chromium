@@ -322,7 +322,7 @@ class DisplayResolutionBootTest
 
   void SetUpInProcessBrowserTestFixture() override {
     // Override FakeSessionManagerClient. This will be shut down by the browser.
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    ash::SessionManagerClient::InitializeFakeInMemory();
     ash::DisplayConfigurationController::DisableAnimatorForTest();
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
@@ -352,9 +352,9 @@ IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, PRE_Reboot) {
           ash::kDeviceDisplayResolution, run_loop.QuitClosure());
   device_policy->SetDefaultSigningKey();
   device_policy->Build();
-  chromeos::FakeSessionManagerClient::Get()->set_device_policy(
+  ash::FakeSessionManagerClient::Get()->set_device_policy(
       device_policy->GetBlob());
-  chromeos::FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
+  ash::FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
   run_loop.Run();
   // Allow tasks posted by CrosSettings observers to complete:
   base::RunLoop().RunUntilIdle();

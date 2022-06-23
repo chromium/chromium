@@ -61,7 +61,7 @@ class ArcMemoryPressureBridgeTest : public testing::Test {
       delete;
 
   ~ArcMemoryPressureBridgeTest() override {
-    chromeos::SessionManagerClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
     StabilityMetricsManager::Shutdown();
   }
 
@@ -80,8 +80,8 @@ class ArcMemoryPressureBridgeTest : public testing::Test {
       AppKillObserver& kill_observer) {
     prefs::RegisterLocalStatePrefs(local_state.registry());
     StabilityMetricsManager::Initialize(&local_state);
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
-    chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
+    ash::SessionManagerClient::InitializeFakeInMemory();
+    ash::FakeSessionManagerClient::Get()->set_arc_available(true);
     prefs::RegisterProfilePrefs(context.pref_registry());
     ArcMetricsService* const arc_metrics_service =
         ArcMetricsService::GetForBrowserContextForTesting(&context);

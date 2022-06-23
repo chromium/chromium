@@ -397,7 +397,7 @@ class ArcVmClientAdapterTest : public testing::Test,
         // connect_sleep_duration_initial
         base::Milliseconds(20));
 
-    chromeos::SessionManagerClient::InitializeFake();
+    ash::SessionManagerClient::InitializeFake();
 
     adapter_->SetDemoModeDelegate(&demo_mode_delegate_);
     app_host_ = std::make_unique<FakeAppHost>(arc_bridge_service()->app());
@@ -407,7 +407,7 @@ class ArcVmClientAdapterTest : public testing::Test,
 
   void TearDown() override {
     arc_dlc_installer_.reset();
-    chromeos::SessionManagerClient::Shutdown();
+    ash::SessionManagerClient::Shutdown();
     adapter_->RemoveObserver(this);
     adapter_.reset();
     run_loop_.reset();
@@ -1102,8 +1102,8 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_FailedAdbResponse) {
   StartMiniArc();
 
   // Ask the Fake Session Manager to return a failed Adb Sideload response.
-  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_response(
-      chromeos::FakeSessionManagerClient::AdbSideloadResponseCode::FAILED);
+  ash::FakeSessionManagerClient::Get()->set_adb_sideload_response(
+      ash::FakeSessionManagerClient::AdbSideloadResponseCode::FAILED);
 
   UpgradeArcWithParamsAndStopVmCount(false, {}, /*run_until_stop_vm_count=*/2);
   ExpectArcStopped();
@@ -1115,9 +1115,8 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_NeedPowerwashAdbResponse) {
 
   // Ask the Fake Session Manager to return a Need_Powerwash Adb Sideload
   // response.
-  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_response(
-      chromeos::FakeSessionManagerClient::AdbSideloadResponseCode::
-          NEED_POWERWASH);
+  ash::FakeSessionManagerClient::Get()->set_adb_sideload_response(
+      ash::FakeSessionManagerClient::AdbSideloadResponseCode::NEED_POWERWASH);
   UpgradeArc(true);
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
   EXPECT_FALSE(is_system_shutdown().has_value());
@@ -1140,7 +1139,7 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_AdbSideloadingPropertyDefault) {
 TEST_F(ArcVmClientAdapterTest, UpgradeArc_AdbSideloadingPropertyEnabled) {
   StartMiniArc();
 
-  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(true);
+  ash::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(true);
   UpgradeArc(true);
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
   EXPECT_FALSE(is_system_shutdown().has_value());
@@ -1151,7 +1150,7 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_AdbSideloadingPropertyEnabled) {
 TEST_F(ArcVmClientAdapterTest, UpgradeArc_AdbSideloadingPropertyDisabled) {
   StartMiniArc();
 
-  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(false);
+  ash::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(false);
   UpgradeArc(true);
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
   EXPECT_FALSE(is_system_shutdown().has_value());

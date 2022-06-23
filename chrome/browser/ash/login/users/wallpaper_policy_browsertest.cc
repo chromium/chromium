@@ -168,7 +168,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
         owner_key_util_);
     owner_key_util_->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    SessionManagerClient::InitializeFakeInMemory();
     FakeSessionManagerClient::Get()->set_device_policy(
         device_policy_.GetBlob());
 

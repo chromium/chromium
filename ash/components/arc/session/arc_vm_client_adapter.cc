@@ -733,7 +733,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     }
 
     VLOG(1) << "Checking adb sideload status";
-    chromeos::SessionManagerClient::Get()->QueryAdbSideload(base::BindOnce(
+    ash::SessionManagerClient::Get()->QueryAdbSideload(base::BindOnce(
         &ArcVmClientAdapter::OnQueryAdbSideload, weak_factory_.GetWeakPtr(),
         std::move(params), std::move(callback)));
   }
@@ -1079,22 +1079,21 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   void OnQueryAdbSideload(
       UpgradeParams params,
       chromeos::VoidDBusMethodCallback callback,
-      chromeos::SessionManagerClient::AdbSideloadResponseCode response_code,
+      ash::SessionManagerClient::AdbSideloadResponseCode response_code,
       bool enabled) {
     VLOG(1) << "IsAdbSideloadAllowed, response_code="
             << static_cast<int>(response_code) << ", enabled=" << enabled;
 
     switch (response_code) {
-      case chromeos::SessionManagerClient::AdbSideloadResponseCode::FAILED:
+      case ash::SessionManagerClient::AdbSideloadResponseCode::FAILED:
         LOG(ERROR) << "Failed response from QueryAdbSideload";
         StopArcInstanceInternal();
         std::move(callback).Run(false);
         return;
-      case chromeos::SessionManagerClient::AdbSideloadResponseCode::
-          NEED_POWERWASH:
+      case ash::SessionManagerClient::AdbSideloadResponseCode::NEED_POWERWASH:
         params.is_adb_sideloading_enabled = false;
         break;
-      case chromeos::SessionManagerClient::AdbSideloadResponseCode::SUCCESS:
+      case ash::SessionManagerClient::AdbSideloadResponseCode::SUCCESS:
         params.is_adb_sideloading_enabled = enabled;
         break;
     }
