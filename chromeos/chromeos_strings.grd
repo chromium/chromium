@@ -3456,6 +3456,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_RESOURCES_DIAGNOSTICS_APP_DESCRIPTION" desc="Description of the diagnostics app resource indicating that they can debug and run hardware tests in the Diagnostics app.">
         Run tests and troubleshooting for hardware issues
       </message>
+      <message name="IDS_FEEDBACK_TOOL_RESOURCES_ASK_COMMUNITY_LABEL" desc="Label of the ask community that opens an external link to the Chromebook community.">
+        Chromebook community
+      </message>
       <!-- End of Feedback Tool -->
     </messages>
   </release>
