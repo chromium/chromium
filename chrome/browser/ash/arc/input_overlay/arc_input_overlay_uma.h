@@ -5,18 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_UMA_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_UMA_H_
 
-#include <string>
-
 namespace arc {
 namespace input_overlay {
 
-void RecordInputOverlayFeatureState(const std::string& package_name,
-                                    bool enable);
+void RecordInputOverlayFeatureState(bool enable);
 
-void RecordInputOverlayMappingHintState(const std::string& package_name,
-                                        bool enable);
+void RecordInputOverlayMappingHintState(bool enable);
 
-void RecordInputOverlayCustomizedUsage(const std::string& package_name);
+void RecordInputOverlayCustomizedUsage();
 
 }  // namespace input_overlay
 }  // namespace arc

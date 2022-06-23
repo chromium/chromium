@@ -360,8 +360,7 @@ void InputMenuView::OnEditButtonPressed() {
   }
   // Change display mode, load edit UI per action and overall edit buttons.
   display_overlay_controller_->SetDisplayMode(DisplayMode::kEdit);
-  const auto* package_name = display_overlay_controller_->GetPackageName();
-  RecordInputOverlayCustomizedUsage(*package_name);
+  RecordInputOverlayCustomizedUsage();
 }
 
 void InputMenuView::OnButtonSendFeedbackPressed() {

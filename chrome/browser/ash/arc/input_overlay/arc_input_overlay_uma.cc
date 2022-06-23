@@ -9,24 +9,16 @@
 namespace arc {
 namespace input_overlay {
 
-void RecordInputOverlayFeatureState(const std::string& package_name,
-                                    bool enable) {
+void RecordInputOverlayFeatureState(bool enable) {
   base::UmaHistogramBoolean("Arc.InputOverlay.FeatureState", enable);
-  base::UmaHistogramBoolean("Arc.InputOverlay.FeatureState." + package_name,
-                            enable);
 }
 
-void RecordInputOverlayMappingHintState(const std::string& package_name,
-                                        bool enable) {
+void RecordInputOverlayMappingHintState(bool enable) {
   base::UmaHistogramBoolean("Arc.InputOverlay.MappingHintState", enable);
-  base::UmaHistogramBoolean("Arc.InputOverlay.MappingHintState." + package_name,
-                            enable);
 }
 
-void RecordInputOverlayCustomizedUsage(const std::string& package_name) {
+void RecordInputOverlayCustomizedUsage() {
   base::UmaHistogramBoolean("Arc.InputOverlay.Customized", true);
-  base::UmaHistogramBoolean("Arc.InputOverlay.Customized." + package_name,
-                            true);
 }
 
 }  // namespace input_overlay
