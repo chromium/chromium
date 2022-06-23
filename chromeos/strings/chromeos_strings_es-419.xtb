@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">La ventana de actualización de firmware para dispositivos externos está abierta. Hay <ph name="NUM_UPDATES" /> actualizaciones disponibles.</translation>
+<translation id="1145516343487477149">Encuentra artículos de ayuda y respuestas a preguntas frecuentes sobre Chromebooks</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1175951029573070619">Promedio (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Desactivar el tema oscuro</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Desactivar el modo oscuro</translation>
+<translation id="1881188606372070653">Ve a la <ph name="BEGIN_LINK1" />página de ayuda legal<ph name="END_LINK1" /> para solicitar cambios de contenido por motivos legales. Es posible que se envíe a Google cierta información de la cuenta y el sistema. Usaremos los datos que nos proporciones para solucionar problemas técnicos y mejorar nuestros servicios, sujeto a nuestra <ph name="BEGIN_LINK2" />Política de Privacidad<ph name="END_LINK2" /> y nuestras <ph name="BEGIN_LINK3" />Condiciones del Servicio<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
 <translation id="1905710495812624430">Se superó la cantidad máxima de intentos permitidos.</translation>
 <translation id="1908234395526491708">Fallos de solicitudes de UDP</translation>
@@ -623,6 +625,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
 <translation id="6381741036071372448">Prueba el teclado</translation>
 <translation id="6388847657025262518">Se atascó el alimentador de documentos del escáner. Revisa el alimentador y vuelve a intentarlo.</translation>
+<translation id="6394634179843537518">Agregar archivo</translation>
 <translation id="6410257289063177456">Archivos de imagen</translation>
 <translation id="641081527798843608">Coincidencia de asunto</translation>
 <translation id="6423239382391657905">VPN abierto</translation>

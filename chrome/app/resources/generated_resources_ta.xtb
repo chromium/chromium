@@ -727,6 +727,7 @@
 <translation id="1679068421605151609">டெவெலப்பர் கருவிகள்</translation>
 <translation id="1679810534535368772">உறுதியாக வெளியேற வேண்டுமா?</translation>
 <translation id="167983332380191032">நிர்வாகச் சேவை தவறான HTTP குறியீட்டை அனுப்பியது.</translation>
+<translation id="167997285881077031">’உரையிலிருந்து பேச்சு’ செயல்முறைக்கான குரல் அமைப்புகள்</translation>
 <translation id="1680841347983561661">சில வினாடிகளுக்குப் பிறகு மீண்டும் Google Playயைத் தொடங்க முயலவும்.</translation>
 <translation id="1680849702532889074">Linux ஆப்ஸை நிறுவும்போது பிழை நேர்ந்தது.</translation>
 <translation id="16815041330799488">கிளிப்போர்டுக்கு நகலெடுத்த உரையையும் படங்களையும் பார்க்க, தளங்களை அனுமதிக்காதே</translation>
@@ -1037,7 +1038,6 @@
 <translation id="1962233722219655970">உங்கள் கம்ப்யூட்டரில் இயங்காத நேட்டிவ் கிளையண்ட் ஆப்ஸை இந்தப் பக்கம் பயன்படுத்துகிறது.</translation>
 <translation id="1963227389609234879">அனைத்தையும் அகற்று</translation>
 <translation id="1963976881984600709">நிலையான பாதுகாப்பு</translation>
-<translation id="196425401113508486">அசையும் போது கர்சரைத் தனிப்படுத்து</translation>
 <translation id="1965624977906726414">எந்தச் சிறப்பு அனுமதிகளும் இல்லை.</translation>
 <translation id="1969654639948595766">WebRTC உரைப் பதிவுகள் (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">வீடியோ பயன்முறைக்குச் சென்றது</translation>
@@ -4104,7 +4104,6 @@
 <translation id="4918021164741308375"><ph name="ORIGIN" />, "<ph name="EXTENSION_NAME" />" நீட்டிப்புடன் தொடர்புகொள்ள விழைகிறது</translation>
 <translation id="4918086044614829423">ஏற்கிறேன்</translation>
 <translation id="4918134162946436591">குறிப்பு ஓவர்லேயைக் காட்டு</translation>
-<translation id="4921348630401250116">உரையிலிருந்து பேச்சு</translation>
 <translation id="492299503953721473">Android ஆப்ஸை அகற்று</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> ஆப்ஸை நிறுவல் நீக்குகிறது...</translation>
 <translation id="4924002401726507608">கருத்தைச் சமர்ப்பி</translation>
@@ -4215,7 +4214,6 @@
 <translation id="5043913660911154449">அல்லது உங்கள் பிரிண்டரின் PPDயைக் குறிப்பிடுங்கள் <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">தவறான கடவுச்சொல்</translation>
 <translation id="504561833207953641">செயலிலுள்ள உலாவி அமர்வில் திறக்கிறது.</translation>
-<translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">நீங்கள் தேர்ந்தெடுத்த மொழிகளில் 'எழுத்துப் பிழை சரிபார்த்தல்' அம்சம் இல்லை</translation>
 <translation id="5052499409147950210">தளத்தைத் திருத்து</translation>
 <translation id="505347685865235222">பெயரிடப்படாத குழு - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -4561,6 +4559,7 @@
 <translation id="5398572795982417028">பக்க வரம்பை மீறிவிட்டது, அதிகபட்ச வரம்பு <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5401426944298678474">தளத்தைப் பின்தொடர்வதை நிறுத்து</translation>
 <translation id="5401851137404501592">தொடர உங்கள் பெயர், மின்னஞ்சல் முகவரி, சுயவிவரப் படம் ஆகியவற்றை இந்தத் தளத்தில் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> பகிரும்.</translation>
+<translation id="5402367795255837559">பிரெய்ல்</translation>
 <translation id="5402815541704507626">மொபைல் டேட்டாவைப் பயன்படுத்திப் புதுப்பிப்பைப் பதிவிறக்கவும்</translation>
 <translation id="540296380408672091">எப்போதும் <ph name="HOST" /> இல் குக்கீகளைத் தடு</translation>
 <translation id="5404740137318486384">ஸ்விட்ச்சையோ கீபோர்டு பட்டனையோ “<ph name="ACTION" />” என்பதற்கு ஒதுக்க, அதை அழுத்தவும்.
@@ -5351,7 +5350,6 @@
 <translation id="6181431612547969857">பதிவிறக்கம் தடுக்கப்பட்டுள்ளது</translation>
 <translation id="6184099524311454384">தாவல்களைத் தேடுக</translation>
 <translation id="6185132558746749656">சாதன இருப்பிடம்</translation>
-<translation id="6188346519670155113">Chrome உலாவி ஒத்திசைவு இயக்கப்பட்டுள்ளது</translation>
 <translation id="6190953336330058278">ஃபோன் ஹப் ஆப்ஸ்</translation>
 <translation id="6195005504600220730">உங்கள் உலாவி, OS, சாதனம் ஆகியவை குறித்த தகவல்களைப் படிப்பது</translation>
 <translation id="6195693561221576702">இந்தச் சாதனத்தை ஆஃப்லைன் டெமோ பயன்முறையில் அமைக்க முடியாது.</translation>
@@ -6180,7 +6178,6 @@
 <translation id="6991665348624301627">இலக்கைத் தேர்ந்தெடு</translation>
 <translation id="6992554835374084304">'மேம்பட்ட எழுத்துப் பிழை சரிபார்க்கும்' அம்சத்தை இயக்கு</translation>
 <translation id="6993000214273684335">பெயரிடப்படாத இந்தக் குழுவிலிருந்து தாவல் அகற்றப்பட்டது - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6994069045767983299">நெகடிவ்</translation>
 <translation id="6995899638241819463">தரவு மீறலினால் கடவுச்சொற்கள் வெளியாகியிருந்தால் அதுகுறித்து எச்சரி</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - செயல்பாட்டுப் பதிவு</translation>
 <translation id="6997707937646349884">உங்கள் சாதனங்களில்:</translation>
@@ -7141,6 +7138,7 @@
 <translation id="7943837619101191061">இடத்தைச் சேர்...</translation>
 <translation id="7944772052836377867">ஒத்திசைக்க இது நீங்கள்தான் என உறுதிசெய்ய வேண்டும்</translation>
 <translation id="7945031593909029181">"<ph name="CHROME_EXTENSION_NAME" />" இணைய விரும்புகிறது</translation>
+<translation id="7945703887991230167">விருப்பமான குரல்</translation>
 <translation id="7946586320617670168">மூலம் பாதுகாப்பானதாக இருக்க வேண்டும்</translation>
 <translation id="794676567536738329">அனுமதிகளை உறுதிப்படுத்து</translation>
 <translation id="7947962633355574091">வீடியோ முகவரியை ந&amp;கலெடு</translation>

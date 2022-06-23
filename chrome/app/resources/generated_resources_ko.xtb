@@ -727,6 +727,7 @@
 <translation id="1679068421605151609">개발자 도구</translation>
 <translation id="1679810534535368772">종료하시겠습니까?</translation>
 <translation id="167983332380191032">관리 서비스에서 HTTP 오류를 전송했습니다.</translation>
+<translation id="167997285881077031">텍스트 음성 변환 음성 설정</translation>
 <translation id="1680841347983561661">잠시 후 다시 Google Play를 시작해 보세요.</translation>
 <translation id="1680849702532889074">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다.</translation>
 <translation id="16815041330799488">사이트에서 클립보드에 복사된 텍스트 및 이미지를 확인하도록 허용하지 않음</translation>
@@ -1037,7 +1038,6 @@
 <translation id="1962233722219655970">이 페이지에서 사용자 컴퓨터에서 작동하지 않는 Native Client 앱을 사용합니다.</translation>
 <translation id="1963227389609234879">모두 삭제</translation>
 <translation id="1963976881984600709">표준 보호 모드</translation>
-<translation id="196425401113508486">커서 이동 중 강조표시</translation>
 <translation id="1965624977906726414">특별한 권한이 필요하지 않습니다.</translation>
 <translation id="1969654639948595766">WebRTC 텍스트 로그(<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">동영상 모드 시작됨</translation>
@@ -2241,6 +2241,7 @@
 <translation id="3067198360141518313">이 플러그인 실행</translation>
 <translation id="3071624960923923138">여기를 클릭하여 새 탭을 열 수 있습니다</translation>
 <translation id="3072775339180057696">사이트에서 <ph name="FILE_NAME" /> 파일을 보도록 허용하시겠습니까?</translation>
+<translation id="3074499504015191586">전체 페이지 번역</translation>
 <translation id="3075874217500066906">Powerwash 프로세스를 시작하려면 다시 시작해야 합니다. 다시 시작하면 계속 진행할 지를 확인하는 메시지가 표시됩니다.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">이 기기에만 저장</translation>
@@ -4102,7 +4103,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />에서 '<ph name="EXTENSION_NAME" />' 확장 프로그램과 통신하려고 합니다.</translation>
 <translation id="4918086044614829423">수락</translation>
 <translation id="4918134162946436591">힌트 오버레이 표시</translation>
-<translation id="4921348630401250116">TTS(텍스트 음성 변환)</translation>
 <translation id="492299503953721473">Android 앱 삭제</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> 제거 중…</translation>
 <translation id="4924002401726507608">의견 제출</translation>
@@ -4213,7 +4213,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5043913660911154449">또는 프린터 PPD 지정 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="504561833207953641">기존 브라우저 세션에서 여는 중입니다.</translation>
-<translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">선택한 언어의 맞춤법 검사가 지원되지 않습니다.</translation>
 <translation id="5052499409147950210">사이트 수정</translation>
 <translation id="505347685865235222">이름이 지정되지 않은 그룹 - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -4559,6 +4558,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5398572795982417028">페이지가 범위를 벗어난 경우 참고하세요. 한도는 <ph name="MAXIMUM_PAGE" />페이지입니다.</translation>
 <translation id="5401426944298678474">사이트 팔로우 해제</translation>
 <translation id="5401851137404501592">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다.</translation>
+<translation id="5402367795255837559">점자</translation>
 <translation id="5402815541704507626">모바일 데이터를 사용하여 업데이트 다운로드</translation>
 <translation id="540296380408672091"><ph name="HOST" />에서 쿠키 항상 차단</translation>
 <translation id="5404740137318486384">'<ph name="ACTION" />'에 할당할 스위치 또는 키보드 키를 누르세요.
@@ -5095,6 +5095,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" />에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="5935158534896975820">인증서 로그인 요청 준비 중(서버에서 대기 중)</translation>
 <translation id="5935656526031444304">세이프 브라우징 관리</translation>
+<translation id="5936065461722368675">전체 페이지 번역</translation>
 <translation id="5938002010494270685">보안 업그레이드 사용 가능</translation>
 <translation id="5939518447894949180">초기화</translation>
 <translation id="5939719276406088041">바로가기를 만들 수 없음</translation>
@@ -5347,7 +5348,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6181431612547969857">다운로드 차단됨</translation>
 <translation id="6184099524311454384">탭 검색</translation>
 <translation id="6185132558746749656">기기 위치</translation>
-<translation id="6188346519670155113">Chrome 브라우저 동기화 사용 설정됨</translation>
 <translation id="6190953336330058278">휴대전화 허브 앱</translation>
 <translation id="6195005504600220730">브라우저, OS, 기기에 관한 정보를 확인합니다.</translation>
 <translation id="6195693561221576702">이 기기는 오프라인 데모 모드에서 설정할 수 없습니다.</translation>
@@ -6176,7 +6176,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6991665348624301627">대상 선택</translation>
 <translation id="6992554835374084304">향상된 맞춤법 검사 기능 사용 설정</translation>
 <translation id="6993000214273684335">이름이 지정되지 않은 그룹에서 탭이 제거됨 - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6994069045767983299">반전</translation>
 <translation id="6995899638241819463">데이터 유출로 인해 비밀번호가 노출된 경우 알림</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 활동 로그</translation>
 <translation id="6997707937646349884">기기에서 다음과 같이 설정하세요.</translation>
@@ -7138,6 +7137,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7943837619101191061">위치 추가...</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
 <translation id="7945031593909029181">'<ph name="CHROME_EXTENSION_NAME" />'에서 연결하려고 함</translation>
+<translation id="7945703887991230167">기본 음성</translation>
 <translation id="7946586320617670168">출처가 안전해야 합니다.</translation>
 <translation id="794676567536738329">권한 확인</translation>
 <translation id="7947962633355574091">동영상 주소 복사(&amp;O)</translation>

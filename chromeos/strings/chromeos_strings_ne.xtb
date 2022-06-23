@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">प्रयोगकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">बाह्य डिभाइसको फर्मवेयर अपडेट गर्ने विन्डो खुला छ। <ph name="NUM_UPDATES" /> वटा अपडेट उपलब्ध छन्।</translation>
+<translation id="1145516343487477149">Chromebook सँग सम्बन्धित मद्दतसम्बन्धी लेख र त्यसका बारेमा सामान्यतया सोधिने प्रश्नहरूको जवाफ भेट्टाउनुहोस्</translation>
 <translation id="1165039591588034296">त्रुटि</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ।</translation>
 <translation id="1175951029573070619">औसत (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">अँध्यारो थिम अफ गर्नुहोस्‌</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">अँध्यारो मोड अफ गर्नुहोस्</translation>
+<translation id="1881188606372070653">कानुनी कारणहरू देखाएर सामग्री परिवर्तन गरिदिन अनुरोध गर्न <ph name="BEGIN_LINK1" />कानुनी मद्दतसम्बन्धी पेज<ph name="END_LINK1" /> मा जानुहोस्। खाता तथा सिस्टमसम्बन्धी केही जानकारी Google मा पठाइन सक्छ। हामी तपाईंले दिनुभएको जानकारी प्राविधिक समस्याहरू समाधान गर्ने र हाम्रा सेवाहरूको गुणस्तर सुधार गर्ने प्रयोजनका लागि हाम्रो <ph name="BEGIN_LINK2" />गोपनीयता नीति<ph name="END_LINK2" /> तथा <ph name="BEGIN_LINK3" />सेवाका सर्तहरू<ph name="END_LINK3" /> बमोजिम प्रयोग गर्ने छौँ।</translation>
 <translation id="1887850431809612466">हार्डवेयरको पुनरावृत्ति</translation>
 <translation id="1905710495812624430">अनुमति दिइएका प्रयासहरूको अधिकतम संख्या नाघ्यो।</translation>
 <translation id="1908234395526491708">UDP सम्बन्धी अनुरोध गर्न सकिएन</translation>
@@ -622,6 +624,7 @@
 <translation id="6379086450106841622">टचस्क्रिन</translation>
 <translation id="6381741036071372448">आफ्नो किबोर्ड जाँच्नुहोस्</translation>
 <translation id="6388847657025262518">स्क्यानरको डकुमेन्ट फिडर जाम भएको छ। फिडर जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="6394634179843537518">फाइल हाल्नुहोस्</translation>
 <translation id="6410257289063177456">छवि फाइलहरू</translation>
 <translation id="641081527798843608">विषयको मिलान</translation>
 <translation id="6423239382391657905">खुल्लाVPN</translation>

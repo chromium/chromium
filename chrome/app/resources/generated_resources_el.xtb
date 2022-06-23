@@ -727,6 +727,7 @@
 <translation id="1679068421605151609">Εργαλεία για Προγραμματιστές</translation>
 <translation id="1679810534535368772">Είστε βέβαιοι ότι θέλετε να βγείτε;</translation>
 <translation id="167983332380191032">Η υπηρεσία διαχείρισης έστειλε σφάλμα HTTP.</translation>
+<translation id="167997285881077031">Ρυθμίσεις φωνής μετατροπής κειμένου σε ομιλία</translation>
 <translation id="1680841347983561661">Δοκιμάστε να εκκινήσετε το Google Play ξανά σε μερικά λεπτά.</translation>
 <translation id="1680849702532889074">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής σας Linux.</translation>
 <translation id="16815041330799488">Να μην επιτρέπεται στους ιστοτόπους να βλέπουν κείμενο και εικόνες που αντιγράψατε στο πρόχειρο</translation>
@@ -1037,7 +1038,6 @@
 <translation id="1962233722219655970">Αυτή η σελίδα χρησιμοποιεί μια εφαρμογή Native Client η οποία δεν λειτουργεί στον υπολογιστή σας.</translation>
 <translation id="1963227389609234879">Κατάργηση όλων</translation>
 <translation id="1963976881984600709">Βασική ασφάλεια</translation>
-<translation id="196425401113508486">Επισήμανση δείκτη του ποντικιού όταν κινείται</translation>
 <translation id="1965624977906726414">Δεν έχει ειδικά δικαιώματα.</translation>
 <translation id="1969654639948595766">Αρχεία καταγραφής κειμένου WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Έγινε είσοδος στη λειτουργία βίντεο</translation>
@@ -2240,6 +2240,7 @@
 <translation id="3067198360141518313">Εκτέλεση αυτής της προσθήκης</translation>
 <translation id="3071624960923923138">Μπορείτε να κάνετε κλικ εδώ, για να ανοίξετε μια νέα καρτέλα</translation>
 <translation id="3072775339180057696">Να επιτρέπεται στον ιστότοπο η προβολή του αρχείου <ph name="FILE_NAME" />;</translation>
+<translation id="3074499504015191586">Μετάφραση πλήρους σελίδας</translation>
 <translation id="3075874217500066906">Απαιτείται επανεκκίνηση προκειμένου να ξεκινήσει η διαδικασία Powerwash. Μετά την επανεκκίνηση, θα σας ζητηθεί να επιβεβαιώσετε ότι θέλετε να συνεχίσετε.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Αποθήκευση μόνο σε αυτήν τη συσκευή</translation>
@@ -4103,7 +4104,6 @@
 <translation id="4918021164741308375">Το <ph name="ORIGIN" /> θέλει να επικοινωνήσει με την επέκταση "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Αποδοχή</translation>
 <translation id="4918134162946436591">Εμφάνιση υποδείξεων με επικάλυψη</translation>
-<translation id="4921348630401250116">Κείμενο σε ομιλία</translation>
 <translation id="492299503953721473">Κατάργηση εφαρμογών Android</translation>
 <translation id="492363500327720082">Απεγκατάσταση <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Υποβολή σχολίων</translation>
@@ -4214,7 +4214,6 @@
 <translation id="5043913660911154449">Εναλλακτικά, καθορίστε το PPD του εκτυπωτή σας <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Λανθασμένος κωδικός πρόσβασης</translation>
 <translation id="504561833207953641">Άνοιγμα σε υπάρχουσα περίοδο σύνδεσης προγράμματος περιήγησης.</translation>
-<translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Δεν υποστηρίζεται ορθογραφικός έλεγχος για τις γλώσσες που επιλέξατε</translation>
 <translation id="5052499409147950210">Επεξεργασία ιστοτόπου</translation>
 <translation id="505347685865235222">Ομάδα χωρίς όνομα - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -4560,6 +4559,7 @@
 <translation id="5398572795982417028">Η αναφορά της σελίδας βρίσκεται εκτός ορίων, το όριο είναι <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5401426944298678474">Κατάργηση παρακολούθησης ιστοτόπου</translation>
 <translation id="5401851137404501592">Για να συνεχίσετε, το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> θα κοινοποιήσει το όνομα, τη διεύθυνση ηλεκτρονικού ταχυδρομείου και τη φωτογραφία προφίλ σας σε αυτόν τον ιστότοπο.</translation>
+<translation id="5402367795255837559">Μπράιγ</translation>
 <translation id="5402815541704507626">Λήψη ενημέρωσης με χρήση δεδομένων κινητής τηλεφωνίας</translation>
 <translation id="540296380408672091">Να γίνεται πάντα αποκλεισμός των cookie για <ph name="HOST" /></translation>
 <translation id="5404740137318486384">Πατήστε έναν διακόπτη ή πλήκτρο του πληκτρολογίου για αντιστοίχιση στην ενέργεια <ph name="ACTION" />.
@@ -5097,6 +5097,7 @@
 <translation id="5933522550144185133">Η εφαρμογή <ph name="APP_NAME" /> χρησιμοποιεί την κάμερα και το μικρόφωνό σας.</translation>
 <translation id="5935158534896975820">Προετοιμασία αιτήματος για υπογραφή πιστοποιητικού (αναμονή στον διακομιστή)</translation>
 <translation id="5935656526031444304">Διαχείριση Ασφαλούς περιήγησης</translation>
+<translation id="5936065461722368675">Μετάφραση πλήρους σελίδας</translation>
 <translation id="5938002010494270685">Υπάρχει διαθέσιμη αναβάθμιση ασφάλειας</translation>
 <translation id="5939518447894949180">Επαναφορά</translation>
 <translation id="5939719276406088041">Δεν είναι δυνατή η δημιουργία συντόμευσης</translation>
@@ -5349,7 +5350,6 @@
 <translation id="6181431612547969857">Η λήψη αποκλείστηκε</translation>
 <translation id="6184099524311454384">Αναζήτηση στις καρτέλες</translation>
 <translation id="6185132558746749656">Τοποθεσία συσκευής</translation>
-<translation id="6188346519670155113">Ο συγχρονισμός προγράμματος περιήγησης Chrome είναι ενεργοποιημένος</translation>
 <translation id="6190953336330058278">Εφαρμογές Phone Hub</translation>
 <translation id="6195005504600220730">Διαβάστε πληροφορίες σχετικά με το πρόγραμμα περιήγησης, το λειτουργικό σύστημα και τη συσκευή σας</translation>
 <translation id="6195693561221576702">Δεν είναι δυνατή η ρύθμιση αυτής της συσκευής σε λειτουργία επίδειξης εκτός σύνδεσης.</translation>
@@ -6178,7 +6178,6 @@
 <translation id="6991665348624301627">Επιλογή προορισμού</translation>
 <translation id="6992554835374084304">Ενεργοποίηση βελτιωμένου ορθογραφικού ελέγχου</translation>
 <translation id="6993000214273684335">Η καρτέλα καταργήθηκε από την ομάδα χωρίς όνομα - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6994069045767983299">Αντιστροφή χρωμάτων</translation>
 <translation id="6995899638241819463">Σας προειδοποιεί σε περίπτωση που οι κωδικοί πρόσβασής σας αποκαλυφθούν στο πλαίσιο μιας παραβίασης δεδομένων.</translation>
 <translation id="6997642619627518301">Αρχείο καταγραφής δραστηριοτήτων - <ph name="NAME_PH" /></translation>
 <translation id="6997707937646349884">Στις συσκευές σας:</translation>
@@ -7139,6 +7138,7 @@
 <translation id="7943837619101191061">Προσθήκη τοποθεσίας…</translation>
 <translation id="7944772052836377867">Ο συγχρονισμός πρέπει να επαληθεύσει την ταυτότητά σας</translation>
 <translation id="7945031593909029181">Η επέκταση "<ph name="CHROME_EXTENSION_NAME" />" επιθυμεί σύνδεση</translation>
+<translation id="7945703887991230167">Προτιμώμενη φωνή</translation>
 <translation id="7946586320617670168">Η προέλευση θα πρέπει να είναι ασφαλής</translation>
 <translation id="794676567536738329">Επιβεβαίωση δικαιωμάτων</translation>
 <translation id="7947962633355574091">Α&amp;ντιγραφή διεύθυνσης βίντεο</translation>

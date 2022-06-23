@@ -159,6 +159,7 @@
 <translation id="2377319039870049694">목록 보기로 전환</translation>
 <translation id="2377590462528165447">폴더 <ph name="NUMBER_OF_ITEMS" />개가 Linux와 공유되었습니다.</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" />개의 파일이 선택됨</translation>
+<translation id="2387120140441437063">삭제된 파일은 열 수 없습니다. 파일을 열기 전에 복원하세요.</translation>
 <translation id="2387458720915042159">프록시 연결 유형</translation>
 <translation id="2389832672041313158">버마어/미얀마어</translation>
 <translation id="2392369802118427583">활성화</translation>

@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Mtumiaji</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Sasisho la programu dhibiti kwa ajili ya dirisha la vifaa vinavyochomekwa lipo wazi. Masasisho <ph name="NUM_UPDATES" /> yanapatikana.</translation>
+<translation id="1145516343487477149">Pata makala ya usaidizi na majibu ya maswali ya kawaida yanayohusu Chromebook</translation>
 <translation id="1165039591588034296">Hitilafu</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> hii inasimamiwa na <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Wastani (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Zima mandhari meusi</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Zima hali nyeusi</translation>
+<translation id="1881188606372070653">Nenda kwenye <ph name="BEGIN_LINK1" />Ukurasa wa Usaidizi wa Kisheria<ph name="END_LINK1" /> ili uombe maudhui yabadilishwe kutokana na sababu za kisheria. Huenda baadhi ya maelezo ya akaunti na mfumo yakatumwa kwenda Google. Tutatumia maelezo unayotupatia ili kusaidia kutatua matatizo ya kiufundi na kuboresha huduma zetu, kulingana na <ph name="BEGIN_LINK2" />Sera yetu ya Faragha<ph name="END_LINK2" /> na <ph name="BEGIN_LINK3" />Sheria na Masharti<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Sahihisho la maunzi</translation>
 <translation id="1905710495812624430">Idadi ya juu ya majaribio yanayoruhusiwa.</translation>
 <translation id="1908234395526491708">Maombi ya UDP ambayo hayakufaulu</translation>
@@ -622,6 +624,7 @@
 <translation id="6379086450106841622">Skrini ya kugusa</translation>
 <translation id="6381741036071372448">Jaribu kibodi yako</translation>
 <translation id="6388847657025262518">Mashine ya kichanganuzi ya kuingiza hati imekwama. Kagua mashine hiyo kisha ujaribu tena.</translation>
+<translation id="6394634179843537518">Weka faili</translation>
 <translation id="6410257289063177456">Faili za Picha</translation>
 <translation id="641081527798843608">Mada inalingana</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

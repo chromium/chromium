@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Defnyddiwr</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Mae ffenestr diweddaru cadarnwedd ar gyfer dyfeisiau allanol ar agor. Mae <ph name="NUM_UPDATES" /> o ddiweddariadau ar gael.</translation>
+<translation id="1145516343487477149">Dewch o hyd i erthyglau cymorth ac atebion i gwestiynau cyffredin Chromebook</translation>
 <translation id="1165039591588034296">Gwall</translation>
 <translation id="1175697296044146566">Rheolir y <ph name="DEVICE_TYPE" /> hwn gan <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Cymedrol <ph name="SIGNAL_STRENGTH" /></translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Diffodd y thema dywyll</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Diffodd y modd tywyll</translation>
+<translation id="1881188606372070653">Ewch i'r <ph name="BEGIN_LINK1" />dudalen Cymorth Cyfreithiol<ph name="END_LINK1" /> i ofyn i ni wneud newidiadau i'r cynnwys am resymau cyfreithiol. Mae'n bosib y byddwn yn anfon peth gwybodaeth system a chyfrif i Google. Byddwn yn defnyddio'r wybodaeth rydych yn ei rhoi i ni i helpu i fynd i'r afael â phroblemau technegol ac i wella ein gwasanaethau, yn amodol ar ein <ph name="BEGIN_LINK2" />Polisi Preifatrwydd <ph name="END_LINK2" /> a'n <ph name="BEGIN_LINK3" />Telerau Gwasanaeth<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Adolygu caledwedd</translation>
 <translation id="1905710495812624430">Wedi mynd y tu hwnt i'r ymgeisiau uchaf a ganiateir.</translation>
 <translation id="1908234395526491708">Methiannau ceisiadau UDP</translation>
@@ -623,6 +625,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="6379086450106841622">Sgrîn gyffwrdd</translation>
 <translation id="6381741036071372448">Profi eich bysellfwrdd</translation>
 <translation id="6388847657025262518">Mae bwydydd dogfennau'r sganiwr wedi'i rwystro. Gwiriwch y bwydydd a rhowch gynnig arall arni.</translation>
+<translation id="6394634179843537518">Ychwanegu ffeil</translation>
 <translation id="6410257289063177456">Ffeiliau llun</translation>
 <translation id="641081527798843608">Cyfateb pwnc</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

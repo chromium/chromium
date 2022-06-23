@@ -727,6 +727,7 @@
 <translation id="1679068421605151609">డెవలపర్ టూల్స్</translation>
 <translation id="1679810534535368772">మీరు ఖచ్చితంగా నిష్క్రమించాలనుకుంటున్నారా?</translation>
 <translation id="167983332380191032">నిర్వహణ సేవ HTTP ఎర్రర్‌ని పంపింది.</translation>
+<translation id="167997285881077031">టెక్ట్స్-టు-స్పీచ్ వాయిస్ సెట్టింగ్‌లు</translation>
 <translation id="1680841347983561661">దయచేసి కొన్ని క్షణాలలో Google Playని మళ్లీ ప్రారంభించడానికి ట్రై చేయండి.</translation>
 <translation id="1680849702532889074">మీ Linux అప్లికేషన్ ఇన్‌స్టాలేషన్ సమయంలో ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="16815041330799488">క్లిప్‌బోర్డ్‌కు కాపీ చేసిన వచనం మరియు చిత్రాలను చూడటానికి సైట్‌లను అనుమతించవద్దు</translation>
@@ -1036,7 +1037,6 @@
 <translation id="1962233722219655970">ఈ పేజీ మీ కంప్యూటర్‌లో పని చేయని స్థానిక క్లయింట్ యాప్‌ను ఉపయోగిస్తుంది.</translation>
 <translation id="1963227389609234879">అన్నీ తొలగించు</translation>
 <translation id="1963976881984600709">ప్రామాణిక రక్షణ</translation>
-<translation id="196425401113508486">కదులుతున్నప్పుడు కర్సర్‌ను హైలైట్ చేయండి</translation>
 <translation id="1965624977906726414">ప్రత్యేక అనుమతులు లేవు.</translation>
 <translation id="1969654639948595766">WebRTC వచన లాగ్ లు( <ph name="WEBRTC_TEXT_LOG_COUNT" /> )</translation>
 <translation id="1970368523891847084">వీడియో మోడ్‌లోకి ప్రవేశించింది</translation>
@@ -4103,7 +4103,6 @@
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్షన్‌తో కమ్యూనికేట్ చేయాలనుకుంటోంది</translation>
 <translation id="4918086044614829423">ఆమోదించు</translation>
 <translation id="4918134162946436591">సూచించే ఓవర్‌లేను చూపించు</translation>
-<translation id="4921348630401250116">టెక్స్ట్-టు-స్పీచ్</translation>
 <translation id="492299503953721473">Android యాప్‌లను తీసివేయి</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" />ను అన్ఇన్‌స్టాల్ చేస్తోంది...</translation>
 <translation id="4924002401726507608">ఫీడ్‌బ్యాక్‌ను సమర్పించండి</translation>
@@ -4214,7 +4213,6 @@
 <translation id="5043913660911154449">లేదా మీ ప్రింటర్ PPDని పేర్కొనండి <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
 <translation id="504561833207953641">ఇప్పటికే ఉన్న బ్రౌజర్ సెషన్‌లో తెరుస్తోంది.</translation>
-<translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">మీరు ఎంచుకున్న భాషలకు స్పెల్‌చెక్ మద్దతు లేదు</translation>
 <translation id="5052499409147950210">సైట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="505347685865235222">పేరు లేని గ్రూప్ - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -4560,6 +4558,7 @@
 <translation id="5398572795982417028">పేజీ సూచన పరిమితిని దాటిపోయారు, పరిమితి <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5401426944298678474">సైట్‌ను అన్-ఫాలో చేయండి</translation>
 <translation id="5401851137404501592">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది.</translation>
+<translation id="5402367795255837559">బ్రెయిలీ</translation>
 <translation id="5402815541704507626">మొబైల్ డేటా ఉపయోగించి అప్‌డేట్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="540296380408672091"><ph name="HOST" />లో కుక్కీలను ఎల్లప్పుడూ బ్లాక్ చేయి</translation>
 <translation id="5404740137318486384">స్విచ్ లేదా కీబోర్డ్ కీని "<ph name="ACTION" />"కు అసైన్ చేయడానికి సదరు స్విచ్ లేదా కీబోర్డ్ కీని నొక్కండి.
@@ -5349,7 +5348,6 @@
 <translation id="6181431612547969857">డౌన్‌లోడ్ బ్లాక్ చేయబడింది</translation>
 <translation id="6184099524311454384">ట్యాబ్‌లలో సెర్చ్ చేయండి</translation>
 <translation id="6185132558746749656">పరికర స్థానం</translation>
-<translation id="6188346519670155113">Chrome బ్రౌజర్ సింక్ ఆన్‌లో ఉంది</translation>
 <translation id="6190953336330058278">ఫోన్ హబ్ యాప్‌లు</translation>
 <translation id="6195005504600220730">మీ బ్రౌజర్, OS, పరికరం గురించి సమాచారాన్ని చదవండి</translation>
 <translation id="6195693561221576702">ఈ పరికరాన్ని ఆఫ్‌లైన్ డెమో మోడ్‌లో సెటప్ చేయలేరు.</translation>
@@ -6178,7 +6176,6 @@
 <translation id="6991665348624301627">గమ్యస్థానాన్ని ఎంచుకోండి</translation>
 <translation id="6992554835374084304">మెరుగైన స్పెల్ చెక్‌ను ఆన్ చేయండి</translation>
 <translation id="6993000214273684335">పేరులేని గ్రూప్ నుండి ట్యాబ్ తొలగించబడింది - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6994069045767983299">రంగుల మధ్య బేధం ఎక్కువగా ఉండే మోడ్</translation>
 <translation id="6995899638241819463">మీరు ఉపయోగించే పాస్‌వర్డ్‌లు, ఏదైనా డేటా ఉల్లంఘనలో బహిర్గతమైతే మిమ్మల్ని హెచ్చరిస్తుంది</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - యాక్టివిటీ లాగ్</translation>
 <translation id="6997707937646349884">మీ పరికరాలలో:</translation>
@@ -7138,6 +7135,7 @@
 <translation id="7943837619101191061">స్థానాన్ని జోడించు...</translation>
 <translation id="7944772052836377867">ఇది మీరేనని సింక్ వెరిఫై చేయాలి</translation>
 <translation id="7945031593909029181">"<ph name="CHROME_EXTENSION_NAME" />" దీనికి కనెక్ట్ చేయాలనుకుంటోంది</translation>
+<translation id="7945703887991230167">ఎక్కువగా ఇష్టపడే వాయిస్</translation>
 <translation id="7946586320617670168">మూలం తప్పనిసరిగా సురక్షితంగా ఉండాలి</translation>
 <translation id="794676567536738329">అనుమతులు నిర్ధారించండి</translation>
 <translation id="7947962633355574091">వీడియో అడ్రస్‌ను కా&amp;పీ చేయండి</translation>

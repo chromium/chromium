@@ -726,6 +726,7 @@
 <translation id="1679068421605151609">Ծրագրավորողի գործիքներ</translation>
 <translation id="1679810534535368772">Իսկապե՞ս ուզում եք դուրս գալ</translation>
 <translation id="167983332380191032">Կառավարման ծառայությունն ուղարկել է HTTP-ի սխալ։</translation>
+<translation id="167997285881077031">Տեքստի հնչեցման ձայնի կարգավորումներ</translation>
 <translation id="1680841347983561661">Մի փոքր ուշ նորից փորձեք գործարկել Google Play-ը։</translation>
 <translation id="1680849702532889074">Լինուքսի հավելվածը տեղադրելիս սխալ առաջացավ:</translation>
 <translation id="16815041330799488">Արգելել կայքերին տեսնել սեղմատախտակին պատճենված տեքստերն ու պատկերները</translation>
@@ -1027,7 +1028,6 @@
 <translation id="1962233722219655970">Այս էջն օգտագործում է Native Client հավելված, որը ձեր համակարգիչը չի աջակցում:</translation>
 <translation id="1963227389609234879">Հեռացնել բոլորը</translation>
 <translation id="1963976881984600709">Սովորական պաշտպանություն</translation>
-<translation id="196425401113508486">Ընդգծել նշորդը, երբ այն շարժվում է</translation>
 <translation id="1965624977906726414">Հատուկ թույլտվություններ չունի:</translation>
 <translation id="1969654639948595766">WebRTC տեքստային մատյաններ (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Տեսագրելու ռեժիմը միացավ</translation>
@@ -2226,6 +2226,7 @@
 <translation id="3067198360141518313">Գործարկել այս փլագինը</translation>
 <translation id="3071624960923923138">Սեղմեք այստեղ՝ նոր ներդիր բացելու համար</translation>
 <translation id="3072775339180057696">Կայքին հասանելի դարձնե՞լ <ph name="FILE_NAME" /> ֆայլը</translation>
+<translation id="3074499504015191586">Թարգմանել ամբողջ էջը</translation>
 <translation id="3075874217500066906">Powerwash-ը սկսելու համար պահանջվում է վերագործարկում: Վերագործարկելուց հետո դուք պետք է հաստատեք, որ ցանկանում եք շարունակել:</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Պահել միայն այս սարքում</translation>
@@ -4087,7 +4088,6 @@
 <translation id="4918021164741308375"><ph name="ORIGIN" />-ը ցանկանում է կապ հաստատել «<ph name="EXTENSION_NAME" />» ընդլայնման հետ</translation>
 <translation id="4918086044614829423">Ընդունել</translation>
 <translation id="4918134162946436591">Ցույց տալ հուշումի վրադրումը</translation>
-<translation id="4921348630401250116">Տեքստի հնչեցում</translation>
 <translation id="492299503953721473">Հեռացնել Android հավելվածները</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> հավելվածը հեռացվում է…</translation>
 <translation id="4924002401726507608">Կարծիք հայտնել</translation>
@@ -4198,7 +4198,6 @@
 <translation id="5043913660911154449">Կամ նշեք ձեր տպիչի PPD ֆայլը <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Գաղտնաբառը սխալ է</translation>
 <translation id="504561833207953641">Բացվում է դիտարկիչի ընթացիկ աշխատաշրջանում։</translation>
-<translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Ուղղագրության ստուգումը չի աջակցվում ձեր ընտրած լեզուների համար</translation>
 <translation id="5052499409147950210">Փոփոխեք կայքը</translation>
 <translation id="505347685865235222">Անանուն խումբ – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -4546,6 +4545,7 @@
 <translation id="5398572795982417028">Դուրս է էջի համարակալման սահմաններից, թույլատրելի սահմանաչափն է <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5401426944298678474">Չհետևել կայքին</translation>
 <translation id="5401851137404501592">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։</translation>
+<translation id="5402367795255837559">Բրայլի գրատիպ</translation>
 <translation id="5402815541704507626">Թարմացման ներբեռնում բջջային ինտերնետի միջոցով</translation>
 <translation id="540296380408672091">Միշտ արգելափակել քուքիները <ph name="HOST" />-ում</translation>
 <translation id="5404740137318486384">Սեղմեք որևէ փոխանջատիչ կամ ստեղնաշարի ստեղն՝ այն «<ph name="ACTION" />» գործողությանը նշանակելու համար։
@@ -5080,6 +5080,7 @@
 <translation id="5933522550144185133"><ph name="APP_NAME" /> հավելվածն օգտագործում է ձեր տեսախցիկն ու խոսափողը</translation>
 <translation id="5935158534896975820">Հավաստագրի ստորագրման հայտի նախապատրաստում (սպասում է սերվերում)</translation>
 <translation id="5935656526031444304">Կառավարել անվտանգ դիտարկումը</translation>
+<translation id="5936065461722368675">Թարգմանել ամբողջ էջը</translation>
 <translation id="5938002010494270685">Հասանելի է անվտանգության համակարգի թարմացում</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="5939719276406088041">Չհաջողվեց դյուրանցում ստեղծել</translation>
@@ -5331,7 +5332,6 @@
 <translation id="6181431612547969857">Ներբեռնումն արգելափակված է</translation>
 <translation id="6184099524311454384">Որոնեք ներդիրներ</translation>
 <translation id="6185132558746749656">Սարքի տեղադրությունը</translation>
-<translation id="6188346519670155113">Chrome դիտարկիչի համաժամացումը միացված է</translation>
 <translation id="6190953336330058278">Հեռախոսի կառավարման կենտրոնի հավելվածներ</translation>
 <translation id="6195005504600220730">Կարդալ տեղեկություններ ձեր դիտարկիչի, օպերացիոն համակարգի և սարքի մասին</translation>
 <translation id="6195693561221576702">Անցանց դեմո ռեժիմն այս սարքի համար հասանելի չէ։</translation>
@@ -6162,7 +6162,6 @@
 <translation id="6991665348624301627">Ընտրեք վերջնակետը</translation>
 <translation id="6992554835374084304">Միացվեց ուղղագրության ընդլայնված ստուգումը</translation>
 <translation id="6993000214273684335">Ներդիրը հեռացվեց անանուն խմբից – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6994069045767983299">Շրջված գույներ</translation>
 <translation id="6995899638241819463">Զգուշացնել, եթե տվյալների արտահոսքի արդյունքում իմ գաղտնաբառերը հայտնի դառնան կողմնակի անձանց</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Գործողությունների մատյան</translation>
 <translation id="6997707937646349884">Ձեր սարքերում՝</translation>
@@ -7121,6 +7120,7 @@
 <translation id="7943837619101191061">Ավելացնել տեղադրություն…</translation>
 <translation id="7944772052836377867">Համաժամացման համար անհրաժեշտ է հաստատել ձեր ինքնությունը</translation>
 <translation id="7945031593909029181">«<ph name="CHROME_EXTENSION_NAME" />» ընդլայնումն ուզում է միանալ</translation>
+<translation id="7945703887991230167">Նախընտրած ձայնը</translation>
 <translation id="7946586320617670168">Սկզբնաղբյուրը պետք է անվտանգ լինի</translation>
 <translation id="794676567536738329">Թույլտվությունների հաստատում</translation>
 <translation id="7947962633355574091">Պատճենել տեսանյութի հասցեն</translation>

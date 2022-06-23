@@ -724,6 +724,7 @@
 <translation id="1679068421605151609">დეველოპერის ხელსაწყოები</translation>
 <translation id="1679810534535368772">ნამდვილად გსურთ გასვლა?</translation>
 <translation id="167983332380191032">მართვის სერვისმა გამოაგზავნა შეტყობინება HTTP შეცდომის შესახებ.</translation>
+<translation id="167997285881077031">ტექსტის გახმოვანების ხმის პარამეტრები</translation>
 <translation id="1680841347983561661">ცადეთ Google Play-ს ხელახლა გაშვება რამდენიმე წუთში.</translation>
 <translation id="1680849702532889074">თქვენი Linux აპლიკაციის ინსტალაციისას მოხდა შეცდომა.</translation>
 <translation id="16815041330799488">საიტებისთვის გაცვლის ბუფერში კოპირებული ტექსტისა და სურათების ნახვის აკრძალვა</translation>
@@ -1025,7 +1026,6 @@
 <translation id="1962233722219655970">ეს გვერდი იყენებს ორიგინალური კლიენტის პროგრამას, რომელიც არ მუშაობს თქვენს კომპიუტერში.</translation>
 <translation id="1963227389609234879">ყველას ამოშლა</translation>
 <translation id="1963976881984600709">სტანდარტული დაცვა</translation>
-<translation id="196425401113508486">გადაადგილებისას კურსორის გამოყოფა</translation>
 <translation id="1965624977906726414">სპეციალური ნებართვები არ არის.</translation>
 <translation id="1969654639948595766">WebRTC-ის ტექსტური ჟურნალები (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">გაშვებულია ვიდეო რეჟიმი</translation>
@@ -4088,7 +4088,6 @@
 <translation id="4918021164741308375"><ph name="ORIGIN" /> სურს ურთიერთობა გაფართოებით „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">მიღება</translation>
 <translation id="4918134162946436591">მინიშნების გადაფარვის ჩვენება</translation>
-<translation id="4921348630401250116">ტექსტის გახმოვანება</translation>
 <translation id="492299503953721473">Android-ის აპების ამოშლა</translation>
 <translation id="492363500327720082">მიმდინარეობს <ph name="APP_NAME" />-ის დეინსტალაცია...</translation>
 <translation id="4924002401726507608">გამოხმაურება</translation>
@@ -4199,7 +4198,6 @@
 <translation id="5043913660911154449">ან მიუთითეთ პრინტერის PPD. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">არასწორი პაროლი</translation>
 <translation id="504561833207953641">მიმდინარეობს ბრაუზერის არსებულ სესიაში გახსნა.</translation>
-<translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">მართლწერის შემოწმება მხარდაუჭერელია თქვენ მიერ არჩეული ენებისთვის</translation>
 <translation id="5052499409147950210">საიტის რედაქტირება</translation>
 <translation id="505347685865235222">უსახელო ჯგუფი — <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -4545,6 +4543,7 @@
 <translation id="5398572795982417028">გვერდზე მითითება საზღვრებს სცდება. ლიმიტი არის <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5401426944298678474">საიტისთვის თვალის მიდევნების გაუქმება</translation>
 <translation id="5401851137404501592">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს.</translation>
+<translation id="5402367795255837559">ბრაილის შრიფტი</translation>
 <translation id="5402815541704507626">განახლების ჩამოტვირთვა მობილური ინტერნეტით</translation>
 <translation id="540296380408672091"><ph name="HOST" />-ზე ქუქი-ჩანაწერების ყოველთვის დაბლოკვა</translation>
 <translation id="5404740137318486384">დააჭირეთ გადამრთველს ან კლავიატურის კლავიშს, „<ph name="ACTION" />“ რომ მიაკუთვნოთ.
@@ -5334,7 +5333,6 @@
 <translation id="6181431612547969857">ჩამოტვირთვა დაბლოკილია</translation>
 <translation id="6184099524311454384">მოიძიეთ ჩანართებში</translation>
 <translation id="6185132558746749656">მოწყობილობის მდებარეობა</translation>
-<translation id="6188346519670155113">Chrome ბრაუზერის სინქრონიზაცია ჩართულია</translation>
 <translation id="6190953336330058278">ტელეფონის ცენტრის აპები</translation>
 <translation id="6195005504600220730">გაეცანით ინფორმაციას თქვენი ბრაუზერის, ოპერაციული სისტემისა და მოწყობილობის შესახებ</translation>
 <translation id="6195693561221576702">ამ მოწყობილობის ხაზგარეშე დემო-რეჟიმში დაყენება ვერ მოხერხდება.</translation>
@@ -6163,7 +6161,6 @@
 <translation id="6991665348624301627">აირჩიეთ დანიშნულება</translation>
 <translation id="6992554835374084304">მართლწერის გაძლიერებული შემოწმების ჩართვა</translation>
 <translation id="6993000214273684335">ჩანართი ამოიშალა უსახელო ჯგუფიდან — <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6994069045767983299">ფერების ინვერსია</translation>
 <translation id="6995899638241819463">გაფრთხილების მიღება მონაცემთა გაჟონვისას პაროლების გამოაშკარავების შემთხვევაში</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> — აქტივობის ჟურნალი</translation>
 <translation id="6997707937646349884">თქვენს მოწყობილობებზე:</translation>
@@ -7123,6 +7120,7 @@
 <translation id="7943837619101191061">მდებარეობის დამატება…</translation>
 <translation id="7944772052836377867">სინქრონიზაციის ფუნქციას სჭირდება თქვენი ვინაობის დადასტურება</translation>
 <translation id="7945031593909029181">„<ph name="CHROME_EXTENSION_NAME" />“ დაკავშირებას ითხოვს</translation>
+<translation id="7945703887991230167">სასურველი ხმა</translation>
 <translation id="7946586320617670168">წყარო უნდა იყოს დაცული</translation>
 <translation id="794676567536738329">დაადასტურეთ ნებართვები</translation>
 <translation id="7947962633355574091">ვიდეოს მისამართის კ&amp;ოპირება</translation>

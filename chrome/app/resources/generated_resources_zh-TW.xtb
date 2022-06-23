@@ -724,6 +724,7 @@
 <translation id="1679068421605151609">開發人員工具</translation>
 <translation id="1679810534535368772">確定要離開嗎？</translation>
 <translation id="167983332380191032">管理服務傳回了 HTTP 錯誤。</translation>
+<translation id="167997285881077031">文字轉語音的聲音設定</translation>
 <translation id="1680841347983561661">請稍後再嘗試重新啟動 Google Play。</translation>
 <translation id="1680849702532889074">安裝 Linux 應用程式的過程中發生錯誤。</translation>
 <translation id="16815041330799488">禁止網站讀取已複製到剪貼簿的文字和圖片</translation>
@@ -1025,7 +1026,6 @@
 <translation id="1962233722219655970">這個網頁使用無法在你電腦上運行的 Native Client 應用程式。</translation>
 <translation id="1963227389609234879">全部移除</translation>
 <translation id="1963976881984600709">標準防護</translation>
-<translation id="196425401113508486">醒目顯示移動中的游標</translation>
 <translation id="1965624977906726414">沒有特殊權限。</translation>
 <translation id="1969654639948595766">WebRTC 文字記錄 (<ph name="WEBRTC_TEXT_LOG_COUNT" /> 筆)</translation>
 <translation id="1970368523891847084">已進入影片模式</translation>
@@ -1543,6 +1543,7 @@
 <translation id="2433836460518180625">僅限解鎖裝置</translation>
 <translation id="2434449159125086437">無法設定印表機，請檢查設定後再試一次。</translation>
 <translation id="2434758125294431199">選取可以與你分享內容的人</translation>
+<translation id="2434915728183570229">你現在可以查看手機的應用程式</translation>
 <translation id="2435137177546457207">《Google Chrome 和 ChromeOS Flex 附加條款》</translation>
 <translation id="2435248616906486374">網路已中斷連線</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
@@ -2224,6 +2225,7 @@
 <translation id="3067198360141518313">執行這個外掛程式</translation>
 <translation id="3071624960923923138">按一下這裡即可開啟新分頁</translation>
 <translation id="3072775339180057696">要允許網站讀取「<ph name="FILE_NAME" />」嗎？</translation>
+<translation id="3074499504015191586">翻譯完整頁面</translation>
 <translation id="3075874217500066906">Powerwash 程序必須重新啟動才能開始執行。重新啟動後，系統將向你確認是否繼續程序。</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">只儲存在這部裝置上</translation>
@@ -4085,7 +4087,6 @@
 <translation id="4918021164741308375"><ph name="ORIGIN" /> 要求與「<ph name="EXTENSION_NAME" />」擴充功能通訊</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4918134162946436591">重疊顯示提示</translation>
-<translation id="4921348630401250116">文字轉語音</translation>
 <translation id="492299503953721473">移除 Android 應用程式</translation>
 <translation id="492363500327720082">正在解除安裝「<ph name="APP_NAME" />」...</translation>
 <translation id="4924002401726507608">提供意見</translation>
@@ -4196,7 +4197,6 @@
 <translation id="5043913660911154449">或指定印表機 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="504561833207953641">正於現有瀏覽器工作階段中開啟。</translation>
-<translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">你選取的語言不支援拼字檢查功能</translation>
 <translation id="5052499409147950210">編輯網站</translation>
 <translation id="505347685865235222">未命名的群組 - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -4225,6 +4225,7 @@
 <translation id="5072900412896857127">無法載入《Google Play 服務條款》。請檢查你的網路連線，然後再試一次。</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />、<ph name="FILE2" />}other{<ph name="FILE1" />、<ph name="FILE2" /> 和另外 # 個檔案}}</translation>
 <translation id="5074318175948309511">你可能需要重新載入這個網頁，新設定才會生效。</translation>
+<translation id="5074761966806028321">仍需要權限才能完成設定</translation>
 <translation id="5075910247684008552">系統預設會封鎖安全網站上的不安全內容</translation>
 <translation id="5078638979202084724">將所有分頁加入書籤</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
@@ -4541,6 +4542,7 @@
 <translation id="5398572795982417028">參照的網頁超出範圍限制 (<ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="5401426944298678474">取消追蹤網站</translation>
 <translation id="5401851137404501592">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。</translation>
+<translation id="5402367795255837559">點字</translation>
 <translation id="5402815541704507626">使用行動數據下載更新</translation>
 <translation id="540296380408672091">一律封鎖 <ph name="HOST" /> 的 Cookie</translation>
 <translation id="5404740137318486384">按下外接切換裝置或鍵盤按鍵，即可為其指派「<ph name="ACTION" />」。
@@ -4588,6 +4590,7 @@
 <translation id="5449551289610225147">密碼無效</translation>
 <translation id="5449588825071916739">將所有分頁加入書籤</translation>
 <translation id="5449716055534515760">關閉視窗(&amp;D)</translation>
+<translation id="5452446625764825792">你現在可以查看手機最近的相片、媒體和應用程式</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (可離線使用)</translation>
 <translation id="5454166040603940656">提供者：<ph name="PROVIDER" /></translation>
 <translation id="545484289444831485">查看更多搜尋結果</translation>
@@ -4648,6 +4651,7 @@
 <translation id="5499211612787418966">這個對話方塊未處於聚焦狀態。按下 Alt + Shift + A 鍵即可聚焦這個對話方塊。</translation>
 <translation id="5499313591153584299">這個檔案可能對你的電腦有害。</translation>
 <translation id="5499453227627332024">現在可以升級 Linux 容器。你也可以稍後再從「設定」應用程式中升級。</translation>
+<translation id="5499476581866658341">你現在可以查看手機近期的相片和媒體</translation>
 <translation id="549957179819296104">新圖示</translation>
 <translation id="5500168250243071806">在你登入後，<ph name="BEGIN_LINK_SEARCH" />搜尋記錄<ph name="END_LINK_SEARCH" />和<ph name="BEGIN_LINK_GOOGLE" />其他形式的活動<ph name="END_LINK_GOOGLE" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。</translation>
 <translation id="5500709606820808700">今天已執行安全檢查</translation>
@@ -5073,6 +5077,7 @@
 <translation id="5933522550144185133">「<ph name="APP_NAME" />」正在使用你的攝影機和麥克風</translation>
 <translation id="5935158534896975820">正在準備憑證簽署要求 (在伺服器上等待)</translation>
 <translation id="5935656526031444304">管理安全瀏覽功能</translation>
+<translation id="5936065461722368675">翻譯完整頁面</translation>
 <translation id="5938002010494270685">可進行安全性更新</translation>
 <translation id="5939518447894949180">重設</translation>
 <translation id="5939719276406088041">無法建立捷徑</translation>
@@ -5324,7 +5329,6 @@
 <translation id="6181431612547969857">下載遭封鎖</translation>
 <translation id="6184099524311454384">搜尋分頁</translation>
 <translation id="6185132558746749656">裝置位置</translation>
-<translation id="6188346519670155113">Chrome 瀏覽器同步功能已開啟</translation>
 <translation id="6190953336330058278">Phone Hub 應用程式</translation>
 <translation id="6195005504600220730">讀取瀏覽器、OS 和裝置相關資訊</translation>
 <translation id="6195693561221576702">這個裝置無法設為離線示範模式。</translation>
@@ -6153,7 +6157,6 @@
 <translation id="6991665348624301627">選取印表機</translation>
 <translation id="6992554835374084304">開啟進階拼字檢查功能</translation>
 <translation id="6993000214273684335">已將分頁從包含「<ph name="GROUP_CONTENTS" />」的未命名群組中移除</translation>
-<translation id="6994069045767983299">反轉顏色</translation>
 <translation id="6995899638241819463">當密碼因資料侵害事件遭到外洩時發出警告</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活動記錄</translation>
 <translation id="6997707937646349884">在你的裝置上：</translation>
@@ -6309,6 +6312,7 @@
 <translation id="7152478047064750137">這個擴充功能不需要特殊權限</translation>
 <translation id="7154130902455071009">將你的起始網頁變更為：<ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">現有的相機相片或圖庫相片</translation>
+<translation id="7160182524506337403">你現在可以查看手機的通知</translation>
 <translation id="7163202347044721291">正在驗證啟用代碼…</translation>
 <translation id="716640248772308851">「<ph name="EXTENSION" />」對於勾選位置中的圖片、影片和聲音檔具有讀取權限。</translation>
 <translation id="7167486101654761064">一律開啟這類檔案(&amp;A)</translation>
@@ -7113,6 +7117,7 @@
 <translation id="7943837619101191061">新增位置...</translation>
 <translation id="7944772052836377867">同步功能需要驗證你的身分</translation>
 <translation id="7945031593909029181">「<ph name="CHROME_EXTENSION_NAME" />」要求連線</translation>
+<translation id="7945703887991230167">偏好語音</translation>
 <translation id="7946586320617670168">來源必須是安全來源</translation>
 <translation id="794676567536738329">確認權限</translation>
 <translation id="7947962633355574091">複製影片位址(&amp;O)</translation>
@@ -7324,6 +7329,7 @@
 <translation id="8138997515734480534">「<ph name="VM_NAME" />」狀態</translation>
 <translation id="8139447493436036221">Google 雲端硬碟檔案</translation>
 <translation id="8140070492745508800">「<ph name="FIRST_DEVICE" />」、「<ph name="SECOND_DEVICE" />」</translation>
+<translation id="8141418916163800697">你可以前往 Phone Hub 設定調整更多功能</translation>
 <translation id="8141584439523427891">正在替代瀏覽器中開啟</translation>
 <translation id="8141725884565838206">管理你的密碼</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 部影片}other{# 部影片}}</translation>
@@ -7531,6 +7537,7 @@
 <translation id="833986336429795709">請選擇要用來開啟這個連結的應用程式</translation>
 <translation id="8342221978608739536">沒有試過</translation>
 <translation id="8342861492835240085">選取集合</translation>
+<translation id="8345848587667658367">你現在可以查看手機最近的相片、媒體、通知和應用程式</translation>
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="834785183489258869">在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="8350789879725387295">Dock 中的觸控筆工具</translation>
@@ -8136,6 +8143,7 @@
 <translation id="8957757410289731985">自訂檔案</translation>
 <translation id="895944840846194039">JavaScript 記憶體使用量</translation>
 <translation id="8960208913905765425">快速解答功能的單位轉換結果</translation>
+<translation id="8960638196855923532">你現在可以查看手機的通知和應用程式</translation>
 <translation id="8962051932294470566">一次只能分享一個檔案，請等待系統完成目前的傳輸作業，然後再試一次。</translation>
 <translation id="8962083179518285172">隱藏詳細資料</translation>
 <translation id="8962918469425892674">這個網站正在使用動作感應器或光源感應器。</translation>
@@ -8287,6 +8295,7 @@
 <translation id="9103868373786083162">按下即可返回，內容選單會顯示歷史記錄</translation>
 <translation id="9108035152087032312">命名視窗...(&amp;W)</translation>
 <translation id="9108072915170399168">目前的數據用量設定是不使用網際網路</translation>
+<translation id="9108294543511800041">你現在可以查看手機最近的相片、媒體和通知</translation>
 <translation id="9108674852930645435">探索 <ph name="DEVICE_TYPE" /> 的新功能</translation>
 <translation id="9108808586816295166">可能無法隨時使用安全 DNS</translation>
 <translation id="9109122242323516435">如要釋出空間，請刪除裝置儲存空間內的檔案</translation>

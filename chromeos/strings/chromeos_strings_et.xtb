@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Kasutaja</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Välisseadmete püsivara värskendamise aken on lahti. Saadaval on <ph name="NUM_UPDATES" /> värskendust.</translation>
+<translation id="1145516343487477149">Leidke Chromebookiga seotud levinud küsimustele vastuseid ja abiartikleid</translation>
 <translation id="1165039591588034296">Viga</translation>
 <translation id="1175697296044146566">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Keskmine (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Tumeda teema väljalülitamine</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Tumeda režiim väljalülitamine</translation>
+<translation id="1881188606372070653">Õiguslikel põhjustel sisumuudatuste taotlemiseks avage <ph name="BEGIN_LINK1" />leht Juriidiline abi<ph name="END_LINK1" />. Osa konto ja süsteemi teabest võidakse saata Google'ile. Kasutame teilt saadud teavet tehniliste probleemide lahendamiseks ning oma teenuste täiustamiseks kooskõlas meie <ph name="BEGIN_LINK2" />privaatsuseeskirjade<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />teenusetingimustega<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Riistvara redaktsioon</translation>
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
 <translation id="1908234395526491708">UDP-taotluste vead</translation>
@@ -623,6 +625,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6379086450106841622">Puuteekraan</translation>
 <translation id="6381741036071372448">Testige oma klaviatuuri</translation>
 <translation id="6388847657025262518">Skanneri dokumendisöötur on ummistunud. Kontrollige sööturit ja proovige uuesti.</translation>
+<translation id="6394634179843537518">Lisa fail</translation>
 <translation id="6410257289063177456">Pildifailid</translation>
 <translation id="641081527798843608">Teema vaste</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

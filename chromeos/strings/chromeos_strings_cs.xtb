@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Uživatel</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Okno aktualizace firmwaru externích zařízení je otevřené. Dostupné aktualizace: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1145516343487477149">Články nápovědy a odpovědi na časté dotazy ohledně Chromebooků</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1175697296044146566">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Průměrný (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Vypnout tmavý motiv</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Vypnout tmavý režim</translation>
+<translation id="1881188606372070653">Pokud chcete požádat o změny obsahu z právních důvodů, přejděte na stránku <ph name="BEGIN_LINK1" />Právní nápověda<ph name="END_LINK1" />. Některé údaje o účtu a systému mohou být předány společnosti Google. Informace, které jste nám poskytli, použijeme při řešení technických problémů a ke zlepšení našich služeb podléhajících našim <ph name="BEGIN_LINK2" />zásadám ochrany soukromí<ph name="END_LINK2" /> a <ph name="BEGIN_LINK3" />smluvním podmínkám<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Revize hardwaru</translation>
 <translation id="1905710495812624430">Byl překročen maximální povolený počet pokusů.</translation>
 <translation id="1908234395526491708">Selhání požadavků UDP</translation>
@@ -623,6 +625,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6379086450106841622">Dotyková obrazovka</translation>
 <translation id="6381741036071372448">Vyzkoušejte si klávesnici</translation>
 <translation id="6388847657025262518">Podavač dokumentů skeneru je zaseknutý. Zkontrolujte podavač a zkuste to znovu.</translation>
+<translation id="6394634179843537518">Přidat soubor</translation>
 <translation id="6410257289063177456">Obrázkové soubory</translation>
 <translation id="641081527798843608">Shoda předmětu</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

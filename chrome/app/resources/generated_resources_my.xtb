@@ -726,6 +726,7 @@
 <translation id="1679068421605151609">ပြုစုသူ၏ ကိရိယာများ</translation>
 <translation id="1679810534535368772">သင်ထွက်ခွာလိုသည်မှာ သေချာပါသလား။</translation>
 <translation id="167983332380191032">စီမံခန့်ခွဲခြင်းဝန်ဆောင်မှုသည် HTTP အမှားအယွင်းကို ပို့ထားသည်။</translation>
+<translation id="167997285881077031">စာသားမှ စကားပြော အသံဆက်တင်များ</translation>
 <translation id="1680841347983561661">ခဏအကြာတွင် Google Play ကို ထပ်မံစတင်ကြည့်ပါ။</translation>
 <translation id="1680849702532889074">သင်၏ Linux အပလီကေးရှင်းကို ထည့်သွင်းနေစဉ် အမှားအယွင်း ဖြစ်ပေါ်ခဲ့သည်။</translation>
 <translation id="16815041330799488">ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည့် စာသားနှင့် ပုံများကို ဝဘ်ဆိုက်များက ကြည့်ခွင့်မရှိပါ</translation>
@@ -1035,7 +1036,6 @@
 <translation id="1962233722219655970">ဒီစာမျက်နှာက Native Client အက်ပ်ကို အသုံးပြုရာ သင်၏ ကွန်ပျူတာမှာ အလုပ် မလုပ်ပါ။</translation>
 <translation id="1963227389609234879">အားလုံးဖယ်ရှားရန်</translation>
 <translation id="1963976881984600709">ပုံမှန်ကာကွယ်မှု</translation>
-<translation id="196425401113508486">ရွှေ့နေသည့်အခါ ကာဆာကို အထူးဖော်ပြရန်</translation>
 <translation id="1965624977906726414">ဆီမှာ အထူး ခွင့်ပြုချက်များ မရှိပါ။</translation>
 <translation id="1969654639948595766">WebRTC စာသားမှတ်တမ်းများ (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">ဗီဒီယိုမုဒ်သို့ ပြောင်းလိုက်ပါပြီ</translation>
@@ -2238,6 +2238,7 @@
 <translation id="3067198360141518313">ဤပလတ်အင်အား သုံးရန်</translation>
 <translation id="3071624960923923138">ဤနေရာကို နှိပ်ပြီး တဘ်အသစ်ဖွင့်နိုင်သည်</translation>
 <translation id="3072775339180057696">ဝဘ်ဆိုက်ကို <ph name="FILE_NAME" /> အား ကြည့်ခွင့်ပြုမလား။</translation>
+<translation id="3074499504015191586">စာမျက်နှာတစ်ခုလုံး ဘာသာပြန်ရန်</translation>
 <translation id="3075874217500066906">Powerwash လုပ်ငန်းစဉ် စတင်ရန်အတွက် စက်အား ပြန်စဖွင့်ရန်လိုသည်။ ပြန်စဖွင့်ပြီးနောက် သင်ဆက်လက်လုပ်ဆောင်လိုခြင်းရှိမရှိ အတည်ပြုရန် မေးလိမ့်မည်။</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">ဤစက်တွင်သာ သိမ်းရန်</translation>
@@ -4100,7 +4101,6 @@
 <translation id="4918021164741308375"><ph name="ORIGIN" /> သည် ပရိုဂရမ်အဆက်"<ph name="EXTENSION_NAME" />" နှင့် ဆက်သွယ်လိုသည်</translation>
 <translation id="4918086044614829423">လက်ခံရန်</translation>
 <translation id="4918134162946436591">ထိန်းချုပ်မှုထပ်ပိုးလွှာ ပြရန်</translation>
-<translation id="4921348630401250116">စာသားမှ စကားပြော</translation>
 <translation id="492299503953721473">Android အက်ပ်များကို ဖယ်ရှားပါ</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> ကို ဖယ်ရှားနေသည်...</translation>
 <translation id="4924002401726507608">အကြံပြုချက် ပို့ရန်</translation>
@@ -4211,7 +4211,6 @@
 <translation id="5043913660911154449">သို့မဟုတ် သင့်ပရင်တာ PPD ကို သတ်မှတ်ပါ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">စကားဝှက် မမှန်ပါ</translation>
 <translation id="504561833207953641">လက်ရှိ ဘရောင်ဇာစက်ရှင်တွင် ဖွင့်နေသည်</translation>
-<translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">သင်ရွေးချယ်ထားသော ဘာသာစကားများအတွက် စာလုံးပေါင်းစစ်ဆေးခြင်းကို ပံ့ပိုးမထားပါ</translation>
 <translation id="5052499409147950210">ဝဘ်ဆိုက်ကို တည်းဖြတ်ရန်</translation>
 <translation id="505347685865235222">အမည်ပေးမထားသော အုပ်စု - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -4557,6 +4556,7 @@
 <translation id="5398572795982417028">စာမျက်နှာများ ကျော်လွန်ဖွင့်ထားသည့် အညွှန်း၊ ကန့်သတ်ချက်မှာ <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5401426944298678474">‘ဝဘ်ဆိုက်’ ကို လိုက်မကြည့်တော့ရန်</translation>
 <translation id="5401851137404501592">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့်အမည်၊ အီးမေးလ်လိပ်စာနှင့် ပရိုဖိုင်ပုံကို ဤဝဘ်ဆိုက်အား မျှဝေမည်။</translation>
+<translation id="5402367795255837559">မျက်မမြင်စာ</translation>
 <translation id="5402815541704507626">မိုဘိုင်းဒေတာကို အသုံးပြုပြီး အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="540296380408672091"><ph name="HOST" /> ရှိ ကူကီးများအား အမြဲပိတ်ထားပါ</translation>
 <translation id="5404740137318486384">၎င်းကို “<ph name="ACTION" />” အတွက် သတ်မှတ်ရန် အသွင်တူခလုတ် (သို့) ကီးဘုတ်ကီးကို နှိပ်ပါ။
@@ -5092,6 +5092,7 @@
 <translation id="5933522550144185133"><ph name="APP_NAME" /> သည် သင်၏ကင်မရာနှင့် မိုက်ခရိုဖုန်းကို သုံးနေသည်</translation>
 <translation id="5935158534896975820">အသိအမှတ်ပြုလက်မှတ် ရေးထိုးရန် တောင်းဆိုချက်ကို ပြင်ဆင်နေသည် (ဆာဗာကို စောင့်နေသည်)</translation>
 <translation id="5935656526031444304">'လုံခြုံစွာ ကြည့်ရှုခြင်း' ကို စီမံရန်</translation>
+<translation id="5936065461722368675">စာမျက်နှာတစ်ခုလုံး ဘာသာပြန်ရန်</translation>
 <translation id="5938002010494270685">လုံခြုံရေး အဆင့်မြှင့်နိုင်ပါသည်</translation>
 <translation id="5939518447894949180">ပြန်ညှိ</translation>
 <translation id="5939719276406088041">ဖြတ်လမ်းလင့်ခ် ပြုလုပ်၍မရပါ</translation>
@@ -5344,7 +5345,6 @@
 <translation id="6181431612547969857">ဒေါင်းလုဒ် ပိတ်ဆို့ထား</translation>
 <translation id="6184099524311454384">တဘ်များတွင် ရှာရန်</translation>
 <translation id="6185132558746749656">စက်ကိရိယာ တည်နေရာ</translation>
-<translation id="6188346519670155113">Chrome ဘရောင်ဇာ စင့်ခ်လုပ်ခြင်းကို ဖွင့်ထားသည်</translation>
 <translation id="6190953336330058278">ဖုန်းစင်တာအက်ပ်များ</translation>
 <translation id="6195005504600220730">သင့်ဘရောင်ဇာ၊ OS နှင့် စက်ပစ္စည်းအကြောင်း အချက်အလက်များ ဖတ်ခြင်း</translation>
 <translation id="6195693561221576702">ဤစက်ပစ္စည်းကို အော့ဖ်လိုင်းသရုပ်ပြမုဒ်အဖြစ် စနစ်ထည့်သွင်း၍မရပါ။</translation>
@@ -6172,7 +6172,6 @@
 <translation id="6991665348624301627">သွားမည့်နေရာကို ရွေးရန်</translation>
 <translation id="6992554835374084304">အဆင့်မြင့် စာလုံးပေါင်းစစ်ဆေးခြင်းကို ဖွင့်ပါ</translation>
 <translation id="6993000214273684335">အမည်ပေးမထားသော အုပ်စုမှ တဘ်ကို ဖယ်ရှားလိုက်သည် - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6994069045767983299">အရောင်များကို ပြောင်းပြန်လှန်ရန်</translation>
 <translation id="6995899638241819463">ဒေတာကျိုးပေါက်မှုတွင် စကားဝှက်များ ဖော်ထုတ်ခံရသည့်အခါ သင့်ကို သတိပေးခြင်း</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - လုပ်ဆောင်ချက်မှတ်တမ်း</translation>
 <translation id="6997707937646349884">သင်စက်ပစ္စည်းများပေါ်တွင်−</translation>
@@ -7133,6 +7132,7 @@
 <translation id="7943837619101191061">တည်နေရာ ထည့်ပေးရန်...</translation>
 <translation id="7944772052836377867">‘စင့်ခ်လုပ်ခြင်း’ က သင်ဖြစ်ကြောင်း စိစစ်ရန်လိုအပ်သည်</translation>
 <translation id="7945031593909029181">"<ph name="CHROME_EXTENSION_NAME" />" သည် ချိတ်ဆက်လိုသည်</translation>
+<translation id="7945703887991230167">ဦးစားပေးအသံ</translation>
 <translation id="7946586320617670168">မူရင်းနေရာသည် လုံခြုံရပါမည်</translation>
 <translation id="794676567536738329">ခွင့်ပြုချက်များ အတည်ပြု</translation>
 <translation id="7947962633355574091">ဗီဒီယို လိပ်စာ မိ&amp;တ္တူ ကူးပါ</translation>

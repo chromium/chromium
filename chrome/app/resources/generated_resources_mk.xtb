@@ -728,6 +728,7 @@
 <translation id="1679068421605151609">Програмерски алатки</translation>
 <translation id="1679810534535368772">Дали сте сигурни дека сакате да излезете?</translation>
 <translation id="167983332380191032">Услугата за управување испрати HTTP-грешка.</translation>
+<translation id="167997285881077031">Гласовни поставки за „Од текст во говор“</translation>
 <translation id="1680841347983561661">Обидете се да го стартувате Google Play повторно по неколку секунди.</translation>
 <translation id="1680849702532889074">Дојде до грешка при инсталирањето на вашата апликација за Linux.</translation>
 <translation id="16815041330799488">Не дозволувај им на сајтовите да гледаат текст и слики копирани на привремената меморија</translation>
@@ -1038,7 +1039,6 @@
 <translation id="1962233722219655970">Оваа страница користи апликација за матичен клиент што не работи на вашиот компјутер.</translation>
 <translation id="1963227389609234879">Отстрани ги сите</translation>
 <translation id="1963976881984600709">Стандардна заштита</translation>
-<translation id="196425401113508486">Нагласи го курсорот при движење</translation>
 <translation id="1965624977906726414">Нема специјални дозволи.</translation>
 <translation id="1969654639948595766">Текстуална евиденција на WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Влеговте во видеорежим</translation>
@@ -4105,7 +4105,6 @@
 <translation id="4918021164741308375"><ph name="ORIGIN" /> сака да комуницира со наставката „<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Прифати</translation>
 <translation id="4918134162946436591">Прикажи ја прекривката за навестување</translation>
-<translation id="4921348630401250116">Од текст во говор</translation>
 <translation id="492299503953721473">Отстрани ги апликациите за Android</translation>
 <translation id="492363500327720082">Се деинсталира <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Испратете повратни информации</translation>
@@ -4216,7 +4215,6 @@
 <translation id="5043913660911154449">Или одредете го PPD на вашиот печатач <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Погрешна лозинка</translation>
 <translation id="504561833207953641">Се отвора во постојната сесија на прелистувачот.</translation>
-<translation id="5050330054928994520">Од текст во говор</translation>
 <translation id="5051836348807686060">Проверката на правопис не е поддржана за јазиците што ги избравте</translation>
 <translation id="5052499409147950210">Изменете го сајтот</translation>
 <translation id="505347685865235222">Неименувана група - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -4562,6 +4560,7 @@
 <translation id="5398572795982417028">Претпочитани вредности за надворешни граници на страницата, ограничувањето е <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5401426944298678474">Отследете го сајтот</translation>
 <translation id="5401851137404501592">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето име, адресата на е-пошта и профилната слика со сајтов.</translation>
+<translation id="5402367795255837559">Браилово писмо</translation>
 <translation id="5402815541704507626">Преземете ажурирање преку мобилен интернет</translation>
 <translation id="540296380408672091">Секогаш блокирај ги колачињата на <ph name="HOST" /></translation>
 <translation id="5404740137318486384">Притиснете прекинувач или копче од тастатурата за да го доделите на „<ph name="ACTION" />“.
@@ -5351,7 +5350,6 @@
 <translation id="6181431612547969857">Преземањето е блокирано</translation>
 <translation id="6184099524311454384">Пребарајте ги картичките</translation>
 <translation id="6185132558746749656">Локација на уредот</translation>
-<translation id="6188346519670155113">Синхронизацијата на Chrome е вклучена</translation>
 <translation id="6190953336330058278">Апликации на Phone Hub</translation>
 <translation id="6195005504600220730">Читање информации за вашиот прелистувач, оперативниот систем и уредот</translation>
 <translation id="6195693561221576702">Уредов не може да се постави во офлајн демо-режим.</translation>
@@ -6182,7 +6180,6 @@
 <translation id="6991665348624301627">Изберете дестинација</translation>
 <translation id="6992554835374084304">Вклучете подобрена проверка на правопис</translation>
 <translation id="6993000214273684335">Картичката е отстранета од неименувана група - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6994069045767983299">Инверзија на бои</translation>
 <translation id="6995899638241819463">Добијте предупредување ако лозинките се откриени при упад во податоците</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Евиденција на активности</translation>
 <translation id="6997707937646349884">На вашите уреди:</translation>
@@ -7143,6 +7140,7 @@
 <translation id="7943837619101191061">Додај локација…</translation>
 <translation id="7944772052836377867">Синхронизацијата треба да потврди дека сте вие</translation>
 <translation id="7945031593909029181">„<ph name="CHROME_EXTENSION_NAME" />“ сака да се поврзе</translation>
+<translation id="7945703887991230167">Претпочитан глас</translation>
 <translation id="7946586320617670168">Потеклото мора да биде безбедно</translation>
 <translation id="794676567536738329">Потврди дозволи</translation>
 <translation id="7947962633355574091">К&amp;опирај ја адресата на видеото</translation>

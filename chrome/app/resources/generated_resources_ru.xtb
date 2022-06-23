@@ -726,6 +726,7 @@
 <translation id="1679068421605151609">Инструменты разработчика</translation>
 <translation id="1679810534535368772">Закрыть страницу?</translation>
 <translation id="167983332380191032">От сервиса управления получен недействительный код HTTP.</translation>
+<translation id="167997285881077031">Настройки синтеза речи</translation>
 <translation id="1680841347983561661">Попробуйте запустить Google Play снова через несколько секунд.</translation>
 <translation id="1680849702532889074">В процессе установки приложения для Linux произошла ошибка.</translation>
 <translation id="16815041330799488">Не предоставлять сайтам доступ к тексту и изображениям, скопированным в буфер обмена</translation>
@@ -1027,7 +1028,6 @@
 <translation id="1962233722219655970">На этой странице используется приложение Native Client, не поддерживаемое вашим компьютером.</translation>
 <translation id="1963227389609234879">Удалить все</translation>
 <translation id="1963976881984600709">Стандартная защита</translation>
-<translation id="196425401113508486">Выделять курсор, когда он движется</translation>
 <translation id="1965624977906726414">Без специальных разрешений.</translation>
 <translation id="1969654639948595766">Текстовые журналы WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Включён режим видеосъёмки</translation>
@@ -4088,7 +4088,6 @@
 <translation id="4918021164741308375"><ph name="ORIGIN" /> запрашивает доступ к расширению "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Принять</translation>
 <translation id="4918134162946436591">Показать оверлей подсказки</translation>
-<translation id="4921348630401250116">Озвучивание текста</translation>
 <translation id="492299503953721473">Удалить приложения для Android</translation>
 <translation id="492363500327720082">Удаление <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Отправить отзыв</translation>
@@ -4199,7 +4198,6 @@
 <translation id="5043913660911154449">Или укажите PPD-файл для принтера. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Неправильный пароль</translation>
 <translation id="504561833207953641">Окно или вкладка откроются в текущем сеансе браузера.</translation>
-<translation id="5050330054928994520">Синтез речи</translation>
 <translation id="5051836348807686060">Проверка правописания не поддерживается для выбранных языков.</translation>
 <translation id="5052499409147950210">Изменение сайта</translation>
 <translation id="505347685865235222">Группа без названия: <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -4545,6 +4543,7 @@
 <translation id="5398572795982417028">Размер страницы больше максимально допустимого (лимит ‒ <ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="5401426944298678474">Отменить подписку на сайт</translation>
 <translation id="5401851137404501592">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт.</translation>
+<translation id="5402367795255837559">Шрифт Брайля</translation>
 <translation id="5402815541704507626">Скачивание обновления по мобильной сети</translation>
 <translation id="540296380408672091">Всегда блокировать файлы cookie на сайте <ph name="HOST" /></translation>
 <translation id="5404740137318486384">Нажмите на переключатель или клавишу, чтобы назначить их для действия "<ph name="ACTION" />".
@@ -5333,7 +5332,6 @@
 <translation id="6181431612547969857">Скачивание запрещено</translation>
 <translation id="6184099524311454384">Поиск по вкладкам</translation>
 <translation id="6185132558746749656">Местоположение устройства</translation>
-<translation id="6188346519670155113">Синхронизация браузера Chrome включена</translation>
 <translation id="6190953336330058278">Управление телефоном: приложения</translation>
 <translation id="6195005504600220730">Доступ к информации о вашем браузере, ОС и устройстве</translation>
 <translation id="6195693561221576702">Демонстрационный офлайн-режим на этом устройстве недоступен.</translation>
@@ -6168,7 +6166,6 @@
 <translation id="6991665348624301627">Выбор места назначения</translation>
 <translation id="6992554835374084304">Включите расширенную проверку правописания</translation>
 <translation id="6993000214273684335">Вкладка удалена из группы без названия – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6994069045767983299">Инвертированные цвета</translation>
 <translation id="6995899638241819463">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Журнал активности</translation>
 <translation id="6997707937646349884">На ваших устройствах:</translation>
@@ -7128,6 +7125,7 @@
 <translation id="7943837619101191061">Добавить папку...</translation>
 <translation id="7944772052836377867">Подтвердите личность для синхронизации</translation>
 <translation id="7945031593909029181">Расширение "<ph name="CHROME_EXTENSION_NAME" />" запрашивает подключение</translation>
+<translation id="7945703887991230167">Предпочтительный голос</translation>
 <translation id="7946586320617670168">Укажите безопасный источник</translation>
 <translation id="794676567536738329">Подтверждение разрешений</translation>
 <translation id="7947962633355574091">&amp;Копировать URL видео</translation>

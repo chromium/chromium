@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Użytkownik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Okno aktualizowania oprogramowania układowego urządzeń zewnętrznych jest otwarte. Dostępne są aktualizacje (<ph name="NUM_UPDATES" />).</translation>
+<translation id="1145516343487477149">Znajdź artykuły pomocy i odpowiedzi na najczęstsze pytania dotyczące Chromebooka</translation>
 <translation id="1165039591588034296">Błąd</translation>
 <translation id="1175697296044146566">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Przeciętna (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Wyłącz ciemny motyw</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Wyłącz tryb ciemny</translation>
+<translation id="1881188606372070653">Wejdź na <ph name="BEGIN_LINK1" />stronę pomocy prawnej<ph name="END_LINK1" />, aby poprosić o zmianę treści z powodów prawnych. Niektóre informacje o koncie i systemie zostaną przesłane do Google. Podane przez Ciebie informacje wykorzystamy do rozwiązywania problemów technicznych i ulepszania naszych usług, zgodnie z <ph name="BEGIN_LINK2" />Polityką prywatności<ph name="END_LINK2" /> oraz <ph name="BEGIN_LINK3" />Warunkami usługi<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Wersja sprzętu</translation>
 <translation id="1905710495812624430">Przekroczono maksymalną liczbę prób.</translation>
 <translation id="1908234395526491708">Nieudane żądania UDP</translation>
@@ -623,6 +625,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6379086450106841622">Ekran dotykowy</translation>
 <translation id="6381741036071372448">Sprawdź klawiaturę</translation>
 <translation id="6388847657025262518">Podajnik dokumentów w skanerze się zaciął. Sprawdź go i spróbuj ponownie.</translation>
+<translation id="6394634179843537518">Dodaj plik</translation>
 <translation id="6410257289063177456">Pliki graficzne</translation>
 <translation id="641081527798843608">Dopasowanie do tematu</translation>
 <translation id="6423239382391657905">OpenVPN</translation>

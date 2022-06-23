@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Lietotājs</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Ir atvērts ārējo ierīču aparātprogrammatūras atjaunināšanas logs. Pieejamie atjauninājumi: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1145516343487477149">Atrodiet palīdzības rakstus un atbildes uz bieži uzdotiem jautājumiem par Chromebook datoru.</translation>
 <translation id="1165039591588034296">Kļūda</translation>
 <translation id="1175697296044146566">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Vidējs (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -120,6 +121,7 @@
 <translation id="1871569928317311284">Izslēgt tumšo motīvu</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Izslēgt tumšo režīmu</translation>
+<translation id="1881188606372070653">Apmeklējiet <ph name="BEGIN_LINK1" />juridiskās palīdzības lapu<ph name="END_LINK1" />, lai pieprasītu satura izmaiņas juridisku iemeslu dēļ. Noteikta konta un sistēmas informācija var tikt nosūtīta uzņēmumam Google. Mēs izmantosim jūsu sniegto informāciju, lai novērstu tehniskas problēmas un uzlabotu savus pakalpojumus. Jūsu informācija tiks izmantota saskaņā ar mūsu <ph name="BEGIN_LINK2" />konfidencialitātes politiku<ph name="END_LINK2" /> un <ph name="BEGIN_LINK3" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Aparatūras pārskatījums</translation>
 <translation id="1905710495812624430">Ir pārsniegts maksimālais atļautais mēģinājumu skaits.</translation>
 <translation id="1908234395526491708">UDP pieprasījumu kļūmes</translation>
@@ -623,6 +625,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6379086450106841622">Skārienekrāns</translation>
 <translation id="6381741036071372448">Tastatūras pārbaude</translation>
 <translation id="6388847657025262518">Skenera dokumentu padevējā ir iestrēdzis papīrs. Pārbaudiet padevēju un mēģiniet vēlreiz.</translation>
+<translation id="6394634179843537518">Pievienot failu</translation>
 <translation id="6410257289063177456">Attēlu faili</translation>
 <translation id="641081527798843608">Temata atbilstība</translation>
 <translation id="6423239382391657905">Atvērt VPN</translation>
