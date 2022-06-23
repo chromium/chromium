@@ -133,13 +133,13 @@ E2ETestBase = class extends AccessibilityTestBase {
    * @param {boolean=} capture
    */
   async waitForEvent(node, eventType, capture) {
-    return new Promise(resolve => {
+    return new Promise(this.newCallback(resolve => {
       const callback = this.newCallback(() => {
         node.removeEventListener(eventType, callback, capture);
         resolve();
       });
       node.addEventListener(eventType, callback, capture);
-    });
+    }));
   }
 
   /**
@@ -222,7 +222,7 @@ E2ETestBase = class extends AccessibilityTestBase {
    *     returned once the document is ready.
    */
   async runWithLoadedTree(doc, opt_params = {}) {
-    return new Promise(async resolve => {
+    return new Promise(this.newCallback(async resolve => {
       // Make sure the test doesn't finish until this function has resolved.
       let callback = this.newCallback(resolve);
       this.desktop_ = await new Promise(r => chrome.automation.getDesktop(r));
@@ -290,7 +290,7 @@ E2ETestBase = class extends AccessibilityTestBase {
           listener({target: f});
         });
       }
-    });
+    }));
   }
 
   /**
