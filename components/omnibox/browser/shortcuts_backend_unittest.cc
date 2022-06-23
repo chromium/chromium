@@ -216,23 +216,22 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore) {
     std::string output_description_class;
     AutocompleteMatch::Type output_type;
   } cases[] = {
-    { "0,1,4,0", "0,3,4,1",  AutocompleteMatchType::URL_WHAT_YOU_TYPED,
-      "0,1,4,0", "0,1",      AutocompleteMatchType::HISTORY_URL },
-    { "0,3,5,1", "0,2,5,0",  AutocompleteMatchType::NAVSUGGEST,
-      "0,1",     "0,0",      AutocompleteMatchType::HISTORY_URL },
-    { "0,1",     "0,0,11,2,15,0",
-                             AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-      "0,1",     "0,0",      AutocompleteMatchType::SEARCH_HISTORY },
-    { "0,1",     "0,0",      AutocompleteMatchType::SEARCH_SUGGEST,
-      "0,1",     "0,0",      AutocompleteMatchType::SEARCH_HISTORY },
-    { "0,1",     "0,0",      AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
-      "",        "",         AutocompleteMatchType::SEARCH_HISTORY },
-    { "0,1",     "0,0",      AutocompleteMatchType::SEARCH_SUGGEST_TAIL,
-      "",        "",         AutocompleteMatchType::SEARCH_HISTORY },
-    { "0,1",     "0,0",      AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED,
-      "",        "",         AutocompleteMatchType::SEARCH_HISTORY },
-    { "0,1",     "0,0",      AutocompleteMatchType::SEARCH_SUGGEST_PROFILE,
-      "",        "",         AutocompleteMatchType::SEARCH_HISTORY },
+      {"0,1,4,0", "0,3,4,1", AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+       "0,1,4,0", "0,1", AutocompleteMatchType::HISTORY_URL},
+      {"0,3,5,1", "0,2,5,0", AutocompleteMatchType::NAVSUGGEST, "0,1", "0,0",
+       AutocompleteMatchType::HISTORY_URL},
+      {"0,1", "0,0,11,2,15,0", AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+       "0,1", "0,0", AutocompleteMatchType::SEARCH_HISTORY},
+      {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST, "0,1", "0,0",
+       AutocompleteMatchType::SEARCH_HISTORY},
+      {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, "", "",
+       AutocompleteMatchType::SEARCH_HISTORY},
+      {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_TAIL, "", "",
+       AutocompleteMatchType::SEARCH_HISTORY},
+      {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED, "", "",
+       AutocompleteMatchType::SEARCH_HISTORY},
+      {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_PROFILE, "", "",
+       AutocompleteMatchType::SEARCH_HISTORY},
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {
@@ -533,4 +532,18 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
   backend()->AddOrUpdateShortcut(u"appl   ", match);
   EXPECT_EQ(shortcuts_map().size(), 7u);
   EXPECT_TRUE(ShortcutExists(u"apple"));
+
+  // Should neither crash nor add a shortcut when text is empty.
+  backend()->AddOrUpdateShortcut(u"", match);
+  EXPECT_EQ(shortcuts_map().size(), 7u);
+  EXPECT_FALSE(ShortcutExists(u""));
+
+  // Should not expand when match description is empty.
+  AutocompleteMatch match_without_description;
+  match_without_description.destination_url = GURL("https://www.google.com");
+  match_without_description.contents = u"https://www.google.com";
+  match_without_description.contents_class.emplace_back(0, 0);
+  backend()->AddOrUpdateShortcut(u"xyz", match_without_description);
+  EXPECT_EQ(shortcuts_map().size(), 8u);
+  EXPECT_TRUE(ShortcutExists(u"xyz"));
 }

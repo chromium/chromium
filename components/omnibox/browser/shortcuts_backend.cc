@@ -64,7 +64,7 @@ AutocompleteMatch::Type GetTypeForShortcut(AutocompleteMatch::Type type) {
 
 // Get either `description_for_shortcuts` if non-empty or fallback to
 // `description`.
-std::u16string GetDescription(const AutocompleteMatch& match) {
+const std::u16string& GetDescription(const AutocompleteMatch& match) {
   return match.description_for_shortcuts.empty()
              ? match.description
              : match.description_for_shortcuts;
@@ -72,7 +72,8 @@ std::u16string GetDescription(const AutocompleteMatch& match) {
 
 // Get either `description_class_for_shortcuts` if non-empty or fallback to
 // `description_class`.
-ACMatchClassifications GetDescriptionClass(const AutocompleteMatch& match) {
+const ACMatchClassifications& GetDescriptionClass(
+    const AutocompleteMatch& match) {
   return match.description_class_for_shortcuts.empty()
              ? match.description_class
              : match.description_class_for_shortcuts;
@@ -83,6 +84,8 @@ ACMatchClassifications GetDescriptionClass(const AutocompleteMatch& match) {
 // 'Charles Aznavour', will return 'Ch Aznavour'.
 std::u16string ExpandToFullWord(const std::u16string& text,
                                 const AutocompleteMatch& match) {
+  DCHECK(!text.empty());
+
   // Look at the description (i.e. title) only. Contents (i.e. URLs) and
   // destination URLs both contain garble often; e.g.,
   // 'docs.google.com/d/3SyB0Y83dG_WuxX'.
@@ -187,6 +190,14 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
 #if DCHECK_IS_ON()
   match.Validate();
 #endif  // DCHECK_IS_ON()
+
+  // `text` may be empty for pedal and zero suggest navigations. It's unlikely
+  // users will have a predictable empty-input navigation, so early exit.
+  // Besides, `ShortcutsProvider::Start()` also early exits on empty inputs, so
+  // there's no reason to add empty-text shortcuts if they won't be used.
+  if (text.empty())
+    return;
+
   // Trim `text` since `ExpandToFullWord()` trims the shortcut text; otherwise,
   // inputs with trailing whitespace wouldn't match a shortcut even if the user
   // previously used the input with a trailing whitespace.
