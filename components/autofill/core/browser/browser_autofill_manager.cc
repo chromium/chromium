@@ -183,10 +183,8 @@ ValuePatternsMetric GetValuePattern(const std::u16string& value) {
 
 void LogValuePatternsMetric(const FormData& form) {
   for (const FormFieldData& field : form.fields) {
-    if (!field.IsVisible()) {
-      // Ignore hidden fields.
+    if (!field.IsFocusable())
       continue;
-    }
     std::u16string value;
     base::TrimWhitespace(field.value, base::TRIM_ALL, &value);
     if (value.empty())
@@ -1873,9 +1871,9 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     AutofillField* cached_field = form_structure->field(i);
     FieldTypeGroup field_group_type = cached_field->Type().group();
 
-    // Don't fill hidden fields, with the exception of <select> fields, for
+    // Don't fill unfocusable fields, with the exception of <select> fields, for
     // the sake of filling the synthetic fields.
-    if (!cached_field->IsVisible()) {
+    if (!cached_field->IsFocusable()) {
       bool skip = result.fields[i].form_control_type != "select-one";
       form_interactions_ukm_logger()
           ->LogHiddenRepresentationalFieldSkipDecision(*form_structure,
@@ -2026,7 +2024,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
                   has_value_before, has_value_after, is_autofilled_before,
                   is_autofilled_after, failure_to_fill.c_str());
 
-    if (!cached_field->IsVisible() && result.fields[i].is_autofilled)
+    if (!cached_field->IsFocusable() && result.fields[i].is_autofilled)
       AutofillMetrics::LogHiddenOrPresentationalSelectFieldsFilled();
   }
   buffer << CTag{"table"};
@@ -2559,12 +2557,13 @@ void BrowserAutofillManager::TriggerRefill(const FormData& form) {
   }
 
   // If the field was deleted, look for one with a matching signature. Prefer
-  // visible and newer fields over invisible or older ones.
+  // focusable and newer fields over invisible or older ones.
   if (autofill_field == nullptr) {
     auto is_better = [](const AutofillField& f, const AutofillField& g) {
-      return std::forward_as_tuple(f.IsVisible(),
+      return std::forward_as_tuple(f.IsFocusable(),
                                    f.unique_renderer_id.value()) >
-             std::forward_as_tuple(g.IsVisible(), g.unique_renderer_id.value());
+             std::forward_as_tuple(g.IsFocusable(),
+                                   g.unique_renderer_id.value());
     };
 
     for (const std::unique_ptr<AutofillField>& field : *form_structure) {

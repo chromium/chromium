@@ -223,7 +223,7 @@ auto SimilarityTuple(const FormFieldData& f) {
 }
 
 auto DynamicIdentityTuple(const FormFieldData& f) {
-  return std::tuple_cat(CommonTuple(f), std::make_tuple(f.IsVisible()));
+  return std::tuple_cat(CommonTuple(f), std::make_tuple(f.IsFocusable()));
 }
 
 auto IdentityTuple(const FormFieldData& f) {

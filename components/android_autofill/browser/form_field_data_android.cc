@@ -98,7 +98,7 @@ ScopedJavaLocalRef<jobject> FormFieldDataAndroid::GetJavaPeer() {
         jheuristic_type, jserver_type, jcomputed_type, jserver_predictions,
         field_ptr_->bounds.x(), field_ptr_->bounds.y(),
         field_ptr_->bounds.right(), field_ptr_->bounds.bottom(),
-        jdatalist_values, jdatalist_labels, field_ptr_->IsVisible());
+        jdatalist_values, jdatalist_labels, field_ptr_->IsFocusable());
     java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   }
   return obj;

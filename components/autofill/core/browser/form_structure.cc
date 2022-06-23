@@ -1914,12 +1914,13 @@ void FormStructure::ApplyRationalizationsToHiddenSelects(
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
   ServerFieldType old_type = fields_[field_index]->Type().GetStorableType();
 
-  // Walk on the hidden select fields right after the field_index which share
-  // the same type with the field_index, and apply the rationalization to them
-  // as well. These fields, if any, function as one field with the field_index.
+  // Walk on the unfocusable select fields right after the field_index which
+  // share the same type with the field_index, and apply the rationalization to
+  // them as well. These fields, if any, function as one field with the
+  // field_index.
   for (auto current_index = field_index + 1; current_index < fields_.size();
        current_index++) {
-    if (fields_[current_index]->IsVisible() ||
+    if (fields_[current_index]->IsFocusable() ||
         fields_[current_index]->form_control_type != "select-one" ||
         fields_[current_index]->Type().GetStorableType() != old_type)
       break;
@@ -1932,7 +1933,7 @@ void FormStructure::ApplyRationalizationsToHiddenSelects(
   if (field_index == 0)
     return;
   for (auto current_index = field_index - 1;; current_index--) {
-    if (fields_[current_index]->IsVisible() ||
+    if (fields_[current_index]->IsFocusable() ||
         fields_[current_index]->form_control_type != "select-one" ||
         fields_[current_index]->Type().GetStorableType() != old_type)
       break;
@@ -1967,11 +1968,11 @@ void FormStructure::ApplyRationalizationsToFields(
     ServerFieldType upper_type,
     ServerFieldType lower_type,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
-  // Hidden fields are ignored during the rationalization, but 'select' hidden
-  // fields also get autofilled to support their corresponding visible
+  // Unfocusable fields are ignored during the rationalization, but unfocusable
+  // 'select' fields also get autofilled to support their corresponding visible
   // 'synthetic fields'. So, if a field's type is rationalized, we should make
-  // sure that the rationalization is also applied to its corresponding hidden
-  // fields, if any.
+  // sure that the rationalization is also applied to its corresponding
+  // unfocusable fields, if any.
   ApplyRationalizationsToHiddenSelects(upper_index, upper_type,
                                        form_interactions_ukm_logger);
   ApplyRationalizationsToFieldAndLog(upper_index, upper_type,
@@ -1988,7 +1989,7 @@ bool FormStructure::FieldShouldBeRationalizedToCountry(size_t upper_index) {
   // in its section. Otherwise, the upper field is a state, and the lower one
   // is a country.
   for (int field_index = upper_index - 1; field_index >= 0; --field_index) {
-    if (fields_[field_index]->IsVisible() &&
+    if (fields_[field_index]->IsFocusable() &&
         AutofillType(fields_[field_index]->Type().GetStorableType()).group() ==
             FieldTypeGroup::kAddressHome &&
         fields_[field_index]->section == fields_[upper_index]->section) {
@@ -2104,8 +2105,9 @@ void FormStructure::RationalizeRepeatedFields(
 
   for (size_t i = 0; i < fields_.size(); ++i) {
     const AutofillField& field = *fields_[i];
-    // The hidden fields are not considered when rationalizing.
-    if (!field.IsVisible())
+    // The unfocusable fields are considered invisible and therefore not
+    // considered when rationalizing.
+    if (!field.IsFocusable())
       continue;
     // The billing and non-billing types are aggregated.
     auto current_type = field.Type().GetStorableType();
@@ -2332,7 +2334,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
         already_saw_current_type |= (seen_types.count(NAME_LAST) > 0);
     }
 
-    bool ignored_field = !field->IsVisible();
+    bool ignored_field = !field->IsFocusable();
 
     // This is the first visible field after a hidden section. Consider it as
     // the continuation of the last visible section.
@@ -2500,7 +2502,7 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
           already_saw_current_type |= (seen_types.count(NAME_LAST) > 0);
       }
 
-      bool ignored_field = !field->IsVisible();
+      bool ignored_field = !field->IsFocusable();
 
       // This is the first visible field after a hidden section. Consider it as
       // the continuation of the last visible section.
@@ -2605,7 +2607,7 @@ void FormStructure::ExtractParseableFieldLabels() {
   field_labels.reserve(field_count());
   for (const auto& field : *this) {
     // Skip fields that are not a text input or not visible.
-    if (!field->IsTextInputElement() || !field->IsVisible()) {
+    if (!field->IsTextInputElement() || !field->IsFocusable()) {
       continue;
     }
     field_labels.push_back(field->label);
@@ -2622,7 +2624,7 @@ void FormStructure::ExtractParseableFieldLabels() {
 
   size_t idx = 0;
   for (auto& field : *this) {
-    if (!field->IsTextInputElement() || !field->IsVisible()) {
+    if (!field->IsTextInputElement() || !field->IsFocusable()) {
       // For those fields, set the original label.
       field->set_parseable_label(field->label);
       continue;
