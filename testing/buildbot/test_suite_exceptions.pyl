@@ -1122,6 +1122,7 @@
       'chromeos-amd64-generic-rel': {
         'swarming': {
           'quickrun_shards': 8,
+          'shards': 7,
         },
       },
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': {

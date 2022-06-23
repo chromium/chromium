@@ -37,7 +37,7 @@
           "idempotent": false,
           "io_timeout": 3600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 10
         },
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/"
@@ -114,7 +114,7 @@
             ]
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 10
         },
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/"
@@ -346,7 +346,7 @@
             ]
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 10
         },
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/"
@@ -1241,7 +1241,7 @@
           "idempotent": false,
           "io_timeout": 3600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 10
         },
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
@@ -1331,7 +1331,7 @@
           "idempotent": false,
           "io_timeout": 3600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 10
         },
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
@@ -1490,7 +1490,7 @@
           "idempotent": false,
           "io_timeout": 3600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 10
         },
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
@@ -1639,7 +1639,7 @@
             ]
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 10
         },
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/"
