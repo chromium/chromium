@@ -300,5 +300,11 @@ public abstract class CronetLogger {
         public int getPatchVersion() {
             return mPatchVersion;
         }
+
+        @Override
+        public String toString() {
+            return "" + mMajorVersion + "." + mMinorVersion + "." + mBuildVersion + "."
+                    + mPatchVersion;
+        }
     }
 }
