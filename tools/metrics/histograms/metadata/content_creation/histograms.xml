@@ -334,6 +334,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SharedHighlights.AndroidShareSheet.SharedState"
     enum="LinkGenerationSharedStatus" expires_after="2022-12-11">
   <owner>sebsg@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Records the status of the link generation when a user shares content using
@@ -343,7 +344,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.AsyncTask.Iterations" units="iterations"
     expires_after="2022-10-30">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Indicates number of iterations it took for AsyncFindBuffer to finish the
@@ -354,7 +355,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.AsyncTask.SearchDuration" units="ms"
     expires_after="2022-11-20">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Time it took in milliseconds for AsyncFindBuffer to finish the search.
@@ -366,6 +367,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SharedHighlights.Desktop.CopiedLinkType"
     enum="LinkGenerationCopiedLinkType" expires_after="2022-12-11">
   <owner>sebsg@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Records the type of shared highlighting link the user copied on desktop.
@@ -374,7 +376,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.LinkGenerated.Error"
     enum="LinkGenerationError" expires_after="2022-12-11">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Records errors that caused text fragment selector generation to fail.
@@ -385,7 +387,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.LinkGenerated.Error.Iterations"
     units="iterations" expires_after="2022-11-13">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Indicates number of iterations it took for the unsuccessful text fragment
@@ -395,7 +397,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.LinkGenerated.Error.Requested"
     enum="LinkGenerationError" expires_after="2022-12-18">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Records errors that caused text fragment selector generation to fail.
@@ -405,7 +407,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.LinkGenerated.Error.TimeToGenerate"
     units="ms" expires_after="2022-12-18">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Time it took in millisecons for a failed text fragment selector generation
@@ -415,7 +417,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.LinkGenerated.Iterations" units="iterations"
     expires_after="2022-10-23">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Indicates number of iterations it took to successfully generate text
@@ -425,7 +427,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.LinkGenerated.ParamLength" units="characters"
     expires_after="2022-12-18">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Number of charaters in successfully generated text fragment selector. For
@@ -437,7 +439,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.LinkGenerated.SelectionLength"
     units="characters" expires_after="2022-08-24">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Number of characters in the user selected text, that text fragment selector
@@ -447,7 +449,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.LinkGenerated.SelectorParameters"
     enum="TextFragmentAnchorParameters" expires_after="2022-06-19">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Indicates which parameters were specified in a text fragment selector.
@@ -457,7 +459,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.LinkGenerated.StateAtRequest"
     enum="LinkGenerationState" expires_after="2022-12-18">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Records the state of the link generation when link to text request is
@@ -467,7 +469,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.LinkGenerated.TimeToGenerate" units="ms"
     expires_after="2022-12-11">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     How long it took in milliseconds to successfully generate text fragment
@@ -477,7 +479,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.LinkGenerated{Requested}"
     enum="BooleanSuccess" expires_after="2022-08-10">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Indicates whether text fragment selector generation was successful for
@@ -496,7 +498,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.LinkToTextDiagnoseStatus"
     enum="LinkToTextDiagnoseStatus" expires_after="2022-10-23">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Records the status of link to text flow on Android for diagnostic purposes.
@@ -506,7 +508,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SharedHighlights.ObtainReshareLink.Status"
     enum="LinkToTextReshareStatus" expires_after="2022-10-09">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Records if obtaining reshare link was successful. Otherwise, it records the
@@ -530,7 +532,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TextFragmentAnchor.LinkOpenSource"
     enum="TextFragmentLinkOpenSource" expires_after="2023-06-30">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
     Recorded for every navigation to a link with a valid text fragment selector

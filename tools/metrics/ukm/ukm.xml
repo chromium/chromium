@@ -18314,7 +18314,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SharedHighlights.LinkGenerated">
-  <owner>seblalancette@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
     Event representing the user action of selecting a piece of text on a page
@@ -18336,7 +18336,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SharedHighlights.LinkGenerated.Requested">
-  <owner>gayane@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
     Event representing the user action of selecting a piece of text on a page
@@ -18358,7 +18358,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SharedHighlights.LinkOpened" singular="true">
-  <owner>seblalancette@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
     Event representing the browser action of highlighting (incl. scroll-to) text
