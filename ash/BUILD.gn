@@ -3170,8 +3170,8 @@ test("ash_unittests") {
 
 test("ash_pixeltests") {
   sources = [
-    "test/ash_pixel_diff_test_base.cc",
-    "test/ash_pixel_diff_test_base.h",
+    "test/ash_pixel_diff_test_helper.cc",
+    "test/ash_pixel_diff_test_helper.h",
     "test/demo_ash_pixel_diff_test.cc",
   ]
 
@@ -3355,6 +3355,8 @@ static_library("test_support") {
     "test/ash_test_helper.h",
     "test/ash_test_suite.cc",
     "test/ash_test_suite.h",
+    "test/ash_test_ui_stabilizer.cc",
+    "test/ash_test_ui_stabilizer.h",
     "test/ash_test_util.cc",
     "test/ash_test_util.h",
     "test/ash_test_views_delegate.cc",

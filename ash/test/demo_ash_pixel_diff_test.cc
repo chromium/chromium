@@ -2,27 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/test/ash_pixel_diff_test_base.h"
+#include "ash/test/ash_pixel_diff_test_helper.h"
+
+#include "ash/test/ash_test_base.h"
 
 namespace ash {
 
-class DemoAshPixelDiffTest : public AshPixelDiffTestBase {
+class DemoAshPixelDiffTest : public AshTestBase {
  public:
-  DemoAshPixelDiffTest() = default;
+  DemoAshPixelDiffTest() { PrepareForPixelDiffTest(); }
   DemoAshPixelDiffTest(const DemoAshPixelDiffTest&) = delete;
   DemoAshPixelDiffTest& operator=(const DemoAshPixelDiffTest&) = delete;
   ~DemoAshPixelDiffTest() override = default;
 
-  // AshPixelDiffTestBase:
+  // AshTestBase:
   void SetUp() override {
-    AshPixelDiffTestBase::SetUp();
-    pixel_diff()->Init(/*screenshot_prefix=*/"ash_demo_test");
+    AshTestBase::SetUp();
+    pixel_test_helper_.InitSkiaGoldPixelDiff(
+        /*screenshot_prefix=*/"ash_demo_test");
   }
+
+  AshPixelDiffTestHelper pixel_test_helper_;
 };
 
 // Verifies the primary display UI right after the ash pixel test sets up.
 TEST_F(DemoAshPixelDiffTest, VerifyDefaultPrimaryDisplay) {
-  EXPECT_TRUE(ComparePrimaryFullScreen("primary_display"));
+  EXPECT_TRUE(pixel_test_helper_.ComparePrimaryFullScreen("primary_display"));
 }
 
 }  // namespace ash

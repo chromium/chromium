@@ -69,6 +69,7 @@ namespace ash {
 class AmbientAshTestHelper;
 class AppListTestHelper;
 class AshTestHelper;
+class AshTestUiStabilizer;
 class Shelf;
 class TestAppListClient;
 class TestShellDelegate;
@@ -182,6 +183,10 @@ class AshTestBase : public testing::Test {
 
   // Attach |window| to the current shell's root window.
   void ParentWindowInPrimaryRootWindow(aura::Window* window);
+
+  // Prepares for the pixel diff test. NOTE: this function should be called
+  // before `SetUp()`.
+  void PrepareForPixelDiffTest();
 
   // Returns the EventGenerator that uses screen coordinates and works
   // across multiple displays. It creates a new generator if it
@@ -339,6 +344,9 @@ class AshTestBase : public testing::Test {
   std::unique_ptr<AshTestHelper> ash_test_helper_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
+
+  // Used only for pixel tests. Set by `PrepareForPixelDiffTest()`.
+  std::unique_ptr<AshTestUiStabilizer> ui_stabilizer_;
 };
 
 class NoSessionAshTestBase : public AshTestBase {

@@ -27,6 +27,7 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/ash_test_ui_stabilizer.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/test_shell_delegate.h"
@@ -51,6 +52,7 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/init/input_method_initializer.h"
+#include "ui/compositor/compositor_switches.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -69,6 +71,8 @@ using session_manager::SessionState;
 
 namespace ash {
 namespace {
+
+// AshEventGeneratorDelegate ---------------------------------------------------
 
 class AshEventGeneratorDelegate
     : public aura::test::EventGeneratorDelegateAura {
@@ -98,7 +102,7 @@ class AshEventGeneratorDelegate
 
 }  // namespace
 
-/////////////////////////////////////////////////////////////////////////////
+// AshTestBase -----------------------------------------------------------------
 
 AshTestBase::AshTestBase(
     std::unique_ptr<base::test::TaskEnvironment> task_environment)
@@ -118,6 +122,12 @@ void AshTestBase::SetUp() {
 }
 
 void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
+  // In pixel tests, override the current time before setting up system UI
+  // components so that the components relying on the time, like the time view,
+  // show as expected.
+  if (ui_stabilizer_)
+    ui_stabilizer_->OverrideTime();
+
   // At this point, the task APIs should already be provided by
   // |task_environment_|.
   CHECK(base::ThreadTaskRunnerHandle::IsSet());
@@ -131,6 +141,11 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
   params.local_state = local_state();
   ash_test_helper_ = std::make_unique<AshTestHelper>();
   ash_test_helper_->SetUp(std::move(params));
+
+  if (ui_stabilizer_) {
+    SimulateUserLogin(ui_stabilizer_->account_id());
+    ui_stabilizer_->StabilizeUi(GetPrimaryDisplay().size());
+  }
 }
 
 void AshTestBase::TearDown() {
@@ -308,6 +323,24 @@ aura::Window* AshTestBase::CreateTestWindowInShellWithDelegateAndType(
 void AshTestBase::ParentWindowInPrimaryRootWindow(aura::Window* window) {
   aura::client::ParentWindowWithContext(window, Shell::GetPrimaryRootWindow(),
                                         gfx::Rect());
+}
+
+void AshTestBase::PrepareForPixelDiffTest() {
+  // In pixel tests, we want to take screenshots then compare them with the
+  // benchmark images. Therefore, enable pixel output in tests.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnablePixelOutputInTests);
+
+  // Expect this function to be called before setup. Because the code that
+  // stabilizes the system UI for pixel tests should be executed during setup.
+  CHECK(!setup_called_);
+
+  CHECK(!ui_stabilizer_);
+  ui_stabilizer_ = std::make_unique<AshTestUiStabilizer>();
+
+  // In pixel tests, a fake user account is used to set the wallpaper.
+  // Therefore, do not start the session as default.
+  start_session_ = false;
 }
 
 void AshTestBase::SetUserPref(const std::string& user_email,
