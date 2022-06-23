@@ -663,6 +663,29 @@ namespace autotestPrivate {
   callback GetLoginEventRecorderLoginEventsCallback = void
       (LoginEventRecorderData[] data);
 
+  // Request parameters for <code>getAccessToken</code>.
+  dictionary GetAccessTokenParams {
+     // An email associated with the account to get a token for.
+     DOMString email;
+     // A list of OAuth scopes to request.
+     DOMString[] scopes;
+     // An optional timeout in milliseconds for the request.
+     // Default: 90 seconds
+     long? timeoutMs;
+  };
+
+  // Response data for <code>getAccessToken</code>.
+  dictionary GetAccessTokenData {
+    // The access token
+    DOMString accessToken;
+    // The time the access token will expire as a unix timestamp in
+    // milliseconds.
+    DOMString expirationTimeUnixMs;
+  };
+
+  // Reponse callback for <code>getAccessToken</code>.
+  callback GetAccessTokenCallback = void(GetAccessTokenData data);
+
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
     static void initializeEvents();
@@ -1335,6 +1358,11 @@ namespace autotestPrivate {
 
     // Force auto theme mode in dark mode or light mode for testing.
     [supportsPromises] static void forceAutoThemeMode(boolean darkModeEnabled, VoidCallback callback);
+
+    // Fetches an access token from Chrome.
+    [supportsPromises] static void getAccessToken(
+        GetAccessTokenParams accessTokenParams,
+        GetAccessTokenCallback callback);
   };
 
   interface Events {

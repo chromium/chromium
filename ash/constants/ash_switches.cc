@@ -866,6 +866,10 @@ const char kWaitForInitialPolicyFetchForTest[] =
 // (e.g. via rootfs or downloadable content).
 const char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";
 
+// Enable the getAccessToken autotest API which creates access tokens using
+// the internal OAuth client ID.
+const char kGetAccessTokenForTest[] = "get-access-token-for-test";
+
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCryptohomeUseAuthSession);

@@ -29,9 +29,16 @@
 #include "ui/display/display.h"
 #include "ui/snapshot/screenshot_grabber.h"
 
+class GoogleServiceAuthError;
+
 namespace crostini {
 enum class CrostiniResult;
 }
+
+namespace signin {
+class AccessTokenFetcher;
+struct AccessTokenInfo;
+}  // namespace signin
 
 namespace update_client {
 enum class Error;
@@ -1569,6 +1576,25 @@ class AutotestPrivateForceAutoThemeModeFunction : public ExtensionFunction {
  private:
   ~AutotestPrivateForceAutoThemeModeFunction() override;
   ResponseAction Run() override;
+};
+
+class AutotestPrivateGetAccessTokenFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateGetAccessTokenFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getAccessToken",
+                             AUTOTESTPRIVATE_GETACCESSTOKEN)
+
+ private:
+  ~AutotestPrivateGetAccessTokenFunction() override;
+  ResponseAction Run() override;
+
+  void RespondWithTimeoutError();
+
+  void OnAccessToken(GoogleServiceAuthError error,
+                     signin::AccessTokenInfo access_token_info);
+
+  std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
+  base::OneShotTimer timeout_timer_;
 };
 
 template <>

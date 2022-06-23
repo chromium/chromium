@@ -1734,6 +1734,7 @@ enum HistogramValue {
   ENTERPRISE_REMOTEAPPS_DELETEAPP = 1671,
   ENTERPRISEREPORTINGPRIVATE_GETAVINFO = 1672,
   ENTERPRISEREPORTINGPRIVATE_GETHOTFIXES = 1673,
+  AUTOTESTPRIVATE_GETACCESSTOKEN = 1674,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

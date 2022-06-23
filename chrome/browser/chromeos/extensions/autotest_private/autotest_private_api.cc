@@ -51,6 +51,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/json/json_reader.h"
+#include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -112,6 +113,7 @@
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/default_pinned_apps.h"
@@ -160,6 +162,8 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -5738,6 +5742,85 @@ AutotestPrivateForceAutoThemeModeFunction::Run() {
 
   color_provider->SetDarkModeEnabledForTest(params->dark_mode_enabled);
   return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetAccessTokenFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetAccessTokenFunction::AutotestPrivateGetAccessTokenFunction() =
+    default;
+
+AutotestPrivateGetAccessTokenFunction::
+    ~AutotestPrivateGetAccessTokenFunction() = default;
+
+ExtensionFunction::ResponseAction AutotestPrivateGetAccessTokenFunction::Run() {
+  // Require a command line switch to avoid crashing on accident.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kGetAccessTokenForTest)) {
+    return RespondNow(
+        Error("* switch is not set", ash::switches::kGetAccessTokenForTest));
+  }
+  // This API is available only on test images.
+  base::SysInfo::CrashIfChromeOSNonTestImage();
+
+  auto params(api::autotest_private::GetAccessToken::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  timeout_timer_.Start(
+      FROM_HERE,
+      base::Milliseconds(params->access_token_params.timeout_ms
+                             ? *params->access_token_params.timeout_ms
+                             : 90000),
+      base::BindOnce(
+          &AutotestPrivateGetAccessTokenFunction::RespondWithTimeoutError,
+          this));
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  OAuth2AccessTokenManager::ScopeSet scopes(
+      params->access_token_params.scopes.begin(),
+      params->access_token_params.scopes.end());
+  access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
+      identity_manager
+          ->FindExtendedAccountInfoByEmailAddress(
+              params->access_token_params.email)
+          .account_id,
+      /*oauth_consumer_name=*/"cros_autotest_private", scopes,
+      base::BindOnce(&AutotestPrivateGetAccessTokenFunction::OnAccessToken,
+                     this),
+      signin::AccessTokenFetcher::Mode::kImmediate);
+  return RespondLater();
+}
+
+void AutotestPrivateGetAccessTokenFunction::RespondWithTimeoutError() {
+  if (did_respond()) {
+    return;
+  }
+  Respond(Error("Timed out fetching access token"));
+  access_token_fetcher_.reset();
+}
+
+void AutotestPrivateGetAccessTokenFunction::OnAccessToken(
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo token_info) {
+  access_token_fetcher_.reset();
+  timeout_timer_.AbandonAndStop();
+  if (did_respond()) {
+    return;
+  }
+  if (error.state() != GoogleServiceAuthError::NONE) {
+    Respond(Error("Failed to get access token: *", error.ToString()));
+    return;
+  }
+  auto token_dict = std::make_unique<base::DictionaryValue>();
+  token_dict->SetStringKey("accessToken", token_info.token);
+  token_dict->SetKey(
+      "expirationTimeUnixMs",
+      base::Int64ToValue((token_info.expiration_time - base::Time::UnixEpoch())
+                             .InMilliseconds()));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(token_dict))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
