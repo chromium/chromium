@@ -30,8 +30,6 @@ static_library("exo") {
     "buffer.h",
     "capabilities.cc",
     "capabilities.h",
-    "common_utils.cc",
-    "common_utils.h",
     "data_device.cc",
     "data_device.h",
     "data_device_delegate.h",
