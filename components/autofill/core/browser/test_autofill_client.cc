@@ -254,6 +254,17 @@ bool TestAutofillClient::HasCreditCardScanFeature() {
 
 void TestAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {}
 
+bool TestAutofillClient::IsTouchToFillCreditCardSupported() {
+  return false;
+}
+
+bool TestAutofillClient::ShowTouchToFillCreditCard(
+    base::WeakPtr<TouchToFillDelegate> delegate) {
+  return false;
+}
+
+void TestAutofillClient::HideTouchToFillCreditCard() {}
+
 void TestAutofillClient::ShowAutofillPopup(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {}

@@ -48,7 +48,7 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   PasswordAutofillManager(const PasswordAutofillManager&) = delete;
   PasswordAutofillManager& operator=(const PasswordAutofillManager&) = delete;
 
-  virtual ~PasswordAutofillManager();
+  ~PasswordAutofillManager() override;
 
   // AutofillPopupDelegate implementation.
   void OnPopupShown() override;

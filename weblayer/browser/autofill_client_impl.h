@@ -109,6 +109,10 @@ class AutofillClientImpl
       AddressProfileSavePromptCallback callback) override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
+  bool IsTouchToFillCreditCardSupported() override;
+  bool ShowTouchToFillCreditCard(
+      base::WeakPtr<autofill::TouchToFillDelegate> delegate) override;
+  void HideTouchToFillCreditCard() override;
   void ShowAutofillPopup(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override;

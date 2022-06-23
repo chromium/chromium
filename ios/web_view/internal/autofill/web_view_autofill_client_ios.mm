@@ -240,6 +240,20 @@ void WebViewAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
   NOTREACHED();
 }
 
+bool WebViewAutofillClientIOS::IsTouchToFillCreditCardSupported() {
+  return false;
+}
+
+bool WebViewAutofillClientIOS::ShowTouchToFillCreditCard(
+    base::WeakPtr<TouchToFillDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void WebViewAutofillClientIOS::HideTouchToFillCreditCard() {
+  NOTREACHED();
+}
+
 void WebViewAutofillClientIOS::ShowAutofillPopup(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {

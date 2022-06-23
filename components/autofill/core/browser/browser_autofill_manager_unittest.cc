@@ -140,6 +140,7 @@ class MockAutofillClient : public TestAutofillClient {
               GetProfileType,
               (),
               (const override));
+  MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason reason), (override));
   MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
 };
 
@@ -163,17 +164,20 @@ class MockAutofillDownloadManager : public TestAutofillDownloadManager {
               (override));
 };
 
-class MockTouchToFillDelegate : public TouchToFillDelegate {
+class MockTouchToFillDelegateImpl : public TouchToFillDelegateImpl {
  public:
-  MockTouchToFillDelegate() = default;
-  MockTouchToFillDelegate(const MockTouchToFillDelegate&) = delete;
-  MockTouchToFillDelegate& operator=(const MockTouchToFillDelegate&) = delete;
-  ~MockTouchToFillDelegate() override = default;
+  explicit MockTouchToFillDelegateImpl(BrowserAutofillManager* manager)
+      : TouchToFillDelegateImpl(manager) {}
+  MockTouchToFillDelegateImpl(const MockTouchToFillDelegateImpl&) = delete;
+  MockTouchToFillDelegateImpl& operator=(const MockTouchToFillDelegateImpl&) =
+      delete;
+  ~MockTouchToFillDelegateImpl() override = default;
 
   MOCK_METHOD(bool,
               TryToShowTouchToFill,
               (int query_id, const FormData& form, const FormFieldData& field),
               (override));
+  MOCK_METHOD(void, HideTouchToFill, (), (override));
 };
 
 void ExpectFilledField(const char* expected_label,
@@ -428,9 +432,10 @@ class BrowserAutofillManagerTest : public testing::Test {
     browser_autofill_manager_->SetExternalDelegateForTest(
         std::move(external_delegate));
 
-    auto touch_to_fill_delegate = std::make_unique<MockTouchToFillDelegate>();
+    auto touch_to_fill_delegate = std::make_unique<MockTouchToFillDelegateImpl>(
+        browser_autofill_manager_.get());
     touch_to_fill_delegate_ = touch_to_fill_delegate.get();
-    browser_autofill_manager_->SetTouchToFillDelegateForTest(
+    browser_autofill_manager_->SetTouchToFillDelegateImplForTest(
         std::move(touch_to_fill_delegate));
 
     auto test_strike_database = std::make_unique<TestStrikeDatabase>();
@@ -761,7 +766,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   raw_ptr<TestAutofillExternalDelegate> external_delegate_;
-  raw_ptr<MockTouchToFillDelegate> touch_to_fill_delegate_;
+  raw_ptr<MockTouchToFillDelegateImpl> touch_to_fill_delegate_;
   scoped_refptr<AutofillWebDataService> database_;
   raw_ptr<MockAutofillDownloadManager> download_manager_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
@@ -9397,6 +9402,14 @@ TEST_F(BrowserAutofillManagerTest, AutofillOverridePrefilledValue) {
   EXPECT_EQ(response_data.fields[1].value, u"Test City");
   EXPECT_EQ(response_data.fields[2].value, u"Tennessee");
   EXPECT_EQ(response_data.fields[3].value, u"Test Country");
+}
+
+// Tests that both Autofill popup and TTF are hidden on renderer event.
+TEST_F(BrowserAutofillManagerTest, HideAutofillPopupAndTouchToFillOnHidePopup) {
+  EXPECT_CALL(autofill_client_,
+              HideAutofillPopup(PopupHidingReason::kRendererEvent));
+  EXPECT_CALL(*touch_to_fill_delegate_, HideTouchToFill);
+  browser_autofill_manager_->OnHidePopup();
 }
 
 // Tests that Autofill suggestions are not shown if TTF is eligible and shown.

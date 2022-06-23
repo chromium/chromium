@@ -419,7 +419,7 @@ BrowserAutofillManager::BrowserAutofillManager(
                       enable_download_manager),
       external_delegate_(
           std::make_unique<AutofillExternalDelegate>(this, driver)),
-      touch_to_fill_delegate_(std::make_unique<TouchToFillDelegate>()),
+      touch_to_fill_delegate_(std::make_unique<TouchToFillDelegateImpl>(this)),
       app_locale_(app_locale),
       personal_data_(client->GetPersonalDataManager()),
       field_filler_(app_locale, client->GetAddressNormalizer()),
@@ -1366,6 +1366,7 @@ void BrowserAutofillManager::OnHidePopup() {
 
   single_field_form_fill_router_->CancelPendingQueries(this);
   client()->HideAutofillPopup(PopupHidingReason::kRendererEvent);
+  touch_to_fill_delegate_->HideTouchToFill();
 }
 
 bool BrowserAutofillManager::GetDeletionConfirmationText(

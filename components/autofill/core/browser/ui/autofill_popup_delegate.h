@@ -89,6 +89,8 @@ class AutofillPopupDelegate {
   // should not outlive it.
   virtual void RegisterDeletionCallback(
       base::OnceClosure deletion_callback) = 0;
+
+  virtual ~AutofillPopupDelegate() = default;
 };
 
 }  // namespace autofill

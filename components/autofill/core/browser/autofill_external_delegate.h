@@ -40,7 +40,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   AutofillExternalDelegate(const AutofillExternalDelegate&) = delete;
   AutofillExternalDelegate& operator=(const AutofillExternalDelegate&) = delete;
 
-  virtual ~AutofillExternalDelegate();
+  ~AutofillExternalDelegate() override;
 
   // AutofillPopupDelegate implementation.
   void OnPopupShown() override;

@@ -340,6 +340,20 @@ void ChromeAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
   NOTREACHED();
 }
 
+bool ChromeAutofillClientIOS::IsTouchToFillCreditCardSupported() {
+  return false;
+}
+
+bool ChromeAutofillClientIOS::ShowTouchToFillCreditCard(
+    base::WeakPtr<TouchToFillDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void ChromeAutofillClientIOS::HideTouchToFillCreditCard() {
+  NOTREACHED();
+}
+
 void ChromeAutofillClientIOS::ShowAutofillPopup(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {
