@@ -78,8 +78,10 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   void OnLog(const std::string& message) override;
   void OnHasConsumers(bool has_consumers) override;
   void OnCapturingLinkSecured(bool is_secure) override;
-  void StartSourceImpl(VideoCaptureDeliverFrameCB frame_callback,
-                       EncodedVideoFrameCB encoded_frame_callback) override;
+  void StartSourceImpl(
+      VideoCaptureDeliverFrameCB frame_callback,
+      EncodedVideoFrameCB encoded_frame_callback,
+      VideoCaptureCropVersionCB crop_version_callback) override;
   media::VideoCaptureFeedbackCB GetFeedbackCallback() const override;
   void StopSourceImpl() override;
   void StopSourceForRestartImpl() override;
@@ -95,6 +97,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
       override;
   absl::optional<uint32_t> GetNextCropVersion() override;
 #endif
+  uint32_t GetCropVersion() const override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
 
   // Method to bind as RunningCallback in VideoCapturerSource::StartCapture().
@@ -123,6 +126,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
 
   media::VideoCaptureParams capture_params_;
   VideoCaptureDeliverFrameCB frame_callback_;
+  VideoCaptureCropVersionCB crop_version_callback_;
   DeviceCapturerFactoryCallback device_capturer_factory_callback_;
 
   // Each time Crop() is called, the source crop version increments.

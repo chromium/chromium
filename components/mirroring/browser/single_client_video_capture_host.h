@@ -89,6 +89,7 @@ class SingleClientVideoCaptureHost final
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
+  void OnNewCropVersion(uint32_t crop_version) override;
   void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;

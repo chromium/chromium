@@ -79,6 +79,10 @@ void ReceiverMediaToCrosapiAdapter::OnFrameDropped(
   handler_->OnFrameDropped(reason);
 }
 
+void ReceiverMediaToCrosapiAdapter::OnNewCropVersion(uint32_t crop_version) {
+  handler_->OnNewCropVersion(crop_version);
+}
+
 void ReceiverMediaToCrosapiAdapter::OnFrameWithEmptyRegionCapture() {
   handler_->OnFrameWithEmptyRegionCapture();
 }

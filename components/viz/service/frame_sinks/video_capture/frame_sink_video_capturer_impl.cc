@@ -393,10 +393,14 @@ void FrameSinkVideoCapturerImpl::ChangeTarget(
   DCHECK_GE(crop_version, crop_version_);
 
   target_ = target;
-  crop_version_ = crop_version;
 
-  // TODO(crbug.com/1266378): Use |crop_version_| to annotate frames delivered
-  // or dropped.
+  if (crop_version_ != crop_version) {
+    crop_version_ = crop_version;
+
+    if (consumer_) {
+      consumer_->OnNewCropVersion(crop_version);
+    }
+  }
 
   ResolveTarget();
 }
@@ -1318,11 +1322,16 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
     scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // TODO(crbug.com/1332628): When capture fails because the crop version has
+  // changed, expedite the capture/delivery of a new frame.
+  const bool capture_was_successful =
+      frame && frame->metadata().crop_version == crop_version_;
   // The Oracle has the final say in whether frame delivery will proceed. It
   // also rewrites the media timestamp in terms of the smooth flow of the
   // original source content.
   base::TimeTicks media_ticks;
-  if (!oracle_->CompleteCapture(oracle_frame_number, !!frame, &media_ticks)) {
+  if (!oracle_->CompleteCapture(oracle_frame_number, capture_was_successful,
+                                &media_ticks)) {
     // Note: The following is used by
     // chrome/browser/media/cast_mirroring_performance_browsertest.cc, in
     // addition to the usual runtime tracing

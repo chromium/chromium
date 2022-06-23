@@ -185,6 +185,10 @@ void VideoFrameHandlerAsh::OnFrameDropped(
   proxy_->OnFrameDropped(reason);
 }
 
+void VideoFrameHandlerAsh::OnNewCropVersion(uint32_t crop_version) {
+  proxy_->OnNewCropVersion(crop_version);
+}
+
 void VideoFrameHandlerAsh::OnFrameWithEmptyRegionCapture() {
   proxy_->OnFrameWithEmptyRegionCapture();
 }

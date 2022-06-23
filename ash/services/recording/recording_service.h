@@ -99,6 +99,7 @@ class RecordingService : public mojom::RecordingService,
       const gfx::Rect& content_rect,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
           callbacks) override;
+  void OnNewCropVersion(uint32_t crop_version) override;
   void OnFrameWithEmptyRegionCapture() override;
   void OnStopped() override;
   void OnLog(const std::string& message) override;

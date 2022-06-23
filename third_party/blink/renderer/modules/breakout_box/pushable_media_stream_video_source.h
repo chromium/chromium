@@ -95,8 +95,10 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
   scoped_refptr<Broker> GetBroker() const { return broker_; }
 
   // MediaStreamVideoSource
-  void StartSourceImpl(VideoCaptureDeliverFrameCB frame_callback,
-                       EncodedVideoFrameCB encoded_frame_callback) override;
+  void StartSourceImpl(
+      VideoCaptureDeliverFrameCB frame_callback,
+      EncodedVideoFrameCB encoded_frame_callback,
+      VideoCaptureCropVersionCB crop_version_callback) override;
   void StopSourceImpl() override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
   void SetCanDiscardAlpha(bool can_discard_alpha) override;

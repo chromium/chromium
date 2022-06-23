@@ -103,6 +103,8 @@ class CONTENT_EXPORT VideoCaptureHost
                              GetDeviceFormatsInUseCallback callback) override;
   void OnFrameDropped(const base::UnguessableToken& device_id,
                       media::VideoCaptureFrameDropReason reason) override;
+  void OnNewCropVersion(const base::UnguessableToken& device_id,
+                        uint32_t crop_version) override;
   void OnLog(const base::UnguessableToken& device_id,
              const std::string& message) override;
 

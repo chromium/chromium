@@ -396,6 +396,19 @@ void VideoCaptureHost::OnFrameDropped(
     controller->OnFrameDropped(reason);
 }
 
+void VideoCaptureHost::OnNewCropVersion(const base::UnguessableToken& device_id,
+                                        uint32_t crop_version) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  const VideoCaptureControllerID controller_id(device_id);
+  if (!base::Contains(controllers_, controller_id) ||
+      !base::Contains(device_id_to_observer_map_, controller_id)) {
+    return;
+  }
+
+  device_id_to_observer_map_[controller_id]->OnNewCropVersion(crop_version);
+}
+
 void VideoCaptureHost::OnLog(const base::UnguessableToken& device_id,
                              const std::string& message) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

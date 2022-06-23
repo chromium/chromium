@@ -187,6 +187,8 @@ class MockFrameObserver : public VideoCaptureControllerEventHandler {
   void OnBufferReady(const VideoCaptureControllerID& id,
                      const ReadyBuffer& buffer,
                      const std::vector<ReadyBuffer>& scaled_buffers) override {}
+  void OnNewCropVersion(const VideoCaptureControllerID& id,
+                        uint32_t crop_version) override {}
   void OnFrameWithEmptyRegionCapture(const VideoCaptureControllerID&) override {
   }
   void OnEnded(const VideoCaptureControllerID& id) override {}

@@ -215,6 +215,17 @@ struct TabInfo {
     return script_result == "deallocate-success";
   }
 
+  bool HideElement(const std::string& element_id) {
+    std::string script_result = "error-not-modified";
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetPrimaryMainFrame(),
+        base::StringPrintf("hideElement('%s');", element_id.c_str()),
+        &script_result));
+    DCHECK(script_result == "hide-element-failure" ||
+           script_result == "hide-element-success");
+    return script_result == "hide-element-success";
+  }
+
   std::string CreateNewDivElement(Frame frame, const std::string& div_id) {
     DCHECK_NE(frame, Frame::kNone);
     std::string script_result = "error-not-modified";
@@ -430,6 +441,27 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   EXPECT_EQ(tab.CropTo("undefined", Frame::kTopLevelDocument),
             "top-level-crop-success");
 }
+
+// TODO(crbug.com/1336323): Re-enable.
+#if 0
+// The Promise resolves when it's guaranteed that no additional frames will
+// be issued with an earlier crop version. That an actual frame be issued
+// at all, let alone with the new crop version, is not actually required,
+// or else these promises could languish unfulfilled indefinitely.
+IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
+                       CropToOfInvisibleElementResolvesInTimelyFashion) {
+  SetUpTest(Frame::kTopLevelDocument, /*self_capture=*/true);
+  TabInfo& tab = tabs_[kMainTab];
+
+  ASSERT_TRUE(tab.HideElement("div"));
+
+  const std::string crop_target =
+      tab.CropTargetFromElement(Frame::kTopLevelDocument, "div");
+  ASSERT_THAT(crop_target, IsExpectedCropTarget("0"));
+  EXPECT_EQ(tab.CropTo(crop_target, Frame::kTopLevelDocument),
+            "top-level-crop-success");
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, MaxCropIdsInTopLevelDocument) {
   SetUpTest(Frame::kNone, /*self_capture=*/false);

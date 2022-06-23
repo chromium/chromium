@@ -70,6 +70,11 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   // |deliver_frame_cb| will be called on the IO thread when a video
   // frame is ready.
   //
+  // |crop_version_cb| will be called on the IO thread when a new crop
+  // version is successfully applied, and it is guaranteed that all
+  // subsequent frames delivered to |deliver_frame_cb|, will have this
+  // crop version or later.
+  //
   // Returns a callback that is used to stop capturing. Note that stopping
   // video capture is not synchronous. Client should handle the case where
   // callbacks are called after capturing is instructed to stop, typically
@@ -78,7 +83,8 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
       const media::VideoCaptureSessionId& id,
       const media::VideoCaptureParams& params,
       const VideoCaptureStateUpdateCB& state_update_cb,
-      const VideoCaptureDeliverFrameCB& deliver_frame_cb);
+      const VideoCaptureDeliverFrameCB& deliver_frame_cb,
+      const VideoCaptureCropVersionCB& crop_version_cb);
 
   // Requests that the video capturer send a frame "soon" (e.g., to resolve
   // picture loss or quality issues).

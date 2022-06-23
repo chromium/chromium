@@ -66,6 +66,7 @@ void MediaStreamVideoSource::AddTrack(
     const VideoCaptureDeliverFrameCB& frame_callback,
     const VideoCaptureNotifyFrameDroppedCB& notify_frame_dropped_callback,
     const EncodedVideoFrameCB& encoded_frame_callback,
+    const VideoCaptureCropVersionCB& crop_version_callback,
     const VideoTrackSettingsCallback& settings_callback,
     const VideoTrackFormatCallback& format_callback,
     ConstraintsOnceCallback callback) {
@@ -76,7 +77,8 @@ void MediaStreamVideoSource::AddTrack(
 
   pending_tracks_.push_back(PendingTrackInfo{
       track, frame_callback, notify_frame_dropped_callback,
-      encoded_frame_callback, settings_callback, format_callback,
+      encoded_frame_callback, crop_version_callback, settings_callback,
+      format_callback,
       std::make_unique<VideoTrackAdapterSettings>(track_adapter_settings),
       std::move(callback)});
 
@@ -88,7 +90,11 @@ void MediaStreamVideoSource::AddTrack(
               &VideoTrackAdapter::DeliverFrameOnIO, GetTrackAdapter())),
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
               &VideoTrackAdapter::DeliverEncodedVideoFrameOnIO,
-              GetTrackAdapter())));
+              GetTrackAdapter())),
+          ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+              &VideoTrackAdapter::NewCropVersionOnIO, GetTrackAdapter()))
+
+      );
       break;
     }
     case STARTING:
@@ -459,8 +465,9 @@ void MediaStreamVideoSource::FinalizeAddPendingTracks(
       GetTrackAdapter()->AddTrack(
           track_info.track, track_info.frame_callback,
           track_info.notify_frame_dropped_callback,
-          track_info.encoded_frame_callback, track_info.settings_callback,
-          track_info.format_callback, *track_info.adapter_settings);
+          track_info.encoded_frame_callback, track_info.crop_version_callback,
+          track_info.settings_callback, track_info.format_callback,
+          *track_info.adapter_settings);
       UpdateTrackSettings(track_info.track, *track_info.adapter_settings);
     }
 
@@ -545,6 +552,10 @@ absl::optional<uint32_t> MediaStreamVideoSource::GetNextCropVersion() {
   return absl::nullopt;
 }
 #endif
+
+uint32_t MediaStreamVideoSource::GetCropVersion() const {
+  return 0;
+}
 
 VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {
   // Each source implementation has to implement its own feedback callbacks.

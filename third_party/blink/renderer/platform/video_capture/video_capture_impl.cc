@@ -619,6 +619,8 @@ struct VideoCaptureImpl::ClientInfo {
   VideoCaptureStateUpdateCB state_update_cb;
 
   VideoCaptureDeliverFrameCB deliver_frame_cb;
+
+  VideoCaptureCropVersionCB crop_version_cb;
 };
 
 VideoCaptureImpl::VideoCaptureImpl(
@@ -685,7 +687,8 @@ void VideoCaptureImpl::StartCapture(
     int client_id,
     const media::VideoCaptureParams& params,
     const VideoCaptureStateUpdateCB& state_update_cb,
-    const VideoCaptureDeliverFrameCB& deliver_frame_cb) {
+    const VideoCaptureDeliverFrameCB& deliver_frame_cb,
+    const VideoCaptureCropVersionCB& crop_version_cb) {
   DVLOG(1) << __func__ << " |device_id_| = " << device_id_;
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   OnLog("VideoCaptureImpl got request to start capture.");
@@ -694,6 +697,7 @@ void VideoCaptureImpl::StartCapture(
   client_info.params = params;
   client_info.state_update_cb = state_update_cb;
   client_info.deliver_frame_cb = deliver_frame_cb;
+  client_info.crop_version_cb = crop_version_cb;
 
   switch (state_) {
     case VIDEO_CAPTURE_STATE_STARTING:
@@ -1071,6 +1075,14 @@ void VideoCaptureImpl::OnBufferDestroyed(int32_t buffer_id) {
            cb_iter->second->HasOneRef())
         << "Instructed to delete buffer we are still using.";
     client_buffers_.erase(cb_iter);
+  }
+}
+
+void VideoCaptureImpl::OnNewCropVersion(uint32_t crop_version) {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+
+  for (const auto& client : clients_) {
+    client.second.crop_version_cb.Run(crop_version);
   }
 }
 

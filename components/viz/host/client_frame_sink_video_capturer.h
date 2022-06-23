@@ -129,6 +129,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
       const gfx::Rect& content_rect,
       mojo::PendingRemote<mojom::FrameSinkVideoConsumerFrameCallbacks>
           callbacks) final;
+  void OnNewCropVersion(uint32_t crop_version) final;
   void OnFrameWithEmptyRegionCapture() final;
   void OnStopped() final;
   void OnLog(const std::string& message) final;

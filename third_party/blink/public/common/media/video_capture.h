@@ -49,6 +49,10 @@ using VideoCaptureDeliverFrameCB = base::RepeatingCallback<void(
 // Callback for delivering dropped frame notifications.
 using VideoCaptureNotifyFrameDroppedCB = base::RepeatingClosure;
 
+// Callback for informing when new crop-versions are applied.
+using VideoCaptureCropVersionCB =
+    base::RepeatingCallback<void(uint32_t crop_version)>;
+
 using VideoCaptureDeviceFormatsCB =
     base::OnceCallback<void(const media::VideoCaptureFormats&)>;
 

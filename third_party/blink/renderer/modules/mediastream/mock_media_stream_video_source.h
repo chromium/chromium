@@ -88,8 +88,10 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   void DoChangeSource(const blink::MediaStreamDevice& new_device) override;
 
   // Implements blink::MediaStreamVideoSource.
-  void StartSourceImpl(VideoCaptureDeliverFrameCB frame_callback,
-                       EncodedVideoFrameCB encoded_frame_callback) override;
+  void StartSourceImpl(
+      VideoCaptureDeliverFrameCB frame_callback,
+      EncodedVideoFrameCB encoded_frame_callback,
+      VideoCaptureCropVersionCB crop_version_callback) override;
   void StopSourceImpl() override;
   absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
   void StopSourceForRestartImpl() override;

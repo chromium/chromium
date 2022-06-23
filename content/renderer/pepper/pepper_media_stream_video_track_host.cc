@@ -431,7 +431,8 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
 
   void StartSourceImpl(
       blink::VideoCaptureDeliverFrameCB frame_callback,
-      blink::EncodedVideoFrameCB encoded_frame_callback) final {
+      blink::EncodedVideoFrameCB encoded_frame_callback,
+      blink::VideoCaptureCropVersionCB crop_version_callback) final {
     if (host_) {
       host_->frame_deliverer_ =
           new FrameDeliverer(io_task_runner(), std::move(frame_callback));

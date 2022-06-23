@@ -655,6 +655,18 @@ void VideoCaptureController::OnFrameDropped(
   LogVideoFrameDrop(reason, stream_type_);
 }
 
+void VideoCaptureController::OnNewCropVersion(uint32_t crop_version) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  EmitLogMessage(base::StringPrintf("%s(%u)", __func__, crop_version), 3);
+  for (const auto& client : controller_clients_) {
+    if (client->session_closed) {
+      continue;
+    }
+    client->event_handler->OnNewCropVersion(client->controller_id,
+                                            crop_version);
+  }
+}
+
 void VideoCaptureController::OnFrameWithEmptyRegionCapture() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   EmitLogMessage(__func__, 3);

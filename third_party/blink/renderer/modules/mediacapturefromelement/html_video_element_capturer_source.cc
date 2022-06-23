@@ -73,6 +73,7 @@ HtmlVideoElementCapturerSource::GetPreferredFormats() {
 void HtmlVideoElementCapturerSource::StartCapture(
     const media::VideoCaptureParams& params,
     const VideoCaptureDeliverFrameCB& new_frame_callback,
+    const VideoCaptureCropVersionCB& crop_version_callback,
     const RunningCallback& running_callback) {
   DVLOG(2) << __func__ << " requested "
            << media::VideoCaptureFormat::ToString(params.requested_format);

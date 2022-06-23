@@ -157,6 +157,8 @@ class MockVideoCaptureObserver final
     OnBufferDestroyedCall(buffer_id);
   }
 
+  MOCK_METHOD1(OnNewCropVersion, void(uint32_t crop_version));
+
   MOCK_METHOD1(OnStateChangedCall, void(media::mojom::VideoCaptureState state));
   MOCK_METHOD1(OnVideoCaptureErrorCall, void(media::VideoCaptureError error));
   void OnStateChanged(media::mojom::VideoCaptureResultPtr result) override {

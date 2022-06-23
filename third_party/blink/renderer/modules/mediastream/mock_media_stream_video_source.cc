@@ -84,7 +84,8 @@ void MockMediaStreamVideoSource::DoChangeSource(
 
 void MockMediaStreamVideoSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
-    EncodedVideoFrameCB encoded_frame_callback) {
+    EncodedVideoFrameCB encoded_frame_callback,
+    VideoCaptureCropVersionCB crop_version_callback) {
   DCHECK(frame_callback_.is_null());
   DCHECK(encoded_frame_callback_.is_null());
   attempted_to_start_ = true;

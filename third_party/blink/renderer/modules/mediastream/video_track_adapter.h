@@ -58,6 +58,7 @@ class MODULES_EXPORT VideoTrackAdapter
                 VideoCaptureDeliverFrameCB frame_callback,
                 VideoCaptureNotifyFrameDroppedCB notify_frame_dropped_callback,
                 EncodedVideoFrameCB encoded_frame_callback,
+                VideoCaptureCropVersionCB crop_version_callback,
                 VideoTrackSettingsCallback settings_callback,
                 VideoTrackFormatCallback track_callback,
                 const VideoTrackAdapterSettings& settings);
@@ -76,6 +77,11 @@ class MODULES_EXPORT VideoTrackAdapter
   // Must be called on the IO-thread.
   void DeliverEncodedVideoFrameOnIO(scoped_refptr<EncodedVideoFrame> frame,
                                     base::TimeTicks estimated_capture_time);
+
+  // Called when it is guaranteed that all subsequent frames delivered
+  // over DeliverFrameOnIO() will have a crop version that is
+  // equal-to-or-greater-than the given crop version.
+  void NewCropVersionOnIO(uint32_t crop_version);
 
   base::SingleThreadTaskRunner* io_task_runner() const {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -123,6 +129,8 @@ class MODULES_EXPORT VideoTrackAdapter
       WTF::CrossThreadFunction<void(
           scoped_refptr<EncodedVideoFrame> video_frame,
           base::TimeTicks estimated_capture_time)>;
+  using VideoCaptureCropVersionInternalCallback =
+      WTF::CrossThreadFunction<void(uint32_t)>;
   using VideoTrackSettingsInternalCallback =
       WTF::CrossThreadFunction<void(gfx::Size frame_size, double frame_rate)>;
   using VideoTrackFormatInternalCallback =
@@ -133,6 +141,7 @@ class MODULES_EXPORT VideoTrackAdapter
       VideoCaptureNotifyFrameDroppedInternalCallback
           notify_frame_dropped_callback,
       DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
+      VideoCaptureCropVersionInternalCallback crop_version_callback,
       VideoTrackSettingsInternalCallback settings_callback,
       VideoTrackFormatInternalCallback track_callback,
       const VideoTrackAdapterSettings& settings);

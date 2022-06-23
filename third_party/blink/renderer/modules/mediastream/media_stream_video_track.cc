@@ -84,7 +84,8 @@ class MediaStreamVideoTrack::FrameDeliverer
 
   FrameDeliverer(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
                  base::WeakPtr<MediaStreamVideoTrack> media_stream_video_track,
-                 bool enabled);
+                 bool enabled,
+                 uint32_t crop_version);
 
   FrameDeliverer(const FrameDeliverer&) = delete;
   FrameDeliverer& operator=(const FrameDeliverer&) = delete;
@@ -134,6 +135,12 @@ class MediaStreamVideoTrack::FrameDeliverer
   void DeliverEncodedVideoFrameOnIO(scoped_refptr<EncodedVideoFrame> frame,
                                     base::TimeTicks estimated_capture_time);
 
+  // Called when a crop-version is acknowledged by the capture module.
+  // After this, it is guaranteed that all subsequent frames will be
+  // associated with a crop-version that is >= |crop_version|.
+  // Must be called on the IO-thread.
+  void NewCropVersionOnIO(uint32_t crop_version);
+
   void SetIsRefreshingForMinFrameRate(bool is_refreshing_for_min_frame_rate);
 
   void AddCropVersionCallback(uint32_t crop_version,
@@ -176,8 +183,6 @@ class MediaStreamVideoTrack::FrameDeliverer
                                   WTF::CrossThreadOnceClosure callback);
   void RemoveCropVersionCallbackOnIO(uint32_t crop_version);
 
-  void MaybeInvokeNewCropVersionCallbacksOnIO(uint32_t crop_version);
-
   // Returns a black frame where the size and time stamp is set to the same as
   // as in |reference_frame|.
   scoped_refptr<media::VideoFrame> GetBlackFrame(
@@ -208,19 +213,25 @@ class MediaStreamVideoTrack::FrameDeliverer
 
   // This should only be accessed on the IO thread.
   bool is_refreshing_for_min_frame_rate_ = false;
+
+  // This monotonously increasing value indicates which crop-version
+  // is expected for delivered frames.
+  uint32_t crop_version_ = 0;
 };
 
 MediaStreamVideoTrack::FrameDeliverer::FrameDeliverer(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     base::WeakPtr<MediaStreamVideoTrack> media_stream_video_track,
-    bool enabled)
+    bool enabled,
+    uint32_t crop_version)
     : io_task_runner_(std::move(io_task_runner)),
       // TODO(crbug.com/1223353, crbug.com/624696): Move to WebFrameScheduler.
       main_render_task_runner_(Thread::MainThread()->GetTaskRunner()),
       media_stream_video_track_(media_stream_video_track),
       enabled_(enabled),
       emit_frame_drop_events_(true),
-      await_next_key_frame_(false) {
+      await_next_key_frame_(false),
+      crop_version_(crop_version) {
   DCHECK(io_task_runner_.get());
 }
 
@@ -432,28 +443,12 @@ void MediaStreamVideoTrack::FrameDeliverer::RemoveCropVersionCallbackOnIO(
   crop_version_callbacks_.erase(crop_version);
 }
 
-void MediaStreamVideoTrack::FrameDeliverer::
-    MaybeInvokeNewCropVersionCallbacksOnIO(uint32_t crop_version) {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-
-  Vector<uint32_t> to_be_removed_keys;
-  for (auto& iter : crop_version_callbacks_) {
-    if (iter.key > crop_version) {
-      continue;
-    }
-    std::move(iter.value).Run();
-    to_be_removed_keys.push_back(iter.key);
-  }
-  crop_version_callbacks_.RemoveAll(to_be_removed_keys);
-}
-
 void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnIO(
     scoped_refptr<media::VideoFrame> frame,
     std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
     base::TimeTicks estimated_capture_time) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-
-  const uint32_t crop_version = frame->metadata().crop_version;
+  DCHECK_EQ(frame->metadata().crop_version, crop_version_);
 
   if (!enabled_ && main_render_task_runner_ && emit_frame_drop_events_) {
     emit_frame_drop_events_ = false;
@@ -492,8 +487,6 @@ void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnIO(
         CrossThreadBindOnce(&MediaStreamVideoTrack::ResetRefreshTimer,
                             media_stream_video_track_));
   }
-
-  MaybeInvokeNewCropVersionCallbacksOnIO(crop_version);
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::NotifyFrameDroppedOnIO() {
@@ -517,6 +510,24 @@ void MediaStreamVideoTrack::FrameDeliverer::DeliverEncodedVideoFrameOnIO(
   for (const auto& entry : encoded_callbacks_.Values()) {
     entry.Run(frame, estimated_capture_time);
   }
+}
+
+void MediaStreamVideoTrack::FrameDeliverer::NewCropVersionOnIO(
+    uint32_t crop_version) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  DCHECK_GT(crop_version, crop_version_);
+
+  crop_version_ = crop_version;
+
+  Vector<uint32_t> to_be_removed_keys;
+  for (auto& iter : crop_version_callbacks_) {
+    if (iter.key > crop_version) {
+      continue;
+    }
+    std::move(iter.value).Run();
+    to_be_removed_keys.push_back(iter.key);
+  }
+  crop_version_callbacks_.RemoveAll(to_be_removed_keys);
 }
 
 scoped_refptr<media::VideoFrame>
@@ -599,7 +610,8 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
       source_(source->GetWeakPtr()) {
   frame_deliverer_ =
       base::MakeRefCounted<MediaStreamVideoTrack::FrameDeliverer>(
-          source->io_task_runner(), weak_factory_.GetWeakPtr(), enabled);
+          source->io_task_runner(), weak_factory_.GetWeakPtr(), enabled,
+          source->GetCropVersion());
   source->AddTrack(
       this, VideoTrackAdapterSettings(),
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
@@ -610,6 +622,9 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
           frame_deliverer_)),
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &MediaStreamVideoTrack::FrameDeliverer::DeliverEncodedVideoFrameOnIO,
+          frame_deliverer_)),
+      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+          &MediaStreamVideoTrack::FrameDeliverer::NewCropVersionOnIO,
           frame_deliverer_)),
       media::BindToCurrentLoop(WTF::BindRepeating(
           &MediaStreamVideoTrack::SetSizeAndComputedFrameRate,
@@ -644,7 +659,8 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
       source_(source->GetWeakPtr()) {
   frame_deliverer_ =
       base::MakeRefCounted<MediaStreamVideoTrack::FrameDeliverer>(
-          source->io_task_runner(), weak_factory_.GetWeakPtr(), enabled);
+          source->io_task_runner(), weak_factory_.GetWeakPtr(), enabled,
+          source->GetCropVersion());
   source->AddTrack(
       this, adapter_settings,
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
@@ -655,6 +671,9 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
           frame_deliverer_)),
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &MediaStreamVideoTrack::FrameDeliverer::DeliverEncodedVideoFrameOnIO,
+          frame_deliverer_)),
+      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+          &MediaStreamVideoTrack::FrameDeliverer::NewCropVersionOnIO,
           frame_deliverer_)),
       media::BindToCurrentLoop(WTF::BindRepeating(
           &MediaStreamVideoTrack::SetSizeAndComputedFrameRate,

@@ -92,6 +92,7 @@ class CAPTURE_EXPORT VideoFrameReceiver {
 
   virtual void OnError(VideoCaptureError error) = 0;
   virtual void OnFrameDropped(VideoCaptureFrameDropReason reason) = 0;
+  virtual void OnNewCropVersion(uint32_t crop_version) = 0;
   virtual void OnFrameWithEmptyRegionCapture() = 0;
   virtual void OnLog(const std::string& message) = 0;
   virtual void OnStarted() = 0;

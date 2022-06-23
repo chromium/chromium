@@ -172,6 +172,12 @@ void ClientFrameSinkVideoCapturer::OnFrameWithEmptyRegionCapture() {
   consumer_->OnFrameWithEmptyRegionCapture();
 }
 
+void ClientFrameSinkVideoCapturer::OnNewCropVersion(uint32_t crop_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  consumer_->OnNewCropVersion(crop_version);
+}
+
 void ClientFrameSinkVideoCapturer::OnLog(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

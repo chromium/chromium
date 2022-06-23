@@ -34,8 +34,10 @@ class MockLocalMediaStreamVideoSource : public blink::MediaStreamVideoSource {
     return weak_factory_.GetWeakPtr();
   }
 
-  void StartSourceImpl(VideoCaptureDeliverFrameCB frame_callback,
-                       EncodedVideoFrameCB encoded_frame_callback) override {}
+  void StartSourceImpl(
+      VideoCaptureDeliverFrameCB frame_callback,
+      EncodedVideoFrameCB encoded_frame_callback,
+      VideoCaptureCropVersionCB crop_version_callback) override {}
 
   void StopSourceImpl() override {}
 

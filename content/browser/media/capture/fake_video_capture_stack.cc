@@ -166,6 +166,8 @@ class FakeVideoCaptureStack::Receiver final : public media::VideoFrameReceiver {
 
   void OnFrameDropped(media::VideoCaptureFrameDropReason) override {}
 
+  void OnNewCropVersion(uint32_t crop_version) override {}
+
   void OnFrameWithEmptyRegionCapture() override {}
 
   void OnLog(const std::string& message) override {

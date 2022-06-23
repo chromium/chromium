@@ -49,6 +49,7 @@ class MODULES_EXPORT HtmlVideoElementCapturerSource final
   media::VideoCaptureFormats GetPreferredFormats() override;
   void StartCapture(const media::VideoCaptureParams& params,
                     const VideoCaptureDeliverFrameCB& new_frame_callback,
+                    const VideoCaptureCropVersionCB& crop_version_callback,
                     const RunningCallback& running_callback) override;
   void StopCapture() override;
 

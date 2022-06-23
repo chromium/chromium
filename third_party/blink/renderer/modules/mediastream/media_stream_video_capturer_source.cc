@@ -115,12 +115,16 @@ void MediaStreamVideoCapturerSource::OnCapturingLinkSecured(bool is_secure) {
 
 void MediaStreamVideoCapturerSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
-    EncodedVideoFrameCB encoded_frame_callback) {
+    EncodedVideoFrameCB encoded_frame_callback,
+    VideoCaptureCropVersionCB crop_version_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   state_ = kStarting;
   frame_callback_ = std::move(frame_callback);
+  crop_version_callback_ = std::move(crop_version_callback);
+
   source_->StartCapture(
-      capture_params_, frame_callback_,
+      capture_params_, frame_callback_, crop_version_callback_,
       WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
                          WTF::Unretained(this), capture_params_));
 }
@@ -157,7 +161,7 @@ void MediaStreamVideoCapturerSource::RestartSourceImpl(
   new_capture_params.requested_format = new_format;
   state_ = kRestarting;
   source_->StartCapture(
-      new_capture_params, frame_callback_,
+      new_capture_params, frame_callback_, crop_version_callback_,
       WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
                          WTF::Unretained(this), new_capture_params));
 }
@@ -199,7 +203,7 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
   SetDevice(new_device);
   source_ = device_capturer_factory_callback_.Run(new_device.session_id());
   source_->StartCapture(
-      capture_params_, frame_callback_,
+      capture_params_, frame_callback_, crop_version_callback_,
       WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
                          WTF::Unretained(this), capture_params_));
 }
@@ -227,6 +231,10 @@ absl::optional<uint32_t> MediaStreamVideoCapturerSource::GetNextCropVersion() {
   return ++current_crop_version_;
 }
 #endif
+
+uint32_t MediaStreamVideoCapturerSource::GetCropVersion() const {
+  return current_crop_version_;
+}
 
 base::WeakPtr<MediaStreamVideoSource>
 MediaStreamVideoCapturerSource::GetWeakPtr() const {

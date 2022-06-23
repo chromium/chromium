@@ -113,6 +113,8 @@ class MockVideoCaptureObserver final
     OnBufferDestroyedCall(buffer_id);
   }
 
+  void OnNewCropVersion(uint32_t crop_version) override {}
+
   void OnStateChanged(media::mojom::VideoCaptureResultPtr result) override {
     if (result->which() == media::mojom::VideoCaptureResult::Tag::kState)
       OnStateChangedCall(result->get_state());

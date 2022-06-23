@@ -169,6 +169,7 @@ TEST_F(HTMLVideoElementCapturerSourceTest, EmptyWebMediaPlayerFailsCapture) {
       media::VideoCaptureParams(),
       WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
                          base::Unretained(this)),
+      base::DoNothing(),
       WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
                          base::Unretained(this)));
 }
@@ -205,6 +206,7 @@ TEST_P(HTMLVideoElementCapturerSourceTest, GetFormatsAndStartAndStop) {
       params,
       WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
                          base::Unretained(this)),
+      base::DoNothing(),
       WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
                          base::Unretained(this)));
 
@@ -246,6 +248,7 @@ TEST_F(HTMLVideoElementCapturerSourceTest,
       params,
       WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
                          base::Unretained(this)),
+      base::DoNothing(),
       WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
                          base::Unretained(this)));
   html_video_capturer_->StopCapture();
@@ -277,6 +280,7 @@ TEST_F(HTMLVideoElementCapturerSourceTest, AlphaAndNot) {
         params,
         WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
                            base::Unretained(this)),
+        base::DoNothing(),
         WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
                            base::Unretained(this)));
     run_loop.Run();
@@ -338,6 +342,7 @@ TEST_F(HTMLVideoElementCapturerSourceTest, SizeChange) {
         params,
         WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
                            base::Unretained(this)),
+        base::DoNothing(),
         WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
                            base::Unretained(this)));
     run_loop.Run();
@@ -380,6 +385,7 @@ TEST_F(HTMLVideoElementCapturerSourceTest, TaintedPlayerDoesNotDeliverFrames) {
       params,
       WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
                          base::Unretained(this)),
+      base::DoNothing(),
       WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
                          base::Unretained(this)));
 

@@ -99,6 +99,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
       const gfx::Rect& content_rect,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
           callbacks) override;
+  void OnNewCropVersion(uint32_t crop_version) final;
   void OnFrameWithEmptyRegionCapture() final;
   void OnStopped() final;
   void OnLog(const std::string& message) final;

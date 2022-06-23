@@ -52,6 +52,16 @@
           window.domAutomationController.send("deallocate-failure");
         }
       }
+
+      function hideElement(elementId) {
+        const element = document.getElementById(elementId);
+        if (!element) {
+          window.domAutomationController.send("hide-element-failure");
+          return;
+        }
+        element.hidden = true;
+        window.domAutomationController.send("hide-element-success");
+      }
     </script>
   </head>
   <body onload="onLoad();">

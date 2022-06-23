@@ -267,7 +267,9 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
             base::BindRepeating(
                 &VideoTrackAdapterFixtureTest::OnEncodedVideoFrameDelivered,
                 base::Unretained(this)),
-            base::DoNothing(), base::DoNothing(), adapter_settings));
+            /*crop_version_callback=*/base::DoNothing(),
+            /*settings_callback=*/base::DoNothing(),
+            /*format_callback=*/base::DoNothing(), adapter_settings));
   }
 
   void SetFrameValidationCallback(VideoCaptureDeliverFrameCB callback) {
@@ -443,6 +445,7 @@ TEST_F(VideoTrackAdapterFixtureTest,
           /*frame_callback=*/base::DoNothing(),
           /*notify_dropped_frame_callback=*/base::DoNothing(),
           /*encoded_frame_callback=*/base::DoNothing(),
+          /*crop_version_callback=*/base::DoNothing(),
           /*settings_callback=*/base::BindLambdaForTesting(check_dimensions),
           /*track_callback=*/base::DoNothing(), adapter_settings));
   settings_callback_run_.Wait();
@@ -485,7 +488,9 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
           base::BindRepeating(
               &VideoTrackAdapterEncodedTest::OnEncodedVideoFrameDelivered,
               base::Unretained(this)),
-          base::DoNothing(), base::DoNothing(), VideoTrackAdapterSettings());
+          /*crop_version_callback=*/base::DoNothing(),
+          /*settings_callback=*/base::DoNothing(),
+          /*track_callback=*/base::DoNothing(), VideoTrackAdapterSettings());
     });
     return track;
   }

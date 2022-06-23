@@ -61,6 +61,15 @@ interface FrameSinkVideoConsumer {
                   pending_remote<FrameSinkVideoConsumerFrameCallbacks>
                       callbacks);
 
+  // Called to indicate that a new |crop_version| has been set, and that all
+  // frames which will subsequently be delivered using OnFrameCaptured(),
+  // will have a crop-version that is greater-than-or-equal-to this one.
+  // This allows the Promise which cropTo() returned to be resolved promptly,
+  // even if frames are not being produced over the track at the moment,
+  // which can happen if the track is cropped to an invisible target, or is
+  // paused, or is muted.
+  OnNewCropVersion(uint32 crop_version);
+
   // Called when a frame is *not* delivered because Region Capture was applied,
   // but the cropped-to region consists of zero pixels. This is needed because
   // the blue border that is normally drawn around the cropped-to region should

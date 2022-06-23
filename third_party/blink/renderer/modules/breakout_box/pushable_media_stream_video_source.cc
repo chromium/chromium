@@ -160,7 +160,8 @@ void PushableMediaStreamVideoSource::PushFrame(
 
 void PushableMediaStreamVideoSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
-    EncodedVideoFrameCB encoded_frame_callback) {
+    EncodedVideoFrameCB encoded_frame_callback,
+    VideoCaptureCropVersionCB crop_version_callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(frame_callback);
   broker_->OnSourceStarted(std::move(frame_callback));

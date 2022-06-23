@@ -123,7 +123,8 @@ base::OnceClosure WebVideoCaptureImplManager::StartCapture(
     const media::VideoCaptureSessionId& id,
     const media::VideoCaptureParams& params,
     const VideoCaptureStateUpdateCB& state_update_cb,
-    const VideoCaptureDeliverFrameCB& deliver_frame_cb) {
+    const VideoCaptureDeliverFrameCB& deliver_frame_cb,
+    const VideoCaptureCropVersionCB& crop_version_cb) {
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
   const auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
   if (it == devices_.end())
@@ -135,7 +136,8 @@ base::OnceClosure WebVideoCaptureImplManager::StartCapture(
   Platform::Current()->GetIOTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoCaptureImpl::StartCapture, it->impl->GetWeakPtr(),
-                     client_id, params, state_update_cb, deliver_frame_cb));
+                     client_id, params, state_update_cb, deliver_frame_cb,
+                     crop_version_cb));
   return base::BindOnce(&WebVideoCaptureImplManager::StopCapture,
                         weak_factory_.GetWeakPtr(), client_id, id);
 }

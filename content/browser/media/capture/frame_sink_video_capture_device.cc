@@ -411,6 +411,16 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
       {});
 }
 
+void FrameSinkVideoCaptureDevice::OnNewCropVersion(uint32_t crop_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!receiver_) {
+    return;
+  }
+
+  receiver_->OnNewCropVersion(crop_version);
+}
+
 void FrameSinkVideoCaptureDevice::OnFrameWithEmptyRegionCapture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

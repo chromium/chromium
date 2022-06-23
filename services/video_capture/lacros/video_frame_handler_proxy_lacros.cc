@@ -146,6 +146,10 @@ void VideoFrameHandlerProxyLacros::OnFrameDropped(
   handler_->OnFrameDropped(reason);
 }
 
+void VideoFrameHandlerProxyLacros::OnNewCropVersion(uint32_t crop_version) {
+  handler_->OnNewCropVersion(crop_version);
+}
+
 void VideoFrameHandlerProxyLacros::OnFrameWithEmptyRegionCapture() {
   handler_->OnFrameWithEmptyRegionCapture();
 }
