@@ -40,7 +40,6 @@ struct MaskFilterInfoExt;
 
 class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
  public:
-  using SurfaceIndexMap = base::flat_map<SurfaceId, uint64_t>;
   using FrameSinkIdMap = base::flat_map<FrameSinkId, LocalSurfaceId>;
 
   // To control when to add an extra render pass to avoid readback from the
@@ -97,7 +96,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   // Aggregate() to make sure no CompositorFrame did arrive between the calls.
   const ResolvedFrameData* GetLatestFrameData(const SurfaceId& surface_id);
 
-  const SurfaceIndexMap& previous_contained_surfaces() const {
+  const base::flat_set<SurfaceId>& previous_contained_surfaces() const {
     return previous_contained_surfaces_;
   }
   const FrameSinkIdMap& previous_contained_frame_sinks() const {
@@ -137,8 +136,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
 
   // SurfaceObserver implementation.
   void OnSurfaceDestroyed(const SurfaceId& surface_id) override;
-
-  void ReleaseResources(const SurfaceId& surface_id);
 
   // Get resolved frame data for the resolved surfaces active frame. Returns
   // null if there is no matching surface or the surface doesn't have an active
@@ -281,10 +278,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
 
   bool CheckFrameSinksChanged(const Surface* surface);
 
-  int ChildIdForSurface(Surface* surface);
-  gfx::Rect DamageRectForSurface(const ResolvedFrameData& resolved_frame,
-                                 bool include_per_quad_damage) const;
-
   // This function adds a damage rect to |surface_damage_rect_list_|. The
   // surface damage rect comes from |resolved_frame| if provided, otherwise
   // |default_damage_rect| will be used.
@@ -417,8 +410,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   // Persistent storage for ResolvedFrameData.
   std::map<SurfaceId, ResolvedFrameData> resolved_frames_;
 
-  base::flat_map<SurfaceId, int> surface_id_to_resource_child_id_;
-
   // The following state is only valid for the duration of one Aggregate call
   // and is only stored on the class to avoid having to pass through every
   // function call.
@@ -434,8 +425,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
 
   // For each Surface used in the last aggregation, gives the frame_index at
   // that time.
-  SurfaceIndexMap previous_contained_surfaces_;
-  SurfaceIndexMap contained_surfaces_;
+  base::flat_set<SurfaceId> previous_contained_surfaces_;
+  base::flat_set<SurfaceId> contained_surfaces_;
   FrameSinkIdMap previous_contained_frame_sinks_;
   FrameSinkIdMap contained_frame_sinks_;
 

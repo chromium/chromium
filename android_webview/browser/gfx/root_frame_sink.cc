@@ -211,8 +211,8 @@ void RootFrameSink::RemoveChildFrameSinkId(
 }
 
 void RootFrameSink::SetContainedSurfaces(
-    const std::vector<viz::SurfaceId>& ids) {
-  contained_surfaces_ = base::flat_set<viz::SurfaceId>(ids.begin(), ids.end());
+    const base::flat_set<viz::SurfaceId>& ids) {
+  contained_surfaces_ = ids;
   for (auto it = last_invalidated_frame_id_.begin();
        it != last_invalidated_frame_id_.end();) {
     if (!contained_surfaces_.contains(it->first))

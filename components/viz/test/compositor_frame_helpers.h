@@ -150,6 +150,10 @@ class RenderPassBuilder {
   // Sets SharedQuadState::clip_rect for the last quad.
   RenderPassBuilder& SetQuadClipRect(absl::optional<gfx::Rect> clip_rect);
 
+  // Sets the damage_rect for the last quad. This is only valid to call if the
+  // last quad has a `damage_rect` member.
+  RenderPassBuilder& SetQuadDamageRect(const gfx::Rect& damage_rect);
+
   // Sets SharedQuadState::blend_mode for the last quad.
   RenderPassBuilder& SetBlendMode(SkBlendMode blend_mode);
 

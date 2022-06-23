@@ -29,6 +29,7 @@
 #include "components/viz/service/frame_sinks/surface_resource_holder_client.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
+#include "components/viz/service/surfaces/frame_index_constants.h"
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/transitions/surface_animation_manager.h"
 #include "components/viz/service/viz_service_export.h"
@@ -68,8 +69,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
                                    const gfx::Size& frame_size_in_pixels,
                                    const gfx::Rect& damage_rect,
                                    base::TimeTicks expected_display_time)>;
-
-  static constexpr uint64_t kFrameIndexStart = 2;
 
   // Determines maximum number of allowed undrawn frames. Once this limit is
   // exceeded, we throttle sBeginFrames to 1 per second. Limit must be at least

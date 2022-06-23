@@ -26,6 +26,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
+#include "components/viz/service/surfaces/frame_index_constants.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/surfaces/surface_dependency_deadline.h"
@@ -216,7 +217,8 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   // Returns a number that increments by 1 every time a new frame is enqueued.
   uint64_t GetActiveFrameIndex() const {
-    return active_frame_data_ ? active_frame_data_->frame_index : 0;
+    return active_frame_data_ ? active_frame_data_->frame_index
+                              : kInvalidFrameIndex;
   }
 
   void TakeActiveLatencyInfo(std::vector<ui::LatencyInfo>* latency_info);

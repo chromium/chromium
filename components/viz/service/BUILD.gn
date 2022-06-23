@@ -188,6 +188,7 @@ viz_component("service") {
     "performance_hint/hint_session.h",
     "performance_hint/utils.cc",
     "performance_hint/utils.h",
+    "surfaces/frame_index_constants.h",
     "surfaces/latest_local_surface_id_lookup_delegate.h",
     "surfaces/pending_copy_output_request.cc",
     "surfaces/pending_copy_output_request.h",

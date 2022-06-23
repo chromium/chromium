@@ -15,6 +15,7 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 
 namespace viz {
@@ -229,6 +230,25 @@ RenderPassBuilder& RenderPassBuilder::SetQuadClipRect(
   return *this;
 }
 
+RenderPassBuilder& RenderPassBuilder::SetQuadDamageRect(
+    const gfx::Rect& damage_rect) {
+  CHECK(!pass_->quad_list.empty());
+  DrawQuad* quad = pass_->quad_list.back();
+
+  if (quad->material == DrawQuad::Material::kTextureContent) {
+    auto* texture_quad = static_cast<TextureDrawQuad*>(quad);
+    texture_quad->damage_rect = damage_rect;
+  } else if (quad->material == DrawQuad::Material::kYuvVideoContent) {
+    auto* yuv_video_quad = static_cast<YUVVideoDrawQuad*>(quad);
+    yuv_video_quad->damage_rect = damage_rect;
+  } else {
+    NOTREACHED();
+  }
+
+  pass_->has_per_quad_damage = true;
+  return *this;
+}
+
 RenderPassBuilder& RenderPassBuilder::SetBlendMode(SkBlendMode blend_mode) {
   GetLastQuadSharedQuadState()->blend_mode = blend_mode;
   return *this;
@@ -428,12 +448,16 @@ CompositorFrame MakeDefaultCompositorFrame() {
 
 CompositorFrame MakeCompositorFrame(
     std::unique_ptr<CompositorRenderPass> render_pass) {
-  return CompositorFrameBuilder().AddRenderPass(std::move(render_pass)).Build();
+  return CompositorFrameBuilder()
+      .AddRenderPass(std::move(render_pass))
+      .PopulateResources()
+      .Build();
 }
 
 CompositorFrame MakeCompositorFrame(CompositorRenderPassList render_pass_list) {
   return CompositorFrameBuilder()
       .SetRenderPassList(std::move(render_pass_list))
+      .PopulateResources()
       .Build();
 }
 

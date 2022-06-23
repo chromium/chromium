@@ -554,14 +554,12 @@ class SurfaceAggregatorValidSurfaceTest : public SurfaceAggregatorTest {
 
   void VerifyExpectedSurfaceIds(
       const std::vector<SurfaceId>& expected_surface_ids) {
-    EXPECT_EQ(expected_surface_ids.size(),
-              aggregator_.previous_contained_surfaces().size());
+    EXPECT_THAT(aggregator_.previous_contained_surfaces(),
+                testing::UnorderedElementsAreArray(expected_surface_ids));
+
     EXPECT_EQ(expected_surface_ids.size(),
               aggregator_.previous_contained_frame_sinks().size());
-
     for (const SurfaceId& surface_id : expected_surface_ids) {
-      EXPECT_THAT(aggregator_.previous_contained_surfaces(),
-                  testing::Contains(testing::Key(surface_id)));
       EXPECT_THAT(
           aggregator_.previous_contained_frame_sinks(),
           testing::Contains(testing::Pair(surface_id.frame_sink_id(),

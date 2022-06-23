@@ -860,8 +860,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         pending_presentation_group_timings_.emplace_back();
 
     base::flat_set<base::PlatformThreadId> thread_ids;
-    for (const auto& id_entry : aggregator_->previous_contained_surfaces()) {
-      surface = surface_manager_->GetSurfaceForId(id_entry.first);
+    for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
+      surface = surface_manager_->GetSurfaceForId(surface_id);
       if (surface) {
         base::flat_set<base::PlatformThreadId> surface_thread_ids =
             surface->GetThreadIds();
@@ -871,8 +871,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     presentation_group_timing.OnDraw(params.frame_time, draw_timer->Begin(),
                                      std::move(thread_ids));
 
-    for (const auto& id_entry : aggregator_->previous_contained_surfaces()) {
-      surface = surface_manager_->GetSurfaceForId(id_entry.first);
+    for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
+      surface = surface_manager_->GetSurfaceForId(surface_id);
       if (surface) {
         std::unique_ptr<Surface::PresentationHelper> helper =
             surface->TakePresentationHelperForPresentNotification();

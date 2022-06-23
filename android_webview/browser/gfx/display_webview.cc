@@ -109,11 +109,8 @@ void DisplayWebView::OnFrameSinkDidFinishFrame(
   }
 }
 
-std::vector<viz::SurfaceId> DisplayWebView::GetContainedSurfaceIds() {
-  std::vector<viz::SurfaceId> surfaces;
-  for (auto& surface : aggregator_->previous_contained_surfaces())
-    surfaces.push_back(surface.first);
-  return surfaces;
+const base::flat_set<viz::SurfaceId>& DisplayWebView::GetContainedSurfaceIds() {
+  return aggregator_->previous_contained_surfaces();
 }
 
 }  // namespace android_webview

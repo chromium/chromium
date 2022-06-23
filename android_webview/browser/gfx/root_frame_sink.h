@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -73,7 +74,7 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   bool IsChildSurface(const viz::FrameSinkId& frame_sink_id);
   void DettachClient();
   void EvictChildSurface(const viz::SurfaceId& surface_id);
-  void SetContainedSurfaces(const std::vector<viz::SurfaceId>& ids);
+  void SetContainedSurfaces(const base::flat_set<viz::SurfaceId>& ids);
 
   void SubmitChildCompositorFrame(ChildFrame* child_frame);
   viz::FrameTimingDetailsMap TakeChildFrameTimingDetailsMap();
