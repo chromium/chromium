@@ -26,6 +26,8 @@ enum class CallbackInvokeHelperMode {
   kLegacyTreatNonObjectAsNull,
 };
 
+enum class CallbackReturnTypeIsPromise { kNo, kYes };
+
 // This class helps implement the generated Blink-V8 bindings of IDL callback
 // functions and IDL callback interfaces.  This class implements the following
 // algorithms of Web IDL.
@@ -42,7 +44,9 @@ enum class CallbackInvokeHelperMode {
 // 3.12. Invoking callback functions
 // To construct a callback functions type value
 template <class CallbackBase,
-          CallbackInvokeHelperMode mode = CallbackInvokeHelperMode::kDefault>
+          CallbackInvokeHelperMode mode = CallbackInvokeHelperMode::kDefault,
+          CallbackReturnTypeIsPromise return_type_is_promise =
+              CallbackReturnTypeIsPromise::kNo>
 class CallbackInvokeHelper final {
   STACK_ALLOCATED();
 
@@ -80,6 +84,7 @@ class CallbackInvokeHelper final {
   }
 
  private:
+  bool CallInternal(int argc, v8::Local<v8::Value>* argv);
   bool Abort() {
     aborted_ = true;
     return false;
@@ -109,6 +114,14 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT
                          CallbackInvokeHelperMode::kLegacyTreatNonObjectAsNull>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
     CallbackInvokeHelper<CallbackInterfaceBase>;
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionBase,
+                         CallbackInvokeHelperMode::kDefault,
+                         CallbackReturnTypeIsPromise::kYes>;
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionBase,
+                         CallbackInvokeHelperMode::kConstructorCall,
+                         CallbackReturnTypeIsPromise::kYes>;
 
 }  // namespace bindings
 

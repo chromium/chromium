@@ -16,9 +16,11 @@ namespace blink {
 
 namespace bindings {
 
-template <class CallbackBase, CallbackInvokeHelperMode mode>
-bool CallbackInvokeHelper<CallbackBase, mode>::PrepareForCall(
-    V8ValueOrScriptWrappableAdapter callback_this) {
+template <class CallbackBase,
+          CallbackInvokeHelperMode mode,
+          CallbackReturnTypeIsPromise return_type_is_promise>
+bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
+    PrepareForCall(V8ValueOrScriptWrappableAdapter callback_this) {
   v8::Isolate* isolate = callback_->GetIsolate();
   if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
     ScriptForbiddenScope::ThrowScriptForbiddenException(isolate);
@@ -106,30 +108,46 @@ bool CallbackInvokeHelper<CallbackBase, mode>::PrepareForCall(
   return true;
 }
 
-template <class CallbackBase, CallbackInvokeHelperMode mode>
-bool CallbackInvokeHelper<CallbackBase, mode>::Call(
-    int argc,
-    v8::Local<v8::Value>* argv) {
-  if (mode == CallbackInvokeHelperMode::kConstructorCall) {
+template <class CallbackBase,
+          CallbackInvokeHelperMode mode,
+          CallbackReturnTypeIsPromise return_type_is_promise>
+bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
+    CallInternal(int argc, v8::Local<v8::Value>* argv) {
+  if constexpr (mode == CallbackInvokeHelperMode::kConstructorCall) {
     // step 10. Let callResult be Construct(F, esArgs).
-    if (!V8ScriptRunner::CallAsConstructor(
-             callback_->GetIsolate(), function_,
-             ExecutionContext::From(callback_->CallbackRelevantScriptState()),
-             argc, argv)
-             .ToLocal(&result_)) {
-      return Abort();
-    }
+    return V8ScriptRunner::CallAsConstructor(
+               callback_->GetIsolate(), function_,
+               ExecutionContext::From(callback_->CallbackRelevantScriptState()),
+               argc, argv)
+        .ToLocal(&result_);
   } else {
     // step 12. Let callResult be Call(X, thisArg, esArgs).
     // or
     // step 11. Let callResult be Call(F, thisArg, esArgs).
-    if (!V8ScriptRunner::CallFunction(
-             function_,
-             ExecutionContext::From(callback_->CallbackRelevantScriptState()),
-             callback_this_, argc, argv, callback_->GetIsolate())
-             .ToLocal(&result_)) {
-      return Abort();
+    return V8ScriptRunner::CallFunction(
+               function_,
+               ExecutionContext::From(callback_->CallbackRelevantScriptState()),
+               callback_this_, argc, argv, callback_->GetIsolate())
+        .ToLocal(&result_);
+  }
+}
+
+template <class CallbackBase,
+          CallbackInvokeHelperMode mode,
+          CallbackReturnTypeIsPromise return_type_is_promise>
+bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::Call(
+    int argc,
+    v8::Local<v8::Value>* argv) {
+  if constexpr (return_type_is_promise == CallbackReturnTypeIsPromise::kYes) {
+    v8::TryCatch block(callback_->GetIsolate());
+    if (!CallInternal(argc, argv)) {
+      result_ = ScriptPromise::Reject(callback_->CallbackRelevantScriptState(),
+                                      block.Exception())
+                    .V8Value();
     }
+  } else {
+    if (!CallInternal(argc, argv))
+      return Abort();
   }
   return true;
 }
@@ -142,6 +160,14 @@ template class CORE_TEMPLATE_EXPORT
     CallbackInvokeHelper<CallbackFunctionBase,
                          CallbackInvokeHelperMode::kLegacyTreatNonObjectAsNull>;
 template class CORE_TEMPLATE_EXPORT CallbackInvokeHelper<CallbackInterfaceBase>;
+template class CORE_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionBase,
+                         CallbackInvokeHelperMode::kDefault,
+                         CallbackReturnTypeIsPromise::kYes>;
+template class CORE_TEMPLATE_EXPORT
+    CallbackInvokeHelper<CallbackFunctionBase,
+                         CallbackInvokeHelperMode::kConstructorCall,
+                         CallbackReturnTypeIsPromise::kYes>;
 
 }  // namespace bindings
 
