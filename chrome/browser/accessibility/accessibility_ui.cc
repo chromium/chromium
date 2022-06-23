@@ -240,7 +240,7 @@ void HandleAccessibilityRequestCallback(
   bool show_internal = pref->GetBoolean(prefs::kShowInternalAccessibilityTree);
   data.SetStringKey(kInternal, show_internal ? kOn : kOff);
 
-  std::unique_ptr<base::ListValue> rvh_list(new base::ListValue());
+  std::unique_ptr<base::ListValue> page_list(new base::ListValue());
   std::unique_ptr<content::RenderWidgetHostIterator> widget_iter(
       content::RenderWidgetHost::GetRenderWidgetHosts());
 
@@ -256,6 +256,8 @@ void HandleAccessibilityRequestCallback(
     content::WebContentsDelegate* delegate = web_contents->GetDelegate();
     if (!delegate)
       continue;
+    if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost() != rvh)
+      continue;
     // Ignore views that are never user-visible, like background pages.
     if (delegate->IsNeverComposited(web_contents))
       continue;
@@ -267,9 +269,9 @@ void HandleAccessibilityRequestCallback(
         BuildTargetDescriptor(rvh);
     descriptor->SetBoolKey(kNative, is_native_enabled);
     descriptor->SetBoolKey(kWeb, is_web_enabled);
-    rvh_list->Append(base::Value::FromUniquePtrValue(std::move(descriptor)));
+    page_list->Append(base::Value::FromUniquePtrValue(std::move(descriptor)));
   }
-  data.Set(kPagesField, std::move(rvh_list));
+  data.Set(kPagesField, std::move(page_list));
 
   std::unique_ptr<base::ListValue> browser_list(new base::ListValue());
 #if !BUILDFLAG(IS_ANDROID)
