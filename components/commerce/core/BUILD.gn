@@ -74,6 +74,11 @@ if (is_android) {
     proto_path = "."
     sources = [ "proto/price_tracking.proto" ]
   }
+
+  proto_library("merchant_signal_db_proto") {
+    proto_in_dir = "//"
+    sources = [ "proto/merchant_signal_db_content.proto" ]
+  }
 }
 
 source_set("commerce_heuristics_data") {
