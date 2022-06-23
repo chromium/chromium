@@ -44,7 +44,7 @@ group("all") {
       ":cast_shell",
     ]
   }
-  if (is_linux || is_chromeos) {
+  if (is_linux) {
     deps += [
       "//chromecast/browser/webview/client:wayland_webview_client",
       "//chromecast/tracing",
@@ -101,7 +101,6 @@ cast_test_group("cast_tests") {
     "//chromecast/shared:cast_shared_unittests",
     "//chromecast/system/reboot:cast_reboot_unittests",
     "//components/viz:viz_unittests",
-    "//content/test:content_unittests",
     "//crypto:crypto_unittests",
     "//media:media_unittests",
     "//media/midi:midi_unittests",
@@ -110,6 +109,10 @@ cast_test_group("cast_tests") {
     "//storage:storage_unittests",
     "//ui/base:ui_base_unittests",
   ]
+
+  if (!is_fuchsia) {
+    tests += [ "//content/test:content_unittests" ]
+  }
 
   if (!is_cast_audio_only) {
     tests += [ "//gpu:gpu_unittests" ]
@@ -123,7 +126,7 @@ cast_test_group("cast_tests") {
     tests += [ "//media/gpu:video_decode_accelerator_tests" ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (is_linux) {
     tests += [
       "//chromecast/crash:cast_crash_unittests",
       "//components/exo:exo_unittests",
@@ -142,7 +145,7 @@ cast_test_group("cast_tests") {
   # TODO(crbug/1319009): `media_use_ffmpeg` should not largely affect top-level
   # test list. Better create another flag to do this or handle the ffmpeg flag
   # in //chromecast/media/cma/decoder.
-  if (media_use_ffmpeg) {
+  if (media_use_ffmpeg && !is_fuchsia) {
     tests += [
       "//chromecast/cast_core:cast_cast_core_unittests",
       "//chromecast/media:cast_media_unittests",
@@ -159,7 +162,7 @@ cast_test_group("cast_tests") {
     filters += [ cast_media_unittests_filter ]
   }
 
-  if (is_linux || is_chromeos || is_fuchsia) {
+  if (is_linux) {
     tests += [ "//chromecast/media/cma/backend:cast_audio_backend_unittests" ]
     cast_audio_backend_unittests_filter = {
       test_name = "cast_audio_backend_unittests"
@@ -338,40 +341,43 @@ cast_test_group("cast_tests") {
   }
   filters += [ viz_unittests_filter ]
 
-  content_unittests_filter = {
-    test_name = "content_unittests"
+  # content_unittests are not run on Fuchsia.
+  if (!is_fuchsia) {
+    content_unittests_filter = {
+      test_name = "content_unittests"
 
-    # IsSupportedVideoConfig_VP9TransferFunctions fails on all cast builds since
-    # the cast IsSupporedVideoConfigs ignore the transfer function parameter.
-    # (b/36984215).
-    gtest_excludes = [ "*.IsSupportedVideoConfig_VP9TransferFunctions" ]
-    if (target_os == "linux" && !is_cast_desktop_build) {
-      # DesktopCaptureDeviceTest.*: No capture device on Eureka
-      # Disable PepperGamepadHostTest.WaitForReply (pepper not supported on Eureka)
-      # Disable RenderWidgetHostTest.Background because we disable the
-      # blacklist to enable WebGL (b/16142554)
-      gtest_excludes += [
-        "LegacyDomStorageDatabaseTest.TestCanOpenAndReadWebCoreDatabase",
-        "DesktopCaptureDeviceTest.Capture",
-        "GamepadProviderTest.PollingAccess",
-        "PepperGamepadHostTest.WaitForReply",
-        "RenderWidgetHostTest.Background",
-      ]
+      # IsSupportedVideoConfig_VP9TransferFunctions fails on all cast builds since
+      # the cast IsSupportedVideoConfigs ignore the transfer function parameter.
+      # (b/36984215).
+      gtest_excludes = [ "*.IsSupportedVideoConfig_VP9TransferFunctions" ]
+      if (target_os == "linux" && !is_cast_desktop_build) {
+        # DesktopCaptureDeviceTest.*: No capture device on Eureka
+        # Disable PepperGamepadHostTest.WaitForReply (pepper not supported on Eureka)
+        # Disable RenderWidgetHostTest.Background because we disable the
+        # blacklist to enable WebGL (b/16142554)
+        gtest_excludes += [
+          "LegacyDomStorageDatabaseTest.TestCanOpenAndReadWebCoreDatabase",
+          "DesktopCaptureDeviceTest.Capture",
+          "GamepadProviderTest.PollingAccess",
+          "PepperGamepadHostTest.WaitForReply",
+          "RenderWidgetHostTest.Background",
+        ]
+      }
+      if (is_cast_audio_only) {
+        # No way to display URL's on audio only cast devices.
+        gtest_excludes += [ "NavigationEntryTest.NavigationEntryURLs" ]
+      }
+      if (enable_assistant && !is_cast_desktop_build) {
+        # Temporarily disable DefaultConstructor on assistant device builds. Cause
+        # of failure is unclear, but it's highly likely it's related to them being
+        # DEATH tests. These were passing until the is_official_build flag was
+        # enabled. These tests are considered non-critical in this context.
+        # (b/62469368)
+        gtest_excludes += [ "WebBluetoothDeviceIdTest.DefaultConstructor" ]
+      }
     }
-    if (is_cast_audio_only) {
-      # No way to display URL's on audio only cast devices.
-      gtest_excludes += [ "NavigationEntryTest.NavigationEntryURLs" ]
-    }
-    if (enable_assistant && !is_cast_desktop_build) {
-      # Temporarily disable DefaultConstructor on assistant device builds. Cause
-      # of failure is unclear, but it's highly likely it's related to them being
-      # DEATH tests. These were passing until the is_official_build flag was
-      # enabled. These tests are considered non-critical in this context.
-      # (b/62469368)
-      gtest_excludes += [ "WebBluetoothDeviceIdTest.DefaultConstructor" ]
-    }
+    filters += [ content_unittests_filter ]
   }
-  filters += [ content_unittests_filter ]
 
   media_unittests_filter = {
     test_name = "media_unittests"

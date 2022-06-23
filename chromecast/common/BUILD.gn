@@ -38,7 +38,9 @@ cast_source_set("activity_url_filter") {
   deps = [
     "//base",
     "//components/url_matcher",
-    "//content/public/common",
+    "//services/network/public/cpp:cpp_base",
+    "//third_party/blink/public/common:common",
+    "//third_party/blink/public/common:headers",
     "//url",
   ]
 }
