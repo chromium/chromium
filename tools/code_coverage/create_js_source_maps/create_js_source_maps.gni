@@ -6,7 +6,12 @@
 # "preprocess_if_expr" build rule(s) in the BUILD.gn file. If you are getting
 # "Target not found in this context" errors, check that the deps
 # names are correct and that they are defined earlier in the same BUILD.gn file.
+
+import("//ui/webui/webui_features.gni")
+
 template("create_js_source_maps") {
+  assert(enable_webui_inline_sourcemaps)
+
   action_foreach(target_name) {
     script =
         "//tools/code_coverage/create_js_source_maps/create_js_source_maps.py"

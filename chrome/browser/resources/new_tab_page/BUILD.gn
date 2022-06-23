@@ -29,7 +29,7 @@ preprocess_if_expr("preprocess") {
   in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = ts_files
-  enable_removal_comments = true
+  enable_removal_comments = enable_webui_inline_sourcemaps
 }
 
 preprocess_if_expr("preprocess_gen") {
@@ -38,7 +38,7 @@ preprocess_if_expr("preprocess_gen") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = html_wrapper_files
-  enable_removal_comments = true
+  enable_removal_comments = enable_webui_inline_sourcemaps
 }
 
 # Copy all Mojom generated JS files used by the NTP to a common location so that
@@ -196,7 +196,11 @@ ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   composite = true
-  tsconfig_base = "tsconfig_base.json"
+  if (enable_webui_inline_sourcemaps) {
+    tsconfig_base = "tsconfig_base_sourcemaps.json"
+  } else {
+    tsconfig_base = "tsconfig_base.json"
+  }
   in_files = ts_files + html_wrapper_files + mojo_js_files
 
   deps = [
@@ -216,11 +220,17 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_gen",
   ]
+
+  if (enable_webui_inline_sourcemaps) {
+    extra_deps += [ ":sourcemaps" ]
+  }
 }
 
-create_js_source_maps("sourcemaps") {
-  deps = [
-    ":preprocess",
-    ":preprocess_gen",
-  ]
+if (enable_webui_inline_sourcemaps) {
+  create_js_source_maps("sourcemaps") {
+    deps = [
+      ":preprocess",
+      ":preprocess_gen",
+    ]
+  }
 }
