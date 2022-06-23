@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -50,6 +51,20 @@ namespace {
 // Rendered image size, pixels.
 constexpr int kImageWidthPx = 336;
 constexpr int kImageHeightPx = 252;
+
+static base::FilePath WriteTemporaryFile(
+    const std::vector<unsigned char>& image_bytes) {
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+  if (!file_path.empty()) {
+    if (!base::WriteFile(file_path, base::make_span(image_bytes.data(),
+                                                    image_bytes.size()))) {
+      file_path.clear();
+    }
+  }
+  return file_path;
+}
+
 }  // namespace
 
 namespace sharing_hub {
@@ -209,9 +224,8 @@ const std::u16string ScreenshotCapturedBubble::GetFilenameForURL(
 
 void ScreenshotCapturedBubble::DownloadButtonPressed() {
   // Returns closest scaling to parameter (1.0).
-  const gfx::ImageSkia& image_ref = image_view_->GetImage();
-  const gfx::ImageSkiaRep& image_rep = image_ref.GetRepresentation(1.0f);
-  const SkBitmap& bitmap = image_rep.GetBitmap();
+  const SkBitmap& bitmap =
+      image_view_->GetImage().GetRepresentation(1.0f).GetBitmap();
   const GURL data_url = GURL(webui::GetBitmapDataUrl(bitmap));
 
   if (!web_contents_)
@@ -253,19 +267,6 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
   download_manager->DownloadUrl(std::move(params));
   base::RecordAction(base::UserMetricsAction(
       "SharingDesktopScreenshot.ScreenshotSavedViaBubble"));
-}
-
-static base::FilePath WriteTemporaryFile(
-    const std::vector<unsigned char>& image_bytes) {
-  base::FilePath file_path;
-  base::CreateTemporaryFile(&file_path);
-  if (!file_path.empty()) {
-    if (!base::WriteFile(file_path, base::make_span(image_bytes.data(),
-                                                    image_bytes.size()))) {
-      file_path.clear();
-    }
-  }
-  return file_path;
 }
 
 void ScreenshotCapturedBubble::EditButtonPressed() {

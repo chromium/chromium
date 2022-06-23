@@ -13,8 +13,9 @@ template <typename T>
 struct DefaultSingletonTraits;
 }
 
-// Contains information about installed image editor component.
 namespace image_editor {
+
+// Contains information about installed image editor component.
 class ImageEditorComponentInfo {
  public:
   static ImageEditorComponentInfo* GetInstance();
