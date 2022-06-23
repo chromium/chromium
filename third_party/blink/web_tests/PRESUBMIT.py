@@ -183,6 +183,7 @@ def _CheckForUnlistedTestFolder(input_api, output_api):
         dirs_from_build_gn = []
         start_line = '# === List Test Cases folders here ==='
         end_line = '# === Test Case Folders Ends ==='
+        end_line_count = 0
         find_start_line  = False
         for line in input_api.ReadFile(path_build_gn).splitlines():
             line = line.strip()
@@ -191,7 +192,11 @@ def _CheckForUnlistedTestFolder(input_api, output_api):
                 continue
             if find_start_line:
                 if line.startswith(end_line):
-                    break
+                    find_start_line = False
+                    end_line_count += 1
+                    if end_line_count == 2:
+                        break
+                    continue
                 if len(line.split('/')) > 1:
                     dirs_from_build_gn.append(line.split('/')[-2])
         dirs_from_build_gn.extend(
@@ -302,7 +307,7 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckForJSTest(input_api, output_api))
     results.extend(_CheckForInvalidPreferenceError(input_api, output_api))
     results.extend(_CheckRunAfterLayoutAndPaintJS(input_api, output_api))
-    # results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
+    results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
     results.extend(_CheckWebViewExpectations(input_api, output_api))
     return results
@@ -313,7 +318,7 @@ def CheckChangeOnCommit(input_api, output_api):
     results.extend(_CheckTestharnessResults(input_api, output_api))
     results.extend(_CheckFilesUsingEventSender(input_api, output_api))
     results.extend(_CheckTestExpectations(input_api, output_api))
-    # results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
+    results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
     results.extend(_CheckWebViewExpectations(input_api, output_api))
     return results
