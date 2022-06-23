@@ -643,6 +643,11 @@ BLINK_COMMON_EXPORT extern const base::Feature kCompositedCaret;
 // back/forward cache.
 BLINK_COMMON_EXPORT extern const base::Feature kBackForwardCacheAppBanner;
 
+// Enables back/forward cache for non-plugin embeds.
+// TODO(crbug.com/1325192): Remove once the bug is resolved.
+BLINK_COMMON_EXPORT
+extern const base::Feature kBackForwardCacheEnabledForNonPluginEmbed;
+
 BLINK_COMMON_EXPORT extern const base::Feature kDefaultStyleSheetsEarlyInit;
 
 BLINK_COMMON_EXPORT extern const base::Feature kSystemColorChooser;

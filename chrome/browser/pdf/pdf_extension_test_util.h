@@ -29,7 +29,8 @@ namespace pdf_extension_test_util {
 // since the delay should be small.)
 [[nodiscard]] testing::AssertionResult EnsurePDFHasLoaded(
     const content::ToRenderFrameHost& frame,
-    bool wait_for_hit_test_data = true);
+    bool wait_for_hit_test_data = true,
+    const std::string& pdf_element = "embed");
 
 gfx::Point ConvertPageCoordToScreenCoord(content::WebContents* contents,
                                          const gfx::Point& point);

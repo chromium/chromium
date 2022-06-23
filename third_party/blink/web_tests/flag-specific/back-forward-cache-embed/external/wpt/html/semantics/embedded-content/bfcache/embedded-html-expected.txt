@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Page with <embed type=text/html src=/resources/blank.html>
+PASS Page with <object type=text/html data=/resources/blank.html>
+Harness: the test ran to completion.
+

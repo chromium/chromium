@@ -1384,6 +1384,10 @@ const base::Feature kCompositedCaret{"CompositedCaret",
 const base::Feature kBackForwardCacheAppBanner{
     "BackForwardCacheAppBanner", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kBackForwardCacheEnabledForNonPluginEmbed{
+    "BackForwardCacheEnabledForNonPluginEmbed",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Initialize CSSDefaultStyleSheets early in renderer startup.
 const base::Feature kDefaultStyleSheetsEarlyInit{
     "DefaultStyleSheetsEarlyInit", base::FEATURE_ENABLED_BY_DEFAULT};
