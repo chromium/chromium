@@ -32,9 +32,7 @@ _FETCH_ALL_PATH = os.path.normpath(
     os.path.join(_ANDROIDX_PATH, '..', 'android_deps', 'fetch_all.py'))
 
 # URL to BUILD_INFO in latest androidx snapshot.
-#_ANDROIDX_LATEST_SNAPSHOT_BUILD_INFO_URL = 'https://androidx.dev/snapshots/latest/artifacts/BUILD_INFO'
-# Force latest to be last known good snapshot 8722497. See https://crbug.com/1336778
-_ANDROIDX_LATEST_SNAPSHOT_BUILD_INFO_URL = 'https://androidx.dev/snapshots/builds/8722497/artifacts/BUILD_INFO'
+_ANDROIDX_LATEST_SNAPSHOT_BUILD_INFO_URL = 'https://androidx.dev/snapshots/latest/artifacts/BUILD_INFO'
 
 # Snapshot repository URL with {{version}} placeholder.
 _SNAPSHOT_REPOSITORY_URL = 'https://androidx.dev/snapshots/builds/{{version}}/artifacts/repository'
