@@ -66,8 +66,6 @@ def _import_fuchsia_runner():
     from common import ConnectPortForwardingTask
     global _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs
     from common_args import _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs
-    global device_target
-    import device_target
     global fuchsia_target
     import target as fuchsia_target
     global qemu_target
