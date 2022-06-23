@@ -77,6 +77,8 @@ PASS window.cached_navigator_virtualKeyboard.boundingRect.x is 0
 PASS window.cached_navigator_virtualKeyboard.boundingRect.y is 0
 PASS window.cached_navigator_virtualKeyboard.ongeometrychange is null
 PASS window.cached_navigator_virtualKeyboard.overlaysContent is false
+PASS window.cached_navigator_windowControlsOverlay.ongeometrychange is null
+PASS window.cached_navigator_windowControlsOverlay.visible is false
 PASS window.cached_navigator_xr.ondevicechange is null
 PASS window.cached_performance.onresourcetimingbufferfull is null
 PASS window.cached_performance_navigation.redirectCount is 0

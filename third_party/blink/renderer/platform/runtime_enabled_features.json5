@@ -2575,7 +2575,7 @@
       name: "WebAppWindowControlsOverlay",
       origin_trial_feature_name: "WebAppWindowControlsOverlay",
       origin_trial_os: ["win", "mac", "linux", "chromeos"],
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebAssemblyCSP",
