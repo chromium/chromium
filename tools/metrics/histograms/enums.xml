@@ -57341,6 +57341,8 @@ from previous Chrome versions.
   <int value="-648593261" label="Memories:enabled"/>
   <int value="-645772961" label="EnableFakeKeyboardHeuristic:enabled"/>
   <int value="-645455405" label="MacViewsNativeDialogs:enabled"/>
+  <int value="-644550997"
+      label="AutofillPreventOverridingPrefilledValues:disabled"/>
   <int value="-643217597" label="EduCoexistenceConsentLog:enabled"/>
   <int value="-642346675" label="DesktopPWAsAttentionBadgingCrOS:enabled"/>
   <int value="-641846393" label="WebViewLegacyTlsSupport:enabled"/>
@@ -57369,6 +57371,8 @@ from previous Chrome versions.
   <int value="-631614101" label="CameraSystemWebApp:enabled"/>
   <int value="-630256330" label="EnableDrDc:enabled"/>
   <int value="-629041881" label="MuteNotificationsDuringScreenShare:disabled"/>
+  <int value="-628535358"
+      label="AutofillPreventOverridingPrefilledValues:enabled"/>
   <int value="-626329144" label="SyncSupportTrustedVaultPassphrase:enabled"/>
   <int value="-626211146" label="DesktopMinimalUI:disabled"/>
   <int value="-625858826" label="EnableDuplicateDownloadDialog:disabled"/>

@@ -459,6 +459,12 @@ const char kAutofillParseMerchantPromoCodeFieldsDescription[] =
     "When enabled, Autofill will attempt to find merchant promo/coupon/gift "
     "code fields when parsing forms.";
 
+const char kAutofillPreventOverridingPrefilledValuesName[] =
+    "Prevent Autofill from overriding prefilled field values";
+const char kAutofillPreventOverridingPrefilledValuesDescription[] =
+    "When enabled, Autofill won't override any field values that have not been "
+    "filled by Autofill";
+
 const char kAutofillUseConsistentPopupSettingsIconsName[] =
     "Consistent Autofill settings icon";
 const char kAutofillUseConsistentPopupSettingsIconsDescription[] =

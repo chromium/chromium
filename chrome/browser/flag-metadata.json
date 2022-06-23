@@ -518,6 +518,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "autofill-prevent-overriding-prefilled-values",
+    "owners": [ "vidhanj", "koerber" ],
+    "expiry_milestone": 107
+  },
+  {
     "name": "autofill-remove-card-expiry-from-downstream-suggestion",
     "owners": [ "siyua", "siashah" ],
     "expiry_milestone": 105

@@ -7814,6 +7814,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillAutoTriggerManualFallbackForCards)},
 
+    {"autofill-prevent-overriding-prefilled-values",
+     flag_descriptions::kAutofillPreventOverridingPrefilledValuesName,
+     flag_descriptions::kAutofillPreventOverridingPrefilledValuesDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillPreventOverridingPrefilledValues)},
+
     {"autofill-show-manual-fallbacks-in-context-menu",
      flag_descriptions::kAutofillShowManualFallbackInContextMenuName,
      flag_descriptions::kAutofillShowManualFallbackInContextMenuDescription,

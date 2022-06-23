@@ -249,6 +249,9 @@ extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[];
 extern const char kAutofillParseMerchantPromoCodeFieldsName[];
 extern const char kAutofillParseMerchantPromoCodeFieldsDescription[];
 
+extern const char kAutofillPreventOverridingPrefilledValuesName[];
+extern const char kAutofillPreventOverridingPrefilledValuesDescription[];
+
 extern const char kAutofillRemoveCardExpiryFromDownstreamSuggestionName[];
 extern const char
     kAutofillRemoveCardExpiryFromDownstreamSuggestionDescription[];
