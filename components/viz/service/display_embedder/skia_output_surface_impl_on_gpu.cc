@@ -530,6 +530,10 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
 
     if (result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores_empty)) {
+      if (!return_release_fence_cb.is_null()) {
+        PostTaskToClientThread(base::BindOnce(
+            std::move(return_release_fence_cb), gfx::GpuFenceHandle()));
+      }
       // TODO(penghuang): handle vulkan device lost.
       FailedSkiaFlush("output_sk_surface()->flush() failed.");
       return;
@@ -679,6 +683,10 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     auto result = surface->flush(flush_info);
     if (result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
+      if (!return_release_fence_cb.is_null()) {
+        PostTaskToClientThread(base::BindOnce(
+            std::move(return_release_fence_cb), gfx::GpuFenceHandle()));
+      }
       // TODO(penghuang): handle vulkan device lost.
       FailedSkiaFlush("offscreen.surface()->flush() failed.");
       return;
