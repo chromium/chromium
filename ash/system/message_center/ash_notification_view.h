@@ -147,8 +147,7 @@ class ASH_EXPORT AshNotificationView
   class NotificationTitleRow : public views::View {
    public:
     METADATA_HEADER(NotificationTitleRow);
-    NotificationTitleRow(AshNotificationView* parent,
-                         const std::u16string& title);
+    explicit NotificationTitleRow(const std::u16string& title);
     NotificationTitleRow(const NotificationTitleRow&) = delete;
     NotificationTitleRow& operator=(const NotificationTitleRow&) = delete;
     ~NotificationTitleRow() override;
@@ -169,11 +168,10 @@ class ASH_EXPORT AshNotificationView
     // views::View:
     void OnThemeChanged() override;
 
+    views::Label* title_view() { return title_view_; }
+
    private:
     friend class AshNotificationViewTest;
-
-    AshNotificationView* const parent_;
-
     // Showing notification title.
     views::Label* const title_view_;
 

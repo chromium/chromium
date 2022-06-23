@@ -116,7 +116,8 @@ constexpr int kTitleCharacterLimit =
     message_center::kNotificationWidth * message_center::kMaxTitleLines /
     message_center::kMinPixelsPerTitleCharacter;
 constexpr int kTitleLabelSize = 13;
-constexpr int kTitleLabelMaxLines = 2;
+constexpr int kTitleLabelExpandedMaxLines = 2;
+constexpr int kTitleLabelCollapsedMaxLines = 1;
 constexpr int kTimestampInCollapsedViewSize = 12;
 constexpr int kMessageLabelSize = 12;
 // The size for `icon_view_`, which is the icon within right content (between
@@ -264,10 +265,8 @@ void AshNotificationView::GroupedNotificationsContainer::
 }
 
 AshNotificationView::NotificationTitleRow::NotificationTitleRow(
-    AshNotificationView* parent,
     const std::u16string& title)
-    : parent_(parent),
-      title_view_(AddChildView(GenerateTitleView(title))),
+    : title_view_(AddChildView(GenerateTitleView(title))),
       title_row_divider_(AddChildView(std::make_unique<views::Label>(
           kTitleRowDivider,
           views::style::CONTEXT_DIALOG_BODY_TEXT))),
@@ -284,8 +283,8 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
                                views::MaximumFlexSizeRule::kPreferred));
   title_view_->SetMultiLine(true);
   title_view_->SetAllowCharacterBreak(true);
-  title_view_->SetMaxLines(kTitleLabelMaxLines);
-  title_view_->SetMaximumWidth(parent->GetExpandedTitleLabelWidth());
+  title_view_->SetMaxLines(kTitleLabelExpandedMaxLines);
+  title_view_->SetMaximumWidth(kNotificationInMessageCenterWidth);
 
   ConfigureLabelStyle(title_row_divider_, kTimestampInCollapsedViewSize,
                       /*is_color_primary=*/false);
@@ -878,6 +877,9 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   if (title_row_) {
     title_row_->UpdateVisibility(is_grouped_child_view_ ||
                                  (IsExpandable() && !expanded));
+    title_row_->title_view()->SetMaxLines(
+        expanded ? kTitleLabelExpandedMaxLines : kTitleLabelCollapsedMaxLines);
+    title_row_->title_view()->SetMaximumWidth(GetExpandedTitleLabelWidth());
   }
 
   if (message_label()) {
@@ -1009,8 +1011,8 @@ void AshNotificationView::CreateOrUpdateTitleView(
       notification.title(), kTitleCharacterLimit, gfx::WORD_BREAK);
 
   if (!title_row_) {
-    title_row_ = AddViewToLeftContent(
-        std::make_unique<NotificationTitleRow>(this, title));
+    title_row_ =
+        AddViewToLeftContent(std::make_unique<NotificationTitleRow>(title));
   } else {
     title_row_->UpdateTitle(title);
     ReorderViewInLeftContent(title_row_);
