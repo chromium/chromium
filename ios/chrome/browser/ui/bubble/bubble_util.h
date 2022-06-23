@@ -50,13 +50,13 @@ CGRect BubbleFrame(CGPoint anchorPoint,
                    BubbleAlignment alignment,
                    CGFloat boundingWidth);
 
-// Returns alignment offset for a full width bubble. `boundingWidth` is the
-// width of the bubble's superview. `anchorPoint` is the point on the UI element
-// the bubble is pointing to. `alignment` is the alignment of the anchor (either
-// leading, centered, or trailing).
-CGFloat FullWidthBubbleAlignmentOffset(CGFloat boundingWidth,
-                                       CGPoint anchorPoint,
-                                       BubbleAlignment alignment);
+// Returns alignment offset for a bubble with a floating arrow. `boundingWidth`
+// is the width of the bubble's superview. `anchorPoint` is the point on the UI
+// element the bubble is pointing to. `alignment` is the alignment of the anchor
+// (either leading, centered, or trailing).
+CGFloat FloatingArrowAlignmentOffset(CGFloat boundingWidth,
+                                     CGPoint anchorPoint,
+                                     BubbleAlignment alignment);
 }  // namespace bubble_util
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_UTIL_H_
