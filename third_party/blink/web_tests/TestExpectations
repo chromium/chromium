@@ -429,8 +429,6 @@ crbug.com/968791 [ Debug Mac11 ] virtual/scalefactor200/external/wpt/css/filter-
 
 crbug.com/916825 external/wpt/css/filter-effects/filter-subregion-01.html [ Failure ]
 
-crbug.com/903383 external/wpt/css/filter-effects/css-filters-animation-combined-001.html [ Failure ]
-crbug.com/903383 external/wpt/css/filter-effects/css-filters-animation-blur.html [ Failure ]
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-001.html [ Failure ]
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-002.html [ Failure ]
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-003.html [ Failure ]
