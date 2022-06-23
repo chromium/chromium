@@ -91,6 +91,7 @@ luci.gitiles_poller(
 ) for name, short_name in (
     ("lacros-amd64-generic-chrome", "lcr"),
     ("lacros-arm-generic-chrome", "lcr"),
+    ("lacros-arm64-generic-chrome", "lcr"),
     ("linux-chromeos-chrome", "cro"),
     ("linux-chrome", "lnx"),
     ("mac-chrome", "mac"),
