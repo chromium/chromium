@@ -20,13 +20,16 @@ import java.util.List;
 
 class HistoryClustersItemProperties {
     @IntDef({HistoryClustersItemProperties.ItemType.VISIT, ItemType.CLUSTER,
-            ItemType.RELATED_SEARCHES, ItemType.TOGGLE})
+            ItemType.RELATED_SEARCHES, ItemType.TOGGLE, ItemType.PRIVACY_DISCLAIMER,
+            ItemType.CLEAR_BROWSING_DATA})
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         int VISIT = 1;
         int CLUSTER = 2;
         int RELATED_SEARCHES = 3;
         int TOGGLE = 4;
+        int PRIVACY_DISCLAIMER = 5;
+        int CLEAR_BROWSING_DATA = 6;
     }
 
     static final WritableObjectPropertyKey<Callback<String>> CHIP_CLICK_HANDLER =

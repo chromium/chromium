@@ -568,37 +568,6 @@ public class HistoryUITest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.HISTORY_JOURNEYS)
-    public void testToggleToJourneysAndBack() {
-        Promise<HistoryClustersResult> promise = new Promise<>();
-        doReturn(promise).when(mHistoryClustersBridge).queryClusters(anyString());
-
-        TabLayout toggle = mHistoryManager.getView().findViewById(R.id.history_toggle_tab_layout);
-        TabLayout.Tab journeysTab = toggle.getTabAt(1);
-
-        Assert.assertFalse(journeysTab.isSelected());
-
-        toggle.selectTab(journeysTab);
-        ViewGroup activityContentView = mHistoryClustersCoordinator.getActivityContentView();
-        Assert.assertEquals(mHistoryManager.getView().getChildAt(0), activityContentView);
-        promise.fulfill(HistoryClustersResult.emptyResult());
-        ShadowLooper.idleMainLooper();
-
-        RecyclerView recyclerView = mHistoryClustersCoordinator.getRecyclerViewFortesting();
-        recyclerView.measure(0, 0);
-        recyclerView.layout(0, 0, 600, 1000);
-
-        TabLayout journeysToggle = recyclerView.findViewById(R.id.history_toggle_tab_layout);
-        TabLayout.Tab historyTab = journeysToggle.getTabAt(0);
-        Assert.assertFalse(historyTab.isSelected());
-
-        journeysToggle.selectTab(historyTab);
-        Assert.assertEquals(
-                mHistoryManager.getView().getChildAt(0), mHistoryManager.getSelectableListLayout());
-    }
-
-    @Test
-    @SmallTest
     public void testScrollToLoadEnabled() {
         HistoryContentManager.setScrollToLoadDisabledForTesting(false);
         // Reduce the height available to the recycler view to less than it needs so that scrolling
@@ -662,6 +631,85 @@ public class HistoryUITest {
 
         Assert.assertEquals((PAGE_INCREMENT) + " more Items should be loaded",
                 mAdapter.getItemCount(), itemCount + PAGE_INCREMENT);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HISTORY_JOURNEYS)
+    public void testToggleToJourneysAndBack() {
+        Promise<HistoryClustersResult> promise = new Promise<>();
+        doReturn(promise).when(mHistoryClustersBridge).queryClusters(anyString());
+
+        TabLayout toggle = mHistoryManager.getView().findViewById(R.id.history_toggle_tab_layout);
+        TabLayout.Tab journeysTab = toggle.getTabAt(1);
+
+        Assert.assertFalse(journeysTab.isSelected());
+
+        toggle.selectTab(journeysTab);
+        ViewGroup activityContentView = mHistoryClustersCoordinator.getActivityContentView();
+        Assert.assertEquals(mHistoryManager.getView().getChildAt(0), activityContentView);
+        promise.fulfill(HistoryClustersResult.emptyResult());
+        ShadowLooper.idleMainLooper();
+
+        RecyclerView recyclerView = mHistoryClustersCoordinator.getRecyclerViewFortesting();
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 600, 1000);
+
+        TabLayout journeysToggle = recyclerView.findViewById(R.id.history_toggle_tab_layout);
+        TabLayout.Tab historyTab = journeysToggle.getTabAt(0);
+        Assert.assertFalse(historyTab.isSelected());
+
+        journeysToggle.selectTab(historyTab);
+        Assert.assertEquals(
+                mHistoryManager.getView().getChildAt(0), mHistoryManager.getSelectableListLayout());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HISTORY_JOURNEYS)
+    public void testJourneysInfoHeader() {
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        setHasOtherFormsOfBrowsingData(true);
+        final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
+        final MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
+        toolbar.onSignInStateChange();
+        Assert.assertTrue(infoMenuItem.isVisible());
+        mHistoryManager.onMenuItemClick(infoMenuItem);
+
+        DateDividedAdapter.ItemGroup headerGroup = mAdapter.getFirstGroupForTests();
+        Assert.assertEquals(2, headerGroup.size());
+
+        Promise<HistoryClustersResult> promise = new Promise<>();
+        doReturn(promise).when(mHistoryClustersBridge).queryClusters(anyString());
+
+        TabLayout toggle = mHistoryManager.getView().findViewById(R.id.history_toggle_tab_layout);
+        TabLayout.Tab journeysTab = toggle.getTabAt(1);
+        toggle.selectTab(journeysTab);
+
+        promise.fulfill(HistoryClustersResult.emptyResult());
+        ShadowLooper.idleMainLooper();
+
+        RecyclerView recyclerView = mHistoryClustersCoordinator.getRecyclerViewFortesting();
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 600, 1000);
+
+        // Hiding the disclaimer in the List UI should hide it in the Journeys UI.
+        Assert.assertNull(recyclerView.findViewById(R.id.privacy_disclaimer));
+        mHistoryClustersCoordinator.onMenuItemClick(
+                mHistoryClustersCoordinator.getToolbarForTesting().getMenu().findItem(
+                        R.id.info_menu_id));
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 600, 1000);
+        Assert.assertNotNull(recyclerView.findViewById(R.id.privacy_disclaimer));
+
+        TabLayout journeysToggle = recyclerView.findViewById(R.id.history_toggle_tab_layout);
+        TabLayout.Tab historyTab = journeysToggle.getTabAt(0);
+        journeysToggle.selectTab(historyTab);
+
+        headerGroup = mAdapter.getFirstGroupForTests();
+        // Showing the disclaimer in the Journeys UI should show it in the List UI.
+        Assert.assertTrue(mAdapter.hasListHeader());
+        Assert.assertEquals(3, headerGroup.size());
     }
 
     private void toggleItemSelection(int position) {

@@ -89,9 +89,9 @@ class HistoryClustersViewBinder {
         }
     }
 
-    public static void bindToggleView(
+    public static void noopBindView(
             PropertyModel propertyModel, View view, PropertyKey propertyKey) {
-        // The toggle view's appearance and behavior are dictated by our parent component, so we
+        // This view's appearance and behavior are dictated by our parent component, so we
         // don't manipulate it here.
     }
 }

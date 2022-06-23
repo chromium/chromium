@@ -29,6 +29,8 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
@@ -91,6 +93,10 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     private TextView mEmptyView;
     private final SnackbarManager mSnackbarManager;
     private @Nullable HistoryClustersCoordinator mHistoryClustersCoordinator;
+    private final ObservableSupplierImpl<Boolean> mShouldShowPrivacyDisclaimerSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
+            new ObservableSupplierImpl<>();
 
     private boolean mIsSearching;
 
@@ -159,6 +165,39 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 public TabCreator getTabCreator(boolean isIncognito) {
                     return new TabDelegate(isIncognito);
                 }
+
+                @Nullable
+                @Override
+                public ViewGroup getPrivacyDisclaimerView(ViewGroup parent) {
+                    ViewGroup viewGroup =
+                            mContentManager.getAdapter().getPrivacyDisclaimerContainer(parent);
+                    viewGroup.findViewById(R.id.privacy_disclaimer_bottom_space)
+                            .setVisibility(View.GONE);
+                    return viewGroup;
+                }
+
+                @Nullable
+                @Override
+                public ObservableSupplier<Boolean> shouldShowPrivacyDisclaimerSupplier() {
+                    return mShouldShowPrivacyDisclaimerSupplier;
+                }
+
+                @Override
+                public void toggleInfoHeaderVisibility() {
+                    HistoryManager.this.toggleInfoHeaderVisibility();
+                }
+
+                @Nullable
+                @Override
+                public ViewGroup getClearBrowsingDataView(ViewGroup parent) {
+                    return mContentManager.getAdapter().getClearBrowsingDataButtonContainer(parent);
+                }
+
+                @Nullable
+                @Override
+                public ObservableSupplier<Boolean> shouldShowClearBrowsingDataSupplier() {
+                    return mShouldShowClearBrowsingDataSupplier;
+                }
             };
 
             mHistoryClustersCoordinator =
@@ -182,6 +221,9 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 (vg) -> buildToggleView(vg, HISTORY_TAB_INDEX));
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
+
+        mShouldShowPrivacyDisclaimerSupplier.set(shouldShowInfoHeader);
+        mShouldShowClearBrowsingDataSupplier.set(mContentManager.getShouldShowClearData());
 
         // 3. Initialize toolbar.
         mToolbar = (HistoryManagerToolbar) mSelectableListLayout.initializeToolbar(
@@ -312,14 +354,19 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             mIsSearching = true;
             return true;
         } else if (item.getItemId() == R.id.info_menu_id) {
-            boolean shouldShowInfoHeader =
-                    !mContentManager.getShouldShowPrivacyDisclaimersIfAvailable();
-            SharedPreferencesManager.getInstance().writeBoolean(
-                    ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, shouldShowInfoHeader);
-            mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeader);
-            mContentManager.updatePrivacyDisclaimers(shouldShowInfoHeader);
+            toggleInfoHeaderVisibility();
         }
         return false;
+    }
+
+    private void toggleInfoHeaderVisibility() {
+        boolean shouldShowInfoHeader =
+                !mContentManager.getShouldShowPrivacyDisclaimersIfAvailable();
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, shouldShowInfoHeader);
+        mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeader);
+        mContentManager.updatePrivacyDisclaimers(shouldShowInfoHeader);
+        mShouldShowPrivacyDisclaimerSupplier.set(shouldShowInfoHeader);
     }
 
     private String getDefaultSearchEngine() {
@@ -565,6 +612,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     @Override
     public void onUserAccountStateChanged() {
         mToolbar.onSignInStateChange();
+        mShouldShowClearBrowsingDataSupplier.set(mContentManager.getShouldShowClearData());
     }
 
     @VisibleForTesting

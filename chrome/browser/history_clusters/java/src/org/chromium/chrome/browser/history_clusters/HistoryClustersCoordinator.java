@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.history_clusters.HistoryClustersItemPropertie
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -128,8 +129,12 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                 HistoryClustersViewBinder::bindClusterView);
         mAdapter.registerType(ItemType.RELATED_SEARCHES, this::buildRelatedSearchesView,
                 HistoryClustersViewBinder::bindRelatedSearchesView);
-        mAdapter.registerType(ItemType.TOGGLE, mDelegate::getToggleView,
-                HistoryClustersViewBinder::bindToggleView);
+        mAdapter.registerType(
+                ItemType.TOGGLE, mDelegate::getToggleView, HistoryClustersViewBinder::noopBindView);
+        mAdapter.registerType(ItemType.PRIVACY_DISCLAIMER, mDelegate::getPrivacyDisclaimerView,
+                HistoryClustersViewBinder::noopBindView);
+        mAdapter.registerType(ItemType.CLEAR_BROWSING_DATA, mDelegate::getClearBrowsingDataView,
+                HistoryClustersViewBinder::noopBindView);
 
         LayoutInflater layoutInflater = LayoutInflater.from(mActivity);
         mActivityContentView = (ViewGroup) layoutInflater.inflate(
@@ -155,6 +160,9 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         if (!mDelegate.isSeparateActivity()) {
             mToolbar.getMenu().removeItem(R.id.close_menu_id);
         }
+        mToolbar.setInfoMenuItem(R.id.info_menu_id);
+        mDelegate.shouldShowPrivacyDisclaimerSupplier().addObserver(
+                (show) -> mToolbar.updateInfoMenuItem(true, show));
 
         PropertyModelChangeProcessor.create(
                 mToolbarModel, mToolbar, HistoryClustersViewBinder::bindToolbar);
@@ -202,6 +210,11 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
             openVisitsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), false);
             mSelectionDelegate.clearSelection();
             return true;
+        } else if (menuItem.getItemId() == R.id.info_menu_id) {
+            mDelegate.toggleInfoHeaderVisibility();
+            mToolbar.updateInfoMenuItem(
+                    true, mDelegate.shouldShowPrivacyDisclaimerSupplier().get());
+            return true;
         }
         return false;
     }
@@ -220,5 +233,10 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     @VisibleForTesting
     public RecyclerView getRecyclerViewFortesting() {
         return mRecyclerView;
+    }
+
+    @VisibleForTesting
+    public SelectableListToolbar getToolbarForTesting() {
+        return mToolbar;
     }
 }

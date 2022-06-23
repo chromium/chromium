@@ -73,6 +73,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private final Clock mClock;
     private final TemplateUrlService mTemplateUrlService;
     private final SelectionDelegate mSelectionDelegate;
+    private ListItem mToggleItem;
+    private ListItem mPrivacyDisclaimerItem;
+    private ListItem mClearBrowsingDataItem;
+    private QueryState mQueryState = QueryState.forQueryless();
 
     /**
      * Create a new HistoryClustersMediator.
@@ -107,6 +111,19 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mClock = clock;
         mTemplateUrlService = templateUrlService;
         mSelectionDelegate = selectionDelegate;
+
+        PropertyModel toggleModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+        mToggleItem = new ListItem(ItemType.TOGGLE, toggleModel);
+
+        PropertyModel privacyDisclaimerModel =
+                new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+        mPrivacyDisclaimerItem = new ListItem(ItemType.PRIVACY_DISCLAIMER, privacyDisclaimerModel);
+        mDelegate.shouldShowPrivacyDisclaimerSupplier().addObserver(show -> ensureHeaders());
+
+        PropertyModel clearBrowsingDataModel =
+                new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+        mClearBrowsingDataItem = new ListItem(ItemType.CLEAR_BROWSING_DATA, clearBrowsingDataModel);
+        mDelegate.shouldShowClearBrowsingDataSupplier().addObserver(show -> ensureHeaders());
     }
 
     // SearchDelegate implementation.
@@ -118,8 +135,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
     @Override
     public void onEndSearch() {
-        mModelList.clear();
-        startQuery("");
+        setQueryState(QueryState.forQueryless());
     }
 
     // OnScrollListener implementation
@@ -142,6 +158,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     }
 
     void setQueryState(QueryState queryState) {
+        mQueryState = queryState;
         mToolbarModel.set(HistoryClustersToolbarProperties.QUERY_STATE, queryState);
         if (!queryState.isSearching()) {
             mModelList.clear();
@@ -216,11 +233,9 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     }
 
     private void queryComplete(HistoryClustersResult result) {
-        boolean isQueryless = result.getQuery().isEmpty();
-        if (isQueryless && !hasToggleItem()) {
-            PropertyModel toggleModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
-            ListItem toggleItem = new ListItem(ItemType.TOGGLE, toggleModel);
-            mModelList.add(0, toggleItem);
+        boolean isQueryLess = !mQueryState.isSearching();
+        if (isQueryLess) {
+            ensureHeaders();
         }
 
         for (HistoryCluster cluster : result.getClusters()) {
@@ -232,7 +247,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             clusterModel.set(HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable);
             ListItem clusterItem = new ListItem(ItemType.CLUSTER, clusterModel);
             mModelList.add(clusterItem);
-            if (isQueryless) {
+            if (isQueryLess) {
                 clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
                         (v) -> setQueryState(QueryState.forQuery(cluster.getLabel())));
                 clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, null);
@@ -294,16 +309,43 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         }
     }
 
+    private void ensureHeaders() {
+        if (mQueryState.isSearching()) {
+            return;
+        }
+
+        int position = 0;
+        boolean hasPrivacyDisclaimer = mModelList.indexOf(mPrivacyDisclaimerItem) > -1;
+        boolean hasClearBrowsingData = mModelList.indexOf(mClearBrowsingDataItem) > -1;
+        boolean hasToggleItem = mModelList.indexOf(mToggleItem) > -1;
+
+        boolean shouldShowPrivacyDisclaimer =
+                Boolean.TRUE.equals(mDelegate.shouldShowPrivacyDisclaimerSupplier().get());
+        if (shouldShowPrivacyDisclaimer && !hasPrivacyDisclaimer) {
+            mModelList.add(position++, mPrivacyDisclaimerItem);
+        } else if (!shouldShowPrivacyDisclaimer && hasPrivacyDisclaimer) {
+            mModelList.remove(mPrivacyDisclaimerItem);
+        }
+
+        boolean shouldShowClearBrowsingData =
+                Boolean.TRUE.equals(mDelegate.shouldShowClearBrowsingDataSupplier().get());
+        if (shouldShowClearBrowsingData && !hasClearBrowsingData) {
+            mModelList.add(position++, mClearBrowsingDataItem);
+        } else if (!shouldShowClearBrowsingData && hasClearBrowsingData) {
+            mModelList.remove(mClearBrowsingDataItem);
+        }
+
+        if (!hasToggleItem) {
+            mModelList.add(position++, mToggleItem);
+        }
+    }
+
     private void onClusterVisitClicked(SelectableItemView view, ClusterVisit clusterVisit) {
         if (mSelectionDelegate.isSelectionEnabled()) {
             view.onLongClick(view);
         } else {
             navigateToUrl(clusterVisit.getGURL(), false, false);
         }
-    }
-
-    private boolean hasToggleItem() {
-        return mModelList.size() > 0 && mModelList.get(0).type == ItemType.TOGGLE;
     }
 
     @VisibleForTesting

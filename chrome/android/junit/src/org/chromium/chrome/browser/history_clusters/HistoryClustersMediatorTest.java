@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history_clusters;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.geq;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -21,9 +22,13 @@ import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +43,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history_clusters.HistoryCluster.MatchPosition;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
@@ -115,6 +122,10 @@ public class HistoryClustersMediatorTest {
     private boolean mIsSeparateActivity;
     private HistoryClustersDelegate mHistoryClustersDelegate;
     private SelectionDelegate mSelectionDelegate = new SelectionDelegate();
+    private final ObservableSupplierImpl<Boolean> mShouldShowPrivacyDisclaimerSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
+            new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
@@ -155,7 +166,37 @@ public class HistoryClustersMediatorTest {
             public TabCreator getTabCreator(boolean isIncognito) {
                 return mTabCreator;
             }
+
+            @Nullable
+            @Override
+            public ViewGroup getPrivacyDisclaimerView(ViewGroup parent) {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public ObservableSupplier<Boolean> shouldShowPrivacyDisclaimerSupplier() {
+                return mShouldShowPrivacyDisclaimerSupplier;
+            }
+
+            @Override
+            public void toggleInfoHeaderVisibility() {}
+
+            @Nullable
+            @Override
+            public ViewGroup getClearBrowsingDataView(ViewGroup parent) {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public ObservableSupplier<Boolean> shouldShowClearBrowsingDataSupplier() {
+                return mShouldShowClearBrowsingDataSupplier;
+            }
         };
+
+        mShouldShowPrivacyDisclaimerSupplier.set(true);
+        mShouldShowClearBrowsingDataSupplier.set(true);
 
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService,
@@ -192,12 +233,16 @@ public class HistoryClustersMediatorTest {
         Promise<HistoryClustersResult> promise = new Promise<>();
         doReturn(promise).when(mBridge).queryClusters("query");
 
+        // In production code, calling setQueryState() will end up calling startQuery via
+        // onSearchTextChanged. In mediator tests we don't have view binders set up so we need to
+        // call both.
+        mMediator.setQueryState(QueryState.forQuery("query"));
         mMediator.startQuery("query");
         assertEquals(mModelList.size(), 0);
 
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
 
-        assertEquals(mModelList.size(), 6);
+        assertEquals(6, mModelList.size());
         ListItem clusterItem = mModelList.get(0);
         assertEquals(clusterItem.type, ItemType.CLUSTER);
         PropertyModel clusterModel = clusterItem.model;
@@ -222,6 +267,7 @@ public class HistoryClustersMediatorTest {
                 Arrays.asList(HistoryClustersItemProperties.CHIP_CLICK_HANDLER,
                         HistoryClustersItemProperties.RELATED_SEARCHES)));
     }
+
     @Test
     public void testEmptyQuery() {
         Promise<HistoryClustersResult> promise = new Promise<>();
@@ -230,16 +276,43 @@ public class HistoryClustersMediatorTest {
         mMediator.startQuery("");
         fulfillPromise(promise, mHistoryClustersResultEmptyQuery);
 
-        // Two clusters + the toggle view
-        assertEquals(mModelList.size(), mHistoryClustersResultEmptyQuery.getClusters().size() + 1);
-        ListItem item = mModelList.get(0);
-        assertEquals(item.type, ItemType.TOGGLE);
+        // Two clusters + the header views (privacy disclaimer, clear browsing data, toggle).
+        assertEquals(mModelList.size(), mHistoryClustersResultEmptyQuery.getClusters().size() + 3);
+        assertThat(mModelList,
+                hasItemTypes(ItemType.PRIVACY_DISCLAIMER, ItemType.CLEAR_BROWSING_DATA,
+                        ItemType.TOGGLE, ItemType.CLUSTER, ItemType.CLUSTER));
 
-        item = mModelList.get(1);
-        assertEquals(item.type, ItemType.CLUSTER);
+        ListItem item = mModelList.get(3);
         PropertyModel model = item.model;
         assertTrue(model.getAllSetProperties().containsAll(Arrays.asList(
                 HistoryClustersItemProperties.CLICK_HANDLER, HistoryClustersItemProperties.TITLE)));
+    }
+
+    @Test
+    public void testHeaderVisibility() {
+        Promise<HistoryClustersResult> promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("");
+
+        mMediator.startQuery("");
+        fulfillPromise(promise, HistoryClustersResult.emptyResult());
+
+        assertThat(mModelList,
+                hasItemTypes(ItemType.PRIVACY_DISCLAIMER, ItemType.CLEAR_BROWSING_DATA,
+                        ItemType.TOGGLE));
+
+        mShouldShowPrivacyDisclaimerSupplier.set(false);
+        assertThat(mModelList, hasItemTypes(ItemType.CLEAR_BROWSING_DATA, ItemType.TOGGLE));
+
+        mShouldShowClearBrowsingDataSupplier.set(false);
+        assertThat(mModelList, hasItemTypes(ItemType.TOGGLE));
+
+        mShouldShowClearBrowsingDataSupplier.set(true);
+        assertThat(mModelList, hasItemTypes(ItemType.CLEAR_BROWSING_DATA, ItemType.TOGGLE));
+
+        mShouldShowPrivacyDisclaimerSupplier.set(true);
+        assertThat(mModelList,
+                hasItemTypes(ItemType.PRIVACY_DISCLAIMER, ItemType.CLEAR_BROWSING_DATA,
+                        ItemType.TOGGLE));
     }
 
     @Test
@@ -415,5 +488,29 @@ public class HistoryClustersMediatorTest {
 
     static ArgumentMatcher<LoadUrlParams> hasSameUrl(String url) {
         return argument -> argument.getUrl().equals(url);
+    }
+
+    static Matcher<ModelList> hasItemTypes(@ItemType int... itemTypes) {
+        return new BaseMatcher<ModelList>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Has item types: " + Arrays.toString(itemTypes));
+            }
+
+            @Override
+            public boolean matches(Object object) {
+                ModelList modelList = (ModelList) object;
+                if (itemTypes.length != modelList.size()) {
+                    return false;
+                }
+                int i = 0;
+                for (ListItem listItem : modelList) {
+                    if (listItem.type != itemTypes[i++]) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        };
     }
 }

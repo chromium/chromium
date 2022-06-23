@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser.history;
 
 import android.content.Context;
-import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
@@ -22,13 +20,10 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import org.chromium.base.Function;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
-import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -325,31 +320,16 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
      * items for them.
      */
     void generateHeaderItems() {
-        ViewGroup privacyDisclaimerContainer = (ViewGroup) View.inflate(
-                mManager.getContext(), R.layout.history_privacy_disclaimer_header, null);
+        ViewGroup privacyDisclaimerContainer = getPrivacyDisclaimerContainer(null);
 
-        TextView privacyDisclaimerTextView =
-                privacyDisclaimerContainer.findViewById(R.id.privacy_disclaimer);
-        privacyDisclaimerTextView.setMovementMethod(LinkMovementMethod.getInstance());
-        privacyDisclaimerTextView.setText(
-                getPrivacyDisclaimerText(privacyDisclaimerTextView.getContext()));
-        mPrivacyDisclaimerBottomSpace =
-                privacyDisclaimerContainer.findViewById(R.id.privacy_disclaimer_bottom_space);
-
-        ViewGroup clearBrowsingDataButtonContainer = (ViewGroup) View.inflate(
-                mManager.getContext(), R.layout.history_clear_browsing_data_header, null);
-
-        mClearBrowsingDataButton = (Button) clearBrowsingDataButtonContainer.findViewById(
-                R.id.clear_browsing_data_button);
-        mClearBrowsingDataButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mManager.onClearBrowsingDataClicked();
-            }
-        });
+        ViewGroup clearBrowsingDataButtonContainer = getClearBrowsingDataButtonContainer(null);
 
         mPrivacyDisclaimerHeaderItem = new HeaderItem(0, privacyDisclaimerContainer);
+        mPrivacyDisclaimerBottomSpace =
+                privacyDisclaimerContainer.findViewById(R.id.privacy_disclaimer_bottom_space);
         mClearBrowsingDataButtonHeaderItem = new HeaderItem(1, clearBrowsingDataButtonContainer);
+        mClearBrowsingDataButton = (Button) clearBrowsingDataButtonContainer.findViewById(
+                R.id.clear_browsing_data_button);
 
         ViewGroup toggleContainer = mToggleViewFactory.apply(null);
         if (toggleContainer != null) {
@@ -358,6 +338,34 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
         updateClearBrowsingDataButtonVisibility();
         setPrivacyDisclaimer();
+    }
+
+    ViewGroup getClearBrowsingDataButtonContainer(ViewGroup parent) {
+        ViewGroup viewGroup =
+                (ViewGroup) LayoutInflater.from(mManager.getContext())
+                        .inflate(R.layout.history_clear_browsing_data_header, parent, false);
+        Button clearBrowsingDataButton =
+                (Button) viewGroup.findViewById(R.id.clear_browsing_data_button);
+        clearBrowsingDataButton.setOnClickListener(v -> mManager.onClearBrowsingDataClicked());
+        return viewGroup;
+    }
+
+    ViewGroup getPrivacyDisclaimerContainer(ViewGroup parent) {
+        Context context = mManager.getContext();
+        ViewGroup privacyDisclaimerContainer = (ViewGroup) LayoutInflater.from(context).inflate(
+                R.layout.history_privacy_disclaimer_header, parent, false);
+
+        TextView privacyDisclaimerTextView =
+                privacyDisclaimerContainer.findViewById(R.id.privacy_disclaimer);
+        privacyDisclaimerTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        NoUnderlineClickableSpan link = new NoUnderlineClickableSpan(
+                context, (view) -> mManager.onPrivacyDisclaimerLinkClicked());
+        CharSequence disclaimerText = SpanApplier.applySpans(
+                context.getResources().getString(R.string.android_history_other_forms_of_history),
+                new SpanApplier.SpanInfo("<link>", "</link>", link));
+        privacyDisclaimerTextView.setText(disclaimerText);
+        return privacyDisclaimerContainer;
     }
 
     /**
@@ -372,18 +380,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         }
 
         setHeaders(args.toArray(new HeaderItem[args.size()]));
-    }
-
-    /**
-     * Create a {@SpannableString} for privacy disclaimer.
-     * @return The {@SpannableString} with the privacy disclaimer string resource and url.
-     */
-    private SpannableString getPrivacyDisclaimerText(Context context) {
-        NoUnderlineClickableSpan link = new NoUnderlineClickableSpan(
-                context, (view) -> mManager.onPrivacyDisclaimerLinkClicked());
-        return SpanApplier.applySpans(
-                context.getResources().getString(R.string.android_history_other_forms_of_history),
-                new SpanApplier.SpanInfo("<link>", "</link>", link));
     }
 
     /**
@@ -419,13 +415,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         // mClearBrowsingDataButton will be null.
         if (mClearBrowsingDataButton == null) return;
 
-        boolean shouldShowButton;
-        if (mManager.getShouldShowClearDataIfAvailable()) {
-            shouldShowButton = UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                       .getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
-        } else {
-            shouldShowButton = false;
-        }
+        boolean shouldShowButton = mManager.getShouldShowClearData();
         if (mClearBrowsingDataButtonVisible == shouldShowButton) return;
         mClearBrowsingDataButtonVisible = shouldShowButton;
         mPrivacyDisclaimerBottomSpace.setVisibility(shouldShowButton ? View.GONE : View.VISIBLE);

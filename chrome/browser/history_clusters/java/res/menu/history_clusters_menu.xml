@@ -7,6 +7,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto" >
   <group android:id="@+id/normal_menu_group" >
     <item
+        android:id="@+id/info_menu_id"
+        android:icon="@drawable/btn_info"
+        android:title="@string/show_info"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/search_menu_id"
         android:icon="@drawable/ic_search"
         android:title="@string/search"

@@ -16,6 +16,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
@@ -33,8 +34,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Promise;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
@@ -63,6 +67,70 @@ Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_
 public class HistoryClustersCoordinatorTest {
     private static final String INCOGNITO_EXTRA = "IN_INCOGNITO";
     private static final String NEW_TAB_EXTRA = "IN_NEW_TAB";
+
+    class TestHistoryClustersDelegate implements HistoryClustersDelegate {
+        private final ObservableSupplierImpl<Boolean> mShouldShowPrivacyDisclaimerSupplier =
+                new ObservableSupplierImpl<>();
+        private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
+                new ObservableSupplierImpl<>();
+
+        public TestHistoryClustersDelegate() {
+            mShouldShowPrivacyDisclaimerSupplier.set(true);
+            mShouldShowClearBrowsingDataSupplier.set(true);
+        }
+
+        @Override
+        public boolean isSeparateActivity() {
+            return true;
+        }
+
+        @Override
+        public Tab getTab() {
+            return mTab;
+        }
+
+        @Override
+        public Intent getHistoryActivityIntent() {
+            return mHistoryActivityIntent;
+        }
+
+        @Nullable
+        @Override
+        public Intent getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean createNewTab) {
+            mOpenUrlIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mOpenUrlIntent.putExtra(INCOGNITO_EXTRA, inIncognito);
+            mOpenUrlIntent.putExtra(NEW_TAB_EXTRA, createNewTab);
+            return mOpenUrlIntent;
+        }
+
+        @Override
+        public ViewGroup getToggleView(ViewGroup parent) {
+            return mToggleView;
+        }
+
+        @Nullable
+        @Override
+        public TabCreator getTabCreator(boolean isIncognito) {
+            return mTabCreator;
+        }
+
+        @Override
+        public void toggleInfoHeaderVisibility() {
+            mShouldShowPrivacyDisclaimerSupplier.set(!mShouldShowPrivacyDisclaimerSupplier.get());
+        }
+
+        @Nullable
+        @Override
+        public ObservableSupplier<Boolean> shouldShowPrivacyDisclaimerSupplier() {
+            return mShouldShowPrivacyDisclaimerSupplier;
+        }
+
+        @Nullable
+        @Override
+        public ObservableSupplier<Boolean> shouldShowClearBrowsingDataSupplier() {
+            return mShouldShowClearBrowsingDataSupplier;
+        }
+    }
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -98,6 +166,8 @@ public class HistoryClustersCoordinatorTest {
     private Promise mPromise = new Promise();
     private ClusterVisit mVisit1;
     private ClusterVisit mVisit2;
+    private TestHistoryClustersDelegate mHistoryClustersDelegate =
+            new TestHistoryClustersDelegate();
 
     @Before
     public void setUp() {
@@ -112,48 +182,11 @@ public class HistoryClustersCoordinatorTest {
         mVisit2 = new ClusterVisit(
                 1.0F, mGurl2, "Title 2", "bar.com", new ArrayList<>(), new ArrayList<>());
 
-        HistoryClustersDelegate historyClustersDelegate = new HistoryClustersDelegate() {
-            @Override
-            public boolean isSeparateActivity() {
-                return true;
-            }
-
-            @Override
-            public Tab getTab() {
-                return mTab;
-            }
-
-            @Override
-            public Intent getHistoryActivityIntent() {
-                return mHistoryActivityIntent;
-            }
-
-            @Nullable
-            @Override
-            public Intent getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean createNewTab) {
-                mOpenUrlIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mOpenUrlIntent.putExtra(INCOGNITO_EXTRA, inIncognito);
-                mOpenUrlIntent.putExtra(NEW_TAB_EXTRA, createNewTab);
-                return mOpenUrlIntent;
-            }
-
-            @Override
-            public ViewGroup getToggleView(ViewGroup parent) {
-                return mToggleView;
-            }
-
-            @Nullable
-            @Override
-            public TabCreator getTabCreator(boolean isIncognito) {
-                return mTabCreator;
-            }
-        };
-
         mActivityScenario =
                 ActivityScenario.launch(ChromeTabbedActivity.class).onActivity(activity -> {
                     mActivity = activity;
                     mHistoryClustersCoordinator = new HistoryClustersCoordinator(
-                            mProfile, activity, mTemplateUrlService, historyClustersDelegate);
+                            mProfile, activity, mTemplateUrlService, mHistoryClustersDelegate);
                 });
     }
 
@@ -255,6 +288,27 @@ public class HistoryClustersCoordinatorTest {
         assertTrue(mOpenUrlIntent.hasExtra(INCOGNITO_EXTRA));
         assertTrue(mOpenUrlIntent.getBooleanExtra(NEW_TAB_EXTRA, false));
         assertTrue(mOpenUrlIntent.getBooleanExtra(INCOGNITO_EXTRA, false));
+    }
+
+    @Test
+    public void testToggleInfoMenuItem() {
+        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
+                                                 .findViewById(R.id.selectable_list)
+                                                 .findViewById(R.id.action_bar);
+        ShadowLooper.idleMainLooper();
+        assertNotNull(toolbar);
+        assertTrue(mHistoryClustersDelegate.shouldShowPrivacyDisclaimerSupplier().get());
+        MenuItem menuItem = toolbar.getMenu().findItem(R.id.info_menu_id);
+        assertEquals(menuItem.getTitle(), mActivity.getResources().getString(R.string.hide_info));
+
+        mHistoryClustersCoordinator.onMenuItemClick(menuItem);
+        assertFalse(mHistoryClustersDelegate.shouldShowPrivacyDisclaimerSupplier().get());
+
+        assertEquals(menuItem.getTitle(), mActivity.getResources().getString(R.string.show_info));
+
+        mHistoryClustersCoordinator.onMenuItemClick(menuItem);
+        assertTrue(mHistoryClustersDelegate.shouldShowPrivacyDisclaimerSupplier().get());
+        assertEquals(menuItem.getTitle(), mActivity.getResources().getString(R.string.hide_info));
     }
 
     private static void resetStaticState() {
