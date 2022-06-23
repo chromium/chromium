@@ -186,11 +186,6 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
   if (pseudo_id == kPseudoIdMarker && StyleRef().ContentBehavesAsNormal())
     return;
 
-  // Don't propagate style from markers with 'content: normal' because it's not
-  // needed and it would be slow.
-  if (pseudo_id == kPseudoIdMarker && StyleRef().ContentBehavesAsNormal())
-    return;
-
   // Propagate style from pseudo elements to generated content. We skip children
   // with pseudo element StyleType() in the for-loop above and skip over
   // descendants which are not generated content in this subtree traversal.
