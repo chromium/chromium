@@ -144,6 +144,44 @@ TEST_F(FieldFormatterStateMapTest, AlternativeStateNameForNonUS) {
                     Contains(Pair(Key(-6), "Invalid"))));
 }
 
+TEST_F(FieldFormatterStateMapTest, AlternativeStateNameForNonASCII) {
+  autofill::test::ClearAlternativeStateNameMapForTesting();
+  WritePathToPref(GetPath());
+  autofill::test::TestStateEntry test_state_entry;
+  test_state_entry.canonical_name = "أبو ظبي'";
+  test_state_entry.abbreviations = {};
+  test_state_entry.alternative_names = {"Abu Dhabi"};
+  base::WriteFile(
+      GetPath().AppendASCII("AE"),
+      autofill::test::CreateStatesProtoAsString("AE", {test_state_entry}));
+
+  autofill::AutofillProfile alternative_state_map_profile;
+  alternative_state_map_profile.SetInfo(autofill::ADDRESS_HOME_STATE,
+                                        u"Abu Dhabi", "en-US");
+  alternative_state_map_profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"AE",
+                                        "en-US");
+
+  base::RunLoop run_loop;
+  autofill::MockAlternativeStateNameMapUpdater
+      mock_alternative_state_name_updater(run_loop.QuitClosure(),
+                                          autofill_client_.GetPrefs(),
+                                          &personal_data_manager_);
+  personal_data_manager_.AddObserver(&mock_alternative_state_name_updater);
+  personal_data_manager_.AddProfile(alternative_state_map_profile);
+  run_loop.Run();
+  personal_data_manager_.RemoveObserver(&mock_alternative_state_name_updater);
+
+  EXPECT_FALSE(autofill::AlternativeStateNameMap::GetInstance()
+                   ->IsLocalisedStateNamesMapEmpty());
+
+  // State handling from state name.
+  autofill::AutofillProfile state_name_profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(&state_name_profile, "John", "", "Doe", "", "",
+                                 "", "", "", "Abu Dhabi", "", "AE", "");
+  EXPECT_THAT(CreateAutofillMappings(state_name_profile, "en-US"),
+              IsSupersetOf({Pair(Key(-6), "أبو ظبي'")}));
+}
+
 TEST_F(FieldFormatterStateMapTest,
        AlternativeStateNameDoesNotOverrideUSResult) {
   autofill::test::ClearAlternativeStateNameMapForTesting();
