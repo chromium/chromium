@@ -4,8 +4,6 @@
 
 #include "chrome/browser/web_applications/chrome_pwa_launcher/launcher_update.h"
 
-#include <windows.h>
-
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_enumerator.h"
