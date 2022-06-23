@@ -572,6 +572,19 @@ crbug.com/478572 [ android android-nexus-5 ] deqp/data/gles2/shaders/linkage.htm
 crbug.com/678850 [ android android-nexus-5 ] conformance/more/functions/vertexAttribPointerBadArgs.html [ Failure ]
 crbug.com/678850 [ android android-nexus-5 ] conformance/attribs/gl-vertexattribpointer.html [ Failure ]
 
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-bvec4.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-ivec3.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-ivec4.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-mat2.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-mat3.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-vec-mat-index.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-vec3.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-vec4.html [ Failure ]
+crbug.com/1338214 [ android android-chromium android-Nexus-5 passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/textures/misc/texture-upload-size.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1338214 [ android android-Nexus-5 passthrough ] WebglExtension_OES_texture_float_linear [ Failure ]
+
 # Started failing after the upgrade to Marshmallow.
 crbug.com/1264880 [ android-marshmallow android-nexus-5 ] conformance/extensions/webgl-multi-draw.html [ Failure ]
 crbug.com/1264882 [ android-marshmallow android-nexus-5 ] conformance/glsl/bugs/sketchfab-lighting-shader-crash.html [ Failure ]
