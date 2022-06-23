@@ -116,6 +116,12 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Returns the original image size.
   gfx::Size GetImageSize();
 
+  // Returns {clientWidth, clientHeight}.
+  gfx::Size GetClientSize();
+
+  // Returns {scrollWidth, scrollHeight}.
+  gfx::Size GetScrollSize();
+
   // ComputedStyle property values. The following exposure is of CSS property
   // values are part of the ComputedStyle set which is usually exposed through
   // the Window object in WebIDL as window.getComputedStyle(element). Exposing

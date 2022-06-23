@@ -937,6 +937,9 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
 }
 
 // Tests the visibility detection of iframes.
+// This test checks many scenarios. It's intentionally not a parameterized test
+// for performance reasons.
+// This test is very similar to the IsWebElementVisibleTest test.
 TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
   // Test cases of <iframe> elements with different styles.
   //
@@ -950,10 +953,10 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
   // IsVisibleIframe() but invisible to the human).
   //
   // The `data-false="{POSITIVE,NEGATIVE}"` attribute indicates whether the test
-  // case to be a false positive/negative compared to human visibility
-  // perception. In such a case, not meeting the expectation actually indicates
-  // an improvement of IsVisibleIframe(), as it means a false positive/negative
-  // has been fixed.
+  // case is a false positive/negative compared to human visibility perception.
+  // In such a case, not meeting the expectation actually indicates an
+  // improvement of IsVisibleIframe(), as it means a false positive/negative has
+  // been fixed.
   //
   // The sole purpose of the `data-false` attribute is to document this and to
   // print a message when such a test fails.
@@ -987,7 +990,7 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
         <iframe srcdoc="<input>" data-visible   style="width: 100px; height: 100px; position: absolute; right:  -200px;" data-false="POSITIVE"></iframe>
         <iframe srcdoc="<input>" data-visible   style="width: 100px; height: 100px; position: absolute; bottom: -200px;" data-false="POSITIVE"></iframe>
 
-        <iframe srcdoc="<input>" data-visible   style=""></iframe> <!-- Finish with a visible frame to make sure all <iframe>s have been closed -->
+        <iframe srcdoc="<input>" data-visible   style=""></iframe> <!-- Finish with a visible frame to make sure all <iframe> tags have been closed -->
 
         <div style="width: 10000; height: 10000"></div>
       </body>)");
@@ -1005,7 +1008,7 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
     }
     return result;
   }();
-  ASSERT_GE(iframes.size(), 16u);
+  ASSERT_GE(iframes.size(), 23u);
 
   auto RunTestCases = [](const std::vector<WebElement>& iframes) {
     for (WebElement iframe : iframes) {
@@ -1035,6 +1038,125 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
     content::RunAllTasksUntilIdle();
     SCOPED_TRACE(testing::Message() << "Scrolled to bottom right");
     RunTestCases(iframes);
+  }
+}
+
+// Tests the visibility detection of iframes.
+// This test checks many scenarios. It's intentionally not a parameterized test
+// for performance reasons.
+// This test is very similar to the IsVisibleIframeTest test.
+TEST_F(FormAutofillUtilsTest, IsWebElementVisibleTest) {
+  // Test cases of <input> elements with different types and styles.
+  //
+  // The `data-[in]visible` attribute represents whether IsWebElementVisible()
+  // is expected to classify the input as [in]visible.
+  //
+  // Since IsWebElementVisible() falls short of what the human user will
+  // consider visible or invisible, there are false positives and false
+  // negatives. For example, IsWebElementVisible() does not check opacity, so
+  // <input style="opacity: 0.0"> is a false positive (it's visible to
+  // IsWebElementVisible() but invisible to the human).
+  //
+  // The `data-false="{POSITIVE,NEGATIVE}"` attribute indicates whether the test
+  // case is a false positive/negative compared to human visibility perception.
+  // In such a case, not meeting the expectation actually indicates an
+  // improvement of IsWebElementVisible(), as it means a false positive/negative
+  // has been fixed.
+  //
+  // The sole purpose of the `data-false` attribute is to document this and to
+  // print a message when such a test fails.
+  LoadHTML(R"(
+      <body>
+        <input type="text" data-visible   style="">
+        <input type="text" data-visible   style="display: block;">
+        <input type="text" data-visible   style="visibility: visible;">
+
+        <input type="text" data-invisible style="display: none;">
+        <input type="text" data-invisible style="visibility: hidden;">
+        <div style="display: none;">     <input type="text" data-invisible></div>
+        <div style="visibility: hidden;"><input type="text" data-invisible></div>
+
+        <input type="text" data-visible   style="width: 15px; height: 15px;">
+        <input type="text" data-invisible style="width: 15px; height:  5px;">
+        <input type="text" data-invisible style="width:  5px; height: 15px;">
+        <input type="text" data-invisible style="width:  5px; height:  5px;">
+
+        <input type="text" data-invisible style="width: 1px; height: 1px;">
+        <input type="text" data-invisible style="width: 1px; height: 1px; overflow: visible;" data-false="NEGATIVE">
+
+        <input type="text" data-visible   style="opacity: 0.0;" data-false="POSITIVE">
+        <input type="text" data-visible   style="opacity: 0.0;" data-false="POSITIVE">
+        <input type="text" data-visible   style="position: absolute; clip: rect(0,0,0,0);" data-false="POSITIVE">
+
+        <input type="text" data-visible   style="width: 100px; position: absolute; left:    -75px;">
+        <input type="text" data-visible   style="width: 100px; position: absolute; top:     -75px;">
+        <input type="text" data-visible   style="width: 100px; position: absolute; left:   -200px;" data-false="POSITIVE">
+        <input type="text" data-visible   style="width: 100px; position: absolute; top:    -200px;" data-false="POSITIVE">
+        <input type="text" data-visible   style="width: 100px; position: absolute; right:  -200px;" data-false="POSITIVE">
+        <input type="text" data-visible   style="width: 100px; position: absolute; bottom: -200px;" data-false="POSITIVE">
+
+        <input type="checkbox" data-visible   style="">
+        <input type="checkbox" data-invisible style="display: none;">
+        <input type="checkbox" data-invisible style="visibility: hidden;">
+        <input type="checkbox" data-visible   style="width: 15px; height: 15px;">
+        <input type="checkbox" data-visible   style="width: 15px; height:  5px;">
+        <input type="checkbox" data-visible   style="width:  5px; height: 15px;">
+        <input type="checkbox" data-visible   style="width:  5px; height:  5px;">
+
+        <input type="radio" data-visible   style="">
+        <input type="radio" data-invisible style="display: none;">
+        <input type="radio" data-invisible style="visibility: hidden;">
+        <input type="radio" data-visible   style="width: 15px; height: 15px;">
+        <input type="radio" data-visible   style="width: 15px; height:  5px;">
+        <input type="radio" data-visible   style="width:  5px; height: 15px;">
+        <input type="radio" data-visible   style="width:  5px; height:  5px;">
+
+        <div style="width: 10000; height: 10000"></div>
+      </body>)");
+
+  // Ensure that Android runs at default page scale.
+  web_view_->SetPageScaleFactor(1.0);
+
+  std::vector<WebElement> inputs = [this] {
+    WebDocument doc = GetMainFrame()->GetDocument();
+    std::vector<WebElement> result;
+    WebElementCollection inputs = doc.GetElementsByHTMLTagName("input");
+    for (WebElement input = inputs.FirstItem(); !input.IsNull();
+         input = inputs.NextItem()) {
+      result.push_back(input);
+    }
+    return result;
+  }();
+  ASSERT_GE(inputs.size(), 36u);
+
+  auto RunTestCases = [](const std::vector<WebElement>& inputs) {
+    for (WebElement input : inputs) {
+      gfx::Rect bounds = input.BoundsInViewport();
+      bool expectation = input.HasAttribute("data-visible");
+      SCOPED_TRACE(
+          testing::Message()
+          << "Iframe with style \n  " << input.GetAttribute("style").Ascii()
+          << "\nwith dimensions w=" << bounds.width()
+          << ",h=" << bounds.height() << " and position x=" << bounds.x()
+          << ",y=" << bounds.y()
+          << (input.HasAttribute("data-false") ? "\nwhich used to be a FALSE "
+                                               : "")
+          << input.GetAttribute("data-false").Ascii());
+      ASSERT_TRUE(input.HasAttribute("data-visible") !=
+                  input.HasAttribute("data-invisible"));
+      EXPECT_EQ(IsWebElementVisible(input), expectation);
+    }
+  };
+
+  RunTestCases(inputs);
+
+  {
+    ExecuteJavaScriptForTests(
+        "window.scrollTo(document.body.scrollWidth,document.body.scrollHeight)"
+        ";");
+    content::RunAllTasksUntilIdle();
+    SCOPED_TRACE(testing::Message() << "Scrolled to bottom right");
+    RunTestCases(inputs);
   }
 }
 

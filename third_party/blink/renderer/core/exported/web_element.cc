@@ -196,6 +196,16 @@ gfx::Size WebElement::GetImageSize() {
   return gfx::Size(image->width(), image->height());
 }
 
+gfx::Size WebElement::GetClientSize() {
+  Element* element = Unwrap<Element>();
+  return gfx::Size(element->clientWidth(), element->clientHeight());
+}
+
+gfx::Size WebElement::GetScrollSize() {
+  Element* element = Unwrap<Element>();
+  return gfx::Size(element->scrollWidth(), element->scrollHeight());
+}
+
 WebString WebElement::GetComputedValue(const WebString& property_name) {
   if (IsNull())
     return WebString();

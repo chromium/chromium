@@ -188,6 +188,7 @@ struct FormFieldData {
   string section;
   CheckStatus check_status;
   bool is_focusable;
+  bool is_visible;
   bool should_autocomplete;
   RoleAttribute role;
   mojo_base.mojom.TextDirection text_direction;

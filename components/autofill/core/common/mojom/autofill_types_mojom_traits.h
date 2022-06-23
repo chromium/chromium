@@ -181,6 +181,10 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.is_focusable;
   }
 
+  static bool is_visible(const autofill::FormFieldData& r) {
+    return r.is_visible;
+  }
+
   static bool should_autocomplete(const autofill::FormFieldData& r) {
     return r.should_autocomplete;
   }

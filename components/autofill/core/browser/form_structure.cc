@@ -2830,6 +2830,10 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Label:" << truncated_label;
 
     buffer << Tr{} << "Is empty:" << (field->IsEmpty() ? "Yes" : "No");
+    buffer << Tr{} << "Is focusable:"
+           << (field->IsFocusable() ? "Yes (focusable)" : "No (unfocusable)");
+    buffer << Tr{} << "Is visible:"
+           << (field->is_visible ? "Yes (visible)" : "No (invisible)");
     buffer << CTag{"table"};
     buffer << CTag{"td"};
     buffer << CTag{"tr"};
