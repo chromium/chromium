@@ -39,6 +39,8 @@ namespace recordreplay {
 `
 );
 
+spawnChecked("goma_ctl", ["restart"]);
+
 spawnChecked("autoninja", ["-C", "out/Release", "chrome"], { stdio: "inherit" });
 
 function spawnChecked(cmd, args, options) {
