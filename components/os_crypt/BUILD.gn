@@ -54,7 +54,8 @@ component("os_crypt") {
     defines += [ "ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE" ]
   }
 
-  if ((is_posix || is_fuchsia) && !is_apple && !(is_linux && !is_castos)) {
+  # TODO(crbug.com/1339022): Provide a Fuchsia-specific implementation.
+  if ((is_posix && !is_apple && !(is_linux && !is_castos)) || is_fuchsia) {
     sources += [ "os_crypt_posix.cc" ]
   }
 
