@@ -9,9 +9,6 @@ visibility = [ "//fuchsia_web/*" ]
 
 source_set("test_support") {
   testonly = true
-
-  # TODO(crbug.com/1081525): Remove once directory is deleted.
-  visibility += [ "//fuchsia/base/*" ]
   sources = [
     "fit_adapter.h",
     "frame_test_util.cc",
@@ -25,7 +22,6 @@ source_set("test_support") {
   ]
   public_deps = [
     "//base",
-    "//fuchsia/base:modular",
     "//fuchsia_web/common",
     "//net",
     "//net:test_support",

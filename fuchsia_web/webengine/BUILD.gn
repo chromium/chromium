@@ -119,7 +119,6 @@ component("web_engine_core") {
     "//content/public/child",
     "//content/public/common",
     "//content/public/renderer",
-    "//fuchsia/base:modular",
     "//fuchsia_web/common",
     "//fuchsia_web/webengine/mojom",
 

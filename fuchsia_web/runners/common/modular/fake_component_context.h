@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_WEB_RUNNERS_CAST_FAKE_COMPONENT_CONTEXT_H_
-#define FUCHSIA_WEB_RUNNERS_CAST_FAKE_COMPONENT_CONTEXT_H_
+#ifndef FUCHSIA_WEB_RUNNERS_COMMON_MODULAR_FAKE_COMPONENT_CONTEXT_H_
+#define FUCHSIA_WEB_RUNNERS_COMMON_MODULAR_FAKE_COMPONENT_CONTEXT_H_
 
 #include <fuchsia/modular/cpp/fidl_test_base.h>
 
@@ -13,7 +13,7 @@
 #include <utility>
 
 #include "base/strings/string_piece.h"
-#include "fuchsia/base/agent_impl.h"
+#include "fuchsia_web/runners/common/modular/agent_impl.h"
 
 namespace cr_fuchsia {
 
@@ -57,4 +57,4 @@ class FakeComponentContext
 };
 
 }  // namespace cr_fuchsia
-#endif  // FUCHSIA_WEB_RUNNERS_CAST_FAKE_COMPONENT_CONTEXT_H_
+#endif  // FUCHSIA_WEB_RUNNERS_COMMON_MODULAR_FAKE_COMPONENT_CONTEXT_H_

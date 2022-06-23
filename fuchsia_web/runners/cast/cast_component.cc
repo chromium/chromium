@@ -19,11 +19,11 @@
 #include "base/task/current_thread.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "components/cast/message_port/platform_message_port.h"
-#include "fuchsia/base/agent_manager.h"
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_streaming.h"
 #include "fuchsia_web/runners/cast/create_web_message.h"
 #include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia_web/runners/common/modular/agent_manager.h"
 #include "fuchsia_web/runners/common/web_component.h"
 
 namespace {

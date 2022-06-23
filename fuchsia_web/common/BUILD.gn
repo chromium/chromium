@@ -8,8 +8,6 @@ assert(is_fuchsia)
 visibility = [ "//fuchsia_web/*" ]
 
 source_set("common") {
-  # TODO(crbug.com/1081525): Remove once directory is deleted.
-  visibility += [ "//fuchsia/base/test/*" ]
   sources = [
     "fuchsia_dir_scheme.cc",
     "init_logging.cc",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_BASE_LIFECYCLE_IMPL_H_
-#define FUCHSIA_BASE_LIFECYCLE_IMPL_H_
+#ifndef FUCHSIA_WEB_RUNNERS_COMMON_MODULAR_LIFECYCLE_IMPL_H_
+#define FUCHSIA_WEB_RUNNERS_COMMON_MODULAR_LIFECYCLE_IMPL_H_
 
 #include <fuchsia/modular/cpp/fidl.h>
 
@@ -38,4 +38,4 @@ class LifecycleImpl final : public ::fuchsia::modular::Lifecycle {
 
 }  // namespace cr_fuchsia
 
-#endif  // FUCHSIA_BASE_LIFECYCLE_IMPL_H_
+#endif  // FUCHSIA_WEB_RUNNERS_COMMON_MODULAR_LIFECYCLE_IMPL_H_

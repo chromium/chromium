@@ -9,7 +9,6 @@ include_rules = [
   "+components/version_info",
   "+content/public/app",
   "+content/public/common",
-  "+fuchsia/base",
   "+fuchsia_web/webinstance_host",
   "+google_apis",
   "+gpu/command_buffer/service/gpu_switches.h",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/lifecycle_impl.h"
+#include "fuchsia_web/runners/common/modular/lifecycle_impl.h"
 
 namespace cr_fuchsia {
 

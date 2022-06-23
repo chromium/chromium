@@ -17,7 +17,7 @@
 
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/startup_context.h"
-#include "fuchsia/base/lifecycle_impl.h"
+#include "fuchsia_web/runners/common/modular/lifecycle_impl.h"
 #include "url/gurl.h"
 
 class WebContentRunner;

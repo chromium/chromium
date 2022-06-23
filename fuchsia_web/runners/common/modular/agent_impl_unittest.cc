@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/agent_impl.h"
+#include "fuchsia_web/runners/common/modular/agent_impl.h"
 
 #include <lib/sys/cpp/component_context.h>
 

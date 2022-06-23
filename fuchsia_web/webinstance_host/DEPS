@@ -2,7 +2,6 @@ include_rules = [
   "+components/embedder_support",
   "+components/fuchsia_component_support",
   "+content/public/common",
-  "+fuchsia/base",
   "+fuchsia_web/webengine/features.h",
   "+fuchsia_web/webengine/switches.h",
   "+gpu/config/gpu_finch_features.h",

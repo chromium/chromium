@@ -8,7 +8,7 @@
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/strings/string_piece.h"
-#include "fuchsia/base/agent_manager.h"
+#include "fuchsia_web/runners/common/modular/agent_manager.h"
 
 PendingCastComponent::PendingCastComponent(
     Delegate* delegate,

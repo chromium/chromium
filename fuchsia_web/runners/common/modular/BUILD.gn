@@ -6,14 +6,16 @@ assert(is_fuchsia)
 
 import("//testing/test.gni")
 
+# Only allow use by targets in this directory unless explicitly specified.
+visibility = [ ":*" ]
+
 # Integration helpers for fuchsia.modular.
+# TODO(crbug.com/1280705): Delete this directory once fully migrated to CFv2.
 source_set("modular") {
   # Only for use by Fuchsia Components.
-  visibility = [
-    ":cr_fuchsia_base_unittests__exec",
-    "./test/*",
+  visibility += [
+    ":unit_tests",
     "//chromecast/internal/*",
-    "//fuchsia_web/common/test/*",
     "//fuchsia_web/runners/*",
     "//fuchsia_web/webengine/*",
   ]
@@ -32,8 +34,9 @@ source_set("modular") {
   ]
 }
 
-# Unit-tests for all //fuchsia/base utilities.
-test("cr_fuchsia_base_unittests") {
+source_set("unit_tests") {
+  testonly = true
+  visibility += [ "//fuchsia_web/runners/*" ]
   sources = [ "agent_impl_unittest.cc" ]
   deps = [
     ":modular",

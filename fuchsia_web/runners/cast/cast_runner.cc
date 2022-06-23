@@ -28,7 +28,6 @@
 #include "base/values.h"
 #include "components/cast/common/constants.h"
 #include "components/fuchsia_component_support/config_reader.h"
-#include "fuchsia/base/agent_manager.h"
 #include "fuchsia_web/runners/cast/cast_streaming.h"
 #include "fuchsia_web/runners/cast/pending_cast_component.h"
 #include "fuchsia_web/runners/common/web_content_runner.h"

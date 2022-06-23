@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia_web/runners/cast/fake_component_context.h"
+#include "fuchsia_web/runners/common/modular/fake_component_context.h"
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
-#include "fuchsia/base/agent_impl.h"
+#include "fuchsia_web/runners/common/modular/agent_impl.h"
 
 namespace cr_fuchsia {
 
