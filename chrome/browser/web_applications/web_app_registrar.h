@@ -89,8 +89,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns whether the app is currently being uninstalled. This will be true
   // after uninstall has begun but before the OS integration hooks for uninstall
   // have completed. It will return false after uninstallation has completed.
-  // Note that the underlying field this checks is not yet persisted to the
-  // database; see https://crbug.com/1162477
   bool IsUninstalling(const AppId& app_id) const;
 
   // Returns whether the app with |app_id| is currently fully locally installed.
