@@ -130,6 +130,7 @@ class AuraToplevel {
                    bool resizing,
                    bool activated);
   virtual void OnOriginChange(const gfx::Point& origin);
+  void SetDecoration(SurfaceFrameType type);
 
   ShellSurface* shell_surface_;
   SerialTracker* const serial_tracker_;
@@ -148,6 +149,7 @@ class AuraPopup {
   ~AuraPopup();
 
   void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
+  void SetDecoration(SurfaceFrameType type);
 
  private:
   ShellSurfaceBase* shell_surface_;

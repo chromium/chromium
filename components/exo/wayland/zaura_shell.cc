@@ -723,6 +723,10 @@ void AuraToplevel::OnOriginChange(const gfx::Point& origin) {
   wl_client_flush(wl_resource_get_client(aura_toplevel_resource_));
 }
 
+void AuraToplevel::SetDecoration(SurfaceFrameType type) {
+  shell_surface_->OnSetFrame(type);
+}
+
 void AuraToplevel::SetClientUsesScreenCoordinates() {
   supports_window_bounds_ = true;
   shell_surface_->set_client_supports_window_bounds(true);
@@ -778,6 +782,10 @@ AuraPopup::~AuraPopup() = default;
 
 void AuraPopup::SetClientSubmitsSurfacesInPixelCoordinates(bool enable) {
   shell_surface_->set_client_submits_surfaces_in_pixel_coordinates(enable);
+}
+
+void AuraPopup::SetDecoration(SurfaceFrameType type) {
+  shell_surface_->OnSetFrame(type);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1104,6 +1112,27 @@ void aura_toplevel_set_restore_info_with_window_id_source(
       restore_session_id, restore_window_id_source);
 }
 
+SurfaceFrameType AuraTopLevelDecorationType(uint32_t decoration_type) {
+  switch (decoration_type) {
+    case ZAURA_TOPLEVEL_DECORATION_TYPE_NONE:
+      return SurfaceFrameType::NONE;
+    case ZAURA_TOPLEVEL_DECORATION_TYPE_NORMAL:
+      return SurfaceFrameType::NORMAL;
+    case ZAURA_TOPLEVEL_DECORATION_TYPE_SHADOW:
+      return SurfaceFrameType::SHADOW;
+    default:
+      VLOG(2) << "Unknown aura-toplevel decoration type: " << decoration_type;
+      return SurfaceFrameType::NONE;
+  }
+}
+
+void aura_toplevel_set_decoration(wl_client* client,
+                                  wl_resource* resource,
+                                  uint32_t type) {
+  GetUserDataAs<AuraToplevel>(resource)->SetDecoration(
+      AuraTopLevelDecorationType(type));
+}
+
 const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_orientation_lock,
     aura_toplevel_surface_submission_in_pixel_coordinates,
@@ -1113,6 +1142,7 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_system_modal,
     aura_toplevel_unset_system_modal,
     aura_toplevel_set_restore_info_with_window_id_source,
+    aura_toplevel_set_decoration,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,
@@ -1121,8 +1151,30 @@ void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,
       ->SetClientSubmitsSurfacesInPixelCoordinates(true);
 }
 
+SurfaceFrameType AuraPopupDecorationType(uint32_t decoration_type) {
+  switch (decoration_type) {
+    case ZAURA_POPUP_DECORATION_TYPE_NONE:
+      return SurfaceFrameType::NONE;
+    case ZAURA_POPUP_DECORATION_TYPE_NORMAL:
+      return SurfaceFrameType::NORMAL;
+    case ZAURA_POPUP_DECORATION_TYPE_SHADOW:
+      return SurfaceFrameType::SHADOW;
+    default:
+      VLOG(2) << "Unknown aura-popup decoration type: " << decoration_type;
+      return SurfaceFrameType::NONE;
+  }
+}
+
+void aura_popup_set_decoration(wl_client* client,
+                               wl_resource* resource,
+                               uint32_t type) {
+  GetUserDataAs<AuraPopup>(resource)->SetDecoration(
+      AuraPopupDecorationType(type));
+}
+
 const struct zaura_popup_interface aura_popup_implementation = {
     aura_popup_surface_submission_in_pixel_coordinates,
+    aura_popup_set_decoration,
 };
 
 void aura_shell_get_aura_toplevel(wl_client* client,
