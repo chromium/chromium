@@ -41,54 +41,18 @@ class CC_PAINT_EXPORT PaintFlags {
     return static_cast<Style>(bitfields_.style_);
   }
   ALWAYS_INLINE void setStyle(Style style) { bitfields_.style_ = style; }
-
-  /** Retrieves alpha and RGB packed into 32 bits.
-
-      @return   ARGB
-  */
   // TODO(crbug.com/1308932): Remove this function
-  [[nodiscard]] ALWAYS_INLINE SkColor getColor() const {
-    return color_.toSkColor();
-  }
-
-  /** Retrieves alpha and RGB as four floating point values.
-
-      @return   RGBA
-  */
-  [[nodiscard]] ALWAYS_INLINE SkColor4f getColor4f() const { return color_; }
-
-  /** Sets alpha and RGB. The color is a 32-bit value packing 8-bit components
-     for alpha, red, blue, and green.
-
-      @param color   ARGB
-  */
+  ALWAYS_INLINE SkColor getColor() const { return color_.toSkColor(); }
+  ALWAYS_INLINE SkColor4f getColor4f() const { return color_; }
   ALWAYS_INLINE void setColor(SkColor color) {
     color_ = SkColor4f::FromColor(color);
   }
-  /** Sets alpha and RGB used. The color is four floating point values.
-
-      @param color        RGBA
-  */
   ALWAYS_INLINE void setColor(SkColor4f color) { color_ = color; }
-
-  /** Retrieves alpha from the color used when stroking and filling.
-
-      @return  alpha ranging from 0.0f, fully transparent, to 1.0, fully opaque
-  */
-  [[nodiscard]] ALWAYS_INLINE float getAlpha() const { return color_.fA; }
-
-  /** Replaces alpha, leaving RGB unchanged. An out of range value triggers an
-     assert in the debug build. a is a value from 0.0 to 1.0. a set to zero
-     makes color fully transparent; a set to 1.0 makes color fully opaque.
-
-     We are using the template F to block any conversions from int, double to
-     float, to ensure that callers are calling setAlpha with a float.
-
-      @param a  alpha component of color
-  */
-  template <class F, class = std::enable_if_t<std::is_same_v<F, float>>>
-  ALWAYS_INLINE void setAlpha(F a) {
-    color_.fA = a;
+  ALWAYS_INLINE uint8_t getAlpha() const {
+    return SkColorGetA(color_.toSkColor());
+  }
+  ALWAYS_INLINE void setAlpha(uint8_t a) {
+    color_ = SkColor4f::FromColor(SkColorSetA(color_.toSkColor(), a));
   }
   ALWAYS_INLINE void setBlendMode(SkBlendMode mode) {
     blend_mode_ = static_cast<uint32_t>(mode);

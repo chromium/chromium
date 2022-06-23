@@ -96,7 +96,8 @@ void LabelButtonAssetBorder::Paint(const View& view, gfx::Canvas* canvas) {
 
   if (animation && animation->is_animating()) {
     // Linearly interpolate background and foreground painters during animation.
-    const float fg_alpha = animation->CurrentValueBetween(0.0f, 1.0f);
+    uint8_t fg_alpha =
+        static_cast<uint8_t>(animation->CurrentValueBetween(0, 255));
 
     const SkRect sk_rect = gfx::RectToSkRect(rect);
     cc::PaintCanvasAutoRestore auto_restore(canvas->sk_canvas(), false);
@@ -105,8 +106,7 @@ void LabelButtonAssetBorder::Paint(const View& view, gfx::Canvas* canvas) {
     {
       // First, modulate the background by 1 - alpha.
       cc::PaintCanvasAutoRestore auto_restore_alpha(canvas->sk_canvas(), false);
-      canvas->sk_canvas()->saveLayerAlpha(
-          &sk_rect, 255 - static_cast<uint8_t>(255 * fg_alpha));
+      canvas->sk_canvas()->saveLayerAlpha(&sk_rect, 255 - fg_alpha);
       state = native_theme_delegate->GetBackgroundThemeState(&extra);
       PaintHelper(this, canvas, state, rect, extra);
     }

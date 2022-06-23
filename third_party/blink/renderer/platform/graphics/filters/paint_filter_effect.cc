@@ -26,8 +26,7 @@ sk_sp<PaintFilter> PaintFilterEffect::CreateImageFilter() {
                                       : SkImageFilters::Dither::kNo;
   if (shader) {
     // Include the paint's alpha modulation
-    return sk_make_sp<ShaderPaintFilter>(sk_ref_sp(shader),
-                                         flags_.getAlpha() * 255,
+    return sk_make_sp<ShaderPaintFilter>(sk_ref_sp(shader), flags_.getAlpha(),
                                          flags_.getFilterQuality(), dither);
   } else {
     // ShaderPaintFilter requires shader to be non-null

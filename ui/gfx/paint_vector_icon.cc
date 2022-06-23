@@ -273,7 +273,7 @@ void PaintPath(Canvas* canvas,
         break;
 
       case PATH_COLOR_ALPHA:
-        flags.setAlpha(arg(0));
+        flags.setAlpha(SkScalarFloorToInt(arg(0)));
         break;
 
       case PATH_COLOR_ARGB:

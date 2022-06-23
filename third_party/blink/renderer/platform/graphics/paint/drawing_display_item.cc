@@ -185,7 +185,7 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
           (flags.getBlendMode() != SkBlendMode::kSrc &&
            flags.getBlendMode() != SkBlendMode::kSrcOver) ||
           flags.getMaskFilter() || flags.getColorFilter() ||
-          flags.getImageFilter() || flags.getAlpha() != 1.0f ||
+          flags.getImageFilter() || flags.getAlpha() != SK_AlphaOPAQUE ||
           (flags.getShader() && !flags.getShader()->IsOpaque()))
         continue;
 
