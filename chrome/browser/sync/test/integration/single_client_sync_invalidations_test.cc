@@ -246,6 +246,10 @@ class SingleClientWithUseSyncInvalidationsTest : public SyncTest {
 
   ~SingleClientWithUseSyncInvalidationsTest() override = default;
 
+  // TODO(crbug.com/1329060): disable configuration refresher to verify
+  // invalidation delivery once invalidations are fixed.
+  bool UseConfigurationRefresher() override { return true; }
+
   // Injects a test DeviceInfo entity to the fake server.
   void InjectDeviceInfoEntityToServer(
       const std::string& cache_guid,
@@ -466,6 +470,27 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 #else
   EXPECT_EQ(1u, observer.num_nudged_get_updates_for_data_type());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+                       PRE_ShouldReceiveInvalidationSentBeforeSetupClients) {
+  // Initialize and enable sync to simulate browser restart when sync is
+  // enabled. This is required to receive an invalidation when browser is not
+  // loaded.
+  ASSERT_TRUE(SetupSync());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+                       ShouldReceiveInvalidationSentBeforeSetupClients) {
+  const base::GUID bookmark_guid = InjectSyncedBookmark(GetFakeServer());
+
+  ASSERT_TRUE(SetupClients());
+
+  // When configuration refresher is disabled, the following condition will be
+  // possible only if invalidations are delivered.
+  EXPECT_TRUE(
+      bookmarks_helper::BookmarksGUIDChecker(/*profile=*/0, bookmark_guid)
+          .Wait());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

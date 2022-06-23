@@ -578,6 +578,10 @@ bool SyncTest::UseVerifier() {
   return false;
 }
 
+bool SyncTest::UseConfigurationRefresher() {
+  return true;
+}
+
 bool SyncTest::SetupClients() {
   previous_profile_ =
       g_browser_process->profile_manager()->GetLastUsedProfile();
@@ -698,7 +702,7 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   clients_[index] = SyncServiceImplHarness::Create(GetProfile(index), username_,
                                                    password_, singin_type);
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
-  InitializeInvalidations(index);
+  InitializeConfigurationRefresher(index);
 
   // Since the SyncService waits for all policies to load before launching the
   // sync engine, this must be called to avoid actually waiting and potentially
@@ -781,7 +785,11 @@ void SyncTest::SetUpInvalidations(int index) {
   }
 }
 
-void SyncTest::InitializeInvalidations(int index) {
+void SyncTest::InitializeConfigurationRefresher(int index) {
+  if (!UseConfigurationRefresher()) {
+    return;
+  }
+
   // Lazily create |configuration_refresher_| the first time we get here (or the
   // first time after a previous call to StopConfigurationRefresher).
   if (!configuration_refresher_) {

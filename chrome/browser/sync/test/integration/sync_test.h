@@ -201,6 +201,11 @@ class SyncTest : public PlatformBrowserTest {
   // tests are rewritten in a way to not use verifier.
   virtual bool UseVerifier();
 
+  // Used to determine whether to use the configuration refresher. It's used to
+  // mitigate test flakiness due to missed invalidations and download updates
+  // after SetupClients().
+  virtual bool UseConfigurationRefresher();
+
   // Initializes sync clients and profiles but does not sync any of them.
   [[nodiscard]] virtual bool SetupClients();
 
@@ -396,8 +401,8 @@ class SyncTest : public PlatformBrowserTest {
   // value of |server_type_|.
   void SetUpInvalidations(int index);
 
-  // Initializes the invalidations that were set up in SetUpInvalidations.
-  void InitializeInvalidations(int index);
+  // Initializes the configuration refresher.
+  void InitializeConfigurationRefresher(int index);
 
   // Internal routine for setting up sync.
   void SetupSyncInternal(SetupSyncMode setup_mode);
