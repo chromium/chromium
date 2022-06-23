@@ -5,11 +5,6 @@
 #ifndef UI_BASE_COCOA_FIND_PASTEBOARD_H_
 #define UI_BASE_COCOA_FIND_PASTEBOARD_H_
 
-#include <string>
-
-
-#ifdef __OBJC__
-
 #import <Cocoa/Cocoa.h>
 
 #include "base/component_export.h"
@@ -51,10 +46,5 @@ COMPONENT_EXPORT(UI_BASE)
 // This methods is meant to be overridden in tests.
 - (NSPasteboard*)findPboard;
 @end
-
-#endif  // __OBJC__
-
-// Also provide a c++ interface
-COMPONENT_EXPORT(UI_BASE) std::u16string GetFindPboardText();
 
 #endif  // UI_BASE_COCOA_FIND_PASTEBOARD_H_

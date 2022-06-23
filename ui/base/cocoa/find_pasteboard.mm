@@ -75,7 +75,3 @@ NSString* kFindPasteboardChangedNotification =
 }
 
 @end
-
-std::u16string GetFindPboardText() {
-  return base::SysNSStringToUTF16([[FindPasteboard sharedInstance] findText]);
-}
