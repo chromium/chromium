@@ -4,10 +4,22 @@
 
 module ash.audio_config.mojom;
 
+// Represents the mute state of a user's audio device.
+enum MuteState {
+  // The device is not muted.
+  kNotMuted,
+
+  // The device is muted by the user.
+  kMutedByUser
+};
+
 // Represents the audio state of the Audio system.
 struct AudioSystemProperties {
   // The volume of the active output device.
   uint8 output_volume_percent;
+
+  // The mute state of the active output device.
+  MuteState output_mute_state;
 };
 
 // Observer for changes to audio system properties.

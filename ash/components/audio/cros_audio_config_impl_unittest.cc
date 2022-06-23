@@ -56,12 +56,9 @@ class CrosAudioConfigImplTest : public testing::Test {
     cros_audio_config_ = std::make_unique<CrosAudioConfigImpl>();
   }
 
- protected:
-  void SetOutputVolumePercent(uint8_t volume_percent) {
-    cras_audio_handler_->SetOutputVolumePercent(volume_percent);
-    base::RunLoop().RunUntilIdle();
-  }
+  void TearDown() override { CrasAudioHandler::Shutdown(); }
 
+ protected:
   std::unique_ptr<FakeAudioSystemPropertiesObserver> Observe() {
     cros_audio_config_->BindPendingReceiver(
         remote_.BindNewPipeAndPassReceiver());
@@ -70,6 +67,23 @@ class CrosAudioConfigImplTest : public testing::Test {
         fake_observer->GeneratePendingRemote());
     base::RunLoop().RunUntilIdle();
     return fake_observer;
+  }
+
+  void SetOutputVolumePercent(uint8_t volume_percent) {
+    cras_audio_handler_->SetOutputVolumePercent(volume_percent);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetOutputMuteState(mojom::MuteState mute_state) {
+    switch (mute_state) {
+      case mojom::MuteState::kMutedByUser:
+        cras_audio_handler_->SetOutputMute(true);
+        break;
+      case mojom::MuteState::kNotMuted:
+        cras_audio_handler_->SetOutputMute(false);
+        break;
+    }
+    base::RunLoop().RunUntilIdle();
   }
 
  private:
@@ -83,6 +97,7 @@ class CrosAudioConfigImplTest : public testing::Test {
 
 TEST_F(CrosAudioConfigImplTest, GetOutputVolumePercent) {
   std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  // fake_observer count is first incremented in observe() method.
   ASSERT_EQ(1u, fake_observer->num_properties_updated_calls_);
   ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
   ASSERT_EQ(kDefaultOutputVolumePercent,
@@ -94,6 +109,27 @@ TEST_F(CrosAudioConfigImplTest, GetOutputVolumePercent) {
   EXPECT_EQ(kTestOutputVolumePercent,
             fake_observer->last_audio_system_properties_.value()
                 ->output_volume_percent);
+}
+
+TEST_F(CrosAudioConfigImplTest, GetOutputMuteState) {
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  ASSERT_EQ(1u, fake_observer->num_properties_updated_calls_);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
+  EXPECT_EQ(
+      mojom::MuteState::kNotMuted,
+      fake_observer->last_audio_system_properties_.value()->output_mute_state);
+
+  SetOutputMuteState(mojom::MuteState::kMutedByUser);
+  ASSERT_EQ(2u, fake_observer->num_properties_updated_calls_);
+  EXPECT_EQ(
+      mojom::MuteState::kMutedByUser,
+      fake_observer->last_audio_system_properties_.value()->output_mute_state);
+
+  SetOutputMuteState(mojom::MuteState::kNotMuted);
+  ASSERT_EQ(3u, fake_observer->num_properties_updated_calls_);
+  EXPECT_EQ(
+      mojom::MuteState::kNotMuted,
+      fake_observer->last_audio_system_properties_.value()->output_mute_state);
 }
 
 }  // namespace ash::audio_config

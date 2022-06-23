@@ -20,10 +20,12 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
 
  private:
   // CrosAudioConfig:
-  uint8_t GetOutputVolumePercent() override;
+  uint8_t GetOutputVolumePercent() const override;
+  mojom::MuteState GetOutputMuteState() const override;
 
   // CrasAudioHandler::AudioObserver:
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;
+  void OnOutputMuteChanged(bool mute_on) override;
 };
 
 }  // namespace ash::audio_config

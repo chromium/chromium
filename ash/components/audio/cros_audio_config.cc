@@ -23,6 +23,7 @@ void CrosAudioConfig::ObserveAudioSystemProperties(
 mojom::AudioSystemPropertiesPtr CrosAudioConfig::GetAudioSystemProperties() {
   auto properties = mojom::AudioSystemProperties::New();
   properties->output_volume_percent = GetOutputVolumePercent();
+  properties->output_mute_state = GetOutputMuteState();
   return properties;
 }
 

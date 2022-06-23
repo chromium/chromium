@@ -31,7 +31,8 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrosAudioConfig
 
   void NotifyObserversAudioSystemPropertiesChanged();
 
-  virtual uint8_t GetOutputVolumePercent() = 0;
+  virtual uint8_t GetOutputVolumePercent() const = 0;
+  virtual mojom::MuteState GetOutputMuteState() const = 0;
 
  private:
   // mojom::CrosAudioConfig:
