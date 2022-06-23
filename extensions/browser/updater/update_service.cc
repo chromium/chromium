@@ -6,7 +6,9 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -32,6 +34,7 @@
 #include "extensions/browser/updater/update_data_provider.h"
 #include "extensions/browser/updater/update_service_factory.h"
 #include "extensions/common/extension_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -166,7 +169,7 @@ void UpdateService::StartUpdateCheck(
       InProgressUpdate(std::move(callback), update_params.install_immediately);
 
   ExtensionUpdateDataMap update_data;
-  std::vector<ExtensionId> update_ids;
+  std::vector<std::vector<ExtensionId>> update_ids;
   update_ids.reserve(update_params.update_info.size());
   for (const auto& update_info : update_params.update_info) {
     const std::string& extension_id = update_info.first;
@@ -183,21 +186,36 @@ void UpdateService::StartUpdateCheck(
                    ExtensionUpdateCheckParams::FOREGROUND) {
       data.install_source = "ondemand";
     }
-    update_ids.push_back(extension_id);
+    if (update_ids.empty() || update_ids.back().size() >= 25) {
+      update_ids.emplace_back();
+    }
+    update_ids.back().push_back(extension_id);
     update_data.insert(std::make_pair(extension_id, data));
   }
 
-  update_client_->Update(
-      update_ids,
-      base::BindOnce(&UpdateDataProvider::GetData, update_data_provider_,
-                     update_params.install_immediately, std::move(update_data)),
-      {}, update_params.priority == ExtensionUpdateCheckParams::FOREGROUND,
+  base::RepeatingCallback closure = base::BarrierClosure(
+      update_ids.size(),
       base::BindOnce(&UpdateService::UpdateCheckComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(update)));
+
+  base::RepeatingCallback<
+      std::vector<absl::optional<update_client::CrxComponent>>(
+          const std::vector<std::string>&)>
+      get_data = base::BindRepeating(
+          &UpdateDataProvider::GetData, update_data_provider_,
+          update_params.install_immediately, std::move(update_data));
+
+  for (const std::vector<std::string>& update_id_group : update_ids) {
+    update_client_->Update(
+        update_id_group, get_data, {},
+        update_params.priority == ExtensionUpdateCheckParams::FOREGROUND,
+        base::BindOnce([](base::RepeatingClosure callback,
+                          update_client::Error /*error*/) { callback.Run(); },
+                       closure));
+  }
 }
 
-void UpdateService::UpdateCheckComplete(InProgressUpdate update,
-                                        update_client::Error error) {
+void UpdateService::UpdateCheckComplete(InProgressUpdate update) {
   VLOG(2) << "UpdateService::UpdateCheckComplete";
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
