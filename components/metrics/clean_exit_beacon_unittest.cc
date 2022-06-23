@@ -414,30 +414,14 @@ TEST_F(CleanExitBeaconTest, WriteBeaconValueWhenExitingCleanly) {
       "Variations.ExtendedSafeMode.BeaconFileWrite", 1, 1);
 }
 
-// Verify that attempting to write synchronously DCHECKs for clients that do not
-// belong to the SignalAndWriteViaFileUtil experiment group.
-TEST_F(CleanExitBeaconTest,
-       WriteBeaconValue_SynchronousWriteDcheck_ControlGroup) {
-  SetUpExtendedSafeModeExperiment(variations::kControlGroup);
-  ASSERT_EQ(variations::kControlGroup, base::FieldTrialList::FindFullName(
-                                           variations::kExtendedSafeModeTrial));
-
-  TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_.GetPath());
-  EXPECT_DCHECK_DEATH(
-      clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
-                                         /*is_extended_safe_mode=*/true));
-
-  // Verify metrics.
-  histogram_tester_.ExpectTotalCount(
-      "Variations.ExtendedSafeMode.BeaconFileWrite", 0);
-}
-
 // Verify that there's a DCHECK when an Extended Variations Safe Mode client
 // attempts to write a clean beacon with |is_extended_safe_mode| set to true.
 // |is_extended_safe_mode| should only be set to true in one call site:
 // VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode().
+//
+// TODO(crbug/1241702): Re-enable this test once the FieldTrial is cleaned up.
 TEST_F(CleanExitBeaconTest,
-       WriteBeaconValue_SynchronousWriteDcheck_ExperimentGroup) {
+       DISABLED_WriteBeaconValue_SynchronousWriteDcheck_ExperimentGroup) {
   SetUpExtendedSafeModeExperiment(variations::kEnabledGroup);
   ASSERT_EQ(variations::kEnabledGroup, base::FieldTrialList::FindFullName(
                                            variations::kExtendedSafeModeTrial));
