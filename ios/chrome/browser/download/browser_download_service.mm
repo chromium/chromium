@@ -52,8 +52,9 @@ void BrowserDownloadService::OnDownloadCreated(
     return;
   }
 
-  base::UmaHistogramEnumeration("Download.IOSDownloadMimeType",
-                                GetUmaResult(task->GetMimeType()));
+  base::UmaHistogramEnumeration(
+      "Download.IOSDownloadMimeType",
+      GetDownloadMimeTypeResultFromMimeType(task->GetMimeType()));
   base::UmaHistogramEnumeration("Download.IOSDownloadFileUI",
                                 DownloadFileUI::DownloadFilePresented,
                                 DownloadFileUI::Count);

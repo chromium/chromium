@@ -5,7 +5,8 @@
 #include "ios/chrome/browser/download/download_mimetype_util.h"
 #include "ios/chrome/browser/download/mime_type_util.h"
 
-DownloadMimeTypeResult GetUmaResult(const std::string& mime_type) {
+DownloadMimeTypeResult GetDownloadMimeTypeResultFromMimeType(
+    const std::string& mime_type) {
   if (mime_type == kPkPassMimeType)
     return DownloadMimeTypeResult::PkPass;
 

@@ -126,6 +126,7 @@ enum class DownloadMimeTypeResult {
 };
 
 // Returns DownloadMimeTypeResult for the given MIME type.
-DownloadMimeTypeResult GetUmaResult(const std::string& mime_type);
+DownloadMimeTypeResult GetDownloadMimeTypeResultFromMimeType(
+    const std::string& mime_type);
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_DOWNLOAD_MIMETYPE_UTIL_H_
