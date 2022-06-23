@@ -6,6 +6,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 
 namespace crostini {
 
@@ -56,6 +57,14 @@ void CrostiniMountProvider::OnRestarted(PrepareCallback callback,
              // this to get the port from Garcon instead of being hardcoded for
              // testing.
       container_info->homedir);
+}
+
+std::unique_ptr<guest_os::GuestOsFileWatcher>
+CrostiniMountProvider::CreateFileWatcher(base::FilePath mount_path,
+                                         base::FilePath relative_path) {
+  return std::make_unique<guest_os::GuestOsFileWatcher>(
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile_), container_id_,
+      std::move(mount_path), std::move(relative_path));
 }
 
 }  // namespace crostini

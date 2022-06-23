@@ -9,6 +9,10 @@
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 
+namespace guest_os {
+class GuestOsFileWatcher;
+}
+
 namespace crostini {
 
 class CrostiniMountProvider : public guest_os::GuestOsMountProvider {
@@ -26,6 +30,10 @@ class CrostiniMountProvider : public guest_os::GuestOsMountProvider {
   std::string DisplayName() override;
   guest_os::GuestId GuestId() override;
   guest_os::VmType vm_type() override;
+
+  std::unique_ptr<guest_os::GuestOsFileWatcher> CreateFileWatcher(
+      base::FilePath mount_path,
+      base::FilePath relative_path) override;
 
  protected:
   // GuestOsMountProvider override. Make sure Crostini's running, then get

@@ -24,6 +24,10 @@ class MockMountProvider : public GuestOsMountProvider {
                void(bool success, int cid, int port, base::FilePath homedir)>
                    callback) override;
 
+  std::unique_ptr<GuestOsFileWatcher> CreateFileWatcher(
+      base::FilePath mount_path,
+      base::FilePath relative_path) override;
+
   Profile* profile_;
   guest_os::GuestId container_id_;
 };

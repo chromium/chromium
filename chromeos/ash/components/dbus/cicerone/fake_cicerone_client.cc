@@ -439,6 +439,7 @@ void FakeCiceroneClient::StartLxd(
 void FakeCiceroneClient::AddFileWatch(
     const vm_tools::cicerone::AddFileWatchRequest& request,
     DBusMethodCallback<vm_tools::cicerone::AddFileWatchResponse> callback) {
+  add_file_watch_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), add_file_watch_response_));
 }
@@ -446,6 +447,7 @@ void FakeCiceroneClient::AddFileWatch(
 void FakeCiceroneClient::RemoveFileWatch(
     const vm_tools::cicerone::RemoveFileWatchRequest& request,
     DBusMethodCallback<vm_tools::cicerone::RemoveFileWatchResponse> callback) {
+  remove_file_watch_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), remove_file_watch_response_));

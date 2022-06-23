@@ -1730,6 +1730,12 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
     std::move(callback).Run(true, cid_, 1234, base::FilePath());
   }
 
+  std::unique_ptr<guest_os::GuestOsFileWatcher> CreateFileWatcher(
+      base::FilePath mount_path,
+      base::FilePath relative_path) override {
+    return nullptr;
+  }
+
   guest_os::VmType vm_type() override { return vm_type_; }
 
   int cid_;
@@ -3190,6 +3196,9 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
     auto* canMount = value.GetDict().Find("canMount");
     auto* vmType = value.GetDict().FindString("vmType");
     CHECK(displayName != nullptr);
+    // TODO(davidmunro): Merge with in-constructor derivation.
+    // auto id = guest_os::GuestId(guest_os::VmType::UNKNOWN, *displayName,
+    // *displayName);
     auto* registry = guest_os::GuestOsService::GetForProfile(profile())
                          ->MountProviderRegistry();
     auto id = registry->Register(std::make_unique<MockGuestOsMountProvider>(

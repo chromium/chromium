@@ -141,13 +141,6 @@ class ContainerShutdownObserver : public base::CheckedObserver {
   virtual void OnContainerShutdown(const guest_os::GuestId& container_id) = 0;
 };
 
-class CrostiniFileChangeObserver : public base::CheckedObserver {
- public:
-  // Called when a path registered via AddFileWatch() is changed.
-  virtual void OnCrostiniFileChanged(const guest_os::GuestId& container_id,
-                                     const base::FilePath& path) = 0;
-};
-
 // CrostiniManager is a singleton which is used to check arguments for
 // ConciergeClient and CiceroneClient. ConciergeClient is dedicated to
 // communication with the Concierge service, CiceroneClient is dedicated to
@@ -430,17 +423,6 @@ class CrostiniManager : public KeyedService,
   void GetContainerSshKeys(const guest_os::GuestId& container_id,
                            GetContainerSshKeysCallback callback);
 
-  // Add a relative path to watch within the container homedir. Register as a
-  // CrostiniFileChangeObserver to be notified when changes occur. Used by
-  // FilesApp.
-  void AddFileWatch(const guest_os::GuestId& container_id,
-                    const base::FilePath& path,
-                    BoolCallback callback);
-  void RemoveFileWatch(const guest_os::GuestId& container_id,
-                       const base::FilePath& path);
-  void AddFileChangeObserver(CrostiniFileChangeObserver* observer);
-  void RemoveFileChangeObserver(CrostiniFileChangeObserver* observer);
-
   // Lookup vsh session from pid. Used by terminal to open new tabs in cwd.
   using VshSessionCallback =
       base::OnceCallback<void(bool success,
@@ -568,8 +550,6 @@ class CrostiniManager : public KeyedService,
       override;
   void OnStartLxdProgress(
       const vm_tools::cicerone::StartLxdProgressSignal& signal) override;
-  void OnFileWatchTriggered(
-      const vm_tools::cicerone::FileWatchTriggeredSignal& signal) override;
 
   // chromeos::NetworkStateHandlerObserver overrides:
   void ActiveNetworksChanged(const std::vector<const chromeos::NetworkState*>&
@@ -937,8 +917,6 @@ class CrostiniManager : public KeyedService,
 
   base::ObserverList<ContainerStartedObserver> container_started_observers_;
   base::ObserverList<ContainerShutdownObserver> container_shutdown_observers_;
-
-  base::ObserverList<CrostiniFileChangeObserver> file_change_observers_;
 
   // Contains the types of crostini dialogs currently open. It is generally
   // invalid to show more than one. e.g. uninstalling and installing are

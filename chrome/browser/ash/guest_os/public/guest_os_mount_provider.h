@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_MOUNT_PROVIDER_H_
 
 #include <string>
+
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_file_watcher.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 
 class Profile;
@@ -45,6 +47,14 @@ class GuestOsMountProvider {
 
   // Requests the provider to unmount.
   void Unmount();
+
+  // Creates a file watcher for the given path, specified by `mount_path` as the
+  // path to where the volume is mounted and `relative_path` is the path to
+  // watch relative to `mount_path`. The watcher starts off idle, call Watch to
+  // start watching.
+  virtual std::unique_ptr<GuestOsFileWatcher> CreateFileWatcher(
+      base::FilePath mount_path,
+      base::FilePath relative_path) = 0;
 
  protected:
   // Called prior to mounting a volume, for the mount provider to do any

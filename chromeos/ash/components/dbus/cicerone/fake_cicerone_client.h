@@ -374,6 +374,9 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
     return configure_for_arc_sideload_called_;
   }
 
+  int add_file_watch_call_count() { return add_file_watch_call_count_; }
+  int remove_file_watch_call_count() { return remove_file_watch_call_count_; }
+
   // Additional functions to allow tests to trigger Signals.
   void NotifyLxdContainerCreated(
       const vm_tools::cicerone::LxdContainerCreatedSignal& signal);
@@ -441,6 +444,9 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   std::string last_container_username_;
 
   bool configure_for_arc_sideload_called_ = false;
+
+  int add_file_watch_call_count_ = 0;
+  int remove_file_watch_call_count_ = 0;
 
   vm_tools::cicerone::LxdContainerCreatedSignal_Status
       lxd_container_created_signal_status_ =
