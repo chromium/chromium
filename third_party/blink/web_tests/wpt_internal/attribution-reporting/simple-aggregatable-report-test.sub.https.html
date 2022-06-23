@@ -30,10 +30,9 @@ attribution_reporting_promise_test(async t => {
     },
   };
 
-  registerAttributionSrc(
-      'Attribution-Reporting-Register-Source', source,
-      'foo=bar;Secure;HttpOnly;Path=/');
-  registerAttributionSrc('Attribution-Reporting-Register-Trigger', trigger);
+  registerAttributionSrc(t, {source, cookie: 'foo=bar;Secure;HttpOnly;Path=/'});
+  registerAttributionSrc(t, {trigger});
+
   const payload = await pollAggregatableReports();
   assert_equals(payload.reports.length, 1);
   const report = JSON.parse(payload.reports[0].body);

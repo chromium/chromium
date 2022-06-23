@@ -5,16 +5,15 @@
 <script src="resources/helpers.js"></script>
 <script>
 attribution_reporting_promise_test(async t => {
-  const sourceEvent = {
+  const source = {
     source_event_id: '9153495207648170476',
     destination: `https://{{host}}`,
   };
-  const trigger = {event_trigger_data: [{'trigger_data': '2'}]};
+  const trigger = {event_trigger_data: [{trigger_data: '2'}]};
 
-  registerAttributionSrc(
-      'Attribution-Reporting-Register-Source', sourceEvent,
-      'foo=bar;Secure;HttpOnly;Path=/');
-  registerAttributionSrc('Attribution-Reporting-Register-Trigger', trigger);
+  registerAttributionSrc(t, {source, cookie: 'foo=bar;Secure;HttpOnly;Path=/'});
+  registerAttributionSrc(t, {trigger});
+
   const payload = await pollEventLevelReports();
   assert_equals(payload.reports.length, 1);
   const report = JSON.parse(payload.reports[0].body);
@@ -22,9 +21,9 @@ attribution_reporting_promise_test(async t => {
   // The trigger data is sanitized to "0" because event sources are limited to 1
   // bit.
   assert_equals(report.trigger_data, '0');
-  assert_equals(report.source_event_id, sourceEvent.source_event_id);
+  assert_equals(report.source_event_id, source.source_event_id);
   assert_equals(report.source_type, 'event');
-  assert_equals(report.attribution_destination, sourceEvent.destination);
+  assert_equals(report.attribution_destination, source.destination);
   assert_greater_than(report.randomized_trigger_rate, 0.0);
   assert_less_than(report.randomized_trigger_rate, 1.0);
   assert_own_property(report, 'report_id');

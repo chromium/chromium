@@ -2,7 +2,7 @@
  * Helper functions for attribution reporting API tests.
  */
 
-const blankURL = () => new URL('/resources/blank.html', window.location);
+const blankURL = () => new URL('/resources/blank.html', location);
 
 const attribution_reporting_promise_test = (f, name) =>
     promise_test(async t => {
@@ -36,23 +36,56 @@ const resetAggregatableReports = () =>
 
 const pipeHeaderPattern = /[,)]/g;
 
-const encodeForPipe =
-    urlString => {
-      return urlString.replace(pipeHeaderPattern, '\\$&');
-    }
+// , and ) in pipe values must be escaped with \
+const encodeForPipe = urlString => urlString.replace(pipeHeaderPattern, '\\$&');
 
-/**
- * Registers either a source or trigger.
- */
-const registerAttributionSrc = (header, body, cookie = '') => {
+const blankURLWithHeaders = headers => {
   const url = blankURL();
-  // , and ) in header values must be escaped with \
-  const attributionHeader =
-      `header(${header},${encodeForPipe(JSON.stringify(body))})`;
-  const cookieHeader = `header(Set-Cookie,${encodeForPipe(cookie)})`;
-  url.searchParams.set('pipe', `${attributionHeader}|${cookieHeader}`);
-  const image = document.createElement('img');
-  image.setAttribute('attributionsrc', url);
+
+  if (headers.length > 0) {
+    url.searchParams.set(
+        'pipe',
+        headers.map(h => `header(${h.name},${encodeForPipe(h.value)})`)
+            .join('|'));
+  }
+
+  return url;
+};
+
+const registerAttributionSrc = (t, {
+  source,
+  trigger,
+  cookie,
+}) => {
+  const headers = [];
+
+  if (source) {
+    headers.push({
+      name: 'Attribution-Reporting-Register-Source',
+      value: JSON.stringify(source),
+    });
+  }
+
+  if (trigger) {
+    headers.push({
+      name: 'Attribution-Reporting-Register-Trigger',
+      value: JSON.stringify(trigger),
+    });
+  }
+
+  if (cookie) {
+    const name = 'Set-Cookie';
+    headers.push({name, value: cookie});
+
+    // Delete the cookie at the end of the test.
+    t.add_cleanup(() => fetch(blankURLWithHeaders([{
+                    name,
+                    value: `${cookie};Max-Age=0`,
+                  }])));
+  }
+
+  const img = document.createElement('img');
+  img.attributionSrc = blankURLWithHeaders(headers);
 };
 
 /**
@@ -79,18 +112,10 @@ const pollEventLevelReports = interval =>
 const pollAggregatableReports = interval =>
     pollAttributionReports(aggregatableReportsUrl, interval);
 
-const validateReportHeaders =
-    headers => {
-      assert_array_equals(headers['content-type'], ['application/json']);
-      assert_array_equals(headers['cache-control'], ['no-cache']);
-      assert_own_property(headers, 'user-agent');
-      assert_not_own_property(headers, 'cookie');
-      assert_not_own_property(headers, 'referer');
-    }
-
-const clearCookie = name => {
-  const url = blankURL();
-  const cookieHeader = `header(Set-Cookie,${encodeForPipe(name)};Max-Age=0)`;
-  url.searchParams.set('pipe', cookieHeader);
-  return fetch(url);
+const validateReportHeaders = headers => {
+  assert_array_equals(headers['content-type'], ['application/json']);
+  assert_array_equals(headers['cache-control'], ['no-cache']);
+  assert_own_property(headers, 'user-agent');
+  assert_not_own_property(headers, 'cookie');
+  assert_not_own_property(headers, 'referer');
 };

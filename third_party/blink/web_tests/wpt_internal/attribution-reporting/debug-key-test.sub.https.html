@@ -9,20 +9,21 @@
 <script>
 const debug_key_promise_test = (testCase, forSource) =>
   attribution_reporting_promise_test(async t => {
-    t.add_cleanup(() => clearCookie(testCase.cookie))
-
     const debugKey = '246';
 
-    registerAttributionSrc('Attribution-Reporting-Register-Source', {
-      source_event_id: '1',
-      destination: `https://{{host}}`,
-      debug_key: forSource ? debugKey : undefined,
-    }, testCase.cookie);
+    registerAttributionSrc(t, {
+      source: {
+        source_event_id: '1',
+        destination: `https://{{host}}`,
+        debug_key: forSource ? debugKey : undefined,
+      },
+      cookie: testCase.cookie,
+    });
 
-    registerAttributionSrc('Attribution-Reporting-Register-Trigger', {
+    registerAttributionSrc(t, {trigger: {
       event_trigger_data: [{trigger_data: '0'}],
       debug_key: forSource ? undefined : debugKey,
-    });
+    }});
 
     const payload = await pollEventLevelReports();
     assert_equals(payload.reports.length, 1);
