@@ -12,11 +12,30 @@ USE_PYTHON3 = True
 
 # pylint: disable=invalid-name,missing-function-docstring
 def CommonChecks(input_api, output_api):
-    pylint_checks = input_api.canned_checks.GetPylint(input_api,
-                                                      output_api,
-                                                      pylintrc='pylintrc',
-                                                      version='2.7')
-    return input_api.RunTests(pylint_checks)
+    presubmit_dir = input_api.PresubmitLocalPath()
+
+    def J(*dirs):
+        """Returns a path relative to presubmit directory."""
+
+        return input_api.os_path.join(presubmit_dir, *dirs)
+
+    tests = []
+    unit_tests = [
+        J('publish_package_unittests.py'),
+    ]
+
+    tests.extend(
+        input_api.canned_checks.GetPylint(input_api,
+                                          output_api,
+                                          pylintrc='pylintrc',
+                                          version='2.7'))
+    tests.extend(
+        input_api.canned_checks.GetUnitTests(input_api,
+                                             output_api,
+                                             unit_tests=unit_tests,
+                                             run_on_python2=False,
+                                             run_on_python3=True))
+    return input_api.RunTests(tests)
 
 
 def CheckChangeOnUpload(input_api, output_api):

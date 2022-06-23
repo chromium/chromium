@@ -9,12 +9,16 @@ import os
 import subprocess
 import sys
 
+from typing import Iterable
+
 from common import SDK_TOOLS_DIR
 
 _pm_tool = os.path.join(SDK_TOOLS_DIR, 'pm')
 
 
-def publish_packages(packages, repo: str, new_repo: bool = False) -> None:
+def publish_packages(packages: Iterable[str],
+                     repo: str,
+                     new_repo: bool = False) -> None:
     """Publish packages to a repo directory, initializing it if necessary."""
     if new_repo:
         subprocess.run([_pm_tool, 'newrepo', '-repo', repo], check=True)
