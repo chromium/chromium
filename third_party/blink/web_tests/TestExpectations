@@ -4777,10 +4777,6 @@ crbug.com/937811 [ Release Win ] http/tests/devtools/elements/shadow/elements-pa
 # Sheriff 2019-03-05
 crbug.com/938200 http/tests/devtools/network/network-blocked-reason.js [ Pass Timeout ]
 
-# Skip before rebaselining expectations
-crbug.com/v8/12808 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/v8-code-cache.html [ Skip ]
-crbug.com/v8/12808 virtual/v8-off-thread-finalization/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/v8-code-cache.html [ Skip ]
-
 # Caused a revert of a good change.
 crbug.com/931533 media/video-played-collapse.html [ Failure Pass ]
 
