@@ -32,10 +32,12 @@ UsbDeviceHandleAndroid::UsbDeviceHandleAndroid(
     scoped_refptr<UsbDevice> device,
     base::ScopedFD fd,
     const base::android::JavaRef<jobject>& wrapper)
-    : UsbDeviceHandleUsbfs(device,
-                           std::move(fd),
-                           base::ScopedFD(),
-                           UsbService::CreateBlockingTaskRunner()),
+    : UsbDeviceHandleUsbfs(
+          device,
+          std::move(fd),
+          base::ScopedFD(),
+          "",  // Empty string to indicate an invalid client id.
+          UsbService::CreateBlockingTaskRunner()),
       j_object_(wrapper) {}
 
 UsbDeviceHandleAndroid::~UsbDeviceHandleAndroid() {}

@@ -63,7 +63,7 @@ void UsbDeviceLinux::Open(OpenCallback callback) {
   }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  chromeos::PermissionBrokerClient::Get()->ClaimDevicePath(
+  chromeos::PermissionBrokerClient::Get()->OpenPathAndRegisterClient(
       device_path_, kAllInterfacesMask, read_end.get(),
       base::BindOnce(&UsbDeviceLinux::OnOpenRequestComplete, this,
                      std::move(split_callback.first), std::move(write_end)),
@@ -84,13 +84,14 @@ void UsbDeviceLinux::Open(OpenCallback callback) {
 
 void UsbDeviceLinux::OnOpenRequestComplete(OpenCallback callback,
                                            base::ScopedFD lifeline_fd,
+                                           const std::string& client_id,
                                            base::ScopedFD fd) {
   if (!fd.is_valid()) {
     USB_LOG(EVENT) << "Did not get valid device handle from permission broker.";
     std::move(callback).Run(nullptr);
     return;
   }
-  Opened(std::move(fd), std::move(lifeline_fd), std::move(callback),
+  Opened(std::move(fd), std::move(lifeline_fd), client_id, std::move(callback),
          UsbService::CreateBlockingTaskRunner());
 }
 
@@ -109,11 +110,14 @@ void UsbDeviceLinux::OpenOnBlockingThread(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner) {
   base::ScopedFD fd(HANDLE_EINTR(open(device_path_.c_str(), O_RDWR)));
+  // Client id is only used for ChromeOS so pass empty string here to indicate
+  // an invalid client id.
+  std::string empty_client_id = "";
   if (fd.is_valid()) {
     task_runner->PostTask(
         FROM_HERE, base::BindOnce(&UsbDeviceLinux::Opened, this, std::move(fd),
-                                  base::ScopedFD(), std::move(callback),
-                                  blocking_task_runner));
+                                  base::ScopedFD(), empty_client_id,
+                                  std::move(callback), blocking_task_runner));
   } else {
     USB_PLOG(EVENT) << "Failed to open " << device_path_;
     task_runner->PostTask(FROM_HERE,
@@ -126,11 +130,13 @@ void UsbDeviceLinux::OpenOnBlockingThread(
 void UsbDeviceLinux::Opened(
     base::ScopedFD fd,
     base::ScopedFD lifeline_fd,
+    const std::string& client_id,
     OpenCallback callback,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  scoped_refptr<UsbDeviceHandle> device_handle = new UsbDeviceHandleUsbfs(
-      this, std::move(fd), std::move(lifeline_fd), blocking_task_runner);
+  scoped_refptr<UsbDeviceHandle> device_handle =
+      new UsbDeviceHandleUsbfs(this, std::move(fd), std::move(lifeline_fd),
+                               client_id, blocking_task_runner);
   handles().push_back(device_handle.get());
   std::move(callback).Run(device_handle);
 }

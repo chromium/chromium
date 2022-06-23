@@ -5,23 +5,29 @@
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
 
 #include <fcntl.h>
+#include <linux/usbdevice_fs.h>
 #include <stdint.h>
+#include <sys/ioctl.h>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/unguessable_token.h"
 
 namespace chromeos {
 
 namespace {
 
-const char kOpenFailedError[] = "open_failed";
+constexpr char kOpenFailedError[] = "open_failed";
+constexpr char kDupFailedError[] = "dup_failed";
+constexpr char kWatchLifelineFdFailedError[] = "watch_lifeline_fd_failed";
 
 FakePermissionBrokerClient* g_instance = nullptr;
 
@@ -48,6 +54,46 @@ void OpenPath(const std::string& path,
 
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(std::move(callback), std::move(fd)));
+}
+
+bool DisconnectInterface(const std::string& path, uint8_t iface_num) {
+  base::ScopedFD fd(HANDLE_EINTR(open(path.c_str(), O_RDWR)));
+  if (!fd.is_valid()) {
+    PLOG(ERROR) << "Failed to open path " << path;
+    return false;
+  }
+
+  struct usbdevfs_ioctl dio = {};
+  dio.ifno = iface_num;
+  dio.ioctl_code = USBDEVFS_DISCONNECT;
+  dio.data = nullptr;
+  int rc = HANDLE_EINTR(ioctl(fd.get(), USBDEVFS_IOCTL, &dio));
+  if (rc < 0) {
+    PLOG(ERROR) << "Failed to disconnect interface "
+                << static_cast<int>(iface_num) << " on path " << path;
+    return false;
+  }
+  return true;
+}
+
+bool ConnectInterface(const std::string& path, uint8_t iface_num) {
+  base::ScopedFD fd(HANDLE_EINTR(open(path.c_str(), O_RDWR)));
+  if (!fd.is_valid()) {
+    PLOG(ERROR) << "Failed to open path " << path;
+    return false;
+  }
+
+  struct usbdevfs_ioctl dio = {};
+  dio.ifno = iface_num;
+  dio.ioctl_code = USBDEVFS_CONNECT;
+  dio.data = nullptr;
+  int rc = HANDLE_EINTR(ioctl(fd.get(), USBDEVFS_IOCTL, &dio));
+  if (rc < 0) {
+    PLOG(ERROR) << "Failed to connect interface " << static_cast<int>(iface_num)
+                << " on path " << path;
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
@@ -91,6 +137,85 @@ void FakePermissionBrokerClient::ClaimDevicePath(
     OpenPathCallback callback,
     ErrorCallback error_callback) {
   OpenPath(path, std::move(callback), std::move(error_callback));
+}
+
+void FakePermissionBrokerClient::OpenPathAndRegisterClient(
+    const std::string& path,
+    uint32_t allowed_interfaces_mask,
+    int lifeline_fd,
+    OpenPathAndRegisterClientCallback callback,
+    ErrorCallback error_callback) {
+  std::string client_id;
+  do {
+    client_id = base::UnguessableToken::Create().ToString();
+  } while (base::Contains(clients, client_id));
+
+  base::ScopedFD dup_lifeline_fd(HANDLE_EINTR(dup(lifeline_fd)));
+  if (!dup_lifeline_fd.is_valid()) {
+    int error_code = logging::GetLastSystemErrorCode();
+    std::move(error_callback)
+        .Run(kDupFailedError,
+             base::StringPrintf(
+                 "Failed to dup lifeline fd %d: %s", lifeline_fd,
+                 logging::SystemErrorCodeToString(error_code).c_str()));
+    return;
+  }
+
+  auto controller = base::FileDescriptorWatcher::WatchReadable(
+      dup_lifeline_fd.get(),
+      base::BindRepeating(&FakePermissionBrokerClient::HandleClosedClient,
+                          weak_factory_.GetWeakPtr(), client_id));
+  if (!controller) {
+    std::move(error_callback)
+        .Run(kWatchLifelineFdFailedError,
+             base::StringPrintf("Failed to watch dup lifeline fd %d",
+                                dup_lifeline_fd.get()));
+    return;
+  }
+  clients.emplace(client_id, UsbInterfaces(path, std::move(controller),
+                                           std::move(dup_lifeline_fd)));
+
+  // No concern of OpenPath failure causing orphan client record here, as the
+  // inserted client's record will still be removed when requester does error
+  // handling and closes the lifeline_fd.
+  OpenPath(path, base::BindOnce(std::move(callback), client_id),
+           std::move(error_callback));
+}
+
+void FakePermissionBrokerClient::DetachInterface(const std::string& client_id,
+                                                 uint8_t iface_num,
+                                                 ResultCallback callback) {
+  auto client_it = clients.find(client_id);
+  if (client_it == clients.end()) {
+    LOG(ERROR) << "Unknown client_id: " << client_id;
+    std::move(callback).Run(false);
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&chromeos::DisconnectInterface, client_it->second.path,
+                     iface_num),
+      std::move(callback));
+}
+
+void FakePermissionBrokerClient::ReattachInterface(const std::string& client_id,
+                                                   uint8_t iface_num,
+                                                   ResultCallback callback) {
+  auto client_it = clients.find(client_id);
+  if (client_it == clients.end()) {
+    LOG(ERROR) << "Unknown client_id: " << client_id;
+    std::move(callback).Run(false);
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&chromeos::ConnectInterface, client_it->second.path,
+                     iface_num),
+      std::move(callback));
 }
 
 void FakePermissionBrokerClient::RequestTcpPortAccess(
@@ -219,5 +344,20 @@ bool FakePermissionBrokerClient::RequestPortImpl(uint16_t port,
   hole_set->insert(rule);
   return true;
 }
+
+FakePermissionBrokerClient::UsbInterfaces::UsbInterfaces(
+    const std::string& path,
+    std::unique_ptr<base::FileDescriptorWatcher::Controller> controller,
+    base::ScopedFD lifeline_fd)
+    : path(std::move(path)),
+      controller(std::move(controller)),
+      lifeline_fd(std::move(lifeline_fd)) {}
+
+FakePermissionBrokerClient::UsbInterfaces::~UsbInterfaces() = default;
+
+FakePermissionBrokerClient::UsbInterfaces::UsbInterfaces(UsbInterfaces&&) =
+    default;
+FakePermissionBrokerClient::UsbInterfaces&
+FakePermissionBrokerClient::UsbInterfaces::operator=(UsbInterfaces&&) = default;
 
 }  // namespace chromeos

@@ -35,6 +35,11 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) PermissionBrokerClient {
   // An OpenPathCallback callback is run when an OpenPath request is completed.
   using OpenPathCallback = base::OnceCallback<void(base::ScopedFD)>;
 
+  // An OpenPathAndRegisterClientCallback callback is run when an
+  // OpenPathAndRegisterClient request is completed.
+  using OpenPathAndRegisterClientCallback =
+      base::OnceCallback<void(const std::string& client_id, base::ScopedFD)>;
+
   // An ErrorCallback callback is run when an error is returned by the
   // permission broker.
   using ErrorCallback = base::OnceCallback<void(const std::string& error_name,
@@ -84,6 +89,38 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) PermissionBrokerClient {
                                int lifeline_fd,
                                OpenPathCallback callback,
                                ErrorCallback error_callback) = 0;
+
+  // This API is for a client to register with the Permission Broker to
+  // make requests to detach/reattach USB device interfaces in the future.
+  // The |drop_privileges_mask| is a bit mask indicating which interface
+  // numbers of a USB device are allowed. The interface number 0 corresponds
+  // to the LSB of the mask. A device which has an ADB interface and other
+  // interfaces for Camera or Storage may be opened purely as an ADB device
+  // using a mask that zeros out the Camera and Storage interface number
+  // bit positions.
+  // The |path| is the USB device path the client wants to access.
+  // The |lifeline_fd| is a file descriptor for monitoring the client's
+  // lifetime and reattaching detached interfaces when the client terminates.
+  // The method returns |fd| which is a file descriptor opened at |path|,
+  // and |client_id| which is an unique id for a registered client.
+  virtual void OpenPathAndRegisterClient(
+      const std::string& path,
+      uint32_t allowed_interfaces_mask,
+      int lifeline_fd,
+      OpenPathAndRegisterClientCallback callback,
+      ErrorCallback error_callback) = 0;
+
+  // This API is for the client with |client_id| to detach the interface
+  // |iface_num| at the USB device associated with it.
+  virtual void DetachInterface(const std::string& client_id,
+                               uint8_t iface_num,
+                               ResultCallback callback) = 0;
+
+  // This API is for the client with |client_id| to reattach the interface
+  // |iface_num| at the USB device associated with it.
+  virtual void ReattachInterface(const std::string& client_id,
+                                 uint8_t iface_num,
+                                 ResultCallback callback) = 0;
 
   // Requests the |port| be opened on the firewall for incoming TCP/IP
   // connections received on |interface| (an empty string indicates all
