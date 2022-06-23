@@ -20,7 +20,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/plugin_service.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -34,6 +33,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
+#include "content/public/browser/plugin_service.h"
 #include "content/public/common/pepper_plugin_info.h"
 #endif
 
@@ -229,11 +229,11 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
     case sandbox::mojom::Sandbox::kNetwork:
       SetupNetworkSandboxParameters(client);
       break;
-    case sandbox::mojom::Sandbox::kPpapi:
 #if BUILDFLAG(ENABLE_PLUGINS)
+    case sandbox::mojom::Sandbox::kPpapi:
       SetupPPAPISandboxParameters(client);
-#endif
       break;
+#endif
     case sandbox::mojom::Sandbox::kNoSandbox:
       CHECK(false) << "Unhandled parameters for sandbox_type "
                    << static_cast<int>(sandbox_type);

@@ -30,6 +30,7 @@
 #include "content/browser/sandbox_parameters_mac.h"
 #include "content/common/mac/font_loader.h"
 #include "crypto/openssl_util.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/mac/seatbelt.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
@@ -93,7 +94,9 @@ class SandboxMacTest : public base::MultiProcessTest {
         sandbox::mojom::Sandbox::kCdm,
         sandbox::mojom::Sandbox::kGpu,
         sandbox::mojom::Sandbox::kNaClLoader,
+#if BUILDFLAG(ENABLE_PLUGINS)
         sandbox::mojom::Sandbox::kPpapi,
+#endif
         sandbox::mojom::Sandbox::kPrintBackend,
         sandbox::mojom::Sandbox::kPrintCompositor,
         sandbox::mojom::Sandbox::kRenderer,

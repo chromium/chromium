@@ -12,6 +12,7 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mac/audio.sb.h"
 #include "sandbox/policy/mac/cdm.sb.h"
@@ -70,9 +71,11 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
     case sandbox::mojom::Sandbox::kNetwork:
       profile += kSeatbeltPolicyString_network;
       break;
+#if BUILDFLAG(ENABLE_PLUGINS)
     case sandbox::mojom::Sandbox::kPpapi:
       profile += kSeatbeltPolicyString_ppapi;
       break;
+#endif
 #if BUILDFLAG(ENABLE_PRINTING)
     case sandbox::mojom::Sandbox::kPrintBackend:
       profile += kSeatbeltPolicyString_print_backend;
