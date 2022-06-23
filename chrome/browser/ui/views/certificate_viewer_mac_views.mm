@@ -8,9 +8,9 @@
 #include "components/remote_cocoa/browser/window.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 
-void ShowCertificateViewer(content::WebContents* web_contents,
-                           gfx::NativeWindow parent,
-                           net::X509Certificate* cert) {
+void ShowCertificateViewerForClientAuth(content::WebContents* web_contents,
+                                        gfx::NativeWindow parent,
+                                        net::X509Certificate* cert) {
   // The certificate viewer on macOS uses the OS viewer rather than the Views
   // implementation (see https://crbug.com/953425), so go through a Mojo
   // interface. This calls the platform APIs from the right process in PWAs.

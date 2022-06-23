@@ -3992,20 +3992,27 @@ static_library("ui") {
     ]
   }
 
-  if (is_linux || is_chromeos) {  # Both desktop Linux and ChromeOS.
+  if (enable_webui_certificate_viewer) {
     sources += [
       "certificate_dialogs.cc",
       "certificate_dialogs.h",
-      "process_singleton_dialog_linux.h",
       "webui/certificate_viewer_ui.cc",
       "webui/certificate_viewer_ui.h",
       "webui/certificate_viewer_webui.cc",
       "webui/certificate_viewer_webui.h",
+    ]
+    deps += [ "//third_party/boringssl" ]
+    if (use_nss_certs) {
+      configs += [ "//build/config/linux/nss" ]
+    }
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "process_singleton_dialog_linux.h",
       "webui/webui_js_error/webui_js_error_ui.cc",
       "webui/webui_js_error/webui_js_error_ui.h",
     ]
-    deps += [ "//third_party/boringssl" ]
-    configs += [ "//build/config/linux/nss" ]
     if (use_aura) {
       deps += [ "//third_party/fontconfig" ]
     }
@@ -5138,7 +5145,6 @@ static_library("ui") {
     }
     if (is_fuchsia) {
       sources += [
-        "views/certificate_viewer_fuchsia.cc",
         "views/chrome_views_delegate_fuchsia.cc",
         "views/frame/browser_desktop_window_tree_host.h",
         "views/frame/browser_desktop_window_tree_host_fuchsia.cc",

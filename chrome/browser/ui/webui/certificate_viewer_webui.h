@@ -27,12 +27,10 @@ class WebContents;
 
 class ConstrainedWebDialogDelegate;
 
-// TODO(https://crbug.com/953425): Update comment when this is used by other
-// platforms.
-// Dialog for displaying detailed certificate information. This is used in linux
-// and chromeos builds to display detailed information in a floating dialog when
-// the user clicks on "Certificate Information" from the lock icon of a web site
-// or "View" from the Certificate Manager.
+// Dialog for displaying detailed certificate information. This is used on
+// desktop builds to display detailed information in a floating dialog when the
+// user clicks on "Certificate Information" from the lock icon of a web site or
+// "View" from the Certificate Manager.
 class CertificateViewerDialog : public ui::WebDialogDelegate {
  public:
 #if BUILDFLAG(USE_NSS_CERTS)

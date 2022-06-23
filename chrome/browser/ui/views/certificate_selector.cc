@@ -278,8 +278,9 @@ void CertificateSelector::ViewCertButtonPressed() {
   net::ClientCertIdentity* const cert = GetSelectedCert();
   if (!cert)
     return;
-  ShowCertificateViewer(web_contents_, web_contents_->GetTopLevelNativeWindow(),
-                        cert->certificate());
+  ShowCertificateViewerForClientAuth(web_contents_,
+                                     web_contents_->GetTopLevelNativeWindow(),
+                                     cert->certificate());
 }
 
 void CertificateSelector::OnSelectionChanged() {

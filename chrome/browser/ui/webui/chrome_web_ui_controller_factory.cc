@@ -341,7 +341,7 @@
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
 #endif
 
-#if BUILDFLAG(USE_NSS_CERTS) && defined(USE_AURA)
+#if BUILDFLAG(ENABLE_WEBUI_CERTIFICATE_VIEWER)
 #include "chrome/browser/ui/webui/certificate_viewer_ui.h"
 #endif
 
@@ -1169,10 +1169,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUITabModalConfirmDialogHost)
     return &NewWebUI<ConstrainedWebDialogUI>;
 #endif
-#if BUILDFLAG(USE_NSS_CERTS) && defined(USE_AURA)
+#if BUILDFLAG(ENABLE_WEBUI_CERTIFICATE_VIEWER)
   if (url.host_piece() == chrome::kChromeUICertificateViewerHost)
     return &NewWebUI<CertificateViewerUI>;
-#endif  // USE_NSS_CERTS && USE_AURA
+#endif  // ENABLE_WEBUI_CERTIFICATE_VIEWER
 
   if (url.host_piece() == chrome::kChromeUIPolicyHost)
     return &NewWebUI<PolicyUI>;

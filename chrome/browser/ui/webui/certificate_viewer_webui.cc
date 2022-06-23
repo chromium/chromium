@@ -145,6 +145,14 @@ void ShowCertificateViewer(WebContents* web_contents,
       std::move(cert_buffers), std::move(nicknames), web_contents, parent);
 }
 
+#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+void ShowCertificateViewerForClientAuth(content::WebContents* web_contents,
+                                        gfx::NativeWindow parent,
+                                        net::X509Certificate* cert) {
+  ShowCertificateViewer(web_contents, parent, cert);
+}
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 // CertificateViewerDialog
 
@@ -374,7 +382,8 @@ void CertificateViewerDialogHandler::HandleExportCertificate(
     return;
 
   gfx::NativeWindow window =
-      platform_util::GetTopLevel(dialog_->GetNativeWebContentsModalDialog());
+      platform_util::GetTopLevel(platform_util::GetViewForWindow(
+          dialog_->GetNativeWebContentsModalDialog()));
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> export_certs;
   for (const auto& cert : base::make_span(*certs_).subspan(cert_index)) {

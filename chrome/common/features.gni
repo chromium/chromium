@@ -69,6 +69,9 @@ declare_args() {
   # Indicates if Wayland display server support is enabled.
   enable_wayland_server = is_chromeos_ash
 
+  # Enables the webui certificate viewer dialog.
+  enable_webui_certificate_viewer = toolkit_views
+
   # optimize_webui was moved to ui/base/ui_features.gni
 }
 
@@ -91,6 +94,7 @@ chrome_grit_defines = [
   "enable_service_discovery=$enable_service_discovery",
   "enable_supervised_users=$enable_supervised_users",
   "enable_vr=$enable_vr",
+  "enable_webui_certificate_viewer=$enable_webui_certificate_viewer",
   "enable_webui_tab_strip=$enable_webui_tab_strip",
   "safe_browsing_mode=$safe_browsing_mode",
   "optimize_webui=$optimize_webui",

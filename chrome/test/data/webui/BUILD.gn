@@ -180,7 +180,7 @@ if (include_js_tests) {
       ]
     }
 
-    if (use_nss_certs && use_aura) {
+    if (enable_webui_certificate_viewer) {
       sources += [ "certificate_viewer_dialog_browsertest.js" ]
     }
     if (enable_extensions) {
