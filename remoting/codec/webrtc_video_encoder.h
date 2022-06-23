@@ -101,6 +101,10 @@ class WebrtcVideoEncoder {
     UNKNOWN_ERROR,
   };
 
+  // Helper function for the VPX and AOM encoders to determine the number of
+  // threads needed to efficiently encode a frame based on its width.
+  static int GetEncoderThreadCount(int frame_width);
+
   // A derived class calls EncodeCallback to return the result of an encoding
   // request. SUCCEEDED with an empty EncodedFrame (nullptr) indicates the frame
   // should be dropped (unchanged or empty frame). Otherwise EncodeResult shows

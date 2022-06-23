@@ -66,6 +66,7 @@ void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
   config->g_w = size.width();
   config->g_h = size.height();
   config->g_pass = VPX_RC_ONE_PASS;
+  config->g_threads = WebrtcVideoEncoder::GetEncoderThreadCount(config->g_w);
 
   // Start emitting packets immediately.
   config->g_lag_in_frames = 0;
@@ -75,10 +76,6 @@ void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
   // frames, so take the hit of an "unnecessary" key-frame every 10,000 frames.
   config->kf_min_dist = 10000;
   config->kf_max_dist = 10000;
-
-  // Allow multiple cores on a system to be used for encoding for
-  // performance while at the same time ensuring we do not saturate.
-  config->g_threads = (base::SysInfo::NumberOfProcessors() + 1) / 2;
 
   // Do not drop any frames at encoder.
   config->rc_dropframe_thresh = 0;
@@ -161,7 +158,7 @@ void SetVp9CodecOptions(vpx_codec_ctx_t* codec,
 
   // The param for this knob is a log2 value so 0 is reasonable here.
   vpx_codec_control(codec, VP9E_SET_TILE_COLUMNS,
-                    static_cast<int>(codec->config.enc->g_threads >> 1));
+                    static_cast<int>(std::log2(codec->config.enc->g_threads)));
 
   // Use the lowest level of noise sensitivity so as to spend less time
   // on motion estimation and inter-prediction mode.
