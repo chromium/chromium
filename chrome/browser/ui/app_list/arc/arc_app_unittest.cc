@@ -651,6 +651,23 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
       EXPECT_EQ(package->last_backup_time, package_info->last_backup_time);
       EXPECT_EQ(package->sync, package_info->should_sync);
       EXPECT_EQ(package->permission_states, package_info->permissions);
+      EXPECT_EQ(package->web_app_info.is_null(),
+                package_info->web_app_info.is_null());
+      if (!package->web_app_info.is_null() &&
+          !package_info->web_app_info.is_null()) {
+        EXPECT_EQ(package->web_app_info->title,
+                  package_info->web_app_info->title);
+        EXPECT_EQ(package->web_app_info->start_url,
+                  package_info->web_app_info->start_url);
+        EXPECT_EQ(package->web_app_info->scope_url,
+                  package_info->web_app_info->scope_url);
+        EXPECT_EQ(package->web_app_info->theme_color,
+                  package_info->web_app_info->theme_color);
+        EXPECT_EQ(package->web_app_info->is_web_only_twa,
+                  package_info->web_app_info->is_web_only_twa);
+        EXPECT_EQ(package->web_app_info->certificate_sha256_fingerprint,
+                  package_info->web_app_info->certificate_sha256_fingerprint);
+      }
     }
   }
 
@@ -2145,6 +2162,10 @@ TEST_P(ArcAppModelBuilderTest, AppLifeCycleEventsOnPackageListRefresh) {
                             &arc::mojom::ArcPackageInfo::package_name,
                             fake_packages()[2]->package_name)))
       .Times(1);
+  EXPECT_CALL(observer, OnPackageInstalled(testing::Field(
+                            &arc::mojom::ArcPackageInfo::package_name,
+                            fake_packages()[3]->package_name)))
+      .Times(1);
   app_instance()->SendRefreshPackageList(
       ArcAppTest::ClonePackages(fake_packages()));
 
@@ -2158,6 +2179,9 @@ TEST_P(ArcAppModelBuilderTest, AppLifeCycleEventsOnPackageListRefresh) {
       .Times(1);
   EXPECT_CALL(observer,
               OnPackageRemoved(fake_packages()[2]->package_name, false))
+      .Times(1);
+  EXPECT_CALL(observer,
+              OnPackageRemoved(fake_packages()[3]->package_name, false))
       .Times(1);
 
   std::vector<arc::mojom::ArcPackageInfoPtr> packages;

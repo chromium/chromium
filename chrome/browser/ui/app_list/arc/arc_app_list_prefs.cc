@@ -86,6 +86,14 @@ constexpr char kUninstalled[] = "uninstalled";
 constexpr char kVPNProvider[] = "vpnprovider";
 constexpr char kPermissionStateGranted[] = "granted";
 constexpr char kPermissionStateManaged[] = "managed";
+constexpr char kWebAppInfo[] = "web_app_info";
+constexpr char kTitle[] = "title";
+constexpr char kStartUrl[] = "start_url";
+constexpr char kScopeUrl[] = "scope_url";
+constexpr char kThemeColor[] = "theme_color";
+constexpr char kIsWebOnlyTwa[] = "is_web_only_twa";
+constexpr char kCertificateSha256Fingerprint[] =
+    "certificate_sha256_fingerprint";
 constexpr char kWindowLayout[] = "window_layout";
 constexpr char kWindowSizeType[] = "window_layout_type";
 constexpr char kWindowResizability[] = "window_resizability";
@@ -776,12 +784,30 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
     }
   }
 
+  arc::mojom::WebAppInfoPtr web_app_info;
+  if (const base::Value* web_app_info_value = package->Find(kWebAppInfo)) {
+    const base::Value::Dict& web_app_info_dict = web_app_info_value->GetDict();
+    web_app_info = arc::mojom::WebAppInfo::New();
+    web_app_info->title = *web_app_info_dict.FindString(kTitle);
+    web_app_info->start_url = *web_app_info_dict.FindString(kStartUrl);
+    web_app_info->scope_url = *web_app_info_dict.FindString(kScopeUrl);
+    bool must_convert_to_int = base::StringToInt64(
+        *web_app_info_dict.FindString(kThemeColor), &web_app_info->theme_color);
+    DCHECK(must_convert_to_int);
+    web_app_info->is_web_only_twa = *web_app_info_dict.FindBool(kIsWebOnlyTwa);
+    if (const std::string* fingerprint =
+            web_app_info_dict.FindString(kCertificateSha256Fingerprint)) {
+      web_app_info->certificate_sha256_fingerprint = *fingerprint;
+    }
+  }
+
   return std::make_unique<PackageInfo>(
       package_name, package->FindInt(kPackageVersion).value_or(0),
       last_backup_android_id, last_backup_time,
       package->FindBool(kShouldSync).value_or(false),
       package->FindBool(kSystem).value_or(false),
-      package->FindBool(kVPNProvider).value_or(false), std::move(permissions));
+      package->FindBool(kVPNProvider).value_or(false), std::move(permissions),
+      std::move(web_app_info));
 }
 
 bool ArcAppListPrefs::IsPackageInstalled(
@@ -1650,6 +1676,21 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
     package_dict.Remove(kPermissionStates);
   }
 
+  if (package.web_app_info) {
+    const arc::mojom::WebAppInfo& web_app_info = *package.web_app_info;
+    base::Value::Dict web_app_info_dict;
+    web_app_info_dict.Set(kTitle, web_app_info.title);
+    web_app_info_dict.Set(kStartUrl, web_app_info.start_url);
+    web_app_info_dict.Set(kScopeUrl, web_app_info.scope_url);
+    web_app_info_dict.Set(kThemeColor,
+                          base::NumberToString(web_app_info.theme_color));
+    web_app_info_dict.Set(kIsWebOnlyTwa, web_app_info.is_web_only_twa);
+    if (const auto& fingerprint = web_app_info.certificate_sha256_fingerprint) {
+      web_app_info_dict.Set(kCertificateSha256Fingerprint, *fingerprint);
+    }
+    package_dict.Set(kWebAppInfo, std::move(web_app_info_dict));
+  }
+
   if (old_package_version == -1 ||
       old_package_version == package.package_version) {
     return;
@@ -2363,7 +2404,8 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
     bool system,
     bool vpn_provider,
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
-        permissions)
+        permissions,
+    arc::mojom::WebAppInfoPtr web_app_info)
     : package_name(package_name),
       package_version(package_version),
       last_backup_android_id(last_backup_android_id),
@@ -2371,7 +2413,8 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
       should_sync(should_sync),
       system(system),
       vpn_provider(vpn_provider),
-      permissions(std::move(permissions)) {}
+      permissions(std::move(permissions)),
+      web_app_info(std::move(web_app_info)) {}
 
 // Need to add explicit destructor for chromium style checker error:
 // Complex class/struct needs an explicit out-of-line destructor
