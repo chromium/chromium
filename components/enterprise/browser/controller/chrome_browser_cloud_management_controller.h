@@ -268,7 +268,7 @@ class ChromeBrowserCloudManagementController
       const std::string& client_id);
 
   void InvalidatePolicies();
-  void UnenrollCallback(bool success);
+  void UnenrollCallback(const std::string& metric_name, bool success);
 
   void CreateReportScheduler();
 

@@ -1669,6 +1669,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Enterprise.MachineLevelUserCloudPolicyEnrollment.DMTokenDeletion"
+    enum="BooleanSuccess" expires_after="2023-06-01">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Records whether browser unenrollment via DMToken deletion completed
+    succcessfully after attempting to delete the token.
+  </summary>
+</histogram>
+
+<histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.RequestFailureTime"
     units="ms" expires_after="2022-06-01">
   <owner>rogerta@chromium.org</owner>

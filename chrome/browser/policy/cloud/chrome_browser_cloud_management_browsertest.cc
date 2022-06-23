@@ -94,6 +94,8 @@ constexpr char kEnrollmentResultMetrics[] =
     "Enterprise.MachineLevelUserCloudPolicyEnrollment.Result";
 const char kUnenrollmentSuccessMetrics[] =
     "Enterprise.MachineLevelUserCloudPolicyEnrollment.UnenrollSuccess";
+const char kDmTokenDeletionMetrics[] =
+    "Enterprise.MachineLevelUserCloudPolicyEnrollment.DMTokenDeletion";
 
 #if BUILDFLAG(IS_ANDROID)
 typedef ChromeBrowserCloudManagementBrowserTestDelegateAndroid
@@ -782,11 +784,13 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
     EXPECT_TRUE(token.is_invalid());
     histogram_tester_.ExpectUniqueSample(kUnenrollmentSuccessMetrics,
                                          storage_enabled(), 1);
+    histogram_tester_.ExpectTotalCount(kDmTokenDeletionMetrics, 0);
   } else if (dm_token() == kDeletionDMToken) {
     EXPECT_EQ(0u, policy_map.size());
     // The token in storage should be empty.
     EXPECT_TRUE(token.is_empty());
-    histogram_tester_.ExpectUniqueSample(kUnenrollmentSuccessMetrics,
+    histogram_tester_.ExpectTotalCount(kUnenrollmentSuccessMetrics, 0);
+    histogram_tester_.ExpectUniqueSample(kDmTokenDeletionMetrics,
                                          storage_enabled(), 1);
   } else {
     EXPECT_EQ(1u, policy_map.size());
@@ -805,6 +809,7 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
       EXPECT_EQ(token.value(), kDMToken);
 
     histogram_tester_.ExpectTotalCount(kUnenrollmentSuccessMetrics, 0);
+    histogram_tester_.ExpectTotalCount(kDmTokenDeletionMetrics, 0);
   }
 }
 

@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -278,7 +279,7 @@ void ChromeBrowserCloudManagementController::UnenrollBrowser(
     DVLOG(1) << "Browser unenrollment: Attempting DMToken deletion";
     BrowserDMTokenStorage::Get()->ClearDMToken(base::BindOnce(
         &ChromeBrowserCloudManagementController::UnenrollCallback,
-        weak_factory_.GetWeakPtr()));
+        weak_factory_.GetWeakPtr(), "DMTokenDeletion"));
     return;
   }
 
@@ -286,7 +287,7 @@ void ChromeBrowserCloudManagementController::UnenrollBrowser(
   DVLOG(1) << "Browser unenrollment: Attempting DMToken invalidation";
   BrowserDMTokenStorage::Get()->InvalidateDMToken(
       base::BindOnce(&ChromeBrowserCloudManagementController::UnenrollCallback,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), "UnenrollSuccess"));
 }
 
 void ChromeBrowserCloudManagementController::InvalidatePolicies() {
@@ -302,11 +303,14 @@ void ChromeBrowserCloudManagementController::InvalidatePolicies() {
     report_scheduler_->OnDMTokenUpdated();
 }
 
-void ChromeBrowserCloudManagementController::UnenrollCallback(bool success) {
+void ChromeBrowserCloudManagementController::UnenrollCallback(
+    const std::string& metric_name,
+    bool success) {
   UMA_HISTOGRAM_BOOLEAN(
-      "Enterprise.MachineLevelUserCloudPolicyEnrollment.UnenrollSuccess",
+      base::StrCat(
+          {"Enterprise.MachineLevelUserCloudPolicyEnrollment.", metric_name}),
       success);
-  DVLOG(1) << "Browser unenrollment: " << (success ? "Successful" : "Failed");
+  DVLOG(1) << "Browser unenrollment: " << (success ? "succeeded" : "failed");
 
   if (success)
     InvalidatePolicies();
