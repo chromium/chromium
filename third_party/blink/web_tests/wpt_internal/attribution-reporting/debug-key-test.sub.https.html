@@ -1,64 +1,49 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name=variant content="?include=source">
+<meta name=variant content="?include=trigger">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/subset-tests-by-key.js"></script>
 <script src="resources/helpers.js"></script>
 <script>
-const source_debug_key_promise_test = testCase =>
+const debug_key_promise_test = (testCase, forSource) =>
   attribution_reporting_promise_test(async t => {
     t.add_cleanup(() => clearCookie(testCase.cookie))
 
+    const debugKey = '246';
+
     registerAttributionSrc('Attribution-Reporting-Register-Source', {
-      source_event_id :'1',
+      source_event_id: '1',
       destination: `https://{{host}}`,
-      debug_key: '246',
+      debug_key: forSource ? debugKey : undefined,
     }, testCase.cookie);
 
     registerAttributionSrc('Attribution-Reporting-Register-Trigger', {
       event_trigger_data: [{trigger_data: '0'}],
+      debug_key: forSource ? undefined : debugKey,
     });
 
     const payload = await pollEventLevelReports();
     assert_equals(payload.reports.length, 1);
     const report = JSON.parse(payload.reports[0].body);
 
-    if (testCase.keyExpected) {
-      assert_equals(report.source_debug_key, '246');
-    } else {
-      assert_not_own_property(report, 'source_debug_key');
+    let keyUnderTest = 'trigger_debug_key';
+    let otherKey = 'source_debug_key';
+    if (forSource) {
+      [keyUnderTest, otherKey] = [otherKey, keyUnderTest];
     }
 
-    assert_not_own_property(report, 'trigger_debug_key');
-  }, `Source: ${testCase.testName}`);
-
-const trigger_debug_key_promise_test = testCase =>
-  attribution_reporting_promise_test(async t => {
-    t.add_cleanup(() => clearCookie(testCase.cookie))
-
-    registerAttributionSrc('Attribution-Reporting-Register-Source', {
-      source_event_id :'1',
-      destination: `https://{{host}}`,
-    });
-
-    registerAttributionSrc('Attribution-Reporting-Register-Trigger', {
-      event_trigger_data: [{trigger_data: '0'}],
-      debug_key: '357',
-    }, testCase.cookie);
-
-    const payload = await pollEventLevelReports();
-    assert_equals(payload.reports.length, 1);
-    const report = JSON.parse(payload.reports[0].body);
-
     if (testCase.keyExpected) {
-      assert_equals(report.trigger_debug_key, '357');
+      assert_equals(report[keyUnderTest], debugKey);
     } else {
-      assert_not_own_property(report, 'trigger_debug_key');
+      assert_not_own_property(report, keyUnderTest);
     }
 
-    assert_not_own_property(report, 'source_debug_key');
-  }, `Trigger: ${testCase.testName}`);
+    assert_not_own_property(report, otherKey);
+  }, testCase.testName);
 
-const testCases = [
+[
   {
     testName: 'Valid cookie propagates debug key.',
     cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/',
@@ -89,8 +74,8 @@ const testCases = [
     cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None',
     keyExpected: false,
   },
-];
-
-testCases.forEach(source_debug_key_promise_test);
-testCases.forEach(trigger_debug_key_promise_test);
+].forEach(testCase => {
+  subsetTestByKey('source', debug_key_promise_test, testCase, /*forSource=*/true);
+  subsetTestByKey('trigger', debug_key_promise_test, testCase, /*forSource=*/false);
+});
 </script>
