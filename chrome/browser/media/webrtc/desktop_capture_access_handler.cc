@@ -581,6 +581,8 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
   picker_params.target_name = picker_params.app_name;
   picker_params.request_audio = pending_request.request.audio_type !=
                                 blink::mojom::MediaStreamType::NO_SERVICE;
+  picker_params.exclude_system_audio =
+      pending_request.request.exclude_system_audio;
   picker_params.restricted_by_policy =
       (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   pending_request.picker->Show(picker_params, std::move(source_lists),

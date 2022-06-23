@@ -391,9 +391,18 @@ UserMediaRequest* UserMediaRequest::Create(
   if (!video.IsNull())
     CountVideoConstraintUses(context, video);
 
-  return MakeGarbageCollected<UserMediaRequest>(
+  UserMediaRequest* const result = MakeGarbageCollected<UserMediaRequest>(
       context, controller, media_type, audio, video,
       options->preferCurrentTab(), callbacks, surface);
+
+  // The default is to include.
+  // Note that this option is no-op if audio is not requested.
+  result->set_exclude_system_audio(
+      options->hasSystemAudio() &&
+      options->systemAudio().AsEnum() ==
+          V8SystemAudioPreferenceEnum::Enum::kExclude);
+
+  return result;
 }
 
 UserMediaRequest* UserMediaRequest::CreateForTesting(

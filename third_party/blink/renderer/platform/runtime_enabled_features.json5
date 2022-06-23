@@ -2300,6 +2300,15 @@
       status: "experimental",
     },
     {
+      // When a Web application calls getDisplayMedia() and asks for audio,
+      // allow a hint to be provided as to whether the Web application is
+      // interested in system-audio being among the options offered to the user.
+      //
+      // https://github.com/w3c/mediacapture-screen-share/pull/222/files
+      name: "SystemAudioConstraint",
+      status: "stable",
+    },
+    {
       name: "SystemWakeLock",
       status: "experimental",
     },

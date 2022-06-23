@@ -147,6 +147,9 @@ class MODULES_EXPORT UserMediaRequest final
 
   bool should_prefer_current_tab() const { return should_prefer_current_tab_; }
 
+  void set_exclude_system_audio(bool value) { exclude_system_audio_ = value; }
+  bool exclude_system_audio() const { return exclude_system_audio_; }
+
   // Mark this request as an GetOpenDevice request for initializing a
   // TransferredMediaStreamTrack from the deviced identified by session_id.
   void SetTransferData(const base::UnguessableToken& session_id,
@@ -167,6 +170,7 @@ class MODULES_EXPORT UserMediaRequest final
   MediaConstraints audio_;
   MediaConstraints video_;
   const bool should_prefer_current_tab_ = false;
+  bool exclude_system_audio_ = false;
   bool should_disable_hardware_noise_suppression_;
   bool has_transient_user_activation_ = false;
   int32_t request_id_ = -1;

@@ -82,6 +82,10 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // audio being played out locally.
   bool disable_local_echo;
 
+  // If audio is requested, |exclude_system_audio| can indicate that
+  // system-audio should nevertheless not be offered to the user.
+  bool exclude_system_audio = false;
+
   // Flag to indicate whether the request is for PTZ use.
   bool request_pan_tilt_zoom_permission;
 };

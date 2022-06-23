@@ -73,6 +73,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
     DisplaySurfaceCategory(
         DesktopMediaList::Type type,
         std::unique_ptr<DesktopMediaListController> controller,
+        bool audio_offered,
         bool audio_checked);
 
     DisplaySurfaceCategory(DisplaySurfaceCategory&& other);
@@ -81,7 +82,8 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
     DesktopMediaList::Type type;
     std::unique_ptr<DesktopMediaListController> controller;
-    bool audio_checked;
+    bool audio_offered;  // Whether the audio-checkbox should be visible.
+    bool audio_checked;  // Whether the audio-checkbox is checked.
   };
 
   static bool AudioSupported(DesktopMediaList::Type type);

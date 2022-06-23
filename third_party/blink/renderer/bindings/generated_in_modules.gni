@@ -2305,6 +2305,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_manager.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_manager.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_system_audio_preference_enum.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_system_audio_preference_enum.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_task_controller.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_task_controller.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_task_priority_change_event.cc",
