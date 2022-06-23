@@ -4,7 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
-import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/file_manager/base/gn/js_test_type_check.gni")
 import("//ui/webui/resources/js/cr.gni")
 
 visibility = [
@@ -16,7 +16,7 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_jsmodules",
-    ":js_test_gen_html_modules_type_check_auto",
+    ":js_test_type_check",
     ":test_support_modules_type_check",
   ]
 }
@@ -407,7 +407,7 @@ js_library("icon_util") {
   deps = [ "//ui/file_manager/file_manager/externs:file_manager_private" ]
 }
 
-js_test_gen_html("js_test_gen_html_modules") {
+js_test_type_check("js_test_type_check") {
   deps = [
     ":file_type_unittest",
     ":files_app_entry_types_unittest",

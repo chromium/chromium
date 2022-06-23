@@ -3948,12 +3948,8 @@ if (!is_android) {
         # data or data_deps and through which dependencies.
         "//chrome/browser/resources/chromeos/wallpaper_manager/",
         "//chromeos/test/data/",
-        "//ui/file_manager/base/",
-        "//ui/file_manager/file_manager/",
-        "//ui/file_manager/image_loader/",
         "//ui/file_manager/integration_tests/",
         "//third_party/polymer/v1_0/components-chromium/",
-        "$root_gen_dir/ui/file_manager/file_manager/",
         "$root_out_dir/chromevox_test_data/",
         "$root_out_dir/content_shell.pak",
         "$root_out_dir/resources/chromeos/",
@@ -3963,7 +3959,6 @@ if (!is_android) {
         "//ash/keyboard/ui:resources",
         "//chrome",
         "//testing/buildbot/filters:chromeos_filters",
-        "//ui/file_manager:unit_test_data",
       ]
       if (!is_official_build) {
         sources += [

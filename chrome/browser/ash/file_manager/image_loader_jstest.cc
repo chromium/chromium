@@ -23,17 +23,17 @@ class ImageLoaderJsTest : public FileManagerJsTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, ImageLoaderClientTest) {
-  RunTestURL("image_loader_client_unittest_gen.html");
+  RunTestURL("image_loader_client_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, CacheTest) {
-  RunTestURL("cache_unittest_gen.html");
+  RunTestURL("cache_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, ImageLoaderTest) {
-  RunTestURL("image_loader_unittest_gen.html");
+  RunTestURL("image_loader_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, SchedulerTest) {
-  RunTestURL("scheduler_unittest_gen.html");
+  RunTestURL("scheduler_unittest.js");
 }

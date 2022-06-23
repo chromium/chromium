@@ -5,7 +5,7 @@
 import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
-import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/file_manager/base/gn/js_test_type_check.gni")
 import("//ui/webui/resources/js/cr.gni")
 
 # TODO(tapted): This folder should be restricted to file_manager, but related
@@ -17,15 +17,13 @@ import("//ui/webui/resources/js/cr.gni")
 related_apps = [
   "//ui/file_manager/audio_player/*",
   "//ui/file_manager/file_manager/*",
-  "//ui/file_manager/gallery/*",
-  "//ui/file_manager/video_player/*",
 ]
 
 group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_jsmodules",
-    ":js_test_gen_html_modules_type_check_auto",
+    ":js_test_type_check",
     ":test_support_modules_type_check",
   ]
 }
@@ -778,7 +776,7 @@ js_library("volume_manager_util") {
   ]
 }
 
-js_test_gen_html("js_test_gen_html_modules") {
+js_test_type_check("js_test_type_check") {
   deps = [
     ":crostini_unittest",
     ":device_handler_unittest",

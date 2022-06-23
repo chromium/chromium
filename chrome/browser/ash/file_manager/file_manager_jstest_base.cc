@@ -116,7 +116,24 @@ void FileManagerJsTestBase::RunGeneratedTest(const std::string& file) {
 }
 
 void FileManagerJsTestBase::RunTestURL(const std::string& file) {
-  RunTestImpl(GURL("chrome://webui-test/" + base_path_.Append(file).value()));
+  // Open a new tab with the Files app test harness.
+  auto url =
+      GURL("chrome://webui-test/base/js/test_harness.html?test_module=/" +
+           base_path_.Append(file).value());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Wait for the JS modules to be loaded and exported to window.
+  content::DOMMessageQueue message_queue(web_contents);
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ(message, "\"LOADED\"");
+
+  // Execute the WebUI test harness.
+  EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents));
 }
 
 void FileManagerJsTestBase::RunTestImpl(const GURL& url) {

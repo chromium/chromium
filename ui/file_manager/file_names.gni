@@ -413,11 +413,12 @@ unittest_files = [
   "image_loader/image_loader_client_unittest.js",
 ]
 
-generated_test_htmls = []
-foreach(_t, unittest_files) {
-  generated_test_htmls += [ string_replace(_t, ".js", "_gen.html") ]
-}
-
 # Files that don't have the generated HTML, but are used for tests.
-unittest_files += [ "file_manager/common/js/mock_util.js" ]
+unittest_files += [
+  # Test harness
+  "base/js/test_harness.html",
+  "base/js/test_harness.js",
+
+  "file_manager/common/js/mock_util.js",
+]
 # END: Test files.
