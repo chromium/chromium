@@ -489,7 +489,7 @@ MoveMigrator::TaskResult MoveMigrator::SetupAshSplitDir(
           original_profile_dir
               .Append(browser_data_migrator_util::kSyncDataFilePath)
               .Append(browser_data_migrator_util::kSyncDataLeveldbName))) {
-    if (!browser_data_migrator_util::MigrateSyncData(
+    if (!browser_data_migrator_util::MigrateSyncDataLevelDB(
             original_profile_dir
                 .Append(browser_data_migrator_util::kSyncDataFilePath)
                 .Append(browser_data_migrator_util::kSyncDataLeveldbName),
@@ -498,8 +498,8 @@ MoveMigrator::TaskResult MoveMigrator::SetupAshSplitDir(
             tmp_profile_dir
                 .Append(browser_data_migrator_util::kSyncDataFilePath)
                 .Append(browser_data_migrator_util::kSyncDataLeveldbName))) {
-      LOG(ERROR) << "MigrateSyncData() failed";
-      return {TaskStatus::kSetupAshDirMigrateSyncDataFailed};
+      LOG(ERROR) << "MigrateSyncDataLevelDB() failed";
+      return {TaskStatus::kSetupAshDirMigrateSyncDataLevelDBFailed};
     }
   }
 
@@ -553,6 +553,35 @@ MoveMigrator::TaskResult MoveMigrator::MoveLacrosItemsToNewDir(
   const base::FilePath tmp_profile_dir =
       original_profile_dir.Append(browser_data_migrator_util::kMoveTmpDir)
           .Append(browser_data_migrator_util::kLacrosProfilePath);
+
+  // Nigori file needs special handling, because it's not stored directly under
+  // |original_profile_dir|.
+  const base::FilePath original_nigori_path =
+      original_profile_dir.Append(browser_data_migrator_util::kSyncDataFilePath)
+          .Append(browser_data_migrator_util::kSyncDataNigoriFileName);
+  if (base::PathExists(original_nigori_path)) {
+    // In theory, `Sync Data` directory should be already created by
+    // SplitSyncDataLevelDB() as long as DB exists. It still needs to be created
+    // manually here, to handle the case when DB doesn't exist, but Nigori file
+    // does.
+    if (!base::CreateDirectory(tmp_profile_dir.Append(
+            browser_data_migrator_util::kSyncDataFilePath))) {
+      PLOG(ERROR) << "Failure while creating "
+                  << tmp_profile_dir.Append(
+                         browser_data_migrator_util::kSyncDataFilePath)
+                  << " directory.";
+      return {TaskStatus::kMoveLacrosItemsCreateDirFailed, errno};
+    }
+
+    const base::FilePath target_nigori_path =
+        tmp_profile_dir.Append(browser_data_migrator_util::kSyncDataFilePath)
+            .Append(browser_data_migrator_util::kSyncDataNigoriFileName);
+    if (!base::Move(original_nigori_path, target_nigori_path)) {
+      PLOG(ERROR) << "Failed to move item " << original_nigori_path.value()
+                  << " to " << target_nigori_path << ": ";
+      return {TaskStatus::kMoveLacrosItemsToNewDirMoveFailed, errno};
+    }
+  }
 
   for (const auto& item : lacros_items.items) {
     if (!base::Move(item.path, tmp_profile_dir.Append(item.path.BaseName()))) {
@@ -849,9 +878,10 @@ MoveMigrator::ToBrowserDataMigratorMigrationResult(TaskResult result) {
     case TaskStatus::kSetupAshDirCreateDirFailed:
     case TaskStatus::kSetupAshDirCopyExtensionsFailed:
     case TaskStatus::kSetupAshDirCopyIndexedDBFailed:
-    case TaskStatus::kSetupAshDirMigrateSyncDataFailed:
+    case TaskStatus::kSetupAshDirMigrateSyncDataLevelDBFailed:
     case TaskStatus::kSetupAshDirCopyStorageFailed:
     case TaskStatus::kMoveSplitItemsToOriginalDirMoveStorageFailed:
+    case TaskStatus::kMoveLacrosItemsCreateDirFailed:
       return {BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
               {BrowserDataMigratorImpl::ResultKind::kFailed}};
   }
@@ -898,9 +928,10 @@ std::string MoveMigrator::TaskStatusToString(TaskStatus task_status) {
     MAPPING(SetupAshDirCreateDirFailed);
     MAPPING(SetupAshDirCopyExtensionsFailed);
     MAPPING(SetupAshDirCopyIndexedDBFailed);
-    MAPPING(SetupAshDirMigrateSyncDataFailed);
+    MAPPING(SetupAshDirMigrateSyncDataLevelDBFailed);
     MAPPING(SetupAshDirCopyStorageFailed);
     MAPPING(MoveSplitItemsToOriginalDirMoveStorageFailed);
+    MAPPING(MoveLacrosItemsCreateDirFailed);
 #undef MAPPING
   }
 }

@@ -232,6 +232,7 @@ constexpr char kLocalStorageLeveldbName[] = "leveldb";
 // `Sync Data` path.
 constexpr char kSyncDataFilePath[] = "Sync Data";
 constexpr char kSyncDataLeveldbName[] = "LevelDB";
+constexpr char kSyncDataNigoriFileName[] = "Nigori.bin";
 
 // State Store paths.
 constexpr const char* const kStateStorePaths[] = {
@@ -489,9 +490,9 @@ bool MigrateLevelDB(const base::FilePath& original_path,
 // Migrate Sync Data's LevelDB instance at `original_path` to Ash and Lacros.
 // For Ash, filter out the data types that are not meant to be ported to Lacros.
 // For Lacros, filter out the data types that are meant to stay in Ash.
-bool MigrateSyncData(const base::FilePath& original_path,
-                     const base::FilePath& ash_target_path,
-                     const base::FilePath& lacros_target_path);
+bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
+                            const base::FilePath& ash_target_path,
+                            const base::FilePath& lacros_target_path);
 
 // Manipulates the given representation of Preferences (`root_dict`)
 // so that the given key only contains values relevant to Ash or

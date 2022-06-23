@@ -578,6 +578,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="TaskStatus">
     <variant name="Cancelled"/>
+    <variant name="MoveLacrosItemsCreateDirFailed"/>
     <variant name="MoveLacrosItemsToNewDirMoveFailed"/>
     <variant name="MoveLacrosItemsToNewDirNoWritePerm"/>
     <variant name="MoveSplitItemsToOriginalDirCreateDirFailed"/>

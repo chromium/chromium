@@ -65680,6 +65680,9 @@ Called by update_use_counter_css.py.-->
   <int value="22" label="SetupAshDirCopyExtensionsFailed"/>
   <int value="23" label="SetupAshDirCopyIndexedDBFailed"/>
   <int value="24" label="SetupAshDirMigrateLevelDBForSyncDataFailed"/>
+  <int value="25" label="SetupAshDirCopyStorageFailed"/>
+  <int value="26" label="MoveSplitItemsToOriginalDirMoveStorageFailed"/>
+  <int value="27" label="MoveLacrosItemsCreateDirFailed"/>
 </enum>
 
 <enum name="MSECodec">
