@@ -50,6 +50,10 @@ def main():
     parser = argparse.ArgumentParser()
     register_package_args(parser)
     args = parser.parse_args()
+    if not args.repo:
+        raise ValueError('Must specify directory to publish packages.')
+    if not args.packages:
+        raise ValueError('Must specify packages to publish.')
     publish_packages(args.packages, args.repo)
 
 
