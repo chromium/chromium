@@ -10,6 +10,14 @@ fn test() {
     expect_true!(true);
 }
 
+#[gtest(Test, WithCustomMessage)]
+fn test() {
+    expect_true!(true, "foo");
+    expect_true!(true, "foo {}", 1);
+    expect_eq!(5, 5, "math stopped working");
+    expect_eq!(5 + 5, 10, "uh {}", "oh");
+}
+
 mod module1 {
     use super::*;
 
