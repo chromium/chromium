@@ -1121,8 +1121,8 @@ if (!is_component_build) {
     android_manifest = "test/javatests/AndroidManifest.xml"
 
     sources = cronet_smoketests_platform_only_common_srcs + [
-                "test/src/org/chromium/net/CronetTestApplication.java",
                 "test/smoketests/src/org/chromium/net/smoke/PlatformOnlyEngineTest.java",
+                "test/src/org/chromium/net/CronetTestApplication.java",
               ]
 
     deps = [
@@ -1524,11 +1524,11 @@ if (!is_component_build) {
   action("api_static_checks") {
     script = "//components/cronet/tools/api_static_checks.py"
     outputs = [ "$target_gen_dir/$target_name.stamp" ]
-    _api_jar =
-        "$root_build_dir/lib.java/components/cronet/android/cronet_api_java.jar"
-    _common_jar = "$root_build_dir/lib.java/components/cronet/android/cronet_impl_common_base_java.jar"
-    _platform_jar = "$root_build_dir/lib.java/components/cronet/android/cronet_impl_platform_base_java.jar"
-    _native_jar = "$root_build_dir/lib.java/components/cronet/android/cronet_impl_native_base_java.jar"
+    _api_jar = "$target_out_dir/cronet_api_java.processed.jar"
+    _common_jar = "$target_out_dir/cronet_impl_common_base_java.processed.jar"
+    _platform_jar =
+        "$target_out_dir/cronet_impl_platform_base_java.processed.jar"
+    _native_jar = "$target_out_dir/cronet_impl_native_base_java.processed.jar"
     args = [
       "--api_jar",
       rebase_path(_api_jar, root_build_dir),
