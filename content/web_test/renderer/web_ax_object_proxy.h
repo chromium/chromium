@@ -208,6 +208,8 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   void ScrollToMakeVisible();
   void ScrollToMakeVisibleWithSubFocus(int x, int y, int width, int height);
   void ScrollToGlobalPoint(int x, int y);
+  void ScrollUp();
+  void ScrollDown();
   int ScrollX();
   int ScrollY();
   std::string ToString();

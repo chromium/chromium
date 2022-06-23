@@ -1290,57 +1290,9 @@ void RenderAccessibilityImpl::MarkAllAXObjectsDirty(
 
 void RenderAccessibilityImpl::Scroll(const ui::AXActionTarget* target,
                                      ax::mojom::Action scroll_action) {
-  gfx::Rect bounds = target->GetRelativeBounds();
-  if (bounds.IsEmpty())
-    return;
-
-  gfx::Point initial = target->GetScrollOffset();
-  gfx::Point min = target->MinimumScrollOffset();
-  gfx::Point max = target->MaximumScrollOffset();
-
-  // TODO(anastasi): This 4/5ths came from the Android implementation, revisit
-  // to find the appropriate modifier to keep enough context onscreen after
-  // scrolling.
-  int page_x = std::max((int)(bounds.width() * 4 / 5), 1);
-  int page_y = std::max((int)(bounds.height() * 4 / 5), 1);
-
-  // Forward/backward defaults to down/up unless it can only be scrolled
-  // horizontally.
-  if (scroll_action == ax::mojom::Action::kScrollForward)
-    scroll_action = max.y() > min.y() ? ax::mojom::Action::kScrollDown
-                                      : ax::mojom::Action::kScrollRight;
-  if (scroll_action == ax::mojom::Action::kScrollBackward)
-    scroll_action = max.y() > min.y() ? ax::mojom::Action::kScrollUp
-                                      : ax::mojom::Action::kScrollLeft;
-
-  int x = initial.x();
-  int y = initial.y();
-  switch (scroll_action) {
-    case ax::mojom::Action::kScrollUp:
-      if (initial.y() == min.y())
-        return;
-      y = std::max(initial.y() - page_y, min.y());
-      break;
-    case ax::mojom::Action::kScrollDown:
-      if (initial.y() == max.y())
-        return;
-      y = std::min(initial.y() + page_y, max.y());
-      break;
-    case ax::mojom::Action::kScrollLeft:
-      if (initial.x() == min.x())
-        return;
-      x = std::max(initial.x() - page_x, min.x());
-      break;
-    case ax::mojom::Action::kScrollRight:
-      if (initial.x() == max.x())
-        return;
-      x = std::min(initial.x() + page_x, max.x());
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  target->SetScrollOffset(gfx::Point(x, y));
+  ui::AXActionData action_data;
+  action_data.action = scroll_action;
+  target->PerformAction(action_data);
 }
 
 void RenderAccessibilityImpl::AddImageAnnotationDebuggingAttributes(

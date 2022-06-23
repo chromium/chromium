@@ -1178,6 +1178,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   gfx::Point GetScrollOffset() const;
   gfx::Point MinimumScrollOffset() const;
   gfx::Point MaximumScrollOffset() const;
+  void Scroll(ax::mojom::blink::Action scroll_action) const;
   void SetScrollOffset(const gfx::Point&) const;
 
   // Tables and grids.

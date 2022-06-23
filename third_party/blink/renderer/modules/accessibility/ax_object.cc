@@ -32,6 +32,7 @@
 #include <ostream>
 
 #include "base/auto_reset.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -537,6 +538,16 @@ blink::KeyboardEvent* CreateKeyboardEvent(
       key.dom_key = ui::DomKey::CONTEXT_MENU;
       key.dom_code = static_cast<int>(ui::DomCode::CONTEXT_MENU);
       key.native_key_code = key.windows_key_code = blink::VKEY_APPS;
+      break;
+    case ax::mojom::blink::Action::kScrollUp:
+      key.dom_key = ui::DomKey::PAGE_UP;
+      key.dom_code = static_cast<int>(ui::DomCode::PAGE_UP);
+      key.native_key_code = key.windows_key_code = blink::VKEY_PRIOR;
+      break;
+    case ax::mojom::blink::Action::kScrollDown:
+      key.dom_key = ui::DomKey::PAGE_DOWN;
+      key.dom_code = static_cast<int>(ui::DomCode::PAGE_DOWN);
+      key.native_key_code = key.windows_key_code = blink::VKEY_NEXT;
       break;
     default:
       NOTREACHED();
@@ -1299,6 +1310,14 @@ void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
   if (IsSlider()) {
     node_data->AddAction(ax::mojom::blink::Action::kDecrement);
     node_data->AddAction(ax::mojom::blink::Action::kIncrement);
+  }
+  if (IsUserScrollable()) {
+    node_data->AddAction(ax::mojom::blink::Action::kScrollUp);
+    node_data->AddAction(ax::mojom::blink::Action::kScrollDown);
+    node_data->AddAction(ax::mojom::blink::Action::kScrollLeft);
+    node_data->AddAction(ax::mojom::blink::Action::kScrollRight);
+    node_data->AddAction(ax::mojom::blink::Action::kScrollForward);
+    node_data->AddAction(ax::mojom::blink::Action::kScrollBackward);
   }
 }
 
@@ -5161,6 +5180,82 @@ void AXObject::SetScrollOffset(const gfx::Point& offset) const {
                         mojom::blink::ScrollType::kProgrammatic);
 }
 
+void AXObject::Scroll(ax::mojom::blink::Action scroll_action) const {
+  AXObject* offset_container = nullptr;
+  gfx::RectF bounds;
+  gfx::Transform container_transform;
+  GetRelativeBounds(&offset_container, bounds, container_transform);
+  if (bounds.IsEmpty())
+    return;
+
+  gfx::Point initial = GetScrollOffset();
+  gfx::Point min = MinimumScrollOffset();
+  gfx::Point max = MaximumScrollOffset();
+
+  // TODO(anastasi): This 4/5ths came from the Android implementation, revisit
+  // to find the appropriate modifier to keep enough context onscreen after
+  // scrolling.
+  int page_x = std::max(base::ClampRound<int>(bounds.width() * 4 / 5), 1);
+  int page_y = std::max(base::ClampRound<int>(bounds.height() * 4 / 5), 1);
+
+  // Forward/backward defaults to down/up unless it can only be scrolled
+  // horizontally.
+  if (scroll_action == ax::mojom::blink::Action::kScrollForward) {
+    scroll_action = max.y() > min.y() ? ax::mojom::blink::Action::kScrollDown
+                                      : ax::mojom::blink::Action::kScrollRight;
+  } else if (scroll_action == ax::mojom::blink::Action::kScrollBackward) {
+    scroll_action = max.y() > min.y() ? ax::mojom::blink::Action::kScrollUp
+                                      : ax::mojom::blink::Action::kScrollLeft;
+  }
+
+  int x = initial.x();
+  int y = initial.y();
+  switch (scroll_action) {
+    case ax::mojom::blink::Action::kScrollUp:
+      if (initial.y() == min.y())
+        return;
+      y = std::max(initial.y() - page_y, min.y());
+      break;
+    case ax::mojom::blink::Action::kScrollDown:
+      if (initial.y() == max.y())
+        return;
+      y = std::min(initial.y() + page_y, max.y());
+      break;
+    case ax::mojom::blink::Action::kScrollLeft:
+      if (initial.x() == min.x())
+        return;
+      x = std::max(initial.x() - page_x, min.x());
+      break;
+    case ax::mojom::blink::Action::kScrollRight:
+      if (initial.x() == max.x())
+        return;
+      x = std::min(initial.x() + page_x, max.x());
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  SetScrollOffset(gfx::Point(x, y));
+
+  if (!RuntimeEnabledFeatures::
+          SynthesizedKeyboardEventsForAccessibilityActionsEnabled())
+    return;
+
+  // There are no keys that produce scroll left/right, so we shouldn't
+  // synthesize any keyboard events for these actions.
+  if (scroll_action == ax::mojom::blink::Action::kScrollLeft ||
+      scroll_action == ax::mojom::blink::Action::kScrollRight)
+    return;
+
+  LocalDOMWindow* local_dom_window = GetDocument()->domWindow();
+  KeyboardEvent* keydown = CreateKeyboardEvent(
+      local_dom_window, WebInputEvent::Type::kRawKeyDown, scroll_action);
+  GetNode()->DispatchEvent(*keydown);
+  KeyboardEvent* keyup = CreateKeyboardEvent(
+      local_dom_window, WebInputEvent::Type::kKeyUp, scroll_action);
+  GetNode()->DispatchEvent(*keyup);
+}
+
 bool AXObject::IsTableLikeRole() const {
   return ui::IsTableLike(RoleValue()) ||
          RoleValue() == ax::mojom::blink::Role::kLayoutTable;
@@ -5563,6 +5658,15 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     case ax::mojom::blink::Action::kShowContextMenu:
       return RequestShowContextMenuAction();
 
+    case ax::mojom::blink::Action::kScrollBackward:
+    case ax::mojom::blink::Action::kScrollDown:
+    case ax::mojom::blink::Action::kScrollForward:
+    case ax::mojom::blink::Action::kScrollLeft:
+    case ax::mojom::blink::Action::kScrollRight:
+    case ax::mojom::blink::Action::kScrollUp:
+      Scroll(action_data.action);
+      return true;
+
     case ax::mojom::blink::Action::kAnnotatePageImages:
     case ax::mojom::blink::Action::kCollapse:
     case ax::mojom::blink::Action::kCustomAction:
@@ -5575,13 +5679,7 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     case ax::mojom::blink::Action::kLoadInlineTextBoxes:
     case ax::mojom::blink::Action::kNone:
     case ax::mojom::blink::Action::kReplaceSelectedText:
-    case ax::mojom::blink::Action::kScrollBackward:
-    case ax::mojom::blink::Action::kScrollDown:
-    case ax::mojom::blink::Action::kScrollForward:
-    case ax::mojom::blink::Action::kScrollLeft:
-    case ax::mojom::blink::Action::kScrollRight:
     case ax::mojom::blink::Action::kScrollToMakeVisible:
-    case ax::mojom::blink::Action::kScrollUp:
     case ax::mojom::blink::Action::kSetSelection:
     case ax::mojom::blink::Action::kShowTooltip:
     case ax::mojom::blink::Action::kSignalEndOfTest:

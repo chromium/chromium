@@ -5232,7 +5232,11 @@ std::vector<ax::mojom::Action> AXPlatformNodeAuraLinux::GetSupportedActions()
     const {
   static const base::NoDestructor<std::vector<ax::mojom::Action>>
       kActionsThatCanBeExposedViaAtkAction{
-          {ax::mojom::Action::kDecrement, ax::mojom::Action::kIncrement}};
+          {ax::mojom::Action::kDecrement, ax::mojom::Action::kIncrement,
+           ax::mojom::Action::kScrollUp, ax::mojom::Action::kScrollDown,
+           ax::mojom::Action::kScrollLeft, ax::mojom::Action::kScrollRight,
+           ax::mojom::Action::kScrollForward,
+           ax::mojom::Action::kScrollBackward}};
   std::vector<ax::mojom::Action> supported_actions;
 
   // The default action, if it exists, must be listed at index 0.

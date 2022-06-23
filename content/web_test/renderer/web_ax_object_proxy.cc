@@ -412,6 +412,8 @@ gin::ObjectTemplateBuilder WebAXObjectProxy::GetObjectTemplateBuilder(
       .SetMethod("scrollToMakeVisibleWithSubFocus",
                  &WebAXObjectProxy::ScrollToMakeVisibleWithSubFocus)
       .SetMethod("scrollToGlobalPoint", &WebAXObjectProxy::ScrollToGlobalPoint)
+      .SetMethod("scrollUp", &WebAXObjectProxy::ScrollUp)
+      .SetMethod("scrollDown", &WebAXObjectProxy::ScrollDown)
       .SetMethod("scrollX", &WebAXObjectProxy::ScrollX)
       .SetMethod("scrollY", &WebAXObjectProxy::ScrollY)
       .SetMethod("toString", &WebAXObjectProxy::ToString)
@@ -1462,6 +1464,20 @@ void WebAXObjectProxy::ScrollToGlobalPoint(int x, int y) {
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kScrollToPoint;
   action_data.target_point = gfx::Point(x, y);
+  accessibility_object_.PerformAction(action_data);
+}
+
+void WebAXObjectProxy::ScrollUp() {
+  UpdateLayout();
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kScrollUp;
+  accessibility_object_.PerformAction(action_data);
+}
+
+void WebAXObjectProxy::ScrollDown() {
+  UpdateLayout();
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kScrollDown;
   accessibility_object_.PerformAction(action_data);
 }
 
