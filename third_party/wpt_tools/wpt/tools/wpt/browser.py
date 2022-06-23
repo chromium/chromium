@@ -156,6 +156,8 @@ class Firefox(Browser):
 
         if self.platform in ("linux", "win"):
             bits = "64" if uname[4] == "x86_64" else "32"
+        elif self.platform == "macos" and uname.machine == "arm64":
+            bits = "-aarch64"
         else:
             bits = ""
 
@@ -620,6 +622,8 @@ class ChromeChromiumBase(Browser):
         """Returns a string that is used for the platform directory in Chromium Snapshots"""
         if (self.platform == "Linux" or self.platform == "Win") and uname[4] == "x86_64":
             return f"{self.platform}_x64"
+        if self.platform == "Mac" and uname.machine == "arm64":
+            return "Mac_Arm"
         return self.platform
 
     def find_webdriver(self, venv_path=None, channel=None, browser_binary=None):
@@ -746,8 +750,6 @@ class ChromeChromiumBase(Browser):
         if webdriver_binary is None:
             self.logger.warning("No valid webdriver supplied to detect version.")
             return None
-        if uname[0] == "Windows":
-            return _get_fileversion(webdriver_binary, self.logger)
 
         try:
             version_string = call(webdriver_binary, "--version").strip()
@@ -864,11 +866,19 @@ class Chrome(ChromeChromiumBase):
 
     product = "chrome"
 
+    @property
+    def _chromedriver_api_platform_string(self):
+        """chromedriver.storage.googleapis.com has a different filename for M1 binary,
+        while the snapshot URL has a different directory but the same filename."""
+        if self.platform == "Mac" and uname.machine == "arm64":
+            return "mac64_m1"
+        return self._chromedriver_platform_string
+
     def _get_webdriver_url(self, version):
         """Get a ChromeDriver API URL to download a version of ChromeDriver that matches
         the browser binary version. Version selection is described here:
         https://chromedriver.chromium.org/downloads/version-selection"""
-        filename = f"chromedriver_{self._chromedriver_platform_string}.zip"
+        filename = f"chromedriver_{self._chromedriver_api_platform_string}.zip"
 
         version = self._remove_version_suffix(version)
 
@@ -886,6 +896,7 @@ class Chrome(ChromeChromiumBase):
                 # We currently use the latest Chromium revision to get a compatible Chromedriver
                 # version for Chrome Dev, since it is not available through the ChromeDriver API.
                 # If we've gotten to this point, it is assumed that this is Chrome Dev.
+                filename = f"chromedriver_{self._chromedriver_platform_string}.zip"
                 revision = self._get_chromium_revision(filename, version)
                 return self._build_snapshots_url(revision, filename)
         return f"https://chromedriver.storage.googleapis.com/{latest}/{filename}"

@@ -1,10 +1,15 @@
 # mypy: allow-untyped-defs
 
+import functools
 import json
 import time
 
 from collections import defaultdict
 from mozlog.formatters import base
+
+from wptrunner.wptmanifest import serializer
+
+_escape_heading = functools.partial(serializer.escape, extras="]")
 
 
 class ChromiumFormatter(base.BaseFormatter):  # type: ignore
@@ -75,7 +80,8 @@ class ChromiumFormatter(base.BaseFormatter):  # type: ignore
         Messages are appended verbatim to self.messages[test].
         """
         if subtest:
-            result = "  [%s]\n    expected: %s\n" % (subtest, wpt_actual_status)
+            result = "  [%s]\n    expected: %s\n" % (_escape_heading(subtest),
+                                                     wpt_actual_status)
             self.actual_metadata[test].append(result)
             if message:
                 self.messages[test].append("%s: %s\n" % (subtest, message))
@@ -83,7 +89,8 @@ class ChromiumFormatter(base.BaseFormatter):  # type: ignore
             # No subtest, so this is the top-level test. The result must be
             # prepended to the list, so that it comes before any subtest.
             test_name_last_part = test.split("/")[-1]
-            result = "[%s]\n  expected: %s\n" % (test_name_last_part, wpt_actual_status)
+            result = "[%s]\n  expected: %s\n" % (
+                _escape_heading(test_name_last_part), wpt_actual_status)
             self.actual_metadata[test].insert(0, result)
             if message:
                 self.messages[test].insert(0, "Harness: %s\n" % message)
