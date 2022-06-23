@@ -324,8 +324,6 @@ bool MigratePathFromOldFormat(Profile* profile,
                               const base::FilePath& old_base,
                               const base::FilePath& old_path,
                               base::FilePath* new_path) {
-  const base::FilePath new_base = GetMyFilesFolderForProfile(profile);
-
   // Special case, migrating /home/chronos/user which is set early (before a
   // profile is attached to the browser process) to default to
   // /home/chronos/u-{hash}/MyFiles/Downloads.
@@ -333,6 +331,12 @@ bool MigratePathFromOldFormat(Profile* profile,
       old_path == base::FilePath("/home/chronos/user")) {
     *new_path = GetDownloadsFolderForProfile(profile);
     return true;
+  }
+
+  // If the `new_base` is already parent of `old_path`, no need to migrate.
+  const base::FilePath new_base = GetMyFilesFolderForProfile(profile);
+  if (new_base.IsParent(old_path)) {
+    return false;
   }
 
   base::FilePath relative;

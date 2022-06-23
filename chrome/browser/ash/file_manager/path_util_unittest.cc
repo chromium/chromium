@@ -282,6 +282,11 @@ TEST_F(FileManagerPathUtilTest, MultiProfileDownloadsFolderMigration) {
   EXPECT_FALSE(MigratePathFromOldFormat(
       profile_.get(), DownloadPrefs::GetDefaultDownloadDirectory(),
       FilePath::FromUTF8Unsafe("/home/chronos/user/dl"), &path));
+
+  // Won't migrate because old_path is already migrated.
+  EXPECT_FALSE(
+      MigratePathFromOldFormat(profile_.get(), kMyFilesFolder.DirName(),
+                               kMyFilesFolder.AppendASCII("a/b"), &path));
 }
 
 TEST_F(FileManagerPathUtilTest, MigrateToDriveFs) {
