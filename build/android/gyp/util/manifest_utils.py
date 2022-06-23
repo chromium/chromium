@@ -63,6 +63,7 @@ def ParseManifest(path):
     manifest_node = doc.getroot()
   else:
     manifest_node = doc.find('manifest')
+  assert manifest_node is not None, 'Manifest is none for path ' + path
 
   app_node = doc.find('application')
   if app_node is None:

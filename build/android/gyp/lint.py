@@ -8,14 +8,11 @@
 from __future__ import print_function
 
 import argparse
-import functools
 import logging
 import os
-import re
 import shutil
 import sys
 import time
-import traceback
 from xml.dom import minidom
 from xml.etree import ElementTree
 
@@ -189,6 +186,38 @@ def _WriteXmlFile(root, path):
             root, encoding='utf-8')).toprettyxml(indent='  ').encode('utf-8'))
 
 
+def _SimplifyBaselineFile(baseline):
+  with open(baseline) as f:
+    doc = ElementTree.parse(f)
+
+  root = doc.getroot()
+  assert root.tag == 'issues'
+
+  for issue_node in root.findall('issue'):
+    # Removing the baseline file is the best way to get lint to regenerate it,
+    # yet a LintError is added about the missing baseline file. Remove it here.
+    if (issue_node.get('id') == 'LintError'
+        and 'lint-baseline.xml' in issue_node.get('message', '')):
+      root.remove(issue_node)
+      continue
+    for location_node in issue_node.findall('location'):
+      # Trim file path so that files in src as well as the output directory do
+      # not have prefixes. Thus the baseline files work on bots and locally.
+      # Example: $HOME/path/to/out/Dir/../../file/in/checkout
+      #          => file/in/checkout
+      file_path = location_node.get('file')
+      if file_path:
+        parent_dir_idx = file_path.rfind('../')
+        if parent_dir_idx != -1:
+          location_node.attrib['file'] = file_path[parent_dir_idx + 3:]
+      # Line and column numbers are not used by lint. Removing to reduce churn.
+      location_node.attrib.pop('line', None)
+      location_node.attrib.pop('column', None)
+
+  with build_utils.AtomicOutput(baseline) as f:
+    doc.write(f, encoding='utf-8', xml_declaration=True)
+
+
 def _RunLint(create_cache,
              lint_binary_path,
              backported_methods_path,
@@ -220,11 +249,6 @@ def _RunLint(create_cache,
 
   cmd = [
       lint_binary_path,
-      # Uncomment to update baseline files during lint upgrades. Avoid using
-      # for now since it seems to downgrade baseline format from 6 to 5. Until
-      # that is fixed, remove the baseline and re-run lint instead (remember
-      # to remove the LintError entry before committing).
-      #'--update-baseline',
       # Uncomment to easily remove fixed lint errors. This is not turned on by
       # default due to: https://crbug.com/1256477#c5
       #'--remove-fixed',
@@ -325,9 +349,11 @@ def _RunLint(create_cache,
     # Generating new baselines is only done locally, and requires more memory to
     # avoid OOMs.
     env['LINT_OPTS'] = '-Xmx4g'
+    generating_new_baseline = True
   else:
     # The default set in the wrapper script is 1g, but it seems not enough :(
     env['LINT_OPTS'] = '-Xmx2g'
+    generating_new_baseline = False
 
   # This filter is necessary for JDK11.
   stderr_filter = build_utils.FilterReflectiveAccessJavaWarnings
@@ -345,6 +371,9 @@ def _RunLint(create_cache,
                                 stderr_filter=stderr_filter,
                                 fail_on_output=warnings_as_errors))
   finally:
+    if generating_new_baseline:
+      _SimplifyBaselineFile(baseline)
+
     # When not treating warnings as errors, display the extra footer.
     is_debug = os.environ.get('LINT_DEBUG', '0') != '0'
 
