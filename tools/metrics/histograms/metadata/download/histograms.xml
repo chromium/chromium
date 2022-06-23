@@ -88,6 +88,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.Bubble.DragInfo" enum="Download.DragInfo"
+    expires_after="2022-12-22">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    This tracks drag events on a complete download on the bubble, and also
+    general download completion on the bubble as a point of reference. Note that
+    the completion can be logged multiple times for a single download if the
+    download bubble is shown and dismissed multiple times.
+  </summary>
+</histogram>
+
 <histogram name="Download.Bubble.PartialToFullViewLatency" units="ms"
     expires_after="2022-12-18">
   <owner>bhatiarohit@google.com</owner>
@@ -1135,7 +1147,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.Shelf.DragInfo" enum="Download.Shelf.DragInfo"
+<histogram name="Download.Shelf.DragInfo" enum="Download.DragInfo"
     expires_after="2022-12-06">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>

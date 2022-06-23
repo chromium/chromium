@@ -81,6 +81,7 @@ class DownloadBubbleRowView : public views::View,
   void UpdateButtonsForItems();
   void UpdateProgressBar();
   void UpdateLabels();
+  void RecordMetricsOnUpdate();
 
   // Load the icon, from the cache or from IconManager::LoadIcon.
   void LoadIcon();
@@ -158,6 +159,10 @@ class DownloadBubbleRowView : public views::View,
   bool dragging_ = false;
   // Position that a possible drag started at.
   absl::optional<gfx::Point> drag_start_point_;
+
+  // Whether the download's completion has already been logged. This is used to
+  // avoid inaccurate repeated logging.
+  bool has_download_completion_been_logged_ = false;
 
   base::WeakPtrFactory<DownloadBubbleRowView> weak_factory_{this};
 };

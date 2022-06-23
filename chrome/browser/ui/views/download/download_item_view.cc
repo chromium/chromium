@@ -445,7 +445,7 @@ bool DownloadItemView::OnMouseDragged(const ui::MouseEvent& event) {
     // TODO(shaktisahu): Make DragDownloadItem work with a model.
     DragDownloadItem(model_->download(), file_icon,
                      widget ? widget->GetNativeView() : nullptr);
-    RecordDownloadShelfDragInfo(DownloadShelfDragInfo::DRAG_STARTED);
+    RecordDownloadShelfDragInfo(DownloadDragInfo::DRAG_STARTED);
   }
   return true;
 }
@@ -508,7 +508,7 @@ void DownloadItemView::OnDownloadUpdated() {
   // One example of this is if the file gets removed.
   if (!has_download_completion_been_logged_ &&
       model_->GetState() == download::DownloadItem::COMPLETE) {
-    RecordDownloadShelfDragInfo(DownloadShelfDragInfo::DOWNLOAD_COMPLETE);
+    RecordDownloadShelfDragInfo(DownloadDragInfo::DOWNLOAD_COMPLETE);
     has_download_completion_been_logged_ = true;
   }
 }

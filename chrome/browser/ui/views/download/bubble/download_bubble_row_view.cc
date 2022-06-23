@@ -373,6 +373,7 @@ bool DownloadBubbleRowView::OnMouseDragged(const ui::MouseEvent& event) {
     const views::Widget* const widget = GetWidget();
     DragDownloadItem(model_->download(), file_icon,
                      widget ? widget->GetNativeView() : nullptr);
+    RecordDownloadBubbleDragInfo(DownloadDragInfo::DRAG_STARTED);
   }
   return true;
 }
@@ -460,7 +461,7 @@ void DownloadBubbleRowView::UpdateLabels() {
   }
 }
 
-void DownloadBubbleRowView::OnDownloadUpdated() {
+void DownloadBubbleRowView::RecordMetricsOnUpdate() {
   // This should only be logged once per download.
   if (is_download_warning(download::GetDesiredDownloadItemMode(model_.get())) &&
       !model_->WasUIWarningShown()) {
@@ -469,6 +470,15 @@ void DownloadBubbleRowView::OnDownloadUpdated() {
         model_->GetDangerType(), model_->GetTargetFilePath(),
         model_->GetURL().SchemeIs(url::kHttpsScheme), model_->HasUserGesture());
   }
+  if (!has_download_completion_been_logged_ &&
+      model_->GetState() == download::DownloadItem::COMPLETE) {
+    RecordDownloadBubbleDragInfo(DownloadDragInfo::DOWNLOAD_COMPLETE);
+    has_download_completion_been_logged_ = true;
+  }
+}
+
+void DownloadBubbleRowView::OnDownloadUpdated() {
+  RecordMetricsOnUpdate();
   UpdateBubbleUIInfo();
   UpdateLabels();
   LoadIcon();

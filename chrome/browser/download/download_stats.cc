@@ -77,9 +77,14 @@ void RecordDownloadCancelReason(DownloadCancelReason reason) {
   base::UmaHistogramEnumeration("Download.CancelReason", reason);
 }
 
-void RecordDownloadShelfDragInfo(DownloadShelfDragInfo drag_info) {
+void RecordDownloadShelfDragInfo(DownloadDragInfo drag_info) {
   base::UmaHistogramEnumeration("Download.Shelf.DragInfo", drag_info,
-                                DownloadShelfDragInfo::COUNT);
+                                DownloadDragInfo::COUNT);
+}
+
+void RecordDownloadBubbleDragInfo(DownloadDragInfo drag_info) {
+  base::UmaHistogramEnumeration("Download.Bubble.DragInfo", drag_info,
+                                DownloadDragInfo::COUNT);
 }
 
 void RecordDownloadStartPerProfileType(Profile* profile) {
