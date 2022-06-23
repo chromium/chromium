@@ -66,7 +66,10 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionControllerTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionControllerTest.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionViewTest.java",
+  ]
 
   deps = [
     ":java",
@@ -81,9 +84,12 @@ robolectric_library("junit") {
     "//components/image_fetcher:java",
     "//components/url_formatter/android:url_formatter_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
     "//url:gurl_java",
     "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",
@@ -93,10 +99,7 @@ robolectric_library("junit") {
 android_library("javatests") {
   testonly = true
 
-  sources = [
-    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionIntegrationTest.java",
-    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionViewTest.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionIntegrationTest.java" ]
 
   deps = [
     ":java",
