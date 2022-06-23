@@ -8,74 +8,97 @@
  * Crostini.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './crostini_import_confirmation_dialog.js';
 import '../../settings_shared_css.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-import {CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-crostini-export-import',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsCrostiniExportImportElementBase = mixinBehaviors(
+    [DeepLinkingBehavior, RouteObserverBehavior, WebUIListenerBehavior],
+    PolymerElement);
 
-  behaviors: [
-    DeepLinkingBehavior,
-    RouteObserverBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class SettingsCrostiniExportImportElement extends
+    SettingsCrostiniExportImportElementBase {
+  static get is() {
+    return 'settings-crostini-export-import';
+  }
 
-  properties: {
-    /** @private */
-    showImportConfirmationDialog_: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Whether the export import buttons should be enabled. Initially false
-     * until status has been confirmed.
-     * @private {boolean}
-     */
-    enableButtons_: {
-      type: Boolean,
-      computed: 'setEnableButtons_(installerShowing_, exportImportInProgress_)',
-    },
+  static get properties() {
+    return {
+      /** @private */
+      showImportConfirmationDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    installerShowing_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Whether the export import buttons should be enabled. Initially false
+       * until status has been confirmed.
+       * @private {boolean}
+       */
+      enableButtons_: {
+        type: Boolean,
+        computed:
+            'setEnableButtons_(installerShowing_, exportImportInProgress_)',
+      },
 
-    /** @private */
-    exportImportInProgress_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      installerShowing_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kBackupLinuxAppsAndFiles,
-        chromeos.settings.mojom.Setting.kRestoreLinuxAppsAndFiles,
-      ]),
-    },
-  },
+      /** @private */
+      exportImportInProgress_: {
+        type: Boolean,
+        value: false,
+      },
 
-  attached() {
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kBackupLinuxAppsAndFiles,
+          chromeos.settings.mojom.Setting.kRestoreLinuxAppsAndFiles,
+        ]),
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!CrostiniBrowserProxy} */
+    this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
     this.addWebUIListener(
         'crostini-export-import-operation-status-changed', inProgress => {
           this.exportImportInProgress_ = inProgress;
@@ -85,14 +108,13 @@ Polymer({
           this.installerShowing_ = installerShowing;
         });
 
-    CrostiniBrowserProxyImpl.getInstance()
-        .requestCrostiniExportImportOperationStatus();
-    CrostiniBrowserProxyImpl.getInstance().requestCrostiniInstallerStatus();
-  },
+    this.browserProxy_.requestCrostiniExportImportOperationStatus();
+    this.browserProxy_.requestCrostiniInstallerStatus();
+  }
 
   /**
    * @param {!Route} route
-   * @param {!Route} oldRoute
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
@@ -101,28 +123,36 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /** @private */
   onExportClick_() {
-    CrostiniBrowserProxyImpl.getInstance().exportCrostiniContainer({
+    this.browserProxy_.exportCrostiniContainer({
       vm_name: DEFAULT_CROSTINI_VM,
       container_name: DEFAULT_CROSTINI_CONTAINER
     });
-  },
+  }
 
   /** @private */
   onImportClick_() {
     this.showImportConfirmationDialog_ = true;
-  },
+  }
 
   /** @private */
   onImportConfirmationDialogClose_() {
     this.showImportConfirmationDialog_ = false;
-  },
+  }
 
-  /** @private */
-  setEnableButtons_: function(installerShowing, exportImportInProgress) {
+  /**
+   * @param {boolean} installerShowing
+   * @param {boolean} exportImportInProgress
+   * @private
+   */
+  setEnableButtons_(installerShowing, exportImportInProgress) {
     return !(installerShowing || exportImportInProgress);
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsCrostiniExportImportElement.is,
+    SettingsCrostiniExportImportElement);

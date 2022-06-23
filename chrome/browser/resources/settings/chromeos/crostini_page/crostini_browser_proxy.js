@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 
@@ -245,7 +245,8 @@ export class CrostiniBrowserProxy {
 
   /**
    * @param {!GuestId} containerId id of container to create.
-   * @param {?URL} imageServer url of lxd container server from which to fetch
+   * @param {?string} imageServer url of lxd container server from which to
+   *     fetch
    * @param {?string} imageAlias name of image to fetch e.g. 'debian/bullseye'
    * @param {?string} ansiblePlaybook file location of an Ansible playbook to
    *     preconfigure the container with
@@ -285,11 +286,23 @@ export class CrostiniBrowserProxy {
   applyAnsiblePlaybook() {}
 }
 
+/** @type {?CrostiniBrowserProxy} */
+let instance = null;
 
 /**
  * @implements {CrostiniBrowserProxy}
  */
 export class CrostiniBrowserProxyImpl {
+  /** @return {!CrostiniBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new CrostiniBrowserProxyImpl());
+  }
+
+  /** @param {!CrostiniBrowserProxy} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   /** @override */
   requestCrostiniInstallerView() {
     chrome.send('requestCrostiniInstallerView');
@@ -456,7 +469,3 @@ export class CrostiniBrowserProxyImpl {
     return sendWithPromise('applyAnsiblePlaybook');
   }
 }
-
-  // The singleton instance_ can be replaced with a test version of this wrapper
-  // during testing.
-addSingletonGetter(CrostiniBrowserProxyImpl);

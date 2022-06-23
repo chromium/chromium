@@ -28,7 +28,7 @@ suite('CrostiniExtraContainersSubpageTests', function() {
 
   setup(async function() {
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
-    CrostiniBrowserProxyImpl.instance_ = crostiniBrowserProxy;
+    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
     crostiniPage = document.createElement('settings-crostini-page');
     document.body.appendChild(crostiniPage);
     testing.Test.disableAnimationsAndTransitions();
@@ -57,9 +57,9 @@ suite('CrostiniExtraContainersSubpageTests', function() {
         routes.CROSTINI_EXTRA_CONTAINERS);
 
     await flushTasks();
-    subpage = crostiniPage.$$('settings-crostini-extra-containers');
+    subpage = crostiniPage.shadowRoot.querySelector(
+        'settings-crostini-extra-containers');
     assertTrue(!!subpage);
-
   });
 
   teardown(function() {
@@ -75,10 +75,11 @@ suite('CrostiniExtraContainersSubpageTests', function() {
     let vmNameInput;
 
     setup(async function() {
-      subpage.$$('#create').click();
+      subpage.shadowRoot.querySelector('#create').click();
 
       await flushTasks();
-      subpage = subpage.$$('settings-crostini-create-container-dialog');
+      subpage = subpage.shadowRoot.querySelector(
+          'settings-crostini-create-container-dialog');
 
       containerNameInput = subpage.root.querySelector('#containerNameInput');
       vmNameInput = subpage.root.querySelector('#vmNameInput');
@@ -207,11 +208,11 @@ suite('CrostiniExtraContainersSubpageTests', function() {
 
   suite('ExportImportContainer', function() {
     test('Export', async function() {
-      subpage.$$('#showContainerMenu1').click();
+      subpage.shadowRoot.querySelector('#showContainerMenu1').click();
 
       await flushTasks();
-      assertTrue(!!subpage.$$('#exportContainerButton'));
-      subpage.$$('#exportContainerButton').click();
+      assertTrue(!!subpage.shadowRoot.querySelector('#exportContainerButton'));
+      subpage.shadowRoot.querySelector('#exportContainerButton').click();
       const args = crostiniBrowserProxy.getArgs('exportCrostiniContainer');
       assertEquals(1, args.length);
       assertEquals(args[0].vm_name, 'termina');
@@ -219,11 +220,11 @@ suite('CrostiniExtraContainersSubpageTests', function() {
     });
 
     test('Import', async function() {
-      subpage.$$('#showContainerMenu1').click();
+      subpage.shadowRoot.querySelector('#showContainerMenu1').click();
 
       await flushTasks();
-      assertTrue(!!subpage.$$('#importContainerButton'));
-      subpage.$$('#importContainerButton').click();
+      assertTrue(!!subpage.shadowRoot.querySelector('#importContainerButton'));
+      subpage.shadowRoot.querySelector('#importContainerButton').click();
       const args = crostiniBrowserProxy.getArgs('importCrostiniContainer');
       assertEquals(1, args.length);
       assertEquals(args[0].vm_name, 'termina');
@@ -231,43 +232,55 @@ suite('CrostiniExtraContainersSubpageTests', function() {
     });
 
     test('ExportImportButtonsGetDisabledOnOperationStatus', async function() {
-      subpage.$$('#showContainerMenu1').click();
+      subpage.shadowRoot.querySelector('#showContainerMenu1').click();
 
       await flushTasks();
-      assertFalse(subpage.$$('#exportContainerButton').disabled);
-      assertFalse(subpage.$$('#importContainerButton').disabled);
+      assertFalse(
+          subpage.shadowRoot.querySelector('#exportContainerButton').disabled);
+      assertFalse(
+          subpage.shadowRoot.querySelector('#importContainerButton').disabled);
       webUIListenerCallback(
           'crostini-export-import-operation-status-changed', true);
 
       await flushTasks();
-      assertTrue(subpage.$$('#exportContainerButton').disabled);
-      assertTrue(subpage.$$('#importContainerButton').disabled);
+      assertTrue(
+          subpage.shadowRoot.querySelector('#exportContainerButton').disabled);
+      assertTrue(
+          subpage.shadowRoot.querySelector('#importContainerButton').disabled);
       webUIListenerCallback(
           'crostini-export-import-operation-status-changed', false);
 
       await flushTasks();
-      assertFalse(subpage.$$('#exportContainerButton').disabled);
-      assertFalse(subpage.$$('#importContainerButton').disabled);
+      assertFalse(
+          subpage.shadowRoot.querySelector('#exportContainerButton').disabled);
+      assertFalse(
+          subpage.shadowRoot.querySelector('#importContainerButton').disabled);
     });
 
     test(
         'ExportImportButtonsDisabledOnWhenInstallingCrostini',
         async function() {
-          subpage.$$('#showContainerMenu1').click();
+          subpage.shadowRoot.querySelector('#showContainerMenu1').click();
 
           await flushTasks();
-          assertFalse(subpage.$$('#exportContainerButton').disabled);
-          assertFalse(subpage.$$('#importContainerButton').disabled);
+          assertFalse(subpage.shadowRoot.querySelector('#exportContainerButton')
+                          .disabled);
+          assertFalse(subpage.shadowRoot.querySelector('#importContainerButton')
+                          .disabled);
           webUIListenerCallback('crostini-installer-status-changed', true);
 
           await flushTasks();
-          assertTrue(subpage.$$('#exportContainerButton').disabled);
-          assertTrue(subpage.$$('#importContainerButton').disabled);
+          assertTrue(subpage.shadowRoot.querySelector('#exportContainerButton')
+                         .disabled);
+          assertTrue(subpage.shadowRoot.querySelector('#importContainerButton')
+                         .disabled);
           webUIListenerCallback('crostini-installer-status-changed', false);
 
           await flushTasks();
-          assertFalse(subpage.$$('#exportContainerButton').disabled);
-          assertFalse(subpage.$$('#importContainerButton').disabled);
+          assertFalse(subpage.shadowRoot.querySelector('#exportContainerButton')
+                          .disabled);
+          assertFalse(subpage.shadowRoot.querySelector('#importContainerButton')
+                          .disabled);
         });
   });
 });

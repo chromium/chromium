@@ -6,12 +6,12 @@
  * @fileoverview 'settings-crostini-container-select' is a component enabling a
  * user to select a target container from a list stored in prefs.
  */
-import '//resources/cr_elements/md_select_css.m.js';
+import 'chrome://resources/cr_elements/md_select_css.m.js';
 import '../../settings_shared_css.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContainerInfo, DEFAULT_CONTAINER_ID, DEFAULT_CROSTINI_VM, GuestId} from './crostini_browser_proxy.js';
+import {ContainerInfo, DEFAULT_CROSTINI_VM, GuestId} from './crostini_browser_proxy.js';
 
 /**
  * @param {!GuestId} first
@@ -67,7 +67,6 @@ class ContainerSelectElement extends PolymerElement {
       },
     };
   }
-
 
   /**
    * @param {!Event} e

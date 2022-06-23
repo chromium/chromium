@@ -8,17 +8,16 @@
  * fields and clicking add.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '//resources/cr_elements/md_select_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/md_select_css.m.js';
 import '../../settings_shared_css.js';
 import './crostini_container_select.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, microTask, PolymerElement, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, GuestId, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+import {ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, GuestId, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
 
 /** @polymer */
 class CrostiniPortForwardingAddPortDialog extends PolymerElement {
@@ -29,7 +28,6 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
   static get template() {
     return html`{__html_template__}`;
   }
-
 
   static get properties() {
     return {
@@ -94,7 +92,6 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
         type: Array,
         value: [],
       },
-
     };
   }
 
@@ -102,6 +99,13 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
     return [
       'onPortStateChanged_(portState_)',
     ];
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!CrostiniBrowserProxy} */
+    this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
   /** @override */
@@ -184,7 +188,7 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
     }
     const portNumber = +this.$.portNumberInput.value;
     const portLabel = this.$.portLabelInput.value;
-    CrostiniBrowserProxyImpl.getInstance()
+    this.browserProxy_
         .addCrostiniPortForward(
             this.containerId_, portNumber,
             /** @type {!CrostiniPortProtocol} */ (this.inputProtocolIndex_),

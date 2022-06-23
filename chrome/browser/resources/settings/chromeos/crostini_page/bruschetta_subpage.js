@@ -8,10 +8,10 @@
  * (third-party VMs).
  */
 
-import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../../settings_shared_css.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../../router.js';
 import {routes} from '../os_route.js';
@@ -37,6 +37,7 @@ class BruschettaSubpageElement extends BruschettaSubpageElementBase {
 
   constructor() {
     super();
+
     /** RouteOriginBehavior override */
     this.route_ = routes.BRUSCHETTA_DETAILS;
   }

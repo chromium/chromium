@@ -7,17 +7,16 @@
  * enabling a user to create a new container.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '//resources/cr_elements/md_select_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/md_select_css.m.js';
 import '../../settings_shared_css.js';
 
-import {assert} from '//resources/js/assert.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, GuestId} from './crostini_browser_proxy.js';
+import {ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 
 /** @polymer */
 class ExtraContainersCreateDialog extends PolymerElement {
@@ -114,6 +113,13 @@ class ExtraContainersCreateDialog extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+
+    /** @private {!CrostiniBrowserProxy} */
+    this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
+  }
+
   /** @override */
   connectedCallback() {
     super.connectedCallback();
@@ -173,7 +179,7 @@ class ExtraContainersCreateDialog extends PolymerElement {
       this.ansiblePlaybook_ = this.$.preconfiguredContainersInput.value;
     }
 
-    CrostiniBrowserProxyImpl.getInstance().createContainer(
+    this.browserProxy_.createContainer(
         {vm_name: this.inputVmName_, container_name: this.inputContainerName_},
         this.inputImageServer_, this.inputImageAlias_, this.ansiblePlaybook_);
     this.$.dialog.close();
@@ -182,7 +188,7 @@ class ExtraContainersCreateDialog extends PolymerElement {
   /** @private */
   async onAnsiblePlaybookUploadClick_() {
     this.$.preconfiguredContainersInput.value =
-        await CrostiniBrowserProxyImpl.getInstance().applyAnsiblePlaybook();
+        await this.browserProxy_.applyAnsiblePlaybook();
   }
 
   /** @private */
