@@ -183,48 +183,6 @@ void RecordTabletVolumeAdjustTypeHistogram(TabletModeVolumeAdjustType type) {
   UMA_HISTOGRAM_ENUMERATION(kTabletCountOfVolumeAdjustType, type);
 }
 
-// Returns the number of times the startup notification has been shown
-// from prefs.
-int GetStartupNotificationPrefCount(PrefService* pref_service) {
-  DCHECK(pref_service);
-  return pref_service->GetInteger(
-      prefs::kImprovedShortcutsNotificationShownCount);
-}
-
-bool ShouldShowStartupNotificationForCurrentUser() {
-  const absl::optional<user_manager::UserType> user_type =
-      Shell::Get()->session_controller()->GetUserType();
-  return user_type &&
-         (*user_type == user_manager::USER_TYPE_REGULAR ||
-          *user_type == user_manager::USER_TYPE_CHILD) &&
-         !Shell::Get()->session_controller()->IsUserFirstLogin();
-}
-
-// Increments the number of times the startup notification has been shown
-// in prefs.
-void IncrementStartupNotificationCount(PrefService* pref_service) {
-  DCHECK(pref_service);
-  int count = GetStartupNotificationPrefCount(pref_service);
-
-  // Increment the pref count.
-  pref_service->SetInteger(prefs::kImprovedShortcutsNotificationShownCount,
-                           count + 1);
-}
-
-// Shows a notification that accelerators/shortcuts have changed in this
-// release.
-// TODO(crbug.com/1179893): Remove this function in M97/M98.
-void NotifyShortcutChangesInRelease(PrefService* pref_service) {
-  DCHECK(::features::IsImprovedKeyboardShortcutsEnabled());
-  DCHECK(pref_service);
-
-  if (GetStartupNotificationPrefCount(pref_service) > 0)
-    return;
-
-  ShowShortcutsChangedNotification();
-  IncrementStartupNotificationCount(pref_service);
-}
-
 void ShowToast(std::string id,
                ToastCatalogName catalog_name,
                const std::u16string& text) {
@@ -1515,8 +1473,6 @@ constexpr const char* AcceleratorControllerImpl::kVolumeButtonSideBottom;
 ////////////////////////////////////////////////////////////////////////////////
 // AcceleratorControllerImpl, public:
 
-bool AcceleratorControllerImpl::should_show_shortcut_notification_ = true;
-
 AcceleratorControllerImpl::TestApi::TestApi(
     AcceleratorControllerImpl* controller)
     : controller_(controller) {
@@ -1580,16 +1536,6 @@ AcceleratorControllerImpl::AcceleratorControllerImpl()
       accelerator_history_(std::make_unique<AcceleratorHistoryImpl>()),
       side_volume_button_location_file_path_(
           base::FilePath(kSideVolumeButtonLocationFilePath)) {
-  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-    // Observe input method changes to determine when to use positional
-    // shortcuts. Calling AddObserver will cause InputMethodChanged to be
-    // called once even when the method does not change.
-    InputMethodManager::Get()->AddObserver(this);
-
-    // Observe session changes.
-    Shell::Get()->session_controller()->AddObserver(this);
-  }
-
   Init();
 
   ParseSideVolumeButtonLocationInfo();
@@ -1604,24 +1550,6 @@ AcceleratorControllerImpl::AcceleratorControllerImpl()
 
 AcceleratorControllerImpl::~AcceleratorControllerImpl() {
   aura::Env::GetInstance()->RemovePreTargetHandler(accelerator_history_.get());
-}
-
-// static
-void AcceleratorControllerImpl::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kImprovedShortcutsNotificationShownCount,
-                                0);
-}
-
-void AcceleratorControllerImpl::OnActiveUserPrefServiceChanged(
-    PrefService* pref_service) {
-  DCHECK(pref_service);
-  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-    if (should_show_shortcut_notification_ &&
-        ShouldShowStartupNotificationForCurrentUser()) {
-      NotifyShortcutChangesInRelease(pref_service);
-    }
-  }
 }
 
 void AcceleratorControllerImpl::InputMethodChanged(InputMethodManager* manager,
@@ -2623,13 +2551,6 @@ void AcceleratorControllerImpl::MaybeShowConfirmationDialog(
       l10n_util::GetStringUTF16(dialog_text_id), std::move(on_accept_callback),
       std::move(on_cancel_callback), /* on close */ base::DoNothing());
   confirmation_dialog_ = dialog->GetWeakPtr();
-}
-
-void AcceleratorControllerImpl::Shutdown() {
-  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-    InputMethodManager::Get()->RemoveObserver(this);
-    Shell::Get()->session_controller()->RemoveObserver(this);
-  }
 }
 
 bool AcceleratorControllerImpl::IsInternalKeyboardOrUncategorizedDevice(

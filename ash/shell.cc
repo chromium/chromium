@@ -723,10 +723,6 @@ Shell::~Shell() {
   // it before destroying |tablet_mode_controller_|.
   accessibility_controller_->Shutdown();
 
-  // Because this function will call |SessionController::RemoveObserver|, do it
-  // before destroying |session_controller_|.
-  accelerator_controller_->Shutdown();
-
   // Must be destructed before human_presence_orientation_controller_.
   power_prefs_.reset();
 

@@ -58,11 +58,6 @@ class ASH_EXPORT ShellTestApi {
   // disabled to prevent failing subsequent tests.
   static void SetUseLoginNotificationDelayForTest(bool use_delay);
 
-  // Whether a notification is shown at startup about new shortcuts. This
-  // can interfere with tests that expect a certain window to be active,
-  // that count notifications, or that test ChromeVox output.
-  static void SetShouldShowShortcutNotificationForTest(bool show_notification);
-
   MessageCenterController* message_center_controller();
   WorkspaceController* workspace_controller();
   ScreenPositionController* screen_position_controller();

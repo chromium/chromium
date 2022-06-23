@@ -265,11 +265,6 @@ void AshTestHelper::SetUp(InitParams init_params) {
 
   ambient_ash_test_helper_ = std::make_unique<AmbientAshTestHelper>();
 
-  // There is a temporary M92-M94 notification that shows once to users
-  // at startup, but this interferes with many tests that expect a
-  // specific active window, or a certain number of notifications.
-  AcceleratorControllerImpl::SetShouldShowShortcutNotificationForTest(false);
-
   ShellInitParams shell_init_params;
   shell_init_params.delegate = std::move(init_params.delegate);
   if (!shell_init_params.delegate)

@@ -750,6 +750,12 @@ const char kStabilityPageLoadCount[] =
     "user_experience_metrics.stability.page_load_count";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 06/2022.
+const char kImprovedShortcutsNotificationShownCount[] =
+    "ash.improved_shortcuts_notification_shown_count";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -821,6 +827,8 @@ void RegisterProfilePrefsForMigration(
   ash::HelpAppNotificationController::RegisterObsoletePrefsForMigration(
       registry);
   registry->RegisterBooleanPref(kHasCameraAppMigratedToSWA, false);
+
+  registry->RegisterIntegerPref(kImprovedShortcutsNotificationShownCount, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
@@ -1933,6 +1941,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 06/2022.
   syncer::MigrateSyncRequestedPrefPostMice(profile_prefs);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 06/2022.
+  profile_prefs->ClearPref(kImprovedShortcutsNotificationShownCount);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
