@@ -373,7 +373,7 @@ TEST_F(OmniboxFieldTrialTest, LocalZeroSuggestAgeThreshold) {
       {{omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
         {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "j"}}}},
       {});
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
   int expected_age_threshold_days = 7;
 #else
   int expected_age_threshold_days = 60;

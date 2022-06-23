@@ -329,11 +329,7 @@ TEST_P(LocalHistoryZeroSuggestProviderTest, FeatureFlags) {
   // on Desktop and Android NTP.
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   StartProviderAndWaitUntilDone();
-#if !BUILDFLAG(IS_IOS)  // Enabled by default on Desktop and Android NTP.
   ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
-#else
-  ExpectMatches({});
-#endif
 }
 
 // Tests that search terms are extracted from the default search provider's

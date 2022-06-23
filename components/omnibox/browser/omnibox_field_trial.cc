@@ -227,7 +227,7 @@ base::Time OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold() {
   // integer, return the default value.
   unsigned int param_value_as_int = 0;
   if (!base::StringToUint(param_value, &param_value_as_int)) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
     param_value_as_int = 7;
 #else
     param_value_as_int = 60;

@@ -5870,25 +5870,6 @@
             ]
         }
     ],
-    "OmniboxLocalHistoryZPSoniOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_60_Days_Stable_GWS",
-                    "params": {
-                        "OmniboxLocalZeroSuggestAgeThreshold": "60"
-                    },
-                    "enable_features": [
-                        "LocalHistoryZeroSuggest",
-                        "OmniboxLocalZeroSuggestAgeThreshold"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxLoggingMigration": [
         {
             "platforms": [
