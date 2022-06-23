@@ -244,8 +244,21 @@ TEST_F(WebContentsViewAuraTest, OccludeView) {
   EXPECT_EQ(web_contents()->GetVisibility(), Visibility::VISIBLE);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-TEST_F(WebContentsViewAuraTest, DragDropFiles) {
+// TODO(crbug.com/1231509): Enable these tests on Fuchsia when
+// OSExchangeDataProviderFactory::CreateProvider is implemented.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_DragDropFiles DISABLED_DragDropFiles
+#define MAYBE_DragDropFilesOriginateFromRenderer \
+  DISABLED_DragDropFilesOriginateFromRenderer
+#define MAYBE_DragDropImageFromRenderer DISABLED_DragDropImageFromRenderer
+#else
+#define MAYBE_DragDropFiles DragDropFiles
+#define MAYBE_DragDropFilesOriginateFromRenderer \
+  DragDropFilesOriginateFromRenderer
+#define MAYBE_DragDropImageFromRenderer DragDropImageFromRenderer
+#endif
+
+TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFiles) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
 
@@ -339,7 +352,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   }
 }
 
-TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
+TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFilesOriginateFromRenderer) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
 
@@ -428,7 +441,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
 #endif
 }
 
-TEST_F(WebContentsViewAuraTest, DragDropImageFromRenderer) {
+TEST_F(WebContentsViewAuraTest, MAYBE_DragDropImageFromRenderer) {
   WebContentsViewAura* view = GetView();
 
   const base::FilePath filename(FILE_PATH_LITERAL("image.jpg"));
@@ -514,8 +527,6 @@ TEST_F(WebContentsViewAuraTest, DragDropImageFromRenderer) {
   EXPECT_EQ("",
             drop_complete_data_->drop_data.file_contents_content_disposition);
 }
-
-#endif
 
 #if BUILDFLAG(IS_WIN)
 
@@ -720,7 +731,7 @@ TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
       drop_complete_data_->drop_data.file_contents_source_url.is_empty());
   EXPECT_TRUE(drop_complete_data_->drop_data.file_contents.empty());
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 

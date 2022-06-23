@@ -20,8 +20,3 @@
 
 # Flaky: https://crbug.com/780508.
 -ServiceWorkerContainerHostTest.*
-
-# TODO(crbug.com/1231509): These tests require
-# OSExchangeDataProviderFactory::CreateProvider to be implemented.
--WebContentsViewAuraTest.DragDropFiles
--WebContentsViewAuraTest.DragDropFilesOriginateFromRenderer
