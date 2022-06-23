@@ -17,7 +17,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -96,9 +95,7 @@ Browser* OpenPopup(content::WebContents* web_contents, const GURL& target_url) {
   EXPECT_TRUE(content::ExecuteScript(web_contents, script));
   nav_observer.Wait();
 
-  Browser* browser = browser_change_observer.Wait();
-  ui_test_utils::BrowserActivationWaiter(browser).WaitForActivation();
-  return browser;
+  return browser_change_observer.Wait();
 }
 
 // Navigates to |target_url| and waits for navigation to complete.
@@ -260,13 +257,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   EXPECT_FALSE(custom_tab_bar_);
 }
 
-// TODO(crbug.com/1338068): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_IsNotCreatedInPopup DISABLED_IsNotCreatedInPopup
-#else
-#define MAYBE_IsNotCreatedInPopup IsNotCreatedInPopup
-#endif
-IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, MAYBE_IsNotCreatedInPopup) {
+IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, IsNotCreatedInPopup) {
   Browser* popup = OpenPopup(browser_view_->GetActiveWebContents(),
                              GURL("http://example.com"));
   EXPECT_TRUE(popup);
