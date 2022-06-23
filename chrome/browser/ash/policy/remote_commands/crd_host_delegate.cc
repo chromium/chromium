@@ -87,8 +87,10 @@ class CrdHostDelegate::CrdHostSession
   }
   void OnHostStateDisconnected(
       const absl::optional<std::string>& disconnect_reason) override {
-    CRD_DVLOG(3) << __FUNCTION__
-                 << " with reason: " << disconnect_reason.value_or("<none>");
+    // We always want to log this event, as it could help customers debug why
+    // their CRD connection is failing/disconnecting.
+    LOG(WARNING) << "CRD session disconnected with reason: "
+                 << disconnect_reason.value_or("<none>");
 
     ReportError(ResultCode::FAILURE_CRD_HOST_ERROR, "host disconnected");
   }
