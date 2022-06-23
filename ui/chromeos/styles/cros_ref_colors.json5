@@ -12,6 +12,11 @@
  */
 {
   token_namespace: 'cros.ref',
+  options: {
+    ColorMappings: {
+      set_name: 'CrosRef',
+    },
+  },
   colors: {
     primary0: '#000000',
     primary10: '#041e49',

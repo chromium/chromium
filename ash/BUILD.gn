@@ -2326,6 +2326,7 @@ component("ash") {
     "//ui/chromeos/events",
     "//ui/chromeos/resources",
     "//ui/chromeos/styles:cros_styles_views",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/color",
     "//ui/color:mixers",
     "//ui/compositor",

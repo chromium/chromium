@@ -14,6 +14,7 @@ from style_variable_generator.ts_generator import TSStyleGenerator
 from style_variable_generator.proto_generator import ProtoStyleGenerator, ProtoJSONStyleGenerator
 from style_variable_generator.views_generator import ViewsCCStyleGenerator, ViewsHStyleGenerator
 from style_variable_generator.base_generator import Modes
+from style_variable_generator.color_mappings_generator import ColorMappingsCCStyleGenerator, ColorMappingsHStyleGenerator
 
 
 def parseGeneratorOptionList(options):
@@ -33,7 +34,8 @@ def main():
 
     generators = [
         CSSStyleGenerator, ViewsCCStyleGenerator, ViewsHStyleGenerator,
-        ProtoStyleGenerator, ProtoJSONStyleGenerator, TSStyleGenerator
+        ProtoStyleGenerator, ProtoJSONStyleGenerator, TSStyleGenerator,
+        ColorMappingsCCStyleGenerator, ColorMappingsHStyleGenerator
     ]
 
     parser.add_argument(

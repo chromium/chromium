@@ -17,6 +17,9 @@
       field_name: 'cros_colors',
       field_id: 2,
     },
+    ColorMappings: {
+      set_name: 'LegacySemantic'
+    },
   },
   colors: {
     /* =========================================================================

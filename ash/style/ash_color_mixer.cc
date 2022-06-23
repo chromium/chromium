@@ -10,12 +10,24 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
 
 namespace ash {
+
+void AddCrosStylesColorMixer(ui::ColorProvider* provider,
+                             const ui::ColorProviderManager::Key& key) {
+  ui::ColorMixer& mixer = provider->AddMixer();
+  bool dark_mode = key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+  cros_tokens::AddCrosRefColorsToMixer(mixer, dark_mode);
+  cros_tokens::AddCrosSysColorsToMixer(mixer, dark_mode);
+  cros_tokens::AddLegacySemanticColorsToMixer(mixer, dark_mode);
+
+  // TODO(b/235913438): Remap legacy colors to tokens here.
+}
 
 void AddAshColorMixer(ui::ColorProvider* provider,
                       const ui::ColorProviderManager::Key& key) {

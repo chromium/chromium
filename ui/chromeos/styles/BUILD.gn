@@ -12,4 +12,19 @@ style_variable_generator("cros_styles") {
     "cros_shadows.json5",
     "cros_typography.json5",
   ]
+
+  cpp_namespace = "cros_styles"
+}
+
+style_variable_generator("cros_tokens") {
+  # If you change the sources, also change the paths in presubmit_support.py
+  sources = [
+    "cros_colors.json5",
+    "cros_palette.json5",
+    "cros_ref_colors.json5",
+    "cros_sys_colors.json5",
+  ]
+
+  cpp_namespace = "cros_tokens"
+  color_id_start_value = "0x4000"
 }

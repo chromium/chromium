@@ -321,13 +321,14 @@ class Model(object):
             return f'{namespace}.{name}'
         return name
 
-    def PostProcess(self):
+    def PostProcess(self, resolve_blended_colors=True):
         '''Called after all variables have been added to perform operations that
            require a complete worldview.
         '''
-        # Resolve blended colors after all the files are added because some
-        # color dependencies are between different files.
-        self.colors._ResolveBlendedColors()
+        if resolve_blended_colors:
+            # Resolve blended colors after all the files are added because some
+            # color dependencies are between different files.
+            self.colors._ResolveBlendedColors()
 
         self.Validate()
 
@@ -351,6 +352,18 @@ class Model(object):
                 raise ValueError("Cannot find opacity %s referenced by %s" %
                                  (name, referrer))
 
+        def CheckColor(color, name):
+            if color.var:
+                CheckColorReference(color.var, name)
+            if color.rgb_var:
+                CheckColorReference(color.RGBVarToVar(), name)
+            if color.opacity and color.opacity.var:
+                CheckOpacityReference(color.opacity.var, name)
+            if color.blended_colors:
+                assert len(color.blended_colors) == 2
+                CheckColor(color.blended_colors[0], name)
+                CheckColor(color.blended_colors[1], name)
+
         RESERVED_SUFFIXES = ['_' + s for s in Modes.ALL + ['rgb', 'inverted']]
 
         # Check all colors in all modes refer to colors that exist in the
@@ -365,17 +378,9 @@ class Model(object):
             if Modes.DEFAULT not in mode_values:
                 raise ValueError("Color %s not defined for default mode" %
                                  name)
+
             for mode, color in mode_values.items():
-                if color.var:
-                    CheckColorReference(color.var, name)
-                if color.rgb_var:
-                    CheckColorReference(color.RGBVarToVar(), name)
-                if color.opacity and color.opacity.var:
-                    CheckOpacityReference(color.opacity.var, name)
-                if color.blended_colors:
-                    assert len(color.blended_colors) == 2
-                    CheckColorReference(color.blended_colors[0], name)
-                    CheckColorReference(color.blended_colors[1], name)
+                CheckColor(color, name)
 
         for name, mode_values in opacities.items():
             for mode, opacity in mode_values.items():

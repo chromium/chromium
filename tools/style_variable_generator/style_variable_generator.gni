@@ -62,6 +62,7 @@ template("style_variable_generator") {
                            [
                              "deps",
                              "sources",
+                             "cpp_namespace",
                            ])
 
     inputs =
@@ -78,6 +79,8 @@ template("style_variable_generator") {
     ]
     args = [
              "--generator=ViewsCC",
+             "--generator-option",
+             "cpp_namespace=$cpp_namespace",
              "--out-file",
              rebase_path(out_file_cc, root_build_dir),
              "--generator=ViewsH",
@@ -97,5 +100,55 @@ template("style_variable_generator") {
       "//skia",
     ]
     defines = [ "IS_${original_target_name}_IMPL" ]
+  }
+
+  if (defined(invoker.color_id_start_value)) {
+    action("${target_name}_color_mappings_generator") {
+      script = script_file
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "sources",
+                               "cpp_namespace",
+                               "color_id_start_value",
+                             ])
+      inputs = common_inputs + [
+                 "//tools/style_variable_generator/color_mappings_generator.py",
+                 "//tools/style_variable_generator/templates/color_mappings_generator_cc.tmpl",
+                 "//tools/style_variable_generator/templates/color_mappings_generator_h.tmpl",
+               ]
+      out_file_cc = "$target_gen_dir/${original_target_name}_color_mappings.cc"
+      out_file_h = "$target_gen_dir/${original_target_name}_color_mappings.h"
+      outputs = [
+        out_file_cc,
+        out_file_h,
+      ]
+      args = [
+               "--generator-option",
+               "cpp_namespace=$cpp_namespace",
+               "--generator-option",
+               "color_id_start_value=$color_id_start_value",
+               "--generator=ColorMappingsCC",
+               "--out-file",
+               rebase_path(out_file_cc, root_build_dir),
+               "--generator=ColorMappingsH",
+               "--out-file",
+               rebase_path(out_file_h, root_build_dir),
+             ] + rebase_path(sources, root_build_dir)
+    }
+
+    component("${target_name}_color_mappings") {
+      sources = [
+        "$target_gen_dir/${original_target_name}_color_mappings.cc",
+        "$target_gen_dir/${original_target_name}_color_mappings.h",
+      ]
+      deps = [
+        ":${original_target_name}_color_mappings_generator",
+        "//base",
+        "//skia",
+        "//ui/color",
+      ]
+      defines = [ "IS_${original_target_name}_COLOR_MAPPINGS_IMPL" ]
+    }
   }
 }

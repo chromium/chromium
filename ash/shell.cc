@@ -1107,7 +1107,8 @@ void Shell::Init(
     env->set_context_factory(context_factory);
 
   ash_color_provider_ = std::make_unique<AshColorProvider>();
-
+  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+      base::BindRepeating(AddCrosStylesColorMixer));
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(AddAshColorMixer));
 

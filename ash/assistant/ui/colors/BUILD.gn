@@ -12,6 +12,8 @@ style_variable_generator("assistant_colors") {
     "//ui/chromeos/styles/cros_palette.json5",
     "assistant_colors.json5",
   ]
+
+  cpp_namespace = "assistant_colors"
 }
 
 source_set("assistant_colors_util") {

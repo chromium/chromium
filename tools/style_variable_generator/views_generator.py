@@ -34,17 +34,23 @@ class ViewsStyleGenerator(CSSStyleGenerator):
 
     def GetGlobals(self):
         globals = {
-            'Modes': Modes,
-            'out_file_path': None,
-            'namespace_name': None,
-            'header_file': None,
-            'in_files': self.GetInputFiles(),
-            'css_color_var': self.CSSColorVar,
+            'Modes':
+            Modes,
+            'out_file_path':
+            None,
+            'namespace_name':
+            self.generator_options.get(
+                'cpp_namespace',
+                os.path.splitext(os.path.basename(self.out_file_path))[0]),
+            'header_file':
+            None,
+            'in_files':
+            self.GetInputFiles(),
+            'css_color_var':
+            self.CSSColorVar,
         }
         if self.out_file_path:
             globals['out_file_path'] = self.out_file_path
-            globals['namespace_name'] = os.path.splitext(
-                os.path.basename(self.out_file_path))[0]
             header_file = self.out_file_path.replace(".cc", ".h")
             header_file = re.sub(r'.*gen/', '', header_file)
             globals['header_file'] = header_file

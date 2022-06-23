@@ -1,5 +1,10 @@
 {
   token_namespace: 'cros.sys',
+  options: {
+    ColorMappings: {
+      set_name: 'CrosSys'
+    },
+  },
   colors: {
     /* Primary */
     primary: {
