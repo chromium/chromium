@@ -503,8 +503,10 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   DCHECK(render_url->is_valid());
 
   std::move(callback).Run(render_url);
-  auction_result_metrics->ReportAuctionResult(
-      AdAuctionResultMetrics::AuctionResult::kSucceeded);
+  if (auction_result_metrics) {
+    auction_result_metrics->ReportAuctionResult(
+        AdAuctionResultMetrics::AuctionResult::kSucceeded);
+  }
   GetInterestGroupManager().EnqueueReports(
       report_urls, debug_win_report_urls, debug_loss_report_urls, origin(),
       GetClientSecurityState(), GetRefCountedTrustedURLLoaderFactory());
