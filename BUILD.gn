@@ -325,10 +325,6 @@ group("gn_all") {
     ]
   }
 
-  if (is_win && (target_cpu == "x86" || target_cpu == "x64")) {
-    deps += [ "//chrome/browser/browser_switcher/bho:browser_switcher_dlls" ]
-  }
-
   if (is_win || is_linux) {
     deps += [ "//tools/traffic_annotation/auditor:traffic_annotation_auditor" ]
   }

@@ -8007,17 +8007,6 @@
         "swarming": {
           "can_use_on_swarming_builders": false
         },
-        "test": "browser_switcher_bho_unittests",
-        "test_id_prefix": "ninja://chrome/browser/browser_switcher/bho:browser_switcher_bho_unittests/"
-      },
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
       },
@@ -103282,27 +103271,6 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19042"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "browser_switcher_bho_unittests",
-        "test_id_prefix": "ninja://chrome/browser/browser_switcher/bho:browser_switcher_bho_unittests/"
-      },
-      {
-        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
           "--test-launcher-filter-file=../../testing/buildbot/filters/win_backuprefptr_fyi.browser_tests.filter"
         ],
@@ -105709,19 +105677,6 @@
         },
         "test": "boringssl_ssl_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "browser_switcher_bho_unittests",
-        "test_id_prefix": "ninja://chrome/browser/browser_switcher/bho:browser_switcher_bho_unittests/"
       },
       {
         "isolate_profile_data": true,

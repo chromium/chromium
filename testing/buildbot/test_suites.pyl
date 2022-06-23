@@ -5406,7 +5406,6 @@
     },
 
     'win_specific_chromium_gtests': {
-      'browser_switcher_bho_unittests': {},
       'chrome_cleaner_unittests': {},
       'chrome_elf_unittests': {},
       'courgette_unittests': {},

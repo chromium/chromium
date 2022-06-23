@@ -298,10 +298,6 @@
     "label": "//third_party/breakpad:breakpad_unittests",
     "type": "console_test_launcher",
   },
-  "browser_switcher_bho_unittests": {
-    "label": "//chrome/browser/browser_switcher/bho:browser_switcher_bho_unittests",
-    "type": "console_test_launcher",
-  },
   "browser_tests": {
     "label": "//chrome/test:browser_tests",
     "type": "windowed_test_launcher",
