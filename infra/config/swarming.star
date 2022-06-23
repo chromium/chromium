@@ -87,6 +87,9 @@ swarming.task_triggerers(
         "chromium-led-users",
     ],
     users = [
+        # Build Recipes Tester launches orchestrator led builds which needs to
+        # trigger compilator led builds
+        "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
         # An account used by "Build Recipes Tester" builder infra/try bucket
         # used to tests changes to Chromium recipes using LED before commit.
         "infra-try-recipes-tester@chops-service-accounts.iam.gserviceaccount.com",
