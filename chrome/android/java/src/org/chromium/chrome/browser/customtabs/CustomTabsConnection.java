@@ -700,6 +700,8 @@ public class CustomTabsConnection {
         logCall("requestPostMessageChannel() with origin "
                         + (postMessageOrigin != null ? postMessageOrigin.toString() : ""),
                 success);
+        RecordHistogram.recordBooleanHistogram(
+                "CustomTabs.PostMessage.RequestPostMessageChannel", success);
         return success;
     }
 
