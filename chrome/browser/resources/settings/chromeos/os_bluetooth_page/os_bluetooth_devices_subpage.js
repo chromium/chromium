@@ -318,6 +318,15 @@ class SettingsBluetoothDevicesSubpageElement extends
     return this.isFastPairSupportedByDevice_ &&
         loadTimeData.getBoolean('enableSavedDevicesFlag');
   }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onClicked_(event) {
+    Router.getInstance().navigateTo(routes.BLUETOOTH_SAVED_DEVICES);
+    event.stopPropagation();
+  }
 }
 
 customElements.define(

@@ -76,6 +76,11 @@ function createOSSettingsRoutes() {
         r.BLUETOOTH, mojom.BLUETOOTH_DEVICE_DETAIL_SUBPAGE_PATH,
         Subpage.kBluetoothDeviceDetail);
   }
+  if (loadTimeData.getBoolean('enableSavedDevicesFlag')) {
+    r.BLUETOOTH_SAVED_DEVICES = createSubpage(
+        r.BLUETOOTH, mojom.BLUETOOTH_SAVED_DEVICES_SUBPAGE_PATH,
+        Subpage.kBluetoothSavedDevices);
+  }
 
   // MultiDevice section.
   if (!loadTimeData.getBoolean('isGuest')) {

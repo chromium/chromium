@@ -2172,6 +2172,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAILS" desc="Name of the settings page which displays Bluetooth device details.">
     Bluetooth device details
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SAVED_DEVICES" desc="Name of the settings page which displays Bluetooth saved devices.">
+   Devices saved to your account
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE" desc="Title of the settings dialog for adding or pairing Bluetooth a device.">
     Connect to Bluetooth device
   </message>

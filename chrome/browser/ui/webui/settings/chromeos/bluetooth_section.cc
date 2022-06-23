@@ -318,6 +318,7 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"enableFastPairSubtitle", IDS_BLUETOOTH_ENABLE_FAST_PAIR_SUBTITLE},
       {"savedDevicesLabel", IDS_BLUETOOTH_SAVED_DEVICES_LABEL},
       {"savedDevicesSubtitle", IDS_BLUETOOTH_SAVED_DEVICES_SUBTITLE},
+      {"savedDevicesPageName", IDS_SETTINGS_BLUETOOTH_SAVED_DEVICES},
       {"bluetoothPrimaryUserControlled",
        IDS_SETTINGS_BLUETOOTH_PRIMARY_USER_CONTROLLED},
       {"bluetoothDeviceWithConnectionStatus",
@@ -413,6 +414,7 @@ void BluetoothSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kBluetoothConnectToDevice,
       mojom::Setting::kBluetoothDisconnectFromDevice,
   };
+
   RegisterNestedSettingBulk(mojom::Subpage::kBluetoothDevices,
                             kBluetoothDevicesSettings, generator);
   generator->RegisterTopLevelAltSetting(mojom::Setting::kBluetoothOnOff);
@@ -426,6 +428,13 @@ void BluetoothSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                 ? mojom::Subpage::kBluetoothDeviceDetail
                                 : mojom::Subpage::kBluetoothDevices,
                             kBluetoothDevicesSettingsLegacy, generator);
+
+  generator->RegisterNestedSubpage(IDS_SETTINGS_BLUETOOTH_SAVED_DEVICES,
+                                   mojom::Subpage::kBluetoothSavedDevices,
+                                   mojom::Subpage::kBluetoothDevices,
+                                   mojom::SearchResultIcon::kBluetooth,
+                                   mojom::SearchResultDefaultRank::kMedium,
+                                   mojom::kBluetoothSavedDevicesSubpagePath);
 }
 
 void BluetoothSection::AdapterPresentChanged(device::BluetoothAdapter* adapter,
