@@ -167,8 +167,8 @@ ExternalConstantsOverrider::FromDefaultJSONFile(
   std::unique_ptr<base::Value> parsed_value(
       parser.Deserialize(&error_code, &error_message));
   if (error_code || !parsed_value) {
-    LOG(ERROR) << "Could not parse " << override_file_path << ": error "
-               << error_code << ": " << error_message;
+    VLOG(2) << "Could not parse " << override_file_path << ": error "
+            << error_code << ": " << error_message;
     return nullptr;
   }
 
