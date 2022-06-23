@@ -14,17 +14,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -307,21 +308,21 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         };
 
         // On pre-R devices, We wait till the layout is complete and get the content
-        // |android.R.id.content| view height. See |getAppUsableScreenHeight|.
+        // |android.R.id.content| view height. See |getAppUsableScreenHeightFromContent|.
         mPositionUpdater =
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? this::updatePosition : () -> {
             // Maybe invoked before layout inflation? Simply return here - postion update will be
             // executed by |onPostInflationStartUp| anyway.
             if (mContentFrame == null) return;
 
-            mContentFrame.getViewTreeObserver().addOnGlobalLayoutListener(
-                    new OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            mContentFrame.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            updatePosition();
-                        }
-                    });
+            mContentFrame.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    mContentFrame.removeOnLayoutChangeListener(this);
+                    updatePosition();
+                }
+            });
         };
     }
 
@@ -356,19 +357,32 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                     .getInsets(WindowInsets.Type.navigationBars())
                     .bottom;
         }
-        // On pre-R devices, there is no official way to get the navigation bar height. A common way
-        // was to get it from a resource definition('navigation_bar_height') but it fails on some
-        // vendor-customized devices. A workaround here is to subtract the app-usable height
-        // (client view height + status bar height) from the whole display height.
-        return mDisplayHeight - getAppUsableScreenHeight();
+        // Pre-R OS offers no official way to get the navigation bar height. A common way was
+        // to get it from a resource definition('navigation_bar_height') but it fails on some
+        // vendor-customized devices.
+        // A workaround here is to subtract the app-usable height from the whole display height.
+        // There are a couple of ways to get the app-usable height:
+        // 1) content frame + status bar height
+        // 2) |display.getSize|
+        // On some devices, only one returns the right height, the other returning a height
+        // bigger that the actual value. Heuristically we choose the smaller of the two.
+        return mDisplayHeight
+                - Math.max(getAppUsableScreenHeightFromContent(),
+                        getAppUsableScreenHeightFromDisplay());
     }
 
-    private int getAppUsableScreenHeight() {
-        // A correct way to get the client area height would be to use |decor_content_parent|,
-        // the parent of |content|, to make sure to include the top action bar dimension. But
-        // CCT (or Chrome for that matter) doesn't have the top action bar. So getting the height
-        // of |content| is enough.
+    private int getAppUsableScreenHeightFromContent() {
+        // A correct way to get the client area height would be to use the parent of |content|
+        // to make sure to include the top action bar dimension. But CCT (or Chrome for that
+        // matter) doesn't have the top action bar. So getting the height of |content| is enough.
         return mContentFrame.getHeight() + getStatusBarHeight();
+    }
+
+    private int getAppUsableScreenHeightFromDisplay() {
+        Display display = mActivity.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return size.y;
     }
 
     @Override
