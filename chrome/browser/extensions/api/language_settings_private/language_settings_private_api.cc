@@ -828,24 +828,22 @@ LanguageSettingsPrivateAddInputMethodFunction::Run() {
   std::string input_methods = base::JoinString(input_method_list, ",");
   prefs->SetString(pref_name, input_methods);
 
-  // In LSV2 Update 2, we want to automatically enable "Show input options in
-  // shelf" when the user has multiple input methods.
+  // We want to automatically enable "Show input options in shelf" when the user
+  // has multiple input methods.
   // We don't want to repeatedly enable it every time the user adds an input
   // method, as a user may want to intentionally turn it off - so we only enable
   // it once the user reaches two input methods.
-  if (base::FeatureList::IsEnabled(ash::features::kLanguageSettingsUpdate2)) {
-    // As pref_name and input_method_set only refer to the preference related to
-    // the list of IMEs for which this newly-added IME is in, we need the other
-    // IME list to calculate the total number of IMEs.
-    const char* other_ime_list_pref_name = is_component_extension_ime
-                                               ? prefs::kLanguageEnabledImes
-                                               : prefs::kLanguagePreloadEngines;
-    base::flat_set<std::string> other_input_method_set(
-        GetIMEsFromPref(prefs, other_ime_list_pref_name));
-    if (input_method_set.size() + other_input_method_set.size() ==
-        kNumImesToAutoEnableImeMenu) {
-      prefs->SetBoolean(prefs::kLanguageImeMenuActivated, true);
-    }
+  // As pref_name and input_method_set only refer to the preference related to
+  // the list of IMEs for which this newly-added IME is in, we need the other
+  // IME list to calculate the total number of IMEs.
+  const char* other_ime_list_pref_name = is_component_extension_ime
+                                             ? prefs::kLanguageEnabledImes
+                                             : prefs::kLanguagePreloadEngines;
+  base::flat_set<std::string> other_input_method_set(
+      GetIMEsFromPref(prefs, other_ime_list_pref_name));
+  if (input_method_set.size() + other_input_method_set.size() ==
+      kNumImesToAutoEnableImeMenu) {
+    prefs->SetBoolean(prefs::kLanguageImeMenuActivated, true);
   }
 #endif
   return RespondNow(NoArguments());

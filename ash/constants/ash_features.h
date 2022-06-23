@@ -376,8 +376,6 @@ extern const base::Feature kLacrosProfileMigrationForceOff;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLacrosMoveProfileMigration;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kLanguageSettingsUpdate2;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLauncherAppSort;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLauncherFolderRenameKeepsSortOrder;

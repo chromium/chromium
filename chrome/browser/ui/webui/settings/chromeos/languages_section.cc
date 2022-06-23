@@ -103,11 +103,6 @@ const std::vector<SearchConcept>& GetEditDictionarySearchConceptsV2() {
   return *tags;
 }
 
-bool IsLanguageSettingsV2Update2Enabled() {
-  return base::FeatureList::IsEnabled(
-      ::chromeos::features::kLanguageSettingsUpdate2);
-}
-
 const std::vector<SearchConcept>& GetSmartInputsSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_SUGGESTIONS,
@@ -447,8 +442,7 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddLanguagesPageStringsV2(html_source);
   AddInputPageStringsV2(html_source);
 
-  html_source->AddBoolean("enableLanguageSettingsV2Update2",
-                          IsLanguageSettingsV2Update2Enabled());
+  html_source->AddBoolean("enableLanguageSettingsV2Update2", true);
   html_source->AddBoolean("onDeviceGrammarCheckEnabled",
                           base::FeatureList::IsEnabled(
                               ::chromeos::features::kOnDeviceGrammarCheck));

@@ -85,14 +85,6 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
     InProcessBrowserTest::SetUp();
   }
 #endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetUp() override {
-    // On CrOS, Language Settings Update 2 will be the norm going forward.
-    // Forcibly enable it here in case it is disabled in the future.
-    feature_list_.InitAndEnableFeature(ash::features::kLanguageSettingsUpdate2);
-    InProcessBrowserTest::SetUp();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetUpOnMainThread() override {
     renderer_ = std::make_unique<content::MockRenderProcessHost>(GetContext());
@@ -367,37 +359,13 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
 #endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Tests related to CrOS Language Settings Update 2.
-// Spell check languages and accept languages are decoupled with Update 2.
-// All tests which rely on the coupling should use the below class.
-// TODO(crbug.com/1177519): Remove this once Update 2 is fully launched.
-class SpellcheckServiceLanguageSettingsUpdate2DisabledBrowserTest
-    : public SpellcheckServiceBrowserTest {
-  void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        ash::features::kLanguageSettingsUpdate2);
-    InProcessBrowserTest::SetUp();
-  }
-};
-
 // Removing a spellcheck language from accept languages should not remove it
-// from spellcheck languages list with Update 2 enabled.
+// from spellcheck languages list on CrOS.
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
                        RemoveSpellcheckLanguageFromAcceptLanguages) {
   InitSpellcheck(true, "", "en-US,fr");
   SetAcceptLanguages("en-US,es,ru");
   EXPECT_EQ("en-US,fr", GetMultilingualDictionaries());
-}
-
-// Removing a spellcheck language from accept languages should remove it from
-// spellcheck languages list as well with Update 2 disabled.
-// TODO(crbug.com/1177519): Remove this once Update 2 is fully launched.
-IN_PROC_BROWSER_TEST_F(
-    SpellcheckServiceLanguageSettingsUpdate2DisabledBrowserTest,
-    RemoveSpellcheckLanguageFromAcceptLanguages) {
-  InitSpellcheck(true, "", "en-US,fr");
-  SetAcceptLanguages("en-US,es,ru");
-  EXPECT_EQ("en-US", GetMultilingualDictionaries());
 }
 #else
 // Removing a spellcheck language from accept languages should remove it from

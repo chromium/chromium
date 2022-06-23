@@ -114,9 +114,6 @@ class LanguageSettingsPrivateApiTest : public ExtensionServiceTestBase {
     // Force Windows hybrid spellcheck to be enabled.
     feature_list_.InitAndEnableFeature(spellcheck::kWinUseBrowserSpellChecker);
 #endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    feature_list_.InitAndEnableFeature(ash::features::kLanguageSettingsUpdate2);
-#endif
   }
 
 #if BUILDFLAG(IS_WIN)
