@@ -4913,7 +4913,9 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest,
   EXPECT_TRUE(web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
 }
 
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetUkmSourceIds) {
+// Flaky on all platforms. crbug/1336851
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DISABLED_GetUkmSourceIds) {
   ukm::TestAutoSetUkmRecorder recorder;
   // This test site has one cross-site iframe.
   GURL main_frame_url(
