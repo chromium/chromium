@@ -15,19 +15,14 @@ ViewModelBase::~ViewModelBase() {
   // view are owned by their parent, no need to delete them.
 }
 
-void ViewModelBase::Remove(int index) {
-  if (index == -1)
-    return;
-
+void ViewModelBase::Remove(size_t index) {
   check_index(index);
   entries_.erase(entries_.begin() + index);
 }
 
-void ViewModelBase::Move(int index, int target_index) {
-  DCHECK_LT(index, static_cast<int>(entries_.size()));
-  DCHECK_GE(index, 0);
-  DCHECK_LT(target_index, static_cast<int>(entries_.size()));
-  DCHECK_GE(target_index, 0);
+void ViewModelBase::Move(size_t index, size_t target_index) {
+  check_index(index);
+  check_index(target_index);
 
   if (index == target_index)
     return;
@@ -36,15 +31,15 @@ void ViewModelBase::Move(int index, int target_index) {
   entries_.insert(entries_.begin() + target_index, entry);
 }
 
-void ViewModelBase::MoveViewOnly(int index, int target_index) {
+void ViewModelBase::MoveViewOnly(size_t index, size_t target_index) {
   if (target_index < index) {
     View* view = entries_[index].view;
-    for (int i = index; i > target_index; --i)
+    for (size_t i = index; i > target_index; --i)
       entries_[i].view = entries_[i - 1].view;
     entries_[target_index].view = view;
   } else if (target_index > index) {
     View* view = entries_[index].view;
-    for (int i = index; i < target_index; ++i)
+    for (size_t i = index; i < target_index; ++i)
       entries_[i].view = entries_[i + 1].view;
     entries_[target_index].view = view;
   }
@@ -57,18 +52,18 @@ void ViewModelBase::Clear() {
     delete entry.view;
 }
 
-int ViewModelBase::GetIndexOfView(const View* view) const {
+absl::optional<size_t> ViewModelBase::GetIndexOfView(const View* view) const {
   const auto i =
       std::find_if(entries_.cbegin(), entries_.cend(),
                    [view](const auto& entry) { return entry.view == view; });
-  return (i == entries_.cend()) ? -1 : (i - entries_.cbegin());
+  return (i == entries_.cend()) ? absl::nullopt
+                                : absl::make_optional(i - entries_.cbegin());
 }
 
 ViewModelBase::ViewModelBase() = default;
 
-void ViewModelBase::AddUnsafe(View* view, int index) {
-  DCHECK_LE(index, static_cast<int>(entries_.size()));
-  DCHECK_GE(index, 0);
+void ViewModelBase::AddUnsafe(View* view, size_t index) {
+  check_index(index);
   Entry entry;
   entry.view = view;
   entries_.insert(entries_.begin() + index, entry);

@@ -547,7 +547,7 @@ void PagedAppsGridView::Layout() {
   }
 
   CalculateIdealBounds();
-  for (int i = 0; i < view_model()->view_size(); ++i) {
+  for (size_t i = 0; i < view_model()->view_size(); ++i) {
     AppListItemView* view = GetItemViewAt(i);
     view->SetBoundsRect(view_model()->ideal_bounds(i));
   }
@@ -704,9 +704,9 @@ void PagedAppsGridView::UpdatePaging() {
 
   // Folders have the same number of tiles on every page, while the root
   // level grid can have a different number of tiles per page.
-  int tiles = view_model()->view_size();
+  size_t tiles = view_model()->view_size();
   int total_pages = 1;
-  int tiles_on_page = TilesPerPage(0);
+  size_t tiles_on_page = TilesPerPage(0);
   while (tiles > tiles_on_page) {
     tiles -= tiles_on_page;
     ++total_pages;
@@ -1180,7 +1180,7 @@ void PagedAppsGridView::AnimateCardifiedState() {
   RecenterItemsContainer();
 
   // Drag view can be nullptr or moved from the model by EndDrag.
-  const int number_of_views_to_animate = view_model()->view_size();
+  const size_t number_of_views_to_animate = view_model()->view_size();
 
   base::RepeatingClosure on_bounds_animator_callback;
   if (number_of_views_to_animate > 0) {
@@ -1211,7 +1211,7 @@ void PagedAppsGridView::AnimateCardifiedState() {
 
   gfx::Vector2d translate_offset(
       0, start_position.y() - items_container()->origin().y());
-  for (int i = 0; i < view_model()->view_size(); ++i) {
+  for (size_t i = 0; i < view_model()->view_size(); ++i) {
     AppListItemView* entry_view = view_model()->view_at(i);
     // Reposition view bounds to compensate for the translation offset.
     gfx::Rect current_bounds = entry_view->bounds();

@@ -108,7 +108,7 @@ CameraRollView::CameraRollItemsView::~CameraRollItemsView() = default;
 
 void CameraRollView::CameraRollItemsView::AddCameraRollItem(
     views::View* camera_roll_item) {
-  int view_size = camera_roll_items_.view_size();
+  size_t view_size = camera_roll_items_.view_size();
   camera_roll_items_.Add(camera_roll_item, view_size);
   AddChildView(camera_roll_item);
 }
@@ -135,7 +135,7 @@ gfx::Size CameraRollView::CameraRollItemsView::CalculatePreferredSize() const {
 void CameraRollView::CameraRollItemsView::Layout() {
   views::View::Layout();
   CalculateIdealBounds();
-  for (int i = 0; i < camera_roll_items_.view_size(); ++i) {
+  for (size_t i = 0; i < camera_roll_items_.view_size(); ++i) {
     auto* thumbnail = camera_roll_items_.view_at(i);
     thumbnail->SetBoundsRect(camera_roll_items_.ideal_bounds(i));
   }
@@ -158,7 +158,7 @@ gfx::Point CameraRollView::CameraRollItemsView::GetCameraRollItemPosition(
 }
 
 void CameraRollView::CameraRollItemsView::CalculateIdealBounds() {
-  for (int i = 0; i < camera_roll_items_.view_size(); ++i) {
+  for (size_t i = 0; i < camera_roll_items_.view_size(); ++i) {
     gfx::Rect camera_roll_item_bounds =
         gfx::Rect(GetCameraRollItemPosition(i), GetCameraRollItemSize());
     camera_roll_items_.set_ideal_bounds(i, camera_roll_item_bounds);

@@ -505,8 +505,11 @@ void TabContainer::UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) {
     group_views->second->UpdateBounds();
 }
 
+// TODO(pkasting): This should really return an optional<size_t>
 int TabContainer::GetModelIndexOf(const TabSlotView* slot_view) const {
-  return tabs_view_model_.GetIndexOfView(slot_view);
+  const absl::optional<size_t> index =
+      tabs_view_model_.GetIndexOfView(slot_view);
+  return index.has_value() ? static_cast<int>(index.value()) : -1;
 }
 
 Tab* TabContainer::GetTabAtModelIndex(int index) const {
@@ -563,9 +566,9 @@ bool TabContainer::IsRectInWindowCaption(const gfx::Rect& rect) {
 
   // A hit on the tab is not in the caption unless it is in the thin strip
   // mentioned above.
-  const int tab_index = tabs_view_model_.GetIndexOfView(v);
-  if (IsValidModelIndex(tab_index)) {
-    Tab* tab = GetTabAtModelIndex(tab_index);
+  const absl::optional<size_t> tab_index = tabs_view_model_.GetIndexOfView(v);
+  if (tab_index.has_value() && IsValidModelIndex(tab_index.value())) {
+    Tab* tab = GetTabAtModelIndex(tab_index.value());
     gfx::Rect tab_drag_handle = tab->GetMirroredBounds();
     tab_drag_handle.set_height(drag_handle_extension);
     return extend_drag_handle && !tab->IsActive() &&

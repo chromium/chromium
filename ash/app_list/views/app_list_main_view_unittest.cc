@@ -38,7 +38,7 @@
 namespace ash {
 namespace {
 
-const int kInitialItems = 2;
+const size_t kInitialItems = 2;
 
 }  // namespace
 
@@ -184,7 +184,7 @@ class AppListMainViewTest : public views::ViewsTestBase,
               delegate_->GetTestModel()->FindFolderItem("single_item_folder"));
     EXPECT_EQ(AppListFolderItem::kItemType, folder_item->GetItemType());
 
-    EXPECT_EQ(1, GetRootViewModel()->view_size());
+    EXPECT_EQ(1u, GetRootViewModel()->view_size());
     AppListItemView* folder_item_view =
         static_cast<AppListItemView*>(GetRootViewModel()->view_at(0));
     EXPECT_EQ(folder_item_view->item(), folder_item);
@@ -287,7 +287,7 @@ TEST_P(AppListMainViewTest, ModelChanged) {
   std::unique_ptr<SearchModel> old_search_model(
       delegate_->ReleaseTestSearchModel());
 
-  const int kReplacementItems = 5;
+  const size_t kReplacementItems = 5;
   delegate_->ReplaceTestModel(kReplacementItems);
   EXPECT_EQ(kReplacementItems, GetRootViewModel()->view_size());
 }
@@ -300,11 +300,11 @@ TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
 
   // Number of apps to populate. Should provide more than 1 page of apps (5*4 =
   // 20).
-  const int kNumApps = 30;
+  const size_t kNumApps = 30;
   delegate_->GetTestModel()->PopulateApps(kNumApps);
   GetRootGridView()->Layout();
 
-  EXPECT_EQ(1, GetFolderViewModel()->view_size());
+  EXPECT_EQ(1u, GetFolderViewModel()->view_size());
   EXPECT_EQ(kNumApps + 1, GetRootViewModel()->view_size());
 
   AppListItemView* dragged = StartDragForReparent(0);
@@ -372,7 +372,7 @@ TEST_P(AppListMainViewTest, ReparentSingleItemOntoSelf) {
   GetFolderGridView()->EndDrag(false);
 
   // The app list model should remain unchanged.
-  EXPECT_EQ(2, GetRootViewModel()->view_size());
+  EXPECT_EQ(2u, GetRootViewModel()->view_size());
   EXPECT_EQ(folder_id, GetRootGridView()->GetItemViewAt(0)->item()->id());
   AppListFolderItem* const folder_item =
       delegate_->GetTestModel()->FindFolderItem("single_item_folder");

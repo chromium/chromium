@@ -989,7 +989,7 @@ TEST_F(AppListBubbleViewTest, DownArrowFromRecentsSelectsLastColumnInAppsGrid) {
 
   // There are only 2 folders, and hence 2 columns, in the top level apps grid.
   auto* apps_grid_view = GetAppsGridView();
-  ASSERT_EQ(2, apps_grid_view->view_model()->view_size());
+  ASSERT_EQ(2u, apps_grid_view->view_model()->view_size());
 
   // Focus the 5th recent app.
   auto* recent_apps_view = GetRecentAppsView();

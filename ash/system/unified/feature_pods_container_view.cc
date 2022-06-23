@@ -116,7 +116,7 @@ void FeaturePodsContainerView::ViewHierarchyChanged(
 void FeaturePodsContainerView::Layout() {
   UpdateCollapsedSidePadding();
   CalculateIdealBoundsForFeaturePods();
-  for (int i = 0; i < visible_buttons_.view_size(); ++i) {
+  for (size_t i = 0; i < visible_buttons_.view_size(); ++i) {
     auto* button = visible_buttons_.view_at(i);
     button->SetBoundsRect(visible_buttons_.ideal_bounds(i));
   }
@@ -136,12 +136,14 @@ void FeaturePodsContainerView::UpdateChildVisibility() {
     bool visible = IsButtonVisible(child, visible_count);
     child->SetVisibleByContainer(visible);
     if (visible) {
-      if (visible_buttons_.GetIndexOfView(child) < 0)
+      if (!visible_buttons_.GetIndexOfView(child).has_value())
         visible_buttons_.Add(child, visible_count);
       ++visible_count;
     } else {
-      if (visible_buttons_.GetIndexOfView(child))
-        visible_buttons_.Remove(visible_buttons_.GetIndexOfView(child));
+      if (auto index = visible_buttons_.GetIndexOfView(child);
+          index.has_value()) {
+        visible_buttons_.Remove(index.value());
+      }
     }
   }
   UpdateTotalPages();
@@ -163,17 +165,17 @@ int FeaturePodsContainerView::GetVisibleCount() const {
 }
 
 void FeaturePodsContainerView::EnsurePageWithButton(views::View* button) {
-  int index = visible_buttons_.GetIndexOfView(button->parent());
-  if (index < 0)
+  auto index = visible_buttons_.GetIndexOfView(button->parent());
+  if (!index.has_value())
     return;
 
   int tiles_per_page = GetTilesPerPage();
-  int first_index = pagination_model_->selected_page() * tiles_per_page;
-  int last_index =
+  size_t first_index = pagination_model_->selected_page() * tiles_per_page;
+  size_t last_index =
       ((pagination_model_->selected_page() + 1) * tiles_per_page) - 1;
-  if (index < first_index || index > last_index) {
-    int page = ((index + 1) / tiles_per_page) +
-               ((index + 1) % tiles_per_page ? 1 : 0) - 1;
+  if (index.value() < first_index || index.value() > last_index) {
+    int page = ((index.value() + 1) / tiles_per_page) +
+               ((index.value() + 1) % tiles_per_page ? 1 : 0) - 1;
 
     pagination_model_->SelectPage(page, true /*animate*/);
   }
@@ -273,7 +275,7 @@ void FeaturePodsContainerView::UpdateCollapsedSidePadding() {
 }
 
 void FeaturePodsContainerView::AddFeaturePodButton(FeaturePodButton* button) {
-  int view_size = visible_buttons_.view_size();
+  size_t view_size = visible_buttons_.view_size();
   if (IsButtonVisible(button, view_size)) {
     visible_buttons_.Add(button, view_size);
   }
@@ -318,7 +320,7 @@ const gfx::Vector2d FeaturePodsContainerView::CalculateTransitionOffset(
 }
 
 void FeaturePodsContainerView::CalculateIdealBoundsForFeaturePods() {
-  for (int i = 0; i < visible_buttons_.view_size(); ++i) {
+  for (size_t i = 0; i < visible_buttons_.view_size(); ++i) {
     gfx::Rect tile_bounds;
     gfx::Size child_size;
     // When we are on the first page we calculate bounds for an expanded tray
@@ -358,7 +360,7 @@ int FeaturePodsContainerView::GetTilesPerPage() const {
 void FeaturePodsContainerView::UpdateTotalPages() {
   int total_pages = 0;
 
-  int total_visible = visible_buttons_.view_size();
+  size_t total_visible = visible_buttons_.view_size();
   int tiles_per_page = GetTilesPerPage();
 
   if (!visible_buttons_.view_size() || !tiles_per_page) {

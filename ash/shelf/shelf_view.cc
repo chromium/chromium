@@ -457,10 +457,12 @@ void ShelfView::Init() {
 
 gfx::Rect ShelfView::GetIdealBoundsOfItemIcon(const ShelfID& id) {
   int index = model_->ItemIndexByID(id);
-  if (!base::Contains(visible_views_indices_, index))
+  if (index < 0 ||
+      !base::Contains(visible_views_indices_, static_cast<size_t>(index)))
     return gfx::Rect();
 
-  const gfx::Rect& ideal_bounds(view_model_->ideal_bounds(index));
+  const gfx::Rect& ideal_bounds(
+      view_model_->ideal_bounds(static_cast<size_t>(index)));
   ShelfAppButton* button = GetShelfAppButton(id);
   gfx::Rect icon_bounds = button->GetIconBounds();
   return gfx::Rect(GetMirroredXWithWidthInView(
@@ -476,7 +478,7 @@ bool ShelfView::IsShowingMenu() const {
 
 void ShelfView::UpdateVisibleShelfItemBoundsUnion() {
   visible_shelf_item_bounds_union_.SetRect(0, 0, 0, 0);
-  for (const int i : visible_views_indices_) {
+  for (const auto i : visible_views_indices_) {
     const views::View* child = view_model_->view_at(i);
     if (ShouldShowTooltipForChildView(child)) {
       visible_shelf_item_bounds_union_.Union(
@@ -718,11 +720,11 @@ void ShelfView::ViewHierarchyChanged(
   if (!details.is_add) {
     if (details.child == current_ghost_view_) {
       current_ghost_view_ = nullptr;
-      current_ghost_view_index_ = -1;
+      current_ghost_view_index_ = absl::nullopt;
     }
     if (details.child == last_ghost_view_) {
       last_ghost_view_ = nullptr;
-      current_ghost_view_index_ = -1;
+      current_ghost_view_index_ = absl::nullopt;
     }
   }
 }
@@ -757,7 +759,7 @@ void ShelfView::ButtonPressed(views::Button* sender,
 
   // Record the index for the last pressed shelf item.
   last_pressed_index_ = view_model_->GetIndexOfView(sender);
-  DCHECK_LT(-1, last_pressed_index_);
+  DCHECK(last_pressed_index_.has_value());
 
   // Place new windows on the same display as the button. Opening windows is
   // usually an async operation so we wait until window activation changes
@@ -782,7 +784,7 @@ void ShelfView::ButtonPressed(views::Button* sender,
   }
 
   // Collect usage statistics before we decide what to do with the click.
-  switch (model_->items()[last_pressed_index_].type) {
+  switch (model_->items()[last_pressed_index_.value()].type) {
     case TYPE_PINNED_APP:
     case TYPE_BROWSER_SHORTCUT:
     case TYPE_APP:
@@ -799,7 +801,7 @@ void ShelfView::ButtonPressed(views::Button* sender,
   }
 
   // Run AfterItemSelected directly if the item has no delegate (ie. in tests).
-  const ShelfItem& item = model_->items()[last_pressed_index_];
+  const ShelfItem& item = model_->items()[last_pressed_index_.value()];
   if (!model_->GetShelfItemDelegate(item.id)) {
     AfterItemSelected(item, sender, ui::Event::Clone(event), ink_drop,
                       SHELF_ACTION_NONE, {});
@@ -847,7 +849,7 @@ void ShelfView::ShowContextMenuForViewImpl(views::View* source,
     }
     return;
   }
-  last_pressed_index_ = -1;
+  last_pressed_index_ = absl::nullopt;
   if (!item || !model_->GetShelfItemDelegate(item->id)) {
     ShowShelfContextMenu(ShelfID(), point, source, source_type, nullptr);
     return;
@@ -880,7 +882,7 @@ void ShelfView::OnTabletModeEnded() {
 void ShelfView::OnShelfConfigUpdated() {
   // Ensure the shelf app buttons have an icon which is up to date with the
   // current ShelfConfig sizing.
-  for (int i = 0; i < view_model_->view_size(); i++) {
+  for (size_t i = 0; i < view_model_->view_size(); i++) {
     ShelfAppButton* button =
         static_cast<ShelfAppButton*>(view_model_->view_at(i));
     if (!button->IsIconSizeCurrent())
@@ -909,8 +911,8 @@ bool ShelfView::ShouldEventActivateButton(View* view, const ui::Event& event) {
   const bool repost = IsRepostEvent(event);
 
   // Ignore if this is a repost event on the last pressed shelf item.
-  int index = view_model_->GetIndexOfView(view);
-  if (index == -1)
+  auto index = view_model_->GetIndexOfView(view);
+  if (!index.has_value())
     return false;
   return !repost || last_pressed_index_ != index;
 }
@@ -972,7 +974,8 @@ void ShelfView::ConfigureChildView(views::View* view,
 }
 
 void ShelfView::CalculateIdealBounds() {
-  DCHECK(model()->item_count() == view_model_->view_size());
+  DCHECK(static_cast<size_t>(model()->item_count()) ==
+         view_model_->view_size());
 
   const int button_spacing = ShelfConfig::Get()->button_spacing();
   UpdateSeparatorIndex();
@@ -981,11 +984,11 @@ void ShelfView::CalculateIdealBounds() {
 
   // Don't show the separator if it isn't needed, or would appear after all
   // visible items.
-  separator_->SetVisible(separator_index_ != -1 &&
+  separator_->SetVisible(separator_index_.has_value() &&
                          separator_index_ < visible_views_indices_.back());
-  // Set |separator_index_| to -1 if it is not visible.
+  // Set |separator_index_| to nullopt if it is not visible.
   if (!separator_->GetVisible())
-    separator_index_ = -1;
+    separator_index_ = absl::nullopt;
 
   app_icons_layout_offset_ = CalculateAppIconsLayoutOffset();
   int x = shelf()->PrimaryAxisValue(app_icons_layout_offset_, 0);
@@ -994,7 +997,7 @@ void ShelfView::CalculateIdealBounds() {
   // The padding is handled in ScrollableShelfView.
 
   const int button_size = GetButtonSize();
-  for (int i = 0; i < view_model_->view_size(); ++i) {
+  for (size_t i = 0; i < view_model_->view_size(); ++i) {
     if (view_model_->view_at(i)->GetVisible()) {
       gfx::Rect ideal_view_bounds(x, y, button_size, button_size);
       view_model_->set_ideal_bounds(i, ideal_view_bounds);
@@ -1084,16 +1087,17 @@ int ShelfView::GetAvailableSpaceForAppIcons() const {
 void ShelfView::UpdateSeparatorIndex() {
   // A separator is shown after the last pinned item only if it's followed by a
   // visible app item.
-  int first_unpinned_index = -1;
-  int last_pinned_index = -1;
+  absl::optional<size_t> first_unpinned_index = absl::nullopt;
+  absl::optional<size_t> last_pinned_index = absl::nullopt;
 
-  int dragged_item_index = -1;
+  absl::optional<size_t> dragged_item_index = absl::nullopt;
   if (drag_view_)
     dragged_item_index = view_model_->GetIndexOfView(drag_view_);
 
   const bool can_drag_view_across_separator =
       drag_view_ && CanDragAcrossSeparator(drag_view_);
-  for (int i = model()->item_count() - 1; i >= 0; --i) {
+  for (size_t index = model()->item_count(); index > 0; --index) {
+    const size_t i = index - 1;
     const auto& item = model()->items()[i];
     if (IsItemPinned(item)) {
       // Dragged pinned item may be moved to the unpinned side of the shelf and
@@ -1112,8 +1116,8 @@ void ShelfView::UpdateSeparatorIndex() {
 
   // If there is no unpinned item in shelf, return -1 as the separator should be
   // hidden.
-  if (first_unpinned_index == -1) {
-    separator_index_ = -1;
+  if (!first_unpinned_index.has_value()) {
+    separator_index_ = absl::nullopt;
     return;
   }
 
@@ -1161,7 +1165,7 @@ bool ShelfView::StartDrag(const std::string& app_id,
 
   // If the AppsGridView (which was dispatching this event) was opened by our
   // button, ShelfView dragging operations are locked and we have to unlock.
-  CancelDrag(-1);
+  CancelDrag(absl::nullopt);
   drag_and_drop_item_pinned_ = false;
   drag_and_drop_shelf_id_ = ShelfID(app_id);
   // Check if the application is pinned - if not, we have to pin it so
@@ -1276,8 +1280,8 @@ void ShelfView::SwapButtons(views::View* button_to_swap, bool with_next) {
     return;
 
   // Find the index of the button to swap in the view model.
-  int src_index = -1;
-  for (int i = 0; i < view_model_->view_size(); ++i) {
+  size_t src_index = static_cast<size_t>(-1);
+  for (size_t i = 0; i < view_model_->view_size(); ++i) {
     View* view = view_model_->view_at(i);
     if (view == button_to_swap) {
       src_index = i;
@@ -1305,8 +1309,8 @@ void ShelfView::PointerPressedOnButton(views::View* view,
   if (IsShowingMenu())
     shelf_menu_model_adapter_->Cancel();
 
-  int index = view_model_->GetIndexOfView(view);
-  if (index == -1 || view_model_->view_size() < 1)
+  auto index = view_model_->GetIndexOfView(view);
+  if (!index.has_value() || view_model_->view_size() < 1)
     return;  // View is being deleted, ignore request.
 
   // Reset drag icon proxy from previous drag (which could be set if the drop
@@ -1351,7 +1355,7 @@ void ShelfView::PointerReleasedOnButton(const views::View* view,
   is_repost_event_on_same_item_ = false;
 
   if (canceled) {
-    CancelDrag(-1);
+    CancelDrag(absl::nullopt);
   } else if (drag_pointer_ == pointer) {
     FinalizeRipOffDrag(false);
     drag_pointer_ = NONE;
@@ -1360,7 +1364,8 @@ void ShelfView::PointerReleasedOnButton(const views::View* view,
     // |drag_view_| is dragged over the separator. Do nothing if |drag_view_| is
     // already handled in FinalizedRipOffDrag.
     if (drag_view_) {
-      if (ShouldUpdateDraggedViewPinStatus(view_model_->GetIndexOfView(view))) {
+      if (ShouldUpdateDraggedViewPinStatus(
+              view_model_->GetIndexOfView(view).value())) {
         const std::string drag_app_id = ShelfItemForView(drag_view_)->id.app_id;
         ShelfModel::ScopedUserTriggeredMutation user_triggered(model_);
         if (model_->IsAppPinned(drag_app_id)) {
@@ -1382,8 +1387,8 @@ void ShelfView::PointerReleasedOnButton(const views::View* view,
     drag_icon_proxy_.reset();
 
   if (drag_icon_proxy_) {
-    const gfx::Rect drag_view_ideal_bounds =
-        view_model_->ideal_bounds(view_model_->GetIndexOfView(drag_view_));
+    const gfx::Rect drag_view_ideal_bounds = view_model_->ideal_bounds(
+        view_model_->GetIndexOfView(drag_view_).value());
     gfx::Rect target_bounds_in_screen =
         drag_view_->GetIdealIconBounds(drag_view_ideal_bounds.size(),
                                        /*icon_scale=*/1.0f);
@@ -1449,7 +1454,7 @@ void ShelfView::AnimateToIdealBounds() {
   move_animation_tracker_->Start(metrics_util::ForSmoothness(
       base::BindRepeating(&ReportMoveAnimationSmoothness)));
 
-  for (int i = 0; i < view_model_->view_size(); ++i) {
+  for (size_t i = 0; i < view_model_->view_size(); ++i) {
     View* view = view_model_->view_at(i);
     bounds_animator_->AnimateViewTo(view, view_model_->ideal_bounds(i));
     // Now that the item animation starts, we have to make sure that the
@@ -1485,8 +1490,8 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
   start_drag_index_ = view_model_->GetIndexOfView(drag_view_);
   drag_scroll_dir_ = 0;
 
-  if (start_drag_index_ == -1) {
-    CancelDrag(-1);
+  if (!start_drag_index_.has_value()) {
+    CancelDrag(absl::nullopt);
     return;
   }
 
@@ -1532,15 +1537,15 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
 void ShelfView::ContinueDrag(const ui::LocatedEvent& event) {
   DCHECK(dragging());
   DCHECK(drag_view_);
-  DCHECK_NE(-1, view_model_->GetIndexOfView(drag_view_));
+  const auto index = view_model_->GetIndexOfView(drag_view_);
+  DCHECK(index.has_value());
 
   const bool dragged_off_shelf_before = dragged_off_shelf_;
 
   // Handle rip off functionality if this is not a drag and drop host operation
   // and not the app list item.
   if (drag_and_drop_shelf_id_.IsNull() &&
-      RemovableByRipOff(view_model_->GetIndexOfView(drag_view_)) !=
-          NOT_REMOVABLE) {
+      RemovableByRipOff(index.value()) != NOT_REMOVABLE) {
     HandleRipOffDrag(event);
     // Check if the item got ripped off the shelf - if it did we are done.
     if (dragged_off_shelf_) {
@@ -1573,13 +1578,16 @@ void ShelfView::ContinueDrag(const ui::LocatedEvent& event) {
                        : drag_icon_bounds_in_screen_;
   delegate_->ScheduleScrollForItemDragIfNeeded(drag_icon_bounds_in_screen);
 
-  if (dragged_off_shelf_before)
-    model_->OnItemReturnedFromRipOff(view_model_->GetIndexOfView(drag_view_));
+  if (dragged_off_shelf_before) {
+    model_->OnItemReturnedFromRipOff(
+        static_cast<int>(view_model_->GetIndexOfView(drag_view_).value()));
+  }
 }
 
 void ShelfView::MoveDragViewTo(int primary_axis_coordinate) {
-  const int current_item_index = view_model_->GetIndexOfView(drag_view_);
-  const std::pair<int, int> indices(GetDragRange(current_item_index));
+  const size_t current_item_index =
+      view_model_->GetIndexOfView(drag_view_).value();
+  const std::pair<size_t, size_t> indices(GetDragRange(current_item_index));
   if (shelf_->IsHorizontalAlignment()) {
     int x = GetMirroredXWithWidthInView(primary_axis_coordinate,
                                         drag_view_->width());
@@ -1599,7 +1607,7 @@ void ShelfView::MoveDragViewTo(int primary_axis_coordinate) {
       drag_view_->SetY(y);
   }
 
-  int target_index = views::ViewModelUtils::DetermineMoveIndex(
+  size_t target_index = views::ViewModelUtils::DetermineMoveIndex(
       *view_model_, drag_view_, shelf_->IsHorizontalAlignment(),
       drag_view_->x(), drag_view_->y());
   target_index = base::clamp(target_index, indices.first, indices.second);
@@ -1638,9 +1646,9 @@ void ShelfView::MoveDragViewTo(int primary_axis_coordinate) {
 }
 
 void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
-  int current_index = view_model_->GetIndexOfView(drag_view_);
-  DCHECK_NE(-1, current_index);
-  std::string dragged_app_id = model_->items()[current_index].id.app_id;
+  auto current_index = view_model_->GetIndexOfView(drag_view_);
+  DCHECK(current_index.has_value());
+  std::string dragged_app_id = model_->items()[current_index.value()].id.app_id;
 
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   gfx::Point screen_location = event.root_location();
@@ -1691,11 +1699,13 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
     dragged_off_shelf_ = true;
     RemoveGhostView();
 
-    if (RemovableByRipOff(current_index) == REMOVABLE) {
+    if (RemovableByRipOff(current_index.value()) == REMOVABLE) {
       // Move the item to the back and hide it. ShelfItemMoved() callback will
       // handle the |view_model_| update and call AnimateToIdealBounds().
-      if (current_index != model_->item_count() - 1)
-        model_->Move(current_index, model_->item_count() - 1);
+      if (current_index.value() !=
+          static_cast<size_t>(model_->item_count() - 1)) {
+        model_->Move(current_index.value(), model_->item_count() - 1);
+      }
       // Make the item partially disappear to show that it will get removed if
       // dropped.
       drag_icon_proxy_->SetOpacity(kDraggedImageOpacity);
@@ -1715,11 +1725,11 @@ void ShelfView::FinalizeRipOffDrag(bool cancel) {
 
   delegate_->CancelScrollForItemDrag();
 
-  int current_index = view_model_->GetIndexOfView(drag_view_);
-  // If the view isn't part of the model anymore (|current_index| == -1), a sync
-  // operation must have removed it. In that case we shouldn't change the model
-  // and only delete the proxy image.
-  if (current_index == -1) {
+  auto current_index = view_model_->GetIndexOfView(drag_view_);
+  // If the view isn't part of the model anymore, a sync operation must have
+  // removed it. In that case we shouldn't change the model and only delete the
+  // proxy image.
+  if (!current_index.has_value()) {
     drag_icon_proxy_.reset();
     return;
   }
@@ -1728,7 +1738,7 @@ void ShelfView::FinalizeRipOffDrag(bool cancel) {
   bool snap_back = false;
   // Items which cannot be dragged off will be handled as a cancel.
   if (!cancel) {
-    if (RemovableByRipOff(current_index) != REMOVABLE) {
+    if (RemovableByRipOff(current_index.value()) != REMOVABLE) {
       // Make sure we do not try to remove un-removable items like items which
       // were not pinned or have to be always there.
       cancel = true;
@@ -1737,7 +1747,7 @@ void ShelfView::FinalizeRipOffDrag(bool cancel) {
       // Make sure the item stays invisible upon removal.
       drag_view_->SetVisible(false);
       ShelfModel::ScopedUserTriggeredMutation user_triggered(model_);
-      model_->UnpinAppWithID(model_->items()[current_index].id.app_id);
+      model_->UnpinAppWithID(model_->items()[current_index.value()].id.app_id);
     }
   }
   if (cancel || snap_back) {
@@ -1756,7 +1766,7 @@ void ShelfView::FinalizeRipOffDrag(bool cancel) {
       drag_view_->AddState(ShelfAppButton::STATE_HIDDEN);
       // When a canceling drag model is happening, the view model is diverged
       // from the menu model and movements / animations should not be done.
-      model_->Move(current_index, start_drag_index_);
+      model_->Move(current_index.value(), start_drag_index_.value());
       AnimateToIdealBounds();
     }
     drag_view_->layer()->SetOpacity(1.0f);
@@ -1805,7 +1815,7 @@ bool ShelfView::ShouldFocusOut(bool reverse, views::View* button) {
          (!reverse && button == FindFirstFocusableChild());
 }
 
-std::pair<int, int> ShelfView::GetDragRange(int index) {
+std::pair<size_t, size_t> ShelfView::GetDragRange(size_t index) {
   DCHECK(base::Contains(visible_views_indices_, index));
   const ShelfItem& dragged_item = model_->items()[index];
 
@@ -1816,34 +1826,34 @@ std::pair<int, int> ShelfView::GetDragRange(int index) {
                           visible_views_indices_.back());
   }
 
-  int first = -1;
-  int last = -1;
-  for (int i : visible_views_indices_) {
+  absl::optional<size_t> first = absl::nullopt;
+  absl::optional<size_t> last = absl::nullopt;
+  for (size_t i : visible_views_indices_) {
     if (SameDragType(model_->items()[i].type, dragged_item.type)) {
-      if (first == -1)
+      if (!first.has_value())
         first = i;
       last = i;
-    } else if (first != -1) {
+    } else if (first.has_value()) {
       break;
     }
   }
-  DCHECK_NE(first, -1);
-  DCHECK_NE(last, -1);
+  DCHECK(first.has_value());
+  DCHECK(last.has_value());
 
   // TODO(afakhry): Consider changing this when taking into account inactive
   // desks.
-  return std::make_pair(first, last);
+  return std::make_pair(first.value(), last.value());
 }
 
-bool ShelfView::ShouldUpdateDraggedViewPinStatus(int dragged_view_index) {
+bool ShelfView::ShouldUpdateDraggedViewPinStatus(size_t dragged_view_index) {
   if (!features::IsDragUnpinnedAppToPinEnabled())
     return false;
 
   DCHECK(base::Contains(visible_views_indices_, dragged_view_index));
   bool is_moved_item_pinned =
       IsPinnedShelfItemType(model_->items()[dragged_view_index].type);
-  if (separator_index_ == -1) {
-    // If |separator_index_| equals to -1, all the apps in shelf are expected to
+  if (!separator_index_.has_value()) {
+    // If there is no |separator_index_|, all the apps in shelf are expected to
     // have the same pinned status.
     for (auto index : visible_views_indices_) {
       if (index != dragged_view_index) {
@@ -1858,7 +1868,8 @@ bool ShelfView::ShouldUpdateDraggedViewPinStatus(int dragged_view_index) {
   // If the separator is shown, check whether the pin status of dragged item
   // matches the pin status implied by the dragged view position relative to the
   // separator.
-  bool should_pinned_by_position = dragged_view_index <= separator_index_;
+  bool should_pinned_by_position =
+      dragged_view_index <= separator_index_.value();
   return should_pinned_by_position != is_moved_item_pinned;
 }
 
@@ -2020,7 +2031,8 @@ gfx::Rect ShelfView::GetBoundsForDragInsertInScreen() {
   return bounds;
 }
 
-int ShelfView::CancelDrag(int modified_index) {
+absl::optional<size_t> ShelfView::CancelDrag(
+    absl::optional<size_t> modified_index) {
   drag_scroll_dir_ = 0;
   scrolling_timer_.Stop();
   speed_up_drag_scrolling_.Stop();
@@ -2033,7 +2045,7 @@ int ShelfView::CancelDrag(int modified_index) {
   if (!drag_view_)
     return modified_index;
   bool was_dragging = dragging();
-  int drag_view_index = view_model_->GetIndexOfView(drag_view_);
+  auto drag_view_index = view_model_->GetIndexOfView(drag_view_);
   drag_pointer_ = NONE;
   drag_view_ = nullptr;
   if (drag_view_index == modified_index) {
@@ -2045,16 +2057,18 @@ int ShelfView::CancelDrag(int modified_index) {
 
   // Restore previous position, tracking the position of the modified view.
   bool at_end = modified_index == view_model_->view_size();
-  views::View* modified_view = (modified_index >= 0 && !at_end)
-                                   ? view_model_->view_at(modified_index)
-                                   : nullptr;
-  model_->Move(drag_view_index, start_drag_index_);
+  views::View* modified_view =
+      (modified_index.has_value() && !at_end)
+          ? view_model_->view_at(modified_index.value())
+          : nullptr;
+  model_->Move(drag_view_index.value(), start_drag_index_.value());
 
   // If the modified view will be at the end of the list, return the new end of
   // the list.
   if (at_end)
     return view_model_->view_size();
-  return modified_view ? view_model_->GetIndexOfView(modified_view) : -1;
+  return modified_view ? view_model_->GetIndexOfView(modified_view)
+                       : absl::nullopt;
 }
 
 void ShelfView::OnGestureEvent(ui::GestureEvent* event) {
@@ -2076,9 +2090,9 @@ void ShelfView::ShelfItemAdded(int model_index) {
   {
     base::AutoReset<bool> cancelling_drag(&cancelling_drag_model_changed_,
                                           true);
-    model_index = CancelDrag(model_index);
+    model_index = static_cast<int>(CancelDrag(model_index).value());
   }
-  view_model_->Add(view, model_index);
+  view_model_->Add(view, static_cast<size_t>(model_index));
 
   // If |item| is pinned and the mutation is user-triggered, report the pinning
   // action for accessibility and UMA. Do it now, because if |item| is hidden
@@ -2108,7 +2122,8 @@ void ShelfView::ShelfItemAdded(int model_index) {
   // spot (because it was in the middle of animating from 0,0 0x0 to its
   // target).
   CalculateIdealBounds();
-  view->SetBoundsRect(view_model_->ideal_bounds(model_index));
+  view->SetBoundsRect(
+      view_model_->ideal_bounds(static_cast<size_t>(model_index)));
 
   if (model_->is_current_mutation_user_triggered() &&
       drag_and_drop_shelf_id_ != item.id) {
@@ -2119,7 +2134,7 @@ void ShelfView::ShelfItemAdded(int model_index) {
   // is hidden, so it visually appears as though we are providing space for
   // it. When done we'll fade the view in.
   AnimateToIdealBounds();
-  DCHECK_LE(model_index, visible_views_indices_.back());
+  DCHECK_LE(static_cast<size_t>(model_index), visible_views_indices_.back());
   bounds_animator_->SetAnimationDelegate(
       view, std::unique_ptr<gfx::AnimationDelegate>(
                 new StartFadeAnimationDelegate(this, view)));
@@ -2147,7 +2162,7 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
   {
     base::AutoReset<bool> cancelling_drag(&cancelling_drag_model_changed_,
                                           true);
-    CancelDrag(-1);
+    CancelDrag(absl::nullopt);
   }
 
   if (view.get() == shelf_->tooltip()->GetCurrentAnchorView())
@@ -2199,7 +2214,7 @@ void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
   // Bail if the view and shelf sizes do not match. ShelfItemChanged may be
   // called here before ShelfItemAdded, due to ChromeShelfController's
   // item initialization, which calls SetItem during ShelfItemAdded.
-  if (static_cast<int>(model_->items().size()) != view_model_->view_size())
+  if (model_->items().size() != view_model_->view_size())
     return;
 
   const ShelfItem& item = model_->items()[model_index];
@@ -2215,7 +2230,7 @@ void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
 
   if (old_item.type != item.type) {
     // Type changed, swap the views.
-    model_index = CancelDrag(model_index);
+    model_index = static_cast<int>(CancelDrag(model_index).value());
     std::unique_ptr<views::View> old_view(view_model_->view_at(model_index));
     bounds_animator_->StopAnimatingView(old_view.get());
     // Removing and re-inserting a view in our view model will strip the ideal
@@ -2353,7 +2368,7 @@ void ShelfView::ShelfPartyToggled(bool in_shelf_party) {
 void ShelfView::OnShelfAlignmentChanged(aura::Window* root_window,
                                         ShelfAlignment old_alignment) {
   LayoutToIdealBounds();
-  for (const auto& visible_index : visible_views_indices_)
+  for (size_t visible_index : visible_views_indices_)
     view_model_->view_at(visible_index)->Layout();
 
   AnnounceShelfAlignment();
@@ -2539,8 +2554,9 @@ bool ShelfView::IsRepostEvent(const ui::Event& event) {
 }
 
 const ShelfItem* ShelfView::ShelfItemForView(const views::View* view) const {
-  const int view_index = view_model_->GetIndexOfView(view);
-  return (view_index < 0) ? nullptr : &(model_->items()[view_index]);
+  const auto view_index = view_model_->GetIndexOfView(view);
+  return (!view_index.has_value()) ? nullptr
+                                   : &(model_->items()[view_index.value()]);
 }
 
 int ShelfView::CalculateShelfDistance(const gfx::Point& coordinate) const {
@@ -2586,7 +2602,7 @@ std::u16string ShelfView::GetTitleForChildView(const views::View* view) const {
 
 void ShelfView::UpdateShelfItemViewsVisibility() {
   visible_views_indices_.clear();
-  for (int i = 0; i < view_model_->view_size(); ++i) {
+  for (size_t i = 0; i < view_model_->view_size(); ++i) {
     View* view = view_model_->view_at(i);
     // To receive drag event continuously from |drag_view_| during the dragging
     // off from the shelf, don't make |drag_view_| invisible. It will be
@@ -2634,7 +2650,7 @@ void ShelfView::HandleShelfParty() {
 
 void ShelfView::RemoveGhostView() {
   if (current_ghost_view_) {
-    current_ghost_view_index_ = -1;
+    current_ghost_view_index_ = absl::nullopt;
     current_ghost_view_->FadeOut();
     current_ghost_view_ = nullptr;
   }

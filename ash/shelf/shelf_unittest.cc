@@ -70,7 +70,7 @@ class ShelfTest : public AshTestBase {
 // Confirms that ShelfItem reflects the appropriated state.
 TEST_F(ShelfTest, StatusReflection) {
   // Initially we have the app list.
-  int button_count = test_api()->GetButtonCount();
+  size_t button_count = test_api()->GetButtonCount();
 
   // Add a running app.
   ShelfItem item;
@@ -92,7 +92,7 @@ TEST_F(ShelfTest, StatusReflection) {
 // browser test we check this here.
 TEST_F(ShelfTest, CheckHoverAfterMenu) {
   // Initially we have the app list.
-  int button_count = test_api()->GetButtonCount();
+  size_t button_count = test_api()->GetButtonCount();
 
   // Add a running app.
   ShelfItem item;

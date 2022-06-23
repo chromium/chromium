@@ -3074,10 +3074,10 @@ TEST_F(ShelfLayoutManagerTest, AutoHideShelfWithContextMenu) {
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
   // Create an app that we can use to pull up a context menu.
-  EXPECT_EQ(0,
+  EXPECT_EQ(0u,
             ShelfViewTestAPI(shelf->GetShelfViewForTesting()).GetButtonCount());
   AddApp();
-  EXPECT_EQ(1,
+  EXPECT_EQ(1u,
             ShelfViewTestAPI(shelf->GetShelfViewForTesting()).GetButtonCount());
 
   // Swipe up to show the shelf.
@@ -4476,8 +4476,8 @@ TEST_F(ShelfLayoutManagerTest, ShelfShowsPinnedAppsOnOtherDisplays) {
 
   // Keep this low so that all apps fit at the center of the screen on all
   // displays.
-  const int max_app_count = 4;
-  for (int app_count = 1; app_count <= max_app_count; ++app_count) {
+  const size_t max_app_count = 4;
+  for (size_t app_count = 1; app_count <= max_app_count; ++app_count) {
     AddApp();
 
     // Wait for everything to settle down.

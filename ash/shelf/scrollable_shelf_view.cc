@@ -288,14 +288,17 @@ class ScrollableShelfFocusSearch : public views::FocusSearch {
 
     // Scrolls to the new page if the focused shelf item is not tappable
     // on the current page.
-    if (new_index < 0)
+    if (new_index < 0) {
       new_index = focusable_views.size() - 1;
-    else if (new_index >= static_cast<int>(focusable_views.size()))
+    } else if (static_cast<size_t>(new_index) >= focusable_views.size()) {
       new_index = 0;
-    else if (new_index < scrollable_shelf_view_->first_tappable_app_index())
+    } else if (static_cast<size_t>(new_index) <
+               scrollable_shelf_view_->first_tappable_app_index()) {
       scrollable_shelf_view_->ScrollToNewPage(/*forward=*/false);
-    else if (new_index > scrollable_shelf_view_->last_tappable_app_index())
+    } else if (static_cast<size_t>(new_index) >
+               scrollable_shelf_view_->last_tappable_app_index()) {
       scrollable_shelf_view_->ScrollToNewPage(/*forward=*/true);
+    }
 
     return focusable_views[new_index];
   }
@@ -1030,8 +1033,13 @@ void ScrollableShelfView::OnButtonWillBeRemoved() {
   // to be removed, i.e. `view_size_before_removal_` is one. In this case,
   // both `first_tappable_app_index_` and `last_tappable_app_index_` are reset
   // to invalid values (see https://crbug.com/1300561).
-  last_tappable_app_index_ =
-      std::min(last_tappable_app_index_, view_size_before_removal - 2);
+  if (view_size_before_removal < 2) {
+    last_tappable_app_index_ = absl::nullopt;
+  } else {
+    last_tappable_app_index_ = std::min(
+        last_tappable_app_index_,
+        absl::make_optional(static_cast<size_t>(view_size_before_removal - 2)));
+  }
   first_tappable_app_index_ =
       std::min(first_tappable_app_index_, last_tappable_app_index_);
 }
@@ -1723,23 +1731,23 @@ void ScrollableShelfView::UpdateTappableIconIndices() {
 
   // The value returned by CalculateMainAxisScrollDistance() can be casted into
   // an integer without losing precision since the decimal part is zero.
-  const std::pair<int, int> tappable_indices = CalculateTappableIconIndices(
+  const auto tappable_indices = CalculateTappableIconIndices(
       layout_strategy_, CalculateMainAxisScrollDistance());
   first_tappable_app_index_ = tappable_indices.first;
   last_tappable_app_index_ = tappable_indices.second;
 }
 
-std::pair<int, int> ScrollableShelfView::CalculateTappableIconIndices(
+std::pair<absl::optional<size_t>, absl::optional<size_t>>
+ScrollableShelfView::CalculateTappableIconIndices(
     ScrollableShelfView::LayoutStrategy layout_strategy,
     int scroll_distance_on_main_axis) const {
   const auto& visible_views_indices = shelf_view_->visible_views_indices();
 
   if (visible_views_indices.empty() || visible_space_.IsEmpty())
-    return std::pair<int, int>(-1, -1);
+    return {absl::nullopt, absl::nullopt};
 
   if (layout_strategy == ScrollableShelfView::kNotShowArrowButtons) {
-    return std::pair<int, int>(visible_views_indices.front(),
-                               visible_views_indices.back());
+    return {visible_views_indices.front(), visible_views_indices.back()};
   }
 
   const int visible_size = GetShelf()->IsHorizontalAlignment()
@@ -1752,8 +1760,8 @@ std::pair<int, int> ScrollableShelfView::CalculateTappableIconIndices(
   // are on an inactive desk. Therefore, the indices of tappable apps may not be
   // contiguous, so we need to map from a visible view index back to an app
   // index. The below are indices into the |visible_views_indices| vector.
-  int first_visible_view_index = -1;
-  int last_visible_view_index = -1;
+  size_t first_visible_view_index;
+  size_t last_visible_view_index;
   if (layout_strategy == kShowRightArrowButton ||
       layout_strategy == kShowButtons) {
     first_visible_view_index =
@@ -1785,15 +1793,11 @@ std::pair<int, int> ScrollableShelfView::CalculateTappableIconIndices(
             : last_visible_view_index;
   }
 
-  DCHECK_GE(first_visible_view_index, 0);
-  DCHECK_LT(first_visible_view_index,
-            static_cast<int>(visible_views_indices.size()));
-  DCHECK_GE(last_visible_view_index, 0);
-  DCHECK_LT(last_visible_view_index,
-            static_cast<int>(visible_views_indices.size()));
+  DCHECK_LT(first_visible_view_index, visible_views_indices.size());
+  DCHECK_LT(last_visible_view_index, visible_views_indices.size());
 
-  return std::pair<int, int>(visible_views_indices[first_visible_view_index],
-                             visible_views_indices[last_visible_view_index]);
+  return {visible_views_indices[first_visible_view_index],
+          visible_views_indices[last_visible_view_index]};
 }
 
 views::View* ScrollableShelfView::FindFirstFocusableChild() {
@@ -2140,21 +2144,23 @@ bool ScrollableShelfView::ShouldCountActivatedInkDrop(
   if (during_scroll_animation_)
     return should_count;
 
-  if (first_tappable_app_index_ == -1 || last_tappable_app_index_ == -1) {
+  if (!first_tappable_app_index_.has_value() ||
+      !last_tappable_app_index_.has_value()) {
     // Verify that `first_tappable_app_index_` and `last_tappable_app_index_`
-    // may be both illegal. In that case, return early.
-    DCHECK_EQ(first_tappable_app_index_, last_tappable_app_index_);
+    // are both illegal. In that case, return early.
+    DCHECK(first_tappable_app_index_ == last_tappable_app_index_);
     return false;
   }
 
   // The ink drop needs to be clipped only if |sender| is the app at one of the
   // corners of the shelf. This happens if it is either the first or the last
   // tappable app and no arrow is showing on its side.
-  if (shelf_view_->view_model()->view_at(first_tappable_app_index_) == sender) {
+  if (shelf_view_->view_model()->view_at(first_tappable_app_index_.value()) ==
+      sender) {
     should_count = !(layout_strategy_ == kShowButtons ||
                      layout_strategy_ == kShowLeftArrowButton);
-  } else if (shelf_view_->view_model()->view_at(last_tappable_app_index_) ==
-             sender) {
+  } else if (shelf_view_->view_model()->view_at(
+                 last_tappable_app_index_.value()) == sender) {
     should_count = !(layout_strategy_ == kShowButtons ||
                      layout_strategy_ == kShowRightArrowButton);
   }

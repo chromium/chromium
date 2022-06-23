@@ -2095,8 +2095,8 @@ void TabStrip::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void TabStrip::OnViewFocused(views::View* observed_view) {
-  int index = tab_container_->tabs_view_model()->GetIndexOfView(observed_view);
-  if (index != -1)
+  auto index = tab_container_->tabs_view_model()->GetIndexOfView(observed_view);
+  if (index.has_value())
     controller_->OnKeyboardFocusedTabChanged(index);
 }
 
