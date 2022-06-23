@@ -39,6 +39,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -129,7 +130,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/webrtc/api/data_channel_interface.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
 #include "third_party/webrtc/api/jsep.h"
@@ -1561,12 +1561,13 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
 
   HeapVector<Member<RTCIceServer>> ice_servers;
   ice_servers.ReserveCapacity(
-      SafeCast<wtf_size_t>(webrtc_configuration.servers.size()));
+      base::checked_cast<wtf_size_t>(webrtc_configuration.servers.size()));
   for (const auto& webrtc_server : webrtc_configuration.servers) {
     auto* ice_server = RTCIceServer::Create();
 
     Vector<String> url_vector;
-    url_vector.ReserveCapacity(SafeCast<wtf_size_t>(webrtc_server.urls.size()));
+    url_vector.ReserveCapacity(
+        base::checked_cast<wtf_size_t>(webrtc_server.urls.size()));
     for (const auto& url : webrtc_server.urls) {
       url_vector.emplace_back(url.c_str());
     }
@@ -1582,8 +1583,8 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
 
   if (!webrtc_configuration.certificates.empty()) {
     HeapVector<blink::Member<RTCCertificate>> certificates;
-    certificates.ReserveCapacity(
-        SafeCast<wtf_size_t>(webrtc_configuration.certificates.size()));
+    certificates.ReserveCapacity(base::checked_cast<wtf_size_t>(
+        webrtc_configuration.certificates.size()));
     for (const auto& webrtc_certificate : webrtc_configuration.certificates) {
       certificates.emplace_back(
           MakeGarbageCollected<RTCCertificate>(webrtc_certificate));

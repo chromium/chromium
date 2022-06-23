@@ -29,6 +29,7 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
@@ -71,10 +72,10 @@ String::String(const char* characters, unsigned length)
 
 #if defined(ARCH_CPU_64_BITS)
 String::String(const UChar* characters, size_t length)
-    : String(characters, SafeCast<unsigned>(length)) {}
+    : String(characters, base::checked_cast<unsigned>(length)) {}
 
 String::String(const char* characters, size_t length)
-    : String(characters, SafeCast<unsigned>(length)) {}
+    : String(characters, base::checked_cast<unsigned>(length)) {}
 #endif  // defined(ARCH_CPU_64_BITS)
 
 int CodeUnitCompare(const String& a, const String& b) {
@@ -488,7 +489,7 @@ String String::Make16BitFrom8BitSource(const LChar* source, wtf_size_t length) {
 }
 
 String String::FromUTF8(const LChar* string_start, size_t string_length) {
-  wtf_size_t length = SafeCast<wtf_size_t>(string_length);
+  wtf_size_t length = base::checked_cast<wtf_size_t>(string_length);
 
   if (!string_start)
     return String();
@@ -530,7 +531,7 @@ String String::FromUTF8(base::StringPiece s) {
 String String::FromUTF8WithLatin1Fallback(const LChar* string, size_t size) {
   String utf8 = FromUTF8(string, size);
   if (!utf8)
-    return String(string, SafeCast<wtf_size_t>(size));
+    return String(string, base::checked_cast<wtf_size_t>(size));
   return utf8;
 }
 

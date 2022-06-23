@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription.h"
 
 #include <memory>
+
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
@@ -15,7 +17,6 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -86,10 +87,11 @@ PushSubscription::PushSubscription(
       options_(MakeGarbageCollected<PushSubscriptionOptions>(
           user_visible_only,
           application_server_key)),
-      p256dh_(DOMArrayBuffer::Create(p256dh.data(),
-                                     SafeCast<unsigned>(p256dh.size()))),
-      auth_(
-          DOMArrayBuffer::Create(auth.data(), SafeCast<unsigned>(auth.size()))),
+      p256dh_(
+          DOMArrayBuffer::Create(p256dh.data(),
+                                 base::checked_cast<unsigned>(p256dh.size()))),
+      auth_(DOMArrayBuffer::Create(auth.data(),
+                                   base::checked_cast<unsigned>(auth.size()))),
       expiration_time_(expiration_time),
       service_worker_registration_(service_worker_registration) {}
 

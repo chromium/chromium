@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/eme_constants.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -26,7 +27,6 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/media_keys_controller.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/timer.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -81,7 +81,7 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
 // NavigatorRequestMediaKeySystemAccess.
 Vector<String> ConvertInitDataTypes(
     const WebVector<media::EmeInitDataType>& init_data_types) {
-  Vector<String> result(SafeCast<wtf_size_t>(init_data_types.size()));
+  Vector<String> result(base::checked_cast<wtf_size_t>(init_data_types.size()));
   for (wtf_size_t i = 0; i < result.size(); i++)
     result[i] =
         EncryptedMediaUtils::ConvertFromInitDataType(init_data_types[i]);
@@ -91,7 +91,7 @@ Vector<String> ConvertInitDataTypes(
 HeapVector<Member<MediaKeySystemMediaCapability>> ConvertCapabilities(
     const WebVector<WebMediaKeySystemMediaCapability>& capabilities) {
   HeapVector<Member<MediaKeySystemMediaCapability>> result(
-      SafeCast<wtf_size_t>(capabilities.size()));
+      base::checked_cast<wtf_size_t>(capabilities.size()));
   for (wtf_size_t i = 0; i < result.size(); i++) {
     MediaKeySystemMediaCapability* capability =
         MediaKeySystemMediaCapability::Create();
@@ -129,7 +129,7 @@ HeapVector<Member<MediaKeySystemMediaCapability>> ConvertCapabilities(
 
 Vector<String> ConvertSessionTypes(
     const WebVector<WebEncryptedMediaSessionType>& session_types) {
-  Vector<String> result(SafeCast<wtf_size_t>(session_types.size()));
+  Vector<String> result(base::checked_cast<wtf_size_t>(session_types.size()));
   for (wtf_size_t i = 0; i < result.size(); i++)
     result[i] = EncryptedMediaUtils::ConvertFromSessionType(session_types[i]);
   return result;

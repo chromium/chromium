@@ -33,6 +33,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -102,21 +103,24 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
   HAS_STRICTLY_TYPED_ARG
   static scoped_refptr<SharedBuffer> Create(STRICTLY_TYPED_ARG(size)) {
     ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return base::AdoptRef(new SharedBuffer(SafeCast<wtf_size_t>(size)));
+    return base::AdoptRef(
+        new SharedBuffer(base::checked_cast<wtf_size_t>(size)));
   }
 
   HAS_STRICTLY_TYPED_ARG
   static scoped_refptr<SharedBuffer> Create(const char* data,
                                             STRICTLY_TYPED_ARG(size)) {
     ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return base::AdoptRef(new SharedBuffer(data, SafeCast<wtf_size_t>(size)));
+    return base::AdoptRef(
+        new SharedBuffer(data, base::checked_cast<wtf_size_t>(size)));
   }
 
   HAS_STRICTLY_TYPED_ARG
   static scoped_refptr<SharedBuffer> Create(const unsigned char* data,
                                             STRICTLY_TYPED_ARG(size)) {
     ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return base::AdoptRef(new SharedBuffer(data, SafeCast<wtf_size_t>(size)));
+    return base::AdoptRef(
+        new SharedBuffer(data, base::checked_cast<wtf_size_t>(size)));
   }
 
   static scoped_refptr<SharedBuffer> AdoptVector(Vector<char>&);
@@ -228,7 +232,7 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
 template <>
 inline Vector<char> SharedBuffer::CopyAs() const {
   Vector<char> buffer;
-  buffer.ReserveInitialCapacity(SafeCast<wtf_size_t>(size_));
+  buffer.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(size_));
 
   for (const auto& span : *this)
     buffer.Append(span.data(), static_cast<wtf_size_t>(span.size()));
@@ -240,7 +244,7 @@ inline Vector<char> SharedBuffer::CopyAs() const {
 template <>
 inline Vector<uint8_t> SharedBuffer::CopyAs() const {
   Vector<uint8_t> buffer;
-  buffer.ReserveInitialCapacity(SafeCast<wtf_size_t>(size_));
+  buffer.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(size_));
 
   for (const auto& span : *this) {
     buffer.Append(reinterpret_cast<const uint8_t*>(span.data()),

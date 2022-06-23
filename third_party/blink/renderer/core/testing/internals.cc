@@ -30,6 +30,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/layer_tree_host.h"
@@ -3109,7 +3110,7 @@ DOMArrayBuffer* Internals::serializeObject(
 
   base::span<const uint8_t> span = serialized_value->GetWireData();
   DOMArrayBuffer* buffer = DOMArrayBuffer::CreateUninitializedOrNull(
-      SafeCast<uint32_t>(span.size()), sizeof(uint8_t));
+      base::checked_cast<uint32_t>(span.size()), sizeof(uint8_t));
   if (buffer)
     memcpy(buffer->Data(), span.data(), span.size());
   return buffer;

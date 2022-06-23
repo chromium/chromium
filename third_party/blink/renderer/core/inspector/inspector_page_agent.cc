@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
@@ -318,9 +319,10 @@ static void MaybeEncodeTextContent(const String& text_content,
   }
 
   const SharedBuffer::DeprecatedFlatData flat_buffer(std::move(buffer));
-  return MaybeEncodeTextContent(text_content, flat_buffer.Data(),
-                                SafeCast<wtf_size_t>(flat_buffer.size()),
-                                result, base64_encoded);
+  return MaybeEncodeTextContent(
+      text_content, flat_buffer.Data(),
+      base::checked_cast<wtf_size_t>(flat_buffer.size()), result,
+      base64_encoded);
 }
 
 // static
@@ -350,13 +352,13 @@ bool InspectorPageAgent::SharedBufferContent(
     text_content = decoder->Decode(flat_buffer.Data(), flat_buffer.size());
     text_content = text_content + decoder->Flush();
   } else if (encoding.IsValid()) {
-    text_content = encoding.Decode(flat_buffer.Data(),
-                                   SafeCast<wtf_size_t>(flat_buffer.size()));
+    text_content = encoding.Decode(
+        flat_buffer.Data(), base::checked_cast<wtf_size_t>(flat_buffer.size()));
   }
 
   MaybeEncodeTextContent(text_content, flat_buffer.Data(),
-                         SafeCast<wtf_size_t>(flat_buffer.size()), result,
-                         base64_encoded);
+                         base::checked_cast<wtf_size_t>(flat_buffer.size()),
+                         result, base64_encoded);
   return true;
 }
 

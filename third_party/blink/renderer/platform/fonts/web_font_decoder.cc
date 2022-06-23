@@ -30,18 +30,18 @@
 
 #include "third_party/blink/renderer/platform/fonts/web_font_decoder.h"
 
+#include <hb.h>
+#include <stdarg.h>
+
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-
 #include "third_party/ots/src/include/ots-memory-stream.h"
 #include "third_party/skia/include/core/SkStream.h"
-
-#include <hb.h>
-#include <stdarg.h>
 
 namespace blink {
 
@@ -175,7 +175,7 @@ sk_sp<SkTypeface> WebFontDecoder::Decode(SharedBuffer* buffer) {
     return nullptr;
   }
 
-  const size_t decoded_length = SafeCast<size_t>(output.Tell());
+  const size_t decoded_length = base::checked_cast<size_t>(output.Tell());
   sk_sp<SkData> sk_data = SkData::MakeWithCopy(output.get(), decoded_length);
 
   sk_sp<SkTypeface> new_typeface;

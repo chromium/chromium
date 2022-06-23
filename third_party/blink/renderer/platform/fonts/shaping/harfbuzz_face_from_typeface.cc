@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face_from_typeface.h"
 
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/skia/include/core/SkStream.h"
 
 namespace {
@@ -28,10 +28,10 @@ HbScoped<hb_face_t> HbFaceFromSkTypeface(sk_sp<SkTypeface> typeface) {
   if (tf_stream && tf_stream->getMemoryBase()) {
     const void* tf_memory = tf_stream->getMemoryBase();
     size_t tf_size = tf_stream->getLength();
-    HbScoped<hb_blob_t> face_blob(
-        hb_blob_create(reinterpret_cast<const char*>(tf_memory),
-                       SafeCast<unsigned int>(tf_size), HB_MEMORY_MODE_READONLY,
-                       tf_stream.release(), DeleteTypefaceStream));
+    HbScoped<hb_blob_t> face_blob(hb_blob_create(
+        reinterpret_cast<const char*>(tf_memory),
+        base::checked_cast<unsigned int>(tf_size), HB_MEMORY_MODE_READONLY,
+        tf_stream.release(), DeleteTypefaceStream));
     // hb_face_create always succeeds.
     // Use hb_face_count to retrieve the number of recognized faces in the blob.
     // hb_face_create_for_tables may still create a working hb_face.

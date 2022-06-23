@@ -26,10 +26,10 @@
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
@@ -136,7 +136,7 @@ static void CopyOpenTypeTable(sk_sp<SkTypeface> typeface,
                               SkFontTableTag tag,
                               Vector<char>& destination) {
   const size_t table_size = typeface->getTableSize(tag);
-  destination.resize(SafeCast<wtf_size_t>(table_size));
+  destination.resize(base::checked_cast<wtf_size_t>(table_size));
   if (table_size) {
     typeface->getTableData(tag, 0, table_size, destination.data());
   }

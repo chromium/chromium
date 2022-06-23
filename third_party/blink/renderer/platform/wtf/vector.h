@@ -22,6 +22,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_VECTOR_H_
 
 #include <string.h>
+
 #include <algorithm>
 #include <initializer_list>
 #include <iterator>
@@ -30,6 +31,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/template_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
@@ -1501,7 +1503,7 @@ Vector<T, inlineCapacity, Allocator>::operator=(
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 Vector<T, inlineCapacity, Allocator>::Vector(std::initializer_list<T> elements)
-    : Base(SafeCast<wtf_size_t>(elements.size())) {
+    : Base(base::checked_cast<wtf_size_t>(elements.size())) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), elements.size());
   size_ = static_cast<wtf_size_t>(elements.size());
   TypeOperations::UninitializedCopy(elements.begin(), elements.end(), begin());
@@ -1510,7 +1512,7 @@ Vector<T, inlineCapacity, Allocator>::Vector(std::initializer_list<T> elements)
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 Vector<T, inlineCapacity, Allocator>& Vector<T, inlineCapacity, Allocator>::
 operator=(std::initializer_list<T> elements) {
-  wtf_size_t input_size = SafeCast<wtf_size_t>(elements.size());
+  wtf_size_t input_size = base::checked_cast<wtf_size_t>(elements.size());
   if (size() > input_size) {
     Shrink(input_size);
   } else if (input_size > capacity()) {

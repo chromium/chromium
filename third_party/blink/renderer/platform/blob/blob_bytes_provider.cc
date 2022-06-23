@@ -204,8 +204,8 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
     return;
   }
 
-  int64_t seek_distance =
-      file.Seek(base::File::FROM_BEGIN, SafeCast<int64_t>(file_offset));
+  int64_t seek_distance = file.Seek(base::File::FROM_BEGIN,
+                                    base::checked_cast<int64_t>(file_offset));
   bool seek_failed = seek_distance < 0;
   if (seek_failed) {
     std::move(callback).Run(absl::nullopt);

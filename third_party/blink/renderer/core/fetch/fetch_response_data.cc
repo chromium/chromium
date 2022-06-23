@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/fetch/fetch_response_data.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "storage/common/quota/padding_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
@@ -15,7 +16,6 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 using Type = network::mojom::FetchResponseType;
 using ResponseSource = network::mojom::FetchResponseSource;
@@ -26,7 +26,7 @@ namespace {
 
 Vector<String> HeaderSetToVector(const HTTPHeaderSet& headers) {
   Vector<String> result;
-  result.ReserveInitialCapacity(SafeCast<wtf_size_t>(headers.size()));
+  result.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(headers.size()));
   // HTTPHeaderSet stores headers using Latin1 encoding.
   for (const auto& header : headers)
     result.push_back(String(header.data(), header.size()));

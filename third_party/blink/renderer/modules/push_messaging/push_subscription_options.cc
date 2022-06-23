@@ -4,13 +4,13 @@
 
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_options.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_push_subscription_options_init.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
@@ -100,7 +100,7 @@ PushSubscriptionOptions::PushSubscriptionOptions(
     : user_visible_only_(user_visible_only),
       application_server_key_(DOMArrayBuffer::Create(
           application_server_key.data(),
-          SafeCast<unsigned>(application_server_key.size()))) {}
+          base::checked_cast<unsigned>(application_server_key.size()))) {}
 
 void PushSubscriptionOptions::Trace(Visitor* visitor) const {
   visitor->Trace(application_server_key_);

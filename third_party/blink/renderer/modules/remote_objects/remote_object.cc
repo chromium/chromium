@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "gin/converter.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -231,7 +232,7 @@ mojom::blink::RemoteInvocationArgumentPtr JSValueToMojom(
     }
 
     WTF::Vector<mojom::blink::RemoteInvocationArgumentPtr> nested_arguments(
-        SafeCast<wtf_size_t>(length));
+        base::checked_cast<wtf_size_t>(length));
     for (uint32_t i = 0; i < property_names->Length(); ++i) {
       v8::Local<v8::Value> key;
       if (!property_names->Get(isolate->GetCurrentContext(), i).ToLocal(&key) ||

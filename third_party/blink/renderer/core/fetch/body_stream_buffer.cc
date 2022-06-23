@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 
 #include <memory>
+
 #include "base/auto_reset.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_tee.h"
@@ -24,7 +26,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -459,7 +460,7 @@ void BodyStreamBuffer::ProcessData() {
     if (result == BytesConsumer::Result::kOk) {
       array = DOMUint8Array::CreateOrNull(
           reinterpret_cast<const unsigned char*>(buffer),
-          SafeCast<uint32_t>(available));
+          base::checked_cast<uint32_t>(available));
       result = consumer_->EndRead(available);
       if (!array) {
         RaiseOOMError();

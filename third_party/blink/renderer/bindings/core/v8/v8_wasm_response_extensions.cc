@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -130,12 +131,12 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
     // The resources needed for caching may have been GC'ed, but we should still
     // save the compiled module. Use the platform API directly.
     Vector<uint8_t> serialized_data = CachedMetadata::GetSerializedDataHeader(
-        kWasmModuleTag,
-        kWireBytesDigestSize + SafeCast<wtf_size_t>(serialized_module.size));
+        kWasmModuleTag, kWireBytesDigestSize + base::checked_cast<wtf_size_t>(
+                                                   serialized_module.size));
     serialized_data.Append(wire_bytes_digest.data(), kWireBytesDigestSize);
     serialized_data.Append(
         reinterpret_cast<const uint8_t*>(serialized_module.buffer.get()),
-        SafeCast<wtf_size_t>(serialized_module.size));
+        base::checked_cast<wtf_size_t>(serialized_module.size));
 
     // Make sure the data could be copied.
     if (serialized_data.size() < serialized_module.size)

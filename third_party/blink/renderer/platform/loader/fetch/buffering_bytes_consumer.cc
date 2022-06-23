@@ -6,8 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -198,7 +198,7 @@ void BufferingBytesConsumer::BufferData() {
       return;
     if (result == Result::kOk) {
       auto* chunk = MakeGarbageCollected<HeapVector<char>>();
-      chunk->Append(p, SafeCast<wtf_size_t>(available));
+      chunk->Append(p, base::checked_cast<wtf_size_t>(available));
       buffer_.push_back(chunk);
       result = bytes_consumer_->EndRead(available);
     }

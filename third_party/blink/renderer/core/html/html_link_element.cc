@@ -27,6 +27,7 @@
 
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
@@ -110,7 +111,7 @@ void HTMLLinkElement::ParseAttribute(
     sizes_->DidUpdateAttributeValue(params.old_value, value);
     WebVector<gfx::Size> web_icon_sizes =
         WebIconSizesParser::ParseIconSizes(value);
-    icon_sizes_.resize(SafeCast<wtf_size_t>(web_icon_sizes.size()));
+    icon_sizes_.resize(base::checked_cast<wtf_size_t>(web_icon_sizes.size()));
     for (wtf_size_t i = 0; i < icon_sizes_.size(); ++i)
       icon_sizes_[i] = web_icon_sizes[i];
     Process();

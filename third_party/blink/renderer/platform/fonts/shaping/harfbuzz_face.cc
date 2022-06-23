@@ -371,7 +371,7 @@ static hb_blob_t* HarfBuzzSkiaGetTable(hb_face_t* face,
   SkTypeface* typeface = reinterpret_cast<SkTypeface*>(user_data);
 
   const wtf_size_t table_size =
-      SafeCast<wtf_size_t>(typeface->getTableSize(tag));
+      base::checked_cast<wtf_size_t>(typeface->getTableSize(tag));
   if (!table_size) {
     return nullptr;
   }

@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/time_ranges.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -36,7 +37,7 @@ TimeRanges::TimeRanges(double start, double end) {
 }
 
 TimeRanges::TimeRanges(const blink::WebTimeRanges& web_ranges) {
-  wtf_size_t size = SafeCast<wtf_size_t>(web_ranges.size());
+  wtf_size_t size = base::checked_cast<wtf_size_t>(web_ranges.size());
   for (wtf_size_t i = 0; i < size; ++i)
     Add(web_ranges[i].start, web_ranges[i].end);
 }

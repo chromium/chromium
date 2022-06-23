@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -52,7 +53,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -135,7 +135,7 @@ DOMArrayBuffer* FileReaderLoader::ArrayBufferResult() {
 
   if (!finished_loading_) {
     return DOMArrayBuffer::Create(raw_data_.Data(),
-                                  SafeCast<size_t>(bytes_loaded_));
+                                  base::checked_cast<size_t>(bytes_loaded_));
   }
 
   array_buffer_result_ = DOMArrayBuffer::Create(std::move(raw_data_));
@@ -429,7 +429,7 @@ String FileReaderLoader::ConvertToDataURL() {
 
   Vector<char> out;
   Base64Encode(base::make_span(static_cast<const uint8_t*>(raw_data_.Data()),
-                               SafeCast<unsigned>(bytes_loaded_)),
+                               base::checked_cast<unsigned>(bytes_loaded_)),
                out);
   builder.Append(out.data(), out.size());
 

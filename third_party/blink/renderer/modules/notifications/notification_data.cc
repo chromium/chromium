@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/notifications/notification_data.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
@@ -18,7 +19,6 @@
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
@@ -122,7 +122,8 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
     notification_data->data = Vector<uint8_t>();
     notification_data->data->Append(
         serialized_script_value->Data(),
-        SafeCast<wtf_size_t>(serialized_script_value->DataLengthInBytes()));
+        base::checked_cast<wtf_size_t>(
+            serialized_script_value->DataLengthInBytes()));
   }
 
   Vector<mojom::blink::NotificationActionPtr> actions;

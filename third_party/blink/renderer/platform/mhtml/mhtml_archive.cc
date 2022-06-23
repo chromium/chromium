@@ -31,8 +31,10 @@
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
 
 #include <stddef.h>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink.h"
@@ -391,14 +393,16 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
                        static_cast<wtf_size_t>(utf8_string.length()));
 
   if (!strcmp(content_encoding, kBinary)) {
-    for (const auto& span : *resource.data)
-      output_buffer.Append(span.data(), SafeCast<wtf_size_t>(span.size()));
+    for (const auto& span : *resource.data) {
+      output_buffer.Append(span.data(),
+                           base::checked_cast<wtf_size_t>(span.size()));
+    }
   } else {
     // FIXME: ideally we would encode the content as a stream without having to
     // fetch it all.
     const SharedBuffer::DeprecatedFlatData flat_data(resource.data);
     const char* data = flat_data.Data();
-    wtf_size_t data_length = SafeCast<wtf_size_t>(flat_data.size());
+    wtf_size_t data_length = base::checked_cast<wtf_size_t>(flat_data.size());
     Vector<char> encoded_data;
     if (!strcmp(content_encoding, kQuotedPrintable)) {
       QuotedPrintableEncode(data, data_length, false /* is_header */,

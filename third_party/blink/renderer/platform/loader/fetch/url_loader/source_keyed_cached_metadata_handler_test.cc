@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13,7 +14,6 @@
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -64,7 +64,7 @@ class MockGeneratedCodeCache {
                      const uint8_t* data,
                      size_t data_size) {
     cache_entries_.emplace_back(url, response_time, data,
-                                SafeCast<wtf_size_t>(data_size));
+                                base::checked_cast<wtf_size_t>(data_size));
   }
 
  private:

@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
@@ -79,7 +80,6 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -192,7 +192,7 @@ class FetchManager::Loader final
         size_t available;
         result = body_->BeginRead(&buffer, &available);
         if (result == Result::kOk) {
-          buffer_.Append(buffer, SafeCast<wtf_size_t>(available));
+          buffer_.Append(buffer, base::checked_cast<wtf_size_t>(available));
           result = body_->EndRead(available);
         }
         if (result == Result::kShouldWait)

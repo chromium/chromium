@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -72,7 +73,8 @@ KURL GetAvailabilityUrl(const WebURL& source, bool is_source_supported) {
   // encoded string representation of the source URL.
   std::string source_string = source.GetString().Utf8();
   String encoded_source = WTF::Base64URLEncode(
-      source_string.data(), SafeCast<unsigned>(source_string.length()));
+      source_string.data(),
+      base::checked_cast<unsigned>(source_string.length()));
 
   return KURL("remote-playback://" + encoded_source);
 }

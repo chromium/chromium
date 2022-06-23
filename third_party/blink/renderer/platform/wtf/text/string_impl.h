@@ -26,6 +26,7 @@
 
 #include <limits.h>
 #include <string.h>
+
 #include <atomic>
 
 #include "base/callback_forward.h"
@@ -34,6 +35,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -851,7 +853,7 @@ inline wtf_size_t LengthOfNullTerminatedString(const UChar* string) {
   size_t length = 0;
   while (string[length] != UChar(0))
     ++length;
-  return SafeCast<wtf_size_t>(length);
+  return base::checked_cast<wtf_size_t>(length);
 }
 
 template <wtf_size_t inlineCapacity>

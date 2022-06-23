@@ -29,6 +29,8 @@
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>
 #include <libxml/xmlversion.h>
+
+#include "base/numerics/safe_conversions.h"
 #if defined(LIBXML_CATALOG_ENABLED)
 #include <libxml/catalog.h>
 #endif
@@ -1453,7 +1455,7 @@ static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
   DCHECK_LE(entity_length_in_utf8, kSharedXhtmlEntityResultLength);
 
   xmlEntityPtr entity = SharedXHTMLEntity();
-  entity->length = SafeCast<int>(entity_length_in_utf8);
+  entity->length = base::checked_cast<int>(entity_length_in_utf8);
   entity->name = name;
   return entity;
 }

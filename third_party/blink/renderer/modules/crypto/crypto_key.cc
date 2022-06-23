@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -38,7 +39,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/crypto_result.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -122,9 +122,10 @@ class DictionaryBuilder : public WebCryptoKeyAlgorithmDictionary {
 
   void SetUint8Array(const char* property_name,
                      const WebVector<unsigned char>& vector) override {
-    builder_.Add(property_name,
-                 DOMUint8Array::Create(vector.data(),
-                                       SafeCast<wtf_size_t>(vector.size())));
+    builder_.Add(
+        property_name,
+        DOMUint8Array::Create(vector.data(),
+                              base::checked_cast<wtf_size_t>(vector.size())));
   }
 
  private:

@@ -32,6 +32,7 @@
 
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
@@ -273,7 +274,8 @@ void WebLocalFrameImpl::SetTickmarks(const WebElement& target,
 
 void FindInPage::SetTickmarks(const WebElement& target,
                               const WebVector<gfx::Rect>& tickmarks) {
-  Vector<gfx::Rect> tickmarks_converted(SafeCast<wtf_size_t>(tickmarks.size()));
+  Vector<gfx::Rect> tickmarks_converted(
+      base::checked_cast<wtf_size_t>(tickmarks.size()));
   for (wtf_size_t i = 0; i < tickmarks.size(); ++i)
     tickmarks_converted[i] = tickmarks[i];
 

@@ -38,6 +38,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/time/default_tick_clock.h"
 #include "build/chromeos_buildflags.h"
@@ -184,7 +185,7 @@ Vector<String> CopyForceEnabledOriginTrials(
     const WebVector<WebString>& force_enabled_origin_trials) {
   Vector<String> result;
   result.ReserveInitialCapacity(
-      SafeCast<wtf_size_t>(force_enabled_origin_trials.size()));
+      base::checked_cast<wtf_size_t>(force_enabled_origin_trials.size()));
   for (const auto& trial : force_enabled_origin_trials)
     result.push_back(trial);
   return result;

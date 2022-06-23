@@ -7,11 +7,11 @@
 #include <algorithm>
 
 #include "base/location.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -106,7 +106,7 @@ BytesConsumer::Result DataPipeBytesConsumer::EndRead(size_t read) {
   DCHECK(is_in_two_phase_read_);
   is_in_two_phase_read_ = false;
   DCHECK(IsReadableOrWaiting());
-  MojoResult rv = data_pipe_->EndReadData(SafeCast<uint32_t>(read));
+  MojoResult rv = data_pipe_->EndReadData(base::checked_cast<uint32_t>(read));
   if (rv != MOJO_RESULT_OK) {
     SetError(Error("error"));
     return Result::kError;

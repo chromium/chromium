@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
@@ -36,7 +37,7 @@ ASSERT_SIZE(AtomicString, String);
 
 #if defined(ARCH_CPU_64_BITS)
 AtomicString::AtomicString(const LChar* chars, size_t length)
-    : AtomicString(chars, SafeCast<unsigned>(length)) {}
+    : AtomicString(chars, base::checked_cast<unsigned>(length)) {}
 #endif  // defined(ARCH_CPU_64_BITS)
 
 AtomicString::AtomicString(const LChar* chars, unsigned length)

@@ -22,6 +22,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_SET_H_
 
 #include <initializer_list>
+
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
@@ -189,8 +191,10 @@ template <typename Value,
           typename Allocator>
 HashSet<Value, HashFunctions, Traits, Allocator>::HashSet(
     std::initializer_list<ValueType> elements) {
-  if (elements.size())
-    impl_.ReserveCapacityForSize(SafeCast<wtf_size_t>(elements.size()));
+  if (elements.size()) {
+    impl_.ReserveCapacityForSize(
+        base::checked_cast<wtf_size_t>(elements.size()));
+  }
   for (const ValueType& element : elements)
     insert(element);
 }

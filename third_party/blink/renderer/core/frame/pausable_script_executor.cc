@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -209,7 +210,7 @@ V8FunctionExecutor::V8FunctionExecutor(v8::Isolate* isolate,
                                        int argc,
                                        v8::Local<v8::Value> argv[])
     : function_(isolate, function), receiver_(isolate, receiver) {
-  args_.ReserveCapacity(SafeCast<wtf_size_t>(argc));
+  args_.ReserveCapacity(base::checked_cast<wtf_size_t>(argc));
   for (int i = 0; i < argc; ++i)
     args_.push_back(TraceWrapperV8Reference<v8::Value>(isolate, argv[i]));
 }

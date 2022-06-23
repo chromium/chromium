@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/power_scheduler/power_mode.h"
@@ -136,7 +137,8 @@ class ResourceSnapshotForWebBundleImpl
       std::move(callback).Run(nullptr);
       return;
     }
-    const auto& resource = resources_.at(SafeCast<WTF::wtf_size_t>(index));
+    const auto& resource =
+        resources_.at(base::checked_cast<WTF::wtf_size_t>(index));
     auto info = data_decoder::mojom::blink::SerializedResourceInfo::New();
     info->url = resource.url;
     info->mime_type = resource.mime_type;
@@ -149,7 +151,8 @@ class ResourceSnapshotForWebBundleImpl
       std::move(callback).Run(absl::nullopt);
       return;
     }
-    const auto& resource = resources_.at(SafeCast<WTF::wtf_size_t>(index));
+    const auto& resource =
+        resources_.at(base::checked_cast<WTF::wtf_size_t>(index));
     if (!resource.data) {
       std::move(callback).Run(absl::nullopt);
       return;

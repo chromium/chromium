@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
@@ -123,7 +124,7 @@ ImageDecoderCore::ImageMetadata ImageDecoderCore::DecodeMetadata() {
   }
 
   metadata.has_size = true;
-  metadata.frame_count = SafeCast<uint32_t>(decoder_->FrameCount());
+  metadata.frame_count = base::checked_cast<uint32_t>(decoder_->FrameCount());
   metadata.repetition_count = decoder_->RepetitionCount();
   metadata.image_has_both_still_and_animated_sub_images =
       decoder_->ImageHasBothStillAndAnimatedSubImages();
@@ -286,7 +287,7 @@ void ImageDecoderCore::AppendData(size_t data_size,
   data_complete_ = data_complete;
   if (data) {
     stream_buffer_->Append(reinterpret_cast<const char*>(data.get()),
-                           SafeCast<wtf_size_t>(data_size));
+                           base::checked_cast<wtf_size_t>(data_size));
   } else {
     DCHECK_EQ(data_size, 0u);
   }
