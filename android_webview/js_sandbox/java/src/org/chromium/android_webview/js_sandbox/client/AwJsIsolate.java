@@ -4,10 +4,13 @@
 
 package org.chromium.android_webview.js_sandbox.client;
 
+import android.content.res.AssetFileDescriptor;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -16,18 +19,33 @@ import org.chromium.android_webview.js_sandbox.common.ExecutionErrorTypes;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.concurrent.GuardedBy;
 
-/** Provides a sandboxed execution Isolate. This class is thread-safe. */
+/** Provides a sandboxed execution Isolate. This class should be accessed in a single-thread. */
 public class AwJsIsolate implements AutoCloseable {
     private static final String TAG = "AwJsIsolate";
     private final Object mSetLock = new Object();
     private IJsSandboxIsolate mJsIsolateStub;
     private android.util.CloseGuard mGuard;
-    private Executor mExecutor;
+    private Executor mMainExecutor;
+    private final Executor mThreadPoolTaskExecutor =
+            Executors.newCachedThreadPool(new ThreadFactory() {
+                private final AtomicInteger mCount = new AtomicInteger(1);
+
+                @Override
+                public Thread newThread(Runnable r) {
+                    return new Thread(r, "AwJsIsolate Thread #" + mCount.getAndIncrement());
+                }
+            });
 
     @GuardedBy("mSetLock")
     private HashSet<CallbackToFutureAdapter.Completer> mPendingCompleterSet =
@@ -55,7 +73,7 @@ public class AwJsIsolate implements AutoCloseable {
     }
 
     AwJsIsolate(IJsSandboxIsolate jsIsolateStub, Executor executor) {
-        mExecutor = executor;
+        mMainExecutor = executor;
         mJsIsolateStub = jsIsolateStub;
         if (Build.VERSION.SDK_INT >= 30) {
             mGuard = new android.util.CloseGuard();
@@ -116,6 +134,45 @@ public class AwJsIsolate implements AutoCloseable {
         }
     }
 
+    public boolean provideNamedData(@NonNull String name, byte[] inputBytes) {
+        if (mJsIsolateStub == null) {
+            throw new IllegalStateException("Calling provideNamedData() after closing the Isolate");
+        }
+        if (name == null) {
+            throw new NullPointerException("name parameter cannot be null");
+        }
+        try {
+            ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createPipe();
+            ParcelFileDescriptor readSide = pipe[0];
+            ParcelFileDescriptor writeSide = pipe[1];
+            OutputStream outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(writeSide);
+
+            mThreadPoolTaskExecutor.execute(
+                    () -> { convertByteArrayToStream(inputBytes, outputStream); });
+
+            final long offset = 0;
+            final long length = inputBytes.length;
+            AssetFileDescriptor asd = new AssetFileDescriptor(readSide, offset, length);
+            return mJsIsolateStub.provideNamedData(name, asd);
+        } catch (RemoteException e) {
+            Log.e(TAG, "RemoteException was thrown during provideNamedData()", e);
+        } catch (IOException e) {
+            Log.e(TAG, "IOException was thrown during provideNamedData", e);
+        }
+        return false;
+    }
+
+    private void convertByteArrayToStream(byte[] inputBytes, OutputStream outputStream) {
+        try {
+            outputStream.write(inputBytes);
+            outputStream.flush();
+        } catch (IOException e) {
+            Log.e(TAG, "Writing to outputStream failed", e);
+        } finally {
+            closeQuietly(outputStream);
+        }
+    }
+
     private void cancelAllPendingEvaluations(Exception e) {
         final HashSet<CallbackToFutureAdapter.Completer> pendingSet;
         synchronized (mSetLock) {
@@ -132,6 +189,15 @@ public class AwJsIsolate implements AutoCloseable {
             if (mPendingCompleterSet != null) {
                 mPendingCompleterSet.remove(completer);
             }
+        }
+    }
+
+    private static void closeQuietly(Closeable closeable) {
+        if (closeable == null) return;
+        try {
+            closeable.close();
+        } catch (IOException ex) {
+            // Ignore the exception on close.
         }
     }
 

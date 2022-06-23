@@ -20,8 +20,8 @@ import java.util.List;
 public class JsSandboxService extends Service {
     private static final String TAG = "JsSandboxService";
 
-    private static final List<String> SUPPORTED_FEATURES =
-            Arrays.asList(IJsSandboxService.ISOLATE_TERMINATION);
+    private static final List<String> SUPPORTED_FEATURES = Arrays.asList(
+            IJsSandboxService.ISOLATE_TERMINATION, IJsSandboxService.WASM_FROM_ARRAY_BUFFER);
 
     private final IJsSandboxService.Stub mBinder = new IJsSandboxService.Stub() {
         @Override
