@@ -26,11 +26,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -662,7 +664,6 @@ void CaptureModeSession::Initialize() {
   UpdateRootWindowDimmers();
 
   TabletModeController::Get()->AddObserver(this);
-  current_root_->AddObserver(this);
   display_observer_.emplace(this);
   // Our event handling code assumes the capture bar widget has been initialized
   // already. So we start handling events after everything has been setup.
@@ -686,6 +687,8 @@ void CaptureModeSession::Initialize() {
   auto* camera_controller = controller_->camera_controller();
   if (is_in_projector_mode_ && camera_controller)
     camera_controller->MaybeSelectFirstCamera();
+
+  Shell::Get()->AddShellObserver(this);
 }
 
 void CaptureModeSession::Shutdown() {
@@ -694,7 +697,6 @@ void CaptureModeSession::Shutdown() {
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
   display_observer_.reset();
   user_nudge_controller_.reset();
-  current_root_->RemoveObserver(this);
   TabletModeController::Get()->RemoveObserver(this);
   if (input_capture_window_) {
     input_capture_window_->RemoveObserver(this);
@@ -730,6 +732,8 @@ void CaptureModeSession::Shutdown() {
       controller_->camera_controller()->SetShouldShowPreview(false);
     }
   }
+
+  Shell::Get()->RemoveShellObserver(this);
 }
 
 aura::Window* CaptureModeSession::GetSelectedWindow() const {
@@ -1214,13 +1218,17 @@ void CaptureModeSession::OnTabletModeEnded() {
 }
 
 void CaptureModeSession::OnWindowDestroying(aura::Window* window) {
-  if (window == input_capture_window_) {
-    input_capture_window_->RemoveObserver(this);
-    input_capture_window_ = nullptr;
-    return;
+  DCHECK_EQ(window, input_capture_window_);
+  input_capture_window_->RemoveObserver(this);
+  input_capture_window_ = nullptr;
+}
+
+void CaptureModeSession::OnRootWindowWillShutdown(aura::Window* root_window) {
+  if (root_window == current_root_) {
+    // There should always be a primary root window.
+    DCHECK_NE(Shell::GetPrimaryRootWindow(), current_root_);
+    MaybeChangeRoot(Shell::GetPrimaryRootWindow());
   }
-  DCHECK_EQ(current_root_, window);
-  MaybeChangeRoot(Shell::GetPrimaryRootWindow());
 }
 
 void CaptureModeSession::OnDisplayMetricsChanged(
@@ -2612,9 +2620,6 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
 
   if (new_root == current_root_)
     return;
-
-  current_root_->RemoveObserver(this);
-  new_root->AddObserver(this);
 
   auto* new_parent = GetParentContainer(new_root);
   parent_container_observer_ =

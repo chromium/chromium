@@ -14,6 +14,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/shell_observer.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -57,7 +58,8 @@ class ASH_EXPORT CaptureModeSession
       public TabletModeObserver,
       public aura::WindowObserver,
       public display::DisplayObserver,
-      public FolderSelectionDialogController::Delegate {
+      public FolderSelectionDialogController::Delegate,
+      public ShellObserver {
  public:
   // Creates the bar widget on a calculated root window. |projector_mode|
   // specifies whether this session was started for the projector workflow.
@@ -191,6 +193,9 @@ class ASH_EXPORT CaptureModeSession
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
+
+  // ShellObserver:
+  void OnRootWindowWillShutdown(aura::Window* root_window) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

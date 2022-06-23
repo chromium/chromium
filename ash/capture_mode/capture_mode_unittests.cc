@@ -1154,6 +1154,26 @@ TEST_F(CaptureModeTest, DisplayRemoval) {
   ASSERT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
 }
 
+// Tests behavior of a capture mode session if the active display is removed
+// and countdown running.
+TEST_F(CaptureModeTest, DisplayRemovalWithCountdownVisible) {
+  UpdateDisplay("800x700,801+0-800x700");
+
+  // Start capture mode on the secondary display.
+  auto recorded_window = CreateTestWindow(gfx::Rect(1000, 200, 400, 400));
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+  GetEventGenerator()->MoveMouseToCenterOf(recorded_window.get());
+
+  auto* session = controller->capture_mode_session();
+
+  RemoveSecondaryDisplay();
+
+  ASSERT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+
+  // Test passes if no crash.
+}
+
 // Tests that using fullscreen or window source, moving the mouse across
 // displays will change the root window of the capture session.
 TEST_F(CaptureModeTest, MultiDisplayFullscreenOrWindowSourceRootWindow) {

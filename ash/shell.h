@@ -326,6 +326,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   // Called when a root window is created.
   void OnRootWindowAdded(aura::Window* root_window);
 
+  // Called when a root window is about to shutdown.
+  void OnRootWindowWillShutdown(aura::Window* root_window);
+
   // Called when dictation is activated.
   void OnDictationStarted();
 

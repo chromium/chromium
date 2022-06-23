@@ -436,6 +436,11 @@ void Shell::OnRootWindowAdded(aura::Window* root_window) {
     observer.OnRootWindowAdded(root_window);
 }
 
+void Shell::OnRootWindowWillShutdown(aura::Window* root_window) {
+  for (auto& observer : shell_observers_)
+    observer.OnRootWindowWillShutdown(root_window);
+}
+
 void Shell::OnDictationStarted() {
   for (auto& observer : shell_observers_)
     observer.OnDictationStarted();
