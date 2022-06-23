@@ -3812,6 +3812,8 @@ static_library("ui") {
       "views/frame/system_menu_insertion_delegate_win.h",
       "views/frame/windows_10_caption_button.cc",
       "views/frame/windows_10_caption_button.h",
+      "views/frame/windows_10_icon_painter.cc",
+      "views/frame/windows_10_icon_painter.h",
       "views/frame/windows_10_tab_search_caption_button.cc",
       "views/frame/windows_10_tab_search_caption_button.h",
       "views/network_profile_bubble_view.cc",

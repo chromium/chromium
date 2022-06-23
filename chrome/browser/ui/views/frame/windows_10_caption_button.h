@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_10_CAPTION_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_WINDOWS_10_CAPTION_BUTTON_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/frame/windows_10_icon_painter.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
@@ -22,6 +25,7 @@ class Windows10CaptionButton : public views::Button {
                          const std::u16string& accessible_name);
   Windows10CaptionButton(const Windows10CaptionButton&) = delete;
   Windows10CaptionButton& operator=(const Windows10CaptionButton&) = delete;
+  ~Windows10CaptionButton() override;
 
   // views::Button:
   gfx::Size CalculatePreferredSize() const override;
@@ -29,6 +33,8 @@ class Windows10CaptionButton : public views::Button {
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
  private:
+  std::unique_ptr<Windows10IconPainter> CreateIconPainter();
+
   // Returns the amount we should visually reserve on the left (right in RTL)
   // for spacing between buttons. We do this instead of repositioning the
   // buttons to avoid the sliver of deadspace that would result.
@@ -47,6 +53,7 @@ class Windows10CaptionButton : public views::Button {
   void PaintSymbol(gfx::Canvas* canvas);
 
   raw_ptr<GlassBrowserFrameView> frame_view_;
+  std::unique_ptr<Windows10IconPainter> icon_painter_;
   ViewID button_type_;
 };
 
