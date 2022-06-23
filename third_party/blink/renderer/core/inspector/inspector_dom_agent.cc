@@ -724,6 +724,8 @@ Response InspectorDOMAgent::collectClassNamesFromSubtree(
   HashSet<String> unique_names;
   *class_names = std::make_unique<protocol::Array<String>>();
   Node* parent_node = NodeForId(node_id);
+  if (!parent_node)
+    return Response::ServerError("No suitable node with given id found");
   auto* parent_element = DynamicTo<Element>(parent_node);
   if (!parent_element && !parent_node->IsDocumentNode() &&
       !parent_node->IsDocumentFragment())
