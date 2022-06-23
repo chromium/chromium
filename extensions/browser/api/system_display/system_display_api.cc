@@ -36,10 +36,10 @@ class OverscanTracker;
 
 // Singleton class to track overscan calibration overlays. An observer is
 // created per WebContents which tracks any calbiration overlays by id.
-// If the render frame is deleted (e.g. the tab is closed) before the overlay
-// calibraiton is completed, the observer will call the overscan complete
-// method to remove the overlay. When all observers are removed, the singleton
-// tracker will delete itself.
+// If the primary main render frame is deleted (e.g. the tab is closed)
+// before the overlay calibraiton is completed, the observer will call the
+// overscan complete method to remove the overlay. When all observers are
+// removed, the singleton tracker will delete itself.
 class OverscanTracker {
  public:
   static void AddDisplay(content::WebContents* web_contents,
@@ -81,6 +81,8 @@ class OverscanTracker::OverscanWebObserver
   // WebContentsObserver
   void RenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override {
+    if (!render_frame_host->IsInPrimaryMainFrame())
+      return;
     for (const std::string& id : display_ids_) {
       // Reset any uncomitted calibraiton changes and complete calibration to
       // hide the overlay.
