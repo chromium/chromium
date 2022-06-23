@@ -77,7 +77,7 @@ void HelpAppLauncher::ShowHelpTopicDialog(Profile* profile,
                                           const GURL& topic_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   LoginWebDialog* dialog = new LoginWebDialog(
-      profile, NULL, parent_window_,
+      profile, parent_window_,
       l10n_util::GetStringUTF16(IDS_LOGIN_OOBE_HELP_DIALOG_TITLE), topic_url);
   dialog->Show();
   // The dialog object will be deleted on dialog close.
