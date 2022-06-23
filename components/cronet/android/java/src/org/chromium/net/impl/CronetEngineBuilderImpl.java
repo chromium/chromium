@@ -69,6 +69,65 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         }
     }
 
+    /**
+     * Mapping between public builder view of HttpCacheMode and internal builder one.
+     */
+    @VisibleForTesting
+    static enum HttpCacheMode {
+        DISABLED(HttpCacheType.DISABLED, false),
+        DISK(HttpCacheType.DISK, true),
+        DISK_NO_HTTP(HttpCacheType.DISK, false),
+        MEMORY(HttpCacheType.MEMORY, true);
+
+        private final int mType;
+        private final boolean mContentCacheEnabled;
+
+        private HttpCacheMode(int type, boolean contentCacheEnabled) {
+            mContentCacheEnabled = contentCacheEnabled;
+            mType = type;
+        }
+
+        int getType() {
+            return mType;
+        }
+
+        boolean isContentCacheEnabled() {
+            return mContentCacheEnabled;
+        }
+
+        @HttpCacheSetting
+        int toPublicBuilderCacheMode() {
+            switch (this) {
+                case DISABLED:
+                    return CronetEngine.Builder.HTTP_CACHE_DISABLED;
+                case DISK_NO_HTTP:
+                    return CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP;
+                case DISK:
+                    return CronetEngine.Builder.HTTP_CACHE_DISK;
+                case MEMORY:
+                    return CronetEngine.Builder.HTTP_CACHE_IN_MEMORY;
+                default:
+                    throw new IllegalArgumentException("Unknown internal builder cache mode");
+            }
+        }
+
+        @VisibleForTesting
+        static HttpCacheMode fromPublicBuilderCacheMode(@HttpCacheSetting int cacheMode) {
+            switch (cacheMode) {
+                case CronetEngine.Builder.HTTP_CACHE_DISABLED:
+                    return DISABLED;
+                case CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP:
+                    return DISK_NO_HTTP;
+                case CronetEngine.Builder.HTTP_CACHE_DISK:
+                    return DISK;
+                case CronetEngine.Builder.HTTP_CACHE_IN_MEMORY:
+                    return MEMORY;
+                default:
+                    throw new IllegalArgumentException("Unknown public builder cache mode");
+            }
+        }
+    }
+
     private static final Pattern INVALID_PKP_HOST_NAME = Pattern.compile("^[0-9\\.]*$");
 
     private static final int INVALID_THREAD_PRIORITY = THREAD_PRIORITY_LOWEST + 1;
@@ -85,7 +144,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     private boolean mHttp2Enabled;
     private boolean mBrotiEnabled;
     private boolean mDisableCache;
-    private int mHttpCacheMode;
+    private HttpCacheMode mHttpCacheMode;
     private long mHttpCacheMaxSize;
     private String mExperimentalOptions;
     protected long mMockCertVerifier;
@@ -209,39 +268,24 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
 
     @Override
     public CronetEngineBuilderImpl enableHttpCache(@HttpCacheSetting int cacheMode, long maxSize) {
-        if (cacheMode == CronetEngine.Builder.HTTP_CACHE_DISK
-                || cacheMode == CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP) {
+        HttpCacheMode cacheModeEnum = HttpCacheMode.fromPublicBuilderCacheMode(cacheMode);
+
+        if (cacheModeEnum.getType() == HttpCacheType.DISK) {
             if (storagePath() == null) {
                 throw new IllegalArgumentException("Storage path must be set");
             }
-        } else {
-            if (storagePath() != null) {
-                throw new IllegalArgumentException("Storage path must not be set");
-            }
+        } else if (storagePath() != null) {
+            throw new IllegalArgumentException("Storage path must not be set");
         }
-        mDisableCache = (cacheMode == CronetEngine.Builder.HTTP_CACHE_DISABLED
-                || cacheMode == CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP);
+
+        mHttpCacheMode = cacheModeEnum;
         mHttpCacheMaxSize = maxSize;
 
-        switch (cacheMode) {
-            case CronetEngine.Builder.HTTP_CACHE_DISABLED:
-                mHttpCacheMode = HttpCacheType.DISABLED;
-                break;
-            case CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP:
-            case CronetEngine.Builder.HTTP_CACHE_DISK:
-                mHttpCacheMode = HttpCacheType.DISK;
-                break;
-            case CronetEngine.Builder.HTTP_CACHE_IN_MEMORY:
-                mHttpCacheMode = HttpCacheType.MEMORY;
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown cache mode");
-        }
         return this;
     }
 
     boolean cacheDisabled() {
-        return mDisableCache;
+        return !mHttpCacheMode.isContentCacheEnabled();
     }
 
     long httpCacheMaxSize() {
@@ -250,7 +294,12 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
 
     @VisibleForTesting
     int httpCacheMode() {
-        return mHttpCacheMode;
+        return mHttpCacheMode.getType();
+    }
+
+    @HttpCacheSetting
+    int publicBuilderHttpCacheMode() {
+        return mHttpCacheMode.toPublicBuilderCacheMode();
     }
 
     @Override

@@ -65,7 +65,7 @@ public abstract class CronetLogger {
             mQuicEnabled = builder.quicEnabled();
             mHttp2Enabled = builder.http2Enabled();
             mBrotiEnabled = builder.brotliEnabled();
-            mHttpCacheMode = builder.httpCacheMode();
+            mHttpCacheMode = builder.publicBuilderHttpCacheMode();
             mExperimentalOptions = builder.experimentalOptions();
             mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
             mThreadPriority = builder.threadPriority(THREAD_PRIORITY_BACKGROUND);

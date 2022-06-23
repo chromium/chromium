@@ -19,6 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import org.chromium.net.CronetEngine;
+import org.chromium.net.impl.CronetEngineBuilderImpl.HttpCacheMode;
 import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
 
@@ -26,7 +28,7 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Test logging functionality.
+ * Test logging functionalities.
  */
 @RunWith(JUnit4.class)
 public final class CronetLoggerTest {
@@ -83,7 +85,7 @@ public final class CronetLoggerTest {
         assertEquals(builderInfo.isQuicEnabled(), builder.quicEnabled());
         assertEquals(builderInfo.isHttp2Enabled(), builder.http2Enabled());
         assertEquals(builderInfo.isBrotliEnabled(), builder.brotliEnabled());
-        assertEquals(builderInfo.getHttpCacheMode(), builder.httpCacheMode());
+        assertEquals(builderInfo.getHttpCacheMode(), builder.publicBuilderHttpCacheMode());
         assertEquals(builderInfo.getExperimentalOptions(), builder.experimentalOptions());
         assertEquals(builderInfo.isNetworkQualityEstimatorEnabled(),
                 builder.networkQualityEstimatorEnabled());
@@ -104,6 +106,19 @@ public final class CronetLoggerTest {
         assertEquals(parsedVersion.getMinorVersion(), minor);
         assertEquals(parsedVersion.getBuildVersion(), build);
         assertEquals(parsedVersion.getPatchVersion(), patch);
+    }
+
+    @Test
+    @SmallTest
+    public void testHttpCacheModeEnum() {
+        final int publicBuilderHttpCacheModes[] = {CronetEngine.Builder.HTTP_CACHE_DISABLED,
+                CronetEngine.Builder.HTTP_CACHE_IN_MEMORY,
+                CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP, CronetEngine.Builder.HTTP_CACHE_DISK};
+        for (int publicBuilderHttpCacheMode : publicBuilderHttpCacheModes) {
+            HttpCacheMode cacheModeEnum =
+                    HttpCacheMode.fromPublicBuilderCacheMode(publicBuilderHttpCacheMode);
+            assertEquals(publicBuilderHttpCacheMode, cacheModeEnum.toPublicBuilderCacheMode());
+        }
     }
 
     @Test
