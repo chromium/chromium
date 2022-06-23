@@ -4045,6 +4045,27 @@
       "features": [
         "add_fence_for_same_gl_context"
       ]
+    },
+    {
+      "id": 397,
+      "description": "VPx decoding crashes due to a buggy driver / chipset combo.",
+      "cr_bugs": [1333299],
+      "os": {
+        "type": "win",
+        "version": {
+          "op": ">=",
+          "value": "10"
+        }
+      },
+      "vendor_id": "0x8086",
+      "device_id": [ "0x591B" ],
+      "driver_version": {
+        "op": "=",
+        "value": "26.20.100.6998"
+      },
+      "features": [
+        "disable_accelerated_vp9_decode"
+      ]
     }
   ]
 }
