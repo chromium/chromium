@@ -93,12 +93,13 @@ SkColor TextureColor(QImage image) {
   size_t r = 0;
   size_t g = 0;
   size_t b = 0;
-  const auto* pixels = image.bits();
+  const auto* pixels = reinterpret_cast<QRgb*>(image.bits());
   for (size_t i = 0; i < size; i++) {
-    a += pixels[4 * i + 0];
-    r += pixels[4 * i + 1];
-    g += pixels[4 * i + 2];
-    b += pixels[4 * i + 3];
+    auto color = QColor::fromRgba(pixels[i]);
+    a += color.alpha();
+    r += color.red();
+    g += color.green();
+    b += color.blue();
   }
   return qRgba(r / size, g / size, b / size, a / size);
 }
@@ -254,6 +255,13 @@ SkColor QtShim::GetColor(ColorType role, ColorState state) const {
                                          ColorTypeToColorRole(role)));
 }
 
+SkColor QtShim::GetFrameColor(ColorState state, bool use_custom_frame) const {
+  constexpr int kSampleSize = 32;
+  return TextureColor(DrawHeaderImpl(kSampleSize, kSampleSize,
+                                     GetColor(ColorType::kWindowBg, state),
+                                     state, use_custom_frame));
+}
+
 int QtShim::GetCursorBlinkIntervalMs() const {
   return app_.cursorFlashTime();
 }
@@ -273,8 +281,18 @@ void QtShim::PaletteChanged(const QPalette& palette) {
 Image QtShim::DrawHeader(int width,
                          int height,
                          SkColor default_color,
-                         bool is_active,
+                         ColorState state,
                          bool use_custom_frame) const {
+  QImage image =
+      DrawHeaderImpl(width, height, default_color, state, use_custom_frame);
+  return {width, height, 1.0f, Buffer(image.bits(), image.sizeInBytes())};
+}
+
+QImage QtShim::DrawHeaderImpl(int width,
+                              int height,
+                              SkColor default_color,
+                              ColorState state,
+                              bool use_custom_frame) const {
   QImage image(width, height, QImage::Format_ARGB32_Premultiplied);
   image.fill(default_color);
   QPainter painter(&image);
@@ -286,17 +304,16 @@ Image QtShim::DrawHeader(int width,
     QStyleOptionTitleBar opt;
     opt.rect = QRect(-kBorderWidth, -kBorderWidth, width + 2 * kBorderWidth,
                      height + 2 * kBorderWidth);
-    if (is_active)
+    if (state == ColorState::kNormal)
       opt.titleBarState = QStyle::State_Active;
     app_.style()->drawComplexControl(QStyle::CC_TitleBar, &opt, &painter,
                                      nullptr);
   } else {
     painter.fillRect(
         0, 0, width, height,
-        app_.palette().brush(is_active ? QPalette::Normal : QPalette::Active,
-                             QPalette::Window));
+        app_.palette().brush(ColorStateToColorGroup(state), QPalette::Window));
   }
-  return {width, height, 1.0f, Buffer(image.bits(), image.sizeInBytes())};
+  return image;
 }
 
 }  // namespace qt

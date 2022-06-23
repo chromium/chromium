@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/qt/qt_interface.h"
 #include "ui/views/linux_ui/linux_ui.h"
 
@@ -82,6 +83,8 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
  private:
   void AddNativeColorMixer(ui::ColorProvider* provider,
                            const ui::ColorProviderManager::Key& key);
+
+  absl::optional<SkColor> GetColor(int id, bool use_custom_frame) const;
 
   // QT modifies argc and argv, and they must be kept alive while
   // `shim_` is alive.

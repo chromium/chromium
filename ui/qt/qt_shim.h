@@ -6,6 +6,7 @@
 #define UI_QT_QT_SHIM_H_
 
 #include <QApplication>
+#include <QImage>
 #include <QObject>
 
 #include "ui/qt/qt_interface.h"
@@ -29,10 +30,11 @@ class QtShim : public QObject, public QtInterface {
   Image GetIconForContentType(const String& content_type,
                               int size) const override;
   SkColor GetColor(ColorType role, ColorState state) const override;
+  SkColor GetFrameColor(ColorState state, bool use_custom_frame) const override;
   Image DrawHeader(int width,
                    int height,
                    SkColor default_color,
-                   bool is_active,
+                   ColorState state,
                    bool use_custom_frame) const override;
   int GetCursorBlinkIntervalMs() const override;
   int GetAnimationDurationMs() const override;
@@ -42,6 +44,11 @@ class QtShim : public QObject, public QtInterface {
   void PaletteChanged(const QPalette& palette);
 
  private:
+  QImage DrawHeaderImpl(int width,
+                        int height,
+                        SkColor default_color,
+                        ColorState state,
+                        bool use_custom_frame) const;
   QtInterface::Delegate* const delegate_;
 
   QApplication app_;
