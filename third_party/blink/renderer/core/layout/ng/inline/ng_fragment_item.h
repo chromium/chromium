@@ -25,6 +25,7 @@ namespace blink {
 
 class NGFragmentItems;
 class NGInlineBreakToken;
+class NGInlinePaintContext;
 struct NGTextFragmentPaintInfo;
 struct NGLogicalLineItem;
 
@@ -306,7 +307,9 @@ class CORE_EXPORT NGFragmentItem final {
   static PhysicalRect LocalVisualRectFor(const LayoutObject& layout_object);
 
   // Re-compute the ink overflow for the |cursor| until its end.
-  static PhysicalRect RecalcInkOverflowForCursor(NGInlineCursor* cursor);
+  static PhysicalRect RecalcInkOverflowForCursor(
+      NGInlineCursor* cursor,
+      NGInlinePaintContext* inline_context);
 
   // Painters can use const methods only, except for these explicitly declared
   // methods.
@@ -316,8 +319,10 @@ class CORE_EXPORT NGFragmentItem final {
    public:
     void InvalidateInkOverflow() { return item_.InvalidateInkOverflow(); }
     void RecalcInkOverflow(const NGInlineCursor& cursor,
+                           NGInlinePaintContext* inline_context,
                            PhysicalRect* self_and_contents_rect_out) {
-      return item_.RecalcInkOverflow(cursor, self_and_contents_rect_out);
+      return item_.RecalcInkOverflow(cursor, inline_context,
+                                     self_and_contents_rect_out);
     }
 
    private:
@@ -560,7 +565,11 @@ class CORE_EXPORT NGFragmentItem final {
 
   // Re-compute the ink overflow for this item. |cursor| should be at |this|.
   void RecalcInkOverflow(const NGInlineCursor& cursor,
+                         NGInlinePaintContext* inline_context,
                          PhysicalRect* self_and_contents_rect_out);
+  PhysicalRect RecalcInkOverflowForDescendantsOf(
+      const NGInlineCursor& cursor,
+      NGInlinePaintContext* inline_context) const;
 
   // Compute the inline position from text offset, in logical coordinate
   // relative to this fragment.

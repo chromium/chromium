@@ -344,11 +344,12 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const PhysicalSize& size,
+    const NGInlinePaintContext* inline_context,
     PhysicalRect* ink_overflow_out) {
   CheckType(type);
   DCHECK(type == kNotSet || type == kInvalidated);
-  absl::optional<PhysicalRect> ink_overflow =
-      ComputeTextInkOverflow(text_info, style, style.GetFont(), size);
+  absl::optional<PhysicalRect> ink_overflow = ComputeTextInkOverflow(
+      text_info, style, style.GetFont(), size, inline_context);
   if (!ink_overflow) {
     *ink_overflow_out = {PhysicalOffset(), size};
     return Reset(type);
@@ -378,8 +379,9 @@ NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
                          LayoutUnit(rect.height()))
           : PhysicalSize(LayoutUnit(rect.width()),
                          LayoutUnit(rect.height() / length_adjust_scale));
-  absl::optional<PhysicalRect> ink_overflow =
-      ComputeTextInkOverflow(text_info, style, scaled_font, item_size);
+  // No |inline_context| because the decoration box is not supported for SVG.
+  absl::optional<PhysicalRect> ink_overflow = ComputeTextInkOverflow(
+      text_info, style, scaled_font, item_size, /* inline_context */ nullptr);
   const bool needs_transform =
       scaling_factor != 1.0f || !transform.IsIdentity();
   PhysicalSize unscaled_size = PhysicalSize::FromSizeFRound(rect.size());
@@ -427,7 +429,8 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const Font& scaled_font,
-    const PhysicalSize& size) {
+    const PhysicalSize& size,
+    const NGInlinePaintContext* inline_context) {
   // Glyph bounds is in logical coordinate, origin at the alphabetic baseline.
   const gfx::RectF text_ink_bounds = scaled_font.TextInkBounds(text_info);
   LayoutRect ink_overflow = EnclosingLayoutRect(text_ink_bounds);
@@ -446,8 +449,8 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
   // Following effects, such as shadows, operate on the text decorations,
   // so compute text decoration overflow first.
   if (!style.AppliedTextDecorations().IsEmpty() && scaled_font.PrimaryFont()) {
-    LayoutRect decoration_rect =
-        ComputeTextDecorationOverflow(style, scaled_font, ink_overflow);
+    LayoutRect decoration_rect = ComputeTextDecorationOverflow(
+        style, scaled_font, ink_overflow, inline_context);
     ink_overflow.Unite(decoration_rect);
   }
 
@@ -506,7 +509,8 @@ LayoutRect NGInkOverflow::ComputeEmphasisMarkOverflow(
 LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
     const ComputedStyle& style,
     const Font& scaled_font,
-    const LayoutRect& ink_overflow) {
+    const LayoutRect& ink_overflow,
+    const NGInlinePaintContext* inline_context) {
   DCHECK(!style.AppliedTextDecorations().IsEmpty());
   // Use a zero offset because all offsets
   // are applied to the ink overflow after it has been computed.
@@ -518,8 +522,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
   // because it just makes the resultant ink overflow slightly larger.
   const MinimumThickness1 kMinimumThicknessIsOne(true);
   TextDecorationInfo decoration_info(
-      offset, ink_overflow.Width(), style,
-      /* inline_context */ nullptr,
+      offset, ink_overflow.Width(), style, inline_context,
       /* selection_text_decoration */ absl::nullopt, &scaled_font,
       kMinimumThicknessIsOne);
   NGTextDecorationOffset decoration_offset(decoration_info.TargetStyle(),

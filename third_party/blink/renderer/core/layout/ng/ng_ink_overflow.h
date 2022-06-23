@@ -17,6 +17,7 @@ namespace blink {
 class AffineTransform;
 class ComputedStyle;
 class Font;
+class NGInlinePaintContext;
 struct NGTextFragmentPaintInfo;
 
 // Represents an ink-overflow rectangle. Used for:
@@ -117,6 +118,7 @@ class CORE_EXPORT NGInkOverflow {
                           const NGTextFragmentPaintInfo& text_info,
                           const ComputedStyle& style,
                           const PhysicalSize& size,
+                          const NGInlinePaintContext* inline_context,
                           PhysicalRect* ink_overflow_out);
 
   // Compute and set ink overflow for SVG text.
@@ -136,7 +138,8 @@ class CORE_EXPORT NGInkOverflow {
       const NGTextFragmentPaintInfo& text_info,
       const ComputedStyle& style,
       const Font& scaled_font,
-      const PhysicalSize& size);
+      const PhysicalSize& size,
+      const NGInlinePaintContext* inline_context);
 
   // Returns ink-overflow with emphasis mark overflow in logical direction.
   // |size| is a size of text item, e.g. |NGFragmentItem::Size()|.
@@ -152,7 +155,8 @@ class CORE_EXPORT NGInkOverflow {
   static LayoutRect ComputeTextDecorationOverflow(
       const ComputedStyle& style,
       const Font& scaled_font,
-      const LayoutRect& ink_overflow);
+      const LayoutRect& ink_overflow,
+      const NGInlinePaintContext* inline_context);
 
 #if DCHECK_IS_ON()
   struct ReadUnsetAsNoneScope {

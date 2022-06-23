@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/page/named_pages_mapper.h"
 #include "third_party/blink/renderer/core/paint/block_flow_paint_invalidator.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -4439,7 +4440,8 @@ void LayoutBlockFlow::RecalcInlineChildrenVisualOverflow() {
     for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
       if (const NGFragmentItems* items = fragment.Items()) {
         NGInlineCursor cursor(fragment, *items);
-        NGFragmentItem::RecalcInkOverflowForCursor(&cursor);
+        NGInlinePaintContext inline_context;
+        NGFragmentItem::RecalcInkOverflowForCursor(&cursor, &inline_context);
       }
       // Even if this turned out to be an inline formatting context with
       // fragment items (handled above), we need to handle floating descendants.

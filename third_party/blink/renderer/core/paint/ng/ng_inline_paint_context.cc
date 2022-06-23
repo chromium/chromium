@@ -167,8 +167,16 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
         // All non-culled inline boxes should have called |SyncDecoratingBox|,
         // so the loop should have stopped before seeing non-culled inline
         // boxes.
-        if (!IsA<LayoutText>(layout_object)) {
-          if (const auto* layout_inline = DynamicTo<LayoutInline>(parent)) {
+        if (const auto* layout_inline = DynamicTo<LayoutInline>(parent)) {
+          // Except when |AppliedTextDecorations| is duplicated instead of
+          // shared, see above.
+          if (!(parent_decorations.size() == parent->Parent()
+                                                 ->StyleRef()
+                                                 .AppliedTextDecorations()
+                                                 .size() &&
+                parent_style.GetTextDecorationLine() ==
+                    TextDecorationLine::kNone) &&
+              !IsA<LayoutText>(layout_object)) {
             DCHECK(!layout_inline->ShouldCreateBoxFragment());
             DCHECK(!layout_inline->HasInlineFragments());
           }

@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -1157,7 +1158,9 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
   PhysicalRect contents_rect;
   if (const NGFragmentItems* items = Items()) {
     NGInlineCursor cursor(*this, *items);
-    contents_rect = NGFragmentItem::RecalcInkOverflowForCursor(&cursor);
+    NGInlinePaintContext child_inline_context;
+    contents_rect = NGFragmentItem::RecalcInkOverflowForCursor(
+        &cursor, &child_inline_context);
 
     // Add text decorations and emphasis mark ink over flow for combined
     // text.

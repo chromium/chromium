@@ -31,6 +31,7 @@ class NGFragmentItems;
 class NGInlineBackwardCursor;
 class NGInlineBreakToken;
 class NGInlineCursor;
+class NGInlinePaintContext;
 class NGPhysicalBoxFragment;
 class Node;
 class ShapeResultView;
@@ -156,7 +157,8 @@ class CORE_EXPORT NGInlineCursorPosition {
     return item_->SelfInkOverflow();
   }
 
-  void RecalcInkOverflow(const NGInlineCursor& cursor) const;
+  void RecalcInkOverflow(const NGInlineCursor& cursor,
+                         NGInlinePaintContext* inline_context) const;
 
   // Returns start/end of offset in text content of current text fragment.
   // It is error when this cursor doesn't point to text fragment.

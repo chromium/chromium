@@ -26,6 +26,62 @@ class NGInlinePaintContextTest : public RenderingTest,
   }
 };
 
+TEST_F(NGInlinePaintContextTest, VerticalAlign) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    :root {
+      font-family: Ahem;
+      font-size: 10px;
+    }
+    .ul {
+      text-decoration-line: underline;
+    }
+    .up {
+      vertical-align: 1em;
+    }
+    </style>
+    <div>
+      <span id="span1" class="ul">
+        span1
+        <span id="span2" sclass="up ul">
+          span2
+          <span id="span3" class="up">
+            span3
+          </span>
+        </span>
+      </span>
+    </div>
+  )HTML");
+
+  const auto StringFromTextItem = [](const NGInlineCursor& cursor) {
+    return cursor.Current().Text(cursor).ToString().StripWhiteSpace();
+  };
+
+  NGInlineCursor cursor;
+  const LayoutObject* span1 = GetLayoutObjectByElementId("span1");
+  cursor.MoveToIncludingCulledInline(*span1);
+  EXPECT_EQ(StringFromTextItem(cursor), "span1");
+  const NGFragmentItem& span1_item = *cursor.Current();
+
+  const LayoutObject* span2 = GetLayoutObjectByElementId("span2");
+  cursor.MoveToIncludingCulledInline(*span2);
+  EXPECT_EQ(StringFromTextItem(cursor), "span2");
+  const NGFragmentItem& span2_item = *cursor.Current();
+
+  const LayoutObject* span3 = GetLayoutObjectByElementId("span3");
+  cursor.MoveToIncludingCulledInline(*span3);
+  EXPECT_EQ(StringFromTextItem(cursor), "span3");
+  const NGFragmentItem& span3_item = *cursor.Current();
+
+  // The bottom of ink overflows of `span1`, `span2`, and `span3` should match,
+  // because underlines are drawn at the decorating box; i.e., `span1`.
+  EXPECT_EQ(span1_item.InkOverflow().Bottom(),
+            span2_item.InkOverflow().Bottom());
+  EXPECT_EQ(span1_item.InkOverflow().Bottom(),
+            span3_item.InkOverflow().Bottom());
+}
+
 TEST_F(NGInlinePaintContextTest, NestedBlocks) {
   SetBodyInnerHTML(R"HTML(
     <style>

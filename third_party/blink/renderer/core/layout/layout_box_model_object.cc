@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_interface.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section_interface.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -581,8 +582,12 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
   if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
     DCHECK(HasSelfPaintingLayer());
     NGInlineCursor cursor;
-    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
-      cursor.Current().RecalcInkOverflow(cursor);
+    NGInlinePaintContext inline_context;
+    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
+      NGInlinePaintContext::ScopedInlineBoxAncestors scoped_items(
+          cursor, &inline_context);
+      cursor.Current().RecalcInkOverflow(cursor, &inline_context);
+    }
     return;
   }
 

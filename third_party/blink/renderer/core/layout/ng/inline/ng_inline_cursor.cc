@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 
 namespace blink {
 class HTMLBRElement;
@@ -460,11 +461,12 @@ gfx::RectF NGInlineCursorPosition::ObjectBoundingBox(
 }
 
 void NGInlineCursorPosition::RecalcInkOverflow(
-    const NGInlineCursor& cursor) const {
+    const NGInlineCursor& cursor,
+    NGInlinePaintContext* inline_context) const {
   DCHECK(item_);
   DCHECK_EQ(item_, cursor.Current().Item());
   PhysicalRect self_and_contents_rect;
-  item_->GetMutableForPainting().RecalcInkOverflow(cursor,
+  item_->GetMutableForPainting().RecalcInkOverflow(cursor, inline_context,
                                                    &self_and_contents_rect);
 }
 
