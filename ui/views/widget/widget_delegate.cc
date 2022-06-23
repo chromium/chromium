@@ -31,11 +31,6 @@ std::unique_ptr<ClientView> CreateDefaultClientView(WidgetDelegate* delegate,
       widget, delegate->TransferOwnershipOfContentsView());
 }
 
-std::unique_ptr<NonClientFrameView> CreateDefaultNonClientFrameView(
-    Widget* widget) {
-  return nullptr;
-}
-
 std::unique_ptr<View> CreateDefaultOverlayView() {
   return nullptr;
 }
@@ -52,8 +47,6 @@ WidgetDelegate::WidgetDelegate()
     : widget_initialized_callbacks_(std::make_unique<ClosureVector>()),
       client_view_factory_(
           base::BindOnce(&CreateDefaultClientView, base::Unretained(this))),
-      non_client_frame_view_factory_(
-          base::BindRepeating(&CreateDefaultNonClientFrameView)),
       overlay_view_factory_(base::BindOnce(&CreateDefaultOverlayView)) {}
 
 WidgetDelegate::~WidgetDelegate() {
@@ -284,8 +277,7 @@ ClientView* WidgetDelegate::CreateClientView(Widget* widget) {
 
 std::unique_ptr<NonClientFrameView> WidgetDelegate::CreateNonClientFrameView(
     Widget* widget) {
-  DCHECK(non_client_frame_view_factory_);
-  return non_client_frame_view_factory_.Run(widget);
+  return nullptr;
 }
 
 View* WidgetDelegate::CreateOverlayView() {
@@ -429,12 +421,6 @@ void WidgetDelegate::RegisterDeleteDelegateCallback(
 void WidgetDelegate::SetClientViewFactory(ClientViewFactory factory) {
   DCHECK(!GetWidget());
   client_view_factory_ = std::move(factory);
-}
-
-void WidgetDelegate::SetNonClientFrameViewFactory(
-    NonClientFrameViewFactory factory) {
-  DCHECK(!GetWidget());
-  non_client_frame_view_factory_ = std::move(factory);
 }
 
 void WidgetDelegate::SetOverlayViewFactory(OverlayViewFactory factory) {
