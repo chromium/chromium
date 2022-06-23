@@ -391,18 +391,6 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   bool HasPolicyFromSource(network::mojom::ContentSecurityPolicySource) const;
 
-  static bool IsScriptDirective(CSPDirectiveName directive_type) {
-    return (directive_type == CSPDirectiveName::ScriptSrc ||
-            directive_type == CSPDirectiveName::ScriptSrcAttr ||
-            directive_type == CSPDirectiveName::ScriptSrcElem);
-  }
-
-  static bool IsStyleDirective(CSPDirectiveName directive_type) {
-    return (directive_type == CSPDirectiveName::StyleSrc ||
-            directive_type == CSPDirectiveName::StyleSrcAttr ||
-            directive_type == CSPDirectiveName::StyleSrcElem);
-  }
-
   void Count(WebFeature feature) const;
 
  private:
