@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/mac/scoped_nsobject.h"
+#include "build/build_config.h"
 #include "ui/gfx/geometry/size.h"
 
 // These interfaces were generated from CoreGraphics binaries.
@@ -238,6 +239,9 @@ void VirtualDisplayMacUtil::RemoveDisplay(int display_id) {
 
 // static
 bool VirtualDisplayMacUtil::ShouldSkip() {
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
+  return true;
+#endif  // IS_MAC && ARCH_CPU_ARM_FAMILY
   if (@available(macos 10.14, *)) {
     return false;
   }
