@@ -310,6 +310,14 @@ Polymer({
       computed: 'updateWireGuardKeyType_(wireguardKeyType_)',
     },
 
+    /** @private */
+    enableHiddenNetworkMigration_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('enableHiddenNetworkMigration');
+      }
+    },
+
     /**
      * Array of values for the EAP Method (Outer) dropdown.
      * @private {!Array<string>}
