@@ -253,9 +253,9 @@ CGRect BubbleFrame(CGPoint anchorPoint,
                      alignment, boundingWidth, isRTL);
 }
 
-CGFloat FullWidthBubbleAlignmentOffset(CGFloat boundingWidth,
-                                       CGPoint anchorPoint,
-                                       BubbleAlignment alignment) {
+CGFloat FloatingArrowAlignmentOffset(CGFloat boundingWidth,
+                                     CGPoint anchorPoint,
+                                     BubbleAlignment alignment) {
   CGFloat alignmentOffset;
   BOOL isRTL = base::i18n::IsRTL();
   switch (alignment) {

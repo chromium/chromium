@@ -30,9 +30,9 @@ CGRect BubbleFrame(CGPoint anchorPoint,
                    CGFloat boundingWidth,
                    bool isRTL);
 
-CGFloat FullWidthBubbleAlignmentOffset(CGFloat boundingWidth,
-                                       CGPoint anchorPoint,
-                                       BubbleAlignment alignment);
+CGFloat FloatingArrowAlignmentOffset(CGFloat boundingWidth,
+                                     CGPoint anchorPoint,
+                                     BubbleAlignment alignment);
 
 }  // namespace bubble_util
 
@@ -468,28 +468,28 @@ TEST_F(BubbleUtilTest, BubbleFrameDownTrailingRTL) {
   EXPECT_FLOAT_EQ(bubbleSize_.height, CGRectGetHeight(bubbleFrame));
 }
 
-// Tests FullWidthAlignmentOffset with a left anchor point and a leading
+// Tests FloatingArrowAlignmentOffset with a left anchor point and a leading
 // alignment.
-TEST_F(BubbleUtilTest, BubbleFullWidthAlignmentOffsetLeadingLeft) {
-  CGFloat alignmentOffset = bubble_util::FullWidthBubbleAlignmentOffset(
+TEST_F(BubbleUtilTest, FloatingArrowAlignmentOffsetLeadingLeft) {
+  CGFloat alignmentOffset = bubble_util::FloatingArrowAlignmentOffset(
       containerSize_.width, leftAlignedAnchorPoint_, BubbleAlignmentLeading);
   EXPECT_FLOAT_EQ(leftAlignedAnchorPoint_.x, alignmentOffset);
 }
 
-// Tests FullWidthAlignmentOffset with a center anchor point and a center
+// Tests FloatingArrowAlignmentOffset with a center anchor point and a center
 // alignment.
-TEST_F(BubbleUtilTest, BubbleFullWidthAlignmentOffsetCenter) {
-  CGFloat alignmentOffset = bubble_util::FullWidthBubbleAlignmentOffset(
+TEST_F(BubbleUtilTest, FloatingArrowAlignmentOffsetCenter) {
+  CGFloat alignmentOffset = bubble_util::FloatingArrowAlignmentOffset(
       containerSize_.width, centerAlignedAnchorPoint_, BubbleAlignmentCenter);
   // Bubble is center aligned, the `alignmentOffset` is ignored, it's set to the
   // minimum of `BubbleDefaultAlignmentOffset`.
   EXPECT_FLOAT_EQ(29.0f, alignmentOffset);
 }
 
-// Tests FullWidthAlignmentOffset with a right anchor point and a trailing
+// Tests FloatingArrowAlignmentOffset with a right anchor point and a trailing
 // alignment.
-TEST_F(BubbleUtilTest, BubbleFullWidthAlignmentOffsetTrailing) {
-  CGFloat alignmentOffset = bubble_util::FullWidthBubbleAlignmentOffset(
+TEST_F(BubbleUtilTest, FloatingArrowAlignmentOffsetTrailing) {
+  CGFloat alignmentOffset = bubble_util::FloatingArrowAlignmentOffset(
       containerSize_.width, rightAlignedAnchorPoint_, BubbleAlignmentTrailing);
   EXPECT_FLOAT_EQ(containerSize_.width - rightAlignedAnchorPoint_.x,
                   alignmentOffset);
