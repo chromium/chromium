@@ -101,8 +101,8 @@ void LacrosFileSystemProvider::ForwardOperation(
   extensions::events::HistogramValue histogram =
       static_cast<extensions::events::HistogramValue>(histogram_value);
 
-  auto event = std::make_unique<extensions::Event>(histogram, event_name,
-                                                   std::move(args));
+  auto event = std::make_unique<extensions::Event>(
+      histogram, event_name, std::move(base::Value(std::move(args)).GetList()));
   router->DispatchEventToExtension(provider, std::move(event));
   std::move(callback).Run(/*delivery_failure=*/false);
 }
