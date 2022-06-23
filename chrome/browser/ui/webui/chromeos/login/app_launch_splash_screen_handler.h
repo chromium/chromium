@@ -80,6 +80,9 @@ class AppLaunchSplashScreenView {
 
   // Returns true if the default network has Internet access.
   virtual bool IsNetworkReady() = 0;
+
+  // Continues app launch after error screen is shown.
+  virtual void ContinueAppLaunch() = 0;
 };
 
 // A class that handles the WebUI hooks for the app launch splash screen.
@@ -117,6 +120,7 @@ class AppLaunchSplashScreenHandler
   void ShowNetworkConfigureUI() override;
   void ShowErrorMessage(KioskAppLaunchError::Error error) override;
   bool IsNetworkReady() override;
+  void ContinueAppLaunch() override;
 
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
   void OnNetworkReady() override;
@@ -127,7 +131,6 @@ class AppLaunchSplashScreenHandler
   void SetLaunchText(const std::string& text);
   int GetProgressMessageFromState(AppLaunchState state);
   void HandleConfigureNetwork();
-  void HandleContinueAppLaunch();
   void DoToggleNetworkConfig(bool visible);
 
   Delegate* delegate_ = nullptr;

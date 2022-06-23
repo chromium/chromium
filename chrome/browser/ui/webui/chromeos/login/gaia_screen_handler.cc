@@ -408,6 +408,8 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     const bool* collect_stats_consent) {
   base::Value params(base::Value::Type::DICTIONARY);
 
+  // TODO(https://crbug.com/1338102): Looks like `forceReload` isn't used
+  //                                  anywhere further. Remove?
   params.SetBoolKey("forceReload", context.force_reload);
   params.SetStringKey("gaiaId", context.gaia_id);
   params.SetBoolKey("readOnlyEmail", true);
@@ -1340,6 +1342,10 @@ void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
   params.SetBoolKey("familyLinkAllowed", family_link_allowed);
 
   CallExternalAPI("showAllowlistCheckFailedError", std::move(params));
+}
+
+void GaiaScreenHandler::ReloadGaiaAuthenticator() {
+  CallExternalAPI("doReload");
 }
 
 void GaiaScreenHandler::LoadAuthExtension(bool force) {

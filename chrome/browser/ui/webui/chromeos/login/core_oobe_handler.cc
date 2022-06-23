@@ -237,6 +237,10 @@ void CoreOobeHandler::ToggleSystemInfo() {
   CallJS("cr.ui.Oobe.toggleSystemInfo");
 }
 
+void CoreOobeHandler::LaunchHelpApp(int help_topic_id) {
+  HandleLaunchHelpApp(help_topic_id);
+}
+
 void CoreOobeHandler::OnOobeConfigurationChanged() {
   base::Value configuration(base::Value::Type::DICTIONARY);
   configuration::FilterConfiguration(

@@ -20,6 +20,7 @@ class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
   void ShowNetworkConfigureUI() override {}
   void ShowErrorMessage(KioskAppLaunchError::Error error) override;
   bool IsNetworkReady() override;
+  void ContinueAppLaunch() override {}
 
   KioskAppLaunchError::Error GetErrorMessageType() const;
   void SetNetworkReady(bool ready);

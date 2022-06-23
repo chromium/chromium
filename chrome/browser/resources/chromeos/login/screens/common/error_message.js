@@ -259,7 +259,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
   }
 
   continueButtonClicked() {
-    chrome.send('continueAppLaunch');
+    this.userActed('continue-app-launch');
   }
 
   okButtonClicked() {
@@ -336,7 +336,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
         'auto-enrollment-learn-more');
     this.shadowRoot.querySelector('#auto-enrollment-learn-more').onclick =
         () => {
-          chrome.send('launchHelpApp', [HELP_TOPIC_AUTO_ENROLLMENT]);
+          this.userActed(['launch-help-app', HELP_TOPIC_AUTO_ENROLLMENT]);
         };
 
     this.updateElementWithStringAndAnchorTag_(

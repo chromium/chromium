@@ -39,6 +39,7 @@ class CoreOobeView {
   virtual void UpdateClientAreaSize(const gfx::Size& size) = 0;
   virtual void ToggleSystemInfo() = 0;
   virtual void ForwardCancel() = 0;
+  virtual void LaunchHelpApp(int help_topic_id) = 0;
 };
 
 // The core handler for Javascript messages related to the "oobe" view.
@@ -91,6 +92,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void ToggleSystemInfo() override;
   // Forwards the cancel accelerator value to the shown screen.
   void ForwardCancel() override;
+  void LaunchHelpApp(int help_topic_id) override;
 
   // ash::TabletModeObserver:
   void OnTabletModeStarted() override;

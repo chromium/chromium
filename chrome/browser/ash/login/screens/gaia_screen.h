@@ -55,6 +55,8 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   void ShowAllowlistCheckFailedError();
   // Reset authenticator.
   void Reset();
+  // Calls authenticator reload on JS side.
+  void ReloadGaiaAuthenticator();
 
   // ScreenBacklightObserver:
   void OnScreenBacklightStateChanged(

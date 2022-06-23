@@ -23,6 +23,7 @@ namespace ash {
 class LoginWebDialog : public ui::WebDialogDelegate {
  public:
   // Delegate class to get notifications from the dialog.
+  // TODO(https://crbug.com/1338520): It isn't used anywhere. Remove.
   class Delegate {
    public:
     // Called when dialog has been closed.

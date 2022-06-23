@@ -85,6 +85,8 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   virtual void SetGaiaPath(GaiaPath gaia_path) = 0;
   // Show error UI at the end of GAIA flow when user is not allowlisted.
   virtual void ShowAllowlistCheckFailedError() = 0;
+  // Reloads authenticator.
+  virtual void ReloadGaiaAuthenticator() = 0;
 
   // Show sign-in screen for the given credentials. `services` is a list of
   // services returned by userInfo call as JSON array. Should be an empty array
@@ -135,6 +137,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void Hide() override;
   void SetGaiaPath(GaiaPath gaia_path) override;
   void ShowAllowlistCheckFailedError() override;
+  void ReloadGaiaAuthenticator() override;
 
   void ShowSigninScreenForTest(const std::string& username,
                                const std::string& password,

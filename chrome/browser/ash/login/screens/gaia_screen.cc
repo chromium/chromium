@@ -91,6 +91,12 @@ void GaiaScreen::Reset() {
   view_->Reset();
 }
 
+void GaiaScreen::ReloadGaiaAuthenticator() {
+  if (!view_)
+    return;
+  view_->ReloadGaiaAuthenticator();
+}
+
 void GaiaScreen::ShowImpl() {
   if (!view_)
     return;

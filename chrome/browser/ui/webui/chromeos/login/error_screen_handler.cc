@@ -17,16 +17,9 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId ErrorScreenView::kScreenId;
+ErrorScreenHandler::ErrorScreenHandler() : BaseScreenHandler(kScreenId) {}
 
-ErrorScreenHandler::ErrorScreenHandler() : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.ErrorMessageScreen.userActed");
-}
-
-ErrorScreenHandler::~ErrorScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+ErrorScreenHandler::~ErrorScreenHandler() = default;
 
 void ErrorScreenHandler::Show() {
   if (!IsJavascriptAllowed()) {
@@ -67,36 +60,31 @@ void ErrorScreenHandler::ShowOobeScreen(OobeScreenId screen) {
 
 void ErrorScreenHandler::SetErrorStateCode(
     NetworkError::ErrorState error_state) {
-  CallJS("login.ErrorMessageScreen.setErrorState",
-         static_cast<int>(error_state));
+  CallExternalAPI("setErrorState", static_cast<int>(error_state));
 }
 
 void ErrorScreenHandler::SetErrorStateNetwork(const std::string& network_name) {
-  CallJS("login.ErrorMessageScreen.setErrorStateNetwork", network_name);
+  CallExternalAPI("setErrorStateNetwork", network_name);
 }
 
 void ErrorScreenHandler::SetGuestSigninAllowed(bool value) {
-  CallJS("login.ErrorMessageScreen.allowGuestSignin", value);
+  CallExternalAPI("allowGuestSignin", value);
 }
 
 void ErrorScreenHandler::SetOfflineSigninAllowed(bool value) {
-  CallJS("login.ErrorMessageScreen.allowOfflineLogin", value);
+  CallExternalAPI("allowOfflineLogin", value);
 }
 
 void ErrorScreenHandler::SetShowConnectingIndicator(bool value) {
-  CallJS("login.ErrorMessageScreen.showConnectingIndicator", value);
+  CallExternalAPI("showConnectingIndicator", value);
 }
 
 void ErrorScreenHandler::SetIsPersistentError(bool is_persistent) {
-  CallJS("login.ErrorMessageScreen.setIsPersistentError", is_persistent);
+  CallExternalAPI("setIsPersistentError", is_persistent);
 }
 
 void ErrorScreenHandler::SetUIState(NetworkError::UIState ui_state) {
-  CallJS("login.ErrorMessageScreen.setUIState", static_cast<int>(ui_state));
-}
-
-void ErrorScreenHandler::OnReloadGaiaClicked() {
-  CallJS("login.GaiaSigninScreen.doReload");
+  CallExternalAPI("setUIState", static_cast<int>(ui_state));
 }
 
 void ErrorScreenHandler::DeclareLocalizedValues(

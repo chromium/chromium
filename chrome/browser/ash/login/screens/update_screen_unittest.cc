@@ -82,7 +82,8 @@ class UpdateScreenUnitTest : public testing::Test {
     mock_network_portal_detector_ = new MockNetworkPortalDetector();
     network_portal_detector::SetNetworkPortalDetector(
         mock_network_portal_detector_);
-    mock_error_screen_ = std::make_unique<MockErrorScreen>(&mock_error_view_);
+    mock_error_screen_ =
+        std::make_unique<MockErrorScreen>(mock_error_view_.AsWeakPtr());
 
     // Ensure proper behavior of UpdateScreen's supporting objects.
     EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())

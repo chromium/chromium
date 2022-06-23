@@ -74,7 +74,7 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     network_portal_detector::SetNetworkPortalDetector(
         mock_network_portal_detector_);
     mock_error_screen_ =
-        std::make_unique<MockErrorScreen>(mock_error_view_.get());
+        std::make_unique<MockErrorScreen>(mock_error_view_.AsWeakPtr());
 
     // Ensure proper behavior of `UpdateRequiredScreen`'s supporting objects.
     EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
@@ -93,7 +93,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
 
     wizard_context_.reset();
     update_required_screen_.reset();
-    mock_error_view_.reset();
     mock_error_screen_.reset();
 
     network_portal_detector::Shutdown();
@@ -109,7 +108,7 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   // Accessory objects needed by `UpdateRequiredScreen`.
   TestLoginScreen test_login_screen_;
   std::unique_ptr<FakeUpdateRequiredScreenHandler> fake_view_;
-  std::unique_ptr<MockErrorScreenView> mock_error_view_;
+  MockErrorScreenView mock_error_view_;
   std::unique_ptr<MockErrorScreen> mock_error_screen_;
   std::unique_ptr<WizardContext> wizard_context_;
   // Will be deleted in `network_portal_detector::Shutdown()`.
