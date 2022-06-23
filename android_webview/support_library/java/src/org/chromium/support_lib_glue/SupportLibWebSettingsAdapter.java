@@ -189,4 +189,15 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
         }
         return RequestedWithHeaderMode.APP_PACKAGE_NAME;
     }
+
+    @Override
+    public void setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean enabled) {
+        recordApiCall(ApiCall.WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED);
+        mAwSettings.setEnterpriseAuthenticationAppLinkPolicyEnabled(enabled);
+    }
+    @Override
+    public boolean getEnterpriseAuthenticationAppLinkPolicyEnabled() {
+        recordApiCall(ApiCall.WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED);
+        return mAwSettings.getEnterpriseAuthenticationAppLinkPolicyEnabled();
+    }
 }

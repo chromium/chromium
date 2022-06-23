@@ -2924,6 +2924,14 @@ Unknown properties are collapsed to zero. -->
   <int value="60" label="GET_VARIATIONS_HEADER">
     WebViewCompat#getVariationsHeader()
   </int>
+  <int value="61"
+      label="WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED">
+    WebSettingsCompat#setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean)
+  </int>
+  <int value="62"
+      label="WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED">
+    WebSettingsCompat#getEnterpriseAuthenticationAppLinkPolicyEnabled()
+  </int>
 </enum>
 
 <enum name="ANGLEProgramCacheResult">
