@@ -181,10 +181,14 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
     delegate_ = std::make_unique<AndroidUIControllerDelegate>();
 #elif BUILDFLAG(IS_CHROMEOS)
   if (!delegate_) {
-    // The Profile is guaranteed to be valid since DownloadUIController is owned
-    // by DownloadService, which in turn is a profile keyed service.
-    delegate_ = std::make_unique<DownloadNotificationManager>(
-        Profile::FromBrowserContext(manager->GetBrowserContext()));
+    if (download::IsDownloadBubbleEnabled(
+            Profile::FromBrowserContext(manager->GetBrowserContext()))) {
+      delegate_ = std::make_unique<DownloadBubbleUIControllerDelegate>(
+          Profile::FromBrowserContext(manager->GetBrowserContext()));
+    } else {
+      delegate_ = std::make_unique<DownloadNotificationManager>(
+          Profile::FromBrowserContext(manager->GetBrowserContext()));
+    }
   }
 #else   // BUILDFLAG(IS_CHROMEOS)
   if (!delegate_) {

@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
@@ -62,7 +63,11 @@ class DownloadBubblePrefsTest : public testing::Test {
 TEST_F(DownloadBubblePrefsTest, FeatureFlagEnabled) {
   feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_FALSE(IsDownloadBubbleEnabled(profile_));
+#else
   EXPECT_TRUE(IsDownloadBubbleEnabled(profile_));
+#endif
 }
 
 TEST_F(DownloadBubblePrefsTest, FeatureFlagDisabled) {
@@ -76,7 +81,11 @@ TEST_F(DownloadBubblePrefsTest, DownloadBubbleEnabledManaged) {
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   profile_->GetTestingPrefService()->SetManagedPref(
       prefs::kDownloadBubbleEnabled, std::make_unique<base::Value>(true));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_FALSE(IsDownloadBubbleEnabled(profile_));
+#else
   EXPECT_TRUE(IsDownloadBubbleEnabled(profile_));
+#endif
   profile_->GetTestingPrefService()->SetManagedPref(
       prefs::kDownloadBubbleEnabled, std::make_unique<base::Value>(false));
   EXPECT_FALSE(IsDownloadBubbleEnabled(profile_));

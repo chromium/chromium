@@ -5,6 +5,7 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 
 #include "base/feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
@@ -16,6 +17,11 @@
 namespace download {
 
 bool IsDownloadBubbleEnabled(Profile* profile) {
+// Download bubble won't replace the old download notification in
+// Ash. See https://crbug.com/1323505.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return false;
+#else
   if (!base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble)) {
     return false;
   }
@@ -30,6 +36,7 @@ bool IsDownloadBubbleEnabled(Profile* profile) {
   }
 
   return true;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool IsDownloadConnectorEnabled(Profile* profile) {
