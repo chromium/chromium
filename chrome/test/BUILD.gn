@@ -3076,6 +3076,7 @@ if (!is_android) {
 
         deps += [
           "../browser/chromeos/extensions/login_screen:browser_tests",
+          "//chromeos/constants",
           "//chromeos/dbus/constants",
         ]
       }

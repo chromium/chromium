@@ -28,6 +28,15 @@ const base::Feature kCloudGamingDevice{"CloudGamingDevice",
 const base::Feature kDarkLightMode{"DarkLightMode",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Disable idle sockets closing on memory pressure for NetworkContexts that
+// belong to Profiles. It only applies to Profiles because the goal is to
+// improve perceived performance of web browsing within the ChromeOS user
+// session by avoiding re-estabshing TLS connections that require client
+// certificates.
+const base::Feature kDisableIdleSocketsCloseOnMemoryPressure{
+    "disable_idle_sockets_close_on_memory_pressure",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Disables "Office Editing for Docs, Sheets & Slides" component app so handlers
 // won't be registered, making it possible to install another version for
 // testing.
