@@ -13,39 +13,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Functions for tests that directly inject JS to access certain UI elements.
 function getPolicyFieldsets() {
-  const statusBoxes = document.querySelectorAll('status-box');
-  return Array.from(statusBoxes)
-      .map(box => box.shadowRoot.querySelector('fieldset'));
+  const statusSection = document.querySelector('#status-section');
+  return statusSection.querySelectorAll('fieldset');
 }
 
 function getAllPolicyTables() {
-  return document.querySelectorAll('#policy-ui policy-table');
+  return document.querySelector('#policy-ui').querySelectorAll('.policy-table');
 }
 
 function getAllPolicyRows(policyTable) {
-  return policyTable.shadowRoot.querySelectorAll('policy-row');
+  return policyTable.querySelectorAll('.policy.row');
 }
 
 function getAllPolicyRowDivs(policyRow) {
-  const row = policyRow.shadowRoot.querySelector('.policy.row');
-  return row.querySelectorAll('div');
+  return policyRow.querySelectorAll('div');
 }
 
 function getPrecedenceRowValue() {
-  const tables = document.querySelectorAll('policy-table');
-  let precedenceRow = null;
-  tables.forEach(table => {
-    const row = table.shadowRoot.querySelector('policy-precedence-row');
-    if (row) {
-      precedenceRow = row.shadowRoot.querySelector('.value');
-    }
-  });
+  const precedenceRow =
+      document.querySelector('#policy-ui')
+          .querySelector('.policy-table .precedence.row > .value');
   return precedenceRow;
 }
 
 function getRefreshIntervalEl() {
-  return document.querySelector('status-box')
-      .shadowRoot.querySelector('.refresh-interval');
+  return document.querySelector('#status-box-container .refresh-interval');
 }
 
 Object.assign(window, {
