@@ -413,7 +413,6 @@ class HarfBuzzLineBreaker {
                       float glyph_height_for_test,
                       WordWrapBehavior word_wrap_behavior,
                       const std::u16string& text,
-                      const BreakList<size_t>* words,
                       const internal::TextRunList& run_list)
       : max_width_((max_width == 0) ? SK_ScalarMax : SkIntToScalar(max_width)),
         min_baseline_(min_baseline),
@@ -421,7 +420,6 @@ class HarfBuzzLineBreaker {
         glyph_height_for_test_(glyph_height_for_test),
         word_wrap_behavior_(word_wrap_behavior),
         text_(text),
-        words_(words),
         run_list_(run_list),
         max_descent_(0),
         max_ascent_(0),
@@ -448,10 +446,17 @@ class HarfBuzzLineBreaker {
 
   // Constructs multiple lines for |text_| based on words iteration approach.
   void ConstructMultiLines() {
-    DCHECK(words_);
-    for (auto iter = words_->breaks().begin(); iter != words_->breaks().end();
-         iter++) {
-      const Range word_range = words_->GetRange(iter);
+    // Get an iterator that pass through valid line breaking positions.
+    // See https://www.unicode.org/reports/tr14/tr14-11.html for lines breaking.
+    base::i18n::BreakIterator words(text_,
+                                    base::i18n::BreakIterator::BREAK_LINE);
+    const bool success = words.Init();
+    DCHECK(success);
+    if (!success)
+      return;
+
+    while (words.Advance()) {
+      const Range word_range = Range(words.prev(), words.pos());
       std::vector<internal::LineSegment> word_segments;
       SkScalar word_width = GetWordWidth(word_range, &word_segments);
 
@@ -699,7 +704,6 @@ class HarfBuzzLineBreaker {
   // segments based on its runs.
   SkScalar GetWordWidth(const Range& word_range,
                         std::vector<internal::LineSegment>* segments) const {
-    DCHECK(words_);
     if (word_range.is_empty() || segments == nullptr)
       return 0;
     size_t run_start_index = run_list_.GetRunIndexAt(word_range.start());
@@ -745,7 +749,6 @@ class HarfBuzzLineBreaker {
   const float glyph_height_for_test_;
   const WordWrapBehavior word_wrap_behavior_;
   const std::u16string& text_;
-  const raw_ptr<const BreakList<size_t>> words_;
   const internal::TextRunList& run_list_;
 
   // Stores the resulting lines.
@@ -1705,7 +1708,7 @@ void RenderTextHarfBuzz::EnsureLayout() {
         display_rect().width(),
         DetermineBaselineCenteringText(height, font_list()), height,
         glyph_height_for_test_, word_wrap_behavior(), GetDisplayText(),
-        multiline() ? &GetLineBreaks() : nullptr, *run_list);
+        *run_list);
 
     if (multiline())
       line_breaker.ConstructMultiLines();
