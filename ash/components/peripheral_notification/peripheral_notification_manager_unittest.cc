@@ -498,9 +498,6 @@ TEST_F(PeripheralNotificationManagerTest, BillboardDevice) {
 }
 
 TEST_F(PeripheralNotificationManagerTest, InvalidDpCableWarning) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsbNotificationController);
-
   InitializeManager(/*is_guest_profile=*/false,
                     /*is_pcie_tunneling_allowed=*/false);
 
@@ -525,8 +522,6 @@ TEST_F(PeripheralNotificationManagerTest, InvalidDpCableWarning) {
 }
 
 TEST_F(PeripheralNotificationManagerTest, InvalidUSB4ValidTBTCableWarning) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsbNotificationController);
   InitializeManager(/*is_guest_profile=*/false,
                     /*is_pcie_tunneling_allowed=*/false);
   EXPECT_EQ(0u, GetInvalidUSB4ValidTBTCableNotificationObserverCalls());
@@ -548,8 +543,6 @@ TEST_F(PeripheralNotificationManagerTest, InvalidUSB4ValidTBTCableWarning) {
 }
 
 TEST_F(PeripheralNotificationManagerTest, InvalidUSB4CableWarning) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsbNotificationController);
   InitializeManager(/*is_guest_profile=*/false,
                     /*is_pcie_tunneling_allowed=*/false);
   EXPECT_EQ(0u, GetInvalidUSB4CableNotificationObserverCalls());
@@ -571,8 +564,6 @@ TEST_F(PeripheralNotificationManagerTest, InvalidUSB4CableWarning) {
 }
 
 TEST_F(PeripheralNotificationManagerTest, InvalidTBTCableWarning) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsbNotificationController);
   InitializeManager(/*is_guest_profile=*/false,
                     /*is_pcie_tunneling_allowed=*/false);
   EXPECT_EQ(0u, GetInvalidTBTCableNotificationObserverCalls());
@@ -594,8 +585,6 @@ TEST_F(PeripheralNotificationManagerTest, InvalidTBTCableWarning) {
 }
 
 TEST_F(PeripheralNotificationManagerTest, SpeedLimitingCableWarning) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsbNotificationController);
   InitializeManager(/*is_guest_profile=*/false,
                     /*is_pcie_tunneling_allowed=*/false);
   EXPECT_EQ(0u, GetSpeedLimitingCableNotificationObserverCalls());
