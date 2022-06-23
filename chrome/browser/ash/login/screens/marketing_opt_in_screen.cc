@@ -32,6 +32,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -116,9 +117,13 @@ void MarketingOptInScreen::ShowImpl() {
   const bool legal_footer_visible =
       email_opt_in_visible_ && countries_with_legal_footer.count(country_);
 
+  const bool cloud_gaming_enabled =
+      chromeos::features::IsCloudGamingDeviceEnabled();
+
   view_->Show(/*opt_in_visible=*/email_opt_in_visible_,
               /*opt_in_default_state=*/IsDefaultOptInCountry(),
-              /*legal_footer_visible=*/legal_footer_visible);
+              /*legal_footer_visible=*/legal_footer_visible,
+              /*cloud_gaming_enabled=*/cloud_gaming_enabled);
 
   // Mark the screen as shown for this user.
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();

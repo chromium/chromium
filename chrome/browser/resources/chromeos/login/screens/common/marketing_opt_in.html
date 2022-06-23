@@ -29,6 +29,7 @@
       #legalFooter {
         margin-top: 20px;
       }
+
       :host-context([orientation=vertical ]) #contentArea {
         justify-content: center;
       }
@@ -103,6 +104,7 @@
         color: var(--cros-text-color-primary);
       }
 
+      #marketingOptInGameDeviceSubtitle,
       #marketingOptInSubtitleWithDeviceName,
       #marketingOptInSubtitle,
       #chromebookUpdatesOptionLabel {
@@ -114,31 +116,54 @@
         for-step="overview"
         aria-label$="[[i18nDynamic(locale, 'marketingOptInScreenTitle')]]"
         aria-describedby="marketing-opt-in-subtitle">
-      <iron-icon slot="icon" icon="[[getIcon_(isDarkModeActive_)]]">
+      <iron-icon slot="icon"
+          icon="[[getIcon_(isDarkModeActive_, isCloudGamingDevice_)]]">
       </iron-icon>
-      <h1 slot="title">
+
+      <h1 hidden="[[isCloudGamingDevice_]]" slot="title">
         [[i18nDynamic(locale, 'marketingOptInScreenTitle')]]
+      </h1>
+      <h1 id ="marketingOptInGameDeviceTitle"
+          hidden="[[!isCloudGamingDevice_]]" slot="title">
+        [[i18nDynamic(locale, 'marketingOptInScreenGameDeviceTitle')]]
+      </h1>
+      <h1 hidden="[[!isCloudGamingDevice_]]" slot="title">
+        [[i18nDynamic(locale, 'marketingOptInScreenGameDeviceTitle2')]]
       </h1>
       <div slot="subtitle">
         <!-- No marketing opt in -->
-        <div hidden="[[marketingOptInVisible_]]"
-          id="marketingOptInSubtitleWithDeviceName">
-          [[i18nDynamic(locale, 'marketingOptInScreenSubtitleWithDeviceName')]]
+        <div hidden="[[isCloudGamingDevice_]]">
+          <div hidden="[[marketingOptInVisible_]]"
+            id="marketingOptInSubtitleWithDeviceName">
+            [[i18nDynamic(locale,
+                  'marketingOptInScreenSubtitleWithDeviceName')]]
+          </div>
+          <!-- Marketing opt in -->
+          <div hidden="[[!marketingOptInVisible_]]" id="marketingOptInSubtitle">
+            [[i18nDynamic(locale,
+                    'marketingOptInScreenSubtitle')]]
+          </div>
         </div>
-        <!-- Marketing opt in -->
-        <div hidden="[[!marketingOptInVisible_]]" id="marketingOptInSubtitle">
-          [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
+        <div hidden="[[!isCloudGamingDevice_]]"
+             id="marketingOptInGameDeviceSubtitle">
+          [[i18nDynamic(locale,
+                  'marketingOptInScreenGameDeviceSubtitle')]]
         </div>
-
         <!-- Toggle row -->
         <div class="layout horizontal center"
             hidden="[[!marketingOptInVisible_]]"
-            id="toggleRow">
+            id="toggleRow" style="[[getMarginTop_(isCloudGamingDevice_)]]">
           <iron-icon id="toggleRowIcon" icon="oobe-32:chromebook"></iron-icon>
           <div id="chromebookUpdatesOptionLabel" class="flex layout vertical"
               aria-hidden="true">
-            <div class="toggle-title">
+            <div class="toggle-title" hidden="[[!isCloudGamingDevice_]]">
               [[i18nDynamic(locale, 'marketingOptInGetChromebookUpdates')]]
+            </div>
+            <div class="toggle-title" hidden="[[!isCloudGamingDevice_]]">
+              [[i18nDynamic(locale, 'marketingOptInGameDeviceUpdates')]]
+            </div>
+            <div class="legal-info" hidden="[[!isCloudGamingDevice_]]">
+              [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
             </div>
             <div class="legal-info">
               [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeLong')]]
@@ -158,9 +183,10 @@
         </div>
       </div>
 
-      <div id="contentArea" slot="content" class="layout flex vertical">
+      <div hidden="[[isCloudGamingDevice_]]" id="contentArea"
+           slot="content" class="layout flex vertical">
         <!-- Animation -->
-        <div class="marketing-animation-content">
+        <div  class="marketing-animation-content">
           <iron-media-query query="(prefers-color-scheme: dark)"
               query-matches="{{isDarkModeActive_}}">
           </iron-media-query>
@@ -169,6 +195,11 @@
               singleLoop="true">
           </oobe-cr-lottie>
         </div>
+      </div>
+      <div hidden="[[!isCloudGamingDevice_]]" slot="content"
+           class="flex layout vertical center-justified center">
+        <img class="oobe-illustration"
+            srcset="[[getImageSource_(isDarkModeActive_)]]" aria-hidden="true">
       </div>
       <oobe-icon-button slot="bottom-buttons"
           hidden="[[!isA11ySettingsButtonVisible_]]"

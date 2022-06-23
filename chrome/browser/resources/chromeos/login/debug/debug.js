@@ -1496,6 +1496,7 @@ cr.define('cr.ui.login.debug', function() {
             optInVisibility: true,
             optInDefaultState: true,
             legalFooterVisibility: false,
+            cloudGamingDevice: false,
           },
           trigger: (screen) => {
             screen.setUIStep('overview');
@@ -1508,6 +1509,7 @@ cr.define('cr.ui.login.debug', function() {
             optInVisibility: false,
             optInDefaultState: false,
             legalFooterVisibility: false,
+            cloudGamingDevice: false,
           },
           trigger: (screen) => {
             screen.setUIStep('overview');
@@ -1520,6 +1522,7 @@ cr.define('cr.ui.login.debug', function() {
             optInVisibility: true,
             optInDefaultState: true,
             legalFooterVisibility: true,
+            cloudGamingDevice: false,
           },
           trigger: (screen) => {
             screen.setUIStep('overview');
@@ -1532,6 +1535,7 @@ cr.define('cr.ui.login.debug', function() {
             optInVisibility: true,
             optInDefaultState: true,
             legalFooterVisibility: true,
+            cloudGamingDevice: false,
           },
           trigger: (screen) => {
             screen.setUIStep('overview');
@@ -1812,6 +1816,20 @@ cr.define('cr.ui.login.debug', function() {
       });
     }
 
+    toggleGameMode() {
+      KNOWN_SCREENS.forEach((screen, index) => {
+        if (screen.id == 'marketing-opt-in') {
+          for (const state of screen.states) {
+            if (state.data) {
+              state.data.cloudGamingDevice = !state.data.cloudGamingDevice;
+            }
+          }
+        }
+      });
+
+      this.triggerScreenState(this.currentScreenId_, this.lastScreenState_);
+    }
+
     createLanguagePanel(parent) {
       const langPanel = new ToolPanel(
           this.debuggerOverlay_, 'Language', 'DebuggerPanelLanguage');
@@ -1845,6 +1863,10 @@ cr.define('cr.ui.login.debug', function() {
       new DebugButton(panel.content, 'Toggle color mode', function() {
         chrome.send('debug.toggleColorMode');
       });
+      var button = new DebugButton(
+          panel.content, 'Toggle gaming mode', this.toggleGameMode.bind(this));
+
+      button.element.classList.add('gametoggle-button');
     }
 
     createScreensPanel(parent) {
@@ -1989,6 +2011,14 @@ cr.define('cr.ui.login.debug', function() {
         if (state.id == this.lastScreenState_) {
           button.element.classList.add('debug-button-selected');
         }
+      }
+
+      if (this.currentScreenId_ == 'marketing-opt-in') {
+        document.getElementsByClassName('gametoggle-button')[0].removeAttribute(
+            'hidden');
+      } else {
+        document.getElementsByClassName('gametoggle-button')[0].setAttribute(
+            'hidden', true);
       }
 
       this.statesPanel.show();

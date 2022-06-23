@@ -29,7 +29,8 @@ class MarketingOptInScreenView {
   // Shows the contents of the screen.
   virtual void Show(bool opt_in_visible,
                     bool opt_in_default_state,
-                    bool legal_footer_visible) = 0;
+                    bool legal_footer_visible,
+                    bool cloud_gaming_enabled) = 0;
 
   // Hides the contents of the screen.
   virtual void Hide() = 0;
@@ -64,7 +65,8 @@ class MarketingOptInScreenHandler : public BaseScreenHandler,
   void Bind(ash::MarketingOptInScreen* screen) override;
   void Show(bool opt_in_visible,
             bool opt_in_default_state,
-            bool legal_footer_visible) override;
+            bool legal_footer_visible,
+            bool cloud_gaming_enabled) override;
   void Hide() override;
   void UpdateA11ySettingsButtonVisibility(bool shown) override;
   void UpdateA11yShelfNavigationButtonToggle(bool enabled) override;
