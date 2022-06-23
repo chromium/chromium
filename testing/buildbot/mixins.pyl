@@ -1383,18 +1383,18 @@
       ],
     },
   },
-  # Default Xcode 14 beta 1.
+  # Default Xcode 14 beta.
   'xcode_14_beta': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '14a5228q'
+        '14a5229c'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_14a5228q',
+          'name': 'xcode_ios_14a5229c',
           'path': 'Xcode.app',
         },
       ],
