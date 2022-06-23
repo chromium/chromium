@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_USERDATAAUTH_INSTALL_ATTRIBUTES_UTIL_H_
-#define CHROMEOS_DBUS_USERDATAAUTH_INSTALL_ATTRIBUTES_UTIL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_INSTALL_ATTRIBUTES_UTIL_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_INSTALL_ATTRIBUTES_UTIL_H_
 
 #include <string>
 
 #include "base/component_export.h"
-#include "chromeos/dbus/userdataauth/install_attributes_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 
 namespace chromeos {
 
@@ -41,4 +41,4 @@ using ::chromeos::install_attributes_util::InstallAttributesIsInvalid;
 using ::chromeos::install_attributes_util::InstallAttributesSet;
 }  // namespace ash::install_attributes_util
 
-#endif  // CHROMEOS_DBUS_USERDATAAUTH_INSTALL_ATTRIBUTES_UTIL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_INSTALL_ATTRIBUTES_UTIL_H_

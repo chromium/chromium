@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/userdataauth/install_attributes_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 
 #include <memory>
 #include <utility>
@@ -14,8 +14,8 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_install_attributes_client.h"
 #include "chromeos/dbus/common/blocking_method_caller.h"
-#include "chromeos/dbus/userdataauth/fake_install_attributes_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"

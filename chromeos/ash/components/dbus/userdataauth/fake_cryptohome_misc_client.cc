@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 
 namespace chromeos {
 

@@ -15,9 +15,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/task_runner.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 
 namespace ash {
 

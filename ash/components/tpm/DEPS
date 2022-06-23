@@ -5,6 +5,7 @@ include_rules = [
   "+base",
   "+crypto",
   "+chromeos/login/login_state",
+  "+chromeos/ash/components/dbus",
   "+chromeos/dbus",
   "+components/account_id",
   "+components/policy/core/common/cloud/cloud_policy_constants.h",

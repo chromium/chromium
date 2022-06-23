@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
-#include "chromeos/dbus/userdataauth/arc_quota_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/arc_quota_client.h"
 
 namespace arc {
 

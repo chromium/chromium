@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_USERDATAAUTH_ARC_QUOTA_CLIENT_H_
-#define CHROMEOS_DBUS_USERDATAAUTH_ARC_QUOTA_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_ARC_QUOTA_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_ARC_QUOTA_CLIENT_H_
 
 #include "base/callback.h"
 #include "base/component_export.h"
@@ -95,4 +95,4 @@ namespace ash {
 using ::chromeos::ArcQuotaClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_USERDATAAUTH_ARC_QUOTA_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_ARC_QUOTA_CLIENT_H_

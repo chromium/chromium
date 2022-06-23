@@ -3,6 +3,7 @@ noparent = True
 include_rules = [
   "+ash/components/login/auth",
   "+base",
+  "+chromeos/ash/components/dbus",
   "+chromeos/dbus",
   "+components/account_id",
   "+components/device_event_log",

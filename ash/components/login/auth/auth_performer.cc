@@ -12,8 +12,8 @@
 #include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace ash {

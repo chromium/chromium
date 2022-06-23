@@ -47,7 +47,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/user_manager/known_user.h"

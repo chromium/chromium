@@ -17,7 +17,7 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/metrics/login_event_recorder.h"
 #include "components/account_id/account_id.h"
 #include "crypto/sha2.h"

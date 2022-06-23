@@ -8,7 +8,7 @@
 #include "ash/in_session_auth/authentication_dialog.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 
 namespace ash {
 

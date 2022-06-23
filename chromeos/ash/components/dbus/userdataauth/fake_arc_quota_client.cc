@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/userdataauth/fake_cryptohome_pkcs11_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_arc_quota_client.h"
 
 #include "base/location.h"
 #include "base/notreached.h"
@@ -12,49 +12,52 @@ namespace chromeos {
 
 namespace {
 // Used to track the fake instance, mirrors the instance in the base class.
-FakeCryptohomePkcs11Client* g_instance = nullptr;
+FakeArcQuotaClient* g_instance = nullptr;
 
 }  // namespace
 
-FakeCryptohomePkcs11Client::FakeCryptohomePkcs11Client() {
+FakeArcQuotaClient::FakeArcQuotaClient() {
   DCHECK(!g_instance);
   g_instance = this;
 }
 
-FakeCryptohomePkcs11Client::~FakeCryptohomePkcs11Client() {
+FakeArcQuotaClient::~FakeArcQuotaClient() {
   DCHECK_EQ(this, g_instance);
   g_instance = nullptr;
 }
 
 // static
-FakeCryptohomePkcs11Client* FakeCryptohomePkcs11Client::Get() {
+FakeArcQuotaClient* FakeArcQuotaClient::Get() {
   return g_instance;
 }
 
-void FakeCryptohomePkcs11Client::Pkcs11IsTpmTokenReady(
-    const ::user_data_auth::Pkcs11IsTpmTokenReadyRequest& request,
-    Pkcs11IsTpmTokenReadyCallback callback) {
-  ::user_data_auth::Pkcs11IsTpmTokenReadyReply reply;
-  reply.set_ready(true);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), reply));
+void FakeArcQuotaClient::GetArcDiskFeatures(
+    const ::user_data_auth::GetArcDiskFeaturesRequest& request,
+    GetArcDiskFeaturesCallback callback) {
+  // Does nothing by default.
 }
-void FakeCryptohomePkcs11Client::Pkcs11GetTpmTokenInfo(
-    const ::user_data_auth::Pkcs11GetTpmTokenInfoRequest& request,
-    Pkcs11GetTpmTokenInfoCallback callback) {
-  const char kStubTPMTokenName[] = "StubTPMTokenName";
-  const char kStubUserPin[] = "012345";
-  const int kStubSlot = 0;
-
-  ::user_data_auth::Pkcs11GetTpmTokenInfoReply reply;
-  reply.mutable_token_info()->set_slot(kStubSlot);
-  reply.mutable_token_info()->set_user_pin(kStubUserPin);
-  reply.mutable_token_info()->set_label(kStubTPMTokenName);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), reply));
+void FakeArcQuotaClient::GetCurrentSpaceForArcUid(
+    const ::user_data_auth::GetCurrentSpaceForArcUidRequest& request,
+    GetCurrentSpaceForArcUidCallback callback) {
+  // Does nothing by default.
+}
+void FakeArcQuotaClient::GetCurrentSpaceForArcGid(
+    const ::user_data_auth::GetCurrentSpaceForArcGidRequest& request,
+    GetCurrentSpaceForArcGidCallback callback) {
+  // Does nothing by default.
+}
+void FakeArcQuotaClient::GetCurrentSpaceForArcProjectId(
+    const ::user_data_auth::GetCurrentSpaceForArcProjectIdRequest& request,
+    GetCurrentSpaceForArcProjectIdCallback callback) {
+  // Does nothing by default.
+}
+void FakeArcQuotaClient::SetProjectId(
+    const ::user_data_auth::SetProjectIdRequest& request,
+    SetProjectIdCallback callback) {
+  // Does nothing by default.
 }
 
-void FakeCryptohomePkcs11Client::WaitForServiceToBeAvailable(
+void FakeArcQuotaClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
   if (service_is_available_ || service_reported_not_available_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -65,7 +68,7 @@ void FakeCryptohomePkcs11Client::WaitForServiceToBeAvailable(
   }
 }
 
-void FakeCryptohomePkcs11Client::SetServiceIsAvailable(bool is_available) {
+void FakeArcQuotaClient::SetServiceIsAvailable(bool is_available) {
   service_is_available_ = is_available;
   if (!is_available)
     return;
@@ -76,7 +79,7 @@ void FakeCryptohomePkcs11Client::SetServiceIsAvailable(bool is_available) {
     std::move(callback).Run(true);
 }
 
-void FakeCryptohomePkcs11Client::ReportServiceIsNotAvailable() {
+void FakeArcQuotaClient::ReportServiceIsNotAvailable() {
   DCHECK(!service_is_available_);
   service_reported_not_available_ = true;
 

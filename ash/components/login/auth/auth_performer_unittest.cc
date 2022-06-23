@@ -15,10 +15,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
-#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
-#include "chromeos/dbus/userdataauth/mock_userdataauth_client.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

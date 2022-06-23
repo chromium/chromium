@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_USERDATAAUTH_FAKE_INSTALL_ATTRIBUTES_CLIENT_H_
-#define CHROMEOS_DBUS_USERDATAAUTH_FAKE_INSTALL_ATTRIBUTES_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_INSTALL_ATTRIBUTES_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_INSTALL_ATTRIBUTES_CLIENT_H_
 
-#include "chromeos/dbus/userdataauth/install_attributes_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 
 #include "base/component_export.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
@@ -127,4 +127,4 @@ namespace ash {
 using ::chromeos::FakeInstallAttributesClient;
 }
 
-#endif  // CHROMEOS_DBUS_USERDATAAUTH_FAKE_INSTALL_ATTRIBUTES_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_INSTALL_ATTRIBUTES_CLIENT_H_

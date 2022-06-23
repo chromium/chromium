@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_USERDATAAUTH_MOCK_USERDATAAUTH_CLIENT_H_
-#define CHROMEOS_DBUS_USERDATAAUTH_MOCK_USERDATAAUTH_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_MOCK_USERDATAAUTH_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_MOCK_USERDATAAUTH_CLIENT_H_
 
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 
 #include "base/component_export.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -190,4 +190,4 @@ namespace ash {
 using ::chromeos::UserDataAuthClient;
 }
 
-#endif  // CHROMEOS_DBUS_USERDATAAUTH_MOCK_USERDATAAUTH_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_MOCK_USERDATAAUTH_CLIENT_H_

@@ -110,8 +110,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/u2f",
     "//chromeos/dbus/u2f:u2f_proto",
     "//chromeos/dbus/update_engine:unit_tests",
-    "//chromeos/dbus/userdataauth",
-    "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/dbus/util:unit_tests",
     "//dbus",
     "//dbus:test_support",
@@ -126,11 +124,6 @@ source_set("unit_tests") {
     "native_timer_unittest.cc",
     "pipe_reader_unittest.cc",
     "tpm_manager/tpm_manager_client_unittest.cc",
-    "userdataauth/arc_quota_client_unittest.cc",
-    "userdataauth/cryptohome_misc_client_unittest.cc",
-    "userdataauth/cryptohome_pkcs11_client_unittest.cc",
-    "userdataauth/install_attributes_client_unittest.cc",
-    "userdataauth/userdataauth_client_unittest.cc",
   ]
 }
 

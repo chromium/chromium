@@ -7,7 +7,7 @@
 
 #include "ash/components/login/auth/auth_performer.h"
 #include "ash/components/login/auth/user_context.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

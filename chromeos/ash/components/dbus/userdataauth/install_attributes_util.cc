@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/userdataauth/install_attributes_util.h"
+#include "chromeos/ash/components/dbus/userdataauth/install_attributes_util.h"
 
 #include <stdint.h>
 
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "chromeos/dbus/userdataauth/install_attributes_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

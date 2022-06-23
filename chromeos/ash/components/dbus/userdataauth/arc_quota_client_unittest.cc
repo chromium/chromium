@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/arc_quota_client.h"
 
 #include <string>
 #include <utility>
@@ -51,10 +51,10 @@ base::OnceCallback<void(T)> CreateCopyCallback(T* out) {
 
 }  // namespace
 
-class CryptohomePkcs11ClientTest : public testing::Test {
+class ArcQuotaClientTest : public testing::Test {
  public:
-  CryptohomePkcs11ClientTest() = default;
-  ~CryptohomePkcs11ClientTest() override = default;
+  ArcQuotaClientTest() = default;
+  ~ArcQuotaClientTest() override = default;
 
   void SetUp() override {
     dbus::Bus::Options options;
@@ -75,18 +75,17 @@ class CryptohomePkcs11ClientTest : public testing::Test {
         .WillRepeatedly(Return(proxy_.get()));
 
     EXPECT_CALL(*proxy_.get(), DoCallMethod(_, _, _))
-        .WillRepeatedly(
-            Invoke(this, &CryptohomePkcs11ClientTest::OnCallMethod));
+        .WillRepeatedly(Invoke(this, &ArcQuotaClientTest::OnCallMethod));
 
-    CryptohomePkcs11Client::Initialize(bus_.get());
+    ArcQuotaClient::Initialize(bus_.get());
 
     // Execute callbacks posted by `client_->Init()`.
     base::RunLoop().RunUntilIdle();
 
-    client_ = CryptohomePkcs11Client::Get();
+    client_ = ArcQuotaClient::Get();
   }
 
-  void TearDown() override { CryptohomePkcs11Client::Shutdown(); }
+  void TearDown() override { ArcQuotaClient::Shutdown(); }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -96,13 +95,18 @@ class CryptohomePkcs11ClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  CryptohomePkcs11Client* client_;
+  ArcQuotaClient* client_;
 
   // The expected replies to the respective D-Bus calls.
-  ::user_data_auth::Pkcs11IsTpmTokenReadyReply
-      expected_pkcs11_is_tpm_token_ready_reply_;
-  ::user_data_auth::Pkcs11GetTpmTokenInfoReply
-      expected_pkcs11_get_tpm_token_info_reply_;
+  ::user_data_auth::GetArcDiskFeaturesReply
+      expected_get_arc_disk_features_reply_;
+  ::user_data_auth::GetCurrentSpaceForArcUidReply
+      expected_get_current_space_for_arc_uid_reply_;
+  ::user_data_auth::GetCurrentSpaceForArcGidReply
+      expected_get_current_space_for_arc_gid_reply_;
+  ::user_data_auth::GetCurrentSpaceForArcProjectIdReply
+      expected_get_current_space_for_arc_project_id_reply_;
+  ::user_data_auth::SetProjectIdReply expected_set_project_id_reply_;
 
   // When it is set `true`, an invalid array of bytes that cannot be parsed will
   // be the response.
@@ -123,13 +127,22 @@ class CryptohomePkcs11ClientTest : public testing::Test {
                                               0xFF, 0xFF, 0xFF};
       writer.AppendArrayOfBytes(invalid_protobuf, sizeof(invalid_protobuf));
     } else if (method_call->GetMember() ==
-               ::user_data_auth::kPkcs11IsTpmTokenReady) {
-      writer.AppendProtoAsArrayOfBytes(
-          expected_pkcs11_is_tpm_token_ready_reply_);
+               ::user_data_auth::kGetArcDiskFeatures) {
+      writer.AppendProtoAsArrayOfBytes(expected_get_arc_disk_features_reply_);
     } else if (method_call->GetMember() ==
-               ::user_data_auth::kPkcs11GetTpmTokenInfo) {
+               ::user_data_auth::kGetCurrentSpaceForArcUid) {
       writer.AppendProtoAsArrayOfBytes(
-          expected_pkcs11_get_tpm_token_info_reply_);
+          expected_get_current_space_for_arc_uid_reply_);
+    } else if (method_call->GetMember() ==
+               ::user_data_auth::kGetCurrentSpaceForArcGid) {
+      writer.AppendProtoAsArrayOfBytes(
+          expected_get_current_space_for_arc_gid_reply_);
+    } else if (method_call->GetMember() ==
+               ::user_data_auth::kGetCurrentSpaceForArcProjectId) {
+      writer.AppendProtoAsArrayOfBytes(
+          expected_get_current_space_for_arc_project_id_reply_);
+    } else if (method_call->GetMember() == ::user_data_auth::kSetProjectId) {
+      writer.AppendProtoAsArrayOfBytes(expected_set_project_id_reply_);
     } else {
       ASSERT_FALSE(true) << "Unrecognized member: " << method_call->GetMember();
     }
@@ -139,44 +152,84 @@ class CryptohomePkcs11ClientTest : public testing::Test {
   }
 };
 
-TEST_F(CryptohomePkcs11ClientTest, Pkcs11IsTpmTokenReadyInvalidProtobuf) {
-  shall_message_parsing_fail_ = true;
-  absl::optional<::user_data_auth::Pkcs11IsTpmTokenReadyReply> result_reply =
-      ::user_data_auth::Pkcs11IsTpmTokenReadyReply();
+TEST_F(ArcQuotaClientTest, GetArcDiskFeatures) {
+  expected_get_arc_disk_features_reply_.set_quota_supported(true);
+  absl::optional<::user_data_auth::GetArcDiskFeaturesReply> result_reply;
 
-  client_->Pkcs11IsTpmTokenReady(
-      ::user_data_auth::Pkcs11IsTpmTokenReadyRequest(),
-      CreateCopyCallback(&result_reply));
+  client_->GetArcDiskFeatures(::user_data_auth::GetArcDiskFeaturesRequest(),
+                              CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, absl::nullopt);
+  EXPECT_TRUE(ProtobufEquals(result_reply.value(),
+                             expected_get_arc_disk_features_reply_));
+}
+
+TEST_F(ArcQuotaClientTest, GetArcDiskFeaturesInvalidProtobuf) {
+  expected_get_arc_disk_features_reply_.set_quota_supported(true);
+  shall_message_parsing_fail_ = true;
+  absl::optional<::user_data_auth::GetArcDiskFeaturesReply> result_reply =
+      ::user_data_auth::GetArcDiskFeaturesReply();
+
+  client_->GetArcDiskFeatures(::user_data_auth::GetArcDiskFeaturesRequest(),
+                              CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(result_reply, absl::nullopt);
 }
 
-TEST_F(CryptohomePkcs11ClientTest, Pkcs11IsTpmTokenReady) {
-  expected_pkcs11_is_tpm_token_ready_reply_.set_ready(true);
-  absl::optional<::user_data_auth::Pkcs11IsTpmTokenReadyReply> result_reply;
+TEST_F(ArcQuotaClientTest, GetCurrentSpaceForArcUid) {
+  constexpr int64_t kCurSpace = 0x12345678ABCDLL;
+  expected_get_current_space_for_arc_uid_reply_.set_cur_space(kCurSpace);
+  absl::optional<::user_data_auth::GetCurrentSpaceForArcUidReply> result_reply;
 
-  client_->Pkcs11IsTpmTokenReady(
-      ::user_data_auth::Pkcs11IsTpmTokenReadyRequest(),
+  client_->GetCurrentSpaceForArcUid(
+      ::user_data_auth::GetCurrentSpaceForArcUidRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
   ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
-                             expected_pkcs11_is_tpm_token_ready_reply_));
+                             expected_get_current_space_for_arc_uid_reply_));
 }
 
-TEST_F(CryptohomePkcs11ClientTest, Pkcs11GetTpmTokenInfo) {
-  constexpr int kSlot = 42;
-  expected_pkcs11_get_tpm_token_info_reply_.mutable_token_info()->set_slot(
-      kSlot);
-  absl::optional<::user_data_auth::Pkcs11GetTpmTokenInfoReply> result_reply;
+TEST_F(ArcQuotaClientTest, GetCurrentSpaceForArcGid) {
+  constexpr int64_t kCurSpace = 0x12345678ABCDLL;
+  expected_get_current_space_for_arc_gid_reply_.set_cur_space(kCurSpace);
+  absl::optional<::user_data_auth::GetCurrentSpaceForArcGidReply> result_reply;
 
-  client_->Pkcs11GetTpmTokenInfo(
-      ::user_data_auth::Pkcs11GetTpmTokenInfoRequest(),
+  client_->GetCurrentSpaceForArcGid(
+      ::user_data_auth::GetCurrentSpaceForArcGidRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
   ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
-                             expected_pkcs11_get_tpm_token_info_reply_));
+                             expected_get_current_space_for_arc_gid_reply_));
+}
+
+TEST_F(ArcQuotaClientTest, GetCurrentSpaceForArcProjectId) {
+  constexpr int64_t kCurSpace = 0x12345678ABCDLL;
+  expected_get_current_space_for_arc_project_id_reply_.set_cur_space(kCurSpace);
+  absl::optional<::user_data_auth::GetCurrentSpaceForArcProjectIdReply>
+      result_reply;
+
+  client_->GetCurrentSpaceForArcProjectId(
+      ::user_data_auth::GetCurrentSpaceForArcProjectIdRequest(),
+      CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, absl::nullopt);
+  EXPECT_TRUE(
+      ProtobufEquals(result_reply.value(),
+                     expected_get_current_space_for_arc_project_id_reply_));
+}
+
+TEST_F(ArcQuotaClientTest, SetProjectId) {
+  expected_set_project_id_reply_.set_success(true);
+  absl::optional<::user_data_auth::SetProjectIdReply> result_reply;
+
+  client_->SetProjectId(::user_data_auth::SetProjectIdRequest(),
+                        CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, absl::nullopt);
+  EXPECT_TRUE(
+      ProtobufEquals(result_reply.value(), expected_set_project_id_reply_));
 }
 
 }  // namespace chromeos

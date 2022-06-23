@@ -19,9 +19,9 @@
 #include "base/task/task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_pkcs11_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
-#include "chromeos/dbus/userdataauth/fake_cryptohome_pkcs11_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
