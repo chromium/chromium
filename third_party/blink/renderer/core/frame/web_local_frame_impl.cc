@@ -2680,33 +2680,13 @@ void WebLocalFrameImpl::ShowContextMenu(
   params.selection_rect =
       LocalRootFrameWidget()->BlinkSpaceToEnclosedDIPs(data.selection_rect);
 
-#if BUILDFLAG(IS_ANDROID)
-  // The Samsung Email app relies on the context menu being shown after the
-  // javascript onselectionchanged is triggered.
-  // See crbug.com/729488
-  GetFrame()
-      ->GetTaskRunner(TaskType::kInternalDefault)
-      ->PostTask(
-          FROM_HERE,
-          WTF::Bind(&WebLocalFrameImpl::ShowDeferredContextMenu,
-                    WrapWeakPersistent(this), std::move(client), params));
-#else
-  ShowDeferredContextMenu(std::move(client), params);
-#endif
-
-  if (Client())
-    Client()->UpdateContextMenuDataForTesting(data, host_context_menu_location);
-}
-
-void WebLocalFrameImpl::ShowDeferredContextMenu(
-    mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
-    const UntrustworthyContextMenuParams& params) {
-  // The local frame may become detached before the object is GC'ed. So, this
-  // method needs to check if GetFrame() returns a nullptr.
   if (!GetFrame())
     return;
   GetFrame()->GetLocalFrameHostRemote().ShowContextMenu(std::move(client),
                                                         params);
+
+  if (Client())
+    Client()->UpdateContextMenuDataForTesting(data, host_context_menu_location);
 }
 
 bool WebLocalFrameImpl::IsAllowedToDownload() const {

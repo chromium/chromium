@@ -576,10 +576,6 @@ class CORE_EXPORT WebLocalFrameImpl final
       network::mojom::blink::WebSandboxFlags sandbox_flags =
           network::mojom::blink::WebSandboxFlags::kNone);
 
-  void ShowDeferredContextMenu(
-      mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
-      const UntrustworthyContextMenuParams& params);
-
   WebLocalFrameClient* client_;
 
   // TODO(dcheng): Inline this field directly rather than going through Member.
