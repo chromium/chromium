@@ -20,9 +20,10 @@ per-file chromium.chromiumos.json=svenzheng@chromium.org
 per-file chromium.fyi.json=svenzheng@chromium.org
 per-file chromium.chromiumos.json=lacros-version-skew-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file chromium.fyi.json=lacros-version-skew-roller@chops-service-accounts.iam.gserviceaccount.com
-# TODO(crbug.com/1234067) Remove the following 2 lines when the conversion is done.
+# TODO(crbug.com/1234067) Remove the following 3 lines when the conversion is done.
 per-file chromium.fyi.json=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
 per-file chromium.chromiumos.json=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
+per-file chromium.memory.json=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
 
 # For Lacros skylab tests cros image roller related reviews
 per-file chrome.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
