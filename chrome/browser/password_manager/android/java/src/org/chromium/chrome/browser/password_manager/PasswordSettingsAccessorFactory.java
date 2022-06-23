@@ -4,30 +4,11 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static org.chromium.base.ThreadUtils.assertOnUiThread;
-
-import androidx.annotation.VisibleForTesting;
-
 /**
  * This factory returns an implementation for the password settings accessor. The factory itself is
  * also implemented downstream.
  */
 public abstract class PasswordSettingsAccessorFactory {
-    private static PasswordSettingsAccessorFactory sInstance;
-
-    PasswordSettingsAccessorFactory() {}
-
-    /**
-     * Returns an accessor factory to be invoked whenever {@link #createAccessor()} is called. If no
-     * factory was used yet, it is created.
-     *
-     * @return The shared {@link PasswordSettingsAccessorFactory} instance.
-     */
-    public static PasswordSettingsAccessorFactory getOrCreate() {
-        assertOnUiThread();
-        return sInstance != null ? sInstance : new PasswordSettingsAccessorFactoryImpl();
-    }
-
     /**
      * Returns the downstream implementation provided by subclasses.
      *
@@ -39,10 +20,5 @@ public abstract class PasswordSettingsAccessorFactory {
 
     public boolean canCreateAccessor() {
         return false;
-    }
-
-    @VisibleForTesting
-    public static void setupFactoryForTesting(PasswordSettingsAccessorFactory accessorFactory) {
-        sInstance = accessorFactory;
     }
 }

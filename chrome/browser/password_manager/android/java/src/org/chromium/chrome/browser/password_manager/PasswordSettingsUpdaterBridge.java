@@ -34,12 +34,12 @@ public class PasswordSettingsUpdaterBridge {
     @CalledByNative
     static PasswordSettingsUpdaterBridge create(long nativeSettingsUpdaterBridge) {
         return new PasswordSettingsUpdaterBridge(nativeSettingsUpdaterBridge,
-                PasswordSettingsAccessorFactoryImpl.getOrCreate().createAccessor());
+                new PasswordSettingsAccessorFactoryImpl().createAccessor());
     }
 
     @CalledByNative
     static boolean canCreateAccessor() {
-        return PasswordSettingsAccessorFactoryImpl.getOrCreate().canCreateAccessor();
+        return new PasswordSettingsAccessorFactoryImpl().canCreateAccessor();
     }
 
     @CalledByNative
