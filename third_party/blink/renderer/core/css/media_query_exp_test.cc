@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,6 +35,10 @@ MediaQueryExpValue RemValue(double value) {
 MediaQueryExpValue DvhValue(double value) {
   return MediaQueryExpValue(
       value, CSSPrimitiveValue::UnitType::kDynamicViewportHeight);
+}
+
+MediaQueryExpValue CssValue(const CSSPrimitiveValue& value) {
+  return MediaQueryExpValue(value);
 }
 
 MediaQueryExpValue InvalidValue() {
@@ -364,6 +370,16 @@ TEST(MediaQueryExpTest, UnitFlags) {
   // 10dvh < width
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kDynamicViewport,
             LeftExp("width", LtCmp(DvhValue(10.0))).GetUnitFlags());
+
+  // width < calc(10em + 10dvh)
+  const auto* calc_value =
+      DynamicTo<CSSPrimitiveValue>(css_test_helpers::ParseValue(
+          *Document::CreateForTest(), "<length>", "calc(10em + 10dvh)"));
+  ASSERT_TRUE(calc_value);
+  EXPECT_EQ(
+      static_cast<unsigned>(MediaQueryExpValue::UnitFlags::kFontRelative |
+                            MediaQueryExpValue::UnitFlags::kDynamicViewport),
+      RightExp("width", LtCmp(CssValue(*calc_value))).GetUnitFlags());
 }
 
 TEST(MediaQueryExpTest, UtilsNullptrHandling) {

@@ -105,7 +105,7 @@ class CORE_EXPORT MediaQueryExpValue {
     kDynamicViewport = 0x4,
   };
 
-  UnitFlags GetUnitFlags() const;
+  unsigned GetUnitFlags() const;
 
   String CssText() const;
   bool operator==(const MediaQueryExpValue& other) const {

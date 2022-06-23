@@ -567,26 +567,46 @@ String MediaQueryExpValue::CssText() const {
   return output.ReleaseString();
 }
 
-MediaQueryExpValue::UnitFlags MediaQueryExpValue::GetUnitFlags() const {
-  if (!IsNumeric())
-    return UnitFlags::kNone;
-  switch (Unit()) {
-    case CSSPrimitiveValue::UnitType::kEms:
-    case CSSPrimitiveValue::UnitType::kExs:
-    case CSSPrimitiveValue::UnitType::kChs:
-      return UnitFlags::kFontRelative;
-    case CSSPrimitiveValue::UnitType::kRems:
-      return UnitFlags::kRootFontRelative;
-    case CSSPrimitiveValue::UnitType::kDynamicViewportWidth:
-    case CSSPrimitiveValue::UnitType::kDynamicViewportHeight:
-    case CSSPrimitiveValue::UnitType::kDynamicViewportInlineSize:
-    case CSSPrimitiveValue::UnitType::kDynamicViewportBlockSize:
-    case CSSPrimitiveValue::UnitType::kDynamicViewportMin:
-    case CSSPrimitiveValue::UnitType::kDynamicViewportMax:
-      return UnitFlags::kDynamicViewport;
-    default:
-      return UnitFlags::kNone;
+unsigned MediaQueryExpValue::GetUnitFlags() const {
+  CSSPrimitiveValue::LengthTypeFlags length_type_flags;
+
+  if (IsCSSValue()) {
+    if (auto* primitive = DynamicTo<CSSPrimitiveValue>(GetCSSValue()))
+      primitive->AccumulateLengthUnitTypes(length_type_flags);
   }
+  if (IsNumeric() && CSSPrimitiveValue::IsLength(Unit())) {
+    CSSPrimitiveValue::LengthUnitType length_unit_type;
+    bool ok =
+        CSSPrimitiveValue::UnitTypeToLengthUnitType(Unit(), length_unit_type);
+    DCHECK(ok);
+    length_type_flags.set(length_unit_type);
+  }
+
+  unsigned unit_flags = 0;
+
+  if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontSize) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontXSize) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeZeroCharacterWidth)) {
+    unit_flags |= UnitFlags::kFontRelative;
+  }
+
+  if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootFontSize))
+    unit_flags |= UnitFlags::kRootFontRelative;
+
+  if (length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeDynamicViewportWidth) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeDynamicViewportHeight) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeDynamicViewportInlineSize) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeDynamicViewportBlockSize) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeDynamicViewportMin) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeDynamicViewportMax)) {
+    unit_flags |= UnitFlags::kDynamicViewport;
+  }
+
+  return unit_flags;
 }
 
 String MediaQueryExpNode::Serialize() const {
