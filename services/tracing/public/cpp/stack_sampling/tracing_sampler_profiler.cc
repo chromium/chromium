@@ -241,17 +241,20 @@ class TracingSamplerProfilerDataSource
     new (g_sampler_profiler_ds_for_test) TracingSamplerProfilerDataSource;
   }
 
+  void RegisterDataSource() {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    perfetto::DataSourceDescriptor dsd;
+    dsd.set_name(mojom::kSamplerProfilerSourceName);
+    DataSourceProxy::Register(dsd, this);
+#endif
+  }
+
  private:
   friend class base::NoDestructor<TracingSamplerProfilerDataSource>;
 
   TracingSamplerProfilerDataSource()
       : DataSourceBase(mojom::kSamplerProfilerSourceName) {
     PerfettoTracedProcess::Get()->AddDataSource(this);
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    perfetto::DataSourceDescriptor dsd;
-    dsd.set_name(mojom::kSamplerProfilerSourceName);
-    DataSourceProxy::Register(dsd, this);
-#endif
     g_sampler_profiler_ds_for_test = this;
   }
 
@@ -741,6 +744,7 @@ void TracingSamplerProfiler::ResetDataSourceForTesting() {
 
 // static
 void TracingSamplerProfiler::RegisterDataSource() {
+  TracingSamplerProfilerDataSource::Get()->RegisterDataSource();
   PerfettoTracedProcess::Get()->AddDataSource(
       TracingSamplerProfilerDataSource::Get());
 }
