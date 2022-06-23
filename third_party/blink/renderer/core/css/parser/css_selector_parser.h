@@ -20,6 +20,10 @@ class CSSSelectorList;
 class Node;
 class StyleSheetContents;
 
+// SelectorVector is the list of CSS selectors as it is parsed,
+// where each selector can contain others (in a tree).
+using CSSSelectorVector = Vector<std::unique_ptr<CSSParserSelector>>;
+
 // FIXME: We should consider building CSSSelectors directly instead of using
 // the intermediate CSSParserSelector.
 class CORE_EXPORT CSSSelectorParser {

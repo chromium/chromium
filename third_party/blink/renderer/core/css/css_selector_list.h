@@ -34,6 +34,9 @@ namespace blink {
 
 class CSSParserSelector;
 
+// See css_selector_parser.h.
+using CSSSelectorVector = Vector<std::unique_ptr<CSSParserSelector>>;
+
 // This class represents a CSS selector, i.e. a pattern of one or more
 // simple selectors. https://www.w3.org/TR/css3-selectors/
 
@@ -79,7 +82,7 @@ class CORE_EXPORT CSSSelectorList {
   ~CSSSelectorList() = default;
 
   static CSSSelectorList AdoptSelectorVector(
-      Vector<std::unique_ptr<CSSParserSelector>>& selector_vector);
+      CSSSelectorVector& selector_vector);
   CSSSelectorList Copy() const;
 
   bool IsValid() const { return !!selector_array_; }

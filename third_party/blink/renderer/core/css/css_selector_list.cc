@@ -52,7 +52,7 @@ CSSSelectorList CSSSelectorList::Copy() const {
 }
 
 CSSSelectorList CSSSelectorList::AdoptSelectorVector(
-    Vector<std::unique_ptr<CSSParserSelector>>& selector_vector) {
+    CSSSelectorVector& selector_vector) {
   size_t flattened_size = 0;
   for (wtf_size_t i = 0; i < selector_vector.size(); ++i) {
     for (CSSParserSelector* selector = selector_vector[i].get(); selector;

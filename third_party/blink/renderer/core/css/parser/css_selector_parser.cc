@@ -109,7 +109,7 @@ CSSSelectorParser::CSSSelectorParser(const CSSParserContext* context,
 
 CSSSelectorList CSSSelectorParser::ConsumeComplexSelectorList(
     CSSParserTokenRange& range) {
-  Vector<std::unique_ptr<CSSParserSelector>> selector_list;
+  CSSSelectorVector selector_list;
   std::unique_ptr<CSSParserSelector> selector = ConsumeComplexSelector(range);
   if (!selector)
     return CSSSelectorList();
@@ -131,7 +131,7 @@ CSSSelectorList CSSSelectorParser::ConsumeComplexSelectorList(
 CSSSelectorList CSSSelectorParser::ConsumeComplexSelectorList(
     CSSParserTokenStream& stream,
     CSSParserObserver* observer) {
-  Vector<std::unique_ptr<CSSParserSelector>> selector_list;
+  CSSSelectorVector selector_list;
 
   while (true) {
     const wtf_size_t selector_offset_start = stream.LookAheadOffset();
@@ -163,7 +163,7 @@ CSSSelectorList CSSSelectorParser::ConsumeComplexSelectorList(
 
 CSSSelectorList CSSSelectorParser::ConsumeCompoundSelectorList(
     CSSParserTokenRange& range) {
-  Vector<std::unique_ptr<CSSParserSelector>> selector_list;
+  CSSSelectorVector selector_list;
   std::unique_ptr<CSSParserSelector> selector = ConsumeCompoundSelector(range);
   range.ConsumeWhitespace();
   if (!selector)
@@ -200,7 +200,7 @@ CSSSelectorList CSSSelectorParser::ConsumeForgivingNestedSelectorList(
 
 CSSSelectorList CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     CSSParserTokenRange& range) {
-  Vector<std::unique_ptr<CSSParserSelector>> selector_list;
+  CSSSelectorVector selector_list;
 
   while (!range.AtEnd()) {
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
@@ -222,7 +222,7 @@ CSSSelectorList CSSSelectorParser::ConsumeForgivingComplexSelectorList(
 
 CSSSelectorList CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
     CSSParserTokenRange& range) {
-  Vector<std::unique_ptr<CSSParserSelector>> selector_list;
+  CSSSelectorVector selector_list;
 
   while (!range.AtEnd()) {
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
@@ -245,7 +245,7 @@ CSSSelectorList CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
 
 CSSSelectorList CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
     CSSParserTokenRange& range) {
-  Vector<std::unique_ptr<CSSParserSelector>> selector_list;
+  CSSSelectorVector selector_list;
 
   while (!range.AtEnd()) {
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
@@ -1009,7 +1009,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       block.ConsumeWhitespace();
       if (!inner_selector || !block.AtEnd())
         return nullptr;
-      Vector<std::unique_ptr<CSSParserSelector>> selector_vector;
+      CSSSelectorVector selector_vector;
       selector_vector.push_back(std::move(inner_selector));
       selector->AdoptSelectorVector(selector_vector);
       return selector;

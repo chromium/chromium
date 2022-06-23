@@ -31,6 +31,10 @@
 namespace blink {
 
 class CSSParserContext;
+class CSSParserSelector;
+
+// See css_selector_parser.h.
+using CSSSelectorVector = Vector<std::unique_ptr<CSSParserSelector>>;
 
 class CORE_EXPORT CSSParserSelector {
   USING_FAST_MALLOC(CSSParserSelector);
@@ -75,8 +79,7 @@ class CORE_EXPORT CSSParserSelector {
     selector_->UpdatePseudoPage(value);
   }
 
-  void AdoptSelectorVector(
-      Vector<std::unique_ptr<CSSParserSelector>>& selector_vector);
+  void AdoptSelectorVector(CSSSelectorVector& selector_vector);
   void SetSelectorList(std::unique_ptr<CSSSelectorList>);
   void SetAtomics(std::unique_ptr<CSSSelectorList>);
   void SetContainsPseudoInsideHasPseudoClass();

@@ -47,7 +47,7 @@ CSSParserSelector::~CSSParserSelector() {
 }
 
 void CSSParserSelector::AdoptSelectorVector(
-    Vector<std::unique_ptr<CSSParserSelector>>& selector_vector) {
+    CSSSelectorVector& selector_vector) {
   CSSSelectorList* selector_list = new CSSSelectorList(
       CSSSelectorList::AdoptSelectorVector(selector_vector));
   selector_->SetSelectorList(base::WrapUnique(selector_list));
