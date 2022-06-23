@@ -496,7 +496,7 @@ TEST_F(ValidateBlinkInterestGroupTest, MalformedUrl) {
 TEST_F(ValidateBlinkInterestGroupTest, TooLarge) {
   mojom::blink::InterestGroupPtr blink_interest_group =
       CreateMinimalInterestGroup();
-  std::string long_string(51173, 'n');
+  std::string long_string(51169, 'n');
   blink_interest_group->name = String(long_string);
   ExpectInterestGroupIsNotValid(
       blink_interest_group, "size" /* expected_error_field_name */,
@@ -504,7 +504,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLarge) {
       "interest groups must be less than 51200 bytes" /* expected_error */);
 
   // Almost too big should still work.
-  long_string = std::string(51200 - 28, 'n');
+  long_string = std::string(51200 - 32, 'n');
   blink_interest_group->name = String(long_string);
 
   ExpectInterestGroupIsValid(blink_interest_group);
@@ -513,7 +513,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLarge) {
 TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
   mojom::blink::InterestGroupPtr blink_interest_group =
       CreateMinimalInterestGroup();
-  blink_interest_group->name = "padding to 51200.......";
+  blink_interest_group->name = "padding to 51200...";
   blink_interest_group->ad_components.emplace();
   for (int i = 0; i < 682; ++i) {
     // Each ad component is 75 bytes.
@@ -554,6 +554,25 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidPriority) {
         blink_interest_group, "priority" /* expected_error_field_name */,
         test_case.priority_text, /*expected_error_field_value */
         "priority must be finite." /* expected_error */);
+  }
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, InvalidExecutionMode) {
+  struct {
+    blink::InterestGroup::ExecutionMode execution_mode;
+    const char* execution_mode_text;
+  } test_cases[] = {
+      {blink::InterestGroup::ExecutionMode::kGroupedByOriginMode, "1"},
+      {blink::InterestGroup::ExecutionMode::kFrozenContext, "2"},
+  };
+  for (const auto& test_case : test_cases) {
+    mojom::blink::InterestGroupPtr blink_interest_group =
+        CreateMinimalInterestGroup();
+    blink_interest_group->execution_mode = test_case.execution_mode;
+    ExpectInterestGroupIsNotValid(
+        blink_interest_group, "execution_mode" /* expected_error_field_name */,
+        test_case.execution_mode_text, /*expected_error_field_value */
+        "execution mode is not valid." /* expected_error */);
   }
 }
 

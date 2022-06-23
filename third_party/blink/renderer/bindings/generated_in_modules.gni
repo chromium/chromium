@@ -1414,6 +1414,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_power_preference.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_well_known_directory.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_well_known_directory.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_worklet_execution_mode.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_worklet_execution_mode.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_write_command_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_write_command_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_data_format.cc",

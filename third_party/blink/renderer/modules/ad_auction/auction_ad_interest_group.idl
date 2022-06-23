@@ -5,10 +5,17 @@
 // Name, origin owner, and metadata for ad interest groups.
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
 
+enum WorkletExecutionMode {
+  "compatibility",
+  // "groupByOrigin",
+  // "frozenContext",
+};
+
 dictionary AuctionAdInterestGroup {
   required USVString owner;
   required USVString name;
   double priority;
+  WorkletExecutionMode executionMode;
   USVString biddingLogicUrl;
   USVString biddingWasmHelperUrl;
   USVString dailyUpdateUrl;

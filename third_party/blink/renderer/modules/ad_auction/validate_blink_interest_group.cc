@@ -46,6 +46,7 @@ size_t EstimateBlinkInterestGroupSize(
   size += group.owner->ToString().length();
   size += group.name.length();
   size += sizeof(group.priority);
+  size += sizeof(group.execution_mode);
 
   if (group.bidding_url)
     size += group.bidding_url->GetString().length();
@@ -99,6 +100,17 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     error_field_name = "priority";
     error_field_value = String::NumberToStringECMAScript(group.priority);
     error = "priority must be finite.";
+    return false;
+  }
+
+  // This check is here to keep it in sync with InterestGroup::IsValid(), but
+  // checks in navigator_auction.cc should ensure the execution mode is always
+  // valid.
+  if (group.execution_mode !=
+      mojom::blink::InterestGroup::ExecutionMode::kCompatibilityMode) {
+    error_field_name = "execution_mode";
+    error_field_value = String::Number(static_cast<int>(group.execution_mode));
+    error = "execution mode is not valid.";
     return false;
   }
 

@@ -28,12 +28,35 @@ const uint32 kMaxInterestGroupSize = 51200; // 50 * 1024
 //
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
 struct InterestGroup {
+  enum ExecutionMode {
+    // kCompatibilityMode creates a new context for every execution. This is
+    // potentially slow as it is only able to reuse the compilation cache from
+    // other interest groups with the same bidding script.
+    kCompatibilityMode,
+    // kGroupedByOriginMode, mode uses the same JavaScript context for groups
+    // with the same joining origin. This can be much faster, but to mitigate
+    // any privacy leaks FLEDGE will clear all of the interest groups for a
+    // joining origin if another origin joins or leaves one of the interest
+    // groups.
+    kGroupedByOriginMode,
+    // kFrozenContext mode uses a "frozen" JavaScript context to execute the
+    // bidding scripts for all interest groups that share a common biddnig
+    // script. Before the script is loaded the global object is recursively
+    // frozen to prevent persisting state. After the script is loaded, the
+    // script context is also frozen and checked for any state that may persist
+    // between function execution. If any potentially persistent state is
+    // identified, execution abandoned.
+    kFrozenContext,
+  };
+
   mojo_base.mojom.Time expiry;
   // `owner` must match the current frame URL's origin.
   url.mojom.Origin owner;
   string name;
   // `priority` of the interest group.
   double priority = 0.0;
+  // `execution_mode` of the interest group.
+  ExecutionMode execution_mode = kCompatibilityMode;
   // `bidding_url` must match the current frame URL's origin.
   url.mojom.Url? bidding_url;
   // `bidding_wasm_helper_url` must match the current frame URL's origin.

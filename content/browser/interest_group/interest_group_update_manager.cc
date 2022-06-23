@@ -95,6 +95,23 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return true;
 }
 
+// Copies the execution_mode JSON field into `interest_group_update`, returns
+// true iff the JSON is valid and the copy completed.
+[[nodiscard]] bool TryToCopyExecutionmode(
+    blink::InterestGroup& interest_group_update,
+    const base::Value::Dict& dict) {
+  const std::string* maybe_execution_mode = dict.FindString("execution_mode");
+  if (!maybe_execution_mode)
+    return true;
+  if (*maybe_execution_mode == "compatibility") {
+    interest_group_update.execution_mode =
+        blink::InterestGroup::ExecutionMode::kCompatibilityMode;
+  } else {
+    return false;
+  }
+  return true;
+}
+
 // Copies the trustedBiddingSignals list JSON field into
 // `interest_group_update`, returns true iff the JSON is valid and the copy
 // completed.
@@ -202,6 +219,9 @@ absl::optional<blink::InterestGroup> ParseUpdateJson(
     if (!maybe_priority_value->is_int() && !maybe_priority_value->is_double())
       return absl::nullopt;
     interest_group_update.priority = maybe_priority_value->GetDouble();
+  }
+  if (!TryToCopyExecutionmode(interest_group_update, *dict)) {
+    return absl::nullopt;
   }
   const std::string* maybe_bidding_url = dict->FindString("biddingLogicUrl");
   if (maybe_bidding_url)

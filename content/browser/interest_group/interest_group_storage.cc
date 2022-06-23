@@ -55,6 +55,8 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 4 - 2021/10 - crrev.com/c/3172863
 // Version 5 - 2021/10 - crrev.com/c/3067804
 // Version 6 - 2021/12 - crrev.com/c/3330516
+// Version 7 - 2022/03 - crrev.com/c/3517534
+// Version 8 - 2022/06 - crrev.com/c/3696265
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -63,7 +65,8 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 5 adds k-anonymity tables and fields.
 // Version 6 adds WebAssembly helper url.
 // Version 7 changes an index, adds interest group priority.
-const int kCurrentVersionNumber = 7;
+// Version 8 adds the execution_mode field to interest groups.
+const int kCurrentVersionNumber = 8;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber|
 // database without failing.
@@ -184,7 +187,7 @@ absl::optional<std::vector<std::string>> DeserializeStringVector(
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV7Schema(sql::Database& db) {
+bool CreateV8Schema(sql::Database& db) {
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -196,6 +199,7 @@ bool CreateV7Schema(sql::Database& db) {
         "joining_origin TEXT NOT NULL,"
         "name TEXT NOT NULL,"
         "priority DOUBLE NOT NULL,"
+        "execution_mode INTEGER NOT NULL,"
         "joining_url TEXT NOT NULL,"
         "bidding_url TEXT NOT NULL,"
         "bidding_wasm_helper_url TEXT NOT NULL,"
@@ -336,6 +340,14 @@ bool CreateV7Schema(sql::Database& db) {
   if (!db.Execute(kWinHistoryIndexSQL))
     return false;
 
+  return true;
+}
+
+bool UpgradeV7SchemaToV8(sql::Database& db, sql::MetaTable& meta_table) {
+  static const char kInterestGroupsAddExecutionModeSql[] =
+      "ALTER TABLE interest_groups ADD COLUMN execution_mode INTEGER DEFAULT 0";
+  if (!db.Execute(kInterestGroupsAddExecutionModeSql))
+    return false;
   return true;
 }
 
@@ -515,6 +527,7 @@ bool DoJoinInterestGroup(sql::Database& db,
             "joining_origin,"
             "name,"
             "priority,"
+            "execution_mode,"
             "joining_url,"
             "bidding_url,"
             "bidding_wasm_helper_url,"
@@ -524,7 +537,7 @@ bool DoJoinInterestGroup(sql::Database& db,
             "user_bidding_signals,"  // opaque data
             "ads,"
             "ad_components) "
-          "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+          "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
 
   // clang-format on
   if (!join_group.is_valid())
@@ -538,19 +551,22 @@ bool DoJoinInterestGroup(sql::Database& db,
   join_group.BindString(4, Serialize(joining_origin));
   join_group.BindString(5, data.name);
   join_group.BindDouble(6, data.priority.value_or(0));
-  join_group.BindString(7, Serialize(joining_url));
-  join_group.BindString(8, Serialize(data.bidding_url));
-  join_group.BindString(9, Serialize(data.bidding_wasm_helper_url));
-  join_group.BindString(10, Serialize(data.daily_update_url));
-  join_group.BindString(11, Serialize(data.trusted_bidding_signals_url));
-  join_group.BindString(12, Serialize(data.trusted_bidding_signals_keys));
+  join_group.BindInt(
+      7, static_cast<int>(data.execution_mode.value_or(
+             blink::InterestGroup::ExecutionMode::kCompatibilityMode)));
+  join_group.BindString(8, Serialize(joining_url));
+  join_group.BindString(9, Serialize(data.bidding_url));
+  join_group.BindString(10, Serialize(data.bidding_wasm_helper_url));
+  join_group.BindString(11, Serialize(data.daily_update_url));
+  join_group.BindString(12, Serialize(data.trusted_bidding_signals_url));
+  join_group.BindString(13, Serialize(data.trusted_bidding_signals_keys));
   if (data.user_bidding_signals) {
-    join_group.BindString(13, data.user_bidding_signals.value());
+    join_group.BindString(14, data.user_bidding_signals.value());
   } else {
-    join_group.BindNull(13);
+    join_group.BindNull(14);
   }
-  join_group.BindString(14, Serialize(data.ads));
-  join_group.BindString(15, Serialize(data.ad_components));
+  join_group.BindString(15, Serialize(data.ads));
+  join_group.BindString(16, Serialize(data.ad_components));
 
   if (!join_group.Run())
     return false;
@@ -592,6 +608,7 @@ bool DoLoadInterestGroup(sql::Database& db,
           "joining_origin,"
           "last_updated,"
           "priority,"
+          "execution_mode,"
           "bidding_url,"
           "bidding_wasm_helper_url,"
           "update_url,"
@@ -622,16 +639,18 @@ bool DoLoadInterestGroup(sql::Database& db,
   if (last_updated)
     *last_updated = load.ColumnTime(2);
   group.priority = load.ColumnDouble(3);
-  group.bidding_url = DeserializeURL(load.ColumnString(4));
-  group.bidding_wasm_helper_url = DeserializeURL(load.ColumnString(5));
-  group.daily_update_url = DeserializeURL(load.ColumnString(6));
-  group.trusted_bidding_signals_url = DeserializeURL(load.ColumnString(7));
+  group.execution_mode =
+      static_cast<blink::InterestGroup::ExecutionMode>(load.ColumnInt(4));
+  group.bidding_url = DeserializeURL(load.ColumnString(5));
+  group.bidding_wasm_helper_url = DeserializeURL(load.ColumnString(6));
+  group.daily_update_url = DeserializeURL(load.ColumnString(7));
+  group.trusted_bidding_signals_url = DeserializeURL(load.ColumnString(8));
   group.trusted_bidding_signals_keys =
-      DeserializeStringVector(load.ColumnString(8));
-  if (load.GetColumnType(9) != sql::ColumnType::kNull)
-    group.user_bidding_signals = load.ColumnString(9);
-  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(10));
-  group.ad_components = DeserializeInterestGroupAdVector(load.ColumnString(11));
+      DeserializeStringVector(load.ColumnString(9));
+  if (load.GetColumnType(10) != sql::ColumnType::kNull)
+    group.user_bidding_signals = load.ColumnString(10);
+  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(11));
+  group.ad_components = DeserializeInterestGroupAdVector(load.ColumnString(12));
 
   return true;
 }
@@ -646,6 +665,7 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
           "SET last_updated=?,"
             "next_update_after=?,"
             "priority=?,"
+            "execution_mode=?,"
             "bidding_url=?,"
             "bidding_wasm_helper_url=?,"
             "update_url=?,"
@@ -664,15 +684,18 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
   store_group.BindTime(
       1, now + InterestGroupStorage::kUpdateSucceededBackoffPeriod);
   store_group.BindDouble(2, group.priority.value_or(0));
-  store_group.BindString(3, Serialize(group.bidding_url));
-  store_group.BindString(4, Serialize(group.bidding_wasm_helper_url));
-  store_group.BindString(5, Serialize(group.daily_update_url));
-  store_group.BindString(6, Serialize(group.trusted_bidding_signals_url));
-  store_group.BindString(7, Serialize(group.trusted_bidding_signals_keys));
-  store_group.BindString(8, Serialize(group.ads));
-  store_group.BindString(9, Serialize(group.ad_components));
-  store_group.BindString(10, Serialize(group.owner));
-  store_group.BindString(11, group.name);
+  store_group.BindInt(
+      3, static_cast<int>(group.execution_mode.value_or(
+             blink::InterestGroup::ExecutionMode::kCompatibilityMode)));
+  store_group.BindString(4, Serialize(group.bidding_url));
+  store_group.BindString(5, Serialize(group.bidding_wasm_helper_url));
+  store_group.BindString(6, Serialize(group.daily_update_url));
+  store_group.BindString(7, Serialize(group.trusted_bidding_signals_url));
+  store_group.BindString(8, Serialize(group.trusted_bidding_signals_keys));
+  store_group.BindString(9, Serialize(group.ads));
+  store_group.BindString(10, Serialize(group.ad_components));
+  store_group.BindString(11, Serialize(group.owner));
+  store_group.BindString(12, group.name);
 
   return store_group.Run();
 }
@@ -705,6 +728,8 @@ bool DoUpdateInterestGroup(sql::Database& db,
     return false;
   if (update.priority)
     stored_group.priority = update.priority;
+  if (update.execution_mode)
+    stored_group.execution_mode = update.execution_mode;
   if (update.bidding_url)
     stored_group.bidding_url = update.bidding_url;
   if (update.bidding_wasm_helper_url)
@@ -1639,7 +1664,7 @@ bool InterestGroupStorage::InitializeSchema() {
     return false;
 
   if (new_db)
-    return CreateV7Schema(*db_);
+    return CreateV8Schema(*db_);
 
   const int db_version = meta_table.GetVersionNumber();
 
@@ -1654,9 +1679,21 @@ bool InterestGroupStorage::InitializeSchema() {
   // Older versions - should be migrated.
   // db_version < kCurrentVersionNumber
   // db_version > kDeprecatedVersionNumber
-  if (db_version == 6) {
-    meta_table.SetVersionNumber(7);
-    return UpgradeV6SchemaToV7(*db_, meta_table);
+  {
+    sql::Transaction transaction(db_.get());
+    if (!transaction.Begin())
+      return false;
+    switch (db_version) {
+      case 6:
+        if (!UpgradeV6SchemaToV7(*db_, meta_table))
+          return false;
+        ABSL_FALLTHROUGH_INTENDED;
+      case 7:
+        if (!UpgradeV7SchemaToV8(*db_, meta_table))
+          return false;
+        meta_table.SetVersionNumber(8);
+    }
+    return transaction.Commit();
   }
 
   NOTREACHED();  // Only V6 should have passed RazeIfIncompatible.

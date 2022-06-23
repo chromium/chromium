@@ -588,6 +588,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       const url::Origin& owner,
       const std::string& name,
       double priority,
+      blink::InterestGroup::ExecutionMode execution_mode =
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
       absl::optional<GURL> bidding_url = absl::nullopt,
       absl::optional<std::vector<blink::InterestGroup::Ad>> ads = absl::nullopt,
       absl::optional<std::vector<blink::InterestGroup::Ad>> ad_components =
@@ -595,7 +597,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       absl::optional<ToRenderFrameHost> execution_target = absl::nullopt) {
     return JoinInterestGroupAndVerify(
         blink::InterestGroup(
-            /*expiry=*/base::Time(), owner, name, priority,
+            /*expiry=*/base::Time(), owner, name, priority, execution_mode,
             std::move(bidding_url),
             /*bidding_wasm_helper_url=*/absl::nullopt,
             /*daily_update_url=*/absl::nullopt,
@@ -1102,7 +1104,8 @@ class InterestGroupFencedFrameBrowserTest
         JoinInterestGroupAndVerify(
             /*owner=*/url::Origin::Create(test_url),
             /*name=*/"cars",
-            /*priority=*/0.0,
+            /*priority=*/0.0, /*execution_mode=*/
+            blink::InterestGroup::ExecutionMode::kCompatibilityMode,
             /*bidding_url=*/
             https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
             /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}},
@@ -1328,6 +1331,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*owner=*/test_origin_a,
           /*name=*/"bicycles",
           /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/GURL("https://bid.a.test"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
           /*daily_update_url=*/absl::nullopt,
@@ -1352,6 +1357,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*owner=*/test_origin_a,
           /*name=*/"tricycles",
           /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/absl::nullopt,
           /*bidding_wasm_helper_url=*/absl::nullopt,
           /*daily_update_url=*/GURL("https://update.a.test"),
@@ -1375,7 +1382,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                 /*expiry=*/base::Time(),
                 /*owner=*/test_origin_a,
                 /*name=*/"four-wheelers",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/absl::nullopt,
                 /*bidding_wasm_helper_url=*/absl::nullopt,
                 /*daily_update_url=*/absl::nullopt,
@@ -1419,7 +1427,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time::Now() + base::Seconds(300),
           /*owner=*/test_origin_d,
           /*name=*/"candy",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/absl::nullopt,
           /*bidding_wasm_helper_url=*/absl::nullopt,
           /*daily_update_url=*/absl::nullopt,
@@ -1482,11 +1491,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   RenderFrameHost* iframe = parent->child_at(0)->current_frame_host();
 
   // Both joining and leaving should work.
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          group_origin, kGroup,
-                          /*priority=*/0, /*bidding_url=*/absl::nullopt,
-                          /*ads=*/absl::nullopt,
-                          /*ad_components=*/absl::nullopt, iframe));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                group_origin, kGroup,
+                /*priority=*/0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/absl::nullopt,
+                /*ads=*/absl::nullopt,
+                /*ad_components=*/absl::nullopt, iframe));
   EXPECT_EQ(kSuccess,
             LeaveInterestGroupAndVerify(group_origin, kGroup, iframe));
 }
@@ -1571,11 +1583,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   RenderFrameHost* iframe = parent->child_at(0)->current_frame_host();
 
   // Joining a group cross-origin should succeed.
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          allow_join_origin, kGroup,
-                          /*priority=*/0, /*bidding_url=*/absl::nullopt,
-                          /*ads=*/absl::nullopt,
-                          /*ad_components=*/absl::nullopt, iframe));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                allow_join_origin, kGroup,
+                /*priority=*/0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/absl::nullopt,
+                /*ads=*/absl::nullopt,
+                /*ad_components=*/absl::nullopt, iframe));
 
   // Leaving the group should fail.
   EXPECT_EQ("NotAllowedError: Permission to leave interest group denied.",
@@ -1618,13 +1633,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // Try to join an `allow_leave_origin` group from the iframe, which should
   // fail.
   EXPECT_EQ("NotAllowedError: Permission to join interest group denied.",
-            JoinInterestGroupAndVerify(allow_leave_origin, kJoinFailsGroup,
-                                       /*priority=*/0.0,
-                                       /*bidding_url=*/absl::nullopt,
-                                       /*ads=*/absl::nullopt,
-                                       /*ad_components=*/
-                                       absl::nullopt,
-                                       /*execution_target=*/iframe));
+            JoinInterestGroupAndVerify(
+                allow_leave_origin, kJoinFailsGroup,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/absl::nullopt,
+                /*ads=*/absl::nullopt,
+                /*ad_components=*/
+                absl::nullopt,
+                /*execution_target=*/iframe));
 
   // Leaving the group from the iframe that was successfully joined earlier
   // should succeed.
@@ -2778,7 +2795,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/test_origin_a,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -2860,7 +2878,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(test_url.host(),
                                 "/interest_group/bidding_logic.js"),
@@ -2916,7 +2935,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -3047,14 +3067,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                .spec());
   GURL expected_ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
 
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/test_origin,
-                          /*name=*/"cars",
-                          /*priority=*/0.0,
-                          /*bidding_url=*/
-                          https_server_->GetURL(
-                              "a.test", "/interest_group/bidding_logic.js"),
-                          /*ads=*/{{{ad_url, "{ad:'metadata', here:[1,2]}"}}}));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, "{ad:'metadata', here:[1,2]}"}}}));
 
   std::string auction_config = JsReplace(
       R"({
@@ -3105,7 +3127,8 @@ IN_PROC_BROWSER_TEST_F(
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -3148,7 +3171,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithBidderWasm) {
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test",
                                 "/interest_group/bidding_logic_use_wasm.js"),
@@ -3187,7 +3211,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                 /*expiry=*/base::Time(),
                 /*owner=*/test_origin,
                 /*name=*/"winner",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "a.test",
@@ -3204,7 +3229,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                 /*expiry=*/base::Time(),
                 /*owner=*/test_origin,
                 /*name=*/"bikes",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "a.test",
@@ -3221,7 +3247,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                 /*expiry=*/base::Time(),
                 /*owner=*/test_origin,
                 /*name=*/"shoes",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "a.test",
@@ -3323,7 +3350,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                 /*expiry=*/base::Time(),
                 /*owner=*/test_origin,
                 /*name=*/"shoes",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "a.test", "/interest_group/bidding_logic_loop_forever.js"),
@@ -3339,7 +3367,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                 /*expiry=*/base::Time(),
                 /*owner=*/test_origin,
                 /*name=*/"bikes",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "a.test", "/interest_group/bidding_logic_throws.js"),
@@ -3413,7 +3442,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -3552,7 +3582,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -3633,7 +3664,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
               /*expiry=*/base::Time(),
               /*owner=*/test_origin,
               /*name=*/"cars",
-              /*priority=*/0.0,
+              /*priority=*/0.0, /*execution_mode=*/
+              blink::InterestGroup::ExecutionMode::kCompatibilityMode,
               /*bidding_url=*/
               https_server_->GetURL(
                   "a.test",
@@ -3661,7 +3693,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
               /*expiry=*/base::Time(),
               /*owner=*/test_origin,
               /*name=*/"trucks",
-              /*priority=*/0.0,
+              /*priority=*/0.0, /*execution_mode=*/
+              blink::InterestGroup::ExecutionMode::kCompatibilityMode,
               /*bidding_url=*/
               https_server_->GetURL("a.test",
                                     "/interest_group/bidding_logic.js"),
@@ -3756,7 +3789,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -3814,7 +3848,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -3857,7 +3892,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CrossOrigin) {
           /*expiry=*/base::Time(),
           /*owner=*/bidder_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(kBidder, "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -3950,7 +3986,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4004,7 +4041,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
           /*expiry=*/base::Time(),
           /*owner=*/other_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
               kOtherHost,
@@ -4097,14 +4135,17 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, Iframe) {
 
   GURL ad_url = https_server_->GetURL(
       kAdHost, "/set-header?Supports-Loading-Mode: fenced-frame");
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/bidder_origin,
-                          /*name=*/"cars",
-                          /*priority=*/0.0,
-                          /*bidding_url=*/
-                          https_server_->GetURL(
-                              kBidderHost, "/interest_group/bidding_logic.js"),
-                          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/bidder_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                https_server_->GetURL(kBidderHost,
+                                      "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   GURL main_frame_url = https_server_->GetURL(
       kTopFrameHost,
@@ -4152,7 +4193,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                 /*expiry=*/base::Time(),
                 /*owner=*/test_origin,
                 /*name=*/"cars",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "a.test",
@@ -4170,7 +4212,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"bikes",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4188,7 +4231,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"shoes",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4235,6 +4279,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionAllGroupsLimited) {
           /*owner=*/test_origin,
           /*name=*/"cars",
           /*priority=*/2.3,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4251,6 +4297,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionAllGroupsLimited) {
           /*owner=*/test_origin,
           /*name=*/"bikes",
           /*priority=*/2.2,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4269,6 +4317,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionAllGroupsLimited) {
           /*owner=*/test_origin,
           /*name=*/"shoes",
           /*priority=*/2.1,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4316,6 +4366,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
                 /*owner=*/test_origin,
                 /*name=*/"cars",
                 /*priority=*/3,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "a.test",
@@ -4334,6 +4386,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
           /*owner=*/test_origin,
           /*name=*/"bikes",
           /*priority=*/2,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4352,6 +4406,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
           /*owner=*/test_origin,
           /*name=*/"shoes",
           /*priority=*/1,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4370,6 +4426,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
           /*owner=*/test_origin2,
           /*name=*/"cars",
           /*priority=*/3,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4386,6 +4444,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
           /*owner=*/test_origin2,
           /*name=*/"bikes",
           /*priority=*/2,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4404,6 +4464,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
           /*owner=*/test_origin2,
           /*name=*/"shoes",
           /*priority=*/1,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4457,6 +4519,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                 /*owner=*/test_origin,
                 /*name=*/"cars",
                 /*priority=*/3,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "a.test",
@@ -4475,6 +4539,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*owner=*/test_origin,
           /*name=*/"bikes",
           /*priority=*/2,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4493,6 +4559,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*owner=*/test_origin,
           /*name=*/"shoes",
           /*priority=*/1,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4511,6 +4579,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*owner=*/test_origin2,
           /*name=*/"cars",
           /*priority=*/3,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4527,6 +4597,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*owner=*/test_origin2,
           /*name=*/"bikes",
           /*priority=*/2,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4545,6 +4617,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*owner=*/test_origin2,
           /*name=*/"shoes",
           /*priority=*/1,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4596,7 +4670,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
                 /*expiry=*/base::Time(),
                 /*owner=*/origin,
                 /*name=*/"cars",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "a.test",
@@ -4619,7 +4694,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
           /*expiry=*/base::Time(),
           /*owner=*/origin2,
           /*name=*/"shoes",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -4760,7 +4836,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
                 /*expiry=*/base::Time(),
                 /*owner=*/origin_a,
                 /*name=*/"cars",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "a.test",
@@ -4782,7 +4859,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
                 /*expiry=*/base::Time(),
                 /*owner=*/origin_b,
                 /*name=*/"shoes",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "b.test",
@@ -4834,7 +4912,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
                 /*expiry=*/base::Time(),
                 /*owner=*/origin_c,
                 /*name=*/"cars",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "c.test",
@@ -5020,7 +5099,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithInvalidAdUrl) {
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
               "a.test", "/interest_group/bidding_logic_invalid_ad_url.js"),
@@ -5058,15 +5138,18 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, NoAdComponents) {
 
   GURL ad_url =
       https_server_->GetURL("c.test", "/fenced_frames/opaque_ads.html");
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/url::Origin::Create(test_url),
-                          /*name=*/"cars",
-                          /*priority=*/0.0,
-                          /*bidding_url=*/
-                          https_server_->GetURL(
-                              "a.test", "/interest_group/bidding_logic.js"),
-                          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}},
-                          /*ad_components=*/absl::nullopt));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/url::Origin::Create(test_url),
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}},
+          /*ad_components=*/absl::nullopt));
 
   ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
       ad_url, JsReplace(
@@ -5232,16 +5315,19 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
 
   GURL ad_url =
       https_server_->GetURL("c.test", "/fenced_frames/opaque_ads.html");
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/url::Origin::Create(test_url),
-                          /*name=*/"cars",
-                          /*priority=*/0.0,
-                          /*bidding_url=*/
-                          https_server_->GetURL(
-                              "a.test", "/interest_group/bidding_logic.js"),
-                          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}},
-                          /*ad_components=*/
-                          {{{ad_component_url, /*metadata=*/absl::nullopt}}}));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/url::Origin::Create(test_url),
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}},
+          /*ad_components=*/
+          {{{ad_component_url, /*metadata=*/absl::nullopt}}}));
 
   content::EvalJsResult urn_url_string = RunAuctionAndWait(JsReplace(
       R"(
@@ -5335,11 +5421,13 @@ return {
 
   GURL ad_url =
       https_server_->GetURL("c.test", "/fenced_frames/opaque_ads.html");
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/url::Origin::Create(test_url),
-                          /*name=*/"cars", /*priority=*/0.0, bidding_url,
-                          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}},
-                          ad_components));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/url::Origin::Create(test_url),
+          /*name=*/"cars", /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode, bidding_url,
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}, ad_components));
 
   ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
       ad_url, JsReplace(
@@ -5391,7 +5479,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test",
                                 "/interest_group/bidding_logic_throws.js"),
@@ -5429,14 +5518,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ComponentAuction) {
   url::Origin test_origin = url::Origin::Create(test_url);
   GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
 
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/test_origin,
-                          /*name=*/"cars",
-                          /*priority=*/0.0,
-                          /*bidding_url=*/
-                          https_server_->GetURL(
-                              "a.test", "/interest_group/bidding_logic.js"),
-                          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   std::string auction_config = JsReplace(
       R"({
@@ -5469,14 +5561,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   url::Origin test_origin = url::Origin::Create(test_url);
   GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
 
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/test_origin,
-                          /*name=*/"cars",
-                          /*priority=*/0.0,
-                          /*bidding_url=*/
-                          https_server_->GetURL(
-                              "a.test", "/interest_group/bidding_logic.js"),
-                          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   std::string auction_config = JsReplace(
       R"({
@@ -5508,14 +5603,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   url::Origin test_origin = url::Origin::Create(test_url);
   GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
 
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/test_origin,
-                          /*name=*/"cars",
-                          /*priority=*/0.0,
-                          /*bidding_url=*/
-                          https_server_->GetURL(
-                              "a.test", "/interest_group/bidding_logic.js"),
-                          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   std::string auction_config = JsReplace(
       R"({
@@ -5545,14 +5643,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   url::Origin test_origin = url::Origin::Create(test_url);
   GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
 
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/test_origin,
-                          /*name=*/"cars",
-                          /*priority=*/0.0,
-                          /*bidding_url=*/
-                          https_server_->GetURL(
-                              "a.test", "/interest_group/bidding_logic.js"),
-                          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   std::string auction_config = JsReplace(
       R"({
@@ -5597,6 +5698,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
                 /*owner=*/second_bidder_origin,
                 /*name=*/"boats",
                 /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(kSecondBidderHost,
                                       "/interest_group/bidding_logic.js"),
@@ -5617,7 +5720,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
           /*expiry=*/base::Time(),
           /*owner=*/bidder_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
               kBidderHost, "/interest_group/bidding_argument_validator.js"),
@@ -5696,7 +5800,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/bidder_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
               kBidderHost,
@@ -5790,7 +5895,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -5989,7 +6095,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, QuitWithRunningAuction) {
                 /*expiry=*/base::Time(),
                 /*owner=*/hanging_origin,
                 /*name=*/"cars",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/hanging_url,
                 /*bidding_wasm_helper_url=*/absl::nullopt,
                 /*daily_update_url=*/absl::nullopt,
@@ -6045,7 +6152,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAllUpdatableFields) {
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -6070,7 +6178,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAllUpdatableFields) {
             if (groups.size() != 1)
               return false;
             const auto& group = groups[0].interest_group;
-            return group.name == "cars" && group.bidding_url.has_value() &&
+            return group.name == "cars" && group.priority == 0.0 &&
+                   group.execution_mode == blink::InterestGroup::ExecutionMode::
+                                               kCompatibilityMode &&
+                   group.bidding_url.has_value() &&
                    group.bidding_url->path() ==
                        "/interest_group/new_bidding_logic.js" &&
                    group.trusted_bidding_signals_url.has_value() &&
@@ -6112,7 +6223,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -6172,14 +6284,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), bidder_b_url));
 
   GURL ad_url_b = https_server_->GetURL(kHostB, "/echo?render_shoes");
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/bidder_b_origin,
-                          /*name=*/"shoes",
-                          /*priority=*/0.0,
-                          /*bidding_url=*/
-                          https_server_->GetURL(
-                              kHostB, "/interest_group/bidding_logic.js"),
-                          /*ads=*/{{{ad_url_b, /*metadata=*/absl::nullopt}}}));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/bidder_b_origin,
+          /*name=*/"shoes",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL(kHostB, "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url_b, /*metadata=*/absl::nullopt}}}));
 
   GURL bidder_a_url = https_server_->GetURL(kHostA, "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), bidder_a_url));
@@ -6192,6 +6307,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                 /*owner=*/bidder_a_origin,
                 /*name=*/"cars",
                 /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     kHostA, "/interest_group/bidding_logic_loop_forever.js"),
@@ -6200,7 +6317,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             JoinInterestGroupAndVerify(
                 /*owner=*/bidder_a_origin,
                 /*name=*/"bikes",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     kHostA, "/interest_group/bidding_logic_loop_forever.js"),
@@ -6241,14 +6359,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   url::Origin test_origin = url::Origin::Create(test_url);
   GURL ad_url = https_server_->GetURL(kHostA, "/echo?render_cars");
 
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/test_origin,
-                          /*name=*/"cars",
-                          /*priority=*/0.0,
-                          /*bidding_url=*/
-                          https_server_->GetURL(
-                              kHostA, "/interest_group/bidding_logic.js"),
-                          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL(kHostA, "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
   // The auction fails, since seller's scoreAd() script times out after 1 ms.
   EXPECT_EQ(
@@ -6281,7 +6402,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/bidder_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(kBidder, "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -6346,7 +6468,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/bidder_origin,
           /*name=*/"cars",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(kBidder, "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -6371,7 +6494,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/bidder2_origin,
           /*name=*/"cars_and_trucks",
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(kBidder2, "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -6446,12 +6570,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       https_server_->GetURL("b.test", "/interest_group/bidding_logic.js");
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("b.test", "/echo")));
   url::Origin bidder_origin = url::Origin::Create(bidder_url);
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/bidder_origin,
-                          /*name=*/"Cthulhu", /*priority=*/0.0, bidder_url,
-                          /*ads=*/
-                          {{{GURL("https://example.com/render"),
-                             /*metadata=*/absl::nullopt}}}));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/bidder_origin,
+          /*name=*/"Cthulhu", /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode, bidder_url,
+          /*ads=*/
+          {{{GURL("https://example.com/render"),
+             /*metadata=*/absl::nullopt}}}));
 
   // Use `remote_test_server_` for all other URLs.
   GURL test_url = remote_test_server_.GetURL("a.test", "/echo");
@@ -6503,16 +6630,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   // AdAuctionServiceImpl's URLLoaderFactory.
   URLLoaderMonitor url_loader_monitor;
 
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          /*owner=*/test_origin,
-                          /*name=*/"Cthulhu",
-                          /*priority=*/0.0,
-                          /*bidding_url=*/
-                          remote_test_server_.GetURL(
-                              "a.test", "/interest_group/bidding_logic.js"),
-                          /*ads=*/
-                          {{{GURL("https://example.com/render"),
-                             /*metadata=*/absl::nullopt}}}));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"Cthulhu",
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                remote_test_server_.GetURL("a.test",
+                                           "/interest_group/bidding_logic.js"),
+                /*ads=*/
+                {{{GURL("https://example.com/render"),
+                   /*metadata=*/absl::nullopt}}}));
 
   EXPECT_EQ(nullptr,
             RunAuctionAndWait(JsReplace(
@@ -6568,7 +6697,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       JoinInterestGroupAndVerify(
           /*owner=*/test_origin,
           /*name=*/bidder_report_to_url.spec(),
-          /*priority=*/0.0,
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           remote_test_server_.GetURL(
               "a.test", "/interest_group/bidding_logic_report_to_name.js"),
@@ -6660,7 +6790,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       JoinInterestGroupAndVerify(blink::InterestGroup(
           /*expiry=*/base::Time(),
           /*owner=*/test_origin,
-          /*name=*/bidder_report_to_url.spec(), /*priority=*/0.0, bidder_url,
+          /*name=*/bidder_report_to_url.spec(), /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode, bidder_url,
           /*bidding_wasm_helper_url=*/absl::nullopt,
           /*daily_update_url=*/absl::nullopt, trusted_bidding_signals_url,
           /*trusted_bidding_signals_keys=*/{{"key1"}},
@@ -6767,7 +6899,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
               JoinInterestGroupAndVerify(blink::InterestGroup(
                   /*expiry=*/base::Time(),
                   /*owner=*/url::Origin::Create(test_url), group_name,
-                  /*priority=*/0.0, initial_bidding_url,
+                  /*priority=*/0.0, /*execution_mode=*/
+                  blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                  initial_bidding_url,
                   /*bidding_wasm_helper_url=*/absl::nullopt, update_url,
                   /*trusted_bidding_signals_url=*/absl::nullopt,
                   /*trusted_bidding_signals_keys=*/absl::nullopt,
@@ -6897,7 +7031,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       JoinInterestGroupAndVerify(blink::InterestGroup(
           /*expiry=*/base::Time(),
           /*owner=*/url::Origin::Create(initial_bidding_url_a),
-          kLocallyUpdateGroupName, /*priority=*/0.0, initial_bidding_url_a,
+          kLocallyUpdateGroupName, /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          initial_bidding_url_a,
           /*bidding_wasm_helper_url=*/absl::nullopt, update_url_a,
           /*trusted_bidding_signals_url=*/absl::nullopt,
           /*trusted_bidding_signals_keys=*/absl::nullopt,
@@ -6923,7 +7059,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       JoinInterestGroupAndVerify(blink::InterestGroup(
           /*expiry=*/base::Time(),
           /*owner=*/url::Origin::Create(initial_bidding_url_b),
-          kPubliclyUpdateGroupName, /*priority=*/0.0, initial_bidding_url_b,
+          kPubliclyUpdateGroupName, /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          initial_bidding_url_b,
           /*bidding_wasm_helper_url=*/absl::nullopt, update_url_b,
           /*trusted_bidding_signals_url=*/absl::nullopt,
           /*trusted_bidding_signals_keys=*/absl::nullopt,
@@ -6943,7 +7081,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       JoinInterestGroupAndVerify(blink::InterestGroup(
           /*expiry=*/base::Time(),
           /*owner=*/url::Origin::Create(initial_bidding_url_c),
-          kLocallyUpdateGroupName, /*priority=*/0.0, initial_bidding_url_c,
+          kLocallyUpdateGroupName, /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          initial_bidding_url_c,
           /*bidding_wasm_helper_url=*/absl::nullopt, update_url_c,
           /*trusted_bidding_signals_url=*/absl::nullopt,
           /*trusted_bidding_signals_keys=*/absl::nullopt,
@@ -7057,7 +7197,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
             /*expiry=*/base::Time(),
             /*owner=*/test_origin_a,
             /*name=*/group_name,
-            /*priority=*/0.0,
+            /*priority=*/0.0, /*execution_mode=*/
+            blink::InterestGroup::ExecutionMode::kCompatibilityMode,
             /*bidding_url=*/
             https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
             /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -7077,7 +7218,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
             /*expiry=*/base::Time(),
             /*owner=*/test_origin_b,
             /*name=*/group_name,
-            /*priority=*/0.0,
+            /*priority=*/0.0, /*execution_mode=*/
+            blink::InterestGroup::ExecutionMode::kCompatibilityMode,
             /*bidding_url=*/
             https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
             /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -7257,7 +7399,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                 /*expiry=*/base::Time(),
                 /*owner=*/origin,
                 /*name=*/"cars",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(host, "/interest_group/bidding_logic.js"),
                 /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -7432,7 +7575,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
                 /*expiry=*/base::Time(),
                 /*owner=*/origin,
                 /*name=*/"cars",
-                /*priority=*/0.0,
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(host, "/interest_group/bidding_logic.js"),
                 /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -7550,7 +7694,8 @@ IN_PROC_BROWSER_TEST_F(
                     /*expiry=*/base::Time(),
                     /*owner=*/other_origin,
                     /*name=*/"cars",
-                    /*priority=*/0.0,
+                    /*priority=*/0.0, /*execution_mode=*/
+                    blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                     /*bidding_url=*/
                     https_server_->GetURL("b.test",
                                           "/interest_group/bidding_logic.js"),
@@ -7644,6 +7789,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
           /*owner=*/test_origin,
           /*name=*/"cars",
           /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -7721,6 +7868,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
           /*owner=*/test_origin,
           /*name=*/"cars",
           /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -7801,6 +7950,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
           /*owner=*/test_origin,
           /*name=*/"cars",
           /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
           /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -7887,6 +8038,8 @@ IN_PROC_BROWSER_TEST_F(
                 /*owner=*/test_origin,
                 /*name=*/"winner",
                 /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "a.test",
@@ -7904,6 +8057,8 @@ IN_PROC_BROWSER_TEST_F(
                 /*owner=*/test_origin,
                 /*name=*/"bikes",
                 /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
                 /*bidding_url=*/
                 https_server_->GetURL(
                     "a.test",

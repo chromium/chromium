@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -64,13 +64,15 @@ bool InterestGroup::Ad::operator==(const Ad& other) const {
   return render_url == other.render_url && metadata == other.metadata;
 }
 
-InterestGroup::InterestGroup() : priority(0.0) {}
+InterestGroup::InterestGroup()
+    : priority(0.0), execution_mode(ExecutionMode::kCompatibilityMode) {}
 
 InterestGroup::InterestGroup(
     base::Time expiry,
     url::Origin owner,
     std::string name,
     double priority,
+    blink::mojom::InterestGroup::ExecutionMode execution_mode,
     absl::optional<GURL> bidding_url,
     absl::optional<GURL> bidding_wasm_helper_url,
     absl::optional<GURL> daily_update_url,
@@ -83,6 +85,7 @@ InterestGroup::InterestGroup(
       owner(std::move(owner)),
       name(std::move(name)),
       priority(priority),
+      execution_mode(execution_mode),
       bidding_url(std::move(bidding_url)),
       bidding_wasm_helper_url(std::move(bidding_wasm_helper_url)),
       daily_update_url(std::move(daily_update_url)),
@@ -102,6 +105,11 @@ bool InterestGroup::IsValid() const {
     return false;
 
   if (!priority || !std::isfinite(*priority))
+    return false;
+
+  if (!execution_mode ||
+      *execution_mode !=
+          blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode)
     return false;
 
   if (bidding_url && !IsUrlAllowed(*bidding_url, *this))
@@ -147,8 +155,10 @@ size_t InterestGroup::EstimateSize() const {
   size += owner.Serialize().size();
   size += name.size();
 
-  // priority is not stored as nullable, so only count the value size.
+  // priority and execution_mode are not stored as nullable, so only count the
+  // value size.
   size += sizeof(decltype(priority)::value_type);
+  size += sizeof(decltype(execution_mode)::value_type);
 
   if (bidding_url)
     size += bidding_url->spec().length();
@@ -176,13 +186,14 @@ size_t InterestGroup::EstimateSize() const {
 }
 
 bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
-  return std::tie(expiry, owner, name, priority, bidding_url,
+  return std::tie(expiry, owner, name, priority, execution_mode, bidding_url,
                   bidding_wasm_helper_url, daily_update_url,
                   trusted_bidding_signals_url, trusted_bidding_signals_keys,
                   user_bidding_signals, ads, ad_components) ==
          std::tie(other.expiry, other.owner, other.name, other.priority,
-                  other.bidding_url, other.bidding_wasm_helper_url,
-                  other.daily_update_url, other.trusted_bidding_signals_url,
+                  other.execution_mode, other.bidding_url,
+                  other.bidding_wasm_helper_url, other.daily_update_url,
+                  other.trusted_bidding_signals_url,
                   other.trusted_bidding_signals_keys,
                   other.user_bidding_signals, other.ads, other.ad_components);
 }

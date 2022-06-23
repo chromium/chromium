@@ -71,6 +71,8 @@ class InterestGroupStorageTest : public testing::Test {
     result.owner = owner;
     result.name = name;
     result.expiry = base::Time::Now() + base::Days(30);
+    result.execution_mode =
+        blink::InterestGroup::ExecutionMode::kCompatibilityMode;
     return result;
   }
 
@@ -730,6 +732,7 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   InterestGroup full(
       /*expiry=*/base::Time::Now() + base::Days(30), /*owner=*/full_origin,
       /*name=*/"full", /*priority=*/1.0,
+      /*execution_mode=*/InterestGroup::ExecutionMode::kCompatibilityMode,
       /*bidding_url=*/GURL("https://full.example.com/bid"),
       /*bidding_wasm_helper_url=*/GURL("https://full.example.com/bid_wasm"),
       /*daily_update_url=*/GURL("https://full.example.com/update"),

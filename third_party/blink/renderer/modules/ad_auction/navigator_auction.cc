@@ -177,6 +177,27 @@ bool CopyOwnerFromIdlToMojo(const ExecutionContext& execution_context,
   return true;
 }
 
+bool CopyExecutionModeFromIdlToMojo(const ExecutionContext& execution_context,
+                                    ExceptionState& exception_state,
+                                    const AuctionAdInterestGroup& input,
+                                    mojom::blink::InterestGroup& output) {
+  if (!input.hasExecutionMode())
+    return true;
+
+  switch (input.executionMode().AsEnum()) {
+    case V8WorkletExecutionMode::Enum::kCompatibility:
+      output.execution_mode =
+          mojom::blink::InterestGroup::ExecutionMode::kCompatibilityMode;
+      break;
+    default:
+      exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
+          input, "executionMode", input.executionMode().AsString(),
+          "is not a supported execution mode."));
+      return false;
+  }
+  return true;
+}
+
 bool CopyBiddingLogicUrlFromIdlToMojo(const ExecutionContext& context,
                                       ExceptionState& exception_state,
                                       const AuctionAdInterestGroup& input,
@@ -942,6 +963,10 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
     return ScriptPromise();
   mojo_group->name = group->name();
   mojo_group->priority = (group->hasPriority()) ? group->priority() : 0.0;
+  if (!CopyExecutionModeFromIdlToMojo(*context, exception_state, *group,
+                                      *mojo_group)) {
+    return ScriptPromise();
+  }
   if (!CopyBiddingLogicUrlFromIdlToMojo(*context, exception_state, *group,
                                         *mojo_group)) {
     return ScriptPromise();

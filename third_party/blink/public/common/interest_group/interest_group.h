@@ -25,6 +25,7 @@ namespace blink {
 //
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
 struct BLINK_COMMON_EXPORT InterestGroup {
+  using ExecutionMode = blink::mojom::InterestGroup_ExecutionMode;
   // An advertisement to display for an interest group. Typemapped to
   // blink::mojom::InterestGroupAd.
   // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#12-interest-group-attributes
@@ -58,6 +59,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
       url::Origin owner,
       std::string name,
       double priority,
+      ExecutionMode execution_mode,
       absl::optional<GURL> bidding_url,
       absl::optional<GURL> bidding_wasm_helper_url,
       absl::optional<GURL> daily_update_url,
@@ -83,6 +85,8 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   url::Origin owner;
   std::string name;
   absl::optional<double> priority;  // Needs to be optional for updates.
+  absl::optional<ExecutionMode>
+      execution_mode;  // Needs to be optional for updates.
   absl::optional<GURL> bidding_url;
   absl::optional<GURL> bidding_wasm_helper_url;
   absl::optional<GURL> daily_update_url;
@@ -91,7 +95,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<std::string> user_bidding_signals;
   absl::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
 
-  static_assert(__LINE__ == 94, R"(
+  static_assert(__LINE__ == 98, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class
