@@ -83,6 +83,25 @@ copy("copy_mojo_read_anything") {
   outputs = [
     "$target_gen_dir/$preprocess_folder/read_anything/{{source_file_part}}",
   ]
+
+  # TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.
+  deps += [
+    "//ui/accessibility:ax_constants_mojo_webui_js",
+    "//ui/accessibility:ax_enums_mojo_webui_js",
+    "//ui/accessibility/mojom:mojom_webui_js",
+  ]
+  sources += [
+    "$root_gen_dir/mojom-webui/ui/accessibility/ax_constants.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ui/accessibility/ax_enums.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ui/accessibility/mojom/ax_action_data.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ui/accessibility/mojom/ax_event.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ui/accessibility/mojom/ax_event_intent.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ui/accessibility/mojom/ax_node_data.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ui/accessibility/mojom/ax_relative_bounds.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ui/accessibility/mojom/ax_tree_data.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ui/accessibility/mojom/ax_tree_id.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ui/accessibility/mojom/ax_tree_update.mojom-webui.js",
+  ]
 }
 
 copy("copy_mojo_reading_list") {
