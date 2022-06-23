@@ -382,17 +382,10 @@ WebrtcVideoEncoderWrapper::ReturnEncodedFrame(
   // Non-null, because WebRTC registers a callback before calling Encode().
   DCHECK(encoded_callback_);
 
-  const uint8_t* buffer =
-      reinterpret_cast<const uint8_t*>(std::data(frame.data));
-  size_t buffer_size = frame.data.size();
-
-  // TODO(crbug.com/1208215): Avoid copying/allocating frame data here, by
-  // implementing EncodedImageBufferInterface.
   webrtc::EncodedImage encoded_image;
-  encoded_image.SetEncodedData(
-      webrtc::EncodedImageBuffer::Create(buffer, buffer_size));
-  encoded_image._encodedWidth = frame.size.width();
-  encoded_image._encodedHeight = frame.size.height();
+  encoded_image.SetEncodedData(frame.data);
+  encoded_image._encodedWidth = frame.dimensions.width();
+  encoded_image._encodedHeight = frame.dimensions.height();
   encoded_image._frameType = frame.key_frame
                                  ? webrtc::VideoFrameType::kVideoFrameKey
                                  : webrtc::VideoFrameType::kVideoFrameDelta;
@@ -414,8 +407,8 @@ WebrtcVideoEncoderWrapper::ReturnEncodedFrame(
     vp9_info->ss_data_available = frame.key_frame;
     vp9_info->spatial_layer_resolution_present = frame.key_frame;
     if (frame.key_frame) {
-      vp9_info->width[0] = frame.size.width();
-      vp9_info->height[0] = frame.size.height();
+      vp9_info->width[0] = frame.dimensions.width();
+      vp9_info->height[0] = frame.dimensions.height();
     }
     vp9_info->num_spatial_layers = 1;
     vp9_info->gof_idx = webrtc::kNoGofIdx;
@@ -489,7 +482,7 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
     return;
   }
 
-  if (!frame || frame->data.empty()) {
+  if (!frame || !frame->data || !frame->data->size()) {
     top_off_active_ = false;
     NotifyFrameDropped();
     DropPendingFrame();

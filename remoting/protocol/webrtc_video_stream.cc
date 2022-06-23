@@ -219,7 +219,7 @@ void WebrtcVideoStream::OnEncodedFrameSent(
     stats.rtt_estimate = current_frame_stats->rtt_estimate;
     stats.send_pending_delay = current_frame_stats->send_pending_delay;
 
-    stats.frame_size = frame.data.size();
+    stats.frame_size = frame.data->size();
 
     if (!current_frame_stats->input_event_timestamps.is_null()) {
       stats.capture_pending_delay =

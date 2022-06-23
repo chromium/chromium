@@ -336,7 +336,7 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
   bool got_data = false;
 
   auto encoded_frame = std::make_unique<EncodedFrame>();
-  encoded_frame->size = frame_size;
+  encoded_frame->dimensions = frame_size;
   encoded_frame->codec = webrtc::kVideoCodecAV1;
 
   while (!got_data) {
@@ -348,8 +348,8 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
     switch (aom_packet->kind) {
       case AOM_CODEC_CX_FRAME_PKT: {
         got_data = true;
-        encoded_frame->data.assign(
-            reinterpret_cast<const char*>(aom_packet->data.frame.buf),
+        encoded_frame->data = webrtc::EncodedImageBuffer::Create(
+            reinterpret_cast<const uint8_t*>(aom_packet->data.frame.buf),
             aom_packet->data.frame.sz);
         encoded_frame->key_frame =
             aom_packet->data.frame.flags & AOM_FRAME_IS_KEY;

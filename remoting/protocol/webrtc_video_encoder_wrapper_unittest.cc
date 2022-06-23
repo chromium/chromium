@@ -173,9 +173,9 @@ class WebrtcVideoEncoderWrapperTest : public testing::Test {
                           WebrtcVideoEncoder::EncodeCallback done) {
           auto encoded_frame =
               std::make_unique<WebrtcVideoEncoder::EncodedFrame>();
-          encoded_frame->size = frame->size();
-          encoded_frame->data.assign(
-              frame->size().width() * frame->size().height(), 'a');
+          encoded_frame->dimensions = frame->size();
+          encoded_frame->data = webrtc::EncodedImageBuffer::Create(
+              frame->size().width() * frame->size().height());
           encoded_frame->key_frame = param.key_frame;
           encoded_frame->quantizer = param.vpx_min_quantizer;
           encoded_frame->codec = kVideoCodecVP9;

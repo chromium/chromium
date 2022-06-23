@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "third_party/webrtc/api/video/encoded_image.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -78,8 +79,8 @@ class WebrtcVideoEncoder {
     EncodedFrame& operator=(EncodedFrame&&);
     ~EncodedFrame();
 
-    webrtc::DesktopSize size;
-    std::string data;
+    webrtc::DesktopSize dimensions;
+    rtc::scoped_refptr<webrtc::EncodedImageBuffer> data;
     bool key_frame;
     int quantizer;
     webrtc::VideoCodecType codec;
