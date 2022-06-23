@@ -192,7 +192,7 @@ assert set(EXECUTABLE_PATHS) & set(NON_EXECUTABLE_PATHS) == set()
 
 VALID_CHARS = set(string.ascii_lowercase + string.digits + '/-_.')
 for paths in (EXECUTABLE_PATHS, NON_EXECUTABLE_PATHS, IGNORED_PATHS):
-  assert all([set(path).issubset(VALID_CHARS) for path in paths])
+  assert all(set(path).issubset(VALID_CHARS) for path in paths)
 
 git_name = 'git.bat' if sys.platform.startswith('win') else 'git'
 
@@ -215,6 +215,8 @@ def get_git_root(dir_path):
   root = capture([git_name, 'rev-parse', '--show-toplevel'], dir_path).strip()
   if root:
     return root
+  # Should not be reached.
+  return None
 
 
 def is_ignored(rel_path):
@@ -261,7 +263,8 @@ def has_executable_bit(full_path):
 
 
 def has_shebang_or_is_elf_or_mach_o(full_path):
-  """Returns if the file starts with #!/ or is an ELF or Mach-O binary.
+  """Returns a three-element tuple that indicates if the file starts with #!/,
+  is an ELF binary, or Mach-O binary.
 
   full_path is the absolute path to the file.
   """
@@ -312,13 +315,13 @@ def check_file(root_path, rel_path):
   if must_be_executable(rel_path):
     if not bit:
       return result_dict('Must have executable bit set: %s' % exec_add)
-    return
+    return None
   if must_not_be_executable(rel_path):
     if bit:
       return result_dict('Must not have executable bit set: %s' % exec_remove)
-    return
+    return None
   if ignored_extension(rel_path):
-    return
+    return None
 
   # For the others, it depends on the file header.
   (shebang, elf, mach_o) = has_shebang_or_is_elf_or_mach_o(full_path)
@@ -332,6 +335,7 @@ def check_file(root_path, rel_path):
     if elf:
       return result_dict('Has ELF header but not executable bit: %s' % exec_add)
     # Mach-O is allowed to exist in the tree with or without an executable bit.
+  return None
 
 
 def check_files(root, files):
@@ -340,7 +344,7 @@ def check_files(root, files):
   return filter(None, gen)
 
 
-class ApiBase(object):
+class ApiBase:
   def __init__(self, root_dir, bare_output):
     self.root_dir = root_dir
     self.bare_output = bare_output

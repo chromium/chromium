@@ -15,7 +15,7 @@ USE_PYTHON3 = True
 def CommonChecks(input_api, output_api):
   output = []
   output.extend(
-      input_api.canned_checks.RunPylint(input_api, output_api, version='1.5'))
+      input_api.canned_checks.RunPylint(input_api, output_api, version='2.7'))
   # Run it like if it were a unit test.
   output.extend(
       input_api.canned_checks.RunUnitTests(input_api,
