@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './select_custom.js';
+
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FormSelectOptions} from './form_constants.js';
+import {Notification} from './types.js';
+
+// Web component housing the form for chrome://notification-tester.
 export class NotificationTester extends PolymerElement {
   static get is() {
     return 'notification-tester';
@@ -14,18 +20,57 @@ export class NotificationTester extends PolymerElement {
   }
 
   static get properties() {
-    return {};
+    return {
+      /*
+       @type {!Notification}
+       */
+      notifMetadata: {
+        type: Object,
+        value: function() {
+          return {};
+        },
+      },
+      /*
+       * @private
+       */
+      titleSelectList: {
+        type: Array,
+        value: FormSelectOptions.TITLE_OPTIONS,
+      },
+      /*
+       * @private
+       */
+      messageSelectList: {
+        type: Array,
+        value: FormSelectOptions.MESSAGE_OPTIONS,
+      },
+      /*
+       * @private
+       */
+      badgeSelectList: {
+        type: Array,
+        value: FormSelectOptions.BADGE_OPTIONS,
+      },
+      /*
+       * @private
+       */
+      imageSelectList: {
+        type: Array,
+        value: FormSelectOptions.IMAGE_OPTIONS,
+      },
+      /*
+       * @private
+       */
+      iconSelectList: {
+        type: Array,
+        value: FormSelectOptions.ICON_OPTIONS,
+      },
+    };
   }
 
-  onClickGenerate_() {
-    // Extract arguments from user selections.
-    const notifTitleElem = this.$.title;
-    const notifBodyElem = this.$.body;
-    const notifTitleValue =
-        notifTitleElem.options[notifTitleElem.selectedIndex].value;
-    const notifBodyValue =
-        notifBodyElem.options[notifBodyElem.selectedIndex].value;
-    chrome.send('generateNotificationForm', [notifTitleValue, notifBodyValue]);
+  onClickGenerate() {
+    // Send notification data to C++
+    chrome.send('generateNotificationForm', [this.notifMetadata]);
   }
 }
 
