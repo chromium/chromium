@@ -6,7 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"

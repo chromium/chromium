@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 
 #include "chromeos/ash/components/network/cellular_esim_profile_handler_impl.h"
+#include "chromeos/ash/components/network/network_test_helper_base.h"
 #include "chromeos/network/managed_cellular_pref_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_metadata_store.h"
-#include "chromeos/network/network_test_helper_base.h"
 #include "components/onc/onc_pref_names.h"
 
 namespace chromeos {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/fake_network_device_handler.h"
+#include "chromeos/ash/components/network/fake_network_device_handler.h"
 
 namespace chromeos {
 

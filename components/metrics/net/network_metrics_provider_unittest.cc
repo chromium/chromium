@@ -17,7 +17,7 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_IOS)

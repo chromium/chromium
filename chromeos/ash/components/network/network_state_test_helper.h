@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_NETWORK_STATE_TEST_HELPER_H_
-#define CHROMEOS_NETWORK_NETWORK_STATE_TEST_HELPER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_STATE_TEST_HELPER_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_STATE_TEST_HELPER_H_
 
-#include "chromeos/network/network_test_helper_base.h"
+#include "chromeos/ash/components/network/network_test_helper_base.h"
 
 namespace chromeos {
 
@@ -57,4 +57,4 @@ namespace ash {
 using ::chromeos::NetworkStateTestHelper;
 }  // namespace ash
 
-#endif  // CHROMEOS_NETWORK_NETWORK_STATE_TEST_HELPER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_STATE_TEST_HELPER_H_

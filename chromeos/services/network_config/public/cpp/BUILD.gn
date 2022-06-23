@@ -30,7 +30,7 @@ source_set("test_support") {
 
   public_deps = [
     "//base",
-    "//chromeos/network:test_support",
+    "//chromeos/ash/components/network:test_support",
     "//chromeos/services/network_config/public/mojom",
     "//mojo/public/cpp/bindings",
   ]

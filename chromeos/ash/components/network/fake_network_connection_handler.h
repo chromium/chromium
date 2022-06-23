@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_FAKE_NETWORK_CONNECTION_HANDLER_H_
-#define CHROMEOS_NETWORK_FAKE_NETWORK_CONNECTION_HANDLER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_FAKE_NETWORK_CONNECTION_HANDLER_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_FAKE_NETWORK_CONNECTION_HANDLER_H_
 
 #include <string>
 #include <vector>
@@ -99,4 +99,4 @@ namespace ash {
 using ::chromeos::FakeNetworkConnectionHandler;
 }
 
-#endif  // CHROMEOS_NETWORK_FAKE_NETWORK_CONNECTION_HANDLER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_FAKE_NETWORK_CONNECTION_HANDLER_H_

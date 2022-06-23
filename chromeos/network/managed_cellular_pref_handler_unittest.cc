@@ -5,7 +5,7 @@
 #include "chromeos/network/managed_cellular_pref_handler.h"
 
 #include "base/test/task_environment.h"
-#include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

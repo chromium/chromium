@@ -1,6 +1,6 @@
 include_rules = [
+  "+chromeos/ash/components/network",
   "+chromeos/dbus",
-  "+chromeos/network",
   "+components/encrypted_messages",
   "+components/variations",
   "+content/public/test/browser_task_environment.h",

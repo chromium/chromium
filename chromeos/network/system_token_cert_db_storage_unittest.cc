@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/network/system_token_cert_db_storage_test_util.h"
+#include "chromeos/ash/components/network/system_token_cert_db_storage_test_util.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
 #include "net/cert/nss_cert_database.h"

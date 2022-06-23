@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/network_test_helper_base.h"
+#include "chromeos/ash/components/network/network_test_helper_base.h"
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"

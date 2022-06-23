@@ -37,9 +37,9 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     "//base",
+    "//chromeos/ash/components/network:test_support",
     "//chromeos/dbus/shill",
     "//chromeos/network",
-    "//chromeos/network:test_support",
     "//components/onc",
     "//components/prefs",
     "//components/prefs:test_support",
