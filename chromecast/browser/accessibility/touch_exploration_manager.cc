@@ -65,10 +65,10 @@ void TouchExplorationManager::HandleAccessibilityGesture(
   // AccessibilityController::HandleAccessibilityGestore.)
   extensions::EventRouter* event_router = extensions::EventRouter::Get(
       shell::CastBrowserProcess::GetInstance()->browser_context());
-  std::vector<base::Value> event_args;
-  event_args.push_back(base::Value(ui::ToString(gesture)));
-  event_args.push_back(base::Value(location.x()));
-  event_args.push_back(base::Value(location.y()));
+  base::Value::List event_args;
+  event_args.Append(ui::ToString(gesture));
+  event_args.Append(location.x());
+  event_args.Append(location.y());
   std::unique_ptr<extensions::Event> event(new extensions::Event(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_ACCESSIBILITY_GESTURE,
       extensions::cast::api::accessibility_private::OnAccessibilityGesture::

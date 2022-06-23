@@ -141,8 +141,8 @@ void TtsExtensionEventHandler::OnTtsEvent(content::TtsUtterance* utterance,
   details.Set(constants::kSrcIdKey, utterance->GetSrcId());
   details.Set(constants::kIsFinalEventKey, utterance->IsFinished());
 
-  std::vector<base::Value> arguments;
-  arguments.emplace_back(std::move(details));
+  base::Value::List arguments;
+  arguments.Append(std::move(details));
 
   auto event = std::make_unique<extensions::Event>(
       ::extensions::events::TTS_ON_EVENT, ::events::kOnEvent,

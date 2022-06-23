@@ -246,7 +246,7 @@ void AccessibilityServiceImpl::AnnounceChromeVox() {
 
   const std::string& extension_id = extension_misc::kChromeVoxExtensionId;
 
-  std::vector<base::Value> event_args;
+  base::Value::List event_args;
   std::unique_ptr<extensions::Event> event(new extensions::Event(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_INTRODUCE_CHROME_VOX,
       extensions::cast::api::accessibility_private::OnIntroduceChromeVox::
