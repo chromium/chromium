@@ -18,6 +18,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -75,7 +76,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private static final float EXTRA_HEIGHT_RATIO = 0.1f;
     private static final int SCROLL_DURATION_MS = 200;
     private static final int NAVBAR_FADE_DURATION_MS = 16;
-    private static final int SPINNER_FADE_DURATION_MS = 400;
+    private static final int SPINNER_FADEIN_DURATION_MS = 100;
+    private static final int SPINNER_FADEOUT_DURATION_MS = 400;
 
     @IntDef({HeightStatus.TOP, HeightStatus.INITIAL_HEIGHT, HeightStatus.TRANSITION})
     @Retention(RetentionPolicy.SOURCE)
@@ -123,13 +125,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private CircularProgressDrawable mSpinner;
     private View mToolbarView;
     private View mToolbarCoordinator;
+    private int mToolbarColor;
     private Runnable mPositionUpdater;
 
     // Runnable finishing the activity after the exit animation. Non-null when PCCT is closing.
     @Nullable
     private Runnable mFinishRunnable;
-
-    private int mToolbarColor;
 
     /** A callback to be called once the Custom Tab has been resized. */
     interface OnResizedCallback {
@@ -390,6 +391,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
         mToolbarCoordinator = coordinatorView;
         mToolbarView = toolbar;
+        mToolbarColor = toolbar.getBackground().getColor();
         roundCorners(coordinatorView, toolbar, toolbarCornerRadius);
         toolbar.setHandleStrategy(new PartialCustomTabHandleStrategy(mActivity));
     }
@@ -430,34 +432,39 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         handleView.setElevation(
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation));
-        View handleBar = handleView.findViewById(R.id.handle_bar);
-        ViewGroup.MarginLayoutParams lp =
-                (ViewGroup.MarginLayoutParams) handleBar.getLayoutParams();
-        int dragBarTopMargin =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_handle_height)
-                - mActivity.getResources().getDimensionPixelSize(
-                        R.dimen.custom_tabs_drag_bar_height);
-        lp.setMargins(0, dragBarTopMargin, 0, 0);
-
-        GradientDrawable background = (GradientDrawable) handleView.getBackground();
-        background.mutate();
-        background.setCornerRadii(new float[] {toolbarCornerRadius, toolbarCornerRadius,
-                toolbarCornerRadius, toolbarCornerRadius, 0, 0, 0, 0});
         updateShadowOffset();
-        mToolbarColor = toolbar.getBackground().getColor();
+
+        GradientDrawable cctBackground = (GradientDrawable) handleView.getBackground();
+        adjustCornerRadius(cctBackground, toolbarCornerRadius);
+        handleView.setBackground(cctBackground);
+
+        // Inner frame |R.id.drag_bar| is used for setting background color to match that of
+        // the toolbar. Outer frame |R.id.custom_tabs_handle_view| is not suitable since it
+        // covers the entire client area for rendering outline shadow around the CCT.
+        View dragBar = handleView.findViewById(R.id.drag_bar);
+        GradientDrawable dragBarBackground = (GradientDrawable) dragBar.getBackground();
+        adjustCornerRadius(dragBarBackground, toolbarCornerRadius);
         if (mDrawOutlineShadow) {
             int width = mActivity.getResources().getDimensionPixelSize(
                     R.dimen.custom_tabs_outline_width);
-            background.setStroke(width, toolbar.getToolbarHairlineColor(mToolbarColor));
+            cctBackground.setStroke(width, toolbar.getToolbarHairlineColor(mToolbarColor));
+
+            // We need an inset to make the outline shadow visible.
+            dragBar.setBackground(new InsetDrawable(dragBarBackground, width, width, width, 0));
+        } else {
+            dragBar.setBackground(dragBarBackground);
         }
 
-        handleView.setBackground(background);
-
-        // Pass the handle View to CustomTabToolbar for background color management.
-        toolbar.setHandleView(handleView);
+        // Pass the drag bar portion to CustomTabToolbar for background color management.
+        toolbar.setHandleBackground(dragBarBackground);
 
         // Having the transparent background is necessary for the shadow effect.
         mActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    }
+
+    private static void adjustCornerRadius(GradientDrawable d, int radius) {
+        d.mutate();
+        d.setCornerRadii(new float[] {radius, radius, radius, radius, 0, 0, 0, 0});
     }
 
     @Override
@@ -562,7 +569,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // animation can always cover the transition artifact.
         mSpinnerView.animate()
                 .alpha(0f)
-                .setDuration(SPINNER_FADE_DURATION_MS)
+                .setDuration(SPINNER_FADEOUT_DURATION_MS)
                 .setListener(mSpinnerFadeoutAnimatorListener);
         updateNavbarVisibility(true);
     }
@@ -594,7 +601,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mSpinnerView.clearAnimation();
         mSpinnerView.setAlpha(0.f);
         mSpinnerView.setVisibility(View.VISIBLE);
-        mSpinnerView.animate().alpha(1.f).setDuration(SPINNER_FADE_DURATION_MS).setListener(null);
+        mSpinnerView.animate().alpha(1.f).setDuration(SPINNER_FADEIN_DURATION_MS).setListener(null);
         mSpinner.start();
     }
 
