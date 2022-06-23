@@ -3050,11 +3050,6 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
                           !win_native_api_available);
 }
 
-void AddIPHStrings(content::WebUIDataSource* html_source) {
-  html_source->AddBoolean("iphDemoEnabled", base::FeatureList::IsEnabled(
-                                                features::kIPHInWebUIDemo));
-}
-
 }  // namespace
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source,
@@ -3074,7 +3069,6 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddCommonStrings(html_source, profile);
   AddDownloadsStrings(html_source);
   AddExtensionsStrings(html_source);
-  AddIPHStrings(html_source);
   AddLanguagesStrings(html_source, profile);
   AddOnStartupStrings(html_source);
   AddPeopleStrings(html_source, profile);
