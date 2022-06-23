@@ -261,23 +261,21 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(kTestParams),
                          &ParamToTestSuffix);
 
-class DiceWebSigninInterceptionBubbleSyncPromoPixelTest
+class DiceWebSigninInterceptionBubbleV2PixelTest
     : public DiceWebSigninInterceptionBubblePixelTest {
  public:
-  DiceWebSigninInterceptionBubbleSyncPromoPixelTest() = default;
+  DiceWebSigninInterceptionBubbleV2PixelTest() = default;
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kSyncPromoAfterSigninIntercept};
+  base::test::ScopedFeatureList scoped_feature_list_{kSigninInterceptBubbleV2};
 };
 
-// TODO(https://crbug.com/1322850): Fix failure and re-enable test.
-IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleSyncPromoPixelTest,
-                       DISABLED_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleV2PixelTest,
+                       InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         DiceWebSigninInterceptionBubbleSyncPromoPixelTest,
+                         DiceWebSigninInterceptionBubbleV2PixelTest,
                          testing::ValuesIn(kTestParams),
                          &ParamToTestSuffix);
 
