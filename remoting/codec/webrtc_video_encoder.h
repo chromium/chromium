@@ -84,6 +84,7 @@ class WebrtcVideoEncoder {
     int quantizer;
     webrtc::VideoCodecType codec;
 
+    uint32_t rtp_timestamp;
     std::unique_ptr<FrameStats> stats;
   };
 

@@ -9,8 +9,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 WebrtcFrameSchedulerConstantRate::WebrtcFrameSchedulerConstantRate() = default;
 
@@ -133,5 +132,4 @@ void WebrtcFrameSchedulerConstantRate::CaptureNextFrame() {
   capture_callback_.Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

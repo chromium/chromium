@@ -5,6 +5,7 @@
 #include "remoting/protocol/webrtc_video_encoder_factory.h"
 
 #include "base/check.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/webrtc_video_encoder_wrapper.h"
@@ -43,6 +44,9 @@ WebrtcVideoEncoderFactory::CreateVideoEncoder(
     const webrtc::SdpVideoFormat& format) {
   return std::make_unique<WebrtcVideoEncoderWrapper>(
       format, session_options_, main_task_runner_,
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::HIGHEST},
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED),
       video_channel_state_observer_);
 }
 
