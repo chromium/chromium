@@ -21,6 +21,7 @@
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 #import "testing/gtest_mac.h"
+#include "ui/base/cocoa/find_pasteboard.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/ime/input_method.h"
 #import "ui/base/test/cocoa_helper.h"
@@ -249,6 +250,43 @@ NSTextInputContext* g_fake_current_input_context = nullptr;
   return g_fake_current_input_context;
 }
 
+@end
+
+// Let's not mess with the machine's actual find pasteboard!
+@interface MockFindPasteboard : FindPasteboard
+@end
+
+@implementation MockFindPasteboard {
+  base::scoped_nsobject<NSString> _text;
+}
+
++ (FindPasteboard*)sharedInstance {
+  static MockFindPasteboard* instance = nil;
+  if (!instance) {
+    instance = [[MockFindPasteboard alloc] init];
+  }
+  return instance;
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _text.reset([[NSString alloc] init]);
+  }
+  return self;
+}
+
+- (void)loadTextFromPasteboard:(NSNotification*)notification {
+  // No-op
+}
+
+- (void)setFindText:(NSString*)newText {
+  _text.reset([newText copy]);
+}
+
+- (NSString*)findText {
+  return _text;
+}
 @end
 
 namespace views {
@@ -1922,6 +1960,25 @@ TEST_F(BridgedNativeWidgetTest, TextInput_WriteToPasteboard) {
     EXPECT_EQ(1u, [objects count]);
     EXPECT_NSEQ(@"bar baz", [objects lastObject]);
   }
+}
+
+TEST_F(BridgedNativeWidgetTest, WriteToFindPasteboard) {
+  base::mac::ScopedObjCClassSwizzler swizzler([FindPasteboard class],
+                                              [MockFindPasteboard class],
+                                              @selector(sharedInstance));
+  EXPECT_NSEQ(@"", [[FindPasteboard sharedInstance] findText]);
+
+  const std::string test_string = "foo bar baz";
+  InstallTextField(test_string);
+
+  SetSelectionRange(NSMakeRange(4, 7));
+  [ns_view_ copyToFindPboard:nil];
+  EXPECT_NSEQ(@"bar baz", [[FindPasteboard sharedInstance] findText]);
+
+  // Don't overwrite with empty selection
+  SetSelectionRange(NSMakeRange(0, 0));
+  [ns_view_ copyToFindPboard:nil];
+  EXPECT_NSEQ(@"bar baz", [[FindPasteboard sharedInstance] findText]);
 }
 
 }  // namespace test
