@@ -613,10 +613,6 @@ class CrostiniManager : public KeyedService,
   // Can be called for testing to skip restart.
   void set_skip_restart_for_testing() { skip_restart_for_testing_ = true; }
   bool skip_restart_for_testing() { return skip_restart_for_testing_; }
-  void set_component_manager_load_error_for_testing(
-      component_updater::CrOSComponentManager::Error error) {
-    component_manager_load_error_for_testing_ = error;
-  }
 
   void SetCrostiniDialogStatus(DialogType dialog_type, bool open);
   // Returns true if the dialog is open.
@@ -865,9 +861,6 @@ class CrostiniManager : public KeyedService,
   std::string owner_id_;
 
   bool skip_restart_for_testing_ = false;
-  component_updater::CrOSComponentManager::Error
-      component_manager_load_error_for_testing_ =
-          component_updater::CrOSComponentManager::Error::NONE;
 
   static bool is_dev_kvm_present_;
 

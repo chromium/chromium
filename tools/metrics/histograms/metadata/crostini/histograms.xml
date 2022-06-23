@@ -259,6 +259,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Crostini.InstallSource" enum="CrostiniInstallSource"
     expires_after="2023-04-10">
+  <obsolete>
+    Removed in M105 - no longer needed
+  </obsolete>
   <owner>sidereal@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>

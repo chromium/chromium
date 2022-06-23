@@ -137,14 +137,6 @@ class TerminaInstallTest : public testing::Test {
     EXPECT_EQ(termina_installer_.GetDlcId(), "termina-dlc");
   }
 
-  void ExpectComponentInstalled() {
-    EXPECT_TRUE(component_manager_->IsRegisteredMayBlock(
-        imageloader::kTerminaComponentName));
-    EXPECT_EQ(termina_installer_.GetInstallLocation(),
-              base::FilePath(component_mount_path_));
-    EXPECT_EQ(termina_installer_.GetDlcId(), absl::nullopt);
-  }
-
  protected:
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
@@ -377,13 +369,14 @@ TEST_F(TerminaInstallTest, InstallDlcFallbackError) {
   fake_dlc_client_->set_install_error("An error");
   PrepareComponentForLoad();
 
-  termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
+  termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectFailure,
                                             base::Unretained(this)),
                              /*is_initial_install=*/false);
   run_loop_.Run();
 
   CheckDlcInstallCalledTimes(1);
-  ExpectComponentInstalled();
+  EXPECT_FALSE(component_manager_->IsRegisteredMayBlock(
+      imageloader::kTerminaComponentName));
 }
 
 TEST_F(TerminaInstallTest, InstallDlcFallbackIsCancelable) {
@@ -432,12 +425,13 @@ TEST_F(TerminaInstallTest, InstallDlcFallbackOfflineComponentAlreadyInstalled) {
   network_connection_tracker->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_NONE);
 
-  termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectSuccess,
+  termina_installer_.Install(base::BindOnce(&TerminaInstallTest::ExpectOffline,
                                             base::Unretained(this)),
                              /*is_initial_install=*/false);
   run_loop_.Run();
 
-  ExpectComponentInstalled();
+  EXPECT_FALSE(component_manager_->IsRegisteredMayBlock(
+      imageloader::kTerminaComponentName));
 }
 
 }  // namespace crostini

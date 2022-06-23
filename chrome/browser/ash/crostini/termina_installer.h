@@ -10,15 +10,14 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 
-// This class is responsible for tracking which source the termina VM is
-// installed from (component updater, dlc service etc.) and ensuring that any
-// unneeded versions are cleaned up.
+// This class is responsible managing (un)installation of the Termina VM.
+// From M105, we require using DLC and will forcibly remove the component even
+// if loading DLC fails.
 class TerminaInstaller {
  public:
   TerminaInstaller();
@@ -48,11 +47,10 @@ class TerminaInstaller {
   // check the result of this.
   //
   // |is_initial_install| should be set to true when this is called from the
-  // crostini installer, and false otherwise. This allows us to fall back to the
-  // cros-termina component if transitioning to DLC fails while still requiring
-  // it for new installs. In the future this may also allow us to force the DLC
-  // to be installed even on tethered connections during the install, as in this
-  // case we can expect the user already knows we will download things.
+  // crostini installer, and false otherwise. In the future this may allow us
+  // to force the DLC to be installed even on tethered connections during the
+  // install, as in this case we can expect the user already knows we will
+  // download things.
   void Install(base::OnceCallback<void(InstallResult)> callback,
                bool is_initial_install);
 
@@ -67,9 +65,8 @@ class TerminaInstaller {
   // Get the id of the installed DLC, or nullopt if DLC is not being used.
   absl::optional<std::string> GetDlcId();
 
-  // Attempt to cancel a pending install. Note that neither DLC service nor
-  // component updater support this, but we have some retry logic that can be
-  // aborted.
+  // Attempt to cancel a pending install. The DLC service does not support
+  // this, but we have some retry logic that can be aborted.
   void Cancel();
 
  private:
@@ -79,18 +76,6 @@ class TerminaInstaller {
                     bool is_initial_install,
                     const chromeos::DlcserviceClient::InstallResult& result);
 
-  void InstallComponent(base::OnceCallback<void(InstallResult)> callback);
-  void OnInstallComponent(base::OnceCallback<void(InstallResult)> callback,
-                          bool is_update_checked,
-                          component_updater::CrOSComponentManager::Error error,
-                          const base::FilePath& path);
-  void ReinstallComponent(base::OnceCallback<void(InstallResult)> callback);
-  void OnReinstallComponent(
-      base::OnceCallback<void(InstallResult)> callback,
-      bool is_update_checked,
-      component_updater::CrOSComponentManager::Error error,
-      const base::FilePath& path);
-
   void RemoveComponentIfPresent(base::OnceCallback<void()> callback,
                                 UninstallResult* result);
   void RemoveDlcIfPresent(base::OnceCallback<void()> callback,
@@ -99,11 +84,6 @@ class TerminaInstaller {
 
   void OnUninstallFinished(base::OnceCallback<void(bool)> callback,
                            std::vector<UninstallResult> partial_results);
-
-  // Do we need to try to force a component update? We want to do this at most
-  // once per session, so this is initialized to true and unset whenever we
-  // successfully check for an update or we need to install a new major version.
-  bool component_update_check_needed_{true};
 
   absl::optional<base::FilePath> termina_location_{absl::nullopt};
   absl::optional<std::string> dlc_id_{};
