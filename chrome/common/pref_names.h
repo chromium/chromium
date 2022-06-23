@@ -1251,6 +1251,11 @@ extern const char kSCTAuditingHashdanceReportCount[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kConsumerAutoUpdateToggle[];
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kKioskMetrics[];
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

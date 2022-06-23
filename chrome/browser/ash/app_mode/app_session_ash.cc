@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
+#include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -29,6 +30,10 @@ void StartFloatingAccessibilityMenu() {
 
 }  // namespace
 
+AppSessionAsh::AppSessionAsh() {
+  network_metrics_service_ = std::make_unique<NetworkConnectivityMetricsService>();
+}
+
 AppSessionAsh::~AppSessionAsh() = default;
 
 void AppSessionAsh::Init(Profile* profile, const std::string& app_id) {
@@ -47,6 +52,10 @@ void AppSessionAsh::InitForWebKioskWithLacros(Profile* profile) {
   SetProfile(profile);
   CreateBrowserWindowHandler(nullptr);
   StartFloatingAccessibilityMenu();
+}
+
+void AppSessionAsh::ShuttingDown() {
+  network_metrics_service_.reset();
 }
 
 void AppSessionAsh::InitKioskAppUpdateService(Profile* profile,

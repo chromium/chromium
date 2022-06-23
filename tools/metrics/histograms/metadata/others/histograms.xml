@@ -7061,6 +7061,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Kiosk.Session.NetworkDrops" units="network drops"
+    expires_after="2023-06-01">
+  <owner>pbond@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@chromium.org</owner>
+  <summary>
+    ChromeOS only. Number of network drops during a kiosk session. Logged on the
+    next kiosk session start.
+  </summary>
+</histogram>
+
 <histogram name="Kiosk.SessionDuration.Crashed" units="ms"
     expires_after="2023-04-20">
   <owner>pbond@chromium.org</owner>

@@ -241,7 +241,8 @@ class KioskAppManager : public KioskAppManagerBase,
   KioskAppManager& operator=(const KioskAppManager&) = delete;
   ~KioskAppManager() override;
 
-  // Stop all data loading and remove its dependency on CrosSettings.
+  // Stop all data loading, remove its dependency on CrosSettings.
+  // Remove ash observers or dependencies.
   void CleanUp();
 
   // Gets KioskAppData for the given app id.

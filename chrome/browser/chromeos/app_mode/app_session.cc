@@ -23,6 +23,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -41,8 +42,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -53,8 +52,6 @@ using extensions::AppWindow;
 using extensions::AppWindowRegistry;
 
 namespace chromeos {
-
-const char kKioskMetrics[] = "kiosk-metrics";
 
 const char kKioskSessionStateHistogram[] = "Kiosk.SessionState";
 const char kKioskSessionCountPerDayHistogram[] = "Kiosk.Session.CountPerDay";
@@ -226,7 +223,7 @@ class AppSessionMetricsService {
   }
 
   void RecordPreviousKioskSessionCrashIfAny() {
-    const auto* metrics_value = prefs_->GetDictionary(kKioskMetrics);
+    const auto* metrics_value = prefs_->GetDictionary(prefs::kKioskMetrics);
 
     if (!metrics_value)
       return;
@@ -248,7 +245,7 @@ class AppSessionMetricsService {
   }
 
   size_t RetrieveLastDaySessionCount(base::Time session_start_time) {
-    const auto* metrics_value = prefs_->GetDictionary(kKioskMetrics);
+    const auto* metrics_value = prefs_->GetDictionary(prefs::kKioskMetrics);
     const base::Value::List* previous_times = nullptr;
     if (metrics_value) {
       const auto* metrics_dict = metrics_value->GetIfDict();
@@ -279,13 +276,13 @@ class AppSessionMetricsService {
     base::Value::Dict result_value;
     result_value.Set(kKioskSessionLastDayList, std::move(times));
     result_value.Set(kKioskSessionStartTime, base::TimeToValue(start_time_));
-    prefs_->SetDict(kKioskMetrics, std::move(result_value));
+    prefs_->SetDict(prefs::kKioskMetrics, std::move(result_value));
     return result;
   }
 
   void ClearStartTime() {
     start_time_ = base::Time();
-    const auto* metrics_value = prefs_->GetDictionary(kKioskMetrics);
+    const auto* metrics_value = prefs_->GetDictionary(prefs::kKioskMetrics);
     if (!metrics_value)
       return;
     const auto* metrics_dict = metrics_value->GetIfDict();
@@ -294,7 +291,7 @@ class AppSessionMetricsService {
     base::Value::Dict new_metrics_dict = metrics_dict->Clone();
     DCHECK(new_metrics_dict.Remove(kKioskSessionStartTime));
 
-    prefs_->SetDict(kKioskMetrics, std::move(new_metrics_dict));
+    prefs_->SetDict(prefs::kKioskMetrics, std::move(new_metrics_dict));
     prefs_->CommitPendingWrite(base::DoNothing(), base::DoNothing());
   }
 
@@ -364,7 +361,7 @@ AppSession::~AppSession() {
 }
 
 void AppSession::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kKioskMetrics);
+  registry->RegisterDictionaryPref(prefs::kKioskMetrics);
 }
 
 void AppSession::Init(Profile* profile, const std::string& app_id) {

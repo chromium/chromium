@@ -3553,4 +3553,11 @@ const char kSCTAuditingHashdanceReportCount[] =
 const char kConsumerAutoUpdateToggle[] = "settings.consumer_auto_update_toggle";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+// A dictionary containing kiosk metrics latest session related information.
+// For example, kiosk session start times, number of network drops.
+// This setting resides in local state.
+const char kKioskMetrics[] = "kiosk-metrics";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace prefs

@@ -704,6 +704,10 @@ void KioskAppManager::CleanUp() {
   apps_.clear();
   usb_stick_updater_.reset();
   external_cache_.reset();
+
+  if (!app_session_)
+    return;
+  app_session_->ShuttingDown();
 }
 
 const KioskAppData* KioskAppManager::GetAppData(

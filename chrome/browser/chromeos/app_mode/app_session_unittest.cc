@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -50,7 +51,9 @@ class AppSessionTest : public testing::Test {
 
   TestingPrefServiceSimple* local_state() { return local_state_->Get(); }
 
-  void TearDown() override { local_state()->RemoveUserPref(kKioskMetrics); }
+  void TearDown() override {
+    local_state()->RemoveUserPref(prefs::kKioskMetrics);
+  }
 
   void WebKioskTracksBrowserCreationTest() {
     auto app_session =
@@ -89,7 +92,7 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
 
   WebKioskTracksBrowserCreationTest();
 
-  const base::Value* value = local_state()->GetDictionary(kKioskMetrics);
+  const base::Value* value = local_state()->GetDictionary(prefs::kKioskMetrics);
   ASSERT_TRUE(value);
   const base::Value* sessions_list =
       value->FindListKey(kKioskSessionLastDayList);
@@ -129,7 +132,7 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
               base::TimeToValue(base::Time::Now() -
                                 2 * kKioskSessionDurationHistogramLimit));
 
-    local_state()->SetDict(kKioskMetrics, std::move(value));
+    local_state()->SetDict(prefs::kKioskMetrics, std::move(value));
   }
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -137,7 +140,7 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
 
   WebKioskTracksBrowserCreationTest();
 
-  const base::Value* value = local_state()->GetDictionary(kKioskMetrics);
+  const base::Value* value = local_state()->GetDictionary(prefs::kKioskMetrics);
   ASSERT_TRUE(value);
   const base::Value* sessions_list =
       value->FindListKey(kKioskSessionLastDayList);
