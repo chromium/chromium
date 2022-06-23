@@ -737,6 +737,14 @@ def ensure_empty_dir(fs, directory, allow_existing, remove_existing):
     if fs.exists(merged_output_json):
         fs.remove(merged_output_json)
 
+    # Fuchsia specific Additional logs to be cleaned
+    fuchsia_log_files = [f for f in fs.listdir(directory)
+                         if fs.isfile(fs.join(directory, f))]
+    for file_name in fuchsia_log_files:
+        path = fs.join(directory, file_name)
+        if fs.exists(path):
+            fs.remove(path)
+
 
 def mark_missing_shards(summary_json,
                         input_directories,

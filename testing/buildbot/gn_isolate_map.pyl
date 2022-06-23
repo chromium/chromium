@@ -274,6 +274,14 @@
       "${ISOLATED_OUTDIR}",
     ],
   },
+  "blink_wpt_tests": {
+    "label": "//:blink_wpt_tests",
+    "type": "generated_script",
+    "args": [
+      "--results-directory",
+      "${ISOLATED_OUTDIR}",
+    ],
+  },
   "boundary_interface_example_apk": {
     "label": "//android_webview/support_library/boundary_interfaces:boundary_interface_example_apk",
     "type": "additional_compile_target",

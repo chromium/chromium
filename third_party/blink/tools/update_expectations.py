@@ -14,4 +14,6 @@ if __name__ == "__main__":
     HOST = host.Host()
     RETURN_CODE = update_expectations.main(
         HOST, BotTestExpectationsFactory(HOST.builders), sys.argv[1:])
+    RETURN_CODE |= update_expectations.main(
+        HOST, BotTestExpectationsFactory(HOST.builders, 'blink_wpt_tests'), sys.argv[1:])
     sys.exit(RETURN_CODE)

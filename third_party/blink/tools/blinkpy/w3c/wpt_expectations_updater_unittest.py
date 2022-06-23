@@ -145,12 +145,12 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         # of the tests passed.
         result = """
             {
-                "testId": "ninja://:blink_web_tests/external/wpt/test/path.html",
+                "testId": "ninja://:blink_wpt_tests/external/wpt/test/path.html",
                 "variant": {
                     "def": {
                         "builder": "mac10.10-blink-rel",
                         "os": "Mac-10.10",
-                        "test_suite": "blink_web_tests"
+                        "test_suite": "blink_wpt_tests"
                     }
                 },
                 "status": "ABORT"
@@ -172,12 +172,12 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         host = self.mock_host()
         result = """
             {
-                "testId": "ninja://:blink_web_tests/external/wpt/x/passing-test.html",
+                "testId": "ninja://:blink_wpt_tests/external/wpt/x/passing-test.html",
                 "variant": {
                     "def": {
                         "builder": "mac10.10-blink-rel",
                         "os": "Mac-10.10",
-                        "test_suite": "blink_web_tests"
+                        "test_suite": "blink_wpt_tests"
                     }
                 },
                 "expected": true,
@@ -189,18 +189,18 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         self.assertFalse(
             list(updater.get_failing_results_dicts(Build('MOCK Try Mac10.10', 123, 'Build-123'),
-                                                   'blink_web_tests')))
+                                                   'blink_wpt_tests')))
 
     def test_get_failing_results_dict_unexpected_pass(self):
         host = self.mock_host()
         result = """
             {
-                "testId": "ninja://:blink_web_tests/external/wpt/x/passing-test.html",
+                "testId": "ninja://:blink_wpt_tests/external/wpt/x/passing-test.html",
                 "variant": {
                     "def": {
                         "builder": "mac10.10-blink-rel",
                         "os": "Mac-10.10",
-                        "test_suite": "blink_web_tests"
+                        "test_suite": "blink_wpt_tests"
                     }
                 },
                 "expected": false,
@@ -212,7 +212,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         self.assertFalse(
             list(updater.get_failing_results_dicts(Build('MOCK Try Mac10.10', 123, 'Build-123'),
-                                                   'blink_web_tests')))
+                                                   'blink_wpt_tests')))
 
     def test_get_failing_results_dict_no_results(self):
         host = self.mock_host()
@@ -221,18 +221,18 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         self.assertFalse(
             list(updater.get_failing_results_dicts(Build('MOCK Try Mac10.10', 123),
-                                                   'blink_web_tests')))
+                                                   'blink_wpt_tests')))
 
     def test_get_failing_results_dict_some_failing_results(self):
         host = self.mock_host()
         result = """
             {
-                "testId": "ninja://:blink_web_tests/external/wpt/x/failing-test.html",
+                "testId": "ninja://:blink_wpt_tests/external/wpt/x/failing-test.html",
                 "variant": {
                     "def": {
                         "builder": "mac10.10-blink-rel",
                         "os": "Mac-10.10",
-                        "test_suite": "blink_web_tests"
+                        "test_suite": "blink_wpt_tests"
                     }
                 },
                 "expected": false,
@@ -243,7 +243,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             [json.loads(result)] * 3)
         updater = WPTExpectationsUpdater(host)
         results = updater.get_failing_results_dicts(
-            Build('MOCK Try Mac10.10', 123, 'Build-123'), 'blink_web_tests')
+            Build('MOCK Try Mac10.10', 123, 'Build-123'), 'blink_wpt_tests')
         self.assertEqual(list(results), [{
             'external/wpt/x/failing-test.html': {
                 DesktopConfig(port_name='test-mac-mac10.10'):
@@ -259,12 +259,12 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         host = self.mock_host()
         result = """
             {
-                "testId": "ninja://:blink_web_tests/x/failing-test.html",
+                "testId": "ninja://:blink_wpt_tests/x/failing-test.html",
                 "variant": {
                     "def": {
                         "builder": "mac10.10-blink-rel",
                         "os": "Mac-10.10",
-                        "test_suite": "blink_web_tests"
+                        "test_suite": "blink_wpt_tests"
                     }
                 },
                 "status": "FAIL"
@@ -274,19 +274,19 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             [json.loads(result)] * 3)
         updater = WPTExpectationsUpdater(host)
         results_dict = updater.get_failing_results_dicts(
-            Build('MOCK Try Mac10.10', 123, 'Build-123'), 'blink_web_tests')
+            Build('MOCK Try Mac10.10', 123, 'Build-123'), 'blink_wpt_tests')
         self.assertEqual(list(results_dict), [])
 
     def test_get_failing_results_dict_not_retried_test(self):
         host = self.mock_host()
         result = """
             {
-                "testId": "ninja://:blink_web_tests/external/wpt/x/failing-test.html",
+                "testId": "ninja://:blink_wpt_tests/external/wpt/x/failing-test.html",
                 "variant": {
                     "def": {
                         "builder": "mac10.10-blink-rel",
                         "os": "Mac-10.10",
-                        "test_suite": "blink_web_tests"
+                        "test_suite": "blink_wpt_tests"
                     }
                 },
                 "status": "FAIL"
@@ -296,19 +296,19 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             [json.loads(result)])
         updater = WPTExpectationsUpdater(host)
         results_dict = updater.get_failing_results_dicts(
-            Build('MOCK Try Mac10.10', 123, 'Build-123'), 'blink_web_tests')
+            Build('MOCK Try Mac10.10', 123, 'Build-123'), 'blink_wpt_tests')
         self.assertEqual(list(results_dict), [])
 
     def test_get_failing_results_dict_webdriver_failing_results(self):
         host = self.mock_host()
         result = """
             {
-                "testId": "ninja://:blink_web_tests/external/wpt/x/failing-test.html",
+                "testId": "ninja://:blink_wpt_tests/external/wpt/x/failing-test.html",
                 "variant": {
                     "def": {
                         "builder": "linux-blink-rel",
                         "os": "Trusty",
-                        "test_suite": "blink_web_tests"
+                        "test_suite": "blink_wpt_tests"
                     }
                 },
                 "status": "FAIL"
@@ -336,7 +336,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             }))
         updater = WPTExpectationsUpdater(host)
         results = list(updater.get_failing_results_dicts(
-            Build('MOCK Try Trusty', 123, 'Build-123'), 'blink_web_tests'))
+            Build('MOCK Try Trusty', 123, 'Build-123'), 'blink_wpt_tests'))
         self.assertEqual(len(results), 2)
         self.assertEqual(results, [{
             'external/wpt/x/failing-test.html': {
@@ -811,7 +811,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     }
                 }
             },
-            step_name='blink_web_tests (with patch)')
+            step_name='blink_wpt_tests (with patch)')
 
         updater.port_name = lambda b: b.builder_name
         self.assertEqual(

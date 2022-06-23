@@ -6999,6 +6999,10 @@ crbug.com/1293679 pending_beacon/pending_beacon-basic.html [ Skip ]
 crbug.com/1293679 pending_beacon/pending_beacon-deactivate.html [ Skip ]
 crbug.com/1293679 wpt_internal/pending_beacon/* [ Skip ]
 
+# introduce blink_wpt_tests
+crbug.com/1299834 [ Win ] wpt_internal/html/interaction/focus/the-autofocus-attribute/object-fallback.html [ Timeout ]
+crbug.com/1299834 external/wpt/css/css-pseudo/first-letter-with-quote.html [ Failure ]
+
 # Sheriff 2022-05-20
 crbug.com/1291841 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment-security.sub.html [ Pass Timeout ]
 crbug.com/1327764 inspector-protocol/overlay/overlay-persistent-overlays.js [ Failure Pass ]

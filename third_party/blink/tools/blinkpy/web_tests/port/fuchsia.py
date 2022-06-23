@@ -291,11 +291,6 @@ class FuchsiaPort(base.Port):
         # platforms.
         return 20000
 
-    def requires_http_server(self):
-        """HTTP server is always required to avoid copying the tests to the VM.
-        """
-        return True
-
     def start_http_server(self, additional_dirs, number_of_drivers):
         additional_dirs['/third_party/blink/PerformanceTests'] = \
             self._perf_tests_dir()

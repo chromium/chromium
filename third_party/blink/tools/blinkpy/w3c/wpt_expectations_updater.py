@@ -74,8 +74,8 @@ class WPTExpectationsUpdater(object):
                              for p in self.expectations_files()}
         self._test_expectations = TestExpectations(
             self.port, expectations_dict=expectations_dict)
-        self.testid_prefix = "ninja://:blink_web_tests/"
-        self.test_suite = "blink_web_tests"
+        self.testid_prefix = "ninja://:blink_wpt_tests/"
+        self.test_suite = "blink_wpt_tests"
 
     def expectations_files(self):
         """Returns list of expectations files.
@@ -157,11 +157,11 @@ class WPTExpectationsUpdater(object):
 
         if flag_specific == "disable-site-isolation-trials":
             builder_names = ["linux-rel"]
-            test_suite = "not_site_per_process_blink_web_tests"
+            test_suite = "not_site_per_process_blink_wpt_tests"
         else:
             builder_names = self.host.builders.all_flag_specific_try_builder_names(
                 flag_specific)
-            test_suite = "blink_web_tests"
+            test_suite = "blink_wpt_tests"
 
         build_to_status = self.git_cl.latest_try_jobs(
             builder_names=builder_names,

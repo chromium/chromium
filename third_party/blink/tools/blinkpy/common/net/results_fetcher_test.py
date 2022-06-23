@@ -90,7 +90,6 @@ class BuilderTest(LoggingTestCase):
 
     def test_fetch_results_with_weird_step_name(self):
         fetcher = TestResultsFetcher()
-        fetcher.builders.step_names_for_builder = lambda builder: []
         fetcher.web = MockWeb(
             urls={
                 'https://test-results.appspot.com/testfile?buildnumber=123&'
@@ -119,57 +118,6 @@ class BuilderTest(LoggingTestCase):
     def test_fetch_results_without_build_number(self):
         fetcher = TestResultsFetcher()
         self.assertIsNone(fetcher.fetch_results(Build('builder', None)))
-
-    def test_get_step_names(self):
-        fetcher = TestResultsFetcher()
-        fetcher.builders.step_names_for_builder = lambda builder: []
-        fetcher.web = MockWeb(
-            urls={
-                'https://test-results.appspot.com/testfile?buildnumber=5&'
-                'callback=ADD_RESULTS&builder=foo&name=full_results.json':
-                b'ADD_RESULTS(' +
-                json.dumps([{
-                    "TestType": "blink_web_tests (with patch)"
-                }, {
-                    "TestType":
-                    "not_site_per_process_blink_web_tests (with patch)"
-                }, {
-                    "TestType": "blink_web_tests (retry with patch)"
-                }, {
-                    "TestType": "base_unittests (with patch)"
-                }]).encode('utf8', 'replace') + b');'
-            })
-        step_names = fetcher.get_layout_test_step_names(Build('foo', 5))
-        self.assertEqual(sorted(step_names), [
-            'blink_web_tests (with patch)',
-            'not_site_per_process_blink_web_tests (with patch)',
-        ])
-        self.assertLog([])
-
-    def test_get_step_names_for_wpt(self):
-        fetcher = TestResultsFetcher()
-        fetcher.builders.step_names_for_builder = lambda builder: []
-        fetcher.web = MockWeb(
-            urls={
-                'https://test-results.appspot.com/testfile?buildnumber=5&'
-                'callback=ADD_RESULTS&builder=foo&name=full_results.json':
-                b'ADD_RESULTS(' +
-                (json.dumps([{
-                    "TestType": "wpt_tests_suite (with patch)"
-                }, {
-                    "TestType": "wpt_tests_suite (retry with patch)"
-                }, {
-                    "TestType": "base_unittests (with patch)"
-                }])).encode('utf8', 'replace') + b');'
-            })
-        step_names = fetcher.get_layout_test_step_names(Build('foo', 5))
-        self.assertEqual(step_names, ['wpt_tests_suite (with patch)'])
-        self.assertLog([])
-
-    def test_get_step_names_without_build_number(self):
-        fetcher = TestResultsFetcher()
-        self.assertEqual(
-            fetcher.get_layout_test_step_names(Build('builder', None)), [])
 
     def test_fetch_webdriver_results_without_build_number(self):
         fetcher = TestResultsFetcher()

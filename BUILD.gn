@@ -1074,6 +1074,7 @@ if (!is_ios) {
 
     deps = [
       ":blink_web_tests",
+      ":blink_wpt_tests",
       "//third_party/blink/public:all_blink",
     ]
   }
@@ -1082,7 +1083,10 @@ if (!is_ios) {
   # third_party/blink/tools/run_web_tests.py
   group("run_web_tests") {
     testonly = true
-    deps = [ ":blink_web_tests" ]
+    deps = [
+      ":blink_web_tests",
+      ":blink_wpt_tests",
+    ]
   }
 
   if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android) {
@@ -1205,8 +1209,8 @@ if (!is_ios) {
       "//third_party/blink/web_tests/external/WPT_BASE_MANIFEST_8.json",
       "//third_party/blink/web_tests/external/wpt/common/",
       "//third_party/blink/web_tests/external/wpt/resources/",
+      "//third_party/blink/web_tests/fast/harness/results.html",
       "//third_party/blink/web_tests/resources/",
-      "//third_party/blink/web_tests/wpt_internal/",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//third_party/test_fonts/test_fonts/",
       "//third_party/wpt_tools/",
@@ -1319,7 +1323,6 @@ if (!is_ios) {
       "//third_party/blink/web_tests/document-transition/",
       "//third_party/blink/web_tests/dom/",
       "//third_party/blink/web_tests/editing/",
-      "//third_party/blink/web_tests/external/",
       "//third_party/blink/web_tests/fast/",
       "//third_party/blink/web_tests/fonts/",
       "//third_party/blink/web_tests/fragmentation/",
@@ -1385,7 +1388,6 @@ if (!is_ios) {
       "//third_party/blink/web_tests/webaudio/",
       "//third_party/blink/web_tests/webexposed/",
       "//third_party/blink/web_tests/webgpu/",
-      "//third_party/blink/web_tests/wpt_internal/",
       "//third_party/blink/web_tests/xmlviewer/",
 
       # === Test Case Folders Ends ===
@@ -1413,6 +1415,71 @@ if (!is_ios) {
         "//third_party/blink/web_tests/platform/mac-mac11/",
         "//third_party/blink/web_tests/platform/mac-mac11-arm64/",
         "//third_party/blink/web_tests/platform/mac-mac12-arm64/",
+      ]
+    }
+
+    # flag-specific tests only runs on linux as of now
+    if (is_linux) {
+      data += [
+        "//third_party/blink/web_tests/FlagSpecificConfig",
+        "//third_party/blink/web_tests/FlagExpectations/",
+        "//third_party/blink/web_tests/flag-specific/",
+      ]
+    }
+  }
+
+  script_test("blink_wpt_tests") {
+    script = _common_web_test_script
+
+    args = _common_web_test_args
+
+    data_deps = [ ":blink_web_tests_support_data" ]
+    data = [
+      "//third_party/blink/perf_tests/",
+      "//third_party/blink/web_tests/SmokeTests/Default.txt",
+      "//third_party/blink/web_tests/VirtualTestSuites",
+
+      # List all test expectations here
+      "//third_party/blink/web_tests/ASANExpectations",
+      "//third_party/blink/web_tests/LeakExpectations",
+      "//third_party/blink/web_tests/MSANExpectations",
+      "//third_party/blink/web_tests/NeverFixTests",
+      "//third_party/blink/web_tests/SlowTests",
+      "//third_party/blink/web_tests/StaleTestExpectations",
+      "//third_party/blink/web_tests/TestExpectations",
+      "//third_party/blink/web_tests/WebDriverExpectations",
+      "//third_party/blink/web_tests/WebGPUExpectations",
+
+      # Generic baselines
+      "//third_party/blink/web_tests/platform/generic/",
+
+      # === List Test Cases folders here ===
+      "//third_party/blink/web_tests/external/",
+      "//third_party/blink/web_tests/wpt_internal/",
+
+      # === Test Case Folders Ends ===
+    ]
+
+    if (is_win || is_linux || is_fuchsia) {
+      data += [
+        "//third_party/blink/web_tests/platform/win/",
+        "//third_party/blink/web_tests/platform/win10/",
+        "//third_party/blink/web_tests/platform/win7/",
+      ]
+      if (is_linux || is_fuchsia) {
+        data += [ "//third_party/blink/web_tests/platform/linux/" ]
+      }
+      if (is_fuchsia) {
+        data += [ "//third_party/blink/web_tests/platform/fuchsia/" ]
+      }
+    } else if (is_mac) {
+      data += [
+        "//third_party/blink/web_tests/SmokeTests/Mac.txt",
+        "//third_party/blink/web_tests/platform/mac/",
+        "//third_party/blink/web_tests/platform/mac-mac10.13/",
+        "//third_party/blink/web_tests/platform/mac-mac10.14/",
+        "//third_party/blink/web_tests/platform/mac-mac10.15/",
+        "//third_party/blink/web_tests/platform/mac-mac11-arm64/",
       ]
     }
 

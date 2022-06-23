@@ -278,51 +278,11 @@ class TestResultsFetcher(object):
 
     @memoized
     def get_layout_test_step_names(self, build):
-        if not build.builder_name or not build.build_number:
-            _log.debug('Builder name or build number is None')
+        if build.builder_name is None:
+            _log.debug('Builder name is None')
             return []
 
-        # We were not able to retrieve step names for some builders from
-        # https://test-results.appspot.com. Read from config file instead
-        step_names = self.builders.step_names_for_builder(build.builder_name)
-        if step_names:
-            return step_names
-
-        url = '%s/testfile?%s' % (
-            TEST_RESULTS_SERVER,
-            six.moves.urllib.parse.urlencode([
-                ('buildnumber', build.build_number),
-                # This forces the server to gives us JSON rather than an HTML page.
-                ('callback', json_results_generator.JSON_CALLBACK),
-                ('builder', build.builder_name),
-                ('name', 'full_results.json')
-            ]))
-        data = self.web.get_binary(url, return_none_on_404=True)
-        if not data:
-            _log.debug('Got 404 response from:\n%s', url)
-            return []
-
-        # Strip out the callback
-        data = json.loads(json_results_generator.strip_json_wrapper(data))
-        suites = [
-            entry['TestType'] for entry in data
-            # Some suite names are like 'blink_web_tests on Intel GPU (with
-            # patch)'. Only make sure it starts with blink_web_tests and
-            # runs with a patch. This should be changed eventually to use actual
-            # structured data from the test results server.
-            if re.match(
-                r'([\w\-]*blink_web_tests|wpt_tests_suite).*\(with patch\)$',
-                entry['TestType'])
-        ]
-        # In manual testing, I sometimes saw results where the same suite was
-        # repeated twice. De-duplicate here to try to catch this.
-        suites = list(set(suites))
-        if not suites:
-            raise Exception(
-                'build %s on builder %s expected to have at least one web test '
-                'step, instead has none' %
-                (build.build_number, build.builder_name))
-        return suites
+        return self.builders.step_names_for_builder(build.builder_name)
 
     @memoized
     def fetch_web_test_results(self, results_url, full=False, step_name=None):
