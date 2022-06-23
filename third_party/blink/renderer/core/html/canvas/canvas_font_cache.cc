@@ -37,7 +37,10 @@ CanvasFontCache::CanvasFontCache(Document& document)
   default_font_description.SetFamily(font_family);
   default_font_description.SetSpecifiedSize(defaultFontSize);
   default_font_description.SetComputedSize(defaultFontSize);
-  default_font_style_ = document.GetStyleResolver().CreateComputedStyle();
+  if (document.IsActive())
+    default_font_style_ = document.GetStyleResolver().CreateComputedStyle();
+  else
+    default_font_style_ = ComputedStyle::CreateInitialStyleSingleton();
   default_font_style_->SetFontDescription(default_font_description);
 }
 
