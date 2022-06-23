@@ -94,6 +94,7 @@ constexpr char kFeedbackUserConsentKey[] = "feedbackUserCtlConsent";
 constexpr char kFeedbackUserConsentGrantedValue[] = "true";
 // Consent value matches JavaScript: `String(false)`.
 constexpr char kFeedbackUserConsentDeniedValue[] = "false";
+constexpr char kExtraDiagnosticsKey[] = "EXTRA_DIAGNOSTICS";
 
 }  // namespace
 
@@ -176,6 +177,11 @@ void ChromeOsFeedbackDelegate::SendReport(
   }
   if (feedback_context->page_url.has_value()) {
     feedback_data->set_page_url(feedback_context->page_url.value().spec());
+  }
+  if (feedback_context->extra_diagnostics.has_value() &&
+      !feedback_context->extra_diagnostics.value().empty()) {
+    feedback_data->AddLog(kExtraDiagnosticsKey,
+                          feedback_context->extra_diagnostics.value());
   }
 
   scoped_refptr<base::RefCountedMemory> png_data = GetScreenshotData();

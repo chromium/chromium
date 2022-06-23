@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/os_feedback_ui/url_constants.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -65,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   base::HistogramTester histogram_tester;
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
-  const GURL expected_url("chrome://os-feedback");
+  const GURL expected_url(ash::kChromeUIOSFeedbackUrl);
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
 
@@ -81,10 +84,42 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
 
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(expected_url, chrome::FindLastActive()
-                              ->tab_strip_model()
-                              ->GetActiveWebContents()
-                              ->GetVisibleURL());
+  const GURL visible_url = chrome::FindLastActive()
+                               ->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetVisibleURL();
+  EXPECT_FALSE(visible_url.has_query());
+  EXPECT_EQ(expected_url, visible_url);
+}
+
+// Test that when `extra_diagnostics` parameter appended.
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
+                       OsFeedbackAdditionalContextAddedToUrl) {
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
+  std::string unused;
+  const std::string extra_diagnostics = "extra diagnostics param";
+  GURL expected_url(base::StrCat(
+      {ash::kChromeUIOSFeedbackUrl, "/?extra_diagnostics=",
+       base::EscapeQueryParamValue(extra_diagnostics, /*use_plus=*/false)}));
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                               true);
+  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,
+                           /*description_template=*/unused,
+                           /*description_placeholder_text=*/unused,
+                           /*category_tag=*/unused,
+                           /*extra_diagnostics=*/extra_diagnostics);
+  navigation_observer.Wait();
+
+  const GURL visible_url = chrome::FindLastActive()
+                               ->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetVisibleURL();
+  EXPECT_TRUE(visible_url.has_query());
+  EXPECT_EQ(expected_url, visible_url);
 }
 
 }  // namespace ash

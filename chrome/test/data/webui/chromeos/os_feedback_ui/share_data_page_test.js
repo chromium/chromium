@@ -7,6 +7,7 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 
 import {fakeEmptyFeedbackContext, fakeFeedbackContext} from 'chrome://os-feedback/fake_data.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
+import {FeedbackContext} from 'chrome://os-feedback/feedback_types.js';
 import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -146,7 +147,6 @@ export function shareDataPageTestSuite() {
             'give us to help address technical issues and to improve our ' +
             'services, subject to our Privacy Policy and Terms of Service.',
         getElementContent('#privacyNote'));
-
   });
 
   // Test that the email drop down is populated with two options.
@@ -472,4 +472,33 @@ export function shareDataPageTestSuite() {
         assertFalse(consentCheckbox.checked);
         assertTrue(consentLabel.classList.contains(disabledInputClass));
       });
+
+  /**
+   * Test that when feedback context contains extra_diagnostics matching value
+   * is set on report.
+   */
+  test('AdditionalContext_ExtraDiagnostics', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    const reportWithoutExtraDiagnostics = (await clickSendAndWait(page)).report;
+    assertFalse(
+        !!reportWithoutExtraDiagnostics.feedbackContext.extraDiagnostics);
+
+    page.reEnableSendReportButton();
+    const fakeFeedbackContextWithExtraDiagnostics =
+        /** @type {!FeedbackContext} */ ({extraDiagnostics: 'some extra info'});
+    page.feedbackContext = fakeFeedbackContextWithExtraDiagnostics;
+    await flushTasks();
+
+    const reportWithExtraDiagnostics = (await clickSendAndWait(page)).report;
+    assertEquals(
+        fakeFeedbackContextWithExtraDiagnostics.extraDiagnostics,
+        reportWithExtraDiagnostics.feedbackContext.extraDiagnostics);
+
+    getElement('#sysInfoCheckbox').checked = false;
+    page.reEnableSendReportButton();
+    const reportNoSysInfo = (await clickSendAndWait(page)).report;
+    assertFalse(!!reportNoSysInfo.feedbackContext.extraDiagnostics);
+  });
 }

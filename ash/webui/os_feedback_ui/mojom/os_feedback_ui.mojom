@@ -74,6 +74,13 @@ struct FeedbackContext {
   string? email;
   // The URL of the page that this issue was being experienced on.
   url.mojom.Url?  page_url;
+  // Extra diagnostics information provided by source CrOS application by
+  // setting the extra_diagnostics query parameter when opening the CrOS
+  // Feedback app. Content of extra_diagnostics is added to
+  // a collection of key-value pairs, and eventually is serialized to a text
+  // file, zipped, and then attached to the report.
+  // Example value: "Failed to connect to wifi network.".
+  string? extra_diagnostics;
 };
 
 // Status of the sending of a feedback report.

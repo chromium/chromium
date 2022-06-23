@@ -25,6 +25,15 @@ export const FeedbackFlowState = {
 };
 
 /**
+ * Enum for reserved query parameters used by feedback source to provide
+ * addition context to final report.
+ * @enum {string}
+ */
+export const AdditionalContextQueryParam = {
+  EXTRA_DIAGNOSTICS: 'extra_diagnostics',
+};
+
+/**
  * @fileoverview
  * 'feedback-flow' manages the navigation among the steps to be taken.
  */
@@ -84,6 +93,7 @@ export class FeedbackFlowElement extends PolymerElement {
 
     this.feedbackServiceProvider_.getFeedbackContext().then((response) => {
       this.feedbackContext_ = response.feedbackContext;
+      this.setAdditionalContextFromQueryParams_();
     });
   }
 
@@ -103,6 +113,19 @@ export class FeedbackFlowElement extends PolymerElement {
         }
       });
     }
+  }
+
+  /**
+   * Sets additional context passed from RequestFeedbackFlow as part of the URL.
+   * See `AdditionalContextQueryParam` for valid query parameters.
+   * @private
+   */
+  setAdditionalContextFromQueryParams_() {
+    const params = new URLSearchParams(window.location.search);
+    const extraDiagnostics =
+        params.get(AdditionalContextQueryParam.EXTRA_DIAGNOSTICS);
+    this.feedbackContext_.extraDiagnostics =
+        extraDiagnostics ? decodeURIComponent(extraDiagnostics) : '';
   }
 
   /**

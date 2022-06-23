@@ -53,6 +53,9 @@ using extensions::FeedbackParams;
 using feedback::FeedbackData;
 using testing::_;
 
+constexpr char kExtraDiagnosticsKey[] = "EXTRA_DIAGNOSTICS";
+constexpr char kFakeExtraDiagnosticsValue[] =
+    "Failed to connect to wifi network.";
 constexpr char kPageUrl[] = "https://www.google.com/?q=123";
 constexpr char kSignedInUserEmail[] = "test_user_email@gmail.com";
 constexpr char kFeedbackUserConsentKey[] = "feedbackUserCtlConsent";
@@ -161,6 +164,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetSignedInUserEmail) {
 // - System logs and histograms are included.
 // - Screenshot is included.
 // - Consent granted.
+// - Non-empty extra_diagnostics provided.
 // TODO(xiangdongkong): Add tests for other flags once they are supported.
 // Currently, only load_system_info and send_histograms flags are implemented.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
@@ -170,6 +174,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->description = kDescription;
   report->include_screenshot = true;
   report->contact_user_consent_granted = true;
+  report->feedback_context->extra_diagnostics = kFakeExtraDiagnosticsValue;
 
   report->include_system_logs_and_histograms = true;
   const FeedbackParams expected_params{/*is_internal_email=*/false,
@@ -192,6 +197,10 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_NE(feedback_data->sys_info()->end(), consent_granted);
   EXPECT_EQ(kFeedbackUserConsentKey, consent_granted->first);
   EXPECT_EQ(kFeedbackUserConsentGrantedValue, consent_granted->second);
+  auto extra_diagnostics =
+      feedback_data->sys_info()->find(kExtraDiagnosticsKey);
+  EXPECT_EQ(kExtraDiagnosticsKey, extra_diagnostics->first);
+  EXPECT_EQ(kFakeExtraDiagnosticsValue, extra_diagnostics->second);
 }
 
 // Test that feedback params and data are populated with correct data before
@@ -199,12 +208,14 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // - System logs and histograms are not included.
 // - Screenshot is not included.
 // - Consent not granted.
+// - Empty string Extra Diagnostics provided.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        FeedbackDataPopulatedNotIncludeSysLogsOrScreenshot) {
   ReportPtr report = Report::New();
   report->feedback_context = FeedbackContext::New();
   report->feedback_context->email = kSignedInUserEmail;
   report->feedback_context->page_url = GURL(kPageUrl);
+  report->feedback_context->extra_diagnostics = std::string();
   report->description = kDescription;
   report->include_screenshot = false;
   report->contact_user_consent_granted = false;
@@ -230,6 +241,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_NE(feedback_data->sys_info()->end(), consent_denied);
   EXPECT_EQ(kFeedbackUserConsentKey, consent_denied->first);
   EXPECT_EQ(kFeedbackUserConsentDeniedValue, consent_denied->second);
+  auto extra_diagnostics =
+      feedback_data->sys_info()->find(kExtraDiagnosticsKey);
+  EXPECT_EQ(feedback_data->sys_info()->end(), extra_diagnostics);
 }
 
 // Test GetScreenshot returns correct data when there is a screenshot.

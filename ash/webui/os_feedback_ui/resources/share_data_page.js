@@ -190,6 +190,12 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       };
     }
 
+    if (this.feedbackContext.extraDiagnostics &&
+        this.getElement_('#sysInfoCheckbox').checked) {
+      report.feedbackContext.extraDiagnostics =
+          this.feedbackContext.extraDiagnostics;
+    }
+
     return report;
   }
 
