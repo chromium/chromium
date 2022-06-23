@@ -1891,9 +1891,9 @@ void SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture() {
 
 void SAMLDeviceAttestationTest::SetAllowedUrlsPolicy(
     const std::vector<std::string>& allowed_urls) {
-  std::vector<base::Value> allowed_urls_values;
+  base::Value::List allowed_urls_values;
   for (const auto& url : allowed_urls) {
-    allowed_urls_values.push_back(base::Value(url));
+    allowed_urls_values.Append(url);
   }
   settings_provider_->Set(kDeviceWebBasedAttestationAllowedUrls,
                           base::Value(std::move(allowed_urls_values)));

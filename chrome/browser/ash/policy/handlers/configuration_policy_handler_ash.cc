@@ -336,11 +336,11 @@ bool PinnedLauncherAppsPolicyHandler::CheckListEntry(const base::Value& value) {
 void PinnedLauncherAppsPolicyHandler::ApplyList(base::Value filtered_list,
                                                 PrefValueMap* prefs) {
   DCHECK(filtered_list.is_list());
-  std::vector<base::Value> pinned_apps_list;
-  for (const base::Value& entry : filtered_list.GetListDeprecated()) {
+  base::Value::List pinned_apps_list;
+  for (const base::Value& entry : filtered_list.GetList()) {
     base::Value app_dict(base::Value::Type::DICTIONARY);
     app_dict.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, entry.Clone());
-    pinned_apps_list.push_back(std::move(app_dict));
+    pinned_apps_list.Append(std::move(app_dict));
   }
   prefs->SetValue(prefs::kPolicyPinnedLauncherApps,
                   base::Value(std::move(pinned_apps_list)));

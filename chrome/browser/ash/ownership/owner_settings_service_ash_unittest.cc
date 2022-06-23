@@ -207,16 +207,17 @@ TEST_F(OwnerSettingsServiceAshTest, ForceAllowlist) {
 }
 
 TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersEmptyLists) {
-  std::vector<base::Value> list;
-  list.push_back(base::Value(kUserAllowlist));
+  base::Value::List list;
+  list.Append(kUserAllowlist);
 
   EXPECT_EQ(0,
             device_policy_->payload().user_allowlist().user_allowlist().size());
   EXPECT_EQ(0,
             device_policy_->payload().user_whitelist().user_whitelist().size());
 
-  OwnerSettingsServiceAsh::UpdateDeviceSettings(
-      kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(kAccountsPrefUsers,
+                                                base::Value(std::move(list)),
+                                                device_policy_->payload());
 
   EXPECT_EQ(1,
             device_policy_->payload().user_allowlist().user_allowlist().size());
@@ -227,8 +228,8 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersEmptyLists) {
 }
 
 TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersAllowList) {
-  std::vector<base::Value> list;
-  list.push_back(base::Value(kUserAllowlist));
+  base::Value::List list;
+  list.Append(kUserAllowlist);
 
   device_policy_->payload().mutable_user_allowlist()->add_user_allowlist(
       kOther);
@@ -238,8 +239,9 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersAllowList) {
   EXPECT_EQ(0,
             device_policy_->payload().user_whitelist().user_whitelist().size());
 
-  OwnerSettingsServiceAsh::UpdateDeviceSettings(
-      kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(kAccountsPrefUsers,
+                                                base::Value(std::move(list)),
+                                                device_policy_->payload());
 
   EXPECT_EQ(1,
             device_policy_->payload().user_allowlist().user_allowlist().size());
@@ -250,8 +252,8 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersAllowList) {
 }
 
 TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersWhiteList) {
-  std::vector<base::Value> list;
-  list.push_back(base::Value(kUserAllowlist));
+  base::Value::List list;
+  list.Append(kUserAllowlist);
 
   device_policy_->payload().mutable_user_whitelist()->add_user_whitelist(
       kOther);
@@ -261,8 +263,9 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersWhiteList) {
   EXPECT_EQ(1,
             device_policy_->payload().user_whitelist().user_whitelist().size());
 
-  OwnerSettingsServiceAsh::UpdateDeviceSettings(
-      kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(kAccountsPrefUsers,
+                                                base::Value(std::move(list)),
+                                                device_policy_->payload());
 
   EXPECT_EQ(0,
             device_policy_->payload().user_allowlist().user_allowlist().size());
@@ -273,8 +276,8 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersWhiteList) {
 }
 
 TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersBothLists) {
-  std::vector<base::Value> list;
-  list.push_back(base::Value(kUserAllowlist));
+  base::Value::List list;
+  list.Append(kUserAllowlist);
 
   device_policy_->payload().mutable_user_allowlist()->add_user_allowlist(
       kOther);
@@ -286,8 +289,9 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersBothLists) {
   EXPECT_EQ(1,
             device_policy_->payload().user_whitelist().user_whitelist().size());
 
-  OwnerSettingsServiceAsh::UpdateDeviceSettings(
-      kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(kAccountsPrefUsers,
+                                                base::Value(std::move(list)),
+                                                device_policy_->payload());
 
   EXPECT_EQ(1,
             device_policy_->payload().user_allowlist().user_allowlist().size());
