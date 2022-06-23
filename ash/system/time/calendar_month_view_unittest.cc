@@ -77,8 +77,8 @@ class CalendarMonthViewTest : public AshTestBase {
     ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(timezone);
     controller_ = std::make_unique<CalendarViewController>();
     controller_->UpdateMonth(date);
-    calendar_month_view_ =
-        std::make_unique<CalendarMonthView>(date, controller_.get());
+    calendar_month_view_ = std::make_unique<CalendarMonthView>(
+        controller_->GetOnScreenMonthFirstDayUTC(), controller_.get());
     calendar_month_view_->Layout();
   }
 
@@ -213,6 +213,44 @@ TEST_F(CalendarMonthViewTest, AzoreSummerTime) {
                 ->GetText());
   EXPECT_EQ(u"2", static_cast<views::LabelButton*>(month_view()->children()[34])
                       ->GetText());
+}
+
+// Tests that the month view should be rendered correctly with any time zone.
+// Using March to test since there's a DST change in several time zones in
+// March. If any calculation is wrong, there could be duplicated dates and the
+// last row will be rendered with one day off.
+TEST_F(CalendarMonthViewTest, AllTimeZone) {
+  // Create a monthview based on Mar,1st 2022.
+  //
+  // 27, 28, 1 , 2 , 3 , 4 , 5
+  // 6,  7,  8 , 9 , 10, 11, 12
+  // 13, 14, 15, 16, 17, 18, 19
+  // 20, 21, 22, 23, 24, 25, 26
+  // 27, 28, 29, 30, 31, 1 , 2
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("6 Mar 2022 10:00 GMT", &date));
+
+  for (auto* timezone : kAllTimeZones) {
+    // Creates a month view based on the current timezone.
+    CreateMonthView(date, base::UTF8ToUTF16(timezone));
+
+    // Checks some dates in the first row and last row of this month view.
+    EXPECT_EQ(u"27",
+              static_cast<views::LabelButton*>(month_view()->children()[0])
+                  ->GetText());
+    EXPECT_EQ(u"28",
+              static_cast<views::LabelButton*>(month_view()->children()[1])
+                  ->GetText());
+    EXPECT_EQ(u"1",
+              static_cast<views::LabelButton*>(month_view()->children()[2])
+                  ->GetText());
+    EXPECT_EQ(u"29",
+              static_cast<views::LabelButton*>(month_view()->children()[30])
+                  ->GetText());
+    EXPECT_EQ(u"2",
+              static_cast<views::LabelButton*>(month_view()->children()[34])
+                  ->GetText());
+  }
 }
 
 // Tests that todays row position is not updated when today is not in the month.
