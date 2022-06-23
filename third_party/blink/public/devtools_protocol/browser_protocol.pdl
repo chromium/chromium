@@ -9533,6 +9533,9 @@ experimental domain Tracing
         recordContinuously
         recordAsMuchAsPossible
         echoToConsole
+      # Size of the trace buffer in kilobytes. If not specified or zero is passed, a default value
+      # of 200 MB would be used.
+      optional number traceBufferSizeInKb
       # Turns on JavaScript stack sampling.
       optional boolean enableSampling
       # Turns on system tracing.

@@ -16,6 +16,7 @@
 #include "base/format_macros.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -64,6 +65,7 @@ namespace {
 const double kMinimumReportingInterval = 250.0;
 
 const char kRecordModeParam[] = "record_mode";
+const char kTraceBufferSizeInKb[] = "trace_buffer_size_in_kb";
 
 // Frames need to be at least 1x1, otherwise nothing would be captured.
 constexpr gfx::Size kMinFrameSize = gfx::Size(1, 1);
@@ -1149,6 +1151,11 @@ base::trace_event::TraceConfig TracingHandler::GetTraceConfigFromDevToolsConfig(
   base::Value config = ConvertDictKeyStyle(devtools_config);
   if (std::string* mode = config.FindStringPath(kRecordModeParam))
     config.SetStringPath(kRecordModeParam, ConvertFromCamelCase(*mode, '-'));
+  if (absl::optional<double> buffer_size =
+          config.FindDoublePath(kTraceBufferSizeInKb)) {
+    config.SetIntKey(kTraceBufferSizeInKb,
+                     base::saturated_cast<size_t>(buffer_size.value()));
+  }
   return base::trace_event::TraceConfig(config);
 }
 
