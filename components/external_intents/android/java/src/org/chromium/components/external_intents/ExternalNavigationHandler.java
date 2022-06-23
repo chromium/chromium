@@ -688,12 +688,13 @@ public class ExternalNavigationHandler {
         return isTyped && params.isRedirect() && isExternalProtocol;
     }
 
-    private boolean redirectShouldStayInApp(
-            ExternalNavigationParams params, boolean isExternalProtocol, Intent targetIntent) {
+    private boolean redirectShouldStayInApp(ExternalNavigationParams params,
+            boolean isExternalProtocol, Intent targetIntent,
+            QueryIntentActivitiesSupplier resolvingInfos) {
         RedirectHandler handler = params.getRedirectHandler();
         if (handler == null) return false;
-        boolean shouldStayInApp = handler.shouldStayInApp(
-                isExternalProtocol, mDelegate.isIntentForTrustedCallingApp(targetIntent));
+        boolean shouldStayInApp = handler.shouldStayInApp(isExternalProtocol,
+                mDelegate.isIntentForTrustedCallingApp(targetIntent, resolvingInfos));
         if (shouldStayInApp || handler.shouldNotOverrideUrlLoading()) {
             if (isExternalProtocol) handler.maybeLogExternalRedirectBlockedWithMissingGesture();
             if (DEBUG) Log.i(TAG, "RedirectHandler decision");
@@ -960,11 +961,11 @@ public class ExternalNavigationHandler {
         return false;
     }
 
-    private boolean fallBackToHandlingWithInstantApp(
-            ExternalNavigationParams params, boolean incomingIntentRedirect) {
+    private boolean fallBackToHandlingWithInstantApp(ExternalNavigationParams params,
+            boolean incomingIntentRedirect, QueryIntentActivitiesSupplier resolveInfos) {
         if (params.isIncognito()) return false;
         if (mDelegate.maybeLaunchInstantApp(params.getUrl(), params.getReferrerUrl(),
-                    incomingIntentRedirect, isSerpReferrer())) {
+                    incomingIntentRedirect, isSerpReferrer(), resolveInfos)) {
             if (DEBUG) Log.i(TAG, "Launching instant App.");
             return true;
         }
@@ -1437,12 +1438,12 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        if (redirectShouldStayInApp(params, isExternalProtocol, targetIntent)) {
-            return OverrideUrlLoadingResult.forNoOverride();
-        }
-
         QueryIntentActivitiesSupplier resolvingInfos =
                 new QueryIntentActivitiesSupplier(targetIntent);
+
+        if (redirectShouldStayInApp(params, isExternalProtocol, targetIntent, resolvingInfos)) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
 
         boolean intentMatchesNonDefaultWebApk =
                 intentMatchesNonDefaultWebApk(params, resolvingInfos);
@@ -1467,7 +1468,7 @@ public class ExternalNavigationHandler {
 
         boolean hasSpecializedHandler = countSpecializedHandlers(resolvingInfos.get()) > 0;
         if (!isExternalProtocol && !hasSpecializedHandler && !intentMatchesNonDefaultWebApk) {
-            if (fallBackToHandlingWithInstantApp(params, incomingIntentRedirect)) {
+            if (fallBackToHandlingWithInstantApp(params, incomingIntentRedirect, resolvingInfos)) {
                 return OverrideUrlLoadingResult.forExternalIntent();
             }
             return fallBackToHandlingInApp();
@@ -1503,7 +1504,7 @@ public class ExternalNavigationHandler {
 
         ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
         boolean requiresIntentChooser = false;
-        if (!mDelegate.maybeSetTargetPackage(targetIntent)) {
+        if (!mDelegate.maybeSetTargetPackage(targetIntent, resolvingInfos)) {
             requiresIntentChooser = isViewIntentToOtherBrowser(
                     targetIntent, resolvingInfos, isIntentWithSupportedProtocol, resolveActivity);
         }
@@ -2058,6 +2059,19 @@ public class ExternalNavigationHandler {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Check whether the given package is a specialized handler for given ResolveInfos.
+     *
+     * @param packageName Package name to check against. If null, checks if any package is a
+     *         specialized handler.
+     * @param infos The list of ResolveInfos to check.
+     * @return Whether the given package (or any package if null) is a specialized handler in the
+     *         given ResolveInfos.
+     */
+    public static boolean isPackageSpecializedHandler(String packageName, List<ResolveInfo> infos) {
+        return !getSpecializedHandlersWithFilter(infos, packageName, false).isEmpty();
     }
 
     public static ArrayList<String> getSpecializedHandlersWithFilter(List<ResolveInfo> infos,

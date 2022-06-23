@@ -45,6 +45,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Function;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
@@ -2825,8 +2826,8 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public boolean maybeLaunchInstantApp(
-                GURL url, GURL referrerUrl, boolean isIncomingRedirect, boolean isSerpReferrer) {
+        public boolean maybeLaunchInstantApp(GURL url, GURL referrerUrl, boolean isIncomingRedirect,
+                boolean isSerpReferrer, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
             return mCanHandleWithInstantApp;
         }
 
@@ -2851,7 +2852,8 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public boolean isIntentForTrustedCallingApp(Intent intent) {
+        public boolean isIntentForTrustedCallingApp(
+                Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
             return mIsCallingAppTrusted;
         }
 
@@ -2879,7 +2881,8 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public boolean maybeSetTargetPackage(Intent intent) {
+        public boolean maybeSetTargetPackage(
+                Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
             if (mTargetPackageName != null) {
                 intent.setSelector(null);
                 intent.setPackage(mTargetPackageName);

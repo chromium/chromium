@@ -6,12 +6,14 @@ package org.chromium.weblayer_private;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.os.RemoteException;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Function;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
 import org.chromium.components.external_intents.ExternalNavigationParams;
@@ -22,6 +24,8 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.ExternalIntentInIncognitoUserDecision;
+
+import java.util.List;
 
 /**
  * WebLayer's implementation of the {@link ExternalNavigationDelegate}.
@@ -149,8 +153,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     public void maybeSetPendingIncognitoUrl(Intent intent) {}
 
     @Override
-    public boolean maybeLaunchInstantApp(
-            GURL url, GURL referrerUrl, boolean isIncomingRedirect, boolean isSerpReferrer) {
+    public boolean maybeLaunchInstantApp(GURL url, GURL referrerUrl, boolean isIncomingRedirect,
+            boolean isSerpReferrer, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
         return false;
     }
 
@@ -176,7 +180,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean isIntentForTrustedCallingApp(Intent intent) {
+    public boolean isIntentForTrustedCallingApp(
+            Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
         return false;
     }
 
@@ -204,7 +209,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean maybeSetTargetPackage(Intent intent) {
+    public boolean maybeSetTargetPackage(
+            Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
         return false;
     }
 

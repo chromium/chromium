@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -177,12 +176,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         // Settings "App Notifications" view will open us with a specific category.
         if (mIntent.hasCategory(Notification.INTENT_CATEGORY_NOTIFICATION_PREFERENCES)) {
             NotificationPlatformBridge.launchNotificationPreferences(mIntent);
-            return Action.FINISH_ACTIVITY;
-        }
-
-        // Check if we should launch an Instant App to handle the intent.
-        if (InstantAppsHandler.getInstance().handleIncomingIntent(
-                    mActivity, mIntent, isCustomTabIntent, false)) {
             return Action.FINISH_ACTIVITY;
         }
 

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.instantapps;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
@@ -15,15 +16,18 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
+
+import java.util.List;
 
 /** A launcher for Instant Apps. */
 public class InstantAppsHandler {
@@ -129,18 +133,18 @@ public class InstantAppsHandler {
      *        resolved to another URL.
      * @return Whether Instant Apps is handling the URL request.
      */
-    public boolean handleIncomingIntent(Context context, Intent intent,
-            boolean isCustomTabsIntent, boolean isRedirect) {
+    public boolean handleIncomingIntent(Context context, Intent intent, boolean isCustomTabsIntent,
+            boolean isRedirect, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
         long startTimeStamp = SystemClock.elapsedRealtime();
         boolean result = handleIncomingIntentInternal(context, intent, isCustomTabsIntent,
-                startTimeStamp, isRedirect);
+                startTimeStamp, isRedirect, resolveInfoSupplier);
         recordHandleIntentDuration(startTimeStamp);
         return result;
     }
 
-    private boolean handleIncomingIntentInternal(
-            Context context, Intent intent, boolean isCustomTabsIntent, long startTime,
-            boolean isRedirect) {
+    private boolean handleIncomingIntentInternal(Context context, Intent intent,
+            boolean isCustomTabsIntent, long startTime, boolean isRedirect,
+            Supplier<List<ResolveInfo>> resolveInfoSupplier) {
         if (!isRedirect && !isCustomTabsIntent && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Log.i(TAG, "Package manager handles intents on O+, not handling in Chrome");
             return false;
@@ -176,7 +180,8 @@ public class InstantAppsHandler {
         if (selector != null) selector.setComponent(null);
 
         if (!(isCustomTabsIntent || isChromeDefaultHandler(context))
-                || ExternalNavigationDelegateImpl.isPackageSpecializedHandler(null, intentCopy)) {
+                || ExternalNavigationHandler.isPackageSpecializedHandler(
+                        null, resolveInfoSupplier.get())) {
             // Chrome is not the default browser or a specialized handler exists.
             Log.i(TAG, "Not handling with Instant Apps because Chrome is not default or "
                     + "there's a specialized handler");

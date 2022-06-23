@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.provider.Browser;
@@ -25,6 +27,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
@@ -36,6 +40,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
+
+import java.util.List;
 
 /**
  * Unit tests for {@link InstantAppsHandler}.
@@ -75,13 +81,23 @@ public class InstantAppsHandlerTest {
         editor.apply();
     }
 
+    private Supplier<List<ResolveInfo>> getSupplier(final Intent intent) {
+        return new Supplier<List<ResolveInfo>>() {
+            @Override
+            public List<ResolveInfo> get() {
+                return PackageManagerUtils.queryIntentActivities(intent,
+                        PackageManager.GET_RESOLVED_FILTER | PackageManager.MATCH_DEFAULT_ONLY);
+            }
+        };
+    }
+
     @Test
     @SmallTest
     public void testInstantAppsDisabled_incognito() {
         Intent i = createViewIntent();
         i.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
 
-        Assert.assertFalse(mHandler.handleIncomingIntent(mContext, i, false, true));
+        Assert.assertFalse(mHandler.handleIncomingIntent(mContext, i, false, true, getSupplier(i)));
     }
 
     @Test
@@ -90,14 +106,14 @@ public class InstantAppsHandlerTest {
         Intent i = createViewIntent();
         i.putExtra("com.google.android.gms.instantapps.DO_NOT_LAUNCH_INSTANT_APP", true);
 
-        Assert.assertFalse(mHandler.handleIncomingIntent(mContext, i, false, true));
+        Assert.assertFalse(mHandler.handleIncomingIntent(mContext, i, false, true, getSupplier(i)));
     }
 
     @Test
     @SmallTest
     public void testInstantAppsDisabled_mainIntent() {
         Intent i = new Intent(Intent.ACTION_MAIN);
-        Assert.assertFalse(mHandler.handleIncomingIntent(mContext, i, false, true));
+        Assert.assertFalse(mHandler.handleIncomingIntent(mContext, i, false, true, getSupplier(i)));
     }
 
     @Test
@@ -106,13 +122,14 @@ public class InstantAppsHandlerTest {
         Intent i = createViewIntent();
         i.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
 
-        Assert.assertFalse(mHandler.handleIncomingIntent(mContext, i, false, true));
+        Assert.assertFalse(mHandler.handleIncomingIntent(mContext, i, false, true, getSupplier(i)));
 
         Intent signedIntent = createViewIntent();
         signedIntent.setPackage(mContext.getPackageName());
         IntentUtils.addTrustedIntentExtras(signedIntent);
 
-        Assert.assertFalse(mHandler.handleIncomingIntent(mContext, signedIntent, false, true));
+        Assert.assertFalse(
+                mHandler.handleIncomingIntent(mContext, signedIntent, false, true, getSupplier(i)));
     }
 
     @Test
@@ -120,7 +137,7 @@ public class InstantAppsHandlerTest {
     public void testInstantAppsDisabled_launchFromShortcut() {
         Intent i = createViewIntent();
         i.putExtra(WebappConstants.EXTRA_SOURCE, 1);
-        Assert.assertFalse(mHandler.handleIncomingIntent(mContext, i, false, true));
+        Assert.assertFalse(mHandler.handleIncomingIntent(mContext, i, false, true, getSupplier(i)));
     }
 
     @Test
@@ -130,15 +147,15 @@ public class InstantAppsHandlerTest {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("applink.chrome_default_browser", false);
         editor.apply();
-
-        Assert.assertFalse(
-                mHandler.handleIncomingIntent(mContext, createViewIntent(), false, true));
+        Intent i = createViewIntent();
+        Assert.assertFalse(mHandler.handleIncomingIntent(mContext, i, false, true, getSupplier(i)));
 
         // Even if Chrome is not default, launch Instant Apps for CustomTabs since those never
         // show disambiguation dialogs.
         Intent cti = createViewIntent()
                 .putExtra("android.support.customtabs.extra.EXTRA_ENABLE_INSTANT_APPS", true);
-        Assert.assertTrue(mHandler.handleIncomingIntent(mContext, cti, true, true));
+        Assert.assertTrue(
+                mHandler.handleIncomingIntent(mContext, cti, true, true, getSupplier(cti)));
     }
 
     @Test
@@ -146,16 +163,16 @@ public class InstantAppsHandlerTest {
     public void testInstantAppsEnabled() {
         Intent i = createViewIntent();
         Assert.assertTrue(mHandler.handleIncomingIntent(
-                InstrumentationRegistry.getContext(), i, false, true));
+                InstrumentationRegistry.getContext(), i, false, true, getSupplier(i)));
 
         // Check that identical intent wouldn't be enabled for CustomTab flow.
-        Assert.assertFalse(
-                mHandler.handleIncomingIntent(InstrumentationRegistry.getContext(), i, true, true));
+        Assert.assertFalse(mHandler.handleIncomingIntent(
+                InstrumentationRegistry.getContext(), i, true, true, getSupplier(i)));
 
         // Add CustomTab specific extra and check it's now enabled.
         i.putExtra("android.support.customtabs.extra.EXTRA_ENABLE_INSTANT_APPS", true);
-        Assert.assertTrue(
-                mHandler.handleIncomingIntent(InstrumentationRegistry.getContext(), i, true, true));
+        Assert.assertTrue(mHandler.handleIncomingIntent(
+                InstrumentationRegistry.getContext(), i, true, true, getSupplier(i)));
     }
 
     @Test
@@ -164,7 +181,7 @@ public class InstantAppsHandlerTest {
         Intent i = new Intent(NfcAdapter.ACTION_NDEF_DISCOVERED);
         i.setData(Uri.parse("http://instantapp.com/"));
         Assert.assertTrue(mHandler.handleIncomingIntent(
-                InstrumentationRegistry.getContext(), i, false, true));
+                InstrumentationRegistry.getContext(), i, false, true, getSupplier(i)));
     }
 
     @Test

@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
-import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -128,22 +127,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         return true;
     }
 
-    /**
-     * Check whether the given package is a specialized handler for the given intent
-     *
-     * @param packageName Package name to check against. Can be null or empty.
-     * @param intent The intent to resolve for.
-     * @return Whether the given package is a specialized handler for the given intent. If there is
-     *         no package name given checks whether there is any specialized handler.
-     */
-    public static boolean isPackageSpecializedHandler(String packageName, Intent intent) {
-        List<ResolveInfo> handlers = PackageManagerUtils.queryIntentActivities(
-                intent, PackageManager.GET_RESOLVED_FILTER);
-        return !ExternalNavigationHandler
-                        .getSpecializedHandlersWithFilter(handlers, packageName, true)
-                        .isEmpty();
-    }
-
     @Override
     public boolean canLoadUrlInCurrentTab() {
         return !(mTab == null || mTab.isClosing() || !mTab.isInitialized());
@@ -227,8 +210,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean maybeLaunchInstantApp(
-            GURL url, GURL referrerUrl, boolean isIncomingRedirect, boolean isSerpReferrer) {
+    public boolean maybeLaunchInstantApp(GURL url, GURL referrerUrl, boolean isIncomingRedirect,
+            boolean isSerpReferrer, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
         if (!hasValidTab() || mTab.getWebContents() == null) return false;
 
         InstantAppsHandler handler = InstantAppsHandler.getInstance();
@@ -241,7 +224,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
             Intent resolvedIntent = new Intent(intent);
             resolvedIntent.setData(Uri.parse(url.getSpec()));
             return handler.handleIncomingIntent(getAvailableContext(), resolvedIntent,
-                    LaunchIntentDispatcher.isCustomTabIntent(resolvedIntent), true);
+                    LaunchIntentDispatcher.isCustomTabIntent(resolvedIntent), true,
+                    resolveInfoSupplier);
         } else if (!isIncomingRedirect) {
             // Check if the navigation is coming from SERP and skip instant app handling.
             if (isSerpReferrer) return false;
@@ -294,7 +278,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean isIntentForTrustedCallingApp(Intent intent) {
+    public boolean isIntentForTrustedCallingApp(
+            Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
         return false;
     }
 
@@ -337,7 +322,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean maybeSetTargetPackage(Intent intent) {
+    public boolean maybeSetTargetPackage(
+            Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
         return false;
     }
 
