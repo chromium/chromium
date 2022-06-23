@@ -81,6 +81,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void setShadowColor(const String&);
 
   // Alpha value that goes from 0 to 1.
+  // TODO(crbug/1308932): Internally alpha is a float, do we really need a
+  // double here?
   double globalAlpha() const;
   void setGlobalAlpha(double);
 
@@ -617,7 +619,7 @@ ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
     if (UNLIKELY(flags->getBlendMode() != SkBlendMode::kSrcOver) ||
         UNLIKELY(flags->getLooper()) || UNLIKELY(flags->getImageFilter()) ||
         UNLIKELY(flags->getMaskFilter()) ||
-        UNLIKELY(flags->getAlpha() < 0xFF) ||
+        UNLIKELY(flags->getAlpha() < 1.0f) ||
         UNLIKELY(image_type == CanvasRenderingContext2DState::kNonOpaqueImage))
       return;
   }
@@ -765,7 +767,7 @@ void BaseRenderingContext2D::CompositedDraw(
           canvas_filter));
       // Resetting the alpha of the shadow layer, to avoid the alpha being
       // applied twice.
-      shadow_flags.setAlpha(255);
+      shadow_flags.setAlpha(1.0f);
       // Saving the shadow layer before setting the matrix, so the shadow offset
       // does not get modified by the transformation matrix
       c->saveLayer(nullptr, &shadow_flags);

@@ -110,7 +110,7 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
 
   // Determines what alpha to use for the icon based on animation and
   // active state.
-  int GetAlphaForIcon(int base_alpha) const;
+  float GetAlphaForIcon(float base_alpha) const;
 
   void UpdateInkDropBaseColor();
 

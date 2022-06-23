@@ -98,7 +98,7 @@ class PartialMagnificationController::ContentMask : public ui::LayerDelegate {
     ui::PaintRecorder recorder(context, layer()->size());
 
     cc::PaintFlags flags;
-    flags.setAlpha(255);
+    flags.setAlpha(1.0f);
     flags.setAntiAlias(true);
     // Stroke is used for clipping the border which consists of the rendered
     // border |kBorderSize| and the magnifier shadow |kShadowThickness| and

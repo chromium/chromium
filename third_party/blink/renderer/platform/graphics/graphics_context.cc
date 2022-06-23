@@ -281,7 +281,7 @@ void GraphicsContext::BeginLayer(float opacity,
                                  ColorFilter color_filter,
                                  sk_sp<PaintFilter> image_filter) {
   cc::PaintFlags layer_flags;
-  layer_flags.setAlpha(static_cast<unsigned char>(opacity * 255));
+  layer_flags.setAlpha(opacity);
   layer_flags.setBlendMode(xfermode);
   layer_flags.setColorFilter(WebCoreColorFilterToSkiaColorFilter(color_filter));
   layer_flags.setImageFilter(std::move(image_filter));

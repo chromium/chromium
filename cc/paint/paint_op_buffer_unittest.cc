@@ -118,8 +118,8 @@ class PaintOpAppendTest : public ::testing::Test {
  public:
   PaintOpAppendTest() {
     rect_ = SkRect::MakeXYWH(2, 3, 4, 5);
-    flags_.setColor(SK_ColorMAGENTA);
-    flags_.setAlpha(100);
+    flags_.setColor(SkColors::kMagenta);
+    flags_.setAlpha(0.4f);
   }
 
   void PushOps(PaintOpBuffer* buffer) {
@@ -230,12 +230,15 @@ TEST_F(PaintOpAppendTest, MoveThenReappendOperatorEq) {
 TEST(PaintOpBufferTest, SaveDrawRestore) {
   PaintOpBuffer buffer;
 
-  uint8_t alpha = 100;
-  buffer.push<SaveLayerAlphaOp>(nullptr, alpha);
+  const float alpha_save_layer = 0.4f;
+  // TODO(crbug/1308932): Simplify here and others in this file when
+  // SaveLayerAlphaOp is made receive alpha values.
+  buffer.push<SaveLayerAlphaOp>(nullptr,
+                                static_cast<uint8_t>(alpha_save_layer * 255));
 
   PaintFlags draw_flags;
-  draw_flags.setColor(SK_ColorMAGENTA);
-  draw_flags.setAlpha(50);
+  draw_flags.setColor(SkColors::kMagenta);
+  draw_flags.setAlpha(0.2f);
   EXPECT_TRUE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
   buffer.push<DrawRectOp>(rect, draw_flags);
@@ -250,16 +253,19 @@ TEST(PaintOpBufferTest, SaveDrawRestore) {
 
   // Expect the alpha from the draw and the save layer to be folded together.
   // Since alpha is stored in a uint8_t and gets rounded, so use tolerance.
-  float expected_alpha = alpha * 50 / 255.f;
-  EXPECT_LE(std::abs(expected_alpha - canvas.paint_.getAlpha()), 1.f);
+  float expected_alpha = alpha_save_layer * draw_flags.getAlpha();
+  EXPECT_LE(std::abs(expected_alpha - canvas.paint_.getAlphaf()), 0.001f);
 }
 
 // Verify that we don't optimize SaveLayerAlpha / DrawTextBlob / Restore.
 TEST(PaintOpBufferTest, SaveDrawTextBlobRestore) {
   PaintOpBuffer buffer;
 
-  uint8_t alpha = 100;
-  buffer.push<SaveLayerAlphaOp>(nullptr, alpha);
+  const float alpha_save_layer = 0.4f;
+  // TODO(crbug/1308932): Simplify here and others in this file when
+  // SaveLayerAlphaOp is made receive alpha values.
+  buffer.push<SaveLayerAlphaOp>(nullptr,
+                                static_cast<uint8_t>(alpha_save_layer * 255));
 
   PaintFlags paint_flags;
   EXPECT_TRUE(paint_flags.SupportsFoldingAlpha());
@@ -280,12 +286,15 @@ TEST(PaintOpBufferTest, SaveDrawTextBlobRestore) {
 TEST(PaintOpBufferTest, SaveDrawRestoreFail_BadFlags) {
   PaintOpBuffer buffer;
 
-  uint8_t alpha = 100;
-  buffer.push<SaveLayerAlphaOp>(nullptr, alpha);
+  const float alpha_save_layer = 0.4f;
+  // TODO(crbug/1308932): Simplify here and others in this file when
+  // SaveLayerAlphaOp is made receive alpha values.
+  buffer.push<SaveLayerAlphaOp>(nullptr,
+                                static_cast<uint8_t>(alpha_save_layer * 255));
 
   PaintFlags draw_flags;
-  draw_flags.setColor(SK_ColorMAGENTA);
-  draw_flags.setAlpha(50);
+  draw_flags.setColor(SkColors::kMagenta);
+  draw_flags.setAlpha(0.2f);
   draw_flags.setBlendMode(SkBlendMode::kSrc);
   EXPECT_FALSE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
@@ -298,7 +307,7 @@ TEST(PaintOpBufferTest, SaveDrawRestoreFail_BadFlags) {
   EXPECT_EQ(1, canvas.save_count_);
   EXPECT_EQ(1, canvas.restore_count_);
   EXPECT_EQ(rect, canvas.draw_rect_);
-  EXPECT_EQ(draw_flags.getAlpha(), canvas.paint_.getAlpha());
+  EXPECT_EQ(draw_flags.getAlpha(), canvas.paint_.getAlphaf());
 }
 
 // Same as above, but the save layer itself appears to be a noop.
@@ -307,12 +316,15 @@ TEST(PaintOpBufferTest, SaveDrawRestoreFail_BadFlags) {
 TEST(PaintOpBufferTest, SaveDrawRestore_BadFlags255Alpha) {
   PaintOpBuffer buffer;
 
-  uint8_t alpha = 255;
-  buffer.push<SaveLayerAlphaOp>(nullptr, alpha);
+  const float alpha_save_layer = 1.0f;
+  // TODO(crbug/1308932): Simplify here and others in this file when
+  // SaveLayerAlphaOp is made receive alpha values.
+  buffer.push<SaveLayerAlphaOp>(nullptr,
+                                static_cast<uint8_t>(alpha_save_layer * 255));
 
   PaintFlags draw_flags;
-  draw_flags.setColor(SK_ColorMAGENTA);
-  draw_flags.setAlpha(50);
+  draw_flags.setColor(SkColors::kMagenta);
+  draw_flags.setAlpha(0.2f);
   draw_flags.setBlendMode(SkBlendMode::kColorBurn);
   EXPECT_FALSE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
@@ -332,12 +344,15 @@ TEST(PaintOpBufferTest, SaveDrawRestore_BadFlags255Alpha) {
 TEST(PaintOpBufferTest, SaveDrawRestoreFail_TooManyOps) {
   PaintOpBuffer buffer;
 
-  uint8_t alpha = 100;
-  buffer.push<SaveLayerAlphaOp>(nullptr, alpha);
+  const float alpha_save_layer = 0.4f;
+  // TODO(crbug/1308932): Simplify here and others in this file when
+  // SaveLayerAlphaOp is made receive alpha values.
+  buffer.push<SaveLayerAlphaOp>(nullptr,
+                                static_cast<uint8_t>(alpha_save_layer * 255));
 
   PaintFlags draw_flags;
-  draw_flags.setColor(SK_ColorMAGENTA);
-  draw_flags.setAlpha(50);
+  draw_flags.setColor(SkColors::kMagenta);
+  draw_flags.setAlpha(0.2f);
   draw_flags.setBlendMode(SkBlendMode::kSrcOver);
   EXPECT_TRUE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
@@ -351,7 +366,7 @@ TEST(PaintOpBufferTest, SaveDrawRestoreFail_TooManyOps) {
   EXPECT_EQ(1, canvas.save_count_);
   EXPECT_EQ(1, canvas.restore_count_);
   EXPECT_EQ(rect, canvas.draw_rect_);
-  EXPECT_EQ(draw_flags.getAlpha(), canvas.paint_.getAlpha());
+  EXPECT_EQ(draw_flags.getAlpha(), canvas.paint_.getAlphaf());
 }
 
 // Verify that the save draw restore code works with a single op
@@ -359,8 +374,11 @@ TEST(PaintOpBufferTest, SaveDrawRestoreFail_TooManyOps) {
 TEST(PaintOpBufferTest, SaveDrawRestore_SingleOpNotADrawOp) {
   PaintOpBuffer buffer;
 
-  uint8_t alpha = 100;
-  buffer.push<SaveLayerAlphaOp>(nullptr, alpha);
+  const float alpha_save_layer = 0.4f;
+  // TODO(crbug/1308932): Simplify here and others in this file when
+  // SaveLayerAlphaOp is made receive alpha values.
+  buffer.push<SaveLayerAlphaOp>(nullptr,
+                                static_cast<uint8_t>(alpha_save_layer * 255));
 
   buffer.push<NoopOp>();
   buffer.push<RestoreOp>();
@@ -378,8 +396,8 @@ TEST(PaintOpBufferTest, SaveDrawRestore_SingleOpRecordWithSingleOp) {
   sk_sp<PaintRecord> record = sk_make_sp<PaintRecord>();
 
   PaintFlags draw_flags;
-  draw_flags.setColor(SK_ColorMAGENTA);
-  draw_flags.setAlpha(50);
+  draw_flags.setColor(SkColors::kMagenta);
+  draw_flags.setAlpha(0.2f);
   EXPECT_TRUE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
   record->push<DrawRectOp>(rect, draw_flags);
@@ -387,8 +405,11 @@ TEST(PaintOpBufferTest, SaveDrawRestore_SingleOpRecordWithSingleOp) {
 
   PaintOpBuffer buffer;
 
-  uint8_t alpha = 100;
-  buffer.push<SaveLayerAlphaOp>(nullptr, alpha);
+  const float alpha_save_layer = 0.4f;
+  // TODO(crbug/1308932): Simplify here and others in this file when
+  // SaveLayerAlphaOp is made receive alpha values.
+  buffer.push<SaveLayerAlphaOp>(nullptr,
+                                static_cast<uint8_t>(alpha_save_layer * 255));
   buffer.push<DrawRecordOp>(std::move(record));
   buffer.push<RestoreOp>();
 
@@ -399,8 +420,8 @@ TEST(PaintOpBufferTest, SaveDrawRestore_SingleOpRecordWithSingleOp) {
   EXPECT_EQ(0, canvas.restore_count_);
   EXPECT_EQ(rect, canvas.draw_rect_);
 
-  float expected_alpha = alpha * 50 / 255.f;
-  EXPECT_LE(std::abs(expected_alpha - canvas.paint_.getAlpha()), 1.f);
+  float expected_alpha = alpha_save_layer * draw_flags.getAlpha();
+  EXPECT_LE(std::abs(expected_alpha - canvas.paint_.getAlphaf()), 1.f);
 }
 
 // The same as the above SingleOpRecord test, but the single op is not
@@ -1119,7 +1140,7 @@ std::vector<PaintFlags> test_flags = {
     PaintFlags(),
     [] {
       PaintFlags flags;
-      flags.setColor(SK_ColorMAGENTA);
+      flags.setColor(SkColors::kMagenta);
       flags.setStrokeWidth(4.2f);
       flags.setStrokeMiter(5.91f);
       flags.setBlendMode(SkBlendMode::kDst);
@@ -1132,8 +1153,8 @@ std::vector<PaintFlags> test_flags = {
     }(),
     [] {
       PaintFlags flags;
-      flags.setColor(SK_ColorCYAN);
-      flags.setAlpha(103);
+      flags.setColor(SkColors::kCyan);
+      flags.setAlpha(0.41f);
       flags.setStrokeWidth(0.32f);
       flags.setStrokeMiter(7.98f);
       flags.setBlendMode(SkBlendMode::kSrcOut);
@@ -2108,7 +2129,7 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
     written = nullptr;
 
     PaintFlags override_flags = static_cast<const PaintOpWithFlags*>(op)->flags;
-    override_flags.setAlpha(override_flags.getAlpha() * 0.5);
+    override_flags.setAlpha(override_flags.getAlpha() * 0.5f);
     bytes_written = op->Serialize(output_.get(), output_size_,
                                   options_provider.serialize_options(),
                                   &override_flags, SkM44(), SkM44());
@@ -2443,12 +2464,15 @@ TEST(PaintOpBufferTest, ClipsImagesDuringSerialization) {
 TEST(PaintOpBufferSerializationTest, AlphaFoldingDuringSerialization) {
   PaintOpBuffer buffer;
 
-  uint8_t alpha = 100;
-  buffer.push<SaveLayerAlphaOp>(nullptr, alpha);
+  const float alpha_save_layer = 0.4f;
+  // TODO(crbug/1308932): Simplify here and others in this file when
+  // SaveLayerAlphaOp is made receive alpha values.
+  buffer.push<SaveLayerAlphaOp>(nullptr,
+                                static_cast<uint8_t>(alpha_save_layer * 255));
 
   PaintFlags draw_flags;
-  draw_flags.setColor(SK_ColorMAGENTA);
-  draw_flags.setAlpha(50);
+  draw_flags.setColor(SkColors::kMagenta);
+  draw_flags.setAlpha(0.2f);
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
   buffer.push<DrawRectOp>(rect, draw_flags);
   buffer.push<RestoreOp>();
@@ -2497,10 +2521,10 @@ TEST(PaintOpBufferSerializationTest, AlphaFoldingDuringSerialization) {
     ASSERT_EQ(op->GetType(), PaintOpType::DrawRect);
     // Expect the alpha from the draw and the save layer to be folded together.
     // Since alpha is stored in a uint8_t and gets rounded, so use tolerance.
-    float expected_alpha = alpha * 50 / 255.f;
+    float expected_alpha = alpha_save_layer * draw_flags.getAlpha();
     EXPECT_LE(std::abs(expected_alpha -
                        static_cast<const DrawRectOp*>(op)->flags.getAlpha()),
-              1.f);
+              0.001f);
   }
 }
 

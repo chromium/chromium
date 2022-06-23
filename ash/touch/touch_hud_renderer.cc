@@ -26,7 +26,7 @@ namespace ash {
 constexpr int kPointRadius = 20;
 constexpr SkColor kProjectionFillColor = SkColorSetRGB(0xF5, 0xF5, 0xDC);
 constexpr SkColor kProjectionStrokeColor = SK_ColorGRAY;
-constexpr int kProjectionAlpha = 0xB0;
+constexpr float kProjectionAlpha = 0.69f;
 constexpr base::TimeDelta kFadeoutDuration = base::Milliseconds(250);
 constexpr int kFadeoutFrameRate = 60;
 
@@ -71,9 +71,9 @@ class TouchPointView : public views::View,
  private:
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override {
-    int alpha = kProjectionAlpha;
+    float alpha = kProjectionAlpha;
     if (fadeout_)
-      alpha = static_cast<int>(fadeout_->CurrentValueBetween(alpha, 0));
+      alpha = fadeout_->CurrentValueBetween(alpha, 0.0f);
 
     cc::PaintFlags fill_flags;
     fill_flags.setAlpha(alpha);

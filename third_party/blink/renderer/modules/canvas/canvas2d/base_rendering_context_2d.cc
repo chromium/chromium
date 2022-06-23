@@ -203,7 +203,7 @@ void BaseRenderingContext2D::beginLayer() {
     cc::PaintFlags extra_flags;
     GetState().FillStyle()->ApplyToFlags(extra_flags);
     extra_flags.setColor(GetState().FillStyle()->PaintColor());
-    extra_flags.setAlpha(globalAlpha() * 255);
+    extra_flags.setAlpha(static_cast<float>(globalAlpha()));
     if (GetState().ShouldDrawShadows())
       extra_flags.setImageFilter(StateGetFilter());
     canvas->saveLayer(nullptr, &extra_flags);
@@ -216,7 +216,7 @@ void BaseRenderingContext2D::beginLayer() {
     // shadows, or filters, both of them, or none of them.
     flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
         GetState().ShadowAndForegroundImageFilter(), StateGetFilter()));
-    flags.setAlpha(globalAlpha() * 255);
+    flags.setAlpha(static_cast<float>(globalAlpha()));
     canvas->saveLayer(nullptr, &flags);
   }
 

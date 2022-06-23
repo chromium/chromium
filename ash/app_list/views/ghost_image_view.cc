@@ -18,7 +18,7 @@ namespace ash {
 namespace {
 
 constexpr int kGhostCircleStrokeWidth = 2;
-constexpr int kGhostColorOpacity = 0x4D;  // 30% opacity.
+constexpr float kGhostColorOpacity = 0.3f;
 constexpr base::TimeDelta kGhostFadeInOutLength = base::Milliseconds(180);
 constexpr gfx::Tween::Type kGhostTween = gfx::Tween::FAST_OUT_SLOW_IN;
 

@@ -200,7 +200,7 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::Layer,
       // Draw a border around the active page.
       const bool dark_mode = AshColorProvider::Get()->IsDarkModeEnabled();
       flags.setColor(dark_mode ? SK_ColorWHITE : SK_ColorBLACK);
-      flags.setAlpha(dark_mode ? 0x29 /*16%*/ : 0x1F /*12%*/);
+      flags.setAlpha(dark_mode ? 0.16f : 0.12f);
       flags.setStyle(cc::PaintFlags::kStroke_Style);
       flags.setStrokeWidth(kBackgroundCardBorderStrokeWidth);
       flags.setAntiAlias(true);
