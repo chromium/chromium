@@ -1982,6 +1982,21 @@
             ]
         }
     ],
+    "CacheDeprecatedSystemLocationSetting": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CacheDeprecatedSystemLocationSetting"
+                    ]
+                }
+            ]
+        }
+    ],
     "CacheFontFamilyMatching": [
         {
             "platforms": [
