@@ -10,13 +10,21 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
 
 class TestWebAppUrlLoader : public WebAppUrlLoader {
  public:
+  struct LoadUrlCall {
+    GURL url;
+    base::raw_ptr<content::WebContents> web_contents;
+    UrlComparison url_comparison;
+  };
+
   TestWebAppUrlLoader();
   TestWebAppUrlLoader(const TestWebAppUrlLoader&) = delete;
   TestWebAppUrlLoader& operator=(const TestWebAppUrlLoader&) = delete;
@@ -48,6 +56,10 @@ class TestWebAppUrlLoader : public WebAppUrlLoader {
   void SetPrepareForLoadResultLoaded();
   void AddPrepareForLoadResults(const std::vector<Result>& results);
 
+  absl::optional<LoadUrlCall> last_load_url_call() const {
+    return last_load_url_call_;
+  }
+
  private:
   bool should_save_requests_ = false;
 
@@ -63,6 +75,7 @@ class TestWebAppUrlLoader : public WebAppUrlLoader {
 
   std::queue<std::pair<GURL, ResultCallback>> pending_requests_;
 
+  absl::optional<LoadUrlCall> last_load_url_call_ = absl::nullopt;
 };
 
 }  // namespace web_app

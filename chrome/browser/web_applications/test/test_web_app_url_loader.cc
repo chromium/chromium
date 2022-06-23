@@ -53,6 +53,8 @@ void TestWebAppUrlLoader::LoadUrl(const GURL& url,
                                   content::WebContents* web_contents,
                                   UrlComparison url_comparison,
                                   ResultCallback callback) {
+  last_load_url_call_ = {url, web_contents, url_comparison};
+
   if (should_save_requests_) {
     pending_requests_.emplace(url, std::move(callback));
     return;
