@@ -657,12 +657,6 @@ void WaylandWindow::OnEnteredOutput() {
   if (AsWaylandPopup())
     return;
 
-  // Notify normal window's delegate only as updating the pixel bounds
-  // may close the popup, and popup will not usually enter new display.
-  // TODO(crbug.com/1306688): Revisit this when wayland implementation
-  // is switced to dip based.
-  delegate()->OnMovedToAnotherDisplay();
-
   UpdateWindowScale(true);
 }
 
