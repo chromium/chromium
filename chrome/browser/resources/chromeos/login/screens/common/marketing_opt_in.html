@@ -35,9 +35,9 @@
 
       :host {
         --marketing-opt-in-dialog-list-item-border:
-          1px solid var(--cros-color-primary);
+          1px solid var(--cros-separator-color);
         --oobe-a11y-dialog-list-item-border:
-          1px solid var(--cros-color-primary);
+          1px solid var(--cros-separator-color);
         --marketing-opt-in-row-height: 50px;
         --marketing-opt-in-line-height: 20px;
       }
@@ -52,6 +52,10 @@
 
       .legal-info {
         color: var(--cros-text-color-secondary);
+      }
+
+      .toggle-title {
+        color: var(--cros-text-color-primary);
       }
 
       #toggleRow {
@@ -110,7 +114,7 @@
         for-step="overview"
         aria-label$="[[i18nDynamic(locale, 'marketingOptInScreenTitle')]]"
         aria-describedby="marketing-opt-in-subtitle">
-      <iron-icon slot="icon" icon="oobe-32:checkmark">
+      <iron-icon slot="icon" icon="[[getIcon_(isDarkModeActive_)]]">
       </iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'marketingOptInScreenTitle')]]
@@ -133,7 +137,7 @@
           <iron-icon id="toggleRowIcon" icon="oobe-32:chromebook"></iron-icon>
           <div id="chromebookUpdatesOptionLabel" class="flex layout vertical"
               aria-hidden="true">
-            <div>
+            <div class="toggle-title">
               [[i18nDynamic(locale, 'marketingOptInGetChromebookUpdates')]]
             </div>
             <div class="legal-info">

@@ -202,6 +202,15 @@ class MarketingOptIn extends MarketingScreenElementBase {
   }
 
   /**
+   * Returns the src of the icon.
+   * @private
+   */
+  getIcon_() {
+    return this.isDarkModeActive_ ? 'oobe-32:checkmark-dark' :
+                                    'oobe-32:checkmark-light';
+  }
+
+  /**
    * Returns the url of the animation asset.
    * @private
    */
