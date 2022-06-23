@@ -13,6 +13,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -33,6 +34,9 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/lens/lens_features.h"
@@ -816,6 +820,61 @@ TEST_F(RenderViewContextMenuPrefsTest, FollowOrUnfollow) {
     EXPECT_FALSE(menu.IsItemPresent(IDC_FOLLOW));
     EXPECT_FALSE(menu.IsItemPresent(IDC_FOLLOW));
   }
+}
+
+class RenderViewContestMenuAutofillTest
+    : public RenderViewContextMenuPrefsTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderViewContestMenuAutofillTest() {
+    feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillShowManualFallbackInContextMenu);
+  }
+
+ protected:
+  // Returns true if the test needs to run in incognito mode.
+  bool IsIncognito() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(AutofillContextMenuTest,
+                         RenderViewContestMenuAutofillTest,
+                         testing::Bool());
+
+// Verify that Autofill context menu items are displayed on a plain text field.
+TEST_P(RenderViewContestMenuAutofillTest, ShowAutofillOptions) {
+  autofill::PersonalDataManager* pdm =
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          profile()->GetOriginalProfile());
+  DCHECK(pdm);
+  pdm->AddServerCreditCardForTest(
+      std::make_unique<autofill::CreditCard>(autofill::test::GetCreditCard()));
+
+  if (IsIncognito()) {
+    // Verify that Autofill context menu items are displayed on a number field
+    // in Incognito.
+    std::unique_ptr<content::WebContents> incognito_web_contents(
+        content::WebContentsTester::CreateTestWebContents(
+            profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+            nullptr));
+
+    content::WebContentsTester::For(incognito_web_contents.get())
+        ->NavigateAndCommit(GURL("http://www.foo.com/"));
+  } else {
+    NavigateAndCommit(GURL("http://www.foo.com/"));
+  }
+  content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
+  params.input_field_type =
+      blink::mojom::ContextMenuDataInputFieldType::kPlainText;
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(
+      menu->IsItemInRangePresent(IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST,
+                                 IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_LAST));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
