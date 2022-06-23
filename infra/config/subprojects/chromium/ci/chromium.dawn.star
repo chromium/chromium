@@ -290,6 +290,9 @@ ci.gpu.windows_builder(
         short_name = "x64",
     ),
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    # Serially executed tests + ASAN = more than the default timeout needed in
+    # order to prevent build timeouts.
+    execution_timeout = 6 * time.hour,
 )
 
 ci.gpu.windows_builder(
