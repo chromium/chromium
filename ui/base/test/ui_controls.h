@@ -118,7 +118,7 @@ bool SendMouseClick(MouseButton type);
 // pointers, |screen_x| and |screen_y| are the screen coordinates of a touch
 // pointer.
 bool SendTouchEvents(int action, int num, int screen_x, int screen_y);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 // Sends a TouchEvent to the window system. |action| is a bitmask of the
 // TouchType constants that indicates what events are generated, |id| identifies
 // the touch point.

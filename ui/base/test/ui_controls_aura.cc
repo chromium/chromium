@@ -86,7 +86,7 @@ bool SendTouchEvents(int action, int num, int x, int y) {
   CHECK(g_ui_controls_enabled);
   return instance_->SendTouchEvents(action, num, x, y);
 }
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 // static
 bool SendTouchEvents(int action, int id, int x, int y) {
   CHECK(g_ui_controls_enabled);

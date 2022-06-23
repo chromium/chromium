@@ -487,7 +487,7 @@ class DetachToBrowserTabDragControllerTest
         INPUT_SOURCE_MOUSE : INPUT_SOURCE_TOUCH;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool SendTouchEventsSync(int action, int id, const gfx::Point& location) {
     base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
     if (!ui_controls::SendTouchEventsNotifyWhenDone(
@@ -507,7 +507,7 @@ class DetachToBrowserTabDragControllerTest
           ui_test_utils::SendMouseEventsSync(
               ui_controls::LEFT, ui_controls::DOWN);
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return SendTouchEventsSync(ui_controls::PRESS, id, location);
 #else
     NOTREACHED();
@@ -518,7 +518,7 @@ class DetachToBrowserTabDragControllerTest
   bool DragInputTo(const gfx::Point& location) {
     if (input_source() == INPUT_SOURCE_MOUSE)
       return ui_test_utils::SendMouseMoveSync(location);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return SendTouchEventsSync(ui_controls::MOVE, 0, location);
 #else
     NOTREACHED();
@@ -529,7 +529,7 @@ class DetachToBrowserTabDragControllerTest
   bool DragInputToAsync(const gfx::Point& location) {
     if (input_source() == INPUT_SOURCE_MOUSE)
       return ui_controls::SendMouseMove(location.x(), location.y());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return ui_controls::SendTouchEvents(ui_controls::MOVE, 0, location.x(),
                                         location.y());
 #else
@@ -545,7 +545,7 @@ class DetachToBrowserTabDragControllerTest
           location.x(), location.y(), std::move(task));
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return ui_controls::SendTouchEventsNotifyWhenDone(
         ui_controls::MOVE, 0, location.x(), location.y(), std::move(task));
 #else
@@ -561,7 +561,7 @@ class DetachToBrowserTabDragControllerTest
                    : ui_test_utils::SendMouseEventsSync(ui_controls::LEFT,
                                                         ui_controls::UP);
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return async ? ui_controls::SendTouchEvents(ui_controls::RELEASE, id, 0, 0)
                  : SendTouchEventsSync(ui_controls::RELEASE, id, gfx::Point());
 #else
@@ -4675,7 +4675,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(ReleaseInput());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(TabDragging,
                          DetachToBrowserTabDragControllerTest,
                          ::testing::Values("mouse", "touch"));
@@ -4683,6 +4683,17 @@ INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled,
     ::testing::Values("mouse", "touch"));
+#else
+INSTANTIATE_TEST_SUITE_P(TabDragging,
+                         DetachToBrowserTabDragControllerTest,
+                         ::testing::Values("mouse"));
+INSTANTIATE_TEST_SUITE_P(
+    TabDragging,
+    DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled,
+    ::testing::Values("mouse"));
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE_P(TabDragging,
                          DetachToBrowserInSeparateDisplayTabDragControllerTest,
                          ::testing::Values("mouse"));
@@ -4700,12 +4711,4 @@ INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
     ::testing::Values("mouse", "touch"));
-#else
-INSTANTIATE_TEST_SUITE_P(TabDragging,
-                         DetachToBrowserTabDragControllerTest,
-                         ::testing::Values("mouse"));
-INSTANTIATE_TEST_SUITE_P(
-    TabDragging,
-    DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled,
-    ::testing::Values("mouse"));
 #endif

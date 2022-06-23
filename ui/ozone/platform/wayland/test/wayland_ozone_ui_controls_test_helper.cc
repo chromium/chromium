@@ -29,6 +29,7 @@ class WaylandGlobalEventWaiter : public WaylandInputEmulate::Observer {
     kMotion,
     kButton,
     kKey,
+    kTouch,
     kUnknown,
   };
 
@@ -104,6 +105,12 @@ class WaylandGlobalEventWaiter : public WaylandInputEmulate::Observer {
   void OnKeyboardKey(int32_t key, bool pressed) override {
     if (event_type_ == WaylandEventType::kKey && button_or_key_ == key &&
         pressed == pressed_) {
+      ExecuteClosure();
+    }
+  }
+
+  void OnTouchReceived(const gfx::Point& screen_position) override {
+    if (event_type_ == WaylandEventType::kTouch) {
       ExecuteClosure();
     }
   }
@@ -227,6 +234,35 @@ void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
                          accelerator_state & ui_controls::kCommand, {}, false);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void WaylandOzoneUIControlsTestHelper::SendTouchEvent(
+    gfx::AcceleratedWidget widget,
+    int action,
+    int id,
+    const gfx::Point& touch_loc,
+    base::OnceClosure closure) {
+  WaylandGlobalEventWaiter::Create(
+      WaylandGlobalEventWaiter::WaylandEventType::kTouch, touch_loc,
+      std::move(closure), input_emulate_.get());
+
+  // TODO(rivr): ui_controls::TouchType is a bitmask, do we need to handle the
+  // case where multiple actions are requested together?
+  ui::EventType event_type;
+  switch (action) {
+    case ui_controls::PRESS:
+      event_type = ui::EventType::ET_TOUCH_PRESSED;
+      break;
+    case ui_controls::RELEASE:
+      event_type = ui::EventType::ET_TOUCH_RELEASED;
+      break;
+    default:
+      event_type = ui::EventType::ET_TOUCH_MOVED;
+  }
+
+  input_emulate_->EmulateTouch(widget, event_type, id, touch_loc);
+}
+#endif
 
 void WaylandOzoneUIControlsTestHelper::RunClosureAfterAllPendingUIEvents(
     base::OnceClosure closure) {

@@ -69,6 +69,17 @@ using WestonTestState = WestonTest::WestonTestState;
 
 constexpr uint32_t kWestonTestVersion = 1;
 
+int WaylandToUIControlsTouchType(int type) {
+  switch (type) {
+    case WL_TOUCH_DOWN:
+      return ui_controls::PRESS;
+    case WL_TOUCH_UP:
+      return ui_controls::RELEASE;
+    default:
+      return ui_controls::MOVE;
+  }
+}
+
 static void weston_test_move_surface(struct wl_client* client,
                                      struct wl_resource* resource,
                                      struct wl_resource* surface_resource,
@@ -104,7 +115,8 @@ static void weston_test_move_pointer(struct wl_client* client,
   }
 
   // TODO(https://crbug.com/1284726): This should not be necessary.
-  weston_test_send_pointer_position(resource, x, y);
+  weston_test_send_pointer_position(resource, wl_fixed_from_int(x),
+                                    wl_fixed_from_int(y));
 }
 
 static void weston_test_send_button(struct wl_client* client,
@@ -297,7 +309,20 @@ static void weston_test_send_touch(struct wl_client* client,
                                    wl_fixed_t x,
                                    wl_fixed_t y,
                                    uint32_t touch_type) {
-  NOTIMPLEMENTED();
+  auto* weston_test = GetUserDataAs<WestonTestState>(resource);
+
+  base::RunLoop run_loop;
+  ui_controls::SendTouchEventsNotifyWhenDone(
+      WaylandToUIControlsTouchType(touch_type), touch_id, wl_fixed_to_int(x),
+      wl_fixed_to_int(y), run_loop.QuitClosure());
+  {
+    // Do not process incoming wayland events which may destroy resources.
+    ScopedEventDispatchDisabler disable(weston_test->server);
+    run_loop.Run();
+  }
+
+  // TODO(https://crbug.com/1284726): This should not be necessary.
+  weston_test_send_touch_received(resource, x, y);
 }
 
 const struct weston_test_interface weston_test_implementation = {

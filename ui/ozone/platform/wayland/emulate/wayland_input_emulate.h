@@ -27,7 +27,7 @@ struct wl_callback;
 
 namespace wl {
 
-// Emulates Keyboard, Pointer, Touch events that ui_interactive_tests test
+// Emulates Keyboard, Pointer, and Touch events that ui_interactive_tests test
 // suite sends. Mustn't be used in production code.
 class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
  public:
@@ -44,6 +44,10 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     // event codes in Linux's input-event-codes.h.
     virtual void OnKeyboardKey(int32_t key, bool pressed) = 0;
 
+    // Notifies that the Wayland compositor has sent a touch event to
+    // |screen_position|.
+    virtual void OnTouchReceived(const gfx::Point& screen_position) = 0;
+
    protected:
     ~Observer() override = default;
   };
@@ -54,17 +58,22 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
   void EmulatePointerMotion(gfx::AcceleratedWidget widget,
-                            gfx::Point mouse_surface_loc);
+                            const gfx::Point& mouse_surface_loc);
   void EmulatePointerButton(gfx::AcceleratedWidget widget,
                             ui::EventType event_type,
                             uint32_t changed_button);
   void EmulateKeyboardKey(gfx::AcceleratedWidget widget,
                           ui::EventType event_type,
                           ui::DomCode dom_code);
+  void EmulateTouch(gfx::AcceleratedWidget widget,
+                    ui::EventType event_type,
+                    int id,
+                    const gfx::Point& touch_screen_loc);
 
  private:
   // Pending emulated events. Can be ET_MOUSE_MOVED,
-  // ET_MOUSE_PRESSED/ET_MOUSE_RELEASED, or ET_KEY_PRESSED/ET_KEY_RELEASED.
+  // ET_MOUSE_PRESSED/ET_MOUSE_RELEASED, ET_KEY_PRESSED/ET_KEY_RELEASED, or
+  // ET_TOUCH_PRESSED/ET_TOUCH_MOVED/ET_TOUCH_RELEASED.
   struct PendingEvent {
     PendingEvent(ui::EventType event_type,
                  gfx::AcceleratedWidget target_widget);
@@ -73,14 +82,19 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     ui::EventType type;
     gfx::AcceleratedWidget widget;
 
-    // Set for type == ET_MOUSE_MOVED.
-    gfx::Point pointer_surface_location_in_px;
+    // Set for type == ET_MOUSE_MOVED || type == ET_TOUCH_*. Location is in
+    // surface coordinates for mouse events, and in root coordinates for touch
+    // events.
+    gfx::Point location_in_px;
 
     // Set for type == ET_MOUSE_PRESSED || type == ET_MOUSE_RELEASED.
     uint32_t mouse_button = 0;
 
     // Set for type == ET_KEY_PRESSED || type == ET_KEY_RELEASED.
     ui::DomCode key_dom_code = ui::DomCode::NONE;
+
+    // Set for type == ET_TOUCH_*.
+    int touch_id = 0;
   };
 
   // A container that tracks created WaylandWindows and keeps some fundamental
@@ -135,6 +149,10 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
                                 struct weston_test* weston_test,
                                 uint32_t key,
                                 uint32_t state);
+  static void HandleTouchReceived(void* data,
+                                  struct weston_test* weston_test,
+                                  wl_fixed_t x,
+                                  wl_fixed_t y);
 
   // wl_registry_listener.
   static void Global(void* data,

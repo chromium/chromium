@@ -60,7 +60,7 @@ class UIControlsOzone : public ui_controls::UIControlsAura {
                                      base::OnceClosure closure,
                                      int accelerator_state) override;
   bool SendMouseClick(ui_controls::MouseButton type) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool SendTouchEvents(int action, int id, int x, int y) override;
   bool SendTouchEventsNotifyWhenDone(int action,
                                      int id,

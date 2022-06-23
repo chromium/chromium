@@ -281,6 +281,7 @@ source_set("interactive_ui_tests_filters") {
 
   data = [
     "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter",
+    "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
     "//testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter",
     "//testing/buildbot/filters/pixel_tests.filter",
   ]
