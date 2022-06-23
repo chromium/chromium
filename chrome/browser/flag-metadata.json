@@ -5810,6 +5810,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "system-color-chooser",
+    "owners": [ "bur", "chrome-mac-dev@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "system-extensions",
     "owners": [ "calamity", "dominicschulz" ],
     "expiry_milestone": 110

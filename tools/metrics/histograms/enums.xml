@@ -55032,6 +55032,7 @@ from previous Chrome versions.
   <int value="-2101338272" label="EnablePciguardUi:disabled"/>
   <int value="-2101337189" label="AutofillOffNoServerData:disabled"/>
   <int value="-2101091929" label="MessagesForAndroidAdsBlocked:disabled"/>
+  <int value="-2100134911" label="SystemColorChooser:disabled"/>
   <int value="-2099608999" label="CrOSEnforceSystemAecNs:enabled"/>
   <int value="-2099486626" label="DownloadLater:enabled"/>
   <int value="-2099457894" label="Mash:enabled"/>
@@ -59706,6 +59707,7 @@ from previous Chrome versions.
   <int value="908302031"
       label="OmniboxUIExperimentElideSuggestionUrlAfterHost:enabled"/>
   <int value="908370794" label="UserActivityPredictionMlService:enabled"/>
+  <int value="908460495" label="SystemColorChooser:enabled"/>
   <int value="908523940" label="PassiveEventListenersDueToFling:disabled"/>
   <int value="909439558" label="disable-device-discovery"/>
   <int value="909525364" label="ExtensionsCheckup:enabled"/>

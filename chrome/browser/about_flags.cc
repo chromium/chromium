@@ -8744,6 +8744,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kQuickIntensiveWakeUpThrottlingAfterLoading)},
 
+#if BUILDFLAG(IS_MAC)
+    {"system-color-chooser", flag_descriptions::kSystemColorChooserName,
+     flag_descriptions::kSystemColorChooserDescription, kOsMac,
+     FEATURE_VALUE_TYPE(blink::features::kSystemColorChooser)},
+#endif  // BUILDFLAG(IS_MAC)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

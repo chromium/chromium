@@ -4176,6 +4176,10 @@ const char kUseAngleDescriptionMac[] =
 
 const char kUseAngleMetal[] = "Metal";
 
+const char kSystemColorChooserName[] = "System Color Chooser";
+const char kSystemColorChooserDescription[] =
+    "Enables a button that launches the macOS native color chooser.";
+
 #endif
 
 // Windows and Mac -------------------------------------------------------------
