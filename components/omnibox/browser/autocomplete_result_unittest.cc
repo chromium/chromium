@@ -1742,6 +1742,65 @@ TEST_F(AutocompleteResultTest,
   EXPECT_EQ(u"oo", result.match_at(1)->inline_autocompletion);
 }
 
+TEST_F(
+    AutocompleteResultTest,
+    SortAndCullPreferNonEntitySpecializedSearchSuggestionForDefaultSuggestion) {
+  // When selecting among multiple duplicate non-entity suggestions, prefer
+  // promoting the one that is a SEARCH_SUGGEST or other "specialized" search
+  // suggestion.
+
+  std::vector<EntityTestData> test_cases = {
+      // Entity search suggestion.
+      {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, GetProvider(1),
+       "http://search/?q=foo", 1200, true},
+      // Duplicate non-entity SEARCH_SUGGEST suggestion should be preferred
+      // above the other options (even when scoring lower).
+      {AutocompleteMatchType::SEARCH_SUGGEST, GetProvider(1),
+       "http://search/?q=foo", 1000, true},
+      // Duplicate non-entity match which is neither a SEARCH_SUGGEST nor a
+      // "specialized" search suggestion.
+      {AutocompleteMatchType::SEARCH_HISTORY, GetProvider(1),
+       "http://search/?q=foo", 1100, true},
+  };
+  ACMatches matches;
+  PopulateEntityTestCases(test_cases, &matches);
+
+  // Simulate the search provider pre-grouping duplicate suggestions.
+  matches[0].duplicate_matches.push_back(matches.back());
+  matches.pop_back();
+
+  matches[0].duplicate_matches.push_back(matches.back());
+  matches.pop_back();
+
+  AutocompleteInput input(u"f", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  AutocompleteResult result;
+  result.AppendMatches(matches);
+  result.SortAndCull(input, template_url_service_.get());
+
+  ASSERT_EQ(result.size(), 2u);
+
+  auto* match = result.match_at(0);
+  // The non-entity SEARCH_SUGGEST suggestion should be promoted as the top
+  // match.
+  EXPECT_EQ(match->type, AutocompleteMatchType::SEARCH_SUGGEST);
+  EXPECT_TRUE(match->allowed_to_be_default_match);
+
+  match = result.match_at(1);
+  // The entity search suggestion should have been demoted.
+  EXPECT_EQ(match->type, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+  EXPECT_TRUE(match->allowed_to_be_default_match);
+
+  EXPECT_EQ(match->duplicate_matches.size(), 1u);
+
+  // The non-entity match which is neither a SEARCH_SUGGEST nor a "specialized"
+  // search suggestion should remain in |duplicate_matches| (i.e. it's not
+  // promoted as the top match).
+  EXPECT_EQ(match->duplicate_matches.at(0).type,
+            AutocompleteMatchType::SEARCH_HISTORY);
+  EXPECT_TRUE(match->duplicate_matches.at(0).allowed_to_be_default_match);
+}
+
 TEST_F(AutocompleteResultTest, SortAndCullPromoteDuplicateSearchURLs) {
   // Register a template URL that corresponds to 'foo' search engine.
   TemplateURLData url_data;

@@ -664,6 +664,10 @@ bool AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
   if (top_match->type != ACMatchType::SEARCH_SUGGEST_ENTITY)
     return false;
 
+  // We define an iterator to capture the non-entity duplicate match (if any)
+  // so that we can later use it with duplicate_matches.erase().
+  auto non_entity_it = top_match->duplicate_matches.end();
+
   // Search the duplicates for an equivalent non-entity search suggestion.
   for (auto it = top_match->duplicate_matches.begin();
        it != top_match->duplicate_matches.end(); ++it) {
@@ -674,17 +678,47 @@ bool AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
       continue;
     }
 
+    if (non_entity_it == top_match->duplicate_matches.end()) {
+      non_entity_it = it;
+    }
+
+    // When an entity suggestion (SEARCH_SUGGEST_ENTITY) is received from
+    // google.com, we also receive a non-entity version of the same suggestion
+    // which (a) gets placed in the |duplicate_matches| list of the entity
+    // suggestion (as part of the deduplication process) and (b) has the same
+    // |deletion_url| as the entity suggestion.
+    // When the user attempts to remove the SEARCH_SUGGEST_ENTITY suggestion
+    // from the omnibox, the suggestion removal code will fire off network
+    // requests to the suggestion's own |deletion_url| as well as to any
+    // deletion_url's present on matches in the associated |duplicate_matches|
+    // list, which in this case would result in redundant network calls to the
+    // same URL.
+    // By prioritizing the "undeduping" (i.e. moving a duplicate match out of
+    // the |duplicate_matches| list) and promotion of the non-entity
+    // SEARCH_SUGGEST (or any other "specialized search") duplicate as the
+    // top match, we are deliberately separating the two matches that have the
+    // same |deletion_url|, thereby eliminating any redundant network calls
+    // upon suggestion removal.
+    if (it->type == ACMatchType::SEARCH_SUGGEST ||
+        AutocompleteMatch::IsSpecializedSearchType(it->type)) {
+      non_entity_it = it;
+      break;
+    }
+  }
+
+  if (non_entity_it != top_match->duplicate_matches.end()) {
     // Copy the non-entity match, then erase it from the list of duplicates.
     // We do this first, because the insertion operation invalidates all
     // iterators, including |top_match|.
-    AutocompleteMatch non_entity_match_copy = *it;
-    top_match->duplicate_matches.erase(it);
+    AutocompleteMatch non_entity_match_copy = *non_entity_it;
+    top_match->duplicate_matches.erase(non_entity_it);
 
     // Promote the non-entity match to the top, then immediately return, since
     // all our iterators are invalid after the insertion.
     matches->insert(matches->begin(), std::move(non_entity_match_copy));
     return true;
   }
+
   return false;
 }
 
