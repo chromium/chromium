@@ -11,6 +11,7 @@ import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.Consumer;
 import org.chromium.components.permissions.AndroidPermissionRequester;
@@ -51,7 +52,8 @@ public class FileAccessPermissionHelper {
 
     static void requestFileAccessPermissionHelper(
             @NonNull WindowAndroid windowAndroid, final Callback<Pair<Boolean, String>> callback) {
-        if (windowAndroid.hasPermission(permission.WRITE_EXTERNAL_STORAGE)) {
+        if (BuildInfo.isAtLeastT()
+                || windowAndroid.hasPermission(permission.WRITE_EXTERNAL_STORAGE)) {
             callback.onResult(Pair.create(true, null));
             return;
         }

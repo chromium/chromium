@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.view.View;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
@@ -119,8 +120,15 @@ class QrCodeShareMediator {
         }
     }
 
+    /** Returns whether we need to explicitly request a storage permission. */
+    private Boolean requiresAdditionalStoragePermission() {
+        return !BuildInfo.isAtLeastT();
+    }
+
     /** Returns whether the user has granted storage permissions. */
     private Boolean hasStoragePermission() {
+        // Not needed for newer SDKs; treat as granted implicitly.
+        if (!requiresAdditionalStoragePermission()) return true;
         return mContext.checkPermission(
                        permission.WRITE_EXTERNAL_STORAGE, Process.myPid(), Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
@@ -128,6 +136,7 @@ class QrCodeShareMediator {
 
     /** Returns whether the user can be prompted for storage permissions. */
     private Boolean canPromptForPermission() {
+        if (!requiresAdditionalStoragePermission()) return false;
         if (mWindowAndroid == null) return false;
         return mWindowAndroid.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE);
     }

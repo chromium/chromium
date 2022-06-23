@@ -17,6 +17,7 @@ import android.provider.Settings;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
 import org.chromium.ui.base.WindowAndroid;
@@ -60,8 +61,10 @@ public class SaveBitmapDelegate {
             return;
         }
 
-        if (!mWindowAndroid.hasPermission(permission.WRITE_EXTERNAL_STORAGE)
-                && !mWindowAndroid.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE)) {
+        boolean needPermissionRequestButBlocked = !BuildInfo.isAtLeastT()
+                && !mWindowAndroid.hasPermission(permission.WRITE_EXTERNAL_STORAGE)
+                && !mWindowAndroid.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE);
+        if (needPermissionRequestButBlocked) {
             AlertDialog.Builder builder =
                     new AlertDialog.Builder(mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog);
             builder.setMessage(R.string.sharing_hub_storage_disabled_text)
