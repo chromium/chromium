@@ -240,6 +240,29 @@ content::PopupMenuHelper::menu_runner_
 content::ShellJavaScriptDialog::helper_
 ui::ClipboardFormatType::data_
 ui::WeakPtrNSObjectFactory::handle_
+content::NativeEventProcessorObserver::event_
+image_editor::EventCaptureMac::web_contents_view_
+image_editor::EventCaptureMac::window_
+
+# Populated manually - struct is part of separate binary and must be a POD
+# https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/mac/app_mode_common.mm;l=64
+app_mode::ChromeAppModeInfo::argv
+
+# Populated manually - requires @property rewrite
+# In Objective-C the instance variable type and property type must be the same.
+# Currently, the rewriter can only rewrite the instance variable declaration.
+# So the types do not match, and causes a compiler error.
+# These fields can be rewritten once the rewriter can rewrite @property declarations.
+ObjCPropertyTestBase::_basePointer
+ObjCPropertyTestDerived::_derivedPointer
+ObjCPropertyTestDerived::_protoPointer
+NativeWidgetMacNSWindow::_bridge
+AlertBridgeHelper::_alertBridge
+BridgedContentView::_bridge
+WindowControlsOverlayNSView::_bridge
+AXPlatformNodeCocoa::_node
+ShellNativeAppWindowController::_appWindow
+WatchedLifetimeMenuController::_deallocCalled
 
 #######
 # BackupRefPtr-specific sections
