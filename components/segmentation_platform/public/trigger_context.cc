@@ -13,9 +13,15 @@
 
 namespace segmentation_platform {
 
-TriggerContext::TriggerContext() = default;
+TriggerContext::TriggerContext(TriggerType trigger_type)
+    : trigger_type_(trigger_type) {}
 
 TriggerContext::~TriggerContext() = default;
+
+base::flat_map<std::string, processing::ProcessedValue>
+TriggerContext::GetSelectionInputArgs() const {
+  return {};
+}
 
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject> TriggerContext::CreateJavaObject()

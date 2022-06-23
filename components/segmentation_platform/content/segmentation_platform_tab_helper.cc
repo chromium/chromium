@@ -32,9 +32,8 @@ void SegmentationPlatformTabHelper::PrimaryPageChanged(content::Page& page) {
   if (GetWebContents().GetVisibility() == content::Visibility::HIDDEN)
     return;
 
-  PageLoadTriggerContext trigger_context(&GetWebContents());
-  segmentation_platform_service_->OnTrigger(TriggerType::kPageLoad,
-                                            trigger_context);
+  segmentation_platform_service_->OnTrigger(
+      std::make_unique<PageLoadTriggerContext>(&GetWebContents()));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SegmentationPlatformTabHelper);

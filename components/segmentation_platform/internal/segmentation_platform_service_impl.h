@@ -105,8 +105,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   void UnregisterOnDemandSegmentSelectionCallback(
       CallbackId callback_id,
       const std::string& segmentation_key) override;
-  void OnTrigger(TriggerType trigger,
-                 const TriggerContext& trigger_context) override;
+  void OnTrigger(std::unique_ptr<TriggerContext> trigger_context) override;
   void EnableMetrics(bool signal_collection_allowed) override;
   ServiceProxy* GetServiceProxy() override;
   bool IsPlatformInitialized() override;
@@ -133,7 +132,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // Callback to run after on-demand segment selection.
   void OnSegmentSelectionForTrigger(
       const std::string& segmentation_key,
-      const TriggerContext& trigger_context,
+      std::unique_ptr<TriggerContext> trigger_context,
       const SegmentSelectionResult& selected_segment);
 
   std::unique_ptr<ModelProviderFactory> model_provider_factory_;

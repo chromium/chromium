@@ -8,7 +8,8 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
+#include "components/segmentation_platform/public/trigger_context.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
 
 namespace segmentation_platform {
 
@@ -20,6 +21,7 @@ class SegmentationTabHelper;
 struct InputContext : base::RefCounted<InputContext> {
  public:
   InputContext();
+  explicit InputContext(const TriggerContext& trigger_context);
 
   InputContext(InputContext&) = delete;
   InputContext& operator=(InputContext&) = delete;
@@ -27,7 +29,7 @@ struct InputContext : base::RefCounted<InputContext> {
   // Input values that can be used to input to model directly if the type is
   // `Type::INTEGER` or `Type::DOUBLE`. Inputs can be substituted to SQL queries
   // if the type is not `Type::DICT` or `Type::LIST`.
-  base::flat_map<std::string, base::Value> metadata_args;
+  base::flat_map<std::string, processing::ProcessedValue> metadata_args;
 
  private:
   friend class RefCounted<InputContext>;

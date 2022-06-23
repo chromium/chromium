@@ -45,8 +45,7 @@ void DummySegmentationPlatformService::
         const std::string& segmentation_key) {}
 
 void DummySegmentationPlatformService::OnTrigger(
-    TriggerType trigger,
-    const TriggerContext& trigger_context) {}
+    std::unique_ptr<TriggerContext> trigger_context) {}
 
 void DummySegmentationPlatformService::EnableMetrics(
     bool signal_collection_allowed) {}

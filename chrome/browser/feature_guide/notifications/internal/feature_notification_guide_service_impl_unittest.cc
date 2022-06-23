@@ -118,9 +118,8 @@ class TestSegmentationPlatformService
   void UnregisterOnDemandSegmentSelectionCallback(
       segmentation_platform::CallbackId callback_id,
       const std::string& segmentation_key) override {}
-  void OnTrigger(
-      segmentation_platform::TriggerType trigger,
-      const segmentation_platform::TriggerContext& trigger_context) override {}
+  void OnTrigger(std::unique_ptr<segmentation_platform::TriggerContext>
+                     trigger_context) override {}
   void EnableMetrics(bool signal_collection_allowed) override {}
   segmentation_platform::ServiceProxy* GetServiceProxy() override {
     return nullptr;

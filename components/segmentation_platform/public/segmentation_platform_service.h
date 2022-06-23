@@ -24,7 +24,7 @@ class PrefRegistrySimple;
 namespace segmentation_platform {
 class ServiceProxy;
 struct SegmentSelectionResult;
-struct TriggerContext;
+class TriggerContext;
 
 using CallbackId = base::IdType32<class OnDemandSegmentSelectionCallbackTag>;
 
@@ -84,8 +84,7 @@ class SegmentationPlatformService : public KeyedService,
       const std::string& segmentation_key) = 0;
 
   // Called when a trigger event happens.
-  virtual void OnTrigger(TriggerType trigger,
-                         const TriggerContext& trigger_context) = 0;
+  virtual void OnTrigger(std::unique_ptr<TriggerContext> trigger_context) = 0;
 
   // Called to enable or disable metrics collection. Must be explicitly called
   // on startup.

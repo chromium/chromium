@@ -24,6 +24,9 @@ struct PageLoadTriggerContext : public TriggerContext {
   explicit PageLoadTriggerContext(content::WebContents* web_contents);
   ~PageLoadTriggerContext() override;
 
+  base::flat_map<std::string, processing::ProcessedValue>
+  GetSelectionInputArgs() const override;
+
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const override;
 #endif  // BUILDFLAG(IS_ANDROID)

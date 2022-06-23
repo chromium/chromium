@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -163,11 +164,12 @@ void SegmentationPlatformServiceImpl::
 }
 
 void SegmentationPlatformServiceImpl::OnTrigger(
-    TriggerType trigger,
-    const TriggerContext& trigger_context) {
+    std::unique_ptr<TriggerContext> trigger_context) {
+  const TriggerType trigger = trigger_context->trigger_type();
   if (clients_for_trigger_.find(trigger) == clients_for_trigger_.end())
     return;
-  scoped_refptr<InputContext> input_context;
+  scoped_refptr<InputContext> input_context =
+      base::MakeRefCounted<InputContext>(*trigger_context);
   for (const auto& segmentation_key : clients_for_trigger_[trigger]) {
     CHECK(segment_selectors_.find(segmentation_key) !=
           segment_selectors_.end());
@@ -176,17 +178,18 @@ void SegmentationPlatformServiceImpl::OnTrigger(
         input_context,
         base::BindOnce(
             &SegmentationPlatformServiceImpl::OnSegmentSelectionForTrigger,
-            weak_ptr_factory_.GetWeakPtr(), segmentation_key, trigger_context));
+            weak_ptr_factory_.GetWeakPtr(), segmentation_key,
+            std::move(trigger_context)));
   }
 }
 
 void SegmentationPlatformServiceImpl::OnSegmentSelectionForTrigger(
     const std::string& segmentation_key,
-    const TriggerContext& trigger_context,
+    std::unique_ptr<TriggerContext> trigger_context,
     const SegmentSelectionResult& selected_segment) {
   for (auto callback_id : segment_selection_callback_ids_[segmentation_key]) {
     const auto& callback = callback_map_[callback_id];
-    callback.Run(selected_segment, trigger_context);
+    callback.Run(selected_segment, *trigger_context);
   }
 }
 

@@ -13,11 +13,27 @@
 
 namespace segmentation_platform {
 
+namespace {
+// TODO(ssid): Figure out a good place to keep the param names for InputContext.
+constexpr char kUrlKey[] = "url";
+}  // namespace
+
 PageLoadTriggerContext::PageLoadTriggerContext(
     content::WebContents* web_contents)
-    : web_contents_(web_contents->GetWeakPtr()) {}
+    : TriggerContext(TriggerType::kPageLoad),
+      web_contents_(web_contents->GetWeakPtr()) {}
 
 PageLoadTriggerContext::~PageLoadTriggerContext() = default;
+
+base::flat_map<std::string, processing::ProcessedValue>
+PageLoadTriggerContext::GetSelectionInputArgs() const {
+  base::flat_map<std::string, processing::ProcessedValue> args;
+  if (web_contents_) {
+    args.emplace(kUrlKey, processing::ProcessedValue(
+                              web_contents_->GetLastCommittedURL()));
+  }
+  return args;
+}
 
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
