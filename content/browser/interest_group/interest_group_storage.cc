@@ -504,17 +504,197 @@ bool DoCreateOrMarkInterestGroupAndAdsReferenced(
   return true;
 }
 
+bool RemoveJoinHistory(sql::Database& db,
+                       const url::Origin& owner,
+                       const std::string& name) {
+  sql::Statement remove_join_history(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "DELETE FROM join_history "
+                            "WHERE owner=? AND name=?"));
+  if (!remove_join_history.is_valid())
+    return false;
+
+  remove_join_history.Reset(true);
+  remove_join_history.BindString(0, Serialize(owner));
+  remove_join_history.BindString(1, name);
+  return remove_join_history.Run();
+}
+
+bool RemoveBidHistory(sql::Database& db,
+                      const url::Origin& owner,
+                      const std::string& name) {
+  sql::Statement remove_bid_history(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "DELETE FROM bid_history "
+                            "WHERE owner=? AND name=?"));
+  if (!remove_bid_history.is_valid())
+    return false;
+
+  remove_bid_history.Reset(true);
+  remove_bid_history.BindString(0, Serialize(owner));
+  remove_bid_history.BindString(1, name);
+  return remove_bid_history.Run();
+}
+
+bool RemoveWinHistory(sql::Database& db,
+                      const url::Origin& owner,
+                      const std::string& name) {
+  sql::Statement remove_win_history(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "DELETE FROM win_history "
+                            "WHERE owner=? AND name=?"));
+  if (!remove_win_history.is_valid())
+    return false;
+
+  remove_win_history.Reset(true);
+  remove_win_history.BindString(0, Serialize(owner));
+  remove_win_history.BindString(1, name);
+  return remove_win_history.Run();
+}
+
+bool DoRemoveInterestGroup(sql::Database& db,
+                           const url::Origin& owner,
+                           const std::string& name) {
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin())
+    return false;
+
+  // These tables have foreign keys that reference the interest group table.
+  if (!RemoveJoinHistory(db, owner, name))
+    return false;
+  if (!RemoveBidHistory(db, owner, name))
+    return false;
+  if (!RemoveWinHistory(db, owner, name))
+    return false;
+
+  sql::Statement remove_group(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "DELETE FROM interest_groups "
+                            "WHERE owner=? AND name=?"));
+  if (!remove_group.is_valid())
+    return false;
+
+  remove_group.Reset(true);
+  remove_group.BindString(0, Serialize(owner));
+  remove_group.BindString(1, name);
+  return remove_group.Run() && transaction.Commit();
+}
+
+bool DoClearClusteredBiddingGroups(sql::Database& db,
+                                   const url::Origin owner,
+                                   const url::Origin main_frame) {
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin())
+    return false;
+
+  // clang-format off
+  sql::Statement same_cluster_groups(
+      db.GetCachedStatement(SQL_FROM_HERE,
+        "SELECT name "
+        "FROM interest_groups "
+        "WHERE owner = ? AND joining_origin = ? AND execution_mode = ?"));
+  // clang-format on
+
+  if (!same_cluster_groups.is_valid())
+    return false;
+
+  same_cluster_groups.Reset(true);
+  same_cluster_groups.BindString(0, Serialize(owner));
+  same_cluster_groups.BindString(1, Serialize(main_frame));
+  same_cluster_groups.BindInt(
+      2, static_cast<int>(
+             blink::InterestGroup::ExecutionMode::kGroupedByOriginMode));
+
+  while (same_cluster_groups.Step()) {
+    if (!DoRemoveInterestGroup(db, owner, same_cluster_groups.ColumnString(0)))
+      return false;
+  }
+  return transaction.Commit();
+}
+
+bool DoLoadInterestGroup(sql::Database& db,
+                         const url::Origin& owner,
+                         const std::string& name,
+                         blink::InterestGroup& group,
+                         url::Origin* joining_origin,
+                         base::Time* last_updated) {
+  // clang-format off
+  sql::Statement load(
+      db.GetCachedStatement(SQL_FROM_HERE,
+        "SELECT expiration,"
+          "joining_origin,"
+          "last_updated,"
+          "priority,"
+          "execution_mode,"
+          "bidding_url,"
+          "bidding_wasm_helper_url,"
+          "update_url,"
+          "trusted_bidding_signals_url,"
+          "trusted_bidding_signals_keys,"
+          "user_bidding_signals,"  // opaque data
+          "ads,"
+          "ad_components "
+        "FROM interest_groups "
+        "WHERE owner = ? AND name = ? "));
+  // clang-format on
+
+  if (!load.is_valid())
+    return false;
+
+  load.Reset(true);
+  load.BindString(0, Serialize(owner));
+  load.BindString(1, name);
+
+  if (!load.Step() || !load.Succeeded())
+    return false;
+
+  group.expiry = load.ColumnTime(0);
+  group.owner = owner;
+  group.name = name;
+  if (joining_origin)
+    *joining_origin = DeserializeOrigin(load.ColumnString(1));
+  if (last_updated)
+    *last_updated = load.ColumnTime(2);
+  group.priority = load.ColumnDouble(3);
+  group.execution_mode =
+      static_cast<blink::InterestGroup::ExecutionMode>(load.ColumnInt(4));
+  group.bidding_url = DeserializeURL(load.ColumnString(5));
+  group.bidding_wasm_helper_url = DeserializeURL(load.ColumnString(6));
+  group.daily_update_url = DeserializeURL(load.ColumnString(7));
+  group.trusted_bidding_signals_url = DeserializeURL(load.ColumnString(8));
+  group.trusted_bidding_signals_keys =
+      DeserializeStringVector(load.ColumnString(9));
+  if (load.GetColumnType(10) != sql::ColumnType::kNull)
+    group.user_bidding_signals = load.ColumnString(10);
+  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(11));
+  group.ad_components = DeserializeInterestGroupAdVector(load.ColumnString(12));
+
+  return true;
+}
+
 bool DoJoinInterestGroup(sql::Database& db,
                          const blink::InterestGroup& data,
                          const GURL& joining_url,
                          base::Time last_updated,
                          base::Time next_update_after) {
   DCHECK(data.IsValid());
+  url::Origin joining_origin = url::Origin::Create(joining_url);
   sql::Transaction transaction(&db);
   if (!transaction.Begin())
     return false;
 
-  url::Origin joining_origin = url::Origin::Create(joining_url);
+  blink::InterestGroup old_group;
+  url::Origin old_joining_origin;
+  if (DoLoadInterestGroup(db, data.owner, data.name, old_group,
+                          &old_joining_origin, nullptr) &&
+      old_group.execution_mode ==
+          blink::InterestGroup::ExecutionMode::kGroupedByOriginMode &&
+      joining_origin != old_joining_origin) {
+    // Clear all interest groups with same owner and mode GroupedByOriginMode
+    // and same old_joining_origin.
+    if (!DoClearClusteredBiddingGroups(db, data.owner, old_joining_origin))
+      return false;
+  }
 
   // clang-format off
   sql::Statement join_group(
@@ -593,66 +773,6 @@ bool DoJoinInterestGroup(sql::Database& db,
     return false;
 
   return transaction.Commit();
-}
-
-bool DoLoadInterestGroup(sql::Database& db,
-                         const url::Origin& owner,
-                         const std::string& name,
-                         blink::InterestGroup& group,
-                         url::Origin* joining_origin,
-                         base::Time* last_updated) {
-  // clang-format off
-  sql::Statement load(
-      db.GetCachedStatement(SQL_FROM_HERE,
-        "SELECT expiration,"
-          "joining_origin,"
-          "last_updated,"
-          "priority,"
-          "execution_mode,"
-          "bidding_url,"
-          "bidding_wasm_helper_url,"
-          "update_url,"
-          "trusted_bidding_signals_url,"
-          "trusted_bidding_signals_keys,"
-          "user_bidding_signals,"  // opaque data
-          "ads,"
-          "ad_components "
-        "FROM interest_groups "
-        "WHERE owner = ? AND name = ? "));
-  // clang-format on
-
-  if (!load.is_valid())
-    return false;
-
-  load.Reset(true);
-  load.BindString(0, Serialize(owner));
-  load.BindString(1, name);
-
-  if (!load.Step() || !load.Succeeded())
-    return false;
-
-  group.expiry = load.ColumnTime(0);
-  group.owner = owner;
-  group.name = name;
-  if (joining_origin)
-    *joining_origin = DeserializeOrigin(load.ColumnString(1));
-  if (last_updated)
-    *last_updated = load.ColumnTime(2);
-  group.priority = load.ColumnDouble(3);
-  group.execution_mode =
-      static_cast<blink::InterestGroup::ExecutionMode>(load.ColumnInt(4));
-  group.bidding_url = DeserializeURL(load.ColumnString(5));
-  group.bidding_wasm_helper_url = DeserializeURL(load.ColumnString(6));
-  group.daily_update_url = DeserializeURL(load.ColumnString(7));
-  group.trusted_bidding_signals_url = DeserializeURL(load.ColumnString(8));
-  group.trusted_bidding_signals_keys =
-      DeserializeStringVector(load.ColumnString(9));
-  if (load.GetColumnType(10) != sql::ColumnType::kNull)
-    group.user_bidding_signals = load.ColumnString(10);
-  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(11));
-  group.ad_components = DeserializeInterestGroupAdVector(load.ColumnString(12));
-
-  return true;
 }
 
 bool DoStoreInterestGroupUpdate(sql::Database& db,
@@ -786,82 +906,6 @@ WHERE owner=? AND name=?)"));
   update_group.BindString(2, name);
 
   return update_group.Run();
-}
-
-bool RemoveJoinHistory(sql::Database& db,
-                       const url::Origin& owner,
-                       const std::string& name) {
-  sql::Statement remove_join_history(
-      db.GetCachedStatement(SQL_FROM_HERE,
-                            "DELETE FROM join_history "
-                            "WHERE owner=? AND name=?"));
-  if (!remove_join_history.is_valid())
-    return false;
-
-  remove_join_history.Reset(true);
-  remove_join_history.BindString(0, Serialize(owner));
-  remove_join_history.BindString(1, name);
-  return remove_join_history.Run();
-}
-
-bool RemoveBidHistory(sql::Database& db,
-                      const url::Origin& owner,
-                      const std::string& name) {
-  sql::Statement remove_bid_history(
-      db.GetCachedStatement(SQL_FROM_HERE,
-                            "DELETE FROM bid_history "
-                            "WHERE owner=? AND name=?"));
-  if (!remove_bid_history.is_valid())
-    return false;
-
-  remove_bid_history.Reset(true);
-  remove_bid_history.BindString(0, Serialize(owner));
-  remove_bid_history.BindString(1, name);
-  return remove_bid_history.Run();
-}
-
-bool RemoveWinHistory(sql::Database& db,
-                      const url::Origin& owner,
-                      const std::string& name) {
-  sql::Statement remove_win_history(
-      db.GetCachedStatement(SQL_FROM_HERE,
-                            "DELETE FROM win_history "
-                            "WHERE owner=? AND name=?"));
-  if (!remove_win_history.is_valid())
-    return false;
-
-  remove_win_history.Reset(true);
-  remove_win_history.BindString(0, Serialize(owner));
-  remove_win_history.BindString(1, name);
-  return remove_win_history.Run();
-}
-
-bool DoRemoveInterestGroup(sql::Database& db,
-                           const url::Origin& owner,
-                           const std::string& name) {
-  sql::Transaction transaction(&db);
-  if (!transaction.Begin())
-    return false;
-
-  // These tables have foreign keys that reference the interest group table.
-  if (!RemoveJoinHistory(db, owner, name))
-    return false;
-  if (!RemoveBidHistory(db, owner, name))
-    return false;
-  if (!RemoveWinHistory(db, owner, name))
-    return false;
-
-  sql::Statement remove_group(
-      db.GetCachedStatement(SQL_FROM_HERE,
-                            "DELETE FROM interest_groups "
-                            "WHERE owner=? AND name=?"));
-  if (!remove_group.is_valid())
-    return false;
-
-  remove_group.Reset(true);
-  remove_group.BindString(0, Serialize(owner));
-  remove_group.BindString(1, name);
-  return remove_group.Run() && transaction.Commit();
 }
 
 bool DoRecordInterestGroupBid(sql::Database& db,
@@ -1713,10 +1757,27 @@ void InterestGroupStorage::JoinInterestGroup(
 }
 
 void InterestGroupStorage::LeaveInterestGroup(const url::Origin& owner,
-                                              const std::string& name) {
+                                              const std::string& name,
+                                              const url::Origin& main_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return;
+
+  blink::InterestGroup old_group;
+  url::Origin old_joining_origin;
+  if (DoLoadInterestGroup(*db_, owner, name, old_group, &old_joining_origin,
+                          nullptr) &&
+      old_group.execution_mode ==
+          blink::InterestGroup::ExecutionMode::kGroupedByOriginMode &&
+      main_frame != old_joining_origin) {
+    // Clear all interest groups with same owner and mode GroupedByOriginMode
+    // and same old_joining_origin.
+    if (!DoClearClusteredBiddingGroups(*db_, owner, old_joining_origin))
+      DLOG(ERROR) << "Could not leave interest group: "
+                  << db_->GetErrorMessage();
+    return;
+  }
+
   if (!DoRemoveInterestGroup(*db_, owner, name))
     DLOG(ERROR) << "Could not leave interest group: " << db_->GetErrorMessage();
 }

@@ -107,7 +107,9 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
   // checks in navigator_auction.cc should ensure the execution mode is always
   // valid.
   if (group.execution_mode !=
-      mojom::blink::InterestGroup::ExecutionMode::kCompatibilityMode) {
+          mojom::blink::InterestGroup::ExecutionMode::kCompatibilityMode &&
+      group.execution_mode !=
+          mojom::blink::InterestGroup::ExecutionMode::kGroupedByOriginMode) {
     error_field_name = "execution_mode";
     error_field_value = String::Number(static_cast<int>(group.execution_mode));
     error = "execution mode is not valid.";

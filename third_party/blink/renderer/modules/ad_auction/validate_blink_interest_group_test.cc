@@ -562,8 +562,8 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidExecutionMode) {
     blink::InterestGroup::ExecutionMode execution_mode;
     const char* execution_mode_text;
   } test_cases[] = {
-      {blink::InterestGroup::ExecutionMode::kGroupedByOriginMode, "1"},
       {blink::InterestGroup::ExecutionMode::kFrozenContext, "2"},
+      {static_cast<blink::InterestGroup::ExecutionMode>(-1), "-1"},
   };
   for (const auto& test_case : test_cases) {
     mojom::blink::InterestGroupPtr blink_interest_group =

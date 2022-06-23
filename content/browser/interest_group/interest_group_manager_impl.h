@@ -116,6 +116,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void CheckPermissionsAndLeaveInterestGroup(
       const url::Origin& owner,
       const std::string& name,
+      const url::Origin& main_frame,
       const url::Origin& frame_origin,
       const net::NetworkIsolationKey& network_isolation_key,
       bool report_result_only,
@@ -128,7 +129,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // record for this interest group is created.
   void JoinInterestGroup(blink::InterestGroup group, const GURL& joining_url);
   // Remove the interest group if it exists.
-  void LeaveInterestGroup(const url::Origin& owner, const std::string& name);
+  void LeaveInterestGroup(const url::Origin& owner,
+                          const std::string& name,
+                          const url::Origin& main_frame);
   // Loads all interest groups owned by `owner`, then updates their definitions
   // by fetching their `dailyUpdateUrl`. Interest group updates that fail to
   // load or validate are skipped, but other updates will proceed.
@@ -271,6 +274,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void OnLeaveInterestGroupPermissionsChecked(
       const url::Origin& owner,
       const std::string& name,
+      const url::Origin& main_frame,
       bool report_result_only,
       blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback,
       bool can_leave);

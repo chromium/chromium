@@ -126,8 +126,9 @@ void AdAuctionServiceImpl::LeaveInterestGroup(
       ContentBrowserClient::InterestGroupApiOperation::kLeave, owner);
 
   GetInterestGroupManager().CheckPermissionsAndLeaveInterestGroup(
-      owner, name, origin(), GetFrame()->GetNetworkIsolationKey(),
-      report_result_only, *GetFrameURLLoaderFactory(), std::move(callback));
+      owner, name, main_frame_origin_, origin(),
+      GetFrame()->GetNetworkIsolationKey(), report_result_only,
+      *GetFrameURLLoaderFactory(), std::move(callback));
 }
 
 void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
@@ -176,8 +177,8 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
   }
 
   GetInterestGroupManager().LeaveInterestGroup(
-      auction_data->interest_group_owner(),
-      auction_data->interest_group_name());
+      auction_data->interest_group_owner(), auction_data->interest_group_name(),
+      main_frame_origin_);
 }
 
 void AdAuctionServiceImpl::UpdateAdInterestGroups() {

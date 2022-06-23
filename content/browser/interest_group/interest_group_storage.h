@@ -58,7 +58,9 @@ class CONTENT_EXPORT InterestGroupStorage {
   void JoinInterestGroup(const blink::InterestGroup& group,
                          const GURL& main_frame_joining_url);
   // Remove the interest group if it exists.
-  void LeaveInterestGroup(const url::Origin& owner, const std::string& name);
+  void LeaveInterestGroup(const url::Origin& owner,
+                          const std::string& name,
+                          const url::Origin& main_frame);
   // Updates the interest group of the same name based on the information in
   // the provided group. This does not update the interest group expiration
   // time or user bidding signals. Silently fails if the interest group does

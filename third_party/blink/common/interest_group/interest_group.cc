@@ -108,8 +108,10 @@ bool InterestGroup::IsValid() const {
     return false;
 
   if (!execution_mode ||
-      *execution_mode !=
-          blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode)
+      (*execution_mode !=
+           blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode &&
+       *execution_mode !=
+           blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode))
     return false;
 
   if (bidding_url && !IsUrlAllowed(*bidding_url, *this))
