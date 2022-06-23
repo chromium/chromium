@@ -11,6 +11,7 @@
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_service.h"
@@ -144,6 +145,11 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
     referrer_url = navigation_handle->GetPreviousPrimaryMainFrameURL();
   }
 
+  ChromeNavigationUIData* chrome_ui_data =
+      navigation_handle->GetNavigationUIData() == nullptr
+          ? nullptr
+          : static_cast<ChromeNavigationUIData*>(
+                navigation_handle->GetNavigationUIData());
   // Note: floc_allowed is set to false initially and is later updated by the
   // floc eligibility observer. Eventually it will be removed from the history
   // service API.
@@ -173,7 +179,9 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
                        history::ContextIDForWebContents(web_contents()),
                        nav_entry_id,
                        navigation_handle->GetPreviousPrimaryMainFrameURL()))
-                 : absl::nullopt));
+                 : absl::nullopt),
+      chrome_ui_data == nullptr ? absl::nullopt
+                                : chrome_ui_data->bookmark_id());
 
   if (ui::PageTransitionIsMainFrame(page_transition) &&
       virtual_url != navigation_handle->GetURL()) {

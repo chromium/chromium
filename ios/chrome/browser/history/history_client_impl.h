@@ -42,6 +42,8 @@ class HistoryClientImpl : public history::HistoryClient,
   void NotifyProfileError(sql::InitStatus init_status,
                           const std::string& diagnostics) override;
   std::unique_ptr<history::HistoryBackendClient> CreateBackendClient() override;
+  void UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
+                                  base::Time time) override;
 
   // bookmarks::BaseBookmarkModelObserver implementation.
   void BookmarkModelChanged() override;

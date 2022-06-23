@@ -263,6 +263,9 @@ class BookmarkModel : public BookmarkUndoProvider,
   // combobox of most recently modified folders.
   void ResetDateFolderModified(const BookmarkNode* node);
 
+  // Updates the last used `time` for the given `id` / `url`.
+  void UpdateLastUsedTime(const BookmarkNode* node, base::Time time);
+
   // Returns up to |max_count| bookmarks containing each term from |query| in
   // either the title, URL, or, if |match_ancestor_titles| is true, the titles
   // of ancestors. |matching_algorithm| determines the algorithm used by

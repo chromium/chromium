@@ -440,7 +440,8 @@ struct HistoryAddPageArgs {
                      bool consider_for_ntp_most_visited,
                      bool floc_allowed,
                      absl::optional<std::u16string> title = absl::nullopt,
-                     absl::optional<Opener> opener = absl::nullopt);
+                     absl::optional<Opener> opener = absl::nullopt,
+                     absl::optional<int64_t> bookmark_id = absl::nullopt);
   HistoryAddPageArgs(const HistoryAddPageArgs& other);
   ~HistoryAddPageArgs();
 
@@ -464,6 +465,7 @@ struct HistoryAddPageArgs {
   bool floc_allowed;
   absl::optional<std::u16string> title;
   absl::optional<Opener> opener;
+  absl::optional<int64_t> bookmark_id;
 };
 
 // TopSites -------------------------------------------------------------------

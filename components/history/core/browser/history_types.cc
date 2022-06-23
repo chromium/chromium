@@ -278,6 +278,7 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          true,
                          false,
                          absl::nullopt,
+                         absl::nullopt,
                          absl::nullopt) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
@@ -293,7 +294,8 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
                                        bool consider_for_ntp_most_visited,
                                        bool floc_allowed,
                                        absl::optional<std::u16string> title,
-                                       absl::optional<Opener> opener)
+                                       absl::optional<Opener> opener,
+                                       absl::optional<int64_t> bookmark_id)
     : url(url),
       time(time),
       context_id(context_id),
@@ -307,7 +309,8 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
       consider_for_ntp_most_visited(consider_for_ntp_most_visited),
       floc_allowed(floc_allowed),
       title(title),
-      opener(opener) {}
+      opener(opener),
+      bookmark_id(bookmark_id) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const HistoryAddPageArgs& other) =
     default;

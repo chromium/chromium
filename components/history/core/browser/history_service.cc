@@ -430,6 +430,13 @@ void HistoryService::AddPage(const HistoryAddPageArgs& add_page_args) {
     }
   }
 
+  // In extremely rare cases an in-flight clear history task posted to the UI
+  // thread could cause this last used time to be dropped.
+  if (add_page_args.bookmark_id.has_value()) {
+    history_client_->UpdateBookmarkLastUsedTime(
+        add_page_args.bookmark_id.value(), add_page_args.time);
+  }
+
   ScheduleTask(PRIORITY_NORMAL,
                base::BindOnce(&HistoryBackend::AddPage, history_backend_,
                               add_page_args));

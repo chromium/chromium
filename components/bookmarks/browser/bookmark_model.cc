@@ -326,6 +326,11 @@ void BookmarkModel::Move(const BookmarkNode* node,
     observer.BookmarkNodeMoved(this, old_parent, old_index, new_parent, index);
 }
 
+void BookmarkModel::UpdateLastUsedTime(const BookmarkNode* node,
+                                       base::Time time) {
+  // TODO(crbug.com/1320950): Use this hook to update the relevant field.
+}
+
 void BookmarkModel::Copy(const BookmarkNode* node,
                          const BookmarkNode* new_parent,
                          size_t index) {

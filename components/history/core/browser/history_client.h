@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "sql/init_status.h"
 
 class GURL;
@@ -43,6 +44,10 @@ class HistoryClient {
 
   // Returns a new HistoryBackendClient instance.
   virtual std::unique_ptr<HistoryBackendClient> CreateBackendClient() = 0;
+
+  // Update the last used `time` for the given bookmark node `id`.
+  virtual void UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
+                                          base::Time time) = 0;
 };
 
 }  // namespace history
