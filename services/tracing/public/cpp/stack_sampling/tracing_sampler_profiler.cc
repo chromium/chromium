@@ -924,6 +924,7 @@ void TracingSamplerProfiler::StopTracing() {
 }  // namespace tracing
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS(
+PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS_WITH_ATTRS(
+    COMPONENT_EXPORT(TRACING_CPP),
     tracing::TracingSamplerProfilerDataSource::DataSourceProxy);
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
