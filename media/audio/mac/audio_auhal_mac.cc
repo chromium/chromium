@@ -169,7 +169,6 @@ AUHALStream::AUHALStream(AudioManagerMac* manager,
       current_lost_frames_(0),
       last_sample_time_(0.0),
       last_number_of_frames_(0),
-      glitch_reporter_(SystemGlitchReporter::StreamType::kRender),
       log_callback_(log_callback) {
   // We must have a manager.
   DCHECK(manager_);
@@ -439,7 +438,7 @@ void AUHALStream::ReportAndResetStats() {
   UMA_HISTOGRAM_COUNTS_1M("Media.Audio.Render.FramesRequested",
                           number_of_frames_requested_);
 
-  SystemGlitchReporter::Stats stats =
+  SystemOutputGlitchReporter::Stats stats =
       glitch_reporter_.GetLongTermStatsAndReset();
 
   std::string log_message = base::StringPrintf(

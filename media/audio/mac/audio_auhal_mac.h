@@ -33,7 +33,7 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/mac/scoped_audio_unit.h"
-#include "media/audio/system_glitch_reporter.h"
+#include "media/audio/system_output_glitch_reporter.h"
 #include "media/base/audio_parameters.h"
 
 namespace media {
@@ -204,7 +204,7 @@ class AUHALStream : public AudioOutputStream {
 
   // Used to aggregate and report glitch metrics to UMA (periodically) and to
   // text logs (when a stream ends).
-  SystemGlitchReporter glitch_reporter_ GUARDED_BY(lock_);
+  SystemOutputGlitchReporter glitch_reporter_ GUARDED_BY(lock_);
 
   // Used to defer Start() to workaround http://crbug.com/160920.
   base::CancelableOnceClosure deferred_start_cb_;

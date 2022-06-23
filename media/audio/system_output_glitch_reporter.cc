@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/audio/system_glitch_reporter.h"
+#include "media/audio/system_output_glitch_reporter.h"
 
 #include "base/metrics/histogram_functions.h"
 
@@ -13,20 +13,8 @@ namespace {
 constexpr static int kCallbacksPerLogPeriod = 1000;
 }  // namespace
 
-SystemGlitchReporter::SystemGlitchReporter(StreamType stream_type)
-    : num_glitches_detected_metric_name_(stream_type == StreamType::kCapture
-                                             ? "Media.Audio.Capture.Glitches2"
-                                             : "Media.Audio.Render.Glitches2"),
-      largest_glitch_duration_metric_name_(
-          stream_type == StreamType::kCapture
-              ? "Media.Audio.Capture.LostFramesInMs2"
-              : "Media.Audio.Render.LostFramesInMs2"),
-      total_glitch_duration_metric_name_(
-          stream_type == StreamType::kCapture
-              ? "Media.Audio.Capture.LargestGlitchMs2"
-              : "Media.Audio.Render.LargestGlitchMs2") {}
-
-SystemGlitchReporter::Stats SystemGlitchReporter::GetLongTermStatsAndReset() {
+SystemOutputGlitchReporter::Stats
+SystemOutputGlitchReporter::GetLongTermStatsAndReset() {
   Stats result = long_term_stats_;
   callback_count_ = 0;
   short_term_stats_ = {};
@@ -34,7 +22,7 @@ SystemGlitchReporter::Stats SystemGlitchReporter::GetLongTermStatsAndReset() {
   return result;
 }
 
-void SystemGlitchReporter::UpdateStats(base::TimeDelta glitch_duration) {
+void SystemOutputGlitchReporter::UpdateStats(base::TimeDelta glitch_duration) {
   ++callback_count_;
 
   if (glitch_duration.is_positive()) {
@@ -55,15 +43,15 @@ void SystemGlitchReporter::UpdateStats(base::TimeDelta glitch_duration) {
 
   // We record the glitch count even if there aren't any glitches, to get a
   // feel for how often we get no glitches vs the alternative.
-  base::UmaHistogramCounts1000(num_glitches_detected_metric_name_,
+  base::UmaHistogramCounts1000("Media.Audio.Render.Glitches2",
                                short_term_stats_.glitches_detected);
 
   if (short_term_stats_.glitches_detected != 0) {
     base::UmaHistogramCounts1M(
-        total_glitch_duration_metric_name_,
+        "Media.Audio.Render.LostFramesInMs2",
         short_term_stats_.total_glitch_duration.InMilliseconds());
     base::UmaHistogramCounts1M(
-        largest_glitch_duration_metric_name_,
+        "Media.Audio.Render.LargestGlitchMs2",
         short_term_stats_.largest_glitch_duration.InMilliseconds());
   }
 
