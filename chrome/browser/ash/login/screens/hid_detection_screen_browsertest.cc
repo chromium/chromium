@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/hid_detection/fake_hid_detection_manager.h"
 #include "ash/components/hid_detection/hid_detection_utils.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_chromeos_version_info.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
@@ -52,9 +55,19 @@ const test::UIPath kHidKeyboardTick = {"hid-detection", "keyboard-tick"};
 
 // TODO(crbug/1173782): use INSTANTIATE_TEST_SUITE_P to test this for
 // chromebox, chromebase, chromebit
-class HIDDetectionScreenChromeboxTest : public OobeBaseTest {
+class HIDDetectionScreenChromeboxTest
+    : public OobeBaseTest,
+      public testing::WithParamInterface<bool> {
  public:
-  HIDDetectionScreenChromeboxTest() = default;
+  HIDDetectionScreenChromeboxTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          ash::features::kOobeHidDetectionRevamp);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          ash::features::kOobeHidDetectionRevamp);
+    }
+  }
 
   HIDDetectionScreenChromeboxTest(const HIDDetectionScreenChromeboxTest&) =
       delete;
@@ -161,16 +174,21 @@ class HIDDetectionScreenChromeboxTest : public OobeBaseTest {
   base::test::ScopedChromeOSVersionInfo version_{"DEVICETYPE=CHROMEBOX",
                                                  base::Time::Now()};
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, NoDevicesConnected) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         HIDDetectionScreenChromeboxTest,
+                         testing::Values(false));
+
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, NoDevicesConnected) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
   test::OobeJS().ExpectDisabledPath(kHidContinueButton);
   EXPECT_FALSE(GetExitResult().has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest,
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
                        BluetoothPairingAttemptsSimultaneous) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
 
@@ -197,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest,
   AssertBluetoothPairingAttemptsCount(/*count=*/3);
 }
 
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest,
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
                        BluetoothPairingAttemptsSequential) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
 
@@ -216,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest,
   AssertBluetoothPairingAttemptsCount(/*count=*/2);
 }
 
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
   // NOTE: State strings match those in hid_detection_screen.cc.
   // No devices added yet
   EXPECT_EQ("searching", handler()->mouse_state_for_test());
@@ -261,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
 
 // Test that if there is any Bluetooth device connected on HID screen, the
 // Bluetooth adapter should not be disabled after advancing to the next screen.
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest,
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
                        BluetoothDeviceConnected) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
 
@@ -282,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest,
 
 // Test that if there is no Bluetooth device connected on HID screen, the
 // Bluetooth adapter should be disabled after advancing to the next screen.
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest,
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
                        NoBluetoothDeviceConnected) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
 
@@ -298,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest,
 
 // Start without devices, connect them and proceed to the network screen.
 // Network screen should be saved in the local state.
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, PRE_ResumableScreen) {
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, PRE_ResumableScreen) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
   test::OobeJS().ExpectDisabledPath(kHidContinueButton);
 
@@ -314,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, PRE_ResumableScreen) {
 
 // Start without devices, connect them. Flow should proceed to the saved screen
 // (network screen).
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, ResumableScreen) {
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, ResumableScreen) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
   hid_controller_.ConnectUSBDevices();
   test::OobeJS().ExpectEnabledPath(kHidContinueButton);
@@ -323,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, ResumableScreen) {
 }
 
 // Tests that the connected 'ticks' are shown when the devices are connected.
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, TestTicks) {
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, TestTicks) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
   // When touch screen is not detected, the whole touchscreen row is hidden
   test::OobeJS().ExpectHiddenPath(kHidTouchscreenEntry);
@@ -337,19 +355,57 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, TestTicks) {
   ContinueToWelcomeScreen();
 }
 
-class HIDDetectionSkipTest : public HIDDetectionScreenChromeboxTest {
+// TODO(crbug.com/1299099): Remove when kOobeHidDetectionRevamp is launched.
+class HIDDetectionSkipTestLegacy : public HIDDetectionScreenChromeboxTest {
  public:
-  HIDDetectionSkipTest() {
+  HIDDetectionSkipTestLegacy() {
     hid_controller_.set_wait_until_idle_after_device_update(false);
     hid_controller_.ConnectUSBDevices();
   }
-  ~HIDDetectionSkipTest() override = default;
+  ~HIDDetectionSkipTestLegacy() override = default;
 
  protected:
   base::HistogramTester histogram_tester;
 };
 
-IN_PROC_BROWSER_TEST_F(HIDDetectionSkipTest, BothDevicesPreConnected) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         HIDDetectionSkipTestLegacy,
+                         testing::Values(false));
+
+IN_PROC_BROWSER_TEST_P(HIDDetectionSkipTestLegacy, BothDevicesPreConnected) {
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  EXPECT_FALSE(GetExitResult().has_value());
+  histogram_tester.ExpectTotalCount("OOBE.HidDetectionScreen.HidConnected", 0);
+}
+
+class HIDDetectionSkipTest : public HIDDetectionScreenChromeboxTest {
+ public:
+  HIDDetectionSkipTest() {
+    auto fake_hid_detection_manager =
+        std::make_unique<hid_detection::FakeHidDetectionManager>();
+    fake_hid_detection_manager_ = fake_hid_detection_manager.get();
+    HIDDetectionScreen::OverrideHidDetectionManagerForTesting(
+        std::move(fake_hid_detection_manager));
+  }
+  ~HIDDetectionSkipTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(fake_hid_detection_manager_
+                    ->HasPendingIsHidDetectionRequiredCallback());
+    fake_hid_detection_manager_->InvokePendingIsHidDetectionRequiredCallback(
+        /*required=*/false);
+    HIDDetectionScreenChromeboxTest::SetUpOnMainThread();
+  }
+
+ protected:
+  base::HistogramTester histogram_tester;
+
+  hid_detection::FakeHidDetectionManager* fake_hid_detection_manager_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, HIDDetectionSkipTest, testing::Values(true));
+
+IN_PROC_BROWSER_TEST_P(HIDDetectionSkipTest, HIDDetectionNotRequired) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   EXPECT_FALSE(GetExitResult().has_value());
   histogram_tester.ExpectTotalCount("OOBE.HidDetectionScreen.HidConnected", 0);
@@ -361,7 +417,11 @@ class HIDDetectionDeviceOwnedTest : public HIDDetectionScreenChromeboxTest {
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };
 
-IN_PROC_BROWSER_TEST_F(HIDDetectionDeviceOwnedTest, NoScreen) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         HIDDetectionDeviceOwnedTest,
+                         testing::Values(false));
+
+IN_PROC_BROWSER_TEST_P(HIDDetectionDeviceOwnedTest, NoScreen) {
   OobeScreenWaiter(GetFirstSigninScreen()).Wait();
 }
 
@@ -372,7 +432,11 @@ class HIDDetectionOobeCompletedUnowned
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 };
 
-IN_PROC_BROWSER_TEST_F(HIDDetectionOobeCompletedUnowned, ShowScreen) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         HIDDetectionOobeCompletedUnowned,
+                         testing::Values(false));
+
+IN_PROC_BROWSER_TEST_P(HIDDetectionOobeCompletedUnowned, ShowScreen) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
 }
 
@@ -402,7 +466,11 @@ class HIDDetectionScreenDisabledAfterRestartTest
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenDisabledAfterRestartTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         HIDDetectionScreenDisabledAfterRestartTest,
+                         testing::Values(false));
+
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenDisabledAfterRestartTest,
                        PRE_SkipToUpdate) {
   OobeScreenWaiter(chromeos::WelcomeView::kScreenId).Wait();
 
@@ -411,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenDisabledAfterRestartTest,
       HIDDetectionView::kScreenId));
 }
 
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenDisabledAfterRestartTest,
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenDisabledAfterRestartTest,
                        SkipToUpdate) {
   OobeScreenWaiter(chromeos::WelcomeView::kScreenId).Wait();
   // The pref should persist restart.
@@ -439,6 +507,9 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromebookTest,
 class HIDDetectionScreenChromebaseTest : public OobeBaseTest {
  public:
   HIDDetectionScreenChromebaseTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kOobeHidDetectionRevamp);
+
     hid_controller_.set_wait_until_idle_after_device_update(false);
     hid_controller_.AddTouchscreen();
   }
@@ -453,6 +524,8 @@ class HIDDetectionScreenChromebaseTest : public OobeBaseTest {
   // with only a touchscreen.
   base::test::ScopedChromeOSVersionInfo version_{"DEVICETYPE=CHROMEBASE",
                                                  base::Time::Now()};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromebaseTest, TouchscreenDetected) {
@@ -481,7 +554,11 @@ class HIDDetectionScreenPreConnectedDeviceTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenPreConnectedDeviceTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         HIDDetectionScreenPreConnectedDeviceTest,
+                         testing::Values(false));
+
+IN_PROC_BROWSER_TEST_P(HIDDetectionScreenPreConnectedDeviceTest,
                        MousePreConnected) {
   // Continue button should be enabled if at least one device is connected.
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
