@@ -12,6 +12,9 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -62,6 +65,31 @@ TEST_F(AppsContainerViewTest, CanHideContinueSection) {
   EXPECT_FALSE(helper->GetAppsContainerView()->separator()->GetVisible());
 }
 
+TEST_F(AppsContainerViewTest, HideContinueSectionPlaysAnimation) {
+  // Show the app list without animation.
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  TabletMode::Get()->SetEnabledForTest(true);
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Hide the continue section.
+  Shell::Get()->app_list_controller()->SetHideContinueSection(true);
+
+  // Apps grid is animating its transform.
+  auto* apps_grid_view = helper->GetRootPagedAppsGridView();
+  ASSERT_TRUE(apps_grid_view->layer());
+  EXPECT_TRUE(apps_grid_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(apps_grid_view->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::TRANSFORM));
+}
+
 TEST_F(AppsContainerViewTest, CanShowContinueSection) {
   // Simulate a user with the continue section hidden on startup.
   Shell::Get()->app_list_controller()->SetHideContinueSection(true);
@@ -86,6 +114,54 @@ TEST_F(AppsContainerViewTest, CanShowContinueSection) {
   EXPECT_TRUE(helper->GetFullscreenContinueSectionView()->GetVisible());
   EXPECT_TRUE(helper->GetFullscreenRecentAppsView()->GetVisible());
   EXPECT_TRUE(helper->GetAppsContainerView()->separator()->GetVisible());
+}
+
+TEST_F(AppsContainerViewTest, ShowContinueSectionPlaysAnimation) {
+  // Simulate a user with the continue section hidden on startup.
+  Shell::Get()->app_list_controller()->SetHideContinueSection(true);
+
+  // Show the app list with enough items to make the continue section and
+  // recent apps visible.
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  TabletMode::Get()->SetEnabledForTest(true);
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Show the continue section.
+  Shell::Get()->app_list_controller()->SetHideContinueSection(false);
+
+  // Continue section is fading in.
+  auto* continue_section = helper->GetFullscreenContinueSectionView();
+  ASSERT_TRUE(continue_section->layer());
+  EXPECT_TRUE(continue_section->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(continue_section->layer()->opacity(), 0.0f);
+  EXPECT_EQ(continue_section->layer()->GetTargetOpacity(), 1.0f);
+
+  // Recent apps view is fading in.
+  auto* recent_apps = helper->GetFullscreenRecentAppsView();
+  ASSERT_TRUE(recent_apps->layer());
+  EXPECT_TRUE(recent_apps->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(recent_apps->layer()->opacity(), 0.0f);
+  EXPECT_EQ(recent_apps->layer()->GetTargetOpacity(), 1.0f);
+
+  // Separator view is fading in.
+  auto* separator = helper->GetAppsContainerView()->separator();
+  ASSERT_TRUE(separator->layer());
+  EXPECT_TRUE(separator->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(separator->layer()->opacity(), 0.0f);
+  EXPECT_EQ(separator->layer()->GetTargetOpacity(), 1.0f);
+
+  // Apps grid is animating its transform.
+  auto* apps_grid_view = helper->GetRootPagedAppsGridView();
+  ASSERT_TRUE(apps_grid_view->layer());
+  EXPECT_TRUE(apps_grid_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(apps_grid_view->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::TRANSFORM));
 }
 
 }  // namespace ash

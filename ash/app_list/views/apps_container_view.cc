@@ -41,6 +41,7 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -52,9 +53,11 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
@@ -209,6 +212,23 @@ class AppsContainerView::ContinueContainer : public views::View {
     continue_section_->UpdateElementsVisibility();
     recent_apps_->UpdateVisibility();
     UpdateSeparatorVisibility();
+  }
+
+  // Animates a fade-in for the continue section, recent apps and separator.
+  void FadeInViews() {
+    continue_section_->layer()->SetOpacity(0.0f);
+    recent_apps_->layer()->SetOpacity(0.0f);
+    separator_->layer()->SetOpacity(0.0f);
+
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(ui::LayerAnimator::PreemptionStrategy::
+                                   IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .Once()
+        .At(base::Milliseconds(100))
+        .SetOpacity(continue_section_, 1.0f)
+        .SetOpacity(recent_apps_, 1.0f)
+        .SetOpacity(separator_, 1.0f)
+        .SetDuration(base::Milliseconds(200));
   }
 
   ContinueSectionView* continue_section() { return continue_section_; }
@@ -807,8 +827,42 @@ void AppsContainerView::UpdateForNewSortingOrder(
 }
 
 void AppsContainerView::UpdateContinueSectionVisibility() {
-  if (continue_container_)
-    continue_container_->UpdateContinueSectionVisibility();
+  if (!continue_container_)
+    return;
+
+  // Get the continue container's height before Layout().
+  const int initial_height = continue_container_->height();
+
+  // Update continue container visibility and bounds.
+  continue_container_->UpdateContinueSectionVisibility();
+  Layout();
+
+  // The change in continue container height is the amount by which the apps
+  // grid view will be offset.
+  const int vertical_offset = initial_height - continue_container_->height();
+
+  // Transform the apps grid view to its original pre-Layout() position.
+  gfx::Transform transform;
+  transform.Translate(0, vertical_offset);
+  apps_grid_view_->SetTransform(transform);
+
+  // Animate to the identity transform to slide the apps grid view into its
+  // final position.
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(ui::LayerAnimator::PreemptionStrategy::
+                                 IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetTransform(apps_grid_view_, gfx::Transform(),
+                    gfx::Tween::ACCEL_LIN_DECEL_100_3)
+      .SetDuration(base::Milliseconds(300));
+
+  // If the continue section is being shown, fade in the continue tasks and
+  // recent apps views. Don't try to fade out the views on hide because they
+  // are already invisible.
+  AppListViewDelegate* view_delegate =
+      contents_view_->GetAppListMainView()->view_delegate();
+  if (!view_delegate->ShouldHideContinueSection())
+    continue_container_->FadeInViews();
 }
 
 ContinueSectionView* AppsContainerView::GetContinueSection() {

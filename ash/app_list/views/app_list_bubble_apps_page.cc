@@ -893,6 +893,8 @@ void AppListBubbleAppsPage::FadeInContinueSectionView(views::View* view) {
   // The animation has a delay to give the separator and apps grid time to
   // partially slide out of the way.
   views::AnimationBuilder()
+      .SetPreemptionStrategy(ui::LayerAnimator::PreemptionStrategy::
+                                 IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .OnEnded(cleanup)
       .OnAborted(cleanup)
       .Once()
