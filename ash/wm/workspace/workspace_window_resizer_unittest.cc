@@ -2153,16 +2153,17 @@ TEST_F(WorkspaceWindowResizerTest, FlingRestoreSize) {
   const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   ASSERT_TRUE(window_state->IsSnapped());
+  const gfx::Rect snapped_bounds = window_state->window()->bounds();
 
   generator.GestureScrollSequence(gfx::Point(10, 10), gfx::Point(10, 210),
                                   base::Milliseconds(10), 10);
   ASSERT_TRUE(window_state->IsMinimized());
 
   // After unminimzing, the window bounds are the size they were before
-  // maximizing.
+  // minimizing.
   window_state->Unminimize();
-  EXPECT_TRUE(window_state->IsNormalStateType());
-  EXPECT_EQ(window_size, touch_resize_window_->bounds().size());
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_EQ(snapped_bounds, touch_resize_window_->bounds());
 }
 
 // Tests that fling to maximize does not crash or DCHECK if the window's restore

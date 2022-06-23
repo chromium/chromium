@@ -66,6 +66,8 @@ WindowStateType BaseState::GetStateForTransitionEvent(WindowState* window_state,
                                                       const WMEvent* event) {
   switch (event->type()) {
     case WM_EVENT_NORMAL:
+      if (window_state->window()->GetProperty(aura::client::kIsRestoringKey))
+        return window_state->GetRestoreWindowState();
       return WindowStateType::kNormal;
     case WM_EVENT_MAXIMIZE:
       return WindowStateType::kMaximized;

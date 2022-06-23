@@ -153,6 +153,16 @@ AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
 AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
     kRestoreShowStateKey;
 
+// A property key to indicate if a window is currently being restored. Normally
+// restoring a window equals to changing window's state to normal window state.
+// This property will be used on Chrome OS to decide if we should use window
+// state restore stack to decide which window state the window should restore
+// back to, and it's not always the normal window state. As an example,
+// unminimizing a window will restore the window back to its pre-minimized
+// window state, which can have a non-normal window state. Note this property
+// does not have any effort on any other operation systems except Chrome OS.
+AURA_EXPORT extern const WindowProperty<bool>* const kIsRestoringKey;
+
 // A property key to store key event dispatch policy. The default value is
 // false, which means IME receives a key event in PREDISPATCH phace before a
 // window receives it. If it's true, a window receives a key event before IME.
