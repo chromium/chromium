@@ -2989,7 +2989,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Media.InitialDecoderSelectionTime" units="ms"
-    expires_after="2022-06-25">
+    expires_after="2023-03-25">
   <owner>cassew@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
