@@ -212,7 +212,7 @@ void FindAppServiceTasks(Profile* profile,
     result_list->push_back(FullTaskDescriptor(
         TaskDescriptor(launch_entry.app_id, GetTaskType(app_type),
                        launch_entry.activity_name),
-        launch_entry.activity_label, Verb::VERB_OPEN_WITH, icon_url,
+        launch_entry.activity_label, Verb::VERB_NONE, icon_url,
         /* is_default=*/false,
         // TODO(petermarshall): Handle the rest of the logic from FindWebTasks()
         // e.g. prioritise non-generic handlers.
