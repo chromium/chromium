@@ -170,10 +170,11 @@ void PasswordCheckManager::OnEditCredential(
   bool is_using_account_store = form.IsUsingAccountStore();
 
   credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
-      std::move(form), CredentialEditBridge::IsInsecureCredential(true),
+      password_manager::CredentialUIEntry(form),
+      CredentialEditBridge::IsInsecureCredential(true),
       GetUsernamesForRealm(saved_passwords_presenter_.GetSavedCredentials(),
                            credential.signon_realm, is_using_account_store),
-      &saved_passwords_presenter_, nullptr,
+      &saved_passwords_presenter_,
       base::BindOnce(&PasswordCheckManager::OnEditUIDismissed,
                      base::Unretained(this)),
       context, settings_launcher);

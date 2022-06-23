@@ -22,11 +22,10 @@
 #include "ui/base/l10n/l10n_util.h"
 
 std::unique_ptr<CredentialEditBridge> CredentialEditBridge::MaybeCreate(
-    const password_manager::PasswordForm credential,
+    const password_manager::CredentialUIEntry credential,
     IsInsecureCredential is_insecure_credential,
     std::vector<std::u16string> existing_usernames,
     password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
-    PasswordManagerPresenter* password_manager_presenter,
     base::OnceClosure dismissal_callback,
     const base::android::JavaRef<jobject>& context,
     const base::android::JavaRef<jobject>& settings_launcher) {
@@ -39,16 +38,15 @@ std::unique_ptr<CredentialEditBridge> CredentialEditBridge::MaybeCreate(
   return base::WrapUnique(new CredentialEditBridge(
       std::move(credential), is_insecure_credential,
       std::move(existing_usernames), saved_passwords_presenter,
-      password_manager_presenter, std::move(dismissal_callback), context,
-      settings_launcher, std::move(java_bridge)));
+      std::move(dismissal_callback), context, settings_launcher,
+      std::move(java_bridge)));
 }
 
 CredentialEditBridge::CredentialEditBridge(
-    const password_manager::PasswordForm credential,
+    const password_manager::CredentialUIEntry credential,
     IsInsecureCredential is_insecure_credential,
     std::vector<std::u16string> existing_usernames,
     password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
-    PasswordManagerPresenter* password_manager_presenter,
     base::OnceClosure dismissal_callback,
     const base::android::JavaRef<jobject>& context,
     const base::android::JavaRef<jobject>& settings_launcher,
@@ -57,7 +55,6 @@ CredentialEditBridge::CredentialEditBridge(
       is_insecure_credential_(is_insecure_credential),
       existing_usernames_(std::move(existing_usernames)),
       saved_passwords_presenter_(saved_passwords_presenter),
-      password_manager_presenter_(password_manager_presenter),
       dismissal_callback_(std::move(dismissal_callback)),
       java_bridge_(java_bridge) {
   Java_CredentialEditBridge_initAndLaunchUi(
@@ -75,8 +72,8 @@ void CredentialEditBridge::GetCredential(JNIEnv* env) {
   Java_CredentialEditBridge_setCredential(
       env, java_bridge_,
       base::android::ConvertUTF16ToJavaString(env, GetDisplayURLOrAppName()),
-      base::android::ConvertUTF16ToJavaString(env, credential_.username_value),
-      base::android::ConvertUTF16ToJavaString(env, credential_.password_value),
+      base::android::ConvertUTF16ToJavaString(env, credential_.username),
+      base::android::ConvertUTF16ToJavaString(env, credential_.password),
       base::android::ConvertUTF16ToJavaString(env,
                                               GetDisplayFederationOrigin()),
       is_insecure_credential_.value());
@@ -92,23 +89,14 @@ void CredentialEditBridge::SaveChanges(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& username,
     const base::android::JavaParamRef<jstring>& password) {
-  saved_passwords_presenter_->EditSavedPasswords(
-      credential_, base::android::ConvertJavaStringToUTF16(username),
-      base::android::ConvertJavaStringToUTF16(password));
+  password_manager::CredentialUIEntry to_edit = credential_;
+  to_edit.username = base::android::ConvertJavaStringToUTF16(username);
+  to_edit.password = base::android::ConvertJavaStringToUTF16(password);
+  saved_passwords_presenter_->EditSavedCredentials(to_edit);
 }
 
 void CredentialEditBridge::DeleteCredential(JNIEnv* env) {
-  if (credential_.blocked_by_user) {
-    std::vector<std::string> sort_keys = {
-        password_manager::CreateSortKey(credential_)};
-    password_manager_presenter_->RemovePasswordExceptions(sort_keys);
-  } else if (!credential_.federation_origin.opaque()) {
-    std::vector<std::string> sort_keys = {
-        password_manager::CreateSortKey(credential_)};
-    password_manager_presenter_->RemoveSavedPasswords(sort_keys);
-  } else {
-    saved_passwords_presenter_->RemovePassword(credential_);
-  }
+  saved_passwords_presenter_->RemoveCredential(credential_);
   std::move(dismissal_callback_).Run();
 }
 
@@ -142,7 +130,7 @@ std::u16string CredentialEditBridge::GetDisplayURLOrAppName() {
 }
 
 std::u16string CredentialEditBridge::GetDisplayFederationOrigin() {
-  return credential_.IsFederatedCredential()
+  return !credential_.federation_origin.opaque()
              ? url_formatter::FormatUrl(
                    credential_.federation_origin.GetURL(),
                    url_formatter::kFormatUrlOmitDefaults |
