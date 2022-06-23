@@ -274,7 +274,8 @@ void GetAnnotatedVisitsToCluster::IncrementContinuationParams(
 }
 
 void GetAnnotatedVisitsToCluster::DoneRunOnMainThread() {
-  std::move(callback_).Run(annotated_visits_, continuation_params_);
+  std::move(callback_).Run(cluster_ids_, annotated_visits_,
+                           continuation_params_);
 }
 
 }  // namespace history_clusters

@@ -75,6 +75,8 @@ void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
 
 void HistoryClustersServiceTaskGetMostRecentClusters::
     OnGotAnnotatedVisitsToCluster(
+        // Unused because clusters aren't persisted in this flow.
+        std::vector<int64_t> old_clusters_unused,
         std::vector<history::AnnotatedVisit> annotated_visits,
         QueryClustersContinuationParams continuation_params) {
   DCHECK(backend_);

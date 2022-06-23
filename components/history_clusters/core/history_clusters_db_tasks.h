@@ -26,8 +26,10 @@ namespace history_clusters {
 //   to invoke `GetRedirectChainStart()`.
 class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
  public:
-  using Callback = base::OnceCallback<void(std::vector<history::AnnotatedVisit>,
-                                           QueryClustersContinuationParams)>;
+  using Callback = base::OnceCallback<void(
+      std::vector<int64_t> cluster_ids,
+      std::vector<history::AnnotatedVisit> annotated_visits,
+      QueryClustersContinuationParams continuation_params)>;
 
   // For a given `end_time`, this returns an appropriate beginning time
   // designed to avoid breaking up internet browsing sessions. Before 4PM, it
@@ -96,6 +98,13 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   // Whether to begin with the most recent visits and iterate towards older
   // visits, or vice versa.
   bool recent_first_ = true;
+
+  // Persisted clusters that contain visits in `annotated_visits_`. Not all
+  // annotated visits will be clustered and therefore represented
+  // in`cluster_ids_`. All annotated visits that are clustered will be
+  // represented. Retrieved from the history DB thread and returned through the
+  // callback on the main thread.
+  std::vector<int64_t> cluster_ids_;
 
   // Persisted visits retrieved from the history DB thread and returned through
   // the callback on the main thread.

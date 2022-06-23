@@ -980,7 +980,8 @@ TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
         std::make_unique<GetAnnotatedVisitsToCluster>(
             IncompleteVisitMap{}, base::Time(), continuation_params, false,
             base::BindLambdaForTesting(
-                [&](std::vector<history::AnnotatedVisit> visits_temp,
+                [&](std::vector<int64_t> old_clusters,
+                    std::vector<history::AnnotatedVisit> visits_temp,
                     QueryClustersContinuationParams continuation_params_temp) {
                   visits = visits_temp;
                   continuation_params = continuation_params_temp;
