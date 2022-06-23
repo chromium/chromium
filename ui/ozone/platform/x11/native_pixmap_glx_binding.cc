@@ -23,6 +23,8 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapGLXBinding::Create(
     GLuint texture_id) {
   auto gl_image = base::MakeRefCounted<gl::GLImageGLXNativePixmap>(
       plane_size, plane_format, plane);
+
+  // Initialize the image using glXCreatePixmap.
   if (!gl_image->Initialize(std::move(pixmap))) {
     LOG(ERROR) << "Unable to initialize GL image from pixmap";
     return nullptr;

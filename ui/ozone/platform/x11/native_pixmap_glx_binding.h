@@ -10,6 +10,8 @@
 namespace ui {
 
 // A binding maintained between GLImageGLXNativePixmap and GL Textures in Ozone.
+// This binding is used for ChromeOS-on-Linux and for Linux/Ozone/X11 with
+// Drm/Kms.
 class NativePixmapGLXBinding : public NativePixmapGLBinding {
  public:
   NativePixmapGLXBinding();

@@ -362,6 +362,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(GLDisplayEGL* display) {
   b_EGL_KHR_wait_sync = gfx::HasExtension(extensions, "EGL_KHR_wait_sync");
   b_EGL_MESA_image_dma_buf_export =
       gfx::HasExtension(extensions, "EGL_MESA_image_dma_buf_export");
+  b_EGL_NOK_texture_from_pixmap =
+      gfx::HasExtension(extensions, "EGL_NOK_texture_from_pixmap");
   b_EGL_NV_post_sub_buffer =
       gfx::HasExtension(extensions, "EGL_NV_post_sub_buffer");
   b_EGL_NV_robustness_video_memory_purge =

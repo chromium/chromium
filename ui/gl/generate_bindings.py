@@ -2835,6 +2835,7 @@ EGL_EXTENSIONS_EXTRA = [
   'EGL_KHR_no_config_context',
   'EGL_KHR_surfaceless_context',
   'EGL_NV_robustness_video_memory_purge',
+  'EGL_NOK_texture_from_pixmap',
 ]
 
 GLX_FUNCTIONS = [

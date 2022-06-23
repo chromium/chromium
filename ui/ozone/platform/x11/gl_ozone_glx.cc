@@ -10,6 +10,7 @@
 #include "ui/gl/gl_context_glx.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_glx_api_implementation.h"
+#include "ui/gl/gl_image_glx_native_pixmap.h"
 #include "ui/gl/gl_surface_glx_x11.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/ozone/platform/x11/native_pixmap_glx_binding.h"
@@ -89,8 +90,7 @@ void GLOzoneGLX::ShutdownGL(gl::GLDisplay* display) {
 }
 
 bool GLOzoneGLX::CanImportNativePixmap() {
-  // TODO(crbug.com/1310028): Enable GLX extension support in SIBackingOzone.
-  return false;
+  return gl::GLImageGLXNativePixmap::CanImportNativePixmap();
 }
 
 std::unique_ptr<NativePixmapGLBinding> GLOzoneGLX::ImportNativePixmap(
