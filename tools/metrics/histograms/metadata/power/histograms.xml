@@ -896,7 +896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerPowerMode.{ProcessType}"
-    enum="PowerMode" expires_after="2022-06-30">
+    enum="PowerMode" expires_after="2022-12-31">
   <owner>eseckler@chromium.org</owner>
   <owner>oksamyt@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
