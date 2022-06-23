@@ -7,164 +7,164 @@
 <script src="resources/popup-utils.js"></script>
 
 <div id=popups>
-  <div popup id=boolean>Popup</div>
-  <div popup="">Popup</div>
-  <div popup=auto>Popup</div>
-  <div popup=hint>Popup</div>
-  <div popup=async>Popup</div>
+  <div popup id=boolean>Pop up</div>
+  <div popup="">Pop up</div>
+  <div popup=auto>Pop up</div>
+  <div popup=hint>Pop up</div>
+  <div popup=async>Pop up</div>
 </div>
 
 <div id=nonpopups>
-  <div>Non-popup</div>
-  <div popup=popup>Non-popup</div>
-  <div popup=invalid>Non-popup</div>
+  <div>Not a pop-up</div>
+  <div popup=popup>Not a pop-up</div>
+  <div popup=invalid>Not a pop-up</div>
 </div>
 
 <script>
-  function popupVisible(popup, isPopup) {
-    const isVisible = isElementVisible(popup);
+  function popUpVisible(popUp, isPopUp) {
+    const isVisible = isElementVisible(popUp);
     if (isVisible) {
-      assert_not_equals(window.getComputedStyle(popup).display,'none');
-      assert_equals(isPopup,popup.matches(':top-layer'));
+      assert_not_equals(window.getComputedStyle(popUp).display,'none');
+      assert_equals(isPopUp,popUp.matches(':top-layer'));
     } else {
-      assert_equals(window.getComputedStyle(popup).display,'none');
-      assert_false(popup.matches(':top-layer'));
+      assert_equals(window.getComputedStyle(popUp).display,'none');
+      assert_false(popUp.matches(':top-layer'));
     }
     return isVisible;
   }
-  function assertIsFunctionalPopup(popup) {
-    assert_false(popupVisible(popup, /*isPopup*/true));
-    popup.showPopup();
-    assert_true(popupVisible(popup, /*isPopup*/true));
-    assert_throws_dom("InvalidStateError",() => popup.showPopup(),'Calling showPopup on a showing popup should throw InvalidStateError');
-    popup.hidePopup();
-    assert_false(popupVisible(popup, /*isPopup*/true));
-    assert_throws_dom("InvalidStateError",() => popup.hidePopup(),'Calling hidePopup on a hidden popup should throw InvalidStateError');
-    const parent = popup.parentElement;
-    popup.remove();
-    assert_throws_dom("InvalidStateError",() => popup.showPopup(),'Calling showPopup on a disconnected popup should throw InvalidStateError');
-    parent.appendChild(popup);
+  function assertIsFunctionalPopUp(popUp) {
+    assert_false(popUpVisible(popUp, /*isPopUp*/true));
+    popUp.showPopup();
+    assert_true(popUpVisible(popUp, /*isPopUp*/true));
+    assert_throws_dom("InvalidStateError",() => popUp.showPopup(),'Calling showPopup on a showing pop-up should throw InvalidStateError');
+    popUp.hidePopup();
+    assert_false(popUpVisible(popUp, /*isPopUp*/true));
+    assert_throws_dom("InvalidStateError",() => popUp.hidePopup(),'Calling hidePopup on a hidden pop-up should throw InvalidStateError');
+    const parent = popUp.parentElement;
+    popUp.remove();
+    assert_throws_dom("InvalidStateError",() => popUp.showPopup(),'Calling showPopup on a disconnected pop-up should throw InvalidStateError');
+    parent.appendChild(popUp);
   }
-  function assertNotAPopup(nonPopup) {
+  function assertNotAPopUp(nonPopUp) {
     // Non-popup elements should already be visible.
-    assert_true(popupVisible(nonPopup, /*isPopup*/false));
-    assert_throws_dom("NotSupportedError",() => nonPopup.showPopup(),'Calling showPopup on a non-popup should throw NotSupportedError');
-    assert_true(popupVisible(nonPopup, /*isPopup*/false));
-    assert_throws_dom("NotSupportedError",() => nonPopup.hidePopup(),'Calling hidePopup on a non-popup should throw NotSupportedError');
-    assert_true(popupVisible(nonPopup, /*isPopup*/false));
+    assert_true(popUpVisible(nonPopUp, /*isPopUp*/false));
+    assert_throws_dom("NotSupportedError",() => nonPopUp.showPopup(),'Calling showPopup on a non-pop-up should throw NotSupportedError');
+    assert_true(popUpVisible(nonPopUp, /*isPopUp*/false));
+    assert_throws_dom("NotSupportedError",() => nonPopUp.hidePopup(),'Calling hidePopup on a non-pop-up should throw NotSupportedError');
+    assert_true(popUpVisible(nonPopUp, /*isPopUp*/false));
   }
 
-  Array.from(document.getElementById('popups').children).forEach(popup => {
+  Array.from(document.getElementById('popups').children).forEach(popUp => {
     test((t) => {
-      assertIsFunctionalPopup(popup);
-    }, `The .showPopup() and .hidePopup() work on a popup, for ${popup.outerHTML}.`);
+      assertIsFunctionalPopUp(popUp);
+    }, `The .showPopup() and .hidePopup() work on a pop-up, for ${popUp.outerHTML}.`);
   });
 
-  Array.from(document.getElementById('nonpopups').children).forEach(nonPopup => {
+  Array.from(document.getElementById('nonpopups').children).forEach(nonPopUp => {
     test((t) => {
-      assertNotAPopup(nonPopup);
-    }, `The .showPopup() and .hidePopup() do NOT work on elements without a 'popup' attribute, ${nonPopup.outerHTML}.`);
+      assertNotAPopUp(nonPopUp);
+    }, `The .showPopup() and .hidePopup() do NOT work on elements without a 'popup' attribute, ${nonPopUp.outerHTML}.`);
   });
 
-  function createPopup(t) {
-    const popup = document.createElement('div');
-    document.body.appendChild(popup);
-    t.add_cleanup(() => popup.remove());
-    popup.setAttribute('popup','auto');
-    return popup;
+  function createPopUp(t) {
+    const popUp = document.createElement('div');
+    document.body.appendChild(popUp);
+    t.add_cleanup(() => popUp.remove());
+    popUp.setAttribute('popup','auto');
+    return popUp;
   }
 
   test((t) => {
     // YOU CAN set the attribute to anything.
     // Setting IDL to something sets the content attribute to exactly that, always.
     // GETTING the IDL only gets valid values.
-    const popup = createPopup(t);
-    assert_equals(popup.popup,'auto');
-    popup.setAttribute('popup','hint');
-    assert_equals(popup.popup,'hint');
-    popup.setAttribute('popup','HiNt');
-    assert_equals(popup.popup,'hint','Case is normalized in IDL');
-    assert_equals(popup.getAttribute('popup'),'HiNt','Case is *not* normalized/changed in the content attribute');
-    popup.popup='hInT';
-    assert_equals(popup.popup,'hint','Case is normalized in IDL');
-    assert_equals(popup.getAttribute('popup'),'hInT','Value set from IDL is propagated exactly to the content attribute');
-    popup.setAttribute('popup','invalid');
-    assert_equals(popup.popup,null,'Invalid values should reflect as null');
-    popup.removeAttribute('popup');
-    assert_equals(popup.popup,null,'No value should reflect as null');
-    popup.popup='hint';
-    assert_equals(popup.getAttribute('popup'),'hint');
-    popup.popup='auto';
-    assert_equals(popup.getAttribute('popup'),'auto');
-    popup.popup='';
-    assert_equals(popup.getAttribute('popup'),'');
-    assert_equals(popup.popup,'auto');
-    popup.popup='AuTo';
-    assert_equals(popup.getAttribute('popup'),'AuTo');
-    assert_equals(popup.popup,'auto');
-    popup.popup='invalid';
-    assert_equals(popup.getAttribute('popup'),'invalid','IDL setter allows any value');
-    assert_equals(popup.popup,null,'but IDL getter does not re-reflect invalid values');
-    popup.popup='';
-    assert_equals(popup.getAttribute('popup'),'','IDL setter propagates exactly');
-    assert_equals(popup.popup,'auto','Empty should map to auto in IDL');
-    popup.popup='auto';
-    popup.popup=null;
-    assert_equals(popup.getAttribute('popup'),null,'Setting null for the IDL property should remove the content attribute');
-    assert_equals(popup.popup,null,'Null returns null');
-    popup.popup='auto';
-    popup.popup=undefined;
-    assert_equals(popup.getAttribute('popup'),null,'Setting undefined for the IDL property should remove the content attribute');
-    assert_equals(popup.popup,null,'undefined returns null');
+    const popUp = createPopUp(t);
+    assert_equals(popUp.popUp,'auto');
+    popUp.setAttribute('popup','hint');
+    assert_equals(popUp.popUp,'hint');
+    popUp.setAttribute('popup','HiNt');
+    assert_equals(popUp.popUp,'hint','Case is normalized in IDL');
+    assert_equals(popUp.getAttribute('popup'),'HiNt','Case is *not* normalized/changed in the content attribute');
+    popUp.popUp='hInT';
+    assert_equals(popUp.popUp,'hint','Case is normalized in IDL');
+    assert_equals(popUp.getAttribute('popup'),'hInT','Value set from IDL is propagated exactly to the content attribute');
+    popUp.setAttribute('popup','invalid');
+    assert_equals(popUp.popUp,null,'Invalid values should reflect as null');
+    popUp.removeAttribute('popup');
+    assert_equals(popUp.popUp,null,'No value should reflect as null');
+    popUp.popUp='hint';
+    assert_equals(popUp.getAttribute('popup'),'hint');
+    popUp.popUp='auto';
+    assert_equals(popUp.getAttribute('popup'),'auto');
+    popUp.popUp='';
+    assert_equals(popUp.getAttribute('popup'),'');
+    assert_equals(popUp.popUp,'auto');
+    popUp.popUp='AuTo';
+    assert_equals(popUp.getAttribute('popup'),'AuTo');
+    assert_equals(popUp.popUp,'auto');
+    popUp.popUp='invalid';
+    assert_equals(popUp.getAttribute('popup'),'invalid','IDL setter allows any value');
+    assert_equals(popUp.popUp,null,'but IDL getter does not re-reflect invalid values');
+    popUp.popUp='';
+    assert_equals(popUp.getAttribute('popup'),'','IDL setter propagates exactly');
+    assert_equals(popUp.popUp,'auto','Empty should map to auto in IDL');
+    popUp.popUp='auto';
+    popUp.popUp=null;
+    assert_equals(popUp.getAttribute('popup'),null,'Setting null for the IDL property should remove the content attribute');
+    assert_equals(popUp.popUp,null,'Null returns null');
+    popUp.popUp='auto';
+    popUp.popUp=undefined;
+    assert_equals(popUp.getAttribute('popup'),null,'Setting undefined for the IDL property should remove the content attribute');
+    assert_equals(popUp.popUp,null,'undefined returns null');
   },'IDL attribute reflection');
 
   test((t) => {
-    const popup = createPopup(t);
-    assertIsFunctionalPopup(popup);
-    popup.removeAttribute('popup');
-    assertNotAPopup(popup);
-    popup.setAttribute('popup','AuTo');
-    assertIsFunctionalPopup(popup);
-    popup.removeAttribute('popup');
-    popup.setAttribute('PoPuP','AuTo');
-    assertIsFunctionalPopup(popup);
+    const popUp = createPopUp(t);
+    assertIsFunctionalPopUp(popUp);
+    popUp.removeAttribute('popup');
+    assertNotAPopUp(popUp);
+    popUp.setAttribute('popup','AuTo');
+    assertIsFunctionalPopUp(popUp);
+    popUp.removeAttribute('popup');
+    popUp.setAttribute('PoPuP','AuTo');
+    assertIsFunctionalPopUp(popUp);
     // Via IDL also
-    popup.popup = 'auto';
-    assertIsFunctionalPopup(popup);
-    popup.popup = 'aUtO';
-    assertIsFunctionalPopup(popup);
-    popup.popup = 'invalid';
-    assertNotAPopup(popup);
+    popUp.popUp = 'auto';
+    assertIsFunctionalPopUp(popUp);
+    popUp.popUp = 'aUtO';
+    assertIsFunctionalPopUp(popUp);
+    popUp.popUp = 'invalid';
+    assertNotAPopUp(popUp);
   },'Popup attribute value should be case insensitive');
 
   test((t) => {
-    const popup = createPopup(t);
-    assertIsFunctionalPopup(popup);
-    popup.setAttribute('popup','hint'); // Change popup type
-    assertIsFunctionalPopup(popup);
-    popup.setAttribute('popup','invalid'); // Change popup type to something invalid
-    assertNotAPopup(popup);
-    popup.popup = 'hint'; // Change popup type via IDL
-    assertIsFunctionalPopup(popup);
-    popup.popup = 'invalid'; // Make invalid via IDL
-    assertNotAPopup(popup);
-  },'Changing attribute values for popup should work');
+    const popUp = createPopUp(t);
+    assertIsFunctionalPopUp(popUp);
+    popUp.setAttribute('popup','hint'); // Change pop-up type
+    assertIsFunctionalPopUp(popUp);
+    popUp.setAttribute('popup','invalid'); // Change pop-up type to something invalid
+    assertNotAPopUp(popUp);
+    popUp.popUp = 'hint'; // Change pop-up type via IDL
+    assertIsFunctionalPopUp(popUp);
+    popUp.popUp = 'invalid'; // Make invalid via IDL
+    assertNotAPopUp(popUp);
+  },'Changing attribute values for pop-up should work');
 
   test((t) => {
-    const popup = createPopup(t);
-    popup.showPopup();
-    assert_true(popup.matches(':top-layer'));
-    popup.setAttribute('popup','hint'); // Change popup type
-    assert_false(popup.matches(':top-layer'));
-    popup.showPopup();
-    assert_true(popup.matches(':top-layer'));
-    popup.setAttribute('popup','async');
-    assert_false(popup.matches(':top-layer'));
-    popup.showPopup();
-    assert_true(popup.matches(':top-layer'));
-    popup.setAttribute('popup','invalid');
-    assert_false(popup.matches(':top-layer'));
-  },'Changing attribute values should close open popups');
+    const popUp = createPopUp(t);
+    popUp.showPopup();
+    assert_true(popUp.matches(':top-layer'));
+    popUp.setAttribute('popup','hint'); // Change pop-up type
+    assert_false(popUp.matches(':top-layer'));
+    popUp.showPopup();
+    assert_true(popUp.matches(':top-layer'));
+    popUp.setAttribute('popup','async');
+    assert_false(popUp.matches(':top-layer'));
+    popUp.showPopup();
+    assert_true(popUp.matches(':top-layer'));
+    popUp.setAttribute('popup','invalid');
+    assert_false(popUp.matches(':top-layer'));
+  },'Changing attribute values should close open pop-ups');
 
   function modalPseudoSupported() {
     try {
@@ -177,24 +177,24 @@
 
   ["auto","hint","async"].forEach(type => {
     test((t) => {
-      const popup = createPopup(t);
-      popup.setAttribute('popup',type);
-      popup.showPopup();
-      assert_true(popup.matches(':top-layer'));
-      popup.remove();
-      assert_false(popup.matches(':top-layer'));
-      document.body.appendChild(popup);
-      assert_false(popup.matches(':top-layer'));
-    },`Removing a visible popup=${type} element from the document should close the popup`);
+      const popUp = createPopUp(t);
+      popUp.setAttribute('popup',type);
+      popUp.showPopup();
+      assert_true(popUp.matches(':top-layer'));
+      popUp.remove();
+      assert_false(popUp.matches(':top-layer'));
+      document.body.appendChild(popUp);
+      assert_false(popUp.matches(':top-layer'));
+    },`Removing a visible popup=${type} element from the document should close the pop-up`);
 
     if (modalPseudoSupported()) {
       test((t) => {
-        const popup = createPopup(t);
-        popup.setAttribute('popup',type);
-        popup.showPopup();
-        assert_true(popup.matches(':top-layer'));
-        assert_false(popup.matches(':modal'));
-        popup.hidePopup();
+        const popUp = createPopUp(t);
+        popUp.setAttribute('popup',type);
+        popUp.showPopup();
+        assert_true(popUp.matches(':top-layer'));
+        assert_false(popUp.matches(':modal'));
+        popUp.hidePopup();
       },`A showing popup=${type} does not match :modal`);
     }
   });

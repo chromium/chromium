@@ -28,7 +28,7 @@ const textLogic = (t,s,h) => {
   return {expectedBehavior: (t || s) ? "show" : "none", expectedId: t || s || 1};
 };
 const noActivationLogic = (t,s,h) => {
-  // This does not activate any popups.
+  // This does not activate any pop-ups.
   return {expectedBehavior: "none", expectedId: 1};
 }
 function activateTextInputFn(arrowChoice) {
@@ -83,7 +83,7 @@ const unsupportedTypes = ['checkbox','radio','range','file','color','date','date
     name: `<input type="${type}"">`,
     makeElement: makeElementWithType('input',type),
     invokeFn: activateTextInputFn('down'),
-    getExpectedLogic: noActivationLogic, // None of these support popup invocation
+    getExpectedLogic: noActivationLogic, // None of these support pop-up invocation
     supported: false,
   };
 });
@@ -117,59 +117,59 @@ const invokers = [
       s_set.forEach(s => {
         h_set.forEach(h => {
           promise_test(async test => {
-            const popup1 = Object.assign(document.createElement('div'),{popup: type, id: 'popup-1'});
-            const popup2 = Object.assign(document.createElement('div'),{popup: type, id: 'popup-2'});
-            assert_equals(popup1.popup,type);
-            assert_equals(popup2.popup,type);
-            assert_not_equals(popup1.id,popup2.id);
+            const popUp1 = Object.assign(document.createElement('div'),{popUp: type, id: 'pop-up-1'});
+            const popUp2 = Object.assign(document.createElement('div'),{popUp: type, id: 'pop-up-2'});
+            assert_equals(popUp1.popUp,type);
+            assert_equals(popUp2.popUp,type);
+            assert_not_equals(popUp1.id,popUp2.id);
             const invoker = testcase.makeElement(test);
-            if (t) invoker.setAttribute('togglepopup',t===1 ? popup1.id : popup2.id);
-            if (s) invoker.setAttribute('showpopup',s===1 ? popup1.id : popup2.id);
-            if (h) invoker.setAttribute('hidepopup',h===1 ? popup1.id : popup2.id);
-            assert_true(!document.getElementById(popup1.id));
-            assert_true(!document.getElementById(popup2.id));
-            document.body.appendChild(popup1);
-            document.body.appendChild(popup2);
+            if (t) invoker.setAttribute('togglepopup',t===1 ? popUp1.id : popUp2.id);
+            if (s) invoker.setAttribute('showpopup',s===1 ? popUp1.id : popUp2.id);
+            if (h) invoker.setAttribute('hidepopup',h===1 ? popUp1.id : popUp2.id);
+            assert_true(!document.getElementById(popUp1.id));
+            assert_true(!document.getElementById(popUp2.id));
+            document.body.appendChild(popUp1);
+            document.body.appendChild(popUp2);
             test.add_cleanup(() => {
-              popup1.remove();
-              popup2.remove();
+              popUp1.remove();
+              popUp2.remove();
             });
             const {expectedBehavior, expectedId} = testcase.getExpectedLogic(t,s,h);
             const otherId = expectedId !== 1 ? 1 : 2;
-            function assert_popup(num,state,message) {
+            function assert_popUp(num,state,message) {
               assert_true(num>0,`Invalid expectedId ${num}`);
-              assert_equals((num===1 ? popup1 : popup2).matches(':top-layer'),state,message || "");
+              assert_equals((num===1 ? popUp1 : popUp2).matches(':top-layer'),state,message || "");
             }
-            assert_popup(expectedId,false);
-            assert_popup(otherId,false);
+            assert_popUp(expectedId,false);
+            assert_popUp(otherId,false);
             await testcase.invokeFn(invoker);
-            assert_popup(otherId,false,'The other popup should never change');
+            assert_popUp(otherId,false,'The other pop-up should never change');
             switch (expectedBehavior) {
               case "toggle":
               case "show":
-                assert_popup(expectedId,true,'Toggle or show should show the popup');
-                (expectedId===1 ? popup1 : popup2).hidePopup(); // Hide the popup
+                assert_popUp(expectedId,true,'Toggle or show should show the pop-up');
+                (expectedId===1 ? popUp1 : popUp2).hidePopup(); // Hide the pop-up
                 break;
               case "hide":
               case "none":
-                assert_popup(expectedId,false,'Hide or none should leave the popup hidden');
+                assert_popUp(expectedId,false,'Hide or none should leave the pop-up hidden');
                 break;
               default:
                 assert_unreached();
             }
-            (expectedId===1 ? popup1 : popup2).showPopup(); // Show the popup directly
-            assert_popup(expectedId,true);
-            assert_popup(otherId,false);
+            (expectedId===1 ? popUp1 : popUp2).showPopup(); // Show the pop-up directly
+            assert_popUp(expectedId,true);
+            assert_popUp(otherId,false);
             await testcase.invokeFn(invoker);
-            assert_popup(otherId,false,'The other popup should never change');
+            assert_popUp(otherId,false,'The other pop-up should never change');
             switch (expectedBehavior) {
               case "toggle":
               case "hide":
-                assert_popup(expectedId,false,'Toggle or hide should hide the popup');
+                assert_popUp(expectedId,false,'Toggle or hide should hide the pop-up');
                 break;
               case "show":
               case "none":
-                assert_popup(expectedId,true,'Show or none should leave the popup showing');
+                assert_popUp(expectedId,true,'Show or none should leave the pop-up showing');
                 break;
               default:
                 assert_unreached();
@@ -185,7 +185,7 @@ const invokers = [
 
 
 <button togglepopup=p1>Toggle Popup 1</button>
-<div popup id=p1 style="border: 5px solid red;top: 100px;left: 100px;">This is popup #1</div>
+<div popup id=p1 style="border: 5px solid red;top: 100px;left: 100px;">This is pop-up #1</div>
 
 <script>
 function clickOn(element) {
@@ -196,15 +196,15 @@ function clickOn(element) {
     .send();
 }
 
-const popup = document.querySelector('[popup]');
+const popUp = document.querySelector('[popup]');
 const button = document.querySelector('button');
 let showCount = 0;
 let hideCount = 0;
-popup.addEventListener('show',() => ++showCount);
-popup.addEventListener('hide',() => ++hideCount);
+popUp.addEventListener('show',() => ++showCount);
+popUp.addEventListener('hide',() => ++hideCount);
 
 async function assertState(expectOpen,expectShow,expectHide) {
-  assert_equals(popup.matches(':top-layer'),expectOpen,'Popup open state is incorrect');
+  assert_equals(popUp.matches(':top-layer'),expectOpen,'Popup open state is incorrect');
   await new Promise(resolve => requestAnimationFrame(resolve));
   assert_equals(showCount,expectShow,'Show count is incorrect');
   assert_equals(hideCount,expectHide,'Hide count is incorrect');
@@ -215,13 +215,13 @@ promise_test(async () => {
   await assertState(false,0,0);
   await clickOn(button);
   await assertState(true,1,0);
-  popup.hidePopup();
+  popUp.hidePopup();
   await assertState(false,1,1);
   button.click();
   await assertState(true,2,1);
-  popup.hidePopup();
+  popUp.hidePopup();
   await assertState(false,2,2);
-}, "Clicking a togglepopup button opens a closed popup (also check event counts)");
+}, "Clicking a togglepopup button opens a closed pop-up (also check event counts)");
 
 promise_test(async () => {
   showCount = hideCount = 0;
@@ -230,4 +230,4 @@ promise_test(async () => {
   await assertState(true,1,0);
   await clickOn(button);
   await assertState(false,1,1);
-}, "Clicking a togglepopup button closes an open popup (also check event counts)");
+}, "Clicking a togglepopup button closes an open pop-up (also check event counts)");

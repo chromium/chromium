@@ -574,7 +574,7 @@ PASS Element interface object length
 PASS Element interface object name
 PASS Element interface: existence and properties of interface prototype object
 PASS Element interface: existence and properties of interface prototype object's "constructor" property
-FAIL Element interface: existence and properties of interface prototype object's @@unscopables property assert_not_equals: Element.prototype[Symbol.unscopables] has unexpected property "popup" got disallowed value -1
+FAIL Element interface: existence and properties of interface prototype object's @@unscopables property assert_not_equals: Element.prototype[Symbol.unscopables] has unexpected property "popUp" got disallowed value -1
 PASS Element interface: attribute namespaceURI
 PASS Element interface: attribute prefix
 PASS Element interface: attribute localName

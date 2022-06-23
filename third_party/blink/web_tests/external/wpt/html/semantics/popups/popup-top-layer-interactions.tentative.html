@@ -11,22 +11,22 @@
 <body>
 <script>
 const types = Object.freeze({
-  popup: Symbol("Popup API"),
+  popUp: Symbol("Pop-up API"),
   modalDialog: Symbol("Modal Dialog"),
   fullscreen: Symbol("Fullscreen Element"),
 });
 const examples = [
   {
-    type: types.popup,
-    closes: [types.popup],
-    createElement: () => Object.assign(document.createElement('div'), {popup: 'auto'}),
+    type: types.popUp,
+    closes: [types.popUp],
+    createElement: () => Object.assign(document.createElement('div'), {popUp: 'auto'}),
     trigger: function() {this.element.showPopup()},
     close: function() {this.element.hidePopup()},
     isTopLayer: function() {return this.element.matches(':top-layer')},
   },
   {
     type: types.modalDialog,
-    closes: [types.popup],
+    closes: [types.popUp],
     createElement: () => document.createElement('dialog'),
     trigger: function() {this.element.showModal();this.showing=true;},
     close: function() {this.element.close();this.showing=false;},
@@ -34,7 +34,7 @@ const examples = [
   },
   {
     type: types.fullscreen,
-    closes: [types.popup, types.fullscreen],
+    closes: [types.popUp, types.fullscreen],
     createElement: () => document.createElement('div'),
     trigger: async function(visibleElement) {assert_false(this.isTopLayer());await bless(visibleElement);await this.element.requestFullscreen();},
     close: function() {assert_equals(this.element,document.fullscreenElement); document.exitFullscreen();},
@@ -62,7 +62,7 @@ async function bless(visibleElement) {
   // The normal "bless" function doesn't work well when there are top layer
   // elements blocking clicks. Additionally, since the normal test_driver.bless
   // function just adds a button to the main document and clicks it, we can't
-  // call that in the presence of open popups, since that click will close them.
+  // call that in the presence of open pop-ups, since that click will close them.
   const button = document.createElement('button');
   button.innerHTML = "Click me to activate";
   visibleElement.appendChild(button);

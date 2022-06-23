@@ -45,51 +45,51 @@
 function rAF() {
   return new Promise(resolve => requestAnimationFrame(resolve));
 }
-function addPopup(classname) {
-  const popup = document.createElement('div');
-  popup.popup = 'auto';
-  popup.classList = classname;
-  popup.textContent = 'This is a popup';
-  document.body.appendChild(popup);
-  return popup;
+function addPopUp(classname) {
+  const popUp = document.createElement('div');
+  popUp.popUp = 'auto';
+  popUp.classList = classname;
+  popUp.textContent = 'This is a pop-up';
+  document.body.appendChild(popUp);
+  return popUp;
 }
 promise_test(async () => {
-  let popup = addPopup("animation");
+  let popUp = addPopUp("animation");
   let dialog = document.querySelector('dialog');
-  popup.showPopup(); // No animations here
+  popUp.showPopup(); // No animations here
   await rAF();
-  popup.hidePopup(); // Start animations
+  popUp.hidePopup(); // Start animations
   await rAF();
-  popup.remove();
+  popUp.remove();
   garbageCollect();
   await rAF();
   // This test passes if it does not crash.
 },'Ensure no crashes if running animations are immediately cancelled (document removal)');
 
 promise_test(async (t) => {
-  let popup = addPopup("animation");
+  let popUp = addPopUp("animation");
   let dialog = document.querySelector('dialog');
-  popup.showPopup(); // No animations here
+  popUp.showPopup(); // No animations here
   await rAF();
-  popup.hidePopup(); // Start animations
+  popUp.hidePopup(); // Start animations
   await rAF();
-  dialog.showModal(); // Immediately hide popup
+  dialog.showModal(); // Immediately hide pop-up
   t.add_cleanup(() => dialog.close());
   await rAF();
-  popup.remove();
+  popUp.remove();
   garbageCollect();
   await rAF();
   // This test passes if it does not crash.
 },'Ensure no crashes if running animations are immediately cancelled (dialog showModal)');
 
 promise_test(async (t) => {
-  let popup = addPopup("transition");
+  let popUp = addPopUp("transition");
   let dialog = document.querySelector('dialog');
   let button = document.createElement('button');
-  t.add_cleanup(() => {popup.remove();button.remove();});
+  t.add_cleanup(() => {popUp.remove();button.remove();});
   document.body.appendChild(button);
   button.addEventListener('click',() => dialog.show());
-  popup.showPopup(); // No animations here
+  popUp.showPopup(); // No animations here
   await rAF();
   await clickOn(button);
   await rAF();

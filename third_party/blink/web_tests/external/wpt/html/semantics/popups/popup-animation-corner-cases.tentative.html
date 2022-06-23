@@ -29,62 +29,62 @@
 </style>
 
 <script>
-function createPopup(t,type) {
-  const popup = document.createElement('div');
-  popup.popup = 'auto';
-  popup.classList = type;
+function createPopUp(t,type) {
+  const popUp = document.createElement('div');
+  popUp.popUp = 'auto';
+  popUp.classList = type;
   const div = document.createElement('div');
   const descendent = div.appendChild(document.createElement('div'));
   descendent.appendChild(document.createTextNode("Descendent element"));
-  popup.append("This is a popup",div);
-  document.body.appendChild(popup);
-  t.add_cleanup(() => popup.remove());
-  return {popup, descendent};
+  popUp.append("This is a pop up",div);
+  document.body.appendChild(popUp);
+  t.add_cleanup(() => popUp.remove());
+  return {popUp, descendent};
 }
 promise_test(async (t) => {
-  const {popup, descendent} = createPopup(t,'animation');
-  assert_false(isElementVisible(popup));
-  assert_equals(descendent.parentElement.parentElement,popup);
-  popup.showPopup();
-  assert_true(popup.matches(':top-layer'));
-  assert_true(isElementVisible(popup));
-  assert_equals(popup.getAnimations({subtree: true}).length,0);
-  popup.hidePopup();
-  const animations = popup.getAnimations({subtree: true});
+  const {popUp, descendent} = createPopUp(t,'animation');
+  assert_false(isElementVisible(popUp));
+  assert_equals(descendent.parentElement.parentElement,popUp);
+  popUp.showPopup();
+  assert_true(popUp.matches(':top-layer'));
+  assert_true(isElementVisible(popUp));
+  assert_equals(popUp.getAnimations({subtree: true}).length,0);
+  popUp.hidePopup();
+  const animations = popUp.getAnimations({subtree: true});
   assert_equals(animations.length,2,'There should be two animations running');
-  assert_false(popup.matches(':top-layer'),'popup should not match :top-layer as soon as hidden');
-  assert_true(isElementVisible(popup),'but animations should keep the popup visible');
+  assert_false(popUp.matches(':top-layer'),'popUp should not match :top-layer as soon as hidden');
+  assert_true(isElementVisible(popUp),'but animations should keep the popUp visible');
   assert_true(isElementVisible(descendent),'The descendent should also be visible');
   await waitForRender();
   await waitForRender();
-  assert_equals(popup.getAnimations({subtree: true}).length,2,'The animations should still be running');
-  assert_true(isElementVisible(popup),'Popup should still be visible due to animation');
+  assert_equals(popUp.getAnimations({subtree: true}).length,2,'The animations should still be running');
+  assert_true(isElementVisible(popUp),'PopUp should still be visible due to animation');
   animations.forEach(animation => animation.finish()); // Force the animations to finish
   await waitForRender(); // Wait one frame
-  assert_false(popup.matches(':top-layer'),'The popup still shouldn\'t match :top-layer');
-  assert_false(isElementVisible(popup),'The popup should now be invisible');
+  assert_false(popUp.matches(':top-layer'),'The pop up still shouldn\'t match :top-layer');
+  assert_false(isElementVisible(popUp),'The pop up should now be invisible');
   assert_false(isElementVisible(descendent),'The descendent should also be invisible');
-  assert_equals(popup.getAnimations({subtree: true}).length,0);
-},'Descendent animations should keep the popup visible until the animation ends');
+  assert_equals(popUp.getAnimations({subtree: true}).length,0);
+},'Descendent animations should keep the pop up visible until the animation ends');
 
 promise_test(async (t) => {
-  const {popup, descendent} = createPopup(t,'');
-  assert_equals(popup.classList.length, 0);
-  assert_false(isElementVisible(popup));
-  popup.showPopup();
-  assert_true(popup.matches(':top-layer'));
-  assert_true(isElementVisible(popup));
-  assert_equals(popup.getAnimations({subtree: true}).length,0);
-  // Start an animation on the popup and its descendent.
-  popup.animate([{opacity: 1},{opacity: 0}],{duration: 1000000,iterations: 1});
+  const {popUp, descendent} = createPopUp(t,'');
+  assert_equals(popUp.classList.length, 0);
+  assert_false(isElementVisible(popUp));
+  popUp.showPopup();
+  assert_true(popUp.matches(':top-layer'));
+  assert_true(isElementVisible(popUp));
+  assert_equals(popUp.getAnimations({subtree: true}).length,0);
+  // Start an animation on the popUp and its descendent.
+  popUp.animate([{opacity: 1},{opacity: 0}],{duration: 1000000,iterations: 1});
   descendent.animate([{transform: 'rotate(0)'},{transform: 'rotate(360deg)'}],{duration: 1000000,iterations: 1});
-  assert_equals(popup.getAnimations({subtree: true}).length,2);
-  // Then hide the popup.
-  popup.hidePopup();
-  assert_false(popup.matches(':top-layer'),'popup should not match :top-layer as soon as hidden');
-  assert_equals(popup.getAnimations({subtree: true}).length,2,'animations should still be running');
+  assert_equals(popUp.getAnimations({subtree: true}).length,2);
+  // Then hide the popUp.
+  popUp.hidePopup();
+  assert_false(popUp.matches(':top-layer'),'pop up should not match :top-layer as soon as hidden');
+  assert_equals(popUp.getAnimations({subtree: true}).length,2,'animations should still be running');
   await waitForRender();
-  assert_equals(popup.getAnimations({subtree: true}).length,2,'animations should still be running');
-  assert_false(isElementVisible(popup),'Pre-existing animations should not keep the popup visible');
-},'Pre-existing animations should *not* keep the popup visible until the animation ends');
+  assert_equals(popUp.getAnimations({subtree: true}).length,2,'animations should still be running');
+  assert_false(isElementVisible(popUp),'Pre-existing animations should not keep the pop up visible');
+},'Pre-existing animations should *not* keep the pop up visible until the animation ends');
 </script>
