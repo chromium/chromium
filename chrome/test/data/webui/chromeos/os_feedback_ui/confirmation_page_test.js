@@ -142,6 +142,8 @@ export function confirmationPageTest() {
         'Ask the experts in the Chromebook help forum',
         getElementContent(communityLink, '#subLabel'));
     assertTrue(page.i18nExists('askCommunityLabel'));
+    assertTrue(page.i18nExists('askCommunityDescription'));
+
     // Verify buttons.
     assertEquals(
         'Send new report', getElementContent(page, '#buttonNewReport'));

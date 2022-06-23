@@ -3462,6 +3462,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_RESOURCES_ASK_COMMUNITY_LABEL" desc="Label of the ask community that opens an external link to the Chromebook community.">
         Chromebook community
       </message>
+      <message name="IDS_FEEDBACK_TOOL_RESOURCES_ASK_COMMUNITY_DESCRIPTION" desc="Description of the ask community link">
+        Ask the experts in the Chromebook help forum
+      </message>
       <!-- End of Feedback Tool -->
     </messages>
   </release>
