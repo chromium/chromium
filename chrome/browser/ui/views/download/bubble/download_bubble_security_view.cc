@@ -38,6 +38,22 @@ constexpr auto kCommandToButtons = base::MakeFixedFlatMap<
       &DownloadBubbleSecurityView::deep_scan_button_},
      {DownloadCommands::BYPASS_DEEP_SCANNING,
       &DownloadBubbleSecurityView::bypass_deep_scan_button_}});
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DownloadBubbleSubpageAction {
+  kShown = 0,
+  kShownCheckbox = 1,
+  kShownFirstButton = 2,
+  kShownSecondButton = 3,
+  kPressedBackButton = 4,
+  kClosedSubpage = 5,
+  kClickedCheckbox = 6,
+  kPressedFirstButton = 7,
+  kPressedSecondButton = 8,
+  kMaxValue = kPressedSecondButton
+};
+const char kSubpageActionHistogram[] = "Download.Bubble.SubpageAction";
 }  // namespace
 
 void DownloadBubbleSecurityView::AddHeader() {
@@ -51,9 +67,8 @@ void DownloadBubbleSecurityView::AddHeader() {
 
   back_button_ =
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-          base::BindRepeating(
-              &DownloadBubbleNavigationHandler::OpenPrimaryDialog,
-              base::Unretained(navigation_handler_)),
+          base::BindRepeating(&DownloadBubbleSecurityView::BackButtonPressed,
+                              base::Unretained(this)),
           vector_icons::kArrowBackIcon, GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
   views::InstallCircleHighlightPathGenerator(back_button_);
   back_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
@@ -86,6 +101,12 @@ void DownloadBubbleSecurityView::AddHeader() {
                             views::LayoutAlignment::kStart);
 }
 
+void DownloadBubbleSecurityView::BackButtonPressed() {
+  navigation_handler_->OpenPrimaryDialog();
+  base::UmaHistogramEnumeration(
+      kSubpageActionHistogram, DownloadBubbleSubpageAction::kPressedBackButton);
+}
+
 void DownloadBubbleSecurityView::UpdateHeader() {
   title_->SetText(download_row_view_->model()
                       ->GetFileNameToReportUser()
@@ -93,12 +114,17 @@ void DownloadBubbleSecurityView::UpdateHeader() {
 }
 
 void DownloadBubbleSecurityView::CloseBubble() {
+  // CloseDialog will delete the object. Do not access any members below.
   navigation_handler_->CloseDialog(
       views::Widget::ClosedReason::kCloseButtonClicked);
+  base::UmaHistogramEnumeration(kSubpageActionHistogram,
+                                DownloadBubbleSubpageAction::kClosedSubpage);
 }
 
 void DownloadBubbleSecurityView::OnCheckboxClicked() {
   first_button_->SetEnabled(checkbox_->GetChecked());
+  base::UmaHistogramEnumeration(kSubpageActionHistogram,
+                                DownloadBubbleSubpageAction::kClickedCheckbox);
 }
 
 void DownloadBubbleSecurityView::UpdateIconAndText() {
@@ -126,6 +152,8 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
 
   checkbox_->SetVisible(ui_info.has_checkbox);
   if (ui_info.has_checkbox) {
+    base::UmaHistogramEnumeration(kSubpageActionHistogram,
+                                  DownloadBubbleSubpageAction::kShownCheckbox);
     checkbox_->SetChecked(false);
     checkbox_->SetText(ui_info.checkbox_label);
   }
@@ -201,6 +229,10 @@ void DownloadBubbleSecurityView::ProcessButtonClick(
   navigation_handler_->OpenPrimaryDialog();
   bubble_controller_->ProcessDownloadButtonPress(download_row_view_->model(),
                                                  command);
+  base::UmaHistogramEnumeration(
+      kSubpageActionHistogram,
+      is_first_button ? DownloadBubbleSubpageAction::kPressedFirstButton
+                      : DownloadBubbleSubpageAction::kPressedSecondButton);
 }
 
 views::MdTextButton* DownloadBubbleSecurityView::GetButtonForCommand(
@@ -229,6 +261,9 @@ void DownloadBubbleSecurityView::UpdateButtons() {
         download_row_view_->ui_info().secondary_color));
     first_button_->SetEnabled(!ui_info.has_checkbox);
     first_button_->SetVisible(true);
+    base::UmaHistogramEnumeration(
+        kSubpageActionHistogram,
+        DownloadBubbleSubpageAction::kShownFirstButton);
   }
   if (ui_info.subpage_buttons.size() > 1) {
     views::MdTextButton* second_button =
@@ -240,6 +275,9 @@ void DownloadBubbleSecurityView::UpdateButtons() {
     second_button->SetText(ui_info.subpage_buttons[1].label);
     second_button->SetVisible(true);
     second_button->SetProminent(ui_info.subpage_buttons[1].is_prominent);
+    base::UmaHistogramEnumeration(
+        kSubpageActionHistogram,
+        DownloadBubbleSubpageAction::kShownSecondButton);
   }
 }
 
@@ -297,6 +335,8 @@ void DownloadBubbleSecurityView::UpdateSecurityView(
   UpdateHeader();
   UpdateIconAndText();
   UpdateButtons();
+  base::UmaHistogramEnumeration(kSubpageActionHistogram,
+                                DownloadBubbleSubpageAction::kShown);
 }
 
 void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {
