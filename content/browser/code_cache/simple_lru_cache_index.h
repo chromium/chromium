@@ -35,7 +35,7 @@ class CONTENT_EXPORT SimpleLruCacheIndex {
   // Returns the total size of the cache.
   uint64_t GetSize() const;
 
-  static constexpr uint32_t kEmptyEntrySize = 2048;
+  static constexpr uint32_t kEmptyEntrySize = 1024;
 
  private:
   using Age = base::StrongAlias<class AgeTag, uint32_t>;

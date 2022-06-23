@@ -199,7 +199,7 @@ bool GeneratedCodeCache::IsValidHeader(
 void GeneratedCodeCache::ReportPeriodicalHistograms() {
   DCHECK_EQ(cache_type_, CodeCacheType::kJavaScript);
   base::UmaHistogramCustomCounts(
-      "SiteIsolatedCodeCache.JS.PotentialMemoryBackedCodeCacheSize",
+      "SiteIsolatedCodeCache.JS.PotentialMemoryBackedCodeCacheSize2",
       lru_cache_index_.GetSize(),
       /*min=*/0,
       /*exclusive_max=*/kLruCacheCapacity,

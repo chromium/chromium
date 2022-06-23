@@ -12280,7 +12280,7 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="SiteIsolatedCodeCache.JS.PotentialMemoryBackedCodeCacheSize"
+<histogram name="SiteIsolatedCodeCache.JS.PotentialMemoryBackedCodeCacheSize2"
     units="counts" expires_after="2022-11-10">
   <owner>yhirano@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>

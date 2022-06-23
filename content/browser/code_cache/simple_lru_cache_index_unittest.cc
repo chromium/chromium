@@ -34,28 +34,28 @@ TEST(SimpleLruCacheIndexTest, PutAndGet) {
   EXPECT_FALSE(cache.Get(kKey4));
 
   cache.Put(kKey1, 1);
-  EXPECT_EQ(cache.GetSize(), 1 + kEmptyEntrySize);
+  EXPECT_EQ(cache.GetSize(), 1 + 4 + kEmptyEntrySize);
   EXPECT_TRUE(cache.Get(kKey1));
   EXPECT_FALSE(cache.Get(kKey2));
   EXPECT_FALSE(cache.Get(kKey3));
   EXPECT_FALSE(cache.Get(kKey4));
 
   cache.Put(kKey1, 2);
-  EXPECT_EQ(cache.GetSize(), 2 + kEmptyEntrySize);
+  EXPECT_EQ(cache.GetSize(), 2 + 4 + kEmptyEntrySize);
   EXPECT_TRUE(cache.Get(kKey1));
   EXPECT_FALSE(cache.Get(kKey2));
   EXPECT_FALSE(cache.Get(kKey3));
   EXPECT_FALSE(cache.Get(kKey4));
 
   cache.Put(kKey2, 3);
-  EXPECT_EQ(cache.GetSize(), 5 + 2 * kEmptyEntrySize);
+  EXPECT_EQ(cache.GetSize(), 5 + 8 + 2 * kEmptyEntrySize);
   EXPECT_TRUE(cache.Get(kKey1));
   EXPECT_TRUE(cache.Get(kKey2));
   EXPECT_FALSE(cache.Get(kKey3));
   EXPECT_FALSE(cache.Get(kKey4));
 
   cache.Put(kKey4, 4);
-  EXPECT_EQ(cache.GetSize(), 9 + 3 * kEmptyEntrySize);
+  EXPECT_EQ(cache.GetSize(), 9 + 12 + 3 * kEmptyEntrySize);
   EXPECT_TRUE(cache.Get(kKey1));
   EXPECT_TRUE(cache.Get(kKey2));
   EXPECT_FALSE(cache.Get(kKey3));
@@ -65,7 +65,7 @@ TEST(SimpleLruCacheIndexTest, PutAndGet) {
 TEST(SimpleLruCacheIndexTest, PutAndEvict) {
   const std::string kKey("key1");
 
-  SimpleLruCacheIndex cache(/*capacity=*/kEmptyEntrySize + 1);
+  SimpleLruCacheIndex cache(/*capacity=*/kEmptyEntrySize + kKey.size() + 1);
 
   EXPECT_EQ(cache.GetSize(), 0u);
   EXPECT_FALSE(cache.Get(kKey));
@@ -77,7 +77,7 @@ TEST(SimpleLruCacheIndexTest, PutAndEvict) {
 
   // This entry stays.
   cache.Put(kKey, 1);
-  EXPECT_EQ(cache.GetSize(), 1 + kEmptyEntrySize);
+  EXPECT_EQ(cache.GetSize(), 1 + kKey.size() + kEmptyEntrySize);
   EXPECT_TRUE(cache.Get(kKey));
 
   // An updated entry can also be evicted.
@@ -92,7 +92,7 @@ TEST(SimpleLruCacheIndexTest, LRU) {
   const std::string kKey3("key3");
   const std::string kKey4("key4");
 
-  SimpleLruCacheIndex cache(kEmptyEntrySize * 2);
+  SimpleLruCacheIndex cache(kEmptyEntrySize * 2 + 8);
 
   cache.Put(kKey1, 0);
   cache.Put(kKey2, 0);
@@ -100,7 +100,7 @@ TEST(SimpleLruCacheIndexTest, LRU) {
   cache.Put(kKey4, 0);
 
   // The last two entries are kept.
-  EXPECT_EQ(cache.GetSize(), 2 * kEmptyEntrySize);
+  EXPECT_EQ(cache.GetSize(), 2 * kEmptyEntrySize + 8);
   EXPECT_FALSE(cache.Get(kKey1));
   EXPECT_FALSE(cache.Get(kKey2));
   EXPECT_TRUE(cache.Get(kKey3));
@@ -113,7 +113,7 @@ TEST(SimpleLruCacheIndexTest, LRUAndGet) {
   const std::string kKey3("key3");
   const std::string kKey4("key4");
 
-  SimpleLruCacheIndex cache(kEmptyEntrySize * 2);
+  SimpleLruCacheIndex cache(kEmptyEntrySize * 2 + 8);
 
   cache.Put(kKey1, 0);
   cache.Put(kKey2, 0);
@@ -121,7 +121,7 @@ TEST(SimpleLruCacheIndexTest, LRUAndGet) {
   EXPECT_TRUE(cache.Get(kKey1));
   cache.Put(kKey3, 0);
 
-  EXPECT_EQ(cache.GetSize(), 2 * kEmptyEntrySize);
+  EXPECT_EQ(cache.GetSize(), 2 * kEmptyEntrySize + 8);
   EXPECT_TRUE(cache.Get(kKey1));
   EXPECT_FALSE(cache.Get(kKey2));
   EXPECT_TRUE(cache.Get(kKey3));
@@ -141,21 +141,21 @@ TEST(SimpleLruCacheIndexTest, Delete) {
   cache.Put(kKey3, 3);
   cache.Put(kKey4, 4);
 
-  EXPECT_EQ(cache.GetSize(), 4 * kEmptyEntrySize + 10);
+  EXPECT_EQ(cache.GetSize(), 4 * kEmptyEntrySize + 16 + 10);
   EXPECT_TRUE(cache.Get(kKey1));
   EXPECT_TRUE(cache.Get(kKey2));
   EXPECT_TRUE(cache.Get(kKey3));
   EXPECT_TRUE(cache.Get(kKey4));
 
   cache.Delete(kKey2);
-  EXPECT_EQ(cache.GetSize(), 3 * kEmptyEntrySize + 8);
+  EXPECT_EQ(cache.GetSize(), 3 * kEmptyEntrySize + 12 + 8);
   EXPECT_TRUE(cache.Get(kKey1));
   EXPECT_FALSE(cache.Get(kKey2));
   EXPECT_TRUE(cache.Get(kKey3));
   EXPECT_TRUE(cache.Get(kKey4));
 
   cache.Delete(kKey2);
-  EXPECT_EQ(cache.GetSize(), 3 * kEmptyEntrySize + 8);
+  EXPECT_EQ(cache.GetSize(), 3 * kEmptyEntrySize + 12 + 8);
   EXPECT_TRUE(cache.Get(kKey1));
   EXPECT_FALSE(cache.Get(kKey2));
   EXPECT_TRUE(cache.Get(kKey3));
