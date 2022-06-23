@@ -91,7 +91,7 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
         new ChromeFeedbackCollector(activity, null /* categoryTag */, null /* description */,
                 new ScreenshotTask(activity),
                 new ChromeFeedbackCollector.InitParams(profile, url, helpContext),
-                collector -> show(activity, helpContext, collector));
+                collector -> show(activity, helpContext, collector), profile);
     }
 
     /**
@@ -112,7 +112,7 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
         new ChromeFeedbackCollector(activity, categoryTag, null /* description */,
                 new ScreenshotTask(activity, screenshotMode),
                 new ChromeFeedbackCollector.InitParams(profile, url, feedbackContext),
-                collector -> showFeedback(activity, collector));
+                collector -> showFeedback(activity, collector), profile);
     }
 
     /**
@@ -145,7 +145,7 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
         new FeedFeedbackCollector(activity, categoryTag, null /* description */,
                 new ScreenshotTask(activity),
                 new FeedFeedbackCollector.InitParams(profile, url, feedContext),
-                collector -> showFeedback(activity, collector));
+                collector -> showFeedback(activity, collector), profile);
     }
 
     /**
