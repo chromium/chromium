@@ -350,6 +350,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
 
   switch (mode) {
     case DisplayMode::kNone:
+      RemoveEditMessage();
       RemoveMenuEntryView();
       RemoveInputMappingView();
       RemoveEducationalView();
@@ -364,6 +365,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
           aura::EventTargetingPolicy::kTargetAndDescendants);
       break;
     case DisplayMode::kView:
+      RemoveEditMessage();
       RemoveInputMenuView();
       RemoveEditFinishView();
       RemoveEducationalView();
