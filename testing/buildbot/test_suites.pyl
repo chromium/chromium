@@ -1813,11 +1813,7 @@
         },
       },
       'compositor_unittests': {},
-      'content_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter',
-        ],
-      },
+      'content_unittests': {},
       'crypto_unittests': {},
       'events_unittests': {},
       'filesystem_service_unittests': {},
