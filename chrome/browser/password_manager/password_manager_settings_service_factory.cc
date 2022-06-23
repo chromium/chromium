@@ -34,7 +34,10 @@ PasswordManagerSettingsServiceFactory::PasswordManagerSettingsServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "PasswordManagerSettingsService",
           BrowserContextDependencyManager::GetInstance()) {
+#if BUILDFLAG(IS_ANDROID)
+  // The sync status is necessary on Android to decide which prefs to check.
   DependsOn(SyncServiceFactory::GetInstance());
+#endif
 }
 
 PasswordManagerSettingsServiceFactory::
@@ -61,11 +64,10 @@ KeyedService* PasswordManagerSettingsServiceFactory::BuildServiceInstanceFor(
 content::BrowserContext*
 PasswordManagerSettingsServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  // As the service is used to read prefs and that checking them depends on
-  // sync status it needs to be accessed as for the regular profile.
+  // On Android, the sync service is used to read prefs and checking them
+  // depends on the sync status, thus the service needs to be accessed as for
+  // the regular profile. On desktop, the sync service is not used, but since
+  // this service is used to access settings which are not specific to incognito
+  // the service can still be used as for the regular profile.
   return chrome::GetBrowserContextRedirectedInIncognito(context);
-}
-
-bool PasswordManagerSettingsServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
