@@ -79,7 +79,7 @@ class SyncReader : public OutputController::SyncReader {
 
   // Denotes that the most recent socket error has been logged. Used to avoid
   // log spam.
-  bool had_socket_error_;
+  bool had_socket_error_{false};
 
   // Socket for transmitting audio data.
   base::CancelableSyncSocket socket_;
@@ -91,9 +91,12 @@ class SyncReader : public OutputController::SyncReader {
 
   // Track the number of times the renderer missed its real-time deadline and
   // report a UMA stat during destruction.
-  size_t renderer_callback_count_;
-  size_t renderer_missed_callback_count_;
-  size_t trailing_renderer_missed_callback_count_;
+  size_t renderer_callback_count_{0};
+  size_t renderer_missed_callback_count_{0};
+  size_t trailing_renderer_missed_callback_count_{0};
+  size_t mixing_renderer_callback_count_{0};
+  size_t mixing_renderer_missed_callback_count_{0};
+  size_t mixing_trailing_renderer_missed_callback_count_{0};
 
   // The maximum amount of time to wait for data from the renderer.  Calculated
   // from the parameters given at construction.
@@ -102,7 +105,7 @@ class SyncReader : public OutputController::SyncReader {
 
   // The index of the audio buffer we're expecting to be sent from the renderer;
   // used to block with timeout for audio data.
-  uint32_t buffer_index_;
+  uint32_t buffer_index_{0};
 };
 
 }  // namespace audio
