@@ -18,8 +18,15 @@ group("orchestrator_all") {
     ":standard_isolated_script_merge_py",
   ]
 
-  # Test specs the Orchestrator needs to trigger swarming tests
-  data = [ "//testing/buildbot/*.json" ]
+  data = [
+    # Various merge/collect scripts will likely need a venv specified in
+    # the root vpython spec files.
+    "//.vpython",
+    "//.vpython3",
+
+    # Test specs the Orchestrator needs to trigger swarming tests
+    "//testing/buildbot/*.json",
+  ]
 
   # Orchestrator will run this script to curl for the coverage tool, which
   # merges and outputs coverage data
