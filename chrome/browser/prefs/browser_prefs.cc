@@ -738,15 +738,17 @@ const char kNativeBridge64BitSupportExperimentEnabled[] =
     "arc.native_bridge_64bit_support_experiment";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Deprecated 06/2022.
-const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 // Deprecated 06/2022.
 const char kBackgroundTracingLastUpload[] = "background_tracing.last_upload";
 const char kStabilityGpuCrashCount[] =
     "user_experience_metrics.stability.gpu_crash_count";
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+const char kStabilityPageLoadCount[] =
+    "user_experience_metrics.stability.page_load_count";
+#endif
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -805,6 +807,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 06/2022.
   registry->RegisterInt64Pref(kBackgroundTracingLastUpload, 0);
   registry->RegisterIntegerPref(kStabilityGpuCrashCount, 0);
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(kStabilityPageLoadCount, 0);
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1659,6 +1664,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 06/2022.
   local_state->ClearPref(kBackgroundTracingLastUpload);
   local_state->ClearPref(kStabilityGpuCrashCount);
+#if !BUILDFLAG(IS_ANDROID)
+  local_state->ClearPref(kStabilityPageLoadCount);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

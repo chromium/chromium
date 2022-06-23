@@ -34,6 +34,7 @@
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/persistent_histograms.h"
+#include "components/metrics/stability_metrics_helper.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
@@ -158,12 +159,14 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CloseRenderersNormally) {
+  base::HistogramTester histogram_tester;
   OpenThreeTabs();
 
   // Verify that the expected stability metrics were recorded.
-  const PrefService* prefs = g_browser_process->local_state();
-  EXPECT_EQ(3, prefs->GetInteger(metrics::prefs::kStabilityPageLoadCount));
-  EXPECT_EQ(0, prefs->GetInteger(metrics::prefs::kStabilityRendererCrashCount));
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     metrics::StabilityEventType::kPageLoad, 2);
+  EXPECT_EQ(0, g_browser_process->local_state()->GetInteger(
+                   metrics::prefs::kStabilityRendererCrashCount));
 }
 
 // Flaky on Linux. See http://crbug.com/131094
@@ -183,10 +186,11 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CrashRenderers) {
   OpenTabsAndNavigateToCrashyUrl(blink::kChromeUICrashURL);
 
   // Verify that the expected stability metrics were recorded.
-  const PrefService* prefs = g_browser_process->local_state();
   // The three tabs from OpenTabs() and the one tab to open chrome://crash/.
-  EXPECT_EQ(4, prefs->GetInteger(metrics::prefs::kStabilityPageLoadCount));
-  EXPECT_EQ(1, prefs->GetInteger(metrics::prefs::kStabilityRendererCrashCount));
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     metrics::StabilityEventType::kPageLoad, 3);
+  EXPECT_EQ(1, g_browser_process->local_state()->GetInteger(
+                   metrics::prefs::kStabilityRendererCrashCount));
 
 #if BUILDFLAG(IS_WIN)
   // Consult Stability Team before changing this test as it's recorded to
@@ -213,10 +217,11 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest,
   OpenTabsAndNavigateToCrashyUrl(blink::kChromeUIHeapCorruptionCrashURL);
 
   // Verify that the expected stability metrics were recorded.
-  const PrefService* prefs = g_browser_process->local_state();
   // The three tabs from OpenTabs() and the one tab to open chrome://crash/.
-  EXPECT_EQ(4, prefs->GetInteger(metrics::prefs::kStabilityPageLoadCount));
-  EXPECT_EQ(1, prefs->GetInteger(metrics::prefs::kStabilityRendererCrashCount));
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     metrics::StabilityEventType::kPageLoad, 3);
+  EXPECT_EQ(1, g_browser_process->local_state()->GetInteger(
+                   metrics::prefs::kStabilityRendererCrashCount));
 
   histogram_tester.ExpectUniqueSample(
       "CrashExitCodes.Renderer",
@@ -231,11 +236,12 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
   OpenTabsAndNavigateToCrashyUrl(blink::kChromeUICheckCrashURL);
 
   // Verify that the expected stability metrics were recorded.
-  const PrefService* prefs = g_browser_process->local_state();
   // The three tabs from OpenTabs() and the one tab to open
   // chrome://checkcrash/.
-  EXPECT_EQ(4, prefs->GetInteger(metrics::prefs::kStabilityPageLoadCount));
-  EXPECT_EQ(1, prefs->GetInteger(metrics::prefs::kStabilityRendererCrashCount));
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     metrics::StabilityEventType::kPageLoad, 3);
+  EXPECT_EQ(1, g_browser_process->local_state()->GetInteger(
+                   metrics::prefs::kStabilityRendererCrashCount));
 
 #if BUILDFLAG(IS_WIN)
   // Consult Stability Team before changing this test as it's recorded to
@@ -261,11 +267,12 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, OOMRenderers) {
   OpenTabsAndNavigateToCrashyUrl(blink::kChromeUIMemoryExhaustURL);
 
   // Verify that the expected stability metrics were recorded.
-  const PrefService* prefs = g_browser_process->local_state();
   // The three tabs from OpenTabs() and the one tab to open
   // chrome://memory-exhaust/.
-  EXPECT_EQ(4, prefs->GetInteger(metrics::prefs::kStabilityPageLoadCount));
-  EXPECT_EQ(1, prefs->GetInteger(metrics::prefs::kStabilityRendererCrashCount));
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     metrics::StabilityEventType::kPageLoad, 3);
+  EXPECT_EQ(1, g_browser_process->local_state()->GetInteger(
+                   metrics::prefs::kStabilityRendererCrashCount));
 
 // On 64-bit, the Job object should terminate the renderer on an OOM. However,
 // if the system is low on memory already, then the allocator might just return

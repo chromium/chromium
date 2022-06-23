@@ -58,9 +58,9 @@ extern const char kStabilityFileMetricsUnsentFilesCount[];
 extern const char kStabilityGmsCoreVersion[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kStabilityLaunchCount[];
+extern const char kStabilityPageLoadCount[];
 extern const char kStabilityRendererLaunchCount[];
 #endif
-extern const char kStabilityPageLoadCount[];
 extern const char kStabilityRendererCrashCount[];
 extern const char kStabilitySavedSystemProfile[];
 extern const char kStabilitySavedSystemProfileHash[];

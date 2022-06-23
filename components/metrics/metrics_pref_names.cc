@@ -175,16 +175,16 @@ const char kStabilityGmsCoreVersion[] =
 const char kStabilityLaunchCount[] =
     "user_experience_metrics.stability.launch_count";
 
+// Number of times a page load event occurred since the last report.
+const char kStabilityPageLoadCount[] =
+    "user_experience_metrics.stability.page_load_count";
+
 // Number of times a renderer process successfully launched since the last
 // report. Used on Android platforms as WebView may still be interested in this
 // metric.
 const char kStabilityRendererLaunchCount[] =
     "user_experience_metrics.stability.renderer_launch_count";
 #endif
-
-// Number of times a page load event occurred since the last report.
-const char kStabilityPageLoadCount[] =
-    "user_experience_metrics.stability.page_load_count";
 
 // Number of times a renderer process crashed since the last report.
 const char kStabilityRendererCrashCount[] =

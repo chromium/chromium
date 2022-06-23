@@ -80,19 +80,18 @@ void StabilityMetricsHelper::ProvideStabilityMetrics(
   SystemProfileProto_Stability* stability_proto =
       system_profile_proto->mutable_stability();
 
-  int count = local_state_->GetInteger(prefs::kStabilityPageLoadCount);
-  if (count) {
-    stability_proto->set_page_load_count(count);
-    local_state_->SetInteger(prefs::kStabilityPageLoadCount, 0);
-  }
-
-  count = local_state_->GetInteger(prefs::kStabilityRendererCrashCount);
+  int count = local_state_->GetInteger(prefs::kStabilityRendererCrashCount);
   if (count) {
     stability_proto->set_renderer_crash_count(count);
     local_state_->SetInteger(prefs::kStabilityRendererCrashCount, 0);
   }
 
 #if BUILDFLAG(IS_ANDROID)
+  count = local_state_->GetInteger(prefs::kStabilityPageLoadCount);
+  if (count) {
+    stability_proto->set_page_load_count(count);
+    local_state_->SetInteger(prefs::kStabilityPageLoadCount, 0);
+  }
   count = local_state_->GetInteger(prefs::kStabilityRendererLaunchCount);
   if (count) {
     stability_proto->set_renderer_launch_count(count);
@@ -111,9 +110,9 @@ void StabilityMetricsHelper::ProvideStabilityMetrics(
 void StabilityMetricsHelper::ClearSavedStabilityMetrics() {
   // Clear all the prefs used in this class in UMA reports.
   local_state_->SetInteger(prefs::kStabilityExtensionRendererCrashCount, 0);
-  local_state_->SetInteger(prefs::kStabilityPageLoadCount, 0);
   local_state_->SetInteger(prefs::kStabilityRendererCrashCount, 0);
 #if BUILDFLAG(IS_ANDROID)
+  local_state_->SetInteger(prefs::kStabilityPageLoadCount, 0);
   local_state_->SetInteger(prefs::kStabilityRendererLaunchCount, 0);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -122,9 +121,9 @@ void StabilityMetricsHelper::ClearSavedStabilityMetrics() {
 void StabilityMetricsHelper::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kStabilityExtensionRendererCrashCount,
                                 0);
-  registry->RegisterIntegerPref(prefs::kStabilityPageLoadCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityRendererCrashCount, 0);
 #if BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(prefs::kStabilityPageLoadCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityRendererLaunchCount, 0);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -177,7 +176,9 @@ void StabilityMetricsHelper::BrowserUtilityProcessLaunchFailed(
 }
 
 void StabilityMetricsHelper::LogLoadStarted() {
+#if BUILDFLAG(IS_ANDROID)
   IncrementPrefValue(prefs::kStabilityPageLoadCount);
+#endif
   RecordStabilityEvent(StabilityEventType::kPageLoad);
 }
 
