@@ -345,7 +345,7 @@ def _ClusterOffsetsFromCallGraph(profiles, processor):
     other_clustering = []
 
   # Start with the renderer cluster to favor rendering performance.
-  final_ordering = renderer_clustering.copy()
+  final_ordering = list(renderer_clustering)
   seen = set(final_ordering)
   final_ordering.extend(s for s in browser_clustering if s not in seen)
   seen |= set(browser_clustering)
@@ -390,7 +390,7 @@ def _ClusterOffsetsLists(profiles, processor, limit_cluster_size=False):
     other_clustering = []
 
   # Start with the renderer cluster to favor rendering performance.
-  final_ordering = renderer_clustering.copy()
+  final_ordering = list(renderer_clustering)
   seen = set(final_ordering)
   final_ordering.extend(s for s in browser_clustering if s not in seen)
   seen |= set(browser_clustering)
