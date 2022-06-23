@@ -317,7 +317,7 @@ struct GPU_EXPORT GPUInfo {
 
   unsigned int GpuCount() const;
 
-  const GPUDevice* GetGpuByPreference(gl::GpuPreference preference) const;
+  GPUDevice* GetGpuByPreference(gl::GpuPreference preference);
 
 #if BUILDFLAG(IS_WIN)
   GPUDevice* FindGpuByLuid(DWORD low_part, LONG high_part);
