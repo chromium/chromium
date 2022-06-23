@@ -1141,15 +1141,20 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)scheduleFaviconsCleanup {
+#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
+  __weak MainController* weakSelf = self;
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kFaviconsCleanup
                   block:^{
-#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
+                    MainController* strongSelf = weakSelf;
+                    if (!strongSelf || !strongSelf.currentBrowserState) {
+                      return;
+                    }
                     UpdateFaviconsStorage(
                         IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                            self.currentBrowserState));
-#endif
+                            strongSelf.currentBrowserState));
                   }];
+#endif
 }
 
 - (void)expireFirstUserActionRecorder {
