@@ -13,6 +13,8 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 import("./new_tab_page.gni")
 
+assert(!is_android)
+
 html_to_wrapper("html_wrapper_files") {
   in_files = html_files
 }

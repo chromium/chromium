@@ -11,6 +11,8 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
 import("downloads.gni")
 
+assert(!is_android)
+
 preprocess_folder = "preprocessed"
 
 if (optimize_webui) {
