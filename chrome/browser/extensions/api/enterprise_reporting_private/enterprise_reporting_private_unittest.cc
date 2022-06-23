@@ -53,10 +53,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
-#include "chrome/browser/enterprise/signals/signals_features.h"  // nogncheck
 #include "components/device_signals/core/browser/mock_signals_aggregator.h"  // nogncheck
 #include "components/device_signals/core/browser/signals_aggregator.h"  // nogncheck
 #include "components/device_signals/core/common/signals_constants.h"  // nogncheck
+#include "components/device_signals/core/common/signals_features.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_SIGNALS_SIGNALS_FEATURES_H_
-#define CHROME_BROWSER_ENTERPRISE_SIGNALS_SIGNALS_FEATURES_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_SIGNALS_FEATURES_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_SIGNALS_FEATURES_H_
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -29,4 +29,4 @@ bool IsNewFunctionEnabled(NewEvFunction new_ev_function);
 
 }  // namespace enterprise_signals::features
 
-#endif  // CHROME_BROWSER_ENTERPRISE_SIGNALS_SIGNALS_FEATURES_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_SIGNALS_FEATURES_H_

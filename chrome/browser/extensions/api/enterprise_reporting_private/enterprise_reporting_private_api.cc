@@ -33,11 +33,11 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
-#include "chrome/browser/enterprise/signals/signals_features.h"  // nogncheck
 #include "chrome/browser/extensions/api/enterprise_reporting_private/conversion_utils.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_context.h"
+#include "components/device_signals/core/common/signals_features.h"  // nogncheck
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(IS_WIN)
 

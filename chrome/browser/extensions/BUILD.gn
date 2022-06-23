@@ -959,7 +959,7 @@ static_library("extensions") {
       "api/system_indicator/system_indicator_manager_factory.h",
     ]
 
-    deps += [ "//chrome/browser/enterprise/signals:features" ]
+    deps += [ "//components/device_signals/core/common:features" ]
   }
 
   if (is_chromeos) {
