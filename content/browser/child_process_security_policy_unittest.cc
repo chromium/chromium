@@ -3187,7 +3187,8 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
     EXPECT_TRUE(foo_instance->HasSite());
     EXPECT_EQ(foo_instance->GetSiteInfo(),
               SiteInfo::CreateForDefaultSiteInstance(
-                  &context, StoragePartitionConfig::CreateDefault(&context),
+                  foo_instance->GetIsolationContext(),
+                  StoragePartitionConfig::CreateDefault(&context),
                   WebExposedIsolationInfo::CreateNonIsolated()));
     EXPECT_FALSE(foo_instance->RequiresDedicatedProcess());
   }

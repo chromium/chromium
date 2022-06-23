@@ -6220,6 +6220,153 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, SubframeProcessReuse) {
   EXPECT_EQ(subframe->GetProcess(), subframe2->GetProcess());
 }
 
+// Helper class to turn off strict site isolation while still using site
+// isolation paths for <webview>.  This forces <webview> to use the default
+// SiteInstance paths. The helper also defines one isolated origin at
+// isolated.com, which takes precedence over the command-line switch to disable
+// site isolation and can be used to test a combination of SiteInstances that
+// require and don't require dedicated processes.
+class WebViewWithDefaultSiteInstanceTest : public SitePerProcessWebViewTest {
+ public:
+  WebViewWithDefaultSiteInstanceTest() = default;
+  ~WebViewWithDefaultSiteInstanceTest() override = default;
+  WebViewWithDefaultSiteInstanceTest(
+      const WebViewWithDefaultSiteInstanceTest&) = delete;
+  WebViewWithDefaultSiteInstanceTest& operator=(
+      const WebViewWithDefaultSiteInstanceTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+    command_line->AppendSwitchASCII(switches::kIsolateOrigins,
+                                    "http://isolated.com");
+    SitePerProcessWebViewTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Check that when strict site isolation is turned off (via a command-line flag
+// or from chrome://flags), the <webview> site isolation paths still work. In
+// particular, <webview> navigations should use a default SiteInstance which
+// should still be considered a guest SiteInstance in the guest's
+// StoragePartition.  Cross-site navigations in the guest should stay in the
+// same SiteInstance, and the guest process shouldn't be locked.
+IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an app with a <webview> guest that starts at a data: URL.
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* guest = GetGuestWebContents();
+  ASSERT_TRUE(guest);
+  content::RenderFrameHost* main_frame = guest->GetPrimaryMainFrame();
+  auto original_id = main_frame->GetGlobalId();
+  scoped_refptr<content::SiteInstance> starting_instance =
+      main_frame->GetSiteInstance();
+
+  // Because this test runs without strict site isolation, the <webview>
+  // process shouldn't be locked.  However, the <webview>'s process and
+  // SiteInstance should still be for a guest.
+  EXPECT_FALSE(
+      starting_instance->GetProcess()->IsProcessLockedToSiteForTesting());
+  EXPECT_FALSE(starting_instance->RequiresDedicatedProcess());
+  EXPECT_TRUE(starting_instance->IsGuest());
+  EXPECT_TRUE(starting_instance->GetProcess()->IsForGuestsOnly());
+  EXPECT_FALSE(starting_instance->GetStoragePartitionConfig().is_default());
+
+  // Navigate <webview> to a cross-site page with a same-site iframe.
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/iframe.html");
+  {
+    content::TestNavigationObserver load_observer(guest);
+    EXPECT_TRUE(
+        ExecuteScript(guest, "location.href = '" + start_url.spec() + "';"));
+    load_observer.Wait();
+  }
+
+  // Expect that we stayed in the same (default) SiteInstance and
+  // RenderFrameHost.
+  main_frame = guest->GetPrimaryMainFrame();
+  EXPECT_EQ(main_frame->GetGlobalId(), original_id);
+  EXPECT_EQ(starting_instance, main_frame->GetSiteInstance());
+  EXPECT_FALSE(main_frame->GetSiteInstance()->RequiresDedicatedProcess());
+  EXPECT_FALSE(main_frame->GetProcess()->IsProcessLockedToSiteForTesting());
+
+  // Navigate <webview> subframe cross-site.  Check that it stays in the same
+  // SiteInstance and process.
+  const GURL frame_url =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+  EXPECT_TRUE(NavigateIframeToURL(guest, "test", frame_url));
+  content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
+  EXPECT_EQ(main_frame->GetSiteInstance(), subframe->GetSiteInstance());
+  EXPECT_EQ(main_frame->GetProcess(), subframe->GetProcess());
+  EXPECT_TRUE(subframe->GetSiteInstance()->IsGuest());
+  EXPECT_FALSE(subframe->GetSiteInstance()->RequiresDedicatedProcess());
+  EXPECT_FALSE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+}
+
+// Similar to the test above, but also exercises navigations to an isolated
+// origin, which takes precedence over switches::kDisableSiteIsolation. In this
+// setup, navigations to the isolated origin should use a normal SiteInstance
+// that requires a dedicated process, while all other navigations should use
+// the default SiteInstance and an unlocked process.
+IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, IsolatedOrigin) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an app with a <webview> guest that starts at a data: URL.
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* guest = GetGuestWebContents();
+  ASSERT_TRUE(guest);
+  content::RenderFrameHost* main_frame = guest->GetPrimaryMainFrame();
+  auto original_id = main_frame->GetGlobalId();
+  scoped_refptr<content::SiteInstance> starting_instance =
+      main_frame->GetSiteInstance();
+
+  // Because this test runs without strict site isolation, the <webview>
+  // process shouldn't be locked.  However, the <webview>'s process and
+  // SiteInstance should still be for a guest.
+  EXPECT_FALSE(
+      starting_instance->GetProcess()->IsProcessLockedToSiteForTesting());
+  EXPECT_FALSE(starting_instance->RequiresDedicatedProcess());
+  EXPECT_TRUE(starting_instance->IsGuest());
+  EXPECT_TRUE(starting_instance->GetProcess()->IsForGuestsOnly());
+  EXPECT_FALSE(starting_instance->GetStoragePartitionConfig().is_default());
+
+  // Navigate to an isolated origin.  Isolated origins take precedence over
+  // switches::kDisableSiteIsolation, so we should swap SiteInstances and
+  // processes, ending up in a locked process.
+  const GURL start_url =
+      embedded_test_server()->GetURL("isolated.com", "/iframe.html");
+  {
+    content::TestNavigationObserver load_observer(guest);
+    EXPECT_TRUE(
+        ExecuteScript(guest, "location.href = '" + start_url.spec() + "';"));
+    load_observer.Wait();
+  }
+
+  main_frame = guest->GetPrimaryMainFrame();
+  EXPECT_NE(main_frame->GetGlobalId(), original_id);
+  EXPECT_NE(starting_instance, main_frame->GetSiteInstance());
+  EXPECT_TRUE(main_frame->GetSiteInstance()->RequiresDedicatedProcess());
+  EXPECT_TRUE(main_frame->GetProcess()->IsProcessLockedToSiteForTesting());
+
+  // Navigate a subframe on the isolated origin cross-site to a non-isolated
+  // URL. The subframe should go back into a default SiteInstance in a
+  // different unlocked process.
+  const GURL frame_url =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+  EXPECT_TRUE(NavigateIframeToURL(guest, "test", frame_url));
+  content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
+  EXPECT_NE(main_frame->GetSiteInstance(), subframe->GetSiteInstance());
+  EXPECT_NE(main_frame->GetProcess(), subframe->GetProcess());
+  EXPECT_TRUE(subframe->GetSiteInstance()->IsGuest());
+  EXPECT_FALSE(subframe->GetSiteInstance()->RequiresDedicatedProcess());
+  EXPECT_FALSE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+
+  // Check that all frames stayed in the same guest StoragePartition.
+  EXPECT_EQ(main_frame->GetSiteInstance()->GetStoragePartitionConfig(),
+            subframe->GetSiteInstance()->GetStoragePartitionConfig());
+  EXPECT_EQ(main_frame->GetSiteInstance()->GetStoragePartitionConfig(),
+            starting_instance->GetStoragePartitionConfig());
+}
+
 class WebViewFencedFrameTest : public WebViewTest {
  public:
   ~WebViewFencedFrameTest() override = default;

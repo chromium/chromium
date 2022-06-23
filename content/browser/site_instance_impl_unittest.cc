@@ -509,7 +509,7 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
   EXPECT_TRUE(site_instance->HasSite());
   EXPECT_EQ(site_instance->GetSiteInfo(),
             SiteInfo::CreateForDefaultSiteInstance(
-                &browser_context,
+                site_instance->GetIsolationContext(),
                 StoragePartitionConfig::CreateDefault(&browser_context),
                 WebExposedIsolationInfo::CreateNonIsolated()));
   EXPECT_FALSE(site_instance->RequiresDedicatedProcess());
