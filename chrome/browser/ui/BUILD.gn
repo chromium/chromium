@@ -2276,6 +2276,8 @@ static_library("ui") {
       "ash/ime_controller_client_impl.h",
       "ash/in_session_auth_dialog_client.cc",
       "ash/in_session_auth_dialog_client.h",
+      "ash/in_session_auth_token_provider_impl.cc",
+      "ash/in_session_auth_token_provider_impl.h",
       "ash/keyboard/chrome_keyboard_bounds_observer.cc",
       "ash/keyboard/chrome_keyboard_bounds_observer.h",
       "ash/keyboard/chrome_keyboard_controller_client.cc",

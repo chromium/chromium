@@ -17,6 +17,7 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
     OnAuthComplete on_auth_complete) {
   auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
   DCHECK(account_id.is_valid());
+  DCHECK_NE(auth_token_provider_, nullptr);
 
   // We don't manage the lifetime of `AuthenticationDialog` here.
   // `AuthenticatonDialog` is-a View and it is instead owned by it's widget,

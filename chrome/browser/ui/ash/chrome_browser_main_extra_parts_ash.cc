@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
+#include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/browser/ui/ash/microphone_mute_notification_delegate_impl.h"
@@ -178,6 +179,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   in_session_auth_dialog_client_ =
       std::make_unique<InSessionAuthDialogClient>();
+
+  in_session_auth_token_provider_ =
+      std::make_unique<ash::InSessionAuthTokenProviderImpl>();
 
   // NOTE: The WallpaperControllerClientImpl must be initialized before the
   // session controller, because the session controller triggers the loading

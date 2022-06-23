@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
 #include "chrome/common/buildflags.h"
 
 namespace ash {
@@ -99,6 +100,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<ArcOpenUrlDelegateImpl> arc_open_url_delegate_impl_;
   std::unique_ptr<ImeControllerClientImpl> ime_controller_client_;
   std::unique_ptr<InSessionAuthDialogClient> in_session_auth_dialog_client_;
+  std::unique_ptr<ash::InSessionAuthTokenProviderImpl>
+      in_session_auth_token_provider_;
   std::unique_ptr<ScreenOrientationDelegateChromeos>
       screen_orientation_delegate_;
   std::unique_ptr<SessionControllerClientImpl> session_controller_client_;

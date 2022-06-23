@@ -23,7 +23,8 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController {
   // InSessionAuthDialogController overrides
   void ShowAuthDialog(Reason reason, OnAuthComplete on_auth_complete) override;
 
-  void SetTokenProvider(InSessionAuthTokenProvider* auth_token_provider);
+  void SetTokenProvider(
+      InSessionAuthTokenProvider* auth_token_provider) override;
 
  private:
   // Non owning pointer, initialized and owned by
