@@ -153,6 +153,9 @@ class CheckBlinkStyle(object):
             changed_files = paths if options.diff_files else None
             patch = host.git().create_patch(
                 options.git_commit, changed_files=changed_files)
+            # create_patch intentionally returns binary data, but we have to
+            # decode it because patch_checker.check assumes str data.
+            patch = patch.decode()
             patch_checker = PatchReader(file_reader)
             patch_checker.check(patch)
 

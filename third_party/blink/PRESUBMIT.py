@@ -176,11 +176,11 @@ def _CheckStyle(input_api, output_api):
     #     extension is too long.
     # The latter error comes from CreateProcess hitting its 32768 character
     # limit.
-    files_per_command = 70 if input_api.is_windows else 1000
+    files_per_command = 40 if input_api.is_windows else 1000
     results = []
     for i in range(0, len(files), files_per_command):
         args = [
-            input_api.python_executable, style_checker_path, '--diff-files'
+            input_api.python3_executable, style_checker_path, '--diff-files'
         ]
         args += files[i:i + files_per_command]
 
