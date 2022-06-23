@@ -70,6 +70,7 @@ TEST_F(WebUIBubbleManagerTest, UsesPersistentContentsWrapperPerProfile) {
   const char* kProfileName = "Person 1";
   auto* test_profile = profile_manager()->CreateTestingProfile(kProfileName);
 
+  // Owned by |test_profile|.
   auto* service =
       BubbleContentsWrapperServiceFactory::GetForProfile(test_profile, true);
   ASSERT_NE(nullptr, service);
@@ -81,8 +82,9 @@ TEST_F(WebUIBubbleManagerTest, UsesPersistentContentsWrapperPerProfile) {
           anchor_widget->GetContentsView(), test_profile, GURL(kTestURL), 1);
   bubble_manager->DisableCloseBubbleHelperForTesting();
 
-  // If using per-profile peristence the `contents_wrapper` should have been
+  // If using per-profile persistence the `contents_wrapper` should have been
   // created before the bubble has been invoked.
+  // Owned by |service|.
   BubbleContentsWrapper* contents_wrapper =
       service->GetBubbleContentsWrapperFromURL(GURL(kTestURL));
   EXPECT_NE(nullptr, contents_wrapper);
@@ -102,6 +104,7 @@ TEST_F(WebUIBubbleManagerTest, UsesPersistentContentsWrapperPerProfile) {
   EXPECT_EQ(contents_wrapper,
             service->GetBubbleContentsWrapperFromURL(GURL(kTestURL)));
 
+  service->Shutdown();  // Need to Shutdown() before the profile owning it.
   profile_manager()->DeleteTestingProfile(kProfileName);
 }
 
@@ -222,6 +225,8 @@ TEST_F(WebUIBubbleManagerTest,
   test_manager(manager1.get(), service1, contents_wrapper_profile1);
   test_manager(manager2.get(), service1, contents_wrapper_profile1);
   test_manager(manager3.get(), service2, contents_wrapper_profile2);
+  service1->Shutdown();  // Need to Shutdown() before the profile owning it.
+  service2->Shutdown();  // Need to Shutdown() before the profile owning it.
   profile_manager()->DeleteTestingProfile(kProfileName1);
   profile_manager()->DeleteTestingProfile(kProfileName2);
 }
