@@ -28,9 +28,6 @@ suite('CellularNetworksList', function() {
   let browserProxy;
 
   setup(function() {
-    loadTimeData.overrideValues({
-      esimPolicyEnabled: true,
-    });
     mojom = chromeos.networkConfig.mojom;
     mojoApi_ = new FakeNetworkConfig();
     MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;

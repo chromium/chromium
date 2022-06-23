@@ -705,7 +705,7 @@ void ManagedNetworkConfigurationHandlerImpl::TriggerCellularPolicyApplication(
 
     const std::string* smdp_address =
         policy_util::GetSMDPAddressFromONC(*network_policy);
-    if (features::IsESimPolicyEnabled() && smdp_address) {
+    if (smdp_address) {
       NET_LOG(EVENT)
           << "Found ONC configuration with SMDP: " << *smdp_address
           << ". Start installing policy eSim profile with ONC config: "
@@ -765,15 +765,13 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
   else
     user_policy_applied_ = true;
 
-  if (features::IsESimPolicyEnabled()) {
-    ESimPolicyLoginMetricsLogger::RecordBlockNonManagedCellularBehavior(
-        AllowOnlyPolicyCellularNetworks());
-    // Call UpdateBlockCellularNetworks when either device policy applied or
-    // user policy applied so that so that unmanaged cellular networks are
-    // blocked correctly if the policy appears in either.
-    network_state_handler_->UpdateBlockedCellularNetworks(
-        AllowOnlyPolicyCellularNetworks());
-  }
+  ESimPolicyLoginMetricsLogger::RecordBlockNonManagedCellularBehavior(
+      AllowOnlyPolicyCellularNetworks());
+  // Call UpdateBlockCellularNetworks when either device policy applied or
+  // user policy applied so that so that unmanaged cellular networks are
+  // blocked correctly if the policy appears in either.
+  network_state_handler_->UpdateBlockedCellularNetworks(
+      AllowOnlyPolicyCellularNetworks());
 
   if (features::IsSimLockPolicyEnabled())
     network_device_handler_->SetAllowCellularSimLock(AllowCellularSimLock());

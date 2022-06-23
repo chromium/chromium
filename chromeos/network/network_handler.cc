@@ -57,11 +57,9 @@ NetworkHandler::NetworkHandler()
   network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
   cellular_esim_installer_.reset(new CellularESimInstaller());
   cellular_esim_uninstall_handler_.reset(new CellularESimUninstallHandler());
-  if (features::IsESimPolicyEnabled()) {
-    cellular_policy_handler_.reset(new CellularPolicyHandler());
-    esim_policy_login_metrics_logger_.reset(new ESimPolicyLoginMetricsLogger());
-    managed_cellular_pref_handler_.reset(new ManagedCellularPrefHandler());
-  }
+  cellular_policy_handler_.reset(new CellularPolicyHandler());
+  esim_policy_login_metrics_logger_.reset(new ESimPolicyLoginMetricsLogger());
+  managed_cellular_pref_handler_.reset(new ManagedCellularPrefHandler());
   cellular_metrics_logger_.reset(new CellularMetricsLogger());
   connection_info_metrics_logger_.reset(new ConnectionInfoMetricsLogger());
   vpn_network_metrics_helper_.reset(new VpnNetworkMetricsHelper());
@@ -115,17 +113,15 @@ void NetworkHandler::Init() {
       managed_cellular_pref_handler_.get(),
       network_configuration_handler_.get(), network_connection_handler_.get(),
       network_state_handler_.get());
-  if (features::IsESimPolicyEnabled()) {
-    cellular_policy_handler_->Init(
-        cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
-        network_profile_handler_.get(), network_state_handler_.get(),
-        managed_cellular_pref_handler_.get(),
-        managed_network_configuration_handler_.get());
-    managed_cellular_pref_handler_->Init(network_state_handler_.get());
-    esim_policy_login_metrics_logger_->Init(
-        network_state_handler_.get(),
-        managed_network_configuration_handler_.get());
-  }
+  cellular_policy_handler_->Init(
+      cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
+      network_profile_handler_.get(), network_state_handler_.get(),
+      managed_cellular_pref_handler_.get(),
+      managed_network_configuration_handler_.get());
+  managed_cellular_pref_handler_->Init(network_state_handler_.get());
+  esim_policy_login_metrics_logger_->Init(
+      network_state_handler_.get(),
+      managed_network_configuration_handler_.get());
   cellular_metrics_logger_->Init(network_state_handler_.get(),
                                  network_connection_handler_.get(),
                                  cellular_esim_profile_handler_.get());
@@ -181,9 +177,7 @@ void NetworkHandler::InitializePrefServices(
     PrefService* logged_in_profile_prefs,
     PrefService* device_prefs) {
   cellular_esim_profile_handler_->SetDevicePrefs(device_prefs);
-  if (features::IsESimPolicyEnabled()) {
-    managed_cellular_pref_handler_->SetDevicePrefs(device_prefs);
-  }
+  managed_cellular_pref_handler_->SetDevicePrefs(device_prefs);
   ui_proxy_config_service_.reset(new UIProxyConfigService(
       logged_in_profile_prefs, device_prefs, network_state_handler_.get(),
       network_profile_handler_.get()));
@@ -197,9 +191,7 @@ void NetworkHandler::InitializePrefServices(
 
 void NetworkHandler::ShutdownPrefServices() {
   cellular_esim_profile_handler_->SetDevicePrefs(nullptr);
-  if (features::IsESimPolicyEnabled()) {
-    managed_cellular_pref_handler_->SetDevicePrefs(nullptr);
-  }
+  managed_cellular_pref_handler_->SetDevicePrefs(nullptr);
   ui_proxy_config_service_.reset();
   network_metadata_store_.reset();
 }

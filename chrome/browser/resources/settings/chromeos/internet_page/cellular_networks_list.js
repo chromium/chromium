@@ -222,15 +222,6 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
         computed: 'computeIsDeviceInhibited_(cellularDeviceState,' +
             'cellularDeviceState.inhibitReason)',
       },
-
-      /** @private {boolean} */
-      isESimPolicyEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('esimPolicyEnabled') &&
-              loadTimeData.getBoolean('esimPolicyEnabled');
-        }
-      },
     };
   }
 
@@ -304,7 +295,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
       // Restricting managed cellular network should not show pending eSIM
       // profiles.
-      if (this.isESimPolicyEnabled_ && this.globalPolicy &&
+      if (this.globalPolicy &&
           this.globalPolicy.allowOnlyPolicyCellularNetworks) {
         this.eSimPendingProfileItems_ = [];
         return;
@@ -563,7 +554,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     if (!this.deviceIsEnabled_(cellularDeviceState)) {
       return true;
     }
-    if (!this.isESimPolicyEnabled_ || !globalPolicy) {
+    if (!globalPolicy) {
       return false;
     }
     return globalPolicy.allowOnlyPolicyCellularNetworks;
@@ -578,8 +569,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    * @private
    */
   shouldShowAddESimPolicyIcon_(globalPolicy) {
-    return this.isESimPolicyEnabled_ && globalPolicy &&
-        globalPolicy.allowOnlyPolicyCellularNetworks;
+    return globalPolicy && globalPolicy.allowOnlyPolicyCellularNetworks;
   }
 
   /**
@@ -679,9 +669,6 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    * @private
    */
   shouldShowNoESimSubtextMessage_() {
-    if (!this.isESimPolicyEnabled_) {
-      return false;
-    }
     if (this.globalPolicy &&
         this.globalPolicy.allowOnlyPolicyCellularNetworks) {
       return true;

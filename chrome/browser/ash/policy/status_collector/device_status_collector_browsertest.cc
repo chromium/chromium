@@ -4075,8 +4075,6 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, DISABLED_TestNoInterfaces) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, Default) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
-
   // Network interfaces should be reported by default, i.e if the policy is
   // not set.
   GetStatus();
@@ -4096,8 +4094,6 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, Default) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfUnaffiliatedUser) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
-
   // Network interfaces should be reported for unaffiliated users.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceNetworkConfiguration, true);
@@ -4109,8 +4105,6 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfUnaffiliatedUser) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfAffiliatedUser) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
-
   // Network interfaces should be reported for affiliated users.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceNetworkConfiguration, true);
@@ -4122,8 +4116,6 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfAffiliatedUser) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfPublicSession) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
-
   // Network interfaces should be reported if in public session.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceNetworkConfiguration, true);
@@ -4137,8 +4129,6 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfPublicSession) {
 }
 
 TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfKioskMode) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kESimPolicy);
-
   // Network interfaces should be reported if in kiosk mode.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceNetworkConfiguration, true);

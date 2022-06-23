@@ -72,8 +72,7 @@ void NetworkInfoSampler::MaybeCollect(OptionalMetricCallback callback) {
     }
 
     // Report EIDs for cellular connections.
-    if (type.Equals(::ash::NetworkTypePattern::Cellular()) &&
-        ::ash::features::IsESimPolicyEnabled()) {
+    if (type.Equals(::ash::NetworkTypePattern::Cellular())) {
       for (const auto& euicc_path :
            ::chromeos::HermesManagerClient::Get()->GetAvailableEuiccs()) {
         ::chromeos::HermesEuiccClient::Properties* properties =

@@ -15,7 +15,6 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/client_cert_resolver.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -676,8 +675,6 @@ TEST_F(AutoConnectHandlerTest, ManualConnectAbortsReconnectAfterLogin) {
 TEST_F(AutoConnectHandlerTest,
        DisableCellularAutoConnectOnAllowOnlyPolicyNetworksAutoconnect) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   std::string cellular1_service_path =
       ConfigureService(kConfigureCellular1UnmanagedConnected);
   ASSERT_FALSE(cellular1_service_path.empty());
@@ -731,8 +728,6 @@ TEST_F(AutoConnectHandlerTest,
 TEST_F(AutoConnectHandlerTest,
        DisconnectCellularOnPolicyLoadingAllowOnlyPolicyCellularNetworks) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   std::string cellular1_service_path =
       ConfigureService(kConfigureCellular1UnmanagedConnected);
   ASSERT_FALSE(cellular1_service_path.empty());

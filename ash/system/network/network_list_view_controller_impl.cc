@@ -361,8 +361,7 @@ void NetworkListViewControllerImpl::UpdateMobileSection() {
 
   // Adding new cellular networks is disallowed when only policy cellular
   // networks are allowed by admin.
-  if (ash::features::IsESimPolicyEnabled() &&
-      (!global_policy || global_policy->allow_only_policy_cellular_networks)) {
+  if (!global_policy || global_policy->allow_only_policy_cellular_networks) {
     is_add_esim_visible = false;
   }
 

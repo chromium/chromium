@@ -572,9 +572,6 @@ bool AllowAddESim(const network_config::mojom::GlobalPolicyPtr& global_policy) {
   if (HermesManagerClient::Get()->GetAvailableEuiccs().size() == 0)
     return false;
 
-  if (!base::FeatureList::IsEnabled(ash::features::kESimPolicy))
-    return true;
-
   return !global_policy->allow_only_policy_cellular_networks;
 }
 

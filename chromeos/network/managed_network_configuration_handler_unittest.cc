@@ -388,8 +388,6 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, RemoveIrrelevantFields) {
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   InitializeStandardProfiles();
   InitializeEuicc();
 
@@ -430,30 +428,11 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest,
-       SetPolicyManagedCellularDisableFeatureFlag) {
-  base::test::ScopedFeatureList feature_list;
-  InitializeStandardProfiles();
-  InitializeEuicc();
-  // Verify that when eSIM policy feature flag is not set, applying managed
-  // eSIM policy should not create a new shill configuration for it.
-  feature_list.InitAndDisableFeature(ash::features::kESimPolicy);
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_cellular.onc");
-  FastForwardProfileRefreshDelay();
-  base::RunLoop().RunUntilIdle();
-  std::string service_path = GetShillServiceClient()->FindServiceMatchingGUID(
-      kTestGuidManagedCellular);
-  ASSERT_EQ(service_path, std::string());
-}
-
-TEST_F(ManagedNetworkConfigurationHandlerTest,
        SetPolicyIgnoreNoSmdpManagedCellular) {
-  base::test::ScopedFeatureList feature_list;
   InitializeStandardProfiles();
   InitializeEuicc();
   // Verify that applying managed eSIM policy with no SMDP address in the ONC
   // should not create a new shill configuration for it.
-  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
             "policy/policy_cellular_with_no_smdp.onc");
   FastForwardProfileRefreshDelay();
@@ -1055,8 +1034,6 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 
 TEST_F(ManagedNetworkConfigurationHandlerTest,
        AllowOnlyPolicyCellularNetworksToConnect) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   InitializeStandardProfiles();
   InitializeEuicc();
 

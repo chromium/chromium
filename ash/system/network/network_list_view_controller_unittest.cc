@@ -553,8 +553,6 @@ TEST_F(NetworkListViewControllerTest, WifiSectionHeader) {
 }
 
 TEST_F(NetworkListViewControllerTest, MobileSectionHeaderAddEsimButtonStates) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(ash::features::kESimPolicy);
   EXPECT_EQ(nullptr, GetMobileSubHeader());
   EXPECT_EQ(nullptr, GetMobileStatusMessage());
 
@@ -592,8 +590,6 @@ TEST_F(NetworkListViewControllerTest, MobileSectionHeaderAddEsimButtonStates) {
   // cellular devices which means adding a new eSIM is disallowed by enterprise
   // policy, add eSIM button is not displayed.
   SetGlobalPolicyConfig(/*allow_only_policy=*/true);
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   UpdateNetworkList(empty_list_);
   EXPECT_FALSE(GetMobileSubHeader()->is_add_esim_visible());
 }

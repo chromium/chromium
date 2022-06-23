@@ -426,8 +426,6 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("useAttachApn",
                           chromeos::features::ShouldUseAttachApn());
-  html_source->AddBoolean("esimPolicyEnabled",
-                          chromeos::features::IsESimPolicyEnabled());
   html_source->AddBoolean("isSimLockPolicyEnabled",
                           chromeos::features::IsSimLockPolicyEnabled());
 }

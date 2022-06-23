@@ -159,18 +159,6 @@ class SettingsInternetSubpageElement extends
       },
 
       /**
-       * Whether the ESim Policy feature flag is enabled or not.
-       * @private
-       */
-      isESimPolicyEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('esimPolicyEnabled') &&
-              loadTimeData.getBoolean('esimPolicyEnabled');
-        }
-      },
-
-      /**
        * Always-on VPN operating mode.
        * @private {!chromeos.networkConfig.mojom.AlwaysOnVpnMode|undefined}
        */
@@ -886,8 +874,7 @@ class SettingsInternetSubpageElement extends
     }
 
     if (state.type === mojom.NetworkType.kCellular) {
-      return this.isESimPolicyEnabled_ &&
-          !!this.globalPolicy.allowOnlyPolicyCellularNetworks;
+      return !!this.globalPolicy.allowOnlyPolicyCellularNetworks;
     }
 
     return !!this.globalPolicy.allowOnlyPolicyWifiNetworksToConnect ||

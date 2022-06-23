@@ -2779,9 +2779,6 @@ extern const char kDisableQuickAnswersV2TranslationDescription[];
 extern const char kQuickAnswersForMoreLocalesName[];
 extern const char kQuickAnswersForMoreLocalesDescription[];
 
-extern const char kESimPolicyName[];
-extern const char kESimPolicyDescription[];
-
 extern const char kTrimOnMemoryPressureName[];
 extern const char kTrimOnMemoryPressureDescription[];
 

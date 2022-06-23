@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -128,8 +127,6 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
 };
 
 TEST_F(ESimPolicyLoginMetricsLoggerTest, LoginMetricsTest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   // Perform this test as though this "device" is enterprise managed.
   esim_policy_login_metrics_logger_->SetIsEnterpriseManaged(
       /*is_enterprise_managed=*/true);

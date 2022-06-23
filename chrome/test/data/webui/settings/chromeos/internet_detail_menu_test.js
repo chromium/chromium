@@ -46,7 +46,7 @@ suite('InternetDetailMenu', function() {
   /** @param {boolean=} opt_isGuest */
   async function init(opt_isGuest) {
     const isGuest = !!opt_isGuest;
-    loadTimeData.overrideValues({esimPolicyEnabled: true, isGuest: isGuest});
+    loadTimeData.overrideValues({isGuest: isGuest});
 
     const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');

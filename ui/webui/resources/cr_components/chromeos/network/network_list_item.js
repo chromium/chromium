@@ -205,15 +205,6 @@ Polymer({
       computed: 'computeIsESimUnactivatedProfile_(managedProperties_)',
     },
 
-    /** @private {boolean} */
-    isESimPolicyEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('esimPolicyEnabled') &&
-            loadTimeData.getBoolean('esimPolicyEnabled');
-      }
-    },
-
     /**
      * Indicates the network item is a blocked cellular network by policy.
      * @private
@@ -1009,8 +1000,7 @@ Polymer({
     }
 
     if (this.item.type === mojom.NetworkType.kCellular) {
-      return this.isESimPolicyEnabled_ &&
-          !!this.globalPolicy.allowOnlyPolicyCellularNetworks;
+      return !!this.globalPolicy.allowOnlyPolicyCellularNetworks;
     }
 
     return this.isBlockedWifiNetwork_();

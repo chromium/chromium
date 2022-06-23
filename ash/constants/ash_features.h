@@ -269,7 +269,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnforceAshExtensionKeeplist;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEolWarningNotifications;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kESimPolicy;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kExoHapticFeedbackSupport;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kExoLockNotification;
@@ -688,7 +687,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDriveFsMirroringEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEapGtcWifiAuthenticationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWAEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWADebugModeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsESimPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsExperimentalRgbKeyboardPatternsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

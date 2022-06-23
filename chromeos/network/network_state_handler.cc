@@ -1341,9 +1341,7 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   }
 
   UpdateManagedWifiNetworkAvailable();
-  if (features::IsESimPolicyEnabled()) {
-    UpdateBlockedCellularNetworks();
-  }
+  UpdateBlockedCellularNetworks();
   if (type != ManagedState::ManagedType::MANAGED_TYPE_NETWORK)
     return;
 
@@ -1606,8 +1604,7 @@ void NetworkStateHandler::UpdateDeviceProperty(const std::string& device_path,
 
     if (device->type() == shill::kTypeWifi && !device->scanning())
       UpdateManagedWifiNetworkAvailable();
-    if (device->type() == shill::kTypeCellular && !device->scanning() &&
-        features::IsESimPolicyEnabled()) {
+    if (device->type() == shill::kTypeCellular && !device->scanning()) {
       UpdateBlockedCellularNetworks();
     }
   }
@@ -1696,8 +1693,7 @@ void NetworkStateHandler::ManagedStateListChanged(
       UpdateNetworkStats();
       NotifyIfActiveNetworksChanged();
       NotifyNetworkListChanged();
-      if (features::IsESimPolicyEnabled())
-        UpdateBlockedCellularNetworks();
+      UpdateBlockedCellularNetworks();
       UpdateManagedWifiNetworkAvailable();
       // ManagedStateListChanged only gets executed if all pending updates have
       // completed. Profile networks are loaded if a user is logged in and all

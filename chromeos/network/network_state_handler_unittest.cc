@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
@@ -2469,8 +2468,6 @@ TEST_F(NetworkStateHandlerTest, BlockedCellularByPolicyOnlyManaged) {
 
 TEST_F(NetworkStateHandlerTest,
        UpdateBlockedCellularNetworkAfterUpdateManagedList) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   const char kTestCellularServicePath2[] = "test_cellular_service_path2";
   const char kTestCellularServiceGuid2[] = "test_cellular_guid2";
   const char kTestCellularServiceName2[] = "test_cellular2";

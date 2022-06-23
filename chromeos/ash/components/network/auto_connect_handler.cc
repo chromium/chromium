@@ -326,8 +326,6 @@ void AutoConnectHandler::DisconnectWiFiIfPolicyRequires() {
 }
 
 void AutoConnectHandler::DisconnectCellularIfPolicyRequires() {
-  if (!features::IsESimPolicyEnabled())
-    return;
   bool only_managed_cellular =
       managed_configuration_handler_->AllowOnlyPolicyCellularNetworks();
   bool only_managed_autoconnect =

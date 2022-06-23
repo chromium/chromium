@@ -297,15 +297,6 @@ class SettingsInternetDetailPageElement extends
       },
 
       /** @private {boolean} */
-      isESimPolicyEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('esimPolicyEnabled') &&
-              loadTimeData.getBoolean('esimPolicyEnabled');
-        }
-      },
-
-      /** @private {boolean} */
       isTrafficCountersEnabled_: {
         type: Boolean,
         value() {
@@ -1308,8 +1299,7 @@ class SettingsInternetDetailPageElement extends
       return false;
     }
 
-    if (this.isESimPolicyEnabled_ &&
-        managedProperties.type ===
+    if (managedProperties.type ===
             chromeos.networkConfig.mojom.NetworkType.kCellular &&
         !!globalPolicy.allowOnlyPolicyCellularNetworks) {
       return true;

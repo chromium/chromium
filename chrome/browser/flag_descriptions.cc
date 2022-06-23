@@ -4935,11 +4935,6 @@ const char kEnforceAshExtensionKeeplistDescription[] =
     "Enforce the Ash extension keeplist. Only the extensions and Chrome apps on"
     " the keeplist are enabled in Ash.";
 
-const char kESimPolicyName[] = "Enable ESim Policy";
-const char kESimPolicyDescription[] =
-    "Enable the support for policy controlled provisioning and configuration "
-    "of eSIM cellular networks";
-
 const char kExoGamepadVibrationName[] = "Gamepad Vibration for Exo Clients";
 const char kExoGamepadVibrationDescription[] =
     "Allow Exo clients like Android to request vibration events for gamepads "

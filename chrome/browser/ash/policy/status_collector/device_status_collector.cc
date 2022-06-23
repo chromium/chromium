@@ -2339,8 +2339,7 @@ bool DeviceStatusCollector::GetNetworkConfiguration(
       interface->set_device_path((*device)->path());
 
     // Report EIDs for cellular connections.
-    if ((*device)->type() == shill::kTypeCellular &&
-        ash::features::IsESimPolicyEnabled()) {
+    if ((*device)->type() == shill::kTypeCellular) {
       std::vector<std::string> eids;
       for (const auto& euicc_path :
            chromeos::HermesManagerClient::Get()->GetAvailableEuiccs()) {

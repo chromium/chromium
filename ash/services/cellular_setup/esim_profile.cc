@@ -459,8 +459,6 @@ bool ESimProfile::IsProfileInstalled() {
 }
 
 bool ESimProfile::IsProfileManaged() {
-  if (!features::IsESimPolicyEnabled())
-    return false;
   NetworkStateHandler::NetworkStateList networks;
   esim_manager_->network_state_handler()->GetNetworkListByType(
       NetworkTypePattern::Cellular(),
