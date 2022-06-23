@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//crypto/features.gni")
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
@@ -29,10 +30,8 @@ static_library("net") {
     "//ui/base",
   ]
 
-  if (!is_android) {
+  if (enable_webui_certificate_viewer) {
     sources += [
-      # x509_certificate_model is used by the WebUI certificate viewer, which
-      # is not used on Android or iOS (but iOS is already implicitly excluded).
       "x509_certificate_model.cc",
       "x509_certificate_model.h",
     ]

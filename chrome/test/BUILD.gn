@@ -5448,10 +5448,7 @@ test("unit_tests") {
     ]
   }
 
-  # TODO(crbug.com/1265746): Enable x509_certificate_model_unittest on windows
-  # once the cert viewer on windows is changed to use the internal one.
-  # Currently disabled on win due to crbug.com/1311991.
-  if (!is_android && !is_win) {
+  if (enable_webui_certificate_viewer) {
     sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
   }
 
