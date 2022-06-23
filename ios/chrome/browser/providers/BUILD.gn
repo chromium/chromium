@@ -52,6 +52,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/signin:chromium_signin_error",
     "//ios/chrome/browser/providers/signin:chromium_signin_resources",
     "//ios/chrome/browser/providers/signin:chromium_signin_sso",
+    "//ios/chrome/browser/providers/text_classifier:chromium_text_classifier",
     "//ios/chrome/browser/providers/text_zoom:chromium_text_zoom",
     "//ios/chrome/browser/providers/ui_utils:chromium_ui_utils",
     "//ios/chrome/browser/providers/url_rewriters:chromium_url_rewriters",

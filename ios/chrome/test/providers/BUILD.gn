@@ -23,6 +23,7 @@ group("providers") {
     "//ios/chrome/test/providers/push_notification",
     "//ios/chrome/test/providers/risk_data",
     "//ios/chrome/test/providers/signin",
+    "//ios/chrome/test/providers/text_classifier",
     "//ios/chrome/test/providers/text_zoom",
     "//ios/chrome/test/providers/ui_utils",
     "//ios/chrome/test/providers/url_rewriters",
