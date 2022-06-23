@@ -14,6 +14,8 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -678,6 +680,19 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
   prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
                                                     expected_prerender_url);
+
+  // With the default setting, there should be no prefetches because the server
+  // does not respond a prefetch suggestion.
+  SearchPrefetchService* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(Profile::FromBrowserContext(
+          GetActiveWebContents()->GetBrowserContext()));
+  ASSERT_NE(search_prefetch_service, nullptr);
+  absl::optional<SearchPrefetchStatus> prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          u"prerender222");
+  EXPECT_FALSE(prefetch_status.has_value());
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch", 0);
 
   content::RenderFrameHost* prerender_rfh =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
