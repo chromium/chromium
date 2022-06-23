@@ -8,12 +8,16 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/components/multidevice/logging/logging.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -39,10 +43,13 @@
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -94,6 +101,13 @@ constexpr float kMaxHeightPercentage = 0.85;
 // Unload timeout to close Eche Bubble in case error from Ech web during closing
 constexpr base::TimeDelta kUnloadTimeoutDuration = base::Milliseconds(500);
 
+// The ID for the "Copy/paste not yet implemented" toast.
+constexpr char kEcheTrayCopyPasteNotImplementedToastId[] =
+    "eche_tray_toast_ids.copy_paste_not_implemented";
+// The ID for the "Tablet mode not supported" toast.
+constexpr char kEcheTrayTabletModeNotSupportedId[] =
+    "eche_tray_toast_ids.tablet_mode_not_supported";
+
 // Creates a button with the given callback, icon, and tooltip text.
 // `message_id` is the resource id of the tooltip text of the icon.
 std::unique_ptr<views::Button> CreateButton(
@@ -121,12 +135,7 @@ EcheTray::EventInterceptor::EventInterceptor(EcheTray* eche_tray)
 EcheTray::EventInterceptor::~EventInterceptor() = default;
 
 void EcheTray::EventInterceptor::OnKeyEvent(ui::KeyEvent* event) {
-  // To provide consistent behavior with a menu, process accelerator as a menu
-  // is open if the event is not handled by the widget.
-  ui::Accelerator accelerator(*event);
-  if (AcceleratorController::Get()->DoesAcceleratorMatchAction(
-          accelerator, AcceleratorAction::WINDOW_MINIMIZE)) {
-    eche_tray_->CloseBubble();
+  if (eche_tray_->ProcessAcceleratorKeys(event)) {
     event->StopPropagation();
     return;
   }
@@ -146,6 +155,10 @@ EcheTray::EcheTray(Shelf* shelf)
   // Note: `ScreenLayoutObserver` starts observing at its constructor.
   observed_session_.Observe(Shell::Get()->session_controller());
   icon_->SetTooltipText(GetAccessibleNameForTray());
+  icon_->SetImage(CreateVectorIcon(
+      kPhoneHubPhoneIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
   shelf_observation_.Observe(shelf);
   tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
   shell_observer_.Observe(Shell::Get());
@@ -227,7 +240,7 @@ void EcheTray::ShowBubble() {
 
 bool EcheTray::PerformAction(const ui::Event& event) {
   // Simply toggle between visible/invisibvle
-  if (bubble_ && bubble_->bubble_view()->GetVisible()) {
+  if (IsBubbleVisible()) {
     HideBubble();
   } else {
 #ifdef FAKE_BUBBLE_FOR_DEBUG
@@ -259,7 +272,7 @@ void EcheTray::OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
     return;
 
   // Another bubble has become visible, so minimize this one.
-  if (visible && bubble_->bubble_view()->GetVisible())
+  if (visible && IsBubbleVisible())
     HideBubble();
 }
 
@@ -300,13 +313,13 @@ void EcheTray::OnLockStateChanged(bool locked) {
 }
 
 void EcheTray::OnKeyboardUIDestroyed() {
-  if (!bubble_ || !bubble_->bubble_view()->GetVisible())
+  if (!IsBubbleVisible())
     return;
   UpdateBubbleBounds();
 }
 
 void EcheTray::OnKeyboardVisibilityChanged(bool visible) {
-  if (visible || !bubble_ || !bubble_->bubble_view()->GetVisible())
+  if (visible || !IsBubbleVisible())
     return;
   UpdateBubbleBounds();
 }
@@ -331,16 +344,26 @@ void EcheTray::SetIcon(const gfx::Image& icon,
   }
 }
 
-void EcheTray::LoadBubble(const GURL& url,
+bool EcheTray::LoadBubble(const GURL& url,
                           const gfx::Image& icon,
                           const std::u16string& visible_name) {
+  if (Shell::Get()->IsInTabletMode()) {
+    ash::ToastManager::Get()->Show(ash::ToastData(
+        kEcheTrayTabletModeNotSupportedId,
+        ash::ToastCatalogName::kEcheTrayTabletModeNotSupported,
+        l10n_util::GetStringUTF16(IDS_ASH_ECHE_TOAST_TABLET_MODE_NOT_SUPPORTED),
+        ash::ToastData::kDefaultToastDuration,
+        /*visible_on_lock_screen=*/false));
+    PA_LOG(WARNING) << "Eche load failed due to tablet mode.";
+    return false;
+  }
   SetUrl(url);
   SetIcon(icon, /*tooltip_text=*/visible_name);
   // If the bubble is already initialized, setting the icon and url was enough
   // to navigate the bubble to the new address.
   if (IsInitialized()) {
     ShowBubble();
-    return;
+    return true;
   }
   InitBubble();
   StartLoadingAnimation();
@@ -351,6 +374,7 @@ void EcheTray::LoadBubble(const GURL& url,
   }
   // Hide bubble first until the streaming is ready.
   HideBubble();
+  return true;
 }
 
 void EcheTray::PurgeAndClose() {
@@ -615,7 +639,7 @@ EcheIconLoadingIndicatorView* EcheTray::GetLoadingIndicator() {
 }
 
 void EcheTray::UpdateBubbleBounds() {
-  if (!bubble_)
+  if (!bubble_ || !bubble_->GetBubbleView())
     return;
   bubble_->GetBubbleView()->ChangeAnchorRect(GetAnchor());
 }
@@ -633,7 +657,15 @@ void EcheTray::OnShelfIconPositionsChanged() {
 }
 
 void EcheTray::OnTabletModeStarted() {
-  UpdateBubbleBounds();
+  if (!IsBubbleVisible())
+    return;
+  ash::ToastManager::Get()->Show(ash::ToastData(
+      kEcheTrayTabletModeNotSupportedId,
+      ash::ToastCatalogName::kEcheTrayTabletModeNotSupported,
+      l10n_util::GetStringUTF16(IDS_ASH_ECHE_TOAST_TABLET_MODE_NOT_SUPPORTED),
+      ash::ToastData::kDefaultToastDuration,
+      /*visible_on_lock_screen=*/false));
+  PurgeAndClose();
 }
 
 void EcheTray::OnTabletModeEnded() {
@@ -646,6 +678,74 @@ void EcheTray::OnShelfAlignmentChanged(aura::Window* root_window,
 
 gfx::Rect EcheTray::GetAnchor() {
   return shelf()->GetSystemTrayAnchorRect();
+}
+
+// TODO(b/234848974): Try to use View::AddAccelerator for the bubble view
+// and then add the handler in View::AcceleratorPressed.
+bool EcheTray::ProcessAcceleratorKeys(ui::KeyEvent* event) {
+  ui::Accelerator accelerator(*event);
+
+  auto* accelerator_controller = AcceleratorController::Get();
+
+  // Process minimize action
+  // Please note that the bubble is not a normal window and it has a special
+  // minimize behavior that is closer to hide than real minimize.
+  //
+  // TODO(https://crbug/1338650): See if we can just leave this to be handled
+  // upper in the chain and perform the minimize by reacting to
+  // ToggleMinimized().
+  if (accelerator_controller->DoesAcceleratorMatchAction(
+          accelerator, AcceleratorAction::WINDOW_MINIMIZE)) {
+    CloseBubble();
+    return true;
+  }
+
+  if (accelerator_controller->DoesAcceleratorMatchAction(
+          accelerator, AcceleratorAction::OPEN_FEEDBACK_PAGE) ||
+      accelerator_controller->DoesAcceleratorMatchAction(
+          accelerator, AcceleratorAction::EXIT)) {
+    views::ViewsDelegate::GetInstance()->ProcessAcceleratorWhileMenuShowing(
+        accelerator);
+    event->StopPropagation();
+    return true;
+  }
+
+  const ui::KeyboardCode key_code = event->key_code();
+  const bool is_only_control_down = ui::Accelerator::MaskOutKeyEventFlags(
+                                        event->flags()) == ui::EF_CONTROL_DOWN;
+
+  if (event->type() == ui::ET_KEY_PRESSED && is_only_control_down) {
+    switch (key_code) {
+      case ui::VKEY_C:
+      case ui::VKEY_V:
+      case ui::VKEY_X:
+        ash::ToastManager::Get()->Show(ash::ToastData(
+            kEcheTrayCopyPasteNotImplementedToastId,
+            ash::ToastCatalogName::kEcheTrayCopyPasteNotImplemented,
+            l10n_util::GetStringUTF16(
+                IDS_ASH_ECHE_TOAST_COPY_PASTE_NOT_IMPLEMENTED),
+            ash::ToastData::kDefaultToastDuration,
+            /*visible_on_lock_screen=*/false));
+        return true;
+      case ui::VKEY_W:
+        // Please note that ctrl+w does not have a global accelerator action
+        // similar to AcceleratorAction::WINDOW_MINIMIZE that was used above.
+        //
+        // TODO(https://crbug/1338650): See if we can just leave this to be
+        // handled upper in the chain.
+        StartGracefulClose();
+        return true;
+      default:
+        // Do nothing
+        break;
+    }
+  }
+  return false;
+}
+
+bool EcheTray::IsBubbleVisible() {
+  return bubble_ && bubble_->GetBubbleView() &&
+         bubble_->GetBubbleView()->GetVisible();
 }
 
 BEGIN_METADATA(EcheTray, TrayBackgroundView)

@@ -197,7 +197,9 @@ enum class ToastCatalogName {
   kUndoCloseAll = 34,
   kEcheAppToast = 35,
   kDeprecateAssistantStylus = 36,
-  kMaxValue = kDeprecateAssistantStylus,
+  kEcheTrayCopyPasteNotImplemented = 37,
+  kEcheTrayTabletModeNotSupported = 38,
+  kMaxValue = kEcheTrayTabletModeNotSupported,
 };
 
 }  // namespace ash

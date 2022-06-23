@@ -5037,6 +5037,15 @@ New install
       <message name="IDS_ASH_STATUS_TRAY_KEYBOARD_BACKLIGHT_ACCESSIBLE_NAME" desc="The accessible text for the brightness slider keyboard backlight icon.">
         Keyboard backlight color
       </message>
+
+      <!-- Eche feature -->
+      <message name="IDS_ASH_ECHE_TOAST_COPY_PASTE_NOT_IMPLEMENTED" desc="A toast message that we show when user tries to use ctrl+c or ctrl+v in the Eche window.">
+        Can't copy or paste content at this time
+      </message>
+      <message name="IDS_ASH_ECHE_TOAST_TABLET_MODE_NOT_SUPPORTED" desc="A toast message that we show when user tries to switch to tablet mode.">
+        Can't stream apps in tablet mode. Try again in laptop mode.
+      </message>
+
     </messages>
   </release>
 </grit>

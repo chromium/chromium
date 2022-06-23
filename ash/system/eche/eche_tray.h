@@ -146,7 +146,9 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // The `url` parameter is used to load the `WebView` inside the bubble.
   // The `icon` is used to update the tray icon for `EcheTray`.
   // The `visible_name` is shown as a tooltip for the Eche icon.
-  void LoadBubble(const GURL& url,
+  //
+  // Returns true if the bubble is loaded or initialized successfully.
+  bool LoadBubble(const GURL& url,
                   const gfx::Image& icon,
                   const std::u16string& visible_name);
 
@@ -235,6 +237,13 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
 
   // returns the position of the anchor that bubble needs to be anchored to.
   gfx::Rect GetAnchor();
+
+  // Processes the accelerator keys and returns true if the accelerator was
+  // processed completely in this method and no further processing is needed.
+  bool ProcessAcceleratorKeys(ui::KeyEvent* event);
+
+  // Returns true only if the bubble is initialized and visible.
+  bool IsBubbleVisible();
 
   // The url that is transferred to the web view.
   // In the current implementation, this is supposed to be
