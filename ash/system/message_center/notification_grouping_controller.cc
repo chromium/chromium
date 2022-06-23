@@ -389,7 +389,8 @@ void NotificationGroupingController::OnNotificationAdded(
 
   if (parent_view) {
     parent_view->AddGroupNotification(*notification);
-    message_center->ResetPopupTimer(parent_id);
+    if (message_center->FindPopupNotificationById(parent_id))
+      message_center->ResetPopupTimer(parent_id);
   } else {
     message_center->ResetSinglePopup(parent_id);
   }
