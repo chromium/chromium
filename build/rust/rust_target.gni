@@ -321,6 +321,7 @@ template("rust_target") {
                                    "configs",
                                    "output_dir",
                                    "unit_test_target",
+                                   "test_inputs",
                                  ])
 
       testonly = _testonly
@@ -393,6 +394,13 @@ template("rust_target") {
         deps = _rust_deps + _public_deps
         if (defined(invoker.test_deps)) {
           deps += invoker.test_deps
+        }
+        inputs = []
+        if (defined(invoker.inputs)) {
+          inputs += invoker.inputs
+        }
+        if (defined(invoker.test_inputs)) {
+          inputs += invoker.test_inputs
         }
         if (defined(_mutually_dependent_target)) {
           # This routes through the C++ mixed target rule to get back to the

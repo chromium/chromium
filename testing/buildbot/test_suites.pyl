@@ -4785,6 +4785,10 @@
         'swarming': {},
         'test': 'build_rust_tests',
       },
+      'gnrt_tests': {
+        'swarming': {},
+        'test': 'gnrt_tests',
+      },
       'mojo_rust_tests': {
         'swarming': {},
         'test': 'mojo_rust_tests',

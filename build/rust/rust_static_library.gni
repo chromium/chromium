@@ -121,6 +121,12 @@ import("//build/rust/rust_target.gni")
 #   crate_name (optional)
 #     Per the usual gn meaning for Rust targets.
 #
+#   inputs (optional)
+#     Additional input files needed for compilation (such as `include!`ed files)
+#
+#   test_inputs (optional)
+#     Same as above but for the unit tests target
+#
 # Example of usage:
 #
 #   rust_static_library("foo_bar") {

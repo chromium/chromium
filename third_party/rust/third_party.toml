@@ -33,6 +33,15 @@
 # their BUILD.gn file. The :lib target can be depended on from Chromium
 # production and test code. Third-party crates that are not listed in this
 # file are not visible to Chromium code.
+
+# Since autocxx-gen is used as a standalone binary, rather than as a library, we
+# can't depend on it in the usual way. Add it as a workspace member so cargo can
+# resolve its dependencies.
+[workspace]
+members = [
+    "autocxx_gen/v0_22/crate",
+]
+
 [dependencies]
 cxxbridge-cmd = "1"
 cxx = "1"

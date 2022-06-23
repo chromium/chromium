@@ -161,6 +161,7 @@
   },
   "linux-rust-x64-dbg": {
     "additional_compile_targets": [
+      "gnrt_tests",
       "mojo_rust",
       "mojo_rust_tests",
       "rust_build_tests",
@@ -246,6 +247,20 @@
         },
         "test": "build_rust_tests",
         "test_id_prefix": "ninja://build/rust/tests:build_rust_tests/"
+      },
+      {
+        "isolate_name": "gnrt_tests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "gnrt_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gnrt_tests",
+        "test_id_prefix": "ninja://tools/crates/gnrt:gnrt_tests/"
       },
       {
         "isolate_name": "mojo_rust_tests",
@@ -265,6 +280,7 @@
   },
   "linux-rust-x64-rel": {
     "additional_compile_targets": [
+      "gnrt_tests",
       "mojo_rust",
       "mojo_rust_tests",
       "rust_build_tests",
@@ -350,6 +366,20 @@
         },
         "test": "build_rust_tests",
         "test_id_prefix": "ninja://build/rust/tests:build_rust_tests/"
+      },
+      {
+        "isolate_name": "gnrt_tests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "gnrt_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gnrt_tests",
+        "test_id_prefix": "ninja://tools/crates/gnrt:gnrt_tests/"
       },
       {
         "isolate_name": "mojo_rust_tests",
@@ -369,6 +399,7 @@
   },
   "linux-rust-x64-rel-android-toolchain": {
     "additional_compile_targets": [
+      "gnrt_tests",
       "mojo_rust",
       "mojo_rust_tests",
       "rust_build_tests",
@@ -454,6 +485,20 @@
         },
         "test": "build_rust_tests",
         "test_id_prefix": "ninja://build/rust/tests:build_rust_tests/"
+      },
+      {
+        "isolate_name": "gnrt_tests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "gnrt_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gnrt_tests",
+        "test_id_prefix": "ninja://tools/crates/gnrt:gnrt_tests/"
       },
       {
         "isolate_name": "mojo_rust_tests",

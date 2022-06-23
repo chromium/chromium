@@ -20,6 +20,7 @@ import("//build/rust/rust_unit_tests_group.gni")
 #   crate_root (optional)
 #   features (optional)
 #   rustflags (optional)
+#   inputs (optional)
 #     All as in rust_static_library.
 #
 # Example of usage:
