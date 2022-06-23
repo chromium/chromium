@@ -19,6 +19,7 @@
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/converting_audio_fifo.h"
 #include "media/base/status.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -182,6 +183,8 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     } else {
       NOTREACHED();
     }
+
+    min_number_input_frames_needed_ = frames_per_buffer_;
   }
 
   void InitializeEncoder(
@@ -196,9 +199,10 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     bool called_done = false;
     AudioEncoder::EncoderStatusCB done_cb =
         base::BindLambdaForTesting([&](EncoderStatus error) {
-          if (!error.is_ok())
+          if (!error.is_ok()) {
             FAIL() << "Error code: " << EncoderStatusCodeToString(error.code())
                    << "\nError message: " << error.message();
+          }
           called_done = true;
         });
 
@@ -206,6 +210,12 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
 
     RunLoop();
     EXPECT_TRUE(called_done);
+
+    if (options_.codec == AudioCodec::kOpus) {
+      min_number_input_frames_needed_ =
+          reinterpret_cast<AudioOpusEncoder*>(encoder_.get())
+              ->fifo_->min_number_input_frames_needed_for_testing();
+    }
   }
 
   // Produces an audio data with |num_frames| frames. The produced data is sent
@@ -257,9 +267,10 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
       EncoderStatus::Codes status_code = EncoderStatus::Codes::kOk) {
     bool flush_done = false;
     auto flush_done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
-      if (error.code() != status_code)
+      if (error.code() != status_code) {
         FAIL() << "Expected " << EncoderStatusCodeToString(status_code)
                << " but got " << EncoderStatusCodeToString(error.code());
+      }
       flush_done = true;
     });
     encoder()->Flush(std::move(flush_done_cb));
@@ -327,6 +338,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
 
   base::TimeDelta buffer_duration_;
   int frames_per_buffer_;
+  int min_number_input_frames_needed_;
 
   std::unique_ptr<AudioTimestampHelper> expected_duration_helper_;
   base::TimeDelta expected_output_duration_;
@@ -653,7 +665,8 @@ TEST_P(AudioOpusEncoderTest, ExtraData) {
       });
 
   InitializeEncoder(std::move(output_cb));
-  ProduceAudioAndEncode();
+  ProduceAudioAndEncode(base::TimeTicks::Now(),
+                        min_number_input_frames_needed_);
   RunLoop();
 
   ASSERT_GT(extra.size(), 0u);
@@ -702,25 +715,22 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode) {
 
   base::TimeTicks time;
   int total_frames = 0;
-  while (total_frames < frames_per_buffer_) {
+
+  // Push data until we have a decoded output.
+  while (total_frames < min_number_input_frames_needed_) {
     total_frames += ProduceAudioAndEncode(time);
     time += buffer_duration_;
+
+    RunLoop();
   }
 
-  RunLoop();
+  EXPECT_GE(total_frames, frames_per_buffer_);
+  EXPECT_EQ(1, encode_callback_count);
 
-  // If there are remaining frames in the opus encoder FIFO, we need to flush
-  // them before we destroy the encoder. Also flush any encoders with delays.
-  bool needs_flushing = total_frames > frames_per_buffer_ || EncoderHasDelay();
-
-  if (!EncoderHasDelay())
-    EXPECT_EQ(1, encode_callback_count);
-
-  // Flushing should trigger the encode callback and we should be able to decode
-  // the resulting encoded frames.
-  if (needs_flushing) {
+  // If there is leftover data in the encoder, flush it. We can have leftover
+  // data from needing to push more than |frames_per_buffer_| to get one output.
+  if (total_frames > frames_per_buffer_) {
     FlushAndVerifyStatus();
-
     EXPECT_EQ(2, encode_callback_count);
   }
 

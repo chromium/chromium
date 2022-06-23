@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/circular_deque.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_encoder.h"
@@ -18,6 +17,7 @@
 namespace media {
 
 class ChannelMixer;
+class ConvertingAudioFifo;
 
 using OpusEncoderDeleterType = void (*)(OpusEncoder* encoder_ptr);
 using OwnedOpusEncoder = std::unique_ptr<OpusEncoder, OpusEncoderDeleterType>;
@@ -46,18 +46,15 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   static constexpr int kMinBitrate = 6000;
 
  private:
-  class InputFramesFifo;
+  friend class AudioEncodersTest;
 
-  // Called synchronously by Encode() once enough audio frames have been
+  // Called synchronously by |fifo_| once enough audio frames have been
   // buffered in |fifo_|. Calls libopus to do actual encoding.
-  void OnEnoughInputFrames();
+  void OnFifoOutput(AudioBus* audio_bus);
 
   CodecDescription PrepareExtraData();
 
   EncoderStatus::Or<OwnedOpusEncoder> CreateOpusEncoder();
-
-  std::unique_ptr<AudioBus> EnsureExpectedChannelCount(
-      std::unique_ptr<AudioBus> audio_bus);
 
   AudioParameters input_params_;
 
@@ -66,25 +63,12 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // (See CreateOpusInputParams() in the .cc file for details).
   AudioParameters converted_params_;
 
-  // Minimal amount of frames needed to satisfy one convert call.
-  int min_input_frames_needed_;
-
-  // Sample rate adapter from the input audio to what OpusEncoder desires.
-  // Note: Must outlive |fifo_|.
-  std::unique_ptr<AudioConverter> converter_;
-
-  // Fifo for holding the original input audio before it goes to the
-  // converter.
-  // Note: Must be destroyed before |converter_|.
-  std::unique_ptr<InputFramesFifo> fifo_;
+  std::unique_ptr<ConvertingAudioFifo> fifo_;
 
   // Used to mix incoming Encode() buffers to match the expect input channel
   // count.
   std::unique_ptr<ChannelMixer> mixer_;
   AudioParameters mixer_input_params_;
-
-  // This is the destination AudioBus where the |converter_| teh audio into.
-  std::unique_ptr<AudioBus> converted_audio_bus_;
 
   // Buffer for passing AudioBus data from the converter to the encoder.
   std::vector<float> buffer_;
