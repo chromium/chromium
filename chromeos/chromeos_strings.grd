@@ -3444,6 +3444,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_PAGE_TITLE_AFTER_SENT" desc="Label showing a thank you message as the title of the confirmation page after a report has been sent.">
         Thanks for your feedback
       </message>
+      <message name="IDS_FEEDBACK_TOOL_THANK_YOU_NOTE_OFFLINE" desc="Thank you note when feedback tool is offline">
+        Thanks for the feedback. Your feedback helps improve Chrome OS and will be reviewed by the Chrome OS team. Because of the number of reports submitted, you won’t receive a direct reply.
+      </message>
       <message name="IDS_FEEDBACK_TOOL_RESOURCES_EXPLORE_APP_DESCRIPTION" desc="Description of the explore app that links to some resourses like help articals and new features of Chromebook.">
         Find help articles and answers to common Chromebook questions
       </message>

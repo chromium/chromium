@@ -26,7 +26,7 @@ const ONLINE_MESSAGE =
 const OFFLINE_MESSAGE =
     'Thanks for the feedback. Your feedback helps improve Chrome OS ' +
     'and will be reviewed by the Chrome OS team. Because of the number ' +
-    ' of reports submitted, you won’t receive a direct reply.';
+    'of reports submitted, you won’t receive a direct reply.';
 
 export function confirmationPageTest() {
   /** @type {?ConfirmationPageElement} */
@@ -87,6 +87,7 @@ export function confirmationPageTest() {
       assertEquals(ONLINE_MESSAGE, getElementContent(page, '#message'));
     } else {
       assertEquals(OFFLINE_TITLE, getElementContent(page, '.page-title'));
+      assertTrue(page.i18nExists('thankYouNoteOffline'));
       assertEquals(OFFLINE_MESSAGE, getElementContent(page, '#message'));
     }
 
