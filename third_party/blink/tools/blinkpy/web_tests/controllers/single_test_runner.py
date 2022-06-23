@@ -478,11 +478,13 @@ class SingleTestRunner(object):
         """Returns (testharness_completed, testharness_failures)."""
         if not driver_output.text:
             return False, []
-        if expected_driver_output.text:
-            # Will compare text if there is expected text.
-            return False, []
         if not testharness_results.is_testharness_output(
                 self._convert_to_str(driver_output.text)):
+            return False, []
+        if self._options.ignore_testharness_expected_txt:
+            expected_driver_output.text = b''
+        elif expected_driver_output.text:
+            # Will compare text if there is expected text.
             return False, []
         if not testharness_results.is_testharness_output_passing(
                 self._convert_to_str(driver_output.text)):

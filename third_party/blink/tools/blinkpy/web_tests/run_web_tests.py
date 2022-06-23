@@ -633,6 +633,12 @@ def parse_args(args):
                 help=(
                     'The Buildbucket ID of the bot running the test. This is '
                     'only used for an experimental Skia Gold dryrun.')),
+            optparse.make_option(
+                '--ignore-testharness-expected-txt',
+                action='store_true',
+                help=('Ignore *-expected.txt for all testharness tests. All '
+                      'testharness test failures will be shown, even if the '
+                      'failures are expected in *-expected.txt.')),
         ]))
 
     # FIXME: Move these into json_results_generator.py.
