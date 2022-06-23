@@ -2266,7 +2266,6 @@ test("content_unittests") {
     "../browser/payments/payment_manager_unittest.cc",
     "../browser/permissions/permission_controller_impl_unittest.cc",
     "../browser/picture_in_picture/picture_in_picture_service_impl_unittest.cc",
-    "../browser/plugin_list_unittest.cc",
     "../browser/prerender/prerender_host_registry_unittest.cc",
     "../browser/prerender/prerender_host_unittest.cc",
     "../browser/presentation/presentation_service_impl_unittest.cc",
@@ -2983,8 +2982,8 @@ test("content_unittests") {
     deps += [ "//ui/events:test_support" ]
   }
 
-  if (!is_win && !is_mac) {
-    sources -= [ "../browser/plugin_list_unittest.cc" ]
+  if (enable_plugins && (is_win || is_mac)) {
+    sources += [ "../browser/plugin_list_unittest.cc" ]
   }
 
   if (use_ozone) {

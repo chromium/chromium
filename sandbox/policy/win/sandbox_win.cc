@@ -40,6 +40,7 @@
 #include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/features.h"
 #include "sandbox/policy/features.h"
@@ -1245,8 +1246,10 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
       return "Utility";
     case Sandbox::kGpu:
       return "GPU";
+#if BUILDFLAG(ENABLE_PLUGINS)
     case Sandbox::kPpapi:
       return "PPAPI";
+#endif
     case Sandbox::kNetwork:
       return "Network";
     case Sandbox::kCdm:
