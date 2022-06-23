@@ -1276,6 +1276,11 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'mixins': [
+           # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
+          'skia_gold_test',
+        ],
         'resultdb': {
           'enable': True,
         },
@@ -1349,6 +1354,8 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'skia_gold_test',
         ],
         'resultdb': {
@@ -1404,6 +1411,8 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'skia_gold_test',
         ],
         'resultdb': {
@@ -1652,6 +1661,8 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'skia_gold_test',
         ],
         'resultdb': {
@@ -1770,6 +1781,8 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'skia_gold_test',
         ],
         'resultdb': {
@@ -4380,6 +4393,8 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'skia_gold_test',
         ],
         'resultdb': {

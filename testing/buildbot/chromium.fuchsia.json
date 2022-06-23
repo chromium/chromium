@@ -2501,6 +2501,7 @@
           "--platform=fuchsia",
           "--jobs=1"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [

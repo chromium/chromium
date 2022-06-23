@@ -3596,6 +3596,7 @@
           "--git-revision=${got_revision}",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -3805,6 +3806,7 @@
           "--num-retries=3",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -3902,6 +3904,7 @@
           "--num-retries=3",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -7566,6 +7569,7 @@
           "--git-revision=${got_revision}",
           "--debug"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
@@ -7666,6 +7670,7 @@
           "--num-retries=3",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
@@ -7941,8 +7946,7 @@
         "args": [
           "--num-retries=3",
           "--git-revision=${got_revision}",
-          "--flag-specific=enable-back-forward-cache-same-site",
-          "--ignore-tests=external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html"
+          "--flag-specific=enable-back-forward-cache-same-site"
         ],
         "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
@@ -7981,6 +7985,7 @@
           "--flag-specific=enable-back-forward-cache-same-site",
           "--ignore-tests=external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [

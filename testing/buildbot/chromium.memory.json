@@ -12494,6 +12494,7 @@
           "48000",
           "--enable-sanitizer"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
@@ -12580,6 +12581,7 @@
           "48000",
           "--enable-leak-detection"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
@@ -12666,6 +12668,7 @@
           "66000",
           "--enable-sanitizer"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [

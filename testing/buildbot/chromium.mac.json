@@ -1518,6 +1518,7 @@
           "--num-retries=3",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
@@ -3309,6 +3310,7 @@
           "--num-retries=3",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
@@ -5108,6 +5110,7 @@
           "--num-retries=3",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
@@ -6985,6 +6988,7 @@
           "--num-retries=3",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -8822,6 +8826,7 @@
           "--git-revision=${got_revision}",
           "--debug"
         ],
+        "check_flakiness_for_new_tests": false,
         "experiment_percentage": 100,
         "isolate_name": "blink_wpt_tests",
         "merge": {
@@ -21092,6 +21097,7 @@
           "--num-retries=3",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "blink_wpt_tests",
         "merge": {
@@ -22917,6 +22923,7 @@
           "--num-retries=3",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "blink_wpt_tests",
         "merge": {

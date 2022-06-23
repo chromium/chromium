@@ -438,8 +438,6 @@
       'linux-bfcache-rel': {
         'args': [
           '--flag-specific=enable-back-forward-cache-same-site',
-          # TODO(crbug.com/1255537): Re-enable the test.
-          '--ignore-tests=external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html',
         ],
       },
       'linux-blink-animation-use-time-delta': {
@@ -516,6 +514,8 @@
       'Win 7 Tests x64 (1)',  # 64-bit win is unsupported by the layout tests.
       'Win7 Tests (1)',
       'Win10 Tests x64 (dbg)',
+      'devtools_frontend_linux_blink_light_rel',
+      'devtools_frontend_linux_blink_light_rel_fastbuild',
     ],
     'modifications': {
       'Fuchsia x64': {
@@ -684,22 +684,6 @@
           # software fallback, SwiftShader, isn't yet for 32-bit ARM.
           '--additional-driver-flag=--use-gpu-in-tests',
         ],
-      },
-      'devtools_frontend_linux_blink_light_rel': {
-        'args': [
-          'http/tests/devtools',
-        ],
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'devtools_frontend_linux_blink_light_rel_fastbuild': {
-        'args': [
-          'http/tests/devtools',
-        ],
-        'swarming': {
-          'shards': 3,
-        },
       },
       'fuchsia-fyi-x64-rel': {
         'args': [
