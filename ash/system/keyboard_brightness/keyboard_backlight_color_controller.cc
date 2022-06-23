@@ -94,12 +94,8 @@ KeyboardBacklightColorController::GetBacklightColor() {
           prefs::kPersonalizationKeyboardBacklightColor));
 }
 
-void KeyboardBacklightColorController::OnActiveUserSessionChanged(
-    const AccountId& account_id) {
-  auto* session_controller = Shell::Get()->session_controller();
-  DCHECK(session_controller);
-  PrefService* pref_service =
-      session_controller->GetUserPrefServiceForUser(account_id);
+void KeyboardBacklightColorController::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
   DCHECK(pref_service);
   auto backlight_color =
       static_cast<personalization_app::mojom::BacklightColor>(

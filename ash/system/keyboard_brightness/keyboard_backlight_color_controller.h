@@ -42,7 +42,7 @@ class ASH_EXPORT KeyboardBacklightColorController
   personalization_app::mojom::BacklightColor GetBacklightColor();
 
   // SessionObserver:
-  void OnActiveUserSessionChanged(const AccountId& account_id) override;
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // WallpaperControllerObserver:
   void OnWallpaperColorsChanged() override;
