@@ -283,7 +283,9 @@ class FfxRunner():
       An FfxTarget for interacting with the target.
     """
     target_id = format_host_port(address, port)
-    self.run_ffx(['target', 'add', target_id])
+    # -n allows `target add` to skip waiting for the device to come up,
+    # as this can take longer than the default wait period.
+    self.run_ffx(['target', 'add', '-n', target_id])
     try:
       yield FfxTarget.from_address(self, address, port)
     finally:
