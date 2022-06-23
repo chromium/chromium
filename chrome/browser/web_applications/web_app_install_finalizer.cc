@@ -268,10 +268,12 @@ void WebAppInstallFinalizer::UninstallWebApp(
   if (app->IsPreinstalledApp()) {
     // Update the default uninstalled web_app prefs if it is a preinstalled app
     // but being removed by user.
+    const WebApp::ExternalConfigMap& config_map =
+        app->management_to_external_config_map();
+    auto it = config_map.find(WebAppManagement::kDefault);
+    DCHECK(it != config_map.end());
     UserUninstalledPreinstalledWebAppPrefs(profile_->GetPrefs())
-        .Add(app_id, app->management_to_external_config_map()
-                         .at(WebAppManagement::kDefault)
-                         .install_urls);
+        .Add(app_id, it->second.install_urls);
   }
 
   // UninstallWebApp can wipe out an app with multiple sources. This

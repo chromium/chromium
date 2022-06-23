@@ -85,13 +85,14 @@ bool WebAppRegistrar::IsPlaceholderApp(
   if (!web_app)
     return false;
 
-  if (!base::Contains(web_app->management_to_external_config_map(),
-                      source_type)) {
+  const WebApp::ExternalConfigMap& config_map =
+      web_app->management_to_external_config_map();
+  auto it = config_map.find(source_type);
+
+  if (it == config_map.end()) {
     return false;
   }
-
-  return web_app->management_to_external_config_map()[source_type]
-      .is_placeholder;
+  return it->second.is_placeholder;
 }
 
 absl::optional<AppId> WebAppRegistrar::LookupPlaceholderAppId(
@@ -216,14 +217,12 @@ WebAppRegistrar::GetExternallyInstalledApps(
   WebAppManagement::Type management_source =
       ConvertExternalInstallSourceToSource(install_source);
   for (const WebApp& web_app : GetApps()) {
-    if (base::Contains(web_app.management_to_external_config_map(),
-                       management_source)) {
-      installed_apps[web_app.app_id()] =
-          web_app.management_to_external_config_map()[management_source]
-              .install_urls;
-    }
+    const WebApp::ExternalConfigMap& config_map =
+        web_app.management_to_external_config_map();
+    auto it = config_map.find(management_source);
+    if (it != config_map.end())
+      installed_apps[web_app.app_id()] = it->second.install_urls;
   }
-
   return installed_apps;
 }
 

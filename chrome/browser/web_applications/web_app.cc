@@ -393,8 +393,7 @@ void WebApp::SetDataSizeInBytes(absl::optional<int64_t> data_size_in_bytes) {
 }
 
 void WebApp::SetWebAppManagementExternalConfigMap(
-    base::flat_map<WebAppManagement::Type, ExternalManagementConfig>
-        management_to_external_config_map) {
+    ExternalConfigMap management_to_external_config_map) {
   management_to_external_config_map_ =
       std::move(management_to_external_config_map);
 }

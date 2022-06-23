@@ -550,8 +550,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
-  base::flat_map<WebAppManagement::Type, WebApp::ExternalManagementConfig>
-      management_to_external_config;
+  WebApp::ExternalConfigMap management_to_external_config;
   for (WebAppManagement::Type type : management_types) {
     if (type == WebAppManagement::kSync)
       continue;

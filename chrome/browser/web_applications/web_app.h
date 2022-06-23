@@ -289,8 +289,10 @@ class WebApp {
     base::flat_set<GURL> install_urls;
   };
 
-  base::flat_map<WebAppManagement::Type, ExternalManagementConfig>
-  management_to_external_config_map() const {
+  using ExternalConfigMap =
+      base::flat_map<WebAppManagement::Type, ExternalManagementConfig>;
+
+  const ExternalConfigMap& management_to_external_config_map() const {
     return management_to_external_config_map_;
   }
 
@@ -377,8 +379,7 @@ class WebApp {
   void SetAppSizeInBytes(absl::optional<int64_t> app_size_in_bytes);
   void SetDataSizeInBytes(absl::optional<int64_t> data_size_in_bytes);
   void SetWebAppManagementExternalConfigMap(
-      base::flat_map<WebAppManagement::Type, ExternalManagementConfig>
-          management_to_external_config_map);
+      ExternalConfigMap management_to_external_config_map);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
       WebAppManagement::Type source_type,
@@ -490,8 +491,7 @@ class WebApp {
 
   // Maps WebAppManagement::Type to config values for externally installed apps,
   // like is_placeholder and install URLs.
-  base::flat_map<WebAppManagement::Type, ExternalManagementConfig>
-      management_to_external_config_map_;
+  ExternalConfigMap management_to_external_config_map_;
 
   // New fields must be added to:
   //  - |operator==|

@@ -37,9 +37,7 @@ constexpr char kWasExternalAppUninstalledByUser[] =
 class ExternallyInstalledWebAppPrefs {
  public:
   // Used in the migration to the web_app DB.
-  using ParsedPrefs = base::flat_map<
-      AppId,
-      base::flat_map<WebAppManagement::Type, WebApp::ExternalManagementConfig>>;
+  using ParsedPrefs = base::flat_map<AppId, WebApp::ExternalConfigMap>;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -103,9 +101,7 @@ class ExternallyInstalledWebAppPrefs {
       const ParsedPrefs& parsed_data);
 
   static base::flat_set<GURL> MergeAllUrls(
-      const base::flat_map<WebAppManagement::Type,
-                           WebApp::ExternalManagementConfig>&
-          source_config_map);
+      const WebApp::ExternalConfigMap& source_config_map);
 
   static void LogDataMetrics(bool data_exists_in_pref,
                              bool data_exists_in_registrar);

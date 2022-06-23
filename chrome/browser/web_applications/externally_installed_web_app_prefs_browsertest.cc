@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/externally_installed_prefs_migration_metrics.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -341,12 +342,12 @@ IN_PROC_BROWSER_TEST_P(
   // Verify install source, placeholder info and urls have been migrated.
   EXPECT_TRUE(provider().registrar().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
-  EXPECT_EQ(1u, installed_app->management_to_external_config_map().size());
-  EXPECT_TRUE(base::Contains(
-      installed_app
-          ->management_to_external_config_map()[WebAppManagement::kPolicy]
-          .install_urls,
-      install_url));
+  const WebApp::ExternalConfigMap& config_map =
+      installed_app->management_to_external_config_map();
+  EXPECT_EQ(1u, config_map.size());
+  auto it = config_map.find(WebAppManagement::kPolicy);
+  EXPECT_NE(it, config_map.end());
+  EXPECT_TRUE(base::Contains(it->second.install_urls, install_url));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,

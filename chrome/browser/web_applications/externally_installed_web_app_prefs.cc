@@ -299,10 +299,12 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
         if (!web_app->GetSources().test(source))
           continue;
 
-        auto config_map = web_app->management_to_external_config_map();
+        const WebApp::ExternalConfigMap& config_map =
+            web_app->management_to_external_config_map();
+        auto map_it = config_map.find(source);
         // Placeholder migration and metrics logging.
-        if (base::Contains(config_map, source) &&
-            config_map[source].is_placeholder ==
+        if (map_it != config_map.end() &&
+            map_it->second.is_placeholder ==
                 parsed_info.second.is_placeholder) {
           LogPlaceholderMigrationState(
               PlaceholderMigrationState::kPlaceholderInfoAlreadyInSync);
@@ -317,8 +319,8 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
         // Install URL migration and metrics logging.
         for (auto url : parsed_info.second.install_urls) {
           DCHECK(url.is_valid());
-          if (base::Contains(config_map, source) &&
-              base::Contains(config_map[source].install_urls, url)) {
+          if (map_it != config_map.end() &&
+              base::Contains(map_it->second.install_urls, url)) {
             LogInstallURLMigrationState(
                 InstallURLMigrationState::kInstallURLAlreadyInSync);
           } else {
@@ -342,7 +344,7 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefDataToPreinstalledPrefs(
   UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(pref_service);
   for (auto pair : parsed_data) {
     const AppId& app_id = pair.first;
-    const auto& source_to_config_map = pair.second;
+    const WebApp::ExternalConfigMap& source_to_config_map = pair.second;
     const auto& it = source_to_config_map.find(WebAppManagement::kDefault);
     // Migration will happen in the following cases:
     // 1. If app_id exists in the external prefs that had source as
@@ -389,8 +391,7 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefDataToPreinstalledPrefs(
 
 // static
 base::flat_set<GURL> ExternallyInstalledWebAppPrefs::MergeAllUrls(
-    const base::flat_map<WebAppManagement::Type,
-                         WebApp::ExternalManagementConfig>& source_config_map) {
+    const WebApp::ExternalConfigMap& source_config_map) {
   std::vector<GURL> urls;
   for (auto it : source_config_map) {
     for (const GURL& url : it.second.install_urls) {

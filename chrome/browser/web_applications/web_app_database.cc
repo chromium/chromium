@@ -1237,8 +1237,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetPermissionsPolicy(policy);
   }
 
-  base::flat_map<WebAppManagement::Type, WebApp::ExternalManagementConfig>
-      management_to_external_config;
+  WebApp::ExternalConfigMap management_to_external_config;
   for (const auto& management_proto :
        local_data.management_to_external_config_info()) {
     WebApp::ExternalManagementConfig config;
