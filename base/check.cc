@@ -22,37 +22,37 @@ namespace logging {
 CheckError CheckError::Check(const char* file,
                              int line,
                              const char* condition) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_FATAL));
-  check_error.stream() << "Check failed: " << condition << ". ";
-  return check_error;
+  auto* const log_message = new LogMessage(file, line, LOGGING_FATAL);
+  log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
 }
 
 CheckError CheckError::CheckOp(const char* file,
                                int line,
                                CheckOpResult* check_op_result) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_FATAL));
-  check_error.stream() << "Check failed: " << check_op_result->message_;
+  auto* const log_message = new LogMessage(file, line, LOGGING_FATAL);
+  log_message->stream() << "Check failed: " << check_op_result->message_;
   free(check_op_result->message_);
   check_op_result->message_ = nullptr;
-  return check_error;
+  return CheckError(log_message);
 }
 
 CheckError CheckError::DCheck(const char* file,
                               int line,
                               const char* condition) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_DCHECK));
-  check_error.stream() << "Check failed: " << condition << ". ";
-  return check_error;
+  auto* const log_message = new LogMessage(file, line, LOGGING_DCHECK);
+  log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
 }
 
 CheckError CheckError::DCheckOp(const char* file,
                                 int line,
                                 CheckOpResult* check_op_result) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_DCHECK));
-  check_error.stream() << "Check failed: " << check_op_result->message_;
+  auto* const log_message = new LogMessage(file, line, LOGGING_DCHECK);
+  log_message->stream() << "Check failed: " << check_op_result->message_;
   free(check_op_result->message_);
   check_op_result->message_ = nullptr;
-  return check_error;
+  return CheckError(log_message);
 }
 
 CheckError CheckError::PCheck(const char* file,
@@ -60,14 +60,14 @@ CheckError CheckError::PCheck(const char* file,
                               const char* condition) {
   SystemErrorCode err_code = logging::GetLastSystemErrorCode();
 #if BUILDFLAG(IS_WIN)
-  CheckError check_error(
-      new Win32ErrorLogMessage(file, line, LOGGING_FATAL, err_code));
+  auto* const log_message =
+      new Win32ErrorLogMessage(file, line, LOGGING_FATAL, err_code);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  CheckError check_error(
-      new ErrnoLogMessage(file, line, LOGGING_FATAL, err_code));
+  auto* const log_message =
+      new ErrnoLogMessage(file, line, LOGGING_FATAL, err_code);
 #endif
-  check_error.stream() << "Check failed: " << condition << ". ";
-  return check_error;
+  log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
 }
 
 CheckError CheckError::PCheck(const char* file, int line) {
@@ -79,22 +79,22 @@ CheckError CheckError::DPCheck(const char* file,
                                const char* condition) {
   SystemErrorCode err_code = logging::GetLastSystemErrorCode();
 #if BUILDFLAG(IS_WIN)
-  CheckError check_error(
-      new Win32ErrorLogMessage(file, line, LOGGING_DCHECK, err_code));
+  auto* const log_message =
+      new Win32ErrorLogMessage(file, line, LOGGING_DCHECK, err_code);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  CheckError check_error(
-      new ErrnoLogMessage(file, line, LOGGING_DCHECK, err_code));
+  auto* const log_message =
+      new ErrnoLogMessage(file, line, LOGGING_DCHECK, err_code);
 #endif
-  check_error.stream() << "Check failed: " << condition << ". ";
-  return check_error;
+  log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
 }
 
 CheckError CheckError::NotImplemented(const char* file,
                                       int line,
                                       const char* function) {
-  CheckError check_error(new LogMessage(file, line, LOGGING_ERROR));
-  check_error.stream() << "Not implemented reached in " << function;
-  return check_error;
+  auto* const log_message = new LogMessage(file, line, LOGGING_ERROR);
+  log_message->stream() << "Not implemented reached in " << function;
+  return CheckError(log_message);
 }
 
 std::ostream& CheckError::stream() {
