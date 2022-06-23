@@ -19,7 +19,7 @@ def CommonChecks(input_api, output_api):
       input_api.canned_checks.RunPylint(input_api,
                                         output_api,
                                         files_to_skip=files_to_skip,
-                                        version='1.5'))
+                                        version='2.7'))
   # These tests don't run on Windows and give verbose and cryptic failure
   # messages.
   if input_api.sys.platform != 'win32':
