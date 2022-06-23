@@ -111,8 +111,10 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
   // Generate the new key pair.
   absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
       credential = credential_store_->CreateCredential(
-          request_.rp.id, request_.user, request_.resident_key_required,
-          touch_id_context_->access_control());
+          request_.rp.id, request_.user,
+          request_.resident_key_required
+              ? TouchIdCredentialStore::kDiscoverable
+              : TouchIdCredentialStore::kNonDiscoverable);
   if (!credential) {
     FIDO_LOG(ERROR) << "CreateCredential() failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,

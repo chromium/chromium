@@ -8149,11 +8149,11 @@ TEST_F(InternalAuthenticatorImplTest, GetAssertionOriginAndRpIds) {
 
 #if BUILDFLAG(IS_MAC)
 class TouchIdAuthenticatorImplTest : public AuthenticatorImplTest {
- public:
+ protected:
   void SetUp() override {
     AuthenticatorImplTest::SetUp();
     test_client_.GetTestWebAuthenticationDelegate()
-        ->touch_id_authenticator_config.emplace();
+        ->touch_id_authenticator_config = config_;
     old_client_ = SetBrowserClientForTesting(&test_client_);
   }
 
@@ -8162,9 +8162,13 @@ class TouchIdAuthenticatorImplTest : public AuthenticatorImplTest {
     AuthenticatorImplTest::TearDown();
   }
 
- private:
   TestAuthenticatorContentBrowserClient test_client_;
   ContentBrowserClient* old_client_ = nullptr;
+  device::fido::mac::AuthenticatorConfig config_{
+      .keychain_access_group = "test-keychain-access-group",
+      .metadata_secret = "TestMetadataSecret"};
+  device::fido::mac::ScopedTouchIdTestEnvironment touch_id_test_environment_{
+      config_};
 };
 
 TEST_F(TouchIdAuthenticatorImplTest, IsUVPAA) {
@@ -8174,8 +8178,7 @@ TEST_F(TouchIdAuthenticatorImplTest, IsUVPAA) {
   for (const bool touch_id_available : {false, true}) {
     SCOPED_TRACE(::testing::Message()
                  << "touch_id_available=" << touch_id_available);
-    device::fido::mac::ScopedTouchIdTestEnvironment touch_id_test_environment;
-    touch_id_test_environment.SetTouchIdAvailable(touch_id_available);
+    touch_id_test_environment_.SetTouchIdAvailable(touch_id_available);
     TestIsUvpaaCallback cb;
     authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
     cb.WaitForCallback();

@@ -6,8 +6,6 @@
 
 #include <algorithm>
 
-#import <LocalAuthentication/LocalAuthentication.h>
-
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"

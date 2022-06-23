@@ -195,6 +195,7 @@ test("device_unittests") {
     sources += [
       "fido/mac/browsing_data_deletion_unittest.mm",
       "fido/mac/credential_metadata_unittest.cc",
+      "fido/mac/credential_store_unittest.mm",
       "fido/mac/get_assertion_operation_unittest_mac.mm",
       "fido/mac/make_credential_operation_unittest_mac.mm",
       "fido/mac/util_unittest.cc",
@@ -321,6 +322,8 @@ test("device_unittests") {
       "CoreBluetooth.framework",
       "IOBluetooth.framework",
       "IOKit.framework",
+      "Foundation.framework",
+      "Security.framework",
     ]
   }
 

@@ -29,16 +29,6 @@ namespace mac {
 
 namespace {
 
-base::ScopedCFTypeRef<SecAccessControlRef> DefaultAccessControl() {
-  // The default access control policy used for WebAuthn credentials stored by
-  // the Touch ID platform authenticator.
-  return base::ScopedCFTypeRef<SecAccessControlRef>(
-      SecAccessControlCreateWithFlags(
-          kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-          kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence,
-          nullptr));
-}
-
 // Returns whether the main executable is signed with a keychain-access-groups
 // entitlement that contains |keychain_access_group|. This is required for the
 // TouchIdAuthenticator to access key material stored in the Touch ID secure
@@ -153,11 +143,7 @@ void TouchIdContext::TouchIdAvailable(
       std::move(callback));
 }
 
-TouchIdContext::TouchIdContext()
-    : context_([[LAContext alloc] init]),
-      access_control_(DefaultAccessControl()),
-      callback_(),
-      weak_ptr_factory_(this) {}
+TouchIdContext::TouchIdContext() : context_([[LAContext alloc] init]) {}
 
 TouchIdContext::~TouchIdContext() {
   // Invalidating the LAContext will dismiss any pending UI dialog (e.g. if the

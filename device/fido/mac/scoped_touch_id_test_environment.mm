@@ -20,8 +20,11 @@ namespace mac {
 
 static ScopedTouchIdTestEnvironment* g_current_environment = nullptr;
 
-ScopedTouchIdTestEnvironment::ScopedTouchIdTestEnvironment()
-    : keychain_(std::make_unique<FakeKeychain>()) {
+ScopedTouchIdTestEnvironment::ScopedTouchIdTestEnvironment(
+    AuthenticatorConfig config)
+    : config_(std::move(config)),
+      keychain_(
+          std::make_unique<ScopedFakeKeychain>(config_.keychain_access_group)) {
   DCHECK(!g_current_environment);
   g_current_environment = this;
 
@@ -32,8 +35,6 @@ ScopedTouchIdTestEnvironment::ScopedTouchIdTestEnvironment()
   touch_id_context_touch_id_available_ptr_ =
       TouchIdContext::g_touch_id_available_;
   TouchIdContext::g_touch_id_available_ = &ForwardTouchIdAvailable;
-
-  Keychain::SetInstanceOverride(static_cast<Keychain*>(keychain_.get()));
 }
 
 ScopedTouchIdTestEnvironment::~ScopedTouchIdTestEnvironment() {
@@ -43,8 +44,6 @@ ScopedTouchIdTestEnvironment::~ScopedTouchIdTestEnvironment() {
   DCHECK(touch_id_context_touch_id_available_ptr_);
   TouchIdContext::g_touch_id_available_ =
       touch_id_context_touch_id_available_ptr_;
-
-  Keychain::ClearInstanceOverride();
   g_current_environment = nullptr;
 }
 

@@ -10,14 +10,14 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "device/fido/mac/authenticator_config.h"
 
 namespace device {
 namespace fido {
 namespace mac {
 
-struct AuthenticatorConfig;
-class FakeKeychain;
 class FakeTouchIdContext;
+class ScopedFakeKeychain;
 class TouchIdContext;
 
 // ScopedTouchIdTestEnvironment overrides behavior of the Touch ID
@@ -29,7 +29,7 @@ class TouchIdContext;
 //  Overrides are reset when the instance is destroyed.
 class COMPONENT_EXPORT(DEVICE_FIDO) ScopedTouchIdTestEnvironment {
  public:
-  ScopedTouchIdTestEnvironment();
+  explicit ScopedTouchIdTestEnvironment(AuthenticatorConfig config);
 
   ScopedTouchIdTestEnvironment(const ScopedTouchIdTestEnvironment&) = delete;
   ScopedTouchIdTestEnvironment& operator=(const ScopedTouchIdTestEnvironment&) =
@@ -61,8 +61,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedTouchIdTestEnvironment {
   using TouchIdAvailableFuncPtr = decltype(&ForwardTouchIdAvailable);
   TouchIdAvailableFuncPtr touch_id_context_touch_id_available_ptr_;
 
+  AuthenticatorConfig config_;
+  std::unique_ptr<ScopedFakeKeychain> keychain_;
   std::unique_ptr<FakeTouchIdContext> next_touch_id_context_;
-  std::unique_ptr<FakeKeychain> keychain_;
   bool touch_id_available_ = true;
 };
 

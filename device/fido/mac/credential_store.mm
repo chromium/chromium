@@ -5,6 +5,7 @@
 #include "device/fido/mac/credential_store.h"
 
 #import <Foundation/Foundation.h>
+#import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
 
 #include "base/containers/contains.h"
@@ -18,11 +19,10 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/mac/keychain.h"
+#include "device/fido/mac/touch_id_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 
 namespace {
 
@@ -154,50 +154,83 @@ Credential::Credential(base::ScopedCFTypeRef<SecKeyRef> private_key_,
                        std::vector<uint8_t> credential_id_)
     : private_key(std::move(private_key_)),
       credential_id(std::move(credential_id_)) {}
-Credential::~Credential() = default;
+
+Credential::Credential(const Credential& other) = default;
+
 Credential::Credential(Credential&& other) = default;
+
+Credential& Credential::operator=(const Credential& other) = default;
+
 Credential& Credential::operator=(Credential&& other) = default;
+
+Credential::~Credential() = default;
+
+bool Credential::operator==(const Credential& other) const {
+  return CFEqual(private_key, other.private_key) &&
+         credential_id == other.credential_id;
+}
 
 TouchIdCredentialStore::TouchIdCredentialStore(AuthenticatorConfig config)
     : config_(std::move(config)) {}
 TouchIdCredentialStore::~TouchIdCredentialStore() = default;
 
+base::ScopedCFTypeRef<SecAccessControlRef>
+TouchIdCredentialStore::DefaultAccessControl() {
+  return base::ScopedCFTypeRef<SecAccessControlRef>(
+      SecAccessControlCreateWithFlags(
+          kCFAllocatorDefault,
+          // Credential can only be used when the device is unlocked.
+          kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+          // Private key is available for signing after user authorization with
+          // biometrics or password.
+          kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence,
+          nullptr));
+}
+
 absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
 TouchIdCredentialStore::CreateCredential(
     const std::string& rp_id,
     const PublicKeyCredentialUserEntity& user,
-    bool is_resident,
-    SecAccessControlRef access_control) const {
-  std::vector<uint8_t> credential_id = SealCredentialId(
-      config_.metadata_secret, rp_id,
-      CredentialMetadata::FromPublicKeyCredentialUserEntity(user, is_resident));
+    Discoverable discoverable) const {
+  std::vector<uint8_t> credential_id =
+      SealCredentialId(config_.metadata_secret, rp_id,
+                       CredentialMetadata::FromPublicKeyCredentialUserEntity(
+                           user, discoverable == kDiscoverable));
 
   base::ScopedCFTypeRef<CFMutableDictionaryRef> params(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
+  CFDictionarySetValue(params, kSecAttrAccessGroup,
+                       base::SysUTF8ToNSString(config_.keychain_access_group));
   CFDictionarySetValue(params, kSecAttrKeyType,
                        kSecAttrKeyTypeECSECPrimeRandom);
   CFDictionarySetValue(params, kSecAttrKeySizeInBits, @256);
   CFDictionarySetValue(params, kSecAttrSynchronizable, @NO);
   CFDictionarySetValue(params, kSecAttrTokenID, kSecAttrTokenIDSecureEnclave);
 
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params =
-      DefaultKeychainQuery(config_, rp_id);
+  CFDictionarySetValue(
+      params, kSecAttrLabel,
+      base::SysUTF8ToNSString(EncodeRpId(config_.metadata_secret, rp_id)));
+  CFDictionarySetValue(params, kSecAttrApplicationTag,
+                       base::SysUTF8ToNSString(EncodeRpIdAndUserId(
+                           config_.metadata_secret, rp_id, user.id)));
+  CFDictionarySetValue(params, kSecAttrApplicationLabel,
+                       [NSData dataWithBytes:credential_id.data()
+                                      length:credential_id.size()]);
+
+  base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(params, kSecPrivateKeyAttrs, private_key_params);
   CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, @YES);
   CFDictionarySetValue(private_key_params, kSecAttrAccessControl,
-                       access_control);
+                       DefaultAccessControl());
   if (authentication_context_) {
     CFDictionarySetValue(private_key_params, kSecUseAuthenticationContext,
                          authentication_context_);
   }
-  CFDictionarySetValue(private_key_params, kSecAttrApplicationTag,
-                       base::SysUTF8ToNSString(EncodeRpIdAndUserId(
-                           config_.metadata_secret, rp_id, user.id)));
-  CFDictionarySetValue(private_key_params, kSecAttrApplicationLabel,
-                       [NSData dataWithBytes:credential_id.data()
-                                      length:credential_id.size()]);
 
   base::ScopedCFTypeRef<CFErrorRef> cferr;
   base::ScopedCFTypeRef<SecKeyRef> private_key(
@@ -417,6 +450,4 @@ TouchIdCredentialStore::FindCredentialsImpl(
   return std::move(credentials);
 }
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac

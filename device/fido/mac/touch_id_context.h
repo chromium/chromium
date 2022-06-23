@@ -15,6 +15,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/weak_ptr.h"
+#include "device/fido/mac/credential_store.h"
 
 namespace device {
 namespace fido {
@@ -83,9 +84,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdContext {
   void RunCallback(bool success);
 
   base::scoped_nsobject<LAContext> context_;
-  base::ScopedCFTypeRef<SecAccessControlRef> access_control_;
+  base::ScopedCFTypeRef<SecAccessControlRef> access_control_{
+      TouchIdCredentialStore::DefaultAccessControl()};
   Callback callback_;
-  base::WeakPtrFactory<TouchIdContext> weak_ptr_factory_;
+  base::WeakPtrFactory<TouchIdContext> weak_ptr_factory_{this};
 
   friend class ScopedTouchIdTestEnvironment;
 };

@@ -5,8 +5,6 @@
 #ifndef DEVICE_FIDO_MAC_CREDENTIAL_STORE_H_
 #define DEVICE_FIDO_MAC_CREDENTIAL_STORE_H_
 
-#include <os/availability.h>
-
 #include <list>
 #include <set>
 #include <string>
@@ -23,21 +21,25 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace device {
-namespace fido {
-namespace mac {
-
+#if defined(__OBJC__)
+@class LAContext;
+#else
 class LAContext;
+#endif
+
+namespace device::fido::mac {
 
 // Credential represents a WebAuthn credential from the keychain.
-struct COMPONENT_EXPORT(FIDO) Credential {
+struct COMPONENT_EXPORT(DEVICE_FIDO) Credential {
   Credential(base::ScopedCFTypeRef<SecKeyRef> private_key,
              std::vector<uint8_t> credential_id);
-  ~Credential();
-  Credential(const Credential&) = delete;
-  Credential& operator=(const Credential&) = delete;
+  Credential(const Credential&);
   Credential(Credential&& other);
-  Credential& operator=(Credential&& other);
+  Credential& operator=(const Credential&);
+  Credential& operator=(Credential&&);
+  ~Credential();
+
+  bool operator==(const Credential&) const;
 
   // An opaque reference to the private key that can be used for signing.
   base::ScopedCFTypeRef<SecKeyRef> private_key;
@@ -52,18 +54,24 @@ struct COMPONENT_EXPORT(FIDO) Credential {
 // TouchIdCredentialStore allows operations on Touch ID platform authenticator
 // credentials stored in the macOS keychain.
 class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
-    : public ::device::fido::PlatformCredentialStore {
+    : public device::fido::PlatformCredentialStore {
  public:
-  explicit TouchIdCredentialStore(AuthenticatorConfig config);
+  // Indicates whether a created credential should be client-side discoverable
+  // (formerly known as "resident keys").
+  enum Discoverable { kNonDiscoverable, kDiscoverable };
 
+  explicit TouchIdCredentialStore(AuthenticatorConfig config);
   TouchIdCredentialStore(const TouchIdCredentialStore&) = delete;
   TouchIdCredentialStore& operator=(const TouchIdCredentialStore&) = delete;
-
   ~TouchIdCredentialStore() override;
+
+  // Returns the access control object used when creating platform authenticator
+  // credentials.
+  static base::ScopedCFTypeRef<SecAccessControlRef> DefaultAccessControl();
 
   // An LAContext that has been successfully evaluated using |TouchIdContext|
   // may be passed in |authenticaton_context|, in order to authorize
-  // credentials returned by the other instance methods for signing without
+  // credentials returned by the `Find*` instance methods for signing without
   // triggering a Touch ID prompt.
   void set_authentication_context(LAContext* authentication_context) {
     authentication_context_ = authentication_context;
@@ -75,22 +83,21 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
   CreateCredential(const std::string& rp_id,
                    const PublicKeyCredentialUserEntity& user,
-                   bool is_resident,
-                   SecAccessControlRef access_control) const;
+                   Discoverable discoverable) const;
 
   // FindCredentialsFromCredentialDescriptorList returns all credentials that
   // match one of the given |descriptors| and belong to |rp_id|. A descriptor
   // matches a credential if its transports() set is either empty or contains
   // FidoTransportProtocol::kInternal, and if its id() is the credential ID.
-  // The returned credentials may be resident or non-resident. If any
+  // The returned credentials may be discoverable or non-discoverable. If any
   // unexpected keychain API error occurs, absl::nullopt is returned instead.
   absl::optional<std::list<Credential>>
   FindCredentialsFromCredentialDescriptorList(
       const std::string& rp_id,
       const std::vector<PublicKeyCredentialDescriptor>& descriptors) const;
 
-  // FindResidentCredentials returns the resident credentials for the given
-  // |rp_id|, or base::nulltopt if an error occurred.
+  // FindResidentCredentials returns the client-side discoverable credentials
+  // for the given |rp_id|, or base::nulltopt if an error occurred.
   absl::optional<std::list<Credential>> FindResidentCredentials(
       const std::string& rp_id) const;
 
@@ -100,18 +107,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
       const std::string& rp_id,
       const Credential& credential) const;
 
-  // DeleteCredentialsForUserId deletes all (resident or non-resident)
+  // DeleteCredentialsForUserId deletes all (discoverable or non-discoverable)
   // credentials for the given RP and user ID. Returns true if deleting
   // succeeded or no matching credential exists, and false otherwise.
   bool DeleteCredentialsForUserId(const std::string& rp_id,
                                   base::span<const uint8_t> user_id) const;
 
   // PlatformCredentialStore:
-
   void DeleteCredentials(base::Time created_not_before,
                          base::Time created_not_after,
                          base::OnceClosure callback) override;
-
   void CountCredentials(base::Time created_not_before,
                         base::Time created_not_after,
                         base::OnceCallback<void(size_t)> callback) override;
@@ -132,8 +137,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   LAContext* authentication_context_ = nullptr;
 };
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac
 
 #endif  // DEVICE_FIDO_MAC_CREDENTIAL_STORE_H_
