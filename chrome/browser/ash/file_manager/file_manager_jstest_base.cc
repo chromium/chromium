@@ -29,12 +29,6 @@
 
 namespace {
 
-base::FilePath GetGenRoot() {
-  base::FilePath executable_path;
-  CHECK(base::PathService::Get(base::DIR_EXE, &executable_path));
-  return executable_path.AppendASCII("gen");
-}
-
 // WebUIProvider to attach the URLDataSource for the test URL during tests.
 // Used to start the unittest from a chrome:// URL which allows unittest files
 // (HTML/JS/CSS) to load other resources from WebUI URLs chrome://*.
@@ -60,15 +54,13 @@ class TestWebUIProvider
         network::mojom::CSPDirectiveName::ScriptSrc,
         "script-src chrome://resources chrome://webui-test "
         "'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
-        "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp "
-        "'unsafe-inline'; ");
+        "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp ");
 
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ScriptSrcElem,
         "script-src chrome://resources chrome://webui-test "
         "'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
-        "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp "
-        "'unsafe-inline'; ");
+        "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp ; ");
 
     // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
     source->DisableTrustedTypesCSP();
@@ -90,31 +82,6 @@ FileManagerJsTestBase::FileManagerJsTestBase(const base::FilePath& base_path)
 
 FileManagerJsTestBase::~FileManagerJsTestBase() {}
 
-void FileManagerJsTestBase::RunTest(const base::FilePath& file) {
-  base::FilePath root_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path));
-  base::FilePath full_path = root_path.Append(base_path_).Append(file);
-  {
-    base::ScopedAllowBlockingForTesting allow_io;
-    ASSERT_TRUE(base::PathExists(full_path)) << full_path.value();
-  }
-  RunTestImpl(net::FilePathToFileURL(full_path));
-}
-
-void FileManagerJsTestBase::RunGeneratedTest(const std::string& file) {
-  base::FilePath path = GetGenRoot();
-
-  // Serve the generated html file from out/gen. It references files from
-  // DIR_SOURCE_ROOT, so serve from there as well. An alternative would be to
-  // copy the js files as a build step and serve file:// URLs, but the embedded
-  // test server gives better output for troubleshooting errors.
-  embedded_test_server()->ServeFilesFromDirectory(path.Append(base_path_));
-  embedded_test_server()->ServeFilesFromSourceDirectory(base::FilePath());
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  RunTestImpl(embedded_test_server()->GetURL(file));
-}
-
 void FileManagerJsTestBase::RunTestURL(const std::string& file) {
   // Open a new tab with the Files app test harness.
   auto url =
@@ -133,14 +100,6 @@ void FileManagerJsTestBase::RunTestURL(const std::string& file) {
   EXPECT_EQ(message, "\"LOADED\"");
 
   // Execute the WebUI test harness.
-  EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents));
-}
-
-void FileManagerJsTestBase::RunTestImpl(const GURL& url) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::WebContents* const web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
   EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents));
 }
 
