@@ -85,10 +85,26 @@ constexpr SkColor kDarkModeShieldColor =
 void LogCompositorThroughput(AmbientAnimationTheme theme, int smoothness) {
   // Use VLOG instead of DVLOG since this log is performance-related and
   // developers will almost certainly only care about this log on non-debug
-  // builds. The overhead of "--vmodule" regex matching is very minor so far to
-  // performance/CPU.
+  // builds.
   VLOG(1) << "Compositor throughput report: smoothness=" << smoothness;
   ambient::RecordAmbientModeAnimationSmoothness(smoothness, theme);
+}
+
+void OnCompositorThroughputReported(
+    base::TimeTicks logging_start_time,
+    AmbientAnimationTheme theme,
+    const cc::FrameSequenceMetrics::CustomReportData& data) {
+  base::TimeDelta duration = base::TimeTicks::Now() - logging_start_time;
+  float duration_sec = duration.InSecondsF();
+  VLOG(1) << "Compositor throughput report: frames_expected="
+          << data.frames_expected << " frames_produced=" << data.frames_produced
+          << " jank_count=" << data.jank_count
+          << " expected_fps=" << data.frames_expected / duration_sec
+          << " actual_fps=" << data.frames_produced / duration_sec
+          << " duration=" << duration;
+  metrics_util::ForSmoothness(
+      base::BindRepeating(&LogCompositorThroughput, theme))
+      .Run(data);
 }
 
 // Returns the maximum possible displacement in either dimension from the
@@ -369,9 +385,10 @@ void AmbientAnimationView::RestartThroughputTracking() {
   ui::Compositor* compositor = widget->GetCompositor();
   DCHECK(compositor);
   throughput_tracker_ = compositor->RequestNewThroughputTracker();
-  throughput_tracker_->Start(metrics_util::ForSmoothness(
-      base::BindRepeating(&LogCompositorThroughput,
-                          static_resources_->GetAmbientAnimationTheme())));
+  throughput_tracker_->Start(
+      base::BindOnce(&OnCompositorThroughputReported,
+                     /*logging_start_time=*/base::TimeTicks::Now(),
+                     static_resources_->GetAmbientAnimationTheme()));
 }
 
 void AmbientAnimationView::ApplyJitter() {
