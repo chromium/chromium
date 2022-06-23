@@ -15336,7 +15336,7 @@
    },
    "window-placement": {
     "fullscreen-companion-window-manual.tentative.https.html": [
-     "fe82916aa26cc488e23567d4a2ccfeff33884ed4",
+     "c2fa2f1ddde8faf3039842f0b451cc42d8a01f70",
      [
       null,
       {}
@@ -99147,7 +99147,7 @@
       ]
      ],
      "quotes-030.html": [
-      "2c793eadf2f3aaa6db7871a3a79a06df7091fcf7",
+      "095c37fedb6bae93b3ae248289dca86e6b9cecf5",
       [
        null,
        [
@@ -149134,6 +149134,32 @@
         {}
        ]
       ],
+      "position-sticky-fixed-ancestor-002.html": [
+       "dc3c383ea5e9c89498898ce9f53af273dbfbc51d",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/reference/position-sticky-fixed-ancestor-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-fixed-ancestor-003.html": [
+       "382112cae42f1391d7bb4f55c413f29f04b64c49",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/reference/position-sticky-fixed-ancestor-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "position-sticky-fixed-ancestor-iframe.html": [
        "e50f5c829b6bcee84385083648bca5cc145e1e37",
        [
@@ -149427,6 +149453,19 @@
         [
          [
           "/css/css-position/sticky/position-sticky-scroll-with-clip-and-abspos-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-stacking-context-002.html": [
+       "1cc162880a37559fd2879912b4418cbba9cbe7cb",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
           "=="
          ]
         ],
@@ -230579,6 +230618,36 @@
      ]
     ]
    },
+   "fullscreen": {
+    "rendering": {
+     "backdrop-iframe.html": [
+      "710d1b48f182d0fcb577298c72bbf6a7f7329dbf",
+      [
+       null,
+       [
+        [
+         "/fullscreen/rendering/backdrop-iframe-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "backdrop-object.html": [
+      "be285b76124def6099b9954d0125117ed65a4917",
+      [
+       null,
+       [
+        [
+         "/fullscreen/rendering/backdrop-object-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    }
+   },
    "html": {
     "browsers": {
      "sandboxing": {
@@ -237263,6 +237332,32 @@
          [
           [
            "/html/semantics/interactive-elements/the-dialog-element/modal-dialog-generated-content-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "modal-dialog-in-iframe.html": [
+        "f6440583fb7c5546405d6440a740e9a4d64d9100",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/modal-dialog-in-iframe-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "modal-dialog-in-object.html": [
+        "728748a7ee38fb335ab1aeece3892054d02fd7d9",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/modal-dialog-in-object-ref.html",
            "=="
           ]
          ],
@@ -264640,7 +264735,7 @@
        []
       ],
       "quotes-030-ref.html": [
-       "36608c3f8b3438525f0a6dc4e2c36f8bc5faa9ca",
+       "c06d85b9dd26f1133c809e1d09ec16071ec62fdc",
        []
       ],
       "quotes-031-ref.html": [
@@ -281270,6 +281365,10 @@
       "reference": {
        "position-sticky-bottom-002-ref.html": [
         "253ca7eebedb1e8c4216a969854bf57f9f3a0d50",
+        []
+       ],
+       "position-sticky-fixed-ancestor-002-ref.html": [
+        "abdc1dbcfa7ea243cc0f86db1d061e1efc201e38",
         []
        ],
        "position-sticky-left-002-ref.html": [
@@ -302615,6 +302714,16 @@
       ]
      }
     },
+    "rendering": {
+     "backdrop-iframe-ref.html": [
+      "3126fe194261f7ce7f6039885e4ec73e7a997468",
+      []
+     ],
+     "backdrop-object-ref.html": [
+      "6c7071a727dd27d182ae017e9f6dbc0834361ddc",
+      []
+     ]
+    },
     "trusted-click.js": [
      "7ee0669eece3e341ef76da4dd153e5ec05ccb288",
      []
@@ -313504,6 +313613,14 @@
         "10c9897c63b9fcc8137161880af3568c538f9d2b",
         []
        ],
+       "modal-dialog-in-iframe-ref.html": [
+        "b6c52b7d7df88c91fbf2111b9bdfcccbc22a56cc",
+        []
+       ],
+       "modal-dialog-in-object-ref.html": [
+        "38e15c1d79d65f75b04ba4501db3481c17980b7d",
+        []
+       ],
        "modal-dialog-in-replaced-renderer-ref.html": [
         "c837503cafbcdb56c995e9b93f49cabde14293b0",
         []
@@ -316951,6 +317068,10 @@
     ]
    },
    "images": {
+    "100px-green-rect.svg": [
+     "c391055bc27b96c166ec0a6a8e4ab8077597442e",
+     []
+    ],
     "DIR_METADATA": [
      "9b0121386d1d5435a8420caea934ef0d59a826aa",
      []
@@ -384235,7 +384356,7 @@
        ]
       ],
       "position-sticky-scrolled-remove-sibling.html": [
-       "f2cf8a98b30a2c19a986d31bc4da99f0bdd8df9d",
+       "845454e1b3d6c53b47412a7557a23ed5a87aa17a",
        [
         null,
         {}
