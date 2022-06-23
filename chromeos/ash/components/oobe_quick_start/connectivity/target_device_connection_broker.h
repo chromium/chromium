@@ -50,6 +50,8 @@ class TargetDeviceConnectionBroker {
   //
   // If the caller paused a connection previously, the connection to the
   // source device will resume via OnConnectionAccepted().
+  // Clients should check  GetFeatureSupportStatus()  before calling
+  // StartAdvertising().
   virtual void StartAdvertising(
       ConnectionLifecycleListener* listener,
       ResultCallback on_start_advertising_callback) = 0;

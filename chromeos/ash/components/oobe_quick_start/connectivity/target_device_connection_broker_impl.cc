@@ -6,8 +6,11 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/ash/components/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
@@ -58,13 +61,39 @@ void TargetDeviceConnectionBrokerImpl::OnGetBluetoothAdapter(
 void TargetDeviceConnectionBrokerImpl::StartAdvertising(
     ConnectionLifecycleListener* listener,
     ResultCallback on_start_advertising_callback) {
-  // TODO(b/234655072): Implement StartAdvertising
-  std::move(on_start_advertising_callback).Run(true);
+  // TODO(b/234655072): Notify client about incoming connections on the started
+  // advertisement via ConnectionLifecycleListener.
+  CHECK(GetFeatureSupportStatus() == FeatureSupportStatus::kSupported);
+
+  if (!bluetooth_adapter_->IsPowered()) {
+    LOG(ERROR) << __func__
+               << " failed to start advertising because the bluetooth adapter "
+                  "is not powered.";
+    std::move(on_start_advertising_callback).Run(/*success=*/false);
+    return;
+  }
+
+  fast_pair_advertiser_ =
+      FastPairAdvertiser::Factory::Create(bluetooth_adapter_);
+  auto [success_callback, failure_callback] =
+      base::SplitOnceCallback(std::move(on_start_advertising_callback));
+
+  fast_pair_advertiser_->StartAdvertising(
+      base::BindOnce(std::move(success_callback), /*success=*/true),
+      base::BindOnce(
+          &TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError,
+          weak_ptr_factory_.GetWeakPtr(), std::move(failure_callback)));
+}
+
+void TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError(
+    ResultCallback callback) {
+  fast_pair_advertiser_.reset();
+  std::move(callback).Run(/*success=*/false);
 }
 
 void TargetDeviceConnectionBrokerImpl::StopAdvertising(
     ResultCallback on_stop_advertising_callback) {
-  // TODO(b/234655072): Implement StopAdvertising
+  fast_pair_advertiser_.reset();
   std::move(on_stop_advertising_callback).Run(true);
 }
 

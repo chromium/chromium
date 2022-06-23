@@ -8,6 +8,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker.h"
 
+class FastPairAdvertiser;
+
 namespace device {
 class BluetoothAdapter;
 }
@@ -35,8 +37,11 @@ class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
  private:
   void GetBluetoothAdapter();
   void OnGetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
+  void OnStartFastPairAdvertisingError(ResultCallback callback);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
+
+  std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
 
   base::WeakPtrFactory<TargetDeviceConnectionBrokerImpl> weak_ptr_factory_{
       this};
