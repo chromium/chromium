@@ -83,6 +83,8 @@
   await dp.Network.enable();
 
   testRunner.runTestSuite([
+    deleteAllCookies,
+
     async function simpleCookieAdd() {
       await setCookie({url: 'http://127.0.0.1', name: 'foo', value: 'bar1'});
     },

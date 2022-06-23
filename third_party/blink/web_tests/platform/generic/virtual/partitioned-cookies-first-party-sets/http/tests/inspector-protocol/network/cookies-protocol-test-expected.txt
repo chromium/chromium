@@ -2,6 +2,8 @@ Tests that cookies are set, updated and removed.
 Test started
 Enabling network
 
+Running test: deleteAllCookies
+
 Running test: simpleCookieAdd
 Setting Cookie
 Num of cookies 1
