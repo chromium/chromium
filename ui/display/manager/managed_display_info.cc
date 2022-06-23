@@ -13,7 +13,6 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -27,7 +26,6 @@
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/insets_conversions.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -172,34 +170,9 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
                              kDefaultHostWindowWidth, kDefaultHostWindowHeight);
   base::StringPiece main_spec = spec;
 
-  gfx::RoundedCornersF rounded_corners_radii;
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
-      main_spec, "~", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (parts.size() == 2) {
-    std::vector<base::StringPiece> radii_part = base::SplitStringPiece(
-        parts[1], "|", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-    DCHECK(radii_part.size() == 1 || radii_part.size() == 4);
-
-    float radii[4];
-    int radius_in_int = 0;
-    for (size_t idx = 0; idx < radii_part.size(); ++idx) {
-      const base::StringPiece& radius = radii_part[idx];
-      DCHECK(base::StringToInt(radius, &radius_in_int));
-      radii[idx] = static_cast<float>(radius_in_int);
-    }
-
-    rounded_corners_radii =
-        (radii_part.size() == 1)
-            ? gfx::RoundedCornersF{radii[0]}
-            : gfx::RoundedCornersF{radii[0], radii[1], radii[2], radii[3]};
-
-    main_spec = parts[0];
-  }
-
   float zoom_factor = 1.0f;
-  parts = base::SplitStringPiece(main_spec, "@", base::KEEP_WHITESPACE,
-                                 base::SPLIT_WANT_NONEMPTY);
+  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+      main_spec, "@", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (parts.size() == 2) {
     double scale_in_double = 0;
     if (base::StringToDouble(parts[1], &scale_in_double))
@@ -302,7 +275,6 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   display_info.SetRotation(rotation, Display::RotationSource::USER);
   display_info.set_zoom_factor(zoom_factor);
   display_info.SetBounds(bounds_in_native);
-  display_info.set_rounded_corners_radii(rounded_corners_radii);
 
   if (!display_modes.size()) {
     display_modes.push_back(ManagedDisplayMode(
@@ -422,7 +394,6 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   refresh_rate_ = native_info.refresh_rate_;
   is_interlaced_ = native_info.is_interlaced_;
   native_ = native_info.native_;
-  rounded_corners_radii_ = native_info.rounded_corners_radii_;
 
   // Rotation, color_profile and overscan are given by preference,
   // or unit tests. Don't copy if this native_info came from
@@ -511,15 +482,14 @@ std::string ManagedDisplayInfo::ToString() const {
 
   std::string result = base::StringPrintf(
       "ManagedDisplayInfo[%lld] native bounds=%s, size=%s, device-scale=%g, "
-      "display-zoom=%g, overscan=%s, rotation=%d, touchscreen=%s, "
-      "corner_radii=%s",
+      "display-zoom=%g, overscan=%s, rotation=%d, touchscreen=%s",
       static_cast<long long int>(id_), bounds_in_native_.ToString().c_str(),
       size_in_pixel_.ToString().c_str(), device_scale_factor_, zoom_factor_,
       overscan_insets_in_dip_.ToString().c_str(), rotation_degree,
-      touch_support_ == Display::TouchSupport::AVAILABLE     ? "yes"
-      : touch_support_ == Display::TouchSupport::UNAVAILABLE ? "no"
-                                                             : "unknown",
-      rounded_corners_radii_.ToString().c_str());
+      touch_support_ == Display::TouchSupport::AVAILABLE
+          ? "yes"
+          : touch_support_ == Display::TouchSupport::UNAVAILABLE ? "no"
+                                                                 : "unknown");
 
   return result;
 }
