@@ -16,10 +16,12 @@
 
 // Static
 void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
-                                         Profile* profile) {
+                                         Profile* profile,
+                                         bool in_side_panel) {
   PrefService* prefs = profile->GetPrefs();
   source->AddBoolean("allowDeletingHistory",
                      prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory));
+  source->AddBoolean("inSidePanel", in_side_panel);
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile);
   source->AddBoolean("isHistoryClustersEnabled",

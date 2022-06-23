@@ -39,6 +39,8 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "url/gurl.h"
@@ -218,6 +220,27 @@ void HistoryClustersHandler::SetSidePanelUIEmbedder(
     base::WeakPtr<ui::MojoBubbleWebUIController::Embedder>
         side_panel_embedder) {
   history_clusters_side_panel_embedder_ = side_panel_embedder;
+}
+
+void HistoryClustersHandler::OpenHistoryCluster(
+    const GURL& url,
+    ui::mojom::ClickModifiersPtr click_modifiers) {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser)
+    return;
+
+  // Used to determine if default behavior should be open in current tab or new
+  // tab since it differs for side panel.
+  const bool in_side_panel = history_clusters_side_panel_embedder_ != nullptr;
+
+  WindowOpenDisposition open_location = ui::DispositionFromClick(
+      /*middle_button=*/!in_side_panel, click_modifiers->alt_key,
+      click_modifiers->ctrl_key, click_modifiers->meta_key,
+      click_modifiers->shift_key);
+  content::OpenURLParams params(url, content::Referrer(), open_location,
+                                ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+                                /*is_renderer_initiated=*/false);
+  browser->OpenURL(params);
 }
 
 void HistoryClustersHandler::SetPage(

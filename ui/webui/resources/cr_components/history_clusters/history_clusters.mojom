@@ -5,6 +5,7 @@
 module history_clusters.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "ui/base/mojom/window_open_disposition.mojom";
 import "url/mojom/url.mojom";
 
 // Represents a search query related to a visit to the search results page.
@@ -159,6 +160,10 @@ struct QueryResult {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
+  // Opens the history cluster specified by url
+  OpenHistoryCluster(url.mojom.Url url,
+      ui.mojom.ClickModifiers click_modifiers);
+
   // The ClustersBrowserProxy singleton calls this when it's first initialized.
   SetPage(pending_remote<Page> page);
 

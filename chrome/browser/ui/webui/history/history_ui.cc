@@ -125,7 +125,7 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
 
   // History clusters
-  HistoryClustersUtil::PopulateSource(source, profile);
+  HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kHistoryResources, kHistoryResourcesSize),

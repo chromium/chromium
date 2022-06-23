@@ -18,7 +18,8 @@ class WebUIDataSource;
 class HistoryClustersUtil {
  public:
   static void PopulateSource(content::WebUIDataSource* source,
-                             Profile* profile);
+                             Profile* profile,
+                             bool in_side_panel);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_HISTORY_CLUSTERS_HISTORY_CLUSTERS_UTIL_H_

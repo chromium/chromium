@@ -22,6 +22,7 @@ mojom("mojo_bindings") {
   sources = [ "history_clusters.mojom" ]
   public_deps = [
     "//mojo/public/mojom/base",
+    "//ui/base/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "chrome://resources/cr_components/history_clusters/"

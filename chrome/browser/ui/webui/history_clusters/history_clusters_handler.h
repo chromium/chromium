@@ -64,6 +64,9 @@ class HistoryClustersHandler : public mojom::PageHandler,
           side_panel_embedder);
 
   // mojom::PageHandler:
+  void OpenHistoryCluster(
+      const GURL& url,
+      ui::mojom::ClickModifiersPtr click_modifiers) override;
   void SetPage(mojo::PendingRemote<mojom::Page> pending_page) override;
   void ShowSidePanelUI() override;
   void ToggleVisibility(bool visible,

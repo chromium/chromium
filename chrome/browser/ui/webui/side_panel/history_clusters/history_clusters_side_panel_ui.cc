@@ -27,7 +27,7 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
 
   Profile* const profile = Profile::FromWebUI(web_ui);
 
-  HistoryClustersUtil::PopulateSource(source, profile);
+  HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/true);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
