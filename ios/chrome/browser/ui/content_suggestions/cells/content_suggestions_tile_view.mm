@@ -69,15 +69,21 @@ const CGFloat kPreferredMaxWidth = 73;
     AddSameCenterConstraints(_imageContainerView, backgroundView);
     UIView* containerView = backgroundView;
 
-    ApplyVisualConstraintsWithMetrics(
-        @[ @"V:|[container]-(space)-[title]|" ],
-        @{@"container" : containerView, @"title" : _titleLabel},
-        @{@"space" : @(kSpaceIconTitle)});
-    [NSLayoutConstraint activateConstraints:@[
-      [_titleLabel.widthAnchor constraintEqualToConstant:kIconSize],
-      [_titleLabel.heightAnchor constraintGreaterThanOrEqualToConstant:9],
-      [_titleLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-    ]];
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      ApplyVisualConstraintsWithMetrics(
+          @[ @"V:|[container]-(space)-[title]|" ],
+          @{@"container" : containerView, @"title" : _titleLabel},
+          @{@"space" : @(kSpaceIconTitle)});
+      [NSLayoutConstraint activateConstraints:@[
+        [_titleLabel.widthAnchor constraintEqualToConstant:kIconSize],
+        [_titleLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+      ]];
+    } else {
+      ApplyVisualConstraintsWithMetrics(
+          @[ @"V:|[container]-(space)-[title]|", @"H:|[title]|" ],
+          @{@"container" : containerView, @"title" : _titleLabel},
+          @{@"space" : @(kSpaceIconTitle)});
+    }
 
     _imageBackgroundView = backgroundView;
 
