@@ -52,4 +52,12 @@ void GPUQuerySet::destroy() {
   GetProcs().querySetDestroy(GetHandle());
 }
 
+String GPUQuerySet::type() const {
+  return FromDawnEnum(GetProcs().querySetGetType(GetHandle()));
+}
+
+uint32_t GPUQuerySet::count() const {
+  return GetProcs().querySetGetCount(GetHandle());
+}
+
 }  // namespace blink

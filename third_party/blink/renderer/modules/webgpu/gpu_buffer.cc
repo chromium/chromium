@@ -210,6 +210,14 @@ void GPUBuffer::destroy(ScriptState* script_state) {
   mappable_buffer_handles_ = nullptr;
 }
 
+uint64_t GPUBuffer::size() const {
+  return size_;
+}
+
+uint32_t GPUBuffer::usage() const {
+  return GetProcs().bufferGetUsage(GetHandle());
+}
+
 ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
                                       uint32_t mode,
                                       uint64_t offset,

@@ -17,5 +17,8 @@
         optional GPUSize64 size);
     [CallWith=ScriptState] void unmap();
     [CallWith=ScriptState] void destroy();
+
+    readonly attribute GPUSize64 size;
+    readonly attribute GPUBufferUsageFlags usage;
 };
 GPUBuffer includes GPUObjectBase;

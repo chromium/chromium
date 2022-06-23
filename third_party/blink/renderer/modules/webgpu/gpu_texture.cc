@@ -293,4 +293,36 @@ void GPUTexture::destroy() {
   mailbox_texture_.reset();
 }
 
+uint32_t GPUTexture::width() const {
+  return GetProcs().textureGetWidth(GetHandle());
+}
+
+uint32_t GPUTexture::height() const {
+  return GetProcs().textureGetHeight(GetHandle());
+}
+
+uint32_t GPUTexture::depthOrArrayLayers() const {
+  return GetProcs().textureGetDepthOrArrayLayers(GetHandle());
+}
+
+uint32_t GPUTexture::mipLevelCount() const {
+  return GetProcs().textureGetMipLevelCount(GetHandle());
+}
+
+uint32_t GPUTexture::sampleCount() const {
+  return GetProcs().textureGetSampleCount(GetHandle());
+}
+
+String GPUTexture::dimension() const {
+  return FromDawnEnum(GetProcs().textureGetDimension(GetHandle()));
+}
+
+String GPUTexture::format() const {
+  return FromDawnEnum(GetProcs().textureGetFormat(GetHandle()));
+}
+
+uint32_t GPUTexture::usage() const {
+  return GetProcs().textureGetUsage(GetHandle());
+}
+
 }  // namespace blink
