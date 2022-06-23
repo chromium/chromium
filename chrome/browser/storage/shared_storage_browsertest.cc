@@ -328,10 +328,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       sharedStorage.selectURL(
           'test-url-selection-operation',
           [{url: "fenced_frames/title0.html"},
-          {url: "fenced_frames/title1.html",
-          reporting_metadata: {report_event: "click",
-              report_url: "fenced_frames/report1.html"}},
-          {url: "fenced_frames/title2.html"}], {data: {'mockResult': 1}});
+           {url: "fenced_frames/title1.html",
+            reportingMetadata: {"click": "fenced_frames/report1.html"}},
+           {url: "fenced_frames/title2.html"}],
+          {data: {'mockResult': 1}});
     )");
 
   if (!SuccessExpected()) {

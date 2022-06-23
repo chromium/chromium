@@ -55,7 +55,7 @@ const char kSelectFrom8URLsScript[] = R"(
     let urls = [];
     for (let i = 0; i < 8; ++i) {
       urls.push({url: 'fenced_frames/title' + i.toString() + '.html',
-                 reporting_metadata: {
+                 reportingMetadata: {
                    'click': 'fenced_frames/report' + i.toString() + '.html'
                  }});
     }
@@ -1056,7 +1056,7 @@ IN_PROC_BROWSER_TEST_F(
       sharedStorage.selectURL(
           'test-url-selection-operation',
           [{url: "fenced_frames/title0.html",
-          reporting_metadata: {"click": "fenced_frames/report1.html",
+          reportingMetadata: {"click": "fenced_frames/report1.html",
               "mouse interaction": "fenced_frames/report2.html"}}],
           {data: {'mockResult':0}});
     )")
@@ -1105,7 +1105,7 @@ IN_PROC_BROWSER_TEST_F(
       sharedStorage.selectURL(
           'test-url-selection-operation',
           [{url: "fenced_frames/title0.html",
-          reporting_metadata: {"click": "fenced_frames/report1.html"}}],
+          reportingMetadata: {"click": "fenced_frames/report1.html"}}],
           {data: {'mockResult':-1}});
     )")
                              .ExtractString();
@@ -1160,7 +1160,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
           'test-url-selection-operation',
           [{url: "fenced_frames/title0.html"},
           {url: "fenced_frames/title1.html",
-          reporting_metadata: {"click": "fenced_frames/report1.html"}},
+          reportingMetadata: {"click": "fenced_frames/report1.html"}},
           {url: "fenced_frames/title2.html"}], {data: {'mockResult': 1}});
     )")
                              .ExtractString();
@@ -1202,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
       sharedStorage.selectURL(
           'test-url-selection-operation',
           [{url: "fenced_frames/title0.html",
-          reporting_metadata: {"": "fenced_frames/report1.html"}}],
+          reportingMetadata: {"": "fenced_frames/report1.html"}}],
           {data: {'mockResult':0}});
     )")
                              .ExtractString();
@@ -1680,7 +1680,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
           'test-url-selection-operation',
           [{url: "fenced_frames/title0.html"},
           {url: "fenced_frames/title1.html",
-          reporting_metadata: {"click": "fenced_frames/report1.html"}},
+          reportingMetadata: {"click": "fenced_frames/report1.html"}},
           {url: "fenced_frames/title2.html"}], {data: {'mockResult': 1}});
     )")
                              .ExtractString();
@@ -1797,7 +1797,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
           'test-url-selection-operation',
           [{url: "fenced_frames/title0.html"},
           {url: "fenced_frames/title1.html",
-          reporting_metadata: {"click": "fenced_frames/report1.html"}},
+          reportingMetadata: {"click": "fenced_frames/report1.html"}},
           {url: "fenced_frames/title2.html"}], {data: {'mockResult': 1}});
     )")
                              .ExtractString();
@@ -2039,7 +2039,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
           'test-url-selection-operation',
           [{url: "fenced_frames/title0.html"},
           {url: "fenced_frames/title1.html",
-          reporting_metadata: {"click": "fenced_frames/report1.html"}},
+          reportingMetadata: {"click": "fenced_frames/report1.html"}},
           {url: "fenced_frames/title2.html"}], {data: {'mockResult': 3}});
     )")
                              .ExtractString();
@@ -2111,7 +2111,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
           [{url: "fenced_frames/title.html"},
           {url: "fenced_frames/title0.html",
           url: "fenced_frames/title1.html",
-          reporting_metadata: {"click": "fenced_frames/report1.html"}},
+          reportingMetadata: {"click": "fenced_frames/report1.html"}},
           {url: "fenced_frames/title2.html"}], {data: {'mockResult': 1}});
     )")
                              .ExtractString();
@@ -2598,7 +2598,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageReportEventBrowserTest,
           'test-url-selection-operation',
           [{url: "fenced_frames/title0.html"},
           {url: "fenced_frames/title1.html",
-          reporting_metadata: {'click': "fenced_frames/report1.html",
+          reportingMetadata: {'click': "fenced_frames/report1.html",
               'mouse interaction': "fenced_frames/report2.html"}}],
           {data: {'mockResult':1}});
     )")

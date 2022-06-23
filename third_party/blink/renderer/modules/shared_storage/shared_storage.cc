@@ -362,7 +362,7 @@ ScriptPromise SharedStorage::selectURL(
       if (!maybe_fields.ToLocal(&fields) || fields->Length() == 0) {
         resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
             script_state->GetIsolate(), DOMExceptionCode::kDataError,
-            "selectURL could not get reporting_metadata object attributes"));
+            "selectURL could not get reportingMetadata object attributes"));
         return promise;
       }
 
@@ -376,7 +376,7 @@ ScriptPromise SharedStorage::selectURL(
                           &report_event_string)) {
           resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
               script_state->GetIsolate(), DOMExceptionCode::kDataError,
-              "selectURL reporting_metadata object attributes must be "
+              "selectURL reportingMetadata object attributes must be "
               "strings"));
           return promise;
         }
@@ -388,7 +388,7 @@ ScriptPromise SharedStorage::selectURL(
                           &report_url_string)) {
           resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
               script_state->GetIsolate(), DOMExceptionCode::kDataError,
-              "selectURL reporting_metadata object attributes must be "
+              "selectURL reportingMetadata object attributes must be "
               "strings"));
           return promise;
         }
