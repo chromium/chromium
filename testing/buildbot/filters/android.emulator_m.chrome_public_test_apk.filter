@@ -45,9 +45,6 @@
 # crbug.com/1062055
 -org.chromium.chrome.browser.metrics.StartupLoadingMetricsTest.testWebApkStartRecorded
 
-# crbug.com/1090942
--org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragmentTest.*
-
 # crbug.com/1112812
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantAutostartTest.testAutostart
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyYear
