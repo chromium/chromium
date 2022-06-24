@@ -2688,6 +2688,40 @@ TEST_F(AccessibilityAcceleratorTester, DisableAccessibilityAccelerators) {
   }
 }
 
+// Tests that the shortcuts for starting another screen capture session will be
+// treated as no-op if a capture session is already running.
+TEST_F(AccessibilityAcceleratorTester,
+       DisableScreenCaptureAcceleratorsIfSessionIsActive) {
+  auto* controller = CaptureModeController::Get();
+  EXPECT_FALSE(controller->IsActive());
+
+  // Start a window capture session.
+  EXPECT_TRUE(ProcessInController(ui::Accelerator(
+      ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN)));
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(CaptureModeSource::kWindow, controller->source());
+
+  //  Accelerators for partial screenshot will be a no-op if a
+  //  session is already running.
+  EXPECT_TRUE(ProcessInController(ui::Accelerator(
+      ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(CaptureModeSource::kWindow, controller->source());
+
+  controller->Stop();
+
+  // Start a partial screenshot capture session.
+  EXPECT_TRUE(ProcessInController(ui::Accelerator(
+      ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)));
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(CaptureModeSource::kRegion, controller->source());
+
+  //  Accelerators for window screenshot will be a no-op if a
+  //  session is already running.
+  EXPECT_TRUE(ProcessInController(ui::Accelerator(
+      ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN)));
+  EXPECT_EQ(CaptureModeSource::kRegion, controller->source());
+}
+
 struct MediaSessionAcceleratorTestConfig {
   // Runs the test with the media session service enabled.
   bool service_enabled;

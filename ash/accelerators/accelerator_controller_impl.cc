@@ -689,13 +689,21 @@ void EnterImageCaptureMode(CaptureModeSource source,
   capture_mode_controller->Start(entry_type);
 }
 
-void HandleTakeWindowScreenshot() {
+void MaybeHandleTakeWindowScreenshot() {
+  // If a capture mode session is already running, this shortcut will be treated
+  // as a no-op.
+  if (CaptureModeController::Get()->IsActive())
+    return;
   base::RecordAction(UserMetricsAction("Accel_Take_Window_Screenshot"));
   EnterImageCaptureMode(CaptureModeSource::kWindow,
                         CaptureModeEntryType::kAccelTakeWindowScreenshot);
 }
 
-void HandleTakePartialScreenshot() {
+void MaybeHandleTakePartialScreenshot() {
+  // If a capture mode session is already running, this shortcut will be treated
+  // as a no-op.
+  if (CaptureModeController::Get()->IsActive())
+    return;
   base::RecordAction(UserMetricsAction("Accel_Take_Partial_Screenshot"));
   EnterImageCaptureMode(CaptureModeSource::kRegion,
                         CaptureModeEntryType::kAccelTakePartialScreenshot);
@@ -2342,13 +2350,13 @@ void AcceleratorControllerImpl::PerformAction(
       HandleCycleUser(CycleUserDirection::PREVIOUS);
       break;
     case TAKE_PARTIAL_SCREENSHOT:
-      HandleTakePartialScreenshot();
+      MaybeHandleTakePartialScreenshot();
       break;
     case TAKE_SCREENSHOT:
       HandleTakeScreenshot(accelerator.key_code());
       break;
     case TAKE_WINDOW_SCREENSHOT:
-      HandleTakeWindowScreenshot();
+      MaybeHandleTakeWindowScreenshot();
       break;
     case TOGGLE_APP_LIST:
       HandleToggleAppList(accelerator, kSearchKey);
