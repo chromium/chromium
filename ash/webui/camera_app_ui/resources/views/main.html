@@ -9,13 +9,13 @@
     <!-- main.css contains all :root styles require to be loaded first. -->
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/button.css">
+    <link rel="stylesheet" href="/css/custom_toast.css">
     <link rel="stylesheet" href="/css/document_mode_dialog.css">
     <link rel="stylesheet" href="/css/flash.css">
     <link rel="stylesheet" href="/css/inkdrop.css">
     <link rel="stylesheet" href="/css/mode/mode.css">
     <link rel="stylesheet" href="/css/mode/scan.css">
     <link rel="stylesheet" href="/css/mode/video.css">
-    <link rel="stylesheet" href="/css/new_feature_toast.css">
     <link rel="stylesheet" href="/css/ptz_panel.css">
     <link rel="stylesheet" href="/css/review.css">
     <link rel="stylesheet" href="/css/views/settings.css">
@@ -569,9 +569,18 @@
       <div class="ripple"></div>
     </template>
     <template id="new-feature-toast-template">
-      <div id="new-feature-toast" tabindex="0">
-        <span class="new-feature-toast-text" aria-hidden="true"></span>
+      <div id="new-feature-toast" class="custom-toast" tabindex="0">
+        <span class="custom-toast-text" aria-hidden="true"></span>
       </div>
+    </template>
+    <template id="indicator-toast-template">
+      <div id="indicator-toast" class="custom-toast" tabindex="0">
+        <div>
+          <img id="indicator-icon" alt>
+        </div>
+        <span class="custom-toast-text" aria-hidden="true"></span>
+      </div>
+      <div id="indicator-dot"></div>
     </template>
     <template id="text-button-template">
       <button class="text-button pill dark inkdrop" tabindex="0"></button>

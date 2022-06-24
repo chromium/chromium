@@ -4,6 +4,7 @@
 
 import * as animate from '../../animation.js';
 import {assert} from '../../assert.js';
+import * as customToast from '../../custom_toast.js';
 import {
   CameraConfig,
   CameraInfo,
@@ -14,7 +15,6 @@ import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as localStorage from '../../models/local_storage.js';
 import * as nav from '../../nav.js';
-import * as newFeatureToast from '../../new_feature_toast.js';
 import * as state from '../../state.js';
 import {Facing, LocalStorageKey, Mode, ViewName} from '../../type.js';
 import * as util from '../../util.js';
@@ -242,14 +242,14 @@ export class Options implements CameraUI {
     const highlight = (enabled: boolean) => {
       if (!enabled) {
         if (toastShown) {
-          newFeatureToast.hide();
+          customToast.hide();
           toastShown = false;
         }
         return;
       }
       toastShown = true;
-      newFeatureToast.show(this.openPTZPanel);
-      newFeatureToast.focus();
+      customToast.showNewFeatureToast(this.openPTZPanel);
+      customToast.focus();
     };
 
     this.cameraManager.registerCameraUI({

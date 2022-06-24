@@ -7,6 +7,7 @@ import {
   assert,
   assertInstanceof,
 } from '../assert.js';
+import * as customToast from '../custom_toast.js';
 import {
   CameraConfig,
   CameraManager,
@@ -31,7 +32,6 @@ import {VideoSaver} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as nav from '../nav.js';
-import * as newFeatureToast from '../new_feature_toast.js';
 import {PerfLogger} from '../perf.js';
 import * as sound from '../sound.js';
 import {speak} from '../spoken_msg.js';
@@ -331,8 +331,11 @@ export class Camera extends View implements CameraViewUI {
     const scanModeItem =
         assertInstanceof(scanModeBtn.parentElement, HTMLDivElement);
     if (!ready) {
-      // TODO(b/226262670): Implement the UI rather than using a regular toast.
-      toast.show(I18nString.DOWNLOADING_DOCUMENT_SCANNING_FEATURE);
+      customToast.showIndicatorToast(
+          scanModeItem, customToast.IndicatorType.DOWNLOAD_DOCUMENT_SCANNER);
+      scanModeBtn.addEventListener('click', () => {
+        customToast.hide();
+      });
       const isLoaded = await this.scanOptions.waitUntilDocumentModeReady();
       if (!isLoaded) {
         return;
@@ -348,9 +351,9 @@ export class Camera extends View implements CameraViewUI {
       localStorage.set(LocalStorageKey.DOC_MODE_TOAST_SHOWN, true);
       // aria-owns don't work on HTMLInputElement, show toast on parent div
       // instead.
-      newFeatureToast.show(scanModeItem);
+      customToast.showNewFeatureToast(scanModeItem);
       scanModeBtn.addEventListener('click', () => {
-        newFeatureToast.hide();
+        customToast.hide();
       });
     }
 
@@ -406,8 +409,8 @@ export class Camera extends View implements CameraViewUI {
       return;
     }
 
-    if (newFeatureToast.isShowing()) {
-      newFeatureToast.focus();
+    if (customToast.isShowing()) {
+      customToast.focus();
       return;
     }
 
