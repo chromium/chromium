@@ -124,10 +124,10 @@ void ToastManagerImpl::ShowLatest() {
         current_toast_data_->duration);
   }
 
-  base::UmaHistogramEnumeration("NotifierFramework.Toast.ShownCount",
+  base::UmaHistogramEnumeration("Ash.NotifierFramework.Toast.ShownCount",
                                 current_toast_data_->catalog_name);
   base::UmaHistogramMediumTimes(
-      "NotifierFramework.Toast.TimeInQueue",
+      "Ash.NotifierFramework.Toast.TimeInQueue",
       base::TimeTicks::Now() - current_toast_data_->time_created);
 }
 

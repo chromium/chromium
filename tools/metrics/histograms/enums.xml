@@ -93036,6 +93036,11 @@ would be helpful to identify which type is being sent.
   <int value="31" label="Extension Install Success"/>
   <int value="32" label="Account Removed"/>
   <int value="33" label="Desk Template Too Large"/>
+  <int value="34" label="Undo Close All"/>
+  <int value="35" label="Eche App Toast"/>
+  <int value="36" label="Deprecate Assistant Stylus"/>
+  <int value="37" label="Eche Tray Copy Paste Not Implemented"/>
+  <int value="38" label="Eche Tray Tablet Mode Not Supported"/>
 </enum>
 
 <enum name="TokenBinding.KeyMatch">

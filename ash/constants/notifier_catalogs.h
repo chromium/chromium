@@ -154,11 +154,10 @@ enum class NotificationCatalogName {
   kManagedSimLock = 138,
 };
 
-// A living catalog that registers Toast notifiers.
-// These values are persisted to metrics. Entries should not be renumbered and
-// numeric values should never be reused.
-// If a toast was deprecated, keep the CatalogName but add the
-// 'DEPRECATED_' prefix to the entry.
+// A living catalog that registers toasts.
+// Current values should not be renumbered or removed. Please keep in sync with
+// "ToastCatalogName" in tools/metrics/histograms/enums.xml.
+// To deprecate add a 'DEPRECATED_' prefix to the entry.
 enum class ToastCatalogName {
   kVirtualDesksLimitMax = 0,
   kVirtualDesksLimitMin = 1,
