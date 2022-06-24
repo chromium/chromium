@@ -1145,6 +1145,14 @@
           '--strip-chrome',
         ],
       },
+      # TODO(crbug.com/1141234): Move out of experimental if/when the bots are
+      # stable.
+      'chromeos-jacuzzi-chrome': {
+        'experiment_percentage': 100,
+      },
+      'chromeos-octopus-chrome': {
+        'experiment_percentage': 100,
+      },
     },
   },
   'chrome_java_test_pagecontroller_tests': {
