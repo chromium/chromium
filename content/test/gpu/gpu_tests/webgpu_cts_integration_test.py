@@ -62,6 +62,8 @@ WORKER_TEST_GLOBS = [
 
 HTML_FILENAME = os.path.join('webgpu-cts', 'test_page.html')
 
+JAVASCRIPT_DURATION = 'javascript_duration'
+
 
 async def StartWebsocketServer() -> None:
   async def HandleWebsocketConnection(
@@ -255,8 +257,14 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         yield (TestNameFromInputs(*test_inputs), HTML_FILENAME, test_inputs)
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
+    self._query, self._run_in_worker = args
+    timeout = self._GetTestTimeout()
+    # Only a single instance is used to run tests despite a number of instances
+    # (~2x the number of total tests) being initialized, so make sure to clear
+    # this state so we don't accidentally keep it around from a previous test.
+    if JAVASCRIPT_DURATION in self.additionalTags:
+      del self.additionalTags[JAVASCRIPT_DURATION]
     try:
-      self._query, self._run_in_worker = args
       self._NavigateIfNecessary(test_path)
       asyncio.run_coroutine_threadsafe(
           WebGpuCtsIntegrationTest.websocket.send(
@@ -265,8 +273,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                   'w': self._run_in_worker
               })), WebGpuCtsIntegrationTest.event_loop)
       future = asyncio.run_coroutine_threadsafe(
-          asyncio.wait_for(WebGpuCtsIntegrationTest.websocket.recv(),
-                           self._GetTestTimeout()),
+          asyncio.wait_for(WebGpuCtsIntegrationTest.websocket.recv(), timeout),
           WebGpuCtsIntegrationTest.event_loop)
       response = future.result()
       response = json.loads(response)
@@ -274,6 +281,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       status = response['s']
       logs_pieces = [response['l']]
       is_final_payload = response['final']
+      js_duration = response['js_duration_ms'] / 1000
+      # Specify the precision to avoid scientific notation. Nanoseconds should
+      # be more precision than we need anyways.
+      self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % js_duration
       # Get multiple log pieces if necessary, e.g. if a monolithic log would
       # have gone over the max payload size.
       while not is_final_payload:
@@ -293,6 +304,8 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       elif status == 'fail':
         self.fail(log_str)
     finally:
+      if JAVASCRIPT_DURATION not in self.additionalTags:
+        self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % timeout
       WebGpuCtsIntegrationTest.total_tests_run += 1
 
   @classmethod
