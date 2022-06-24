@@ -26308,7 +26308,7 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
-      'caption': '''Re-enabled the Event.path API until M115.''',
+      'caption': '''Re-enable the Event.path API until M115.''',
       'tags': [],
       'items': [
         {
