@@ -218,6 +218,8 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableSignedExchangeSubresourcePrefetch(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableSubresourceWebBundles(bool);
+  BLINK_PLATFORM_EXPORT static void EnableIdentityInCanMakePaymentEventFeature(
+      bool);
   BLINK_PLATFORM_EXPORT static void EnableIdleDetection(bool);
   BLINK_PLATFORM_EXPORT static void EnableSkipTouchEventFilter(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebOTP(bool);
@@ -237,7 +239,8 @@ class WebRuntimeFeatures {
 
   BLINK_PLATFORM_EXPORT static void EnableDocumentTransition(bool);
   BLINK_PLATFORM_EXPORT static void EnableCLSScrollAnchoring(bool);
-  BLINK_PLATFORM_EXPORT static void EnableAndroidDownloadableFontsMatching(bool);
+  BLINK_PLATFORM_EXPORT static void EnableAndroidDownloadableFontsMatching(
+      bool);
   BLINK_PLATFORM_EXPORT static void EnableWebAuthenticationRemoteDesktopSupport(
       bool);
 

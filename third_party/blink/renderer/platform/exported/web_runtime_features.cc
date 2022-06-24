@@ -571,6 +571,12 @@ void WebRuntimeFeatures::EnableSubresourceWebBundles(bool enable) {
   RuntimeEnabledFeatures::SetSubresourceWebBundlesEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableIdentityInCanMakePaymentEventFeature(
+    bool enable) {
+  RuntimeEnabledFeatures::SetIdentityInCanMakePaymentEventFeatureEnabled(
+      enable);
+}
+
 void WebRuntimeFeatures::EnableIdleDetection(bool enable) {
   RuntimeEnabledFeatures::SetIdleDetectionEnabled(enable);
 }

@@ -1255,6 +1255,10 @@
       status:"experimental",
     },
     {
+      name: "IdentityInCanMakePaymentEventFeature",
+      status: "stable",
+    },
+    {
       name: "IdleDetection",
       status: "stable",
     },

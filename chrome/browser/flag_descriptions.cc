@@ -2908,6 +2908,12 @@ const char kPaymentRequestBasicCardName[] =
 const char kPaymentRequestBasicCardDescription[] =
     "The 'basic-card' payment method of the PaymentRequest API.";
 
+const char kIdentityInCanMakePaymentEventFeatureName[] =
+    "Identity in canmakepayment event";
+const char kIdentityInCanMakePaymentEventFeatureDescription[] =
+    "The payment app receives the merchant and user identity when the merchant "
+    "checks whether this payment app is present and can make payments.";
+
 const char kAppStoreBillingDebugName[] =
     "Web Payments App Store Billing Debug Mode";
 const char kAppStoreBillingDebugDescription[] =

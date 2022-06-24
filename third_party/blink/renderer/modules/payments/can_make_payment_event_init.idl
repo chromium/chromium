@@ -5,8 +5,8 @@
 // https://w3c.github.io/payment-handler/#canmakepaymenteventinit-dictionary
 
 dictionary CanMakePaymentEventInit : ExtendableEventInit {
-    USVString topOrigin;
-    USVString paymentRequestOrigin;
-    sequence<PaymentMethodData> methodData;
-    sequence<PaymentDetailsModifier> modifiers;
+    [RuntimeEnabled=IdentityInCanMakePaymentEventFeature] USVString topOrigin;
+    [RuntimeEnabled=IdentityInCanMakePaymentEventFeature] USVString paymentRequestOrigin;
+    [RuntimeEnabled=IdentityInCanMakePaymentEventFeature] sequence<PaymentMethodData> methodData;
+    [RuntimeEnabled=IdentityInCanMakePaymentEventFeature] sequence<PaymentDetailsModifier> modifiers;
 };

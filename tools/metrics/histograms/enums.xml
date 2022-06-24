@@ -57328,6 +57328,8 @@ from previous Chrome versions.
   <int value="-665514294" label="FontAccess:disabled"/>
   <int value="-665006585" label="Bento:enabled"/>
   <int value="-663476391" label="enable-pixel-canvas-recording:enabled"/>
+  <int value="-662971693"
+      label="IdentityInCanMakePaymentEventFeature:disabled"/>
   <int value="-662720891" label="PreviewsCoinFlipHoldback_UKMOnly:enabled"/>
   <int value="-662314979"
       label="AutofillEnableSaveCardInfoBarAccountIndicationFooter:disabled"/>
@@ -58254,6 +58256,7 @@ from previous Chrome versions.
   <int value="-41254374" label="WebRtcMetronomeTaskQueue:enabled"/>
   <int value="-40935502" label="ContextualSuggestionsSlimPeekUI:enabled"/>
   <int value="-37966026" label="PermissionPredictions:enabled"/>
+  <int value="-37110489" label="IdentityInCanMakePaymentEventFeature:enabled"/>
   <int value="-36503306" label="HomepageLocationPolicy:enabled"/>
   <int value="-36234530" label="PluginVmShowMicrophonePermissions:enabled"/>
   <int value="-36077995" label="SplitCacheByNetworkIsolationKey:disabled"/>

@@ -21,6 +21,8 @@ public class PaymentFeatureList {
     public static final String ANDROID_APP_PAYMENT_UPDATE_EVENTS = "AndroidAppPaymentUpdateEvents";
     public static final String ENFORCE_FULL_DELEGATION = "EnforceFullDelegation";
     public static final String GPAY_APP_DYNAMIC_UPDATE = "GPayAppDynamicUpdate";
+    public static final String IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT_FEATURE =
+            "IdentityInCanMakePaymentEventFeature";
     public static final String SECURE_PAYMENT_CONFIRMATION = "SecurePaymentConfirmationBrowser";
     public static final String SERVICE_WORKER_PAYMENT_APPS = "ServiceWorkerPaymentApps";
     public static final String PAYMENT_REQUEST_BASIC_CARD = "PaymentRequestBasicCard";

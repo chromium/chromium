@@ -3650,6 +3650,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "identity-in-can-make-payment",
+    "owners": [ "rouslan", "web-payments-team@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "ignore-gpu-blocklist",
     "owners": [ "kbr", "zmo" ],
     // A debugging flag intended for end-users where there may not be any other
