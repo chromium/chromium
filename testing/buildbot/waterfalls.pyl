@@ -4123,7 +4123,7 @@
           'bullhead',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_android_telemetry_tests',
         },
       },
       'GPU Linux Builder': {},
@@ -4249,7 +4249,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_android_shieldtv_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_android_telemetry_tests',
         },
       },
       'Android FYI Release (Nexus 5)': {
@@ -4264,7 +4264,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_android_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_android_telemetry_tests',
         },
       },
       'Android FYI Release (Nexus 5X)': {

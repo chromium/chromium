@@ -377,7 +377,7 @@
           "--browser=android-chromium",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
@@ -385,7 +385,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl_conformance_tests",
+        "name": "webgl_conformance_validating_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -411,7 +411,7 @@
           ],
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "shards": 6
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
       }

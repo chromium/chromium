@@ -855,7 +855,7 @@
           "--browser=android-chromium",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
         "merge": {
