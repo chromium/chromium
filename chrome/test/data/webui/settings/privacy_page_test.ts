@@ -6,9 +6,8 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, CookiePrimarySetting, SafeBrowsingSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrLinkRowElement, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SecureDnsMode, SettingsPrivacyPageElement, StatusAction, SyncStatus, TrustSafetyInteraction} from 'chrome://settings/settings.js';
-
+import {ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CrLinkRowElement, CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SettingsPrefsElement, SettingsPrivacyPageElement, StatusAction, SyncStatus, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -62,6 +61,7 @@ const redesignedPages: Route[] = [
 
 suite('PrivacyPage', function() {
   let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
   let testClearBrowsingDataBrowserProxy: TestClearBrowsingDataBrowserProxy;
   let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -73,6 +73,9 @@ suite('PrivacyPage', function() {
       isPrivacySandboxRestricted: true,
       privacyGuideEnabled: false,
     });
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
   });
 
   setup(function() {
@@ -89,26 +92,7 @@ suite('PrivacyPage', function() {
 
     document.body.innerHTML = '';
     page = document.createElement('settings-privacy-page');
-    page.prefs = {
-      profile: {password_manager_leak_detection: {value: true}},
-      signin: {
-        allowed_on_next_startup:
-            {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true}
-      },
-      safebrowsing: {
-        enabled: {value: true},
-        scout_reporting_enabled: {value: true},
-        enhanced: {value: false}
-      },
-      dns_over_https:
-          {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
-      privacy_guide: {
-        viewed: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-      },
-    };
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -186,6 +170,7 @@ suite('PrivacyPage', function() {
 
 suite('PrivacySandboxEnabled', function() {
   let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
@@ -193,6 +178,9 @@ suite('PrivacySandboxEnabled', function() {
       isPrivacySandboxRestricted: false,
       privacySandboxSettings3Enabled: false,
     });
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
   });
 
   setup(function() {
@@ -200,12 +188,7 @@ suite('PrivacySandboxEnabled', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = '';
     page = document.createElement('settings-privacy-page');
-    page.prefs = {
-      privacy_sandbox: {
-        apis_enabled: {value: true},
-        apis_enabled_v2: {value: true},
-      },
-    };
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -259,36 +242,20 @@ suite('PrivacySandboxEnabled', function() {
 
 suite('PrivacyGuideEnabled', function() {
   let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = '';
     page = document.createElement('settings-privacy-page');
-    page.prefs = {
-      // Need privacy_sandbox pref for the page's setup.
-      privacy_sandbox: {
-        apis_enabled: {value: true},
-        apis_enabled_v2: {value: true},
-      },
-      privacy_guide: {
-        viewed: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-      },
-      generated: {
-        cookie_primary_setting: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: CookiePrimarySetting.BLOCK_THIRD_PARTY,
-        },
-        safe_browsing: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: SafeBrowsingSetting.STANDARD,
-        },
-      },
-    };
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -348,12 +315,16 @@ suite('PrivacyGuideEnabled', function() {
 // TODO(1215630): Remove once #privacy-guide-2 has been rolled out.
 suite('PrivacyGuide2Disabled', function() {
   let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
       privacyGuide2Enabled: false,
     });
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
   });
 
   setup(function() {
@@ -361,29 +332,7 @@ suite('PrivacyGuide2Disabled', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = '';
     page = document.createElement('settings-privacy-page');
-    page.prefs = {
-      // Need privacy_sandbox pref for the page's setup.
-      privacy_sandbox: {
-        apis_enabled: {value: true},
-        apis_enabled_v2: {value: true},
-      },
-      privacy_guide: {
-        viewed: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-      },
-      generated: {
-        cookie_primary_setting: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: CookiePrimarySetting.BLOCK_THIRD_PARTY,
-        },
-        safe_browsing: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: SafeBrowsingSetting.STANDARD,
-        },
-      },
-    };
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -507,31 +456,20 @@ suite('PrivacyPageSound', function() {
 
 suite('HappinessTrackingSurveys', function() {
   let testHatsBrowserProxy: TestHatsBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
   let page: SettingsPrivacyPageElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
     document.body.innerHTML = '';
     page = document.createElement('settings-privacy-page');
-    // Initialize the privacy page pref. Security page manually expands
-    // the initially selected safe browsing option so the pref object
-    // needs to be defined.
-    page.prefs = {
-      generated: {
-        safe_browsing: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: SafeBrowsingSetting.STANDARD,
-        },
-        cookie_session_only: {value: false},
-        cookie_primary_setting:
-            {type: chrome.settingsPrivate.PrefType.NUMBER, value: 0},
-        password_manager_leak_detection: {value: false},
-      },
-      profile: {password_manager_leak_detection: {value: false}},
-      dns_over_https:
-          {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
-    };
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   });
