@@ -31,9 +31,11 @@ class COMPONENT_EXPORT(EVDEV) OneDeviceTrainNeuralStylusPalmDetectionFilterModel
 
   const NeuralStylusPalmDetectionFilterModelConfig& config() const override;
 
+ protected:
+  NeuralStylusPalmDetectionFilterModelConfig config_;
+
  private:
   void Initialize();
-  NeuralStylusPalmDetectionFilterModelConfig config_;
   size_t expected_feature_size_;
 };
 

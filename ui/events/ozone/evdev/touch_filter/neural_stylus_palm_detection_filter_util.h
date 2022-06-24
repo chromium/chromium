@@ -39,6 +39,13 @@ struct COMPONENT_EXPORT(EVDEV) PalmFilterSample {
   int tracking_id = 0;
   gfx::PointF point;
   base::TimeTicks time;
+
+  bool operator==(const PalmFilterSample& other) const {
+    return major_radius == other.major_radius &&
+           minor_radius == other.minor_radius && pressure == other.pressure &&
+           edge == other.edge && tracking_id == other.tracking_id &&
+           point == other.point && time == other.time;
+  }
 };
 
 COMPONENT_EXPORT(EVDEV)
@@ -50,14 +57,13 @@ PalmFilterSample CreatePalmFilterSample(
 
 class COMPONENT_EXPORT(EVDEV) PalmFilterStroke {
  public:
-  explicit PalmFilterStroke(size_t max_length);
+  explicit PalmFilterStroke(
+      const NeuralStylusPalmDetectionFilterModelConfig& model_config);
   PalmFilterStroke(const PalmFilterStroke& other);
   PalmFilterStroke(PalmFilterStroke&& other);
-  PalmFilterStroke& operator=(const PalmFilterStroke& other);
-  PalmFilterStroke& operator=(PalmFilterStroke&& other);
   ~PalmFilterStroke();
 
-  void AddSample(const PalmFilterSample& sample);
+  void ProcessSample(const PalmFilterSample& sample);
   gfx::PointF GetCentroid() const;
   float BiggestSize() const;
   // If no elements in stroke, returns 0.0;
@@ -69,11 +75,32 @@ class COMPONENT_EXPORT(EVDEV) PalmFilterStroke {
 
  private:
   void AddToUnscaledCentroid(const gfx::Vector2dF point);
+  void AddSample(const PalmFilterSample& sample);
+  /**
+   * Process the sample. Potentially store the resampled sample into samples_.
+   */
+  void Resample(const PalmFilterSample& sample);
 
   std::deque<PalmFilterSample> samples_;
   int tracking_id_ = 0;
+  /**
+   * How many total samples have been reported for this stroke. This is
+   * different from samples_.size() because samples_ will get pruned to only
+   * keep a certain number of last samples.
+   * When resampling is enabled, this value will be equal to the number of
+   * resampled values that this stroke has received. It may not be equal to the
+   * number of times 'AddSample' has been called.
+   */
   uint64_t samples_seen_ = 0;
-  uint64_t max_length_;
+  /**
+   * The last sample seen by the model. Used when resampling is enabled in order
+   * to compute the resampled value.
+   */
+  PalmFilterSample last_sample_;
+
+  const uint64_t max_sample_count_;
+  const absl::optional<base::TimeDelta> resample_period_;
+
   gfx::PointF unscaled_centroid_ = gfx::PointF(0., 0.);
   // Used in part of the kahan summation.
   gfx::Vector2dF unscaled_centroid_sum_error_ =

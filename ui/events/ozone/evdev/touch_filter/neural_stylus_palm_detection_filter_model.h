@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
@@ -90,6 +91,12 @@ struct COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilterModelConfig {
   // If a stroke has these numbers of samples, run an early stage detection to
   // check if it's spurious and mark it held if so.
   std::unordered_set<uint32_t> early_stage_sample_counts;
+
+  // If set, time between values to resample. Must match the value coded into
+  // model. Currently the model is developed for 120Hz touch devices, so this
+  // value must be set to "8 ms" if your device has a different refresh rate.
+  // If not set, no resampling is done.
+  absl::optional<base::TimeDelta> resample_period;
 };
 
 // An abstract model utilized by NueralStylusPalmDetectionFilter.

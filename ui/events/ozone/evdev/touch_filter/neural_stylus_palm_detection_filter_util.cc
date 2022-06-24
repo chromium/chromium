@@ -58,6 +58,48 @@ float ScaledRadius(
   }
   return return_value;
 }
+
+float interpolate(float start_value, float end_value, float proportion) {
+  return start_value + (end_value - start_value) * proportion;
+}
+
+/**
+ * During resampling, the later events are used as a basis to populate
+ * non-resampled fields like major and minor. However, if the requested time is
+ * within this delay of the earlier event, the earlier event will be used as a
+ * basis instead.
+ */
+const static auto kPreferInitialEventDelay = base::Microseconds(1);
+
+/**
+ * Interpolate between the "before" and "after" events to get a resampled value
+ * at the timestamp 'time'. Not all fields are interpolated. For fields that are
+ * not interpolated, the values are taken from the 'after' sample unless the
+ * requested time is very close to the 'before' sample.
+ */
+PalmFilterSample getSampleAtTime(base::TimeTicks time,
+                                 const PalmFilterSample& before,
+                                 const PalmFilterSample& after) {
+  // Use the newest sample as the base, except when the requested time is very
+  // close to the 'before' sample.
+  PalmFilterSample result = after;
+  if (time - before.time < kPreferInitialEventDelay) {
+    result = before;
+  }
+  // Only the x and y values are interpolated. We could also interpolate the
+  // oval size and orientation, but it's not a simple computation, and would
+  // likely not provide much value.
+  const float proportion =
+      static_cast<float>((time - before.time).InNanoseconds()) /
+      (after.time - before.time).InNanoseconds();
+  result.edge = interpolate(before.edge, after.edge, proportion);
+  result.point.set_x(
+      interpolate(before.point.x(), after.point.x(), proportion));
+  result.point.set_y(
+      interpolate(before.point.y(), after.point.y(), proportion));
+  result.time = time;
+  return result;
+}
 }  // namespace
 
 PalmFilterSample CreatePalmFilterSample(
@@ -82,11 +124,11 @@ PalmFilterSample CreatePalmFilterSample(
     sample.minor_radius = ScaledRadius(touch.major, model_config);
   }
 
-  // Nearest edge distance, in cm.
   float nearest_x_edge = std::min(touch.x, dev_info.max_x - touch.x);
   float nearest_y_edge = std::min(touch.y, dev_info.max_y - touch.y);
   float normalized_x_edge = nearest_x_edge / dev_info.x_res;
   float normalized_y_edge = nearest_y_edge / dev_info.y_res;
+  // Nearest edge distance, in mm.
   sample.edge = std::min(normalized_x_edge, normalized_y_edge);
   sample.point =
       gfx::PointF(touch.x / dev_info.x_res, touch.y / dev_info.y_res);
@@ -96,25 +138,63 @@ PalmFilterSample CreatePalmFilterSample(
   return sample;
 }
 
-PalmFilterStroke::PalmFilterStroke(size_t max_length)
-    : max_length_(max_length) {}
+PalmFilterStroke::PalmFilterStroke(
+    const NeuralStylusPalmDetectionFilterModelConfig& model_config)
+    : max_sample_count_(model_config.max_sample_count),
+      resample_period_(model_config.resample_period) {}
 PalmFilterStroke::PalmFilterStroke(const PalmFilterStroke& other) = default;
 PalmFilterStroke::PalmFilterStroke(PalmFilterStroke&& other) = default;
-PalmFilterStroke& PalmFilterStroke::operator=(const PalmFilterStroke& other) =
-    default;
-PalmFilterStroke& PalmFilterStroke::operator=(PalmFilterStroke&& other) =
-    default;
 PalmFilterStroke::~PalmFilterStroke() {}
 
-void PalmFilterStroke::AddSample(const PalmFilterSample& sample) {
-  samples_seen_++;
-  if (samples_.empty()) {
+void PalmFilterStroke::ProcessSample(const PalmFilterSample& sample) {
+  if (samples_seen_ == 0) {
     tracking_id_ = sample.tracking_id;
   }
   DCHECK_EQ(tracking_id_, sample.tracking_id);
-  samples_.push_back(sample);
+  if (resample_period_.has_value()) {
+    Resample(sample);
+    return;
+  }
+
+  AddSample(sample);
+
+  while (samples_.size() > max_sample_count_) {
+    AddToUnscaledCentroid(-samples_.front().point.OffsetFromOrigin());
+    samples_.pop_front();
+  }
+}
+
+void PalmFilterStroke::AddSample(const PalmFilterSample& sample) {
   AddToUnscaledCentroid(sample.point.OffsetFromOrigin());
-  while (samples_.size() > max_length_) {
+  samples_.push_back(sample);
+  samples_seen_++;
+}
+
+/**
+ * When resampling is enabled, we don't store all samples. Only the resampled
+ * values are stored into samples_. In addition, the last real event is stored
+ * into last_sample_, which is used to calculate the resampled values.
+ */
+void PalmFilterStroke::Resample(const PalmFilterSample& sample) {
+  if (samples_seen_ == 0) {
+    AddSample(sample);
+    last_sample_ = sample;
+    return;
+  }
+
+  // We already have a valid last sample here.
+  DCHECK_LE(last_sample_.time, sample.time);
+  // Generate resampled values
+  base::TimeTicks next_sample_time = samples_.back().time + *resample_period_;
+  while (next_sample_time <= sample.time) {
+    AddSample(getSampleAtTime(next_sample_time, last_sample_, sample));
+    next_sample_time = samples_.back().time + (*resample_period_);
+  }
+  last_sample_ = sample;
+
+  // Prune the resampled collection
+  while ((samples_.back().time - samples_.front().time) >=
+         (*resample_period_) * max_sample_count_) {
     AddToUnscaledCentroid(-samples_.front().point.OffsetFromOrigin());
     samples_.pop_front();
   }
