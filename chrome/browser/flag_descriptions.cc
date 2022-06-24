@@ -4679,6 +4679,13 @@ const char kFastPairSavedDevicesDescription[] =
     "user's devices and provide the option to opt in or out of saving devices "
     "to their account.";
 
+const char kFrameSinkDesktopCapturerInCrdName[] =
+    "Enable FrameSinkDesktopCapturer in CRD";
+const char kFrameSinkDesktopCapturerInCrdDescription[] =
+    "Enables the use of FrameSinkDesktopCapturer in the video streaming for "
+    "CRD, "
+    "replacing the use of AuraDesktopCapturer";
+
 const char kMultiMonitorsInCrdName[] = "Multi monitor in CRD";
 const char kMultiMonitorsInCrdDescription[] =
     "Enables support for viewing multiple monitors connected to this ChromeOS "

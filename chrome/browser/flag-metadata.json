@@ -3479,6 +3479,11 @@
     "expiry_milestone": 81
   },
   {
+    "name": "frame-sink-desktop-capturer-in-crd",
+    "owners" : ["chromeos-commercial-crd@google.com", "macinashutosh@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "frame-throttle-fps",
     "owners":[ "yjliu", "chromeos-perf@google.com"],
     "expiry_milestone": 95

@@ -15,6 +15,9 @@ extern const base::Feature kEnableMultiMonitorsInCrd;
 // the login screen.
 extern const base::Feature kEnableCrdAdminRemoteAccess;
 
+// Enable to allow FrameSinkDesktopCapturer to be used for CRD video streaming.
+extern const base::Feature kEnableFrameSinkDesktopCapturerInCrd;
+
 }  // namespace remoting::features
 
 #endif  // REMOTING_HOST_CHROMEOS_FEATURES_H_

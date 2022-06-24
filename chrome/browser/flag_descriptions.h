@@ -2669,6 +2669,9 @@ extern const char kFastPairSubsequentPairingUXDescription[];
 extern const char kFastPairSavedDevicesName[];
 extern const char kFastPairSavedDevicesDescription[];
 
+extern const char kFrameSinkDesktopCapturerInCrdName[];
+extern const char kFrameSinkDesktopCapturerInCrdDescription[];
+
 extern const char kMultiMonitorsInCrdName[];
 extern const char kMultiMonitorsInCrdDescription[];
 

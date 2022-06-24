@@ -55336,6 +55336,8 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSteadyStateUrlTrivialSubdomains:enabled"/>
   <int value="-1931712004" label="ConsolidatedSiteStorageControls:disabled"/>
   <int value="-1930720286" label="nacl-debug-mask"/>
+  <int value="-1930487223"
+      label="EnableFrameSinkDesktopCapturerInCrd:disabled"/>
   <int value="-1928198763" label="enable-async-dns"/>
   <int value="-1927968708" label="OmniboxPedalsAndroidBatch1:disabled"/>
   <int value="-1927080237" label="Vulkan:enabled"/>
@@ -60041,6 +60043,7 @@ from previous Chrome versions.
   <int value="1114270092" label="PortalsCrossOrigin:disabled"/>
   <int value="1114629582" label="enable-floating-virtual-keyboard"/>
   <int value="1114794286" label="AutofillTypeSpecificPopupWidth:disabled"/>
+  <int value="1115532551" label="EnableFrameSinkDesktopCapturerInCrd:enabled"/>
   <int value="1115635149" label="EnableUnifiedMultiDeviceSetup:enabled"/>
   <int value="1116593018" label="CaptureThumbnailOnLoadFinished:disabled"/>
   <int value="1116798400" label="NoncedPartitionedCookies:enabled"/>
