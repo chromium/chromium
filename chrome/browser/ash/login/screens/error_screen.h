@@ -96,12 +96,6 @@ class ErrorScreen : public BaseScreen,
   // been created.
   void MaybeInitCaptivePortalWindowProxy(content::WebContents* web_contents);
 
-  // Actually show or hide the screen. These are called by ErrorScreenHandler;
-  // having two show methods (Show/Hide from BaseScreen below) is confusing
-  // and this should be cleaned up.
-  void DoShow();
-  void DoHide();
-
   void ShowNetworkErrorMessage(NetworkStateInformer::State state,
                                NetworkError::ErrorReason reason);
 

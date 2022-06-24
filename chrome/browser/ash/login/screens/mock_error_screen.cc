@@ -30,21 +30,8 @@ void MockErrorScreen::SetErrorState(NetworkError::ErrorState error_state,
   MockSetErrorState(error_state, network);
 }
 
-MockErrorScreenView::MockErrorScreenView() {
-  EXPECT_CALL(*this, MockBind(_)).Times(AtLeast(1));
-  EXPECT_CALL(*this, MockUnbind()).Times(AtLeast(1));
-}
+MockErrorScreenView::MockErrorScreenView() = default;
 
 MockErrorScreenView::~MockErrorScreenView() = default;
-
-void MockErrorScreenView::Bind(ErrorScreen* screen) {
-  screen_ = screen;
-  MockBind(screen);
-}
-
-void MockErrorScreenView::Unbind() {
-  screen_ = nullptr;
-  MockUnbind();
-}
 
 }  // namespace ash

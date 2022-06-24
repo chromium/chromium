@@ -6,7 +6,6 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,35 +21,9 @@ ErrorScreenHandler::ErrorScreenHandler() : BaseScreenHandler(kScreenId) {}
 ErrorScreenHandler::~ErrorScreenHandler() = default;
 
 void ErrorScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-
   base::Value::Dict data;
   data.Set("hasUserPods", ash::LoginDisplayHost::default_host()->HasUserPods());
   ShowInWebUI(std::move(data));
-
-  if (screen_)
-    screen_->DoShow();
-  showing_ = true;
-}
-
-void ErrorScreenHandler::Hide() {
-  showing_ = false;
-  show_on_init_ = false;
-  if (screen_)
-    screen_->DoHide();
-}
-
-void ErrorScreenHandler::Bind(ErrorScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-}
-
-void ErrorScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void ErrorScreenHandler::ShowOobeScreen(OobeScreenId screen) {
@@ -130,17 +103,6 @@ void ErrorScreenHandler::DeclareLocalizedValues(
   ui::network_element::AddLocalizedValuesToBuilder(builder);
 
   builder->Add("offlineLogin", IDS_OFFLINE_LOGIN_HTML);
-}
-
-void ErrorScreenHandler::InitializeDeprecated() {
-  if (!IsJavascriptAllowed())
-    return;
-
-  if (show_on_init_) {
-    // TODO(nkostylev): Check that context initial state is properly passed.
-    Show();
-    show_on_init_ = false;
-  }
 }
 
 }  // namespace chromeos

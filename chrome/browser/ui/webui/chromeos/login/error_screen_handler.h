@@ -9,10 +9,6 @@
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace ash {
-class ErrorScreen;
-}
-
 namespace chromeos {
 
 // Interface for dependency injection between ErrorScreen and its actual
@@ -26,15 +22,6 @@ class ErrorScreenView : public base::SupportsWeakPtr<ErrorScreenView> {
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
-
-  // Binds `screen` to the view.
-  virtual void Bind(ash::ErrorScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
 
   // Switches to `screen`.
   virtual void ShowOobeScreen(OobeScreenId screen) = 0;
@@ -76,9 +63,6 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
  private:
   // ErrorScreenView:
   void Show() override;
-  void Hide() override;
-  void Bind(ash::ErrorScreen* screen) override;
-  void Unbind() override;
   void ShowOobeScreen(OobeScreenId screen) override;
   void SetErrorStateCode(NetworkError::ErrorState error_state) override;
   void SetErrorStateNetwork(const std::string& network_name) override;
@@ -91,19 +75,9 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
 
   // WebUI message handlers.
   void HandleHideCaptivePortal();
-
-  // Non-owning ptr.
-  ash::ErrorScreen* screen_ = nullptr;
-
-  // Should the screen be shown right after initialization?
-  bool show_on_init_ = false;
-
-  // Whether the error screen is currently shown.
-  bool showing_ = false;
 
   base::WeakPtrFactory<ErrorScreenHandler> weak_ptr_factory_{this};
 };

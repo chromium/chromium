@@ -94,14 +94,10 @@ ErrorScreen::ErrorScreen(base::WeakPtr<ErrorScreenView> view)
   network_state_informer_ = new NetworkStateInformer();
   network_state_informer_->Init();
   NetworkHandler::Get()->network_connection_handler()->AddObserver(this);
-  if (view_)
-    view_->Bind(this);
 }
 
 ErrorScreen::~ErrorScreen() {
   NetworkHandler::Get()->network_connection_handler()->RemoveObserver(this);
-  if (view_)
-    view_->Unbind();
 }
 
 void ErrorScreen::AllowGuestSignin(bool allowed) {
@@ -208,23 +204,6 @@ void ErrorScreen::MaybeInitCaptivePortalWindowProxy(
   }
 }
 
-void ErrorScreen::DoShow() {
-  LOG(WARNING) << "Network error screen message is shown";
-  session_manager::SessionManager::Get()->NotifyNetworkErrorScreenShown();
-  network_portal_detector::GetInstance()->SetStrategy(
-      PortalDetectorStrategy::STRATEGY_ID_ERROR_SCREEN);
-}
-
-void ErrorScreen::DoHide() {
-  LOG(WARNING) << "Network error screen message is hidden";
-  if (on_hide_callback_) {
-    std::move(on_hide_callback_).Run();
-    on_hide_callback_ = base::OnceClosure();
-  }
-  network_portal_detector::GetInstance()->SetStrategy(
-      PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN);
-}
-
 void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
                                           NetworkError::ErrorReason reason) {
   const std::string network_path = network_state_informer_->network_path();
@@ -272,13 +251,27 @@ void ErrorScreen::ShowImpl() {
     SetHideCallback(base::BindOnce(&ErrorScreen::DefaultHideCallback,
                                    weak_factory_.GetWeakPtr()));
   }
-  if (view_)
-    view_->Show();
+  if (!view_)
+    return;
+
+  view_->Show();
+  LOG(WARNING) << "Network error screen message is shown";
+  session_manager::SessionManager::Get()->NotifyNetworkErrorScreenShown();
+  network_portal_detector::GetInstance()->SetStrategy(
+      PortalDetectorStrategy::STRATEGY_ID_ERROR_SCREEN);
 }
 
 void ErrorScreen::HideImpl() {
-  if (view_ && !is_hidden())
-    view_->Hide();
+  if (!view_ || is_hidden())
+    return;
+
+  LOG(WARNING) << "Network error screen message is hidden";
+  if (on_hide_callback_) {
+    std::move(on_hide_callback_).Run();
+    on_hide_callback_ = base::OnceClosure();
+  }
+  network_portal_detector::GetInstance()->SetStrategy(
+      PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN);
 }
 
 void ErrorScreen::OnUserAction(const base::Value::List& args) {
