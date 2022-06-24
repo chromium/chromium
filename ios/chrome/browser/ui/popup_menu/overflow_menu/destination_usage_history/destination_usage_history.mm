@@ -30,6 +30,10 @@ constexpr int kRecencyWindow = 7;  // days (inclusive)
 // places.
 constexpr double kDampening = 1.1;
 
+// kInitialBufferNumClicks represents the minimum number of clicks a destination
+// must have before the user notices a visible change in the carousel sort.
+constexpr int kInitialBufferNumClicks = 3;  // clicks
+
 // The dictionary key used for storing rankings.
 const std::string kRankingKey = "ranking";
 
@@ -233,9 +237,10 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   if (!self.prefService)
     return;
 
-  const base::Value* pref = self.prefService->GetDictionary(
-      prefs::kOverflowMenuDestinationUsageHistory);
-  const base::Value::Dict* history = pref->GetIfDict();
+  const base::Value::Dict* history =
+      self.prefService
+          ->GetDictionary(prefs::kOverflowMenuDestinationUsageHistory)
+          ->GetIfDict();
   const std::string path = base::NumberToString(TodaysDay()) + "." +
                            overflow_menu::StringNameForDestination(destination);
 
@@ -244,6 +249,10 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   DictionaryPrefUpdate update(self.prefService,
                               prefs::kOverflowMenuDestinationUsageHistory);
   update->SetIntPath(path, numClicks);
+
+  // User's very first time using Smart Sorting.
+  if (history->size() == 0)
+    [self injectDefaultNumClicksForAllDestinations];
 
   // Calculate new ranking and store to prefs; Calculate the new ranking
   // ahead of time so overflow menu presentation needn't run ranking algorithm
@@ -256,6 +265,30 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 }
 
 #pragma mark - Private
+
+// Injects a default number of clicks for all destinations in the history
+// dictonary.
+- (void)injectDefaultNumClicksForAllDestinations {
+  DCHECK_GT(kDampening, 1.0);
+  DCHECK_GT(kInitialBufferNumClicks, 1);
+
+  int defaultNumClicks =
+      (kInitialBufferNumClicks - 1) * (kDampening - 1.0) * 100.0;
+  std::string today = base::NumberToString(TodaysDay());
+  DictionaryPrefUpdate update(self.prefService,
+                              prefs::kOverflowMenuDestinationUsageHistory);
+  const base::Value::Dict* history =
+      self.prefService
+          ->GetDictionary(prefs::kOverflowMenuDestinationUsageHistory)
+          ->GetIfDict();
+
+  for (overflow_menu::Destination destination : kDefaultRanking) {
+    const std::string path =
+        today + "." + overflow_menu::StringNameForDestination(destination);
+    update->SetIntPath(path, history->FindIntByDottedPath(path).value_or(0) +
+                                 defaultNumClicks);
+  }
+}
 
 // Delete expired usage data (data older than |kDataExpirationWindow| days) and
 // saves back to prefs. Returns true if expired usage data was found/removed,
