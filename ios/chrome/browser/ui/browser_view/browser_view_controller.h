@@ -33,6 +33,7 @@ class Browser;
 // TODO(crbug.com/1331229): Remove all use of the download manager coordinator
 // from BVC
 @class DownloadManagerCoordinator;
+@protocol HelpCommands;
 @class KeyCommandsProvider;
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 @protocol PopupMenuUIUpdating;
@@ -42,6 +43,7 @@ class PrerenderService;
 @class SideSwipeController;
 @class TabStripCoordinator;
 @class TabStripLegacyCoordinator;
+@protocol TextZoomCommands;
 @class ToolbarAccessoryPresenter;
 @protocol ToolbarCoordinating;
 @protocol IncognitoReauthCommands;
@@ -61,6 +63,8 @@ typedef struct {
   TabStripLegacyCoordinator* legacyTabStripCoordinator;
   SideSwipeController* sideSwipeController;
   BookmarkInteractionController* bookmarkInteractionController;
+  id<TextZoomCommands> textZoomHandler;
+  id<HelpCommands> helpHandler;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

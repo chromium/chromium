@@ -524,9 +524,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.tabStripCoordinator = dependencies.tabStripCoordinator;
     self.legacyTabStripCoordinator = dependencies.legacyTabStripCoordinator;
 
-    // TODO(crbug.com/1329089): Inject this handler.
-    self.textZoomHandler =
-        HandlerForProtocol(self.commandDispatcher, TextZoomCommands);
+    self.textZoomHandler = dependencies.textZoomHandler;
+    self.helpHandler = dependencies.helpHandler;
+
     // TODO(crbug.com/1329090): Have BrowserCoordinator set up dispatch to the
     // BVC for these commands.
     [self.commandDispatcher
@@ -1924,10 +1924,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _downloadManagerCoordinator.bottomMarginHeightAnchor =
       [NamedGuide guideWithName:kSecondaryToolbarGuide view:self.contentArea]
           .heightAnchor;
-
-  // TODO(crbug.com/1329089): Inject this handler.
-  self.helpHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
 
   // TODO(crbug.com/1329098): Assuming all of the coordinators are in
   // BrowserCoordinator, move this setup there as well.

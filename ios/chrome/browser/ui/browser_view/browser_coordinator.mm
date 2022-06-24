@@ -336,6 +336,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   // The coordinator that shows the Send Tab To Self UI.
   SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
   BookmarkInteractionController* _bookmarkInteractionController;
+  id<TextZoomCommands> _textZoomHandler;
+  id<HelpCommands> _helpHandler;
 }
 
 #pragma mark - ChromeCoordinator
@@ -593,6 +595,9 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   self.downloadManagerCoordinator.presenter =
       [[VerticalAnimationContainer alloc] init];
 
+  _textZoomHandler = HandlerForProtocol(_dispatcher, TextZoomCommands);
+  _helpHandler = HandlerForProtocol(_dispatcher, HelpCommands);
+
   _viewControllerDependencies.prerenderService = _prerenderService;
   _viewControllerDependencies.bubblePresenter = _bubblePresenter;
   _viewControllerDependencies.downloadManagerCoordinator =
@@ -609,6 +614,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _viewControllerDependencies.sideSwipeController = _sideSwipeController;
   _viewControllerDependencies.bookmarkInteractionController =
       _bookmarkInteractionController;
+  _viewControllerDependencies.textZoomHandler = _textZoomHandler;
+  _viewControllerDependencies.helpHandler = _helpHandler;
 }
 
 - (void)updateViewControllerDependencies {
@@ -630,11 +637,15 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _viewControllerDependencies.tabStripCoordinator = nil;
   _viewControllerDependencies.legacyTabStripCoordinator = nil;
   _viewControllerDependencies.sideSwipeController = nil;
+  _viewControllerDependencies.textZoomHandler = nil;
+  _viewControllerDependencies.helpHandler = nil;
   _viewControllerDependencies.bookmarkInteractionController = nil;
 
   [_bookmarkInteractionController shutdown];
   _bookmarkInteractionController = nil;
 
+  _textZoomHandler = nil;
+  _helpHandler = nil;
   _legacyTabStripCoordinator = nil;
   _tabStripCoordinator = nil;
   _sideSwipeController = nil;
