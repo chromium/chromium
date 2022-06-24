@@ -72,7 +72,10 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "feature_engagement_egtest.mm" ]
+  sources = [
+    "feature_engagement_egtest.mm",
+    "password_suggestions_iph_egtest.mm",
+  ]
   deps = [
     ":eg_test_support+eg2",
     "//base",
