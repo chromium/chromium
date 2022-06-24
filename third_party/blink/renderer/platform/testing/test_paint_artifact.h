@@ -73,7 +73,8 @@ class TestPaintArtifact {
       const EffectPaintPropertyNodeOrAlias& effect) {
     return Properties(PropertyTreeStateOrAlias(transform, clip, effect));
   }
-  TestPaintArtifact& Properties(const RefCountedPropertyTreeState& properties) {
+  TestPaintArtifact& Properties(
+      const RefCountedPropertyTreeStateOrAlias& properties) {
     return Properties(properties.GetPropertyTreeState());
   }
 
@@ -86,7 +87,8 @@ class TestPaintArtifact {
   TestPaintArtifact& Chunk(const PropertyTreeStateOrAlias& properties) {
     return Chunk().Properties(properties);
   }
-  TestPaintArtifact& Chunk(const RefCountedPropertyTreeState& properties) {
+  TestPaintArtifact& Chunk(
+      const RefCountedPropertyTreeStateOrAlias& properties) {
     return Chunk().Properties(properties);
   }
 

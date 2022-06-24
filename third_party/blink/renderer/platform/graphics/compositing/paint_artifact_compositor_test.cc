@@ -55,7 +55,7 @@ void SetTransform(PaintChunk& chunk,
                   const TransformPaintPropertyNode& transform) {
   auto properties = chunk.properties.GetPropertyTreeState();
   properties.SetTransform(transform);
-  chunk.properties = RefCountedPropertyTreeState(properties);
+  chunk.properties = RefCountedPropertyTreeStateOrAlias(properties);
 }
 
 class MockScrollCallbacks : public CompositorScrollCallbacks {

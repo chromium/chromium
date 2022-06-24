@@ -375,7 +375,7 @@ TEST_F(CullRectTest, SingleScrollWholeScrollingContents) {
   auto ref_scroll_translation_state = CreateCompositedScrollTranslationState(
       state1, -10, -15, gfx::Rect(20, 10, 40, 50), gfx::Size(2000, 2000));
   auto scroll_translation_state =
-      ref_scroll_translation_state.GetPropertyTreeState().Unalias();
+      ref_scroll_translation_state.GetPropertyTreeState();
 
   // Same as ApplyScrollTranslationWholeScrollingContents.
   CullRect cull_rect1(gfx::Rect(0, 0, 50, 100));
@@ -416,7 +416,7 @@ TEST_F(CullRectTest, SingleScrollPartialScrollingContents) {
   auto ref_scroll_translation_state = CreateCompositedScrollTranslationState(
       state1, -3000, -5000, gfx::Rect(20, 10, 40, 50), gfx::Size(8000, 8000));
   auto scroll_translation_state =
-      ref_scroll_translation_state.GetPropertyTreeState().Unalias();
+      ref_scroll_translation_state.GetPropertyTreeState();
 
   // Same as ApplyScrollTranslationPartialScrollingContents.
   CullRect cull_rect1(gfx::Rect(0, 0, 50, 100));
@@ -453,8 +453,7 @@ TEST_F(CullRectTest, TransformUnderScrollTranslation) {
       state1, -3000, -5000, gfx::Rect(20, 10, 40, 50), gfx::Size(8000, 8000));
   auto t2 =
       Create2DTranslation(scroll_translation_state.Transform(), 2000, 3000);
-  PropertyTreeState state2 =
-      scroll_translation_state.GetPropertyTreeState().Unalias();
+  PropertyTreeState state2 = scroll_translation_state.GetPropertyTreeState();
   state2.SetTransform(*t2);
 
   // Cases below are the same as those in SingleScrollPartialScrollingContents,
@@ -491,7 +490,7 @@ TEST_F(CullRectTest, TransformEscapingScroll) {
   auto ref_scroll_translation_state = CreateCompositedScrollTranslationState(
       state1, -3000, -5000, gfx::Rect(20, 10, 40, 50), gfx::Size(8000, 8000));
   auto scroll_translation_state =
-      ref_scroll_translation_state.GetPropertyTreeState().Unalias();
+      ref_scroll_translation_state.GetPropertyTreeState();
 
   auto t2 = CreateTransform(scroll_translation_state.Transform(),
                             TransformationMatrix().Translate(100, 200));
@@ -522,7 +521,7 @@ TEST_F(CullRectTest, SmallScrollContentsAfterBigScrollContents) {
   auto ref_scroll_translation_state1 = CreateCompositedScrollTranslationState(
       state1, -10, -15, gfx::Rect(20, 10, 40, 50), gfx::Size(8000, 8000));
   auto scroll_translation_state1 =
-      ref_scroll_translation_state1.GetPropertyTreeState().Unalias();
+      ref_scroll_translation_state1.GetPropertyTreeState();
 
   auto t2 = CreateTransform(scroll_translation_state1.Transform(),
                             TransformationMatrix().Translate(2000, 3000));
@@ -531,7 +530,7 @@ TEST_F(CullRectTest, SmallScrollContentsAfterBigScrollContents) {
   auto ref_scroll_translation_state2 = CreateCompositedScrollTranslationState(
       state2, -10, -15, gfx::Rect(30, 20, 100, 200), gfx::Size(200, 400));
   auto scroll_translation_state2 =
-      ref_scroll_translation_state2.GetPropertyTreeState().Unalias();
+      ref_scroll_translation_state2.GetPropertyTreeState();
 
   CullRect cull_rect1(gfx::Rect(0, 0, 50, 100));
   cull_rect1.ApplyPaintProperties(state1, state1, scroll_translation_state2,
@@ -554,7 +553,7 @@ TEST_F(CullRectTest, BigScrollContentsAfterSmallScrollContents) {
   auto ref_scroll_translation_state1 = CreateCompositedScrollTranslationState(
       state1, -10, -15, gfx::Rect(30, 20, 100, 200), gfx::Size(200, 400));
   auto scroll_translation_state1 =
-      ref_scroll_translation_state1.GetPropertyTreeState().Unalias();
+      ref_scroll_translation_state1.GetPropertyTreeState();
 
   auto t2 = CreateTransform(scroll_translation_state1.Transform(),
                             TransformationMatrix().Translate(10, 20));
@@ -564,7 +563,7 @@ TEST_F(CullRectTest, BigScrollContentsAfterSmallScrollContents) {
       state2, -3000, -5000, gfx::Rect(20, 10, 50, 100),
       gfx::Size(10000, 20000));
   auto scroll_translation_state2 =
-      ref_scroll_translation_state2.GetPropertyTreeState().Unalias();
+      ref_scroll_translation_state2.GetPropertyTreeState();
 
   CullRect cull_rect1(gfx::Rect(0, 0, 100, 200));
   cull_rect1.ApplyPaintProperties(state1, state1, scroll_translation_state2,
