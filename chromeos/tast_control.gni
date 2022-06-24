@@ -297,7 +297,7 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.SSHFSMount.bullseye_stable",
   "crostini.SecureCopyPaste.copy_x11_bullseye_stable",
 
-  # http://b234699971
+  # http://b/234699971
   "crostini.AppGeditUnshareFolder",
 
   # b/235279574
@@ -315,6 +315,14 @@ tast_disabled_tests_from_chrome_all = [
   # http://b/236710501
   "crostini.AppAndroidStudio.stable",
   "crostini.AppGeditUnshareFolder.stable",
+
+  # http://crbug.com/1339132
+  "crostini.AppEclipse",
+  "crostini.AppEmacs",
+  "crostini.AppVscode",
+  "crostini.BasicLxdNext.stable",
+  "crostini.RestartApp",
+  "crostini.RestartApp.stable",
 
   # http://crbug.com/1338038
   "arc.IMEBlockingVK",
