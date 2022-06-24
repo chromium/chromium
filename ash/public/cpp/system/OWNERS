@@ -1,5 +1,1 @@
 file://ash/system/OWNERS
-
-per-file *catalog.h=set noparent
-per-file *catalog.h=file://ash/system/OWNERS
-per-file *catalog.h=kradtke@chromium.org
