@@ -14,7 +14,7 @@ import urllib.request
 # MIN_VERSION is the earliest working version of the updater for self-update
 # testing. If a backwards-incompatible change to the updater is made, it may be
 # necessary to increase the version.
-MIN_VERSION = 958587
+MIN_VERSION = 1017743
 
 def get_platform():
     return 'Mac'
