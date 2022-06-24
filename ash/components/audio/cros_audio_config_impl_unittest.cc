@@ -5,6 +5,7 @@
 #include "ash/components/audio/cros_audio_config_impl.h"
 
 #include "ash/components/audio/audio_devices_pref_handler.h"
+#include "ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/audio/cros_audio_config.h"
 #include "ash/components/audio/public/mojom/cros_audio_config.mojom.h"
@@ -51,12 +52,18 @@ class CrosAudioConfigImplTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kAudioSettingsPage);
-    CrasAudioHandler::InitializeForTesting();
+    CrasAudioClient::InitializeFake();
+    audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
+    CrasAudioHandler::Initialize(mojo::NullRemote(), audio_pref_handler_);
     cras_audio_handler_ = CrasAudioHandler::Get();
     cros_audio_config_ = std::make_unique<CrosAudioConfigImpl>();
   }
 
-  void TearDown() override { CrasAudioHandler::Shutdown(); }
+  void TearDown() override {
+    CrasAudioHandler::Shutdown();
+    CrasAudioClient::Shutdown();
+    audio_pref_handler_ = nullptr;
+  }
 
  protected:
   std::unique_ptr<FakeAudioSystemPropertiesObserver> Observe() {
@@ -77,10 +84,16 @@ class CrosAudioConfigImplTest : public testing::Test {
   void SetOutputMuteState(mojom::MuteState mute_state) {
     switch (mute_state) {
       case mojom::MuteState::kMutedByUser:
+        audio_pref_handler_->SetAudioOutputAllowedValue(true);
         cras_audio_handler_->SetOutputMute(true);
         break;
       case mojom::MuteState::kNotMuted:
+        audio_pref_handler_->SetAudioOutputAllowedValue(true);
         cras_audio_handler_->SetOutputMute(false);
+        break;
+      case mojom::MuteState::kMutedByPolicy:
+        // Calling this method does not alert AudioSystemPropertiesObserver.
+        audio_pref_handler_->SetAudioOutputAllowedValue(false);
         break;
     }
     base::RunLoop().RunUntilIdle();
@@ -93,11 +106,12 @@ class CrosAudioConfigImplTest : public testing::Test {
   CrasAudioHandler* cras_audio_handler_ = nullptr;  // Not owned.
   std::unique_ptr<CrosAudioConfigImpl> cros_audio_config_;
   mojo::Remote<mojom::CrosAudioConfig> remote_;
+  scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
 };
 
 TEST_F(CrosAudioConfigImplTest, GetOutputVolumePercent) {
   std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
-  // fake_observer count is first incremented in observe() method.
+  // |fake_observer| count is first incremented in Observe() method.
   ASSERT_EQ(1u, fake_observer->num_properties_updated_calls_);
   ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
   ASSERT_EQ(kDefaultOutputVolumePercent,
@@ -129,6 +143,16 @@ TEST_F(CrosAudioConfigImplTest, GetOutputMuteState) {
   ASSERT_EQ(3u, fake_observer->num_properties_updated_calls_);
   EXPECT_EQ(
       mojom::MuteState::kNotMuted,
+      fake_observer->last_audio_system_properties_.value()->output_mute_state);
+}
+
+TEST_F(CrosAudioConfigImplTest, GetOutputMuteStateMutedByPolicy) {
+  SetOutputMuteState(mojom::MuteState::kMutedByPolicy);
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  ASSERT_EQ(1u, fake_observer->num_properties_updated_calls_);
+  ASSERT_TRUE(fake_observer->last_audio_system_properties_.has_value());
+  EXPECT_EQ(
+      mojom::MuteState::kMutedByPolicy,
       fake_observer->last_audio_system_properties_.value()->output_mute_state);
 }
 

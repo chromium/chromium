@@ -13,9 +13,8 @@ CrosAudioConfigImpl::CrosAudioConfigImpl() {
 }
 
 CrosAudioConfigImpl::~CrosAudioConfigImpl() {
-  if (CrasAudioHandler::Get()) {
+  if (CrasAudioHandler::Get())
     CrasAudioHandler::Get()->RemoveAudioObserver(this);
-  }
 }
 
 uint8_t CrosAudioConfigImpl::GetOutputVolumePercent() const {
@@ -23,10 +22,13 @@ uint8_t CrosAudioConfigImpl::GetOutputVolumePercent() const {
 };
 
 mojom::MuteState CrosAudioConfigImpl::GetOutputMuteState() const {
-  // TODO(owenzhang): Add kMutedByPolicy and kMutedExternally.
-  if (CrasAudioHandler::Get()->IsOutputMuted()) {
+  // TODO(owenzhang): Add kMutedExternally.
+  if (CrasAudioHandler::Get()->IsOutputMutedByPolicy())
+    return mojom::MuteState::kMutedByPolicy;
+
+  if (CrasAudioHandler::Get()->IsOutputMuted())
     return mojom::MuteState::kMutedByUser;
-  }
+
   return mojom::MuteState::kNotMuted;
 };
 

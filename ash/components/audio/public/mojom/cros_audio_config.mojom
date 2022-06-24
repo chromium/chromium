@@ -10,7 +10,10 @@ enum MuteState {
   kNotMuted,
 
   // The device is muted by the user.
-  kMutedByUser
+  kMutedByUser,
+
+  // The device is muted by the device policy.
+  kMutedByPolicy
 };
 
 // Represents the audio state of the Audio system.

@@ -227,7 +227,7 @@ bool AudioDevicesPrefHandlerImpl::GetDeviceActive(const AudioDevice& device,
   return true;
 }
 
-bool AudioDevicesPrefHandlerImpl::GetAudioOutputAllowedValue() {
+bool AudioDevicesPrefHandlerImpl::GetAudioOutputAllowedValue() const {
   return local_state_->GetBoolean(prefs::kAudioOutputAllowed);
 }
 
