@@ -4673,6 +4673,12 @@ void LocalFrameView::DidChangeMobileFriendliness(
 }
 
 LocalFrameUkmAggregator& LocalFrameView::EnsureUkmAggregator() {
+  if (!frame_->IsLocalRoot() &&
+      base::FeatureList::IsEnabled(
+          features::kLocalFrameRootPrePostFCPMetrics)) {
+    DCHECK(!ukm_aggregator_);
+    return frame_->LocalFrameRoot().View()->EnsureUkmAggregator();
+  }
   if (!ukm_aggregator_) {
     ukm_aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>(
         frame_->GetDocument()->UkmSourceID(),

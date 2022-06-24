@@ -736,7 +736,9 @@ class CORE_EXPORT LocalFrameView final
   }
   void DidChangeMobileFriendliness(const MobileFriendliness& mf);
 
-  // Return the UKM aggregator for this frame, creating it if necessary.
+  // Returns the UKM aggregator for this frame, or this frame's local root if
+  // features::kLocalFrameRootPrePostFCPMetrics is enabled, creating it if
+  // necessary.
   LocalFrameUkmAggregator& EnsureUkmAggregator();
 
   // Report the First Contentful Paint signal to the LocalFrameView.
