@@ -264,6 +264,121 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         clearLabel.innerText.trim());
   });
 
+  test('dynamic filtered clear data confirmation strings', async function() {
+    interface DialogState {
+      filter: boolean;
+      appInstalled: boolean;
+      storage: boolean;
+      title: string;
+      description: string;
+      signout: string;
+    }
+
+    const dialogStates: DialogState[] = [
+      {
+        filter: false,
+        appInstalled: false,
+        storage: true,
+        title: 'siteSettingsClearAllStorageDialogTitle',
+        description: 'siteSettingsClearAllStorageConfirmation',
+        signout: 'siteSettingsClearAllStorageSignOut'
+      },
+      {
+        filter: false,
+        appInstalled: true,
+        storage: true,
+        title: 'siteSettingsClearAllStorageDialogTitle',
+        description: 'siteSettingsClearAllStorageConfirmationInstalled',
+        signout: 'siteSettingsClearAllStorageSignOut'
+      },
+      {
+        filter: true,
+        appInstalled: false,
+        storage: true,
+        title: 'siteSettingsClearDisplayedStorageDialogTitle',
+        description: 'siteSettingsClearDisplayedStorageConfirmation',
+        signout: 'siteSettingsClearDisplayedStorageSignOut'
+      },
+      {
+        filter: true,
+        appInstalled: false,
+        storage: false,
+        title: 'siteSettingsClearDisplayedStorageDialogTitle',
+        description: 'siteSettingsClearDisplayedStorageConfirmation',
+        signout: 'siteSettingsClearDisplayedStorageSignOut'
+      },
+      {
+        filter: true,
+        appInstalled: true,
+        storage: false,
+        title: 'siteSettingsClearDisplayedStorageDialogTitle',
+        description: 'siteSettingsClearDisplayedStorageConfirmationInstalled',
+        signout: 'siteSettingsClearDisplayedStorageSignOut'
+      },
+      {
+        filter: true,
+        appInstalled: true,
+        storage: true,
+        title: 'siteSettingsClearDisplayedStorageDialogTitle',
+        description: 'siteSettingsClearDisplayedStorageConfirmationInstalled',
+        signout: 'siteSettingsClearDisplayedStorageSignOut'
+      },
+    ];
+
+    setUpAllSites(prefsVarious);
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
+    await browserProxy.whenCalled('getAllSites');
+    // Removing extra unwanted site entries.
+    testElement.siteGroupMap.delete('google.com');
+
+    const clearAllButton =
+        testElement.$.clearAllButton.querySelector('cr-button')!;
+    const confirmClearAllData = testElement.$.confirmClearAllData.get();
+
+    // Open the clear all data dialog.
+    assertFalse(confirmClearAllData.open, 'closed dialog');
+    clearAllButton.click();
+    assertTrue(confirmClearAllData.open, 'open dialog');
+
+    for (const state of dialogStates) {
+      assertTrue(state.filter || state.storage, 'valid state');
+
+      if (state.storage) {  // 'bar' has storage of 100 B
+        testElement.filter = state.filter ? 'bar' : '';
+      } else {  // 'foo' has storage of 0 B
+        testElement.filter = state.filter ? 'foo' : '';
+      }
+
+      testElement.siteGroupMap.get('foo.com')!.hasInstalledPWA =
+          state.appInstalled;
+      testElement.siteGroupMap.get('bar.com')!.hasInstalledPWA =
+          state.appInstalled;
+
+      testElement.forceListUpdateForTesting();
+      await flushTasks();
+
+      const confirmationTitle =
+          confirmClearAllData.querySelector<HTMLElement>(
+                                 '[slot=title]')!.innerText.trim();
+      const confirmationDescription =
+          confirmClearAllData
+              .querySelector<HTMLElement>(
+                  '#clearAllStorageDialogDescription')!.innerText.trim();
+      const confirmationSignOutLabel =
+          confirmClearAllData
+              .querySelector<HTMLElement>(
+                  '#clearAllStorageDialogSignOutLabel')!.innerText.trim();
+
+      assertEquals(loadTimeData.getString(state.title), confirmationTitle);
+      assertEquals(
+          getSubstitutedString(
+              state.description, state.storage ? '100 B' : '0 B'),
+          confirmationDescription);
+      assertEquals(
+          loadTimeData.getString(state.signout), confirmationSignOutLabel);
+    }
+  });
+
   test('can be sorted by storage', async function() {
     setUpAllSites(prefsVarious);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);

@@ -552,9 +552,9 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   /**
-   * Selects the correct string to display for clear button based on whether a
-   * filter is applied.
-   * @return The correct |clearAllButton| string based on whether a filter
+   * Selects the appropriate string to display for clear button based on whether
+   * a filter is applied.
+   * @return The appropriate |clearAllButton| string based on whether a filter
    *     is applied.
    */
   private getClearDataButtonString_(): string {
@@ -565,9 +565,9 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   /**
-   * Selects the correct string to display for total usage based on whether a
-   * filter is applied.
-   * @return The correct |clearLabel| string based on whether a filter
+   * Selects the appropriate string to display for total usage based on whether
+   * a filter is applied.
+   * @return The appropriate |clearLabel| string based on whether a filter
    *     is applied.
    */
   private getClearStorageDescription_(): string {
@@ -748,17 +748,52 @@ export class AllSitesElement extends AllSitesElementBase {
         .some(o => o.hasPermissionSettings);
   }
 
+
   /**
-   * Get the appropriate label for the clear all data confirmation
-   * dialog, depending on whether or not any apps are installed.
+   * Selects the appropriate title to display for clear storage confirmation
+   * dialog based on whether a filter is applied.
+   * @return The appropriate title for clear storage confirmation dialog.
    */
-  private getClearAllDataLabel_(): string {
+  private getClearAllStorageDialogTitle_(): string {
+    const titleId = this.isFiltered_() ?
+        'siteSettingsClearDisplayedStorageDialogTitle' :
+        'siteSettingsClearAllStorageDialogTitle';
+    return loadTimeData.substituteString(this.i18n(titleId), this.totalUsage_);
+  }
+
+  /**
+   * Get the appropriate label for the clear data confirmation dialog, depending
+   * on whether any apps are installed and/or filter is applied.
+   * @return The appropriate description for clear data confirmation dialog.
+   */
+  private getClearAllStorageDialogDescription_(): string {
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
-    const messageId = anyAppsInstalled ?
-        'siteSettingsClearAllStorageConfirmationInstalled' :
-        'siteSettingsClearAllStorageConfirmation';
+    let messageId;
+    if (anyAppsInstalled) {
+      messageId = this.isFiltered_() ?
+          'siteSettingsClearDisplayedStorageConfirmationInstalled' :
+          'siteSettingsClearAllStorageConfirmationInstalled';
+    } else {
+      messageId = this.isFiltered_() ?
+          'siteSettingsClearDisplayedStorageConfirmation' :
+          'siteSettingsClearAllStorageConfirmation';
+    }
+
     return loadTimeData.substituteString(
         this.i18n(messageId), this.totalUsage_);
+  }
+
+  /**
+   * Selects the appropriate string to display for the sign-out string in
+   * confirmation popup based on whether a filter is applied.
+   * @return The appropriate sign out confirmation string based on whether a
+   *     filter is applied.
+   */
+  private getClearAllStorageDialogSignOutLabel_(): string {
+    const signOutLabelId = this.isFiltered_() ?
+        'siteSettingsClearDisplayedStorageSignOut' :
+        'siteSettingsClearAllStorageSignOut';
+    return this.i18n(signOutLabelId);
   }
 
   /**
