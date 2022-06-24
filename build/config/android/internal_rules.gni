@@ -91,7 +91,6 @@ _desugar_jdk_libs_jar = "//third_party/android_deps/libs/com_android_tools_desug
 _desugar_jdk_libs_configuration_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/desugar_jdk_libs_configuration-1.1.5.jar"
 _robolectric_jar_path =
     "//third_party/robolectric/lib/android-all-12-robolectric-7732740.jar"
-_lint_jar_path = "//third_party/android_lint/lint.jar"
 
 # Put the bug number in the target name so that false-positives have a hint in
 # the error message about why non-existent dependencies are there.
@@ -1029,6 +1028,7 @@ if (enable_java_templates) {
         _min_sdk_version = default_min_sdk_version
       }
 
+      _lint_binary_path = "$lint_android_sdk_root/cmdline-tools/latest/bin/lint"
       _cache_dir = "$root_build_dir/android_lint_cache"
 
       # Save generated xml files in a consistent location for debugging.
@@ -1038,7 +1038,7 @@ if (enable_java_templates) {
       script = "//build/android/gyp/lint.py"
       depfile = "$target_gen_dir/$target_name.d"
       inputs = [
-        _lint_jar_path,
+        _lint_binary_path,
         _backported_methods,
       ]
 
@@ -1047,8 +1047,8 @@ if (enable_java_templates) {
         get_label_info(":${target_name}", "label_no_toolchain"),
         "--depfile",
         rebase_path(depfile, root_build_dir),
-        "--lint-jar-path",
-        rebase_path(_lint_jar_path, root_build_dir),
+        "--lint-binary-path",
+        rebase_path(_lint_binary_path, root_build_dir),
         "--cache-dir",
         rebase_path(_cache_dir, root_build_dir),
         "--lint-gen-dir",
