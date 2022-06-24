@@ -12,6 +12,7 @@
 
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
@@ -103,6 +105,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     test_cbs_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::BookmarkModelFactory::GetInstance(),
+        ios::BookmarkModelFactory::GetDefaultFactory());
 
     chrome_browser_state_ = test_cbs_builder.Build();
 
@@ -210,6 +215,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     side_swipe_controller_ =
         [[SideSwipeController alloc] initWithBrowser:browser_.get()];
 
+    bookmark_interaction_controller_ =
+        [[BookmarkInteractionController alloc] initWithBrowser:browser_.get()];
+
     BrowserViewControllerDependencies dependencies;
     dependencies.prerenderService = fake_prerender_service_.get();
     dependencies.bubblePresenter = bubble_presenter_;
@@ -220,6 +228,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.tabStripCoordinator = tab_strip_coordinator_;
     dependencies.legacyTabStripCoordinator = legacy_tab_strip_coordinator_;
     dependencies.sideSwipeController = side_swipe_controller_;
+    dependencies.bookmarkInteractionController =
+        bookmark_interaction_controller_;
 
     bvc_ = [[BrowserViewController alloc]
                        initWithBrowser:browser_.get()
@@ -272,6 +282,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   TabStripCoordinator* tab_strip_coordinator_;
   TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
   SideSwipeController* side_swipe_controller_;
+  BookmarkInteractionController* bookmark_interaction_controller_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {

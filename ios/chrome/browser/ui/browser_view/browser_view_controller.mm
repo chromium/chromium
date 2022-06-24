@@ -516,6 +516,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _sideSwipeController = dependencies.sideSwipeController;
     [_sideSwipeController setSnapshotDelegate:self];
     [_sideSwipeController setSwipeDelegate:self];
+    _bookmarkInteractionController = dependencies.bookmarkInteractionController;
     self.toolbarInterface = dependencies.toolbarInterface;
     self.primaryToolbarCoordinator = dependencies.primaryToolbarCoordinator;
     self.secondaryToolbarCoordinator = dependencies.secondaryToolbarCoordinator;
@@ -1096,7 +1097,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _fullscreenDisabler = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-  [_bookmarkInteractionController shutdown];
   _bookmarkInteractionController = nil;
 }
 
@@ -2180,16 +2180,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/1329088): This update should happen in the mediator, not
   // here.
   webState->WasShown();
-}
-
-// Initializes the bookmark interaction controller if not already initialized.
-- (void)initializeBookmarkInteractionController {
-  if (_bookmarkInteractionController)
-    return;
-  // TODO(crbug.com/1329103): Remove BookmarkInteractionController from BVC.
-  _bookmarkInteractionController =
-      [[BookmarkInteractionController alloc] initWithBrowser:self.browser
-                                            parentController:self];
 }
 
 - (void)updateOverlayContainerOrder {
@@ -3662,8 +3652,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - BrowserCommands
 
 - (void)bookmarkCurrentPage {
-  [self initializeBookmarkInteractionController];
-
   GURL URL = self.currentWebState->GetLastCommittedURL();
   // TODO(crbug.com/1329102): Change -isWebStateBookmarkedByUser method to a
   // free function.
@@ -3691,12 +3679,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // for voice search.
   [self ensureVoiceSearchControllerCreated];
   [_voiceSearchController prepareToAppear];
-}
-
-// TODO(crbug.com/1329107): Move `showBookmarksManager` out of the BVC.
-- (void)showBookmarksManager {
-  [self initializeBookmarkInteractionController];
-  [_bookmarkInteractionController presentBookmarks];
 }
 
 // TODO(crbug.com/1272498): Refactor this command away, and add a mediator to
@@ -4283,10 +4265,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _toolbarAccessoryPresenter.baseViewController = self;
   return _toolbarAccessoryPresenter;
 }
-
-#pragma mark - ManageAccountsDelegate
-// TODO(crbug.com/1272476): Factor ManageAccountsDelegate out of the BVC. It can
-// be a browser agent instead.
 
 #pragma mark - SigninPresenter
 

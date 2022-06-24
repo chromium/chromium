@@ -55,9 +55,6 @@
 // Closes all tabs.
 - (void)closeAllTabs;
 
-// Shows the bookmarks manager.
-- (void)showBookmarksManager;
-
 // Prepares the browser to display a popup menu.
 - (void)prepareForPopupMenuPresentation:(PopupMenuCommandType)type;
 

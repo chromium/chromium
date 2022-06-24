@@ -694,8 +694,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (void)editNode:(const BookmarkNode*)node {
   if (!self.bookmarkInteractionController) {
     self.bookmarkInteractionController =
-        [[BookmarkInteractionController alloc] initWithBrowser:self.browser
-                                              parentController:self];
+        [[BookmarkInteractionController alloc] initWithBrowser:self.browser];
+    self.bookmarkInteractionController.parentController = self;
     self.bookmarkInteractionController.delegate = self;
   }
 

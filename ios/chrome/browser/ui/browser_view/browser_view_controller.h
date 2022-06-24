@@ -22,6 +22,7 @@
 
 @protocol ActivityServicePositioner;
 class Browser;
+@class BookmarkInteractionController;
 @class BrowserContainerViewController;
 @class BrowserViewControllerHelper;
 @class BubblePresenter;
@@ -59,6 +60,7 @@ typedef struct {
   TabStripCoordinator* tabStripCoordinator;
   TabStripLegacyCoordinator* legacyTabStripCoordinator;
   SideSwipeController* sideSwipeController;
+  BookmarkInteractionController* bookmarkInteractionController;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

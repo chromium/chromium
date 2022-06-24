@@ -43,6 +43,9 @@ class GURL;
 // applicable.
 - (void)showDefaultSiteViewIPH;
 
+// Shows bookmarks manager.
+- (void)showBookmarksManager;
+
 // Shows recent tabs.
 - (void)showRecentTabs;
 

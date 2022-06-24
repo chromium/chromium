@@ -507,8 +507,8 @@
 - (BookmarkInteractionController*)bookmarkInteractionController {
   if (!_bookmarkInteractionController) {
     _bookmarkInteractionController = [[BookmarkInteractionController alloc]
-         initWithBrowser:self.regularBrowser
-        parentController:self.baseViewController];
+        initWithBrowser:self.regularBrowser];
+    _bookmarkInteractionController.parentController = self.baseViewController;
   }
   return _bookmarkInteractionController;
 }

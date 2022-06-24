@@ -86,9 +86,6 @@ enum class PresentedState {
   // it is incognito.
   ChromeBrowserState* _browserState;  // weak
 
-  // The parent controller on top of which the UI needs to be presented.
-  __weak UIViewController* _parentController;
-
   // The web state list currently in use.
   WebStateList* _webStateList;
 }
@@ -170,8 +167,7 @@ enum class PresentedState {
 @synthesize folderEditor = _folderEditor;
 @synthesize mediator = _mediator;
 
-- (instancetype)initWithBrowser:(Browser*)browser
-               parentController:(UIViewController*)parentController {
+- (instancetype)initWithBrowser:(Browser*)browser {
   self = [super init];
   if (self) {
     _browser = browser;
@@ -179,7 +175,6 @@ enum class PresentedState {
     // incognito mode.
     _currentBrowserState = browser->GetBrowserState();
     _browserState = _currentBrowserState->GetOriginalChromeBrowserState();
-    _parentController = parentController;
     // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
     // clean up.
     _handler = static_cast<id<ApplicationCommands, BrowserCommands>>(
@@ -190,7 +185,6 @@ enum class PresentedState {
     _mediator = [[BookmarkMediator alloc] initWithBrowserState:_browserState];
     _currentPresentedState = PresentedState::NONE;
     DCHECK(_bookmarkModel);
-    DCHECK(_parentController);
   }
   return self;
 }

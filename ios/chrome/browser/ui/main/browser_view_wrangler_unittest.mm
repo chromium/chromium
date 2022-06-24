@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/bookmarks/test/bookmark_test_helpers.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -82,6 +84,9 @@ class BrowserViewWranglerTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         PrerenderServiceFactory::GetInstance(),
         PrerenderServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::BookmarkModelFactory::GetInstance(),
+        ios::BookmarkModelFactory::GetDefaultFactory());
 
     chrome_browser_state_ = test_cbs_builder.Build();
 

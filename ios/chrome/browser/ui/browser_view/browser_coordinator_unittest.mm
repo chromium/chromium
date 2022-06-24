@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
 
 #import "base/files/file_util.h"
+#import "components/bookmarks/test/bookmark_test_helpers.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
@@ -72,6 +74,9 @@ class BrowserCoordinatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         PrerenderServiceFactory::GetInstance(),
         PrerenderServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::BookmarkModelFactory::GetInstance(),
+        ios::BookmarkModelFactory::GetDefaultFactory());
 
     chrome_browser_state_ = test_cbs_builder.Build();
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());

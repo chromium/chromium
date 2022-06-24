@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
@@ -334,6 +335,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   SideSwipeController* _sideSwipeController;
   // The coordinator that shows the Send Tab To Self UI.
   SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
+  BookmarkInteractionController* _bookmarkInteractionController;
 }
 
 #pragma mark - ChromeCoordinator
@@ -346,6 +348,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   [self createViewControllerDependencies];
   [self createViewController];
+  [self updateViewControllerDependencies];
   // Mediators should start before coordinators so model state is accurate for
   // any UI that starts up.
   [self startMediators];
@@ -569,6 +572,9 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     }
   }
 
+  _bookmarkInteractionController =
+      [[BookmarkInteractionController alloc] initWithBrowser:self.browser];
+
   self.browserContainerCoordinator = [[BrowserContainerCoordinator alloc]
       initWithBaseViewController:nil
                          browser:self.browser];
@@ -594,9 +600,12 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _viewControllerDependencies.legacyTabStripCoordinator =
       _legacyTabStripCoordinator;
   _viewControllerDependencies.sideSwipeController = _sideSwipeController;
+  _viewControllerDependencies.bookmarkInteractionController =
+      _bookmarkInteractionController;
 }
 
 - (void)updateViewControllerDependencies {
+  _bookmarkInteractionController.parentController = self.viewController;
 }
 
 // Destroys the browser view controller dependencies.
@@ -611,6 +620,10 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _viewControllerDependencies.tabStripCoordinator = nil;
   _viewControllerDependencies.legacyTabStripCoordinator = nil;
   _viewControllerDependencies.sideSwipeController = nil;
+  _viewControllerDependencies.bookmarkInteractionController = nil;
+
+  [_bookmarkInteractionController shutdown];
+  _bookmarkInteractionController = nil;
 
   _legacyTabStripCoordinator = nil;
   _tabStripCoordinator = nil;
@@ -959,6 +972,10 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
       initWithBaseViewController:self.viewController
                          browser:self.browser];
   [self.readingListCoordinator start];
+}
+
+- (void)showBookmarksManager {
+  [_bookmarkInteractionController presentBookmarks];
 }
 
 - (void)showReadingListIPH {

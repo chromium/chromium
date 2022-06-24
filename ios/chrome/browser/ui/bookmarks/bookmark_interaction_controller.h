@@ -30,9 +30,10 @@ class WebState;
 // This object's delegate.
 @property(nonatomic, weak) id<BookmarkInteractionControllerDelegate> delegate;
 
-- (instancetype)initWithBrowser:(Browser*)browser
-               parentController:(UIViewController*)parentController
-    NS_DESIGNATED_INITIALIZER;
+// The parent controller on top of which the UI needs to be presented.
+@property(nonatomic, weak) UIViewController* parentController;
+
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Called before the instance is deallocated.
