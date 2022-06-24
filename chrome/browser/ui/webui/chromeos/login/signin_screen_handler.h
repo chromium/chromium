@@ -103,8 +103,6 @@ class SigninScreenHandler
   friend class ReportDnsCacheClearedOnUIThread;
 
   void UpdateStateInternal(NetworkError::ErrorReason reason, bool force_update);
-  void SetupAndShowOfflineMessage(NetworkStateInformer::State state,
-                                  NetworkError::ErrorReason reason);
   void HideOfflineMessage(NetworkStateInformer::State state,
                           NetworkError::ErrorReason reason);
   void ReloadGaia(bool force_reload);
@@ -130,10 +128,6 @@ class SigninScreenHandler
   // Returns true if current visible screen is the error screen over
   // Gaia sign-in page.
   bool IsGaiaHiddenByError();
-
-  // Returns true if current screen is the error screen over signin
-  // screen.
-  bool IsSigninScreenHiddenByError();
 
   net::Error FrameError() const;
 

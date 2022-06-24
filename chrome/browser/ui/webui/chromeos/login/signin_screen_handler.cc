@@ -137,32 +137,13 @@ namespace chromeos {
 
 namespace {
 
-bool IsOnline(NetworkStateInformer::State state,
-              NetworkError::ErrorReason reason) {
-  return state == NetworkStateInformer::ONLINE &&
-         reason != NetworkError::ERROR_REASON_PORTAL_DETECTED &&
-         reason != NetworkError::ERROR_REASON_LOADING_TIMEOUT;
-}
-
-bool IsBehindCaptivePortal(NetworkStateInformer::State state,
-                           NetworkError::ErrorReason reason) {
-  return state == NetworkStateInformer::CAPTIVE_PORTAL ||
-         reason == NetworkError::ERROR_REASON_PORTAL_DETECTED;
-}
-
 bool IsProxyError(NetworkStateInformer::State state,
                   NetworkError::ErrorReason reason,
                   net::Error frame_error) {
-  return state == NetworkStateInformer::PROXY_AUTH_REQUIRED ||
-         reason == NetworkError::ERROR_REASON_PROXY_AUTH_CANCELLED ||
-         reason == NetworkError::ERROR_REASON_PROXY_CONNECTION_FAILED ||
+  return NetworkStateInformer::IsProxyError(state, reason) ||
          (reason == NetworkError::ERROR_REASON_FRAME_ERROR &&
           (frame_error == net::ERR_PROXY_CONNECTION_FAILED ||
            frame_error == net::ERR_TUNNEL_CONNECTION_FAILED));
-}
-
-bool IsSigninScreen(const OobeScreenId screen) {
-  return screen == GaiaView::kScreenId;
 }
 
 }  // namespace
@@ -289,8 +270,9 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   }
   connecting_callback_.Cancel();
 
-  const bool is_online = IsOnline(state, reason);
-  const bool is_behind_captive_portal = IsBehindCaptivePortal(state, reason);
+  const bool is_online = NetworkStateInformer::IsOnline(state, reason);
+  const bool is_behind_captive_portal =
+      NetworkStateInformer::IsBehindCaptivePortal(state, reason);
   const bool is_gaia_loading_timeout =
       (reason == NetworkError::ERROR_REASON_LOADING_TIMEOUT);
   const bool is_gaia_error =
@@ -314,8 +296,7 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   // Hide offline message (if needed) and return if current screen is
   // not a Gaia frame.
   if (!is_gaia_signin) {
-    if (!IsSigninScreenHiddenByError())
-      HideOfflineMessage(state, reason);
+    HideOfflineMessage(state, reason);
     return;
   }
 
@@ -374,7 +355,7 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
 
 void SigninScreenHandler::HideOfflineMessage(NetworkStateInformer::State state,
                                              NetworkError::ErrorReason reason) {
-  if (!IsSigninScreenHiddenByError())
+  if (!IsGaiaHiddenByError())
     return;
 
   gaia_reload_reason_ = NetworkError::ERROR_REASON_NONE;
@@ -448,16 +429,12 @@ void SigninScreenHandler::HandleShowLoadingTimeoutError() {
 }
 
 bool SigninScreenHandler::IsGaiaVisible() {
-  return IsSigninScreen(GetCurrentScreen());
+  return GetCurrentScreen() == GaiaView::kScreenId;
 }
 
 bool SigninScreenHandler::IsGaiaHiddenByError() {
-  return IsSigninScreenHiddenByError();
-}
-
-bool SigninScreenHandler::IsSigninScreenHiddenByError() {
   return (GetCurrentScreen() == ErrorScreenView::kScreenId) &&
-         (IsSigninScreen(error_screen_->GetParentScreen()));
+         (error_screen_->GetParentScreen() == GaiaView::kScreenId);
 }
 
 net::Error SigninScreenHandler::FrameError() const {
