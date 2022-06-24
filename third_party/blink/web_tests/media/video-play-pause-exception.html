@@ -16,8 +16,7 @@ async_test(function(t) {
         assert_equals(video.networkState, HTMLMediaElement.NETWORK_EMPTY);
     });
 
-    // Ignore any error that may be thrown from calling pause() immediately.
-    video.play().catch(function() {});
+    video.play();
     video.pause();
 });
 </script>

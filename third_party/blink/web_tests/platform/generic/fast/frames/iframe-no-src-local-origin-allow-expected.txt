@@ -1,0 +1,14 @@
+This tests that an iframe with no src attribute uses the parent document's origin when resolving links inserted into the frame via JavaScript.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS document.getElementById('theFrame').contentDocument.baseURI is document.baseURI
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS document.getElementById('theFrame').contentDocument.getElementById('innerFrame').contentDocument.body.innerHTML is 'PASS\n'
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
