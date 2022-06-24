@@ -24,15 +24,23 @@ ViewTimeline* ViewTimeline::Create(Document& document,
     return nullptr;
   }
 
-  return MakeGarbageCollected<ViewTimeline>(&document, subject, orientation);
+  // TODO(crbug.com/1329159): Remove scroll_offsets. Currently needed for
+  // the ScrollTimeline constructor.
+  HeapVector<Member<ScrollTimelineOffset>> scroll_offsets;
+
+  return MakeGarbageCollected<ViewTimeline>(&document, subject, orientation,
+                                            scroll_offsets);
 }
 
-ViewTimeline::ViewTimeline(Document* document,
-                           Element* subject,
-                           ScrollDirection orientation)
+ViewTimeline::ViewTimeline(
+    Document* document,
+    Element* subject,
+    ScrollDirection orientation,
+    HeapVector<Member<ScrollTimelineOffset>> scroll_offsets)
     : ScrollTimeline(document,
                      ReferenceType::kNearestAncestor,
                      subject,
-                     orientation) {}
+                     orientation,
+                     scroll_offsets) {}
 
 }  // namespace blink

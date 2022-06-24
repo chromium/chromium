@@ -87,6 +87,7 @@ class TestAnimationEffect : public AnimationEffect {
     event_delegate_->Reset();
     AnimationEffect::UpdateInheritedTime(
         ANIMATION_TIME_DELTA_FROM_SECONDS(time),
+        /* inherited_phase */ absl::nullopt,
         /* at_progress_timeline_boundary */ false,
         /* inherited_playback_rate */ 1.0, reason);
   }

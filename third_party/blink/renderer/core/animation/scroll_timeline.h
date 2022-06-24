@@ -7,20 +7,18 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "cc/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class PaintLayerScrollableArea;
 class ScrollTimelineOptions;
 class WorkletAnimationBase;
 
@@ -35,8 +33,6 @@ class WorkletAnimationBase;
 // Spec: https://wicg.github.io/scroll-animations/#scroll-timelines
 class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   DEFINE_WRAPPERTYPEINFO();
-
-  using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
 
  public:
   enum ScrollDirection {
@@ -61,7 +57,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   ScrollTimeline(Document*,
                  ReferenceType reference_type,
                  Element* reference,
-                 ScrollDirection);
+                 ScrollDirection,
+                 HeapVector<Member<ScrollTimelineOffset>>);
 
   static bool StringToScrollDirection(String scroll_direction,
                                       ScrollTimeline::ScrollDirection& result);
@@ -82,6 +79,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // IDL API implementation.
   Element* source() const;
   String orientation();
+  const HeapVector<Member<V8ScrollTimelineOffset>> scrollOffsets() const;
 
   V8CSSNumberish* currentTime() override;
   V8CSSNumberish* duration() override;
@@ -95,7 +93,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
 
   // Return the latest resolved scroll offsets. This will be empty when
   // timeline is inactive.
-  absl::optional<ScrollOffsets> GetResolvedScrollOffsets() const;
+  const std::vector<double> GetResolvedScrollOffsets() const;
 
   ScrollDirection GetOrientation() const { return orientation_; }
 
@@ -149,6 +147,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
 
  protected:
   PhaseAndTime CurrentPhaseAndTime() override;
+  bool ScrollOffsetsEqual(
+      const HeapVector<Member<ScrollTimelineOffset>>& other) const;
 
   virtual Element* ReferenceElement() const { return reference_element_.Get(); }
 
@@ -164,13 +164,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
 
   void UpdateResolvedSource();
 
-  // Scroll offsets corresponding to 0% and 100% progress. By default, these
-  // correspond to the scroll range of the container.
-  virtual double GetStartOffset(PaintLayerScrollableArea* scrollable_area,
-                                ScrollOrientation physical_orientation) const;
-  virtual double GetEndOffset(PaintLayerScrollableArea* scrollable_area,
-                              ScrollOrientation physical_orientation) const;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, ResolveScrollOffsets);
@@ -181,12 +174,19 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   bool ComputeIsActive() const;
   PhaseAndTime ComputeCurrentPhaseAndTime() const;
 
+  // Resolve scroll offsets The resolution process turns length-based values
+  // into concrete length values resolving percentages and zoom factor. For
+  // element-based values it computes the corresponding length value that maps
+  // to the particular element intersection. See
+  // |ScrollTimelineOffset::ResolveOffset()| for more details.
+  bool ResolveScrollOffsets(WTF::Vector<double>& resolved_offsets) const;
+
   struct TimelineState {
-    // TODO(crbug.com/1338167): Remove phase as it can be inferred from
-    // current_time.
     TimelinePhase phase;
     absl::optional<base::TimeDelta> current_time;
-    absl::optional<ScrollOffsets> scroll_offsets;
+    // The resolved version of scroll offset. The vector is empty
+    // when timeline is inactive (e.g., when source does not overflow).
+    WTF::Vector<double> scroll_offsets;
 
     bool operator==(const TimelineState& other) const {
       return phase == other.phase && current_time == other.current_time &&
@@ -195,6 +195,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   };
 
   TimelineState ComputeTimelineState();
+  ScrollTimelineOffset* StartScrollOffset() const;
+  ScrollTimelineOffset* EndScrollOffset() const;
 
   // Use time_check true to request next service if time has changed.
   // false - regardless of time change.
@@ -204,6 +206,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   Member<Element> reference_element_;
   Member<Node> resolved_source_;
   ScrollDirection orientation_;
+  HeapVector<Member<ScrollTimelineOffset>> scroll_offsets_;
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;

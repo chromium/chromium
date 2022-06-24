@@ -37,6 +37,23 @@ class ScrollableAreaMockChromeClient : public RenderingTestChromeClient {
   }
 };
 
+HeapVector<Member<ScrollTimelineOffset>> CreateScrollOffsets(
+    ScrollTimelineOffset* start_scroll_offset =
+        MakeGarbageCollected<ScrollTimelineOffset>(
+            CSSNumericLiteralValue::Create(
+                10.0,
+                CSSPrimitiveValue::UnitType::kPixels)),
+    ScrollTimelineOffset* end_scroll_offset =
+        MakeGarbageCollected<ScrollTimelineOffset>(
+            CSSNumericLiteralValue::Create(
+                90.0,
+                CSSPrimitiveValue::UnitType::kPixels))) {
+  HeapVector<Member<ScrollTimelineOffset>> scroll_offsets;
+  scroll_offsets.push_back(start_scroll_offset);
+  scroll_offsets.push_back(end_scroll_offset);
+  return scroll_offsets;
+}
+
 }  // namespace
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -1423,11 +1440,15 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, SetSnapContainerDataNeedsUpdate) {
 
 class ScrollTimelineForTest : public ScrollTimeline {
  public:
-  ScrollTimelineForTest(Document* document, Element* scroll_source)
+  ScrollTimelineForTest(Document* document,
+                        Element* scroll_source,
+                        HeapVector<Member<ScrollTimelineOffset>>
+                            scroll_offsets = CreateScrollOffsets())
       : ScrollTimeline(document,
                        ScrollTimeline::ReferenceType::kSource,
                        scroll_source,
-                       ScrollTimeline::kVertical),
+                       ScrollTimeline::kVertical,
+                       std::move(scroll_offsets)),
         invalidated_(false) {}
   void Invalidate() override {
     ScrollTimeline::Invalidate();
