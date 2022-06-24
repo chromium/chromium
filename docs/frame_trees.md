@@ -17,6 +17,15 @@ The renderer side (Blink) will have no notion of this placeholder in the
 frame tree and its frame tree appears as it would for the web exposed
 [window.frames](https://developer.mozilla.org/en-US/docs/Web/API/Window/frames)
 
+## Why do we nest frame trees?
+
+Certain features that nest documents require a stronger boundary than what would
+be achievable with iframes. We want to prevent the exposure of information
+across this boundary. This may be for privacy reasons where we enforce
+communication restrictions between documents on the web (e.g. fenced frames).
+The boundary could also be between content on the web and parts of the user
+agent implemented with web technologies (e.g. chrome's PDF viewer, webview tag).
+
 ## What are Outermost Main Frames?
 
 Building on the concept above that a `FrameTree` can have an embedded
@@ -74,6 +83,22 @@ The primary page can change over time (see
 navigating, a `Page` is restored from the `BackForwardCache` or from the
 prendering pages.
 
+## Relationships between core classes in content/
+
+A WebContents represents a tab. A WebContents owns a FrameTree, the "primary
+frame tree," for what is being displayed in the tab. A WebContents may
+indirectly own additional FrameTrees for features such as prerendering.
+
+A FrameTree consists of FrameTreeNodes. A FrameTreeNode contains a
+RenderFrameHost. FrameTreeNodes reflect the frame structure in the renderer.
+RenderFrameHosts represent documents loaded in a frame (roughly,
+[see footnote 3](#footnote_3)). As a frame navigates its RenderFrameHost may
+change, but its FrameTreeNode stays the same.
+
+In the case of nested frame trees, the RenderFrameHost corresponding to the
+hosting document owns the inner FrameTree (possibly through an intermediate
+object, as is the case for content::FencedFrame).
+
 ## Footnotes
 
 <a name="footnote_1"></a>1: GuestViews (embedding of a WebContents inside another WebContents) are
@@ -84,3 +109,6 @@ escape the WebContents boundary because of the logical embedding boundary.
 <a name="footnote_2"></a>2: The placeholder RenderFrameHost is generally not exposed outside
 of the content boundary. Iteration APIs such as ForEachRenderFrameHost
 do not visit this node.
+
+<a name="footnote_3"></a>3: RenderFrameHost is not 1:1 with a document in the renderer.
+See [RenderDocument](/docs/render_document.md).
