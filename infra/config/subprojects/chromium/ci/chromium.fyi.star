@@ -1393,6 +1393,8 @@ fyi_ios_builder(
     # goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     description_html = "experiment reclient for ios. remove after the migration. crbug.com/1254986",
+    builderless = True,
+    os = os.MAC_DEFAULT,
 )
 
 fyi_ios_builder(
