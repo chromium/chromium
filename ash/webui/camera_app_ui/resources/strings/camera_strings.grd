@@ -695,6 +695,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Label for spoken feedback to indicate that the mute button is now on." name="IDS_ARIA_MUTE_ON">
         Toggle microphone mute. Mute is on
       </message>
+      <message desc="Toast message notifying user about the document scanner feature is currently downloading" name="IDS_DOWNLOADING_DOCUMENT_SCANNING_FEATURE">
+        Downloading document scanning feature
+      </message>
     </messages>
   </release>
 </grit>

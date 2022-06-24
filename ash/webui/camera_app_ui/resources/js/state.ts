@@ -49,7 +49,6 @@ export enum State {
   RECORDING_UI_PAUSED = 'recording-ui-paused',
   SHOULD_HANDLE_INTENT_RESULT = 'should-handle-intent-result',
   SHOW_GIF_RECORDING_OPTION = 'show-gif-recording-option',
-  SHOW_SCAN_MODE = 'show-scan-mode',
   SHUTTER_PROGRESSING = 'shutter-progressing',
   SNAPSHOTTING = 'snapshotting',
   STREAMING = 'streaming',

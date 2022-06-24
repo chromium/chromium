@@ -6,10 +6,14 @@
 #define ASH_WEBUI_CAMERA_APP_UI_DOCUMENT_SCANNER_SERVICE_CLIENT_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -20,6 +24,7 @@ namespace ash {
 // Client for communicating to the CrOS Document Scanner Service.
 class DocumentScannerServiceClient {
  public:
+  using OnReadyCallback = base::OnceCallback<void(bool is_supported)>;
   using DetectCornersCallback =
       base::OnceCallback<void(bool success,
                               const std::vector<gfx::PointF>& results)>;
@@ -28,9 +33,13 @@ class DocumentScannerServiceClient {
 
   static bool IsSupported();
 
+  static bool IsSupportedByDlc();
+
   static std::unique_ptr<DocumentScannerServiceClient> Create();
 
   ~DocumentScannerServiceClient();
+
+  void RegisterDocumentScannerReadyCallback(OnReadyCallback callback);
 
   bool IsLoaded();
 
@@ -49,15 +58,27 @@ class DocumentScannerServiceClient {
   DocumentScannerServiceClient();
 
  private:
-  void OnInitialized(chromeos::machine_learning::mojom::LoadModelResult result);
+  void LoadDocumentScanner(const std::string& lib_path);
 
-  bool document_scanner_loaded_ = false;
+  void OnLoadedDocumentScanner(
+      chromeos::machine_learning::mojom::LoadModelResult result);
+
+  // Guards |document_scanner_loaded_| and |on_ready_callbacks_| which are
+  // related to the load status.
+  base::Lock load_status_lock_;
+
+  bool document_scanner_loaded_ GUARDED_BY(load_status_lock_) = false;
+
+  std::vector<OnReadyCallback> on_ready_callbacks_
+      GUARDED_BY(load_status_lock_);
 
   mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>
       ml_service_;
 
   mojo::Remote<chromeos::machine_learning::mojom::DocumentScanner>
       document_scanner_;
+
+  base::WeakPtrFactory<DocumentScannerServiceClient> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

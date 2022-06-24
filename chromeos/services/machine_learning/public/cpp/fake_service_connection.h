@@ -125,6 +125,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
 
   void LoadDocumentScanner(
       mojo::PendingReceiver<mojom::DocumentScanner> receiver,
+      mojom::DocumentScannerConfigPtr config,
       mojom::MachineLearningService::LoadDocumentScannerCallback callback)
       override;
 

@@ -4,8 +4,11 @@
 
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
 
+#include "ash/webui/camera_app_ui/document_scanner_installer.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/bind_post_task.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/device_event_log/device_event_log.h"
 
@@ -21,6 +24,8 @@ using chromeos::machine_learning::mojom::Rotation;
 
 constexpr char kOndeviceDocumentScanner[] = "ondevice_document_scanner";
 constexpr char kMLService[] = "ml_service";
+constexpr char kLibDocumentScannerDefaultDir[] =
+    "/usr/share/cros-camera/libfs/";
 
 // Returns whether the `value` is set for command line switch
 // kOndeviceDocumentScanner.
@@ -35,6 +40,11 @@ bool IsEnabledOnRootfs() {
   return HasCommandLineSwitch(kOndeviceDocumentScanner, "use_rootfs");
 }
 
+// Returns true if switch kOndeviceDocumentScanner is set to use_dlc.
+bool IsEnabledOnDlc() {
+  return HasCommandLineSwitch(kOndeviceDocumentScanner, "use_dlc");
+}
+
 bool IsMachineLearningServiceAvailable() {
   return HasCommandLineSwitch(kMLService, "enabled");
 }
@@ -43,7 +53,13 @@ bool IsMachineLearningServiceAvailable() {
 
 // static
 bool DocumentScannerServiceClient::IsSupported() {
-  return IsMachineLearningServiceAvailable() && IsEnabledOnRootfs();
+  return IsMachineLearningServiceAvailable() &&
+         (IsEnabledOnRootfs() || IsEnabledOnDlc());
+}
+
+// static
+bool DocumentScannerServiceClient::IsSupportedByDlc() {
+  return IsMachineLearningServiceAvailable() && IsEnabledOnDlc();
 }
 
 // static
@@ -58,15 +74,24 @@ DocumentScannerServiceClient::Create() {
 
 DocumentScannerServiceClient::~DocumentScannerServiceClient() = default;
 
+void DocumentScannerServiceClient::RegisterDocumentScannerReadyCallback(
+    OnReadyCallback callback) {
+  base::AutoLock auto_lock(load_status_lock_);
+  if (document_scanner_loaded_) {
+    std::move(callback).Run(true);
+    return;
+  }
+  on_ready_callbacks_.push_back(std::move(callback));
+}
+
 bool DocumentScannerServiceClient::IsLoaded() {
+  base::AutoLock auto_lock(load_status_lock_);
   return document_scanner_loaded_;
 }
 
 void DocumentScannerServiceClient::DetectCornersFromNV12Image(
     base::ReadOnlySharedMemoryRegion nv12_image,
     DetectCornersCallback callback) {
-  DCHECK(IsSupported());
-
   if (!IsLoaded()) {
     std::move(callback).Run(false, {});
     return;
@@ -86,8 +111,6 @@ void DocumentScannerServiceClient::DetectCornersFromNV12Image(
 void DocumentScannerServiceClient::DetectCornersFromJPEGImage(
     base::ReadOnlySharedMemoryRegion jpeg_image,
     DetectCornersCallback callback) {
-  DCHECK(IsSupported());
-
   if (!IsLoaded()) {
     std::move(callback).Run(false, {});
     return;
@@ -109,8 +132,6 @@ void DocumentScannerServiceClient::DoPostProcessing(
     const std::vector<gfx::PointF>& corners,
     Rotation rotation,
     DoPostProcessingCallback callback) {
-  DCHECK(IsSupported());
-
   if (!IsLoaded()) {
     std::move(callback).Run(false, {});
     return;
@@ -131,15 +152,35 @@ void DocumentScannerServiceClient::DoPostProcessing(
 DocumentScannerServiceClient::DocumentScannerServiceClient() {
   chromeos::machine_learning::ServiceConnection::GetInstance()
       ->BindMachineLearningService(ml_service_.BindNewPipeAndPassReceiver());
+  if (IsEnabledOnRootfs()) {
+    LoadDocumentScanner(kLibDocumentScannerDefaultDir);
+  } else if (IsEnabledOnDlc()) {
+    DocumentScannerInstaller::GetInstance()->GetLibraryPath(base::BindPostTask(
+        base::SequencedTaskRunnerHandle::Get(),
+        base::BindOnce(&DocumentScannerServiceClient::LoadDocumentScanner,
+                       weak_ptr_factory_.GetWeakPtr())));
+  }
+}
+
+void DocumentScannerServiceClient::LoadDocumentScanner(
+    const std::string& lib_path) {
+  auto config = chromeos::machine_learning::mojom::DocumentScannerConfig::New();
+  config->library_dlc_path = base::FilePath(lib_path);
+
   ml_service_->LoadDocumentScanner(
-      document_scanner_.BindNewPipeAndPassReceiver(),
-      base::BindOnce(&DocumentScannerServiceClient::OnInitialized,
+      document_scanner_.BindNewPipeAndPassReceiver(), std::move(config),
+      base::BindOnce(&DocumentScannerServiceClient::OnLoadedDocumentScanner,
                      base::Unretained(this)));
 }
 
-void DocumentScannerServiceClient::OnInitialized(
+void DocumentScannerServiceClient::OnLoadedDocumentScanner(
     chromeos::machine_learning::mojom::LoadModelResult result) {
+  base::AutoLock auto_lock(load_status_lock_);
   document_scanner_loaded_ = result == LoadModelResult::OK;
+  for (auto& callback : on_ready_callbacks_) {
+    std::move(callback).Run(document_scanner_loaded_);
+  }
+  on_ready_callbacks_.clear();
 }
 
 }  // namespace ash

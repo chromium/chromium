@@ -8,6 +8,7 @@ import {CameraManager, CameraUI} from '../../device/index.js';
 import * as dom from '../../dom.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import {BarcodeScanner} from '../../models/barcode.js';
+import {ChromeHelper} from '../../mojo/chrome_helper.js';
 import * as state from '../../state.js';
 import {Mode, PreviewVideo} from '../../type.js';
 import {assertEnumVariant} from '../../util.js';
@@ -33,20 +34,12 @@ function getElementFromScanType(type: ScanType): HTMLInputElement {
   return dom.get(`input[data-scantype=${type}]`, HTMLInputElement);
 }
 
-const DEFAULT_SCAN_TYPE = ScanType.DOCUMENT;
-
 type ScanOptionsChangeListener = () => void;
 
 /**
  * Controller for the scan options of Camera view.
  */
 export class ScanOptions implements CameraUI {
-  /**
-   * Togglable barcode option in photo mode.
-   */
-  private readonly photoBarcodeOption =
-      dom.get('#toggle-barcode', HTMLInputElement);
-
   private readonly scanOptions =
       [...dom.getAll('#scan-modes-group [data-scantype]', HTMLInputElement)];
 
@@ -70,23 +63,39 @@ export class ScanOptions implements CameraUI {
     this.documentCornerOverlay = new DocumentCornerOverlay(
         (p) => this.cameraManager.setPointOfInterest(p));
 
-    for (const option of [this.photoBarcodeOption, ...this.scanOptions]) {
+    // By default, the checked scan type is barcode unless the document mode is
+    // ready.
+    dom.get('#scan-barcode', HTMLInputElement).checked = true;
+
+    for (const option of this.scanOptions) {
       option.addEventListener('click', (evt) => {
         if (state.get(state.State.CAMERA_CONFIGURING)) {
           evt.preventDefault();
         }
       });
-    }
-    this.photoBarcodeOption.addEventListener('change', () => {
-      this.updateOption(
-          this.photoBarcodeOption.checked ? ScanType.BARCODE : null);
-    });
-    for (const option of this.scanOptions) {
       option.addEventListener('change', () => {
         if (option.checked) {
           this.updateOption(this.getToggledScanOption());
         }
       });
+    }
+  }
+
+  async waitUntilDocumentModeReady(): Promise<boolean> {
+    const documentModeBtn = dom.get('#scan-document-option', HTMLDivElement);
+    documentModeBtn.hidden = true;
+    const isLoaded =
+        await ChromeHelper.getInstance().waitUntilDocumentModeReady();
+    if (isLoaded) {
+      this.onDocumentModeReady();
+      documentModeBtn.hidden = false;
+    }
+    return isLoaded;
+  }
+
+  onDocumentModeReady(): void {
+    if (!state.get(Mode.SCAN)) {
+      dom.get('#scan-document', HTMLInputElement).checked = true;
     }
   }
 
@@ -115,7 +124,7 @@ export class ScanOptions implements CameraUI {
     });
     const {deviceId} = video.getVideoSettings();
     this.documentCornerOverlay.attach(deviceId);
-    const scanType = state.get(Mode.SCAN) ? this.getToggledScanOption() : null;
+    const scanType = this.getToggledScanOption();
     (async () => {
       await video.onExpired;
       this.detachPreview();
@@ -129,8 +138,8 @@ export class ScanOptions implements CameraUI {
    */
   private getToggledScanOption(): ScanType {
     const checkedEl = this.scanOptions.find(({checked}) => checked);
-    return checkedEl === undefined ? DEFAULT_SCAN_TYPE :
-                                     getScanTypeFromElement(checkedEl);
+    assert(checkedEl !== undefined);
+    return getScanTypeFromElement(checkedEl);
   }
 
   isDocumentModeEnabled(): boolean {
@@ -141,15 +150,14 @@ export class ScanOptions implements CameraUI {
    * @param scanType Scan type to be enabled, null for no type is
    *     enabled.
    */
-  private async updateOption(scanType: ScanType|null) {
+  private async updateOption(scanType: ScanType) {
     if (!this.previewAvailable()) {
       return;
     }
     assert(this.barcodeScanner !== null);
 
-    this.updateOptionsUI(scanType);
-    const mode = state.get(state.State.SHOW_SCAN_MODE) ? Mode.SCAN : Mode.PHOTO;
-    if (state.get(mode) && scanType === ScanType.BARCODE) {
+    getElementFromScanType(scanType).checked = true;
+    if (state.get(Mode.SCAN) && scanType === ScanType.BARCODE) {
       sendBarcodeEnabledEvent();
       this.barcodeScanner.start();
       state.set(state.State.ENABLE_SCAN_BARCODE, true);
@@ -173,15 +181,6 @@ export class ScanOptions implements CameraUI {
     this.barcodeScanner.stop();
     barcodeChip.dismiss();
     state.set(state.State.ENABLE_SCAN_BARCODE, false);
-  }
-
-  private updateOptionsUI(scanType: ScanType|null) {
-    if (state.get(Mode.SCAN)) {
-      assert(scanType !== null);
-      getElementFromScanType(scanType).checked = true;
-    } else if (state.get(Mode.PHOTO)) {
-      this.photoBarcodeOption.checked = scanType === ScanType.BARCODE;
-    }
   }
 
   /**

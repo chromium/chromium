@@ -4,6 +4,7 @@
 
 #include "ash/webui/camera_app_ui/document_scanner_installer.h"
 
+#include "ash/webui/camera_app_ui/document_scanner_service_client.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -35,6 +36,10 @@ void DocumentScannerInstaller::GetLibraryPath(
 
 void DocumentScannerInstaller::TriggerInstall() {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!DocumentScannerServiceClient::IsSupportedByDlc()) {
+    return;
+  }
 
   dlcservice::InstallRequest install_request;
   install_request.set_id(kDocumentScannerDlcId);

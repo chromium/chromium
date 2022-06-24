@@ -47,6 +47,9 @@ fi
 echo "Copying mojoms from Chrome OS side ..."
 cp $1/platform2/ml/mojom/*.mojom . || exit 1
 
+echo "Removing file_path.mojom ..."
+rm file_path.mojom || exit 1
+
 echo "Removing time.mojom ..."
 rm time.mojom || exit 1
 
@@ -58,6 +61,7 @@ rm geometry.mojom || exit 1
 
 echo "Changing import paths ..."
 sed --in-place --regexp-extended \
+  -e 's~^import "ml/mojom/file_path.mojom~import "mojo/public/mojom/base/file_path.mojom~g' \
   -e 's~^import "ml/mojom/geometry.mojom~import "ui/gfx/geometry/mojom/geometry.mojom~g' \
   -e 's~^import "ml/mojom/shared_memory.mojom~import "mojo/public/mojom/base/shared_memory.mojom~g' \
   -e 's~^import "ml/mojom/time.mojom~import "mojo/public/mojom/base/time.mojom~g' \

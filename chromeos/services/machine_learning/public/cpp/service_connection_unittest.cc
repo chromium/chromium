@@ -751,10 +751,11 @@ TEST_F(ServiceConnectionTest, FakeDocumentScanner) {
   ServiceConnection::GetInstance()->Initialize();
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  auto config = chromeos::machine_learning::mojom::DocumentScannerConfig::New();
   ServiceConnection::GetInstance()
       ->GetMachineLearningService()
       .LoadDocumentScanner(
-          scanner.BindNewPipeAndPassReceiver(),
+          scanner.BindNewPipeAndPassReceiver(), std::move(config),
           base::BindOnce(
               [](bool* callback_done, mojom::LoadModelResult result) {
                 EXPECT_EQ(result, mojom::LoadModelResult::OK);

@@ -51,6 +51,7 @@ source_set("lib") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//media/capture:capture_lib",
     "//media/capture:capture_switches",
   ]
 

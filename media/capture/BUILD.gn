@@ -323,10 +323,12 @@ component("capture_lib") {
       "video/chromeos/video_capture_jpeg_decoder_impl.cc",
       "video/chromeos/video_capture_jpeg_decoder_impl.h",
     ]
-    public_deps += [ "//media/capture/video/chromeos/public" ]
+    public_deps += [
+      "//ash/webui/camera_app_ui:document_scanning",
+      "//media/capture/video/chromeos/public",
+    ]
     deps += [
       "//ash/constants",
-      "//ash/webui/camera_app_ui:document_scanning",
       "//build/config/linux/libdrm",
       "//chromeos/components/sensors:sensors",
       "//chromeos/dbus/power",

@@ -235,7 +235,7 @@ export class Modes {
               params.constraints, params.captureResolution,
               assertExists(this.handler));
         },
-        isSupported: async () => state.get(state.State.SHOW_SCAN_MODE),
+        isSupported: async () => true,
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
             constraints, resolution, CaptureIntent.STILL_CAPTURE),

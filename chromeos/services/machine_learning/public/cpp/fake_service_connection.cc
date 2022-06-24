@@ -164,6 +164,7 @@ void FakeServiceConnectionImpl::LoadTextSuggester(
 
 void FakeServiceConnectionImpl::LoadDocumentScanner(
     mojo::PendingReceiver<mojom::DocumentScanner> receiver,
+    mojom::DocumentScannerConfigPtr config,
     mojom::MachineLearningService::LoadDocumentScannerCallback callback) {
   ScheduleCall(base::BindOnce(
       &FakeServiceConnectionImpl::HandleLoadDocumentScannerCall,

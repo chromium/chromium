@@ -1,23 +1,8 @@
 /* Copyright 2021 The Chromium Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
-
-body:is(.show-scan-mode, :not(.streaming), :not(.photo)) #toggle-barcode {
+body:is(:not(.scan), :not(.streaming)) #scan-modes-group {
   display: none;
-}
-
-body:is(:not(.show-scan-mode), :not(.scan), :not(.streaming)) #scan-modes-group {
-  display: none;
-}
-
-#toggle-barcode:checked {
-  background: url(/images/barcode_toggle_on.svg) center no-repeat,
-              rgba(var(--blue-300-rgb), 0.3);
-}
-
-#toggle-barcode {
-  background-image: url(/images/barcode_toggle_off.svg);
-  border-radius: 50%;
 }
 
 /* The container of scan box for layout and positioning. */

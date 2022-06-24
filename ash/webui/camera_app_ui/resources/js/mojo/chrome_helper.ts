@@ -18,6 +18,7 @@ import {
   CameraIntentAction,
   CameraUsageOwnershipMonitorCallbackRouter,
   DocumentOutputFormat,
+  DocumentScannerReadyState,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
   Rotation,
@@ -299,11 +300,23 @@ export class ChromeHelper {
   }
 
   /**
-   * Returns true if the document mode is supported on the device.
+   * Gets the ready state of the document scanner.
    */
-  async isDocumentModeSupported(): Promise<boolean> {
-    const {isSupported} = await this.remote.isDocumentModeSupported();
-    return isSupported;
+  async getDocumentScannerReadyState():
+      Promise<{supported: boolean, ready: boolean}> {
+    const {readyState} = await this.remote.getDocumentScannerReadyState();
+    return {
+      supported: readyState !== DocumentScannerReadyState.NOT_SUPPORTED,
+      ready: readyState === DocumentScannerReadyState.SUPPORTED_AND_READY,
+    };
+  }
+
+  /**
+   * Waits until the document mode is ready. Returns false if it fails to load.
+   */
+  async waitUntilDocumentModeReady(): Promise<boolean> {
+    const {isLoaded} = await this.remote.registerDocumentScannerReadyCallback();
+    return isLoaded;
   }
 
   /**
