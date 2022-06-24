@@ -253,15 +253,15 @@ if (is_fuchsia) {
 
   # TODO(crbug.com/1211758): Remove this once bringup on CFv2 is complete.
   fuchsia_component("chrome_component_v1") {
+    visibility = [ ":*" ]
     manifest = "chrome_v1.cmx"
     data_deps = [ "//chrome:chrome_initial" ]
-    visibility = [ ":*" ]
   }
 
   fuchsia_component("chrome_component") {
+    visibility = [ ":*" ]
     manifest = "chrome.cml"
     data_deps = [ "//chrome:chrome_initial" ]
-    visibility = [ ":*" ]
   }
 
   fuchsia_package("chrome_pkg") {
@@ -275,6 +275,12 @@ if (is_fuchsia) {
   }
 
   fuchsia_package_installer("chrome_fuchsia") {
+    visibility = [
+      ":*",  # See https://crbug.com/1328459#c4.
+      "//:gn_all",
+      "//chrome/test/*",
+      "//content/test/*",
+    ]
     package = ":chrome_pkg"
     package_name = "chrome"
   }

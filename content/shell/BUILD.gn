@@ -586,6 +586,10 @@ if (is_android) {
 
     fuchsia_package_installer("content_shell_fuchsia") {
       testonly = true
+      visibility = [
+        ":*",  # See https://crbug.com/1328459#c4.
+        "//:*",
+      ]
       package = ":content_shell_pkg"
       package_name = "content_shell"
     }

@@ -369,6 +369,9 @@ fuchsia_package("web_engine") {
 }
 
 fuchsia_package_installer("web_engine_installer") {
+  # Force this template to apply visibility. See the bug below.
+  # TODO(crbug.com/1328459): Remove once the bug is fixed.
+  visibility += []
   package = ":web_engine"
 }
 
@@ -405,6 +408,10 @@ fuchsia_package("web_engine_with_webui") {
 }
 
 fuchsia_package_installer("web_engine_with_webui_installer") {
+  visibility += [
+    "//chrome/test/*",
+    "//content/test/*",
+  ]
   package = ":web_engine_with_webui"
 }
 

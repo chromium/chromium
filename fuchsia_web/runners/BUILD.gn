@@ -179,6 +179,7 @@ fuchsia_package("cast_runner_pkg") {
 }
 
 fuchsia_package_installer("cast_runner") {
+  visibility += [ "//fuchsia_web:gn_all" ]
   package = ":cast_runner_pkg"
   package_name = "cast_runner"
   package_deps = [ [
@@ -320,6 +321,7 @@ fuchsia_package("web_runner_pkg") {
 }
 
 fuchsia_package_installer("web_runner") {
+  visibility += [ "//fuchsia_web:gn_all" ]
   package = ":web_runner_pkg"
   package_name = "web_runner"
   package_deps = [ [
