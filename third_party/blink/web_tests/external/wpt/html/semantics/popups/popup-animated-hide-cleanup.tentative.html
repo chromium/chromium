@@ -56,9 +56,9 @@ function addPopUp(classname) {
 promise_test(async () => {
   let popUp = addPopUp("animation");
   let dialog = document.querySelector('dialog');
-  popUp.showPopup(); // No animations here
+  popUp.showPopUp(); // No animations here
   await rAF();
-  popUp.hidePopup(); // Start animations
+  popUp.hidePopUp(); // Start animations
   await rAF();
   popUp.remove();
   garbageCollect();
@@ -69,9 +69,9 @@ promise_test(async () => {
 promise_test(async (t) => {
   let popUp = addPopUp("animation");
   let dialog = document.querySelector('dialog');
-  popUp.showPopup(); // No animations here
+  popUp.showPopUp(); // No animations here
   await rAF();
-  popUp.hidePopup(); // Start animations
+  popUp.hidePopUp(); // Start animations
   await rAF();
   dialog.showModal(); // Immediately hide pop-up
   t.add_cleanup(() => dialog.close());
@@ -89,7 +89,7 @@ promise_test(async (t) => {
   t.add_cleanup(() => {popUp.remove();button.remove();});
   document.body.appendChild(button);
   button.addEventListener('click',() => dialog.show());
-  popUp.showPopup(); // No animations here
+  popUp.showPopUp(); // No animations here
   await rAF();
   await clickOn(button);
   await rAF();

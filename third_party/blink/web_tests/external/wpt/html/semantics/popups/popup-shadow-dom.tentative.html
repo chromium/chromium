@@ -36,13 +36,13 @@
     ensureShadowDom(testRoot);
     return findPopups(testRoot);
   }
-  function showPopup(testId,popupNum) {
-    getPopupReferences(testId)[popupNum].showPopup();
+  function showPopUp(testId,popupNum) {
+    getPopupReferences(testId)[popupNum].showPopUp();
   }
 </script>
 
 <div id=test1>
-  <button onclick='showPopup("test1",0)'>Test1 Popup</button>
+  <button onclick='showPopUp("test1",0)'>Test1 Popup</button>
   <my-element>
     <template shadowroot=open>
       <div popup>
@@ -55,7 +55,7 @@
 <script>
   test(function() {
     const popup = getPopupReferences('test1')[0];
-    popup.showPopup();
+    popup.showPopUp();
     assert_true(popup.matches(':top-layer'));
     assert_true(isElementVisible(popup));
   }, "Popups located inside shadow DOM can still be shown");
@@ -63,10 +63,10 @@
 
 
 <div id=test2>
-  <button id=t2b1 onclick='showPopup("test2",0)'>Test 2 Popup 1</button>
+  <button id=t2b1 onclick='showPopUp("test2",0)'>Test 2 Popup 1</button>
   <div popup anchor=t2b1 style="top: 400px;">
     <p>Popup 1</p>
-    <button id=t2b2 onclick='showPopup("test2",1)'>Test 2 Popup 2</button>
+    <button id=t2b2 onclick='showPopUp("test2",1)'>Test 2 Popup 2</button>
   </div>
   <my-element>
     <template shadowroot=open>
@@ -81,10 +81,10 @@
 <script>
   test(function() {
     const [popup1,popup2] = getPopupReferences('test2');
-    popup1.showPopup();
+    popup1.showPopUp();
     assert_true(popup1.matches(':top-layer'));
     assert_true(isElementVisible(popup1));
-    popup2.showPopup();
+    popup2.showPopUp();
     assert_false(popup1.matches(':top-layer'), 'popup1 open'); // P1 was closed by P2
     assert_false(isElementVisible(popup1), 'popup1 visible');
     assert_true(popup2.matches(':top-layer'), 'popup2 open'); // P2 is open
@@ -96,13 +96,13 @@
 <div id=test3>
   <my-element>
     <template shadowroot=open>
-      <button id=t3b1 onclick='showPopup("test3",0)'>Test 3 Popup 1</button>
+      <button id=t3b1 onclick='showPopUp("test3",0)'>Test 3 Popup 1</button>
       <div popup anchor=t3b1>
         <p>This popup will stay open when popup2 shows.</p>
         <slot></slot>
       </div>
     </template>
-    <button id=t3b2 onclick='showPopup("test3",1)'>Test 3 Popup 2</button>
+    <button id=t3b2 onclick='showPopUp("test3",1)'>Test 3 Popup 2</button>
   </my-element>
   <div popup anchor=t3b2>Popup 2</div>
 </div>
@@ -110,17 +110,17 @@
 <script>
   test(function() {
     const [popup1,popup2] = getPopupReferences('test3');
-    popup1.showPopup();
+    popup1.showPopUp();
     assert_true(popup1.matches(':top-layer'));
     assert_true(isElementVisible(popup1));
     // Showing popup2 should not close popup1, since it is a flat
     // tree ancestor of popup2's anchor button.
-    popup2.showPopup();
+    popup2.showPopUp();
     assert_true(popup2.matches(':top-layer'));
     assert_true(isElementVisible(popup2));
     assert_true(popup1.matches(':top-layer'));
     assert_true(isElementVisible(popup1));
-    popup1.hidePopup();
+    popup1.hidePopUp();
     assert_false(popup2.matches(':top-layer'));
     assert_false(popup1.matches(':top-layer'));
   }, "anchor references use the flat tree not the DOM tree");
@@ -128,12 +128,12 @@
 
 
 <div id=test4>
-  <button id=t4b1 onclick='showPopup("test4",0)'>Test 4 Popup 1</button>
+  <button id=t4b1 onclick='showPopUp("test4",0)'>Test 4 Popup 1</button>
   <div popup anchor=t4b1>
     <p>This should not get hidden when popup2 opens.</p>
     <my-element>
       <template shadowroot=open>
-        <button id=t4b2 onclick='showPopup("test4",1)'>Test 4 Popup 2</button>
+        <button id=t4b2 onclick='showPopUp("test4",1)'>Test 4 Popup 2</button>
         <div popup anchor=t4b2>
           <p>This should not hide popup1.</p>
         </div>
@@ -145,15 +145,15 @@
 <script>
   test(function() {
     const [popup1,popup2] = getPopupReferences('test4');
-    popup1.showPopup();
-    popup2.showPopup();
+    popup1.showPopUp();
+    popup2.showPopUp();
     // Both 1 and 2 should be open at this point.
     assert_true(popup1.matches(':top-layer'), 'popup1 not open');
     assert_true(isElementVisible(popup1));
     assert_true(popup2.matches(':top-layer'), 'popup2 not open');
     assert_true(isElementVisible(popup2));
     // This should hide both of them.
-    popup1.hidePopup();
+    popup1.hidePopUp();
     assert_false(popup2.matches(':top-layer'));
     assert_false(isElementVisible(popup2));
   }, "The popup stack is preserved across shadow-inclusive ancestors");

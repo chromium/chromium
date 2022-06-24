@@ -2448,7 +2448,7 @@ void Element::UpdatePopupAttribute(String value) {
       return;
     // If the popup type is changing, hide it.
     if (popupOpen()) {
-      hidePopupInternal(HidePopupFocusBehavior::kFocusPreviousElement,
+      hidePopUpInternal(HidePopupFocusBehavior::kFocusPreviousElement,
                         HidePopupForcingLevel::kHideAfterAnimations);
     }
   }
@@ -2490,7 +2490,7 @@ bool Element::popupOpen() const {
   return false;
 }
 
-void Element::showPopup(ExceptionState& exception_state) {
+void Element::showPopUp(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (!HasValidPopupAttribute()) {
     return exception_state.ThrowDOMException(
@@ -2506,7 +2506,7 @@ void Element::showPopup(ExceptionState& exception_state) {
   if (PopupType() == PopupValueType::kAuto ||
       PopupType() == PopupValueType::kHint) {
     if (GetDocument().HintShowing()) {
-      GetDocument().PopupAndHintStack().back()->hidePopupInternal(
+      GetDocument().PopupAndHintStack().back()->hidePopUpInternal(
           HidePopupFocusBehavior::kNone,
           HidePopupForcingLevel::kHideAfterAnimations);
     }
@@ -2563,12 +2563,12 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
   }
   while (!document.PopupAndHintStack().IsEmpty() &&
          document.PopupAndHintStack().back() != endpoint) {
-    document.PopupAndHintStack().back()->hidePopupInternal(focus_behavior,
+    document.PopupAndHintStack().back()->hidePopUpInternal(focus_behavior,
                                                            forcing_level);
   }
 }
 
-void Element::hidePopup(ExceptionState& exception_state) {
+void Element::hidePopUp(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (!HasValidPopupAttribute()) {
     return exception_state.ThrowDOMException(
@@ -2580,11 +2580,11 @@ void Element::hidePopup(ExceptionState& exception_state) {
         DOMExceptionCode::kInvalidStateError,
         "Invalid on already-hidden popup elements");
   }
-  hidePopupInternal(HidePopupFocusBehavior::kFocusPreviousElement,
+  hidePopUpInternal(HidePopupFocusBehavior::kFocusPreviousElement,
                     HidePopupForcingLevel::kHideAfterAnimations);
 }
 
-void Element::hidePopupInternal(HidePopupFocusBehavior focus_behavior,
+void Element::hidePopUpInternal(HidePopupFocusBehavior focus_behavior,
                                 HidePopupForcingLevel forcing_level) {
   DCHECK(HasValidPopupAttribute());
   if (!isConnected() || !popupOpen())
@@ -2872,7 +2872,7 @@ void Element::HandlePopupLightDismiss(const Event& event) {
     const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
     if (key_event && key_event->key() == "Escape") {
       // Escape key just pops the topmost popup or hint off the stack.
-      document.PopupAndHintStack().back()->hidePopupInternal(
+      document.PopupAndHintStack().back()->hidePopUpInternal(
           HidePopupFocusBehavior::kFocusPreviousElement,
           HidePopupForcingLevel::kHideAfterAnimations);
     }
@@ -2889,7 +2889,7 @@ void Element::InvokePopup(Element* invoker) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   DCHECK(HasValidPopupAttribute());
   GetPopupData()->setInvoker(invoker);
-  showPopup(ASSERT_NO_EXCEPTION);
+  showPopUp(ASSERT_NO_EXCEPTION);
 }
 
 Element* Element::anchorElement() const {
@@ -3226,7 +3226,7 @@ Node::InsertionNotificationRequest Element::InsertedInto(
                          if (popup && popup->isConnected() &&
                              (popup->PopupType() == PopupValueType::kAsync ||
                               !popup->GetDocument().PopupOrHintShowing())) {
-                           popup->showPopup(ASSERT_NO_EXCEPTION);
+                           popup->showPopUp(ASSERT_NO_EXCEPTION);
                          }
                        },
                        WrapWeakPersistent(this)));
@@ -3286,7 +3286,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   // removed from the popup element stack and the top layer.
   if (was_in_document && HasValidPopupAttribute()) {
     // We can't run focus event handlers while removing elements.
-    hidePopupInternal(HidePopupFocusBehavior::kNone,
+    hidePopUpInternal(HidePopupFocusBehavior::kNone,
                       HidePopupForcingLevel::kHideImmediately);
   }
 

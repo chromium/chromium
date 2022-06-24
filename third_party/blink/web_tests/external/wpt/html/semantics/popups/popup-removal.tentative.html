@@ -17,7 +17,7 @@ promise_test(async t => {
   }
   const popup = document.querySelector('[popup]');
   assert_false(popup.matches(':top-layer'));
-  popup.showPopup();
+  popup.showPopUp();
   assert_true(popup.matches(':top-layer'));
   popup.remove(); // Shouldn't cause any issues
   document.body.click(); // Shouldn't cause light dismiss problems

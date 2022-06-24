@@ -36,14 +36,14 @@ promise_test(async t => {
   document.addEventListener('hide',() => ++hideCount);
   assert_equals(0,showCount);
   assert_equals(0,hideCount);
-  popup.showPopup();
+  popup.showPopUp();
   assert_true(popup.matches(':top-layer'));
   await waitUntilChange(() => showCount);
   assert_equals(1,showCount);
   assert_equals(0,hideCount);
   await requestAnimationFramePromise();
   assert_true(popup.matches(':top-layer'));
-  popup.hidePopup();
+  popup.hidePopUp();
   assert_false(popup.matches(':top-layer'));
   await waitUntilChange(() => hideCount);
   assert_equals(1,showCount);

@@ -342,7 +342,7 @@ bool HTMLSelectMenuElement::open() const {
 void HTMLSelectMenuElement::OpenListbox() {
   if (listbox_part_ && !open()) {
     listbox_part_->SetNeedsRepositioningForSelectMenu(true);
-    listbox_part_->showPopup(ASSERT_NO_EXCEPTION);
+    listbox_part_->showPopUp(ASSERT_NO_EXCEPTION);
     if (selectedOption()) {
       selectedOption()->Focus();
     }
@@ -354,7 +354,7 @@ void HTMLSelectMenuElement::CloseListbox() {
   if (listbox_part_ && open()) {
     if (listbox_part_->HasValidPopupAttribute()) {
       // We will handle focus directly.
-      listbox_part_->hidePopupInternal(
+      listbox_part_->hidePopUpInternal(
           HidePopupFocusBehavior::kNone,
           HidePopupForcingLevel::kHideAfterAnimations);
     }

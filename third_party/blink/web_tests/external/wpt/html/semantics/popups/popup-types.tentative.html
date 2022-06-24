@@ -19,41 +19,41 @@ function assert_state_1(popupOpen,hintOpen,asyncOpen,async2Open) {
 }
 test(() => {
   assert_state_1(false,false,false,false);
-  popup.showPopup();
+  popup.showPopUp();
   assert_state_1(true,false,false,false);
-  hint.showPopup();
+  hint.showPopUp();
   assert_state_1(true,true,false,false);
-  async.showPopup();
+  async.showPopUp();
   assert_state_1(true,true,true,false);
-  async2.showPopup();
+  async2.showPopUp();
   assert_state_1(true,true,true,true);
-  hint.hidePopup();
+  hint.hidePopUp();
   assert_state_1(true,false,true,true);
-  popup.hidePopup();
+  popup.hidePopUp();
   assert_state_1(false,false,true,true);
-  popup.showPopup();
-  hint.showPopup();
+  popup.showPopUp();
+  hint.showPopUp();
   assert_state_1(true,true,true,true);
-  popup.hidePopup();
+  popup.hidePopUp();
   assert_state_1(false,false,true,true);
-  async.hidePopup();
+  async.hidePopUp();
   assert_state_1(false,false,false,true);
-  async2.hidePopup();
+  async2.hidePopUp();
   assert_state_1(false,false,false,false);
 },'hints and asyncs do not close popups');
 
 test(() => {
   assert_state_1(false,false,false,false);
-  hint.showPopup();
-  async.showPopup();
-  async2.showPopup();
+  hint.showPopUp();
+  async.showPopUp();
+  async2.showPopUp();
   assert_state_1(false,true,true,true);
-  popup.showPopup();
+  popup.showPopUp();
   assert_state_1(true,false,true,true);
-  popup.hidePopup();
+  popup.hidePopUp();
   assert_state_1(false,false,true,true);
-  async.hidePopup();
-  async2.hidePopup();
+  async.hidePopUp();
+  async2.hidePopUp();
   assert_state_1(false,false,false,false);
 },'popups close hints but not asyncs');
 </script>
@@ -74,15 +74,15 @@ function assert_state_2(popup1Open,popup2Open,popup3Open,hintOpen) {
 }
 test(() => {
   assert_state_2(false,false,false,false);
-  popup1.showPopup();
-  popup2.showPopup();
-  popup3.showPopup();
+  popup1.showPopUp();
+  popup2.showPopUp();
+  popup3.showPopUp();
   assert_state_2(true,true,true,false);
-  hint2.showPopup();
+  hint2.showPopUp();
   assert_state_2(true,true,true,true);
-  popup3.hidePopup(); // Should close the hint
+  popup3.hidePopUp(); // Should close the hint
   assert_state_2(true,true,false,false);
-  popup1.hidePopup();
+  popup1.hidePopUp();
   assert_state_2(false,false,false,false);
 },'hint, even with popup ancestor, closes with first popup');
 </script>

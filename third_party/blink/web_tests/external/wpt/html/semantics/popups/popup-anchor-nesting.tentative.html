@@ -14,13 +14,13 @@
 <!-- This example has the anchor (b1) for one popup (p1)
      which contains a separate popup (p2) which is anchored
      by a separate anchor (b2). -->
-<button id=b1 onclick='p1.showPopup()'>Popup 1
+<button id=b1 onclick='p1.showPopUp()'>Popup 1
   <div popup id=p2 anchor=b2>
     <span id=inside2>Inside popup 2</span>
   </div>
 </button>
 <div popup id=p1 anchor=b1>This is popup 1</div>
-<button id=b2 onclick='p2.showPopup()'>Popup 2</button>
+<button id=b2 onclick='p2.showPopUp()'>Popup 2</button>
 
 <style>
   #p1 { top:50px; }
@@ -45,7 +45,7 @@
   (async function() {
     setup({ explicit_done: true });
 
-    popup2.showPopup();
+    popup2.showPopUp();
     assert_false(popup1.matches(':top-layer'));
     assert_true(popup2.matches(':top-layer'));
     await clickOn(button1);

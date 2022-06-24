@@ -2314,7 +2314,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // hint in the stack, it is at the top.
   HeapVector<Member<Element>> popup_and_hint_stack_;
 
-  // A set of popups for which hidePopup() has been called, but animations are
+  // A set of popups for which hidePopUp() has been called, but animations are
   // still running.
   HeapHashSet<Member<Element>> popups_waiting_to_hide_;
 

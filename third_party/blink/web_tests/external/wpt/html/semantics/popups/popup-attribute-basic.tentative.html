@@ -34,36 +34,36 @@
   }
   function assertIsFunctionalPopUp(popUp) {
     assert_false(popUpVisible(popUp, /*isPopUp*/true));
-    popUp.showPopup();
+    popUp.showPopUp();
     assert_true(popUpVisible(popUp, /*isPopUp*/true));
-    assert_throws_dom("InvalidStateError",() => popUp.showPopup(),'Calling showPopup on a showing pop-up should throw InvalidStateError');
-    popUp.hidePopup();
+    assert_throws_dom("InvalidStateError",() => popUp.showPopUp(),'Calling showPopUp on a showing pop-up should throw InvalidStateError');
+    popUp.hidePopUp();
     assert_false(popUpVisible(popUp, /*isPopUp*/true));
-    assert_throws_dom("InvalidStateError",() => popUp.hidePopup(),'Calling hidePopup on a hidden pop-up should throw InvalidStateError');
+    assert_throws_dom("InvalidStateError",() => popUp.hidePopUp(),'Calling hidePopUp on a hidden pop-up should throw InvalidStateError');
     const parent = popUp.parentElement;
     popUp.remove();
-    assert_throws_dom("InvalidStateError",() => popUp.showPopup(),'Calling showPopup on a disconnected pop-up should throw InvalidStateError');
+    assert_throws_dom("InvalidStateError",() => popUp.showPopUp(),'Calling showPopUp on a disconnected pop-up should throw InvalidStateError');
     parent.appendChild(popUp);
   }
   function assertNotAPopUp(nonPopUp) {
     // Non-popup elements should already be visible.
     assert_true(popUpVisible(nonPopUp, /*isPopUp*/false));
-    assert_throws_dom("NotSupportedError",() => nonPopUp.showPopup(),'Calling showPopup on a non-pop-up should throw NotSupportedError');
+    assert_throws_dom("NotSupportedError",() => nonPopUp.showPopUp(),'Calling showPopUp on a non-pop-up should throw NotSupportedError');
     assert_true(popUpVisible(nonPopUp, /*isPopUp*/false));
-    assert_throws_dom("NotSupportedError",() => nonPopUp.hidePopup(),'Calling hidePopup on a non-pop-up should throw NotSupportedError');
+    assert_throws_dom("NotSupportedError",() => nonPopUp.hidePopUp(),'Calling hidePopUp on a non-pop-up should throw NotSupportedError');
     assert_true(popUpVisible(nonPopUp, /*isPopUp*/false));
   }
 
   Array.from(document.getElementById('popups').children).forEach(popUp => {
     test((t) => {
       assertIsFunctionalPopUp(popUp);
-    }, `The .showPopup() and .hidePopup() work on a pop-up, for ${popUp.outerHTML}.`);
+    }, `The .showPopUp() and .hidePopUp() work on a pop-up, for ${popUp.outerHTML}.`);
   });
 
   Array.from(document.getElementById('nonpopups').children).forEach(nonPopUp => {
     test((t) => {
       assertNotAPopUp(nonPopUp);
-    }, `The .showPopup() and .hidePopup() do NOT work on elements without a 'popup' attribute, ${nonPopUp.outerHTML}.`);
+    }, `The .showPopUp() and .hidePopUp() do NOT work on elements without a 'popup' attribute, ${nonPopUp.outerHTML}.`);
   });
 
   function createPopUp(t) {
@@ -152,15 +152,15 @@
 
   test((t) => {
     const popUp = createPopUp(t);
-    popUp.showPopup();
+    popUp.showPopUp();
     assert_true(popUp.matches(':top-layer'));
     popUp.setAttribute('popup','hint'); // Change pop-up type
     assert_false(popUp.matches(':top-layer'));
-    popUp.showPopup();
+    popUp.showPopUp();
     assert_true(popUp.matches(':top-layer'));
     popUp.setAttribute('popup','async');
     assert_false(popUp.matches(':top-layer'));
-    popUp.showPopup();
+    popUp.showPopUp();
     assert_true(popUp.matches(':top-layer'));
     popUp.setAttribute('popup','invalid');
     assert_false(popUp.matches(':top-layer'));
@@ -179,7 +179,7 @@
     test((t) => {
       const popUp = createPopUp(t);
       popUp.setAttribute('popup',type);
-      popUp.showPopup();
+      popUp.showPopUp();
       assert_true(popUp.matches(':top-layer'));
       popUp.remove();
       assert_false(popUp.matches(':top-layer'));
@@ -191,10 +191,10 @@
       test((t) => {
         const popUp = createPopUp(t);
         popUp.setAttribute('popup',type);
-        popUp.showPopup();
+        popUp.showPopUp();
         assert_true(popUp.matches(':top-layer'));
         assert_false(popUp.matches(':modal'));
-        popUp.hidePopup();
+        popUp.hidePopUp();
       },`A showing popup=${type} does not match :modal`);
     }
   });

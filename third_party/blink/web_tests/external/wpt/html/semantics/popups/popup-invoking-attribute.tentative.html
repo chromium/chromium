@@ -148,7 +148,7 @@ const invokers = [
               case "toggle":
               case "show":
                 assert_popUp(expectedId,true,'Toggle or show should show the pop-up');
-                (expectedId===1 ? popUp1 : popUp2).hidePopup(); // Hide the pop-up
+                (expectedId===1 ? popUp1 : popUp2).hidePopUp(); // Hide the pop-up
                 break;
               case "hide":
               case "none":
@@ -157,7 +157,7 @@ const invokers = [
               default:
                 assert_unreached();
             }
-            (expectedId===1 ? popUp1 : popUp2).showPopup(); // Show the pop-up directly
+            (expectedId===1 ? popUp1 : popUp2).showPopUp(); // Show the pop-up directly
             assert_popUp(expectedId,true);
             assert_popUp(otherId,false);
             await testcase.invokeFn(invoker);
@@ -215,11 +215,11 @@ promise_test(async () => {
   await assertState(false,0,0);
   await clickOn(button);
   await assertState(true,1,0);
-  popUp.hidePopup();
+  popUp.hidePopUp();
   await assertState(false,1,1);
   button.click();
   await assertState(true,2,1);
-  popUp.hidePopup();
+  popUp.hidePopUp();
   await assertState(false,2,2);
 }, "Clicking a togglepopup button opens a closed pop-up (also check event counts)");
 

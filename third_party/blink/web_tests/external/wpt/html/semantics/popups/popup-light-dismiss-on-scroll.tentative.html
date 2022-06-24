@@ -22,7 +22,7 @@
     This is popup 2
   </div>
 </div>
-<button onclick='popup1.showPopup();popup2.showPopup();'>Open popups</button>
+<button onclick='popup1.showPopUp();popup2.showPopUp();'>Open popups</button>
 
 <style>
   #popup1 { top:50px; left: 50px; }
@@ -49,8 +49,8 @@
       });
     }
     assertAll(/*showing*/false);
-    popups[0].showPopup();
-    popups[1].showPopup();
+    popups[0].showPopUp();
+    popups[1].showPopUp();
     assertAll(/*showing*/true);
     scroller.scrollTo(0, 100);
     requestAnimationFrame(() => {

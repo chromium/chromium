@@ -137,23 +137,23 @@
       // Directly show and hide the pop-up:
       priorFocus.focus();
       assert_equals(document.activeElement, priorFocus);
-      popUp.showPopup();
-      assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopup()`);
-      popUp.hidePopup();
+      popUp.showPopUp();
+      assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopUp()`);
+      popUp.hidePopUp();
       assert_equals(document.activeElement, priorFocus, 'prior element should get focus on hide');
 
       // Hit Escape:
       priorFocus.focus();
       assert_equals(document.activeElement, priorFocus);
-      popUp.showPopup();
-      assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopup()`);
+      popUp.showPopUp();
+      assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopUp()`);
       await sendEscape();
       assert_equals(document.activeElement, priorFocus, 'prior element should get focus after Escape');
 
       // Change the pop-up type:
       priorFocus.focus();
-      popUp.showPopup();
-      assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopup()`);
+      popUp.showPopUp();
+      assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopUp()`);
       assert_equals(popUp.popUp, 'auto', 'All pop-ups in this test should start as popup=auto');
       popUp.popUp = 'hint';
       assert_false(popUp.matches(':top-layer'), 'Changing the pop-up type should hide the pop-up');
@@ -162,8 +162,8 @@
 
       // Remove from the document:
       priorFocus.focus();
-      popUp.showPopup();
-      assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopup()`);
+      popUp.showPopUp();
+      assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopUp()`);
       popUp.remove();
       assert_false(popUp.matches(':top-layer'), 'Removing the pop-up should hide it');
       if (!popUp.hasAttribute('data-no-focus')) {
@@ -173,8 +173,8 @@
 
       // Show a modal dialog:
       priorFocus.focus();
-      popUp.showPopup();
-      assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopup()`);
+      popUp.showPopUp();
+      assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopUp()`);
       const dialog = document.body.appendChild(document.createElement('dialog'));
       dialog.showModal();
       assert_false(popUp.matches(':top-layer'), 'Opening a modal dialog should hide the pop-up');
@@ -206,7 +206,7 @@
       assert_false(popUp.contains(button), 'Start with a non-contained button');
       priorFocus.focus();
       assert_equals(document.activeElement, priorFocus);
-      popUp.showPopup();
+      popUp.showPopUp();
       assert_true(popUp.matches(':top-layer'));
       await clickOn(button); // This will not light dismiss, but will "toggle" the popUp.
       assert_false(popUp.matches(':top-layer'));
@@ -217,7 +217,7 @@
       button.setAttribute('hidepopup', popUp.id);
       popUp.appendChild(button);
       priorFocus.focus();
-      popUp.showPopup();
+      popUp.showPopUp();
       assert_true(popUp.matches(':top-layer'));
       if (!popUp.hasAttribute('data-no-focus')) {
         assert_not_equals(document.activeElement, priorFocus, 'focus should shift for this element');
@@ -230,7 +230,7 @@
       button = document.createElement('button');
       document.body.appendChild(button);
       priorFocus.focus();
-      popUp.showPopup();
+      popUp.showPopUp();
       assert_true(popUp.matches(':top-layer'));
       await clickOn(button); // This will light dismiss the pop-up, focus the prior focus, then focus this button.
       assert_false(popUp.matches(':top-layer'), 'clicking button should hide the pop-up (via light dismiss)');
@@ -247,25 +247,25 @@
 
       // Move the prior focus out of the document
       priorFocus.focus();
-      popUp.showPopup();
+      popUp.showPopUp();
       assert_true(popUp.matches(':top-layer'));
       const newFocus = document.activeElement;
       assert_not_equals(newFocus, priorFocus, 'focus should shift for this element');
       priorFocus.remove();
       assert_equals(document.activeElement, newFocus, 'focus should not change when prior focus is removed');
-      popUp.hidePopup();
+      popUp.hidePopUp();
       assert_not_equals(document.activeElement, priorFocus, 'focused element has been removed');
       document.body.appendChild(priorFocus); // Put it back
 
       // Move the prior focus inside the (already open) pop-up
       priorFocus.focus();
-      popUp.showPopup();
+      popUp.showPopUp();
       assert_true(popUp.matches(':top-layer'));
       assert_false(popUp.contains(priorFocus), 'Start with a non-contained prior focus');
       popUp.appendChild(priorFocus); // Move inside the pop-up
       assert_true(popUp.contains(priorFocus));
       assert_true(popUp.matches(':top-layer'), 'pop-up should stay open');
-      popUp.hidePopup();
+      popUp.hidePopUp();
       assert_not_equals(document.activeElement, priorFocus, 'focused element is display:none inside the pop-up');
       document.body.appendChild(priorFocus); // Put it back
     }, "Popup corner cases test: " + testName);

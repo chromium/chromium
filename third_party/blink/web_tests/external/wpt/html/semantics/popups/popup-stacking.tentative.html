@@ -67,18 +67,18 @@
 <!-- Other examples -->
 
 <div popup id=p1 anchor=b1><p>This is popup #1</p>
-  <button id=b2 onclick='p2.showPopup()'>Popup 2</button>
-  <button id=b4 onclick='p4.showPopup()'>Popup 4</button>
+  <button id=b2 onclick='p2.showPopUp()'>Popup 2</button>
+  <button id=b4 onclick='p4.showPopUp()'>Popup 4</button>
 </div>
 <div popup id=p2 anchor=b2><p>This is popup #2</p>
-  <button id=b3 onclick='p3.showPopup()'>Popup 3</button>
+  <button id=b3 onclick='p3.showPopUp()'>Popup 3</button>
 </div>
 <div popup id=p3 anchor=b3><p>This is popup #3</p></div>
 <div popup id=p4 anchor=b4><p>This is popup #4</p></div>
-<button id=b1 onclick='p1.showPopup()'>Popup 1</button>
+<button id=b1 onclick='p1.showPopUp()'>Popup 1</button>
 
 <dialog id=d1>This is a dialog<button onclick='this.parentElement.close()'>Close</button></dialog>
-<button id=b5 onclick='d1.showPopup()'>Dialog</button>
+<button id=b5 onclick='d1.showPopUp()'>Dialog</button>
 
 <script>
   // Test basic ancestor relationships
@@ -91,14 +91,14 @@
       assert_true(!!descr && !!ancestor && !!child);
       assert_false(ancestor.matches(':top-layer'));
       assert_false(child.matches(':top-layer'));
-      ancestor.showPopup();
+      ancestor.showPopUp();
       if (clickToActivate)
         clickToActivate.click();
       else
-        child.showPopup();
+        child.showPopUp();
       assert_true(child.matches(':top-layer'));
       assert_true(ancestor.matches(':top-layer'));
-      ancestor.hidePopup();
+      ancestor.hidePopUp();
       assert_false(ancestor.matches(':top-layer'));
       assert_false(child.matches(':top-layer'));
     },descr);
@@ -114,33 +114,33 @@
   }
   test(function() {
     assertState(false,false,false,false);
-    p1.showPopup();
+    p1.showPopUp();
     assertState(true,false,false,false);
-    p2.showPopup();
+    p2.showPopUp();
     assertState(true,true,false,false);
-    p3.showPopup();
+    p3.showPopUp();
     assertState(true,true,true,false);
     // P4 is a sibling of P2, so showing it should
     // close P2 and P3.
-    p4.showPopup();
+    p4.showPopUp();
     assertState(true,false,false,true);
     // P2 should close P4 now.
-    p2.showPopup();
+    p2.showPopUp();
     assertState(true,true,false,false);
     // Hiding P1 should hide all.
-    p1.hidePopup();
+    p1.hidePopUp();
     assertState(false,false,false,false);
   }, "more complex nesting, all using anchor ancestry")
 
   test(function() {
     function openManyPopups() {
-      p1.showPopup();
-      p2.showPopup();
-      p3.showPopup();
+      p1.showPopUp();
+      p2.showPopUp();
+      p3.showPopUp();
       assertState(true,true,true,false);
     }
     openManyPopups();
-    d1.show(); // Dialog.showPopup() should hide all popups.
+    d1.show(); // Dialog.show() should hide all popups.
     assertState(false,false,false,false);
     d1.close();
     openManyPopups();
@@ -154,10 +154,10 @@
     assert_false(d1.open);
     d1.show();
     assert_true(d1.open);
-    p1.showPopup();
+    p1.showPopUp();
     assertState(true,false,false,false);
     assert_true(d1.open);
-    p1.hidePopup();
+    p1.hidePopUp();
     assert_true(d1.open);
     d1.close();
     assert_false(d1.open);

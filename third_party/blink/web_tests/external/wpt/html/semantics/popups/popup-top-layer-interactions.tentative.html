@@ -20,8 +20,8 @@ const examples = [
     type: types.popUp,
     closes: [types.popUp],
     createElement: () => Object.assign(document.createElement('div'), {popUp: 'auto'}),
-    trigger: function() {this.element.showPopup()},
-    close: function() {this.element.hidePopup()},
+    trigger: function() {this.element.showPopUp()},
+    close: function() {this.element.hidePopUp()},
     isTopLayer: function() {return this.element.matches(':top-layer')},
   },
   {

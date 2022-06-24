@@ -33,8 +33,8 @@
 
     const popup1 = document.querySelector('#p1');
     const popup2 = document.querySelector('#p2');
-    popup1.showPopup();
-    popup2.showPopup();
+    popup1.showPopUp();
+    popup2.showPopUp();
     eventSender.keyDown("Escape");
     assert_true(popup1.matches(':top-layer'));
     assert_false(popup2.matches(':top-layer'));

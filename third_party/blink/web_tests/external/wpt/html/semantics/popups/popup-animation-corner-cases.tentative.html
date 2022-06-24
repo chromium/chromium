@@ -45,11 +45,11 @@ promise_test(async (t) => {
   const {popUp, descendent} = createPopUp(t,'animation');
   assert_false(isElementVisible(popUp));
   assert_equals(descendent.parentElement.parentElement,popUp);
-  popUp.showPopup();
+  popUp.showPopUp();
   assert_true(popUp.matches(':top-layer'));
   assert_true(isElementVisible(popUp));
   assert_equals(popUp.getAnimations({subtree: true}).length,0);
-  popUp.hidePopup();
+  popUp.hidePopUp();
   const animations = popUp.getAnimations({subtree: true});
   assert_equals(animations.length,2,'There should be two animations running');
   assert_false(popUp.matches(':top-layer'),'popUp should not match :top-layer as soon as hidden');
@@ -71,7 +71,7 @@ promise_test(async (t) => {
   const {popUp, descendent} = createPopUp(t,'');
   assert_equals(popUp.classList.length, 0);
   assert_false(isElementVisible(popUp));
-  popUp.showPopup();
+  popUp.showPopUp();
   assert_true(popUp.matches(':top-layer'));
   assert_true(isElementVisible(popUp));
   assert_equals(popUp.getAnimations({subtree: true}).length,0);
@@ -80,7 +80,7 @@ promise_test(async (t) => {
   descendent.animate([{transform: 'rotate(0)'},{transform: 'rotate(360deg)'}],{duration: 1000000,iterations: 1});
   assert_equals(popUp.getAnimations({subtree: true}).length,2);
   // Then hide the popUp.
-  popUp.hidePopup();
+  popUp.hidePopUp();
   assert_false(popUp.matches(':top-layer'),'pop up should not match :top-layer as soon as hidden');
   assert_equals(popUp.getAnimations({subtree: true}).length,2,'animations should still be running');
   await waitForRender();
