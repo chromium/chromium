@@ -370,7 +370,7 @@ class X11Window : public PlatformWindow,
   // Was this window initialized with the override_redirect window attribute?
   bool override_redirect_ = false;
 
-  std::u16string window_title_;
+  absl::optional<std::u16string> window_title_;
 
   // Whether the window is visible with respect to Aura.
   bool window_mapped_in_client_ = false;

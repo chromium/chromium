@@ -380,6 +380,8 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
   if (wm_role_name)
     SetWindowRole(xwindow_, std::string(wm_role_name));
 
+  SetTitle(u"");
+
   if (properties.remove_standard_frame) {
     // Setting _GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED tells gnome-shell to not force
     // fullscreen on the window when it matches the desktop size.
