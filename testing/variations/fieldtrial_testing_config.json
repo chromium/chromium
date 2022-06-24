@@ -1876,23 +1876,6 @@
             ]
         }
     ],
-    "ButterForPasswordsRevisedOptInFlow": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20211203",
-                    "enable_features": [
-                        "PasswordsAccountStorageRevisedOptInFlow"
-                    ]
-                }
-            ]
-        }
-    ],
     "CCTNewDownloadTab": [
         {
             "platforms": [

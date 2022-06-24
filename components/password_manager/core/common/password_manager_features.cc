@@ -156,7 +156,7 @@ const base::Feature kPasswordReuseDetectionEnabled = {
 // Enables a revised opt-in flow for the account-scoped password storage.
 const base::Feature kPasswordsAccountStorageRevisedOptInFlow = {
     "PasswordsAccountStorageRevisedOptInFlow",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables password scripts fetching for the |PasswordChangeInSettings| feature.
 const base::Feature kPasswordScriptsFetching = {
