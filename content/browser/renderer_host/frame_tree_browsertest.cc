@@ -1070,7 +1070,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
   EXPECT_TRUE(urn_uuid.is_valid());
 
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
   {
     TestFrameNavigationObserver observer(fenced_frame_root_node);
@@ -1136,8 +1136,7 @@ IN_PROC_BROWSER_TEST_P(
   {
     TestFrameNavigationObserver observer(
         fenced_frame_root_node1->current_frame_host());
-    std::string navigate_urn_script =
-        JsReplace("f1.src = $1;", urn_uuid.spec());
+    std::string navigate_urn_script = JsReplace("f1.src = $1;", urn_uuid);
     EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
     observer.Wait();
   }
@@ -1145,8 +1144,7 @@ IN_PROC_BROWSER_TEST_P(
   {
     TestFrameNavigationObserver observer(
         fenced_frame_root_node2->current_frame_host());
-    std::string navigate_urn_script =
-        JsReplace("f2.src = $1;", urn_uuid.spec());
+    std::string navigate_urn_script = JsReplace("f2.src = $1;", urn_uuid);
     EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
     observer.Wait();
   }
@@ -1188,7 +1186,7 @@ IN_PROC_BROWSER_TEST_P(
   const GURL urn_uuid = url_mapping.GeneratePendingMappedURN();
   const GURL mapped_url =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
   TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
@@ -1266,7 +1264,7 @@ IN_PROC_BROWSER_TEST_P(
   const GURL urn_uuid = url_mapping.GeneratePendingMappedURN();
   const GURL mapped_url =
       https_server()->GetURL("a.test", "/fenced_frames/nonexistent-url.html");
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
   TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
@@ -1334,7 +1332,7 @@ IN_PROC_BROWSER_TEST_P(
   const GURL urn_uuid = url_mapping.GeneratePendingMappedURN();
   const GURL mapped_url =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
   TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
@@ -1412,7 +1410,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
   EXPECT_TRUE(urn_uuid.is_valid());
 
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, urn_uuid, navigate_urn_script);
   EXPECT_EQ(
@@ -1494,7 +1492,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
   EXPECT_TRUE(urn_uuid.is_valid());
 
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, urn_uuid, navigate_urn_script);
   EXPECT_EQ(
@@ -1833,7 +1831,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
   EXPECT_TRUE(urn_uuid.is_valid());
 
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, urn_uuid, navigate_urn_script,
       net::ERR_BLOCKED_BY_RESPONSE);
@@ -2799,7 +2797,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckInvalidUrnError) {
   GURL urn_uuid = GURL("urn:uuid:12345678-9abc-def0-1234-56789abcdef0");
   EXPECT_TRUE(urn_uuid.is_valid());
 
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, urn_uuid, navigate_urn_script, InvalidUrnError());
 }
@@ -2860,7 +2858,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
     GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
     EXPECT_TRUE(urn_uuid.is_valid());
 
-    std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+    std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
     net::Error expected_net_error_code =
         test_case.expect_allowed ? net::OK : net::ERR_BLOCKED_BY_CSP;
@@ -3331,6 +3329,14 @@ INSTANTIATE_TEST_SUITE_P(
 
 class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
  public:
+  // TODO(crbug.com/1123606): Disable window.fence.reportEvent in iframes.
+  // Remove this constructor and `scoped_feature_list_` once FLEDGE stops
+  // supporting iframes.
+  FencedFrameReportEventBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kAllowURNsInIframes, {}}},
+        {/* disabled_features */});
+  }
   void SetUpOnMainThread() override {
     // Set up the host resolver to allow serving separate sites, so we can
     // perform cross-process navigation.
@@ -3344,6 +3350,9 @@ class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
     https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the fenced frame with a urn:uuid commits the navigation with the
@@ -3390,12 +3399,13 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
       url_mapping.AddFencedFrameURL(https_url, fenced_frame_reporting);
   EXPECT_TRUE(urn_uuid.is_valid());
 
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
-
   TestFencedFrameURLMappingResultObserver mapping_observer;
   url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
   TestFrameNavigationObserver observer(fenced_frame_root_node);
+
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
+
   observer.WaitForCommit();
   EXPECT_TRUE(mapping_observer.mapping_complete_observed());
   EXPECT_EQ(reporting_url,
@@ -3417,6 +3427,77 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
                                "  eventData: $1,"
                                "  destination: ['buyer']});",
                                event_data)));
+
+  response.WaitForRequest();
+  EXPECT_EQ(response.http_request()->content, event_data);
+}
+
+// (Temporary test for FLEDGE iframe OT.)
+// Tests that an iframe with a urn:uuid commits the navigation with the
+// associated reporting metadata and `fence.reportEvent` sends the beacon to
+// the registered reporting url.
+// TODO(crbug.com/1123606): Disable window.fence.reportEvent in iframes.
+// Remove this test once the FLEDGE origin trial stops supporting iframes.
+IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+                       IframeReportingMetadata) {
+  net::test_server::ControllableHttpResponse response(https_server(),
+                                                      "/title2.html");
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('iframe');"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* iframe_node = root->child_at(0);
+
+  // Add reporting metadata.
+  ReportingMetadata fenced_frame_reporting;
+  GURL reporting_url(https_server()->GetURL("c.test", "/title2.html"));
+  fenced_frame_reporting.metadata[blink::mojom::ReportingDestination::kBuyer]
+                                 ["mouse interaction"] = reporting_url;
+  fenced_frame_reporting
+      .metadata[blink::mojom::ReportingDestination::kBuyer]["click"] =
+      https_server()->GetURL("c.test", "/title1.html");
+
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid =
+      url_mapping.AddFencedFrameURL(https_url, fenced_frame_reporting);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  TestFencedFrameURLMappingResultObserver mapping_observer;
+  url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
+  TestFrameNavigationObserver observer(iframe_node);
+
+  EXPECT_EQ(urn_uuid.spec(), EvalJs(root, JsReplace("f.src = $1;", urn_uuid)));
+
+  observer.WaitForCommit();
+  EXPECT_TRUE(mapping_observer.mapping_complete_observed());
+  EXPECT_EQ(reporting_url,
+            mapping_observer.reporting_metadata()
+                .metadata[blink::mojom::ReportingDestination::kBuyer]
+                         ["mouse interaction"]);
+
+  EXPECT_EQ(https_url,
+            iframe_node->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(https_url),
+            iframe_node->current_frame_host()->GetLastCommittedOrigin());
+
+  std::string event_data = "this is a click";
+  EXPECT_TRUE(ExecJs(iframe_node, JsReplace("window.fence.reportEvent({"
+                                            "  eventType: 'mouse interaction',"
+                                            "  eventData: $1,"
+                                            "  destination: ['buyer']});",
+                                            event_data)));
 
   response.WaitForRequest();
   EXPECT_EQ(response.http_request()->content, event_data);
@@ -3461,7 +3542,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
   EXPECT_TRUE(urn_uuid.is_valid());
 
   // Navigate the fenced frame.
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, urn_uuid, navigate_urn_script);
 
