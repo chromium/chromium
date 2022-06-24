@@ -198,6 +198,24 @@ void MaybeInitializeVlogInfo() {
 }
 #endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
+#if !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
+
+// Warn developers that vlog command line settings are being ignored.
+void MaybeWarnVmodule() {
+  if (base::CommandLine::InitializedForCurrentProcess()) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kV) ||
+        command_line->HasSwitch(switches::kVModule)) {
+      LOG(WARNING)
+          << "--" << switches::kV << " and --" << switches::kVModule
+          << " are currently ignored. See comments in base/logging.h on "
+             "proper usage of USE_RUNTIME_VLOG.";
+    }
+  }
+}
+
+#endif  // !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
+
 const char* const log_severity_names[] = {"INFO", "WARNING", "ERROR", "FATAL"};
 static_assert(LOGGING_NUM_SEVERITIES == std::size(log_severity_names),
               "Incorrect number of log_severity_names");
@@ -471,6 +489,10 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
 #if BUILDFLAG(USE_RUNTIME_VLOG)
   MaybeInitializeVlogInfo();
 #endif  // BUILDFLAG(USE_RUNTIME_VLOG)
+
+#if !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
+  MaybeWarnVmodule();
+#endif  // !BUILDFLAG(USE_RUNTIME_VLOG) && DCHECK_IS_ON()
 
   g_logging_destination = settings.logging_dest;
 
