@@ -652,11 +652,12 @@ void WebEngineAudioRenderer::OnDemuxerStreamReadDone(
 
 void WebEngineAudioRenderer::SendInputPacket(
     media::StreamProcessorHelper::IoPacket packet) {
+  const auto packet_size = packet.size();
   fuchsia::media::StreamPacket stream_packet;
   stream_packet.payload_buffer_id = packet.buffer_index();
   stream_packet.pts = packet.timestamp().ToZxDuration();
   stream_packet.payload_offset = packet.offset();
-  stream_packet.payload_size = packet.size();
+  stream_packet.payload_size = packet_size;
 
   stream_sink_->SendPacket(
       std::move(stream_packet),
@@ -669,7 +670,7 @@ void WebEngineAudioRenderer::SendInputPacket(
   // safe to report it as decoded right away since the packet is expected to be
   // decoded soon after AudioConsumer receives it.
   media::PipelineStatistics stats;
-  stats.audio_bytes_decoded = packet.size();
+  stats.audio_bytes_decoded = packet_size;
   client_->OnStatisticsUpdate(stats);
 }
 
