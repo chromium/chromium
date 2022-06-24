@@ -25,8 +25,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NaCl.AppType" enum="NaClAppTypeEnum"
     expires_after="2022-12-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     Type of NaCl/PNaCl application/extension. Recorded at plugin creation time
     after the permission check.
@@ -34,20 +33,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Client.Helper.InitState" enum="NaClHelperStatus"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     When the browser started, what happened with the NaCl helper process?
   </summary>
 </histogram>
 
 <histogram name="NaCl.Client.Helper.StateOnFork" enum="NaClHelperStatus"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     When a NaCl application process was created, what had happened with the NaCl
     helper process when the browser was started?
@@ -55,18 +52,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Client.OSArch" enum="NaClOSArchEnum"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>The OS/Architecture of a nexe that was loaded.</summary>
 </histogram>
 
 <histogram name="NaCl.HttpStatusCodeClass.Manifest.InstalledApp"
-    enum="NaClHttpStatusCodeClass" expires_after="2022-07-31">
+    enum="NaClHttpStatusCodeClass" expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The status code returned when trying to load a manifest inside an installed
     app.
@@ -74,10 +69,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.HttpStatusCodeClass.Manifest.NotInstalledApp"
-    enum="NaClHttpStatusCodeClass" expires_after="2022-07-31">
+    enum="NaClHttpStatusCodeClass" expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The status code returned when trying to load a manifest from a source other
     than an installed app.
@@ -85,10 +79,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.HttpStatusCodeClass.Nexe.InstalledApp"
-    enum="NaClHttpStatusCodeClass" expires_after="2022-07-31">
+    enum="NaClHttpStatusCodeClass" expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The status code returned when trying to load a NaCl executable inside an
     installed app.
@@ -96,10 +89,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.HttpStatusCodeClass.Nexe.NotInstalledApp"
-    enum="NaClHttpStatusCodeClass" expires_after="2022-07-31">
+    enum="NaClHttpStatusCodeClass" expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The status code returned when trying to load a NaCl executable from a source
     other than an installed app.
@@ -107,18 +99,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.LoadStatus.Plugin" enum="NaClPluginErrorCode"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>The error code returned by NaCl's Chrome plugin.</summary>
 </histogram>
 
 <histogram name="NaCl.LoadStatus.Plugin.InstalledApp"
-    enum="NaClPluginErrorCode" expires_after="2022-07-31">
+    enum="NaClPluginErrorCode" expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The error code returned by NaCl's Chrome plugin, but only for installed
     apps.
@@ -126,10 +116,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.LoadStatus.Plugin.NotInstalledApp"
-    enum="NaClPluginErrorCode" expires_after="2022-07-31">
+    enum="NaClPluginErrorCode" expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The error code returned by NaCl's Chrome plugin, but excluding installed
     apps.
@@ -137,63 +126,56 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.LoadStatus.SelLdr" enum="NaClSelLdrErrorCode"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>The error code returned by NaCl's sel_ldr.</summary>
 </histogram>
 
 <histogram name="NaCl.LoadStatus.SelLdr.InstalledApp"
-    enum="NaClSelLdrErrorCode" expires_after="2022-07-31">
+    enum="NaClSelLdrErrorCode" expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The error code returned by NaCl's sel_ldr, but only for installed apps.
   </summary>
 </histogram>
 
 <histogram name="NaCl.LoadStatus.SelLdr.NotInstalledApp"
-    enum="NaClSelLdrErrorCode" expires_after="2022-07-31">
+    enum="NaClSelLdrErrorCode" expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The error code returned by NaCl's sel_ldr, but excluding installed apps.
   </summary>
 </histogram>
 
 <histogram name="NaCl.Manifest.IsDataURI" enum="NaClManifestType"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     Was the manifest specified as a data URI rather than a .nmf file?
   </summary>
 </histogram>
 
-<histogram name="NaCl.ModuleUptime.Crash" units="ms" expires_after="2022-07-31">
+<histogram name="NaCl.ModuleUptime.Crash" units="ms" expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>The time a NaCl module ran before it crashed.</summary>
 </histogram>
 
 <histogram name="NaCl.ModuleUptime.Normal" units="ms"
     expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>The time a NaCl module ran without crashing, at shutdown.</summary>
 </histogram>
 
 <histogram name="NaCl.Options.PNaCl.OptLevel" enum="PNaClOptionsOptLevelEnum"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The optimization level set for the initial Portable Native Client
     translation from bitcode to native code.
@@ -203,8 +185,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NaCl.Perf.PNaClCache.IsHit" enum="PNaClTranslationCacheEnum"
     expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     Did the Portable Native Client translation cache find an executable
     translated from bitcode?
@@ -214,8 +195,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NaCl.Perf.PNaClLoadTime.CompileKBPerSec" units="KB/s"
     expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The rate for compiling a Portable Native Client bitcode file to an object
     file in Kilobytes per second.
@@ -225,8 +205,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NaCl.Perf.PNaClLoadTime.CompileTime" units="ms"
     expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took to compile a Portable Native Client bitcode file to an
     object file.
@@ -236,8 +215,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NaCl.Perf.PNaClLoadTime.LinkTime" units="ms"
     expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took to link a Portable Native Client generated object file into
     a Native Client executable.
@@ -247,8 +225,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NaCl.Perf.PNaClLoadTime.LoadCompiler" units="ms"
     expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took to load and validate the Portable Native Client compiler.
   </summary>
@@ -257,8 +234,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NaCl.Perf.PNaClLoadTime.LoadLinker" units="ms"
     expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took to load and validate the Portable Native Client linker.
   </summary>
@@ -267,8 +243,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NaCl.Perf.PNaClLoadTime.PctCompiledWhenFullyDownloaded"
     units="%" expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The percentage of a Portable Native Client application that is compiled by
     the time the application is fully downloaded (compile and download happen in
@@ -279,8 +254,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NaCl.Perf.PNaClLoadTime.TotalUncachedKBPerSec" units="KB/s"
     expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The rate for completely translating a Portable Native Client bitcode file
     into a Native Client executable and caching the result in Kilobytes per
@@ -291,8 +265,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NaCl.Perf.PNaClLoadTime.TotalUncachedTime" units="ms"
     expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The total time it took to completely translate a Portable Native Client
     bitcode file into a Native Client executable, and cache the result.
@@ -302,31 +275,27 @@ chromium-metrics-reviews@google.com.
 <histogram name="NaCl.Perf.ShutdownTime.Total" units="ms"
     expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>The time it took the NaCl module to shut down.</summary>
 </histogram>
 
 <histogram name="NaCl.Perf.Size.Manifest" units="KB" expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>The size of the manifest file.</summary>
 </histogram>
 
 <histogram name="NaCl.Perf.Size.Nexe" units="KB" expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The size of the main .nexe file downloaded for a Native Client module.
   </summary>
 </histogram>
 
-<histogram name="NaCl.Perf.Size.Pexe" units="KB" expires_after="2022-07-31">
+<histogram name="NaCl.Perf.Size.Pexe" units="KB" expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The size of the main .pexe bitcode file downloaded for a Portable Native
     Client module.
@@ -334,10 +303,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.Size.PexeNexeSizePct" units="%"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The size of the main .pexe bitcode file divided by the size of the .nexe
     that is the result of translating the bitcode file, times 100.
@@ -345,10 +313,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.Size.PNaClTranslatedNexe" units="KB"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The size of the main .nexe file that is the result of translating a Portable
     Native Client .pexe bitcode file. This reflects the amount of cache
@@ -357,18 +324,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.StartupTime.LoadModule" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>The time it took to load the NaCl module into sel_ldr.</summary>
 </histogram>
 
 <histogram name="NaCl.Perf.StartupTime.LoadModulePerMB" units="milliseconds/MB"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took to load the NaCl module into sel_ldr. Normalized by the
     size of the .nexe, in megabytes.
@@ -376,20 +341,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.StartupTime.ManifestDownload" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took to download the manifset file for a Native Client module.
   </summary>
 </histogram>
 
 <histogram name="NaCl.Perf.StartupTime.NaClOverhead" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took between the Native Client plugin initialization and when
     proxied execution of the NaCl module begins. This is the general startup
@@ -398,10 +361,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.StartupTime.NaClOverheadPerMB"
-    units="milliseconds/MB" expires_after="2022-07-31">
+    units="milliseconds/MB" expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took between the Native Client plugin initialization and when
     proxied execution of the NaCl module begins. This is the general startup
@@ -411,20 +373,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.StartupTime.NexeDownload" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took to download the main .nexe for a Native Client module.
   </summary>
 </histogram>
 
 <histogram name="NaCl.Perf.StartupTime.NexeDownloadPerMB"
-    units="milliseconds/MB" expires_after="2022-07-31">
+    units="milliseconds/MB" expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took to download the main .nexe for a Native Client module.
     Normalized by the size of the .nexe, in megabytes.
@@ -432,10 +392,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.StartupTime.Total" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took between the Native Client plugin initialization and when
     the NaCl module is ready to be used.
@@ -443,10 +402,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.StartupTime.TotalPerMB" units="milliseconds/MB"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took between the Native Client plugin initialization and when
     the NaCl module is ready to be used. Normalized by the size of the .nexe, in
@@ -455,20 +413,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.ValidationCache.Query" enum="NaClValidationCacheEnum"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     Did a validation cache query find a previously known validation result?
   </summary>
 </histogram>
 
 <histogram name="NaCl.ValidationCache.Set" enum="NaClValidationCacheEnum"
-    expires_after="2022-07-31">
+    expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>
-  <owner>adamk@chromium.org</owner>
-  <owner>bbudge@chromium.org</owner>
+  <owner>fabiansommer@chromium.org</owner>
   <summary>
     Was the validation cache updated with a new validation result?
   </summary>
