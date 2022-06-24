@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/style/dark_mode_controller.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
@@ -15,11 +15,11 @@ namespace ash {
 
 namespace {
 
-DarkModeController* g_instance = nullptr;
+DarkLightModeControllerImpl* g_instance = nullptr;
 
 }  // namespace
 
-DarkModeController::DarkModeController()
+DarkLightModeControllerImpl::DarkLightModeControllerImpl()
     : ScheduledFeature(prefs::kDarkModeEnabled,
                        prefs::kDarkModeScheduleType,
                        std::string(),
@@ -29,19 +29,20 @@ DarkModeController::DarkModeController()
   g_instance = this;
 }
 
-DarkModeController::~DarkModeController() {
+DarkLightModeControllerImpl::~DarkLightModeControllerImpl() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
 
 // static
-DarkModeController* DarkModeController::Get() {
+DarkLightModeControllerImpl* DarkLightModeControllerImpl::Get() {
   DCHECK(g_instance);
   return g_instance;
 }
 
 // static
-void DarkModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+void DarkLightModeControllerImpl::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kDarkModeScheduleType,
       static_cast<int>(ScheduleType::kSunsetToSunrise));
@@ -50,36 +51,36 @@ void DarkModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 kDarkLightModeNudgeMaxShownCount);
 }
 
-void DarkModeController::SetAutoScheduleEnabled(bool enabled) {
+void DarkLightModeControllerImpl::SetAutoScheduleEnabled(bool enabled) {
   SetScheduleType(enabled ? ScheduleType::kSunsetToSunrise
                           : ScheduleType::kNone);
 }
 
-bool DarkModeController::GetAutoScheduleEnabled() const {
+bool DarkLightModeControllerImpl::GetAutoScheduleEnabled() const {
   const ScheduleType type = GetScheduleType();
-  // `DarkModeController` does not support the custom scheduling.
+  // `DarkLightModeControllerImpl` does not support the custom scheduling.
   DCHECK_NE(type, ScheduleType::kCustom);
   return type == ScheduleType::kSunsetToSunrise;
 }
 
-void DarkModeController::ToggledByUser() {
+void DarkLightModeControllerImpl::ToggledByUser() {
   nudge_controller_->ToggledByUser();
 }
 
-void DarkModeController::SetShowNudgeForTesting(bool value) {
+void DarkLightModeControllerImpl::SetShowNudgeForTesting(bool value) {
   nudge_controller_->set_show_nudge_for_testing(value);  // IN-TEST
 }
 
-void DarkModeController::RefreshFeatureState() {}
+void DarkLightModeControllerImpl::RefreshFeatureState() {}
 
-void DarkModeController::OnSessionStateChanged(
+void DarkLightModeControllerImpl::OnSessionStateChanged(
     session_manager::SessionState state) {
   if (state == session_manager::SessionState::ACTIVE)
     nudge_controller_->MaybeShowNudge();
 }
 
-const char* DarkModeController::GetFeatureName() const {
-  return "DarkModeController";
+const char* DarkLightModeControllerImpl::GetFeatureName() const {
+  return "DarkLightModeControllerImpl";
 }
 
 }  // namespace ash

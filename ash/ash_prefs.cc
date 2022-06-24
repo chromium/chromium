@@ -28,7 +28,7 @@
 #include "ash/session/fullscreen_controller.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/dark_mode_controller.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
@@ -80,7 +80,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   CellularSetupNotifier::RegisterProfilePrefs(registry);
   contextual_tooltip::RegisterProfilePrefs(registry);
   ClipboardNudgeController::RegisterProfilePrefs(registry);
-  DarkModeController::RegisterProfilePrefs(registry);
+  DarkLightModeControllerImpl::RegisterProfilePrefs(registry);
   desks_restore_util::RegisterProfilePrefs(registry);
   saved_desk_util::RegisterProfilePrefs(registry);
   DockedMagnifierController::RegisterProfilePrefs(registry);

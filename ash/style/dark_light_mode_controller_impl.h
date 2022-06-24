@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_STYLE_DARK_MODE_CONTROLLER_H_
-#define ASH_STYLE_DARK_MODE_CONTROLLER_H_
+#ifndef ASH_STYLE_DARK_LIGHT_MODE_CONTROLLER_IMPL_H_
+#define ASH_STYLE_DARK_LIGHT_MODE_CONTROLLER_IMPL_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 
 class PrefRegistrySimple;
@@ -14,19 +15,20 @@ namespace ash {
 
 class DarkLightModeNudgeController;
 
-// TODO(minch): Rename to DarkLightModeController.
 // Controls the behavior of dark/light mode. Turns on the dark mode at sunset
 // and off at sunrise if auto schedule is set (custom start and end for
 // scheduling is not supported). And determine whether to show the educational
 // nudge for users on login.
-class ASH_EXPORT DarkModeController : public ScheduledFeature {
+class ASH_EXPORT DarkLightModeControllerImpl : public DarkLightModeController,
+                                               public ScheduledFeature {
  public:
-  DarkModeController();
-  DarkModeController(const DarkModeController&) = delete;
-  DarkModeController& operator=(const DarkModeController&) = delete;
-  ~DarkModeController() override;
+  DarkLightModeControllerImpl();
+  DarkLightModeControllerImpl(const DarkLightModeControllerImpl&) = delete;
+  DarkLightModeControllerImpl& operator=(const DarkLightModeControllerImpl&) =
+      delete;
+  ~DarkLightModeControllerImpl() override;
 
-  static DarkModeController* Get();
+  static DarkLightModeControllerImpl* Get();
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -59,4 +61,4 @@ class ASH_EXPORT DarkModeController : public ScheduledFeature {
 
 }  // namespace ash
 
-#endif  // ASH_STYLE_DARK_MODE_CONTROLLER_H_
+#endif  // ASH_STYLE_DARK_LIGHT_MODE_CONTROLLER_IMPL_H_

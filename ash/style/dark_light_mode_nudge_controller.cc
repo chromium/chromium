@@ -7,8 +7,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/dark_light_mode_nudge.h"
-#include "ash/style/dark_mode_controller.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -18,7 +18,7 @@ namespace ash {
 namespace {
 
 PrefService* GetActiveUserPrefService() {
-  return DarkModeController::Get()->active_user_pref_service();
+  return DarkLightModeControllerImpl::Get()->active_user_pref_service();
 }
 
 void SetRemainingShownCount(int count) {

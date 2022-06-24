@@ -106,7 +106,7 @@ class CalendarController;
 class CaptureModeController;
 class ControlVHistogramRecorder;
 class CrosDisplayConfig;
-class DarkModeController;
+class DarkLightModeControllerImpl;
 class DesksController;
 class DetachableBaseHandler;
 class DetachableBaseNotificationController;
@@ -389,8 +389,8 @@ class ASH_EXPORT Shell : public SessionObserver,
     return cros_display_config_.get();
   }
   ::wm::CursorManager* cursor_manager() { return cursor_manager_.get(); }
-  DarkModeController* dark_mode_controller() {
-    return dark_mode_controller_.get();
+  DarkLightModeControllerImpl* dark_light_mode_controller() {
+    return dark_light_mode_controller_.get();
   }
   DesksController* desks_controller() { return desks_controller_.get(); }
   PersistentDesksBarController* persistent_desks_bar_controller() {
@@ -790,7 +790,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<BrightnessControlDelegate> brightness_control_delegate_;
   std::unique_ptr<CalendarController> calendar_controller_;
   std::unique_ptr<CrosDisplayConfig> cros_display_config_;
-  std::unique_ptr<DarkModeController> dark_mode_controller_;
+  std::unique_ptr<DarkLightModeControllerImpl> dark_light_mode_controller_;
   std::unique_ptr<DesksController> desks_controller_;
   std::unique_ptr<DesksTemplatesDelegate> desks_templates_delegate_;
   std::unique_ptr<DetachableBaseHandler> detachable_base_handler_;

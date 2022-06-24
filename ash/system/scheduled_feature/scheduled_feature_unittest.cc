@@ -15,7 +15,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
-#include "ash/style/dark_mode_controller.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/geolocation/geolocation_controller_test_util.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
@@ -114,7 +114,8 @@ class ScheduledFeatureTest : public NoSessionAshTestBase {
     // Otherwise the tests will fails `DCHECK_GE(start_time, now)` in
     // `ScheduledFeature::RefreshScheduleTimer()` when the new user session
     // is entered and `InitFromUserPrefs()` triggers `RefreshScheduleTimer()`.
-    ash::Shell::Get()->dark_mode_controller()->SetClockForTesting(&test_clock_);
+    ash::Shell::Get()->dark_light_mode_controller()->SetClockForTesting(
+        &test_clock_);
 
     CreateTestUserSessions();
 

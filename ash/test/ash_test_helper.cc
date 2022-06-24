@@ -24,7 +24,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/shell_init_params.h"
-#include "ash/style/dark_mode_controller.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/message_center/session_state_notification_blocker.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/screen_layout_observer.h"
@@ -283,7 +283,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   // operations needed in many of the tests, e.g, when productive launcher is
   // shown as well, we need one more click outside of the launcher to dismiss
   // the nudge first before dismissing the launcher.
-  shell->dark_mode_controller()->SetShowNudgeForTesting(false);
+  shell->dark_light_mode_controller()->SetShowNudgeForTesting(false);
 
   // Set up a test wallpaper controller client before signing in any users. At
   // the time a user logs in, Wallpaper controller relies on

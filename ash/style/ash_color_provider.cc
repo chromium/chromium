@@ -15,7 +15,7 @@
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/dark_mode_controller.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -400,7 +400,7 @@ void AshColorProvider::ToggleColorMode() {
   active_user_pref_service_->CommitPendingWrite();
   NotifyColorModeChanges();
 
-  DarkModeController::Get()->ToggledByUser();
+  DarkLightModeControllerImpl::Get()->ToggledByUser();
 }
 
 SkColor AshColorProvider::GetShieldLayerColorImpl(ShieldLayerType type,

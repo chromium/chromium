@@ -295,6 +295,8 @@ component("cpp") {
     "style/color_mode_observer.h",
     "style/color_provider.cc",
     "style/color_provider.h",
+    "style/dark_light_mode_controller.cc",
+    "style/dark_light_mode_controller.h",
     "stylus_utils.cc",
     "stylus_utils.h",
     "system/power/power_button_controller_base.cc",

@@ -6,7 +6,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/dark_mode_controller.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -39,7 +39,7 @@ TEST_F(DarkModeFeaturePodControllerTest, ToggleDarkMode) {
       dark_mode_feature_pod_controller->CreateButton());
 
   // Enable dark mode auto scheduling.
-  DarkModeController* controller = Shell::Get()->dark_mode_controller();
+  auto* controller = Shell::Get()->dark_light_mode_controller();
   controller->SetAutoScheduleEnabled(true);
   EXPECT_TRUE(controller->GetAutoScheduleEnabled());
 

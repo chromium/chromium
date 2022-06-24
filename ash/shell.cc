@@ -105,7 +105,7 @@
 #include "ash/shutdown_controller_impl.h"
 #include "ash/style/ash_color_mixer.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/dark_mode_controller.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/audio/display_speaker_controller.h"
 #include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 #include "ash/system/bluetooth/bluetooth_notification_controller.h"
@@ -863,7 +863,7 @@ Shell::~Shell() {
 
   // Depends on `geolocation_controller_`, so it must be destructed before the
   // geolocation controller.
-  dark_mode_controller_.reset();
+  dark_light_mode_controller_.reset();
 
   geolocation_controller_.reset();
 
@@ -1125,7 +1125,7 @@ void Shell::Init(
   // been initialized.
   night_light_controller_ = std::make_unique<NightLightControllerImpl>();
 
-  dark_mode_controller_ = std::make_unique<DarkModeController>();
+  dark_light_mode_controller_ = std::make_unique<DarkLightModeControllerImpl>();
 
   // Privacy Screen depends on the display manager, so initialize it after
   // display manager was properly initialized.
