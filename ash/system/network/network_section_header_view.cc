@@ -110,9 +110,8 @@ int GetAddESimTooltipMessageId() {
   const DeviceStateProperties* cellular_device =
       Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
           NetworkType::kCellular);
-  if (!cellular_device) {
-    return 0;
-  }
+
+  DCHECK(cellular_device);
 
   switch (cellular_device->inhibit_reason) {
     case chromeos::network_config::mojom::InhibitReason::kInstallingProfile:
@@ -370,6 +369,12 @@ void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
 void MobileSectionHeaderView::DeviceStateListChanged() {
   if (!add_esim_button_)
     return;
+
+  if (!IsESimSupported()) {
+    add_esim_button_->SetVisible(/*visible=*/false);
+    return;
+  }
+
   add_esim_button_->SetEnabled(can_add_esim_button_be_enabled_ &&
                                !IsCellularDeviceInhibited());
   add_esim_button_->SetTooltipText(
