@@ -521,28 +521,28 @@ const FeatureEntry::FeatureVariation kAutofillSaveCardUiExperimentOptions[] = {
 const FeatureEntry::FeatureParam kForceDark_SimpleHsl[] = {
     {"inversion_method", "hsl_based"},
     {"image_behavior", "none"},
-    {"foreground_lightness_threshold", "255"},
-    {"background_lightness_threshold", "0"}};
+    {"foreground_lightness_threshold", "150"},
+    {"background_lightness_threshold", "205"}};
 
 const FeatureEntry::FeatureParam kForceDark_SimpleCielab[] = {
     {"inversion_method", "cielab_based"},
     {"image_behavior", "none"},
-    {"foreground_lightness_threshold", "255"},
-    {"background_lightness_threshold", "0"}};
+    {"foreground_lightness_threshold", "150"},
+    {"background_lightness_threshold", "205"}};
 
 const FeatureEntry::FeatureParam kForceDark_SimpleRgb[] = {
     {"inversion_method", "rgb_based"},
     {"image_behavior", "none"},
-    {"foreground_lightness_threshold", "255"},
-    {"background_lightness_threshold", "0"}};
+    {"foreground_lightness_threshold", "150"},
+    {"background_lightness_threshold", "205"}};
 
 // Keep in sync with the kForceDark_SelectiveImageInversion
 // in aw_feature_entries.cc if you tweak these parameters.
 const FeatureEntry::FeatureParam kForceDark_SelectiveImageInversion[] = {
     {"inversion_method", "cielab_based"},
     {"image_behavior", "selective"},
-    {"foreground_lightness_threshold", "255"},
-    {"background_lightness_threshold", "0"}};
+    {"foreground_lightness_threshold", "150"},
+    {"background_lightness_threshold", "205"}};
 
 const FeatureEntry::FeatureParam kForceDark_SelectiveElementInversion[] = {
     {"inversion_method", "cielab_based"},
