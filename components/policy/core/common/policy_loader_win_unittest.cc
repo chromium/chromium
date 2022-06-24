@@ -279,8 +279,7 @@ ConfigurationPolicyProvider* RegistryTestHarness::CreateProvider(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   base::win::ScopedDomainStateForTesting scoped_domain(true);
   std::unique_ptr<AsyncPolicyLoader> loader(new PolicyLoaderWin(
-      task_runner, PlatformManagementService::GetInstance(), kTestPolicyKey,
-      true /* is_dev_registry_key_supported */));
+      task_runner, PlatformManagementService::GetInstance(), kTestPolicyKey));
   return new AsyncPolicyProvider(registry, std::move(loader));
 }
 
@@ -411,8 +410,7 @@ class PolicyLoaderWinTest : public PolicyTestBase {
   bool Matches(const PolicyBundle& expected) {
     PolicyLoaderWin loader(task_environment_.GetMainThreadTaskRunner(),
                            PlatformManagementService::GetInstance(),
-                           kTestPolicyKey,
-                           true /* is_dev_registry_key_supported */);
+                           kTestPolicyKey);
     std::unique_ptr<PolicyBundle> loaded(
         loader.InitialLoad(schema_registry_.schema_map()));
     return loaded->Equals(expected);

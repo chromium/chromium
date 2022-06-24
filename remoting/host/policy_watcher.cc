@@ -453,8 +453,7 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
   std::unique_ptr<policy::AsyncPolicyLoader> policy_loader;
 #if BUILDFLAG(IS_WIN)
   policy_loader = std::make_unique<policy::PolicyLoaderWin>(
-      file_task_runner, management_service, kChromePolicyKey,
-      true /* is_dev_registry_key_supported */);
+      file_task_runner, management_service, kChromePolicyKey);
 #elif BUILDFLAG(IS_APPLE)
   CFStringRef bundle_id = CFSTR("com.google.Chrome");
   policy_loader = std::make_unique<policy::PolicyLoaderMac>(
