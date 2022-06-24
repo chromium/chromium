@@ -248,4 +248,9 @@ public class TrustedWebActivityUmaRecorder {
                 "TrustedWebActivity.QualityEnforcementViolation.Crashed", type,
                 QualityEnforcementViolationType.MAX_VALUE + 1);
     }
+
+    public void recordExtraCommandSuccess(String command, boolean success) {
+        RecordHistogram.recordBooleanHistogram(
+                "TrustedWebActivity.ExtraCommandSuccess." + command, success);
+    }
 }

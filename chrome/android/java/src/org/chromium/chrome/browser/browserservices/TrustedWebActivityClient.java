@@ -208,9 +208,14 @@ public class TrustedWebActivityClient {
                 commandArgs.putString(ARG_NOTIFICATION_CHANNEL_NAME, channelName);
                 Bundle commandResult = service.sendExtraCommand(
                         COMMAND_CHECK_NOTIFICATION_PERMISSION, commandArgs, /*callback=*/null);
+                boolean commandSuccess = commandResult == null
+                        ? false
+                        : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
+                mRecorder.recordExtraCommandSuccess(
+                        COMMAND_CHECK_NOTIFICATION_PERMISSION, commandSuccess);
                 // The command might fail if the app is too old to support it. To handle that case,
                 // fall back to the old flow.
-                if (commandResult == null || !commandResult.getBoolean(EXTRA_COMMAND_SUCCESS)) {
+                if (!commandSuccess) {
                     boolean enabled = service.areNotificationsEnabled(channelName);
                     @ContentSettingValues
                     int settingValue =
@@ -255,12 +260,17 @@ public class TrustedWebActivityClient {
                 Bundle commandResult = service.sendExtraCommand(
                         COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT, commandArgs,
                         /*callback=*/null);
-                PendingIntent pendingIntent = commandResult.getParcelable(
-                        KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT);
-                // TODO(crbug.com/1320272) UMA logging for these results. Is defaulting to BLOCK a
-                // good enough way to handle outdated TWAs?
-                if (commandResult == null || !commandResult.getBoolean(EXTRA_COMMAND_SUCCESS)
-                        || pendingIntent == null) {
+                boolean commandSuccess = commandResult == null
+                        ? false
+                        : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
+                PendingIntent pendingIntent = commandSuccess
+                        ? commandResult.getParcelable(
+                                KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT)
+                        : null;
+                mRecorder.recordExtraCommandSuccess(
+                        COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT,
+                        commandSuccess && pendingIntent != null);
+                if (!commandSuccess || pendingIntent == null) {
                     permissionCallback.onPermission(
                             service.getComponentName(), ContentSettingValues.BLOCK);
                     return;
