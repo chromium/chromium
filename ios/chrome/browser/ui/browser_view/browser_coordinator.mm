@@ -424,6 +424,9 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   [self.pageInfoCoordinator stop];
 
+  [_sendTabToSelfCoordinator stop];
+  _sendTabToSelfCoordinator = nil;
+
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
 }
@@ -862,6 +865,9 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   [self.netExportCoordinator stop];
   self.netExportCoordinator = nil;
+
+  [_sendTabToSelfCoordinator stop];
+  _sendTabToSelfCoordinator = nil;
 }
 
 // Starts mediators owned by this coordinator.
@@ -1062,12 +1068,19 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 }
 
 - (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title {
+  DCHECK(!_sendTabToSelfCoordinator);
   _sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                              url:url
                            title:title];
   [_sendTabToSelfCoordinator start];
+}
+
+- (void)hideSendTabToSelfUI {
+  DCHECK(_sendTabToSelfCoordinator);
+  [_sendTabToSelfCoordinator stop];
+  _sendTabToSelfCoordinator = nil;
 }
 
 - (void)dismissBadgePopupMenu {

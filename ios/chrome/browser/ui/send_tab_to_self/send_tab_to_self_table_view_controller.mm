@@ -12,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/send_tab_to_self/features.h"
-#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_image_detail_text_item.h"
@@ -231,15 +230,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Helpers
 
 - (void)sendTabWhenPressed:(UIButton*)sender {
-  send_tab_to_self::RecordDeviceClicked(
-      send_tab_to_self::ShareEntryPoint::kShareMenu);
   [self.delegate sendTabToTargetDeviceCacheGUID:self.selectedItem.cacheGuid
                                targetDeviceName:self.selectedItem.text];
-  [self.delegate dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)dismiss:(UIButton*)sender {
-  [self.delegate dismissViewControllerAnimated:YES completion:nil];
+  [self.delegate dismissViewControllerAnimated];
 }
 
 - (NSString*)sendTabToSelfdaysSinceLastUpdate:(int)days {
