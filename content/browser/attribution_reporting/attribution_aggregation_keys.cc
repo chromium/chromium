@@ -9,6 +9,8 @@
 
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/abseil_string_number_conversions.h"
+#include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
@@ -27,6 +29,43 @@ absl::optional<AttributionAggregationKeys> AttributionAggregationKeys::FromKeys(
   return is_valid
              ? absl::make_optional(AttributionAggregationKeys(std::move(keys)))
              : absl::nullopt;
+}
+
+// static
+absl::optional<AttributionAggregationKeys> AttributionAggregationKeys::FromJSON(
+    const base::Value* value) {
+  // TODO(johnidel): Consider logging registration JSON metrics here.
+  if (!value)
+    return AttributionAggregationKeys();
+
+  const base::Value::Dict* dict = value->GetIfDict();
+  if (!dict)
+    return absl::nullopt;
+
+  const size_t num_keys = dict->size();
+
+  if (num_keys > blink::kMaxAttributionAggregationKeysPerSourceOrTrigger)
+    return absl::nullopt;
+
+  Keys::container_type keys;
+  keys.reserve(num_keys);
+
+  for (auto [key_id, value] : *dict) {
+    if (key_id.size() > blink::kMaxBytesPerAttributionAggregationKeyId)
+      return absl::nullopt;
+
+    const std::string* s = value.GetIfString();
+    if (!s)
+      return absl::nullopt;
+
+    absl::uint128 key;
+    if (!base::HexStringToUInt128(*s, &key))
+      return absl::nullopt;
+
+    keys.emplace_back(key_id, key);
+  }
+
+  return AttributionAggregationKeys(Keys(base::sorted_unique, std::move(keys)));
 }
 
 // static

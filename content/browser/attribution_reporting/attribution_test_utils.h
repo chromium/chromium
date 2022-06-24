@@ -168,6 +168,14 @@ class MockDataHostManager : public AttributionDataHostManager {
       (override));
 
   MOCK_METHOD(void,
+              NotifyNavigationRedirectRegistation,
+              (const blink::AttributionSrcToken& attribution_src_token,
+               const std::string& header_value,
+               url::Origin reporting_origin,
+               const url::Origin& source_origin),
+              (override));
+
+  MOCK_METHOD(void,
               NotifyNavigationForDataHost,
               (const blink::AttributionSrcToken& attribution_src_token,
                const url::Origin& source_origin,

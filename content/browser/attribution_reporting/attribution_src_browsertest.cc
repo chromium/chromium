@@ -306,6 +306,40 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   // AttributionsBrowserTest.
 }
 
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       AnchorClickEmptyAttributionSrc_ImpressionReceived) {
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost).Times(0);
+
+  SourceObserver source_observer(web_contents());
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+  createAndClickAttributionSrcAnchor({url: 'page_with_conversion_redirect.html',
+                                      attributionsrc: ''});)"));
+
+  // Wait for the impression to be seen by the observer.
+  blink::Impression last_impression = source_observer.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       WindowOpenAttributionSrc_ImpressionReceived) {
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost).Times(0);
+
+  SourceObserver source_observer(web_contents());
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+  window.open("page_with_conversion_redirect.html", "_top",
+  "attributionsrc=");)"));
+
+  // Wait for the impression to be seen by the observer.
+  blink::Impression last_impression = source_observer.Wait();
+}
+
 // See crbug.com/1322450
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcWindowOpen_URLEncoded_SourceRegistered) {

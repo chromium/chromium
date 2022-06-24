@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
-                       ImpressionWithInsecureReportingOrigin_NotRegistered) {
+                       ImpressionWithInsecureReportingOrigin_ReceivesToken) {
   // Navigate to a page with the non-https server.
   EXPECT_TRUE(NavigateToURL(
       web_contents(),
@@ -327,8 +327,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   SourceObserver source_observer(web_contents());
   EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
-  // We should see a null impression on the navigation
-  EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
+  // We should see an impression, as there may be registrations that happen on
+  // the navigation redirect.
+  source_observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,

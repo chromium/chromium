@@ -15,6 +15,10 @@
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Value;
+}  // namespace base
+
 namespace content {
 
 // Supports persistence to disk via serializaton to/from proto.
@@ -38,6 +42,8 @@ class CONTENT_EXPORT AttributionFilterData {
   // Trigger filter data is allowed to contain a `source_type` filter.
   static absl::optional<AttributionFilterData> FromTriggerFilterValues(
       FilterValues&&);
+
+  static absl::optional<AttributionFilterData> FromSourceJSON(base::Value*);
 
   // Returns filter data that matches only the given source type.
   static AttributionFilterData ForSourceType(AttributionSourceType);

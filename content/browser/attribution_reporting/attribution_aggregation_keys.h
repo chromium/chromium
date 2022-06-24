@@ -12,6 +12,10 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Value;
+}  // namespace base
+
 namespace content {
 
 class CONTENT_EXPORT AttributionAggregationKeys {
@@ -20,6 +24,9 @@ class CONTENT_EXPORT AttributionAggregationKeys {
 
   // Returns `absl::nullopt` if `keys` is invalid.
   static absl::optional<AttributionAggregationKeys> FromKeys(Keys keys);
+
+  static absl::optional<AttributionAggregationKeys> FromJSON(
+      const base::Value*);
 
   // Deserializes `str`, if valid. Returns `absl::nullopt` if not.
   static absl::optional<AttributionAggregationKeys> Deserialize(

@@ -18,6 +18,7 @@
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -183,6 +184,27 @@ struct AttributionDataHostManagerImpl::NavigationDataHost {
   base::TimeTicks register_time;
 };
 
+struct AttributionDataHostManagerImpl::NavigationRedirectSourceRegistrations {
+  // Source origin to use for all registrations on a redirect chain. Will not
+  // change over the course of the redirect chain.
+  url::Origin source_origin;
+
+  // Number of source data we are waiting to be decoded/received.
+  size_t pending_source_data = 0;
+
+  // Source data that has been received as part of this redirect chain. Sources
+  // cannot be processed until `destination` is set.
+  std::vector<StorableSource> sources;
+
+  // The final, committed destination of the navigation associated with this.
+  // This can be set before or after all `pending_source_data` is received.
+  url::Origin destination;
+
+  // The time the first registration header was received for the redirect chain.
+  // Will not change over the course of the redirect chain.
+  base::TimeTicks register_time;
+};
+
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
     AttributionManager* attribution_manager)
     : attribution_manager_(attribution_manager) {
@@ -224,6 +246,45 @@ bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
   return true;
 }
 
+void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistation(
+    const blink::AttributionSrcToken& attribution_src_token,
+    const std::string& header_value,
+    url::Origin reporting_origin,
+    const url::Origin& source_origin) {
+  if (!network::IsOriginPotentiallyTrustworthy(source_origin) ||
+      !network::IsOriginPotentiallyTrustworthy(reporting_origin)) {
+    return;
+  }
+
+  // Avoid costly isolated JSON parsing below if the header is obviously
+  // invalid.
+  if (header_value.empty())
+    return;
+
+  auto [it, inserted] = redirect_registrations_.try_emplace(
+      attribution_src_token, NavigationRedirectSourceRegistrations{
+                                 .source_origin = source_origin,
+                                 .register_time = base::TimeTicks::Now()});
+
+  // Redirect data may not be registered if the navigation is already finished.
+  DCHECK(it->second.destination.opaque());
+
+  // Treat ongoing redirect registrations within a chain as a data host for the
+  // purpose of trigger queuing.
+  if (inserted)
+    data_hosts_in_source_mode_++;
+
+  it->second.pending_source_data++;
+
+  // Send the data to the decoder, but track that we are now waiting on a new
+  // registration.
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      header_value,
+      base::BindOnce(&AttributionDataHostManagerImpl::OnRedirectSourceParsed,
+                     weak_factory_.GetWeakPtr(), attribution_src_token,
+                     std::move(reporting_origin)));
+}
+
 void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
     const blink::AttributionSrcToken& attribution_src_token,
     const url::Origin& source_origin,
@@ -236,33 +297,66 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
 
   auto it = navigation_data_host_map_.find(attribution_src_token);
 
-  if (it == navigation_data_host_map_.end()) {
+  if (it != navigation_data_host_map_.end()) {
+    receivers_.Add(
+        this, std::move(it->second.data_host),
+        FrozenContext{.context_origin = source_origin,
+                      .source_type = AttributionSourceType::kNavigation,
+                      .destination = destination_origin,
+                      .register_time = it->second.register_time});
+
+    navigation_data_host_map_.erase(it);
+    RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
+  } else {
     RecordNavigationDataHostStatus(NavigationDataHostStatus::kNotFound);
-    return;
   }
 
-  receivers_.Add(
-      this, std::move(it->second.data_host),
-      FrozenContext{.context_origin = source_origin,
-                    .source_type = AttributionSourceType::kNavigation,
-                    .destination = destination_origin,
-                    .register_time = it->second.register_time});
+  // Process any registrations on redirects for this navigation now that we know
+  // the destination.
+  auto redirect_it = redirect_registrations_.find(attribution_src_token);
+  if (redirect_it == redirect_registrations_.end()) {
+    return;
+  }
+  NavigationRedirectSourceRegistrations& registrations = redirect_it->second;
+  registrations.destination = destination_origin;
+  const net::SchemefulSite destination_site(destination_origin);
 
-  navigation_data_host_map_.erase(it);
+  for (StorableSource& source : registrations.sources) {
+    // The reporting origin has mis-configured the destination, ignore the
+    // source.
+    if (source.common_info().ConversionDestination() != destination_site)
+      continue;
 
-  RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
+    // Process the registration if the destination matched.
+    attribution_manager_->HandleSource(std::move(source));
+  }
+  registrations.sources.clear();
+
+  if (registrations.pending_source_data == 0u) {
+    // We have finished processing all sources on this redirect chain, cleanup
+    // the map.
+    OnSourceEligibleDataHostFinished(registrations.register_time);
+    redirect_registrations_.erase(redirect_it);
+  }
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationFailure(
     const blink::AttributionSrcToken& attribution_src_token) {
   auto it = navigation_data_host_map_.find(attribution_src_token);
-  DCHECK(it != navigation_data_host_map_.end());
+  if (it != navigation_data_host_map_.end()) {
+    base::TimeTicks register_time = it->second.register_time;
+    navigation_data_host_map_.erase(it);
+    OnSourceEligibleDataHostFinished(register_time);
+    RecordNavigationDataHostStatus(NavigationDataHostStatus::kNavigationFailed);
+  }
 
-  base::TimeTicks register_time = it->second.register_time;
-  navigation_data_host_map_.erase(it);
-  OnSourceEligibleDataHostFinished(register_time);
-
-  RecordNavigationDataHostStatus(NavigationDataHostStatus::kNavigationFailed);
+  // We are not guaranteed to be processing redirect registrations for a given
+  // navigation.
+  auto redirect_it = redirect_registrations_.find(attribution_src_token);
+  if (redirect_it != redirect_registrations_.end()) {
+    OnSourceEligibleDataHostFinished(redirect_it->second.register_time);
+    redirect_registrations_.erase(redirect_it);
+  }
 }
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
@@ -571,6 +665,52 @@ void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished(
   }
 
   delayed_triggers_.clear();
+}
+
+void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
+    const blink::AttributionSrcToken& attribution_src_token,
+    url::Origin reporting_origin,
+    data_decoder::DataDecoder::ValueOrError result) {
+  // TODO(johnidel): Add metrics regarding parsing failures / misconfigured
+  // headers.
+  auto it = redirect_registrations_.find(attribution_src_token);
+
+  // The registration may no longer be tracked in the event the navigation
+  // failed.
+  if (it == redirect_registrations_.end())
+    return;
+
+  DCHECK_GE(it->second.pending_source_data, 0u);
+  NavigationRedirectSourceRegistrations& registrations = it->second;
+  registrations.pending_source_data--;
+
+  absl::optional<StorableSource> source;
+  if (result.value && result.value->is_dict()) {
+    source = ParseSourceRegistration(
+        std::move(result.value->GetDict()), /*source_time=*/base::Time::Now(),
+        std::move(reporting_origin), registrations.source_origin,
+        AttributionSourceType::kNavigation);
+  }
+  // Do not access `reporting_origin` below this line, it is no longer valid.
+
+  // An opaque destination means that navigation has not finished, delay
+  // handling.
+  if (registrations.destination.opaque()) {
+    if (source)
+      registrations.sources.push_back(std::move(*source));
+    return;
+  }
+
+  // Process the registration if it was valid.
+  if (source)
+    attribution_manager_->HandleSource(std::move(*source));
+
+  if (registrations.pending_source_data == 0u) {
+    // We have finished processing all sources on this redirect chain, cleanup
+    // the map.
+    OnSourceEligibleDataHostFinished(registrations.register_time);
+    redirect_registrations_.erase(it);
+  }
 }
 
 }  // namespace content
