@@ -4235,8 +4235,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   base::OnceClosure did_stop_loading_callback_;
 
   // Used when testing to retrieve that last created Web Bluetooth service.
-  raw_ptr<WebBluetoothServiceImpl, DanglingUntriaged>
-      last_web_bluetooth_service_for_testing_ = nullptr;
+  raw_ptr<WebBluetoothServiceImpl> last_web_bluetooth_service_for_testing_ =
+      nullptr;
 
   BackForwardCacheDisablingFeaturesCallback
       back_forward_cache_disabling_features_callback_for_testing_;

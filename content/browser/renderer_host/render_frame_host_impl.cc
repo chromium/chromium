@@ -5736,6 +5736,9 @@ void RenderFrameHostImpl::AddDocumentService(
 void RenderFrameHostImpl::RemoveDocumentService(
     internal::DocumentServiceBase* document_service,
     base::PassKey<internal::DocumentServiceBase>) {
+  if (document_service == last_web_bluetooth_service_for_testing_) {
+    last_web_bluetooth_service_for_testing_ = nullptr;
+  }
   base::Erase(document_associated_data_->services, document_service);
 }
 
@@ -10044,14 +10047,6 @@ WebBluetoothServiceImpl*
 RenderFrameHostImpl::GetWebBluetoothServiceForTesting() {
   if (!document_associated_data_ || !last_web_bluetooth_service_for_testing_)
     return nullptr;
-
-  // Checking the list of services to make sure the last WebBluetoothServiceImpl
-  // instance has not been invalidated since then.
-  auto it = base::ranges::find(document_associated_data_->services,
-                               last_web_bluetooth_service_for_testing_);
-  if (document_associated_data_->services.end() == it) {
-    last_web_bluetooth_service_for_testing_ = nullptr;
-  }
 
   return last_web_bluetooth_service_for_testing_;
 }
