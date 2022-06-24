@@ -131,9 +131,15 @@ FakeFastPairRepository::GetImagesForDevice(const std::string& device_id) {
   return absl::nullopt;
 }
 
-// Unimplemented.
-void FakeFastPairRepository::GetSavedDevices(GetSavedDevicesCallback callback) {
+void FakeFastPairRepository::SetSavedDevices(
+    nearby::fastpair::OptInStatus status,
+    std::vector<nearby::fastpair::FastPairDevice> devices) {
+  status_ = status;
+  devices_ = std::move(devices);
+}
 
+void FakeFastPairRepository::GetSavedDevices(GetSavedDevicesCallback callback) {
+  std::move(callback).Run(status_, devices_);
 }
 
 }  // namespace quick_pair

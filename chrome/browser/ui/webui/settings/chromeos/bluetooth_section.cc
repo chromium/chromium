@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/bluetooth_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
+#include "chrome/browser/ui/webui/settings/chromeos/fast_pair_saved_devices_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -370,6 +371,10 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
 void BluetoothSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<BluetoothHandler>());
+
+  if (features::IsFastPairSavedDevicesEnabled()) {
+    web_ui->AddMessageHandler(std::make_unique<FastPairSavedDevicesHandler>());
+  }
 }
 
 int BluetoothSection::GetSectionNameMessageId() const {
