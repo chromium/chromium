@@ -394,8 +394,15 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
                                  targetURL.spec().c_str()];
 
   [ChromeEarlGreyUI focusOmniboxAndType:script];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Go")]
-      performAction:grey_tap()];
+
+  if (@available(iOS 16, *)) {
+    // TODO(crbug.com/1331347): Move this logic into EG.
+    XCUIApplication* app = [[XCUIApplication alloc] init];
+    [[[app keyboards] buttons][@"go"] tap];
+  } else {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Go")]
+        performAction:grey_tap()];
+  }
 
   [ChromeEarlGrey waitForPageToFinishLoading];
 
