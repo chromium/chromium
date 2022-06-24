@@ -203,6 +203,21 @@ bool WebAccessibleResourcesInfo::HasWebAccessibleResources(
   return info && (info->web_accessible_resources.size() > 0);
 }
 
+// static
+bool WebAccessibleResourcesInfo::ShouldUseDynamicUrl(const Extension* extension,
+                                                     const std::string& path) {
+  const WebAccessibleResourcesInfo* info = GetResourcesInfo(extension);
+  if (!info)
+    return false;
+  for (const auto& entry : info->web_accessible_resources) {
+    if (extension->ResourceMatches(entry.resources, path) &&
+        entry.use_dynamic_url) {
+      return true;
+    }
+  }
+  return false;
+}
+
 WebAccessibleResourcesInfo::Entry::Entry() = default;
 
 WebAccessibleResourcesInfo::Entry::Entry(

@@ -434,3 +434,54 @@ TEST_F(WebAccessibleResourcesManifestTest, MatchFromInitiator) {
                               test_case.expected_accessible);
   }
 }
+
+// Verify whether dynamic url should be used.
+TEST_F(WebAccessibleResourcesManifestTest, ShouldUseDynamicUrl) {
+  // Common uses of web accessible resources.
+  auto test_should_use_dynamic_url = [&](bool use_dynamic_url,
+                                         const char* resource,
+                                         bool expected_use_dynamic_url) {
+    auto manifest = content::JsReplace(
+        // clang-format off
+      R"([{
+        "resources": ["web_accessible_resource.html"],
+        "matches": ["<all_urls>"],
+        "use_dynamic_url": $1
+      }])",
+        // clang-format on
+        use_dynamic_url);
+    scoped_refptr<Extension> extension(
+        LoadAndExpectSuccess(GetManifestData(manifest)));
+    EXPECT_EQ(expected_use_dynamic_url,
+              WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension.get(),
+                                                              resource));
+  };
+  struct {
+    bool use_dynamic_url;
+    const char* resource;
+    bool expected_use_dynamic_url;
+  } test_cases[] = {
+      {true, "web_accessible_resource.html", true},
+      {false, "web_accessible_resource.html", false},
+      {true, "undefined.html", false},
+      {false, "undefined.html", false},
+  };
+  for (const auto& test_case : test_cases) {
+    test_should_use_dynamic_url(test_case.use_dynamic_url, test_case.resource,
+                                test_case.expected_use_dynamic_url);
+  }
+
+  // Web accessible rexources undefined.
+  constexpr char kManifestStub[] =
+      R"({
+        "name": "Test",
+        "version": "1.0",
+        "manifest_version": 3
+    })";
+  base::Value manifest_value = base::test::ParseJson(kManifestStub);
+  EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
+  auto manifest_data = ManifestData(std::move(manifest_value), "test");
+  scoped_refptr<Extension> extension(LoadAndExpectSuccess(manifest_data));
+  EXPECT_EQ(false, WebAccessibleResourcesInfo::ShouldUseDynamicUrl(
+                       extension.get(), "resource.html"));
+}

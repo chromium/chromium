@@ -60,6 +60,10 @@ struct WebAccessibleResourcesInfo : public Extension::ManifestData {
   // Returns true when 'web_accessible_resources' are defined for the extension.
   static bool HasWebAccessibleResources(const Extension* extension);
 
+  // Accessor for use_dynamic_url.
+  static bool ShouldUseDynamicUrl(const Extension* extension,
+                                  const std::string& resource);
+
   // The list of entries for the web-accessible resources of the extension.
   std::vector<Entry> web_accessible_resources;
 };
