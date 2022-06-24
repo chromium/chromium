@@ -503,7 +503,8 @@ class VolumeManager : public KeyedService,
                       const std::string& display_name);
   void RemoveSmbFsVolume(const base::FilePath& mount_point);
 
-  void OnFuseboxAttachStorageMTP(const std::string& fsid,
+  void OnFuseboxAttachStorageMTP(const std::string& subdir,
+                                 const std::string& fsid,
                                  const std::string& label,
                                  bool read_only,
                                  int error);

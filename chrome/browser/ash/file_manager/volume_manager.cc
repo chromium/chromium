@@ -186,6 +186,11 @@ std::string GenerateVolumeId(const Volume& volume) {
           volume.mount_path().BaseName().AsUTF8Unsafe());
 }
 
+std::string FuseBoxMTPSubdir(const std::string& storage_info_location) {
+  auto suffix = base::TrimString(storage_info_location, "/", base::TRIM_ALL);
+  return std::string(kMtpVolumeIdPrefix).append(std::string(suffix));
+}
+
 std::string GetMountPointNameForMediaStorage(
     const storage_monitor::StorageInfo& info) {
   std::string name(kFileManagerMTPMountNamePrefix);
@@ -1429,13 +1434,16 @@ void VolumeManager::DoAttachMtpStorage(
   DCHECK(mtp_file_system_url.is_valid());
 
   // Attach the MTP storage device to the fusebox daemon.
+  std::string subdir = FuseBoxMTPSubdir(info.location());
   fusebox_mounter_->AttachStorage(
-      "mtp", url, read_only,
+      subdir, url, read_only,
       base::BindOnce(&VolumeManager::OnFuseboxAttachStorageMTP,
-                     weak_ptr_factory_.GetWeakPtr(), fsid, label, read_only));
+                     weak_ptr_factory_.GetWeakPtr(), subdir, fsid, label,
+                     read_only));
 }
 
-void VolumeManager::OnFuseboxAttachStorageMTP(const std::string& fsid,
+void VolumeManager::OnFuseboxAttachStorageMTP(const std::string& subdir,
+                                              const std::string& fsid,
                                               const std::string& label,
                                               bool read_only,
                                               int error) {
@@ -1444,7 +1452,7 @@ void VolumeManager::OnFuseboxAttachStorageMTP(const std::string& fsid,
     return;
 
   // Create a Volume for the fusebox MTP storage device.
-  const base::FilePath mount_path = base::FilePath::FromUTF8Unsafe("mtp");
+  const base::FilePath mount_path = base::FilePath(subdir);
   std::unique_ptr<Volume> volume =
       Volume::CreateForFuseBoxMTP(mount_path, label, read_only);
 
@@ -1497,7 +1505,8 @@ void VolumeManager::OnRemovableStorageDetached(
     mount_points->RevokeFileSystem(util::kFuseBox + fsid);
 
     // Detach the fusebox MTP storage device from the fusebox daemon.
-    fusebox_mounter_->DetachStorage("mtp", base::DoNothing());
+    std::string subdir = FuseBoxMTPSubdir(info.location());
+    fusebox_mounter_->DetachStorage(subdir, base::DoNothing());
     return;
   }
 }
