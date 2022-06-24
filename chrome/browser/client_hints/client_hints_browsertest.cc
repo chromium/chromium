@@ -235,8 +235,20 @@ void OnUnblockOnProfileCreation(base::RunLoop* run_loop,
     run_loop->Quit();
 }
 
-void CheckUserAgentMinorVersion(const std::string& user_agent_value,
-                                const bool expected_user_agent_reduced) {
+// Return |true| in the following conditions: If we expect reduced user agent,
+// user agent minor version matches "0.0.0" if reduced UA through UAReduction
+// origin trial. or user agent minor version matches "0.X.0" if reduced UA
+// through kReduceUserAgentMinorVersion experiment. Otherwise, return |false|.
+// We should not always expect reduced UA when kReduceUserAgentMinorVersion
+// feature turns on, it would give false positive test results when the feature
+// turns on as default. For example, if we expect full UA in the UADeprecation
+// origin trial with kReduceUserAgentMinorVersion turned on, the actual value
+// gives reduced UA, and the validation will succeed in this case which causes
+// us to ignore actual bugs in code.
+void CheckUserAgentMinorVersion(
+    const std::string& user_agent_value,
+    const bool expected_user_agent_reduced,
+    const bool expected_reduced_ua_through_experiment) {
   // A regular expression that matches Chrome/{major_version}.{minor_version}
   // in the User-Agent string, where the {minor_version} is captured.
   static constexpr char kChromeVersionRegex[] =
@@ -255,10 +267,9 @@ void CheckUserAgentMinorVersion(const std::string& user_agent_value,
                                      &minor_version));
 
   if (expected_user_agent_reduced) {
-    EXPECT_EQ(minor_version, kReducedMinorVersion);
-  } else if (base::FeatureList::IsEnabled(
-                 blink::features::kReduceUserAgentMinorVersion)) {
-    EXPECT_EQ(minor_version, kReduceUserAgentMinorVersion);
+    EXPECT_EQ(minor_version, expected_reduced_ua_through_experiment
+                                 ? kReduceUserAgentMinorVersion
+                                 : kReducedMinorVersion);
   } else {
     EXPECT_NE(minor_version, kReducedMinorVersion);
   }
@@ -3681,12 +3692,15 @@ class UaOriginTrialBrowserTest : public InProcessBrowserTest {
                 Optional(expected_ua_header_value));
   }
 
-  void CheckUserAgentReduced(const bool expected_user_agent_reduced) {
+  void CheckUserAgentReduced(
+      const bool expected_user_agent_reduced,
+      const bool expected_reduced_ua_through_experiment) {
     const absl::optional<std::string>& user_agent_header_value =
         GetLastUserAgentHeaderValue();
     EXPECT_TRUE(user_agent_header_value.has_value());
     CheckUserAgentMinorVersion(*user_agent_header_value,
-                               expected_user_agent_reduced);
+                               expected_user_agent_reduced,
+                               expected_reduced_ua_through_experiment);
   }
 
   // |ch_ua_reduced_expected| indicates whether expects a reduce UA string.
@@ -3698,7 +3712,19 @@ class UaOriginTrialBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     CheckUaOriginTrialClientHint(ch_ua_exist_expected);
-    CheckUserAgentReduced(ch_ua_reduced_expected);
+
+    // If we expect reduced user agent, but there is no valid origin trial
+    // header, it means reduced UA depends on feature
+    // kReduceUserAgentMinorVersion experiment.
+    const bool expected_reduced_ua_through_experiment =
+        ch_ua_reduced_expected && !ch_ua_exist_expected;
+    CheckUserAgentReduced(ch_ua_reduced_expected,
+                          expected_reduced_ua_through_experiment);
+  }
+
+  bool UAReductionEnabled() {
+    return base::FeatureList::IsEnabled(
+        blink::features::kReduceUserAgentMinorVersion);
   }
 
  protected:
@@ -3898,11 +3924,20 @@ class SameOriginUaOriginTrialBrowserTest
     // If Critical-CH is set, we expect Sec-CH-UA-Reduced in the first
     // navigation request header.  If Critical-CH is not set, we don't expect
     // Sec-CH-UA-Reduced in the first navigation request.
-    const bool first_navigation_reduced_ua =
+    // If Sec-CH-UA-Reduced in the first request, UA string should reduced,
+    // otherwise UA string depends on whether kReduceUserAgentMinorVersion has
+    // turns up.
+    const bool first_navigation_has_sec_reduced_ua =
         critical_ch_ua_reduced_expected && ch_ua_reduced_expected;
-    NavigateAndCheckHeaders(url, first_navigation_reduced_ua,
-                            first_navigation_reduced_ua);
-    if (first_navigation_reduced_ua) {
+    bool first_navigation_expected_reduced_ua = true;
+    if (first_navigation_has_sec_reduced_ua) {
+      first_navigation_expected_reduced_ua = true;
+    } else {
+      first_navigation_expected_reduced_ua = UAReductionEnabled();
+    }
+    NavigateAndCheckHeaders(url, first_navigation_expected_reduced_ua,
+                            first_navigation_has_sec_reduced_ua);
+    if (first_navigation_has_sec_reduced_ua) {
       ++reduced_count;
       if (critical_ch_ua_reduced_expected) {
         // If Critical-CH was set, there will also be the initial navigation
@@ -3924,8 +3959,18 @@ class SameOriginUaOriginTrialBrowserTest
     // Regardless of the Critical-CH setting, we expect the Sec-CH-UA-Reduced
     // client hint sent on the second request, if Sec-CH-UA-Reduced is set and
     // the Origin Trial token is valid.
-    NavigateAndCheckHeaders(url, ch_ua_reduced_expected,
-                            ch_ua_reduced_expected);
+    // If Sec-CH-UA-Reduced in the second request, UA string should reduced,
+    // otherwise UA string depends on whether kReduceUserAgentMinorVersion has
+    // turns up.
+    bool second_navigation_has_sec_reduced_ua = ch_ua_reduced_expected;
+    bool second_navigation_expected_reduced_ua = true;
+    if (second_navigation_has_sec_reduced_ua) {
+      second_navigation_expected_reduced_ua = true;
+    } else {
+      second_navigation_expected_reduced_ua = UAReductionEnabled();
+    }
+    NavigateAndCheckHeaders(url, second_navigation_expected_reduced_ua,
+                            second_navigation_has_sec_reduced_ua);
     // Make sure non-default client hints are not added to the request headers
     // of subresource requests. Here, we just use Sec-CH-UA-Bitness as a high
     // entropy hint to check against.
@@ -3953,10 +3998,19 @@ class SameOriginUaOriginTrialBrowserTest
     // If Critical-CH is set, we expect Sec-CH-UA-Full in the first
     // navigation request header.  If Critical-CH is not set, we don't expect
     // Sec-CH-UA-Full in the first navigation request.
-    const bool first_navigation_full_ua =
+    const bool first_navigation_has_sec_full_ua =
         critical_ch_ua_full_expected && ch_ua_full_expected;
-    // For full user agent, we never expect the ua reduced.
-    NavigateAndCheckHeaders(url, false, first_navigation_full_ua);
+    // If Sec-CH-UA-Full in the first request, UA string should not reduced,
+    // otherwise UA string depends on whether kReduceUserAgentMinorVersion has
+    // turns up.
+    bool first_navigation_expected_reduced_ua = false;
+    if (first_navigation_has_sec_full_ua) {
+      first_navigation_expected_reduced_ua = false;
+    } else {
+      first_navigation_expected_reduced_ua = UAReductionEnabled();
+    }
+    NavigateAndCheckHeaders(url, first_navigation_expected_reduced_ua,
+                            first_navigation_has_sec_full_ua);
 
     // TODO: Currently no matter whether it's a first navigation request or not,
     // we always sent the full user agent string. We need to update the count
@@ -3978,7 +4032,18 @@ class SameOriginUaOriginTrialBrowserTest
     // Regardless of the Critical-CH setting, we expect the Sec-CH-UA-Full
     // client hint sent on the second request, if Sec-CH-UA-Full is set and
     // the Origin Trial token is valid.
-    NavigateAndCheckHeaders(url, false, ch_ua_full_expected);
+    // If Sec-CH-UA-Full in the second request, UA string should not reduced,
+    // otherwise UA string depends on whether kReduceUserAgentMinorVersion has
+    // turns up.
+    bool second_navigation_has_sec_full_ua = ch_ua_full_expected;
+    bool second_navigation_expected_reduced_ua = false;
+    if (second_navigation_has_sec_full_ua) {
+      second_navigation_expected_reduced_ua = false;
+    } else {
+      second_navigation_expected_reduced_ua = UAReductionEnabled();
+    }
+    NavigateAndCheckHeaders(url, second_navigation_expected_reduced_ua,
+                            ch_ua_full_expected);
     // Make sure non-default client hints are not added to the request headers
     // of subresource requests. Here, we just use Sec-CH-UA-Bitness as a high
     // entropy hint to check against.
@@ -4147,11 +4212,13 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
   CheckUserAgentMinorVersion(
       content::EvalJs(web_contents, "navigator.userAgent").ExtractString(),
       /*expected_user_agent_reduced=*/GetParam() ==
-          UserAgentOriginTrialTestType::UAReduction);
+          UserAgentOriginTrialTestType::UAReduction,
+      false);
   CheckUserAgentMinorVersion(
       content::EvalJs(web_contents, "navigator.appVersion").ExtractString(),
       /*expected_user_agent_reduced=*/GetParam() ==
-          UserAgentOriginTrialTestType::UAReduction);
+          UserAgentOriginTrialTestType::UAReduction,
+      false);
   // Instead of checking all platform types, just check one that has a
   // difference between the full and reduced versions.
 #if BUILDFLAG(IS_ANDROID)
@@ -4175,16 +4242,16 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
                               /*ch_ua_exist_expected=*/false,
                               /*critical_ch_ua_exist_expected=*/false);
 
-  // The Origin Trial token is invalid, so we expect the full UA values in
-  // the Javascript getters.
+  // The Origin Trial token is invalid, so we expect the UA values depends on
+  // the feature kReduceUserAgentMinorVersion in the Javascript getters.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   CheckUserAgentMinorVersion(
       content::EvalJs(web_contents, "navigator.userAgent").ExtractString(),
-      /*expected_user_agent_reduced=*/false);
+      /*expected_user_agent_reduced=*/UAReductionEnabled(), true);
   CheckUserAgentMinorVersion(
       content::EvalJs(web_contents, "navigator.appVersion").ExtractString(),
-      /*expected_user_agent_reduced=*/false);
+      /*expected_user_agent_reduced=*/UAReductionEnabled(), true);
   // Instead of checking all platform types, just check one that has a
   // difference between the full and reduced versions.
 #if BUILDFLAG(IS_ANDROID)
@@ -4459,7 +4526,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
   // The first navigation sets Sec-CH-UA-Reduced/Sec-CH-UA-Full in the client
   // hints storage for the origin.
   NavigateAndCheckHeaders(ua_with_valid_origin_trial_token_url(),
-                          /*ch_ua_reduced_expected=*/false,
+                          /*ch_ua_reduced_expected=*/UAReductionEnabled(),
                           /*ch_ua_exist_expected=*/false);
   // The second navigation doesn't contain an Accept-CH header in the
   // response, so Sec-CH-UA-Reduced/Sec-CH-UA-Full is removed from the storage.
@@ -4471,7 +4538,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
   // in the request header because the second navigation caused it to get
   // removed.
   NavigateAndCheckHeaders(ua_with_valid_origin_trial_token_url(),
-                          /*ch_ua_reduced_expected=*/false,
+                          /*ch_ua_reduced_expected=*/UAReductionEnabled(),
                           /*ch_ua_exist_expected=*/false);
 }
 
@@ -4734,7 +4801,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyUaOriginTrialBrowserTest, ScriptDisabled) {
           CONTENT_SETTING_BLOCK);
   // Headers should not be sent in third party iframe.
   NavigateAndCheckHeaders(url,
-                          /*ch_ua_reduced_expected=*/false,
+                          /*ch_ua_reduced_expected=*/UAReductionEnabled(),
                           /*ch_ua_exist_expected=*/false);
 
   // Make sure the last intercepted URL was the request for the embedded
@@ -4794,7 +4861,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyUaOriginTrialBrowserTest,
   SetValidOTToken(false);       // Origin Trial Token is invalid.
 
   NavigateAndCheckHeaders(accept_ch_ua_cross_origin_iframe_request_url(),
-                          /*ch_ua_reduced_expected=*/false,
+                          /*ch_ua_reduced_expected=*/UAReductionEnabled(),
                           /*ch_ua_exist_expected=*/false);
 
   // Make sure the last intercepted URL was the request for the embedded
@@ -4808,7 +4875,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyUaOriginTrialBrowserTest,
   SetValidOTToken(false);       // Origin Trial Token is invalid.
 
   NavigateAndCheckHeaders(accept_ch_ua_cross_origin_subresource_request_url(),
-                          /*ch_ua_reduced_expected=*/false,
+                          /*ch_ua_reduced_expected=*/UAReductionEnabled(),
                           /*ch_ua_exist_expected=*/false);
 
   // Make sure the last intercepted URL was the request for the embedded
@@ -4948,7 +5015,7 @@ class ThirdPartyAcceptChUaOriginTrialBrowserTest
           GetParam() == UserAgentOriginTrialTestType::UAReduction;
       const bool ch_ua_exist_expected = true;
       CheckUaOriginTrialClientHint(ch_ua_exist_expected);
-      CheckUserAgentReduced(ch_ua_reduced_expected);
+      CheckUserAgentReduced(ch_ua_reduced_expected, false);
     }
 
     std::string resource_path = "chrome/test/data/client_hints";
@@ -5016,10 +5083,11 @@ class ThirdPartyAcceptChUaOriginTrialBrowserTest
 
   // Called by `https_server_`.
   void MonitorRequest(const net::test_server::HttpRequest& request) {
-    // All first party requests will have the full UA string, not the reduced
-    // one, since they don't respond with a valid Origin Trial token.
-    CheckUserAgentMinorVersion(request.headers.at("user-agent"),
-                               /*expected_user_agent_reduced=*/false);
+    // All first party requests don't respond with a valid Origin Trial token,
+    // Reduced UA string or not is controlled by kReduceUserAgentMinorVersion.
+    CheckUserAgentMinorVersion(
+        request.headers.at("user-agent"),
+        /*expected_user_agent_reduced=*/UAReductionEnabled(), true);
     std::string sec_ua_ch_name =
         base::StrCat({GetParam() == UserAgentOriginTrialTestType::UAReduction
                           ? "sec-ch-ua-reduced"
@@ -5076,7 +5144,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyAcceptChUaOriginTrialBrowserTest,
       accept_ch_ua_cross_origin_iframe_request_url();
   // The first navigation is to opt-into the OT.
   NavigateAndCheckHeaders(top_level_frame_url,
-                          /*ch_ua_reduced_expected=*/false,
+                          /*ch_ua_reduced_expected=*/UAReductionEnabled(),
                           /*ch_ua_exist_expected=*/false);
   NavigateAndCheckHeaders(top_level_frame_url,
                           /*ch_ua_reduced_expected=*/GetParam() ==
@@ -5104,10 +5172,10 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyAcceptChUaOriginTrialBrowserTest,
   // embed, which shouldn't happen for this test because third-party cookies
   // are blocked.
   NavigateAndCheckHeaders(top_level_frame_url,
-                          /*ch_ua_reduced_expected=*/false,
+                          /*ch_ua_reduced_expected=*/UAReductionEnabled(),
                           /*ch_ua_exist_expected=*/false);
   NavigateAndCheckHeaders(top_level_frame_url,
-                          /*ch_ua_reduced_expected=*/false,
+                          /*ch_ua_reduced_expected=*/UAReductionEnabled(),
                           /*ch_ua_exist_expected=*/false);
   // Make sure the last intercepted URL was the request for the embedded
   // iframe.
@@ -5125,10 +5193,10 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyAcceptChUaOriginTrialBrowserTest,
   // The first navigation is to attempt to opt-into the OT for the third-party
   // embed, which shouldn't happen for this test because cookies are blocked.
   NavigateAndCheckHeaders(accept_ch_ua_cross_origin_iframe_request_url(),
-                          /*ch_ua_reduced_expected=*/false,
+                          /*ch_ua_reduced_expected=*/UAReductionEnabled(),
                           /*ch_ua_exist_expected=*/false);
   NavigateAndCheckHeaders(accept_ch_ua_cross_origin_iframe_request_url(),
-                          /*ch_ua_reduced_expected=*/false,
+                          /*ch_ua_reduced_expected=*/UAReductionEnabled(),
                           /*ch_ua_exist_expected=*/false);
   // Make sure the last intercepted URL was the request for the embedded
   // iframe.
@@ -5472,13 +5540,16 @@ IN_PROC_BROWSER_TEST_F(RedirectUaReducedOriginTrialBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirect_url()));
   EXPECT_EQ(last_url(), redirect_url());
   CheckUserAgentMinorVersion(last_user_agent(),
-                             /*expected_user_agent_reduced=*/true);
+                             /*expected_user_agent_reduced=*/true, false);
   EXPECT_THAT(last_ua_reduced_ch(), Optional(Eq("?1")));
 
   // The next request to the origin should not send Sec-CH-UA-Reduced.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), accept_ch_url()));
   EXPECT_EQ(last_url(), accept_ch_url());
   CheckUserAgentMinorVersion(last_user_agent(),
-                             /*expected_user_agent_reduced=*/false);
+                             /*expected_user_agent_reduced=*/
+                             base::FeatureList::IsEnabled(
+                                 blink::features::kReduceUserAgentMinorVersion),
+                             true);
   EXPECT_THAT(last_ua_reduced_ch(), Eq(absl::nullopt));
 }

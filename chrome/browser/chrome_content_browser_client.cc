@@ -5945,8 +5945,7 @@ std::string ChromeContentBrowserClient::GetUserAgentBasedOnPolicy(
   switch (user_agent_reduction) {
     case embedder_support::UserAgentReductionEnterprisePolicyState::
         kForceDisabled:
-      return embedder_support::GetFullUserAgent(force_major_version_to_minor,
-                                                user_agent_reduction);
+      return embedder_support::GetFullUserAgent(force_major_version_to_minor);
     case embedder_support::UserAgentReductionEnterprisePolicyState::
         kForceEnabled:
       return embedder_support::GetReducedUserAgent(

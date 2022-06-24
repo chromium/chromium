@@ -93,9 +93,7 @@ IN_PROC_BROWSER_TEST_P(UserAgentBrowserTest, ReductionPolicyDisabled) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), empty_url()));
   EXPECT_EQ(observed_user_agent(),
             embedder_support::GetFullUserAgent(
-                embedder_support::ForceMajorVersionToMinorPosition::kDefault,
-                embedder_support::UserAgentReductionEnterprisePolicyState::
-                    kForceDisabled));
+                embedder_support::ForceMajorVersionToMinorPosition::kDefault));
 }
 
 IN_PROC_BROWSER_TEST_P(UserAgentBrowserTest, ReductionPolicyEnabled) {
