@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/svg/svg_element_rare_data.h"
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -66,6 +68,35 @@ TEST_F(SVGElementTest, BaseComputedStyleForSMILWithContainerQueries) {
             Color::kTransparent);
   EXPECT_EQ(g_style->VisitedDependentColor(GetCSSPropertyBackgroundColor()),
             Color::kTransparent);
+}
+
+TEST_F(SVGElementTest, ContainerUnitContext) {
+  ScopedCSSContainerQueriesForTest scoped_cq(true);
+  ScopedCSSContainerSkipStyleRecalcForTest scoped_skip(true);
+  ScopedLayoutNGForTest scoped_ng(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container, #svg { container-type:size; }
+      #container {
+        width: 200px;
+        height: 200px;
+      }
+      #svg {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id="container">
+      <svg id="svg"></svg>
+    </div>
+  )HTML");
+
+  auto* svg = To<SVGElement>(GetDocument().getElementById("svg"));
+  const auto* value = DynamicTo<CSSPrimitiveValue>(
+      css_test_helpers::ParseValue(GetDocument(), "<length>", "100cqw"));
+  EXPECT_FLOAT_EQ(200.0f, SVGLengthContext(svg).ResolveValue(
+                              *value, SVGLengthMode::kWidth));
 }
 
 }  // namespace blink

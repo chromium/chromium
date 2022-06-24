@@ -64,8 +64,9 @@ StyleResolverState::StyleResolverState(
       element_type_(style_request.IsPseudoStyleRequest()
                         ? ElementType::kPseudoElement
                         : ElementType::kElement),
-      container_unit_context_(
-          style_recalc_context ? style_recalc_context->container : &element),
+      container_unit_context_(style_recalc_context
+                                  ? style_recalc_context->container
+                                  : element.ParentOrShadowHostElement()),
       originating_element_style_(style_request.originating_element_style),
       is_for_highlight_(IsHighlightPseudoElement(style_request.pseudo_id)),
       is_for_custom_highlight_(style_request.pseudo_id ==

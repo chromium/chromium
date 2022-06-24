@@ -2866,4 +2866,38 @@ TEST_F(StyleResolverTest,
   UpdateAllLifecyclePhasesForTest();
 }
 
+TEST_F(StyleResolverTestCQ, ContainerUnitContext) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container, #div { container-type:size; }
+      #container {
+        width: 200px;
+        height: 200px;
+      }
+      #div {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id="container">
+      <div id="div"></div>
+    </div>
+  )HTML");
+
+  Element* div = GetDocument().getElementById("div");
+  ASSERT_TRUE(div);
+
+  scoped_refptr<ComputedStyle> style =
+      ComputedStyle::Clone(div->ComputedStyleRef());
+
+  // Don't provide a StyleRecalcContext here.
+  StyleResolverState state(GetDocument(), *div);
+
+  // To make UpdateLengthConversionData happen.
+  state.SetStyle(style);
+
+  EXPECT_DOUBLE_EQ(200.0, state.CssToLengthConversionData().ContainerWidth());
+  EXPECT_DOUBLE_EQ(200.0, state.CssToLengthConversionData().ContainerHeight());
+}
+
 }  // namespace blink
