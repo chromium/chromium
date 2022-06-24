@@ -1,5 +1,5 @@
 /* CpuArch.c -- CPU specific code
-2021-07-13 : Igor Pavlov : Public domain */
+2018-02-18: Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -55,47 +55,6 @@ static UInt32 CheckFlag(UInt32 flag)
 #define CHECK_CPUID_IS_SUPPORTED
 #endif
 
-#ifndef USE_ASM
-  #ifdef _MSC_VER
-    #if _MSC_VER >= 1600
-      #define MY__cpuidex  __cpuidex
-    #else
-
-/*
- __cpuid (function == 4) requires subfunction number in ECX.
-  MSDN: The __cpuid intrinsic clears the ECX register before calling the cpuid instruction.
-   __cpuid() in new MSVC clears ECX.
-   __cpuid() in old MSVC (14.00) doesn't clear ECX
- We still can use __cpuid for low (function) values that don't require ECX,
- but __cpuid() in old MSVC will be incorrect for some function values: (function == 4).
- So here we use the hack for old MSVC to send (subFunction) in ECX register to cpuid instruction,
- where ECX value is first parameter for FAST_CALL / NO_INLINE function,
- So the caller of MY__cpuidex_HACK() sets ECX as subFunction, and
- old MSVC for __cpuid() doesn't change ECX and cpuid instruction gets (subFunction) value.
- 
- DON'T remove MY_NO_INLINE and MY_FAST_CALL for MY__cpuidex_HACK() !!!
-*/
-
-static
-MY_NO_INLINE
-void MY_FAST_CALL MY__cpuidex_HACK(UInt32 subFunction, int *CPUInfo, UInt32 function)
-{
-  UNUSED_VAR(subFunction);
-  __cpuid(CPUInfo, function);
-}
-
-      #define MY__cpuidex(info, func, func2)  MY__cpuidex_HACK(func2, info, func)
-      #pragma message("======== MY__cpuidex_HACK WAS USED ========")
-    #endif
-  #else
-     #define MY__cpuidex(info, func, func2)  __cpuid(info, func)
-     #pragma message("======== (INCORRECT ?) cpuid WAS USED ========")
-  #endif
-#endif
-
-
-
-
 void MyCPUID(UInt32 function, UInt32 *a, UInt32 *b, UInt32 *c, UInt32 *d)
 {
   #ifdef USE_ASM
@@ -140,20 +99,18 @@ void MyCPUID(UInt32 function, UInt32 *a, UInt32 *b, UInt32 *c, UInt32 *d)
   #endif
       "=c" (*c) ,
       "=d" (*d)
-    : "0" (function), "c"(0) ) ;
+    : "0" (function)) ;
 
   #endif
   
   #else
 
   int CPUInfo[4];
-
-  MY__cpuidex(CPUInfo, (int)function, 0);
-
-  *a = (UInt32)CPUInfo[0];
-  *b = (UInt32)CPUInfo[1];
-  *c = (UInt32)CPUInfo[2];
-  *d = (UInt32)CPUInfo[3];
+  __cpuid(CPUInfo, function);
+  *a = CPUInfo[0];
+  *b = CPUInfo[1];
+  *c = CPUInfo[2];
+  *d = CPUInfo[3];
 
   #endif
 }
@@ -217,7 +174,7 @@ BoolInt CPU_Is_InOrder()
 }
 
 #if !defined(MY_CPU_AMD64) && defined(_WIN32)
-#include <Windows.h>
+#include <windows.h>
 static BoolInt CPU_Sys_Is_SSE_Supported()
 {
   OSVERSIONINFO vi;
@@ -231,101 +188,13 @@ static BoolInt CPU_Sys_Is_SSE_Supported()
 #define CHECK_SYS_SSE_SUPPORT
 #endif
 
-
-static UInt32 X86_CPUID_ECX_Get_Flags()
-{
-  Cx86cpuid p;
-  CHECK_SYS_SSE_SUPPORT
-  if (!x86cpuid_CheckAndRead(&p))
-    return 0;
-  return p.c;
-}
-
-BoolInt CPU_IsSupported_AES()
-{
-  return (X86_CPUID_ECX_Get_Flags() >> 25) & 1;
-}
-
-BoolInt CPU_IsSupported_SSSE3()
-{
-  return (X86_CPUID_ECX_Get_Flags() >> 9) & 1;
-}
-
-BoolInt CPU_IsSupported_SSE41()
-{
-  return (X86_CPUID_ECX_Get_Flags() >> 19) & 1;
-}
-
-BoolInt CPU_IsSupported_SHA()
+BoolInt CPU_Is_Aes_Supported()
 {
   Cx86cpuid p;
   CHECK_SYS_SSE_SUPPORT
   if (!x86cpuid_CheckAndRead(&p))
     return False;
-
-  if (p.maxFunc < 7)
-    return False;
-  {
-    UInt32 d[4] = { 0 };
-    MyCPUID(7, &d[0], &d[1], &d[2], &d[3]);
-    return (d[1] >> 29) & 1;
-  }
-}
-
-// #include <stdio.h>
-
-#ifdef _WIN32
-#include <Windows.h>
-#endif
-
-BoolInt CPU_IsSupported_AVX2()
-{
-  Cx86cpuid p;
-  CHECK_SYS_SSE_SUPPORT
-
-  #ifdef _WIN32
-  #define MY__PF_XSAVE_ENABLED  17
-  if (!IsProcessorFeaturePresent(MY__PF_XSAVE_ENABLED))
-    return False;
-  #endif
-
-  if (!x86cpuid_CheckAndRead(&p))
-    return False;
-  if (p.maxFunc < 7)
-    return False;
-  {
-    UInt32 d[4] = { 0 };
-    MyCPUID(7, &d[0], &d[1], &d[2], &d[3]);
-    // printf("\ncpuid(7): ebx=%8x ecx=%8x\n", d[1], d[2]);
-    return 1
-      & (d[1] >> 5); // avx2
-  }
-}
-
-BoolInt CPU_IsSupported_VAES_AVX2()
-{
-  Cx86cpuid p;
-  CHECK_SYS_SSE_SUPPORT
-
-  #ifdef _WIN32
-  #define MY__PF_XSAVE_ENABLED  17
-  if (!IsProcessorFeaturePresent(MY__PF_XSAVE_ENABLED))
-    return False;
-  #endif
-
-  if (!x86cpuid_CheckAndRead(&p))
-    return False;
-  if (p.maxFunc < 7)
-    return False;
-  {
-    UInt32 d[4] = { 0 };
-    MyCPUID(7, &d[0], &d[1], &d[2], &d[3]);
-    // printf("\ncpuid(7): ebx=%8x ecx=%8x\n", d[1], d[2]);
-    return 1
-      & (d[1] >> 5) // avx2
-      // & (d[1] >> 31) // avx512vl
-      & (d[2] >> 9); // vaes // VEX-256/EVEX
-  }
+  return (p.c >> 25) & 1;
 }
 
 BoolInt CPU_IsSupported_PageGB()
@@ -344,137 +213,6 @@ BoolInt CPU_IsSupported_PageGB()
     MyCPUID(0x80000001, &d[0], &d[1], &d[2], &d[3]);
     return (d[3] >> 26) & 1;
   }
-}
-
-
-#elif defined(MY_CPU_ARM_OR_ARM64)
-
-#ifdef _WIN32
-
-#include <Windows.h>
-
-BoolInt CPU_IsSupported_CRC32()  { return IsProcessorFeaturePresent(PF_ARM_V8_CRC32_INSTRUCTIONS_AVAILABLE) ? 1 : 0; }
-BoolInt CPU_IsSupported_CRYPTO() { return IsProcessorFeaturePresent(PF_ARM_V8_CRYPTO_INSTRUCTIONS_AVAILABLE) ? 1 : 0; }
-BoolInt CPU_IsSupported_NEON()   { return IsProcessorFeaturePresent(PF_ARM_NEON_INSTRUCTIONS_AVAILABLE) ? 1 : 0; }
-
-#else
-
-#if defined(__APPLE__)
-
-/*
-#include <stdio.h>
-#include <string.h>
-static void Print_sysctlbyname(const char *name)
-{
-  size_t bufSize = 256;
-  char buf[256];
-  int res = sysctlbyname(name, &buf, &bufSize, NULL, 0);
-  {
-    int i;
-    printf("\nres = %d : %s : '%s' : bufSize = %d, numeric", res, name, buf, (unsigned)bufSize);
-    for (i = 0; i < 20; i++)
-      printf(" %2x", (unsigned)(Byte)buf[i]);
-
-  }
-}
-*/
-
-static BoolInt My_sysctlbyname_Get_BoolInt(const char *name)
-{
-  UInt32 val = 0;
-  if (My_sysctlbyname_Get_UInt32(name, &val) == 0 && val == 1)
-    return 1;
-  return 0;
-}
-
-  /*
-  Print_sysctlbyname("hw.pagesize");
-  Print_sysctlbyname("machdep.cpu.brand_string");
-  */
-
-BoolInt CPU_IsSupported_CRC32(void)
-{
-  return My_sysctlbyname_Get_BoolInt("hw.optional.armv8_crc32");
-}
-
-BoolInt CPU_IsSupported_NEON(void)
-{
-  return My_sysctlbyname_Get_BoolInt("hw.optional.neon");
-}
-
-#ifdef MY_CPU_ARM64
-#define APPLE_CRYPTO_SUPPORT_VAL 1
-#else
-#define APPLE_CRYPTO_SUPPORT_VAL 0
-#endif
-
-BoolInt CPU_IsSupported_SHA1(void) { return APPLE_CRYPTO_SUPPORT_VAL; }
-BoolInt CPU_IsSupported_SHA2(void) { return APPLE_CRYPTO_SUPPORT_VAL; }
-BoolInt CPU_IsSupported_AES (void) { return APPLE_CRYPTO_SUPPORT_VAL; }
-
-
-#else // __APPLE__
-
-#include <sys/auxv.h>
-
-#if !defined(ARMV8_OS_FUCHSIA)
-#define USE_HWCAP
-#endif // !defined(ARMV8_OS_FUCHSIA)
-
-#ifdef USE_HWCAP
-
-#include <asm/hwcap.h>
-
-  #define MY_HWCAP_CHECK_FUNC_2(name1, name2) \
-  BoolInt CPU_IsSupported_ ## name1() { return (getauxval(AT_HWCAP)  & (HWCAP_  ## name2)) ? 1 : 0; }
-
-#ifdef MY_CPU_ARM64
-  #define MY_HWCAP_CHECK_FUNC(name) \
-  MY_HWCAP_CHECK_FUNC_2(name, name)
-  MY_HWCAP_CHECK_FUNC_2(NEON, ASIMD)
-// MY_HWCAP_CHECK_FUNC (ASIMD)
-#elif defined(MY_CPU_ARM)
-  #define MY_HWCAP_CHECK_FUNC(name) \
-  BoolInt CPU_IsSupported_ ## name() { return (getauxval(AT_HWCAP2) & (HWCAP2_ ## name)) ? 1 : 0; }
-  MY_HWCAP_CHECK_FUNC_2(NEON, NEON)
-#endif
-
-#else // USE_HWCAP
-
-  #define MY_HWCAP_CHECK_FUNC(name) \
-  BoolInt CPU_IsSupported_ ## name() { return 0; }
-  MY_HWCAP_CHECK_FUNC(NEON)
-
-#endif // USE_HWCAP
-
-MY_HWCAP_CHECK_FUNC (CRC32)
-MY_HWCAP_CHECK_FUNC (SHA1)
-MY_HWCAP_CHECK_FUNC (SHA2)
-MY_HWCAP_CHECK_FUNC (AES)
-
-#endif // __APPLE__
-#endif // _WIN32
-
-#endif // MY_CPU_ARM_OR_ARM64
-
-
-
-#ifdef __APPLE__
-
-#include <sys/sysctl.h>
-
-int My_sysctlbyname_Get(const char *name, void *buf, size_t *bufSize)
-{
-  return sysctlbyname(name, buf, bufSize, NULL, 0);
-}
-
-int My_sysctlbyname_Get_UInt32(const char *name, UInt32 *val)
-{
-  size_t bufSize = sizeof(*val);
-  int res = My_sysctlbyname_Get(name, val, &bufSize);
-  if (res == 0 && bufSize != sizeof(*val))
-    return EFAULT;
-  return res;
 }
 
 #endif

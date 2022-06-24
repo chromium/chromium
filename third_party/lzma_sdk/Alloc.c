@@ -1,12 +1,12 @@
 /* Alloc.c -- Memory allocation functions
-2021-07-13 : Igor Pavlov : Public domain */
+2018-04-27 : Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
 #include <stdio.h>
 
 #ifdef _WIN32
-#include <Windows.h>
+#include <windows.h>
 #endif
 #include <stdlib.h>
 
@@ -122,6 +122,7 @@ static void PrintAddr(void *p)
 #define Print(s)
 #define PrintLn()
 #define PrintHex(v, align)
+#define PrintDec(v, align)
 #define PrintAddr(p)
 
 #endif
@@ -132,11 +133,10 @@ void *MyAlloc(size_t size)
 {
   if (size == 0)
     return NULL;
-  PRINT_ALLOC("Alloc    ", g_allocCount, size, NULL);
   #ifdef _SZ_ALLOC_DEBUG
   {
     void *p = malloc(size);
-    // PRINT_ALLOC("Alloc    ", g_allocCount, size, p);
+    PRINT_ALLOC("Alloc    ", g_allocCount, size, p);
     return p;
   }
   #else
@@ -172,20 +172,14 @@ void MidFree(void *address)
   VirtualFree(address, 0, MEM_RELEASE);
 }
 
-#ifdef _7ZIP_LARGE_PAGES
-
-#ifdef MEM_LARGE_PAGES
-  #define MY__MEM_LARGE_PAGES  MEM_LARGE_PAGES
-#else
-  #define MY__MEM_LARGE_PAGES  0x20000000
+#ifndef MEM_LARGE_PAGES
+#undef _7ZIP_LARGE_PAGES
 #endif
 
-extern
-SIZE_T g_LargePageSize;
+#ifdef _7ZIP_LARGE_PAGES
 SIZE_T g_LargePageSize = 0;
-typedef SIZE_T (WINAPI *GetLargePageMinimumP)(VOID);
-
-#endif // _7ZIP_LARGE_PAGES
+typedef SIZE_T (WINAPI *GetLargePageMinimumP)();
+#endif
 
 void SetLargePageSize()
 {
@@ -220,7 +214,7 @@ void *BigAlloc(size_t size)
       size2 = (size + ps) & ~ps;
       if (size2 >= size)
       {
-        void *res = VirtualAlloc(NULL, size2, MEM_COMMIT | MY__MEM_LARGE_PAGES, PAGE_READWRITE);
+        void *res = VirtualAlloc(NULL, size2, MEM_COMMIT | MEM_LARGE_PAGES, PAGE_READWRITE);
         if (res)
           return res;
       }
@@ -247,14 +241,14 @@ static void *SzAlloc(ISzAllocPtr p, size_t size) { UNUSED_VAR(p); return MyAlloc
 static void SzFree(ISzAllocPtr p, void *address) { UNUSED_VAR(p); MyFree(address); }
 const ISzAlloc g_Alloc = { SzAlloc, SzFree };
 
-#ifdef _WIN32
 static void *SzMidAlloc(ISzAllocPtr p, size_t size) { UNUSED_VAR(p); return MidAlloc(size); }
 static void SzMidFree(ISzAllocPtr p, void *address) { UNUSED_VAR(p); MidFree(address); }
+const ISzAlloc g_MidAlloc = { SzMidAlloc, SzMidFree };
+
 static void *SzBigAlloc(ISzAllocPtr p, size_t size) { UNUSED_VAR(p); return BigAlloc(size); }
 static void SzBigFree(ISzAllocPtr p, void *address) { UNUSED_VAR(p); BigFree(address); }
-const ISzAlloc g_MidAlloc = { SzMidAlloc, SzMidFree };
 const ISzAlloc g_BigAlloc = { SzBigAlloc, SzBigFree };
-#endif
+
 
 /*
   uintptr_t : <stdint.h> C99 (optional)
@@ -286,13 +280,11 @@ const ISzAlloc g_BigAlloc = { SzBigAlloc, SzBigFree };
 */
 #define MY_ALIGN_PTR_DOWN(p, align) ((void *)((((UIntPtr)(p)) & ~((UIntPtr)(align) - 1))))
 
-
-#if !defined(_WIN32) && defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200112L)
-  #define USE_posix_memalign
-#endif
-
-#ifndef USE_posix_memalign
 #define MY_ALIGN_PTR_UP_PLUS(p, align) MY_ALIGN_PTR_DOWN(((char *)(p) + (align) + ADJUST_ALLOC_SIZE), align)
+
+
+#if (_POSIX_C_SOURCE >= 200112L) && !defined(_WIN32)
+  #define USE_posix_memalign
 #endif
 
 /*

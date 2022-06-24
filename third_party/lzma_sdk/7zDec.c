@@ -1,5 +1,5 @@
 /* 7zDec.c -- Decoding from 7z folder
-2021-02-09 : Igor Pavlov : Public domain */
+2019-02-02 : Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -21,20 +21,17 @@
 #endif
 
 #define k_Copy 0
-#ifndef _7Z_NO_METHOD_LZMA2
-#define k_LZMA2 0x21
-#endif
-#define k_LZMA  0x30101
-#define k_BCJ2  0x303011B
-#ifndef _7Z_NO_METHODS_FILTERS
 #define k_Delta 3
+#define k_LZMA2 0x21
+#define k_LZMA  0x30101
 #define k_BCJ   0x3030103
+#define k_BCJ2  0x303011B
 #define k_PPC   0x3030205
 #define k_IA64  0x3030401
 #define k_ARM   0x3030501
 #define k_ARMT  0x3030701
 #define k_SPARC 0x3030805
-#endif
+
 
 #ifdef _7ZIP_PPMD_SUPPPORT
 
@@ -59,7 +56,7 @@ static Byte ReadByte(const IByteIn *pp)
     return *p->cur++;
   if (p->res == SZ_OK)
   {
-    size_t size = (size_t)(p->cur - p->begin);
+    size_t size = p->cur - p->begin;
     p->processed += size;
     p->res = ILookInStream_Skip(p->inStream, size);
     size = (1 << 25);
@@ -104,32 +101,28 @@ static SRes SzDecodePpmd(const Byte *props, unsigned propsSize, UInt64 inSize, c
     Ppmd7_Init(&ppmd, order);
   }
   {
-    ppmd.rc.dec.Stream = &s.vt;
-    if (!Ppmd7z_RangeDec_Init(&ppmd.rc.dec))
+    CPpmd7z_RangeDec rc;
+    Ppmd7z_RangeDec_CreateVTable(&rc);
+    rc.Stream = &s.vt;
+    if (!Ppmd7z_RangeDec_Init(&rc))
       res = SZ_ERROR_DATA;
-    else if (!s.extra)
+    else if (s.extra)
+      res = (s.res != SZ_OK ? s.res : SZ_ERROR_DATA);
+    else
     {
-      Byte *buf = outBuffer;
-      const Byte *lim = buf + outSize;
-      for (; buf != lim; buf++)
+      SizeT i;
+      for (i = 0; i < outSize; i++)
       {
-        int sym = Ppmd7z_DecodeSymbol(&ppmd);
+        int sym = Ppmd7_DecodeSymbol(&ppmd, &rc.vt);
         if (s.extra || sym < 0)
           break;
-        *buf = (Byte)sym;
+        outBuffer[i] = (Byte)sym;
       }
-      if (buf != lim)
+      if (i != outSize)
+        res = (s.res != SZ_OK ? s.res : SZ_ERROR_DATA);
+      else if (s.processed + (s.cur - s.begin) != inSize || !Ppmd7z_RangeDec_IsFinishedOK(&rc))
         res = SZ_ERROR_DATA;
-      else if (!Ppmd7z_RangeDec_IsFinishedOK(&ppmd.rc.dec))
-      {
-        /* if (Ppmd7z_DecodeSymbol(&ppmd) != PPMD7_SYM_END || !Ppmd7z_RangeDec_IsFinishedOK(&ppmd.rc.dec)) */
-        res = SZ_ERROR_DATA;
-      }
     }
-    if (s.extra)
-      res = (s.res != SZ_OK ? s.res : SZ_ERROR_DATA);
-    else if (s.processed + (size_t)(s.cur - s.begin) != inSize)
-      res = SZ_ERROR_DATA;
   }
   Ppmd7_Free(&ppmd, allocMain);
   return res;
@@ -372,9 +365,7 @@ static SRes CheckSupportedFolder(const CSzFolder *f)
   return SZ_ERROR_UNSUPPORTED;
 }
 
-#ifndef _7Z_NO_METHODS_FILTERS
 #define CASE_BRA_CONV(isa) case k_ ## isa: isa ## _Convert(outBuffer, outSize, 0, 0); break;
-#endif
 
 static SRes SzFolder_Decode2(const CSzFolder *folder,
     const Byte *propsData,

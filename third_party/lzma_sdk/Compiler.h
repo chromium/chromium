@@ -1,12 +1,8 @@
 /* Compiler.h
-2021-01-05 : Igor Pavlov : Public domain */
+2017-04-03 : Igor Pavlov : Public domain */
 
 #ifndef __7Z_COMPILER_H
 #define __7Z_COMPILER_H
-
-  #ifdef __clang__
-    #pragma clang diagnostic ignored "-Wunused-private-field"
-  #endif
 
 #ifdef _MSC_VER
 
@@ -27,12 +23,6 @@
     #pragma warning(disable : 4710) // not inlined
     #pragma warning(disable : 4714) // function marked as __forceinline not inlined
     #pragma warning(disable : 4786) // identifier was truncated to '255' characters in the debug information
-  #endif
-
-  #ifdef __clang__
-    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    #pragma clang diagnostic ignored "-Wmicrosoft-exception-spec"
-    // #pragma clang diagnostic ignored "-Wreserved-id-macro"
   #endif
 
 #endif

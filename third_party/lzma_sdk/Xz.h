@@ -1,5 +1,5 @@
 /* Xz.h - Xz interface
-2021-04-01 : Igor Pavlov : Public domain */
+2018-07-04 : Igor Pavlov : Public domain */
 
 #ifndef __XZ_H
 #define __XZ_H
@@ -47,7 +47,7 @@ typedef struct
   CXzFilter filters[XZ_NUM_FILTERS_MAX];
 } CXzBlock;
 
-#define XzBlock_GetNumFilters(p) (((unsigned)(p)->flags & XZ_BF_NUM_FILTERS_MASK) + 1)
+#define XzBlock_GetNumFilters(p) (((p)->flags & XZ_BF_NUM_FILTERS_MASK) + 1)
 #define XzBlock_HasPackSize(p)   (((p)->flags & XZ_BF_PACK_SIZE) != 0)
 #define XzBlock_HasUnpackSize(p) (((p)->flags & XZ_BF_UNPACK_SIZE) != 0)
 #define XzBlock_HasUnsupportedFlags(p) (((p)->flags & ~(XZ_BF_NUM_FILTERS_MASK | XZ_BF_PACK_SIZE | XZ_BF_UNPACK_SIZE)) != 0)
@@ -277,10 +277,7 @@ void XzUnpacker_Free(CXzUnpacker *p);
     {
       XzUnpacker_Init()
       for()
-      {
         XzUnpacker_Code();
-      }
-      XzUnpacker_IsStreamWasFinished()
     }
     
   Interface-2 : Direct output buffer:
@@ -291,10 +288,7 @@ void XzUnpacker_Free(CXzUnpacker *p);
       XzUnpacker_Init()
       XzUnpacker_SetOutBufMode(); // to set output buffer and size
       for()
-      {
         XzUnpacker_Code(); // (dest = NULL) in XzUnpacker_Code()
-      }
-      XzUnpacker_IsStreamWasFinished()
     }
 
   Interface-3 : Direct output buffer : One call full decoding
@@ -302,7 +296,6 @@ void XzUnpacker_Free(CXzUnpacker *p);
     It uses Interface-2 internally.
     {
       XzUnpacker_CodeFull()
-      XzUnpacker_IsStreamWasFinished()
     }
 */
 
@@ -316,12 +309,8 @@ Returns:
   SZ_OK
     status:
       CODER_STATUS_NOT_FINISHED,
-      CODER_STATUS_NEEDS_MORE_INPUT - the decoder can return it in two cases:
-         1) it needs more input data to finish current xz stream
-         2) xz stream was finished successfully. But the decoder supports multiple
-            concatented xz streams. So it expects more input data for new xz streams.
-         Call XzUnpacker_IsStreamWasFinished() to check that latest xz stream was finished successfully.
-
+      CODER_STATUS_NEEDS_MORE_INPUT - maybe there are more xz streams,
+                                      call XzUnpacker_IsStreamWasFinished to check that current stream was finished
   SZ_ERROR_MEM  - Memory allocation error
   SZ_ERROR_DATA - Data error
   SZ_ERROR_UNSUPPORTED - Unsupported method or method properties
@@ -346,17 +335,12 @@ SRes XzUnpacker_CodeFull(CXzUnpacker *p, Byte *dest, SizeT *destLen,
     const Byte *src, SizeT *srcLen,
     ECoderFinishMode finishMode, ECoderStatus *status);
 
-/*
-If you decode full xz stream(s), then you can call XzUnpacker_IsStreamWasFinished()
-after successful XzUnpacker_CodeFull() or after last call of XzUnpacker_Code().
-*/
-
 BoolInt XzUnpacker_IsStreamWasFinished(const CXzUnpacker *p);
 
 /*
-XzUnpacker_GetExtraSize() returns then number of unconfirmed bytes,
+XzUnpacker_GetExtraSize() returns then number of uncofirmed bytes,
  if it's in (XZ_STATE_STREAM_HEADER) state or in (XZ_STATE_STREAM_PADDING) state.
-These bytes can be some data after xz archive, or
+These bytes can be some bytes after xz archive, or
 it can be start of new xz stream.
  
 Call XzUnpacker_GetExtraSize() after XzUnpacker_Code() function to detect real size of
@@ -387,46 +371,19 @@ BoolInt XzUnpacker_IsBlockFinished(const CXzUnpacker *p);
 
 
 
-
-
-
-/* ---- Single-Thread and Multi-Thread xz Decoding with Input/Output Streams ---- */
-
-/*
-  if (CXzDecMtProps::numThreads > 1), the decoder can try to use
-  Multi-Threading. The decoder analyses xz block header, and if
-  there are pack size and unpack size values stored in xz block header,
-  the decoder reads compressed data of block to internal buffers,
-  and then it can start parallel decoding, if there are another blocks.
-  The decoder can switch back to Single-Thread decoding after some conditions.
-
-  The sequence of calls for xz decoding with in/out Streams:
-  {
-    XzDecMt_Create()
-    XzDecMtProps_Init(XzDecMtProps) to set default values of properties
-    // then you can change some XzDecMtProps parameters with required values
-    // here you can set the number of threads and (memUseMax) - the maximum
-    Memory usage for multithreading decoding.
-    for()
-    {
-      XzDecMt_Decode() // one call per one file
-    }
-    XzDecMt_Destroy()
-  }
-*/
+/* ---------- Multi Threading Decoding ---------- */
 
 
 typedef struct
 {
-  size_t inBufSize_ST;    // size of input buffer for Single-Thread decoding
-  size_t outStep_ST;      // size of output buffer for Single-Thread decoding
-  BoolInt ignoreErrors;   // if set to 1, the decoder can ignore some errors and it skips broken parts of data.
+  size_t inBufSize_ST;
+  size_t outStep_ST;
+  BoolInt ignoreErrors;
   
   #ifndef _7ZIP_ST
-  unsigned numThreads;    // the number of threads for Multi-Thread decoding. if (umThreads == 1) it will use Single-thread decoding
-  size_t inBufSize_MT;    // size of small input data buffers for Multi-Thread decoding. Big number of such small buffers can be created
-  size_t memUseMax;       // the limit of total memory usage for Multi-Thread decoding.
-                          // it's recommended to set (memUseMax) manually to value that is smaller of total size of RAM in computer.
+  unsigned numThreads;
+  size_t inBufSize_MT;
+  size_t memUseMax;
   #endif
 } CXzDecMtProps;
 
@@ -436,7 +393,7 @@ void XzDecMtProps_Init(CXzDecMtProps *p);
 typedef void * CXzDecMtHandle;
 
 /*
-  alloc    : XzDecMt uses CAlignOffsetAlloc internally for addresses allocated by (alloc).
+  alloc    : XzDecMt uses CAlignOffsetAlloc for addresses allocated by (alloc).
   allocMid : for big allocations, aligned allocation is better
 */
 
@@ -450,46 +407,33 @@ typedef struct
   Byte NumStreams_Defined;
   Byte NumBlocks_Defined;
 
-  Byte DataAfterEnd;      // there are some additional data after good xz streams, and that data is not new xz stream.
+  Byte DataAfterEnd;
   Byte DecodingTruncated; // Decoding was Truncated, we need only partial output data
 
-  UInt64 InSize;          // pack size processed. That value doesn't include the data after
-                          // end of xz stream, if that data was not correct
+  UInt64 InSize;  // pack size processed
   UInt64 OutSize;
 
   UInt64 NumStreams;
   UInt64 NumBlocks;
 
-  SRes DecodeRes;         // the error code of xz streams data decoding
-  SRes ReadRes;           // error code from ISeqInStream:Read()
-  SRes ProgressRes;       // error code from ICompressProgress:Progress()
+  SRes DecodeRes;
+  SRes ReadRes;
+  SRes ProgressRes;
+  SRes CombinedRes;
+  SRes CombinedRes_Type;
 
-  SRes CombinedRes;       // Combined result error code that shows main rusult
-                          // = S_OK, if there is no error.
-                          // but check also (DataAfterEnd) that can show additional minor errors.
- 
-  SRes CombinedRes_Type;  // = SZ_ERROR_READ,     if error from ISeqInStream
-                          // = SZ_ERROR_PROGRESS, if error from ICompressProgress
-                          // = SZ_ERROR_WRITE,    if error from ISeqOutStream
-                          // = SZ_ERROR_* codes for decoding
 } CXzStatInfo;
 
 void XzStatInfo_Clear(CXzStatInfo *p);
 
 /*
-
 XzDecMt_Decode()
-SRes: it's combined decoding result. It also is equal to stat->CombinedRes.
-
-  SZ_OK               - no error
-                        check also output value in (stat->DataAfterEnd)
-                        that can show additional possible error
-
+SRes:
+  SZ_OK               - OK
   SZ_ERROR_MEM        - Memory allocation error
   SZ_ERROR_NO_ARCHIVE - is not xz archive
   SZ_ERROR_ARCHIVE    - Headers error
   SZ_ERROR_DATA       - Data Error
-  SZ_ERROR_UNSUPPORTED - Unsupported method or method properties
   SZ_ERROR_CRC        - CRC Error
   SZ_ERROR_INPUT_EOF  - it needs more input data
   SZ_ERROR_WRITE      - ISeqOutStream error
@@ -507,9 +451,8 @@ SRes XzDecMt_Decode(CXzDecMtHandle p,
     // Byte *outBuf, size_t *outBufSize,
     ISeqInStream *inStream,
     // const Byte *inData, size_t inDataSize,
-    CXzStatInfo *stat,         // out: decoding results and statistics
-    int *isMT,                 // out: 0 means that ST (Single-Thread) version was used
-                               //      1 means that MT (Multi-Thread) version was used
+    CXzStatInfo *stat,
+    int *isMT,                 // 0 means that ST (Single-Thread) version was used
     ICompressProgress *progress);
 
 EXTERN_C_END
