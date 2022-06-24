@@ -166,8 +166,7 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   blink::WebTouchEvent touch_event_;
   int emulated_stream_active_sequence_count_;
   int native_stream_active_sequence_count_;
-  raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged>
-      last_emulated_start_target_;
+  raw_ptr<RenderWidgetHostViewBase> last_emulated_start_target_;
   // TODO(einbinder): this relies on synchronous tap gesture generation and does
   // not work for any other gestures. We should switch to callbacks which go
   // through touches and gestures once that's available.
