@@ -62,9 +62,7 @@ class ReadAnythingAppController
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
-  // read_anything::mojom::Page
-  void ShowContent(std::vector<read_anything::mojom::ContentNodePtr>
-                       content_nodes) override {}
+  // read_anything::mojom::Page:
   void OnAXTreeDistilled(
       const ui::AXTreeUpdate& snapshot,
       const std::vector<ui::AXNodeID>& content_node_ids) override;

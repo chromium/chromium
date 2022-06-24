@@ -118,6 +118,7 @@ ts_library("build_ts") {
   composite = true
   in_files = ts_files + html_wrapper_files + mojo_files
   definitions = [
+    "read_anything/read_anything.d.ts",
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/bookmarks.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",

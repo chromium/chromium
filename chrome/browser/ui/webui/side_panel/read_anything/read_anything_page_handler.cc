@@ -30,6 +30,8 @@ ReadAnythingPageHandler::ReadAnythingPageHandler(
   model_->AddObserver(this);
   delegate_ = static_cast<ReadAnythingPageHandler::Delegate*>(
       coordinator_->GetController());
+  if (delegate_)
+    delegate_->OnUIReady();
 }
 
 ReadAnythingPageHandler::~ReadAnythingPageHandler() {
@@ -43,25 +45,10 @@ ReadAnythingPageHandler::~ReadAnythingPageHandler() {
     coordinator_->RemoveObserver(this);
 }
 
-void ReadAnythingPageHandler::OnUIReady() {
-  if (delegate_)
-    delegate_->OnUIReady();
-}
-
 void ReadAnythingPageHandler::OnCoordinatorDestroyed() {
   coordinator_ = nullptr;
   model_ = nullptr;
   delegate_ = nullptr;
-}
-
-void ReadAnythingPageHandler::OnContentUpdated(
-    const std::vector<ContentNodePtr>& content_nodes) {
-  // Make a copy of |content_nodes|, which is stored in the model, before moving
-  // across IPC to the WebUI.
-  std::vector<ContentNodePtr> content_nodes_copy;
-  for (auto it = content_nodes.begin(); it != content_nodes.end(); ++it)
-    content_nodes_copy.push_back(it->Clone());
-  page_->ShowContent(std::move(content_nodes_copy));
 }
 
 void ReadAnythingPageHandler::OnAXTreeDistilled(

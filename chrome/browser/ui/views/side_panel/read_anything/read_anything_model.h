@@ -16,8 +16,6 @@
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/models/combobox_model.h"
 
-using read_anything::mojom::ContentNodePtr;
-
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingFontModel
 //
@@ -61,8 +59,6 @@ class ReadAnythingModel {
         const ui::AXTreeUpdate& snapshot,
         const std::vector<ui::AXNodeID>& content_node_ids) = 0;
     virtual void OnFontNameUpdated(const std::string& new_font_name) = 0;
-    virtual void OnContentUpdated(
-        const std::vector<ContentNodePtr>& content) = 0;
   };
 
   ReadAnythingModel();
@@ -76,18 +72,15 @@ class ReadAnythingModel {
   void SetDistilledAXTree(ui::AXTreeUpdate snapshot,
                           std::vector<ui::AXNodeID> content_node_ids);
   void SetSelectedFontIndex(int new_index);
-  void SetContent(std::vector<ContentNodePtr> content_nodes);
 
   ReadAnythingFontModel* GetFontModel() { return font_model_.get(); }
 
  private:
   void NotifyAXTreeDistilled();
   void NotifyFontNameUpdated();
-  void NotifyContentUpdated();
 
   // State:
   std::string font_name_;
-  std::vector<ContentNodePtr> content_nodes_;
   // TODO(crbug.com/1266555): Use |snapshot_| and |content_node_ids_| to keep
   // scrolls in sync.
   ui::AXTreeUpdate snapshot_;

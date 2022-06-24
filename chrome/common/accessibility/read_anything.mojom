@@ -6,7 +6,6 @@
 module read_anything.mojom;
 
 import "ui/accessibility/mojom/ax_tree_update.mojom";
-import "url/mojom/url.mojom";
 
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
@@ -15,40 +14,14 @@ interface PageHandlerFactory {
                     pending_receiver<PageHandler> handler);
 };
 
-// The type of content node.
-enum ContentType {
-  kHeading,
-  kLink,
-  kParagraph,
-  kStaticText,
-};
-
-// A node that contains distilled content. All nodes have type ContentType.
-// Some node types have additional values, which are verified in WebUI:
-//   ContentNode with type kHeading must have a heading_level.
-//   ContentNode with type kStaticText must have text.
-//   ContentNode with type kUrl must have a url.
-struct ContentNode {
-  array<ContentNode> children;
-  uint32 heading_level;
-  string text;
-  ContentType type;
-  url.mojom.Url url;
-};
-
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Notify the backend that the WebUI is ready.
-  OnUIReady();
+  // TODO(crbug.com/1266555): Fill in with messages once Select to Read Anything
+  // is implemented.
 };
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Trigger the frontend to update the current read anything display. Content
-  // nodes is a list of content nodes from a web page, where each node is part
-  // of the main article for that web page.
-  ShowContent(array<ContentNode> content_nodes);
-
   // Trigger the frontend to update the current read anything display. Snapshot
   // is an accessibility tree snapshot of a web page. Content node ids are node
   // ids from that ax tree update, where each node is part of the main article

@@ -5,7 +5,6 @@
 non_web_component_files = [
   "bookmarks/bookmarks_api_proxy.ts",
   "bookmarks/bookmarks_drag_manager.ts",
-  "read_anything/read_anything_api_proxy.ts",
   "reading_list/reading_list_api_proxy.ts",
 ]
 

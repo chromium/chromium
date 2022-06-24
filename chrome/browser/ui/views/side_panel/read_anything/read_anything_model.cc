@@ -27,11 +27,6 @@ void ReadAnythingModel::SetSelectedFontIndex(int new_index) {
   NotifyFontNameUpdated();
 }
 
-void ReadAnythingModel::SetContent(std::vector<ContentNodePtr> content_nodes) {
-  content_nodes_ = std::move(content_nodes);
-  NotifyContentUpdated();
-}
-
 void ReadAnythingModel::SetDistilledAXTree(
     ui::AXTreeUpdate snapshot,
     std::vector<ui::AXNodeID> content_node_ids) {
@@ -43,12 +38,6 @@ void ReadAnythingModel::SetDistilledAXTree(
 void ReadAnythingModel::NotifyFontNameUpdated() {
   for (Observer& obs : observers_) {
     obs.OnFontNameUpdated(font_name_);
-  }
-}
-
-void ReadAnythingModel::NotifyContentUpdated() {
-  for (Observer& obs : observers_) {
-    obs.OnContentUpdated(content_nodes_);
   }
 }
 

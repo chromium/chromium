@@ -38,10 +38,6 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
               OnFontNameUpdated,
               (const std::string& new_font_name),
               (override));
-  MOCK_METHOD(void,
-              OnContentUpdated,
-              (const std::vector<ContentNodePtr>& content),
-              (override));
 };
 
 class ReadAnythingCoordinatorTest : public TestWithBrowserView {
@@ -120,12 +116,10 @@ TEST_F(ReadAnythingCoordinatorTest, ModelObserversReceiveNotifications) {
 
   EXPECT_CALL(model_observer_, OnAXTreeDistilled(_, _)).Times(1);
   EXPECT_CALL(model_observer_, OnFontNameUpdated(_)).Times(1);
-  EXPECT_CALL(model_observer_, OnContentUpdated(_)).Times(1);
 
   GetModel()->SetDistilledAXTree(ui::AXTreeUpdate(),
                                  std::vector<ui::AXNodeID>());
   GetModel()->SetSelectedFontIndex(3);
-  GetModel()->SetContent(std::vector<ContentNodePtr>());
 
   GetModel()->RemoveObserver(&model_observer_);
 }

@@ -21,7 +21,6 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
-using read_anything::mojom::ContentNodePtr;
 using read_anything::mojom::Page;
 using read_anything::mojom::PageHandler;
 
@@ -48,16 +47,11 @@ class ReadAnythingPageHandler : public PageHandler,
   ReadAnythingPageHandler& operator=(const ReadAnythingPageHandler&) = delete;
   ~ReadAnythingPageHandler() override;
 
-  // PageHandler:
-  void OnUIReady() override;
-
   // ReadAnythingModel::Observer:
   void OnAXTreeDistilled(
       const ui::AXTreeUpdate& snapshot,
       const std::vector<ui::AXNodeID>& content_node_ids) override;
   void OnFontNameUpdated(const std::string& new_font_name) override;
-  void OnContentUpdated(
-      const std::vector<ContentNodePtr>& content_nodes) override;
 
   // ReadAnythingCoordinator::Observer:
   void OnCoordinatorDestroyed() override;
