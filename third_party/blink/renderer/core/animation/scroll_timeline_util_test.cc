@@ -6,7 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -16,29 +15,15 @@
 
 namespace blink {
 
-namespace {
-
-HeapVector<Member<ScrollTimelineOffset>> CreateScrollOffsets(
-    ScrollTimelineOffset* start_scroll_offset,
-    ScrollTimelineOffset* end_scroll_offset) {
-  HeapVector<Member<ScrollTimelineOffset>> scroll_offsets;
-  scroll_offsets.push_back(start_scroll_offset);
-  scroll_offsets.push_back(end_scroll_offset);
-  return scroll_offsets;
-}
-
-}  // namespace
-
 namespace scroll_timeline_util {
 
 using ScrollTimelineUtilTest = PageTestBase;
 
 // This test covers only the basic conversions for element id, time range,
-// orientation, and start and end scroll offset. Complex orientation conversions
-// are tested in the GetOrientation* tests, and complex start/end scroll offset
-// resolutions are tested in blink::ScrollTimelineTest.
+// and orientation. Complex orientation conversions are tested in the
+// GetOrientation* tests.
 TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
-  using animation_test_helpers::OffsetFromString;
+  // using animation_test_helpers::OffsetFromString;
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -62,8 +47,6 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
   options->setSource(scroller);
   options->setOrientation("block");
-  options->setScrollOffsets({OffsetFromString(GetDocument(), "50px"),
-                             OffsetFromString(GetDocument(), "auto")});
   ScrollTimeline* timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
@@ -73,9 +56,6 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
   EXPECT_EQ(compositor_timeline->GetPendingIdForTest(), element_id);
   EXPECT_EQ(compositor_timeline->GetDirectionForTest(),
             CompositorScrollTimeline::ScrollDown);
-  EXPECT_EQ(compositor_timeline->GetStartScrollOffsetForTest(), 50);
-  // 900 is contents-size - scroller-viewport == 1000 - 100
-  EXPECT_EQ(compositor_timeline->GetEndScrollOffsetForTest(), 900);
 }
 
 TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullParameter) {
@@ -94,14 +74,9 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullSource) {
   // source. The alternative approach would require us to remove the
   // documentElement from the document.
   Element* source = nullptr;
-  ScrollTimelineOffset* start_scroll_offset =
-      MakeGarbageCollected<ScrollTimelineOffset>();
-  ScrollTimelineOffset* end_scroll_offset =
-      MakeGarbageCollected<ScrollTimelineOffset>();
   ScrollTimeline* timeline = MakeGarbageCollected<ScrollTimeline>(
       &GetDocument(), ScrollTimeline::ReferenceType::kSource, source,
-      ScrollTimeline::kBlock,
-      CreateScrollOffsets(start_scroll_offset, end_scroll_offset));
+      ScrollTimeline::kBlock);
 
   scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);
@@ -121,11 +96,6 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullLayoutBox) {
   scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);
   EXPECT_TRUE(compositor_timeline.get());
-  // Here we just want to test the start/end scroll offset.
-  // ToCompositorScrollTimelineNullSource covers the expected pending id
-  // and ConvertOrientationNullStyle covers the orientation conversion.
-  EXPECT_EQ(compositor_timeline->GetStartScrollOffsetForTest(), absl::nullopt);
-  EXPECT_EQ(compositor_timeline->GetEndScrollOffsetForTest(), absl::nullopt);
 }
 
 TEST_F(ScrollTimelineUtilTest, ConvertOrientationPhysicalCases) {

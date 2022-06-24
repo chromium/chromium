@@ -38,8 +38,7 @@ ComputedEffectTiming* WorkletAnimationEffect::getComputedTiming() const {
       local_time = AnimationTimeDelta(local_time_.value());
     }
     calculated_ = specified_timing_.CalculateTimings(
-        local_time, /*timeline_phase*/ absl::nullopt,
-        /*at_progress_timeline_boundary*/ false, normalized_timing_,
+        local_time, /*at_progress_timeline_boundary*/ false, normalized_timing_,
         Timing::AnimationDirection::kForwards, false, playback_rate);
   }
 

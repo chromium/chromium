@@ -19,7 +19,7 @@ namespace blink {
 
 class Document;
 
-enum class TimelinePhase { kInactive, kBefore, kActive, kAfter };
+enum class TimelinePhase { kInactive, kActive };
 
 class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();

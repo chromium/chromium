@@ -729,12 +729,10 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
             timeline != existing_animation->Timeline()) {
           DCHECK(!is_animation_style_change);
 
-          absl::optional<TimelinePhase> inherited_phase;
           absl::optional<AnimationTimeDelta> inherited_time;
           absl::optional<AnimationTimeDelta> timeline_duration;
 
           if (timeline) {
-            inherited_phase = absl::make_optional(timeline->Phase());
             inherited_time = animation->UnlimitedCurrentTime();
             timeline_duration = timeline->GetDuration();
 
@@ -780,8 +778,8 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
                   CreateKeyframeEffectModel(
                       resolver, element, animating_element, &style,
                       parent_style, name, keyframe_timing_function.get(), i),
-                  timing, is_paused, inherited_time, inherited_phase,
-                  timeline_duration, animation->playbackRate()),
+                  timing, is_paused, inherited_time, timeline_duration,
+                  animation->playbackRate()),
               specified_timing, keyframes_rule, timeline,
               animation_data->PlayStateList());
           if (toggle_pause_state)
@@ -790,7 +788,6 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
       } else {
         DCHECK(!is_animation_style_change);
         AnimationTimeline* timeline = ComputeTimeline(&element, timeline_name);
-        absl::optional<TimelinePhase> inherited_phase;
         absl::optional<AnimationTimeDelta> inherited_time =
             AnimationTimeDelta();
 
@@ -798,7 +795,6 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
         if (timeline) {
           timeline_duration = timeline->GetDuration();
           if (!timeline->IsMonotonicallyIncreasing()) {
-            inherited_phase = absl::make_optional(timeline->Phase());
             inherited_time = timeline->CurrentTime();
           }
         }
@@ -808,8 +804,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
                 CreateKeyframeEffectModel(resolver, element, animating_element,
                                           &style, parent_style, name,
                                           keyframe_timing_function.get(), i),
-                timing, is_paused, inherited_time, inherited_phase,
-                timeline_duration, 1.0),
+                timing, is_paused, inherited_time, timeline_duration, 1.0),
             specified_timing, keyframes_rule, timeline,
             animation_data->PlayStateList());
       }
@@ -1430,9 +1425,8 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   state.update.StartTransition(
       property, state.before_change_style, state.cloned_style,
       reversing_adjusted_start_value, reversing_shortening_factor,
-      *MakeGarbageCollected<InertEffect>(model, timing, false,
-                                         AnimationTimeDelta(), absl::nullopt,
-                                         absl::nullopt, 1.0));
+      *MakeGarbageCollected<InertEffect>(
+          model, timing, false, AnimationTimeDelta(), absl::nullopt, 1.0));
   DCHECK(!state.animating_element.GetElementAnimations() ||
          !state.animating_element.GetElementAnimations()
               ->IsAnimationStyleChange());
@@ -1624,7 +1618,7 @@ scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
 
       auto* inert_animation_for_sampling = MakeGarbageCollected<InertEffect>(
           effect->Model(), effect->SpecifiedTiming(), false, current_time,
-          absl::nullopt, absl::nullopt, animation->playbackRate());
+          /* timeline_duration */ absl::nullopt, animation->playbackRate());
 
       HeapVector<Member<Interpolation>> sample;
       inert_animation_for_sampling->Sample(sample);

@@ -95,12 +95,6 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
                           : CompositorScrollTimeline::ScrollUp;
 }
 
-double ComputeProgress(double current_offset,
-                       const WTF::Vector<double>& resolved_offsets) {
-  return cc::ComputeProgress<WTF::Vector<double>>(current_offset,
-                                                  resolved_offsets);
-}
-
 }  // namespace scroll_timeline_util
 
 }  // namespace blink

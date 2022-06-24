@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
@@ -98,21 +97,6 @@ void EnsureInterpolatedValueCached(ActiveInterpolations* interpolations,
   StyleCascade cascade(state);
   cascade.AddInterpolations(&map, CascadeOrigin::kAnimation);
   cascade.Apply();
-}
-
-V8ScrollTimelineOffset* OffsetFromString(Document& document,
-                                         const String& string) {
-  const CSSValue* value = css_test_helpers::ParseValue(
-      document, "<length-percentage> | auto", string);
-
-  if (const auto* primitive = DynamicTo<CSSPrimitiveValue>(value)) {
-    return MakeGarbageCollected<V8ScrollTimelineOffset>(
-        CSSNumericValue::FromCSSValue(*primitive));
-  } else if (DynamicTo<CSSIdentifierValue>(value)) {
-    return MakeGarbageCollected<V8ScrollTimelineOffset>(
-        CSSKeywordValue::Create("auto"));
-  }
-  return MakeGarbageCollected<V8ScrollTimelineOffset>(string);
 }
 
 }  // namespace animation_test_helpers

@@ -184,7 +184,6 @@ struct CORE_EXPORT Timing {
 
   CalculatedTiming CalculateTimings(
       absl::optional<AnimationTimeDelta> local_time,
-      absl::optional<Phase> timeline_phase,
       bool at_progress_timeline_boundary,
       const NormalizedTiming& normalized_timing,
       AnimationDirection animation_direction,

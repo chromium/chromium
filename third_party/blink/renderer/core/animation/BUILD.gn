@@ -230,8 +230,6 @@ blink_core_sources("animation") {
     "sampled_effect.h",
     "scroll_timeline.cc",
     "scroll_timeline.h",
-    "scroll_timeline_offset.cc",
-    "scroll_timeline_offset.h",
     "scroll_timeline_util.cc",
     "scroll_timeline_util.h",
     "side_index.h",

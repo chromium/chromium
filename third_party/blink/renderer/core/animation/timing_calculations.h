@@ -112,7 +112,6 @@ static inline AnimationTimeDelta MultiplyZeroAlwaysGivesZero(
 static inline Timing::Phase CalculatePhase(
     const Timing::NormalizedTiming& normalized,
     absl::optional<AnimationTimeDelta> local_time,
-    absl::optional<Timing::Phase> timeline_phase,
     bool at_progress_timeline_boundary,
     Timing::AnimationDirection direction) {
   DCHECK(GreaterThanOrEqualToWithinTimeTolerance(normalized.active_duration,
@@ -123,27 +122,21 @@ static inline Timing::Phase CalculatePhase(
   AnimationTimeDelta before_active_boundary_time =
       std::max(std::min(normalized.start_delay, normalized.end_time),
                AnimationTimeDelta());
-
-  if ((timeline_phase && timeline_phase.value() == Timing::kPhaseBefore) ||
-      ((!timeline_phase ||
-        (timeline_phase && timeline_phase.value() == Timing::kPhaseActive)) &&
-       (local_time.value() < before_active_boundary_time ||
-        (direction == Timing::AnimationDirection::kBackwards &&
-         local_time.value() == before_active_boundary_time &&
-         !at_progress_timeline_boundary)))) {
+  if (local_time.value() < before_active_boundary_time ||
+      (direction == Timing::AnimationDirection::kBackwards &&
+       local_time.value() == before_active_boundary_time &&
+       !at_progress_timeline_boundary)) {
     return Timing::kPhaseBefore;
   }
+
   AnimationTimeDelta active_after_boundary_time =
       std::max(std::min(normalized.start_delay + normalized.active_duration,
                         normalized.end_time),
                AnimationTimeDelta());
-  if ((timeline_phase && timeline_phase.value() == Timing::kPhaseAfter) ||
-      ((!timeline_phase ||
-        (timeline_phase && timeline_phase.value() == Timing::kPhaseActive)) &&
-       (local_time.value() > active_after_boundary_time ||
-        (direction == Timing::AnimationDirection::kForwards &&
-         local_time.value() == active_after_boundary_time &&
-         !at_progress_timeline_boundary)))) {
+  if (local_time.value() > active_after_boundary_time ||
+      (direction == Timing::AnimationDirection::kForwards &&
+       local_time.value() == active_after_boundary_time &&
+       !at_progress_timeline_boundary)) {
     return Timing::kPhaseAfter;
   }
   return Timing::kPhaseActive;

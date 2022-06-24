@@ -151,7 +151,6 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   // it will (if necessary) recalculate timings and (if necessary) call
   // UpdateChildrenAndEffects.
   void UpdateInheritedTime(absl::optional<AnimationTimeDelta> inherited_time,
-                           absl::optional<TimelinePhase> inherited_phase,
                            bool at_progress_timeline_boundary,
                            double inherited_playback_rate,
                            TimingUpdateReason) const;
@@ -190,7 +189,6 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   mutable absl::optional<Timing::NormalizedTiming> normalized_;
   mutable bool needs_update_;
   mutable absl::optional<AnimationTimeDelta> last_update_time_;
-  mutable absl::optional<Timing::Phase> last_update_phase_;
   AnimationTimeDelta cancel_time_;
   const Timing::CalculatedTiming& EnsureCalculated() const;
   void EnsureNormalizedTiming() const;
