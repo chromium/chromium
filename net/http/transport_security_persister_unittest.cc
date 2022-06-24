@@ -41,6 +41,14 @@ class TransportSecurityPersisterTest : public ::testing::TestWithParam<bool>,
   TransportSecurityPersisterTest()
       : WithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // This feature is used in initializing |state_|.
+    if (partition_expect_ct_state()) {
+      feature_list_.InitAndEnableFeature(
+          features::kPartitionExpectCTStateByNetworkIsolationKey);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kPartitionExpectCTStateByNetworkIsolationKey);
+    }
     // Mock out time so that entries with hard-coded json data can be
     // successfully loaded. Use a large enough value that dynamically created
     // entries have at least somewhat interesting expiration times.
@@ -61,14 +69,6 @@ class TransportSecurityPersisterTest : public ::testing::TestWithParam<bool>,
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
-    // This feature is used in initializing |state_|.
-    if (partition_expect_ct_state()) {
-      feature_list_.InitAndEnableFeature(
-          features::kPartitionExpectCTStateByNetworkIsolationKey);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kPartitionExpectCTStateByNetworkIsolationKey);
-    }
     state_ = std::make_unique<TransportSecurityState>();
     persister_ = std::make_unique<TransportSecurityPersister>(
         state_.get(), std::move(background_runner),

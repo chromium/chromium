@@ -1775,15 +1775,21 @@ class CTEmergencyDisableTest
     : public TransportSecurityStateTest,
       public testing::WithParamInterface<CTEmergencyDisableSwitchKind> {
  public:
+  CTEmergencyDisableTest() {
+    if (GetParam() ==
+        CTEmergencyDisableSwitchKind::kComponentUpdaterDrivenSwitch) {
+      scoped_feature_list_.Init();
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          TransportSecurityState::kCertificateTransparencyEnforcement);
+    }
+  }
   void SetUp() override {
     if (GetParam() ==
         CTEmergencyDisableSwitchKind::kComponentUpdaterDrivenSwitch) {
       state_.SetCTEmergencyDisabled(true);
-      scoped_feature_list_.Init();
     } else {
       ASSERT_EQ(GetParam(), CTEmergencyDisableSwitchKind::kFinchDrivenFeature);
-      scoped_feature_list_.InitAndDisableFeature(
-          TransportSecurityState::kCertificateTransparencyEnforcement);
     }
   }
 
@@ -4174,10 +4180,9 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
 class TransportSecurityStatePinningKillswitchTest
     : public TransportSecurityStateTest {
  public:
-  void SetUp() override {
+  TransportSecurityStatePinningKillswitchTest() {
     scoped_feature_list_.InitAndDisableFeature(
         features::kStaticKeyPinningEnforcement);
-    TransportSecurityStateTest::SetUp();
   }
 
  protected:
