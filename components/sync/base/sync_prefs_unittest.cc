@@ -244,6 +244,26 @@ TEST_F(SyncPrefsTest, GetSelectedOsTypesNotAllOsTypesSelected) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(SyncPrefsTest, ShouldSetAppsSyncEnabledByOsToFalseByDefault) {
+  EXPECT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
+}
+
+TEST_F(SyncPrefsTest, ShouldChangeAppsSyncEnabledByOsAndNotifyObservers) {
+  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+  sync_prefs_->AddSyncPrefObserver(&mock_sync_pref_observer);
+
+  EXPECT_CALL(mock_sync_pref_observer, OnPreferredDataTypesPrefChange());
+  sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/true);
+  EXPECT_TRUE(sync_prefs_->IsAppsSyncEnabledByOs());
+
+  testing::Mock::VerifyAndClearExpectations(&mock_sync_pref_observer);
+  EXPECT_CALL(mock_sync_pref_observer, OnPreferredDataTypesPrefChange());
+  sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/false);
+  EXPECT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 TEST_F(SyncPrefsTest, PassphrasePromptMutedProductVersion) {
   EXPECT_EQ(0, sync_prefs_->GetPassphrasePromptMutedProductVersion());
 

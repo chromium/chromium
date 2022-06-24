@@ -84,6 +84,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // The pref for Wi-Fi configurations is registered in the loop above.
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  registry->RegisterBooleanPref(prefs::kSyncAppsEnabledByOs, false);
+#endif
+
   // The encryption bootstrap token represents a user-entered passphrase.
   registry->RegisterStringPref(prefs::kSyncEncryptionBootstrapToken,
                                std::string());
@@ -243,6 +247,21 @@ const char* SyncPrefs::GetPrefNameForOsType(UserSelectableOsType type) {
   return nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool SyncPrefs::IsAppsSyncEnabledByOs() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetBoolean(prefs::kSyncAppsEnabledByOs);
+}
+
+void SyncPrefs::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->SetBoolean(prefs::kSyncAppsEnabledByOs, apps_sync_enabled);
+  for (SyncPrefObserver& observer : sync_pref_observers_) {
+    observer.OnPreferredDataTypesPrefChange();
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool SyncPrefs::IsManaged() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

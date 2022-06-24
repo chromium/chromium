@@ -96,6 +96,11 @@ class SyncPrefs {
   static const char* GetPrefNameForOsType(UserSelectableOsType type);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsAppsSyncEnabledByOs() const;
+  void SetAppsSyncEnabledByOs(bool apps_sync_enabled);
+#endif
+
   // Whether Sync is forced off by enterprise policy. Note that this only covers
   // one out of two types of policy, "browser" policy. The second kind, "cloud"
   // policy, is handled directly in SyncServiceImpl.
