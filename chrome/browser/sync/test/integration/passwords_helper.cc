@@ -402,3 +402,64 @@ bool PasswordFormsChecker::IsExitConditionSatisfiedImpl(std::ostream* os) {
   }
   return is_matching;
 }
+
+ServerPasswordsEqualityChecker::ServerPasswordsEqualityChecker(
+    const std::vector<password_manager::PasswordForm>& expected_forms,
+    const std::string& encryption_passphrase,
+    const syncer::KeyDerivationParams& key_derivation_params)
+    : cryptographer_(syncer::CryptographerImpl::FromSingleKeyForTesting(
+          encryption_passphrase,
+          key_derivation_params)) {
+  for (const password_manager::PasswordForm& password_form : expected_forms) {
+    expected_forms_.push_back(
+        std::make_unique<password_manager::PasswordForm>(password_form));
+    // |in_store| field is specific for the clients, clean it up, since server
+    // specifics don't have it.
+    expected_forms_.back()->in_store =
+        password_manager::PasswordForm::Store::kNotSet;
+  }
+}
+
+ServerPasswordsEqualityChecker::~ServerPasswordsEqualityChecker() = default;
+
+bool ServerPasswordsEqualityChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting for server passwords to match the expected value.";
+
+  std::vector<sync_pb::SyncEntity> entities =
+      fake_server()->GetSyncEntitiesByModelType(syncer::PASSWORDS);
+  if (expected_forms_.size() != entities.size()) {
+    *os << "Server doesn't not contain same amount of passwords ("
+        << entities.size() << ") as expected (" << expected_forms_.size()
+        << ").";
+    return false;
+  }
+
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      server_password_forms;
+  for (const auto& entity : entities) {
+    if (!entity.specifics().has_password()) {
+      *os << "Server stores corrupted password.";
+      return false;
+    }
+
+    sync_pb::PasswordSpecificsData decrypted;
+    if (!cryptographer_->Decrypt(entity.specifics().password().encrypted(),
+                                 &decrypted)) {
+      *os << "Can't decrypt server password.";
+      return false;
+    }
+    server_password_forms.push_back(
+        std::make_unique<password_manager::PasswordForm>(
+            password_manager::PasswordFromSpecifics(decrypted)));
+  }
+
+  std::ostringstream mismatch_details_stream;
+  bool is_matching = password_manager::ContainsEqualPasswordFormsUnordered(
+      expected_forms_, server_password_forms, &mismatch_details_stream);
+  if (!is_matching) {
+    *os << "Server does not contain the same Password forms as expected. "
+        << mismatch_details_stream.str();
+  }
+  return is_matching;
+}

@@ -523,6 +523,12 @@ void FakeServer::ClearServerData() {
            /*committed_model_types=*/{syncer::NIGORI});
 }
 
+void FakeServer::DeleteAllEntitiesForModelType(ModelType model_type) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  loopback_server_->DeleteAllEntitiesForModelType(model_type);
+}
+
 void FakeServer::SetHttpError(net::HttpStatusCode http_status_code) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_GT(http_status_code, 0);

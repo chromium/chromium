@@ -10,12 +10,14 @@
 #include <vector>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace syncer {
+class Cryptographer;
 class KeyDerivationParams;
 }
 
@@ -165,6 +167,26 @@ class PasswordFormsChecker : public SingleClientStatusChangeChecker {
   std::vector<std::unique_ptr<password_manager::PasswordForm>> expected_forms_;
   bool in_progress_;
   bool needs_recheck_;
+};
+
+// Checker to block until server has the given password forms encrypted with
+// given encryption params.
+class ServerPasswordsEqualityChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  ServerPasswordsEqualityChecker(
+      const std::vector<password_manager::PasswordForm>& expected_forms,
+      const std::string& encryption_passphrase,
+      const syncer::KeyDerivationParams& key_derivation_params);
+  ~ServerPasswordsEqualityChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  const std::unique_ptr<syncer::Cryptographer> cryptographer_;
+
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> expected_forms_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_PASSWORDS_HELPER_H_

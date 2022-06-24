@@ -170,6 +170,10 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // store birthday.
   void ClearServerData();
 
+  // Deletes all |model_type| entities from the server without creating
+  // tombstones.
+  void DeleteAllEntitiesForModelType(syncer::ModelType model_type);
+
   // Causes future calls to HandleCommand() fail with the given response code.
   void SetHttpError(net::HttpStatusCode http_status_code);
 

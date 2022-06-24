@@ -123,6 +123,8 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
 
   void ClearServerData();
 
+  void DeleteAllEntitiesForModelType(ModelType model_type);
+
   // Creates and saves a permanent folder for Bookmarks (e.g., Bookmark Bar).
   bool CreatePermanentBookmarkFolder(const std::string& server_tag,
                                      const std::string& name);

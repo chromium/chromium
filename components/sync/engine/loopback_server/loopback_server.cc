@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/guid.h"
@@ -698,6 +699,15 @@ void LoopbackServer::ClearServerData() {
   store_birthday_ = base::Time::Now().ToJavaTime();
   base::DeleteFile(persistent_file_);
   Init();
+}
+
+void LoopbackServer::DeleteAllEntitiesForModelType(ModelType model_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto should_delete_entry = [model_type](const auto& id_and_entity) {
+    return id_and_entity.second->GetModelType() == model_type;
+  };
+  base::EraseIf(entities_, should_delete_entry);
+  ScheduleSaveStateToFile();
 }
 
 std::string LoopbackServer::GetStoreBirthday() const {
