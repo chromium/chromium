@@ -1468,11 +1468,6 @@
     "expiry_milestone": 104
   },
   {
-    "name": "enable-accessibility-os-settings-reorganization",
-    "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-accessibility-os-settings-visibility",
     "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 110

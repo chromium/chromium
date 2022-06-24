@@ -145,13 +145,6 @@ bool IsEnhancedNetworkVoicesEnabled() {
   return base::FeatureList::IsEnabled(::features::kEnhancedNetworkVoices);
 }
 
-const base::Feature kAccessibilityOSSettingsReorganization{
-    "AccessibilityOSSettingsReorganization", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsAccessibilityOSSettingsReorganizationEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityOSSettingsReorganization);
-}
 const base::Feature kAccessibilityOSSettingsVisibility{
     "AccessibilityOSSettingsVisibility", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -159,7 +152,6 @@ bool IsAccessibilityOSSettingsVisibilityEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityOSSettingsVisibility);
 }
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::Feature kAugmentExistingImageLabels{

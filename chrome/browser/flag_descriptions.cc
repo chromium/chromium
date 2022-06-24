@@ -977,12 +977,6 @@ const char kEnhancedNetworkVoicesDescription[] =
     "This option enables high-quality, network-based voices in "
     "Select-to-speak.";
 
-const char kAccessibilityOSSettingsReorganizationName[] =
-    "Accessibility OS Settings Reorganization";
-const char kAccessibilityOSSettingsReorganizationDescription[] =
-    "This option enables improvements in the organization of Accessibility OS "
-    "Settings.";
-
 const char kAccessibilityOSSettingsVisibilityName[] =
     "Accessibility OS Settings Visibility";
 const char kAccessibilityOSSettingsVisibilityDescription[] =
