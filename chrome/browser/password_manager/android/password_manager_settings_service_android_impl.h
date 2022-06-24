@@ -91,7 +91,7 @@ class PasswordManagerSettingsServiceAndroidImpl
 
   // Sync service used to check whether the user has chosen to sync passwords
   // or settings.
-  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
+  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
   // Bridge used by the service to talk to the Java side.
   std::unique_ptr<password_manager::PasswordSettingsUpdaterAndroidBridge>

@@ -73,7 +73,7 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
     const raw_ptr<PrefService> prefs_ = nullptr;
 
     // Set when sync_service is already initialized and can be interacted with.
-    raw_ptr<syncer::SyncService> sync_service_ = nullptr;
+    raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
     // Cached value of the configured password sync setting. Updated when the
     // user is changing sync settings, and may from

@@ -50,7 +50,7 @@ bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                       const PrefService& prefs);
 
 // If syncing passwords is enabled in settings.
-bool IsPasswordSyncEnabled(syncer::SyncService* sync_service);
+bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service);
 
 }  // namespace sync_util
 

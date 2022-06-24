@@ -100,7 +100,7 @@ bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
   return false;
 }
 
-bool IsPasswordSyncEnabled(syncer::SyncService* sync_service) {
+bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
   return sync_service && sync_service->IsSyncFeatureEnabled() &&
          sync_service->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kPasswords);

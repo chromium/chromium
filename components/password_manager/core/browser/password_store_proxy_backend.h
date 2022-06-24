@@ -119,7 +119,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   const raw_ptr<PasswordStoreBackend> android_backend_;
   raw_ptr<PrefService> const prefs_ = nullptr;
   const raw_ptr<SyncDelegate> sync_delegate_;
-  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
+  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
   base::WeakPtrFactory<PasswordStoreProxyBackend> weak_ptr_factory_{this};
 };
