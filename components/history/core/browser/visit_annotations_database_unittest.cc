@@ -9,10 +9,10 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/browser/visit_database.h"
+#include "components/history/core/test/visit_annotations_test_utils.h"
 #include "sql/database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "visit_annotations_test_utils.h"
 
 namespace history {
 

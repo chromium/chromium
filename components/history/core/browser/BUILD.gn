@@ -233,8 +233,6 @@ source_set("unit_tests") {
     "url_row_unittest.cc",
     "url_utils_unittest.cc",
     "visit_annotations_database_unittest.cc",
-    "visit_annotations_test_utils.cc",
-    "visit_annotations_test_utils.h",
     "visit_database_unittest.cc",
     "visit_tracker_unittest.cc",
     "web_history_service_unittest.cc",
