@@ -8509,6 +8509,27 @@
             ]
         }
     ],
+    "UseHtmlAttributeNameLookup": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "UseHtmlAttributeNameLookup",
+                    "enable_features": [
+                        "UseHtmlAttributeNameLookup"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseNativeThreadPool": [
         {
             "platforms": [

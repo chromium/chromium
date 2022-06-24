@@ -6,10 +6,7 @@
 
 namespace blink {
 
-QualifiedName AtomicHTMLToken::NameForAttribute(
-    const HTMLToken::Attribute& attribute) const {
-  return QualifiedName(g_null_atom, attribute.GetName(), g_null_atom);
-}
+bool g_use_html_attribute_name_lookup = true;
 
 bool AtomicHTMLToken::UsesName() const {
   return type_ == HTMLToken::kStartTag || type_ == HTMLToken::kEndTag ||

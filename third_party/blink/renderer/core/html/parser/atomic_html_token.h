@@ -38,7 +38,15 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
+// TODO(https://crbug.com/1338583): enable on android.
+#if !BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/renderer/core/html_element_attribute_name_lookup_trie.h"  // nogncheck
+#endif
+
 namespace blink {
+
+// Controls whether attribute name lookup uses LookupHTMLAttributeName().
+CORE_EXPORT extern bool g_use_html_attribute_name_lookup;
 
 class CORE_EXPORT AtomicHTMLToken {
   STACK_ALLOCATED();
@@ -159,7 +167,6 @@ class CORE_EXPORT AtomicHTMLToken {
   HTMLToken::TokenType type_;
 
   void InitializeAttributes(const HTMLToken::AttributeList& attributes);
-  QualifiedName NameForAttribute(const HTMLToken::Attribute&) const;
 
   bool UsesName() const;
 
@@ -193,7 +200,8 @@ inline void AtomicHTMLToken::InitializeAttributes(
   HashSet<AtomicString> added_attributes;
   added_attributes.ReserveCapacityForSize(size);
 
-  attributes_.clear();
+  // This is only called once, so `attributes_` should be empty.
+  DCHECK(attributes_.IsEmpty());
   attributes_.ReserveInitialCapacity(size);
   for (const auto& attribute : attributes) {
     if (attribute.NameIsEmpty())
@@ -204,19 +212,30 @@ inline void AtomicHTMLToken::InitializeAttributes(
     attribute.ValueRange().CheckValid();
 #endif
 
+    QualifiedName name = g_null_name;
+#if !BUILDFLAG(IS_ANDROID)
+    if (g_use_html_attribute_name_lookup) {
+      name = LookupHTMLAttributeName(attribute.NameBuffer().data(),
+                                     attribute.NameBuffer().size());
+    }
+#endif
+    if (name == g_null_name) {
+      name = QualifiedName(g_null_atom, attribute.GetName(), g_null_atom);
+    }
+
+    if (!added_attributes.insert(name.LocalName()).is_new_entry) {
+      duplicate_attribute_ = true;
+      continue;
+    }
+
     // The string pointer in |value| is null for attributes with no values, but
     // the null atom is used to represent absence of attributes; attributes with
     // no values have the value set to an empty atom instead.
-    QualifiedName name = NameForAttribute(attribute);
-    if (added_attributes.insert(name.LocalName()).is_new_entry) {
-      AtomicString value(attribute.GetValue());
-      if (value.IsNull()) {
-        value = g_empty_atom;
-      }
-      attributes_.UncheckedAppend(Attribute(std::move(name), std::move(value)));
-    } else {
-      duplicate_attribute_ = true;
+    AtomicString value(attribute.GetValue());
+    if (value.IsNull()) {
+      value = g_empty_atom;
     }
+    attributes_.UncheckedAppend(Attribute(std::move(name), std::move(value)));
   }
 }
 

@@ -117,6 +117,8 @@ class HTMLToken {
     AtomicString GetName() const { return name_.AsAtomicString(); }
     AtomicString GetValue() const { return value_.AsAtomicString(); }
 
+    const UCharLiteralBuffer<32>& NameBuffer() const { return name_; }
+
     String NameAttemptStaticStringCreation() const {
       return AttemptStaticStringCreation(name_, kLikely8Bit);
     }

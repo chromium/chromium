@@ -36,7 +36,7 @@ import template_expander
 
 
 class ElementLookupTrieWriter(json5_generator.Writer):
-    # FIXME: Inherit all these from somewhere.
+    # TODO(https://crbug.com/1338945): Inherit all these from somewhere.
     default_parameters = {
         'JSInterfaceName': {},
         'constructorNeedsCreateElementFlags': {},

@@ -1079,6 +1079,32 @@ blink_python_runner("make_core_generated_html_element_lookup_trie") {
   deps = make_core_generated_deps
 }
 
+blink_python_runner("make_core_generated_html_attribute_name_lookup_trie") {
+  visibility = []  # Allow re-assignment of list.
+  visibility = [ ":*" ]
+  script = "../build/scripts/make_element_attribute_name_lookup_trie.py"
+
+  input_file = "html/html_attribute_names.json5"
+  inputs =
+      make_trie_helpers_files + [
+        input_file,
+        "../build/scripts/templates/element_attribute_name_lookup_trie.cc.tmpl",
+        "../build/scripts/templates/element_attribute_name_lookup_trie.h.tmpl",
+      ]
+  outputs = [
+    "$blink_core_output_dir/html_element_attribute_name_lookup_trie.cc",
+    "$blink_core_output_dir/html_element_attribute_name_lookup_trie.h",
+  ]
+
+  args = [
+    rebase_path(input_file, root_build_dir),
+    "--output_dir",
+    rel_blink_core_gen_dir,
+  ]
+
+  deps = make_core_generated_deps
+}
+
 blink_python_runner("make_core_generated_web_origin_trials") {
   script = "../build/scripts/make_web_origin_trials.py"
 
@@ -1140,6 +1166,11 @@ targets_generating_sources = [
   ":make_core_generated_xml_names",
   ":make_core_generated_xml_ns_names",
 ]
+
+if (!is_android) {
+  targets_generating_sources +=
+      [ ":make_core_generated_html_attribute_name_lookup_trie" ]
+}
 
 group("all_generators") {
   public_deps = targets_generating_sources
