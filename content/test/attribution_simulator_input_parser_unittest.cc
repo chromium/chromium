@@ -863,6 +863,22 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["aggregation_keys"]["a"]: must be a uint128 formatted as a base-16 string)",
+        R"json({"sources": [{
+          "timestamp": "1643235574000",
+          "source_type": "event",
+          "reporting_origin": "https://a.r.test",
+          "source_origin": "https://a.s.test",
+          "Attribution-Reporting-Register-Source": {
+            "source_event_id": "123",
+            "destination": "https://a.d.test",
+            "aggregation_keys": {
+              "a": "123"
+            }
+          }
+        }]})json",
+    },
+    {
         R"(["sources"]: must be a list)",
         R"json({"sources": ""})json",
     },

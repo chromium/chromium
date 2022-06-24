@@ -17,6 +17,7 @@
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -581,8 +582,11 @@ class AttributionSimulatorInputParser {
     const std::string* s = key_value.GetIfString();
 
     absl::uint128 value = 0;
-    if (!s || !base::HexStringToUInt128(*s, &value))
+    if (!s ||
+        !base::StartsWith(*s, "0x", base::CompareCase::INSENSITIVE_ASCII) ||
+        !base::HexStringToUInt128(*s, &value)) {
       *Error() << "must be a uint128 formatted as a base-16 string";
+    }
 
     return value;
   }
