@@ -14,7 +14,7 @@ DictationEditingUtilTest = class extends DictationE2ETestBase {
   }
 };
 
-SYNC_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
+AX_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   let value;
   let caretIndex;
   let deletePhrase;
@@ -131,7 +131,7 @@ SYNC_TEST_F('DictationEditingUtilTest', 'ReplacePhrase', function() {
   assertEquals('', f());
 });
 
-SYNC_TEST_F('DictationEditingUtilTest', 'InsertBefore', function() {
+AX_TEST_F('DictationEditingUtilTest', 'InsertBefore', function() {
   let value;
   let caretIndex;
   let insertPhrase;
@@ -161,7 +161,7 @@ SYNC_TEST_F('DictationEditingUtilTest', 'InsertBefore', function() {
   assertEquals('This is a test', f());
 });
 
-SYNC_TEST_F('DictationEditingUtilTest', 'SelectBetween', function() {
+AX_TEST_F('DictationEditingUtilTest', 'SelectBetween', function() {
   let value;
   let caretIndex;
   let startPhrase;
@@ -242,7 +242,7 @@ SYNC_TEST_F('DictationEditingUtilTest', 'SelectBetween', function() {
   assertEquals(9, selection.end);
 });
 
-SYNC_TEST_F('DictationEditingUtilTest', 'NavNextSent', function() {
+AX_TEST_F('DictationEditingUtilTest', 'NavNextSent', function() {
   let value;
   let caretIndex;
   const f = () => EditingUtil.navNextSent(value, caretIndex);
@@ -276,7 +276,7 @@ SYNC_TEST_F('DictationEditingUtilTest', 'NavNextSent', function() {
   assertEquals(0, f());
 });
 
-SYNC_TEST_F('DictationEditingUtilTest', 'NavPrevSent', function() {
+AX_TEST_F('DictationEditingUtilTest', 'NavPrevSent', function() {
   let value;
   let caretIndex;
   const f = () => EditingUtil.navPrevSent(value, caretIndex);
@@ -310,7 +310,7 @@ SYNC_TEST_F('DictationEditingUtilTest', 'NavPrevSent', function() {
   assertEquals(0, f());
 });
 
-SYNC_TEST_F('DictationEditingUtilTest', 'AdjustCommitText', function() {
+AX_TEST_F('DictationEditingUtilTest', 'AdjustCommitText', function() {
   let value;
   let caretIndex;
   let commitText;

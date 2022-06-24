@@ -18,7 +18,7 @@ DictationMacrosTest = class extends DictationE2ETestBase {
   }
 };
 
-SYNC_TEST_F('DictationMacrosTest', 'ValidInputTextViewMacro', async function() {
+AX_TEST_F('DictationMacrosTest', 'ValidInputTextViewMacro', async function() {
   // Toggle Dictation on so that the Macro will be runnable.
   this.toggleDictationOn();
   const macro = await this.getInputTextStrategy().parse('Hello world');
@@ -33,21 +33,20 @@ SYNC_TEST_F('DictationMacrosTest', 'ValidInputTextViewMacro', async function() {
   this.assertCommittedText('Hello world');
 });
 
-SYNC_TEST_F(
-    'DictationMacrosTest', 'InvalidInputTextViewMacro', async function() {
-      // Do not toggle Dictation. The resulting macro will not be able to run.
-      const macro = await this.getInputTextStrategy().parse('Hello world');
-      assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
-      const checkContextResult = macro.checkContext();
-      assertFalse(checkContextResult.canTryAction);
-      assertEquals(undefined, checkContextResult.willImmediatelyDisambiguate);
-      assertEquals(MacroError.FAILED_ACTUATION, checkContextResult.error);
-      const runMacroResult = macro.runMacro();
-      assertFalse(runMacroResult.isSuccess);
-      assertEquals(MacroError.FAILED_ACTUATION, runMacroResult.error);
-    });
+AX_TEST_F('DictationMacrosTest', 'InvalidInputTextViewMacro', async function() {
+  // Do not toggle Dictation. The resulting macro will not be able to run.
+  const macro = await this.getInputTextStrategy().parse('Hello world');
+  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
+  const checkContextResult = macro.checkContext();
+  assertFalse(checkContextResult.canTryAction);
+  assertEquals(undefined, checkContextResult.willImmediatelyDisambiguate);
+  assertEquals(MacroError.FAILED_ACTUATION, checkContextResult.error);
+  const runMacroResult = macro.runMacro();
+  assertFalse(runMacroResult.isSuccess);
+  assertEquals(MacroError.FAILED_ACTUATION, runMacroResult.error);
+});
 
-SYNC_TEST_F('DictationMacrosTest', 'RepeatableKeyPressMacro', async function() {
+AX_TEST_F('DictationMacrosTest', 'RepeatableKeyPressMacro', async function() {
   // DELETE_PREV_CHAR is one of many RepeatableKeyPressMacros.
   const macro = await this.getSimpleParseStrategy().parse('delete');
   assertEquals('DELETE_PREV_CHAR', macro.getMacroNameString());
@@ -60,7 +59,7 @@ SYNC_TEST_F('DictationMacrosTest', 'RepeatableKeyPressMacro', async function() {
   assertEquals(undefined, runMacroResult.error);
 });
 
-SYNC_TEST_F('DictationMacrosTest', 'ListCommandsMacro', async function() {
+AX_TEST_F('DictationMacrosTest', 'ListCommandsMacro', async function() {
   this.toggleDictationOn();
   const macro = await this.getSimpleParseStrategy().parse('help');
   assertEquals('LIST_COMMANDS', macro.getMacroNameString());
@@ -73,7 +72,7 @@ SYNC_TEST_F('DictationMacrosTest', 'ListCommandsMacro', async function() {
   assertEquals(undefined, runMacroResult.error);
 });
 
-SYNC_TEST_F('DictationMacrosTest', 'StopListeningMacro', async function() {
+AX_TEST_F('DictationMacrosTest', 'StopListeningMacro', async function() {
   this.toggleDictationOn();
   assertTrue(this.getDictationActive());
   assertTrue(this.getSpeechRecognitionActive());
