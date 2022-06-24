@@ -364,7 +364,7 @@ void AppsGridView::UpdateAppListConfig(const AppListConfig* app_list_config) {
 
   // The app list item view icon sizes depend on the app list config, so they
   // have to be refreshed.
-  for (size_t i = 0; i < view_model_.view_size(); ++i)
+  for (int i = 0; i < view_model_.view_size(); ++i)
     view_model_.view_at(i)->UpdateAppListConfig(app_list_config);
 
   if (current_ghost_view_)
@@ -413,7 +413,7 @@ void AppsGridView::ResetForShowApps() {
 
   // The number of non-page-break-items should be the same as item views.
   if (item_list_) {
-    size_t item_count = 0;
+    int item_count = 0;
     for (size_t i = 0; i < item_list_->item_count(); ++i) {
       if (!item_list_->item_at(i)->is_page_break())
         ++item_count;
@@ -758,7 +758,7 @@ void AppsGridView::EndDrag(bool cancel) {
   if (!cancel) {
     // Select the page where dragged item is dropped. Avoid doing so when the
     // dragged item ends up in a folder.
-    const size_t model_index = GetModelIndexOfItem(drag_item);
+    const int model_index = GetModelIndexOfItem(drag_item);
     if (model_index < view_model_.view_size())
       EnsureViewVisible(view_structure_.GetIndexFromModelIndex(model_index));
   }
@@ -781,7 +781,7 @@ AppListItemView* AppsGridView::GetItemViewForItem(const std::string& item_id) {
 }
 
 AppListItemView* AppsGridView::GetItemViewAt(int index) const {
-  if (index < 0 || static_cast<size_t>(index) >= view_model_.view_size())
+  if (index < 0 || index >= view_model_.view_size())
     return nullptr;
   return view_model_.view_at(index);
 }
@@ -863,7 +863,7 @@ void AppsGridView::FolderHidden(const std::string& item_id) {
   // the folder location change should be animated).
   AppListItemView* item_view = nullptr;
   int model_index = -1;
-  for (size_t i = 0; i < view_model_.view_size(); ++i) {
+  for (int i = 0; i < view_model_.view_size(); ++i) {
     AppListItemView* view = view_model_.view_at(i);
     if (view == drag_view_)
       continue;
@@ -1052,7 +1052,7 @@ void AppsGridView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   if (!details.is_add && details.parent == items_container_) {
     // The view being delete should not have reference in |view_model_|.
-    CHECK(!view_model_.GetIndexOfView(details.child).has_value());
+    CHECK_EQ(-1, view_model_.GetIndexOfView(details.child));
 
     if (selected_view_ == details.child)
       selected_view_ = nullptr;
@@ -1142,15 +1142,14 @@ void AppsGridView::OnSwapAnimationDone(views::View* placeholder,
                                        AppListItemView* app_view) {
   delete placeholder;
 
-  if (view_model_.GetIndexOfView(app_view).has_value() &&
-      !ItemViewsRequireLayers())
+  if (view_model_.GetIndexOfView(app_view) != -1 && !ItemViewsRequireLayers())
     app_view->DestroyLayer();
 
   UpdatePulsingBlockViews();
 }
 
 AppListItemView* AppsGridView::MaybeSwapPlaceholderAsset(size_t index) {
-  size_t model_index = GetTargetModelIndexFromItemIndex(index);
+  int model_index = GetTargetModelIndexFromItemIndex(index);
   AppListItemView* view = items_container_->AddChildViewAt(
       CreateViewForItemAtIndex(index), model_index);
   view_model_.Add(view, model_index);
@@ -1201,9 +1200,9 @@ void AppsGridView::UpdatePulsingBlockViews() {
     if (existing_items > TilesPerPage(0))
       existing_items -= TilesPerPage(0);
   }
-  const size_t available_slots =
+  const int available_slots =
       tiles_per_page - (existing_items % tiles_per_page);
-  const size_t desired =
+  const int desired =
       model_ && model_->status() == AppListModelStatus::kStatusSyncing
           ? available_slots
           : 0;
@@ -1260,11 +1259,11 @@ void AppsGridView::SetSelectedItemByIndex(const GridIndex& index) {
 }
 
 GridIndex AppsGridView::GetIndexOfView(const AppListItemView* view) const {
-  const auto model_index = view_model_.GetIndexOfView(view);
-  if (!model_index.has_value())
+  const int model_index = view_model_.GetIndexOfView(view);
+  if (model_index == -1)
     return GridIndex();
 
-  return view_structure_.GetIndexFromModelIndex(model_index.value());
+  return view_structure_.GetIndexFromModelIndex(model_index);
 }
 
 AppListItemView* AppsGridView::GetViewAtIndex(const GridIndex& index) const {
@@ -1305,7 +1304,7 @@ void AppsGridView::SetMaxColumnsInternal(int max_cols) {
 }
 
 void AppsGridView::SetIdealBoundsForViewToGridIndex(
-    size_t view_index_in_model,
+    int view_index_in_model,
     const GridIndex& view_grid_index) {
   gfx::Rect tile_bounds = GetExpectedTileBounds(view_grid_index);
   tile_bounds.Offset(CalculateTransitionOffset(view_grid_index.page));
@@ -1333,10 +1332,10 @@ void AppsGridView::CalculateIdealBounds() {
     reserved_slots.insert(open_folder_info_->grid_index);
   }
 
-  const size_t total_views =
+  const int total_views =
       view_model_.view_size() + pulsing_blocks_model_.view_size();
   int slot_index = 0;
-  for (size_t i = 0; i < total_views; ++i) {
+  for (int i = 0; i < total_views; ++i) {
     // NOTE: Because of pulsing blocks, `i` can count up to a value higher than
     // the view model size. So verify that `i` is less than the view model size
     // before fetching at index `i` from the view model.
@@ -1418,7 +1417,7 @@ void AppsGridView::CalculateIdealBoundsForPageStructureWithPartialPages() {
 
   // All pulsing blocks come after item views.
   GridIndex pulsing_block_index = copied_view_structure.GetLastTargetIndex();
-  for (size_t i = 0; i < pulsing_blocks_model().view_size(); ++i) {
+  for (int i = 0; i < pulsing_blocks_model().view_size(); ++i) {
     if (pulsing_block_index.slot == TilesPerPage(pulsing_block_index.page)) {
       ++pulsing_block_index.page;
       pulsing_block_index.slot = 0;
@@ -1437,7 +1436,7 @@ void AppsGridView::AnimateToIdealBounds() {
   visible_bounds.set_origin(visible_origin);
 
   CalculateIdealBounds();
-  for (size_t i = 0; i < view_model_.view_size(); ++i) {
+  for (int i = 0; i < view_model_.view_size(); ++i) {
     AppListItemView* view = GetItemViewAt(i);
     const gfx::Rect& target = view_model_.ideal_bounds(i);
     const gfx::Rect& current = view->bounds();
@@ -1570,7 +1569,7 @@ void AppsGridView::AnimateDragIconToTargetPosition(
   if (target_folder_id.empty()) {
     // Find the view for drag item, and use its ideal bounds to calculate target
     // drop bounds.
-    for (size_t i = 0; i < view_model_.view_size(); ++i) {
+    for (int i = 0; i < view_model_.view_size(); ++i) {
       if (view_model_.view_at(i)->item() != drag_item)
         continue;
 
@@ -1769,8 +1768,8 @@ bool AppsGridView::IsDraggingForReparentInHiddenGridView() const {
 gfx::Rect AppsGridView::GetTargetIconRectInFolder(
     AppListItem* drag_item,
     AppListItemView* folder_item_view) {
-  const gfx::Rect view_ideal_bounds = view_model_.ideal_bounds(
-      view_model_.GetIndexOfView(folder_item_view).value());
+  const gfx::Rect view_ideal_bounds =
+      view_model_.ideal_bounds(view_model_.GetIndexOfView(folder_item_view));
   const gfx::Rect icon_ideal_bounds =
       folder_item_view->GetIconBoundsForTargetViewBounds(
           app_list_config_, view_ideal_bounds,
@@ -1946,7 +1945,7 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
     bool cancel_drag,
     std::unique_ptr<AppDragIconProxy> drag_icon_proxy) {
   DCHECK(!IsInFolder());
-  DCHECK(view_model_.GetIndexOfView(original_parent_item_view).has_value());
+  DCHECK_NE(-1, view_model_.GetIndexOfView(original_parent_item_view));
 
   // EndDrag was called before if |drag_view_| is nullptr.
   if (!drag_item_)
@@ -2040,7 +2039,7 @@ void AppsGridView::HandleKeyboardReparent(
   DCHECK(key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT ||
          key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN);
   DCHECK(!folder_delegate_);
-  DCHECK(view_model_.GetIndexOfView(original_parent_item_view).has_value());
+  DCHECK_NE(-1, view_model_.GetIndexOfView(original_parent_item_view));
 
   // Set |original_parent_item_view| selected so |target_index| will be
   // computed relative to the open folder.
@@ -2191,8 +2190,8 @@ void AppsGridView::CancelAnimationsForTest() {
   bounds_animator_->Cancel();
   drag_icon_proxy_.reset();
 
-  const size_t total_views = view_model_.view_size();
-  for (size_t i = 0; i < total_views; ++i) {
+  const int total_views = view_model_.view_size();
+  for (int i = 0; i < total_views; ++i) {
     if (view_model_.view_at(i)->layer())
       view_model_.view_at(i)->layer()->CompleteAllAnimations();
   }
@@ -2457,10 +2456,10 @@ void AppsGridView::CancelContextMenusOnCurrentPage() {
   GridIndex start_index(GetSelectedPage(), 0);
   if (!IsValidIndex(start_index))
     return;
-  size_t start = view_structure_.GetModelIndexFromIndex(start_index);
-  size_t end =
+  int start = view_structure_.GetModelIndexFromIndex(start_index);
+  int end =
       std::min(view_model_.view_size(), start + TilesPerPage(start_index.page));
-  for (size_t i = start; i < end; ++i)
+  for (int i = start; i < end; ++i)
     GetItemViewAt(i)->CancelContextMenu();
 }
 
@@ -2762,10 +2761,8 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardMove(
     const ui::KeyboardCode backward =
         base::i18n::IsRTL() ? ui::VKEY_RIGHT : ui::VKEY_LEFT;
 
-    size_t target_model_index =
-        view_model_.GetIndexOfView(selected_view_).value();
-    if (target_model_index > 0 || key_code != backward)
-      target_model_index += (key_code == backward) ? -1 : 1;
+    const int target_model_index = view_model_.GetIndexOfView(selected_view_) +
+                                   ((key_code == backward) ? -1 : 1);
 
     // A forward move on the last item in |view_model_| should result in page
     // creation.
@@ -2782,7 +2779,8 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardMove(
     }
 
     target_index = GetIndexOfView(
-        static_cast<const AppListItemView*>(GetItemViewAt(target_model_index)));
+        static_cast<const AppListItemView*>(GetItemViewAt(std::min(
+            std::max(0, target_model_index), view_model_.view_size() - 1))));
     if (view_structure_.mode() == PagedViewStructure::Mode::kPartialPages &&
         key_code == backward && target_index.page < source_index.page &&
         !view_structure_.IsFullPage(target_index.page)) {
@@ -2942,7 +2940,7 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
 bool AppsGridView::IsValidIndex(const GridIndex& index) const {
   return index.page >= 0 && index.page < GetTotalPages() && index.slot >= 0 &&
          index.slot < TilesPerPage(index.page) &&
-         static_cast<size_t>(view_structure_.GetModelIndexFromIndex(index)) <
+         view_structure_.GetModelIndexFromIndex(index) <
              view_model_.view_size();
 }
 
@@ -2984,7 +2982,7 @@ int AppsGridView::GetNumberOfItemsOnPage(int page) const {
     return TilesPerPage(page);
 
   // We are on the last page, so calculate the number of items on the page.
-  size_t item_count = view_model_.view_size();
+  int item_count = view_model_.view_size();
   int current_page = 0;
   while (current_page < GetTotalPages() - 1) {
     item_count -= TilesPerPage(current_page);
@@ -3107,7 +3105,7 @@ void AppsGridView::BeginHideCurrentGhostImageView() {
 }
 
 void AppsGridView::PrepareItemsForBoundsAnimation() {
-  for (size_t i = 0; i < view_model_.view_size(); ++i)
+  for (int i = 0; i < view_model_.view_size(); ++i)
     view_model_.view_at(i)->EnsureLayer();
 }
 
@@ -3167,7 +3165,7 @@ void AppsGridView::OnFadeOutAnimationEnded(ReorderAnimationCallback callback,
     // painting cost incurred by the bounds changes because of reorder. The
     // fade in animation should be responsible for reshowing the item views that
     // are within the visible view port after reorder.
-    for (size_t view_index = 0; view_index < view_model_.view_size();
+    for (int view_index = 0; view_index < view_model_.view_size();
          ++view_index) {
       view_model_.view_at(view_index)->SetVisible(false);
     }
@@ -3210,8 +3208,7 @@ void AppsGridView::OnFadeInAnimationEnded(ReorderAnimationCallback callback,
     layer()->SetOpacity(1.f);
 
   // Ensure that all item views are visible after fade in animation completes.
-  for (size_t view_index = 0; view_index < view_model_.view_size();
-       ++view_index) {
+  for (int view_index = 0; view_index < view_model_.view_size(); ++view_index) {
     view_model_.view_at(view_index)->SetVisible(true);
   }
 

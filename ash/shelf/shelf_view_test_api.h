@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/shelf_item.h"
 #include "base/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 
 namespace base {
@@ -42,7 +41,7 @@ class ShelfViewTestAPI {
   ~ShelfViewTestAPI();
 
   // Number of icons displayed.
-  size_t GetButtonCount();
+  int GetButtonCount();
 
   // Retrieve the button at |index|, doesn't support the home button,
   // because the home button is not a ShelfAppButton.
@@ -123,7 +122,7 @@ class ShelfViewTestAPI {
   void SetShelfContextMenuCallback(base::RepeatingClosure closure);
 
   // Returns |separator_index_|.
-  absl::optional<size_t> GetSeparatorIndex() const;
+  int GetSeparatorIndex() const;
 
   // Checks whether the separator is visible or not.
   bool IsSeparatorVisible() const;

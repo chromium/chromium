@@ -613,8 +613,7 @@ gfx::Rect ShelfAppButton::CalculateSmallRippleArea() const {
   // the shelf when there is a non-zero padding between the app icon and the
   // end of scrollable shelf.
   if (TabletModeController::Get()->InTabletMode() && padding > 0) {
-    const size_t current_index =
-        shelf_view_->view_model()->GetIndexOfView(this).value();
+    const int current_index = shelf_view_->view_model()->GetIndexOfView(this);
     int left_padding =
         (shelf_view_->visible_views_indices().front() == current_index)
             ? padding

@@ -516,7 +516,7 @@ TEST_P(HotseatWidgetTest, DragItemOffExtendedHotseat) {
                               ->hotseat_widget()
                               ->scrollable_shelf_view()
                               ->shelf_view();
-  EXPECT_EQ(2u, shelf_view->view_model_for_test()->view_size());
+  EXPECT_EQ(2, shelf_view->view_model_for_test()->view_size());
 
   // Show the in-app shelf.
   SwipeUpOnShelf();
@@ -539,7 +539,7 @@ TEST_P(HotseatWidgetTest, DragItemOffExtendedHotseat) {
   // 1. Shelf item count decreases by one; and
   // 2. Hotseat is still extended.
   GetEventGenerator()->ReleaseLeftButton();
-  EXPECT_EQ(1u, shelf_view->view_model_for_test()->view_size());
+  EXPECT_EQ(1, shelf_view->view_model_for_test()->view_size());
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
 }
 

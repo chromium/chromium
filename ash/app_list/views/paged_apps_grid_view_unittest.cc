@@ -656,7 +656,7 @@ TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
 
   // Item views should animate upwards to take the place of the closed reorder
   // toast.
-  for (size_t i = 1; i < view_model->view_size(); i++) {
+  for (int i = 1; i < view_model->view_size(); i++) {
     AppListItemView* item_view = view_model->view_at(i);
     // The items off screen on the second page should not animate.
     if (i >= grid_test_api_->TilesPerPage(0)) {

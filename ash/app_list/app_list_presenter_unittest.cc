@@ -888,7 +888,7 @@ TEST_P(ProductivityLauncherTest, FolderItemViewNotAnimatingAfterClosingFolder) {
   EXPECT_EQ(original_folder_item_bounds, folder_item_view->GetBoundsInScreen());
 
   // No item layers are expected to be created.
-  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
@@ -1003,7 +1003,7 @@ TEST_P(ProductivityLauncherTest,
             apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen());
 
   // Verify that item view layers have been deleted.
-  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
@@ -1122,7 +1122,7 @@ TEST_P(ProductivityLauncherTest,
             apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen());
 
   // Verify that item view layers have been deleted.
-  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
@@ -1241,7 +1241,7 @@ TEST_P(ProductivityLauncherTest,
             apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen());
 
   // Verify that item view layers have been deleted.
-  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
@@ -1324,7 +1324,7 @@ TEST_P(ProductivityLauncherTest, ReorderedFolderItemDeletionDuringFolderClose) {
             apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen());
 
   // Verify that item view layers have been deleted.
-  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
@@ -1422,7 +1422,7 @@ TEST_P(ProductivityLauncherTest,
             apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen());
 
   // Verify that item view layers have been deleted.
-  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
@@ -1519,7 +1519,7 @@ TEST_P(ProductivityLauncherTest,
             apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen());
 
   // Verify that item view layers have been deleted.
-  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
@@ -2969,7 +2969,7 @@ TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   // Verify that item layers have been destroyed after the drag operation ended.
   apps_grid_test_api_->WaitForItemMoveAnimationDone();
 
-  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
@@ -2984,7 +2984,7 @@ TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   EXPECT_EQ(expected_folder_item_view_bounds,
             folder_item_view->GetBoundsInScreen());
   EXPECT_TRUE(AppListIsInFolderView());
-  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
@@ -3043,7 +3043,7 @@ TEST_P(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
   // Verify that item layers have been destroyed after the drag operation ended.
   apps_grid_test_api_->WaitForItemMoveAnimationDone();
 
-  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
@@ -3065,7 +3065,7 @@ TEST_P(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
   // Verify that item views have no layers after the folder has been opened.
   apps_grid_test_api_->WaitForItemMoveAnimationDone();
   EXPECT_TRUE(AppListIsInFolderView());
-  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
     views::View* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
@@ -5965,7 +5965,7 @@ TEST_P(AppListPresenterHomeLauncherTest, LayerOnSecondPage) {
   // of the layers, including items on the second page.
   generator->MoveMouseTo(start_point.x(), 0);
   generator->ReleaseLeftButton();
-  for (size_t i = 0; i < apps_grid_view->view_model()->view_size(); ++i) {
+  for (int i = 0; i < apps_grid_view->view_model()->view_size(); ++i) {
     views::View* item_view = apps_grid_view->view_model()->view_at(i);
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }

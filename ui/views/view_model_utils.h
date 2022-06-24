@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_VIEW_MODEL_UTILS_H_
 #define UI_VIEWS_VIEW_MODEL_UTILS_H_
 
-#include <stddef.h>
-
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -27,11 +25,11 @@ class VIEWS_EXPORT ViewModelUtils {
   static bool IsAtIdealBounds(const ViewModelBase& model);
 
   // Returns the index to move |view| to based on a coordinate of |x| and |y|.
-  static size_t DetermineMoveIndex(const ViewModelBase& model,
-                                   View* view,
-                                   bool is_horizontal,
-                                   int x,
-                                   int y);
+  static int DetermineMoveIndex(const ViewModelBase& model,
+                                View* view,
+                                bool is_horizontal,
+                                int x,
+                                int y);
 };
 
 }  // namespace views

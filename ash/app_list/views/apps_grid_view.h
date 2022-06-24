@@ -469,7 +469,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Sets the ideal bounds for view at index `view_inde_in_model` in
   // `view_model_`. The bounds are set to match the expected tile bounds at
   // `view_grid_index` in the apps grid.
-  void SetIdealBoundsForViewToGridIndex(size_t view_index_in_model,
+  void SetIdealBoundsForViewToGridIndex(int view_index_in_model,
                                         const GridIndex& view_grid_index);
 
   // Calculates the item views' bounds for both folder and non-folder.

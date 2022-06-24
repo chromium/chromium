@@ -305,12 +305,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   ShelfAppButton* drag_view() { return drag_view_; }
 
-  const std::vector<size_t>& visible_views_indices() const {
+  const std::vector<int>& visible_views_indices() const {
     return visible_views_indices_;
   }
-  size_t number_of_visible_apps() const {
-    return visible_views_indices_.size();
-  }
+  int number_of_visible_apps() const { return visible_views_indices_.size(); }
   ShelfWidget* shelf_widget() const { return shelf_->shelf_widget(); }
   const views::ViewModel* view_model() const { return view_model_.get(); }
   ShelfID drag_and_drop_shelf_id() const { return drag_and_drop_shelf_id_; }
@@ -324,9 +322,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
     return shelf_menu_model_adapter_.get();
   }
 
-  absl::optional<size_t> current_ghost_view_index() const {
-    return current_ghost_view_index_;
-  }
+  int current_ghost_view_index() const { return current_ghost_view_index_; }
 
  private:
   friend class ShelfViewTestAPI;
@@ -425,11 +421,11 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // Returns the range (in the model) the item at the specified index can be
   // dragged to.
-  std::pair<size_t, size_t> GetDragRange(size_t index);
+  std::pair<int, int> GetDragRange(int index);
 
   // Checks if the item at |dragged_item_index| should be pinned or unpinned on
   // pointer release.
-  bool ShouldUpdateDraggedViewPinStatus(size_t dragged_item_index);
+  bool ShouldUpdateDraggedViewPinStatus(int dragged_item_index);
 
   // Checks if |dragged_view| is allowed to be dragged across the separator to
   // perform pinning and unpinning. Note that this function doesn't check if the
@@ -438,7 +434,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // If there is a drag operation in progress it's canceled. If |modified_index|
   // is valid, the new position of the corresponding item is returned.
-  absl::optional<size_t> CancelDrag(absl::optional<size_t> modified_index);
+  int CancelDrag(int modified_index);
 
   // Returns rectangle bounds used for drag insertion.
   gfx::Rect GetBoundsForDragInsertInScreen();
@@ -573,7 +569,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   std::unique_ptr<views::ViewModel> view_model_;
 
   // The indices of the views in |view_model_| that are visible.
-  std::vector<size_t> visible_views_indices_;
+  std::vector<int> visible_views_indices_;
 
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
 
@@ -593,8 +589,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // items.
   views::Separator* separator_ = nullptr;
 
-  // Index of |separator_|. It is set to nullopt if it is invisible.
-  absl::optional<size_t> separator_index_ = absl::nullopt;
+  // Index of |separator_|. It is set to -1 if it is invisible.
+  int separator_index_ = -1;
 
   // Used in |drag_view_relative_to_ideal_bounds_| to represent the relative
   // position between |drag_view_| and its ideal bounds in shelf.
@@ -616,7 +612,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   gfx::Point drag_origin_;
 
   // Index |drag_view_| was initially at.
-  absl::optional<size_t> start_drag_index_ = absl::nullopt;
+  int start_drag_index_ = -1;
 
   // Used for the context menu of a particular item.
   ShelfID context_menu_id_;
@@ -675,7 +671,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Record the index for the last pressed shelf item. This variable is used to
   // check if a repost event occurs on the same shelf item as previous one. If
   // so, the repost event should be ignored.
-  absl::optional<size_t> last_pressed_index_ = absl::nullopt;
+  int last_pressed_index_ = -1;
 
   // Tracks UMA metrics based on shelf button press actions.
   ShelfButtonPressedMetricTracker shelf_button_pressed_metric_tracker_;
@@ -724,7 +720,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   GhostImageView* last_ghost_view_ = nullptr;
 
   // The index in the shelf app icons where the |current_ghost_view_| will show.
-  absl::optional<size_t> current_ghost_view_index_ = absl::nullopt;
+  int current_ghost_view_index_ = -1;
 
   // When the scrollable shelf is enabled, |shelf_button_delegate_| should
   // be ScrollableShelfView.

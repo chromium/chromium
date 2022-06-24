@@ -54,7 +54,7 @@ class TabStripLayoutHelper {
   int first_non_pinned_tab_x() { return first_non_pinned_tab_x_; }
 
   // Returns the number of pinned tabs in the tabstrip.
-  size_t GetPinnedTabCount() const;
+  int GetPinnedTabCount() const;
 
   // Returns a map of all tab groups and their bounds.
   const std::map<tab_groups::TabGroupId, gfx::Rect>& group_header_ideal_bounds()

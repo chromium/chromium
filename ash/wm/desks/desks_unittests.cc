@@ -4271,7 +4271,8 @@ class PerDeskShelfTest : public AshTestBase,
   // given |window| is equal to the given |expected_visibility|.
   void VerifyViewVisibility(aura::Window* window,
                             bool expected_visibility) const {
-    const size_t index = GetShelfItemIndexForWindow(window);
+    const int index = GetShelfItemIndexForWindow(window);
+    EXPECT_GE(index, 0);
     auto* shelf_view = GetShelfView();
     auto* view_model = shelf_view->view_model();
 

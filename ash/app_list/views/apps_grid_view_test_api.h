@@ -48,7 +48,7 @@ class AppsGridViewTestApi {
 
   void PressItemAt(int index);
 
-  size_t TilesPerPage(int page) const;
+  int TilesPerPage(int page) const;
 
   int AppsOnPage(int page) const;
 
