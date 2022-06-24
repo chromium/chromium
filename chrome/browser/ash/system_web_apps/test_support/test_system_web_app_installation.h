@@ -9,8 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -249,7 +249,7 @@ class TestSystemWebAppInstallation {
 
   std::unique_ptr<web_app::FakeWebAppProviderCreator>
       fake_web_app_provider_creator_;
-  std::unique_ptr<web_app::TestSystemWebAppManagerCreator>
+  std::unique_ptr<TestSystemWebAppManagerCreator>
       test_system_web_app_manager_creator_;
 
   // nullopt if SetUpWithoutApps() was used.

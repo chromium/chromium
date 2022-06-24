@@ -20,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
@@ -198,7 +198,7 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
     fake_externally_managed_app_manager_impl_ =
         std::make_unique<web_app::FakeExternallyManagedAppManager>(profile());
     test_system_web_app_manager_ =
-        std::make_unique<web_app::TestSystemWebAppManager>(profile());
+        std::make_unique<TestSystemWebAppManager>(profile());
     test_ui_manager_ = std::make_unique<web_app::FakeWebAppUiManager>();
     command_manager_ =
         std::make_unique<web_app::WebAppCommandManager>(profile());
@@ -275,7 +275,7 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
     return *fake_externally_managed_app_manager_impl_;
   }
 
-  web_app::TestSystemWebAppManager& system_web_app_manager() {
+  TestSystemWebAppManager& system_web_app_manager() {
     return *test_system_web_app_manager_;
   }
 
@@ -341,8 +341,7 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<web_app::WebAppInstallManager> install_manager_;
   std::unique_ptr<web_app::FakeExternallyManagedAppManager>
       fake_externally_managed_app_manager_impl_;
-  std::unique_ptr<web_app::TestSystemWebAppManager>
-      test_system_web_app_manager_;
+  std::unique_ptr<TestSystemWebAppManager> test_system_web_app_manager_;
   std::unique_ptr<web_app::FakeWebAppUiManager> test_ui_manager_;
   std::unique_ptr<web_app::WebAppCommandManager> command_manager_;
 };
@@ -1098,7 +1097,7 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
       web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, AppUrl1())));
 
   auto unsynced_system_web_app_manager =
-      std::make_unique<web_app::TestSystemWebAppManager>(profile());
+      std::make_unique<TestSystemWebAppManager>(profile());
 
   unsynced_system_web_app_manager->SetSubsystems(
       &externally_managed_app_manager(), &controller().registrar(),
@@ -1517,7 +1516,7 @@ TEST_F(SystemWebAppManagerTest,
 
   // Creates a new SystemWebAppManager without the previously installed App.
   auto unsynced_system_web_app_manager =
-      std::make_unique<web_app::TestSystemWebAppManager>(profile());
+      std::make_unique<TestSystemWebAppManager>(profile());
 
   unsynced_system_web_app_manager->SetSubsystems(
       &externally_managed_app_manager(), &controller().registrar(),

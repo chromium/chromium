@@ -18,11 +18,11 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -330,7 +330,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     fake_externally_managed_app_manager_ =
         std::make_unique<FakeExternallyManagedAppManager>(profile());
     test_system_app_manager_ =
-        std::make_unique<web_app::TestSystemWebAppManager>(profile());
+        std::make_unique<ash::TestSystemWebAppManager>(profile());
     web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
 
     controller().SetUp(profile());
@@ -456,7 +456,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     return *fake_externally_managed_app_manager_;
   }
 
-  TestSystemWebAppManager& system_app_manager() {
+  ash::TestSystemWebAppManager& system_app_manager() {
     return *test_system_app_manager_;
   }
 
@@ -518,7 +518,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
       externally_installed_app_prefs_;
   std::unique_ptr<FakeExternallyManagedAppManager>
       fake_externally_managed_app_manager_;
-  std::unique_ptr<TestSystemWebAppManager> test_system_app_manager_;
+  std::unique_ptr<ash::TestSystemWebAppManager> test_system_app_manager_;
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

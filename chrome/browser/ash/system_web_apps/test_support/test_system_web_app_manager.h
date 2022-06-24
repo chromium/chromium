@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_TEST_SYSTEM_WEB_APP_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_TEST_SYSTEM_WEB_APP_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TEST_SUPPORT_TEST_SYSTEM_WEB_APP_MANAGER_H_
+#define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TEST_SUPPORT_TEST_SYSTEM_WEB_APP_MANAGER_H_
 
 #include <string>
 #include <vector>
@@ -21,11 +21,11 @@ namespace content {
 class BrowserContext;
 }
 
-namespace web_app {
+namespace ash {
 
 // This class is used in unit tests only, browser tests use real
 // `SystemWebAppManager`.
-class TestSystemWebAppManager : public ash::SystemWebAppManager {
+class TestSystemWebAppManager : public SystemWebAppManager {
  public:
   // Used by the TestingProfile in unit tests.
   // Builds a stub `TestSystemWebAppManager` that needs to be manually started
@@ -53,7 +53,7 @@ class TestSystemWebAppManager : public ash::SystemWebAppManager {
     current_locale_ = locale;
   }
 
-  // ash::SystemWebAppManager:
+  // SystemWebAppManager:
   const base::Version& CurrentVersion() const override;
   const std::string& CurrentLocale() const override;
 
@@ -84,6 +84,6 @@ class TestSystemWebAppManagerCreator {
   base::CallbackListSubscription create_services_subscription_;
 };
 
-}  // namespace web_app
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_TEST_SYSTEM_WEB_APP_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TEST_SUPPORT_TEST_SYSTEM_WEB_APP_MANAGER_H_

@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"

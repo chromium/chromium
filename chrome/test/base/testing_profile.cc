@@ -109,11 +109,11 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -416,8 +416,7 @@ void TestingProfile::Init(bool is_supervised_profile) {
   web_app::WebAppProviderFactory::GetInstance()->SetTestingFactory(
       this, base::BindRepeating(&web_app::FakeWebAppProvider::BuildDefault));
   ash::SystemWebAppManagerFactory::GetInstance()->SetTestingFactory(
-      this,
-      base::BindRepeating(&web_app::TestSystemWebAppManager::BuildDefault));
+      this, base::BindRepeating(&ash::TestSystemWebAppManager::BuildDefault));
 #endif
 
   // Prefs for incognito profiles are set in CreateIncognitoPrefService().

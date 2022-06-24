@@ -65,6 +65,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -104,7 +105,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -534,8 +534,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
   void StartWebAppProvider(Profile* profile) {
     auto* provider = web_app::FakeWebAppProvider::Get(profile);
 
-    auto* system_web_app_manager =
-        web_app::TestSystemWebAppManager::Get(profile);
+    auto* system_web_app_manager = ash::TestSystemWebAppManager::Get(profile);
 
     provider->SetRunSubsystemStartupTasks(true);
     provider->Start();

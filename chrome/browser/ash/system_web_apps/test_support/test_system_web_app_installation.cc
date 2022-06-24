@@ -301,10 +301,9 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation(
           base::Unretained(this)));
 
   test_system_web_app_manager_creator_ =
-      std::make_unique<web_app::TestSystemWebAppManagerCreator>(
-          base::BindRepeating(
-              &TestSystemWebAppInstallation::CreateSystemWebAppManager,
-              base::Unretained(this), delegate_ptr));
+      std::make_unique<TestSystemWebAppManagerCreator>(base::BindRepeating(
+          &TestSystemWebAppInstallation::CreateSystemWebAppManager,
+          base::Unretained(this), delegate_ptr));
 }
 
 TestSystemWebAppInstallation::TestSystemWebAppInstallation() {
@@ -319,7 +318,7 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation() {
           base::Unretained(this)));
 
   test_system_web_app_manager_creator_ =
-      std::make_unique<web_app::TestSystemWebAppManagerCreator>(
+      std::make_unique<TestSystemWebAppManagerCreator>(
           base::BindRepeating(&TestSystemWebAppInstallation::
                                   CreateSystemWebAppManagerWithNoSystemWebApps,
                               base::Unretained(this)));

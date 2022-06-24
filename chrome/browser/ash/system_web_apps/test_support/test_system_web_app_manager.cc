@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 
 #include <memory>
 #include <string>
@@ -15,14 +15,15 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace web_app {
+namespace ash {
 
 // static
 std::unique_ptr<KeyedService> TestSystemWebAppManager::BuildDefault(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
   DCHECK(provider);
 
   auto test_swa_manager = std::make_unique<TestSystemWebAppManager>(profile);
@@ -46,8 +47,8 @@ TestSystemWebAppManager* TestSystemWebAppManager::Get(Profile* profile) {
 TestSystemWebAppManager::TestSystemWebAppManager(Profile* profile)
     : SystemWebAppManager(profile) {
   SetSystemAppsForTesting(
-      base::flat_map<ash::SystemWebAppType,
-                     std::unique_ptr<ash::SystemWebAppDelegate>>());
+      base::flat_map<SystemWebAppType,
+                     std::unique_ptr<SystemWebAppDelegate>>());
 }
 
 TestSystemWebAppManager::~TestSystemWebAppManager() = default;
@@ -80,7 +81,7 @@ TestSystemWebAppManagerCreator::~TestSystemWebAppManagerCreator() = default;
 
 void TestSystemWebAppManagerCreator::OnWillCreateBrowserContextServices(
     content::BrowserContext* context) {
-  ash::SystemWebAppManagerFactory::GetInstance()->SetTestingFactory(
+  SystemWebAppManagerFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(
                    &TestSystemWebAppManagerCreator::CreateSystemWebAppManager,
                    base::Unretained(this)));
@@ -90,10 +91,10 @@ std::unique_ptr<KeyedService>
 TestSystemWebAppManagerCreator::CreateSystemWebAppManager(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  DCHECK(!ash::SystemWebAppManagerFactory::IsServiceCreatedForProfile(profile));
-  if (!AreWebAppsEnabled(profile) || !callback_)
+  DCHECK(!SystemWebAppManagerFactory::IsServiceCreatedForProfile(profile));
+  if (!web_app::AreWebAppsEnabled(profile) || !callback_)
     return nullptr;
   return callback_.Run(profile);
 }
 
-}  // namespace web_app
+}  // namespace ash

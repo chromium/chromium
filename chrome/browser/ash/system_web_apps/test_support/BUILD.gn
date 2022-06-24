@@ -16,6 +16,8 @@ source_set("test_support") {
   sources = [
     "test_system_web_app_installation.cc",
     "test_system_web_app_installation.h",
+    "test_system_web_app_manager.cc",
+    "test_system_web_app_manager.h",
   ]
 
   deps = [
