@@ -88,6 +88,11 @@ using ::chromeos::WindowStateType;
 // always be moved to these three positions.
 constexpr float kFixedPositionRatios[] = {0.f, 0.5f, 1.0f};
 
+// Two optional position ratios of the divider. Whether the divider can be moved
+// to these two positions depends on the minimum size of the snapped windows.
+constexpr float kOneThirdPositionRatio = 0.33f;
+constexpr float kTwoThirdPositionRatio = 0.67f;
+
 // The black scrim starts to fade in when the divider is moved past the two
 // optional positions (kOneThirdPositionRatio, kTwoThirdPositionRatio) and
 // reaches to its maximum opacity (kBlackScrimOpacity) after moving
@@ -1033,25 +1038,16 @@ aura::Window* SplitViewController::GetDefaultSnappedWindow() {
 
 gfx::Rect SplitViewController::GetSnappedWindowBoundsInParent(
     SnapPosition snap_position,
-    aura::Window* window_for_minimum_size,
-    float snap_ratio) {
-  gfx::Rect bounds = GetSnappedWindowBoundsInScreen(
-      snap_position, window_for_minimum_size, snap_ratio);
+    aura::Window* window_for_minimum_size) {
+  gfx::Rect bounds =
+      GetSnappedWindowBoundsInScreen(snap_position, window_for_minimum_size);
   wm::ConvertRectFromScreen(root_window_, &bounds);
   return bounds;
 }
 
-gfx::Rect SplitViewController::GetSnappedWindowBoundsInParent(
-    SnapPosition snap_position,
-    aura::Window* window_for_minimum_size) {
-  return GetSnappedWindowBoundsInParent(snap_position, window_for_minimum_size,
-                                        kDefaultSnapRatio);
-}
-
 gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
     SnapPosition snap_position,
-    aura::Window* window_for_minimum_size,
-    float snap_ratio) {
+    aura::Window* window_for_minimum_size) {
   const gfx::Rect work_area_bounds_in_screen =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           root_window_);
@@ -1073,8 +1069,8 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
   // mode to `GetSnappedWindowBounds()` in window_positioning_utils.cc.
   const bool in_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
   const int work_area_size = GetDividerEndPosition();
-  int divider_position = divider_position_ < 0 ? GetDividerPosition(snap_ratio)
-                                               : divider_position_;
+  int divider_position =
+      divider_position_ < 0 ? GetDefaultDividerPosition() : divider_position_;
 
   // Edit `divider_position` if window restore is currently restoring a snapped
   // window; take into account the snap percentage saved by the window. Only do
@@ -1157,26 +1153,15 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
   return snapped_window_bounds_in_screen;
 }
 
-gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
-    SnapPosition snap_position,
-    aura::Window* window_for_minimum_size) {
-  return GetSnappedWindowBoundsInScreen(snap_position, window_for_minimum_size,
-                                        kDefaultSnapRatio);
-}
-
 bool SplitViewController::ShouldUseWindowBoundsDuringFastResize() {
   return is_resizing_ && tablet_resize_mode_ == TabletResizeMode::kFast;
 }
 
 int SplitViewController::GetDefaultDividerPosition() const {
-  return GetDividerPosition(kDefaultPositionRatio);
-}
-
-int SplitViewController::GetDividerPosition(float snap_ratio) const {
-  int next_divider_position = GetDividerEndPosition() * snap_ratio;
+  int default_divider_position = GetDividerEndPosition() / 2;
   if (split_view_type_ == SplitViewType::kTabletType)
-    next_divider_position -= kSplitviewDividerShortSideLength / 2;
-  return next_divider_position;
+    default_divider_position -= kSplitviewDividerShortSideLength / 2;
+  return default_divider_position;
 }
 
 bool SplitViewController::IsDividerAnimating() const {
