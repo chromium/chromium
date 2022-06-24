@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -472,6 +473,13 @@ AutofillProfile GetServerProfile2() {
   profile.GenerateServerProfileIdentifier();
 
   return profile;
+}
+
+Iban GetIban() {
+  Iban iban(base::GenerateGUID(), kEmptyOrigin);
+  iban.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban.set_nickname(u"Nickname for Iban");
+  return iban;
 }
 
 CreditCard GetCreditCard() {

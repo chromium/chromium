@@ -102,6 +102,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
+    case IBAN_VALUE:
     case UPI_VPA:
       return FieldTypeGroup::kNoGroup;
 

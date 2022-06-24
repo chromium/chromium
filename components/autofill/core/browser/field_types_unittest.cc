@@ -72,6 +72,7 @@ TEST(FieldTypesTest, IsValidServerFieldType) {
       SINGLE_USERNAME,
       NOT_USERNAME,
       UPI_VPA,
+      IBAN_VALUE,
       ADDRESS_HOME_STREET_NAME,
       ADDRESS_HOME_HOUSE_NUMBER,
       ADDRESS_HOME_SUBPREMISE,

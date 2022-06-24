@@ -380,6 +380,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case BIRTHDATE_DAY:
         case BIRTHDATE_MONTH:
         case BIRTHDATE_YEAR_4_DIGITS:
+        case IBAN_VALUE:
         case MAX_VALID_FIELD_TYPE:
           NOTREACHED() << field_type << " type is not in that group.";
           group = GROUP_AMBIGUOUS;

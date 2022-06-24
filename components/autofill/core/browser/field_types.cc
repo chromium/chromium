@@ -102,6 +102,10 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case UPI_VPA:
       return base::FeatureList::IsEnabled(features::kAutofillSaveAndFillVPA);
 
+    // TODO(crbug/1335549) to return true when the flag is enabled.
+    case IBAN_VALUE:
+      return false;
+
     case COMPANY_NAME:
       return true;
 
@@ -327,6 +331,8 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "ADDRESS_HOME_OTHER_SUBUNIT";
     case AMBIGUOUS_TYPE:
       return "AMBIGUOUS_TYPE";
+    case IBAN_VALUE:
+      return "IBAN_VALUE";
     case MAX_VALID_FIELD_TYPE:
       return "";
   }

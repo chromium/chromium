@@ -96,7 +96,7 @@ TEST(AutofillShadowPredictionComparisonTest, ComparisonContainsAllTypes) {
   // If this test fails after adding a type, update
   // `AutofillPredictionsComparisonResult` in tools/metrics/histograms/enums.xml
   // and set `last_known_type` to the last entry in the enum.
-  constexpr ServerFieldType last_known_type = PHONE_HOME_NUMBER_SUFFIX;
+  constexpr ServerFieldType last_known_type = IBAN_VALUE;
   int max_comparison =
       GetShadowPrediction(last_known_type, NAME_FIRST, {NAME_LAST});
 

@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
@@ -201,6 +202,9 @@ AutofillProfile GetServerProfile();
 
 // Returns a server profile full of dummy info, different to the above.
 AutofillProfile GetServerProfile2();
+
+// Returns an IBAN full of dummy info.
+Iban GetIban();
 
 // Returns a credit card full of dummy info.
 CreditCard GetCreditCard();
