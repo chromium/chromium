@@ -275,6 +275,12 @@ class ASH_EXPORT AppsGridView : public views::View,
   views::AnimationBuilder FadeInVisibleItemsForReorder(
       ReorderAnimationCallback done_callback);
 
+  // Slides visible items up when the continue section is hidden in tablet mode.
+  // Each row of items has a different vertical offset, creating a "cascade"
+  // effect. `base_offset` is the offset for the first row. Subsequent rows have
+  // a smaller offset.
+  void SlideVisibleItemsForHideContinueSection(int base_offset);
+
   // Whether the provided view is hidden to facilitate drag operation (for
   // example, the drag view for which a drag icon proxy has been created).
   bool IsViewHiddenForDrag(const views::View* view) const;
@@ -876,6 +882,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // caller that starts the fade in animation. `aborted` is true when the fade
   // in animation gets aborted.
   void OnFadeInAnimationEnded(ReorderAnimationCallback callback, bool aborted);
+
+  // Called at the end of the hide continue section animation.
+  void OnHideContinueSectionAnimationEnded();
 
   // Runs the animation callback popped from the test callback queue if the
   // queue is not empty. The parameters indicate the animation running result

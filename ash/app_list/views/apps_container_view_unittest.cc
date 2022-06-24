@@ -13,6 +13,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -88,7 +89,8 @@ TEST_F(AppsContainerViewTest, HideContinueSectionPlaysAnimation) {
   auto* helper = GetAppListTestHelper();
   helper->AddContinueSuggestionResults(4);
   helper->AddRecentApps(5);
-  helper->AddAppItems(5);
+  const int item_count = 5;
+  helper->AddAppItems(item_count);
   TabletMode::Get()->SetEnabledForTest(true);
 
   // Enable animations.
@@ -98,12 +100,35 @@ TEST_F(AppsContainerViewTest, HideContinueSectionPlaysAnimation) {
   // Hide the continue section.
   Shell::Get()->app_list_controller()->SetHideContinueSection(true);
 
-  // Apps grid is animating its transform.
+  // Animation status is updated.
   auto* apps_grid_view = helper->GetRootPagedAppsGridView();
-  ASSERT_TRUE(apps_grid_view->layer());
-  EXPECT_TRUE(apps_grid_view->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(apps_grid_view->layer()->GetAnimator()->IsAnimatingProperty(
-      ui::LayerAnimationElement::TRANSFORM));
+  EXPECT_EQ(apps_grid_view->reorder_animation_status_for_test(),
+            AppListReorderAnimationStatus::kHideContinueSection);
+
+  // Individial app items are animating their transforms.
+  for (int i = 0; i < item_count; ++i) {
+    SCOPED_TRACE(testing::Message() << "Item " << i);
+    AppListItemView* item = apps_grid_view->GetItemViewAt(i);
+    ASSERT_TRUE(item->layer());
+    EXPECT_TRUE(item->layer()->GetAnimator()->is_animating());
+    EXPECT_TRUE(item->layer()->GetAnimator()->IsAnimatingProperty(
+        ui::LayerAnimationElement::TRANSFORM));
+  }
+
+  // Wait for the last item's animation to complete.
+  AppListItemView* last_item = apps_grid_view->GetItemViewAt(item_count - 1);
+  LayerAnimationStoppedWaiter().Wait(last_item->layer());
+
+  // Animation status is updated.
+  EXPECT_EQ(apps_grid_view->reorder_animation_status_for_test(),
+            AppListReorderAnimationStatus::kEmpty);
+
+  // Layers have been removed for all items.
+  for (int i = 0; i < item_count; ++i) {
+    SCOPED_TRACE(testing::Message() << "Item " << i);
+    AppListItemView* item = apps_grid_view->GetItemViewAt(i);
+    EXPECT_FALSE(item->layer());
+  }
 }
 
 TEST_F(AppsContainerViewTest, CanShowContinueSection) {

@@ -309,6 +309,8 @@ enum class AppListModelStatus {
 };
 
 // Indicate the state of the apps grid reorder animation.
+// TODO(jamescook): Rename this enum because it is used for more than the
+// reorder animation.
 enum class AppListReorderAnimationStatus {
   // No reorder animation is active.
   kEmpty,
@@ -320,7 +322,11 @@ enum class AppListReorderAnimationStatus {
   kIntermediaryState,
 
   // Run the animation that fades in the new layout after reordering.
-  kFadeInAnimation
+  kFadeInAnimation,
+
+  // Run the animation that slides up each row of icons when the continue
+  // section is hidden by the user.
+  kHideContinueSection,
 };
 
 // The UI component the user launched the search result from. Must match

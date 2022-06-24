@@ -828,16 +828,34 @@ void AppsContainerView::UpdateContinueSectionVisibility() {
   continue_container_->UpdateContinueSectionVisibility();
   Layout();
 
+  // Only play animations if the tablet mode app list is visible. This function
+  // can be called in clamshell mode when the tablet app list is cached.
+  if (!contents_view_->app_list_view()->is_tablet_mode())
+    return;
+
   // The change in continue container height is the amount by which the apps
   // grid view will be offset.
   const int vertical_offset = initial_height - continue_container_->height();
 
-  // Transform the apps grid view to its original pre-Layout() position.
+  AppListViewDelegate* view_delegate =
+      contents_view_->GetAppListMainView()->view_delegate();
+  if (view_delegate->ShouldHideContinueSection()) {
+    // Continue section is being hidden. Slide each row of app icons up with a
+    // different offset per row.
+    apps_grid_view_->SlideVisibleItemsForHideContinueSection(vertical_offset);
+
+    // Don't try to fade out the views on hide because they are already
+    // invisible.
+    return;
+  }
+
+  // Continue section is being shown. Transform the apps grid view up to its
+  // original pre-Layout() position.
   gfx::Transform transform;
   transform.Translate(0, vertical_offset);
   apps_grid_view_->SetTransform(transform);
 
-  // Animate to the identity transform to slide the apps grid view into its
+  // Animate to the identity transform to slide the apps grid view down to its
   // final position.
   views::AnimationBuilder()
       .SetPreemptionStrategy(ui::LayerAnimator::PreemptionStrategy::
@@ -847,13 +865,8 @@ void AppsContainerView::UpdateContinueSectionVisibility() {
                     gfx::Tween::ACCEL_LIN_DECEL_100_3)
       .SetDuration(base::Milliseconds(300));
 
-  // If the continue section is being shown, fade in the continue tasks and
-  // recent apps views. Don't try to fade out the views on hide because they
-  // are already invisible.
-  AppListViewDelegate* view_delegate =
-      contents_view_->GetAppListMainView()->view_delegate();
-  if (!view_delegate->ShouldHideContinueSection())
-    continue_container_->FadeInViews();
+  // Fade in the continue tasks and recent apps views.
+  continue_container_->FadeInViews();
 }
 
 ContinueSectionView* AppsContainerView::GetContinueSection() {

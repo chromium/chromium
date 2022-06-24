@@ -36,6 +36,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/utility/haptics_util.h"
@@ -2182,6 +2183,70 @@ views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
   return animation_builder;
 }
 
+void AppsGridView::SlideVisibleItemsForHideContinueSection(int base_offset) {
+  DCHECK(IsTabletMode());  // This animation is only used in tablet mode.
+
+  if (needs_layout())
+    Layout();
+
+  const absl::optional<VisibleItemIndexRange> range =
+      GetVisibleItemIndexRange();
+
+  // Safety check, unlikely in production.
+  if (!range)
+    return;
+
+  // The continue section is on the 0th page. Don't animate if a different page
+  // is selected.
+  if (view_structure_.GetIndexFromModelIndex(range->first_index).page != 0)
+    return;
+
+  reorder_animation_status_ =
+      AppListReorderAnimationStatus::kHideContinueSection;
+
+  views::AnimationBuilder animation_builder;
+  reorder_animation_abort_handle_ = animation_builder.GetAbortHandle();
+  animation_builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(
+          base::BindOnce(&AppsGridView::OnHideContinueSectionAnimationEnded,
+                         weak_factory_.GetWeakPtr()))
+      .OnAborted(
+          base::BindOnce(&AppsGridView::OnHideContinueSectionAnimationEnded,
+                         weak_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(base::Milliseconds(300));
+
+  // Animate each row of app icons with a different offset.
+  for (int item_index = range->first_index; item_index <= range->last_index;
+       ++item_index) {
+    const int row_index = item_index / cols_;
+
+    // The 0th row animates base_offset * 3 / 4
+    // The 1st row animates base_offset * 2 / 4
+    // The 2nd row animates base_offset * 1 / 4
+    const int vertical_offset = std::max(0, base_offset * (3 - row_index) / 4);
+
+    // Ensure each icon view has a layer. These are cleaned up on animation end.
+    views::View* icon = GetItemViewAt(item_index);
+    PrepareForLayerAnimation(icon);
+
+    // Slide each icon into position.
+    SlideViewIntoPositionWithSequenceBlock(
+        icon, vertical_offset, /*time_delta=*/absl::nullopt,
+        gfx::Tween::ACCEL_LIN_DECEL_100_3,
+        &animation_builder.GetCurrentSequence());
+  }
+}
+
+void AppsGridView::OnHideContinueSectionAnimationEnded() {
+  reorder_animation_status_ = AppListReorderAnimationStatus::kEmpty;
+
+  // Clean up the layers created for the app icon views.
+  DestroyLayerItemsIfNotNeeded();
+}
+
 bool AppsGridView::IsAnimationRunningForTest() {
   return bounds_animator_->IsAnimating() ||
          bounds_animation_for_cardified_state_in_progress_ > 0;
@@ -2711,6 +2776,7 @@ void AppsGridView::MaybeAbortReorderAnimation() {
       break;
     case AppListReorderAnimationStatus::kFadeOutAnimation:
     case AppListReorderAnimationStatus::kFadeInAnimation:
+    case AppListReorderAnimationStatus::kHideContinueSection:
       DCHECK(reorder_animation_abort_handle_);
       reorder_animation_abort_handle_.reset();
       break;
