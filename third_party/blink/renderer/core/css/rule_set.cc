@@ -489,10 +489,9 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
     StyleRuleBase* rule = rules[i].Get();
 
     if (auto* style_rule = DynamicTo<StyleRule>(rule)) {
-      const CSSSelectorList& selector_list = style_rule->SelectorList();
-      for (const CSSSelector* selector = selector_list.First(); selector;
-           selector = selector_list.Next(*selector)) {
-        wtf_size_t selector_index = selector_list.SelectorIndex(*selector);
+      for (const CSSSelector* selector = style_rule->FirstSelector(); selector;
+           selector = CSSSelectorList::Next(*selector)) {
+        wtf_size_t selector_index = style_rule->SelectorIndex(*selector);
         AddRule(style_rule, selector_index, add_rule_flags, container_query,
                 cascade_layer, style_scope);
       }
@@ -609,11 +608,8 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
 }
 
 void RuleSet::AddStyleRule(StyleRule* rule, AddRuleFlags add_rule_flags) {
-  for (wtf_size_t selector_index =
-           rule->SelectorList().SelectorIndex(*rule->SelectorList().First());
-       selector_index != kNotFound;
-       selector_index =
-           rule->SelectorList().IndexOfNextSelectorAfter(selector_index)) {
+  for (wtf_size_t selector_index = 0; selector_index != kNotFound;
+       selector_index = rule->IndexOfNextSelectorAfter(selector_index)) {
     AddRule(rule, selector_index, add_rule_flags, nullptr /* container_query */,
             nullptr /* cascade_layer */, nullptr /* scope */);
   }

@@ -156,8 +156,7 @@ TEST_P(ScopeProximityTest, All) {
 
   auto* style_rule = DynamicTo<StyleRule>(rule);
   ASSERT_TRUE(style_rule);
-  ASSERT_TRUE(style_rule->SelectorList().IsValid());
-  ASSERT_EQ(1u, style_rule->SelectorList().ComputeLength());
+  ASSERT_TRUE(style_rule->FirstSelector()->IsLastInSelectorList());
 
   Element* target = GetDocument().getElementById("target");
   ASSERT_TRUE(target);
@@ -165,7 +164,7 @@ TEST_P(ScopeProximityTest, All) {
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
   SelectorChecker::StyleScopeFrame style_scope_frame(*target);
   SelectorChecker::SelectorCheckingContext context(target);
-  context.selector = style_rule->SelectorList().First();
+  context.selector = style_rule->FirstSelector();
   context.style_scope = scope;
   context.style_scope_frame = &style_scope_frame;
 

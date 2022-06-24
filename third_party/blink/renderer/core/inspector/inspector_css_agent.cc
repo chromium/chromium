@@ -2401,19 +2401,19 @@ InspectorCSSAgent::BuildArrayForMatchedRuleList(RuleIndexList* rule_list) {
     //  (complex): {.foo: 0, .bar: 1, h1: 2, body: 3, h1: 4}, matches: [2, 4]
     // (compound): {.foo: 0, .bar: 0, h1: 1, body: 2, h1: 2}, matches: [1, 2]
     auto matching_selectors = std::make_unique<protocol::Array<int>>();
-    if (rule->GetStyleRule() && rule->GetStyleRule()->SelectorList().First()) {
-      const CSSSelectorList& list = rule->GetStyleRule()->SelectorList();
+    if (rule->GetStyleRule()) {
       // Compound index (0 -> 1 -> 2).
       int compound = 0;
       // Complex index of the next compound (0 -> 2 -> 3 -> kNotFound).
-      wtf_size_t next_compound_start = list.IndexOfNextSelectorAfter(0);
+      wtf_size_t next_compound_start =
+          rule->GetStyleRule()->IndexOfNextSelectorAfter(0);
 
       std::sort(rule_indices.at(rule)->begin(), rule_indices.at(rule)->end());
       for (unsigned complex_match : (*rule_indices.at(rule))) {
         while (complex_match >= next_compound_start &&
                next_compound_start != kNotFound) {
-          next_compound_start =
-              list.IndexOfNextSelectorAfter(next_compound_start);
+          next_compound_start = rule->GetStyleRule()->IndexOfNextSelectorAfter(
+              next_compound_start);
           compound++;
         }
         matching_selectors->push_back(compound);

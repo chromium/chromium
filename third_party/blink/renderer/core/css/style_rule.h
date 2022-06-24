@@ -128,7 +128,25 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   StyleRule(CSSSelectorList, CSSLazyPropertyParser*);
   StyleRule(const StyleRule&);
 
-  const CSSSelectorList& SelectorList() const { return selector_list_; }
+  // Partial subset of the CSSSelector API.
+  const CSSSelector* FirstSelector() const { return selector_list_.First(); }
+  const CSSSelector& SelectorAt(wtf_size_t index) const {
+    return selector_list_.SelectorAt(index);
+  }
+  wtf_size_t SelectorIndex(const CSSSelector& selector) const {
+    return static_cast<wtf_size_t>(&selector - FirstSelector());
+  }
+  wtf_size_t IndexOfNextSelectorAfter(wtf_size_t index) const {
+    const CSSSelector& current = SelectorAt(index);
+    const CSSSelector* next = CSSSelectorList::Next(current);
+    if (!next)
+      return kNotFound;
+    return SelectorIndex(*next);
+  }
+  String SelectorsText() const {
+    return CSSSelectorList::SelectorsText(FirstSelector());
+  }
+
   const CSSPropertyValueSet& Properties() const;
   MutableCSSPropertyValueSet& MutableProperties();
 

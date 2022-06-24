@@ -47,20 +47,26 @@ class RuleFeatureSetTest : public testing::Test {
       CSSSelectorList selector_list,
       const StyleScope* style_scope,
       RuleFeatureSet& set) {
-    Vector<wtf_size_t> indices;
-    for (const CSSSelector* s = selector_list.First(); s;
-         s = selector_list.Next(*s)) {
-      indices.push_back(selector_list.SelectorIndex(*s));
-    }
-
     auto* style_rule = MakeGarbageCollected<StyleRule>(
         std::move(selector_list),
         MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode));
+    return CollectFeaturesTo(style_rule, style_scope, set);
+  }
+
+  static RuleFeatureSet::SelectorPreMatch CollectFeaturesTo(
+      StyleRule* style_rule,
+      const StyleScope* style_scope,
+      RuleFeatureSet& set) {
+    Vector<wtf_size_t> indices;
+    for (const CSSSelector* s = style_rule->FirstSelector(); s;
+         s = CSSSelectorList::Next(*s)) {
+      indices.push_back(style_rule->SelectorIndex(*s));
+    }
 
     RuleFeatureSet::SelectorPreMatch result =
         RuleFeatureSet::SelectorPreMatch::kSelectorNeverMatches;
-    for (unsigned i = 0; i < indices.size(); ++i) {
-      RuleData rule_data(style_rule, indices[i], 0, 0, kRuleHasNoSpecialState);
+    for (wtf_size_t index : indices) {
+      RuleData rule_data(style_rule, index, 0, 0, kRuleHasNoSpecialState);
       if (set.CollectFeaturesFromRuleData(&rule_data, style_scope))
         result = RuleFeatureSet::SelectorPreMatch::kSelectorMayMatch;
     }
@@ -1813,9 +1819,7 @@ class RuleFeatureSetScopeRefTest
     auto* style_rule = DynamicTo<StyleRule>(rule);
     ASSERT_TRUE(style_rule);
 
-    DCHECK(style_rule->SelectorList().IsValid());
-
-    CollectFeaturesTo(style_rule->SelectorList().Copy(), scope, set);
+    CollectFeaturesTo(style_rule, scope, set);
   }
 
   void Compare(const RuleFeatureSet& main,

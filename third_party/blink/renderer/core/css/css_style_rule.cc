@@ -65,7 +65,7 @@ String CSSStyleRule::selectorText() const {
   }
 
   DCHECK(!GetSelectorTextCache().Contains(this));
-  String text = style_rule_->SelectorList().SelectorsText();
+  String text = style_rule_->SelectorsText();
   GetSelectorTextCache().Set(this, text);
   SetHasCachedSelectorText(true);
   return text;
