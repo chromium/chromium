@@ -84,6 +84,15 @@ int DeviceListenerOutputStream::OnMoreData(base::TimeDelta delay,
                                       prior_frames_skipped, dest);
 }
 
+int DeviceListenerOutputStream::OnMoreData(base::TimeDelta delay,
+                                           base::TimeTicks delay_timestamp,
+                                           int prior_frames_skipped,
+                                           media::AudioBus* dest,
+                                           bool is_mixing) {
+  return source_callback_->OnMoreData(delay, delay_timestamp,
+                                      prior_frames_skipped, dest, is_mixing);
+}
+
 void DeviceListenerOutputStream::OnError(ErrorType type) {
   if (type == ErrorType::kDeviceChange) {
     task_runner_->PostTask(

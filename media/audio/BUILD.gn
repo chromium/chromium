@@ -78,6 +78,7 @@ source_set("audio") {
     "audio_input_ipc.h",
     "audio_input_stream_data_interceptor.cc",
     "audio_input_stream_data_interceptor.h",
+    "audio_io.cc",
     "audio_io.h",
     "audio_manager.cc",
     "audio_manager.h",
