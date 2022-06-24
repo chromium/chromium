@@ -52,7 +52,9 @@ class GEOMETRY_EXPORT Size {
   // Returns a checked numeric representation of the area.
   base::CheckedNumeric<int> GetCheckedArea() const;
 
-  uint64_t Area64() const { return static_cast<uint64_t>(width_) * height_; }
+  uint64_t Area64() const {
+    return static_cast<uint64_t>(width_) * static_cast<uint64_t>(height_);
+  }
 
   void SetSize(int width, int height) {
     set_width(width);

@@ -73,7 +73,7 @@ class CC_PAINT_EXPORT PaintFlags {
     kLast = kHigh,
   };
   ALWAYS_INLINE void setFilterQuality(FilterQuality quality) {
-    bitfields_.filter_quality_ = static_cast<int>(quality);
+    bitfields_.filter_quality_ = static_cast<uint32_t>(quality);
   }
   ALWAYS_INLINE FilterQuality getFilterQuality() const {
     return static_cast<FilterQuality>(bitfields_.filter_quality_);

@@ -96,7 +96,8 @@ struct ArrayDataTraits<bool> {
     return MessageFragmentArrayTraits<bool>::GetStorageSize(num_elements);
   }
   static BitRef ToRef(StorageType* storage, size_t offset) {
-    return BitRef(&storage[offset / 8], 1 << (offset % 8));
+    return BitRef(&storage[offset / 8],
+                  static_cast<uint8_t>(1 << (offset % 8)));
   }
   static bool ToConstRef(const StorageType* storage, size_t offset) {
     return (storage[offset / 8] & (1 << (offset % 8))) != 0;

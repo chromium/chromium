@@ -1240,7 +1240,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   size_t GetOpOffsetForTracing(const PaintOp* op) const {
     DCHECK_GE(reinterpret_cast<const char*>(op), data_.get());
-    size_t result = reinterpret_cast<const char*>(op) - data_.get();
+    size_t result =
+        static_cast<size_t>(reinterpret_cast<const char*>(op) - data_.get());
     DCHECK_LT(result, used_);
     return result;
   }

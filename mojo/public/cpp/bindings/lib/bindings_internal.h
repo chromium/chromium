@@ -58,7 +58,7 @@ class Map_Data;
 using String_Data = Array_Data<char>;
 
 inline size_t Align(size_t size) {
-  return (size + 7) & ~0x7;
+  return (size + 7) & ~size_t{7};
 }
 
 inline bool IsAligned(const void* ptr) {

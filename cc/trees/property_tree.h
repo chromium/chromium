@@ -390,11 +390,11 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
   int LowestCommonAncestorWithRenderSurface(int id_1, int id_2) const;
 
   RenderSurfaceImpl* GetRenderSurface(int id) {
-    return render_surfaces_[id].get();
+    return render_surfaces_[static_cast<size_t>(id)].get();
   }
 
   const RenderSurfaceImpl* GetRenderSurface(int id) const {
-    return render_surfaces_[id].get();
+    return render_surfaces_[static_cast<size_t>(id)].get();
   }
 
   void ClearTransitionPseudoElementEffectNodes();

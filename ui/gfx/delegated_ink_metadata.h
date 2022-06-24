@@ -66,7 +66,8 @@ class GFX_EXPORT DelegatedInkMetadata {
     // Use mask to distinguish from DelegatedInkPoint::trace_id().
     // Using microseconds provides uniqueness of trace_id per
     // DelegatedInkMetadata.
-    return timestamp_.since_origin().InMicroseconds() | (uint64_t{1} << 63);
+    return static_cast<uint64_t>(timestamp_.since_origin().InMicroseconds()) |
+           (uint64_t{1} << 63);
   }
   std::string ToString() const;
 
