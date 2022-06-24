@@ -124,7 +124,7 @@ if (is_android || is_chromeos) {
     # Purposefully repeated so that downstream can change
     # default_android_sdk_root without changing lint version.
     default_lint_android_sdk_root = public_android_sdk_root
-    default_lint_android_sdk_version = 31
+    default_lint_android_sdk_version = 32
   }
 
   if (!defined(default_extras_android_sdk_root)) {

@@ -219,7 +219,7 @@ def _SimplifyBaselineFile(baseline):
 
 
 def _RunLint(create_cache,
-             lint_binary_path,
+             lint_jar_path,
              backported_methods_path,
              config_path,
              manifest_path,
@@ -247,8 +247,25 @@ def _RunLint(create_cache,
     shutil.rmtree(cache_dir, ignore_errors=True)
     os.makedirs(cache_dir)
 
-  cmd = [
-      lint_binary_path,
+  if baseline and not os.path.exists(baseline):
+    # Generating new baselines is only done locally, and requires more memory to
+    # avoid OOMs.
+    lint_xmx = '4G'
+    generating_new_baseline = True
+  else:
+    lint_xmx = '2G'
+    generating_new_baseline = False
+  cmd = build_utils.JavaCmd(xmx=lint_xmx) + [
+      '-cp',
+      lint_jar_path,
+      'com.android.tools.lint.Main',
+      '--sdk-home',
+      android_sdk_root,
+      # Uncomment to update baseline files during lint upgrades. Avoid using
+      # for now since it seems to downgrade baseline format from 6 to 5. Until
+      # that is fixed, remove the baseline and re-run lint instead (remember
+      # to remove the LintError entry before committing).
+      #'--update-baseline',
       # Uncomment to easily remove fixed lint errors. This is not turned on by
       # default due to: https://crbug.com/1256477#c5
       #'--remove-fixed',
@@ -340,21 +357,8 @@ def _RunLint(create_cache,
 
   logging.info('Preparing environment variables')
   env = os.environ.copy()
-  # It is important that lint uses the checked-in JDK11 as it is almost 50%
-  # faster than JDK8.
-  env['JAVA_HOME'] = build_utils.JAVA_HOME
   # This is necessary so that lint errors print stack traces in stdout.
   env['LINT_PRINT_STACKTRACE'] = 'true'
-  if baseline and not os.path.exists(baseline):
-    # Generating new baselines is only done locally, and requires more memory to
-    # avoid OOMs.
-    env['LINT_OPTS'] = '-Xmx4g'
-    generating_new_baseline = True
-  else:
-    # The default set in the wrapper script is 1g, but it seems not enough :(
-    env['LINT_OPTS'] = '-Xmx2g'
-    generating_new_baseline = False
-
   # This filter is necessary for JDK11.
   stderr_filter = build_utils.FilterReflectiveAccessJavaWarnings
   stdout_filter = lambda x: build_utils.FilterLines(x, 'No issues found')
@@ -406,9 +410,9 @@ def _ParseArgs(argv):
   parser.add_argument('--use-build-server',
                       action='store_true',
                       help='Always use the build server.')
-  parser.add_argument('--lint-binary-path',
+  parser.add_argument('--lint-jar-path',
                       required=True,
-                      help='Path to lint executable.')
+                      help='Path to the lint jar.')
   parser.add_argument('--backported-methods',
                       help='Path to backported methods file created by R8.')
   parser.add_argument('--cache-dir',
@@ -507,7 +511,7 @@ def main():
   depfile_deps = [p for p in possible_depfile_deps if p]
 
   _RunLint(args.create_cache,
-           args.lint_binary_path,
+           args.lint_jar_path,
            args.backported_methods,
            args.config_path,
            args.manifest_path,
