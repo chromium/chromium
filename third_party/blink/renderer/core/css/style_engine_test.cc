@@ -3950,14 +3950,14 @@ TEST_F(StyleEngineContainerQueryTest, UpdateStyleAndLayoutTreeForContainer) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container1, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
+      *container1, LogicalSize(200, 100), kLogicalAxisBoth);
 
   // The first span.affected child and #container2
   EXPECT_EQ(2u, GetStyleEngine().StyleForElementCount() - start_count);
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container2, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
+      *container2, LogicalSize(200, 100), kLogicalAxisBoth);
 
   // Three direct span.affected children, and the two display:none elements.
   EXPECT_EQ(6u, GetStyleEngine().StyleForElementCount() - start_count);
@@ -4014,7 +4014,7 @@ TEST_F(StyleEngineContainerQueryTest, ContainerQueriesContainmentNotApplying) {
   unsigned start_count = GetStyleEngine().StyleForElementCount();
 
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
+      *container, LogicalSize(200, 100), kLogicalAxisBoth);
 
   // Even though none of the inner containers are eligible for containment,
   // they are still containers for the purposes of evaluating container
@@ -4050,7 +4050,7 @@ TEST_F(StyleEngineContainerQueryTest, PseudoElementContainerQueryRecalc) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
+      *container, LogicalSize(200, 100), kLogicalAxisBoth);
 
   // The two ::before elements + #span.
   EXPECT_EQ(3u, GetStyleEngine().StyleForElementCount() - start_count);
@@ -4088,7 +4088,7 @@ TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(200, 100), LogicalAxes(kLogicalAxisBoth));
+      *container, LogicalSize(200, 100), kLogicalAxisBoth);
 
   // Input elements mark their InnerEditorElement() style-dirty when they are
   // recalculated. That means the UpdateStyleAndLayoutTreeForContainer() call

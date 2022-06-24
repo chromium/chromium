@@ -569,21 +569,19 @@ TEST_F(ContainerQueryTest, OldStyleForTransitions) {
   EXPECT_EQ("10px", ComputedValueString(target, "height"));
   EXPECT_EQ(0u, GetAnimationsCount(target));
 
-  LogicalAxes contained_axes(kLogicalAxisInline);
-
   // Simulate a style and layout pass with multiple rounds of style recalc.
   {
     PostStyleUpdateScope post_style_update_scope(GetDocument());
 
     // Should transition between [10px, 20px]. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-        *container, LogicalSize(120, -1), contained_axes);
+        *container, LogicalSize(120, -1), kLogicalAxisInline);
     EXPECT_EQ("15px", ComputedValueString(target, "height"));
     EXPECT_EQ(0u, GetAnimationsCount(target));
 
     // Should transition between [10px, 30px]. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-        *container, LogicalSize(130, -1), contained_axes);
+        *container, LogicalSize(130, -1), kLogicalAxisInline);
     EXPECT_EQ("20px", ComputedValueString(target, "height"));
     EXPECT_EQ(0u, GetAnimationsCount(target));
 
@@ -640,21 +638,19 @@ TEST_F(ContainerQueryTest, TransitionAppearingInFinalPass) {
   EXPECT_EQ("10px", ComputedValueString(target, "height"));
   EXPECT_EQ(0u, GetAnimationsCount(target));
 
-  LogicalAxes contained_axes(kLogicalAxisInline);
-
   // Simulate a style and layout pass with multiple rounds of style recalc.
   {
     PostStyleUpdateScope post_style_update_scope(GetDocument());
 
     // No transition property present. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-        *container, LogicalSize(120, -1), contained_axes);
+        *container, LogicalSize(120, -1), kLogicalAxisInline);
     EXPECT_EQ("20px", ComputedValueString(target, "height"));
     EXPECT_EQ(0u, GetAnimationsCount(target));
 
     // Still no transition property present. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-        *container, LogicalSize(130, -1), contained_axes);
+        *container, LogicalSize(130, -1), kLogicalAxisInline);
     EXPECT_EQ("30px", ComputedValueString(target, "height"));
     EXPECT_EQ(0u, GetAnimationsCount(target));
 
@@ -711,21 +707,19 @@ TEST_F(ContainerQueryTest, TransitionTemporarilyAppearing) {
   EXPECT_EQ("10px", ComputedValueString(target, "height"));
   EXPECT_EQ(0u, GetAnimationsCount(target));
 
-  LogicalAxes contained_axes(kLogicalAxisInline);
-
   // Simulate a style and layout pass with multiple rounds of style recalc.
   {
     PostStyleUpdateScope post_style_update_scope(GetDocument());
 
     // No transition property present yet. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-        *container, LogicalSize(120, -1), contained_axes);
+        *container, LogicalSize(120, -1), kLogicalAxisInline);
     EXPECT_EQ("20px", ComputedValueString(target, "height"));
     EXPECT_EQ(0u, GetAnimationsCount(target));
 
     // Transition between [10px, 90px]. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-        *container, LogicalSize(130, -1), contained_axes);
+        *container, LogicalSize(130, -1), kLogicalAxisInline);
     EXPECT_EQ("50px", ComputedValueString(target, "height"));
     EXPECT_EQ(0u, GetAnimationsCount(target));
 
@@ -782,21 +776,19 @@ TEST_F(ContainerQueryTest, RedefiningAnimations) {
 
   EXPECT_EQ("auto", ComputedValueString(target, "height"));
 
-  LogicalAxes contained_axes(kLogicalAxisInline);
-
   // Simulate a style and layout pass with multiple rounds of style recalc.
   {
     PostStyleUpdateScope post_style_update_scope(GetDocument());
 
     // Animation at 20%. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-        *container, LogicalSize(120, -1), contained_axes);
+        *container, LogicalSize(120, -1), kLogicalAxisInline);
     EXPECT_EQ("20px", ComputedValueString(target, "height"));
     EXPECT_EQ(0u, GetAnimationsCount(target));
 
     // Animation at 30%. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-        *container, LogicalSize(130, -1), contained_axes);
+        *container, LogicalSize(130, -1), kLogicalAxisInline);
     EXPECT_EQ("30px", ComputedValueString(target, "height"));
     EXPECT_EQ(0u, GetAnimationsCount(target));
 
@@ -851,15 +843,13 @@ TEST_F(ContainerQueryTest, UnsetAnimation) {
   ASSERT_EQ(1u, target->getAnimations().size());
   Animation* animation_before = target->getAnimations()[0].Get();
 
-  LogicalAxes contained_axes(kLogicalAxisInline);
-
   // Simulate a style and layout pass with multiple rounds of style recalc.
   {
     PostStyleUpdateScope post_style_update_scope(GetDocument());
 
     // Animation should appear to be canceled. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-        *container, LogicalSize(130, -1), contained_axes);
+        *container, LogicalSize(130, -1), kLogicalAxisInline);
     EXPECT_EQ("auto", ComputedValueString(target, "height"));
     EXPECT_EQ(1u, GetAnimationsCount(target));
 

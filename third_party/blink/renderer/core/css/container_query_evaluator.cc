@@ -22,11 +22,11 @@ namespace {
 // provided to ContainerChanged, since there are multiple sources of
 // applied containment (e.g. the 'contain' property itself).
 PhysicalAxes ContainerTypeAxes(const ComputedStyle& style) {
-  LogicalAxes axes(kLogicalAxisNone);
+  LogicalAxes axes = kLogicalAxisNone;
   if (style.ContainerType() & kContainerTypeInlineSize)
-    axes |= LogicalAxes(kLogicalAxisInline);
+    axes |= kLogicalAxisInline;
   if (style.ContainerType() & kContainerTypeBlockSize)
-    axes |= LogicalAxes(kLogicalAxisBlock);
+    axes |= kLogicalAxisBlock;
   return ToPhysicalAxes(axes, style.GetWritingMode());
 }
 

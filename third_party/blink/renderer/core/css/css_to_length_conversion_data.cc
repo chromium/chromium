@@ -43,11 +43,11 @@ namespace blink {
 namespace {
 
 PhysicalAxes SupportedAxes(const ComputedStyle& style) {
-  LogicalAxes supported(kLogicalAxisNone);
+  LogicalAxes supported = kLogicalAxisNone;
   if (style.ContainerType() & kContainerTypeInlineSize)
-    supported |= LogicalAxes(kLogicalAxisInline);
+    supported |= kLogicalAxisInline;
   if (style.ContainerType() & kContainerTypeBlockSize)
-    supported |= LogicalAxes(kLogicalAxisBlock);
+    supported |= kLogicalAxisBlock;
   return ToPhysicalAxes(supported, style.GetWritingMode());
 }
 

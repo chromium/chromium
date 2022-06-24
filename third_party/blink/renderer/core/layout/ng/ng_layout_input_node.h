@@ -244,11 +244,11 @@ class CORE_EXPORT NGLayoutInputNode {
   }
 
   LogicalAxes ContainedAxes() const {
-    LogicalAxes axes(kLogicalAxisNone);
+    LogicalAxes axes = kLogicalAxisNone;
     if (ShouldApplyInlineSizeContainment())
-      axes |= LogicalAxes(kLogicalAxisInline);
+      axes |= kLogicalAxisInline;
     if (ShouldApplyBlockSizeContainment())
-      axes |= LogicalAxes(kLogicalAxisBlock);
+      axes |= kLogicalAxisBlock;
     return axes;
   }
 
