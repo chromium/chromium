@@ -10,7 +10,6 @@ import subprocess
 import sys
 import time
 
-from argparse import ArgumentParser
 from contextlib import AbstractContextManager
 from typing import Iterable, Optional, TextIO
 
@@ -113,15 +112,6 @@ def start_system_log(log_manager: LogManager,
     else:
         log_manager.add_log_process(
             run_continuous_ffx_command(log_cmd, stdout=system_log))
-
-
-def register_log_args(parser: ArgumentParser) -> None:
-    """Register commonly used arguments."""
-
-    log_args = parser.add_argument_group('logging', 'logging arguments')
-    log_args.add_argument('--logs-dir',
-                          type=os.path.realpath,
-                          help=('Directory to write logs to.'))
 
 
 def main():

@@ -143,6 +143,15 @@ def register_device_args(parser: ArgumentParser) -> None:
                                    'the default target in ffx will be used.'))
 
 
+def register_log_args(parser: ArgumentParser) -> None:
+    """Register commonly used arguments."""
+
+    log_args = parser.add_argument_group('logging', 'logging arguments')
+    log_args.add_argument('--logs-dir',
+                          type=os.path.realpath,
+                          help=('Directory to write logs to.'))
+
+
 def get_component_uri(package: str) -> str:
     """Retrieve the uri for a package."""
     return f'fuchsia-pkg://{REPO_ALIAS}/{package}#meta/{package}.cm'

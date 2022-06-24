@@ -12,3 +12,8 @@ good-names=f,PRESUBMIT
 [REPORTS]
 
 reports=no
+
+[DESIGN]
+
+# Maximum number of arguments for function / method
+max-args=6

@@ -78,8 +78,12 @@ def test_connection(target_id: Optional[str]) -> None:
 class FfxEmulator(AbstractContextManager):
     """A helper for managing emulators."""
 
-    def __init__(self, enable_graphics: bool, hardware_gpu: bool,
-                 product_bundle: Optional[str], with_network: bool) -> None:
+    def __init__(self,
+                 enable_graphics: bool,
+                 hardware_gpu: bool,
+                 product_bundle: Optional[str],
+                 with_network: bool,
+                 logs_dir: Optional[str] = None) -> None:
         if product_bundle:
             self._product_bundle = product_bundle
         else:
@@ -88,6 +92,7 @@ class FfxEmulator(AbstractContextManager):
 
         self._enable_graphics = enable_graphics
         self._hardware_gpu = hardware_gpu
+        self._logs_dir = logs_dir
         self._with_network = with_network
         node_name_suffix = random.randint(1, 9999)
         self._node_name = f'fuchsia-emulator-{node_name_suffix}'
@@ -140,6 +145,9 @@ class FfxEmulator(AbstractContextManager):
             emu_command.append('-H')
         if self._hardware_gpu:
             emu_command.append('--gpu')
+        if self._logs_dir:
+            emu_command.extend(
+                ('-l', os.path.join(self._logs_dir, 'emulator_log')))
         if self._with_network:
             emu_command.extend(('--net', 'tap'))
         run_ffx_command(emu_command)

@@ -14,7 +14,7 @@ import sys
 from typing import List, Optional
 
 from common import get_component_uri, register_common_args, \
-                   register_device_args, resolve_packages, run_ffx_command
+                   register_device_args, register_log_args, run_ffx_command
 from compatible_utils import map_filter_file_to_package_file
 from ffx_integration import FfxTestRunner
 from test_runner import TestRunner
@@ -23,6 +23,7 @@ from test_runner import TestRunner
 def _copy_custom_output_file(test_runner: FfxTestRunner, file: str,
                              dest: str) -> None:
     """Copy custom test output file from the device to the host."""
+
     artifact_dir = test_runner.get_custom_artifact_directory()
     if not artifact_dir:
         logging.error(
@@ -35,12 +36,17 @@ def _copy_custom_output_file(test_runner: FfxTestRunner, file: str,
 class ExecutableTestRunner(TestRunner):
     """Test runner for running standalone test executables."""
 
-    def __init__(self, out_dir: str, test_args: List[str], test_name: str,
-                 target_id: Optional[str]) -> None:
+    def __init__(self,
+                 out_dir: str,
+                 test_args: List[str],
+                 test_name: str,
+                 target_id: Optional[str],
+                 logs_dir: Optional[str] = None) -> None:
         super().__init__(out_dir, test_args, [test_name], target_id)
         self._test_name = test_name
         self._custom_artifact_directory = None
         self._isolated_script_test_output = None
+        self._logs_dir = logs_dir
         self._test_launcher_summary_output = None
 
     def _get_args(self) -> List[str]:
@@ -113,9 +119,8 @@ class ExecutableTestRunner(TestRunner):
                 self._isolated_script_test_output)
 
     def run_test(self) -> subprocess.Popen:
-        resolve_packages(self.packages, self._target_id)
         test_args = self._get_args()
-        with FfxTestRunner() as test_runner:
+        with FfxTestRunner(self._logs_dir) as test_runner:
             test_proc = test_runner.run_test(
                 get_component_uri(self._test_name), test_args, self._target_id)
 
@@ -140,23 +145,35 @@ class ExecutableTestRunner(TestRunner):
         return test_proc
 
 
-def register_gtest_args(parser: argparse.ArgumentParser) -> None:
-    """Register common arguments for GtestRunner."""
+def create_executable_test_runner(runner_args: argparse.Namespace,
+                                  test_args: List[str]):
+    """Helper for creating an ExecutableTestRunner."""
+
+    return ExecutableTestRunner(runner_args.out_dir, test_args,
+                                runner_args.test_type, runner_args.target_id,
+                                runner_args.logs_dir)
+
+
+def register_test_args(parser: argparse.ArgumentParser) -> None:
+    """Register common arguments for ExecutableTestRunner."""
+
     test_args = parser.add_argument_group('test', 'arguments for test running')
     test_args.add_argument('--test-name',
+                           dest='test_type',
                            help='Name of the test package (e.g. unit_tests).')
 
 
 def main():
-    """Stand-alone function for running gtests."""
+    """Stand-alone function for running executable tests."""
+
     parser = argparse.ArgumentParser()
-    register_gtest_args(parser)
     register_common_args(parser)
     register_device_args(parser)
+    register_log_args(parser)
+    register_test_args(parser)
     runner_args, test_args = parser.parse_known_args()
-    runner = ExecutableTestRunner(runner_args.out_dir, runner_args.test_name,
-                                  test_args, runner_args.target_id)
-    return runner.run_test()
+    runner = create_executable_test_runner(runner_args, test_args)
+    return runner.run_test().returncode
 
 
 if __name__ == '__main__':

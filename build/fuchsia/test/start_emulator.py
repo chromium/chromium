@@ -9,6 +9,7 @@ import logging
 import sys
 import time
 
+from common import register_log_args
 from ffx_integration import FfxEmulator
 
 
@@ -40,13 +41,14 @@ def create_emulator_from_args(args: argparse.Namespace) -> FfxEmulator:
     """Helper method for initializing an FfxEmulator class with parsed
     arguments."""
     return FfxEmulator(args.enable_graphics, args.hardware_gpu,
-                       args.product_bundle, args.with_network)
+                       args.product_bundle, args.with_network, args.logs_dir)
 
 
 def main():
     """Stand-alone function for starting an emulator."""
     parser = argparse.ArgumentParser()
     register_emulator_args(parser)
+    register_log_args(parser)
     args = parser.parse_args()
     with create_emulator_from_args(args):
         try:

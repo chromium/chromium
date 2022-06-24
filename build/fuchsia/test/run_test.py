@@ -11,12 +11,13 @@ import tempfile
 from contextlib import ExitStack
 from typing import List
 
-from common import register_common_args, register_device_args
+from common import register_common_args, register_device_args, \
+                   register_log_args, resolve_packages
 from ffx_integration import test_connection
-from log_manager import LogManager, register_log_args, start_system_log
+from log_manager import LogManager, start_system_log
 from publish_package import publish_packages, register_package_args
 from run_blink_test import BlinkTestRunner
-from run_executable_test import ExecutableTestRunner
+from run_executable_test import create_executable_test_runner
 from serve_repo import register_serve_args, serve_repository
 from start_emulator import create_emulator_from_args, register_emulator_args
 from test_runner import TestRunner
@@ -28,8 +29,7 @@ def _get_test_runner(runner_args: argparse.Namespace,
     if runner_args.test_type == 'blink':
         return BlinkTestRunner(runner_args.out_dir, test_args,
                                runner_args.target_id)
-    return ExecutableTestRunner(runner_args.out_dir, test_args,
-                                runner_args.test_type, runner_args.target_id)
+    return create_executable_test_runner(runner_args, test_args)
 
 
 def main():
@@ -72,10 +72,10 @@ def main():
         test_connection(runner_args.target_id)
 
         test_runner = _get_test_runner(runner_args, test_args)
-        packages = test_runner.get_package_paths()
+        package_paths = test_runner.get_package_paths()
 
         # Start system logging.
-        start_system_log(log_manager, False, packages, ('--since', 'now'),
+        start_system_log(log_manager, False, package_paths, ('--since', 'now'),
                          runner_args.target_id)
 
         if not runner_args.repo:
@@ -83,10 +83,11 @@ def main():
             runner_args.repo = stack.enter_context(
                 tempfile.TemporaryDirectory())
 
-        publish_packages(packages, runner_args.repo,
+        publish_packages(package_paths, runner_args.repo,
                          not runner_args.no_repo_init)
 
         with serve_repository(runner_args):
+            resolve_packages(test_runner.packages, runner_args.target_id)
             return test_runner.run_test().returncode
 
 
