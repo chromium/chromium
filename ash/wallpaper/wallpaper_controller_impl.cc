@@ -1785,8 +1785,6 @@ void WallpaperControllerImpl::CompositorLockTimedOut() {
 
 void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
-  if (!features::IsWallpaperWebUIEnabled())
-    return;
   AccountId account_id = GetActiveAccountId();
   if (wallpaper_controller_client_->IsWallpaperSyncEnabled(account_id)) {
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -2964,8 +2962,7 @@ void WallpaperControllerImpl::SyncLocalAndRemotePrefs(
 }
 
 bool WallpaperControllerImpl::IsDailyRefreshEnabled() const {
-  return features::IsWallpaperWebUIEnabled() &&
-         !GetDailyRefreshCollectionId(GetActiveAccountId()).empty();
+  return !GetDailyRefreshCollectionId(GetActiveAccountId()).empty();
 }
 
 bool WallpaperControllerImpl::IsDailyGooglePhotosWallpaperSelected() {
@@ -3123,8 +3120,6 @@ void WallpaperControllerImpl::HandleGooglePhotosStalenessCheck(
 void WallpaperControllerImpl::SaveWallpaperToDriveFsAndSyncInfo(
     const AccountId& account_id,
     const base::FilePath& origin_path) {
-  if (!features::IsWallpaperWebUIEnabled())
-    return;
   if (!wallpaper_controller_client_)
     return;
   if (!wallpaper_controller_client_->IsWallpaperSyncEnabled(account_id))
@@ -3181,8 +3176,6 @@ void WallpaperControllerImpl::DriveFsWallpaperChanged(
 
 PrefService* WallpaperControllerImpl::GetUserPrefServiceSyncable(
     const AccountId& account_id) const {
-  if (!features::IsWallpaperWebUIEnabled())
-    return nullptr;
   if (!wallpaper_controller_client_->IsWallpaperSyncEnabled(account_id))
     return nullptr;
   return Shell::Get()->session_controller()->GetUserPrefServiceForUser(

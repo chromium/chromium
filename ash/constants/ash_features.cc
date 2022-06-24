@@ -1527,22 +1527,15 @@ const base::Feature kVirtualKeyboardRoundCorners{
 const base::Feature kWakeOnWifiAllowed{"WakeOnWifiAllowed",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable new wallpaper experience SWA.
-const base::Feature kWallpaperWebUI{"WallpaperWebUI",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable "daily" refresh wallpaper to refresh every ten seconds for testing.
-// Requires |kWallpaperWebUI| to also be enabled.
 const base::Feature kWallpaperFastRefresh{"WallpaperFastRefresh",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable full screen wallpaper preview in new wallpaper experience. Requires
-// |kWallpaperWebUI| to also be enabled.
+// Enable full screen wallpaper preview in new wallpaper experience.
 const base::Feature kWallpaperFullScreenPreview{
     "WallpaperFullScreenPreview", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable Google Photos integration in the new wallpaper experience. Note that
-// this feature flag does not have any effect if `kWallpaperWebUI` is disabled.
+// Enable Google Photos integration in the new wallpaper experience.
 const base::Feature kWallpaperGooglePhotosIntegration{
     "WallpaperGooglePhotosIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -2323,23 +2316,16 @@ bool IsUseStorkSmdsServerAddressEnabled() {
   return base::FeatureList::IsEnabled(kUseStorkSmdsServerAddress);
 }
 
-bool IsWallpaperWebUIEnabled() {
-  return base::FeatureList::IsEnabled(kWallpaperWebUI);
-}
-
 bool IsWallpaperFastRefreshEnabled() {
-  return IsWallpaperWebUIEnabled() &&
-         base::FeatureList::IsEnabled(kWallpaperFastRefresh);
+  return base::FeatureList::IsEnabled(kWallpaperFastRefresh);
 }
 
 bool IsWallpaperFullScreenPreviewEnabled() {
-  return IsWallpaperWebUIEnabled() &&
-         base::FeatureList::IsEnabled(kWallpaperFullScreenPreview);
+  return base::FeatureList::IsEnabled(kWallpaperFullScreenPreview);
 }
 
 bool IsWallpaperGooglePhotosIntegrationEnabled() {
-  return IsWallpaperWebUIEnabled() &&
-         base::FeatureList::IsEnabled(kWallpaperGooglePhotosIntegration);
+  return base::FeatureList::IsEnabled(kWallpaperGooglePhotosIntegration);
 }
 
 bool IsWallpaperPerDeskEnabled() {

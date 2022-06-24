@@ -667,30 +667,13 @@ void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {
 void WallpaperControllerClientImpl::OpenWallpaperPicker() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
-  if (ash::features::IsWallpaperWebUIEnabled()) {
-    web_app::SystemAppLaunchParams params;
-    params.url = GURL(
-        std::string(ash::personalization_app::kChromeUIPersonalizationAppURL) +
-        ash::personalization_app::kWallpaperSubpageRelativeUrl);
-    params.launch_source = apps::mojom::LaunchSource::kFromShelf;
-    web_app::LaunchSystemWebAppAsync(
-        profile, ash::SystemWebAppType::PERSONALIZATION, params);
-    return;
-  }
-
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  if (proxy->AppRegistryCache().GetAppType(kWallpaperManagerId) ==
-      apps::AppType::kUnknown) {
-    return;
-  }
-
-  proxy->Launch(
-      kWallpaperManagerId,
-      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                          WindowOpenDisposition::NEW_WINDOW,
-                          false /* preferred_containner */),
-      apps::mojom::LaunchSource::kFromShelf);
+  web_app::SystemAppLaunchParams params;
+  params.url = GURL(
+      std::string(ash::personalization_app::kChromeUIPersonalizationAppURL) +
+      ash::personalization_app::kWallpaperSubpageRelativeUrl);
+  params.launch_source = apps::mojom::LaunchSource::kFromShelf;
+  web_app::LaunchSystemWebAppAsync(
+      profile, ash::SystemWebAppType::PERSONALIZATION, params);
 }
 
 void WallpaperControllerClientImpl::MaybeClosePreviewWallpaper() {

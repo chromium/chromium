@@ -242,9 +242,6 @@ class WallpaperProfileHelperImpl : public WallpaperProfileHelper {
   }
 
   PrefService* GetUserPrefServiceSyncable(const AccountId& id) override {
-    if (!features::IsWallpaperWebUIEnabled())
-      return nullptr;
-
     if (!IsWallpaperSyncEnabled(id))
       return nullptr;
 

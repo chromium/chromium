@@ -101,7 +101,7 @@ bool PersonalizationSystemAppDelegate::ShouldCaptureNavigations() const {
 }
 
 bool PersonalizationSystemAppDelegate::IsAppEnabled() const {
-  return chromeos::features::IsWallpaperWebUIEnabled();
+  return true;
 }
 
 bool PersonalizationSystemAppDelegate::ShouldShowInLauncher() const {

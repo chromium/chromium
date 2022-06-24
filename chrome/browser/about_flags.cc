@@ -8884,25 +8884,12 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }
 
-  // Only show wallpaper fast refresh flag if:
-  // * channel is one of Dev/Canary/Unknown, and
-  // * wallpaper Web UI flag is enabled.
+  // Only show wallpaper fast refresh flag if channel is one of
+  // Dev/Canary/Unknown.
   if (!strcmp(kWallpaperFastRefreshInternalName, entry.internal_name)) {
     return (channel != version_info::Channel::DEV &&
             channel != version_info::Channel::CANARY &&
-            channel != version_info::Channel::UNKNOWN) ||
-           !ash::features::IsWallpaperWebUIEnabled();
-  }
-
-  // Only show full screen preview flag if wallpaper flag is enabled.
-  if (!strcmp(kWallpaperFullScreenPreviewInternalName, entry.internal_name))
-    return !ash::features::IsWallpaperWebUIEnabled();
-
-  // Only show Google Photos wallpaper integration flag if wallpaper flag is
-  // enabled.
-  if (!strcmp(kWallpaperGooglePhotosIntegrationInternalName,
-              entry.internal_name)) {
-    return !ash::features::IsWallpaperWebUIEnabled();
+            channel != version_info::Channel::UNKNOWN);
   }
 
   // Only show clipboard history reorder flag if channel is one of

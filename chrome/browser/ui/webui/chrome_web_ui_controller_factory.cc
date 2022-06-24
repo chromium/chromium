@@ -1084,8 +1084,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::VmUI>;
   }
   if (url.host_piece() ==
-          ash::personalization_app::kChromeUIPersonalizationAppHost &&
-      chromeos::features::IsWallpaperWebUIEnabled()) {
+      ash::personalization_app::kChromeUIPersonalizationAppHost) {
     return &NewWebUI<ash::personalization_app::PersonalizationAppUI>;
   }
   if (url.host_piece() == ash::kChromeUISystemExtensionsInternalsHost &&

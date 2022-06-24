@@ -738,14 +738,13 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
 void ExtensionAppsChromeOs::SetShowInFields(
     const extensions::Extension* extension,
     App& app) {
+  // TODO(b:193788853) delete wallpaper manager and remove special case.
   if (extension->id() == extension_misc::kWallpaperManagerId) {
     // Explicitly show the Wallpaper Picker app in search only.
     app.show_in_launcher = false;
 
-    // Hide from shelf and search if new Personalization SWA is enabled.
-    auto should_show = !ash::features::IsWallpaperWebUIEnabled();
-    app.show_in_shelf = should_show;
-    app.show_in_search = should_show;
+    app.show_in_shelf = false;
+    app.show_in_search = false;
     app.show_in_management = false;
     app.handles_intents = true;
     return;
@@ -766,18 +765,15 @@ void ExtensionAppsChromeOs::SetShowInFields(
 void ExtensionAppsChromeOs::SetShowInFields(
     apps::mojom::AppPtr& app,
     const extensions::Extension* extension) {
+  // TODO(b:193788853) delete wallpaper manager and remove special case.
   if (extension->id() == extension_misc::kWallpaperManagerId) {
     // Explicitly show the Wallpaper Picker app in search only. But permit it to
     // handle intents.
     app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
     app->handles_intents = apps::mojom::OptionalBool::kTrue;
 
-    // Hide from shelf and search if new Personalization SWA is enabled.
-    auto should_show = ash::features::IsWallpaperWebUIEnabled()
-                           ? apps::mojom::OptionalBool::kFalse
-                           : apps::mojom::OptionalBool::kTrue;
-    app->show_in_shelf = should_show;
-    app->show_in_search = should_show;
+    app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
+    app->show_in_search = apps::mojom::OptionalBool::kFalse;
 
     app->show_in_management = apps::mojom::OptionalBool::kFalse;
     return;
