@@ -674,7 +674,15 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
   bool is_resize = client_bounds.size() != current_size &&
                    !widget_->IsMaximized() && !widget_->IsFullscreen();
 
-  const float scale = 1.f / GetClientToDpScale();
+  // Make sure to use the up-to-date scale factor. At this point, |scale_| or
+  // |pending_scale_| may not be updated yet.
+  display::Display display;
+  const bool display_exists =
+      display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
+                                                            &display);
+  DCHECK(display_exists && display.is_valid());
+  const float scale =
+      use_default_scale_cancellation_ ? 1.f : display.device_scale_factor();
   const gfx::Rect scaled_client_bounds =
       gfx::ScaleToRoundedRect(client_bounds, scale);
   delegate_->OnBoundsChanged(current_state, requested_state, display_id,

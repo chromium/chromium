@@ -78,7 +78,7 @@ class ExoTestHelper {
   std::unique_ptr<ClientControlledShellSurface>
   CreateClientControlledShellSurface(Surface* surface,
                                      bool is_modal = false,
-                                     bool default_scale_cancellation = true);
+                                     bool default_scale_cancellation = false);
   std::unique_ptr<InputMethodSurface> CreateInputMethodSurface(
       Surface* surface,
       InputMethodSurfaceManager* surface_manager,

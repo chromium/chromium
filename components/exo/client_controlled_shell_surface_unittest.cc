@@ -972,8 +972,9 @@ TEST_F(ClientControlledShellSurfaceTest,
   std::unique_ptr<Buffer> buffer(
       new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
   std::unique_ptr<Surface> surface(new Surface);
-  auto shell_surface(
-      exo_test_helper()->CreateClientControlledShellSurface(surface.get()));
+  auto shell_surface(exo_test_helper()->CreateClientControlledShellSurface(
+      surface.get(), false /* is_modal */,
+      true /* default_scale_cancelation */));
 
   surface->Attach(buffer.get());
   surface->Commit();
@@ -1557,7 +1558,7 @@ TEST_F(ClientControlledShellSurfaceDisplayTest, MoveToAnotherDisplayByDrag) {
 
 TEST_F(ClientControlledShellSurfaceDisplayTest,
        MoveToAnotherDisplayByShortcut) {
-  UpdateDisplay("400x600,800x600");
+  UpdateDisplay("400x600,800x600*2");
   aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
   std::unique_ptr<Surface> surface(new Surface);
   auto shell_surface =
@@ -1592,13 +1593,15 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
       ash::window_util::MoveWindowToDisplay(window, secondary_display.id()));
 
   ASSERT_EQ(1, delegate->bounds_change_count());
-  EXPECT_EQ(gfx::Rect(-174, 10, 200, 200), delegate->requested_bounds()[0]);
+  // Should be scaled by 2x in pixels on 2x-density density.
+  EXPECT_EQ(gfx::Rect(-348, 20, 400, 400), delegate->requested_bounds()[0]);
   EXPECT_EQ(secondary_display.id(), delegate->requested_display_ids()[0]);
 
   gfx::Rect secondary_position(700, 10, 200, 200);
   shell_surface->SetBounds(secondary_display.id(), secondary_position);
   surface->Commit();
-  EXPECT_EQ(gfx::Rect(1100, 10, 200, 200), window->GetBoundsInScreen());
+  // Should be scaled by half when converted from pixels to DP.
+  EXPECT_EQ(gfx::Rect(750, 5, 100, 100), window->GetBoundsInScreen());
 
   delegate->Reset();
 
@@ -1607,7 +1610,7 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
       ash::window_util::MoveWindowToDisplay(window, primary_display.id()));
   ASSERT_EQ(1, delegate->bounds_change_count());
   // Should fit in the primary display.
-  EXPECT_EQ(gfx::Rect(375, 10, 200, 200), delegate->requested_bounds()[0]);
+  EXPECT_EQ(gfx::Rect(350, 5, 100, 100), delegate->requested_bounds()[0]);
   EXPECT_EQ(primary_display.id(), delegate->requested_display_ids()[0]);
 }
 
