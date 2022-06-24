@@ -9,8 +9,7 @@ import("//build/toolchain/toolchain.gni")
 declare_args() {
   # Indicates if Ozone is enabled. Ozone is a low-level library layer for Linux
   # that does not require X11.
-  use_ozone =
-      is_chromeos || (is_castos && !is_android) || is_fuchsia || is_linux
+  use_ozone = is_chromeos || is_fuchsia || is_linux
 }
 
 declare_args() {
@@ -68,7 +67,7 @@ declare_args() {
 
     if (is_cast_audio_only) {
       # Just use headless for audio-only Cast platforms.
-    } else if (is_castos && !is_fuchsia) {
+    } else if (is_castos) {
       # Enable the Cast ozone platform on all video CastOS builds.
       ozone_platform_cast = true
 

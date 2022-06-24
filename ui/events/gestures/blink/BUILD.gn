@@ -10,8 +10,7 @@ source_set("blink") {
     "web_gesture_curve_impl.h",
   ]
 
-  # TODO(crbug.com/1314528): Should not need the is_android check.
-  if (is_castos && !is_android) {
+  if (is_castos) {
     defines = [ "USE_MOBILE_FLING_CURVE" ]
   }
 
