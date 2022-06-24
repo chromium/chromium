@@ -13,8 +13,10 @@
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendBridgeImpl_jni.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
+#include "components/password_manager/core/browser/protos/password_with_local_data.pb.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
-#include "components/sync/protocol/list_passwords_result.pb.h"
+#include "components/password_manager/core/browser/unified_password_manager_proto_utils.h"
 
 using JobId = PasswordStoreAndroidBackendBridgeImpl::JobId;
 
@@ -25,7 +27,7 @@ std::vector<password_manager::PasswordForm> CreateFormsVector(
   std::vector<uint8_t> serialized_result;
   base::android::JavaByteArrayToByteVector(base::android::AttachCurrentThread(),
                                            passwords, &serialized_result);
-  sync_pb::ListPasswordsResult list_passwords_result;
+  password_manager::ListPasswordsResult list_passwords_result;
   bool parsing_succeeds = list_passwords_result.ParseFromArray(
       serialized_result.data(), serialized_result.size());
   DCHECK(parsing_succeeds);
@@ -144,7 +146,8 @@ JobId PasswordStoreAndroidBackendBridgeImpl::AddLogin(
     const password_manager::PasswordForm& form,
     Account account) {
   JobId job_id = GetNextJobId();
-  sync_pb::PasswordWithLocalData data = PasswordWithLocalDataFromPassword(form);
+  password_manager::PasswordWithLocalData data =
+      PasswordWithLocalDataFromPassword(form);
   Java_PasswordStoreAndroidBackendBridgeImpl_addLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
@@ -157,7 +160,8 @@ JobId PasswordStoreAndroidBackendBridgeImpl::UpdateLogin(
     const password_manager::PasswordForm& form,
     Account account) {
   JobId job_id = GetNextJobId();
-  sync_pb::PasswordWithLocalData data = PasswordWithLocalDataFromPassword(form);
+  password_manager::PasswordWithLocalData data =
+      PasswordWithLocalDataFromPassword(form);
   Java_PasswordStoreAndroidBackendBridgeImpl_updateLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),

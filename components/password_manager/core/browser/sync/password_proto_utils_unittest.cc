@@ -6,9 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/sync/protocol/list_passwords_result.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
-#include "components/sync/protocol/password_with_local_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,16 +18,6 @@ using testing::ElementsAre;
 using testing::Eq;
 
 constexpr time_t kIssuesCreationTime = 1337;
-constexpr char kTestOrigin[] = "https://www.origin.com/";
-constexpr char kTestAction[] = "https://www.action.com/";
-constexpr char kTestFormName[] = "login_form";
-const std::u16string kTestFormName16(u"login_form");
-constexpr char kTestUsernameElementName[] = "username_element";
-const std::u16string kTestUsernameElementName16(u"username_element");
-constexpr char kTestUsernameElementType[] = "text";
-constexpr char kTestPasswordElementName[] = "password_element";
-const std::u16string kTestPasswordElementName16(u"password_element");
-constexpr char kTestPasswordElementType[] = "password";
 
 sync_pb::PasswordSpecificsData_PasswordIssues CreateSpecificsDataIssues(
     const std::vector<InsecureType>& issue_types) {
@@ -238,67 +226,6 @@ TEST(PasswordProtoUtilsTest, SpecificsFromPasswordPreservesUnknownFields) {
                 .client_only_encrypted_data()
                 .SerializeAsString(),
             specifics.SerializeAsString());
-}
-
-TEST(PasswordProtoUtilsTest,
-     ConvertPasswordWithLocalDataToFullPasswordFormAndBack) {
-  sync_pb::PasswordWithLocalData password_data;
-  *password_data.mutable_password_specifics_data() = CreateSpecificsData(
-      kTestOrigin, kTestUsernameElementName, "username_value",
-      kTestPasswordElementName, "signon_realm", {InsecureType::kLeaked});
-  (*password_data.mutable_local_data())
-      .set_previously_associated_sync_account_email("test@gmail.com");
-  std::string opaque_metadata =
-      "{\"form_data\":{\"action\":\"" + std::string(kTestAction) +
-      "\",\"fields\":[{\"form_control_type\":\"" + kTestUsernameElementType +
-      "\",\"name\":\"" + kTestUsernameElementName +
-      "\"},{\"form_control_type\":\"" + kTestPasswordElementType +
-      "\",\"name\":\"" + kTestPasswordElementName + "\"}],\"name\":\"" +
-      kTestFormName + "\",\"url\":\"" + kTestOrigin +
-      "\"},\"skip_zero_click\":false}";
-  (*password_data.mutable_local_data()).set_opaque_metadata(opaque_metadata);
-
-  PasswordForm form = PasswordFromProtoWithLocalData(password_data);
-  EXPECT_THAT(form.url, Eq(GURL(kTestOrigin)));
-  EXPECT_THAT(form.username_element, Eq(kTestUsernameElementName16));
-  EXPECT_THAT(form.username_value, Eq(u"username_value"));
-  EXPECT_THAT(form.password_element, Eq(kTestPasswordElementName16));
-  EXPECT_THAT(form.signon_realm, Eq("signon_realm"));
-  EXPECT_FALSE(form.skip_zero_click);
-  EXPECT_EQ(form.form_data.url, GURL(kTestOrigin));
-  EXPECT_EQ(form.form_data.action, GURL(kTestAction));
-  EXPECT_EQ(form.form_data.name, kTestFormName16);
-  ASSERT_EQ(form.form_data.fields.size(), 2u);
-  EXPECT_EQ(form.form_data.fields[0].name, kTestUsernameElementName16);
-  EXPECT_EQ(form.form_data.fields[0].form_control_type,
-            kTestUsernameElementType);
-  EXPECT_EQ(form.form_data.fields[1].name, kTestPasswordElementName16);
-  EXPECT_EQ(form.form_data.fields[1].form_control_type,
-            kTestPasswordElementType);
-
-  sync_pb::PasswordWithLocalData password_data_converted_back =
-      PasswordWithLocalDataFromPassword(form);
-  EXPECT_EQ(password_data.SerializeAsString(),
-            password_data_converted_back.SerializeAsString());
-}
-
-TEST(PasswordProtoUtilsTest, ConvertListResultToFormVector) {
-  sync_pb::ListPasswordsResult list_result;
-  sync_pb::PasswordWithLocalData password1;
-  *password1.mutable_password_specifics_data() =
-      CreateSpecificsData("http://1.origin.com/", "username_1", "username_1",
-                          "password_1", "signon_1", {InsecureType::kLeaked});
-  sync_pb::PasswordWithLocalData password2;
-  *password2.mutable_password_specifics_data() =
-      CreateSpecificsData("http://2.origin.com/", "username_2", "username_2",
-                          "password_2", "signon_2", {InsecureType::kLeaked});
-  *list_result.add_password_data() = password1;
-  *list_result.add_password_data() = password2;
-
-  std::vector<PasswordForm> forms = PasswordVectorFromListResult(list_result);
-
-  EXPECT_THAT(forms, ElementsAre(PasswordFromProtoWithLocalData(password1),
-                                 PasswordFromProtoWithLocalData(password2)));
 }
 
 }  // namespace password_manager

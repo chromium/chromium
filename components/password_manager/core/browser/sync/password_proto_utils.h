@@ -15,8 +15,6 @@ class PasswordSpecifics;
 class PasswordSpecificsData;
 class PasswordSpecificsData_PasswordIssues;
 class PasswordSpecificsData_Notes;
-class PasswordWithLocalData;
-class ListPasswordsResult;
 }  // namespace sync_pb
 
 namespace password_manager {
@@ -59,23 +57,10 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
     const PasswordForm& password_form,
     const sync_pb::PasswordSpecificsData& base_password_data);
 
-// Returns sync_pb::PasswordWithLocalData based on given `password_form`.
-sync_pb::PasswordWithLocalData PasswordWithLocalDataFromPassword(
-    const PasswordForm& password_form);
-
 // Returns a partial PasswordForm for a given set of `password_data`. In
 // contrast to `PasswordFromProtoWithLocalData`, this method resets local data.
 PasswordForm PasswordFromSpecifics(
     const sync_pb::PasswordSpecificsData& password_data);
-
-// Returns a PasswordForm for a given `password` with local, chrome-specific
-// data.
-PasswordForm PasswordFromProtoWithLocalData(
-    const sync_pb::PasswordWithLocalData& password);
-
-// Converts the `list_result` to PasswordForms and returns them in a vector.
-std::vector<PasswordForm> PasswordVectorFromListResult(
-    const sync_pb::ListPasswordsResult& list_result);
 
 // Returns a copy of |password_specifics_data| with cleared supported fields
 // that don't need to be preserved in EntityMetadata cache.

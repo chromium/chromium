@@ -37,10 +37,10 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
+import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.sync.protocol.ListPasswordsResult;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
-import org.chromium.components.sync.protocol.PasswordWithLocalData;
 
 /**
  * Tests that bridge calls as invoked by the password store reach the backend and return correctly.

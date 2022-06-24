@@ -22,14 +22,12 @@
 #include "components/sync/protocol/extension_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
 #include "components/sync/protocol/history_specifics.pb.h"
-#include "components/sync/protocol/list_passwords_result.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/os_preference_specifics.pb.h"
 #include "components/sync/protocol/os_priority_preference_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
-#include "components/sync/protocol/password_with_local_data.pb.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/printer_specifics.pb.h"
@@ -582,10 +580,6 @@ VISIT_PROTO_FIELDS(const sync_pb::LinkedAppIconInfo& proto) {
   VISIT(size);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::ListPasswordsResult& proto) {
-  VISIT_REP(password_data);
-}
-
 VISIT_PROTO_FIELDS(const sync_pb::ManagedUserSettingSpecifics& proto) {
   VISIT(name);
   VISIT(value);
@@ -738,16 +732,6 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecifics& proto) {
   VISIT(unencrypted_metadata);
   VISIT(client_only_encrypted_data);
   VISIT(encrypted_notes_backup);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::PasswordWithLocalData& proto) {
-  VISIT(password_specifics_data);
-  VISIT(local_data);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::PasswordWithLocalData_LocalData& proto) {
-  VISIT_BYTES(opaque_metadata);
-  VISIT(previously_associated_sync_account_email);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData& proto) {
