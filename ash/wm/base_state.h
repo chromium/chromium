@@ -63,6 +63,14 @@ class BaseState : public WindowState::State {
       aura::Window* window,
       const chromeos::WindowStateType state_type);
 
+  // Returns the window bounds for snapped window state for given `snap_ratio`.
+  // Note that even when `snap_ratio` is provided, it might get ignored to meet
+  // the window's minimum size requirement.
+  gfx::Rect GetSnappedWindowBoundsInParent(
+      aura::Window* window,
+      const chromeos::WindowStateType state_type,
+      float snap_ratio);
+
   // Prepares for the window snap event. Check if the window can be snapped in
   // split screen and if so, SplitViewController will start observe this window.
   // This needs to be done before the window's state and bounds change to its
