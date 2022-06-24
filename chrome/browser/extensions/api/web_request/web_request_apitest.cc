@@ -585,19 +585,39 @@ class ExtensionWebRequestApiAuthRequiredTest
   }
 };
 
-// Note: this is flaky on multiple platforms (crbug.com/1003598).
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
-                       DISABLED_WebRequestAuthRequired) {
+                       WebRequestAuthRequired) {
   CancelLoginDialog login_dialog_helper;
 
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  // Pass "debug" as a custom arg to debug test flakiness.
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_auth_required.html",
-                                .custom_arg = R"({"debug": true})",
-                                .open_in_incognito = GetEnableIncognito()},
-                               {.allow_in_incognito = GetEnableIncognito()}))
+  ASSERT_TRUE(RunExtensionTest(
+      "webrequest",
+      {.page_url = "test_auth_required.html",
+       .custom_arg = R"({"testName": "authRequiredNonBlocking"})",
+       .open_in_incognito = GetEnableIncognito()},
+      {.allow_in_incognito = GetEnableIncognito()}))
+      << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      "webrequest",
+      {.page_url = "test_auth_required.html",
+       .custom_arg = R"({"testName": "authRequiredSyncNoAction"})",
+       .open_in_incognito = GetEnableIncognito()},
+      {.allow_in_incognito = GetEnableIncognito()}))
+      << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      "webrequest",
+      {.page_url = "test_auth_required.html",
+       .custom_arg = R"({"testName": "authRequiredSyncCancelAuth"})",
+       .open_in_incognito = GetEnableIncognito()},
+      {.allow_in_incognito = GetEnableIncognito()}))
+      << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      "webrequest",
+      {.page_url = "test_auth_required.html",
+       .custom_arg = R"({"testName": "authRequiredSyncSetAuth"})",
+       .open_in_incognito = GetEnableIncognito()},
+      {.allow_in_incognito = GetEnableIncognito()}))
       << message_;
 }
 

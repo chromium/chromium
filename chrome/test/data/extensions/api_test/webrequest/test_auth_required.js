@@ -10,7 +10,7 @@ function getURLAuthRequired(realm, subpath = 'subpath') {
       'auth-basic/' + realm + '/' + subpath + '?realm=' + realm);
 }
 
-runTests([
+var availableTests = [
   // onAuthRequired is not a blocking function in this variant.
   function authRequiredNonBlocking() {
     var realm = 'nonblock';
@@ -338,4 +338,17 @@ runTests([
       ["responseHeaders", "blocking"]);
     navigateAndWait(url);
   },
-]);
+];
+
+chrome.test.getConfig(function(config) {
+  var args = JSON.parse(config.customArg);
+  var tests = availableTests.filter(function(op) {
+    return args.testName == op.name;
+  });
+  if (tests.length !== 1) {
+    chrome.test.notifyFail('Test not found: ' + args.testName);
+    return;
+  }
+
+  runTests(tests);
+});
