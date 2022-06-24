@@ -9,13 +9,23 @@ for more details about the presubmit API built into depot_tools.
 
 USE_PYTHON3 = True
 
+_EXTRA_PATHS_COMPONENTS = [('testing', )]
 
 # pylint: disable=invalid-name,missing-function-docstring
 def CommonChecks(input_api, output_api):
     tests = []
+
+    chromium_src_path = input_api.os_path.realpath(
+        input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..',
+                               '..'))
+    pylint_extra_paths = [
+        input_api.os_path.join(chromium_src_path, *component)
+        for component in _EXTRA_PATHS_COMPONENTS
+    ]
     tests.extend(
         input_api.canned_checks.GetPylint(input_api,
                                           output_api,
+                                          extra_paths_list=pylint_extra_paths,
                                           pylintrc='pylintrc',
                                           version='2.7'))
 

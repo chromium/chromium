@@ -4763,6 +4763,11 @@
     },
 
     'pytype_tests': {
+      'fuchsia_pytype': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
       'gpu_pytype': {
         'mixins': [
           'has_native_resultdb_integration',

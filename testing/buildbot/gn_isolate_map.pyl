@@ -870,6 +870,11 @@
     "label": "//mojo/public/cpp/base/fuchsia:fuchsia_mojo_unittests",
     "type": "console_test_launcher",
   },
+  "fuchsia_pytype": {
+    "label": "//testing:fuchsia_pytype",
+    "script": "//build/fuchsia/test/run_pytype.py",
+    "type": "script",
+  },
   "fuchsia_sizes": {
     "label": "//tools/fuchsia/size_tests:fuchsia_sizes",
     "type": "generated_script",
