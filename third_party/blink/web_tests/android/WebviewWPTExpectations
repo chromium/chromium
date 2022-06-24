@@ -2926,7 +2926,6 @@ crbug.com/1050754 external/wpt/html/semantics/interactive-elements/the-dialog-el
 crbug.com/1050754 external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-node-is-unfocusable.html [ Failure ]
 crbug.com/1050754 external/wpt/html/semantics/interactive-elements/the-dialog-element/remove-dialog-should-unblock-document.html [ Failure ]
 crbug.com/1050754 external/wpt/html/semantics/interactive-elements/the-dialog-element/show-modal-focusing-steps.html [ Timeout ]
-crbug.com/1050754 external/wpt/html/semantics/interfaces.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/semantics/links/downloading-resources/header-origin-no-referrer.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/semantics/links/following-hyperlinks/activation-behavior.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/semantics/links/links-created-by-a-and-area-elements/htmlanchorelement_noopener.html [ Timeout ]
