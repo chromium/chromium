@@ -142,10 +142,12 @@ class DocumentTransitionStyleTracker
     // |target_element|. This information is mirrored into the UA stylesheet.
     LayoutSize border_box_size_in_css_space;
     TransformationMatrix viewport_matrix;
+    float device_pixel_ratio = 1.f;
 
     // Computed info cached before the DOM switches to the new state.
     LayoutSize cached_border_box_size_in_css_space;
     TransformationMatrix cached_viewport_matrix;
+    float cached_device_pixel_ratio = 1.f;
 
     // Valid if there is an element in the old DOM generating a snapshot.
     viz::SharedElementResourceId old_snapshot_id;
