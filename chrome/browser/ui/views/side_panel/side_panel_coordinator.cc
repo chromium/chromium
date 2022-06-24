@@ -192,6 +192,15 @@ void SidePanelCoordinator::Show(absl::optional<SidePanelEntry::Id> entry_id) {
       static_cast<SidePanelContentSwappingContainer*>(
           GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
   DCHECK(content_wrapper);
+
+  auto* current_entry = content_wrapper->loading_entry()
+                            ? content_wrapper->loading_entry()
+                            : current_entry_.get();
+  // Do not load the same entry if it's already loading or loaded.
+  if (current_entry == entry) {
+    return;
+  }
+
   content_wrapper->RequestEntry(
       entry, base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
                             base::Unretained(this)));
@@ -314,10 +323,6 @@ void SidePanelCoordinator::InitializeSidePanel() {
 void SidePanelCoordinator::PopulateSidePanel(
     SidePanelEntry* entry,
     absl::optional<std::unique_ptr<views::View>> content_view) {
-  if (current_entry_.get() == entry) {
-    return;
-  }
-
   // Ensure that the correct combobox entry is selected. This may not be the
   // case if `Show()` was called after registering a contextual entry.
   DCHECK(header_combobox_);

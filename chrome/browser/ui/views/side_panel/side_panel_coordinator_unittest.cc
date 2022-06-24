@@ -685,6 +685,23 @@ TEST_F(SidePanelCoordinatorTest,
       contextual_registries_[0]->GetEntryForId(SidePanelEntry::Id::kAssistant));
 }
 
+TEST_F(SidePanelCoordinatorTest, ShouldNotRecreateTheSameEntry) {
+  int count = 0;
+  global_registry_->Register(std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Id::kLens, u"lens",
+      ui::ImageModel::FromVectorIcon(kReadLaterIcon, ui::kColorIcon),
+      base::BindRepeating(
+          [](int* count) {
+            (*count)++;
+            return std::make_unique<views::View>();
+          },
+          &count)));
+  coordinator_->Show(SidePanelEntry::Id::kLens);
+  ASSERT_EQ(1, count);
+  coordinator_->Show(SidePanelEntry::Id::kLens);
+  ASSERT_EQ(1, count);
+}
+
 // Test that the SidePanelCoordinator behaves and updates corrected when dealing
 // with entries that load/display asynchronously.
 class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
