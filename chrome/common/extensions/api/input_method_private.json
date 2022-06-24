@@ -839,6 +839,24 @@
     ],
     "events": [
       {
+        "name": "onCaretBoundsChanged",
+        "type": "function",
+        "description": "Fired when the caret bounds change.",
+        "parameters": [
+          {
+            "name": "caretBounds",
+            "type": "object",
+            "description": "The bounds information for the caret.",
+            "properties": {
+              "x": {"type": "integer"},
+              "y": {"type": "integer"},
+              "w": {"type": "integer"},
+              "h": {"type": "integer"}
+            }
+          }
+        ]
+      },
+      {
         "name": "onChanged",
         "type": "function",
         "description": "Fired when the input method is changed.",

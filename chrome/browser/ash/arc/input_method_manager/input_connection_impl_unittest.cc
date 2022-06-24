@@ -47,6 +47,7 @@ class DummyInputMethodEngineObserver
   void OnDeactivated(const std::string& engine_id) override {}
   void OnCompositionBoundsChanged(
       const std::vector<gfx::Rect>& bounds) override {}
+  void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) override {}
   void OnSurroundingTextChanged(const std::string& engine_id,
                                 const std::u16string& text,
                                 int cursor_pos,

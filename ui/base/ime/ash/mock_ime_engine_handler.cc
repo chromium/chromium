@@ -57,6 +57,9 @@ void MockIMEEngineHandler::ProcessKeyEvent(const ui::KeyEvent& key_event,
 void MockIMEEngineHandler::SetCompositionBounds(
     const std::vector<gfx::Rect>& bounds) {}
 
+void MockIMEEngineHandler::SetCaretBounds(
+    const gfx::Rect& caret_bounds) {}
+
 ui::VirtualKeyboardController*
 MockIMEEngineHandler::GetVirtualKeyboardController() const {
   return nullptr;

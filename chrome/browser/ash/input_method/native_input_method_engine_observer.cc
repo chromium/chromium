@@ -881,6 +881,11 @@ void NativeInputMethodEngineObserver::OnCompositionBoundsChanged(
   ime_base_observer_->OnCompositionBoundsChanged(bounds);
 }
 
+void NativeInputMethodEngineObserver::OnCaretBoundsChanged(
+    const gfx::Rect& caret_bounds) {
+  ime_base_observer_->OnCaretBoundsChanged(caret_bounds);
+}
+
 void NativeInputMethodEngineObserver::OnSurroundingTextChanged(
     const std::string& engine_id,
     const std::u16string& text,

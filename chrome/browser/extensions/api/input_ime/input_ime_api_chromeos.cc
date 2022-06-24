@@ -435,6 +435,25 @@ class ImeObserverChromeOS
         OnCompositionBoundsChanged::kEventName, std::move(args));
   }
 
+  void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) override {
+    if (extension_id_.empty() ||
+        !HasListener(input_method_private::OnCaretBoundsChanged::kEventName)) {
+      return;
+    }
+
+    // Note: this is a private API event;
+    input_method_private::OnCaretBoundsChanged::CaretBounds caret_bounds_arg;
+    caret_bounds_arg.x = caret_bounds.x();
+    caret_bounds_arg.y = caret_bounds.y();
+    caret_bounds_arg.w = caret_bounds.width();
+    caret_bounds_arg.h = caret_bounds.height();
+
+    DispatchEventToExtension(
+      extensions::events::INPUT_METHOD_PRIVATE_ON_CARET_BOUNDS_CHANGED,
+      input_method_private::OnCaretBoundsChanged::kEventName,
+      input_method_private::OnCaretBoundsChanged::Create(caret_bounds_arg));
+  }
+
   void OnFocus(
       const std::string& engine_id,
       int context_id,

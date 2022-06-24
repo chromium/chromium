@@ -437,8 +437,13 @@ chrome.inputMethodPrivate.onAutocorrect = function(parameters) {};
  * }): void} callback Called with screen coordinates of the text field when the
  *     operation completes. On failure, $(ref:runtime.lastError) is set.
  */
-chrome.inputMethodPrivate.getTextFieldBounds = function(
-    parameters, callback) {};
+chrome.inputMethodPrivate.getTextFieldBounds = function(parameters, callback) {};
+
+/**
+ * Fired when the caret bounds change.
+ * @type {!ChromeEvent}
+ */
+chrome.inputMethodPrivate.onCaretBoundsChanged;
 
 /**
  * Fired when the input method is changed.

@@ -681,6 +681,11 @@ void InputMethodEngine::SetCompositionBounds(
   observer_->OnCompositionBoundsChanged(bounds);
 }
 
+void InputMethodEngine::SetCaretBounds(const gfx::Rect& caret_bounds)
+{
+  observer_->OnCaretBoundsChanged(caret_bounds);
+}
+
 void InputMethodEngine::PropertyActivate(const std::string& property_name) {
   observer_->OnMenuItemActivated(active_component_id_, property_name);
 }

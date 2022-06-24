@@ -100,6 +100,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEEngineHandlerInterface {
   // Called when the composition bounds changed.
   virtual void SetCompositionBounds(const std::vector<gfx::Rect>& bounds) = 0;
 
+  // Called when caret bounds changed.
+  virtual void SetCaretBounds(const gfx::Rect& caret_bounds) = 0;
+
   // Gets the implementation of the keyboard controller.
   virtual ui::VirtualKeyboardController* GetVirtualKeyboardController()
       const = 0;

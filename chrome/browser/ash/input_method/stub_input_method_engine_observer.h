@@ -41,6 +41,7 @@ class StubInputMethodEngineObserver : public InputMethodEngineObserver {
                                 int offset) override {}
   void OnCompositionBoundsChanged(
       const std::vector<gfx::Rect>& bounds) override {}
+  void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) override {}
   void OnScreenProjectionChanged(bool is_projected) override {}
   void OnReset(const std::string& engine_id) override {}
   void OnSuggestionsChanged(

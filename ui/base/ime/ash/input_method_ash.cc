@@ -217,8 +217,11 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
   DCHECK(client == GetTextInputClient());
   DCHECK(!IsTextInputTypeNone());
 
-  if (GetEngine())
-    GetEngine()->SetCompositionBounds(GetCompositionBounds(client));
+  ui::IMEEngineHandlerInterface* engine = GetEngine();
+  if (engine) {
+    engine->SetCompositionBounds(GetCompositionBounds(client));
+    engine->SetCaretBounds(client->GetCaretBounds());
+  }
 
   ash::IMECandidateWindowHandlerInterface* candidate_window =
       ui::IMEBridge::Get()->GetCandidateWindowHandler();

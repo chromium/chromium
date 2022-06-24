@@ -33095,6 +33095,7 @@ Called by update_extension_histograms.py.-->
   <int value="493" label="LOGIN_ON_EXTERNAL_LOGOUT_DONE"/>
   <int value="494" label="ACCESSIBILITY_PRIVATE_ON_PUMPKIN_INSTALLED"/>
   <int value="495" label="REMOTE_APPS_ON_REMOTE_APP_LAUNCHED"/>
+  <int value="496" label="INPUT_METHOD_PRIVATE_ON_CARET_BOUNDS_CHANGED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
