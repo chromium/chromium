@@ -239,8 +239,6 @@ source_set("internal") {
       "management/platform_management_status_provider_win.h",
       "policy_loader_win.cc",
       "policy_loader_win.h",
-      "registry_watcher_win.cc",
-      "registry_watcher_win.h",
     ]
     libs = [
       "netapi32.lib",
@@ -565,10 +563,7 @@ source_set("unit_tests") {
     data = [ "//chrome/test/data/policy/" ]
   }
   if (is_win) {
-    sources += [
-      "policy_loader_win_unittest.cc",
-      "registry_watcher_win_unittest.cc",
-    ]
+    sources += [ "policy_loader_win_unittest.cc" ]
   }
   if (is_chromeos_lacros) {
     sources += [ "policy_loader_lacros_unittest.cc" ]
