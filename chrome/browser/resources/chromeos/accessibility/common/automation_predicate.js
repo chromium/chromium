@@ -218,6 +218,7 @@ AutomationPredicate = class {
         node.role === Role.SWITCH || node.role === Role.TEXT_FIELD ||
         node.role === Role.TEXT_FIELD_WITH_COMBO_BOX ||
         (node.role === Role.MENU_ITEM && !hasActionableDescendant(node)) ||
+        AutomationPredicate.image(node) ||
         // Simple list items should be leaves.
         AutomationPredicate.simpleListItem(node);
   }

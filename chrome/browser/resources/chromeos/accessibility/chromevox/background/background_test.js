@@ -4073,3 +4073,38 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'GestureOnPopUpButton', async function() {
       .expectSpeech('apple')
       .replay();
 });
+
+AX_TEST_F('ChromeVoxBackgroundTest', 'NestedImages', async function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+<div>start</div>
+<div aria-label="first"><div aria-label="second"></div></div>
+<div aria-label="third"><div aria-label="fourth"></div></div>
+<div>end</div>
+`;
+  const root = await this.runWithLoadedTree(site);
+  // Fake the divs as images. This nested structure isn't possible with ordinary
+  // html.
+  const img1 = root.children[1];
+  const img2 = img1.children[0];
+  const img3 = root.children[2];
+  Object.defineProperty(img1, 'isImage', {get: () => true});
+  Object.defineProperty(img2, 'isImage', {get: () => true});
+  // Clears the name.
+  Object.defineProperty(img2, 'name', {get: () => ''});
+  Object.defineProperty(img3, 'isImage', {get: () => true});
+  Object.defineProperty(img3, 'role', {get: () => RoleType.IMAGE});
+
+  // Linear nav should visit the outer image only.
+  mockFeedback.call(doCmd('nextObject'))
+      .expectSpeech('first')
+
+      // Visits the image which has text inside. This one has an image role, so
+      // is spoken as one.
+      .call(doCmd('nextObject'))
+      .expectSpeech('third', 'Image')
+
+      .call(doCmd('nextObject'))
+      .expectSpeech('end')
+      .replay();
+});
