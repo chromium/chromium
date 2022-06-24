@@ -150,6 +150,8 @@ const CGFloat kClearButtonSize = 28.0f;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
+  [self.view attachLayoutGuides];
+
   [NSNotificationCenter.defaultCenter
       addObserver:self
          selector:@selector(pasteboardDidChange:)
@@ -164,12 +166,6 @@ const CGFloat kClearButtonSize = 28.0f;
          selector:@selector(applicationDidBecomeActive:)
              name:UIApplicationDidBecomeActiveNotification
            object:nil];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
-
-  [self.view attachLayoutGuides];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
