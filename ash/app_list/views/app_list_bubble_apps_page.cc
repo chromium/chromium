@@ -13,6 +13,7 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/views/app_list_keyboard_controller.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_toast_view.h"
@@ -226,6 +227,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   layout->SetFlexForView(scrollable_apps_grid_view_, 1);
 
   scroll_view_->SetContents(std::move(scroll_contents));
+
+  app_list_keyboard_controller_ = std::make_unique<AppListKeyboardController>(
+      this, recent_apps_, toast_container_, scrollable_apps_grid_view_);
 
   UpdateSuggestions();
   UpdateContinueSectionVisibility();
@@ -564,29 +568,19 @@ void AppListBubbleAppsPage::OnViewVisibilityChanged(
 }
 
 void AppListBubbleAppsPage::MoveFocusUpFromRecents() {
-  DCHECK_GT(recent_apps_->GetItemViewCount(), 0);
-  AppListItemView* first_recent = recent_apps_->GetItemViewAt(0);
-  // Find the view one step in reverse from the first recent app.
-  views::View* previous_view = GetFocusManager()->GetNextFocusableView(
-      first_recent, GetWidget(), /*reverse=*/true, /*dont_loop=*/false);
-  DCHECK(previous_view);
-  previous_view->RequestFocus();
+  app_list_keyboard_controller_->MoveFocusUpFromRecents();
 }
 
 void AppListBubbleAppsPage::MoveFocusDownFromRecents(int column) {
-  // Check if the `toast_container_` can handle the focus.
-  if (toast_container_ && toast_container_->HandleFocus(column))
-    return;
-
-  HandleMovingFocusToAppsGrid(column);
+  app_list_keyboard_controller_->MoveFocusDownFromRecents(column);
 }
 
 bool AppListBubbleAppsPage::MoveFocusUpFromToast(int column) {
-  return HandleMovingFocusToRecents(column);
+  return app_list_keyboard_controller_->MoveFocusUpFromToast(column);
 }
 
 bool AppListBubbleAppsPage::MoveFocusDownFromToast(int column) {
-  return HandleMovingFocusToAppsGrid(column);
+  return app_list_keyboard_controller_->MoveFocusDownFromToast(column);
 }
 
 void AppListBubbleAppsPage::OnNudgeRemoved() {
@@ -605,44 +599,7 @@ void AppListBubbleAppsPage::OnNudgeRemoved() {
 }
 
 bool AppListBubbleAppsPage::MoveFocusUpFromAppsGrid(int column) {
-  DVLOG(1) << __FUNCTION__;
-  // Check if the `toast_container_` can handle the focus.
-  if (toast_container_ && toast_container_->HandleFocus(column))
-    return true;
-
-  return HandleMovingFocusToRecents(column);
-}
-
-bool AppListBubbleAppsPage::HandleMovingFocusToRecents(int column) {
-  const int recent_app_count = recent_apps_->GetItemViewCount();
-  // If there aren't any recent apps, don't change focus here. Fall back to the
-  // app grid's default behavior.
-  if (!recent_apps_->GetVisible() || recent_app_count <= 0)
-    return false;
-
-  // Attempt to focus the item at `column`, or the last item if there aren't
-  // enough items.
-  int index = std::min(column, recent_app_count - 1);
-  AppListItemView* item = recent_apps_->GetItemViewAt(index);
-  DCHECK(item);
-  item->RequestFocus();
-  return true;
-}
-
-bool AppListBubbleAppsPage::HandleMovingFocusToAppsGrid(int column) {
-  int top_level_item_count =
-      scrollable_apps_grid_view_->view_model()->view_size();
-  if (top_level_item_count <= 0)
-    return false;
-
-  // Attempt to focus the item at `column` in the first row, or the last item if
-  // there aren't enough items. This could happen if the user's apps are in a
-  // small number of folders.
-  int index = std::min(column, top_level_item_count - 1);
-  AppListItemView* item = scrollable_apps_grid_view_->GetItemViewAt(index);
-  DCHECK(item);
-  item->RequestFocus();
-  return true;
+  return app_list_keyboard_controller_->MoveFocusUpFromAppsGrid(column);
 }
 
 ui::Layer* AppListBubbleAppsPage::GetPageAnimationLayerForTest() {

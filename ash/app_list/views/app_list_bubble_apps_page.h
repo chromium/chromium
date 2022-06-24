@@ -35,19 +35,20 @@ class Separator;
 
 namespace ash {
 
-class AppListConfig;
 class ApplicationDragAndDropHost;
 class AppListA11yAnnouncer;
+class AppListConfig;
 class AppListFolderController;
+class AppListKeyboardController;
 class AppListNudgeController;
 class AppListViewDelegate;
 class ContinueSectionView;
 class IconButton;
 class RecentAppsView;
 class RoundedScrollBar;
-class SearchBoxView;
 class ScrollableAppsGridView;
 class ScrollViewGradientHelper;
+class SearchBoxView;
 
 // The default page for the app list bubble / clamshell launcher. Contains a
 // scroll view with:
@@ -135,10 +136,6 @@ class ASH_EXPORT AppListBubbleAppsPage
 
   // AppsGridViewFocusDelegate:
   bool MoveFocusUpFromAppsGrid(int column) override;
-
-  // Helper functions to move the focus to RecentAppsView/AppsGridView.
-  bool HandleMovingFocusToRecents(int column);
-  bool HandleMovingFocusToAppsGrid(int column);
 
   // Updates the visibility of the continue section based on user preference.
   void UpdateContinueSectionVisibility();
@@ -245,6 +242,7 @@ class ASH_EXPORT AppListBubbleAppsPage
   // The search box owned by AppListBubbleView.
   SearchBoxView* search_box_ = nullptr;
 
+  std::unique_ptr<AppListKeyboardController> app_list_keyboard_controller_;
   std::unique_ptr<AppListNudgeController> app_list_nudge_controller_;
 
   // Adds fade in/out gradients to `scroll_view_`.

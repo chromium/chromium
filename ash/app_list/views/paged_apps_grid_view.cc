@@ -15,6 +15,7 @@
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
+#include "ash/app_list/views/apps_grid_view_focus_delegate.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/ghost_image_view.h"
 #include "ash/constants/ash_features.h"
@@ -220,12 +221,13 @@ PagedAppsGridView::PagedAppsGridView(
     AppListA11yAnnouncer* a11y_announcer,
     AppsGridViewFolderDelegate* folder_delegate,
     AppListFolderController* folder_controller,
-    ContainerDelegate* container_delegate)
+    ContainerDelegate* container_delegate,
+    AppsGridViewFocusDelegate* focus_delegate)
     : AppsGridView(a11y_announcer,
                    contents_view->GetAppListMainView()->view_delegate(),
                    folder_delegate,
                    folder_controller,
-                   /*focus_delegate=*/nullptr),
+                   focus_delegate),
       contents_view_(contents_view),
       container_delegate_(container_delegate),
       page_flip_delay_(kPageFlipDelay),

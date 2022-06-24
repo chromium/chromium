@@ -14,6 +14,7 @@
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/app_list_keyboard_controller.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
@@ -319,7 +320,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
       std::make_unique<PagedAppsGridView>(contents_view, a11y_announcer,
                                           /*folder_delegate=*/nullptr,
                                           /*folder_controller=*/this,
-                                          /*container_delegate=*/this));
+                                          /*container_delegate=*/this,
+                                          /*focus_delegate=*/this));
   apps_grid_view_->Init();
   apps_grid_view_->pagination_model()->AddObserver(this);
   if (features::IsProductivityLauncherEnabled())
@@ -339,6 +341,10 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
   app_list_folder_view_ = AddChildView(std::move(app_list_folder_view));
   // The folder view is initially hidden.
   app_list_folder_view_->SetVisible(false);
+
+  app_list_keyboard_controller_ = std::make_unique<AppListKeyboardController>(
+      this, continue_container_ ? continue_container_->recent_apps() : nullptr,
+      toast_container_, apps_grid_view_);
 
   // NOTE: At this point, the apps grid folder and recent apps grids are not
   // fully initialized - they require an `app_list_config_` instance (because
@@ -716,38 +722,19 @@ void AppsContainerView::OnCardifiedStateEnded() {
 
 // RecentAppsView::Delegate:
 void AppsContainerView::MoveFocusUpFromRecents() {
-  DCHECK(!GetRecentApps()->children().empty());
-  views::View* first_recent = GetRecentApps()->children()[0];
-  DCHECK(views::IsViewClass<AppListItemView>(first_recent));
-  // Find the view one step in reverse from the first recent app.
-  views::View* previous_view = GetFocusManager()->GetNextFocusableView(
-      first_recent, GetWidget(), /*reverse=*/true, /*dont_loop=*/false);
-  DCHECK(previous_view);
-  previous_view->RequestFocus();
+  app_list_keyboard_controller_->MoveFocusUpFromRecents();
 }
 
 void AppsContainerView::MoveFocusDownFromRecents(int column) {
-  if (toast_container_ && toast_container_->HandleFocus(column))
-    return;
-
-  int top_level_item_count = apps_grid_view_->view_model()->view_size();
-  if (top_level_item_count <= 0)
-    return;
-  // Attempt to focus the item at `column` in the first row, or the last item if
-  // there aren't enough items. This could happen if the user's apps are in a
-  // small number of folders.
-  int index = std::min(column, top_level_item_count - 1);
-  AppListItemView* item = apps_grid_view_->GetItemViewAt(index);
-  DCHECK(item);
-  item->RequestFocus();
+  app_list_keyboard_controller_->MoveFocusDownFromRecents(column);
 }
 
 bool AppsContainerView::MoveFocusUpFromToast(int column) {
-  return false;
+  return app_list_keyboard_controller_->MoveFocusUpFromToast(column);
 }
 
 bool AppsContainerView::MoveFocusDownFromToast(int column) {
-  return false;
+  return app_list_keyboard_controller_->MoveFocusDownFromToast(column);
 }
 
 void AppsContainerView::OnNudgeRemoved() {
@@ -762,6 +749,10 @@ void AppsContainerView::OnNudgeRemoved() {
   UpdateTopLevelGridDimensions();
 
   apps_grid_view_->AnimateOnNudgeRemoved();
+}
+
+bool AppsContainerView::MoveFocusUpFromAppsGrid(int column) {
+  return app_list_keyboard_controller_->MoveFocusUpFromAppsGrid(column);
 }
 
 void AppsContainerView::UpdateForNewSortingOrder(
@@ -1156,6 +1147,27 @@ void AppsContainerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   // Finish initialization of views that require app list config.
   if (creating_initial_config)
     UpdateForActiveAppListModel();
+}
+
+void AppsContainerView::AddedToWidget() {
+  GetFocusManager()->AddFocusChangeListener(this);
+}
+
+void AppsContainerView::RemovedFromWidget() {
+  GetFocusManager()->RemoveFocusChangeListener(this);
+}
+
+void AppsContainerView::OnDidChangeFocus(View* focused_before,
+                                         View* focused_now) {
+  // Ensure that `continue_container_` is visible (the first page is active)
+  // after moving focus down from the last row on 2nd+ page to the search box
+  // and then to `continue_container_`.
+  if (!is_active_page_)
+    return;
+  if (!continue_container_ || !continue_container_->Contains(focused_now))
+    return;
+  if (apps_grid_view_->pagination_model()->selected_page() != 0)
+    apps_grid_view_->pagination_model()->SelectPage(0, /*animate=*/false);
 }
 
 void AppsContainerView::OnGestureEvent(ui::GestureEvent* event) {

@@ -7,6 +7,8 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/continue_section_view.h"
+#include "ash/app_list/views/recent_apps_view.h"
+#include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
@@ -15,6 +17,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
 
@@ -27,6 +31,18 @@ class AppsContainerViewTest : public AshTestBase {
                                {});
   }
   ~AppsContainerViewTest() override = default;
+
+  void PressDown() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+  }
+
+  int GetSelectedPage() {
+    return GetAppListTestHelper()
+        ->GetRootPagedAppsGridView()
+        ->pagination_model()
+        ->selected_page();
+  }
 
  private:
   base::test::ScopedFeatureList features_;
@@ -162,6 +178,59 @@ TEST_F(AppsContainerViewTest, ShowContinueSectionPlaysAnimation) {
   EXPECT_TRUE(apps_grid_view->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(apps_grid_view->layer()->GetAnimator()->IsAnimatingProperty(
       ui::LayerAnimationElement::TRANSFORM));
+}
+
+TEST_F(AppsContainerViewTest, UpdatesSelectedPageAfterFocusTraversal) {
+  auto* helper = GetAppListTestHelper();
+  helper->AddRecentApps(5);
+  helper->AddAppItems(16);
+  TabletMode::Get()->SetEnabledForTest(true);
+
+  auto* apps_grid_view = helper->GetRootPagedAppsGridView();
+  auto* recent_apps_view = helper->GetFullscreenRecentAppsView();
+  auto* search_box = helper->GetSearchBoxView()->search_box();
+
+  // Focus moves to the search box.
+  PressDown();
+  EXPECT_TRUE(search_box->HasFocus());
+  EXPECT_EQ(GetSelectedPage(), 0);
+
+  // Focus moves to the first item inside `RecentAppsView`.
+  PressDown();
+  EXPECT_TRUE(recent_apps_view->GetItemViewAt(0)->HasFocus());
+  EXPECT_EQ(GetSelectedPage(), 0);
+
+  // Focus moves to the first item / first row inside `PagedAppsGridView`.
+  PressDown();
+  EXPECT_TRUE(apps_grid_view->GetItemViewAt(0)->HasFocus());
+  EXPECT_EQ(GetSelectedPage(), 0);
+
+  // Focus moves to the first item / second row inside `PagedAppsGridView`.
+  PressDown();
+  EXPECT_TRUE(apps_grid_view->GetItemViewAt(5)->HasFocus());
+  EXPECT_EQ(GetSelectedPage(), 0);
+
+  // Focus moves to the first item / third row inside `PagedAppsGridView`.
+  PressDown();
+  EXPECT_TRUE(apps_grid_view->GetItemViewAt(10)->HasFocus());
+  EXPECT_EQ(GetSelectedPage(), 0);
+
+  // Focus moves to the first item / first row on the second page of
+  // `PagedAppsGridView`.
+  PressDown();
+  EXPECT_TRUE(apps_grid_view->GetItemViewAt(15)->HasFocus());
+  EXPECT_EQ(GetSelectedPage(), 1);
+
+  // Focus moves to the search box, but second page stays active.
+  PressDown();
+  EXPECT_TRUE(search_box->HasFocus());
+  EXPECT_EQ(GetSelectedPage(), 1);
+
+  // Focus moves to the first item inside `RecentAppsView` and activates first
+  // page.
+  PressDown();
+  EXPECT_TRUE(recent_apps_view->GetItemViewAt(0)->HasFocus());
+  EXPECT_EQ(GetSelectedPage(), 0);
 }
 
 }  // namespace ash
