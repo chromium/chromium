@@ -214,9 +214,6 @@ double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
       // http://uma/p/chrome/timeline_v2?sid=39bc30a43a01d045204d0add05ad120a
       return 0.75;
 
-    case metrics::CallStackProfileParams::Process::kUtility:
-      return 1.0;
-
     default:
       return 0.0;
   }
@@ -228,7 +225,6 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
   // TODO(https://crbug.com/1326430): Enable for all the default processes.
   switch (process) {
     case metrics::CallStackProfileParams::Process::kRenderer:
-    case metrics::CallStackProfileParams::Process::kUtility:
       return true;
 
     default:

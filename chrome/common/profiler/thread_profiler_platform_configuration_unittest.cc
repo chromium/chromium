@@ -158,7 +158,7 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
   EXPECT_EQ(0.0,
             config()->GetChildProcessEnableFraction(
                 metrics::CallStackProfileParams::Process::kNetworkService));
-  EXPECT_EQ(1.0, config()->GetChildProcessEnableFraction(
+  EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::Process::kUtility));
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::Process::kUnknown));
