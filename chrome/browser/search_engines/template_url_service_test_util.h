@@ -20,14 +20,20 @@
 class KeywordWebDataService;
 class TemplateURLService;
 
-// Sets the managed preferences for the default search provider.
-// enabled arg enables/disables use of managed engine by DefaultSearchManager.
+// Sets the managed preferences for the default search provider. `enabled`
+// enables/disables use of the managed engine by `DefaultSearchManager`.
 void SetManagedDefaultSearchPreferences(const TemplateURLData& managed_data,
                                         bool enabled,
                                         TestingProfile* profile);
 
 // Removes all the managed preferences for the default search provider.
 void RemoveManagedDefaultSearchPreferences(TestingProfile* profile);
+
+// Sets the recommended preferences for the default search provider. `enabled`
+// enables/disables use of the managed engine by `DefaultSearchManager`.
+void SetRecommendedDefaultSearchPreferences(const TemplateURLData& data,
+                                            bool enabled,
+                                            TestingProfile* profile);
 
 // Creates a TemplateURL with some test values. The caller owns the returned
 // TemplateURL*.

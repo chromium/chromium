@@ -648,9 +648,9 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Updates |template_urls| so that the only "created by policy" entry is
   // |default_from_prefs|. |default_from_prefs| may be NULL if there is no
   // policy-defined DSE in effect.
-  void UpdateProvidersCreatedByPolicy(
-      OwnedTemplateURLVector* template_urls,
-      const TemplateURLData* default_from_prefs);
+  void UpdateProvidersCreatedByPolicy(OwnedTemplateURLVector* template_urls,
+                                      const TemplateURLData* default_from_prefs,
+                                      bool is_mandatory);
 
   // Resets the sync GUID of the specified TemplateURL and persists the change
   // to the database. This does not notify observers.

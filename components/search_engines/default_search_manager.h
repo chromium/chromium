@@ -78,6 +78,9 @@ class DefaultSearchManager {
     // Search engine controlled externally through enterprise configuration
     // management (e.g. windows group policy).
     FROM_POLICY,
+    // Search engine recommended externally through enterprise configuration
+    // management but allows for user modification.
+    FROM_POLICY_RECOMMENDED,
   };
 
   using ObserverCallback =
@@ -143,7 +146,8 @@ class DefaultSearchManager {
   void MergePrefsDataWithPrepopulated();
 
   // Reads default search provider data from |pref_service_|, updating
-  // |prefs_default_search_| and |default_search_controlled_by_policy_|.
+  // |prefs_default_search_|, |default_search_mandatory_by_policy_|, and
+  // |default_search_recommended_by_policy_|.
   // Invokes MergePrefsDataWithPrepopulated().
   void LoadDefaultSearchEngineFromPrefs();
 
@@ -174,7 +178,10 @@ class DefaultSearchManager {
   std::unique_ptr<TemplateURLData> prefs_default_search_;
 
   // True if the default search is currently enforced by policy.
-  bool default_search_controlled_by_policy_;
+  bool default_search_mandatory_by_policy_ = false;
+
+  // True if the default search is currently recommended by policy.
+  bool default_search_recommended_by_policy_ = false;
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_DEFAULT_SEARCH_MANAGER_H_
