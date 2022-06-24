@@ -18,7 +18,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <mutex>
 #include <tuple>
 #include <utility>
 
@@ -259,15 +258,15 @@ class CrashReportDatabaseGeneric : public CrashReportDatabase {
   static bool WriteMetadata(const base::FilePath& path, const Report& report);
 
   Settings& SettingsInternal() {
-    std::call_once(settings_init_, [this]() {
+    if (!settings_init_)
       settings_.Initialize(base_dir_.Append(kSettings));
-    });
+    settings_init_ = true;
     return settings_;
   }
 
   base::FilePath base_dir_;
   Settings settings_;
-  std::once_flag settings_init_;
+  bool settings_init_ = false;
   InitializationStateDcheck initialized_;
 };
 

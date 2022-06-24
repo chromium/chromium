@@ -14,7 +14,6 @@
 
 vars = {
   'chromium_git': 'https://chromium.googlesource.com',
-  'gn_version': 'git_revision:2ecd43a10266bd091c98e6dcde507c64f6a0dad3',
   'pull_linux_clang': False,
   'pull_win_toolchain': False,
   # Controls whether crashpad/build/ios/setup-ios-gn.py is run as part of
@@ -26,11 +25,7 @@ vars = {
 deps = {
   'buildtools':
       Var('chromium_git') + '/chromium/src/buildtools.git@' +
-      '8b16338d17cd71b04a6ba28da7322ab6739892c2',
-  'buildtools/clang_format/script':
-      Var('chromium_git') +
-      '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
-      'c912837e0d82b5ca4b6e790b573b3956d3744c1c',
+      '9e121212d42be62a7cce38072f925f8398d11e49',
   'crashpad/third_party/edo/edo': {
       'url': Var('chromium_git') + '/external/github.com/google/eDistantObject.git@' +
       '727e556705278598fce683522beedbb9946bfda0',
@@ -52,37 +47,7 @@ deps = {
       Var('chromium_git') + '/chromium/src/third_party/zlib@' +
       '13dc246a58e4b72104d35f9b1809af95221ebda7',
 
-  # CIPD packages.
-  'buildtools/linux64': {
-    'packages': [
-      {
-        'package': 'gn/gn/linux-amd64',
-        'version': Var('gn_version'),
-      }
-    ],
-    'dep_type': 'cipd',
-    'condition': 'host_os == "linux"',
-  },
-  'buildtools/mac': {
-    'packages': [
-      {
-        'package': 'gn/gn/mac-${{arch}}',
-        'version': Var('gn_version'),
-      }
-    ],
-    'dep_type': 'cipd',
-    'condition': 'host_os == "mac"',
-  },
-  'buildtools/win': {
-    'packages': [
-      {
-        'package': 'gn/gn/windows-amd64',
-        'version': Var('gn_version'),
-      }
-    ],
-    'dep_type': 'cipd',
-    'condition': 'host_os == "win"',
-  },
+  # CIPD packages below.
   'crashpad/third_party/linux/clang/linux-amd64': {
     'packages': [
       {
@@ -160,9 +125,7 @@ hooks = [
       '--no_auth',
       '--bucket=chromium-clang-format',
       '--sha1_file',
-      'buildtools/mac/clang-format.{host_cpu}.sha1',
-      '--output',
-      'buildtools/mac/clang-format',
+      'buildtools/mac/clang-format.sha1',
     ],
   },
   {

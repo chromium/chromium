@@ -18,7 +18,6 @@
 #include <windows.h>
 #include <sys/time.h>
 
-#include <string>
 #include <vector>
 
 #include "build/build_config.h"
@@ -78,7 +77,6 @@ class ProcessReaderWin {
     ~Thread() {}
 
     ThreadContext context;
-    std::string name;
     uint64_t id;
     WinVMAddress teb_address;
     WinVMSize teb_size;

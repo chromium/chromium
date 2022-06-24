@@ -75,7 +75,6 @@ ThreadSnapshotIOSIntermediateDump::ThreadSnapshotIOSIntermediateDump()
 #endif
       context_(),
       stack_(),
-      thread_name_(),
       thread_id_(0),
       thread_specific_data_address_(0),
       suspend_count_(0),
@@ -101,7 +100,6 @@ bool ThreadSnapshotIOSIntermediateDump::Initialize(
   GetDataValueFromMap(thread_data, Key::kThreadID, &thread_id_);
   GetDataValueFromMap(
       thread_data, Key::kThreadDataAddress, &thread_specific_data_address_);
-  GetDataStringFromMap(thread_data, Key::kThreadName, &thread_name_);
 
 #if defined(ARCH_CPU_X86_64)
   typedef x86_thread_state64_t thread_state_type;
@@ -218,11 +216,6 @@ const MemorySnapshot* ThreadSnapshotIOSIntermediateDump::Stack() const {
 uint64_t ThreadSnapshotIOSIntermediateDump::ThreadID() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return thread_id_;
-}
-
-std::string ThreadSnapshotIOSIntermediateDump::ThreadName() const {
-  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return thread_name_;
 }
 
 int ThreadSnapshotIOSIntermediateDump::SuspendCount() const {

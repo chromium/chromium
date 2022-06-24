@@ -27,7 +27,6 @@
 
 #include <array>
 #include <iterator>
-#include <mutex>
 #include <tuple>
 
 #include "base/logging.h"
@@ -264,15 +263,15 @@ class CrashReportDatabaseMac : public CrashReportDatabase {
   void CleanOrphanedAttachments();
 
   Settings& SettingsInternal() {
-    std::call_once(settings_init_, [this]() {
+    if (!settings_init_)
       settings_.Initialize(base_dir_.Append(kSettings));
-    });
+    settings_init_ = true;
     return settings_;
   }
 
   base::FilePath base_dir_;
   Settings settings_;
-  std::once_flag settings_init_;
+  bool settings_init_;
   bool xattr_new_names_;
   InitializationStateDcheck initialized_;
 };
@@ -281,7 +280,7 @@ CrashReportDatabaseMac::CrashReportDatabaseMac(const base::FilePath& path)
     : CrashReportDatabase(),
       base_dir_(path),
       settings_(),
-      settings_init_(),
+      settings_init_(false),
       xattr_new_names_(false),
       initialized_() {}
 

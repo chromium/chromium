@@ -26,18 +26,15 @@ namespace internal {
 ThreadSnapshotMinidump::ThreadSnapshotMinidump()
     : ThreadSnapshot(),
       minidump_thread_(),
-      thread_name_(),
       context_(),
       stack_(),
       initialized_() {}
 
 ThreadSnapshotMinidump::~ThreadSnapshotMinidump() {}
 
-bool ThreadSnapshotMinidump::Initialize(
-    FileReaderInterface* file_reader,
-    RVA minidump_thread_rva,
-    CPUArchitecture arch,
-    const std::map<uint32_t, std::string>& thread_names) {
+bool ThreadSnapshotMinidump::Initialize(FileReaderInterface* file_reader,
+                                        RVA minidump_thread_rva,
+                                        CPUArchitecture arch) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
   std::vector<unsigned char> minidump_context;
 
@@ -70,10 +67,6 @@ bool ThreadSnapshotMinidump::Initialize(
   if (!stack_.Initialize(file_reader, stack_info_location)) {
     return false;
   }
-  const auto thread_name_iter = thread_names.find(minidump_thread_.ThreadId);
-  if (thread_name_iter != thread_names.end()) {
-    thread_name_ = thread_name_iter->second;
-  }
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
@@ -82,11 +75,6 @@ bool ThreadSnapshotMinidump::Initialize(
 uint64_t ThreadSnapshotMinidump::ThreadID() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return minidump_thread_.ThreadId;
-}
-
-std::string ThreadSnapshotMinidump::ThreadName() const {
-  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return thread_name_;
 }
 
 int ThreadSnapshotMinidump::SuspendCount() const {

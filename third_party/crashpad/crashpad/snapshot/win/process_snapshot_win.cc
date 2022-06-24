@@ -45,7 +45,8 @@ ProcessSnapshotWin::ProcessSnapshotWin()
       annotations_simple_map_(),
       snapshot_time_(),
       options_(),
-      initialized_() {}
+      initialized_() {
+}
 
 ProcessSnapshotWin::~ProcessSnapshotWin() {
 }
