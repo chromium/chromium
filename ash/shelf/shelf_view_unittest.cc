@@ -667,14 +667,16 @@ TEST_P(LtrRtlShelfViewTest, VisibleShelfItemsBounds) {
   AddAppShortcut();
   const auto app_id = AddApp();
 
-  EXPECT_EQ(model_->item_count(), shelf_view_->number_of_visible_apps());
+  EXPECT_EQ(static_cast<size_t>(model_->item_count()),
+            shelf_view_->number_of_visible_apps());
   const gfx::Rect visible_items_bounds =
       test_api_->visible_shelf_item_bounds_union();
 
   // Pin the app with `app_id` and expect that the visible items bounds union
   // remains the same.
   SetShelfItemTypeToAppShortcut(app_id);
-  EXPECT_EQ(model_->item_count(), shelf_view_->number_of_visible_apps());
+  EXPECT_EQ(static_cast<size_t>(model_->item_count()),
+            shelf_view_->number_of_visible_apps());
   EXPECT_EQ(visible_items_bounds, test_api_->visible_shelf_item_bounds_union());
 }
 
@@ -803,7 +805,7 @@ TEST_P(LtrRtlShelfViewTest, SimultaneousDrag) {
 TEST_F(ShelfViewDragToPinTest, DragAppsToPinAndUnpin) {
   std::vector<std::pair<ShelfID, views::View*>> id_map;
   SetupForDragTest(&id_map);
-  int pinned_apps_size = id_map.size();
+  size_t pinned_apps_size = id_map.size();
 
   const ShelfID open_app_id = AddApp();
   id_map.emplace_back(open_app_id, GetButtonByID(open_app_id));
@@ -869,7 +871,7 @@ TEST_F(ShelfViewDragToPinTest, DragAppsToPinAndUnpin) {
 TEST_F(ShelfViewDragToPinTest, BlockBrowserShortcutFromUnpinningByDragging) {
   std::vector<std::pair<ShelfID, views::View*>> id_map;
   SetupForDragTest(&id_map);
-  const int pinned_apps_size = id_map.size();
+  const size_t pinned_apps_size = id_map.size();
 
   const ShelfID open_app_id = AddApp();
   id_map.emplace_back(open_app_id, GetButtonByID(open_app_id));
@@ -898,7 +900,7 @@ TEST_F(ShelfViewDragToPinTest, BlockBrowserShortcutFromUnpinningByDragging) {
 TEST_F(ShelfViewDragToPinTest, DragAppAroundSeparator) {
   std::vector<std::pair<ShelfID, views::View*>> id_map;
   SetupForDragTest(&id_map);
-  const int pinned_apps_size = id_map.size();
+  const size_t pinned_apps_size = id_map.size();
 
   const ShelfID open_app_id = AddApp();
   id_map.emplace_back(open_app_id, GetButtonByID(open_app_id));
@@ -913,8 +915,8 @@ TEST_F(ShelfViewDragToPinTest, DragAppAroundSeparator) {
 
   // Drag an unpinned open app that is beside the separator around and check
   // that the separator is correctly placed.
-  ASSERT_EQ(model_->ItemIndexByID(open_app_id),
-            test_api_->GetSeparatorIndex() + 1);
+  ASSERT_EQ(static_cast<size_t>(model_->ItemIndexByID(open_app_id)),
+            test_api_->GetSeparatorIndex().value() + 1);
   gfx::Point unpinned_app_location =
       GetButtonCenter(GetButtonByID(open_app_id));
   generator->set_current_screen_location(unpinned_app_location);
@@ -924,9 +926,9 @@ TEST_F(ShelfViewDragToPinTest, DragAppAroundSeparator) {
   generator->MoveMouseBy(-button_width / 4, 0);
   EXPECT_EQ(1, GetHapticTickEventsCount());
   // In this case, the separator is moved to the end of the shelf so it is set
-  // invisible and the |separator_index_| will be updated to -1.
+  // invisible and the |separator_index_| will be updated to nullopt.
   EXPECT_FALSE(test_api_->IsSeparatorVisible());
-  EXPECT_EQ(test_api_->GetSeparatorIndex(), -1);
+  EXPECT_FALSE(test_api_->GetSeparatorIndex().has_value());
   // Drag the mouse slightly to the right where the dragged app will stay at the
   // same index.
   generator->MoveMouseBy(button_width / 2, 0);
@@ -940,7 +942,8 @@ TEST_F(ShelfViewDragToPinTest, DragAppAroundSeparator) {
   // separator is correctly placed. Check that the dragged app is not a browser
   // shortcut, which can not be dragged across the separator.
   ASSERT_NE(model_->items()[pinned_apps_size - 1].type, TYPE_BROWSER_SHORTCUT);
-  ASSERT_EQ(model_->ItemIndexByID(id_map[pinned_apps_size - 1].first),
+  ASSERT_EQ(static_cast<size_t>(
+                model_->ItemIndexByID(id_map[pinned_apps_size - 1].first)),
             test_api_->GetSeparatorIndex());
   gfx::Point pinned_app_location =
       GetButtonCenter(id_map[pinned_apps_size - 1].first);
@@ -1383,7 +1386,7 @@ TEST_P(LtrRtlShelfViewTest, ShouldHideTooltipTest) {
       << "We should not be showing the app list";
 
   // The tooltip shouldn't hide if the mouse is on normal buttons.
-  for (int i = 0; i < test_api_->GetButtonCount(); i++) {
+  for (size_t i = 0; i < test_api_->GetButtonCount(); i++) {
     ShelfAppButton* button = test_api_->GetButton(i);
     if (!button)
       continue;
@@ -1397,7 +1400,7 @@ TEST_P(LtrRtlShelfViewTest, ShouldHideTooltipTest) {
   const int left = home_button->GetBoundsInScreen().right();
   // Find the first shelf button that's to the right of the home button.
   int right = 0;
-  for (int i = 0; i < test_api_->GetButtonCount(); ++i) {
+  for (size_t i = 0; i < test_api_->GetButtonCount(); ++i) {
     ShelfAppButton* button = test_api_->GetButton(i);
     if (!button)
       continue;
@@ -1423,7 +1426,7 @@ TEST_P(LtrRtlShelfViewTest, ShouldHideTooltipTest) {
 
   // The tooltip should hide if it's outside of all buttons.
   gfx::Rect all_area;
-  for (int i = 0; i < test_api_->GetButtonCount(); i++) {
+  for (size_t i = 0; i < test_api_->GetButtonCount(); i++) {
     ShelfAppButton* button = test_api_->GetButton(i);
     if (!button)
       continue;
@@ -1447,7 +1450,7 @@ TEST_P(LtrRtlShelfViewTest, ShouldHideTooltipWithAppListWindowTest) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
 
   // The tooltip shouldn't hide if the mouse is on normal buttons.
-  for (int i = 2; i < test_api_->GetButtonCount(); i++) {
+  for (size_t i = 2; i < test_api_->GetButtonCount(); i++) {
     ShelfAppButton* button = test_api_->GetButton(i);
     if (!button)
       continue;
@@ -2226,16 +2229,16 @@ TEST_P(LtrRtlShelfViewTest, FirstAndLastVisibleIndex) {
   // At the start, the only visible app on the shelf is the browser app button
   // (index 0).
   ASSERT_EQ(1u, shelf_view_->visible_views_indices().size());
-  EXPECT_EQ(0, shelf_view_->visible_views_indices()[0]);
+  EXPECT_EQ(0u, shelf_view_->visible_views_indices()[0]);
   // By enabling tablet mode, the back button (index 0) should become visible,
   // but that does not change the first and last visible indices.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   ASSERT_EQ(1u, shelf_view_->visible_views_indices().size());
-  EXPECT_EQ(0, shelf_view_->visible_views_indices()[0]);
+  EXPECT_EQ(0u, shelf_view_->visible_views_indices()[0]);
   // Turn tablet mode off again.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   ASSERT_EQ(1u, shelf_view_->visible_views_indices().size());
-  EXPECT_EQ(0, shelf_view_->visible_views_indices()[0]);
+  EXPECT_EQ(0u, shelf_view_->visible_views_indices()[0]);
 }
 
 TEST_P(LtrRtlShelfViewTest, ReplacingDelegateCancelsContextMenu) {
@@ -2344,7 +2347,7 @@ TEST_P(LtrRtlShelfViewTest, PartyingItemsHiddenFromShelf) {
   // Start shelf party.
   model_->ToggleShelfParty();
   {
-    const std::vector<int> not_partying = {1, 3};
+    const std::vector<size_t> not_partying = {1, 3};
     EXPECT_EQ(not_partying, shelf_view_->visible_views_indices());
   }
   test_api_->RunMessageLoopUntilAnimationsDone();
@@ -2354,7 +2357,7 @@ TEST_P(LtrRtlShelfViewTest, PartyingItemsHiddenFromShelf) {
   // End shelf party.
   model_->ToggleShelfParty();
   {
-    const std::vector<int> not_partying = {0, 1, 2, 3};
+    const std::vector<size_t> not_partying = {0, 1, 2, 3};
     EXPECT_EQ(not_partying, shelf_view_->visible_views_indices());
   }
   test_api_->RunMessageLoopUntilAnimationsDone();
@@ -2457,21 +2460,21 @@ TEST_F(GhostImageShelfViewTest, ShowGhostImageOnDrag) {
 
   EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_FALSE(shelf_view_->drag_view());
-  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+  EXPECT_FALSE(shelf_view_->current_ghost_view_index().has_value());
 
   ShelfID second_app_id = id_map[1].first;
   GetEventGenerator()->MoveTouch(GetButtonCenter(second_app_id));
 
   EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_TRUE(shelf_view_->drag_view());
-  EXPECT_EQ(1, shelf_view_->current_ghost_view_index());
+  EXPECT_EQ(1u, shelf_view_->current_ghost_view_index());
 
   GetEventGenerator()->ReleaseTouch();
   EXPECT_EQ(0, GetHapticTickEventsCount());
 
   EXPECT_FALSE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_FALSE(shelf_view_->drag_view());
-  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+  EXPECT_FALSE(shelf_view_->current_ghost_view_index().has_value());
 }
 
 // Tests that the ghost image is removed if the app is dragged outide of the
@@ -2486,14 +2489,14 @@ TEST_F(GhostImageShelfViewTest, RemoveGhostImageForRipOffDrag) {
 
   EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_FALSE(shelf_view_->drag_view());
-  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+  EXPECT_FALSE(shelf_view_->current_ghost_view_index().has_value());
 
   ShelfID second_app_id = id_map[1].first;
   GetEventGenerator()->MoveTouch(GetButtonCenter(second_app_id));
 
   EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_TRUE(shelf_view_->drag_view());
-  EXPECT_EQ(1, shelf_view_->current_ghost_view_index());
+  EXPECT_EQ(1u, shelf_view_->current_ghost_view_index());
 
   // The rip off threshold. Taken from |kRipOffDistance| in shelf_view.cc.
   constexpr int kRipOffDistance = 48;
@@ -2503,14 +2506,14 @@ TEST_F(GhostImageShelfViewTest, RemoveGhostImageForRipOffDrag) {
 
   EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_TRUE(shelf_view_->drag_view());
-  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+  EXPECT_FALSE(shelf_view_->current_ghost_view_index().has_value());
 
   GetEventGenerator()->ReleaseTouch();
   EXPECT_EQ(0, GetHapticTickEventsCount());
 
   EXPECT_FALSE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_FALSE(shelf_view_->drag_view());
-  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+  EXPECT_FALSE(shelf_view_->current_ghost_view_index().has_value());
 }
 
 // Disabled as likely to cause builder failure, see  https://crbug.com/1334936.
@@ -2526,14 +2529,14 @@ TEST_F(GhostImageShelfViewTest, DISABLED_ReinsertGhostImageAfterRipOffDrag) {
 
   EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_FALSE(shelf_view_->drag_view());
-  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+  EXPECT_FALSE(shelf_view_->current_ghost_view_index().has_value());
 
   ShelfID second_app_id = id_map[1].first;
   GetEventGenerator()->MoveTouch(GetButtonCenter(second_app_id));
 
   EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_TRUE(shelf_view_->drag_view());
-  EXPECT_EQ(1, shelf_view_->current_ghost_view_index());
+  EXPECT_EQ(1u, shelf_view_->current_ghost_view_index());
 
   // The rip off threshold. Taken from |kRipOffDistance| in shelf_view.cc.
   constexpr int kRipOffDistance = 48;
@@ -2543,20 +2546,20 @@ TEST_F(GhostImageShelfViewTest, DISABLED_ReinsertGhostImageAfterRipOffDrag) {
 
   EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_TRUE(shelf_view_->drag_view());
-  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+  EXPECT_FALSE(shelf_view_->current_ghost_view_index().has_value());
 
   GetEventGenerator()->MoveTouch(GetButtonCenter(second_app_id));
 
   EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_TRUE(shelf_view_->drag_view());
-  EXPECT_EQ(1, shelf_view_->current_ghost_view_index());
+  EXPECT_EQ(1u, shelf_view_->current_ghost_view_index());
 
   GetEventGenerator()->ReleaseTouch();
   EXPECT_EQ(0, GetHapticTickEventsCount());
 
   EXPECT_FALSE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_FALSE(shelf_view_->drag_view());
-  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+  EXPECT_FALSE(shelf_view_->current_ghost_view_index().has_value());
 }
 
 class ShelfViewVisibleBoundsTest : public ShelfViewTest,
@@ -2572,7 +2575,7 @@ class ShelfViewVisibleBoundsTest : public ShelfViewTest,
     gfx::Rect visible_bounds = shelf_view_->GetVisibleItemsBoundsInScreen();
     gfx::Rect shelf_bounds = shelf_view_->GetBoundsInScreen();
     EXPECT_TRUE(shelf_bounds.Contains(visible_bounds));
-    for (int i = 0; i < test_api_->GetButtonCount(); ++i)
+    for (size_t i = 0; i < test_api_->GetButtonCount(); ++i)
       if (ShelfAppButton* button = test_api_->GetButton(i)) {
         if (button->GetVisible())
           EXPECT_TRUE(visible_bounds.Contains(button->GetBoundsInScreen()));
@@ -3227,7 +3230,7 @@ TEST_F(ShelfViewFocusTest, Basic) {
   // There are five buttons, including 3 app buttons. The back button and
   // launcher are always there, the browser shortcut is added in
   // ShelfViewTest and the two test apps added in ShelfViewFocusTest.
-  EXPECT_EQ(3, test_api_->GetButtonCount());
+  EXPECT_EQ(3u, test_api_->GetButtonCount());
   EXPECT_TRUE(GetPrimaryShelf()->navigation_widget()->IsActive());
 
   // The home button is focused initially because the back button is only

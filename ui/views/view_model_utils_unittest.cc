@@ -32,30 +32,30 @@ TEST(ViewModelUtils, DetermineMoveIndex) {
   model.set_ideal_bounds(1, gfx::Rect(10, 0, 1000, 10));
   model.set_ideal_bounds(2, gfx::Rect(1010, 0, 2, 10));
 
-  EXPECT_EQ(0, ViewModelUtils::DetermineMoveIndex(model, &v1, true, -10, 0));
-  EXPECT_EQ(0, ViewModelUtils::DetermineMoveIndex(model, &v1, true, 4, 0));
-  EXPECT_EQ(1, ViewModelUtils::DetermineMoveIndex(model, &v1, true, 506, 0));
-  EXPECT_EQ(2, ViewModelUtils::DetermineMoveIndex(model, &v1, true, 1010, 0));
-  EXPECT_EQ(2, ViewModelUtils::DetermineMoveIndex(model, &v1, true, 2000, 0));
+  EXPECT_EQ(0u, ViewModelUtils::DetermineMoveIndex(model, &v1, true, -10, 0));
+  EXPECT_EQ(0u, ViewModelUtils::DetermineMoveIndex(model, &v1, true, 4, 0));
+  EXPECT_EQ(1u, ViewModelUtils::DetermineMoveIndex(model, &v1, true, 506, 0));
+  EXPECT_EQ(2u, ViewModelUtils::DetermineMoveIndex(model, &v1, true, 1010, 0));
+  EXPECT_EQ(2u, ViewModelUtils::DetermineMoveIndex(model, &v1, true, 2000, 0));
 
-  EXPECT_EQ(0, ViewModelUtils::DetermineMoveIndex(model, &v2, true, -10, 0));
-  EXPECT_EQ(0, ViewModelUtils::DetermineMoveIndex(model, &v2, true, 4, 0));
-  EXPECT_EQ(2, ViewModelUtils::DetermineMoveIndex(model, &v2, true, 12, 0));
+  EXPECT_EQ(0u, ViewModelUtils::DetermineMoveIndex(model, &v2, true, -10, 0));
+  EXPECT_EQ(0u, ViewModelUtils::DetermineMoveIndex(model, &v2, true, 4, 0));
+  EXPECT_EQ(2u, ViewModelUtils::DetermineMoveIndex(model, &v2, true, 12, 0));
 
   // Try the same when vertical.
   model.set_ideal_bounds(0, gfx::Rect(0, 0, 10, 10));
   model.set_ideal_bounds(1, gfx::Rect(0, 10, 10, 1000));
   model.set_ideal_bounds(2, gfx::Rect(0, 1010, 10, 2));
 
-  EXPECT_EQ(0, ViewModelUtils::DetermineMoveIndex(model, &v1, false, 0, -10));
-  EXPECT_EQ(0, ViewModelUtils::DetermineMoveIndex(model, &v1, false, 0, 4));
-  EXPECT_EQ(1, ViewModelUtils::DetermineMoveIndex(model, &v1, false, 0, 506));
-  EXPECT_EQ(2, ViewModelUtils::DetermineMoveIndex(model, &v1, false, 0, 1010));
-  EXPECT_EQ(2, ViewModelUtils::DetermineMoveIndex(model, &v1, false, 0, 2000));
+  EXPECT_EQ(0u, ViewModelUtils::DetermineMoveIndex(model, &v1, false, 0, -10));
+  EXPECT_EQ(0u, ViewModelUtils::DetermineMoveIndex(model, &v1, false, 0, 4));
+  EXPECT_EQ(1u, ViewModelUtils::DetermineMoveIndex(model, &v1, false, 0, 506));
+  EXPECT_EQ(2u, ViewModelUtils::DetermineMoveIndex(model, &v1, false, 0, 1010));
+  EXPECT_EQ(2u, ViewModelUtils::DetermineMoveIndex(model, &v1, false, 0, 2000));
 
-  EXPECT_EQ(0, ViewModelUtils::DetermineMoveIndex(model, &v2, false, 0, -10));
-  EXPECT_EQ(0, ViewModelUtils::DetermineMoveIndex(model, &v2, false, 0, 4));
-  EXPECT_EQ(2, ViewModelUtils::DetermineMoveIndex(model, &v2, false, 0, 12));
+  EXPECT_EQ(0u, ViewModelUtils::DetermineMoveIndex(model, &v2, false, 0, -10));
+  EXPECT_EQ(0u, ViewModelUtils::DetermineMoveIndex(model, &v2, false, 0, 4));
+  EXPECT_EQ(2u, ViewModelUtils::DetermineMoveIndex(model, &v2, false, 0, 12));
 }
 
 }  // namespace views

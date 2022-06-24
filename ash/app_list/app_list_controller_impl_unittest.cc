@@ -340,7 +340,7 @@ TEST_F(AppListControllerImplTest, CheckTabOrderAfterDragIconToShelf) {
 
   // Pins |item2| by dragging it to ShelfView.
   ShelfView* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
-  ASSERT_EQ(0, shelf_view->view_model()->view_size());
+  ASSERT_EQ(0u, shelf_view->view_model()->view_size());
   GetEventGenerator()->MoveMouseTo(item2->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->PressLeftButton();
   item2->FireMouseDragTimerForTest();
@@ -348,7 +348,7 @@ TEST_F(AppListControllerImplTest, CheckTabOrderAfterDragIconToShelf) {
       shelf_view->GetBoundsInScreen().CenterPoint());
   ASSERT_TRUE(GetAppsGridView()->FireDragToShelfTimerForTest());
   GetEventGenerator()->ReleaseLeftButton();
-  ASSERT_EQ(1, shelf_view->view_model()->view_size());
+  ASSERT_EQ(1u, shelf_view->view_model()->view_size());
 
   // Verifies that the dragged item has the correct previous/next focusable
   // view after drag.

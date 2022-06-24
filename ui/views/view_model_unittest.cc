@@ -17,7 +17,7 @@ namespace {
 // Returns a string containing the x-coordinate of each of the views in |model|.
 std::string BoundsString(const ViewModel& model) {
   std::string result;
-  for (int i = 0; i < model.view_size(); ++i) {
+  for (size_t i = 0; i < model.view_size(); ++i) {
     if (i != 0)
       result += " ";
     result += base::NumberToString(model.ideal_bounds(i).x());
@@ -28,7 +28,7 @@ std::string BoundsString(const ViewModel& model) {
 // Returns a string containing the id of each of the views in |model|.
 std::string ViewIDsString(const ViewModel& model) {
   std::string result;
-  for (int i = 0; i < model.view_size(); ++i) {
+  for (size_t i = 0; i < model.view_size(); ++i) {
     if (i != 0)
       result += " ";
     result += base::NumberToString(model.view_at(i)->GetID());
@@ -42,12 +42,12 @@ TEST(ViewModel, BasicAssertions) {
   View v1;
   ViewModel model;
   model.Add(&v1, 0);
-  EXPECT_EQ(1, model.view_size());
+  EXPECT_EQ(1u, model.view_size());
   EXPECT_EQ(&v1, model.view_at(0));
   gfx::Rect v1_bounds(1, 2, 3, 4);
   model.set_ideal_bounds(0, v1_bounds);
   EXPECT_EQ(v1_bounds, model.ideal_bounds(0));
-  EXPECT_EQ(0, model.GetIndexOfView(&v1));
+  EXPECT_EQ(0u, model.GetIndexOfView(&v1));
 }
 
 TEST(ViewModel, Move) {

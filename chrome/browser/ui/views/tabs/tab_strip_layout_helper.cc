@@ -93,9 +93,9 @@ std::vector<TabSlotView*> TabStripLayoutHelper::GetTabSlotViews() const {
   return views;
 }
 
-int TabStripLayoutHelper::GetPinnedTabCount() const {
+size_t TabStripLayoutHelper::GetPinnedTabCount() const {
   views::ViewModelT<Tab>* tabs = get_tabs_callback_.Run();
-  int pinned_count = 0;
+  size_t pinned_count = 0;
   while (pinned_count < tabs->view_size() &&
          tabs->view_at(pinned_count)->data().pinned) {
     pinned_count++;
