@@ -67,18 +67,18 @@ void NTPTilesInternalsMessageHandler::RegisterMessages(
     NTPTilesInternalsMessageHandlerClient* client) {
   client_ = client;
 
-  client_->RegisterDeprecatedMessageCallback(
+  client_->RegisterMessageCallback(
       "registerForEvents",
       base::BindRepeating(
           &NTPTilesInternalsMessageHandler::HandleRegisterForEvents,
           base::Unretained(this)));
 
-  client_->RegisterDeprecatedMessageCallback(
+  client_->RegisterMessageCallback(
       "update",
       base::BindRepeating(&NTPTilesInternalsMessageHandler::HandleUpdate,
                           base::Unretained(this)));
 
-  client_->RegisterDeprecatedMessageCallback(
+  client_->RegisterMessageCallback(
       "viewPopularSitesJson",
       base::BindRepeating(
           &NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson,
@@ -86,7 +86,7 @@ void NTPTilesInternalsMessageHandler::RegisterMessages(
 }
 
 void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   if (!client_->SupportsNTPTiles()) {
     base::Value::Dict disabled;
     disabled.Set("topSites", false);
@@ -98,7 +98,7 @@ void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
     SendTiles(NTPTilesVector(), FaviconResultMap());
     return;
   }
-  DCHECK_EQ(0u, args->GetListDeprecated().size());
+  DCHECK_EQ(0u, args.size());
 
   popular_sites_json_.clear();
   most_visited_sites_ = client_->MakeMostVisitedSites();
@@ -107,13 +107,13 @@ void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
 }
 
 void NTPTilesInternalsMessageHandler::HandleUpdate(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   if (!client_->SupportsNTPTiles()) {
     return;
   }
 
-  DCHECK_EQ(1u, args->GetListDeprecated().size());
-  const base::Value& dict = args->GetListDeprecated()[0];
+  DCHECK_EQ(1u, args.size());
+  const base::Value& dict = args[0];
   DCHECK(dict.is_dict());
 
   PrefService* prefs = client_->GetPrefs();
@@ -165,8 +165,8 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
 }
 
 void NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson(
-    const base::ListValue* args) {
-  DCHECK_EQ(0u, args->GetListDeprecated().size());
+    const base::Value::List& args) {
+  DCHECK_EQ(0u, args.size());
   if (!most_visited_sites_ ||
       !most_visited_sites_->DoesSourceExist(ntp_tiles::TileSource::POPULAR)) {
     return;

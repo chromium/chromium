@@ -12,12 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/values.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/ntp_tiles/most_visited_sites.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace favicon {
 class FaviconService;
@@ -55,10 +52,9 @@ class NTPTilesInternalsMessageHandler : public MostVisitedSites::Observer {
                                     favicon_base::FaviconRawBitmapResult>;
 
   // Callbacks registered in RegisterMessages().
-  void HandleRegisterForEvents(const base::ListValue* args);
-  void HandleUpdate(const base::ListValue* args);
-  void HandleFetchSuggestions(const base::ListValue* args);
-  void HandleViewPopularSitesJson(const base::ListValue* args);
+  void HandleRegisterForEvents(const base::Value::List& args);
+  void HandleUpdate(const base::Value::List& args);
+  void HandleViewPopularSitesJson(const base::Value::List& args);
 
   void SendSourceInfo();
   void SendTiles(const NTPTilesVector& tiles,
