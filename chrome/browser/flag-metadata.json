@@ -1365,6 +1365,14 @@
     "expiry_milestone": 106
   },
   {
+    "name": "download-bubble-v2",
+    "owners": [
+      "bhatiarohit",
+      "chrome-safebrowsing-alerts@google.com"
+    ],
+    "expiry_milestone": 106
+  },
+  {
     "name": "download-calendar",
     "owners": [ "ewannpv", "gambard" ],
     "expiry_milestone": 107

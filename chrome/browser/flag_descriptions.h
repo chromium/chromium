@@ -638,6 +638,9 @@ extern const char kDownloadAutoResumptionNativeDescription[];
 extern const char kDownloadBubbleName[];
 extern const char kDownloadBubbleDescription[];
 
+extern const char kDownloadBubbleV2Name[];
+extern const char kDownloadBubbleV2Description[];
+
 extern const char kDownloadLaterName[];
 extern const char kDownloadLaterDescription[];
 

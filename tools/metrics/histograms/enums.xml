@@ -56394,6 +56394,7 @@ from previous Chrome versions.
   <int value="-1262303946" label="SubresourceRedirectPreviews:disabled"/>
   <int value="-1262152606" label="disable-lock-screen-apps"/>
   <int value="-1261972671" label="OmniboxDocumentProvider:disabled"/>
+  <int value="-1261699926" label="DownloadBubbleV2:disabled"/>
   <int value="-1261263046"
       label="RemoveUsageOfDeprecatedGaiaSigninEndpoint:disabled"/>
   <int value="-1261110018" label="AllowDisableTouchpadHapticFeedback:disabled"/>
@@ -56981,6 +56982,7 @@ from previous Chrome versions.
   <int value="-892297699" label="EditContext:enabled"/>
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
   <int value="-890517779" label="JXL:enabled"/>
+  <int value="-890224928" label="DownloadBubbleV2:enabled"/>
   <int value="-889670978" label="AssistantRoutines:disabled"/>
   <int value="-887101831" label="StoreHoursAndroid:disabled"/>
   <int value="-887094098" label="ForcedColors:enabled"/>

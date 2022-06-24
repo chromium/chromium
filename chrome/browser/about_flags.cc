@@ -8501,6 +8501,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsLacros | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(safe_browsing::kDownloadBubble)},
 
+    {"download-bubble-v2", flag_descriptions::kDownloadBubbleV2Name,
+     flag_descriptions::kDownloadBubbleV2Description,
+     kOsLinux | kOsLacros | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(safe_browsing::kDownloadBubbleV2)},
+
     {"unthrottled-nested-timeout",
      flag_descriptions::kUnthrottledNestedTimeoutName,
      flag_descriptions::kUnthrottledNestedTimeoutDescription, kOsAll,

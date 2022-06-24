@@ -11,6 +11,9 @@ namespace download {
 
 bool IsDownloadBubbleEnabled(Profile* profile);
 
+// V2 is only eligible to be enabled if V1 is also enabled.
+bool IsDownloadBubbleV2Enabled(Profile* profile);
+
 bool IsDownloadConnectorEnabled(Profile* profile);
 
 }  // namespace download

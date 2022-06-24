@@ -70,6 +70,9 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
 const base::Feature kDownloadBubble{"DownloadBubble",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDownloadBubbleV2{"DownloadBubbleV2",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kEnhancedProtection {
   "SafeBrowsingEnhancedProtection",
 #if BUILDFLAG(IS_IOS)
@@ -179,6 +182,7 @@ constexpr struct {
     {&kConnectorsScanningReportOnlyUI, true},
     {&kDelayedWarnings, true},
     {&kDownloadBubble, true},
+    {&kDownloadBubbleV2, true},
     {&kEnhancedProtection, true},
     {&kEnhancedProtectionPhase2IOS, true},
     {&kExtensionTelemetry, true},

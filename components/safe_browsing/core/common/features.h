@@ -69,6 +69,11 @@ extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 // Whether to use download bubble instead of download shelf.
 extern const base::Feature kDownloadBubble;
 
+// The V2 of the download bubble, consisting of features that were not available
+// on the download shelf. This is only eligible to be enabled when
+// kDownloadBubble is already enabled.
+extern const base::Feature kDownloadBubbleV2;
+
 // Enables Enhanced Safe Browsing.
 extern const base::Feature kEnhancedProtection;
 

@@ -39,6 +39,11 @@ bool IsDownloadBubbleEnabled(Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+bool IsDownloadBubbleV2Enabled(Profile* profile) {
+  return IsDownloadBubbleEnabled(profile) &&
+         base::FeatureList::IsEnabled(safe_browsing::kDownloadBubbleV2);
+}
+
 bool IsDownloadConnectorEnabled(Profile* profile) {
   auto* connector_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(

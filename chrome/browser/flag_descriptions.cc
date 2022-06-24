@@ -1079,6 +1079,12 @@ const char kDownloadBubbleName[] = "Enable download bubble";
 const char kDownloadBubbleDescription[] =
     "Enables the download bubble instead of the download shelf.";
 
+const char kDownloadBubbleV2Name[] = "Enable download bubble V2";
+const char kDownloadBubbleV2Description[] =
+    "Adds features to the download bubble not available on the download shelf. "
+    "Only works if the base download bubble flag download-bubble is also "
+    "enabled.";
+
 const char kDownloadLaterName[] = "Enable download later";
 const char kDownloadLaterDescription[] = "Enables download later feature.";
 
