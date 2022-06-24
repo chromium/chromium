@@ -76,6 +76,7 @@
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_extension_observer.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
+#include "chromeos/crosapi/mojom/wallpaper.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/lacros/lacros_service_never_blocking_state.h"
@@ -414,6 +415,9 @@ LacrosService::LacrosService()
                   Crosapi::MethodMinVersions::kBindUrlHandlerMinVersion>();
   ConstructRemote<crosapi::mojom::AppPublisher, &Crosapi::BindWebAppPublisher,
                   Crosapi::MethodMinVersions::kBindWebAppPublisherMinVersion>();
+  ConstructRemote<crosapi::mojom::Wallpaper,
+                  &crosapi::mojom::Crosapi::BindWallpaper,
+                  Crosapi::MethodMinVersions::kBindWallpaperMinVersion>();
   ConstructRemote<crosapi::mojom::WebAppService,
                   &crosapi::mojom::Crosapi::BindWebAppService,
                   Crosapi::MethodMinVersions::kBindWebAppServiceMinVersion>();

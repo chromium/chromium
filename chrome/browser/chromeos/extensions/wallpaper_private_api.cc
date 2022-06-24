@@ -53,6 +53,7 @@
 #include "url/gurl.h"
 
 using base::Value;
+using wallpaper_api_util::GenerateThumbnail;
 namespace wallpaper_base = extensions::api::wallpaper;
 namespace wallpaper_private = extensions::api::wallpaper_private;
 namespace set_wallpaper_if_exists = wallpaper_private::SetWallpaperIfExists;
@@ -428,7 +429,7 @@ void WallpaperPrivateSetCustomWallpaperFunction::OnWallpaperDecoded(
       base::FilePath(params->file_name).BaseName().value();
   WallpaperControllerClientImpl::Get()->SetCustomWallpaper(
       account_id_, file_name, layout, image, params->preview_mode);
-  unsafe_wallpaper_decoder_ = nullptr;
+  wallpaper_decoder_ = nullptr;
 
   if (params->generate_thumbnail) {
     image.EnsureRepsForSupportedScales();

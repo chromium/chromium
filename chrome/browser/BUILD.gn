@@ -5278,6 +5278,8 @@ static_library("browser") {
       "chromeos/extensions/info_private_api.h",
       "chromeos/extensions/public_session_permission_helper.cc",
       "chromeos/extensions/public_session_permission_helper.h",
+      "chromeos/extensions/wallpaper_api.cc",
+      "chromeos/extensions/wallpaper_api.h",
       "chromeos/policy/dlp/clipboard_bubble.cc",
       "chromeos/policy/dlp/clipboard_bubble.h",
       "chromeos/policy/dlp/data_transfer_dlp_controller.cc",

@@ -4615,6 +4615,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/screen_manager_lacros_browsertest.cc",
       "../browser/lacros/tab_scrubber_lacros_browsertest.cc",
       "../browser/lacros/tablet_mode_lacros_browsertest.cc",
+      "../browser/lacros/wallpaper_lacros_browsertest.cc",
       "../browser/lacros/web_contents_can_go_back_observer_browsertest.cc",
       "../browser/metrics/structured/lacros_structured_metrics_recorder_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.cc",
@@ -4655,6 +4656,7 @@ if (is_chromeos_lacros) {
       "//components/proxy_config:proxy_config",
       "//components/services/app_service/public/cpp:intents",
       "//components/services/app_service/public/cpp:preferred_apps",
+      "//ui/gfx/codec",
       "//ui/platform_window",
     ]
 

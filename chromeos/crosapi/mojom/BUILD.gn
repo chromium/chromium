@@ -79,6 +79,7 @@ mojom("mojom") {
     "video_capture.mojom",
     "vpn_extension_observer.mojom",
     "vpn_service.mojom",
+    "wallpaper.mojom",
     "web_app_service.mojom",
     "web_app_types.mojom",
     "web_page_info.mojom",

@@ -96,6 +96,7 @@
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_extension_observer.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
+#include "chromeos/crosapi/mojom/wallpaper.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -210,7 +211,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 81,
+static_assert(crosapi::mojom::Crosapi::Version_ == 82,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -290,6 +291,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::VideoCaptureDeviceFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VpnExtensionObserver>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VpnService>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::Wallpaper>(),
     MakeInterfaceVersionEntry<crosapi::mojom::WebAppService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::WebPageInfoFactory>(),
     MakeInterfaceVersionEntry<device::mojom::HidConnection>(),
