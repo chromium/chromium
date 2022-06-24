@@ -68,4 +68,52 @@ HermesResponseStatus HermesResponseStatusFromErrorName(
   return HermesResponseStatus::kErrorUnknown;
 }
 
+std::ostream& operator<<(std::ostream& stream, HermesResponseStatus status) {
+  switch (status) {
+    case HermesResponseStatus::kSuccess:
+      return stream << "[kSuccess]";
+    case HermesResponseStatus::kErrorAlreadyDisabled:
+      return stream << "[kErrorAlreadyDisabled]";
+    case HermesResponseStatus::kErrorAlreadyEnabled:
+      return stream << "[kErrorAlreadyEnabled]";
+    case HermesResponseStatus::kErrorInvalidActivationCode:
+      return stream << "[kErrorInvalidActivationCode]";
+    case HermesResponseStatus::kErrorInvalidIccid:
+      return stream << "[kErrorInvalidIccid]";
+    case HermesResponseStatus::kErrorInvalidParameter:
+      return stream << "[kErrorInvalidParameter]";
+    case HermesResponseStatus::kErrorNeedConfirmationCode:
+      return stream << "[kErrorNeedConfirmationCode]";
+    case HermesResponseStatus::kErrorSendNotificationFailure:
+      return stream << "[kErrorSendNotificationFailure]";
+    case HermesResponseStatus::kErrorTestProfileInProd:
+      return stream << "[kErrorTestProfileInProd]";
+    case HermesResponseStatus::kErrorUnknown:
+      return stream << "[kErrorUnknown]";
+    case HermesResponseStatus::kErrorUnsupported:
+      return stream << "[kErrorUnsupported]";
+    case HermesResponseStatus::kErrorWrongState:
+      return stream << "[kErrorWrongState]";
+    case HermesResponseStatus::kErrorInvalidResponse:
+      return stream << "[kErrorInvalidResponse]";
+    case HermesResponseStatus::kErrorNoResponse:
+      return stream << "[kErrorNoResponse]";
+    case HermesResponseStatus::kErrorMalformedResponse:
+      return stream << "[kErrorMalformedResponse]";
+    case HermesResponseStatus::kErrorInternalLpaFailure:
+      return stream << "[kErrorInternalLpaFailure]";
+    case HermesResponseStatus::kErrorBadRequest:
+      return stream << "[kErrorBadRequest]";
+    case HermesResponseStatus::kErrorBadNotification:
+      return stream << "[kErrorBadNotification]";
+    case HermesResponseStatus::kErrorPendingProfile:
+      return stream << "[kErrorPendingProfile]";
+    case HermesResponseStatus::kErrorSendApduFailure:
+      return stream << "[kErrorSendApduFailure]";
+    case HermesResponseStatus::kErrorSendHttpsFailure:
+      return stream << "[kErrorSendHttpsFailure]";
+  }
+  return stream << (static_cast<int>(status));
+}
+
 }  // namespace chromeos

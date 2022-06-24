@@ -201,8 +201,7 @@ void CellularESimInstaller::OnProfileInstallResult(
 
   bool is_managed = IsManagedNetwork(new_shill_properties);
   if (status != HermesResponseStatus::kSuccess) {
-    NET_LOG(ERROR) << "Error Installing profile status="
-                   << static_cast<int>(status);
+    NET_LOG(ERROR) << "Error Installing profile status=" << status;
     RecordInstallESimProfileResult(
         InstallESimProfileResult::kHermesInstallFailed, is_managed,
         is_initial_install, is_install_via_qr_code);

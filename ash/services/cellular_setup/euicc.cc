@@ -281,8 +281,7 @@ void Euicc::OnRequestPendingProfilesResult(
   mojom::ESimOperationResult operation_result;
 
   if (status != HermesResponseStatus::kSuccess) {
-    NET_LOG(ERROR) << "Request Pending events failed status="
-                   << static_cast<int>(status);
+    NET_LOG(ERROR) << "Request Pending events failed status=" << status;
     metrics_result = RequestPendingProfilesResult::kHermesRequestFailed;
     operation_result = mojom::ESimOperationResult::kFailure;
   } else {

@@ -302,7 +302,7 @@ void ESimProfile::OnRequestPendingProfiles(
   bool success = status == HermesResponseStatus::kSuccess;
   if (!success) {
     NET_LOG(ERROR) << "Error requesting pending profiles to ensure profile "
-                   << "exists on Euicc; status: " << static_cast<int>(status);
+                   << "exists on Euicc; status: " << status;
   }
   OnRequestProfiles(std::move(callback), std::move(inhibit_lock), success);
 }
@@ -371,8 +371,7 @@ void ESimProfile::OnPendingProfileInstallResult(
   hermes_metrics::LogInstallPendingProfileResult(status);
 
   if (status != HermesResponseStatus::kSuccess) {
-    NET_LOG(ERROR) << "Error Installing pending profile status="
-                   << static_cast<int>(status);
+    NET_LOG(ERROR) << "Error Installing pending profile status=" << status;
     properties_->state = mojom::ProfileState::kPending;
     esim_manager_->NotifyESimProfileChanged(this);
     std::move(install_callback_).Run(InstallResultFromStatus(status));
