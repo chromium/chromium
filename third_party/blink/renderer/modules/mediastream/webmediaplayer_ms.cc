@@ -1084,13 +1084,16 @@ bool WebMediaPlayerMS::HasAvailableVideoFrame() const {
 void WebMediaPlayerMS::OnFrameHidden() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (watch_time_reporter_)
+  bool in_picture_in_picture =
+      client_->GetDisplayType() == DisplayType::kPictureInPicture;
+
+  if (watch_time_reporter_ && !in_picture_in_picture)
     watch_time_reporter_->OnHidden();
 
   // This method is called when the RenderFrame is sent to background or
   // suspended. During undoable tab closures OnHidden() may be called back to
   // back, so we can't rely on |render_frame_suspended_| being false here.
-  if (frame_deliverer_) {
+  if (frame_deliverer_ && !in_picture_in_picture) {
     PostCrossThreadTask(
         *io_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&FrameDeliverer::SetRenderFrameSuspended,

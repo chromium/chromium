@@ -143,8 +143,11 @@ class SuspendCaptureObserver : public GarbageCollected<SuspendCaptureObserver>,
         frame->Client()->MediaStreamDeviceObserver();
     if (!media_stream_device_observer)
       return;
-
-    bool suspend = !GetPage()->IsPageVisible();
+    // Don't suspend media capture devices if page visibility is
+    // PageVisibilityState::kHiddenButPainting (e.g. Picture-in-Picture).
+    // TODO(crbug.com/1339252): Add tests.
+    bool suspend = (GetPage()->GetVisibilityState() ==
+                    mojom::blink::PageVisibilityState::kHidden);
     MediaStreamDevices video_devices =
         media_stream_device_observer->GetNonScreenCaptureDevices();
     Platform::Current()->GetVideoCaptureImplManager()->SuspendDevices(
