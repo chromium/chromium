@@ -178,7 +178,14 @@ bool ReadAnythingAppController::IsStaticText(ui::AXNodeID ax_node_id) {
 }
 
 void ReadAnythingAppController::OnConnected() {
-  // TODO(abigailbklein): Connect via mojo to browser.
+  mojo::PendingReceiver<read_anything::mojom::PageHandlerFactory>
+      page_handler_factory_receiver =
+          page_handler_factory_.BindNewPipeAndPassReceiver();
+  page_handler_factory_->CreatePageHandler(
+      receiver_.BindNewPipeAndPassRemote(),
+      page_handler_.BindNewPipeAndPassReceiver());
+  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+      std::move(page_handler_factory_receiver));
 }
 
 ui::AXNode* ReadAnythingAppController::GetAXNode(ui::AXNodeID ax_node_id) {

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "chrome/common/accessibility/read_anything.mojom.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -38,7 +39,8 @@ class ReadAnythingAppControllerTest;
 //  lifetime as the render frame.
 //
 class ReadAnythingAppController
-    : public gin::Wrappable<ReadAnythingAppController> {
+    : public gin::Wrappable<ReadAnythingAppController>,
+      public read_anything::mojom::Page {
  public:
   static gin::WrapperInfo kWrapperInfo;
 
@@ -60,10 +62,13 @@ class ReadAnythingAppController
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
-  // TODO(abigailbklein): Add these methods to read_anything::mojom::Page.
-  void OnAXTreeDistilled(const ui::AXTreeUpdate& snapshot,
-                         const std::vector<ui::AXNodeID>& content_node_ids);
-  void OnFontNameChange(const std::string& new_font_name);
+  // read_anything::mojom::Page
+  void ShowContent(std::vector<read_anything::mojom::ContentNodePtr>
+                       content_nodes) override {}
+  void OnAXTreeDistilled(
+      const ui::AXTreeUpdate& snapshot,
+      const std::vector<ui::AXNodeID>& content_node_ids) override;
+  void OnFontNameChange(const std::string& new_font_name) override;
 
   // gin templates:
   std::vector<ui::AXNodeID> ContentNodeIds();
@@ -81,6 +86,9 @@ class ReadAnythingAppController
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id);
 
   content::RenderFrame* render_frame_;
+  mojo::Remote<read_anything::mojom::PageHandlerFactory> page_handler_factory_;
+  mojo::Remote<read_anything::mojom::PageHandler> page_handler_;
+  mojo::Receiver<read_anything::mojom::Page> receiver_{this};
 
   // State
   std::unique_ptr<ui::AXTree> tree_;

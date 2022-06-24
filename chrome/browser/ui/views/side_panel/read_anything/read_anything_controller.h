@@ -16,10 +16,7 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_node_id_forward.h"
-
-namespace ui {
-struct AXTreeUpdate;
-}
+#include "ui/accessibility/ax_tree_update_forward.h"
 
 class Browser;
 

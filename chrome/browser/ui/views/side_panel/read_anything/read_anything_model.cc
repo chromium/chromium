@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,6 +32,14 @@ void ReadAnythingModel::SetContent(std::vector<ContentNodePtr> content_nodes) {
   NotifyContentUpdated();
 }
 
+void ReadAnythingModel::SetDistilledAXTree(
+    ui::AXTreeUpdate snapshot,
+    std::vector<ui::AXNodeID> content_node_ids) {
+  snapshot_ = std::move(snapshot);
+  content_node_ids_ = std::move(content_node_ids);
+  NotifyAXTreeDistilled();
+}
+
 void ReadAnythingModel::NotifyFontNameUpdated() {
   for (Observer& obs : observers_) {
     obs.OnFontNameUpdated(font_name_);
@@ -40,6 +49,12 @@ void ReadAnythingModel::NotifyFontNameUpdated() {
 void ReadAnythingModel::NotifyContentUpdated() {
   for (Observer& obs : observers_) {
     obs.OnContentUpdated(content_nodes_);
+  }
+}
+
+void ReadAnythingModel::NotifyAXTreeDistilled() {
+  for (Observer& obs : observers_) {
+    obs.OnAXTreeDistilled(snapshot_, content_node_ids_);
   }
 }
 

@@ -10,11 +10,12 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything.mojom.h"
+#include "chrome/common/accessibility/read_anything.mojom.h"
 #include "content/public/browser/page.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "url/gurl.h"
 
 namespace {
@@ -128,6 +129,8 @@ void ReadAnythingController::DistillAXTree() {
 void ReadAnythingController::OnAXTreeDistilled(
     const ui::AXTreeUpdate& snapshot,
     const std::vector<ui::AXNodeID>& content_node_ids) {
+  // TODO(abigailbklein): Rather than the below, do
+  // model_->SetDistilledAXTree(snapshot, content_node_ids);
   // Unserialize the snapshot.
   ui::AXTree tree;
   bool success = tree.Unserialize(snapshot);

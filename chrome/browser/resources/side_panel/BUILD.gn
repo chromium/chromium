@@ -76,10 +76,8 @@ copy("copy_mojo_bookmarks") {
 }
 
 copy("copy_mojo_read_anything") {
-  deps = [
-    "//chrome/browser/ui/webui/side_panel/read_anything:mojo_bindings_webui_js",
-  ]
-  sources = [ "$mojo_root_folder/read_anything/read_anything.mojom-webui.js" ]
+  deps = [ "//chrome/common/accessibility:mojo_bindings_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/common/accessibility/read_anything.mojom-webui.js" ]
   outputs = [
     "$target_gen_dir/$preprocess_folder/read_anything/{{source_file_part}}",
   ]

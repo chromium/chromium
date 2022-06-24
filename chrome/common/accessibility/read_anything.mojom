@@ -5,6 +5,7 @@
 // A module for a prototype of the Read Anything feature.
 module read_anything.mojom;
 
+import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "url/mojom/url.mojom";
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -47,6 +48,13 @@ interface Page {
   // nodes is a list of content nodes from a web page, where each node is part
   // of the main article for that web page.
   ShowContent(array<ContentNode> content_nodes);
+
+  // Trigger the frontend to update the current read anything display. Snapshot
+  // is an accessibility tree snapshot of a web page. Content node ids are node
+  // ids from that ax tree update, where each node is part of the main article
+  // for that web page.
+  OnAXTreeDistilled(ax.mojom.AXTreeUpdate snapshot,
+                    array<int32> content_node_ids);
 
   // Send an updated font name to front end.
   OnFontNameChange(string new_font_name);

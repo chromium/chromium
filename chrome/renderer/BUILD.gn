@@ -390,7 +390,10 @@ static_library("renderer") {
       "searchbox/searchbox_extension.h",
     ]
 
-    deps += [ "//components/crx_file" ]
+    deps += [
+      "//chrome/common/accessibility:mojo_bindings",
+      "//components/crx_file",
+    ]
   }
 
   if (is_android) {

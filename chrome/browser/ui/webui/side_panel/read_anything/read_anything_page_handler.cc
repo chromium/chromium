@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
+#include "ui/accessibility/ax_tree_update.h"
 
 ReadAnythingPageHandler::ReadAnythingPageHandler(
     mojo::PendingRemote<Page> page,
@@ -61,6 +62,12 @@ void ReadAnythingPageHandler::OnContentUpdated(
   for (auto it = content_nodes.begin(); it != content_nodes.end(); ++it)
     content_nodes_copy.push_back(it->Clone());
   page_->ShowContent(std::move(content_nodes_copy));
+}
+
+void ReadAnythingPageHandler::OnAXTreeDistilled(
+    const ui::AXTreeUpdate& snapshot,
+    const std::vector<ui::AXNodeID>& content_node_ids) {
+  page_->OnAXTreeDistilled(snapshot, content_node_ids);
 }
 
 void ReadAnythingPageHandler::OnFontNameUpdated(
