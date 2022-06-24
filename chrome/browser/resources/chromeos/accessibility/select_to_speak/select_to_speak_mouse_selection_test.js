@@ -47,7 +47,7 @@ SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakMouseSelectionTest', 'SpeaksNodeWhenClicked',
     async function() {
       const root = await this.runWithLoadedTree(
@@ -70,7 +70,7 @@ TEST_F(
       this.triggerReadMouseSelectedText(event, event);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakMouseSelectionTest', 'SpeaksMultipleNodesWhenDragged',
     async function() {
       const root = await this.runWithLoadedTree(
@@ -103,7 +103,7 @@ TEST_F(
       this.triggerReadMouseSelectedText(downEvent, upEvent);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakMouseSelectionTest', 'SpeaksAcrossNodesInAParagraph',
     async function() {
       const root = await this.runWithLoadedTree(
@@ -134,7 +134,7 @@ TEST_F(
       this.triggerReadMouseSelectedText(downEvent, upEvent);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakMouseSelectionTest', 'SpeaksNodeAfterTrayTapAndMouseClick',
     async function() {
       const root = await this.runWithLoadedTree(
@@ -163,7 +163,7 @@ TEST_F(
       });
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakMouseSelectionTest', 'CancelsSelectionModeWithStateChange',
     async function() {
       const root = await this.runWithLoadedTree(
@@ -188,7 +188,7 @@ TEST_F(
       });
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakMouseSelectionTest', 'CancelsSpeechWithTrayTap',
     async function() {
       const root = await this.runWithLoadedTree(

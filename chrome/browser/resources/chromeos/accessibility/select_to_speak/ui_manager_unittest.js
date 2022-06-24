@@ -104,7 +104,7 @@ SelectToSpeakUiManagerUnitTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakUiManagerUnitTest', 'NextParagraphActionCallsListener',
     function() {
       this.mockAccessibilityPrivate.sendSelectToSpeakPanelAction(
@@ -112,7 +112,7 @@ SYNC_TEST_F(
       assertTrue(this.mockListener.onNextParagraphRequestedCalled);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakUiManagerUnitTest', 'PreviousParagraphActionCallsListener',
     function() {
       this.mockAccessibilityPrivate.sendSelectToSpeakPanelAction(
@@ -120,7 +120,7 @@ SYNC_TEST_F(
       assertTrue(this.mockListener.onPreviousParagraphRequestedCalled);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakUiManagerUnitTest', 'NextSentenceActionCallsListener',
     function() {
       this.mockAccessibilityPrivate.sendSelectToSpeakPanelAction(
@@ -128,7 +128,7 @@ SYNC_TEST_F(
       assertTrue(this.mockListener.onNextSentenceRequestedCalled);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakUiManagerUnitTest', 'PreviousSentenceActionCallsListener',
     function() {
       this.mockAccessibilityPrivate.sendSelectToSpeakPanelAction(
@@ -136,19 +136,19 @@ SYNC_TEST_F(
       assertTrue(this.mockListener.onPreviousSentenceRequestedCalled);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakUiManagerUnitTest', 'PauseActionCallsListener', function() {
       this.mockAccessibilityPrivate.sendSelectToSpeakPanelAction('pause');
       assertTrue(this.mockListener.onPauseRequestedCalled);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakUiManagerUnitTest', 'ResumeActionCallsListener', function() {
       this.mockAccessibilityPrivate.sendSelectToSpeakPanelAction('resume');
       assertTrue(this.mockListener.onResumeRequestedCalled);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakUiManagerUnitTest', 'ChangeSpeedActionCallsListener',
     function() {
       this.mockAccessibilityPrivate.sendSelectToSpeakPanelAction(
@@ -156,19 +156,19 @@ SYNC_TEST_F(
       assertEquals(1.2, this.mockListener.onChangeSpeedRequestedValue);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakUiManagerUnitTest', 'ExitActionCallsListener', function() {
       this.mockAccessibilityPrivate.sendSelectToSpeakPanelAction('exit');
       assertTrue(this.mockListener.onExitRequestedCalled);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakUiManagerUnitTest', 'StateChangeCallsListener', function() {
       this.mockAccessibilityPrivate.sendSelectToSpeakStateChangeRequest();
       assertTrue(this.mockListener.onStateChangeRequestedCalled);
     });
 
-SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'SetSelectionRect', function() {
+AX_TEST_F('SelectToSpeakUiManagerUnitTest', 'SetSelectionRect', function() {
   const selectionRect = {left: 0, top: 10, width: 400, height: 200};
 
   // No focus rings to start.
@@ -185,7 +185,7 @@ SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'SetSelectionRect', function() {
   assertEquals(FOCUS_RING_COLOR, focusRings[0].color);
 });
 
-SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUi', function() {
+AX_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUi', function() {
   const textNode = {
     role: 'staticText',
     name: 'Test',
@@ -221,7 +221,7 @@ SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUi', function() {
   assertEquals(0, highlightRects.length);
 });
 
-SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUiNoPanel', function() {
+AX_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUiNoPanel', function() {
   const textNode = {
     role: 'staticText',
     name: 'Test',
@@ -248,7 +248,7 @@ SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUiNoPanel', function() {
   assertFalse(panelState.show);
 });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakUiManagerUnitTest', 'UpdatesUiWithWordHighlight', function() {
       const wordBounds = {left: 25, top: 5, width: 20, height: 40};
       const wordStart = 0;
@@ -282,7 +282,7 @@ SYNC_TEST_F(
           HIGHLIGHT_COLOR, this.mockAccessibilityPrivate.getHighlightColor());
     });
 
-SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'ClearsUI', function() {
+AX_TEST_F('SelectToSpeakUiManagerUnitTest', 'ClearsUI', function() {
   // Start with a focus ring.
   this.uiManager.setSelectionRect({left: 0, top: 10, width: 400, height: 200});
   let focusRings = this.mockAccessibilityPrivate.getFocusRings();

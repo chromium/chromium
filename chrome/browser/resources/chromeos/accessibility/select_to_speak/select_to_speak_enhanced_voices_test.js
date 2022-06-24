@@ -65,7 +65,7 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakEnhancedNetworkTtsVoicesTest',
     'EnablesVoicesIfConfirmedInDialog', async function() {
       this.confirmationDialogResponse_ = true;
@@ -93,7 +93,7 @@ TEST_F(
       this.triggerReadMouseSelectedText(event, event);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakEnhancedNetworkTtsVoicesTest',
     'DisablesVoicesIfCanceledInDialog', async function() {
       this.confirmationDialogResponse_ = false;
@@ -120,7 +120,7 @@ TEST_F(
       this.triggerReadMouseSelectedText(event, event);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakEnhancedNetworkTtsVoicesTest',
     'DisablesVoicesIfDisallowedByPolicy', async function() {
       this.confirmationDialogResponse_ = true;
@@ -147,7 +147,7 @@ TEST_F(
       this.triggerReadMouseSelectedText(event, event);
     });
 
-TEST_F(
+AX_TEST_F(
     'SelectToSpeakEnhancedNetworkTtsVoicesTest',
     'DisablesDialogIfDisallowedByPolicy', async function() {
       this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);

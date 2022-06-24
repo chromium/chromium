@@ -20,7 +20,7 @@ SelectToSpeakNodeNavigationUtilsUnitTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNodesForNextParagraph',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
@@ -77,7 +77,7 @@ SYNC_TEST_F(
       assertEquals(result.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNextParagraphWithNode',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
@@ -150,7 +150,7 @@ SYNC_TEST_F(
       assertEquals(result.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeContainedWithinRoot', function() {
       const desktop = createMockNode({role: 'desktop'});
@@ -187,7 +187,7 @@ SYNC_TEST_F(
       assertEquals(result.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeThroughIframe', function() {
       const desktop = createMockNode({role: 'desktop'});
@@ -228,7 +228,7 @@ SYNC_TEST_F(
       assertEquals(result[0], text3);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeNonBlockNodes', function() {
       /**
@@ -271,7 +271,7 @@ SYNC_TEST_F(
       assertEquals(result[0], text2);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeNestedBlocks', function() {
       const root = createMockNode({role: 'rootWebArea'});
@@ -305,7 +305,7 @@ SYNC_TEST_F(
       assertEquals(result[0], text1);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeAndroid', function() {
       const root = createMockNode({role: 'application'});
@@ -368,7 +368,7 @@ SYNC_TEST_F(
       assertEquals(result.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupEmptyNodeGroup', function() {
       const nodeGroup = {nodes: []};
@@ -378,7 +378,7 @@ SYNC_TEST_F(
       assertEquals(result.offset, -1);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupForward', function() {
       // The nodeGroup has four inline text nodes and one static text node.
@@ -416,7 +416,7 @@ SYNC_TEST_F(
       assertEquals(result.nodes.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupBackward', function() {
       // The nodeGroup has four inline text nodes and one static text node.
@@ -457,7 +457,7 @@ SYNC_TEST_F(
       assertEquals(result.nodes.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupForwardWithEmptyTail', function() {
       // The nodeGroup consists of three inline text nodes: "Hello", "world ",
@@ -483,7 +483,7 @@ SYNC_TEST_F(
       assertEquals(result.nodes[0].name, 'world ');
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupBackwardWithEmptyHeads', function() {
       // The nodeGroup consists of three inline text nodes: " ", " Hello",
@@ -509,7 +509,7 @@ SYNC_TEST_F(
       assertEquals(result.nodes[0].name, ' Hello');
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupForwardFromPartialParagraph',
     function() {
@@ -530,7 +530,7 @@ SYNC_TEST_F(
       assertEquals(result.offset, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupBackwardFromPartialParagraph',
     function() {
@@ -552,7 +552,7 @@ SYNC_TEST_F(
       assertEquals(result.offset, 8);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNextNodesInParagraph',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
@@ -598,7 +598,7 @@ SYNC_TEST_F(
       assertEquals(result.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNodesForNextSentence',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
@@ -743,7 +743,7 @@ SYNC_TEST_F(
       assertEquals(nodes.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNodesForNextSentenceWithChoppedNodes', function() {
       const root = createMockNode({role: 'rootWebArea'});
