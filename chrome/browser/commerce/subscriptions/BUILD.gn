@@ -12,17 +12,13 @@ source_set("commerce_subscription_db") {
   ]
 
   deps = [
-    ":commerce_subscription_db_content_proto",
     "//base:base",
     "//chrome/browser/commerce/subscriptions/android:jni_headers",
     "//chrome/browser/persisted_state_db:persisted_state_db",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/keyed_service/content",
     "//components/leveldb_proto",
     "//content/public/browser:browser",
     "//third_party/leveldatabase",
   ]
-}
-
-proto_library("commerce_subscription_db_content_proto") {
-  sources = [ "commerce_subscription_db_content.proto" ]
 }

@@ -17,7 +17,7 @@
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 #else
-#include "chrome/browser/commerce/subscriptions/commerce_subscription_db_content.pb.h"
+#include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/merchant_signal_db_content.pb.h"
 #endif
 

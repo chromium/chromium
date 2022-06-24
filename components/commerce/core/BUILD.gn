@@ -79,6 +79,11 @@ if (is_android) {
     proto_in_dir = "//"
     sources = [ "proto/merchant_signal_db_content.proto" ]
   }
+
+  proto_library("commerce_subscription_db_content_proto") {
+    proto_in_dir = "//"
+    sources = [ "proto/commerce_subscription_db_content.proto" ]
+  }
 }
 
 source_set("commerce_heuristics_data") {
