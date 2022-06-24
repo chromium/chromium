@@ -9,6 +9,13 @@ export class OsBluetoothDevicesSubpageBrowserProxy {
    * Returned by the 'fast-pair-device-supported' WebUI listener event.
    */
   requestFastPairDeviceSupport() {}
+
+  /**
+   * Requests Fast Pair Saved Devices opt-in status and list of devices.
+   * Returned by the 'fast-pair-saved-devices-opt-in-status' and the
+   * 'fast-pair-saved-devices-list' WebUI listener event.
+   */
+  requestFastPairSavedDevices() {}
 }
 
 /** @type {?OsBluetoothDevicesSubpageBrowserProxy} */
@@ -32,5 +39,10 @@ export class OsBluetoothDevicesSubpageBrowserProxyImpl {
   /** @override */
   requestFastPairDeviceSupport() {
     chrome.send('requestFastPairDeviceSupportStatus');
+  }
+
+  /** @override */
+  requestFastPairSavedDevices() {
+    chrome.send('loadSavedDevicePage');
   }
 }

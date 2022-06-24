@@ -160,6 +160,9 @@ js_library("os_bluetooth_pairing_dialog") {
   ]
 }
 
+js_library("settings_fast_pair_constants") {
+}
+
 js_library("settings_fast_pair_toggle") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
