@@ -27,14 +27,15 @@ class FastCheckoutClientImpl
   void Stop() override;
   bool IsRunning() const override;
 
- private:
-  friend class content::WebContentsUserData<FastCheckoutClientImpl>;
-
+ protected:
   explicit FastCheckoutClientImpl(content::WebContents* web_contents);
 
   // Creates the external action deglegate and script controller.
-  std::unique_ptr<autofill_assistant::HeadlessScriptController>
+  virtual std::unique_ptr<autofill_assistant::HeadlessScriptController>
   CreateHeadlessScriptController();
+
+ private:
+  friend class content::WebContentsUserData<FastCheckoutClientImpl>;
 
   // Registers when a run is complete. Used in callbacks.
   void OnRunComplete(
