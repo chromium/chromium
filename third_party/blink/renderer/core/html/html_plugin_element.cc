@@ -715,6 +715,8 @@ bool HTMLPlugInElement::LoadPlugin(const KURL& url,
   // TODO(esprehn): WebPluginContainerImpl::SetCcLayer() also schedules a
   // compositing update, do we need both?
   SetNeedsCompositingUpdate();
+  if (layout_object->HasLayer())
+    layout_object->Layer()->SetNeedsCompositingInputsUpdate();
   return true;
 }
 

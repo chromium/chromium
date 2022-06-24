@@ -4625,10 +4625,6 @@ void Element::SetNeedsCompositingUpdate() {
   // reasons which affect paint properties.
   if (layout_object->CanHaveAdditionalCompositingReasons())
     layout_object->SetNeedsPaintPropertyUpdate();
-
-  // TODO(pdr): Do not depend on PaintLayer for compositing decisions.
-  if (layout_object->HasLayer())
-    layout_object->Layer()->SetNeedsCompositingInputsUpdate();
 }
 
 void Element::SetRegionCaptureCropId(

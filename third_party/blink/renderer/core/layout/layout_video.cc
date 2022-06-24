@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/video_painter.h"
 
 namespace blink {
@@ -196,6 +197,8 @@ void LayoutVideo::UpdatePlayer(bool is_in_layout) {
     return;
 
   VideoElement()->SetNeedsCompositingUpdate();
+  if (HasLayer())
+    Layer()->SetNeedsCompositingInputsUpdate();
 }
 
 LayoutUnit LayoutVideo::MinimumReplacedHeight() const {

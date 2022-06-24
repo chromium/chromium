@@ -1128,8 +1128,7 @@ void PaintLayerScrollableArea::DidChangeGlobalRootScroller() {
   // Being the global root scroller will affect clipping size due to browser
   // controls behavior so we need to update compositing based on updated clip
   // geometry.
-  if (auto* element = DynamicTo<Element>(GetLayoutBox()->GetNode()))
-    element->SetNeedsCompositingUpdate();
+  Layer()->SetNeedsCompositingInputsUpdate();
   GetLayoutBox()->SetNeedsPaintPropertyUpdate();
 
   // On Android, where the VisualViewport supplies scrollbars, we need to
