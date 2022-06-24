@@ -107,11 +107,11 @@ unsigned CSSSelectorList::MaximumSpecificity() const {
   return specificity;
 }
 
-String CSSSelectorList::SelectorsText() const {
+String CSSSelectorList::SelectorsText(const CSSSelector* first) {
   StringBuilder result;
 
-  for (const CSSSelector* s = First(); s; s = Next(*s)) {
-    if (s != First())
+  for (const CSSSelector* s = first; s; s = Next(*s)) {
+    if (s != first)
       result.Append(", ");
     result.Append(s->SelectorText());
   }

@@ -109,7 +109,8 @@ class CORE_EXPORT CSSSelectorList {
     return SelectorIndex(*next);
   }
 
-  String SelectorsText() const;
+  String SelectorsText() const { return SelectorsText(First()); }
+  static String SelectorsText(const CSSSelector* first);
 
   // Selector lists don't know their length, computing it is O(n) and should be
   // avoided when possible. Instead iterate from first() and using next().
@@ -118,10 +119,10 @@ class CORE_EXPORT CSSSelectorList {
   // Return the specificity of the selector with the highest specificity.
   unsigned MaximumSpecificity() const;
 
- private:
   CSSSelectorList(const CSSSelectorList&) = delete;
   CSSSelectorList& operator=(const CSSSelectorList&) = delete;
 
+ private:
   // End of a multipart selector is indicated by is_last_in_tag_history_ bit in
   // the last item. End of the array is indicated by is_last_in_selector_list_
   // bit in the last item.
