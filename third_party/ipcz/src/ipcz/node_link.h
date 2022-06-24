@@ -39,7 +39,7 @@ class Router;
 // NodeLinks may also allocate an arbitrary number of sublinks which are used
 // to multiplex the link and facilitate point-to-point communication between
 // specific Router instances on either end.
-class NodeLink : public RefCounted, private msg::NodeMessageListener {
+class NodeLink : public msg::NodeMessageListener {
  public:
   struct Sublink {
     Sublink(Ref<RemoteRouterLink> link, Ref<Router> receiver);

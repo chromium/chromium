@@ -57,13 +57,12 @@ NodeLink::NodeLink(Ref<Node> node,
       remote_protocol_version_(remote_protocol_version),
       transport_(std::move(transport)),
       memory_(std::move(memory)) {
-  transport_->set_listener(this);
+  transport_->set_listener(WrapRefCounted(this));
 }
 
 NodeLink::~NodeLink() {
-  // Ensure this NodeLink is deactivated even if it was never adopted by a Node.
-  // If it was already deactivated, this is a no-op.
-  Deactivate();
+  absl::MutexLock lock(&mutex_);
+  ABSL_HARDENING_ASSERT(!active_);
 }
 
 Ref<RemoteRouterLink> NodeLink::AddRemoteRouterLink(SublinkId sublink,

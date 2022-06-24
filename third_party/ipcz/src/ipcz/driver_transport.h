@@ -37,9 +37,9 @@ class DriverTransport
   };
 
   // A Listener to receive message and error events from the driver.
-  class Listener {
+  class Listener : public RefCounted {
    public:
-    virtual ~Listener() = default;
+    ~Listener() override = default;
 
     // Accepts a raw message from the transport. Note that this is called
     // without *any* validation of the size or content of `message`.
@@ -48,6 +48,10 @@ class DriverTransport
 
     // Indicates that some unrecoverable error has occurred with the transport.
     virtual void OnTransportError() = 0;
+
+    // Indicates that dectivation has been completed by the driver, meaning that
+    // no further methods will be invoked on this Listener.
+    virtual void OnTransportDeactivated() {}
   };
 
   // Constructs a new DriverTransport object over the driver-created transport
@@ -57,8 +61,8 @@ class DriverTransport
   // Set the object handling any incoming message or error notifications. This
   // is only safe to set before Activate() is called, or from within one of the
   // Listener methods when invoked by this DriverTransport (because invocations
-  // are mutually exclusive). `listener` must outlive this DriverTransport.
-  void set_listener(Listener* listener) { listener_ = listener; }
+  // are mutually exclusive).
+  void set_listener(Ref<Listener> listener) { listener_ = std::move(listener); }
 
   // Exposes the underlying driver handle for this transport.
   const DriverObject& driver_object() const { return transport_; }
@@ -97,6 +101,10 @@ class DriverTransport
   bool Notify(const RawMessage& message);
   void NotifyError();
 
+  // Invoked once the driver has finalized deactivation of this transport, as
+  // previously requested by a call to Deactivate().
+  void NotifyDeactivated();
+
   // APIObject:
   IpczResult Close() override;
 
@@ -105,7 +113,7 @@ class DriverTransport
 
   DriverObject transport_;
 
-  Listener* listener_ = nullptr;
+  Ref<Listener> listener_;
 };
 
 }  // namespace ipcz

@@ -15,7 +15,7 @@ namespace ipcz::test {
 
 // Helper for tests to conveniently listen for incoming messages on a driver
 // transport.
-class TestTransportListener : public DriverTransport::Listener {
+class TestTransportListener {
  public:
   using GenericMessageHandler =
       std::function<bool(const DriverTransport::RawMessage& message)>;
@@ -23,7 +23,7 @@ class TestTransportListener : public DriverTransport::Listener {
 
   TestTransportListener(IpczHandle node, IpczDriverHandle handle);
   explicit TestTransportListener(Ref<DriverTransport> transport);
-  ~TestTransportListener() override;
+  ~TestTransportListener();
 
   // Deactivates the transport and stops listening for messages and/or errors.
   void StopListening();
@@ -66,17 +66,13 @@ class TestTransportListener : public DriverTransport::Listener {
   }
 
  private:
+  class ListenerImpl;
+
   void ActivateTransportIfNecessary();
 
-  // DriverTransport::Listener:
-  bool OnTransportMessage(const DriverTransport::RawMessage& message,
-                          const DriverTransport& transport) override;
-  void OnTransportError() override;
-
   const Ref<DriverTransport> transport_;
+  const Ref<ListenerImpl> listener_;
   bool activated_ = false;
-  GenericMessageHandler message_handler_;
-  ErrorHandler error_handler_;
 };
 
 }  // namespace ipcz::test

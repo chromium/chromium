@@ -29,7 +29,7 @@ class Portal;
 // Once an initial handshake is complete the underlying transport is adopted by
 // a new NodeLink and handed off to the local Node to communicate with the
 // remote node, and this object is destroyed.
-class NodeConnector : public RefCounted, public msg::NodeMessageListener {
+class NodeConnector : public msg::NodeMessageListener {
  public:
   // Constructs a new NodeConnector to send and receive a handshake on
   // `transport`. The specific type of connector to create is determined by a
@@ -77,7 +77,6 @@ class NodeConnector : public RefCounted, public msg::NodeMessageListener {
   const Ref<DriverTransport> transport_;
   const IpczConnectNodeFlags flags_;
   const std::vector<Ref<Portal>> waiting_portals_;
-  Ref<NodeConnector> active_self_;
 
  private:
   bool ActivateTransportAndConnect();

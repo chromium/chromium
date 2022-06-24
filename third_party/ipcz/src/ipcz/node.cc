@@ -89,9 +89,16 @@ void Node::SetAssignedName(const NodeName& name) {
 }
 
 bool Node::AddLink(const NodeName& remote_node_name, Ref<NodeLink> link) {
-  absl::MutexLock lock(&mutex_);
-  auto [it, inserted] = node_links_.insert({remote_node_name, std::move(link)});
-  return inserted;
+  {
+    absl::MutexLock lock(&mutex_);
+    auto [it, inserted] = node_links_.insert({remote_node_name, link});
+    if (inserted) {
+      return true;
+    }
+  }
+
+  link->Deactivate();
+  return false;
 }
 
 NodeName Node::GenerateRandomName() const {

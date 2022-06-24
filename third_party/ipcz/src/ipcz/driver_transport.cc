@@ -34,6 +34,7 @@ IpczResult IPCZ_API NotifyTransport(IpczHandle transport,
   if (flags & IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED) {
     const Ref<DriverTransport> doomed_transport =
         DriverTransport::TakeFromHandle(transport);
+    doomed_transport->NotifyDeactivated();
     return IPCZ_RESULT_OK;
   }
 
@@ -88,12 +89,26 @@ IpczResult DriverTransport::Transmit(Message& message) {
 
 bool DriverTransport::Notify(const RawMessage& message) {
   ABSL_ASSERT(listener_);
-  return listener_->OnTransportMessage(message, *this);
+  // Listener methods may set a new Listener on this DriverTransport, and that
+  // may drop their own last reference. Keep a reference here to ensure this
+  // Listener remains alive through the extent of its notification.
+  Ref<Listener> listener = listener_;
+  return listener->OnTransportMessage(message, *this);
 }
 
 void DriverTransport::NotifyError() {
   ABSL_ASSERT(listener_);
-  listener_->OnTransportError();
+  // Listener methods may set a new Listener on this DriverTransport, and that
+  // may drop their own last reference. Keep a reference here to ensure this
+  // Listener remains alive through the extent of its notification.
+  Ref<Listener> listener = listener_;
+  return listener->OnTransportError();
+}
+
+void DriverTransport::NotifyDeactivated() {
+  ABSL_ASSERT(listener_);
+  Ref<Listener> listener = std::move(listener_);
+  listener->OnTransportDeactivated();
 }
 
 IpczResult DriverTransport::Close() {

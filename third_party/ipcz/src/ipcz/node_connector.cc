@@ -68,6 +68,7 @@ class NodeConnectorForBrokerToNonBroker : public NodeConnector {
     DVLOG(4) << "Accepting ConnectFromNonBrokerToBroker on broker "
              << broker_name_.ToString() << " from new node "
              << new_remote_node_name_.ToString();
+
     AcceptConnection(
         NodeLink::Create(node_, LinkSide::kA, broker_name_,
                          new_remote_node_name_, Node::Type::kNormal,
@@ -233,7 +234,6 @@ void NodeConnector::AcceptConnection(Ref<NodeLink> new_link,
     callback_(new_link);
   }
   EstablishWaitingPortals(std::move(new_link), link_side, num_remote_portals);
-  active_self_.reset();
 }
 
 void NodeConnector::RejectConnection() {
@@ -242,12 +242,10 @@ void NodeConnector::RejectConnection() {
   }
   EstablishWaitingPortals(nullptr, LinkSide::kA, 0);
   transport_->Deactivate();
-  active_self_.reset();
 }
 
 bool NodeConnector::ActivateTransportAndConnect() {
-  active_self_ = WrapRefCounted(this);
-  transport_->set_listener(this);
+  transport_->set_listener(WrapRefCounted(this));
   if (transport_->Activate() != IPCZ_RESULT_OK) {
     RejectConnection();
     return false;
