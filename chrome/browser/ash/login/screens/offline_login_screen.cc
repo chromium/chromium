@@ -158,7 +158,7 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
         << user_context.GetUserType();
   }
   user_context.SetIsUsingOAuth(false);
-  // TODO(dkuzmin): call Login through delegate.
+
   if (ExistingUserController::current_controller()) {
     ExistingUserController::current_controller()->Login(user_context,
                                                         SigninSpecifics());
@@ -236,6 +236,12 @@ void OfflineLoginScreen::UpdateState(NetworkError::ErrorReason reason) {
       (state == NetworkStateInformer::ONLINE &&
        reason != NetworkError::ERROR_REASON_PORTAL_DETECTED &&
        reason != NetworkError::ERROR_REASON_LOADING_TIMEOUT);
+}
+
+void OfflineLoginScreen::ShowPasswordMismatchMessage() {
+  if (!view_)
+    return;
+  view_->ShowPasswordMismatchMessage();
 }
 
 }  // namespace ash

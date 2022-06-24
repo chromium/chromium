@@ -135,7 +135,7 @@
           transform: translateX(-100%);
         }
         to {
-          transform: translateX(0%);
+          transform: translateX(0);
         }
       }
 
@@ -144,13 +144,13 @@
           transform: translateX(100%);
         }
         to {
-          transform: translateX(0%);
+          transform: translateX(0);
         }
       }
 
       @keyframes hide-to-left {
         from {
-          transform: translateX(0%);
+          transform: translateX(0);
         }
         to {
           transform: translateX(-100%);
@@ -159,7 +159,7 @@
 
       @keyframes hide-to-right {
         from {
-          transform: translateX(0%);
+          transform: translateX(0);
         }
         to {
           transform: translateX(100%);
@@ -219,8 +219,7 @@
             <gaia-input-form id="email-input-form"
                 on-submit="onNextButtonClicked_" disabled="[[disabled]]">
               <cr-input slot="inputs" id="emailInput" value="{{email_}}"
-                  clear-error required
-                  error-message="[[i18nDynamic(
+                  required error-message="[[i18nDynamic(
                       locale, 'offlineLoginInvalidEmail')]]"
                   placeholder="[[i18nDynamic(locale, 'offlineLoginEmail')]]">
                 <span slot="inline-suffix">[[displayDomain_]]</span>
@@ -237,8 +236,7 @@
             <gaia-input-form id="password-input-form"
                 on-submit="onNextButtonClicked_" disabled="[[disabled]]">
               <cr-input slot="inputs" id="passwordInput" value="{{password_}}"
-                  type="password" clear-error required
-                  error-message="[[i18nDynamic(
+                  type="password" required error-message="[[i18nDynamic(
                       locale, 'offlineLoginInvalidPassword')]]"
                   placeholder="[[i18nDynamic(locale, 'offlineLoginPassword')]]">
               </cr-input>
@@ -250,11 +248,11 @@
         </div>
       </div>
       <div slot="back-navigation">
-        <oobe-back-button id="backButton"
+        <oobe-back-button id="backButton" disabled="[[disabled]]"
             on-click="onBackButtonClicked_"></oobe-back-button>
       </div>
       <div slot="bottom-buttons">
-        <oobe-next-button id="nextButton"
+        <oobe-next-button id="nextButton" disabled="[[disabled]]"
             on-click="onNextButtonClicked_"></oobe-next-button>
       </div>
     </oobe-content-dialog>

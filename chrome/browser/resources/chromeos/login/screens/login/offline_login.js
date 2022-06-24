@@ -151,6 +151,9 @@ class OfflineLogin extends OfflineLoginBase {
   }
 
   cancel() {
+    if (this.disabled) {
+      return;
+    }
     this.onBackButtonClicked_();
   }
 
@@ -231,6 +234,7 @@ class OfflineLogin extends OfflineLoginBase {
     }
 
     this.animationInProgress = animated;
+    this.disabled = animated;
     this.activeSection = LOGIN_SECTION.EMAIL;
   }
 
@@ -243,11 +247,13 @@ class OfflineLogin extends OfflineLoginBase {
     }
 
     this.animationInProgress = animated;
+    this.disabled = animated;
     this.activeSection = LOGIN_SECTION.PASSWORD;
   }
 
   onSlideAnimationEnd_() {
     this.animationInProgress = false;
+    this.disabled = false;
     this.focus();
   }
 
@@ -266,7 +272,7 @@ class OfflineLogin extends OfflineLoginBase {
     }
     this.email_ = this.fullEmail_;
     this.userActed(['complete-authentication', this.email_, this.password_]);
-    this.password_ = '';
+    this.disabled = true;
   }
 
   onBackButtonClicked_() {
@@ -312,6 +318,8 @@ class OfflineLogin extends OfflineLoginBase {
 
   showPasswordMismatchMessage() {
     this.$.passwordInput.invalid = true;
+    this.disabled = false;
+    this.$.passwordInput.focusInput();
   }
 
   /**

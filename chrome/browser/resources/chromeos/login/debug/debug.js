@@ -682,14 +682,14 @@ cr.define('cr.ui.login.debug', function() {
         {
           id: 'default',
           trigger: (screen) => {
-            screen.loadParams({});
+            screen.onBeforeShow({});
           },
         },
         {
           // kAccountsPrefLoginScreenDomainAutoComplete value is set
           id: 'offline-gaia-domain',
           trigger: (screen) => {
-            screen.loadParams({
+            screen.onBeforeShow({
               emailDomain: 'somedomain.com',
             });
           },
@@ -698,7 +698,7 @@ cr.define('cr.ui.login.debug', function() {
           // Device is enterprise-managed.
           id: 'offline-gaia-enterprise',
           trigger: (screen) => {
-            screen.loadParams({
+            screen.onBeforeShow({
               enterpriseDomainManager: 'example.com',
             });
           },

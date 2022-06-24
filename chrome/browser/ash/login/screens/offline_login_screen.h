@@ -37,14 +37,11 @@ class OfflineLoginScreen
                      const ScreenExitCallback& exit_callback);
   ~OfflineLoginScreen() override;
 
-  void HandleCompleteAuth(const std::string& username,
-                          const std::string& password);
-
-  void HandleEmailSubmitted(const std::string& username);
-
   // NetworkStateInformer::NetworkStateInformerObserver:
   void OnNetworkReady() override;
   void UpdateState(NetworkError::ErrorReason reason) override;
+
+  void ShowPasswordMismatchMessage();
 
  private:
   void ShowImpl() override;
@@ -55,6 +52,9 @@ class OfflineLoginScreen
   void OnIdle();
 
   void HandleTryLoadOnlineLogin();
+  void HandleCompleteAuth(const std::string& username,
+                          const std::string& password);
+  void HandleEmailSubmitted(const std::string& username);
 
   base::WeakPtr<OfflineLoginView> view_;
 

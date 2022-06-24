@@ -539,6 +539,12 @@ void LoginDisplayHostCommon::ShowSigninError(SigninError error,
     if (!IsOobeUIDialogVisible())
       // Handled by Views UI.
       return;
+    OfflineLoginScreen* offline_login_screen =
+        GetWizardController()->GetScreen<OfflineLoginScreen>();
+    if (GetWizardController()->current_screen() == offline_login_screen) {
+      offline_login_screen->ShowPasswordMismatchMessage();
+      return;
+    }
   }
 
   std::string error_text;
