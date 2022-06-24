@@ -24,7 +24,8 @@ async def test_consoleLog_logEntryAddedEventEmitted(websocket, context_id):
         "method": "script.evaluate",
         "params": {
             "expression": "console.log('some log message','line 2')",
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     # Wait for responses
     event_response = await wait_for_event(websocket, "log.entryAdded")
@@ -64,7 +65,8 @@ async def test_consoleLogWithNullUndefinedValues_logEntryAddedEventEmitted(
         "method": "script.evaluate",
         "params": {
             "expression": "console.log(null, undefined)",
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     # Wait for responses
     event_response = await wait_for_event(websocket, "log.entryAdded")
@@ -101,7 +103,8 @@ async def test_consoleInfo_logEntryWithMethodInfoEmitted(websocket, context_id):
         "method": "script.evaluate",
         "params": {
             "expression": "console.info('some log message')",
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     # Wait for responses
     event_response = await wait_for_event(websocket, "log.entryAdded")
@@ -120,7 +123,8 @@ async def test_consoleError_logEntryWithMethodErrorEmitted(websocket,
         "method": "script.evaluate",
         "params": {
             "expression": "console.error('some log message')",
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     # Wait for responses
     event_response = await wait_for_event(websocket, "log.entryAdded")
@@ -141,7 +145,8 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
                           "integer: %d, integer: %i, float: %f, %o, %O, %c',"
                           "'line 2', 1, -2, 1.234, 'abc', {id: 1}, "
                           "{'font-size': '20px'})",
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     # Wait for responses
     event_response = await wait_for_event(websocket, "log.entryAdded")

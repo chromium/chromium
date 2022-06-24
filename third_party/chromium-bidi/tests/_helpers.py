@@ -75,6 +75,8 @@ async def subscribe(websocket, event_names, context_ids=None):
 # Compares 2 objects recursively.
 # Expected value can be a callable delegate, asserting the value.
 def recursive_compare(expected, actual):
+    if callable(expected):
+        return expected(actual)
     assert type(expected) == type(actual)
     if type(expected) is list:
         assert len(expected) == len(actual)
@@ -88,10 +90,7 @@ def recursive_compare(expected, actual):
             f"\nNot present: {set(expected.keys()) - set(actual.keys())}" \
             f"\nUnexpected: {set(actual.keys()) - set(expected.keys())}"
         for index, val in enumerate(expected):
-            if callable(expected[val]):
-                expected[val](actual[val])
-            else:
-                recursive_compare(expected[val], actual[val])
+            recursive_compare(expected[val], actual[val])
         return
 
     assert expected == actual

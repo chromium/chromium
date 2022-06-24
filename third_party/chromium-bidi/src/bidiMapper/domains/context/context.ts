@@ -66,7 +66,7 @@ export abstract class Context implements IContext {
     this.#url = url;
   }
 
-  protected addChild(child: IContext) {
+  public addChild(child: IContext) {
     this.#childrenIds.add(child.getContextId());
   }
 

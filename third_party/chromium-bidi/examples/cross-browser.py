@@ -23,11 +23,11 @@ import logging
 import os
 import websockets
 
-
 logging.basicConfig(
     format="%(message)s",
     level=logging.DEBUG,
 )
+
 
 async def get_websocket():
     port = os.getenv('PORT', 8080)
@@ -134,7 +134,9 @@ async def main():
                 });
             }""",
             "args": [results_selector],
-            "target": {"context": context_id}}}, websocket)
+            "target": {"context": context_id},
+            "awaitPromise": True}},
+        websocket)
 
     # Part 2. Get the command result.
     # const links = ...

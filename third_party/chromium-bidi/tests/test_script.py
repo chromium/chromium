@@ -23,7 +23,8 @@ async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
         "method": "script.evaluate",
         "params": {
             "expression": "(()=>{const a=()=>{throw 1;}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     recursive_compare({
         "realm": any_string,
@@ -70,7 +71,8 @@ async def test_script_evaluateThrowingError_exceptionReturned(websocket,
         "method": "script.evaluate",
         "params": {
             "expression": "(()=>{const a=()=>{throw new Error('foo');}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     recursive_compare({
         "realm": any_string,
@@ -214,7 +216,8 @@ async def test_script_evaluateInteractsWithDom_resultReceived(websocket,
         "method": "script.evaluate",
         "params": {
             "expression": "'!!@@##, ' + window.location.href",
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     recursive_compare({
         "realm": any_string,
@@ -237,7 +240,8 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
                 "type": "number",
                 "value": 42
             }],
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     recursive_compare({
         "realm": any_string,
@@ -325,7 +329,8 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
             "arguments": [{
                 "handle": handle
             }],
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     recursive_compare({
         "realm": any_string,
@@ -434,7 +439,8 @@ async def test_script_callFunctionWithArrowFunctionAndThisParameter_thisIsIgnore
                 "type": "number",
                 "value": 1
             },
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     recursive_compare({
         "realm": any_string,
@@ -455,7 +461,8 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
                 "type": "number",
                 "value": 1
             },
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     recursive_compare({
         "realm": any_string,
@@ -477,7 +484,8 @@ async def _ignore_test_script_callFunctionWithClassicFunctionAndThisParameter_th
                 "type": "number",
                 "value": 42
             },
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     recursive_compare({
         "realm": any_string,
@@ -511,7 +519,8 @@ async def test_script_callFunctionWithNode_resultReceived(websocket,
             "functionDeclaration": "(element) => {return '!!@@##, ' + element.innerHTML}",
             "arguments": [{
                 "handle": handle}],
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     recursive_compare({
         "realm": any_string,
@@ -528,7 +537,8 @@ async def test_script_evaluate_windowOpen_windowOpened(websocket,
         "method": "script.evaluate",
         "params": {
             "expression": "window.open()",
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     recursive_compare({
         "realm": any_string,
