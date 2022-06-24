@@ -1071,4 +1071,27 @@ IN_PROC_BROWSER_TEST_P(
       sharedInstance] occlusionStateUpdatesAreScheduledForTesting]);
 }
 
+// Tests that when a window becomes a child, if the occlusion system
+// previously marked it occluded, the window transitions to visible.
+IN_PROC_BROWSER_TEST_P(
+    WindowOcclusionBrowserTestMacWithOcclusionDetectionFeature,
+    WindowMadeChildForcedVisible) {
+  InitWindowA();
+
+  // Create a second window that occludes window_a.
+  InitWindowB([window_a frame]);
+  WaitForOcclusionUpdate();
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kOccluded);
+
+  // Make window_a a child of window_b. The occlusion system ignores
+  // child windows, so ensure window_a's occlusion state changes back
+  // to visible.
+  [window_b addChildWindow:window_a ordered:NSWindowAbove];
+
+  WaitForOcclusionUpdate();
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kVisible);
+}
+
 }  // namespace content

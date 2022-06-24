@@ -193,16 +193,29 @@ NSString* const kWindowIsOccludedKey = @"ChromeWindowIsOccludedKey";
 }
 
 - (BOOL)windowCanTriggerOcclusionUpdates:(NSWindow*)window {
-  // The checker cycles through the window list when performing its manual
-  // occlusion checks. Child windows don't appear in this list, so it's
-  // pointless to trigger an occlusion check when something changes with a child
-  // window.
-  //
-  // We also only care about occlusion because we want to inform web contentes
+  // We only care about occlusion because we want to inform web contentes
   // so they can update their visibility state. Therefore, we ignore windows
   // that don't have a web contents (they essentially don't exist for our manual
   // occlusion calculations).
-  return [window parentWindow] == nil && [window containsWebContentsViewCocoa];
+  if (![window containsWebContentsViewCocoa])
+    return NO;
+
+  // The checker cycles through the window list when performing its manual
+  // occlusion checks. Child windows don't appear in this list, so don't
+  // trigger an occlusion check unless `window` is a parent window
+  // (i.e. is not the child of another window).
+  if ([window parentWindow] == nil)
+    return YES;
+
+  // `window` is a child window but that wasn't always the case. When it was
+  // created and resized it was a "parent" window. If it came through this
+  // codepath, we may have marked it occluded. Since we don't trigger occlusion
+  // updates on child windows, now that the window is a child, there's a chance
+  // we'll never update its state to visible. To avoid this, ensure it's visible
+  // before we exit. See https://crbug.com/1337390 .
+  [window setOccluded:NO];
+
+  return NO;
 }
 
 - (void)windowWillClose:(NSNotification*)notification {
