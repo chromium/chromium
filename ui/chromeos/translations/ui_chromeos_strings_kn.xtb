@@ -177,7 +177,6 @@
 <translation id="2541377937973966830">ಈ ಫೋಲ್ಡರ್‌ನಲ್ಲಿರುವ ವಿಷಯಗಳು ಓದಲು-ಮಾತ್ರ ಆಗಿದೆ. ಕೆಲವು ಚಟುವಟಿಕೆಗಳು ಬೆಂಬಲಿತವಾಗಿರುವುದಿಲ್ಲ.</translation>
 <translation id="2542049655219295786">Google ಕೋಷ್ಟಕ</translation>
 <translation id="2544853746127077729">ದೃಢೀಕರಣ ಪ್ರಮಾಣಪತ್ರವನ್ನು ನೆಟ್‌ವರ್ಕ್‌ನಿಂದ ತಿರಸ್ಕರಿಸಲಾಗಿದೆ</translation>
-<translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> ಗೆ ಸೇರಿಸಿ</translation>
 <translation id="255937426064304553">US ಇಂಟರ್‌ನ್ಯಾಷನಲ್</translation>
 <translation id="2563185590376525700">ಕಪ್ಪೆ</translation>
 <translation id="2578394532502990878">ತಮಿಳು ಫೋನೆಟಿಕ್</translation>
@@ -229,7 +228,6 @@
 <translation id="3047197340186497470">ಚೈನೀಸ್ ದಾಯಿ</translation>
 <translation id="3057861065630527966">ನಿಮ್ಮ ಫೋಟೋಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ</translation>
 <translation id="3067790092342515856">Windows ಫೈಲ್‌ಗಳು</translation>
-<translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS ಹೋಸ್ಟ್</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್,<ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
@@ -326,7 +324,6 @@
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
 <translation id="3855472144336161447">ಜರ್ಮನ್ ನಿಯೊ 2</translation>
 <translation id="3858860766373142691">ಹೆಸರು</translation>
-<translation id="386548886866354912"><ph name="EXTENSION_NAME" /> ಜೊತೆಗೆ ಪ್ಯಾಕ್</translation>
 <translation id="3866249974567520381">ವಿವರಣೆ</translation>
 <translation id="3899991606604168269">ಬಹುಭಾಷಾ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಫ್ರೆಂಚ್ (ಕೆನಡಾ)</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> ಗೆ ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -600,7 +597,6 @@
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6170470584681422115">ಸ್ಯಾಂಡ್‌ವಿಚ್</translation>
 <translation id="6187719147498869044">ಹಂಗೇರಿಯನ್</translation>
-<translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> ಮೂಲಕ ತೆರೆಯಿರಿ</translation>
 <translation id="6198252989419008588">PIN ಬದಲಾಯಿಸು</translation>
 <translation id="6199801702437275229">ಅಂತರ ಮಾಹಿತಿಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6205710420833115353">ಕೆಲವು ಕಾರ್ಯಾಚರಣೆಗಳು ನಿರೀಕ್ಷಿಸಿದ್ದಕ್ಕಿಂತಲೂ ಹೆಚ್ಚಿನ ಸಮಯವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದೆ. ನೀವು ಅವುಗಳನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಲು ಬಯಸುವಿರಾ?</translation>

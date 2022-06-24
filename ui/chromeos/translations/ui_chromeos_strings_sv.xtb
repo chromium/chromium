@@ -159,6 +159,7 @@
 <translation id="2377319039870049694">Byt till listvy</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mappar delas med Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> filer har valts</translation>
+<translation id="2387120140441437063">Det går inte att öppna filer i papperskorgen. Återställ filerna innan du öppnar dem.</translation>
 <translation id="2387458720915042159">Proxyanslutningstyp</translation>
 <translation id="2389832672041313158">burmesiska (Myanmar)</translation>
 <translation id="2392369802118427583">Aktivera</translation>
@@ -180,7 +181,6 @@
 <translation id="2541377937973966830">Mappens innehåll är skrivskyddat. Vissa aktiviteter stöds inte.</translation>
 <translation id="2542049655219295786">Tabell i Google Dokument</translation>
 <translation id="2544853746127077729">Autentiseringscertifikatet godkändes inte av nätverket</translation>
-<translation id="2547921442987553570">Lägg till i <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">USA (internationell)</translation>
 <translation id="2563185590376525700">Groda</translation>
 <translation id="2578394532502990878">tamil, fonetiskt</translation>
@@ -232,7 +232,6 @@
 <translation id="3047197340186497470">kinesiska (dayi)</translation>
 <translation id="3057861065630527966">Säkerhetskopiera foton och videor</translation>
 <translation id="3067790092342515856">Windows-filer</translation>
-<translation id="3078461028045006476">Dela med <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit-modeller</translation>
 <translation id="3085752524577180175">SOCKS-värd</translation>
 <translation id="3104793765551262433">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, blockerat av administratören, information</translation>
@@ -329,7 +328,6 @@
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3855472144336161447">Tyska (neo 2)</translation>
 <translation id="3858860766373142691">Namn</translation>
-<translation id="386548886866354912">Packa med <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Beskrivning</translation>
 <translation id="3899991606604168269">franska (Kanada) med flerspråkigt tangentbord</translation>
 <translation id="3901991538546252627">Ansluter till <ph name="NAME" /></translation>
@@ -603,7 +601,6 @@
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6170470584681422115">Smörgås</translation>
 <translation id="6187719147498869044">ungerska</translation>
-<translation id="6189412234224385711">Öppna med <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Byt pinkod</translation>
 <translation id="6199801702437275229">Väntar på information om lagringsutrymme ...</translation>
 <translation id="6205710420833115353">Vissa åtgärder tar längre tid än väntat. Vill du avbryta dem?</translation>

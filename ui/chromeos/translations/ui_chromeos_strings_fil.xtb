@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Read only ang mga nilalaman ng folder na ito. Hindi sinusuportahan ang ilang aktibidad.</translation>
 <translation id="2542049655219295786">Talahanayan ng Google</translation>
 <translation id="2544853746127077729">Tinanggihan ng network ang certificate sa pagpapatunay</translation>
-<translation id="2547921442987553570">Idagdag sa <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US international</translation>
 <translation id="2563185590376525700">Palaka</translation>
 <translation id="2578394532502990878">Tamil Phonetic</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">Chinese Dayi</translation>
 <translation id="3057861065630527966">I-back up ang iyong mga larawan at video</translation>
 <translation id="3067790092342515856">Mga Windows file</translation>
-<translation id="3078461028045006476">Ibahagi sa <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Mga Chromebit</translation>
 <translation id="3085752524577180175">SOCKS Host</translation>
 <translation id="3104793765551262433">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Na-block ng iyong Administrator, Mga Detalye</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Pangalan</translation>
-<translation id="386548886866354912">I-pack kasama ng <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Paglalarawan</translation>
 <translation id="3899991606604168269">French (Canada) na may Multilingual keyboard</translation>
 <translation id="3901991538546252627">Kumokonekta sa <ph name="NAME" /></translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Hungarian</translation>
-<translation id="6189412234224385711">Buksan gamit ang <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Palitan ang PIN</translation>
 <translation id="6199801702437275229">Hinihintay ang impormasyon ng espasyo...</translation>
 <translation id="6205710420833115353">Mas matagal kaysa sa inaasahan ang ilang operasyon. Gusto mo bang i-abort ang mga ito?</translation>

@@ -159,6 +159,7 @@
 <translation id="2377319039870049694">Liste görünümüne geç</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> klasör Linux ile paylaşıldı</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> dosya seçildi</translation>
+<translation id="2387120140441437063">Çöp kutusuna gönderilen dosyalar açılamaz. Açmadan önce lütfen dosyaları geri yükleyin.</translation>
 <translation id="2387458720915042159">Proxy bağlantısı türü</translation>
 <translation id="2389832672041313158">Birmanca/Myanmar</translation>
 <translation id="2392369802118427583">Etkinleştir</translation>
@@ -180,7 +181,6 @@
 <translation id="2541377937973966830">Bu klasörün içindekiler salt okunurdur. Bazı işlemler desteklenmez.</translation>
 <translation id="2542049655219295786">Google tablosu</translation>
 <translation id="2544853746127077729">Kimlik doğrulama sertifikası ağ tarafından reddedildi</translation>
-<translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> uzantısına ekle</translation>
 <translation id="255937426064304553">ABD uluslararası</translation>
 <translation id="2563185590376525700">Kurbağa</translation>
 <translation id="2578394532502990878">Tamilce Fonetik</translation>
@@ -232,7 +232,6 @@
 <translation id="3047197340186497470">Çince Dayi</translation>
 <translation id="3057861065630527966">Fotoğraflarınızı ve videolarınızı yedekleyin</translation>
 <translation id="3067790092342515856">Windows dosyaları</translation>
-<translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> ile paylaş</translation>
 <translation id="3083975830683400843">Chromebit'ler</translation>
 <translation id="3085752524577180175">SOCKS Ana Makinesi</translation>
 <translation id="3104793765551262433">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Yöneticiniz tarafından engellenmiş, Ayrıntılar</translation>
@@ -329,7 +328,6 @@
 <translation id="385051799172605136">Geri</translation>
 <translation id="3855472144336161447">Alman Neo 2</translation>
 <translation id="3858860766373142691">Ad</translation>
-<translation id="386548886866354912"><ph name="EXTENSION_NAME" /> uzantısıyla paketle</translation>
 <translation id="3866249974567520381">Açıklama</translation>
 <translation id="3899991606604168269">Fransızca (Kanada), Çok Dilli klavye</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> ağına bağlanılıyor</translation>
@@ -603,7 +601,6 @@
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6170470584681422115">Sandviç</translation>
 <translation id="6187719147498869044">Macarca</translation>
-<translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> ile aç</translation>
 <translation id="6198252989419008588">PIN'i değiştir</translation>
 <translation id="6199801702437275229">Alan bilgileri bekleniyor...</translation>
 <translation id="6205710420833115353">Bazı işlemler beklenenden daha uzun sürüyor. Bunları iptal etmek istiyor musunuz?</translation>

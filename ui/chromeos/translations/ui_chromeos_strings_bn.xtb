@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">এই ফোল্ডারের কন্টেন্ট 'রিড-ওনলি' মোডে রয়েছে। কিছু অ্যাক্টিভিটি এখানে কাজ করবে না।</translation>
 <translation id="2542049655219295786">Google টেবিল</translation>
 <translation id="2544853746127077729">নেটওয়ার্কের দ্বারা প্রমাণীকরণ সার্টিফিকেট প্রত্যাখ্যান করা হয়েছে</translation>
-<translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> এ যোগ করুন</translation>
 <translation id="255937426064304553">মার্কিন আন্তর্জাতিক</translation>
 <translation id="2563185590376525700">ব্যাঙ</translation>
 <translation id="2578394532502990878">তামিল ফোনেটিক</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">চীনা ডেই</translation>
 <translation id="3057861065630527966">আপনার ফটো ও ভিডিওগুলির ব্যাকআপ নিন</translation>
 <translation id="3067790092342515856">Windows ফাইল</translation>
-<translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> এর সাথে শেয়ার করুন</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">সক্স হোস্ট</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ব্লক করেছেন, বিবরণ</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3855472144336161447">জার্মান নিও ২</translation>
 <translation id="3858860766373142691">নাম</translation>
-<translation id="386548886866354912"><ph name="EXTENSION_NAME" /> দিয়ে প্যাক করুন</translation>
 <translation id="3866249974567520381">বর্ণনা</translation>
 <translation id="3899991606604168269">ফরাসি (কানাডা) ভাষায় মাল্টিলিঙ্গুয়াল কীবোর্ড</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-এ সংযোগ করা হচ্ছে</translation>
@@ -603,7 +600,6 @@
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6170470584681422115">স্যান্ডউইচ</translation>
 <translation id="6187719147498869044">হাঙ্গেরিয়ান</translation>
-<translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> এর মাধ্যমে খুলুন</translation>
 <translation id="6198252989419008588">পিন পরিবর্তন করুন</translation>
 <translation id="6199801702437275229">স্থান তথ্যের জন্য অপেক্ষারত...</translation>
 <translation id="6205710420833115353">কিছু অ্যাক্টিভিটি প্রত্যাশিত সময়ের থেকে বেশি সময় নিচ্ছে। আপনি কি সেগুলি থামাতে চান?</translation>

@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Ennek a mappának a tartalma írásvédett. Bizonyos műveletek nem hajthatók végre.</translation>
 <translation id="2542049655219295786">Google-tábla</translation>
 <translation id="2544853746127077729">A hálózat elutasította a hitelesítési tanúsítványt</translation>
-<translation id="2547921442987553570">Hozzáadás a következőhöz: <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">USA nemzetközi</translation>
 <translation id="2563185590376525700">Béka</translation>
 <translation id="2578394532502990878">tamil, fonetikus</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">kínai dayi</translation>
 <translation id="3057861065630527966">Biztonsági másolat készítése a fotókról és videókról</translation>
 <translation id="3067790092342515856">Windows-fájlok</translation>
-<translation id="3078461028045006476">Megosztás a következővel: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebitek</translation>
 <translation id="3085752524577180175">SOCKS-szerver</translation>
 <translation id="3104793765551262433">Hálózat száma: <ph name="NETWORK_INDEX" />, összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, biztonsági állapot: <ph name="SECURITY_STATUS" />, csatlakozási állapot: <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, rendszergazda tiltja, részletek</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Vissza</translation>
 <translation id="3855472144336161447">német Neo 2</translation>
 <translation id="3858860766373142691">Név</translation>
-<translation id="386548886866354912">Csomagolás a következővel: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Leírás</translation>
 <translation id="3899991606604168269">francia (Kanada), többnyelvű billentyűzettel</translation>
 <translation id="3901991538546252627">Csatlakozás a következőhöz: <ph name="NAME" /></translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6170470584681422115">Szendvics</translation>
 <translation id="6187719147498869044">magyar</translation>
-<translation id="6189412234224385711">Megnyitás a következővel: <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">PIN-kód megváltoztatása</translation>
 <translation id="6199801702437275229">Várakozás a helyinformációkra...</translation>
 <translation id="6205710420833115353">Egyes műveletek végrehajtása a vártnál tovább tart. Megszakítja őket?</translation>

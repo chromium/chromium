@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Содржините во папкава се само за читање. Некои активности не се поддржани.</translation>
 <translation id="2542049655219295786">Табела на Google</translation>
 <translation id="2544853746127077729">Мрежата го отфрли сертификатот за автентикација</translation>
-<translation id="2547921442987553570">Додајте во <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Меѓународен англиски (САД)</translation>
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">фонетски тамилски</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">кинески даји</translation>
 <translation id="3057861065630527966">Бекап на фотографиите и видеата</translation>
 <translation id="3067790092342515856">Датотеки на Windows</translation>
-<translation id="3078461028045006476">Споделете со <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Уреди Chromebit</translation>
 <translation id="3085752524577180175">Хост на SOCKS</translation>
 <translation id="3104793765551262433">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, блокирано од администраторот, детали</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Германска Neo 2</translation>
 <translation id="3858860766373142691">Име</translation>
-<translation id="386548886866354912">Спакувајте со <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Опис</translation>
 <translation id="3899991606604168269">француски (Канада) со повеќејазична тастатура</translation>
 <translation id="3901991538546252627">Се поврзува со <ph name="NAME" /></translation>
@@ -603,7 +600,6 @@
 <translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6170470584681422115">Сендвич</translation>
 <translation id="6187719147498869044">унгарски</translation>
-<translation id="6189412234224385711">Отворете со <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Промена на PIN</translation>
 <translation id="6199801702437275229">Се чекаат информации за простор…</translation>
 <translation id="6205710420833115353">Некои операции траат подолго од очекуваното. Дали сакате да ги прекинете?</translation>

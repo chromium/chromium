@@ -183,7 +183,6 @@
 <translation id="2541377937973966830">Τα περιεχόμενα αυτού του φακέλου είναι μόνο για ανάγνωση. Δεν υποστηρίζονται ορισμένες δραστηριότητες.</translation>
 <translation id="2542049655219295786">Πίνακας Google</translation>
 <translation id="2544853746127077729">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε από το δίκτυο</translation>
-<translation id="2547921442987553570">Προσθήκη στην επέκταση <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Διεθνές ΗΠΑ</translation>
 <translation id="2563185590376525700">Βάτραχος</translation>
 <translation id="2578394532502990878">Φωνητική εισαγωγή Ταμίλ</translation>
@@ -237,7 +236,6 @@
 <translation id="3047197340186497470">Κινεζικά Dayi</translation>
 <translation id="3057861065630527966">Δημιουργία αντιγράφων ασφαλείας για τις φωτογραφίες και τα βίντεό σας</translation>
 <translation id="3067790092342515856">Αρχεία Windows</translation>
-<translation id="3078461028045006476">Μοιραστείτε με την επέκταση <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Κεντρικός υπολογιστής SOCKS</translation>
 <translation id="3104793765551262433">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Αποκλείστηκε από τον διαχειριστή σας, Λεπτομέρειες</translation>
@@ -338,7 +336,6 @@
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3855472144336161447">Γερμανικά Neo 2</translation>
 <translation id="3858860766373142691">Όνομα</translation>
-<translation id="386548886866354912">Συμπίεση με <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Περιγραφή</translation>
 <translation id="3899991606604168269">Γαλλικά (Καναδά) με πολύγλωσσο πληκτρολόγιο</translation>
 <translation id="3901991538546252627">Σύνδεση με <ph name="NAME" /></translation>
@@ -617,7 +614,6 @@
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6170470584681422115">Σάντουιτς</translation>
 <translation id="6187719147498869044">Ουγγρικά</translation>
-<translation id="6189412234224385711">Άνοιγμα με <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Αλλαγή PIN</translation>
 <translation id="6199801702437275229">Αναμονή για πληροφορίες χώρου...</translation>
 <translation id="6205710420833115353">Ορισμένες λειτουργίες διαρκούν περισσότερο από το αναμενόμενο. Θέλετε να τις ματαιώσετε;</translation>

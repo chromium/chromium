@@ -159,6 +159,7 @@
 <translation id="2377319039870049694">Skipta yfir í listayfirlit</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> möppum deilt með Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> skrár valdar</translation>
+<translation id="2387120140441437063">Ekki tókst að opna skrár í rusli. Endurheimtu skrárnar áður en þú opnar þær.</translation>
 <translation id="2387458720915042159">Gerð tengingar staðgengilsþjóns</translation>
 <translation id="2389832672041313158">Búrmíska/Myanmar</translation>
 <translation id="2392369802118427583">Virkja</translation>
@@ -180,7 +181,6 @@
 <translation id="2541377937973966830">Innihald þessarar möppu er skrifvarið. Sumar aðgerðir eru ekki studdar.</translation>
 <translation id="2542049655219295786">Google tafla</translation>
 <translation id="2544853746127077729">Auðkenningarvottorði hafnað af neti</translation>
-<translation id="2547921442987553570">Bæta við <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Bandarískt (alþjóðlegt)</translation>
 <translation id="2563185590376525700">Fúsi</translation>
 <translation id="2578394532502990878">Tamíl hljóðritun</translation>
@@ -232,7 +232,6 @@
 <translation id="3047197340186497470">Kínverska Dayi</translation>
 <translation id="3057861065630527966">Afrita myndir og myndskeið</translation>
 <translation id="3067790092342515856">Windows-skrár</translation>
-<translation id="3078461028045006476">Deila með <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit tæki</translation>
 <translation id="3085752524577180175">SOCKS-hýsill</translation>
 <translation id="3104793765551262433">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />%, útilokað af stjórnanda, nánar</translation>
@@ -329,7 +328,6 @@
 <translation id="385051799172605136">Til baka</translation>
 <translation id="3855472144336161447">Þýskt Neo 2</translation>
 <translation id="3858860766373142691">Heiti</translation>
-<translation id="386548886866354912">Pakki með <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Lýsing</translation>
 <translation id="3899991606604168269">Franska (Kanada) með fjölmála lyklaborði</translation>
 <translation id="3901991538546252627">Tengist <ph name="NAME" /></translation>
@@ -602,7 +600,6 @@
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6170470584681422115">Samloka</translation>
 <translation id="6187719147498869044">Ungverska</translation>
-<translation id="6189412234224385711">Opna með <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Breyta PIN-númeri</translation>
 <translation id="6199801702437275229">Beðið eftir rýmisupplýsingum...</translation>
 <translation id="6205710420833115353">Sumar aðgerðir ætla að taka lengri tíma en búist var við. Viltu hætta við þær?</translation>

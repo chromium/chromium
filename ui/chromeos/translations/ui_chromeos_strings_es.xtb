@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">El contenido de esta carpeta es de solo lectura. No se admiten algunas acciones.</translation>
 <translation id="2542049655219295786">Tabla de Google</translation>
 <translation id="2544853746127077729">Certificado de autenticación rechazado por la red</translation>
-<translation id="2547921442987553570">Añadir a <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Estados Unidos (internacional)</translation>
 <translation id="2563185590376525700">Rana</translation>
 <translation id="2578394532502990878">Tamil (fonético)</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">Chino (Dayi)</translation>
 <translation id="3057861065630527966">Realiza copias de seguridad de tus fotos y vídeos</translation>
 <translation id="3067790092342515856">Archivos de Windows</translation>
-<translation id="3078461028045006476">Compartir con <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3104793765551262433">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Intensidad de la señal <ph name="SIGNAL_STRENGTH" /> %, Bloqueada por tu administrador, Detalles</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Volver</translation>
 <translation id="3855472144336161447">Alemán (Neo 2)</translation>
 <translation id="3858860766373142691">Nombre</translation>
-<translation id="386548886866354912">Comprimir con <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Descripción</translation>
 <translation id="3899991606604168269">Francés (Canadá) con teclado multilingüe</translation>
 <translation id="3901991538546252627">Conectando con: <ph name="NAME" /></translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6170470584681422115">Bocadillo</translation>
 <translation id="6187719147498869044">Húngaro</translation>
-<translation id="6189412234224385711">Abrir con <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Cambiar PIN</translation>
 <translation id="6199801702437275229">Esperando información sobre el espacio...</translation>
 <translation id="6205710420833115353">Algunas operaciones están tardando más de lo esperado. ¿Quieres cancelarlas?</translation>

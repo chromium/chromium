@@ -159,6 +159,7 @@
 <translation id="2377319039870049694">Prepnúť na zobrazenie zoznamu</translation>
 <translation id="2377590462528165447">Priečinky (<ph name="NUMBER_OF_ITEMS" />) zdieľané so systémom Linux</translation>
 <translation id="2378075407703503998">Počet vybratých súborov: <ph name="SELCTED_FILE_COUNT" /></translation>
+<translation id="2387120140441437063">Súbory v koši nie je možné otvoriť. Pred otvorením súbory obnovte.</translation>
 <translation id="2387458720915042159">Typ pripojenia proxy</translation>
 <translation id="2389832672041313158">Mjanmarská klávesnica</translation>
 <translation id="2392369802118427583">Aktivovať</translation>
@@ -180,7 +181,6 @@
 <translation id="2541377937973966830">Obsah tohto priečinka je k dispozícii iba na čítanie. Niektoré aktivity nie sú podporované.</translation>
 <translation id="2542049655219295786">Tabuľka Google</translation>
 <translation id="2544853746127077729">Certifikát na overenie totožnosti bol zamietnutý sieťou</translation>
-<translation id="2547921442987553570">Pridať do rozšírenia <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Americká klávesnica s medzinárodným rozložením klávesov</translation>
 <translation id="2563185590376525700">Žaba</translation>
 <translation id="2578394532502990878">Tamilská fonetická klávesnica</translation>
@@ -232,7 +232,6 @@
 <translation id="3047197340186497470">Čínska klávesnica Dayi</translation>
 <translation id="3057861065630527966">Zálohovať fotky a videá</translation>
 <translation id="3067790092342515856">Súbory systému Windows</translation>
-<translation id="3078461028045006476">Zdieľať s rozšírením <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebity</translation>
 <translation id="3085752524577180175">Hostiteľ SOCKS</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu: <ph name="SIGNAL_STRENGTH" /> %, zablokoval váš správca, podrobnosti</translation>
@@ -329,7 +328,6 @@
 <translation id="385051799172605136">Späť</translation>
 <translation id="3855472144336161447">Nemecká klávesnica Neo 2</translation>
 <translation id="3858860766373142691">Názov</translation>
-<translation id="386548886866354912">Komprimovať pomocou rozšírenia <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Popis</translation>
 <translation id="3899991606604168269">Francúzska (Kanada) viacjazyčná klávesnica</translation>
 <translation id="3901991538546252627">Pripája sa k sieti <ph name="NAME" /></translation>
@@ -603,7 +601,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6187719147498869044">Maďarská klávesnica</translation>
-<translation id="6189412234224385711">Otvoriť pomocou rozšírenia <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Zmeniť PIN</translation>
 <translation id="6199801702437275229">Čaká sa na informácie o voľnom mieste...</translation>
 <translation id="6205710420833115353">Niektoré operácie trvajú dlhšie, ako sa očakávalo. Chcete ich zrušiť?</translation>

@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Съдържанието на тази папка е само за четене. Някои действия не се поддържат.</translation>
 <translation id="2542049655219295786">Таблица в Google</translation>
 <translation id="2544853746127077729">Сертификатът за удостоверяване бе отхвърлен от мрежата</translation>
-<translation id="2547921442987553570">Добавяне към <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Американска международна клавиатура</translation>
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">Тамилски (фонетична клавиатура)</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">Китайски (даи)</translation>
 <translation id="3057861065630527966">Създаване на резервни копия на снимките и видеоклиповете ви</translation>
 <translation id="3067790092342515856">Файлове на Windows</translation>
-<translation id="3078461028045006476">Споделяне с/ъс <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Устройствата Chromebit</translation>
 <translation id="3085752524577180175">SOCKS хост</translation>
 <translation id="3104793765551262433">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, блокирана от администратора ви, подробности</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Немска (Neo 2) клавиатура</translation>
 <translation id="3858860766373142691">Име</translation>
-<translation id="386548886866354912">Пакетиране с/ъс <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Описание</translation>
 <translation id="3899991606604168269">Френски (Канада) с многоезична клавиатура</translation>
 <translation id="3901991538546252627">Установява се връзка със: <ph name="NAME" /></translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6170470584681422115">Сандвич</translation>
 <translation id="6187719147498869044">Унгарски</translation>
-<translation id="6189412234224385711">Отваряне с/ъс <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Промяна на ПИН</translation>
 <translation id="6199801702437275229">Информацията за мястото се изчаква...</translation>
 <translation id="6205710420833115353">Някои операции отнемат повече време от очакваното. Искате ли да ги прекратите?</translation>

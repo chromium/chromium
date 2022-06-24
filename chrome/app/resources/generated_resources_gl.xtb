@@ -1720,7 +1720,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2602501489742255173">Pasa o dedo cara arriba para comezar</translation>
 <translation id="2603115962224169880">Fai limpeza no ordenador</translation>
 <translation id="2603355571917519942">A función Voice Match está lista</translation>
-<translation id="2604138917550693049">Buscar imaxe con Google Lens</translation>
 <translation id="2604255671529671813">Produciuse un erro de conexión de rede</translation>
 <translation id="2605668923777146443">Accede a <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" /> se queres ver as opcións dispoñibles para Better Together.</translation>
 <translation id="2606246518223360146">Ligar datos</translation>
@@ -4199,7 +4198,6 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5051836348807686060">O corrector ortográfico non é compatible cos idiomas que seleccionaches</translation>
 <translation id="5052499409147950210">Editar sitio</translation>
 <translation id="505347685865235222">Grupo sen nome: <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Buscar imaxe con Google Lens</translation>
 <translation id="5054374119096692193">Consulta todas as opcións relativas ás tarxetas en <ph name="BEGIN_LINK" />Personalizar Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Conectando co contedor</translation>
 <translation id="5057110919553308744">Cando fagas clic na extensión</translation>

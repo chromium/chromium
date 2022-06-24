@@ -1735,7 +1735,6 @@
 <translation id="2602501489742255173">יש להחליק כלפי מעלה כדי להתחיל</translation>
 <translation id="2603115962224169880">ניקוי המחשב</translation>
 <translation id="2603355571917519942">‏התכונה Voice Match מוכנה</translation>
-<translation id="2604138917550693049">‏חיפוש תמונה באמצעות Google Lens</translation>
 <translation id="2604255671529671813">שגיאת חיבור רשת</translation>
 <translation id="2605668923777146443">‏כדי לראות את האפשרויות של Better Together יש לעבור אל <ph name="LINK_BEGIN" />ההגדרות<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">קישור נתונים</translation>
@@ -2240,6 +2239,7 @@
 <translation id="3067198360141518313">הרצת פלאגין זה</translation>
 <translation id="3071624960923923138">אפשר ללחוץ כאן כדי לפתוח כרטיסייה חדשה</translation>
 <translation id="3072775339180057696">האם לאפשר לאתר לראות את <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">תרגום הדף המלא</translation>
 <translation id="3075874217500066906">‏נדרשת הפעלה מחדש על מנת להתחיל את תהליך ה-Powerwash. לאחר ההפעלה מחדש יידרש ממך אישור להמשיך.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">שמירה רק במכשיר הזה</translation>
@@ -4216,7 +4216,6 @@
 <translation id="5051836348807686060">בשפות שבחרת אין תמיכה בבדיקת איות</translation>
 <translation id="5052499409147950210">עריכת אתר</translation>
 <translation id="505347685865235222">קבוצה ללא שם – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">‏חיפוש תמונה באמצעות Google Lens</translation>
 <translation id="5054374119096692193">‏הצגת כל אפשרויות הכרטיסים ב<ph name="BEGIN_LINK" />התאמה האישית של Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">מתבצעת התחברות למאגר</translation>
 <translation id="5057110919553308744">בלחיצה על התוסף</translation>
@@ -5095,6 +5094,7 @@
 <translation id="5933522550144185133">האפליקציה <ph name="APP_NAME" /> משתמשת במצלמה ובמיקרופון שלך</translation>
 <translation id="5935158534896975820">המערכת מכינה את בקשת החתימה על האישור (בהמתנה לשרת)</translation>
 <translation id="5935656526031444304">ניהול גלישה בטוחה</translation>
+<translation id="5936065461722368675">תרגום הדף המלא</translation>
 <translation id="5938002010494270685">יש שדרוג אבטחה זמין</translation>
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="5939719276406088041">לא ניתן ליצור קיצור דרך</translation>

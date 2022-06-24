@@ -1723,7 +1723,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2602501489742255173">Lai sāktu darbu, velciet augšup</translation>
 <translation id="2603115962224169880">Tīriet datoru</translation>
 <translation id="2603355571917519942">Funkcija Voice Match ir gatava darbam</translation>
-<translation id="2604138917550693049">Meklēt attēlu ar Google Lens</translation>
 <translation id="2604255671529671813">Tīkla savienojuma kļūda</translation>
 <translation id="2605668923777146443">Lai skatītu funkcijas Better Together opcijas, pārejiet uz sadaļu <ph name="LINK_BEGIN" />Iestatījumi<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Saistīt datus</translation>
@@ -2227,6 +2226,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3067198360141518313">Izpildīt šo spraudni</translation>
 <translation id="3071624960923923138">Varat noklikšķināt šeit, lai atvērtu jaunu cilni.</translation>
 <translation id="3072775339180057696">Vai ļaut vietnei skatīt failu <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Tulkot visu lapu</translation>
 <translation id="3075874217500066906">Lai varētu sākt Powerwash procesu, ir jāveic restartēšana. Pēc tam jums tiks lūgts apstiprināt, ka vēlaties turpināt darbu.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Saglabāt tikai šajā ierīcē</translation>
@@ -4202,7 +4202,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5051836348807686060">Pareizrakstības pārbaude netiek atbalstīta atlasītajās valodās</translation>
 <translation id="5052499409147950210">Vietnes rediģēšana</translation>
 <translation id="505347685865235222">Grupa bez nosaukuma — <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Meklēt attēlu ar Google Lens</translation>
 <translation id="5054374119096692193">Skatiet visas kartīšu opcijas sadaļā <ph name="BEGIN_LINK" />Chrome pielāgošana<ph name="END_LINK" />.</translation>
 <translation id="5056950756634735043">Notiek savienojuma izveide ar konteineru</translation>
 <translation id="5057110919553308744">Kad noklikšķināt uz paplašinājuma</translation>
@@ -5079,6 +5078,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5933522550144185133">Lietotne <ph name="APP_NAME" /> izmanto jūsu kameru un mikrofonu</translation>
 <translation id="5935158534896975820">Tiek sagatavots sertifikāta parakstīšanas pieprasījums (tiek gaidīta servera atbilde)</translation>
 <translation id="5935656526031444304">Pārvaldīt drošu pārlūkošanu</translation>
+<translation id="5936065461722368675">Tulkot visu lapu</translation>
 <translation id="5938002010494270685">Pieejams drošības jauninājums</translation>
 <translation id="5939518447894949180">Atiestatīt</translation>
 <translation id="5939719276406088041">Nevar izveidot saīsni</translation>

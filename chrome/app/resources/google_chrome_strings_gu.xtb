@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="1001534784610492198">ઇન્સ્ટૉલર આર્કાઇવ ખરાબ છે અથવા અમાન્ય છે. કૃપા કરીને Google Chrome ફરીથી ડાઉનલોડ કરો.</translation>
+<translation id="1026101648481255140">ઇન્સ્ટૉલેશનની પ્રક્રિયા ફરી શરૂ કરો</translation>
 <translation id="102763973188675173">Google Chromeને કસ્ટમાઇઝ અને નિયંત્રિત કરો. અપડેટ ઉપલબ્ધ છે.</translation>
 <translation id="1051826050538111504">તમારા કમ્પ્યુટરમાં નુકસાનકારક સૉફ્ટવેર છે. Chrome તે કાઢી નાખી શકે છે, તમારી સેટિંગ પાછી મેળવી શકે છે અને એક્સ્ટેંશન બંધ કરી શકે છે જેથી તમારું બ્રાઉઝર ફરી સામાન્ય રીતે કામ કરી શકે.</translation>
 <translation id="1065672644894730302">તમારી પસંદગીઓને વાંચી શકાતી નથી.
@@ -15,6 +16,7 @@
 <translation id="1154147086299354128">&amp;Chromeમાં ખોલો</translation>
 <translation id="1178374936842835197">જો કોઈ સેટિંગ આ પેજ પર ન દેખાતું હોય, તો તમારા <ph name="LINK_BEGIN" />
         ChromeOS Flexના સેટિંગ<ph name="LINK_END" />માં જુઓ</translation>
+<translation id="1203500561924088507">ઇન્સ્ટૉલ કરવા બદલ આભાર. <ph name="BUNDLE_NAME" />નો ઉપયોગ કરતા પહેલાં તમારે તમારું બ્રાઉઝર ફરી શરૂ કરવું આવશ્યક છે.</translation>
 <translation id="1278833599417554002">&amp;Chrome અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
 <translation id="1302523850133262269">કૃપા કરીને Chrome નવીનતમ સિસ્ટમ અપડેટ્સ ઇન્સ્ટોલ કરે ત્યાં સુધી રાહ જુઓ.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે આ ડિવાઇસનો ઉપયોગ કરતા પહેલાં નીચેની સેવાની શરતો વાંચો અને સ્વીકારો. આ શરતો Google ChromeOS Flexની શરતોને વધારતી નથી, તેમાં ફેરફાર કરતી નથી અથવા તેને મર્યાદિત કરતી નથી.</translation>
@@ -35,6 +37,7 @@
 <translation id="1619887657840448962">Chrome ને સુરક્ષિત બનાવવા માટે, અમે નીચેના એક્સ્ટેન્શનને અક્ષમ કર્યું છે કે જે <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યું હોઈ શકે છે.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />તમે તમારો ડેટા કેવી રીતે મેનેજ કરી શકો છો:<ph name="END_BOLD" /> તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, અમે 4 અઠવાડિયા કરતાં જૂની હોય એવી તમારી રુચિઓને ઑટોમૅટિક રીતે ડિલીટ કરીએ છીએ. તમે જેમ જેમ બ્રાઉઝ કરતા રહો છો, તેમ તેમ તમારી રુચિનો વિષય ફરી સૂચિમાં દેખાઈ શકે છે. અથવા તમે તમારી રુચિના એવા વિષયો કાઢી નાખી શકો છો કે જેમને તમે Chromeની સૂચિમાં શામેલ કરવા માગતા નથી.</translation>
 <translation id="1628000112320670027">Chrome સાથે સહાય મેળવો</translation>
+<translation id="1640672724030957280">ડાઉનલોડ કરી રહ્યું છે...</translation>
 <translation id="1662146548738125461">ChromeOS Flex વિશે</translation>
 <translation id="1674870198290878346">Chrome છુ&amp;પી વિંડોમાં લિંક ખોલો</translation>
 <translation id="1682634494516646069">Google Chrome એની ડેટા ડિરેક્ટરી વાંચી અથવા લખી શકતુંં નથી:
@@ -52,7 +55,9 @@
 <translation id="1877026089748256423">Chrome જૂનું થઈ ગયું છે</translation>
 <translation id="1919130412786645364">Chromeમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="1952239763774043237">Google Chromeની ભાવિ અપડેટ મેળવવા માટે, તમારે macOS 10.13 કે તે પછીના વર્ઝન પર અપડેટ કરવું જરૂરી રહેશે. આ કમ્પ્યુટર macOS 10.12નો ઉપયોગ કરે છે.</translation>
+<translation id="1953553007165777902">ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="MINUTE" /> મિનિટ બાકી છે</translation>
 <translation id="2018528049276128029">દરેક પ્રોફાઇલ બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજી ઘણી બાબતો જેવી તેની પોતાની Chrome માહિતી ધરાવે છે</translation>
+<translation id="2018879682492276940">ઇન્સ્ટૉલ કરવામાં નિષ્ફળ રહ્યાં. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="2071318482926839249">તમે પહેલેથી જ અન્ય એકાઉન્ટમાં સાઇન કરેલું છે. તમારું બ્રાઉઝિંગ અલગ રાખવા, Chrome તમારા માટે તમારી અલગ પ્રોફાઇલ બનાવી શકે છે.</translation>
 <translation id="207902854391093810">અજમાયશો ચાલુ હોય ત્યારે, Ad measurement તમે જેની મુલાકાત લો છો તે સાઇટને Chrome પાસેથી માહિતીની વિનંતી કરવાની મંજૂરી આપે છે, જે સાઇટને તેની જાહેરાતોનું કાર્યપ્રદર્શન માપવામાં સહાય કરે છે. Ad measurement સાઇટ વચ્ચે શક્ય તેટલી ઓછી માહિતી ટ્રાન્સફર કરીને, સાઇટ દ્વારા પરસ્પરના ટ્રૅકિંગને પ્રતિબંધિત કરે છે.</translation>
 <translation id="2094648590148273905">ChromeOS Flexની શરતો</translation>
@@ -64,6 +69,7 @@
 <translation id="2131230230468101642">તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, અમે 4 અઠવાડિયા કરતાં જૂની હોય એવી તમારી રુચિઓને ઑટોમૅટિક રીતે ડિલીટ કરીએ છીએ. તમે જેમ જેમ બ્રાઉઝ કરતા રહો છો, તેમ તેમ તમારી રુચિનો વિષય ફરી સૂચિમાં દેખાઈ શકે છે. અથવા તમે તમારી રુચિના એવા વિષયો કાઢી નાખી શકો છો કે જેમને તમે Chromeની સૂચિમાં શામેલ કરવા માગતા નથી.</translation>
 <translation id="2139300032719313227">ChromeOS ફરી શરૂ કરો</translation>
 <translation id="2151406531797534936">કૃપા કરીને હવે Chrome ફરી શરૂ કરો</translation>
+<translation id="2174917724755363426">ઇન્સ્ટૉલેશનની પ્રક્રિયા પૂર્ણ થઈ નથી. શું તમે ખરેખર રદ કરવા માગો છો?</translation>
 <translation id="2258103955319320201">Chrome બ્રાઉઝર પરની તમારી વસ્તુઓને તમારા બધા ડિવાઇસ પર ઍક્સેસ કરવા માટે, સાઇન ઇન કરો અને પછી સિંક કરવાની સુવિધા ચાલુ કરો</translation>
 <translation id="2290014774651636340">Google API કીઝ ખૂટે છે. Google Chrome ની કેટલીક કાર્યક્ષમતા અક્ષમ થશે.</translation>
 <translation id="2290095356545025170">શું તમને ખાતરી છે કે તમારે Google Chromeને અનઇન્સ્ટૉલ કરવું છે?</translation>
@@ -100,13 +106,16 @@
 <translation id="2871893339301912279">તમે હમણાં Chrome માં સાઇન ઇન છો!</translation>
 <translation id="2885378588091291677">કાર્ય વ્યવસ્થાપક</translation>
 <translation id="2888126860611144412">Chrome વિશે</translation>
+<translation id="2915996080311180594">પછીથી ફરી શરૂ કરો</translation>
 <translation id="2926676257163822632">નબળા પાસવર્ડનું અનુમાન કરવું સરળ હોય છે. Chromeને <ph name="BEGIN_LINK" />તમારા માટે સશક્ત પાસવર્ડ બનાવવા અને યાદ રાખવા<ph name="END_LINK" />ની મંજૂરી આપો.</translation>
 <translation id="2926952073016206995">આ સાઇટ માટે Chromeને કૅમેરાની પરવાનગીની જરૂર છે</translation>
+<translation id="2928420929544864228">ઇન્સ્ટૉલેશનની પ્રક્રિયા પૂર્ણ થઈ.</translation>
 <translation id="2929907241665500097">કંઈક ખોટુ થયું હોવાને કારણે Chrome અપડેટ કરી શકાયું નથી. <ph name="BEGIN_LINK" />Chrome અપડેટ કરવામાં આવતી સમસ્યાઓ અને નિષ્ફળ થયેલા અપડેટ સુધારો.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન - Chrome</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex અપડેટ કરવા માટે ફરીથી લૉન્ચ કરો</translation>
 <translation id="303514781271618814">Chrome એવી સુવિધાઓની શોધખોળ કરી રહ્યું છે જે તમારા ડેટાના મર્યાદિત ઉપયોગ વડે પણ સાઇટને બ્રાઉઝિંગનો પહેલાં જેવો જ અનુભવ પ્રદાન કરી શકે</translation>
 <translation id="3037838751736561277">Google Chrome બૅકગ્રાઉન્ડ મોડમાં છે.</translation>
+<translation id="3038232873781883849">ઇન્સ્ટૉલ થવાની રાહ જોઈ રહ્યાં છીએ...</translation>
 <translation id="3059710691562604940">Safe Browsingની સુવિધા બંધ છે. Chrome તેને ચાલુ રાખવાનો સુઝાવ આપે છે.</translation>
 <translation id="3065168410429928842">Chrome ટૅબ</translation>
 <translation id="3069821012350118710">તમે મુલાકાત લો છો એ બધી સાઇટ તમે Chrome બંધ કરો નહીં, ત્યાં સુધી તમારી માહિતી યાદ રાખે છે</translation>
@@ -120,6 +129,7 @@
 <translation id="3169523567916669830">અજમાયશો દરમિયાન, તમે રુચિના એ વિષયોને જોઈ અને કાઢી નાખી શકો છો કે જેનો ઉપયોગ સાઇટ દ્વારા તમને જાહેરાતો બતાવવા માટે કરવામાં આવ્યો હતો. Chrome તમારા તાજેતરના બ્રાઉઝિંગ ઇતિહાસના આધારે તમારી રુચિઓનું અનુમાન લગાવે છે.</translation>
 <translation id="3245429137663807393">જો તમે Chromeના વપરાશના રિપોર્ટ પણ શેર કરતા હો, તો તે રિપોર્ટમાં તમે મુલાકાત લો છો તે URLs શામેલ હોય છે</translation>
 <translation id="3282568296779691940">Chrome માં સાઇન ઇન કરો</translation>
+<translation id="3286538390144397061">હવે ફરીથી પ્રારંભ કરો</translation>
 <translation id="3360895254066713204">Chrome સહાયક</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome હમણાં ફરીથી લૉન્ચ થશે}=1{Chrome 1 સેકન્ડમાં ફરીથી લૉન્ચ થશે}one{Chrome # સેકન્ડમાં ફરીથી લૉન્ચ થશે}other{Chrome # સેકન્ડમાં ફરીથી લૉન્ચ થશે}}</translation>
 <translation id="3396977131400919238">ઇન્સ્ટૉલેશન દરમિયાન એક ઑપરેટિંગ સિસ્ટમની ભૂલ આવી. કૃપા કરીને Google Chrome ફરીથી ડાઉનલોડ કરો.</translation>
@@ -156,9 +166,11 @@
 <translation id="4106587138345390261">Chrome એવી નવી સુવિધાઓની શોધખોળ કરી રહ્યું છે કે જેના વડે સાઇટ તમારી ઓછી માહિતીનો ઉપયોગ કરીને બ્રાઉઝિંગનો એવો જ અનુભવ પ્રદાન કરી શકે</translation>
 <translation id="4110895483821904099">તમારી નવી Chrome પ્રોફાઇલ સેટઅપ કરો</translation>
 <translation id="4147555960264124640">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Google Chrome પ્રોફાઇલ પર ઍડમિનને એનું નિયંત્રણ આપી રહ્યાં છો. તમારો Chrome ડેટા, જેમ કે તમારી ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" />થી જોડાયેલા રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડથી આ ડેટાને ડિલીટ કરી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહીં. <ph name="LEARN_MORE" /></translation>
+<translation id="4148957013307229264">ઇન્સ્ટોલ કરી રહ્યું છે...</translation>
 <translation id="4149882025268051530">ઇન્સ્ટૉલર આર્કાઇવને અનકોમ્પ્રેસ કરવામાં નિષ્ફળ. કૃપા કરીને Google Chrome ફરીથી ડાઉનલોડ કરો.</translation>
 <translation id="4191857738314598978">{0,plural, =1{એક દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}one{# દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}other{# દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}}</translation>
 <translation id="4205939740494406371">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી. 24 કલાક પછી ફરી પ્રયાસ કરજો અથવા <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટમાં પાસવર્ડ ચેક કરો<ph name="END_LINK" />.</translation>
+<translation id="4222932583846282852">રદ કરી રહ્યાં છીએ…</translation>
 <translation id="4242034826641750751">આ સાઇટ માટે Chromeને કૅમેરા અને માઇક્રોફોનની પરવાનગીઓની જરૂર છે</translation>
 <translation id="424864128008805179">Chromeમાંથી સાઇન આઉટ કરીએ?</translation>
 <translation id="4251615635259297716">તમારા Chrome ડેટાને આ એકાઉન્ટ સાથે લિંક કરીએ?</translation>
@@ -166,6 +178,7 @@
 <translation id="4281844954008187215">સેવાની શરતો</translation>
 <translation id="4293420128516039005">તમારા બધા ડિવાઇસ પર Chromeને સિંક અને વ્યક્તિગત કરવા માટે સાઇન ઇન કરો</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
+<translation id="4334294535648607276">ડાઉનલોડ પૂર્ણ.</translation>
 <translation id="4335235004908507846">Chrome તમને ડેટા ઉલ્લંઘન, ખરાબ એક્સ્ટેંશન અને બીજી ઘણી બાબતોથી સુરક્ષિત રાખી શકે છે</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />ને Chromeમાં ઉમેરવામાં આવ્યું છે</translation>
 <translation id="4384570495110188418">તમે સાઇન ઇન કરેલું ન હોવાને કારણે Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી</translation>
@@ -180,6 +193,7 @@
 <translation id="4600710005438004015">Chromeનું નવું વર્ઝન અપડેટ ન થવાથી, તમે નવી સુવિધાઓ અને સુરક્ષાના સુધારા ચૂકી રહ્યા છો.</translation>
 <translation id="4627412468266359539">વૈકલ્પિક: Googleને ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને ChromeOS Flexની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો.</translation>
 <translation id="4633000520311261472">Chrome ને સુરક્ષિત બનાવવા માટે, અમે <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યાં હોઈ શકે છે તેવા કેટલાક એક્સ્ટેન્શન્સને અક્ષમ કર્યા છે.</translation>
+<translation id="4680828127924988555">ઇન્સ્ટૉલેશનની પ્રક્રિયા રદ કરો</translation>
 <translation id="469553575393225953">અજાણ્યા સ્રોતો પરના એક્સ્ટેન્શન, ઍપ અને થીમ તમારા ડિવાઇસને નુકસાન પહોંચાડી શકે છે. Chrome તેમને Chrome વેબ સ્ટોર પરથી જ ઇન્સ્ટૉલ કરવાનો સુઝાવ આપે છે</translation>
 <translation id="4728575227883772061">અનુલ્લેખિત ભૂલને કારણે ઇન્સ્ટોલેશન નિષ્ફળ રહ્યું. જો Google Chrome હાલમાં ચાલુ હોય, તો કૃપા કરીને તેને બંધ કરો અને તેનો ફરીથી પ્રયાસ કરો.</translation>
 <translation id="4747730611090640388">Chrome તમારી રુચિઓનું અનુમાન લગાવી શકે છે.  પછી, તમે જેની મુલાકાત લો તે સાઇટ Chromeને તમારી રુચિઓ જોવા માટે કહી શકે છે, જેથી તમને જોવા મળતી જાહેરાતોને મનગમતી બનાવી શકાય.</translation>
@@ -235,10 +249,14 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="5901850848447342934">તમે Chrome બંધ કરશો, ત્યારે તમને <ph name="BEGIN_BOLD" />મોટાભાગની બધી સાઇટમાંથી સાઇન આઉટ<ph name="END_BOLD" /> કરવામાં આવશે. જો સિંક કરવાની સુવિધા બંધ હશે, તો તમને <ph name="BEGIN_BOLD" />Googleની સેવાઓ અને Chromeમાંથી પણ સાઇન આઉટ<ph name="END_BOLD" /> કરવામાં આવશે.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન</translation>
+<translation id="5924017743176219022">ઇન્ટરનેટ સાથે કનેક્ટ કરી રહ્યાં છીએ...</translation>
 <translation id="5940385492829620908">તમારું વેબ, બુકમાર્ક અને અન્ય Chrome સામગ્રી અહીં હોય છે.</translation>
+<translation id="5941711191222866238">નાનું કરો</translation>
 <translation id="5941830788786076944">Google Chrome ને ડિફૉલ્ટ બ્રાઉઝર બનાવો</translation>
 <translation id="5959292945051687759">જો આ પેજ પર સેટિંગ બતાવેલું ન હોય, તો તમારા <ph name="LINK_BEGIN" />
         ChromeOS સેટિંગ<ph name="LINK_END" />માં જુઓ</translation>
+<translation id="6003112304606738118">ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="HOURS" /> કલાક બાકી છે</translation>
+<translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6070348360322141662">વધારાની સુરક્ષા માટે, Google Chrome, તમારા ડેટાને એન્ક્રિપ્ટ કરશે</translation>
 <translation id="608006075545470555">આ બ્રાઉઝરમાં ઑફિસની પ્રોફાઇલ ઉમેરો</translation>
 <translation id="6113794647360055231">Chrome હવે પહેલાંથી બહેતર બન્યું છે</translation>
@@ -247,8 +265,10 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome બીટા</translation>
 <translation id="6235018212288296708">mDNS ટ્રાફિકને મંજૂરી આપવા માટે Google Chrome માટે ઇનબાઉન્ડ નિયમ.</translation>
 <translation id="6247557882553405851">Google પાસવર્ડ મેનેજર</translation>
+<translation id="6273793429163604305">તૈયાર રહો...</translation>
 <translation id="6291089322031436445">Chrome Dev ઍપ્લિકેશનો</translation>
 <translation id="6291549208091401781">Google Chrome, તમારા કમ્પ્યુટર પર પહેલાંથી તમામ વપરાશકર્તાઓ માટે ઇન્સ્ટૉલ કરેલ છે.</translation>
+<translation id="6327105987658262776">કોઈ અપડેટ ઉપલબ્ધ નથી.</translation>
 <translation id="6412673304250309937">URLsને Chromeમાં સ્ટોર કરેલી અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
 <translation id="6418662306461808273">વર્તમાન Chrome પ્રોફાઇલ પર સ્વિચ કરીએ?</translation>
 <translation id="6506909944137591434">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromeને કૅમેરાની પરવાનગીની જરૂર છે</translation>
@@ -269,6 +289,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6943584222992551122">આ વ્યક્તિનો બ્રાઉઝિંગ ડેટા આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે. આ ડેટા પાછો મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="6967962315388095737">mDNS ટ્રાફિકને મંજૂરી આપવા માટે Google Chrome બીટા માટે ઇનબાઉન્ડ નિયમ.</translation>
 <translation id="6989339256997917931">Google Chrome અપડેટ કરવામાં આવ્યું હતું, પણ તમે તેનો 30 દિવસ સુધી ઉપયોગ કર્યો નથી.</translation>
+<translation id="7025789849649390912">ઇન્સ્ટૉલેશનની પ્રક્રિયા રોકી.</translation>
 <translation id="7025800014283535195">તમે અહીં એક Chrome પ્રોફાઇલથી બીજી Chrome પ્રોફાઇલ પર સ્વિચ કરી શકો છો</translation>
 <translation id="7036251913954633326">જો તમે માત્ર એક વાર જ આ એકાઉન્ટનો ઉપયોગ કરવા માગતા હો, તો તમે Chrome બ્રાઉઝરમાં <ph name="GUEST_LINK_BEGIN" />અતિથિ મોડ<ph name="GUEST_LINK_END" />નો ઉપયોગ કરી શકો છો. જો તમે કોઈ બીજી વ્યક્તિ માટે એકાઉન્ટ ઉમેરવા માગતા હો, તો તમારા <ph name="DEVICE_TYPE" />માં <ph name="LINK_BEGIN" />નવી વ્યક્તિ ઉમેરો<ph name="LINK_END" />.
 
@@ -297,11 +318,13 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7481213027396403996">Chromeની સૌથી વધુ મજબૂત સુરક્ષા મેળવો</translation>
 <translation id="7486227612705979895">ઍડ્રેસ બારમાં સૂચનો કરવા માટે, Chrome તમારી ડ્રાઇવને ઍક્સેસ કરશે</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ઇન્સ્ટૉલર</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Chrome પર આપનું સ્વાગત છે</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે આ ડિવાઇસનો ઉપયોગ કરતા પહેલાં નીચે આપેલી સેવાની શરતો વાંચો અને તેને સ્વીકારો. આ શરતો Google ChromeOSની શરતોમાં વધારો કરતી નથી, તેમાં ફેરફાર કરતી નથી અથવા તેને મર્યાદિત કરતી નથી.</translation>
 <translation id="7629695634924605473">Chrome વડે તમે તમારા પાસવર્ડમાં ક્યારેક ચેડાં થાય તો તેના વિશે જાણકારી મેળવી શકો છો</translation>
 <translation id="7641148173327520642">તમારા સિસ્ટમ વ્યવસ્થાપકે <ph name="TARGET_URL_HOSTNAME" />ને ઍક્સેસ કરવા Google Chromeને <ph name="ALTERNATIVE_BROWSER_NAME" /> ખોલવા માટે ગોઠવેલું છે.</translation>
+<translation id="7649070708921625228">સહાય</translation>
 <translation id="7651907282515937834">Chrome એન્ટરપ્રાઇઝ લૉગો</translation>
 <translation id="7655455401911432608">તમારો બ્રાઉઝિંગ ઇતિહાસ કે જેમાં આ ડિવાઇસ પર તમે Chrome વડે મુલાકાત લીધેલી સાઇટનો રેકોર્ડ હોય છે.</translation>
 <translation id="7747138024166251722">ઇન્સ્ટૉલર અસ્થાયી ડિરેક્ટરી બનાવી શક્યું નથી. કૃપા કરીને ખાલી ડિસ્ક સ્પેસ માટે અને સૉફ્ટવેર ઇન્સ્ટૉલ કરવાની પરવાનગી માટે તપાસો.</translation>
@@ -313,6 +336,8 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7801699035218095297">Google Chrome પાસવર્ડની કૉપિ કરવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
 <translation id="7808348361785373670">Chrome માંથી દૂર કરો...</translation>
 <translation id="7825851276765848807">અનુલ્લેખિત ભૂલને કારણે ઇન્સ્ટોલેશન નિષ્ફળ રહ્યું. કૃપા કરીને Google Chrome ફરીથી ડાઉનલોડ કરો.</translation>
+<translation id="7845233973568007926">ઇન્સ્ટૉલ કરવા બદલ આભાર. <ph name="BUNDLE_NAME" />નો ઉપયોગ કરતા પહેલાં તમારે તમારું કમ્પ્યુટર ફરી શરૂ કરવું આવશ્યક છે.</translation>
+<translation id="7872446069773932638">ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="SECONDS" /> સેકન્ડ બાકી છે</translation>
 <translation id="7880591377632733558">Chrome પર આપનું સ્વાગત છે, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">જો તમે કમ્પ્યુટરને શેર કરો છો, તો મિત્રો અને કુટુંબીજનો અલગ-અલગ બ્રાઉઝ કરી શકે છે અને તેમને જોઈએ તેમ Chrome ને સેટ કરી શકે છે.</translation>
 <translation id="7896673875602241923">કોઈએ આ કમ્પ્યુટર પર પહેલા <ph name="ACCOUNT_EMAIL_LAST" /> તરીકે Chromeમાં સાઇન ઇન કર્યું છે. તમારી માહિતી અલગ રાખવા માટે કૃપા કરીને નવો Chrome વપરાશકર્તા બનાવો.</translation>
@@ -323,8 +348,11 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8005666035647241369">આ ડિવાઇસ પર Google પાસવર્ડ મેનેજરમાં સાચવો</translation>
 <translation id="8008534537613507642">Chrome ફરીથી ઇન્સ્ટોલ કરો</translation>
 <translation id="8013993649590906847">જો છબીમાં ઉપયોગી વર્ણન ન હોય, તો Chrome તમને વર્ણન પૂરું પાડવાનો પ્રયાસ કરશે. વર્ણન બનાવવા માટે, Googleને છબીઓ મોકલવામાં આવે છે.</translation>
+<translation id="80471789339884597">ઇન્સ્ટૉલ કરવા બદલ આભાર. તમારે <ph name="BUNDLE_NAME" />નો ઉપયોગ કરતા પહેલાં તમારા બધા બ્રાઉઝર ફરી શરૂ કરવા આવશ્યક છે.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">&amp;Google Chrome વિશે</translation>
+<translation id="813913629614996137">પ્રારંભ કરી રહ્યું છે...</translation>
 <translation id="8255190535488645436">Google Chrome તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="8286862437124483331">Google Chrome પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
 <translation id="828798499196665338">તમારા માતાપિતાએ Chrome માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ <ph name="EXTENSION_TYPE_PARAMETER" /> ચાલુ કરવાની મંજૂરી નથી.</translation>

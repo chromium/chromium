@@ -1736,7 +1736,6 @@
 <translation id="2602501489742255173">向上滑動即可開始</translation>
 <translation id="2603115962224169880">清理電腦</translation>
 <translation id="2603355571917519942">Voice Match 已準備就緒</translation>
-<translation id="2604138917550693049">使用「Google 智能鏡頭」搜尋圖片</translation>
 <translation id="2604255671529671813">網絡連線錯誤</translation>
 <translation id="2605668923777146443">前往「<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />」以查看您 Better Together 的選項。﻿</translation>
 <translation id="2606246518223360146">連結資料</translation>
@@ -3792,7 +3791,7 @@
 <translation id="4615586811063744755">未選取 Cookie</translation>
 <translation id="461661862154729886">電源</translation>
 <translation id="4617001782309103936">太短</translation>
-<translation id="4617019240346358451">重新載入網頁以使用「<ph name="EXTENSION_NAME" />」</translation>
+<translation id="4617019240346358451">重新載入頁面以使用「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="4617270414136722281">擴充程式選項</translation>
 <translation id="4617880081511131945">無法建立連線</translation>
 <translation id="4619564267100705184">驗證身分</translation>
@@ -4217,7 +4216,6 @@
 <translation id="5051836348807686060">您所選取的語言不支援拼字檢查功能</translation>
 <translation id="5052499409147950210">編輯網站</translation>
 <translation id="505347685865235222">未命名的群組 - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">使用「Google 智能鏡頭」搜尋圖片</translation>
 <translation id="5054374119096692193">在「<ph name="BEGIN_LINK" />自訂 Chrome<ph name="END_LINK" />」中查看所有資訊卡選項</translation>
 <translation id="5056950756634735043">正在連線至容器</translation>
 <translation id="5057110919553308744">當您點擊擴充程式時</translation>
@@ -7831,7 +7829,7 @@
 <translation id="8642947597466641025">放大文字</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> 可能不安全。要傳送到「Google 進階保護功能」進行掃瞄嗎？</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{沒有 Cookie}=1{已封鎖 1 個 Cookie}other{已封鎖 # 個 Cookie}}</translation>
-<translation id="864423554496711319">已儲存到你的帳戶的裝置</translation>
+<translation id="864423554496711319">已儲存至您帳戶的裝置</translation>
 <translation id="8644655801811752511">無法重設此安全密鑰。請在插入密鑰後立即重設。</translation>
 <translation id="8645354835496065562">繼續允許存取感應器</translation>
 <translation id="8645920082661222035">在危險事件發生前進行預測並發出警告</translation>

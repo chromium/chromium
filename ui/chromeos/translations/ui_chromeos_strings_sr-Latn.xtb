@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Sadržaj ovog foldera je samo za čitanje. Neke aktivnosti nisu podržane.</translation>
 <translation id="2542049655219295786">Google tabela</translation>
 <translation id="2544853746127077729">Mreža je odbila sertifikat za potvrdu autentičnosti</translation>
-<translation id="2547921442987553570">Dodaj u <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">međunarodna američka</translation>
 <translation id="2563185590376525700">Žaba</translation>
 <translation id="2578394532502990878">fonetski tamilski</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">kineski daji</translation>
 <translation id="3057861065630527966">Napravite rezervne kopije slika i video snimaka</translation>
 <translation id="3067790092342515856">Windows datoteke</translation>
-<translation id="3078461028045006476">Deli pomoću dodatka <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit-ovi</translation>
 <translation id="3085752524577180175">SOCKS host</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, blokirao administrator, detalji</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3855472144336161447">nemačka Neo 2</translation>
 <translation id="3858860766373142691">Naziv</translation>
-<translation id="386548886866354912">Spakuj pomoću dodatka <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Opis</translation>
 <translation id="3899991606604168269">francuski (Kanada) sa višejezičnom tastaturom</translation>
 <translation id="3901991538546252627">Povezivanje sa mrežom <ph name="NAME" /></translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6187719147498869044">mađarski</translation>
-<translation id="6189412234224385711">Otvori pomoću dodatka <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Promeni PIN</translation>
 <translation id="6199801702437275229">Čekaju se informacije o prostoru...</translation>
 <translation id="6205710420833115353">Neke radnje traju duže od očekivanog. Želite li da ih prekinete?</translation>

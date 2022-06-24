@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Энэ фолдерын контентуудыг зөвхөн уншиж болно. Зарим үйл ажиллагааг дэмждэггүй.</translation>
 <translation id="2542049655219295786">Google-ийн хүснэгт</translation>
 <translation id="2544853746127077729">Таниулах гэрчилгээг сүлжээнээс цуцалсан байна</translation>
-<translation id="2547921442987553570"><ph name="EXTENSION_NAME" />-д нэмэх</translation>
 <translation id="255937426064304553">АНУ олон улсын</translation>
 <translation id="2563185590376525700">Frog</translation>
 <translation id="2578394532502990878">Тамил авиа зүй</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">Хятад даи</translation>
 <translation id="3057861065630527966">Өөрийн зураг болон видеог хадгалах</translation>
 <translation id="3067790092342515856">Windows-н файлууд</translation>
-<translation id="3078461028045006476"><ph name="EXTENSION_NAME" />-тай хуваалцах</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS Хост</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Танай администратор блоклосон, Дэлгэрэнгүй</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Буцах</translation>
 <translation id="3855472144336161447">Герман Neo 2</translation>
 <translation id="3858860766373142691">Нэр</translation>
-<translation id="386548886866354912"><ph name="EXTENSION_NAME" />-р багцлах</translation>
 <translation id="3866249974567520381">Тодорхойлолт</translation>
 <translation id="3899991606604168269">Олон хэлний гартай франц (Канад)</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-д холбогдож байна</translation>
@@ -601,7 +598,6 @@
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6187719147498869044">Унгар</translation>
-<translation id="6189412234224385711"><ph name="EXTENSION_NAME" />-р нээх</translation>
 <translation id="6198252989419008588">ПИН кодыг өөрчлөх</translation>
 <translation id="6199801702437275229">Орон зайн мэдээлэл хүлээж байна ...</translation>
 <translation id="6205710420833115353">Зарим үйл ажиллагаа хүлээгдэж байснаас илүү удаан хийгдэж байна. Та тэднийг зогсоохыг хүсч байна уу?</translation>

@@ -159,6 +159,7 @@
 <translation id="2377319039870049694">Показать в виде списка</translation>
 <translation id="2377590462528165447">Linux предоставлен доступ к нескольким папкам (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="2378075407703503998">Выбрано файлов: <ph name="SELCTED_FILE_COUNT" />.</translation>
+<translation id="2387120140441437063">Не удается открыть файлы в корзине. Восстановите их, чтобы продолжить.</translation>
 <translation id="2387458720915042159">Тип подключения через прокси-сервер</translation>
 <translation id="2389832672041313158">Бирманский</translation>
 <translation id="2392369802118427583">Активировать</translation>
@@ -180,7 +181,6 @@
 <translation id="2541377937973966830">Содержимое этой папки доступно только для чтения. Некоторые действия не поддерживаются.</translation>
 <translation id="2542049655219295786">Таблица Google</translation>
 <translation id="2544853746127077729">Сертификат аутентификации отклонен сетью</translation>
-<translation id="2547921442987553570">Добавить в расширение "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="255937426064304553">США (международная)</translation>
 <translation id="2563185590376525700">Лягушка</translation>
 <translation id="2578394532502990878">Тамильский, фонетический</translation>
@@ -232,7 +232,6 @@
 <translation id="3047197340186497470">Китайский, даи</translation>
 <translation id="3057861065630527966">Создать резервные копии фото и видео</translation>
 <translation id="3067790092342515856">Файлы Windows</translation>
-<translation id="3078461028045006476">Поделиться с помощью приложения "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3083975830683400843">Устройства Chromebit</translation>
 <translation id="3085752524577180175">SOCKS-прокси</translation>
 <translation id="3104793765551262433">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />", <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заблокирована администратором, дополнительные сведения</translation>
@@ -329,7 +328,6 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Немецкая (Neo 2)</translation>
 <translation id="3858860766373142691">Название</translation>
-<translation id="386548886866354912">Создать архив <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Описание</translation>
 <translation id="3899991606604168269">Французский (Канада), мультиязычная раскладка</translation>
 <translation id="3901991538546252627">Подключение к <ph name="NAME" /></translation>
@@ -603,7 +601,6 @@
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6187719147498869044">Венгерский</translation>
-<translation id="6189412234224385711">Открыть с помощью расширения "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6198252989419008588">Изменить PIN-код</translation>
 <translation id="6199801702437275229">Получение информации о свободном месте…</translation>
 <translation id="6205710420833115353">Некоторые операции займут больше времени, чем ожидалось. Прервать?</translation>

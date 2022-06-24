@@ -1736,7 +1736,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2602501489742255173">Leret ke atas untuk memulakan</translation>
 <translation id="2603115962224169880">Bersihkan komputer</translation>
 <translation id="2603355571917519942">Voice Match sudah sedia</translation>
-<translation id="2604138917550693049">Cari imej dengan Google Lens</translation>
 <translation id="2604255671529671813">Ralat sambungan rangkaian</translation>
 <translation id="2605668923777146443">Pergi ke <ph name="LINK_BEGIN" />Tetapan<ph name="LINK_END" /> untuk melihat pilihan anda untuk Better Together.</translation>
 <translation id="2606246518223360146">Pautkan Data</translation>
@@ -2240,6 +2239,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3067198360141518313">Jalankan pemalam ini</translation>
 <translation id="3071624960923923138">Anda boleh klik di sini untuk membuka tab baharu</translation>
 <translation id="3072775339180057696">Benarkan tapak melihat <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Terjemahkan Halaman Penuh</translation>
 <translation id="3075874217500066906">Mula semula perlu dilakukan untuk memulakan proses Powerwash. Selepas memulakan semula, anda akan diminta mengesahkan bahawa anda ingin meneruskan.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Simpan pada peranti ini sahaja</translation>
@@ -4216,7 +4216,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5051836348807686060">Semak ejaan tidak disokong untuk bahasa yang anda pilih</translation>
 <translation id="5052499409147950210">Edit tapak</translation>
 <translation id="505347685865235222">Kumpulan tidak bernama - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Cari Imej dengan Google Lens</translation>
 <translation id="5054374119096692193">Lihat semua pilihan kad dalam <ph name="BEGIN_LINK" />Sesuaikan Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Menyambung kepada bekas</translation>
 <translation id="5057110919553308744">Apabila anda mengklik sambungan</translation>
@@ -5095,6 +5094,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon anda</translation>
 <translation id="5935158534896975820">Menyediakan permintaan penandatanganan sijil (menunggu pelayan)</translation>
 <translation id="5935656526031444304">Urus Penyemakan Imbas Selamat</translation>
+<translation id="5936065461722368675">Terjemahkan halaman penuh</translation>
 <translation id="5938002010494270685">Peningkatan keselamatan tersedia</translation>
 <translation id="5939518447894949180">Tetapkan semula</translation>
 <translation id="5939719276406088041">Tidak dapat membuat pintasan</translation>

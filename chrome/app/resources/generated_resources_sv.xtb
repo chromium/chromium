@@ -1736,7 +1736,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2602501489742255173">Kom igång genom att svepa uppåt</translation>
 <translation id="2603115962224169880">Rensa upp på datorn</translation>
 <translation id="2603355571917519942">Voice Match har konfigurerats</translation>
-<translation id="2604138917550693049">Bildsökning med Google Lens</translation>
 <translation id="2604255671529671813">Fel vid nätverksanslutning</translation>
 <translation id="2605668923777146443">Du hittar alternativ för Better Together i <ph name="LINK_BEGIN" />inställningarna<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Länka Data</translation>
@@ -2240,6 +2239,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3067198360141518313">Kör det här plugin-programmet</translation>
 <translation id="3071624960923923138">Du kan klicka här om du vill öppna en ny flik</translation>
 <translation id="3072775339180057696">Vill du låta webbplatsen visa <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Översätt hela sidan</translation>
 <translation id="3075874217500066906">En omstart krävs för att Powerwash-processen ska inledas. Efter omstarten får du bekräfta att du vill fortsätta.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Spara endast på den här enheten</translation>
@@ -4216,7 +4216,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5051836348807686060">Stavningskontroll stöds inte för de språk du valt</translation>
 <translation id="5052499409147950210">Redigera webbplats</translation>
 <translation id="505347685865235222">Namnlös grupp – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Bildsökning med Google Lens</translation>
 <translation id="5054374119096692193">Se alla kortalternativ i <ph name="BEGIN_LINK" />Anpassa Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Ansluter till behållaren</translation>
 <translation id="5057110919553308744">När du klickar på tillägget</translation>
@@ -5095,6 +5094,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> använder kameran och mikrofonen</translation>
 <translation id="5935158534896975820">Förbereder begäran om certifikatsignering (väntar på server)</translation>
 <translation id="5935656526031444304">Hantera Säker webbsökning</translation>
+<translation id="5936065461722368675">Översätt hela sidan</translation>
 <translation id="5938002010494270685">En säkerhetsuppgradering är tillgänglig</translation>
 <translation id="5939518447894949180">Återställ</translation>
 <translation id="5939719276406088041">Det gick inte att skapa genvägen</translation>

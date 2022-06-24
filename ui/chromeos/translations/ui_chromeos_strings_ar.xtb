@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">محتوى هذا الملف للقراءة فقط. وبعض النشاطات غير متاحة فيه.</translation>
 <translation id="2542049655219295786">‏جدول من Google</translation>
 <translation id="2544853746127077729">تمّ رفض شهادة المصادقة بواسطة الشبكة</translation>
-<translation id="2547921442987553570">إضافة إلى <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">الأمريكية الدولية</translation>
 <translation id="2563185590376525700">ضفدع</translation>
 <translation id="2578394532502990878">التاميلية الصوتية</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">‏الصينية باستخدام نظام Dayi</translation>
 <translation id="3057861065630527966">نسخ الصور والفيديوهات احتياطيًا</translation>
 <translation id="3067790092342515856">‏ملفات نظام التشغيل Windows</translation>
-<translation id="3078461028045006476">مشاركة مع <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">‏أجهزة Chromebit</translation>
 <translation id="3085752524577180175">‏مضيف SOCKS</translation>
 <translation id="3104793765551262433">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة %<ph name="SIGNAL_STRENGTH" />، تم حظر هذه الشبكة من قِبَل المشرف، التفاصيل</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3855472144336161447">‏الألمانية Neo 2</translation>
 <translation id="3858860766373142691">الاسم</translation>
-<translation id="386548886866354912">تجميع مع <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">الوصف</translation>
 <translation id="3899991606604168269">الفرنسية (كندا) باستخدام لوحة مفاتيح متعددة اللغات</translation>
 <translation id="3901991538546252627">جارٍ الاتصال بـ <ph name="NAME" /></translation>
@@ -605,7 +602,6 @@
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6170470584681422115">ساندويتش</translation>
 <translation id="6187719147498869044">المجرية</translation>
-<translation id="6189412234224385711">فتح باستخدام <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">تغيير رقم التعريف الشخصي</translation>
 <translation id="6199801702437275229">في انتظار معلومات المساحة...</translation>
 <translation id="6205710420833115353">تستغرق بعض العمليات وقتًا أطول من المتوقع. هل تريد إيقافها؟</translation>

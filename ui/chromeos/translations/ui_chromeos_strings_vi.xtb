@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Nội dung trong thư mục này đang ở chế độ chỉ có thể đọc. Vì thế, một số hoạt động sẽ không được hỗ trợ.</translation>
 <translation id="2542049655219295786">Bảng Google</translation>
 <translation id="2544853746127077729">Chứng chỉ xác thực bị mạng từ chối</translation>
-<translation id="2547921442987553570">Thêm vào <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Bàn phím quốc tế Hoa Kỳ</translation>
 <translation id="2563185590376525700">Ếch</translation>
 <translation id="2578394532502990878">Tiếng Tamil (phiên âm)</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">Tiếng Trung (Dayi)</translation>
 <translation id="3057861065630527966">Sao lưu ảnh và video của bạn</translation>
 <translation id="3067790092342515856">Tệp Windows</translation>
-<translation id="3078461028045006476">Chia sẻ với <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Máy chủ SOCKS</translation>
 <translation id="3104793765551262433">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Quản trị viên đã chặn, Thông tin chi tiết</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3855472144336161447">Neo 2 tiếng Đức</translation>
 <translation id="3858860766373142691">Tên</translation>
-<translation id="386548886866354912">Gói đi kèm <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Mô tả</translation>
 <translation id="3899991606604168269">Tiếng Pháp (Canada) bằng bàn phím Đa ngôn ngữ</translation>
 <translation id="3901991538546252627">Đang kết nối với <ph name="NAME" /></translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Tiếng Hungary</translation>
-<translation id="6189412234224385711">Mở bằng <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Thay đổi mã PIN</translation>
 <translation id="6199801702437275229">Đang chờ thông tin dung lượng...</translation>
 <translation id="6205710420833115353">Một số tác vụ đang diễn ra lâu hơn thông thường. Bạn có muốn hủy các tác vụ này không?</translation>

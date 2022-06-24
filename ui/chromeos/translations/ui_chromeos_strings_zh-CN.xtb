@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">此文件夹中的内容都是处于只读状态，所以不支持某些活动。</translation>
 <translation id="2542049655219295786">Google 表格</translation>
 <translation id="2544853746127077729">身份验证证书遭到网络拒绝</translation>
-<translation id="2547921442987553570">添加到“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="255937426064304553">美国英语（国际）</translation>
 <translation id="2563185590376525700">青蛙</translation>
 <translation id="2578394532502990878">泰米尔语注音</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">中文大易</translation>
 <translation id="3057861065630527966">备份您的照片和视频</translation>
 <translation id="3067790092342515856">Windows 文件</translation>
-<translation id="3078461028045006476">使用“<ph name="EXTENSION_NAME" />”分享</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS 主机</translation>
 <translation id="3104793765551262433">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，已被您的管理员禁用，详细信息</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3855472144336161447">德语Neo 2</translation>
 <translation id="3858860766373142691">名称</translation>
-<translation id="386548886866354912">使用“<ph name="EXTENSION_NAME" />”打包</translation>
 <translation id="3866249974567520381">说明</translation>
 <translation id="3899991606604168269">法语（加拿大）多语言键盘</translation>
 <translation id="3901991538546252627">正在连接：<ph name="NAME" /></translation>
@@ -599,7 +596,6 @@
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6170470584681422115">三明治</translation>
 <translation id="6187719147498869044">匈牙利语</translation>
-<translation id="6189412234224385711">使用“<ph name="EXTENSION_NAME" />”打开</translation>
 <translation id="6198252989419008588">更改 PIN</translation>
 <translation id="6199801702437275229">等待存储空间信息...</translation>
 <translation id="6205710420833115353">某些操作所用的时间超出预期。要取消这些操作吗？</translation>

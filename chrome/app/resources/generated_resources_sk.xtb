@@ -1723,7 +1723,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2602501489742255173">Začnite potiahnutím nahor</translation>
 <translation id="2603115962224169880">Vyčistiť počítač</translation>
 <translation id="2603355571917519942">Funkcia Voice Match je pripravená</translation>
-<translation id="2604138917550693049">Hľadať obrázok pomocou funkcie Google Lens</translation>
 <translation id="2604255671529671813">Chyba sieťového pripojenia</translation>
 <translation id="2605668923777146443">Možnosti funkcie Better Together nájdete v <ph name="LINK_BEGIN" />Nastaveniach<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Prepojiť dáta</translation>
@@ -2227,6 +2226,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3067198360141518313">Spustiť tento doplnok</translation>
 <translation id="3071624960923923138">Kliknite tu a otvorte novú kartu</translation>
 <translation id="3072775339180057696">Chcete povoliť webu zobraziť si súbor <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Preložiť celú stránku</translation>
 <translation id="3075874217500066906">Spustenie procesu úplného obnovenia (Powerwash) vyžaduje reštartovanie. Po reštartovaní budete musieť potvrdiť, že chcete pokračovať.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Uložiť iba v tomto zariadení</translation>
@@ -4202,7 +4202,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5051836348807686060">Kontrola pravopisu nie je v prípade vybraných jazykov podporovaná</translation>
 <translation id="5052499409147950210">Úprava webu</translation>
 <translation id="505347685865235222">Skupina bez názvu – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Hľadať obrázok pomocou funkcie Google Lens</translation>
 <translation id="5054374119096692193">Prezrite si všetky možnosti karty v sekcii <ph name="BEGIN_LINK" />Prispôsobenie Chromu<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Pripája sa ku kontajneru</translation>
 <translation id="5057110919553308744">Keď kliknete na rozšírenie</translation>
@@ -5081,6 +5080,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> používa vašu kameru a mikrofón</translation>
 <translation id="5935158534896975820">Pripravuje sa žiadosť o podpísanie certifikátu (čaká sa na server)</translation>
 <translation id="5935656526031444304">Spravovať Bezpečné prehliadanie</translation>
+<translation id="5936065461722368675">Preložiť celú stránku</translation>
 <translation id="5938002010494270685">K dispozícii je bezpečnostná inovácia</translation>
 <translation id="5939518447894949180">Resetovať</translation>
 <translation id="5939719276406088041">Odkaz sa nedá vytvoriť</translation>

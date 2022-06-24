@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1001534784610492198">インストーラー アーカイブが壊れているか無効です。Google Chrome をダウンロードし直してください。</translation>
+<translation id="1026101648481255140">インストールを再開</translation>
 <translation id="102763973188675173">Google Chrome をカスタマイズしてご活用ください。アップデートが利用可能です。</translation>
 <translation id="1051826050538111504">お使いのパソコンに有害なソフトウェアが見つかりました。Chrome では、ブラウザを正常な動作に戻すためにこのソフトウェアを削除し、設定を復元して、拡張機能を無効化することができます。</translation>
 <translation id="1065672644894730302">ユーザー設定ファイルを読み込むことができません。一部の機能が利用できない可能性があります。また、設定への変更は保存されません。</translation>
@@ -13,6 +14,7 @@
 <translation id="1154147086299354128">Chrome で開く(&amp;O)</translation>
 <translation id="1178374936842835197">このページに設定が表示されない場合は、<ph name="LINK_BEGIN" />
         ChromeOS Flex の設定<ph name="LINK_END" />を確認してください</translation>
+<translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
 <translation id="1278833599417554002">再起動して Chrome を更新(&amp;C)</translation>
 <translation id="1302523850133262269">Chrome は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> では、このデバイスを使用する前に下記の利用規約を確認しこれに同意していただく必要があります。これらの規約は Google ChromeOS Flex 利用規約を拡張、変更、制限するものではありません。</translation>
@@ -32,6 +34,7 @@
 <translation id="1619887657840448962">Chrome をより安全にご利用いただくために、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない次の拡張機能を無効にしました。これは知らないうちに追加された可能性があります。</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するために、4 週間以上経過したユーザーの興味 / 関心は自動削除されます。ブラウジングを続けていると、興味 / 関心がリストに再度表示される場合もあります。Chrome に認識してほしくない興味 / 関心は削除できます。</translation>
 <translation id="1628000112320670027">Chrome のヘルプを見る</translation>
+<translation id="1640672724030957280">ダウンロードしています...</translation>
 <translation id="1662146548738125461">ChromeOS Flex について</translation>
 <translation id="1674870198290878346">Chrome のシークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="1682634494516646069">Google Chrome はこのデータ ディレクトリへの読み書きを実行できません: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -47,7 +50,9 @@
 <translation id="1877026089748256423">Chrome は古いバージョンです</translation>
 <translation id="1919130412786645364">Chrome へのログインを許可する</translation>
 <translation id="1952239763774043237">今後、Google Chrome のアップデートを受信するには、macOS 10.13 以降が必要となります。このコンピュータでは macOS 10.12 が実行されています。</translation>
+<translation id="1953553007165777902">ダウンロードしています... 残り <ph name="MINUTE" /> 分です</translation>
 <translation id="2018528049276128029">Chrome の情報（ブックマーク、履歴、パスワードなど）はプロファイルごとに分けて保持されます</translation>
+<translation id="2018879682492276940">インストールできませんでした。もう一度お試しください。</translation>
 <translation id="2071318482926839249">別のアカウントですでにログインしています。ブラウジング環境を分ける場合は、Chrome で自分用のプロフィールを作成できます。</translation>
 <translation id="207902854391093810">試用期間中の広告の測定により、アクセスしたサイトは、サイトが広告のパフォーマンスを測定する際に役立つ Chrome の情報をリクエストできます。広告の測定は、サイト間で転送する情報をできるだけ少なくすることで、クロスサイト トラッキングを制限します。</translation>
 <translation id="2094648590148273905">ChromeOS Flex 利用規約</translation>
@@ -59,6 +64,7 @@
 <translation id="2131230230468101642">ユーザーのプライバシーを保護するために、4 週間以上経過したユーザーの興味 / 関心は自動削除されます。ブラウジングを続けていると、興味 / 関心がリストに再度表示される場合もあります。Chrome に認識してほしくない興味 / 関心は削除できます。</translation>
 <translation id="2139300032719313227">Chrome OS を再起動してください</translation>
 <translation id="2151406531797534936">Chrome を今すぐ再起動してください</translation>
+<translation id="2174917724755363426">インストールは完了していません。キャンセルしてもよろしいですか？</translation>
 <translation id="2258103955319320201">お使いのすべてのデバイスで Chrome ブラウザの設定やデータを使用するには、ログインして同期を有効にしてください。</translation>
 <translation id="2290014774651636340">Google API キーが欠落しています。Google Chrome の一部の機能は無効になります。</translation>
 <translation id="2290095356545025170">Google Chrome をアンインストールしてもよろしいですか？</translation>
@@ -95,13 +101,16 @@
 <translation id="2871893339301912279">Chrome にログインしました</translation>
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2888126860611144412">Chrome について</translation>
+<translation id="2915996080311180594">後で再起動</translation>
 <translation id="2926676257163822632">脆弱なパスワードは簡単に推測されてしまいます。Chrome で<ph name="BEGIN_LINK" />安全性の高いパスワードを自動生成して保存する<ph name="END_LINK" />ことができます。</translation>
 <translation id="2926952073016206995">このサイトを利用するには、Chrome でカメラの使用を許可する必要があります</translation>
+<translation id="2928420929544864228">インストールが完了しました。</translation>
 <translation id="2929907241665500097">エラーが発生したため、Chrome が更新されませんでした。<ph name="BEGIN_LINK" />Chrome の更新に関する問題を解決してください。<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ネットワークにログイン - Chrome</translation>
 <translation id="3019382870990049182">再起動して ChromeOS Flex を更新(&amp;C)</translation>
 <translation id="303514781271618814">Chrome では、使用されるユーザーデータの量を抑えつつ、同じようにサイトをブラウジングできる新機能をテストしています</translation>
 <translation id="3037838751736561277">Google Chrome はバックグラウンド モードです。</translation>
+<translation id="3038232873781883849">インストールの待機中...</translation>
 <translation id="3059710691562604940">セーフ ブラウジングがオフになっています。Chrome はオンにすることをおすすめしています。</translation>
 <translation id="3065168410429928842">Chrome タブ</translation>
 <translation id="3069821012350118710">Chrome を閉じるまで、アクセスしたサイトにお客様の情報が保存されます</translation>
@@ -115,6 +124,7 @@
 <translation id="3169523567916669830">テスト期間中、サイトでの広告表示に使用される興味 / 関心のトピックを表示、削除できます。Chrome では最近の閲覧履歴に基づいてユーザーの興味 / 関心を推定します。</translation>
 <translation id="3245429137663807393">Chrome の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
+<translation id="3286538390144397061">今すぐ再起動</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome は今すぐ再起動されます}=1{Chrome は 1 秒後に再起動されます}other{Chrome は # 秒後に再起動されます}}</translation>
 <translation id="3396977131400919238">インストール中にオペレーティング システム エラーが発生しました。Google Chrome をダウンロード直してください。</translation>
@@ -151,9 +161,11 @@
 <translation id="4106587138345390261">Chrome では、使用されるユーザーの情報の量を抑えつつ、同じようにサイトをブラウジングできる新機能をテストしています</translation>
 <translation id="4110895483821904099">新しい Chrome プロファイルの設定</translation>
 <translation id="4147555960264124640">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロファイルを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。<ph name="LEARN_MORE" /></translation>
+<translation id="4148957013307229264">インストール中...</translation>
 <translation id="4149882025268051530">インストーラー アーカイブを解凍できませんでした。Google Chrome をダウンロードし直してください。</translation>
 <translation id="4191857738314598978">{0,plural, =1{1 日以内に Chrome を再起動してください}other{# 日以内に Chrome を再起動してください}}</translation>
 <translation id="4205939740494406371">Chrome でパスワードを確認できません。24 時間後にもう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウントでパスワードをご確認ください<ph name="END_LINK" />。</translation>
+<translation id="4222932583846282852">キャンセルしています...</translation>
 <translation id="4242034826641750751">このサイトを利用するには、Chrome でカメラとマイクの使用を許可する必要があります</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
 <translation id="4251615635259297716">Chrome データをこのアカウントにリンクしますか？</translation>
@@ -161,6 +173,7 @@
 <translation id="4281844954008187215">利用規約</translation>
 <translation id="4293420128516039005">ログインすると、同期してカスタマイズした Chrome をどのデバイスでも使用できます</translation>
 <translation id="4328355335528187361">Google Chrome Dev（mDNS-In）</translation>
+<translation id="4334294535648607276">ダウンロードが完了しました。</translation>
 <translation id="4335235004908507846">Chrome でデータ侵害や不正な拡張機能などの脅威から保護されているか確認します</translation>
 <translation id="4343195214584226067">「<ph name="EXTENSION_NAME" />」が Chrome に追加されました</translation>
 <translation id="4384570495110188418">ログインしていないため、Chrome でパスワードを確認できません</translation>
@@ -175,6 +188,7 @@
 <translation id="4600710005438004015">Chrome を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>
 <translation id="4627412468266359539">オプション: 診断と使用状況のデータを Google に自動送信して ChromeOS Flex の機能と動作の改善に役立てる。</translation>
 <translation id="4633000520311261472">Chrome をより安全にご利用いただくため、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない一部の拡張機能を無効にしました。これらは知らないうちに追加された可能性があります。</translation>
+<translation id="4680828127924988555">インストールをキャンセル</translation>
 <translation id="469553575393225953">提供元不明の拡張機能、アプリ、テーマはデバイスに危害を及ぼす可能性があります。Chrome ウェブストアで公開されているアイテムのみをインストールすることをおすすめします</translation>
 <translation id="4728575227883772061">原因不明のエラーによりインストールが失敗しました。実行中の Google Chrome を終了してからやり直してください。</translation>
 <translation id="4747730611090640388">Chrome はユーザーの興味 / 関心を推定する場合があります。その後、アクセスしたサイトは、表示する広告をカスタマイズするために、Chrome にユーザーの興味 / 関心を確認するよう依頼できます。</translation>
@@ -226,9 +240,13 @@
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5901850848447342934">Chrome を閉じると、<ph name="BEGIN_BOLD" />ほとんどのサイトからログアウト<ph name="END_BOLD" />します。同期がオフの場合は、<ph name="BEGIN_BOLD" />Google サービスと Chrome からもログアウト<ph name="END_BOLD" />します。</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ネットワークにログイン</translation>
+<translation id="5924017743176219022">インターネットに接続しています…</translation>
 <translation id="5940385492829620908">ウェブ、ブックマーク、その他の Chrome データを好みに設定できます。</translation>
+<translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">Google Chrome を既定のブラウザにする</translation>
 <translation id="5959292945051687759">このページに設定が表示されない場合は、<ph name="LINK_BEGIN" />Chrome OS の設定<ph name="LINK_END" />を確認してください</translation>
+<translation id="6003112304606738118">ダウンロードしています... 残り <ph name="HOURS" /> 時間です</translation>
+<translation id="6040143037577758943">閉じる</translation>
 <translation id="6070348360322141662">セキュリティ強化のため、データは Google Chrome で暗号化されます</translation>
 <translation id="608006075545470555">このブラウザに仕事用プロファイルを追加</translation>
 <translation id="6113794647360055231">進化する Chrome</translation>
@@ -237,8 +255,10 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">mDNS トラフィックを許可する Google Chrome のインバウンド ルールです。</translation>
 <translation id="6247557882553405851">Google パスワード マネージャー</translation>
+<translation id="6273793429163604305">位置について...</translation>
 <translation id="6291089322031436445">Chrome Dev アプリ</translation>
 <translation id="6291549208091401781">Google Chrome は既にパソコンのすべてのユーザー対してインストールされています。</translation>
+<translation id="6327105987658262776">利用できるアップデートはありません。</translation>
 <translation id="6412673304250309937">Chrome に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="6418662306461808273">既存の Chrome プロファイルに切り替えますか？</translation>
 <translation id="6506909944137591434">周囲の 3D マップを作成するには、Chrome にカメラの使用を許可する必要があります</translation>
@@ -259,6 +279,7 @@
 <translation id="6943584222992551122">この操作を行うと、このユーザーの閲覧データがこのデバイスから削除されます。データを復元するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
 <translation id="6967962315388095737">mDNS トラフィックを許可する Google Chrome ベータ版のインバウンド ルールです。</translation>
 <translation id="6989339256997917931">Google Chrome が更新されましたが、30 日間以上使用されていません。</translation>
+<translation id="7025789849649390912">インストールが停止しました。</translation>
 <translation id="7025800014283535195">こちらで Chrome プロフィールを切り替えることができます</translation>
 <translation id="7036251913954633326">このアカウントを 1 回だけ使用する場合は、Chrome ブラウザの<ph name="GUEST_LINK_BEGIN" />ゲストモード<ph name="GUEST_LINK_END" />を使用できます。他のユーザーのアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に<ph name="LINK_BEGIN" />新しいユーザーを追加<ph name="LINK_END" />します。
 
@@ -287,11 +308,13 @@
 <translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
 <translation id="7486227612705979895">Chrome からお客様のドライブにアクセスして、アドレスバーに候補を表示します</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="7583399374488819119"><ph name="COMPANY_NAME" /> インストーラ</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Chrome へようこそ</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> では、このデバイスを使用する前に下記の利用規約を確認しこれに同意していただく必要があります。これらの規約は Google Chrome OS 利用規約を拡張、変更、制限するものではありません。</translation>
 <translation id="7629695634924605473">Chrome では、特定のパスワードが侵害された事実の有無がわかります</translation>
 <translation id="7641148173327520642">システム管理者が、<ph name="TARGET_URL_HOSTNAME" /> へのアクセスに <ph name="ALTERNATIVE_BROWSER_NAME" /> を開くよう Google Chrome を設定しています。</translation>
+<translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7651907282515937834">Chrome Enterprise ロゴ</translation>
 <translation id="7655455401911432608">閲覧履歴（このデバイスで Chrome を使用してアクセスしたサイトの記録）。</translation>
 <translation id="7747138024166251722">インストーラーの一時ディレクトリを作成できませんでした。ディスクの空き領域とソフトウェアのインストール許可があることを確認してください。</translation>
@@ -303,6 +326,8 @@
 <translation id="7801699035218095297">Google Chrome がパスワードをコピーしようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="7808348361785373670">Chrome から削除...</translation>
 <translation id="7825851276765848807">原因不明のエラーによりインストールに失敗しました。Google Chrome をもう一度ダウンロードしてください。</translation>
+<translation id="7845233973568007926">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはコンピュータを再起動してください。</translation>
+<translation id="7872446069773932638">ダウンロードしています... 残り <ph name="SECONDS" /> 秒です</translation>
 <translation id="7880591377632733558">Chrome へようこそ、<ph name="ACCOUNT_FIRST_NAME" /> さん</translation>
 <translation id="7890208801193284374">パソコンを共有している場合、友だちや家族はそれぞれ Chrome を自分専用のブラウザとして自分用の設定をして使うことができます。</translation>
 <translation id="7896673875602241923">前回このパソコンで別のユーザー（<ph name="ACCOUNT_EMAIL_LAST" />）が Chrome にログインしました。情報を個別に保持するには、新しい Chrome ユーザーを作成してください。</translation>
@@ -313,8 +338,11 @@
 <translation id="8005666035647241369">このデバイスの Google パスワード マネージャーに移動</translation>
 <translation id="8008534537613507642">Chrome を再インストール</translation>
 <translation id="8013993649590906847">画像に有効な説明が設定されていない場合に、Chrome で説明を自動的に生成できるよう Google に画像が送信されます。</translation>
+<translation id="80471789339884597">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはすべてのブラウザを再起動してください。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">Google Chrome について(&amp;G)</translation>
+<translation id="813913629614996137">初期化しています...</translation>
 <translation id="8255190535488645436">Google Chrome がカメラとマイクを使用しています。</translation>
 <translation id="8286862437124483331">Google Chrome でパスワードを表示しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="828798499196665338">保護者が Chrome の「サイト、アプリ、拡張機能の権限」をオフにしました。この <ph name="EXTENSION_TYPE_PARAMETER" /> を有効にすることはできません。</translation>

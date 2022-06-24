@@ -1719,7 +1719,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2602501489742255173">Rrëshqit shpejt lart për të filluar</translation>
 <translation id="2603115962224169880">Pastro kompjuterin</translation>
 <translation id="2603355571917519942">Voice Match është gati</translation>
-<translation id="2604138917550693049">Kërko imazh me "Lenten e Google"</translation>
 <translation id="2604255671529671813">Gabim në lidhjen e rrjetit</translation>
 <translation id="2605668923777146443">Shko te <ph name="LINK_BEGIN" />Cilësimet<ph name="LINK_END" /> për të parë opsionet e tua për Better Together.</translation>
 <translation id="2606246518223360146">Lidh të dhënat</translation>
@@ -2222,6 +2221,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3067198360141518313">Vër në punë përbërësin shtesë</translation>
 <translation id="3071624960923923138">Mund të klikosh këtu për të hapur një skedë të re</translation>
 <translation id="3072775339180057696">Do ta lejosh sajtin të shikojë <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Përkthe të gjithë faqen</translation>
 <translation id="3075874217500066906">Kërkohet një rinisje për të filluar procesin Powerwash. Pas rinisjes, do të të kërkohet të konfirmosh që dëshiron të vazhdosh.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Ruaje vetëm në këtë pajisje</translation>
@@ -4197,7 +4197,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5051836348807686060">Kontrolli drejtshkrimor nuk mbështetet për gjuhët që zgjodhe</translation>
 <translation id="5052499409147950210">Modifiko sajtin</translation>
 <translation id="505347685865235222">Grup pa emër - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Kërko imazh me "Lenten e Google"</translation>
 <translation id="5054374119096692193">Shiko të gjitha opsionet e kartave te <ph name="BEGIN_LINK" />Personalizimi i Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Lidhja me kontejnerin</translation>
 <translation id="5057110919553308744">Kur klikon te shtesa</translation>
@@ -5076,6 +5075,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="5935158534896975820">Kërkesa e identifikimit të certifikatës po përgatitet (në pritje në server)</translation>
 <translation id="5935656526031444304">Menaxho "Shfletimin e sigurt"</translation>
+<translation id="5936065461722368675">Përkthe të gjithë faqen</translation>
 <translation id="5938002010494270685">Ofrohet një përmirësim i sigurisë</translation>
 <translation id="5939518447894949180">Rivendos</translation>
 <translation id="5939719276406088041">Shkurtorja nuk mund të krijohet</translation>

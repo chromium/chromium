@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Bu jild kontentini faqat oʻqish mumkin. Ayrim amallar ishlamaydi.</translation>
 <translation id="2542049655219295786">Google jadvali</translation>
 <translation id="2544853746127077729">Haqiqiylikni tekshirish sertifikati tarmoq tomonidan rad etildi</translation>
-<translation id="2547921442987553570">“<ph name="EXTENSION_NAME" />” kengaytmasiga qo‘shish</translation>
 <translation id="255937426064304553">AQSH (xalqaro)</translation>
 <translation id="2563185590376525700">Qurbaqa</translation>
 <translation id="2578394532502990878">Tamil (fonetik)</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">Xitoy (Dayi)</translation>
 <translation id="3057861065630527966">Rasmlar va videolarni zaxiralash</translation>
 <translation id="3067790092342515856">Windows fayllari</translation>
-<translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> orqali yuborish</translation>
 <translation id="3083975830683400843">Chromebit qurilmalari</translation>
 <translation id="3085752524577180175">SOCKS hosti</translation>
 <translation id="3104793765551262433">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator tomonidan bloklangan, Batafsil</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Orqaga</translation>
 <translation id="3855472144336161447">Nemis Neo 2</translation>
 <translation id="3858860766373142691">Ism</translation>
-<translation id="386548886866354912"><ph name="EXTENSION_NAME" /> arxiv yaratish</translation>
 <translation id="3866249974567520381">Tavsif</translation>
 <translation id="3899991606604168269">Fransuz (Kanada) va bir nechta tilli klaviatura</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> tarmog‘iga ulanilmoqda</translation>
@@ -603,7 +600,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6170470584681422115">Sendvich</translation>
 <translation id="6187719147498869044">Venger</translation>
-<translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> bilan ochish</translation>
 <translation id="6198252989419008588">PIN-kodni o‘zgartirish</translation>
 <translation id="6199801702437275229">Bo‘sh joy haqidagi ma’lumot qabul qilinmoqda...</translation>
 <translation id="6205710420833115353">Ba’zi amallar kutilgandan ko‘proq vaqt olmoqda. Ularni to‘xtatishni istaysizmi?</translation>

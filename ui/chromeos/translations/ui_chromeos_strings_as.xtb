@@ -159,6 +159,7 @@
 <translation id="2377319039870049694">সূচী চোৱা ম’ডলৈ সলনি কৰক</translation>
 <translation id="2377590462528165447">Linuxৰ সৈতে <ph name="NUMBER_OF_ITEMS" />টা ফ’ল্ডাৰ শ্বেয়াৰ কৰা হ’ল</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" />টা ফাইল বাছনি কৰা হৈছে</translation>
+<translation id="2387120140441437063">ট্ৰেশ্বত থকা ফাইল খুলিব নোৱাৰি। অনুগ্ৰহ কৰি খোলাৰ পূৰ্বে ফাইল পুনঃস্থাপন কৰক।</translation>
 <translation id="2387458720915042159">প্ৰক্সি সংযোগৰ প্ৰকাৰ</translation>
 <translation id="2389832672041313158">বাৰ্মীজ/ম্যানমাৰ</translation>
 <translation id="2392369802118427583">সক্ৰিয় কৰক</translation>
@@ -180,7 +181,6 @@
 <translation id="2541377937973966830">এই ফ’ল্ডাৰটোৰ সমলবোৰ কেৱল পঢ়িব পৰা। কিছুমান কাৰ্যকলাপ সমৰ্থিত নহয়।</translation>
 <translation id="2542049655219295786">Google তালিকা</translation>
 <translation id="2544853746127077729">নেটৱৰ্কে বিশ্বাসযোগ্যতাৰ প্ৰমাণপত্ৰ অগ্ৰাহ্য কৰিছে</translation>
-<translation id="2547921442987553570"><ph name="EXTENSION_NAME" />ত যোগ কৰক</translation>
 <translation id="255937426064304553">US আন্তৰ্জাতিক</translation>
 <translation id="2563185590376525700">ভেকুলী</translation>
 <translation id="2578394532502990878">তামিল ফ’নেটিক</translation>
@@ -232,7 +232,6 @@
 <translation id="3047197340186497470">চীনা ডে’য়ি</translation>
 <translation id="3057861065630527966">আপোনাৰ ফট’ আৰু ভিডিঅ’সমূহ বেক আপ কৰক</translation>
 <translation id="3067790092342515856">Windows ফাইলসমূহ</translation>
-<translation id="3078461028045006476"><ph name="EXTENSION_NAME" />ৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS হ’ষ্ট</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিছে, সবিশেষ</translation>
@@ -329,7 +328,6 @@
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="3855472144336161447">জার্মান NEO 2 কীব’র্ড</translation>
 <translation id="3858860766373142691">নাম</translation>
-<translation id="386548886866354912"><ph name="EXTENSION_NAME" /> জৰিয়তে পেক কৰক</translation>
 <translation id="3866249974567520381">বিৱৰণ</translation>
 <translation id="3899991606604168269">বহুভাষিক কীব’ৰ্ডৰ সৈতে ফৰাচী (কানাডা)</translation>
 <translation id="3901991538546252627"><ph name="NAME" />ৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
@@ -602,7 +600,6 @@
 <translation id="6165508094623778733">অধিক জানক</translation>
 <translation id="6170470584681422115">ছেণ্ডৱিচ্চ</translation>
 <translation id="6187719147498869044">হাংগেৰিয়ান</translation>
-<translation id="6189412234224385711"><ph name="EXTENSION_NAME" />ৰ জৰিয়তে খোলক</translation>
 <translation id="6198252989419008588">পিন সলনি কৰক</translation>
 <translation id="6199801702437275229">খালী ঠাইৰ বিষয়ে তথ্যৰ বাবে অপেক্ষা কৰি থকা হৈছে...</translation>
 <translation id="6205710420833115353">কিছুমান কাৰ্যত আশা কৰাতকৈ বেছি সময় লয়৷ আপুনি সেই কাৰ্যবোৰ বন্ধ কৰিব বিচাৰে নেকি?</translation>

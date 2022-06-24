@@ -1723,7 +1723,6 @@
 <translation id="2602501489742255173">Чтобы начать, проведите по экрану вверх.</translation>
 <translation id="2603115962224169880">Удаление вредоносного ПО с компьютера</translation>
 <translation id="2603355571917519942">Функция Voice Match настроена</translation>
-<translation id="2604138917550693049">Найти через Google Объектив</translation>
 <translation id="2604255671529671813">Ошибка подключения к сети</translation>
 <translation id="2605668923777146443">Чтобы посмотреть параметры режима Better Together, откройте <ph name="LINK_BEGIN" />Настройки<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Связать данные</translation>
@@ -2226,6 +2225,7 @@
 <translation id="3067198360141518313">Запустить подключаемый модуль</translation>
 <translation id="3071624960923923138">Нажмите здесь, чтобы открыть новую вкладку</translation>
 <translation id="3072775339180057696">Разрешить сайту просматривать файл "<ph name="FILE_NAME" />"?</translation>
+<translation id="3074499504015191586">Перевести всю страницу</translation>
 <translation id="3075874217500066906">Для запуска процесса Powerwash необходимо перезагрузить устройство. После этого появится запрос подтверждения.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Сохранить только на этом устройстве</translation>
@@ -4201,7 +4201,6 @@
 <translation id="5051836348807686060">Проверка правописания не поддерживается для выбранных языков.</translation>
 <translation id="5052499409147950210">Изменение сайта</translation>
 <translation id="505347685865235222">Группа без названия: <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Найти через Google Объектив</translation>
 <translation id="5054374119096692193">Чтобы посмотреть все варианты карточек, выберите <ph name="BEGIN_LINK" />Настроить Chrome<ph name="END_LINK" />.</translation>
 <translation id="5056950756634735043">Подключение к контейнеру…</translation>
 <translation id="5057110919553308744">При нажатии на расширение</translation>
@@ -5080,6 +5079,7 @@
 <translation id="5933522550144185133">Приложение "<ph name="APP_NAME" />" использует камеру и микрофон.</translation>
 <translation id="5935158534896975820">Подготовка запроса на подпись сертификата (ожидание на сервере)</translation>
 <translation id="5935656526031444304">Настроить Безопасный просмотр</translation>
+<translation id="5936065461722368675">Перевести всю страницу</translation>
 <translation id="5938002010494270685">Доступно обновление системы безопасности</translation>
 <translation id="5939518447894949180">Сбросить</translation>
 <translation id="5939719276406088041">Не удалось создать ярлык.</translation>

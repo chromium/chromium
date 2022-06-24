@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">ເນື້ອຫາຂອງໂຟນເດີນີ້ເປັນແບບອ່ານເທົ່ານັ້ນ. ບໍ່ຮອງຮັບບາງກິດຈະກຳ.</translation>
 <translation id="2542049655219295786">ຕາ​ຕະ​ລາງ​ Google</translation>
 <translation id="2544853746127077729">ໃບ​ຢັ້ງ​ຢືນ​ການ​ຮັບຮອງຖືກ​ເຄືອ​ຂ່າຍ​ປະ​ຕິ​ເສດ</translation>
-<translation id="2547921442987553570">ເພີ່ມໃສ່ <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US ສາ​ກົນ</translation>
 <translation id="2563185590376525700">ກົບ</translation>
 <translation id="2578394532502990878">ພາສາທາມິລ (ຕາມການອອກສຽງ)</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">ພາສາຈີນ (Dayi)</translation>
 <translation id="3057861065630527966">ສຳ​ຮອງ​ຮູບ ແລະ​ວິ​ດີ​ໂອ​ຂອງ​ທ່ານ</translation>
 <translation id="3067790092342515856">ໄຟລ໌ Windows</translation>
-<translation id="3078461028045006476">ແບ່ງປັນກັບ <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">ແມ່ຂ່າຍ SOCKS</translation>
 <translation id="3104793765551262433">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ຖືກບລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
 <translation id="3855472144336161447">ພາສາເຢຍລະັມນ Neo 2</translation>
 <translation id="3858860766373142691">ຊື່</translation>
-<translation id="386548886866354912">ເກັບຮວມກັນກັບ <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">ລາຍ​ລະ​ອຽດ</translation>
 <translation id="3899991606604168269">ພາສາຝຣັ່ງ (ຄານາດາ) ທີ່ໃຊ້ແປ້ນພິມຫຼາຍພາສາ</translation>
 <translation id="3901991538546252627">ກໍາລເຊື່ອມຕໍ່ກັບ <ph name="NAME" /></translation>
@@ -603,7 +600,6 @@
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6170470584681422115">ແຊນວິດ</translation>
 <translation id="6187719147498869044">ພາສາຮັງກາຣຽນ</translation>
-<translation id="6189412234224385711">ເປີດດ້ວຍ <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">ປ່ຽນ PIN</translation>
 <translation id="6199801702437275229">ກໍາລັງລໍຖ້າຂໍ້ມູນກ່ຽວ​ກັບ​ບ່ອນວ່າງ...</translation>
 <translation id="6205710420833115353">ການດໍາເນີນງານບາງອັນໃຊ້ເວລາດົນກ່ວາທີ່ຄາດໄວ້. ທ່ານຕ້ອງການຍົກເລີກພວກມັນບໍ?</translation>

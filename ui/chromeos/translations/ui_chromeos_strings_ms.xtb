@@ -159,6 +159,7 @@
 <translation id="2377319039870049694">Tukar kepada paparan senarai</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folder dikongsi dengan Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fail dipilih</translation>
+<translation id="2387120140441437063">Tidak dapat membuka fail yang telah dibuang. Sila pulihkan fail tersebut sebelum membuka.</translation>
 <translation id="2387458720915042159">Jenis sambungan proksi</translation>
 <translation id="2389832672041313158">Burma/Myanmar</translation>
 <translation id="2392369802118427583">Aktifkan</translation>
@@ -180,7 +181,6 @@
 <translation id="2541377937973966830">Kandungan folder ini bersifat baca sahaja. Sesetengah aktiviti tidak disokong.</translation>
 <translation id="2542049655219295786">Jadual Google</translation>
 <translation id="2544853746127077729">Sijil pengesahan ditolak oleh rangkaian</translation>
-<translation id="2547921442987553570">Tambahkan pada <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Antarabangsa AS</translation>
 <translation id="2563185590376525700">Katak</translation>
 <translation id="2578394532502990878">Fonetik Tamil</translation>
@@ -232,7 +232,6 @@
 <translation id="3047197340186497470">Dayi Cina</translation>
 <translation id="3057861065630527966">Sandarkan foto dan video anda</translation>
 <translation id="3067790092342515856">Fail Windows</translation>
-<translation id="3078461028045006476">Berkongsi dengan <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Hos SOCKS</translation>
 <translation id="3104793765551262433">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Disekat oleh Pentadbir anda, Butiran</translation>
@@ -329,7 +328,6 @@
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3855472144336161447">Bahasa Jerman Neo 2</translation>
 <translation id="3858860766373142691">Nama</translation>
-<translation id="386548886866354912">Dipek dengan <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Huraian</translation>
 <translation id="3899991606604168269">Perancis (Kanada) dengan papan kekunci Berbilang Bahasa</translation>
 <translation id="3901991538546252627">Menyambung ke <ph name="NAME" /></translation>
@@ -603,7 +601,6 @@
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
 <translation id="6170470584681422115">Sandwic</translation>
 <translation id="6187719147498869044">Hungary</translation>
-<translation id="6189412234224385711">Buka dengan <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Tukar PIN</translation>
 <translation id="6199801702437275229">Menunggu maklumat ruang...</translation>
 <translation id="6205710420833115353">Sesetengah operasi mengambil masa lebih lama daripada yang dijangkakan. Adakah anda ingin menghenti paksanya?</translation>

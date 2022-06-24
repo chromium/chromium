@@ -1733,7 +1733,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2602501489742255173">Telezesha kidole kuelekea juu ili uanze</translation>
 <translation id="2603115962224169880">Futa programu hatari kwenye kompyuta yako</translation>
 <translation id="2603355571917519942">Voice Match iko tayari</translation>
-<translation id="2604138917550693049">Tafuta picha ukitumia Lenzi ya Google</translation>
 <translation id="2604255671529671813">Hitilafu ya muunganisho wa mtandao</translation>
 <translation id="2605668923777146443">Nenda kwenye <ph name="LINK_BEGIN" />Mipangilio<ph name="LINK_END" /> ili uone chaguo zako za Better Together.</translation>
 <translation id="2606246518223360146">Unganisha Data</translation>
@@ -2237,6 +2236,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3067198360141518313">Tekeleza programu jalizi hii</translation>
 <translation id="3071624960923923138">Unaweza kubofya hapa ili ufungue kichupo kipya</translation>
 <translation id="3072775339180057696">Ungependa kuruhusu tovuti ione <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Tafsiri Ukurasa Mzima</translation>
 <translation id="3075874217500066906">Inahitaji kuanzishwa upya ili mchakato wa Powerwash uanze. Baada ya kuanzisha upya utaombwa uthibitishe kwamba unataka kuendelea.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Hifadhi kwenye kifaa hiki pekee</translation>
@@ -4211,7 +4211,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5051836348807686060">Kikagua tahajia hakitumiki kwa lugha uliyochagua</translation>
 <translation id="5052499409147950210">Badilisha tovuti</translation>
 <translation id="505347685865235222">Kikundi kisicho na jina - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Tafuta Picha Ukitumia Lenzi ya Google</translation>
 <translation id="5054374119096692193">Angalia chaguo zote za kadi kwenye <ph name="BEGIN_LINK" />Weka Mapendeleo ya Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Inaunganisha kwenye metadata</translation>
 <translation id="5057110919553308744">Unapobofya kiendelezi</translation>
@@ -5090,6 +5089,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> inatumia kamera na maikrofoni yako</translation>
 <translation id="5935158534896975820">Inatayarisha ombi la kuambatisha cheti (inasubiri seva)</translation>
 <translation id="5935656526031444304">Dhibiti Mipangilio ya Kuvinjari Salama</translation>
+<translation id="5936065461722368675">Tafsiri ukurasa mzima</translation>
 <translation id="5938002010494270685">Sasisho la usalama linapatikana</translation>
 <translation id="5939518447894949180">Weka upya</translation>
 <translation id="5939719276406088041">Imeshindwa kuweka njia ya mkato</translation>

@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">이 폴더의 콘텐츠는 읽기 전용입니다. 일부 활동이 지원되지 않습니다.</translation>
 <translation id="2542049655219295786">Google 표</translation>
 <translation id="2544853746127077729">인증서가 네트워크에 의해 거부됨</translation>
-<translation id="2547921442987553570"><ph name="EXTENSION_NAME" />에 추가</translation>
 <translation id="255937426064304553">영어(미국 국제)</translation>
 <translation id="2563185590376525700">개구리</translation>
 <translation id="2578394532502990878">타밀어(표음)</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">중국어(대이수입법)</translation>
 <translation id="3057861065630527966">사진 및 동영상을 백업합니다.</translation>
 <translation id="3067790092342515856">Windows 파일</translation>
-<translation id="3078461028045006476"><ph name="EXTENSION_NAME" />와(과) 공유</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS 호스트</translation>
 <translation id="3104793765551262433">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 차단함, 세부정보</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3855472144336161447">독일어 Neo 2</translation>
 <translation id="3858860766373142691">이름</translation>
-<translation id="386548886866354912"><ph name="EXTENSION_NAME" />(으)로 보관처리</translation>
 <translation id="3866249974567520381">설명</translation>
 <translation id="3899991606604168269">프랑스어(캐나다, 다국어 키보드)</translation>
 <translation id="3901991538546252627"><ph name="NAME" />에 연결 중</translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6170470584681422115">샌드위치</translation>
 <translation id="6187719147498869044">헝가리어</translation>
-<translation id="6189412234224385711"><ph name="EXTENSION_NAME" />(으)로 열기</translation>
 <translation id="6198252989419008588">PIN 변경</translation>
 <translation id="6199801702437275229">남은 저장 용량을 확인하는 중...</translation>
 <translation id="6205710420833115353">일부 작업 시간이 예상보다 지연되고 있습니다. 중단하시겠습니까?</translation>

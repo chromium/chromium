@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Вміст цієї папки можна лише переглядати. Деякі дії не підтримуються.</translation>
 <translation id="2542049655219295786">Таблиця Google</translation>
 <translation id="2544853746127077729">Сертифікат автентифікації відхилений мережею</translation>
-<translation id="2547921442987553570">Додати в <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Міжнародна (США)</translation>
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">Тамільська, фонетична розкладка</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">Китайська, даї</translation>
 <translation id="3057861065630527966">Створити резервні копії фотографій і відео</translation>
 <translation id="3067790092342515856">Файли Windows</translation>
-<translation id="3078461028045006476">Надіслати в <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Хост SOCKS</translation>
 <translation id="3104793765551262433">Мережа № <ph name="NETWORK_INDEX" />; загалом мереж: <ph name="NETWORK_COUNT" />; назва мережі: "<ph name="NETWORK_NAME" />"; стан безпеки: <ph name="SECURITY_STATUS" />; стан з’єднання: <ph name="CONNECTION_STATUS" />; рівень сигналу: <ph name="SIGNAL_STRENGTH" />%; заблоковано адміністратором; відомості</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Німецька (Neo 2)</translation>
 <translation id="3858860766373142691">Назва</translation>
-<translation id="386548886866354912">Архівувати за допомогою розширення "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3866249974567520381">Опис</translation>
 <translation id="3899991606604168269">Французька (Канада), багатомовна розкладка</translation>
 <translation id="3901991538546252627">Під’єднання до <ph name="NAME" /></translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6170470584681422115">Сендвіч</translation>
 <translation id="6187719147498869044">Угорська</translation>
-<translation id="6189412234224385711">Відкрити за допомогою розширення "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6198252989419008588">Змінити PIN-код</translation>
 <translation id="6199801702437275229">Очікування даних про вільне місце...</translation>
 <translation id="6205710420833115353">Деякі операції тривають довше, ніж очікувалось. Скасувати їх?</translation>

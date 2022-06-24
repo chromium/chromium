@@ -159,6 +159,7 @@
 <translation id="2377319039870049694">Пераключыць на рэжым спіса</translation>
 <translation id="2377590462528165447">Папак абагулена з сістэмай Linux: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2378075407703503998">Выбрана файлаў: <ph name="SELCTED_FILE_COUNT" /></translation>
+<translation id="2387120140441437063">Адкрываць файлы ў сметніцы нельга, спачатку іх трэба аднавіць.</translation>
 <translation id="2387458720915042159">Тып падключэння проксі-сервера</translation>
 <translation id="2389832672041313158">Бірманская/М'янма</translation>
 <translation id="2392369802118427583">Уключыць</translation>
@@ -180,7 +181,6 @@
 <translation id="2541377937973966830">Змесціва ў гэтай папцы – толькі для чытання. Некаторыя дзеянні не падтрымліваюцца.</translation>
 <translation id="2542049655219295786">Табліца Google</translation>
 <translation id="2544853746127077729">Сертыфікат аўтэнтыфікацыі адхілены сеткай</translation>
-<translation id="2547921442987553570">Дадаць у пашырэнне "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="255937426064304553">ЗША, міжнародная</translation>
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2578394532502990878">Тамільская (фанетычная раскладка)</translation>
@@ -232,7 +232,6 @@
 <translation id="3047197340186497470">Кітайская (метад уводу Dayi)</translation>
 <translation id="3057861065630527966">Захаваць рэзервовыя копіі фота і відэа</translation>
 <translation id="3067790092342515856">Файлы Windows</translation>
-<translation id="3078461028045006476">Абагуліць праз пашырэнне "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Хост SOCKS</translation>
 <translation id="3104793765551262433">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, заблакіравана адміністратарам, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
@@ -329,7 +328,6 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Нямецкая (Neo 2)</translation>
 <translation id="3858860766373142691">Назва</translation>
-<translation id="386548886866354912">Запакаваць з дапамогай <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Апісанне</translation>
 <translation id="3899991606604168269">Французская (Канада) з раскладкай для некалькіх моў</translation>
 <translation id="3901991538546252627">Ідзе падключэнне да сеткі <ph name="NAME" /></translation>
@@ -602,7 +600,6 @@
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6170470584681422115">Сандвіч</translation>
 <translation id="6187719147498869044">Венгерская</translation>
-<translation id="6189412234224385711">Адкрыць у пашырэнні <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Змяніць PIN-код</translation>
 <translation id="6199801702437275229">Чаканне інфармацыі пра вольнае месца...</translation>
 <translation id="6205710420833115353">Некаторыя аперацыі займаюць больш часу, чым звычайна. Спыніць іх?</translation>

@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Inhalte in diesem Ordner sind schreibgeschützt. Einige Aktionen werden nicht unterstützt.</translation>
 <translation id="2542049655219295786">Google-Tabelle</translation>
 <translation id="2544853746127077729">Ablehnung des Authentifizierungszertifikats durch das Netzwerk</translation>
-<translation id="2547921442987553570">Zu <ph name="EXTENSION_NAME" /> hinzufügen</translation>
 <translation id="255937426064304553">USA – international</translation>
 <translation id="2563185590376525700">Frosch</translation>
 <translation id="2578394532502990878">Tamil (phonetisch)</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">Chinesisch (Dayi)</translation>
 <translation id="3057861065630527966">Fotos und Videos sichern</translation>
 <translation id="3067790092342515856">Windows-Dateien</translation>
-<translation id="3078461028045006476">Teilen mit <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-Host</translation>
 <translation id="3104793765551262433">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, vom Administrator blockiert, Details</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Zurück</translation>
 <translation id="3855472144336161447">Deutsch – Neo 2</translation>
 <translation id="3858860766373142691">Name</translation>
-<translation id="386548886866354912">Mit <ph name="EXTENSION_NAME" /> packen</translation>
 <translation id="3866249974567520381">Beschreibung</translation>
 <translation id="3899991606604168269">Französisch (Kanada) mit mehrsprachiger Tastatur</translation>
 <translation id="3901991538546252627">Verbindung mit <ph name="NAME" /> wird hergestellt.</translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Ungarisch</translation>
-<translation id="6189412234224385711">Öffnen mit <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">PIN ändern</translation>
 <translation id="6199801702437275229">Speicherplatzangaben werden abgerufen...</translation>
 <translation id="6205710420833115353">Einige Vorgänge dauern länger als erwartet. Möchtest du sie abbrechen?</translation>

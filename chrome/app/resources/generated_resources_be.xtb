@@ -1724,7 +1724,6 @@
 <translation id="2602501489742255173">Каб пачаць, правядзіце пальцам уверх</translation>
 <translation id="2603115962224169880">Ачыстка камп'ютара</translation>
 <translation id="2603355571917519942">Функцыя Voice Match гатовая да работы</translation>
-<translation id="2604138917550693049">Шукаць праз Google Аб'ектыў</translation>
 <translation id="2604255671529671813">Памылка падключэння да сеткі</translation>
 <translation id="2605668923777146443">Каб прагледзець параметры функцыі Better Together, перайдзіце ў <ph name="LINK_BEGIN" />Налады<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Звязаць даныя</translation>
@@ -2227,6 +2226,7 @@
 <translation id="3067198360141518313">Запусціць гэту ўбудову</translation>
 <translation id="3071624960923923138">Каб адкрыць новую ўкладку, можна націснуць сюды</translation>
 <translation id="3072775339180057696">Дазволіць сайту праглядаць файл <ph name="FILE_NAME" />?</translation>
+<translation id="3074499504015191586">Перакласці ўсю старонку</translation>
 <translation id="3075874217500066906">Каб пачаць працэс Powerwash, трэба перазапусціць прыладу. Пасля гэтага вам трэба будзе пацвердзіць, што вы хочаце працягнуць.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Захаваць толькі на гэтай прыладзе</translation>
@@ -4202,7 +4202,6 @@
 <translation id="5051836348807686060">Праверка правапісу для выбраных моў не падтрымліваецца</translation>
 <translation id="5052499409147950210">Рэдагаванне сайта</translation>
 <translation id="505347685865235222">Група без назвы – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Шукаць праз Google Аб'ектыў</translation>
 <translation id="5054374119096692193">Праглядзіце ўсе варыянты картак у раздзеле <ph name="BEGIN_LINK" />Наладзіць Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Ідзе падключэнне да кантэйнера</translation>
 <translation id="5057110919553308744">Пры націсканні на пашырэнне</translation>
@@ -5081,6 +5080,7 @@
 <translation id="5933522550144185133">Праграма "<ph name="APP_NAME" />" выкарыстоўвае камеру і мікрафон</translation>
 <translation id="5935158534896975820">Рыхтуецца запыт на подпіс сертыфіката (чакаецца адказ сервера)</translation>
 <translation id="5935656526031444304">Кіраваць Бяспечным праглядам</translation>
+<translation id="5936065461722368675">Перакласці ўсю старонку</translation>
 <translation id="5938002010494270685">Даступнае абнаўленне сістэмы бяспекі</translation>
 <translation id="5939518447894949180">Скінуць</translation>
 <translation id="5939719276406088041">Не ўдаецца стварыць ярлык</translation>

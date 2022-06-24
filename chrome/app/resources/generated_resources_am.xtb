@@ -1730,7 +1730,6 @@
 <translation id="2602501489742255173">ለመጀመር በጣት ይጥረጉ</translation>
 <translation id="2603115962224169880">ኮምፒውተርን አጽዳ</translation>
 <translation id="2603355571917519942">Voice Match ዝግጁ ነው</translation>
-<translation id="2604138917550693049">በGoogle ሌንስ አማካኝነት ምስልን ይፈልጉ</translation>
 <translation id="2604255671529671813">የአውታረ መረብ ግንኙነት ስህተት</translation>
 <translation id="2605668923777146443">ለተሻለ አብሮነት የእርስዎን ምርጫዎች ለማየት ወደ <ph name="LINK_BEGIN" />ቅንብሮች<ph name="LINK_END" /> ይሂዱ።</translation>
 <translation id="2606246518223360146">ውሂብ አገናኝ</translation>
@@ -2234,6 +2233,7 @@
 <translation id="3067198360141518313">ይህን ተሰኪ አሂድ</translation>
 <translation id="3071624960923923138">አዲስ ትር ለመክፈት እዚህ ጠቅ ማድረግ ይችላሉ</translation>
 <translation id="3072775339180057696">ጣቢያ <ph name="FILE_NAME" /> እንዲመለከት ይፈቀድለት?</translation>
+<translation id="3074499504015191586">ሙሉ ገጹን ተርጉም</translation>
 <translation id="3075874217500066906">የPowerwash ሂደቱን ለመጀመር ዳግም ማስጀመር ያስፈልጋል። ዳግም ከተጀመረ በኋላ መቀጠል እንደሚፈልጉ እንዲያረጋግጡ ይጠየቃሉ።</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">በዚህ መሣሪያ ላይ ብቻ ያስቀምጡ</translation>
@@ -4207,7 +4207,6 @@
 <translation id="5051836348807686060">ፊደል ማረሚያ ለመረጧቸው ቋንቋዎች አይደገፍም</translation>
 <translation id="5052499409147950210">ጣቢያን አርትዕ ያድርጉ</translation>
 <translation id="505347685865235222">ያልተሰየመ ቡድን - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">በGoogle ሌንስ አማካኝነት ምስልን ይፈልጉ</translation>
 <translation id="5054374119096692193">በ<ph name="BEGIN_LINK" />Chrome አብጅ<ph name="END_LINK" /> ውስጥ ሁሉንም የካርድ አማራጮች ይመልከቱ</translation>
 <translation id="5056950756634735043">ከመያዣው ጋር በመገናኘት ላይ</translation>
 <translation id="5057110919553308744">ቅጥያውን ጠቅ ሲያደርጉ</translation>
@@ -5086,6 +5085,7 @@
 <translation id="5933522550144185133"><ph name="APP_NAME" /> የእርስዎን ካሜራ እና ማይክሮፎን እየተጠቀመ ነው</translation>
 <translation id="5935158534896975820">የዕውቅና ማረጋገጫ ፊርማ ጥያቄን በማዘጋጀት ላይ (በአገልጋይ ላይ በመጠበቅ ላይ)</translation>
 <translation id="5935656526031444304">የጥንቃቄ አሰሳን አቀናብር</translation>
+<translation id="5936065461722368675">ሙሉ ገጹን ተርጉም</translation>
 <translation id="5938002010494270685">የደህነንት ማላቂያ ይገኛል</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
 <translation id="5939719276406088041">አቋራጮችን መፍጠር አልተቻለም</translation>

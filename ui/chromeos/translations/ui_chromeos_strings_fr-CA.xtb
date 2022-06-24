@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Le contenu de ce dossier est en lecture seule. Certaines activités ne sont pas prises en charge.</translation>
 <translation id="2542049655219295786">Tableau Google</translation>
 <translation id="2544853746127077729">Certificat d'authentification rejeté par le réseau</translation>
-<translation id="2547921442987553570">Ajouter à <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">États-Unis international</translation>
 <translation id="2563185590376525700">Grenouille</translation>
 <translation id="2578394532502990878">Tamoul (phonétique)</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">Chinois (Dayi)</translation>
 <translation id="3057861065630527966">Sauvegarder vos photos et vidéos</translation>
 <translation id="3067790092342515856">Fichiers Windows</translation>
-<translation id="3078461028045006476">Partager avec <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Hôte SOCKS</translation>
 <translation id="3104793765551262433">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puissance du signal <ph name="SIGNAL_STRENGTH" /> %, bloqué par votre administrateur, détails</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Retour</translation>
 <translation id="3855472144336161447">Allemand (Neo 2)</translation>
 <translation id="3858860766373142691">Nom</translation>
-<translation id="386548886866354912">Archiver avec <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Description</translation>
 <translation id="3899991606604168269">Français (Canada) avec clavier multilingue</translation>
 <translation id="3901991538546252627">Connexion à <ph name="NAME" /> en cours...</translation>
@@ -605,7 +602,6 @@
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Hongrois</translation>
-<translation id="6189412234224385711">Ouvrir avec <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Modifier le NIP</translation>
 <translation id="6199801702437275229">En attente d'information sur l'espace disponible…</translation>
 <translation id="6205710420833115353">Certaines opérations prennent plus longtemps que prévu. Voulez-vous les annuler?</translation>

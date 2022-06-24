@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">මෙම ෆෝල්ඩරයේ අන්තර්ගත කියවීමට පමණී. සමහර ක්‍රියාකාරකම් සහාය නොදක්වයි.</translation>
 <translation id="2542049655219295786">Google වගුව</translation>
 <translation id="2544853746127077729">අවසරදීම් සහතිකය ජාලය වෙතින් ප්‍රතික්ෂේප විය</translation>
-<translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> වෙත එක් කරන්න</translation>
 <translation id="255937426064304553">US ජාත්‍යන්තර</translation>
 <translation id="2563185590376525700">ගෙම්බා</translation>
 <translation id="2578394532502990878">දෙමළ ශබ්දිම</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">වීන ඩායි</translation>
 <translation id="3057861065630527966">ඔබගේ ඡායාරූප හා වීඩියෝ උපස්ථ කරන්න</translation>
 <translation id="3067790092342515856">Windows ගොනු</translation>
-<translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> සමඟ බෙදාගන්න</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS සංග්‍රාහක</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලක විසින් අවහිර කර ඇත, විස්තර</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="3855472144336161447">ජර්මානු නියෝ 2</translation>
 <translation id="3858860766373142691">නම</translation>
-<translation id="386548886866354912"><ph name="EXTENSION_NAME" /> සමඟ අසුරන්න</translation>
 <translation id="3866249974567520381">විස්තරය</translation>
 <translation id="3899991606604168269">බහුභාෂා යතුරුපුවරුව සමග ප්‍රංශ (කැනඩාව)</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> වෙත සබඳ වෙමින්</translation>
@@ -603,7 +600,6 @@
 <translation id="6165508094623778733">තව දැන ගන්න</translation>
 <translation id="6170470584681422115">සැන්ඩ්විච්</translation>
 <translation id="6187719147498869044">හංගේරියානු</translation>
-<translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> සමඟ විවෘත කරන්න</translation>
 <translation id="6198252989419008588">PIN අංකය වෙනස් කරන්න</translation>
 <translation id="6199801702437275229">ඉඩ තොරතුරු අපේක්ෂාවෙන්...</translation>
 <translation id="6205710420833115353">සමහර මෙහෙයුම් අපේක්ෂිත කාලයට වඩා වඩාත දිගු කාලයක් ගනී. ඒවා අහෝසි කිරීමට ඔබට අවශ්‍යද?</translation>

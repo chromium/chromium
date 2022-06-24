@@ -159,6 +159,7 @@
 <translation id="2377319039870049694">ወደ የዝርዝር እይታ ቀይር</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> አቃፊዎች ለLinux ተጋርተዋል</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ፋይሎች ተመርጠዋል</translation>
+<translation id="2387120140441437063">ወደ መጣያ የተወሰዱ ፋይሎችን መክፈት አይችሉም። እባክዎ ከመክፈትዎ በፊት ፋይሎቹን ወደነበሩበት ይመልሱ።</translation>
 <translation id="2387458720915042159">የተኪ ግንኙነት አይነት</translation>
 <translation id="2389832672041313158">በርማኛ/ማያንማር</translation>
 <translation id="2392369802118427583">አግብር</translation>
@@ -180,7 +181,6 @@
 <translation id="2541377937973966830">የዚህ አቃፊ ይዘቶች ተነባቢ-ብቻ ናቸው። አንዳንድ እንቅስቃሴዎች አይደገፉም።</translation>
 <translation id="2542049655219295786">Google ሠንጠረዥ</translation>
 <translation id="2544853746127077729">የማረጋገጫ ምስክር ወረቀት በአውታረ መረቡ ተቀባይነት አላገኘም</translation>
-<translation id="2547921442987553570">ወደ <ph name="EXTENSION_NAME" /> አክል</translation>
 <translation id="255937426064304553">አሜሪካ ዓለምአቀፍ</translation>
 <translation id="2563185590376525700">እንቁራሪት</translation>
 <translation id="2578394532502990878">ታሚልኛ ፎነቲክ</translation>
@@ -232,7 +232,6 @@
 <translation id="3047197340186497470">ቻይንኛ ዳዪ</translation>
 <translation id="3057861065630527966">የእርስዎን ፎቶዎች እና ቪዲዮዎች በምትኬ ያስቀምጡ</translation>
 <translation id="3067790092342515856">የWindows ፋይሎች</translation>
-<translation id="3078461028045006476">ለ<ph name="EXTENSION_NAME" /> አጋራ</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">የSOCKS አስተናጋጅ</translation>
 <translation id="3104793765551262433">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በአስተዳዳሪዎ የታገደ፣ ዝርዝሮች</translation>
@@ -329,7 +328,6 @@
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="3855472144336161447">ጀርመንኛ ኒዮ 2</translation>
 <translation id="3858860766373142691">ስም</translation>
-<translation id="386548886866354912">በ<ph name="EXTENSION_NAME" /> ጋር ጠቅልል</translation>
 <translation id="3866249974567520381">ማብራሪያ</translation>
 <translation id="3899991606604168269">ፈረንሳይኛ (ካናዳ) በባለብዙ ቋንቋ ቁልፍ ሰሌዳ</translation>
 <translation id="3901991538546252627">ከ<ph name="NAME" /> ጋር በመገናኘት ላይ</translation>
@@ -603,7 +601,6 @@
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6170470584681422115">ሳንድዊች</translation>
 <translation id="6187719147498869044">ሀንጋሪኛ</translation>
-<translation id="6189412234224385711">በ<ph name="EXTENSION_NAME" /> ክፈት</translation>
 <translation id="6198252989419008588">ፒን ይቀይሩ</translation>
 <translation id="6199801702437275229">የቦታ መረጃን በመጠበቅ ላይ...</translation>
 <translation id="6205710420833115353">አንዳንድ ክወናዎች ከሚጠበቀው በላይ ጊዜ እየወሰዱ ነው። ሊያቋርጧቸው ይፈልጋሉ?</translation>

@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Os conteúdos da pasta são somente leitura. Algumas atividades estão indisponíveis.</translation>
 <translation id="2542049655219295786">Tabela do Google</translation>
 <translation id="2544853746127077729">Certificado de autenticação rejeitado pela rede</translation>
-<translation id="2547921442987553570">Adicionar à extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Internacional: Estados Unidos</translation>
 <translation id="2563185590376525700">Rã</translation>
 <translation id="2578394532502990878">Tâmil (fonético)</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">Chinês (dayi)</translation>
 <translation id="3057861065630527966">Fazer backup de suas fotos e seus vídeos</translation>
 <translation id="3067790092342515856">Arquivos do Windows</translation>
-<translation id="3078461028045006476">Compartilhar com <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3104793765551262433">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bloqueada pelo administrador, detalhes</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Voltar</translation>
 <translation id="3855472144336161447">Alemão (Neo 2)</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="386548886866354912">Compactar com <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Descrição</translation>
 <translation id="3899991606604168269">Francês (Canadá) com teclado multilíngue</translation>
 <translation id="3901991538546252627">Conectando-se a <ph name="NAME" /></translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6170470584681422115">Sanduíche</translation>
 <translation id="6187719147498869044">Húngaro</translation>
-<translation id="6189412234224385711">Abrir com <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
 <translation id="6199801702437275229">Aguardando informações sobre espaço...</translation>
 <translation id="6205710420833115353">Algumas operações estão demorando mais tempo que o esperado. Quer cancelar?</translation>

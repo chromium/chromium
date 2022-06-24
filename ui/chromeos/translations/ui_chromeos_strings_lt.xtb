@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Šio aplanko turinys skirtas tik skaityti. Tam tikra veikla nepalaikoma.</translation>
 <translation id="2542049655219295786">„Google“ lentelė</translation>
 <translation id="2544853746127077729">Autentifikavimo sertifikatą atmetė tinklas</translation>
-<translation id="2547921442987553570">Pridėti prie „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="255937426064304553">JAV tarptautinė</translation>
 <translation id="2563185590376525700">Varlė</translation>
 <translation id="2578394532502990878">Tamilų k. fonetinė</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">Kinų k. „Dayi“</translation>
 <translation id="3057861065630527966">Kurkite atsargines nuotraukų ir vaizdo įrašų kopijas</translation>
 <translation id="3067790092342515856">„Windows“ failai</translation>
-<translation id="3078461028045006476">Bendrinti su „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS priegloba</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc., užblokavo administratorius, išsami informacija</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Atgal</translation>
 <translation id="3855472144336161447">Vokiečių „Neo 2“</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
-<translation id="386548886866354912">Supakuoti naudojant <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Aprašas</translation>
 <translation id="3899991606604168269">Prancūzų k. (Kanada) su keliomis kalbomis klaviatūra</translation>
 <translation id="3901991538546252627">Jungiamasi prie „<ph name="NAME" />“</translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6170470584681422115">Sumuštinis</translation>
 <translation id="6187719147498869044">Vengrų k.</translation>
-<translation id="6189412234224385711">Atidaryti naudojant „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6198252989419008588">Keisti PIN kodą</translation>
 <translation id="6199801702437275229">Laukiama vietos informacijos...</translation>
 <translation id="6205710420833115353">Kai kurios operacijos trunka ilgiau nei tikėtasi. Ar norite jas nutraukti?</translation>

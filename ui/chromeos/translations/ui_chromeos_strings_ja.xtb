@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">このフォルダのコンテンツは読み取り専用です。一部の操作は行えません。</translation>
 <translation id="2542049655219295786">Google Table</translation>
 <translation id="2544853746127077729">認証証明書がネットワークによって拒否されました</translation>
-<translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> に追加</translation>
 <translation id="255937426064304553">US インターナショナル</translation>
 <translation id="2563185590376525700">カエル</translation>
 <translation id="2578394532502990878">タミル語（表音）</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">中国語（大易）</translation>
 <translation id="3057861065630527966">写真や動画をバックアップします</translation>
 <translation id="3067790092342515856">Windows ファイル</translation>
-<translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> と共有</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS ホスト</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によってブロック、詳細</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">戻る</translation>
 <translation id="3855472144336161447">ドイツ語（Neo 2）</translation>
 <translation id="3858860766373142691">名前</translation>
-<translation id="386548886866354912"><ph name="EXTENSION_NAME" /> を同梱</translation>
 <translation id="3866249974567520381">説明</translation>
 <translation id="3899991606604168269">フランス語（カナダ）（多言語）キーボード</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> に接続しています</translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6170470584681422115">サンドイッチ</translation>
 <translation id="6187719147498869044">ハンガリー語</translation>
-<translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> で開く</translation>
 <translation id="6198252989419008588">PIN を変更</translation>
 <translation id="6199801702437275229">空き容量情報を待機中...</translation>
 <translation id="6205710420833115353">一部の操作に予想より時間がかかっています。中止しますか？</translation>

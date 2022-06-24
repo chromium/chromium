@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">Obsah této složky je pouze ke čtení. Některé aktivity nejsou podporovány.</translation>
 <translation id="2542049655219295786">Tabulka Google</translation>
 <translation id="2544853746127077729">Ověřovací certifikát byl sítí odmítnut</translation>
-<translation id="2547921442987553570">Přidat do rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Americká klávesnice (mezinárodní)</translation>
 <translation id="2563185590376525700">Žába</translation>
 <translation id="2578394532502990878">tamilština (fonetická)</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">čínština (Dayi)</translation>
 <translation id="3057861065630527966">Zálohovat fotky a videa</translation>
 <translation id="3067790092342515856">Soubory Windows</translation>
-<translation id="3078461028045006476">Sdílet s rozšířením <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Hostitel protokolu SOCKS</translation>
 <translation id="3104793765551262433">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, blokováno administrátorem, podrobnosti</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Zpět</translation>
 <translation id="3855472144336161447">Německá klávesnice Neo 2</translation>
 <translation id="3858860766373142691">Název</translation>
-<translation id="386548886866354912">Zabalit pomocí rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Popis</translation>
 <translation id="3899991606604168269">francouzština (Kanada) s vícejazyčnou klávesnicí</translation>
 <translation id="3901991538546252627">Připojování k síti <ph name="NAME" /></translation>
@@ -603,7 +600,6 @@
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6187719147498869044">maďarština</translation>
-<translation id="6189412234224385711">Otevřít pomocí rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Změnit kód PIN</translation>
 <translation id="6199801702437275229">Čeká se na informace o volném místě...</translation>
 <translation id="6205710420833115353">Některé operace trvají neočekávaně dlouho. Chcete je zrušit?</translation>

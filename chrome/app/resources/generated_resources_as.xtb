@@ -1734,7 +1734,6 @@
 <translation id="2602501489742255173">আৰম্ভ কৰিবলৈ ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="2603115962224169880">কম্পিউটাৰৰ ডেটা মচক</translation>
 <translation id="2603355571917519942">Voice Match সুবিধাটো সাজু আছে</translation>
-<translation id="2604138917550693049">Google Lensৰে প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="2604255671529671813">নেটৱৰ্ক সংযোগ সম্পর্কীয় আসোঁৱাহ</translation>
 <translation id="2605668923777146443">উন্নত সমাযোজনৰ বাবে আপোনাৰ বিকল্প চাবলৈ <ph name="LINK_BEGIN" />ছেটিঙ<ph name="LINK_END" />লৈ যাওক।</translation>
 <translation id="2606246518223360146">ডেটা লিংক কৰক</translation>
@@ -2237,6 +2236,7 @@
 <translation id="3067198360141518313">এই প্লেগইন চলাওক</translation>
 <translation id="3071624960923923138">আপুনি কোনো নতুন টেব খুলিবলৈ ইয়াত ক্লিক কৰক</translation>
 <translation id="3072775339180057696">ছাইটটোক <ph name="FILE_NAME" /> চাবলৈ দিবনে?</translation>
+<translation id="3074499504015191586">সম্পূৰ্ণ পৃষ্ঠাখন অনুবাদ কৰক</translation>
 <translation id="3075874217500066906">পাৱাৰৱাশ্ব প্ৰক্ৰিয়াটো আৰম্ভ কৰিবলৈ এবাৰ ৰিষ্টাৰ্ট কৰাৰ আৱশ্যক। ৰিষ্টাৰ্ট কৰাৰ পাছত আপুনি আগবাঢ়িব বিচাৰিছে বুলি আপোনাক নিশ্চিত কৰিবলৈ কোৱা হ'ব।</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">কেৱল এই ডিভাইচটোত ছেভ কৰক</translation>
@@ -4212,7 +4212,6 @@
 <translation id="5051836348807686060">আপুনি বাছনি কৰা ভাষাৰ ক্ষেত্ৰত বানান পৰীক্ষক সমৰ্থিত নহয়</translation>
 <translation id="5052499409147950210">ছাইট সম্পাদনা কৰক</translation>
 <translation id="505347685865235222">নামবিহীন গোট - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lensৰে প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome কাষ্টমাইজ কৰক<ph name="END_LINK" />ত থকা কাৰ্ডৰ আটাইবোৰ বিকল্প চাওক</translation>
 <translation id="5056950756634735043">কণ্টেইনাৰৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
 <translation id="5057110919553308744">যেতিয়া আপুনি এক্সটেনশ্বনটো ক্লিক কৰে</translation>
@@ -5091,6 +5090,7 @@
 <translation id="5933522550144185133"><ph name="APP_NAME" />এ আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="5935158534896975820">প্ৰমাণপত্ৰ স্বাক্ষৰ কৰাৰ অনুৰোধ প্ৰস্তুত কৰি থকা হৈছে (ছার্ভাৰত অপেক্ষাৰত)</translation>
 <translation id="5935656526031444304">সুৰক্ষিত ব্ৰাউজিং পৰিচালনা কৰক</translation>
+<translation id="5936065461722368675">সম্পূৰ্ণ পৃষ্ঠাখন অনুবাদ কৰক</translation>
 <translation id="5938002010494270685">সুৰক্ষা আপগ্ৰেড উপলব্ধ</translation>
 <translation id="5939518447894949180">ৰিছেট কৰক</translation>
 <translation id="5939719276406088041">শ্বর্টকাট সৃষ্টি কৰিব নোৱাৰি</translation>

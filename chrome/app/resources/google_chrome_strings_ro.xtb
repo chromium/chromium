@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1001534784610492198">Arhiva programului de instalare este deteriorată sau nevalidă. Descarcă din nou Google Chrome.</translation>
+<translation id="1026101648481255140">Reia instalarea</translation>
 <translation id="102763973188675173">Personalizează și controlează Google Chrome. Este disponibilă o actualizare.</translation>
 <translation id="1051826050538111504">Ai software dăunător pe computer. Chrome poate să îl elimine, să restabilească setările și să dezactiveze extensiile pentru ca browserul să funcționeze normal din nou.</translation>
 <translation id="1065672644894730302">Preferințele dvs. nu pot fi citite. Este posibil ca unele funcții să nu fie disponibile, iar modificările aduse preferințelor nu vor fi salvate.</translation>
@@ -12,6 +13,7 @@
 <translation id="1152920704813762236">Despre sistemul de operare Chrome</translation>
 <translation id="1154147086299354128">&amp;Deschide în Chrome</translation>
 <translation id="1178374936842835197">Dacă o setare nu apare în pagină, încearcă <ph name="LINK_BEGIN" />setările sistemului de operare Chrome Flex<ph name="LINK_END" /></translation>
+<translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
 <translation id="1278833599417554002">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="1302523850133262269">Așteaptă până când Chrome instalează cele mai recente actualizări de sistem.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> îți solicită să citești și să accepți Termenii și condițiile următoare înainte de a folosi acest dispozitiv. Aceste condiții nu extind, nu modifică și nu limitează Condițiile pentru sistemul de operare Google Chrome Flex.</translation>
@@ -31,6 +33,7 @@
 <translation id="1619887657840448962">Pentru mai multă siguranță în Chrome, am dezactivat următoarea extensie care nu este inclusă în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugată fără știrea ta.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Cum îți poți gestiona datele:<ph name="END_BOLD" /> pentru a-ți proteja confidențialitatea, ștergem automat categoriile de interese mai vechi de patru săptămâni. Pe măsură ce navighezi, o categorie de interese poate să reapară în listă. Sau poți elimina categoriile de interese pe care nu dorești ca Chrome să le ia în considerare.</translation>
 <translation id="1628000112320670027">Obține ajutor privind Chrome</translation>
+<translation id="1640672724030957280">Se descarcă…</translation>
 <translation id="1662146548738125461">Despre sistemul de operare Chrome Flex</translation>
 <translation id="1674870198290878346">Deschide linkul într-o fereastră Chrome inco&amp;gnito</translation>
 <translation id="1682634494516646069">Google Chrome nu poate citi și scrie în directorul propriu de date: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -46,7 +49,9 @@
 <translation id="1877026089748256423">Chrome nu este actualizat</translation>
 <translation id="1919130412786645364">Permite conectarea la Chrome</translation>
 <translation id="1952239763774043237">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de macOS 10.13 sau o versiune ulterioară. Acest computer folosește macOS 10.12.</translation>
+<translation id="1953553007165777902">Se descarcă… Timp rămas: <ph name="MINUTE" /> minute</translation>
 <translation id="2018528049276128029">Fiecare profil conține propriile informații Chrome, cum ar fi marcaje, istoric, parole și altele</translation>
+<translation id="2018879682492276940">Nu s-a instalat. Încearcă din nou.</translation>
 <translation id="2071318482926839249">Alt cont este deja conectat. Ca să separi navigarea, poți crea propriul profil în Chrome.</translation>
 <translation id="207902854391093810">În versiunile de încercare, Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.</translation>
 <translation id="2094648590148273905">Condițiile pentru sistemul de operare Chrome Flex</translation>
@@ -58,6 +63,7 @@
 <translation id="2131230230468101642">Pentru a-ți proteja confidențialitatea, ștergem automat categoriile de interese mai vechi de patru săptămâni. Pe măsură ce navighezi, o categorie de interese poate să reapară în listă. Sau poți elimina categoriile de interese pe care nu dorești ca Chrome să le ia în considerare.</translation>
 <translation id="2139300032719313227">Repornește sistemul de operare Chrome</translation>
 <translation id="2151406531797534936">Repornește Chrome acum</translation>
+<translation id="2174917724755363426">Instalarea nu este finalizată. Sigur anulezi?</translation>
 <translation id="2258103955319320201">Pentru a accesa informațiile din Chrome pe toate dispozitivele, conectează-te, apoi activează sincronizarea</translation>
 <translation id="2290014774651636340">Lipsesc chei pentru API-ul Google. Unele funcționalități Google Chrome vor fi dezactivate.</translation>
 <translation id="2290095356545025170">Sigur vrei să dezinstalezi Google Chrome?</translation>
@@ -94,13 +100,16 @@
 <translation id="2871893339301912279">V-ați conectat la Chrome!</translation>
 <translation id="2885378588091291677">Manager de activități</translation>
 <translation id="2888126860611144412">Despre Chrome</translation>
+<translation id="2915996080311180594">Repornește mai târziu</translation>
 <translation id="2926676257163822632">Parolele slabe sunt ușor de ghicit. Permite browserului Chrome <ph name="BEGIN_LINK" />să creeze și să memoreze parole puternice pentru tine<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome are nevoie de acces la cameră pentru acest site</translation>
+<translation id="2928420929544864228">Instalare finalizată.</translation>
 <translation id="2929907241665500097">Chrome nu s-a actualizat. A apărut o eroare. <ph name="BEGIN_LINK" />Remediază problemele de actualizare și actualizările nereușite în Chrome.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – conectare la rețea – Chrome</translation>
 <translation id="3019382870990049182">Relansează pentru a actualiza &amp;sistemul de operare Chrome Flex</translation>
 <translation id="303514781271618814">Chrome explorează noi funcții care le dau site-urilor posibilitatea să ofere aceeași experiență de navigare, folosind mai puține date despre tine</translation>
 <translation id="3037838751736561277">Google Chrome este în modul fundal.</translation>
+<translation id="3038232873781883849">Se așteaptă instalarea…</translation>
 <translation id="3059710691562604940">Navigarea sigură este dezactivată. Chrome îți recomandă să o activezi.</translation>
 <translation id="3065168410429928842">Fila Chrome</translation>
 <translation id="3069821012350118710">Site-urile pe care le accesezi rețin informațiile tale până când închizi Chrome</translation>
@@ -114,6 +123,7 @@
 <translation id="3169523567916669830">În perioadele de încercare, poți să vezi și să elimini subiectele de interes folosite de site-uri pentru a-ți afișa anunțuri. Chrome îți estimează interesele pe baza istoricului tău de navigare recent.</translation>
 <translation id="3245429137663807393">Dacă trimiți rapoarte privind folosirea Chrome, acestea includ adresele URL pe care le accesezi</translation>
 <translation id="3282568296779691940">Conectează-te la Chrome</translation>
+<translation id="3286538390144397061">Repornește acum</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se va relansa acum}=1{Chrome se va relansa într-o secundă}few{Chrome se va relansa în # secunde}other{Chrome se va relansa în # de secunde}}</translation>
 <translation id="3396977131400919238">S-a produs o eroare de sistem de operare în timpul instalării. Descarcă din nou Google Chrome.</translation>
@@ -150,9 +160,11 @@
 <translation id="4106587138345390261">Chrome explorează noi funcții care le dau site-urilor posibilitatea să ofere aceeași experiență de navigare, folosind mai puține informații despre tine</translation>
 <translation id="4110895483821904099">Configurează noul profil Chrome</translation>
 <translation id="4147555960264124640">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Google Chrome. Datele Chrome, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu un alt cont. <ph name="LEARN_MORE" /></translation>
+<translation id="4148957013307229264">Se instalează...</translation>
 <translation id="4149882025268051530">Programul de instalare nu a putut decomprima arhiva. Descarcă din nou Google Chrome.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Relansează Chrome în cel mult o zi}few{Relansează Chrome în cel mult # zile}other{Relansează Chrome în cel mult # de zile}}</translation>
 <translation id="4205939740494406371">Chrome nu îți poate verifica parolele. Încearcă din nou după 24 de ore sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
+<translation id="4222932583846282852">Se anulează…</translation>
 <translation id="4242034826641750751">Chrome are nevoie de acces la cameră și microfon pentru acest site</translation>
 <translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
 <translation id="4251615635259297716">Vă conectați datele Chrome cu acest cont?</translation>
@@ -160,6 +172,7 @@
 <translation id="4281844954008187215">Condiții de furnizare a serviciilor</translation>
 <translation id="4293420128516039005">Conectează-te pentru a sincroniza și a personaliza Chrome pe toate dispozitivele</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
+<translation id="4334294535648607276">Descărcarea a fost finalizată.</translation>
 <translation id="4335235004908507846">Chrome te protejează împotriva încălcării securității datelor, a extensiilor necorespunzătoare și nu numai</translation>
 <translation id="4343195214584226067">Extensia <ph name="EXTENSION_NAME" /> a fost adăugată la Chrome</translation>
 <translation id="4384570495110188418">Chrome nu îți poate verifica parolele, deoarece nu te-ai conectat</translation>
@@ -174,6 +187,7 @@
 <translation id="4600710005438004015">Chrome nu s-a putut actualiza la cea mai recentă versiune. Astfel, pierzi noi funcții și remedieri de securitate.</translation>
 <translation id="4627412468266359539">Opțional: contribuie la îmbunătățirea funcțiilor și a performanței sistemului de operare Chrome Flex, trimițând automat la Google date de diagnosticare și de utilizare.</translation>
 <translation id="4633000520311261472">Pentru ca browserul Chrome să fie mai sigur, am dezactivat câteva extensii care nu sunt incluse în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugate fără știrea dvs.</translation>
+<translation id="4680828127924988555">Anulează instalarea</translation>
 <translation id="469553575393225953">Extensiile, aplicațiile și temele din surse necunoscute pot să dăuneze dispozitivului. Chrome recomandă să le instalezi numai din Magazinul web Chrome</translation>
 <translation id="4728575227883772061">Instalarea nu a reușit din cauza unei erori necunoscute. Dacă Google Chrome rulează în acest moment, închide-l și încearcă din nou.</translation>
 <translation id="4747730611090640388">Chrome îți poate estima interesele.  Ulterior, un site pe care-l accesezi poate solicita browserului Chrome să vadă interesele tale pentru a personaliza anunțurile pe care le vezi.</translation>
@@ -225,9 +239,13 @@
 <translation id="5895138241574237353">Reîncepe</translation>
 <translation id="5901850848447342934">Vei fi <ph name="BEGIN_BOLD" />deconectat(ă) de pe majoritatea site-urilor<ph name="END_BOLD" /> când închizi Chrome. Dacă sincronizarea este dezactivată, vei fi <ph name="BEGIN_BOLD" />deconectat(ă) și de la serviciile Google și de la Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – conectare la rețea</translation>
+<translation id="5924017743176219022">Se conectează la internet…</translation>
 <translation id="5940385492829620908">Experiența web personalizată, marcajele și celelalte date Chrome chiar aici.</translation>
+<translation id="5941711191222866238">Minimizează</translation>
 <translation id="5941830788786076944">Setează Google Chrome ca browser prestabilit</translation>
 <translation id="5959292945051687759">Dacă o setare nu apare în pagină, încearcă <ph name="LINK_BEGIN" />Setările sistemului de operare Chrome<ph name="LINK_END" /></translation>
+<translation id="6003112304606738118">Se descarcă… Au rămas <ph name="HOURS" /> ore</translation>
+<translation id="6040143037577758943">Închide</translation>
 <translation id="6070348360322141662">Pentru un plus de securitate, Google Chrome îți va cripta datele</translation>
 <translation id="608006075545470555">Adaugă un profil de serviciu în acest browser</translation>
 <translation id="6113794647360055231">Chrome a devenit și mai bun</translation>
@@ -236,8 +254,10 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Regula de intrare pentru Google Chrome pentru a permite traficul mDNS.</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
+<translation id="6273793429163604305">Pe locuri…</translation>
 <translation id="6291089322031436445">Aplicații Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome este instalat deja pentru toți utilizatorii de pe computerul tău.</translation>
+<translation id="6327105987658262776">Nu este disponibilă nicio actualizare.</translation>
 <translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="6418662306461808273">Schimbi la profilul Chrome existent?</translation>
 <translation id="6506909944137591434">Chrome are nevoie de acces la cameră pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
@@ -258,6 +278,7 @@
 <translation id="6943584222992551122">Datele de navigare ale acestei persoane vor fi șterse de pe dispozitiv. Pentru a recupera datele, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regula de intrare pentru Google Chrome Beta pentru a permite traficul mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome a fost actualizat, dar nu l-ai folosit cel puțin 30 de zile.</translation>
+<translation id="7025789849649390912">Instalare oprită.</translation>
 <translation id="7025800014283535195">Aici poți comuta între profilurile Chrome</translation>
 <translation id="7036251913954633326">Dacă vrei să folosești contul o singură dată, poți utiliza <ph name="GUEST_LINK_BEGIN" />modul pentru invitați<ph name="GUEST_LINK_END" /> în browserul Chrome. Dacă vrei să adaugi un cont pentru altcineva, <ph name="LINK_BEGIN" />adaugă o nouă persoană<ph name="LINK_END" /> pe <ph name="DEVICE_TYPE" />.
 
@@ -286,11 +307,13 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7481213027396403996">Beneficiază de cel mai înalt nivel de securitate de la Chrome</translation>
 <translation id="7486227612705979895">Chrome îți va accesa spațiul de stocare Drive pentru a face sugestii în bara de adrese</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="7583399374488819119">Program de instalare <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Sistemul de operare Google Chrome Flex</translation>
 <translation id="7626032353295482388">Bun venit la Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> îți solicită să citești și să accepți Termenii și condițiile următoare înainte de a folosi acest dispozitiv. Aceste condiții nu extind, nu modifică și nu limitează Condițiile sistemului de operare Google Chrome.</translation>
 <translation id="7629695634924605473">Chrome te anunță dacă parolele tale sunt compromise</translation>
 <translation id="7641148173327520642">Administratorul sistemului a configurat Google Chrome să deschidă <ph name="ALTERNATIVE_BROWSER_NAME" /> pentru a accesa <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7649070708921625228">Ajutor</translation>
 <translation id="7651907282515937834">Sigla Chrome Enterprise</translation>
 <translation id="7655455401911432608">istoricul tău de navigare, o evidență a site-urilor pe care le-ai accesat folosind Chrome pe acest dispozitiv;</translation>
 <translation id="7747138024166251722">Programul de instalare nu a putut crea un director temporar. Verifică dacă există suficient spațiu liber și dacă ai drepturile necesare pentru a instala software-ul.</translation>
@@ -302,6 +325,8 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7801699035218095297">Google Chrome încearcă să copieze parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="7808348361785373670">Elimină din Chrome...</translation>
 <translation id="7825851276765848807">Instalarea nu a reușit din cauza unei erori neprecizate. Descarci Google Chrome din nou.</translation>
+<translation id="7845233973568007926">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești computerul.</translation>
+<translation id="7872446069773932638">Se descarcă… Timp rămas: <ph name="SECONDS" /> secunde</translation>
 <translation id="7880591377632733558">Bun venit la Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Dacă permiteți accesul la un computer, familia și prietenii pot să navigheze separat și să configureze Chrome cum doresc.</translation>
 <translation id="7896673875602241923">Un alt utilizator s-a conectat anterior la Chrome pe acest computer ca <ph name="ACCOUNT_EMAIL_LAST" />. Creează un nou utilizator Chrome pentru a-ți păstra separat informațiile.</translation>
@@ -312,8 +337,11 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8005666035647241369">În Manager de parole Google pe acest dispozitiv</translation>
 <translation id="8008534537613507642">Reinstalați Chrome</translation>
 <translation id="8013993649590906847">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google.</translation>
+<translation id="80471789339884597">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești toate browserele.</translation>
 <translation id="8064015586118426197">Sistemul de operare Chrome Flex</translation>
+<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">Despre &amp;Google Chrome</translation>
+<translation id="813913629614996137">Se inițializează...</translation>
 <translation id="8255190535488645436">Google Chrome utilizează camera foto și microfonul.</translation>
 <translation id="8286862437124483331">Google Chrome încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
 <translation id="828798499196665338">Părintele tău a dezactivat opțiunea „Permisiuni pentru site-uri, aplicații și extensii” în Chrome. Activarea acestei <ph name="EXTENSION_TYPE_PARAMETER" /> nu este permisă.</translation>

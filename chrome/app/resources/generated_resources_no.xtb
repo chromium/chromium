@@ -1730,7 +1730,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2602501489742255173">Sveip opp for å komme i gang</translation>
 <translation id="2603115962224169880">Rydd opp i datamaskinen</translation>
 <translation id="2603355571917519942">Voice Match er klar</translation>
-<translation id="2604138917550693049">Søk etter bildet med Google Lens</translation>
 <translation id="2604255671529671813">Feil i nettverkstilkobling</translation>
 <translation id="2605668923777146443">Gå til <ph name="LINK_BEGIN" />Innstillinger<ph name="LINK_END" /> for å se alternativene for Better Together.</translation>
 <translation id="2606246518223360146">Knytt sammen dataene</translation>
@@ -4208,7 +4207,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5051836348807686060">Stavekontroll støttes ikke for språkene du har valgt</translation>
 <translation id="5052499409147950210">Rediger nettstedet</translation>
 <translation id="505347685865235222">Gruppe uten navn – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Søk etter bildet med Google Lens</translation>
 <translation id="5054374119096692193">Se alle kortalternativene i <ph name="BEGIN_LINK" />Tilpass Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Kobler til beholderen</translation>
 <translation id="5057110919553308744">Når du klikker på utvidelsen</translation>

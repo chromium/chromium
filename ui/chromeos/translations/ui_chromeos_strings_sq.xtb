@@ -159,6 +159,7 @@
 <translation id="2377319039870049694">Kalo te pamja e listës</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosje të ndara me Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> skedarë u zgjodhën</translation>
+<translation id="2387120140441437063">Skedarët e zhvendosur te koshi nuk mund të hapen. Restauro skedarët para se t'i hapësh.</translation>
 <translation id="2387458720915042159">Lloji i lidhjes së përfaqësuesit</translation>
 <translation id="2389832672041313158">Birmanisht/Mianmar</translation>
 <translation id="2392369802118427583">Aktivizoje</translation>
@@ -180,7 +181,6 @@
 <translation id="2541377937973966830">Përmbajtjet e kësaj dosjeje janë vetëm për lexim. Disa aktivitete nuk mbështeten.</translation>
 <translation id="2542049655219295786">Tabela e Google</translation>
 <translation id="2544853746127077729">Certifikata e vërtetimit u refuzua nga rrjeti</translation>
-<translation id="2547921442987553570">Shto te <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Amerikane ndërkombëtare</translation>
 <translation id="2563185590376525700">Bretkosa</translation>
 <translation id="2578394532502990878">Tamilisht fonetike</translation>
@@ -232,7 +232,6 @@
 <translation id="3047197340186497470">Kinezisht Dayi</translation>
 <translation id="3057861065630527966">Rezervo fotografitë dhe videot</translation>
 <translation id="3067790092342515856">Skedarët e Windows</translation>
-<translation id="3078461028045006476">Ndaje me <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Pajisjet Chromebit</translation>
 <translation id="3085752524577180175">Strehuesi i protokollit SOCKS</translation>
 <translation id="3104793765551262433">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bllokuar nga administratori yt, detajet</translation>
@@ -329,7 +328,6 @@
 <translation id="385051799172605136">Prapa</translation>
 <translation id="3855472144336161447">Gjermanisht Neo 2</translation>
 <translation id="3858860766373142691">Emri</translation>
-<translation id="386548886866354912">Paketë me <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Përshkrimi</translation>
 <translation id="3899991606604168269">Frëngjisht (Kanada) me tastierë shumëgjuhëshe</translation>
 <translation id="3901991538546252627">Po lidhet me <ph name="NAME" /></translation>
@@ -602,7 +600,6 @@
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6170470584681422115">Sandviç</translation>
 <translation id="6187719147498869044">Hungarisht</translation>
-<translation id="6189412234224385711">Hape me <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Ndrysho kodin PIN</translation>
 <translation id="6199801702437275229">Po pret për informacionin e hapësirës...</translation>
 <translation id="6205710420833115353">Disa operacione po zgjasin më shumë nga sa pritej. Dëshiron që t'i braktisësh?</translation>

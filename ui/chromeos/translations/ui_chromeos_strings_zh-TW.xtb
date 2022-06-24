@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">這個資料夾的內容為唯讀檔案，因此不支援部分活動。</translation>
 <translation id="2542049655219295786">Google 表格</translation>
 <translation id="2544853746127077729">網路已拒絕驗證憑證</translation>
-<translation id="2547921442987553570">加入「<ph name="EXTENSION_NAME" />」中</translation>
 <translation id="255937426064304553">美國國際</translation>
 <translation id="2563185590376525700">青蛙</translation>
 <translation id="2578394532502990878">泰米爾文 (拼音)</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">中文 (大易)</translation>
 <translation id="3057861065630527966">備份您的相片和影片</translation>
 <translation id="3067790092342515856">Windows 檔案</translation>
-<translation id="3078461028045006476">使用「<ph name="EXTENSION_NAME" />」分享/共用</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS 主機</translation>
 <translation id="3104793765551262433">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，遭到管理員封鎖，詳細資料</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3855472144336161447">德文 Neo 2</translation>
 <translation id="3858860766373142691">名稱</translation>
-<translation id="386548886866354912">使用「<ph name="EXTENSION_NAME" />」封裝</translation>
 <translation id="3866249974567520381">說明</translation>
 <translation id="3899991606604168269">法文 (加拿大) 搭配多語鍵盤</translation>
 <translation id="3901991538546252627">正在連線至：<ph name="NAME" /></translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6170470584681422115">三明治</translation>
 <translation id="6187719147498869044">匈牙利文</translation>
-<translation id="6189412234224385711">使用「<ph name="EXTENSION_NAME" />」開啟</translation>
 <translation id="6198252989419008588">變更 PIN 碼</translation>
 <translation id="6199801702437275229">正在等待空間資訊...</translation>
 <translation id="6205710420833115353">部分作業所需時間超出預期。你想中斷這些作業嗎？</translation>

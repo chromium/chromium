@@ -181,7 +181,6 @@
 <translation id="2541377937973966830">El contingut d'aquesta carpeta és només de lectura. Algunes activitats no s'admeten.</translation>
 <translation id="2542049655219295786">Taula de Google</translation>
 <translation id="2544853746127077729">La xarxa ha rebutjat el certificat d'autenticació</translation>
-<translation id="2547921442987553570">Afegeix a <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Teclat internacional d'Estats Units</translation>
 <translation id="2563185590376525700">Granota</translation>
 <translation id="2578394532502990878">Tàmil fonètic</translation>
@@ -233,7 +232,6 @@
 <translation id="3047197340186497470">Xinès (dayi)</translation>
 <translation id="3057861065630527966">Crea una còpia de seguretat de les fotos i dels vídeos</translation>
 <translation id="3067790092342515856">Fitxers de Windows</translation>
-<translation id="3078461028045006476">Comparteix amb <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">dispositius Chromebit</translation>
 <translation id="3085752524577180175">Amfitrió SOCKS</translation>
 <translation id="3104793765551262433">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, bloquejada per l'administrador, detalls</translation>
@@ -330,7 +328,6 @@
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3855472144336161447">Neo 2 alemany</translation>
 <translation id="3858860766373142691">Nom</translation>
-<translation id="386548886866354912">Crea un paquet amb l'extensió <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Descripció</translation>
 <translation id="3899991606604168269">Francès (Canadà) amb teclat multilingüe</translation>
 <translation id="3901991538546252627">S'està connectant amb <ph name="NAME" /></translation>
@@ -604,7 +601,6 @@
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6170470584681422115">Entrepà</translation>
 <translation id="6187719147498869044">Hongarès</translation>
-<translation id="6189412234224385711">Obre amb <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">Canvia el PIN</translation>
 <translation id="6199801702437275229">S'està esperant per rebre informació sobre l'espai...</translation>
 <translation id="6205710420833115353">Algunes operacions estan tardant més del que estava previst. Voleu cancel·lar-les?</translation>
