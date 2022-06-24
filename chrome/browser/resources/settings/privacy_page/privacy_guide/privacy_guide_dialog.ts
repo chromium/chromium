@@ -72,7 +72,8 @@ export class SettingsPrivacyGuideDialogElement extends PolymerElement {
         new CustomEvent('close', {bubbles: true, composed: true}));
   }
 
-  private onPrivacyGuidePageClose_() {
+  private onPrivacyGuidePageClose_(e: Event) {
+    e.stopPropagation();
     this.$.dialog.close();
   }
 
