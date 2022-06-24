@@ -16,8 +16,6 @@
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
-#include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -25,6 +23,7 @@
 #include "components/app_restore/app_restore_data.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/widget.h"
 
@@ -129,9 +128,10 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 
   TestingProfile::TestingFactories GetTestingFactories() override {
     return {{SyncServiceFactory::GetInstance(),
-             SyncServiceFactory::GetDefaultFactory()},
-            {ChromeSigninClientFactory::GetInstance(),
-             base::BindRepeating(&signin::BuildTestSigninClient)}};
+             base::BindRepeating(
+                 [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                   return std::make_unique<syncer::TestSyncService>();
+                 })}};
   }
 
  private:

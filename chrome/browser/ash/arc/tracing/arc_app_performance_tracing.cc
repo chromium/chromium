@@ -9,6 +9,7 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/constants/ash_features.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -29,7 +30,6 @@
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -66,6 +66,7 @@ class ArcAppPerformanceTracingFactory
   friend base::DefaultSingletonTraits<ArcAppPerformanceTracingFactory>;
   ArcAppPerformanceTracingFactory() {
     DependsOn(ArcAppListPrefsFactory::GetInstance());
+    // TODO(crbug.com/1330894): This should probably depend on SyncService.
   }
   ~ArcAppPerformanceTracingFactory() override = default;
 };
@@ -420,15 +421,34 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
   Profile* const profile = Profile::FromBrowserContext(context_);
   DCHECK(profile);
 
-  const syncer::SyncPrefs prefs(profile->GetPrefs());
-
-  if (!prefs.GetSelectedTypes().Has(syncer::UserSelectableType::kApps)) {
-    VLOG(1) << "Cannot trace: App Sync is not enabled.";
+  const syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  if (!sync_service) {
+    // Possible if sync is disabled by command line flag.
+    // TODO(crbug.com/1330894): This should probably handled by
+    // ArcAppPerformanceTracingFactory.
+    VLOG(1) << "Cannot trace: Sync service not available";
     return;
   }
 
   const syncer::SyncUserSettings* sync_user_settings =
-      SyncServiceFactory::GetForProfile(profile)->GetUserSettings();
+      sync_service->GetUserSettings();
+
+  bool apps_sync_enabled = false;
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+    apps_sync_enabled = sync_service->CanSyncFeatureStart() &&
+                        sync_user_settings->GetSelectedOsTypes().Has(
+                            syncer::UserSelectableOsType::kOsApps);
+  } else {
+    apps_sync_enabled = sync_service->CanSyncFeatureStart() &&
+                        sync_user_settings->GetSelectedTypes().Has(
+                            syncer::UserSelectableType::kApps);
+  }
+
+  if (!apps_sync_enabled) {
+    VLOG(1) << "Cannot trace: App Sync is not enabled.";
+    return;
+  }
 
   if (sync_user_settings->IsUsingExplicitPassphrase()) {
     VLOG(1) << "Cannot trace: User has a sync passphrase.";
