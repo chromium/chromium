@@ -159,23 +159,30 @@ struct BASE_EXPORT InternedMapping
                   const base::ModuleCache::Module* module);
 };
 
+// Interns an unsymbolized source code location + all it's "dependencies", i.e.
+// module, strings used in the module definition, and so on.
 struct BASE_EXPORT InternedUnsymbolizedSourceLocation
     : public perfetto::TrackEventInternedDataIndex<
           InternedUnsymbolizedSourceLocation,
           perfetto::protos::pbzero::InternedData::
               kUnsymbolizedSourceLocationsFieldNumber,
-          UnsymbolizedSourceLocation> {
+          uintptr_t> {
+  // We need a custom Get implementation to use ModuleCache, and to return
+  // a nullopt if a module for the given address cannot be found.
+  static absl::optional<size_t> Get(perfetto::EventContext* ctx,
+                                    uintptr_t address);
   static void Add(perfetto::protos::pbzero::InternedData* interned_data,
                   size_t iid,
                   const UnsymbolizedSourceLocation& location);
-};
 
-// Interns an unsymbolized source code location + all it's "dependencies", i.e.
-// module, strings used in the module definition, and so on. Returns the
-// location's iid, or nullopt if the address cannot be mapped to a module.
-BASE_EXPORT absl::optional<size_t> InternUnsymbolizedSourceLocation(
-    uintptr_t address,
-    perfetto::EventContext& ctx);
+ private:
+  // This implies that a module cache lifetime = incremental state.
+  // We don't want unlimited lifetime because it keeps modules pinned in
+  // memory on some platforms (Windows).
+  // TODO(b/237055179): Consider tying module cache to DataSource instead so
+  // that the cache is not unnecessarily cleared on incremental state change.
+  base::ModuleCache module_cache_;
+};
 
 }  // namespace trace_event
 }  // namespace base

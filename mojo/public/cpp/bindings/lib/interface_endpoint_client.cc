@@ -855,8 +855,8 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
                 const auto method_address = reinterpret_cast<uintptr_t>(
                     method_address_callback_(*message));
                 const absl::optional<size_t> location_iid =
-                    base::trace_event::InternUnsymbolizedSourceLocation(
-                        method_address, ctx);
+                    base::trace_event::InternedUnsymbolizedSourceLocation::Get(
+                        &ctx, method_address);
                 if (location_iid) {
                   info->set_mojo_interface_method_iid(*location_iid);
                 }
