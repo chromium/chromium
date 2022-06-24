@@ -2336,7 +2336,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.LoginsToRemove"
-    units="count" expires_after="2022-09-11">
+    units="count" expires_after="M108">
   <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
@@ -2346,7 +2346,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.SuccessRate"
-    units="%" expires_after="2022-06-30">
+    units="%" expires_after="M108">
   <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
@@ -2359,7 +2359,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend{Function}.APIError"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="2022-06-30">
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M108">
   <owner>fhorschig@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2380,7 +2380,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend{Function}.ErrorCode"
-    enum="PasswordStoreAndroidBackendError" expires_after="2022-06-30">
+    enum="PasswordStoreAndroidBackendError" expires_after="M108">
   <owner>fhorschig@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2450,7 +2450,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreProxyBackend.{ModifyingFunction}.{Metric}.{Measurement}"
-    units="count" expires_after="2022-06-30">
+    units="count" expires_after="M108">
   <owner>fhorschig@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
