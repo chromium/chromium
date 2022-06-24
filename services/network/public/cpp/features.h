@@ -116,6 +116,9 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kOptimizeNetworkBuffers;
 
 COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FeatureParam<int> kOptimizeNetworkBuffersBytesReadLimit;
+
+COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCacheTransparency;
 
 COMPONENT_EXPORT(NETWORK_CPP)
