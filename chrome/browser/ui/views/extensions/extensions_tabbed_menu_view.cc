@@ -796,8 +796,9 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility(
   // setting is set to "grant all extensions", since site settings are not
   // granted yet. After finishing implementation of user permissions, check no
   // request access items is visible if `show_combobox` is true.
-  for (SiteAccessMenuItemView* item : GetVisibleMenuItemsOf(has_access_))
-    item->SetSiteAccessComboboxVisible(show_combobox);
+  for (views::View* item : has_access_.items->children()) {
+    GetAsSiteAccessMenuItem(item)->SetSiteAccessComboboxVisible(show_combobox);
+  }
 
   // Display a message when no extensions have or request access.
   if (!has_access_.container->GetVisible() &&
