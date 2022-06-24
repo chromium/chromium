@@ -296,12 +296,14 @@ double CSSToLengthConversionData::DynamicViewportHeight() const {
 }
 
 double CSSToLengthConversionData::ContainerWidth() const {
-  SetHasContainerRelativeUnits(style_);
+  if (style_)
+    SetHasContainerRelativeUnits(style_);
   return container_sizes_.Width().value_or(SmallViewportWidth());
 }
 
 double CSSToLengthConversionData::ContainerHeight() const {
-  SetHasContainerRelativeUnits(style_);
+  if (style_)
+    SetHasContainerRelativeUnits(style_);
   return container_sizes_.Height().value_or(SmallViewportHeight());
 }
 

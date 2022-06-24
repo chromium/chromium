@@ -111,4 +111,13 @@ TEST_F(CSSToLengthConversionDataTest, Unzoomed) {
   EXPECT_FLOAT_EQ(36.0f, Convert(data, "calc(1em + 1ex)"));
 }
 
+TEST_F(CSSToLengthConversionDataTest, StyleLessContainerUnitConversion) {
+  // No ComputedStyle associated.
+  CSSToLengthConversionData data;
+
+  // Don't crash:
+  Convert(data, "1cqw");
+  Convert(data, "1cqh");
+}
+
 }  // namespace blink
