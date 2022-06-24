@@ -280,6 +280,37 @@ URLPatternSet PermissionsData::GetUserBlockedHosts(int context_id) {
       .user_restrictions.blocked_hosts.Clone();
 }
 
+URLPatternSet PermissionsData::GetUserBlockedHosts() const {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    // Feature not enabled.
+    return {};
+  }
+
+  if (!context_id_) {
+    // Context ID is unset, so this extension isn't associated with a context.
+    // This happens a) in unit tests and b) in extensions embedders like app
+    // shell that don't set the context (and also don't support user host
+    // restrictions).
+    // TODO(https://crbug.com/1268198): It'd be nice to change this (even if
+    // app shell just sets a global context id) so that we can DCHECK it here.
+    // If we didn't have a context ID set in production Chromium, it'd be a bug
+    // and would result in the extension potentially having access to user-
+    // restricted sites.
+    return {};
+  }
+
+  if (location_ == mojom::ManifestLocation::kComponent ||
+      Manifest::IsPolicyLocation(location_)) {
+    // Extension is exempt from user settings.
+    return {};
+  }
+
+  base::AutoLock lock(GetContextPermissionsLock());
+  return GetContextPermissions(*context_id_)
+      .user_restrictions.blocked_hosts.Clone();
+}
+
 void PermissionsData::UpdateTabSpecificPermissions(
     int tab_id,
     const PermissionSet& permissions) const {

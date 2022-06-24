@@ -12,6 +12,7 @@
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -179,6 +180,75 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
     EXPECT_EQ(u"Title Of Awesomeness", GetActiveTab()->GetTitle());
   } else {
     EXPECT_EQ(kInjectedTitle, GetActiveTab()->GetTitle());
+  }
+}
+
+// Ensures user host restrictions are properly propagated to the network
+// service. Since fetch() permissions are controlled here, a cross-origin
+// fetch() is a suitable exercise.
+IN_PROC_BROWSER_TEST_P(
+    UserHostRestrictionsBrowserTest,
+    ExtensionsCannotRunOnUserRestrictedSites_NetworkService) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "version": "0.1",
+           "manifest_version": 3,
+           "background": {"service_worker": "background.js"},
+           "host_permissions": ["<all_urls>"]
+         })";
+
+  static constexpr char kBackground[] =
+      R"(// Attempts to execute a script on the given `tabId` passing either the
+         // result of the execution or the error encountered back as the script
+         // result.
+         async function tryFetchUrl(url) {
+           let result;
+           try {
+             let fetchResult = await fetch(url);
+             result = await fetchResult.text();
+           } catch (e) {
+             result = e.toString();
+           }
+           chrome.test.sendScriptResult(result);
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  auto try_fetch_url = [this, extension](const GURL& url) {
+    base::Value result = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), content::JsReplace("tryFetchUrl($1)", url),
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+    return result.is_string() ? result.GetString() : "<invalid result>";
+  };
+
+  const GURL allowed_url = embedded_test_server()->GetURL(
+      "allowed.example", "/extensions/fetch1.html");
+  const GURL restricted_url = embedded_test_server()->GetURL(
+      "restricted.example", "/extensions/fetch2.html");
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  {
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->AddUserRestrictedSite(
+        url::Origin::Create(restricted_url));
+    waiter.WaitForPermissionsChange();
+  }
+
+  EXPECT_EQ("fetch1 - cat\n", try_fetch_url(allowed_url));
+
+  // The extension should not be able to fetch the user-restricted site iff
+  // the feature is enabled.
+  if (GetParam()) {
+    EXPECT_EQ("TypeError: Failed to fetch", try_fetch_url(restricted_url));
+  } else {
+    EXPECT_EQ("fetch2 - dog\n", try_fetch_url(restricted_url));
   }
 }
 

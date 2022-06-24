@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_id.h"
@@ -165,6 +166,9 @@ class PermissionsManager : public KeyedService {
   // Returns if the site has been removed.
   bool RemoveRestrictedSiteAndUpdatePrefs(const url::Origin& origin);
 
+  // Notifies observers of a permissions change.
+  void NotifyObserversOfChange();
+
   base::ObserverList<Observer>::Unchecked observers_;
 
   // The associated browser context.
@@ -172,6 +176,8 @@ class PermissionsManager : public KeyedService {
 
   const raw_ptr<ExtensionPrefs> extension_prefs_;
   UserPermissionsSettings user_permissions_;
+
+  base::WeakPtrFactory<PermissionsManager> weak_factory_{this};
 };
 
 }  // namespace extensions

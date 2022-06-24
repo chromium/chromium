@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/network_permissions_updater.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/browser/renderer_startup_helper.h"
@@ -411,8 +412,12 @@ void PermissionsManager::OnUserPermissionsSettingsChanged() const {
       util::GetBrowserContextId(browser_context_),
       std::move(user_blocked_sites), std::move(user_allowed_sites));
 
-  for (auto& observer : observers_)
-    observer.UserPermissionsSettingsChanged(GetUserPermissionsSettings());
+  // Notify observers of a permissions change once the changes have taken
+  // effect in the network layer.
+  NetworkPermissionsUpdater::UpdateAllExtensions(
+      *browser_context_,
+      base::BindOnce(&PermissionsManager::NotifyObserversOfChange,
+                     weak_factory_.GetWeakPtr()));
 }
 
 bool PermissionsManager::RemovePermittedSiteAndUpdatePrefs(
@@ -431,6 +436,11 @@ bool PermissionsManager::RemoveRestrictedSiteAndUpdatePrefs(
     RemoveSiteFromPrefs(extension_prefs_, kRestrictedSites, origin);
 
   return removed_site;
+}
+
+void PermissionsManager::NotifyObserversOfChange() {
+  for (auto& observer : observers_)
+    observer.UserPermissionsSettingsChanged(GetUserPermissionsSettings());
 }
 
 }  // namespace extensions

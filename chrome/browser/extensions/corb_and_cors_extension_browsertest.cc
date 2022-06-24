@@ -56,10 +56,12 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -872,6 +874,61 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     VerifyFetchWasAllowedByCorb(histograms, false /* expecting_sniffing */);
     VerifyFetchWasBlockedByCors(console_observer);
+  }
+}
+
+class CorbAndCorsUserHostRestrictionsBrowserTest
+    : public CorbAndCorsExtensionBrowserTest {
+ public:
+  CorbAndCorsUserHostRestrictionsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionsMenuAccessControl);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CorbAndCorsUserHostRestrictionsBrowserTest,
+                       PolicyVsUserHostRestrictions) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(InstallExtensionWithPermissionToAllUrls());
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*.example.com");
+    pref.AddPolicyAllowedHost("*", "*://public.example.com");
+  }
+
+  GURL policy_allowed_resource =
+      embedded_test_server()->GetURL("public.example.com", "/nosniff.xml");
+  GURL policy_restricted_resource =
+      embedded_test_server()->GetURL("restricted.example.com", "/nosniff.xml");
+
+  // Now, add user settings that are in the inverse of the policy ones:
+  // Blocked on public.example.com, but allowed on restricted.example.com.
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  {
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->AddUserRestrictedSite(
+        url::Origin::Create(policy_allowed_resource));
+    waiter.WaitForPermissionsChange();
+  }
+  {
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->AddUserPermittedSite(
+        url::Origin::Create(policy_restricted_resource));
+    waiter.WaitForPermissionsChange();
+  }
+
+  {
+    std::string fetch_result = FetchViaBackgroundPage(policy_allowed_resource);
+    EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+  }
+  {
+    std::string fetch_result =
+        FetchViaBackgroundPage(policy_restricted_resource);
+    EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
   }
 }
 

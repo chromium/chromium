@@ -269,9 +269,17 @@ class PermissionsData {
   // Returns the list of hosts that the user has explicitly allowed or blocked
   // all extensions from running on. As with the policy host restrictions above,
   // accessing these should only be done for serialization and to update
-  // renderers; otherwise, rely on methods like `CanAccessPage()`.
+  // other services; otherwise, rely on methods like `CanAccessPage()`.
   static URLPatternSet GetUserAllowedHosts(int context_id);
   static URLPatternSet GetUserBlockedHosts(int context_id);
+
+  // Returns the list of user-restricted hosts that applies to the associated
+  // extension. This looks at the associated context ID and also at whether the
+  // user is allowed to apply settings to the extension (which is disallowed
+  // for e.g. policy-installed extensions). As above, accessing these should
+  // only be done for serialization and to update other services; otherwise,
+  // rely on methods like `CanAccessPage()`.
+  URLPatternSet GetUserBlockedHosts() const;
 
   // Returns list of hosts for *this* extension that enterprise policy has
   // explicitly blocked or allowed extensions to run on. If the extension uses
