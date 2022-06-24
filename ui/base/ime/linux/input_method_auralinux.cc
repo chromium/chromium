@@ -474,6 +474,13 @@ void InputMethodAuraLinux::OnSetPreeditRegion(
   if (!text_input_client)
     return;
   text_input_client->SetCompositionFromExistingText(range, spans);
+
+  std::u16string text;
+  if (text_input_client->GetTextFromRange(range, &text)) {
+    composition_changed_ |= composition_.text != text;
+    composition_.text = text;
+  }
+  last_commit_result_.reset();
 }
 
 // Overridden from InputMethodBase.

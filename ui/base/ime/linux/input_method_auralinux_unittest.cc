@@ -977,6 +977,62 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_PartialText) {
   test_result_->Verify();
 }
 
+TEST_F(InputMethodAuraLinuxTest, SetPreeditRegionSingleCharTest) {
+  std::unique_ptr<TextInputClientForTesting> client(
+      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
+  input_method_auralinux_->SetFocusedTextInputClient(client.get());
+  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+
+  client->surrounding_text = u"a";
+  client->text_range = gfx::Range(0, 1);
+  client->selection_range = gfx::Range(1, 1);
+
+  input_method_auralinux_->OnCaretBoundsChanged(client.get());
+  input_method_auralinux_->OnSetPreeditRegion(client->text_range,
+                                              std::vector<ImeTextSpan>());
+
+  test_result_->ExpectAction("surroundingtext:a");
+  test_result_->ExpectAction("selectionrangestart:1");
+  test_result_->ExpectAction("selectionrangeend:1");
+
+  input_method_auralinux_->OnCommit(u"a");
+
+  // Verifies single char commit under composition mode will call InsertText
+  // instead of InsertChar.
+  test_result_->ExpectAction("textinput:a");
+  test_result_->Verify();
+}
+
+TEST_F(InputMethodAuraLinuxTest, SetPreeditRegionCompositionEndTest) {
+  std::unique_ptr<TextInputClientForTesting> client(
+      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
+  input_method_auralinux_->SetFocusedTextInputClient(client.get());
+  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+
+  input_method_auralinux_->OnCommit(u"a");
+
+  test_result_->ExpectAction("keypress:97");
+
+  client->surrounding_text = u"a";
+  client->text_range = gfx::Range(0, 1);
+  client->selection_range = gfx::Range(1, 1);
+
+  input_method_auralinux_->OnCaretBoundsChanged(client.get());
+  input_method_auralinux_->OnSetPreeditRegion(client->text_range,
+                                              std::vector<ImeTextSpan>());
+
+  test_result_->ExpectAction("surroundingtext:a");
+  test_result_->ExpectAction("selectionrangestart:1");
+  test_result_->ExpectAction("selectionrangeend:1");
+
+  CompositionText comp;
+  comp.text = u"";
+  input_method_auralinux_->OnPreeditChanged(comp);
+
+  test_result_->ExpectAction("compositionend");
+  test_result_->Verify();
+}
+
 TEST_F(InputMethodAuraLinuxTest, GetVirtualKeyboardController) {
   EXPECT_EQ(input_method_auralinux_->GetVirtualKeyboardController(),
             context_->GetVirtualKeyboardController());
