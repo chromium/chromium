@@ -947,11 +947,10 @@ const base::Feature kLauncherDismissButtonsOnSortNudgeAndToast{
     "LauncherDismissButtonsOnSortNudgeAndToast",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When enabled, adds menu items to the launcher continue task context menu
-// and recent apps context menu that allow the user to hide the continue
-// section.
+// When enabled, adds UI to the launcher that allows the user to hide the
+// continue tasks and recent apps.
 const base::Feature kLauncherHideContinueSection{
-    "LauncherHideContinueSection", base::FEATURE_DISABLED_BY_DEFAULT};
+    "LauncherHideContinueSection", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Uses short intervals for launcher nudge for testing if enabled.
 const base::Feature kLauncherNudgeShortInterval{

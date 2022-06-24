@@ -470,14 +470,25 @@ void ContinueSectionView::OnDidChangeFocus(views::View* focused_before,
   // If a child of the privacy toast gained focus (e.g. the OK button) then
   // ensure the whole toast is visible.
   if (privacy_toast_ && privacy_toast_->Contains(focused_now)) {
-    privacy_toast_->ScrollViewToVisible();
+    if (features::IsLauncherHideContinueSectionEnabled()) {
+      // The parent view owns the continue label, which provides more context
+      // for the privacy notice. Ensure the label is visible.
+      parent()->ScrollViewToVisible();
+    } else {
+      privacy_toast_->ScrollViewToVisible();
+    }
     return;
   }
   // If a suggested task gained focus then ensure the continue label is visible
   // so the user knows what this section is.
   if (suggestions_container_->Contains(focused_now)) {
-    DCHECK(continue_label_);
-    continue_label_->ScrollViewToVisible();
+    if (features::IsLauncherHideContinueSectionEnabled()) {
+      // The parent view owns the continue label, so ensure label visibility.
+      parent()->ScrollViewToVisible();
+    } else {
+      DCHECK(continue_label_);
+      continue_label_->ScrollViewToVisible();
+    }
   }
 }
 
