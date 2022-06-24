@@ -477,7 +477,7 @@ void AppListBubbleAppsPage::UpdateForNewSortingOrder(
 
   // Abort the old reorder animation if any before closure update to avoid data
   // races on closures.
-  scrollable_apps_grid_view_->MaybeAbortReorderAnimation();
+  scrollable_apps_grid_view_->MaybeAbortWholeGridAnimation();
   DCHECK(!update_position_closure_);
   update_position_closure_ = std::move(update_position_closure);
   DCHECK(!reorder_animation_done_closure_);

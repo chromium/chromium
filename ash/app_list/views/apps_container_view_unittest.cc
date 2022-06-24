@@ -102,8 +102,8 @@ TEST_F(AppsContainerViewTest, HideContinueSectionPlaysAnimation) {
 
   // Animation status is updated.
   auto* apps_grid_view = helper->GetRootPagedAppsGridView();
-  EXPECT_EQ(apps_grid_view->reorder_animation_status_for_test(),
-            AppListReorderAnimationStatus::kHideContinueSection);
+  EXPECT_EQ(apps_grid_view->grid_animation_status_for_test(),
+            AppListGridAnimationStatus::kHideContinueSection);
 
   // Individial app items are animating their transforms.
   for (int i = 0; i < item_count; ++i) {
@@ -120,8 +120,8 @@ TEST_F(AppsContainerViewTest, HideContinueSectionPlaysAnimation) {
   LayerAnimationStoppedWaiter().Wait(last_item->layer());
 
   // Animation status is updated.
-  EXPECT_EQ(apps_grid_view->reorder_animation_status_for_test(),
-            AppListReorderAnimationStatus::kEmpty);
+  EXPECT_EQ(apps_grid_view->grid_animation_status_for_test(),
+            AppListGridAnimationStatus::kEmpty);
 
   // Layers have been removed for all items.
   for (int i = 0; i < item_count; ++i) {

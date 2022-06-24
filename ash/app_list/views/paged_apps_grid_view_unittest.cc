@@ -94,9 +94,9 @@ class PagedAppsGridViewTestBase : public AshTestBase {
 
   void OnReorderAnimationDone(base::OnceClosure closure,
                               bool aborted,
-                              AppListReorderAnimationStatus status) {
+                              AppListGridAnimationStatus status) {
     EXPECT_FALSE(aborted);
-    EXPECT_EQ(AppListReorderAnimationStatus::kFadeInAnimation, status);
+    EXPECT_EQ(AppListGridAnimationStatus::kReorderFadeIn, status);
     std::move(closure).Run();
   }
 

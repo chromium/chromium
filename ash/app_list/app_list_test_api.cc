@@ -766,21 +766,20 @@ void AppListTestApi::RegisterReorderAnimationDoneCallback(
                           weak_factory_.GetWeakPtr(), actual_state));
 }
 
-void AppListTestApi::OnReorderAnimationDone(
-    ReorderAnimationEndState* result,
-    bool abort,
-    ash::AppListReorderAnimationStatus status) {
-  DCHECK(status == ash::AppListReorderAnimationStatus::kFadeOutAnimation ||
-         status == ash::AppListReorderAnimationStatus::kFadeInAnimation);
+void AppListTestApi::OnReorderAnimationDone(ReorderAnimationEndState* result,
+                                            bool abort,
+                                            AppListGridAnimationStatus status) {
+  DCHECK(status == AppListGridAnimationStatus::kReorderFadeOut ||
+         status == AppListGridAnimationStatus::kReorderFadeIn);
 
   // Record the animation running result.
   if (abort) {
-    if (status == ash::AppListReorderAnimationStatus::kFadeOutAnimation)
+    if (status == AppListGridAnimationStatus::kReorderFadeOut)
       *result = ReorderAnimationEndState::kFadeOutAborted;
     else
       *result = ReorderAnimationEndState::kFadeInAborted;
   } else {
-    EXPECT_EQ(ash::AppListReorderAnimationStatus::kFadeInAnimation, status);
+    EXPECT_EQ(AppListGridAnimationStatus::kReorderFadeIn, status);
     *result = ReorderAnimationEndState::kCompleted;
 
     // Verify that the toast container under the clamshell mode does not have
@@ -805,8 +804,8 @@ void AppListTestApi::WaitForReorderAnimationAndVerifyItemVisibility() {
 void AppListTestApi::WaitForFadeOutAnimation() {
   ash::AppsGridView* apps_grid_view = GetTopLevelAppsGridView();
 
-  if (apps_grid_view->reorder_animation_status_for_test() !=
-      ash::AppListReorderAnimationStatus::kFadeOutAnimation) {
+  if (apps_grid_view->grid_animation_status_for_test() !=
+      AppListGridAnimationStatus::kReorderFadeOut) {
     // The apps grid is not under fade out animation so no op.
     return;
   }

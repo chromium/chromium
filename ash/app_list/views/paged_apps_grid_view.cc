@@ -274,7 +274,7 @@ void PagedAppsGridView::OnTabletModeChanged(bool started) {
   CancelContextMenusOnCurrentPage();
 
   // Abort the running reorder animation when the tablet mode updates.
-  MaybeAbortReorderAnimation();
+  MaybeAbortWholeGridAnimation();
 }
 
 void PagedAppsGridView::HandleScrollFromParentView(const gfx::Vector2d& offset,
@@ -294,7 +294,7 @@ void PagedAppsGridView::UpdateOpacity(bool restore_opacity,
     return;
 
   // Do not update opacity when reorder animation is running.
-  if (IsUnderReorderAnimation())
+  if (IsUnderWholeGridAnimation())
     return;
 
   // Return early if the opacity is locked.
