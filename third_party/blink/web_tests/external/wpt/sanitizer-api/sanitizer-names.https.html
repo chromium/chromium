@@ -103,14 +103,11 @@
       assert_equals(sanitize(elem, probe), probe);
     }, `Mixed-case element names #${index}: "${elem}"`);
     test(t => {
-      assert_equals(sanitize(elem.toLowerCase(), probe), probe);
+      assert_not_equals(sanitize(elem.toLowerCase(), probe), probe);
     }, `Mixed-case element names #${index}: "${elem.toLowerCase()}"`);
     test(t => {
-      assert_equals(sanitize(elem.toUpperCase(), probe), probe);
+      assert_not_equals(sanitize(elem.toUpperCase(), probe), probe);
     }, `Mixed-case element names #${index}: "${elem.toUpperCase()}"`);
-    test(t => {
-      assert_equals(sanitize(elem, probe.toLowerCase()), probe);
-    }, `Mixed-case element names #${index}: "${elem}" with lowercase probe.`);
     test(t => {
       const elems = [elem];
       assert_array_equals(

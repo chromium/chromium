@@ -65,7 +65,7 @@
                          "onclick": ["*"] },
       allowCustomElements: true,
     };
-    assert_deep_equals(configs[0],
+    assert_deep_equals(config_0_mixed,
                        new Sanitizer(config_0_mixed).getConfiguration());
   }, "SanitizerAPI getConfiguration() reflects creation config.");
 
