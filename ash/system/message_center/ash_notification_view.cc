@@ -100,7 +100,10 @@ constexpr int kTitleRowSpacing = 6;
 
 constexpr auto kHeaderRowExpandedPadding = gfx::Insets::TLBR(4, 0, 8, 0);
 constexpr auto kHeaderRowCollapsedPadding = gfx::Insets::TLBR(0, 0, 8, 0);
-constexpr auto kRightContentPadding = gfx::Insets::TLBR(12, 16, 0, 0);
+constexpr auto kRightContentCollapsedPadding = gfx::Insets::TLBR(12, 0, 0, 16);
+constexpr auto kRightContentExpandedPadding = gfx::Insets::TLBR(20, 0, 0, 16);
+constexpr auto kTimeStampInCollapsedStatePadding =
+    gfx::Insets::TLBR(0, 0, 0, 16);
 
 // Bullet character. The divider symbol between the title and the timestamp.
 constexpr char16_t kTitleRowDivider[] = u"\u2022";
@@ -113,6 +116,8 @@ constexpr int kTitleCharacterLimit =
     message_center::kNotificationWidth * message_center::kMaxTitleLines /
     message_center::kMinPixelsPerTitleCharacter;
 constexpr int kTitleLabelSize = 14;
+constexpr int kTitleLabelExpandedMaxLines = 2;
+constexpr int kTitleLabelCollapsedMaxLines = 1;
 constexpr int kTimestampInCollapsedViewSize = 12;
 constexpr int kMessageLabelSize = 13;
 // The size for `icon_view_`, which is the icon within right content (between
@@ -270,10 +275,15 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetDefault(views::kMarginsKey,
                    gfx::Insets::TLBR(0, 0, 0, kTitleRowSpacing));
+  timestamp_in_collapsed_view_->SetProperty(views::kMarginsKey,
+                                            kTimeStampInCollapsedStatePadding);
   title_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kPreferred));
+  title_view_->SetMultiLine(true);
+  title_view_->SetAllowCharacterBreak(true);
+  title_view_->SetMaxLines(kTitleLabelExpandedMaxLines);
 
   ConfigureLabelStyle(title_row_divider_, kTimestampInCollapsedViewSize,
                       /*is_color_primary=*/false);
@@ -395,7 +405,8 @@ AshNotificationView::AshNotificationView(
                                    views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kUnbounded))
                   .AddChild(CreateRightContentBuilder().SetProperty(
-                      views::kMarginsKey, kRightContentPadding))
+                      views::kCrossAxisAlignmentKey,
+                      views::LayoutAlignment::kStart))
                   .AddChild(
                       views::Builder<views::FlexLayoutView>()
                           .SetOrientation(views::LayoutOrientation::kVertical)
@@ -422,9 +433,8 @@ AshNotificationView::AshNotificationView(
                                   .SetCallback(base::BindRepeating(
                                       &AshNotificationView::ToggleExpand,
                                       base::Unretained(this)))
-                                  .SetProperty(
-                                      views::kCrossAxisAlignmentKey,
-                                      views::LayoutAlignment::kStart))));
+                                  .SetProperty(views::kCrossAxisAlignmentKey,
+                                               views::LayoutAlignment::kEnd))));
 
   // Main right view contains all the views besides control buttons, app icon,
   // grouped container and action buttons.
@@ -864,6 +874,9 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   if (title_row_) {
     title_row_->UpdateVisibility(is_grouped_child_view_ ||
                                  (IsExpandable() && !expanded));
+    title_row_->title_view()->SetMaxLines(
+        expanded ? kTitleLabelExpandedMaxLines : kTitleLabelCollapsedMaxLines);
+    title_row_->title_view()->SetMaximumWidth(GetExpandedTitleLabelWidth());
   }
 
   if (message_label()) {
@@ -878,6 +891,11 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   app_icon_view_->SetProperty(views::kMarginsKey,
                               use_expanded_padding ? kAppIconExpandedPadding
                                                    : kAppIconCollapsedPadding);
+
+  right_content()->SetProperty(
+      views::kMarginsKey, use_expanded_padding ? kRightContentExpandedPadding
+                                               : kRightContentCollapsedPadding);
+
   expand_button_->SetProperty(
       views::kMarginsKey, use_expanded_padding ? kExpandButtonExpandedPadding
                                                : kExpandButtonCollapsedPadding);
@@ -1350,6 +1368,16 @@ void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<message_center::NotificationBackgroundPainter>(
           top_radius_, bottom_radius_, background_color_)));
+}
+
+int AshNotificationView::GetExpandedTitleLabelWidth() {
+  int notification_width = shown_in_popup_ ? message_center::kNotificationWidth
+                                           : kNotificationInMessageCenterWidth;
+
+  return notification_width - kNotificationViewPadding.width() -
+         kAppIconViewSize - kMainRightViewChildPadding.width() -
+         kAppIconViewSize - kRightContentExpandedPadding.width() -
+         kMessageLabelInExpandedStatePadding.width();
 }
 
 int AshNotificationView::GetExpandedMessageLabelWidth() {
