@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.toolbar.adaptive.settings;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
 
+import android.os.Bundle;
 import android.util.Pair;
 
+import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -16,35 +18,35 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests for {@link AdaptiveToolbarPreferenceFragment}.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
 public class AdaptiveToolbarPreferenceFragmentTest {
     @Rule
-    public SettingsActivityTestRule<AdaptiveToolbarPreferenceFragment> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(AdaptiveToolbarPreferenceFragment.class);
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
-    private AdaptiveToolbarPreferenceFragment mSettings;
     private ChromeSwitchPreference mSwitchPreference;
     private RadioButtonGroupAdaptiveToolbarPreference mRadioPreference;
 
@@ -54,30 +56,30 @@ public class AdaptiveToolbarPreferenceFragmentTest {
         SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
                 new Pair<>(false, AdaptiveToolbarButtonVariant.NEW_TAB));
-        mSettingsActivityTestRule.startSettingsActivity();
-        mSettings = mSettingsActivityTestRule.getFragment();
-        mSwitchPreference = (ChromeSwitchPreference) mSettings.findPreference(
-                AdaptiveToolbarPreferenceFragment.PREF_TOOLBAR_SHORTCUT_SWITCH);
-        mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) mSettings.findPreference(
-                AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+
+        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
     }
 
     @After
     public void tearDownTest() throws Exception {
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(null);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SharedPreferencesManager.getInstance().removeKey(
-                    ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
-            SharedPreferencesManager.getInstance().removeKey(
-                    ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
-        });
+        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(null);
+        SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
+        SharedPreferencesManager.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
     }
 
     @Test
     @SmallTest
-    @Feature({"AdaptiveToolbar"})
     public void testSelectShortcuts() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
+        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+                        Bundle.EMPTY, org.chromium.chrome.R.style.Theme_Chromium_Settings);
+        scenario.onFragment(fragment -> {
+            mSwitchPreference = (ChromeSwitchPreference) fragment.findPreference(
+                    AdaptiveToolbarPreferenceFragment.PREF_TOOLBAR_SHORTCUT_SWITCH);
+            mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
+                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+
             Assert.assertFalse(SharedPreferencesManager.getInstance().contains(
                     ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED));
             Assert.assertTrue(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());

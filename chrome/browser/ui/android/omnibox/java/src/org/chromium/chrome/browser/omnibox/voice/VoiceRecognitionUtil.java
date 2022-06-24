@@ -10,6 +10,7 @@ import android.content.pm.ResolveInfo;
 import android.speech.RecognizerIntent;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.PackageManagerUtils;
@@ -30,6 +31,7 @@ import java.util.List;
  */
 public class VoiceRecognitionUtil {
     private static Boolean sHasRecognitionIntentHandler;
+    private static Boolean sIsVoiceSearchEnabledForTesting;
 
     /**
      * Returns whether voice search is enabled.
@@ -49,6 +51,10 @@ public class VoiceRecognitionUtil {
      */
     public static boolean isVoiceSearchEnabled(
             AndroidPermissionDelegate androidPermissionDelegate) {
+        if (sIsVoiceSearchEnabledForTesting != null) {
+            return sIsVoiceSearchEnabledForTesting.booleanValue();
+        }
+
         assert LibraryLoader.getInstance().isInitialized()
             : "Premature call to check VoiceSearch eligibility may not return reliable information";
 
@@ -95,6 +101,16 @@ public class VoiceRecognitionUtil {
             return prefService == null || prefService.getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
         }
         return true;
+    }
+
+    /**
+     * Set whether voice search is enabled. Should be reset back to null after the test has
+     * finished.
+     * @param isVoiceSearchEnabled
+     */
+    @VisibleForTesting
+    public static void setIsVoiceSearchEnabledForTesting(@Nullable Boolean isVoiceSearchEnabled) {
+        sIsVoiceSearchEnabledForTesting = isVoiceSearchEnabled;
     }
 
     /** Returns the PrefService for the active Profile, or null if no profile has been loaded. */

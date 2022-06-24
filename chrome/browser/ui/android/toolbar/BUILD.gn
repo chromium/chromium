@@ -277,6 +277,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarFeaturesTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarStatePredictorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/AdaptiveToolbarPreferenceFragmentTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/load_progress/LoadProgressMediatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonMediatorTest.java",
@@ -323,6 +324,7 @@ robolectric_library("junit") {
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_testing_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_library_java",
@@ -333,39 +335,4 @@ robolectric_library("junit") {
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
-}
-
-android_library("javatests") {
-  testonly = true
-  sources = [
-    "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/AdaptiveToolbarPreferenceFragmentTest.java",
-  ]
-
-  deps = [
-    ":java",
-    ":java_resources",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/preferences:java",
-    "//chrome/browser/settings:test_support_java",
-    "//chrome/browser/tab:java",
-    "//chrome/browser/ui/android/omnibox:java_resources",
-    "//chrome/browser/ui/android/toolbar:java",
-    "//chrome/test/android:chrome_java_integration_test_support",
-    "//components/browser_ui/settings/android:java",
-    "//components/browser_ui/styles/android:java",
-    "//components/browser_ui/widget/android:java",
-    "//content/public/android:content_java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/hamcrest:hamcrest_library_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_java",
-    "//ui/android:ui_java_test_support",
-    "//url:gurl_java",
-  ]
-
-  resources_package = "org.chromium.chrome.browser.toolbar"
 }
