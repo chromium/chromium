@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
@@ -58,8 +58,8 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
 
 }  // namespace
 
-@protocol
-    ContentSuggestionsMediatorDispatcher <BrowserCommands, SnackbarCommands>
+@protocol ContentSuggestionsMediatorDispatcher <BrowserCoordinatorCommands,
+                                                SnackbarCommands>
 @end
 
 // Testing Suite for ContentSuggestionsMediator

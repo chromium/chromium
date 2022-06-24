@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol BrowserCommands;
+@protocol BrowserCoordinatorCommands;
 @class ShareImageData;
 @class ShareToData;
 
@@ -16,16 +16,14 @@
 
 // Initializes the print activity with the given tab `data` and the `handler`.
 // Print preview will be presented on top of `baseViewController`.
-// TODO(crbug.com/906662): Use id<BrowserCoordinatorCommands> for handler.
 - (instancetype)initWithData:(ShareToData*)data
-                     handler:(id<BrowserCommands>)handler
+                     handler:(id<BrowserCoordinatorCommands>)handler
           baseViewController:(UIViewController*)baseViewController
     NS_DESIGNATED_INITIALIZER;
 // Initializes the print activity with the given `imageData` and the `handler`.
 // Print preview will be presented on top of `baseViewController`.
-// TODO(crbug.com/906662): Use id<BrowserCoordinatorCommands> for handler.
 - (instancetype)initWithImageData:(ShareImageData*)imageData
-                          handler:(id<BrowserCommands>)handler
+                          handler:(id<BrowserCoordinatorCommands>)handler
                baseViewController:(UIViewController*)baseViewController
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

@@ -36,7 +36,9 @@
 
 @interface ActivityServiceCoordinator ()
 
-@property(nonatomic, weak) id<BrowserCommands, FindInPageCommands> handler;
+@property(nonatomic, weak)
+    id<BrowserCommands, BrowserCoordinatorCommands, FindInPageCommands>
+        handler;
 
 @property(nonatomic, strong) ActivityServiceMediator* mediator;
 
@@ -63,7 +65,8 @@
 #pragma mark - Public methods
 
 - (void)start {
-  self.handler = static_cast<id<BrowserCommands, FindInPageCommands>>(
+  self.handler = static_cast<
+      id<BrowserCommands, BrowserCoordinatorCommands, FindInPageCommands>>(
       self.browser->GetCommandDispatcher());
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();

@@ -43,7 +43,9 @@
 
 @interface ActivityServiceMediator ()
 
-@property(nonatomic, weak) id<BrowserCommands, FindInPageCommands> handler;
+@property(nonatomic, weak)
+    id<BrowserCommands, BrowserCoordinatorCommands, FindInPageCommands>
+        handler;
 
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 
@@ -64,7 +66,9 @@
 
 #pragma mark - Public
 
-- (instancetype)initWithHandler:(id<BrowserCommands, FindInPageCommands>)handler
+- (instancetype)initWithHandler:(id<BrowserCommands,
+                                    BrowserCoordinatorCommands,
+                                    FindInPageCommands>)handler
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
                     prefService:(PrefService*)prefService

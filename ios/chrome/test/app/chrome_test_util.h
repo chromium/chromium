@@ -8,6 +8,7 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 
 @protocol ApplicationCommands;
 class Browser;
@@ -47,7 +48,8 @@ Browser* GetMainBrowser();
 UIViewController* GetActiveViewController();
 
 // Returns the dispatcher for the active Browser.
-id<ApplicationCommands, BrowserCommands> HandlerForActiveBrowser();
+id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands>
+HandlerForActiveBrowser();
 
 // Removes all presented infobars.
 void RemoveAllInfoBars();

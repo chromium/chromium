@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 
@@ -52,6 +53,7 @@ class WebNavigationBrowserAgent;
                 baseViewController:(UIViewController*)baseViewController
                         dispatcher:(id<ApplicationCommands,
                                        BrowserCommands,
+                                       BrowserCoordinatorCommands,
                                        FindInPageCommands>)dispatcher
                    navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
                     omniboxHandler:(id<OmniboxCommands>)omniboxHandler

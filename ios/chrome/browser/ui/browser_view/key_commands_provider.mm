@@ -25,6 +25,7 @@
                 baseViewController:(UIViewController*)baseViewController
                         dispatcher:(id<ApplicationCommands,
                                        BrowserCommands,
+                                       BrowserCoordinatorCommands,
                                        FindInPageCommands,
                                        OmniboxCommands>)dispatcher
                    navigationAgent:(WebNavigationBrowserAgent*)navigationAgent
@@ -32,7 +33,8 @@
                        editingText:(BOOL)editingText {
   __weak id<KeyCommandsPlumbing> weakConsumer = consumer;
   __weak UIViewController* weakBaseViewController = baseViewController;
-  __weak id<ApplicationCommands, BrowserCommands, FindInPageCommands>
+  __weak id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
+            FindInPageCommands>
       weakDispatcher = dispatcher;
   __weak id<OmniboxCommands> weakOmniboxHandler = omniboxHandler;
 

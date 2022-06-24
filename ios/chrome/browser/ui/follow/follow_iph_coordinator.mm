@@ -7,7 +7,7 @@
 #include "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 
@@ -20,8 +20,9 @@
 #pragma mark - FollowIPHPresenter
 
 - (void)presentFollowWhileBrowsingIPH {
-  id<BrowserCommands> browserCommandsHandler =
-      static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
+  id<BrowserCoordinatorCommands> browserCommandsHandler =
+      static_cast<id<BrowserCoordinatorCommands>>(
+          self.browser->GetCommandDispatcher());
   [browserCommandsHandler showFollowWhileBrowsingIPH];
   FeedMetricsRecorder* feedMetricsRecorder =
       DiscoverFeedServiceFactory::GetForBrowserState(

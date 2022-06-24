@@ -30,7 +30,7 @@ class PrefRegistrySyncable;
 
 @protocol ApplicationCommands;
 class Browser;
-@protocol BrowserCommands;
+@protocol BrowserCoordinatorCommands;
 @protocol ContentSuggestionsCollectionConsumer;
 @protocol DiscoverFeedDelegate;
 class GURL;
@@ -64,7 +64,7 @@ class WebStateList;
 
 // Dispatcher.
 @property(nonatomic, weak)
-    id<ApplicationCommands, BrowserCommands, SnackbarCommands>
+    id<ApplicationCommands, BrowserCoordinatorCommands, SnackbarCommands>
         dispatcher;
 
 // Command handler for the mediator.

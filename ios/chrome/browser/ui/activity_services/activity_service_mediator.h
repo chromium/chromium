@@ -16,6 +16,7 @@ class BookmarkModel;
 
 @protocol BookmarksCommands;
 @protocol BrowserCommands;
+@protocol BrowserCoordinatorCommands;
 @class ChromeActivityImageSource;
 @protocol ChromeActivityItemSource;
 @class ChromeActivityURLSource;
@@ -36,7 +37,9 @@ class WebNavigationBrowserAgent;
 // read settings and policies, and a `bookmarkModel` to retrieve bookmark
 // states.
 // `baseViewController` can be passed to activities which need to present VCs.
-- (instancetype)initWithHandler:(id<BrowserCommands, FindInPageCommands>)handler
+- (instancetype)initWithHandler:(id<BrowserCommands,
+                                    BrowserCoordinatorCommands,
+                                    FindInPageCommands>)handler
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
                     prefService:(PrefService*)prefService

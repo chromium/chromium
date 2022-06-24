@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -197,8 +197,9 @@
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.contentSuggestionsMediator.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands,
-                     SnackbarCommands>>(self.browser->GetCommandDispatcher());
+      static_cast<id<ApplicationCommands, BrowserCoordinatorCommands,
+                     OmniboxCommands, SnackbarCommands>>(
+          self.browser->GetCommandDispatcher());
   self.contentSuggestionsMediator.webStateList =
       self.browser->GetWebStateList();
   self.contentSuggestionsMediator.webState = self.webState;

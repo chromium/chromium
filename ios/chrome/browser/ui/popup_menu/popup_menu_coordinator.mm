@@ -345,10 +345,10 @@ enum class IOSOverflowMenuActionType {
     if (IsNewOverflowMenuEnabled()) {
       if (@available(iOS 15, *)) {
         self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
-        self.overflowMenuMediator.dispatcher =
-            static_cast<id<ApplicationCommands, BrowserCommands,
-                           FindInPageCommands, TextZoomCommands>>(
-                self.browser->GetCommandDispatcher());
+        self.overflowMenuMediator.dispatcher = static_cast<
+            id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
+               FindInPageCommands, TextZoomCommands>>(
+            self.browser->GetCommandDispatcher());
         self.overflowMenuMediator.webStateList =
             self.browser->GetWebStateList();
         self.overflowMenuMediator.navigationAgent =
@@ -467,10 +467,10 @@ enum class IOSOverflowMenuActionType {
 
   self.actionHandler = [[PopupMenuActionHandler alloc] init];
   self.actionHandler.baseViewController = self.baseViewController;
-  self.actionHandler.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCommands, FindInPageCommands,
-                     LoadQueryCommands, TextZoomCommands>>(
-          self.browser->GetCommandDispatcher());
+  self.actionHandler.dispatcher = static_cast<
+      id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
+         FindInPageCommands, LoadQueryCommands, TextZoomCommands>>(
+      self.browser->GetCommandDispatcher());
   self.actionHandler.delegate = self.mediator;
   self.actionHandler.navigationAgent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);
