@@ -477,8 +477,8 @@ float OmniboxFieldTrial::HQPExperimentalTopicalityThreshold() {
 }
 
 int OmniboxFieldTrial::MaxNumHQPUrlsIndexedAtStartup() {
-#if BUILDFLAG(IS_ANDROID)
-  // Limits on Android are chosen based on experiment results. See
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Limits on Android and iOS are chosen based on experiment results. See
   // crbug.com/715852#c18 and crbug.com/1141539#c31.
   constexpr int kDefaultOnLowEndDevices = 100;
   constexpr int kDefaultOnNonLowEndDevices = 400;
@@ -488,7 +488,7 @@ int OmniboxFieldTrial::MaxNumHQPUrlsIndexedAtStartup() {
   // This limit will only affect 0.01% of Windows users. crbug.com/750845.
   constexpr int kDefaultOnLowEndDevices = 20000;
   constexpr int kDefaultOnNonLowEndDevices = 20000;
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif
 
   if (base::SysInfo::IsLowEndDevice()) {
     return variations::GetVariationParamByFeatureAsInt(
