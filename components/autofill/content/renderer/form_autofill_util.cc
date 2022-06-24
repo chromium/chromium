@@ -1846,7 +1846,7 @@ bool IsWebElementFocusable(const blink::WebElement& element) {
   return element.IsFocusable();
 }
 
-bool IsWebElementVisible(blink::WebElement element) {
+bool IsWebElementVisible(const blink::WebElement& element) {
   auto HasMinSize = [](auto size) {
     constexpr int kMinPixelSize = 10;
     return size.width() >= kMinPixelSize && size.height() >= kMinPixelSize;

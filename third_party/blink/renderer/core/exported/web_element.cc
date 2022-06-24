@@ -196,13 +196,13 @@ gfx::Size WebElement::GetImageSize() {
   return gfx::Size(image->width(), image->height());
 }
 
-gfx::Size WebElement::GetClientSize() {
-  Element* element = Unwrap<Element>();
+gfx::Size WebElement::GetClientSize() const {
+  Element* element = const_cast<Element*>(ConstUnwrap<Element>());
   return gfx::Size(element->clientWidth(), element->clientHeight());
 }
 
-gfx::Size WebElement::GetScrollSize() {
-  Element* element = Unwrap<Element>();
+gfx::Size WebElement::GetScrollSize() const {
+  Element* element = const_cast<Element*>(ConstUnwrap<Element>());
   return gfx::Size(element->scrollWidth(), element->scrollHeight());
 }
 

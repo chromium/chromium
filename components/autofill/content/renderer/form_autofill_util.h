@@ -194,7 +194,7 @@ bool IsWebElementFocusable(const blink::WebElement& element);
 // Exposed for testing purposes.
 //
 // TODO(crbug.com/1335257): Can input fields or iframes actually overflow?
-bool IsWebElementVisible(blink::WebElement element);
+bool IsWebElementVisible(const blink::WebElement& element);
 
 // Returns the form's |name| attribute if non-empty; otherwise the form's |id|
 // attribute.
