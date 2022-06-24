@@ -66,6 +66,7 @@
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
@@ -1064,46 +1065,6 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
       tab, "window.domAutomationController.send(window.document.referrer);",
       &page_referrer));
   ASSERT_EQ(kEmptyReferrer, page_referrer);
-}
-
-// Verify that "Open link in [App Name]" opens a new App window.
-// TODO(crbug.com/1180790): Test is flaky on Linux and Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_OpenLinkInWebApp DISABLED_OpenLinkInWebApp
-#else
-#define MAYBE_OpenLinkInWebApp OpenLinkInWebApp
-#endif
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInWebApp) {
-  InstallTestWebApp(GURL(kAppUrl1));
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  size_t num_browsers = chrome::GetBrowserCount(browser()->profile());
-  int num_tabs = browser()->tab_strip_model()->count();
-  content::WebContents* initial_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  const GURL initial_url = initial_tab->GetLastCommittedURL();
-
-  const GURL start_url(kAppUrl1);
-  ui_test_utils::UrlLoadObserver url_observer(
-      start_url, content::NotificationService::AllSources());
-  content::ContextMenuParams params;
-  params.page_url = GURL("https://www.example.com/");
-  params.link_url = start_url;
-  TestRenderViewContextMenu menu(*initial_tab->GetPrimaryMainFrame(), params);
-  menu.Init();
-  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP,
-                      0 /* event_flags */);
-  url_observer.Wait();
-
-  EXPECT_EQ(num_tabs, browser()->tab_strip_model()->count());
-  EXPECT_EQ(++num_browsers, chrome::GetBrowserCount(browser()->profile()));
-  Browser* app_browser = chrome::FindLastActive();
-  EXPECT_NE(browser(), app_browser);
-  EXPECT_EQ(initial_url, initial_tab->GetLastCommittedURL());
-  EXPECT_EQ(start_url, app_browser->tab_strip_model()
-                           ->GetActiveWebContents()
-                           ->GetLastCommittedURL());
 }
 
 // Check filename on clicking "Save Link As" via a "real" context menu.

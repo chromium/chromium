@@ -2348,8 +2348,10 @@ if (!is_android) {
         "../browser/accessibility/live_caption_controller_browsertest.cc",
         "../browser/accessibility/live_caption_speech_recognition_host_browsertest.cc",
 
-        # This test is run as part of lacros_chrome_browsertests below.
+        # These tests also run on Lacros, as part of
+        # lacros_chrome_browsertests_run_in_series below.
         "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
+        "../browser/ui/web_applications/launch_web_app_browsertest.cc",
 
         # Test not valid on Lacros as WebApps is only enabled in the main
         # profile which can never be deleted.
@@ -4645,6 +4647,7 @@ if (is_chromeos_lacros) {
       "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
       "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
       "../browser/ui/web_applications/lacros_web_app_browsertest.cc",
+      "../browser/ui/web_applications/launch_web_app_browsertest.cc",
       "../browser/ui/web_applications/share_to_target_browsertest.cc",
       "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",
     ]

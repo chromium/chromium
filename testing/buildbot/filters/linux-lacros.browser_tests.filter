@@ -10,7 +10,6 @@
 -BrowserViewTest.GetAccessibleTabModalDialogTitle
 -BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
 -ContextMenuBrowserTest.OpenLinkInProfile
--ContextMenuBrowserTest.OpenLinkInWebApp
 -DeclarativeContentApiTest.RulesPersistence
 -ExternalProtocolDialogBrowserTest.TestFocus
 -FolderUploadConfirmationViewTest.InitiallyFocusesCancel
