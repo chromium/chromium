@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/callback_internal.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -94,9 +95,22 @@ class UnretainedWrapper {
   T* get() const { return ptr_; }
 
  private:
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  // When `MTECheckedPtr` is enabled as the backing implementation of
+  // `raw_ptr`, there are too many different types that immediately
+  // cause Chrome to crash. Some of these are inutterable as forward
+  // declarations in `raw_ptr.h` (necessary to mark it as not
+  // `IsSupportedType`) - in particular, nested classes
+  // (`Foo::UnsupportedFoo`) cannot be marked as unsupported.
+  //
+  // As a compromise, we decay the wrapper to use `T*` only (rather
+  // than `raw_ptr`) when `raw_ptr` is `MTECheckedPtr`.
+  using ImplType = T*;
+#else
   using ImplType = std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
                                       raw_ptr<T, DanglingUntriaged>,
                                       T*>;
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
   ImplType ptr_;
 };
 
@@ -115,9 +129,14 @@ class UnretainedRefWrapper {
   T& get() const { return *ptr_; }
 
  private:
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  // As above.
+  using ImplType = T*;
+#else
   using ImplType = std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
                                       raw_ptr<T, DanglingUntriaged>,
                                       T*>;
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
   ImplType const ptr_;
 };
 
