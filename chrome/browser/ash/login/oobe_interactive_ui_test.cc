@@ -165,6 +165,7 @@ void RunEulaScreenChecks() {
 }
 
 void WaitForGaiaSignInScreen(bool wait_for_arc_preloading) {
+  LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   test::OobeJS()
       .CreateVisibilityWaiter(true, {"gaia-signin", "signin-frame-dialog"})
@@ -1177,62 +1178,22 @@ class EphemeralUserOobeTest
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };
 
-// TODO(crbug.com/1004561) Disabled due to flake.
-IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, DISABLED_RegularEphemeralUser) {
-  WaitForGaiaSignInScreen(test_setup()->arc_state() != ArcState::kNotAvailable);
+IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, RegularEphemeralUser) {
+  WaitForGaiaSignInScreen(false);
   LogInAsRegularUser();
-
-  test::WaitForSyncConsentScreen();
-  RunSyncConsentScreenChecks();
-  test::ExitScreenSyncConsent();
-
-  if (test_setup()->is_quick_unlock_enabled()) {
-    test::WaitForFingerprintScreen();
-    RunFingerprintScreenChecks();
-    test::ExitFingerprintPinSetupScreen();
+  if (features::IsDarkLightModeEnabled() &&
+      features::IsOobeThemeSelectionEnabled()) {
+    HandleThemeSelectionScreen();
   }
-
-  if (test_setup()->is_tablet()) {
-    test::WaitForPinSetupScreen();
-    RunPinSetupScreenChecks();
-    test::ExitPinSetupScreen();
-  }
-
-  if (test_setup()->arc_state() != ArcState::kNotAvailable) {
-    HandleArcTermsOfServiceScreen();
-  }
-
-  if (test_setup()->arc_state() != ArcState::kNotAvailable) {
-    HandleRecommendAppsScreen();
-    HandleAppDownloadingScreen();
-  }
-
-  HandleAssistantOptInScreen();
-
-  if (test_setup()->is_tablet() &&
-      test_setup()->hide_shelf_controls_in_tablet_mode()) {
-    HandleGestureNavigationScreen();
-
-    if (features::IsDarkLightModeEnabled() &&
-        features::IsOobeThemeSelectionEnabled()) {
-      HandleThemeSelectionScreen();
-    }
-
-    HandleMarketingOptInScreen();
-  }
-
   WaitForActiveSession();
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     EphemeralUserOobeTest,
-    testing::Combine(
-        testing::Bool(),
-        testing::Bool(),
-        testing::Bool(),
-        testing::Bool(),
-        testing::Values(ArcState::kNotAvailable,
-                        ArcState::kAcceptTerms,
-                        ArcState::kAcceptTermsRecommendAppsNewLayout)));
+    testing::Combine(testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Values(ArcState::kNotAvailable)));
 }  //  namespace ash
