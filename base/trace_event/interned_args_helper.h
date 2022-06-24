@@ -25,12 +25,12 @@ namespace trace_event {
 struct BASE_EXPORT TraceSourceLocation {
   const char* function_name = nullptr;
   const char* file_name = nullptr;
-  size_t line_number = 0;
+  int line_number = 0;
 
   TraceSourceLocation() = default;
   TraceSourceLocation(const char* function_name,
                       const char* file_name,
-                      size_t line_number)
+                      int line_number)
       : function_name(function_name),
         file_name(file_name),
         line_number(line_number) {}
@@ -40,7 +40,7 @@ struct BASE_EXPORT TraceSourceLocation {
   explicit TraceSourceLocation(const base::Location& location)
       : function_name(location.function_name()),
         file_name(location.file_name()),
-        line_number(static_cast<size_t>(location.line_number())) {}
+        line_number(location.line_number()) {}
 
   bool operator==(const TraceSourceLocation& other) const {
     return file_name == other.file_name &&

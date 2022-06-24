@@ -25,15 +25,14 @@ struct RepeatedFieldParamTraits {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {
-    int size;
-    // ReadLength() checks for < 0 itself.
+    size_t size;
     if (!iter->ReadLength(&size))
       return false;
     // Avoid integer overflow / assertion failure in Reserve() function.
-    if (INT_MAX / sizeof(StorageType) <= static_cast<size_t>(size))
+    if (size > INT_MAX / sizeof(StorageType))
       return false;
     r->Reserve(size);
-    for (int i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++) {
       if (!ReadParam(m, iter, r->Add()))
         return false;
     }

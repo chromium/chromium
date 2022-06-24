@@ -72,7 +72,7 @@ namespace base {
 SpeedLimitObserverWin::SpeedLimitObserverWin(
     SpeedLimitUpdateCallback speed_limit_update_callback)
     : callback_(std::move(speed_limit_update_callback)),
-      num_cpus_(SysInfo::NumberOfProcessors()),
+      num_cpus_(static_cast<size_t>(SysInfo::NumberOfProcessors())),
       moving_average_(kMovingAverageWindowSize) {
   DVLOG(1) << __func__ << "(num_CPUs=" << num_cpus() << ")";
   timer_.Start(FROM_HERE, kSampleInterval, this,
@@ -147,7 +147,8 @@ float SpeedLimitObserverWin::EstimateThrottlingLevel() {
   std::vector<PROCESSOR_POWER_INFORMATION> info(num_cpus());
   if (!NT_SUCCESS(CallNtPowerInformation(
           ProcessorInformation, nullptr, 0, &info[0],
-          sizeof(PROCESSOR_POWER_INFORMATION) * num_cpus()))) {
+          static_cast<ULONG>(sizeof(PROCESSOR_POWER_INFORMATION) *
+                             num_cpus())))) {
     return throttling_level;
   }
 
@@ -162,9 +163,9 @@ float SpeedLimitObserverWin::EstimateThrottlingLevel() {
   // any type of throttling (thermal, power-limit, PMAX etc) starts.
   int num_non_idle_cpus = 0;
   float load_fraction_total = 0.0;
-  for (int i = 0; i < num_cpus(); ++i) {
+  for (size_t i = 0; i < num_cpus(); ++i) {
     // Amount of "non-idleness" is the distance from the max idle state.
-    const int idle_diff = info[i].MaxIdleState - info[i].CurrentIdleState;
+    const auto idle_diff = info[i].MaxIdleState - info[i].CurrentIdleState;
     // Derive a value between 0.0 and 1.0 where 1.0 corresponds to max load on
     // CPU#i.
     // Example: MaxIdleState=2, CurrentIdleState=1 => (2 - 1) / 2 = 0.5.

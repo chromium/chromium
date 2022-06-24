@@ -20,7 +20,7 @@ namespace {
 bool SkipString16(base::PickleIterator* iter) {
   DCHECK(iter);
 
-  int len;
+  size_t len;
   if (!iter->ReadLength(&len))
     return false;
   return iter->SkipBytes(len * sizeof(char16_t));

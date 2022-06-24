@@ -318,7 +318,7 @@ bool RestoreNavigationEntryFromPickle(
 
   if (state_version >= internal::AW_STATE_VERSION_DATA_URL) {
     const char* data;
-    int size;
+    size_t size;
     if (!iterator->ReadData(&data, &size))
       return false;
     if (size > 0) {

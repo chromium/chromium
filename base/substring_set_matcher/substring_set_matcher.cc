@@ -239,7 +239,8 @@ void SubstringSetMatcher::InsertPatternIntoAhoCorasickTree(
   // Create new nodes if necessary.
   while (i != text_end) {
     tree_.emplace_back();
-    current_node->SetEdge(static_cast<unsigned char>(*i), tree_.size() - 1);
+    current_node->SetEdge(static_cast<unsigned char>(*i),
+                          static_cast<NodeID>(tree_.size() - 1));
     current_node = &tree_.back();
     ++i;
   }
@@ -380,13 +381,13 @@ SubstringSetMatcher::NodeID
 SubstringSetMatcher::AhoCorasickNode::GetEdgeNoInline(uint32_t label) const {
   DCHECK(edges_capacity_ != 0);
 #ifdef __SSE2__
-  const __m128i lbl = _mm_set1_epi32(label);
+  const __m128i lbl = _mm_set1_epi32(static_cast<int>(label));
   const __m128i mask = _mm_set1_epi32(0x1ff);
   for (unsigned edge_idx = 0; edge_idx < num_edges(); edge_idx += 4) {
     const __m128i four = _mm_loadu_si128(
         reinterpret_cast<const __m128i*>(&edges_.edges[edge_idx]));
     const __m128i match = _mm_cmpeq_epi32(_mm_and_si128(four, mask), lbl);
-    const uint32_t match_mask = _mm_movemask_epi8(match);
+    const uint32_t match_mask = static_cast<uint32_t>(_mm_movemask_epi8(match));
     if (match_mask != 0) {
       if (match_mask & 0x1u) {
         return edges_.edges[edge_idx].node_id;
@@ -446,6 +447,9 @@ void SubstringSetMatcher::AhoCorasickNode::SetEdge(uint32_t label,
         edges_capacity_ == 0 ? kNumInlineEdges : edges_capacity_;
     unsigned new_capacity = old_capacity * 2;
     DCHECK_EQ(0u, new_capacity % 4);
+    // TODO(pkasting): The header claims this condition holds, but I don't
+    // understand why.  If you do, please comment.
+    DCHECK_LE(new_capacity, kEmptyLabel + 1);
     AhoCorasickEdge* new_edges = new AhoCorasickEdge[new_capacity];
     memcpy(new_edges, edges(), sizeof(AhoCorasickEdge) * old_capacity);
     for (unsigned edge_idx = old_capacity; edge_idx < new_capacity;
@@ -456,8 +460,9 @@ void SubstringSetMatcher::AhoCorasickNode::SetEdge(uint32_t label,
       delete[] edges_.edges;
     }
     edges_.edges = new_edges;
-    edges_capacity_ = new_capacity;
-    num_free_edges_ = new_capacity - old_capacity;
+    // These casts are safe due to the DCHECK above.
+    edges_capacity_ = static_cast<uint16_t>(new_capacity);
+    num_free_edges_ = static_cast<uint8_t>(new_capacity - old_capacity);
   }
 
   // Insert the new edge at the end of our heap storage.

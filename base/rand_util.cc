@@ -25,7 +25,7 @@ uint64_t RandUint64() {
 int RandInt(int min, int max) {
   DCHECK_LE(min, max);
 
-  uint64_t range = static_cast<uint64_t>(max) - min + 1;
+  uint64_t range = static_cast<uint64_t>(max) - static_cast<uint64_t>(min) + 1;
   // |range| is at most UINT_MAX + 1, so the result of RandGenerator(range)
   // is at most UINT_MAX.  Hence it's safe to cast it from uint64_t to int64_t.
   int result =

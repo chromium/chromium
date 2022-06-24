@@ -18,7 +18,7 @@
 namespace skia {
 
 bool ReadSkString(base::PickleIterator* iter, SkString* str) {
-  int reply_length;
+  size_t reply_length;
   const char* reply_text;
 
   if (!iter->ReadData(&reply_text, &reply_length))
@@ -33,7 +33,7 @@ bool ReadSkFontIdentity(base::PickleIterator* iter,
                         SkFontConfigInterface::FontIdentity* identity) {
   uint32_t reply_id;
   uint32_t reply_ttcIndex;
-  int reply_length;
+  size_t reply_length;
   const char* reply_text;
 
   if (!iter->ReadUInt32(&reply_id) ||

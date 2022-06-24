@@ -38,7 +38,7 @@ class BASE_EXPORT SpeedLimitObserverWin final {
   void OnTimerTick();
   float EstimateThrottlingLevel();
 
-  int num_cpus() const { return num_cpus_; }
+  size_t num_cpus() const { return num_cpus_; }
 
   const SpeedLimitUpdateCallback callback_;
 
@@ -48,7 +48,7 @@ class BASE_EXPORT SpeedLimitObserverWin final {
   // Number of logical cores in the existing physical processor.
   // Example: a processor with 6 cores which supports hyperthreading has 12
   // logical cores, hence `num_cpus_` equals 12 in this case.
-  const int num_cpus_;
+  const size_t num_cpus_;
   // A simple MA filter of size 10 is used to smooth out the speed-limit
   // value and to remove noise from short spikes in CPU load. The existing
   // sample rate is one sample per seconds but the existing choice is rather

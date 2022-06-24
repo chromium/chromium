@@ -36,7 +36,7 @@ FileSystemUsageCache::~FileSystemUsageCache() {
 const base::FilePath::CharType FileSystemUsageCache::kUsageFileName[] =
     FILE_PATH_LITERAL(".usage");
 const char FileSystemUsageCache::kUsageFileHeader[] = "FSU5";
-const int FileSystemUsageCache::kUsageFileHeaderSize = 4;
+const size_t FileSystemUsageCache::kUsageFileHeaderSize = 4;
 
 // Pickle::{Read,Write}Bool treat bool as int
 const int FileSystemUsageCache::kUsageFileSize =

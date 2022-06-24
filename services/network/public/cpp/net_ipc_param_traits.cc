@@ -163,10 +163,10 @@ bool ParamTraits<net::HttpRequestHeaders>::Read(const base::Pickle* m,
                                                 base::PickleIterator* iter,
                                                 param_type* r) {
   // Sanity check.
-  int size;
+  size_t size;
   if (!iter->ReadLength(&size))
     return false;
-  for (int i = 0; i < size; ++i) {
+  for (size_t i = 0; i < size; ++i) {
     net::HttpRequestHeaders::HeaderKeyValuePair pair;
     if (!ReadParam(m, iter, &pair) ||
         !net::HttpUtil::IsValidHeaderName(pair.key) ||

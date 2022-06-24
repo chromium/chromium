@@ -704,14 +704,16 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::AllocateImpl(
     // Don't leave a slice at the end of a page too small for anything. This
     // can result in an allocation up to two alignment-sizes greater than the
     // minimum required by requested-size + header + alignment.
-    if (page_free - size < sizeof(BlockHeader) + kAllocAlignment)
+    if (page_free - size < sizeof(BlockHeader) + kAllocAlignment) {
       size = page_free;
-
-    const uint32_t new_freeptr = freeptr + size;
-    if (new_freeptr > mem_size_) {
-      SetCorrupt();
-      return kReferenceNull;
+      if (freeptr + size > mem_size_) {
+        SetCorrupt();
+        return kReferenceNull;
+      }
     }
+
+    // This cast is safe because (freeptr + size) <= mem_size_.
+    const uint32_t new_freeptr = static_cast<uint32_t>(freeptr + size);
 
     // Save our work. Try again if another thread has completed an allocation
     // while we were processing. A "weak" exchange would be permissable here
