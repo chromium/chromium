@@ -2523,7 +2523,6 @@ const FeatureEntry::FeatureVariation kPasswordChangeFeatureVariations[] = {
          kPasswordChangeVariationWithForcedDialogAfterEverySuccessfulSubmission),
      nullptr}};
 
-#if BUILDFLAG(IS_ANDROID)
 // The variations of --password-change-in-settings.
 const FeatureEntry::FeatureParam
     kPasswordChangeInSettingsVariationWithForcedWarningForEverySite[] = {
@@ -2539,6 +2538,7 @@ const FeatureEntry::FeatureVariation
              kPasswordChangeInSettingsVariationWithForcedWarningForEverySite),
          nullptr}};
 
+#if BUILDFLAG(IS_ANDROID)
 // The variations of --touch-to-fill-password-submission.
 const FeatureEntry::FeatureParam
     kTouchToFillPasswordSubmissionWithConservativeHeuristics[] = {
@@ -6936,20 +6936,19 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(password_manager::features::kPasswordChange,
                                     kPasswordChangeFeatureVariations,
                                     "PasswordChangeFeatureVariations")},
-
-#if BUILDFLAG(IS_ANDROID)
     {"password-change-in-settings",
      flag_descriptions::kPasswordChangeInSettingsName,
-     flag_descriptions::kPasswordChangeInSettingsDescription, kOsAndroid,
+     flag_descriptions::kPasswordChangeInSettingsDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          password_manager::features::kPasswordChangeInSettings,
          kPasswordChangeInSettingsFeatureVariations,
          "PasswordChangeInSettingsFeatureVariations")},
+
+#if BUILDFLAG(IS_ANDROID)
     {"password-scripts-fetching",
      flag_descriptions::kPasswordScriptsFetchingName,
      flag_descriptions::kPasswordScriptsFetchingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordScriptsFetching)},
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
