@@ -116,6 +116,17 @@ CONTENT_EXPORT extern const base::Feature kIsolatedWebApps;
 CONTENT_EXPORT extern const base::Feature kIsolateOrigins;
 CONTENT_EXPORT extern const char kIsolateOriginsFieldTrialParamName[];
 CONTENT_EXPORT extern const base::Feature kIsolateSandboxedIframes;
+enum class IsolateSandboxedIframesGrouping {
+  // In this grouping, all isolated sandboxed iframes whose URLs share the same
+  // site in a given BrowsingInstance will share a process.
+  kPerSite,
+  // In this grouping, all isolated sandboxed iframes from a given
+  // BrowsingInstance whose URLs share the same origin will be isolated in an
+  // origin-keyed process.
+  kPerOrigin,
+};
+CONTENT_EXPORT extern const base::FeatureParam<IsolateSandboxedIframesGrouping>
+    kIsolateSandboxedIframesGroupingParam;
 CONTENT_EXPORT extern const base::Feature kLazyFrameLoading;
 CONTENT_EXPORT extern const base::Feature kLazyFrameVisibleLoadTimeMetrics;
 CONTENT_EXPORT extern const base::Feature kLazyImageLoading;

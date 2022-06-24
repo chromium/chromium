@@ -278,9 +278,10 @@ extern const char kIsolatedSandboxedIframesName[] =
 extern const char kIsolatedSandboxedIframesDescription[] =
     "When enabled, applies process isolation to iframes with the 'sandbox' "
     "attribute and without the 'allow-same-origin' permission set on that "
-    "attribute. The current isolation model is that all sandboxed iframes from "
-    "a given site will be placed into the same process, but alternative models "
-    "may be introduced in future experiments.";
+    "attribute. This also applies to documents with a similar CSP sandbox "
+    "header, even in the main frame. The affected sandboxed documents can be "
+    "grouped into processes based on their URL's site or origin. The default "
+    "grouping when enabled is per-site.";
 
 const char kAssistantConsentModalName[] = "AssistantConsentModal";
 const char kAssistantConsentModalDescription[] =

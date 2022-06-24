@@ -812,8 +812,18 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
     // we won't hit this for hosted app effective URLs (see
     // https://crbug.com/961386).
     if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled() &&
-        origin.GetURL().SchemeIsHTTPOrHTTPS())
+        origin.GetURL().SchemeIsHTTPOrHTTPS()) {
       return origin.GetURL();
+    }
+
+    // For isolated sandboxed iframes in per-origin mode we also just return the
+    // origin, as we should be using the full origin for the SiteInstance, but
+    // we don't need to track the origin like we do for OriginAgentCluster.
+    if (real_url_info.is_sandboxed &&
+        features::kIsolateSandboxedIframesGroupingParam.Get() ==
+            features::IsolateSandboxedIframesGrouping::kPerOrigin) {
+      return origin.GetURL();
+    }
 
     site_url = GetSiteForOrigin(origin);
 

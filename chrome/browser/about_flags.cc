@@ -3133,6 +3133,23 @@ const FeatureEntry::FeatureVariation kDmTokenDeletionVariation[] = {
      nullptr}};
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// Feature variations for kIsolateSandboxedIframes.
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(wjmaclean): Add FeatureParams for a per-frame grouping when support
+// for it is added.
+const FeatureEntry::FeatureParam kIsolateSandboxedIframesGroupingPerSite{
+    "grouping", "per-site"};
+const FeatureEntry::FeatureParam kIsolateSandboxedIframesGroupingPerOrigin{
+    "grouping", "per-origin"};
+const FeatureEntry::FeatureVariation
+    kIsolateSandboxedIframesGroupingVariations[] = {
+        {"with grouping by URL's site",
+         &kIsolateSandboxedIframesGroupingPerSite, 1, nullptr},
+        {"with grouping by URL's origin",
+         &kIsolateSandboxedIframesGroupingPerOrigin, 1, nullptr},
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -8499,7 +8516,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-isolated-sandboxed-iframes",
      flag_descriptions::kIsolatedSandboxedIframesName,
      flag_descriptions::kIsolatedSandboxedIframesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kIsolateSandboxedIframes)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kIsolateSandboxedIframes,
+         kIsolateSandboxedIframesGroupingVariations,
+         "IsolateSandboxedIframes" /* trial name */)},
 #endif
 
     {"download-bubble", flag_descriptions::kDownloadBubbleName,

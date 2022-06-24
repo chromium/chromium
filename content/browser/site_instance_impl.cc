@@ -1077,8 +1077,17 @@ bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
   if (src_origin.scheme() != dest_origin.scheme())
     return false;
 
-  if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled())
+  // Rely on an origin comparison if StrictOriginIsolation is enabled for all
+  // URLs, or if we're comparing against a sandboxed iframe in a per-origin
+  // mode. Due to an earlier check, at this point
+  // `real_src_url_info.is_sandboxed` and `real_dest_url_info.is_sandboxed` are
+  // known to have the same value.
+  if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled() ||
+      (real_src_url_info.is_sandboxed &&
+       features::kIsolateSandboxedIframesGroupingParam.Get() ==
+           features::IsolateSandboxedIframesGrouping::kPerOrigin)) {
     return src_origin == dest_origin;
+  }
 
   if (!net::registry_controlled_domains::SameDomainOrHost(
           src_origin, dest_origin,

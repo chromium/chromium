@@ -474,6 +474,15 @@ const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
 // sandboxes are isolated.
 const base::Feature kIsolateSandboxedIframes{"IsolateSandboxedIframes",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<IsolateSandboxedIframesGrouping>::Option
+    isolated_sandboxed_iframes_grouping_types[] = {
+        {IsolateSandboxedIframesGrouping::kPerSite, "per-site"},
+        {IsolateSandboxedIframesGrouping::kPerOrigin, "per-origin"}};
+const base::FeatureParam<IsolateSandboxedIframesGrouping>
+    kIsolateSandboxedIframesGroupingParam{
+        &kIsolateSandboxedIframes, "grouping",
+        IsolateSandboxedIframesGrouping::kPerSite,
+        &isolated_sandboxed_iframes_grouping_types};
 
 const base::Feature kLazyFrameLoading{"LazyFrameLoading",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
