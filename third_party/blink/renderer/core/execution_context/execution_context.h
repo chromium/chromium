@@ -405,8 +405,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // Reports first usage of `navigator.userAgent` and related getters
   void ReportNavigatorUserAgentAccess();
 
-  virtual ukm::UkmRecorder* UkmRecorder() { return nullptr; }
-  virtual ukm::SourceId UkmSourceID() const { return ukm::kInvalidSourceId; }
+  virtual ukm::UkmRecorder* UkmRecorder() = 0;
+  virtual ukm::SourceId UkmSourceID() const = 0;
 
   // Returns the token that uniquely identifies this ExecutionContext.
   virtual ExecutionContextToken GetExecutionContextToken() const = 0;
