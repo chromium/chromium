@@ -32,9 +32,15 @@ class ContainerQueryParserTest : public PageTestBase {
     STACK_ALLOCATED();
 
    public:
-    bool IsAllowed(const String& name) const override {
-      return name == "width";
+    bool IsAllowed(const String& feature) const override {
+      return feature == "width";
     }
+    bool IsAllowedWithoutValue(const String& feature,
+                               const ExecutionContext*) const override {
+      return true;
+    }
+    bool IsCaseSensitive(const String& feature) const override { return false; }
+    bool SupportsRange() const override { return true; }
   };
 
   // E.g. https://drafts.csswg.org/css-contain-3/#typedef-style-query

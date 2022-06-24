@@ -39,7 +39,19 @@ class CORE_EXPORT MediaQueryParser {
     STACK_ALLOCATED();
 
    public:
-    virtual bool IsAllowed(const String&) const = 0;
+    // Returns true if the feature name is allowed in this set.
+    virtual bool IsAllowed(const String& feature) const = 0;
+
+    // Returns true if the feature can be queried without a value.
+    virtual bool IsAllowedWithoutValue(const String& feature,
+                                       const ExecutionContext*) const = 0;
+
+    // Returns true is the feature name is case sensitive.
+    virtual bool IsCaseSensitive(const String& feature) const = 0;
+
+    // Whether the features support range syntax. This is typically false for
+    // style container queries.
+    virtual bool SupportsRange() const = 0;
   };
 
  private:

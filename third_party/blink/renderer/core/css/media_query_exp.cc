@@ -29,13 +29,15 @@
 
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 
+#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
+#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
@@ -227,61 +229,6 @@ static inline bool FeatureWithAspectRatio(const String& media_feature) {
          media_feature == kMaxDeviceAspectRatioMediaFeature;
 }
 
-static inline bool FeatureWithoutValue(
-    const String& media_feature,
-    const ExecutionContext* execution_context) {
-  // Media features that are prefixed by min/max cannot be used without a value.
-  return media_feature == media_feature_names::kMonochromeMediaFeature ||
-         media_feature == media_feature_names::kColorMediaFeature ||
-         media_feature == media_feature_names::kColorIndexMediaFeature ||
-         media_feature == media_feature_names::kGridMediaFeature ||
-         media_feature == media_feature_names::kHeightMediaFeature ||
-         media_feature == media_feature_names::kWidthMediaFeature ||
-         media_feature == media_feature_names::kBlockSizeMediaFeature ||
-         media_feature == media_feature_names::kInlineSizeMediaFeature ||
-         media_feature == media_feature_names::kDeviceHeightMediaFeature ||
-         media_feature == media_feature_names::kDeviceWidthMediaFeature ||
-         media_feature == media_feature_names::kOrientationMediaFeature ||
-         media_feature == media_feature_names::kAspectRatioMediaFeature ||
-         media_feature == media_feature_names::kDeviceAspectRatioMediaFeature ||
-         media_feature == media_feature_names::kHoverMediaFeature ||
-         media_feature == media_feature_names::kAnyHoverMediaFeature ||
-         media_feature == media_feature_names::kTransform3dMediaFeature ||
-         media_feature == media_feature_names::kPointerMediaFeature ||
-         media_feature == media_feature_names::kAnyPointerMediaFeature ||
-         media_feature == media_feature_names::kDevicePixelRatioMediaFeature ||
-         media_feature == media_feature_names::kResolutionMediaFeature ||
-         media_feature == media_feature_names::kDisplayModeMediaFeature ||
-         media_feature == media_feature_names::kScanMediaFeature ||
-         media_feature == media_feature_names::kColorGamutMediaFeature ||
-         media_feature == media_feature_names::kImmersiveMediaFeature ||
-         media_feature ==
-             media_feature_names::kPrefersColorSchemeMediaFeature ||
-         (media_feature == media_feature_names::kPrefersContrastMediaFeature &&
-          RuntimeEnabledFeatures::PrefersContrastEnabled()) ||
-         media_feature ==
-             media_feature_names::kPrefersReducedMotionMediaFeature ||
-         (media_feature ==
-              media_feature_names::kPrefersReducedDataMediaFeature &&
-          RuntimeEnabledFeatures::PrefersReducedDataEnabled()) ||
-         (media_feature == media_feature_names::kForcedColorsMediaFeature &&
-          RuntimeEnabledFeatures::ForcedColorsEnabled()) ||
-         (media_feature ==
-              media_feature_names::kNavigationControlsMediaFeature &&
-          RuntimeEnabledFeatures::MediaQueryNavigationControlsEnabled()) ||
-         (media_feature == media_feature_names::kOriginTrialTestMediaFeature &&
-          RuntimeEnabledFeatures::OriginTrialsSampleAPIEnabled(
-              execution_context)) ||
-         (media_feature ==
-              media_feature_names::kHorizontalViewportSegmentsMediaFeature &&
-          RuntimeEnabledFeatures::CSSFoldablesEnabled()) ||
-         (media_feature ==
-              media_feature_names::kVerticalViewportSegmentsMediaFeature &&
-          RuntimeEnabledFeatures::CSSFoldablesEnabled()) ||
-         (media_feature == media_feature_names::kDevicePostureMediaFeature &&
-          RuntimeEnabledFeatures::DevicePostureEnabled());
-}
-
 bool MediaQueryExp::IsViewportDependent() const {
   return media_feature_ == media_feature_names::kWidthMediaFeature ||
          media_feature_ == media_feature_names::kHeightMediaFeature ||
@@ -361,30 +308,38 @@ MediaQueryExp::MediaQueryExp(const String& media_feature,
 
 MediaQueryExp MediaQueryExp::Create(const String& media_feature,
                                     CSSParserTokenRange& range,
-                                    const CSSParserContext& context,
-                                    const ExecutionContext* execution_context) {
-  String lower_media_feature =
-      AttemptStaticStringCreation(media_feature.LowerASCII());
-  if (auto value = MediaQueryExpValue::Consume(lower_media_feature, range,
-                                               context, execution_context)) {
-    return MediaQueryExp(lower_media_feature, *value);
+                                    const CSSParserContext& context) {
+  String feature = AttemptStaticStringCreation(media_feature);
+  if (auto value = MediaQueryExpValue::Consume(feature, range, context)) {
+    return MediaQueryExp(feature, *value);
   }
   return Invalid();
 }
 
 absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
-    const String& lower_media_feature,
+    const String& media_feature,
     CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const ExecutionContext* execution_context) {
-  DCHECK_EQ(lower_media_feature, lower_media_feature.LowerASCII());
-
+    const CSSParserContext& context) {
   CSSParserContext::ParserModeOverridingScope scope(context, kHTMLStandardMode);
+
+  if (CSSVariableParser::IsValidVariableName(media_feature)) {
+    if (const CSSValue* value =
+            CSSVariableParser::ParseDeclarationValue({range}, false, context)) {
+      while (!range.AtEnd())
+        range.Consume();
+      return MediaQueryExpValue(*value);
+    }
+    return absl::nullopt;
+  }
+
+  DCHECK_EQ(media_feature, media_feature.LowerASCII())
+      << "Under the assumption that custom properties in style() container "
+         "queries are currently the only case sensitive features";
 
   CSSPrimitiveValue* value =
       css_parsing_utils::ConsumeInteger(range, context, 0);
-  if (!value && !FeatureExpectingPositiveInteger(lower_media_feature) &&
-      !FeatureWithAspectRatio(lower_media_feature)) {
+  if (!value && !FeatureExpectingPositiveInteger(media_feature) &&
+      !FeatureWithAspectRatio(media_feature)) {
     value = css_parsing_utils::ConsumeNumber(
         range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
   }
@@ -398,20 +353,16 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
   if (!value) {
     if (CSSIdentifierValue* ident = css_parsing_utils::ConsumeIdent(range)) {
       CSSValueID ident_id = ident->GetValueID();
-      if (!FeatureWithValidIdent(lower_media_feature, ident_id))
+      if (!FeatureWithValidIdent(media_feature, ident_id))
         return absl::nullopt;
       return MediaQueryExpValue(ident_id);
-    }
-    if (FeatureWithoutValue(lower_media_feature, execution_context)) {
-      // Valid, creates a MediaQueryExp with an 'invalid' MediaQueryExpValue
-      return MediaQueryExpValue();
     }
     return absl::nullopt;
   }
 
   // Now we have |value| as a number, length or resolution
   // Create value for media query expression that must have 1 or more values.
-  if (FeatureWithAspectRatio(lower_media_feature)) {
+  if (FeatureWithAspectRatio(media_feature)) {
     if (!value->IsInteger() || value->GetDoubleValue() == 0)
       return absl::nullopt;
     if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range))
@@ -425,7 +376,7 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
                               ClampTo<unsigned>(denominator->GetDoubleValue()));
   }
 
-  if (FeatureWithValidDensity(lower_media_feature, value)) {
+  if (FeatureWithValidDensity(media_feature, value)) {
     // TODO(crbug.com/983613): Support resolution in math functions.
     DCHECK(value->IsNumericLiteralValue());
     const auto* numeric_literal = To<CSSNumericLiteralValue>(value);
@@ -433,14 +384,14 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
                               numeric_literal->GetType());
   }
 
-  if (FeatureWithPositiveInteger(lower_media_feature, value) ||
-      FeatureWithPositiveNumber(lower_media_feature, value) ||
-      FeatureWithZeroOrOne(lower_media_feature, value)) {
+  if (FeatureWithPositiveInteger(media_feature, value) ||
+      FeatureWithPositiveNumber(media_feature, value) ||
+      FeatureWithZeroOrOne(media_feature, value)) {
     return MediaQueryExpValue(value->GetDoubleValue(),
                               CSSPrimitiveValue::UnitType::kNumber);
   }
 
-  if (FeatureWithValidPositiveLength(lower_media_feature, value)) {
+  if (FeatureWithValidPositiveLength(media_feature, value)) {
     if (value->IsNumber()) {
       return MediaQueryExpValue(value->GetDoubleValue(),
                                 CSSPrimitiveValue::UnitType::kNumber);
@@ -499,13 +450,11 @@ bool MediaQueryExp::operator==(const MediaQueryExp& other) const {
 }
 
 String MediaQueryExp::Serialize() const {
-  String name = media_feature_.LowerASCII();
-
   StringBuilder result;
   // <mf-boolean> e.g. (color)
   // <mf-plain>  e.g. (width: 100px)
   if (!bounds_.IsRange()) {
-    result.Append(name);
+    result.Append(media_feature_);
     if (bounds_.right.IsValid()) {
       result.Append(": ");
       result.Append(bounds_.right.value.CssText());
@@ -517,7 +466,7 @@ String MediaQueryExp::Serialize() const {
       result.Append(MediaQueryOperatorToString(bounds_.left.op));
       result.Append(" ");
     }
-    result.Append(name);
+    result.Append(media_feature_);
     if (bounds_.right.IsValid()) {
       result.Append(" ");
       result.Append(MediaQueryOperatorToString(bounds_.right.op));

@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
+#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -553,7 +554,8 @@ static bool ComputeLength(const MediaQueryExpValue& value,
                           const MediaValues& media_values,
                           double& result) {
   if (value.IsCSSValue()) {
-    result = value.GetCSSValue().ComputeLength<double>(media_values);
+    result = To<CSSPrimitiveValue>(value.GetCSSValue())
+                 .ComputeLength<double>(media_values);
     return true;
   }
 
@@ -1312,6 +1314,9 @@ KleeneValue MediaQueryEvaluator::EvalFeature(
   if (!media_values_->BlockSize().has_value() && feature.IsBlockSizeDependent())
     return KleeneValue::kUnknown;
 
+  if (CSSVariableParser::IsValidVariableName(feature.Name()))
+    return EvalStyleFeature(feature, result_flags);
+
   DCHECK(g_function_map);
 
   // Call the media feature evaluation function. Assume no prefix and let
@@ -1345,6 +1350,26 @@ KleeneValue MediaQueryEvaluator::EvalFeature(
   }
 
   return result ? KleeneValue::kTrue : KleeneValue::kFalse;
+}
+
+KleeneValue MediaQueryEvaluator::EvalStyleFeature(
+    const MediaQueryFeatureExpNode& feature,
+    MediaQueryResultFlags* result_flags) const {
+  if (!media_values_ || !media_values_->HasValues()) {
+    NOTREACHED()
+        << "media_values has to be initialized for style() container queries";
+    return KleeneValue::kFalse;
+  }
+
+  const MediaQueryExpBounds& bounds = feature.Bounds();
+
+  // Style features always have the form of "property(feature): value".
+  DCHECK(!bounds.IsRange());
+  DCHECK(bounds.right.op == MediaQueryOperator::kNone);
+  DCHECK(bounds.right.IsValid());
+
+  // TODO(crbug.com/1302630): Implement computed style comparison.
+  return KleeneValue::kFalse;
 }
 
 }  // namespace blink

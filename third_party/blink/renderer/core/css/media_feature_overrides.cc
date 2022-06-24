@@ -89,7 +89,7 @@ void MediaFeatureOverrides::SetOverride(const AtomicString& feature,
   // Document to get the ExecutionContext so the extra parameter should be
   // removed.
   MediaQueryExpBounds bounds =
-      MediaQueryExp::Create(feature, range, *fake_context, nullptr).Bounds();
+      MediaQueryExp::Create(feature, range, *fake_context).Bounds();
   DCHECK(!bounds.left.IsValid());
   MediaQueryExpValue value = bounds.right.value;
 

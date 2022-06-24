@@ -172,4 +172,16 @@
   test_container_selector_invalid('And');
   test_container_selector_invalid('oR');
   test_container_selector_invalid('nOt');
+
+  test_query_known('style(--my-prop: foo)');
+  test_query_known('style(--my-prop: foo - bar ())');
+  test_query_known('style(not ((--foo: calc(10px + 2em)) and ((--foo: url(x)))))');
+  test_query_known('style((--foo: bar) or (--bar: 10px))');
+  test_query_known('style(--foo: bar !important)');
+  test_query_known('style(--my-prop:)');
+  test_query_known('style(--my-prop: )');
+
+  test_query_unknown('style(--foo: bar;)');
+  test_query_unknown('style(--foo)');
+  test_query_unknown('style(style(--foo: bar))');
 </script>
