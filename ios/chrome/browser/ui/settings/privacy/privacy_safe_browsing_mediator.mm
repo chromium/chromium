@@ -209,6 +209,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
         [[UIColor colorNamed:kTextSecondaryColor] colorWithAlphaComponent:0.4f];
     infoButtonItem.accessibilityHint = l10n_util::GetNSString(
         IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+  } else {
+    infoButtonItem.accessibilityActivationPointOnButton = NO;
+    infoButtonItem.accessibilityHint = l10n_util::GetNSString(
+        IDS_IOS_TABLE_VIEW_INFO_BUTTON_ITEM_ACCESSIBILITY_TAP);
   }
   UIImageConfiguration* configuration = [UIImageSymbolConfiguration
       configurationWithPointSize:kSymbolImagePointSize
@@ -345,8 +349,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - TableViewInfoButtonItemDelegate
 
-- (void)handleTapOutsideInfoButtonForItem:(TableViewItem*)item {
-  [self didSelectItem:item];
+- (void)handleTappedInfoButtonForItem:(TableViewItem*)item {
+  [self didTapInfoButton:nil onItem:item];
 }
 
 #pragma mark - BooleanObserver

@@ -9,8 +9,8 @@
 
 @protocol TableViewInfoButtonItemDelegate <NSObject>
 
-// Handles the cell tap outside the InfoButton.
-- (void)handleTapOutsideInfoButtonForItem:(TableViewItem*)item;
+// Handles the info button tap inside the cell.
+- (void)handleTappedInfoButtonForItem:(TableViewItem*)item;
 
 @end
 
