@@ -143,6 +143,7 @@ crbug.com/1282821 [ win10 intel ] ContextLost_WebGPUBlockedAfterJSNavigation [ R
 # Flaking on Mac / Linux
 crbug.com/1284424 [ mac ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
 crbug.com/1284424 [ linux ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
+crbug.com/1338955 [ mac debug intel-0x3e9b passthrough ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
 
 # Flaking on Nexus 5X
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
