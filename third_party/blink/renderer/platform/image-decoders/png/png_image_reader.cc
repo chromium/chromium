@@ -96,6 +96,11 @@ PNGImageReader::PNGImageReader(PNGImageDecoder* decoder,
       ignore_animation_(false) {
   png_ = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, pngFailed,
                                 nullptr);
+  // Configure the PNG encoder to always keep the cICP chunk if present.
+  // TODO(veluca): when libpng starts supporting cICP chunks explicitly, remove
+  // this code.
+  png_set_keep_unknown_chunks(png_, PNG_HANDLE_CHUNK_ALWAYS,
+                              reinterpret_cast<const png_byte*>("cICP"), 1);
   info_ = png_create_info_struct(png_);
   png_set_progressive_read_fn(png_, decoder_, nullptr, pngRowAvailable,
                               pngFrameComplete);
@@ -632,7 +637,8 @@ bool PNGImageReader::ParseSize(const FastSharedBufferReader& reader) {
       ignore_animation_ = true;
     } else {
       auto is_necessary_ancillary = [](const png_byte* chunk) {
-        for (const char* tag : {"tRNS", "cHRM", "iCCP", "sRGB", "gAMA"}) {
+        for (const char* tag :
+             {"tRNS", "cHRM", "iCCP", "sRGB", "gAMA", "cICP"}) {
           if (IsChunk(chunk, tag))
             return true;
         }

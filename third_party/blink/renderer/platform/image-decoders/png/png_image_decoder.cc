@@ -41,6 +41,8 @@
 #include <memory>
 
 #include "base/numerics/checked_math.h"
+#include "media/base/video_color_space.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
 
 #if (defined(__ARM_NEON__) || defined(__ARM_NEON))
@@ -158,8 +160,73 @@ void PNGImageDecoder::InitializeNewFrame(wtf_size_t index) {
   buffer.SetRequiredPreviousFrameIndex(previous_frame_index);
 }
 
-inline std::unique_ptr<ColorProfile> ReadColorProfile(png_structp png,
-                                                      png_infop info) {
+// Returns nullptr if the cICP chunk is invalid, or if it describes an
+// unsupported color profile.
+// See https://w3c.github.io/PNG-spec/#11cICP for the definition of this chunk.
+static std::unique_ptr<ColorProfile> ParseCicpChunk(
+    const png_unknown_chunk& chunk) {
+  // First, validate the cICP chunk.
+  // cICP must be 4 bytes.
+  if (chunk.size != 4) {
+    return nullptr;
+  }
+
+  // Memory layout: ptmf, with p representing the colour primaries, t
+  // representing the transfer characteristics, m the matrix coefficients, and f
+  // whether the data is full or limited range.
+  uint8_t primaries = chunk.data[0];
+  uint8_t trc = chunk.data[1];
+  uint8_t matrix_coefficients = chunk.data[2];
+  uint8_t range_u8 = chunk.data[3];
+
+  // Per PNG spec, matrix_coefficients must be 0, i.e. RGB (YUV is explicitly
+  // disallowed).
+  if (matrix_coefficients) {
+    return nullptr;
+  }
+  // range must be 0 or 1.
+  if (range_u8 != 0 && range_u8 != 1) {
+    return nullptr;
+  }
+  const auto range = range_u8 == 1 ? gfx::ColorSpace::RangeID::FULL
+                                   : gfx::ColorSpace::RangeID::LIMITED;
+  if (range == gfx::ColorSpace::RangeID::LIMITED) {
+    // TODO(crbug/1339019): Implement this if needed.
+    DLOG(WARNING) << "Limited range RGB is not fully supported";
+  }
+  media::VideoColorSpace color_space(primaries, trc, 0, range);
+
+  // If not valid, do not return anything.
+  if (!color_space.IsSpecified()) {
+    return nullptr;
+  }
+
+  sk_sp<SkColorSpace> sk_color_space =
+      color_space.ToGfxColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
+  skcms_ICCProfile profile;
+  sk_color_space->toProfile(&profile);
+
+  return std::make_unique<ColorProfile>(profile);
+}
+
+static inline std::unique_ptr<ColorProfile> ReadColorProfile(png_structp png,
+                                                             png_infop info) {
+  png_unknown_chunkp unknown_chunks;
+  size_t num_unknown_chunks =
+      png_get_unknown_chunks(png, info, &unknown_chunks);
+  for (size_t i = 0; i < num_unknown_chunks; i++) {
+    const auto& chunk = unknown_chunks[i];
+    if (strcmp(reinterpret_cast<const char*>(chunk.name), "cICP") == 0) {
+      // We found a cICP chunk, which takes priority over other chunks.
+      std::unique_ptr<ColorProfile> cicp_color_profile = ParseCicpChunk(chunk);
+      // Ignore cICP if it is invalid or if the color profile it describes is
+      // not supported.
+      if (cicp_color_profile) {
+        return cicp_color_profile;
+      }
+    }
+  }
+
   if (png_get_valid(png, info, PNG_INFO_sRGB)) {
     return std::make_unique<ColorProfile>(*skcms_sRGB_profile());
   }
@@ -651,7 +718,7 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
 #if (defined(__ARM_NEON__) || defined(__ARM_NEON))
           SetRGBAPremultiplyRowNeon(src_ptr, width, dst_row, &alpha_mask);
 #else
-          for (auto *dst_pixel = dst_row; dst_pixel < dst_row + width;
+          for (auto* dst_pixel = dst_row; dst_pixel < dst_row + width;
                dst_pixel++, src_ptr += 4) {
             ImageFrame::SetRGBAPremultiply(dst_pixel, src_ptr[0], src_ptr[1],
                                            src_ptr[2], src_ptr[3]);
@@ -662,7 +729,7 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
 #if (defined(__ARM_NEON__) || defined(__ARM_NEON))
           SetRGBARawRowNeon(src_ptr, width, dst_row, &alpha_mask);
 #else
-          for (auto *dst_pixel = dst_row; dst_pixel < dst_row + width;
+          for (auto* dst_pixel = dst_row; dst_pixel < dst_row + width;
                dst_pixel++, src_ptr += 4) {
             ImageFrame::SetRGBARaw(dst_pixel, src_ptr[0], src_ptr[1],
                                    src_ptr[2], src_ptr[3]);
@@ -676,14 +743,14 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
         // can blend the pixel of this frame, stored in |src_ptr|, over the
         // previous pixel stored in |dst_pixel|.
         if (buffer.PremultiplyAlpha()) {
-          for (auto *dst_pixel = dst_row; dst_pixel < dst_row + width;
+          for (auto* dst_pixel = dst_row; dst_pixel < dst_row + width;
                dst_pixel++, src_ptr += 4) {
             ImageFrame::BlendRGBAPremultiplied(
                 dst_pixel, src_ptr[0], src_ptr[1], src_ptr[2], src_ptr[3]);
             alpha_mask &= src_ptr[3];
           }
         } else {
-          for (auto *dst_pixel = dst_row; dst_pixel < dst_row + width;
+          for (auto* dst_pixel = dst_row; dst_pixel < dst_row + width;
                dst_pixel++, src_ptr += 4) {
             ImageFrame::BlendRGBARaw(dst_pixel, src_ptr[0], src_ptr[1],
                                      src_ptr[2], src_ptr[3]);
@@ -699,7 +766,7 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
 #if (defined(__ARM_NEON__) || defined(__ARM_NEON))
       SetRGBARawRowNoAlphaNeon(src_ptr, width, dst_row);
 #else
-      for (auto *dst_pixel = dst_row; dst_pixel < dst_row + width;
+      for (auto* dst_pixel = dst_row; dst_pixel < dst_row + width;
            src_ptr += 3, ++dst_pixel) {
         ImageFrame::SetRGBARaw(dst_pixel, src_ptr[0], src_ptr[1], src_ptr[2],
                                255);
