@@ -578,7 +578,7 @@ ci.thin_tester(
     ),
     # We have limited tablet capacity and thus limited ability to run
     # tests in parallel, hence the high timeout.
-    execution_timeout = 12 * time.hour,
+    execution_timeout = 14 * time.hour,
     triggered_by = ["ci/Android arm Builder (dbg)"],
 )
 
