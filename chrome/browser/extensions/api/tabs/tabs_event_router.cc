@@ -525,7 +525,7 @@ void TabsEventRouter::TabCreatedAt(WebContents* contents,
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   auto event = std::make_unique<Event>(events::TABS_ON_CREATED,
                                        api::tabs::OnCreated::kEventName,
-                                       std::vector<base::Value>(), profile);
+                                       base::Value::List(), profile);
   event->user_gesture = EventRouter::USER_GESTURE_NOT_ENABLED;
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchTabCreatedEvent, contents, active);
@@ -591,7 +591,7 @@ void TabsEventRouter::DispatchTabUpdatedEvent(
       events::TABS_ON_UPDATED, api::tabs::OnUpdated::kEventName,
       // The event arguments depend on the extension's permission. They are set
       // in WillDispatchTabUpdatedEvent().
-      std::vector<base::Value>(), profile);
+      base::Value::List(), profile);
   event->user_gesture = EventRouter::USER_GESTURE_NOT_ENABLED;
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchTabUpdatedEvent, contents,

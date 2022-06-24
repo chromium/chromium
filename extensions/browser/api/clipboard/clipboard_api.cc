@@ -41,10 +41,9 @@ void ClipboardAPI::OnClipboardDataChanged() {
   EventRouter* router = EventRouter::Get(browser_context_);
   if (router &&
       router->HasEventListener(clipboard::OnClipboardDataChanged::kEventName)) {
-    std::unique_ptr<Event> event(
-        new Event(events::CLIPBOARD_ON_CLIPBOARD_DATA_CHANGED,
-                  clipboard::OnClipboardDataChanged::kEventName,
-                  std::vector<base::Value>()));
+    std::unique_ptr<Event> event(new Event(
+        events::CLIPBOARD_ON_CLIPBOARD_DATA_CHANGED,
+        clipboard::OnClipboardDataChanged::kEventName, base::Value::List()));
     router->BroadcastEvent(std::move(event));
   }
 }

@@ -94,7 +94,7 @@ class MessageSender : public ExtensionHostRegistry::Observer {
       GURL event_url) {
     auto event = std::make_unique<Event>(
         events::TEST_ON_MESSAGE, "test.onMessage",
-        std::move(*event_args).TakeListDeprecated(), browser_context);
+        std::move(event_args->GetList()), browser_context);
     event->event_url = std::move(event_url);
     return event;
   }

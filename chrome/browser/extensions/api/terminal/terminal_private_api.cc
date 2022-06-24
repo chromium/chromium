@@ -191,10 +191,10 @@ void NotifyProcessOutput(content::BrowserContext* browser_context,
     return;
   }
 
-  std::vector<base::Value> args;
-  args.push_back(base::Value(terminal_id));
-  args.push_back(base::Value(output_type));
-  args.push_back(base::Value(base::make_span(
+  base::Value::List args;
+  args.Append(terminal_id);
+  args.Append(output_type);
+  args.Append(base::Value(base::make_span(
       reinterpret_cast<const uint8_t*>(&output[0]), output.size())));
 
   extensions::EventRouter* event_router =
@@ -212,10 +212,10 @@ void PrefChanged(Profile* profile, const std::string& pref_name) {
   if (!event_router) {
     return;
   }
-  std::vector<base::Value> args;
+  base::Value::List args;
   base::Value prefs(base::Value::Type::DICTIONARY);
   prefs.SetKey(pref_name, profile->GetPrefs()->Get(pref_name)->Clone());
-  args.push_back(std::move(prefs));
+  args.Append(std::move(prefs));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TERMINAL_PRIVATE_ON_PREF_CHANGED,
       terminal_private::OnPrefChanged::kEventName, std::move(args));

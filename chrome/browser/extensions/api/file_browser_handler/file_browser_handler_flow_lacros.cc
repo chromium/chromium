@@ -243,8 +243,7 @@ void FileBrowserHandlerExecutorFlow::GrantAccessToFilesAndLaunch(
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::FILE_BROWSER_HANDLER_ON_EXECUTE,
-      "fileBrowserHandler.onExecute",
-      base::Value(std::move(event_args)).TakeListDeprecated(), profile_);
+      "fileBrowserHandler.onExecute", std::move(event_args), profile_);
   router->DispatchEventToExtension(extension_->id(), std::move(event));
 
   Finish(true);  // Success.

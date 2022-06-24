@@ -525,13 +525,13 @@ void DeveloperPrivateEventRouter::OnExtensionAllowlistWarningStateChanged(
 }
 
 void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {
-  std::vector<base::Value> args;
-  args.push_back(base::Value::FromUniquePtrValue(
+  base::Value::List args;
+  args.Append(base::Value::FromUniquePtrValue(
       DeveloperPrivateAPI::CreateProfileInfo(profile_)->ToValue()));
 
-  std::unique_ptr<Event> event(
-      new Event(events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
-                developer::OnProfileStateChanged::kEventName, std::move(args)));
+  auto event = std::make_unique<Event>(
+      events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
+      developer::OnProfileStateChanged::kEventName, std::move(args));
   event_router_->BroadcastEvent(std::move(event));
 }
 
@@ -545,8 +545,8 @@ void DeveloperPrivateEventRouter::UserPermissionsSettingsChanged(
     const PermissionsManager::UserPermissionsSettings& settings) {
   developer::UserSiteSettings user_site_settings =
       ConvertToUserSiteSettings(settings);
-  std::vector<base::Value> args;
-  args.push_back(base::Value::FromUniquePtrValue(user_site_settings.ToValue()));
+  base::Value::List args;
+  args.Append(base::Value::FromUniquePtrValue(user_site_settings.ToValue()));
 
   auto event = std::make_unique<Event>(
       events::DEVELOPER_PRIVATE_ON_USER_SITE_SETTINGS_CHANGED,
@@ -567,12 +567,12 @@ void DeveloperPrivateEventRouter::Observe(
 }
 
 void DeveloperPrivateEventRouter::OnProfilePrefChanged() {
-  std::vector<base::Value> args;
-  args.push_back(base::Value::FromUniquePtrValue(
+  base::Value::List args;
+  args.Append(base::Value::FromUniquePtrValue(
       DeveloperPrivateAPI::CreateProfileInfo(profile_)->ToValue()));
-  std::unique_ptr<Event> event(
-      new Event(events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
-                developer::OnProfileStateChanged::kEventName, std::move(args)));
+  auto event = std::make_unique<Event>(
+      events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
+      developer::OnProfileStateChanged::kEventName, std::move(args));
   event_router_->BroadcastEvent(std::move(event));
 
   // The following properties are updated when dev mode is toggled.
@@ -622,8 +622,8 @@ void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(
         std::make_unique<developer::ExtensionInfo>(std::move(infos[0]));
   }
 
-  std::vector<base::Value> args;
-  args.push_back(base::Value::FromUniquePtrValue(event_data.ToValue()));
+  base::Value::List args;
+  args.Append(base::Value::FromUniquePtrValue(event_data.ToValue()));
   std::unique_ptr<Event> event(
       new Event(events::DEVELOPER_PRIVATE_ON_ITEM_STATE_CHANGED,
                 developer::OnItemStateChanged::kEventName, std::move(args)));

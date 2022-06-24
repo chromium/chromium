@@ -293,8 +293,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    std::vector<base::Value> event_value;
-    event_value.push_back(base::Value::FromUniquePtrValue(params.ToValue()));
+    base::Value::List event_value;
+    event_value.Append(base::Value::FromUniquePtrValue(params.ToValue()));
 
     auto extension_event = std::make_unique<Event>(
         events::
@@ -330,8 +330,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
     const std::string& user_name) {
   // |event_router_| can be null in tests.
   if (event_router_) {
-    std::vector<base::Value> event_value;
-    event_value.push_back(base::Value(user_name));
+    base::Value::List event_value;
+    event_value.Append(user_name);
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_POLICY_SPECIFIED_PASSWORD_CHANGED,
         api::safe_browsing_private::OnPolicySpecifiedPasswordChanged::
@@ -371,8 +371,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    std::vector<base::Value> event_value;
-    event_value.push_back(base::Value::FromUniquePtrValue(params.ToValue()));
+    base::Value::List event_value;
+    event_value.Append(base::Value::FromUniquePtrValue(params.ToValue()));
 
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_DANGEROUS_DOWNLOAD_OPENED,
@@ -428,8 +428,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    std::vector<base::Value> event_value;
-    event_value.push_back(base::Value::FromUniquePtrValue(params.ToValue()));
+    base::Value::List event_value;
+    event_value.Append(base::Value::FromUniquePtrValue(params.ToValue()));
 
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_SECURITY_INTERSTITIAL_SHOWN,
@@ -477,8 +477,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    std::vector<base::Value> event_value;
-    event_value.push_back(base::Value::FromUniquePtrValue(params.ToValue()));
+    base::Value::List event_value;
+    event_value.Append(base::Value::FromUniquePtrValue(params.ToValue()));
 
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_SECURITY_INTERSTITIAL_PROCEEDED,

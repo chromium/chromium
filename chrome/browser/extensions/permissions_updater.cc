@@ -664,11 +664,10 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
   EventRouter* event_router =
       event_name ? EventRouter::Get(browser_context) : nullptr;
   if (event_router) {
-    std::vector<base::Value> event_args;
+    base::Value::List event_args;
     std::unique_ptr<api::permissions::Permissions> permissions =
         PackPermissionSet(*changed);
-    event_args.emplace_back(
-        base::Value::FromUniquePtrValue(permissions->ToValue()));
+    event_args.Append(base::Value::FromUniquePtrValue(permissions->ToValue()));
     auto event = std::make_unique<Event>(
         histogram_value, event_name, std::move(event_args), browser_context);
     event_router->DispatchEventToExtension(extension->id(), std::move(event));

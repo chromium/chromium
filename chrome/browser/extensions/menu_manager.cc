@@ -691,8 +691,8 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
                          webview_guest->view_instance_id());
   }
 
-  base::Value::ListStorage args;
-  args.push_back(std::move(properties));
+  base::Value::List args;
+  args.Append(std::move(properties));
 
   // Add the tab info to the argument list.
   // No tab info in a platform app.
@@ -709,12 +709,12 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
       // on permissions.
       ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior = {
           ExtensionTabUtil::kDontScrubTab, ExtensionTabUtil::kDontScrubTab};
-      args.push_back(base::Value::FromUniquePtrValue(
+      args.Append(base::Value::FromUniquePtrValue(
           ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
                                             extension)
               ->ToValue()));
     } else {
-      args.push_back(base::Value(base::Value::Type::DICTIONARY));
+      args.Append(base::Value(base::Value::Type::DICTIONARY));
     }
   }
 
@@ -747,8 +747,8 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
     auto event = std::make_unique<Event>(
         webview_guest ? events::WEB_VIEW_INTERNAL_CONTEXT_MENUS
                       : events::CONTEXT_MENUS,
-        webview_guest ? kOnWebviewContextMenus : kOnContextMenus,
-        base::Value(args).TakeListDeprecated(), context);
+        webview_guest ? kOnWebviewContextMenus : kOnContextMenus, args.Clone(),
+        context);
     event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
     event_router->DispatchEventToExtension(item->extension_id(),
                                            std::move(event));

@@ -1291,23 +1291,6 @@ Event::Event(events::HistogramValue histogram_value,
       << "See extension_event_histogram_value.h for inspiration.";
 }
 
-Event::Event(events::HistogramValue histogram_value,
-             const std::string& event_name,
-             std::vector<base::Value> event_args)
-    : Event(histogram_value, event_name, std::move(event_args), nullptr) {}
-
-Event::Event(events::HistogramValue histogram_value,
-             const std::string& event_name,
-             std::vector<base::Value> event_args,
-             content::BrowserContext* restrict_to_browser_context)
-    : Event(histogram_value,
-            event_name,
-            std::move(base::Value(std::move(event_args)).GetList()),
-            restrict_to_browser_context,
-            GURL(),
-            EventRouter::USER_GESTURE_UNKNOWN,
-            mojom::EventFilteringInfo::New()) {}
-
 Event::~Event() = default;
 
 std::unique_ptr<Event> Event::DeepCopy() const {

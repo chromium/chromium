@@ -151,10 +151,10 @@ void DispatchEventToExtensionsImpl(Profile* profile,
         }
       }
 
-      base::Value args_copy = args->Clone();
-      auto event = std::make_unique<Event>(
-          histogram_value, event_name,
-          std::move(args_copy).TakeListDeprecated(), restrict_to_profile);
+      base::Value::List args_copy = args->GetList().Clone();
+      auto event =
+          std::make_unique<Event>(histogram_value, event_name,
+                                  std::move(args_copy), restrict_to_profile);
       router->DispatchEventToExtension(extension->id(), std::move(event));
     }
   }

@@ -583,18 +583,6 @@ struct Event {
         EventRouter::UserGestureState user_gesture,
         mojom::EventFilteringInfoPtr info);
 
-  // Deprecated versions of the above methods.
-  //
-  // TODO(https://crbug.com/1338341): Remove these when no more callers use
-  // them, or once base::Value::ListStorage has been removed.
-  Event(events::HistogramValue histogram_value,
-        const std::string& event_name,
-        std::vector<base::Value> event_args);
-  Event(events::HistogramValue histogram_value,
-        const std::string& event_name,
-        std::vector<base::Value> event_args,
-        content::BrowserContext* restrict_to_browser_context);
-
   ~Event();
 
   // Makes a deep copy of this instance.
