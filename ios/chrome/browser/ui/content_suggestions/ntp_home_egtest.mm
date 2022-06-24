@@ -169,12 +169,25 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 #pragma mark - Tests
 
 // Tests that all items are accessible on the home page.
-- (void)testAccessibility {
+// This is currently needed to prevent this test case from being ignored.
+// TODO(crbug.com/1339419): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testAccessibility DISABLED_testAccessibility
+#else
+#define MAYBE_testAccessibility testAccessibility
+#endif
+- (void)MAYBE_testAccessibility {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 // Tests that the collections shortcut are displayed and working.
-- (void)testCollectionShortcuts {
+// TODO(crbug.com/1339419): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testCollectionShortcuts DISABLED_testCollectionShortcuts
+#else
+#define MAYBE_testCollectionShortcuts testCollectionShortcuts
+#endif
+- (void)MAYBE_testCollectionShortcuts {
   // Check the Bookmarks.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -230,7 +243,13 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that when loading an invalid URL, the NTP is still displayed.
 // Prevents regressions from https://crbug.com/1063154 .
-- (void)testInvalidURL {
+// TODO(crbug.com/1339419): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testInvalidURL DISABLED_testInvalidURL
+#else
+#define MAYBE_testInvalidURL testInvalidURL
+#endif
+- (void)MAYBE_testInvalidURL {
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad, because key '-' could not be "
@@ -704,7 +723,13 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
                             [NSString stringWithFormat:@"%i", 3])];
 }
 
-- (void)testFavicons {
+// TODO(crbug.com/1339419): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testFavicons DISABLED_testFavicons
+#else
+#define MAYBE_testFavicons testFavicons
+#endif
+- (void)MAYBE_testFavicons {
   for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
@@ -819,7 +844,15 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Test to ensure that initial position and content are maintained when rotating
 // the device back and forth.
-- (void)testInitialPositionAndOrientationChange {
+// TODO(crbug.com/1339419): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testInitialPositionAndOrientationChange \
+  DISABLED_testInitialPositionAndOrientationChange
+#else
+#define MAYBE_testInitialPositionAndOrientationChange \
+  testInitialPositionAndOrientationChange
+#endif
+- (void)MAYBE_testInitialPositionAndOrientationChange {
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
   [self testNTPInitialPositionAndContent:collectionView];
@@ -905,7 +938,13 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 }
 
 // Test to ensure that NTP for incognito mode works properly.
-- (void)testIncognitoMode {
+// TODO(crbug.com/1339419): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testIncognitoMode DISABLED_testIncognitoMode
+#else
+#define MAYBE_testIncognitoMode testIncognitoMode
+#endif
+- (void)MAYBE_testIncognitoMode {
   // Checks that default NTP is not incognito.
   [self
       testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
@@ -1067,7 +1106,13 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that feed ablation successfully hides the feed from the NTP and the
 // toggle from the Chrome settings.
-- (void)testFeedAblationHidesFeed {
+// TODO(crbug.com/1339419): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testFeedAblationHidesFeed DISABLED_testFeedAblationHidesFeed
+#else
+#define MAYBE_testFeedAblationHidesFeed testFeedAblationHidesFeed
+#endif
+- (void)MAYBE_testFeedAblationHidesFeed {
   // Ensures that feed header is visible before enabling ablation.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -1331,7 +1376,13 @@ id<GREYMatcher> FeedHeaderSegmentFollowing() {
 }
 
 // This is currently needed to prevent this test case from being ignored.
-- (void)testEmpty {
+// TODO(crbug.com/1339419): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testEmpty DISABLED_testEmpty
+#else
+#define MAYBE_testEmpty testEmpty
+#endif
+- (void)MAYBE_testEmpty {
 }
 
 @end
@@ -1353,7 +1404,13 @@ id<GREYMatcher> FeedHeaderSegmentFollowing() {
 }
 
 // This is currently needed to prevent this test case from being ignored.
-- (void)testEmpty {
+// TODO(crbug.com/1339419): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testEmpty DISABLED_testEmpty
+#else
+#define MAYBE_testEmpty testEmpty
+#endif
+- (void)MAYBE_testEmpty {
 }
 
 @end

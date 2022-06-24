@@ -610,13 +610,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // TODO(crbug.com/1322120): Reenable this test.
-- (void)MAYBE_testNotSwitchButtonOnCurrentTab {
+- (void)DISABLED_testNotSwitchButtonOnCurrentTab {
   if (@available(iOS 15, *)) {
     [super MAYBE_testNotSwitchButtonOnCurrentTab];
   } else {
     EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
   }
 }
+
 - (void)testSwitchToClosedTab {
   // TODO(crbug.com/1315304): Reenable this test
   EARL_GREY_TEST_SKIPPED(@"Test disabled with SwiftUI.")
