@@ -1968,6 +1968,64 @@ TEST_F(DeveloperPrivateApiUnitTest, OnUserSiteSettingsChanged) {
   EXPECT_TRUE(settings.restricted_sites.empty());
 }
 
+TEST_F(DeveloperPrivateApiUnitTest,
+       DeveloperPrivateGetUserAndExtensionSitesByEtld) {
+  PermissionsManager* manager = PermissionsManager::Get(browser_context());
+
+  // Add two sites under the eTLD+1 example.com, and one under eTLD+1 google.ca.
+  manager->AddUserPermittedSite(
+      url::Origin::Create(GURL("http://a.example.com")));
+  manager->AddUserRestrictedSite(
+      url::Origin::Create(GURL("http://b.example.com")));
+  manager->AddUserRestrictedSite(url::Origin::Create(GURL("http://google.ca")));
+
+  scoped_refptr<ExtensionFunction> function = base::MakeRefCounted<
+      api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
+  EXPECT_TRUE(RunFunction(function, base::ListValue())) << function->GetError();
+  const base::Value::List* results = function->GetResultList();
+  ASSERT_EQ(1u, results->size());
+  ASSERT_TRUE((*results)[0].is_list());
+  const base::Value::List& list = (*results)[0].GetList();
+  ASSERT_EQ(2u, list.size());
+
+  auto site_info_matcher =
+      [](const std::string& site,
+         const api::developer_private::UserSiteSet& site_list) {
+        return testing::AllOf(
+            testing::Field(&api::developer_private::SiteInfo::site, site),
+            testing::Field(&api::developer_private::SiteInfo::site_list,
+                           site_list));
+      };
+
+  // There should be two SiteGroups for the two eTLD+1s.
+  std::unique_ptr<api::developer_private::SiteGroup> example_info =
+      api::developer_private::SiteGroup::FromValue(list[0]);
+  ASSERT_TRUE(example_info);
+
+  EXPECT_EQ("example.com", example_info->etld_plus_one);
+  EXPECT_THAT(
+      example_info->sites,
+      testing::UnorderedElementsAre(
+          site_info_matcher(
+              "http://a.example.com",
+              api::developer_private::UserSiteSet::USER_SITE_SET_PERMITTED),
+          site_info_matcher(
+              "http://b.example.com",
+              api::developer_private::UserSiteSet::USER_SITE_SET_RESTRICTED)));
+
+  std::unique_ptr<api::developer_private::SiteGroup> google_info =
+      api::developer_private::SiteGroup::FromValue(list[1]);
+  ASSERT_TRUE(google_info);
+
+  // Check the contents of the SiteInfo under google.ca.
+  EXPECT_EQ("google.ca", google_info->etld_plus_one);
+  EXPECT_THAT(
+      google_info->sites,
+      testing::UnorderedElementsAre(site_info_matcher(
+          "http://google.ca",
+          api::developer_private::UserSiteSet::USER_SITE_SET_RESTRICTED)));
+}
+
 class DeveloperPrivateApiAllowlistUnitTest
     : public DeveloperPrivateApiUnitTest {
  public:

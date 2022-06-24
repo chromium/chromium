@@ -34848,6 +34848,7 @@ Called by update_extension_histograms.py.-->
   <int value="1672" label="ENTERPRISEREPORTINGPRIVATE_GETAVINFO"/>
   <int value="1673" label="ENTERPRISEREPORTINGPRIVATE_GETHOTFIXES"/>
   <int value="1674" label="AUTOTESTPRIVATE_GETACCESSTOKEN"/>
+  <int value="1675" label="DEVELOPERPRIVATE_GETUSERANDEXTENSIONSITESBYETLD"/>
 </enum>
 
 <enum name="ExtensionIconState">
