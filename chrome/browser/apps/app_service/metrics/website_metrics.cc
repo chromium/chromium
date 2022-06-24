@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -141,7 +142,9 @@ void WebsiteMetrics::OnWindowActivated(ActivationReason reason,
 
 void WebsiteMetrics::OnURLsDeleted(history::HistoryService* history_service,
                                    const history::DeletionInfo& deletion_info) {
-  // TODO(crbug.com/1334173): Remove local records for urls in `deletion_info`.
+  // To simplify the implementation, remove all recorded urls no matter whatever
+  // `deletion_info`.
+  webcontents_to_ukm_key_.clear();
 }
 
 void WebsiteMetrics::HistoryServiceBeingDeleted(

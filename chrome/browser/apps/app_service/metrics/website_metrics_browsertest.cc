@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/history/core/browser/history_types.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -292,6 +293,60 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
 
   EXPECT_TRUE(webcontents_to_observer_map().empty());
   EXPECT_TRUE(window_to_web_contents().empty());
+  EXPECT_TRUE(webcontents_to_ukm_key().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
+  // Setup: two browsers with one tabs each.
+  auto* browser1 = CreateBrowser();
+  auto* window1 = browser1->window()->GetNativeWindow();
+  auto* tab_app1 = InsertForegroundTab(browser1, "https://a.example.org");
+
+  auto* browser2 = CreateBrowser();
+  auto* window2 = browser2->window()->GetNativeWindow();
+  auto* tab_app2 = InsertForegroundTab(browser2, "https://b.example.org");
+
+  EXPECT_EQ(2u, window_to_web_contents().size());
+  EXPECT_EQ(2u, webcontents_to_observer_map().size());
+  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
+                             window_to_web_contents()[window1]));
+  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
+                             window_to_web_contents()[window2]));
+  EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
+            GURL("https://a.example.org"));
+  EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),
+            GURL("https://b.example.org"));
+  EXPECT_EQ(2u, webcontents_to_ukm_key().size());
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app1], GURL("https://a.example.org"));
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app2], GURL("https://b.example.org"));
+
+  // Simulate OnURLsDeleted is called.
+  website_metrics()->OnURLsDeleted(nullptr,
+                                   history::DeletionInfo::ForAllHistory());
+  EXPECT_EQ(2u, window_to_web_contents().size());
+  EXPECT_EQ(2u, webcontents_to_observer_map().size());
+  EXPECT_TRUE(webcontents_to_ukm_key().empty());
+
+  // Create 2 tabs for the 2 browsers separately.
+  auto* tab_app3 = InsertForegroundTab(browser1, "https://c.example.org");
+  auto* tab_app4 = InsertForegroundTab(browser2, "https://d.example.org");
+
+  EXPECT_EQ(2u, window_to_web_contents().size());
+  EXPECT_EQ(2u, webcontents_to_observer_map().size());
+  EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
+            GURL("https://c.example.org"));
+  EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),
+            GURL("https://d.example.org"));
+  EXPECT_EQ(2u, webcontents_to_ukm_key().size());
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app3], GURL("https://c.example.org"));
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app4], GURL("https://d.example.org"));
+
+  // Close the browsers.
+  browser1->tab_strip_model()->CloseAllTabs();
+  browser2->tab_strip_model()->CloseAllTabs();
+
+  EXPECT_TRUE(window_to_web_contents().empty());
+  EXPECT_TRUE(webcontents_to_observer_map().empty());
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
 }
 
