@@ -74,6 +74,7 @@ class SoftwareImageDecodeCacheUtils {
     PaintImage::Id stable_id() const { return stable_id_; }
     ProcessingType type() const { return type_; }
     bool is_nearest_neighbor() const { return is_nearest_neighbor_; }
+    bool may_be_lcp_candidate() const { return may_be_lcp_candidate_; }
     gfx::Rect src_rect() const { return src_rect_; }
     gfx::Size target_size() const { return target_size_; }
     const TargetColorParams& target_color_params() const {
@@ -99,6 +100,7 @@ class SoftwareImageDecodeCacheUtils {
              PaintImage::Id stable_id,
              ProcessingType type,
              bool is_nearest_neighbor,
+             bool may_be_lcp_candidate,
              const gfx::Rect& src_rect,
              const gfx::Size& size,
              const TargetColorParams& target_color_params);
@@ -110,6 +112,7 @@ class SoftwareImageDecodeCacheUtils {
     PaintImage::Id stable_id_;
     ProcessingType type_;
     bool is_nearest_neighbor_;
+    bool may_be_lcp_candidate_;
     gfx::Rect src_rect_;
     gfx::Size target_size_;
     TargetColorParams target_color_params_;

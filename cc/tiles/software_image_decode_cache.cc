@@ -103,6 +103,13 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
     cache_->OnImageDecodeTaskCompleted(image_key_, task_type_);
   }
 
+  // Overridden from TileTask:
+  bool TaskContainsLCPCandidateImages() const override {
+    if (!HasCompleted() && paint_image_.may_be_lcp_candidate())
+      return true;
+    return TileTask::TaskContainsLCPCandidateImages();
+  }
+
  protected:
   ~SoftwareImageDecodeTaskImpl() override = default;
 
@@ -634,6 +641,8 @@ void SoftwareImageDecodeCache::OnImageDecodeTaskCompleted(
   auto image_it = decoded_images_.Peek(key);
   DCHECK(image_it != decoded_images_.end());
   CacheEntry* cache_entry = image_it->second.get();
+  UMA_HISTOGRAM_BOOLEAN("Compositing.DecodeLCPCandidateImage.Software",
+                        key.may_be_lcp_candidate());
   auto& task = task_type == DecodeTaskType::USE_IN_RASTER_TASKS
                    ? cache_entry->in_raster_task
                    : cache_entry->out_of_raster_task;

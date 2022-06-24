@@ -83,6 +83,10 @@ void Tile::AsValueInto(base::trace_event::TracedValue* value) const {
                     base::saturated_cast<int>(GPUMemoryUsageInBytes()));
 }
 
+bool Tile::HasMissingLCPCandidateImages() const {
+  return HasRasterTask() && raster_task_->TaskContainsLCPCandidateImages();
+}
+
 size_t Tile::GPUMemoryUsageInBytes() const {
   if (draw_info_.resource_) {
     // We can use UncheckedSizeInBytes, since the tile size is determined by the

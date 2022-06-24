@@ -584,6 +584,13 @@ class GpuImageDecodeTaskImpl : public TileTask {
     cache_->OnImageDecodeTaskCompleted(image_, task_type_);
   }
 
+  // Overridden from TileTask:
+  bool TaskContainsLCPCandidateImages() const override {
+    if (!HasCompleted() && image_.paint_image().may_be_lcp_candidate())
+      return true;
+    return TileTask::TaskContainsLCPCandidateImages();
+  }
+
  protected:
   ~GpuImageDecodeTaskImpl() override = default;
 
@@ -1582,6 +1589,8 @@ void GpuImageDecodeCache::OnImageDecodeTaskCompleted(
   // Decode task is complete, remove our reference to it.
   ImageData* image_data = GetImageDataForDrawImage(draw_image, cache_key);
   DCHECK(image_data);
+  UMA_HISTOGRAM_BOOLEAN("Compositing.DecodeLCPCandidateImage.Hardware",
+                        draw_image.paint_image().may_be_lcp_candidate());
   if (task_type == DecodeTaskType::kPartOfUploadTask) {
     DCHECK(image_data->decode.task);
     image_data->decode.task = nullptr;

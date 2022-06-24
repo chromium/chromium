@@ -547,6 +547,14 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       append_quads_data->checkerboarded_no_recording_content_area +=
           visible_geometry_area - checkerboarded_has_recording_area;
 
+      // Report data on any missing images that might be the largest
+      // contentful image.
+      if (*iter) {
+        UMA_HISTOGRAM_BOOLEAN(
+            "Compositing.DecodeLCPCandidateImage.MissedDeadline",
+            iter->HasMissingLCPCandidateImages());
+      }
+
       continue;
     }
 

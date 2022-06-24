@@ -123,6 +123,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.DecodeLCPCandidateImage.{DecodeMethod}"
+    enum="Boolean" expires_after="2023-01-31">
+  <owner>schenney@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Reports whether an image decode was for an image that might be used as the
+    Largest Contentful Image, and then whether a missing tile at raster time
+    includes such an image. The goal is to get an approximate idea of how many
+    LCP candidate images miss their frame deadline, and hence how often we may
+    report LCP too soon.
+
+    Recorded on every {DecodeMethod}
+  </summary>
+  <token key="DecodeMethod">
+    <variant name="Hardware" summary="hardware image decode task completion."/>
+    <variant name="MissedDeadline"
+        summary="call to PrepareTiles() in which there was a missing tile.
+                 True if any missing tile contains an LCP candidate decode
+                 that has not completed."/>
+    <variant name="Software" summary="software image decode task completion."/>
+  </token>
+</histogram>
+
 <histogram name="Compositing.DidMainThreadBlockDuringCommit" enum="Boolean"
     expires_after="2022-11-09">
   <owner>szager@chromium.org</owner>

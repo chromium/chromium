@@ -31,4 +31,14 @@ bool TileTask::HasCompleted() const {
   return did_complete_;
 }
 
+bool TileTask::TaskContainsLCPCandidateImages() const {
+  for (auto dependent : dependencies_) {
+    if (!dependent->HasCompleted() &&
+        dependent->TaskContainsLCPCandidateImages()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace cc

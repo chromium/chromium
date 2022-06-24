@@ -112,6 +112,8 @@ class CC_EXPORT Tile {
 
   bool HasRasterTask() const { return !!raster_task_.get(); }
 
+  bool HasMissingLCPCandidateImages() const;
+
   void set_solid_color_analysis_performed(bool performed) {
     is_solid_color_analysis_performed_ = performed;
   }
