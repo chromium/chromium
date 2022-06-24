@@ -42,6 +42,9 @@ class FastPairSavedDevicesHandler : public ::settings::SettingsPageUIHandler {
   void SaveImageAsBase64(const std::string& image_url, gfx::Image image);
   void DecodingUrlsFinished();
 
+  void HandleRemoveSavedDevice(const base::Value::List& args);
+  void OnSavedDeviceDeleted(bool success);
+
   bool loading_saved_device_page_ = false;
 
   std::unique_ptr<base::AtomicRefCount> pending_decoding_tasks_count_;

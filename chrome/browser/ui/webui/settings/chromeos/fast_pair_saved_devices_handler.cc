@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/fast_pair_saved_devices_handler.h"
 
+#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -18,13 +20,20 @@
 namespace {
 
 const char kLoadSavedDevicePage[] = "loadSavedDevicePage";
+const char kRemoveSavedDevice[] = "removeSavedDevice";
 const char kOptInStatusMessage[] = "fast-pair-saved-devices-opt-in-status";
 const char kSavedDevicesListMessage[] = "fast-pair-saved-devices-list";
 
 std::string DecodeKey(const std::string& encoded_key) {
   std::string key;
   base::Base64Decode(encoded_key, &key);
+  QP_LOG(ERROR) << __func__ << ": " << encoded_key << " " << key;
   return key;
+}
+
+std::string EncodeKey(const std::string& decoded_key) {
+  return base::HexEncode(
+      std::vector<uint8_t>(decoded_key.begin(), decoded_key.end()));
 }
 
 // Keys in the JSON representation of a SavedDevice
@@ -40,7 +49,7 @@ base::Value SavedDeviceToDictionary(const std::string& device_name,
   base::Value::Dict dictionary;
   dictionary.Set(kSavedDeviceNameKey, device_name);
   dictionary.Set(kSavedDeviceImageUrlKey, image_url);
-  dictionary.Set(kSavedDeviceAccountKeyKey, DecodeKey(account_key));
+  dictionary.Set(kSavedDeviceAccountKeyKey, EncodeKey(account_key));
   return base::Value(std::move(dictionary));
 }
 
@@ -64,6 +73,25 @@ void FastPairSavedDevicesHandler::RegisterMessages() {
       base::BindRepeating(
           &FastPairSavedDevicesHandler::HandleLoadSavedDevicePage,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      kRemoveSavedDevice,
+      base::BindRepeating(&FastPairSavedDevicesHandler::HandleRemoveSavedDevice,
+                          base::Unretained(this)));
+}
+
+void FastPairSavedDevicesHandler::HandleRemoveSavedDevice(
+    const base::Value::List& args) {
+  std::vector<uint8_t> account_key;
+  base::HexStringToBytes(args[0].GetString(), &account_key);
+  ash::quick_pair::FastPairRepository::Get()
+      ->DeleteAssociatedDeviceByAccountKey(
+          account_key,
+          base::BindOnce(&FastPairSavedDevicesHandler::OnSavedDeviceDeleted,
+                         weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairSavedDevicesHandler::OnSavedDeviceDeleted(bool success) {
+  QP_LOG(ERROR) << __func__ << ": " << (success ? "success" : "failed");
 }
 
 void FastPairSavedDevicesHandler::HandleLoadSavedDevicePage(

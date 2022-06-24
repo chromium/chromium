@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
@@ -30,6 +31,7 @@ namespace chromeos::settings {
 namespace {
 
 const char kLoadSavedDevicePage[] = "loadSavedDevicePage";
+const char kRemoveSavedDevice[] = "removeSavedDevice";
 const char kOptInStatusMessage[] = "fast-pair-saved-devices-opt-in-status";
 const char kSavedDevicesListMessage[] = "fast-pair-saved-devices-list";
 
@@ -116,10 +118,8 @@ nearby::fastpair::FastPairDevice CreateFastPairDevice(
   return device;
 }
 
-std::string DecodeKey(const std::vector<uint8_t>& encoded_key) {
-  std::string key;
-  base::Base64Decode(std::string(encoded_key.begin(), encoded_key.end()), &key);
-  return key;
+std::string EncodeKey(const std::vector<uint8_t>& decoded_key) {
+  return base::HexEncode(decoded_key);
 }
 
 bool VerifyDeviceInList(const base::Value& device,
@@ -135,7 +135,7 @@ bool VerifyDeviceInList(const base::Value& device,
 
   return (expected_device_name == device_name->GetString()) &&
          (expected_base64_image_url == device_url->GetString()) &&
-         (DecodeKey(expected_account_key) == device_account_key->GetString());
+         (EncodeKey(expected_account_key) == device_account_key->GetString());
 }
 
 class TestFastPairSavedDevicesHandler : public FastPairSavedDevicesHandler {
@@ -271,6 +271,14 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
     // `HandleReceivedMessages` has to use a ListValue due to the API.
     base::Value args(base::Value::Type::LIST);
     test_web_ui()->HandleReceivedMessage(kLoadSavedDevicePage,
+                                         &base::Value::AsListValue(args));
+  }
+
+  void RemoveDevice(const std::vector<uint8_t>& account_key) {
+    // `HandleReceivedMessages` has to use a ListValue due to the API.
+    base::Value args(base::Value::Type::LIST);
+    args.Append(EncodeKey(account_key));
+    test_web_ui()->HandleReceivedMessage(kRemoveSavedDevice,
                                          &base::Value::AsListValue(args));
   }
 
@@ -510,6 +518,47 @@ TEST_F(FastPairSavedDevicesHandlerTest, EmptyImageSentToWebUi) {
       /*device_name2=*/kDeviceName2, /*expected_device_url2=*/"",
       /*account_key2=*/kAccountKey2, /*device_name3=*/kDeviceName3,
       /*expected_device_url3=*/"", /*account_key3=*/kAccountKey3);
+}
+
+TEST_F(FastPairSavedDevicesHandlerTest, RemoveSavedDevice) {
+  InitializeSavedDevicesList(
+      /*device_name1=*/kDeviceName1, /*device_url1=*/kDisplayUrl1,
+      /*account_key1=*/kAccountKey1, /*device_name2=*/kDeviceName2,
+      /*device_url2=*/kDisplayUrl2, /*account_key2=*/kAccountKey2,
+      /*device_name3=*/kDeviceName3, /*device_url3=*/kDisplayUrl3,
+      /*account_key3=*/kAccountKey3,
+      /*opt_in_status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+  LoadPage();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2u, test_web_ui()->call_data().size());
+  VerifySavedDevicesList(
+      *test_web_ui()->call_data()[1], /*device_name1=*/kDeviceName1,
+      /*expected_device_url1=*/kDisplayUrlBase64, /*account_key1=*/kAccountKey1,
+      /*device_name2=*/kDeviceName2, /*expected_device_url2=*/kDisplayUrlBase64,
+      /*account_key2=*/kAccountKey2, /*device_name3=*/kDeviceName3,
+      /*expected_device_url3=*/kDisplayUrlBase64,
+      /*account_key3=*/kAccountKey3);
+
+  RemoveDevice(kAccountKey3);
+  base::RunLoop().RunUntilIdle();
+
+  LoadPage();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(4u, test_web_ui()->call_data().size());
+
+  const base::Value::List* saved_devices_list =
+      test_web_ui()->call_data()[3]->arg2()->GetIfList();
+  ASSERT_EQ(2u, saved_devices_list->size());
+  ASSERT_TRUE(
+      VerifyDeviceInList(/*device=*/*(saved_devices_list->begin()),
+                         /*expected_device_name=*/kDeviceName1,
+                         /*expected_base64_image_url=*/kDisplayUrlBase64,
+                         /*expected_account_key=*/kAccountKey1));
+  ASSERT_TRUE(
+      VerifyDeviceInList(/*device=*/*(saved_devices_list->begin() + 1),
+                         /*expected_device_name=*/kDeviceName2,
+                         /*expected_base64_image_url=*/kDisplayUrlBase64,
+                         /*expected_account_key=*/kAccountKey2));
 }
 
 }  // namespace chromeos::settings

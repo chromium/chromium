@@ -4,7 +4,10 @@
 
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 
+#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
+#include "base/base64.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -94,10 +97,21 @@ void FakeFastPairRepository::CheckOptInStatus(
   std::move(callback).Run(status_);
 }
 
-// Unimplemented.
 void FakeFastPairRepository::DeleteAssociatedDeviceByAccountKey(
     const std::vector<uint8_t>& account_key,
-    DeleteAssociatedDeviceByAccountKeyCallback callback) {}
+    DeleteAssociatedDeviceByAccountKeyCallback callback) {
+  for (auto it = devices_.begin(); it != devices_.end(); it++) {
+    if (it->has_account_key() &&
+        base::HexEncode(std::vector<uint8_t>(it->account_key().begin(),
+                                             it->account_key().end())) ==
+            base::HexEncode(account_key)) {
+      devices_.erase(it);
+      std::move(callback).Run(/*success=*/true);
+      return;
+    }
+  }
+  std::move(callback).Run(/*success=*/false);
+}
 
 // Unimplemented.
 void FakeFastPairRepository::UpdateOptInStatus(

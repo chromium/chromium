@@ -16,6 +16,13 @@ export class OsBluetoothDevicesSubpageBrowserProxy {
    * 'fast-pair-saved-devices-list' WebUI listener event.
    */
   requestFastPairSavedDevices() {}
+
+  /**
+   * Invokes the removal of a Fast Pair device by the account key |accountKey|
+   * from a user's account.
+   * @param {string} accountKey
+   */
+  deleteFastPairSavedDevice(accountKey) {}
 }
 
 /** @type {?OsBluetoothDevicesSubpageBrowserProxy} */
@@ -44,5 +51,13 @@ export class OsBluetoothDevicesSubpageBrowserProxyImpl {
   /** @override */
   requestFastPairSavedDevices() {
     chrome.send('loadSavedDevicePage');
+  }
+
+  /**
+   * @override
+   * @param {string} accountKey
+   */
+  deleteFastPairSavedDevice(accountKey) {
+    chrome.send('removeSavedDevice', [accountKey]);
   }
 }
