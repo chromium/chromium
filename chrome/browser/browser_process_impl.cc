@@ -628,7 +628,7 @@ void BrowserProcessImpl::EndSession() {
   // Tell the metrics service it was cleanly shutdown.
   metrics::MetricsService* metrics = g_browser_process->metrics_service();
   if (metrics) {
-    metrics->RecordStartOfSessionEnd();
+    metrics->LogCleanShutdown();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // The MetricsService may update Local State prefs in memory without
     // writing the updated prefs to disk, so schedule a Local State write now.

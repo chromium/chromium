@@ -180,15 +180,15 @@ bool ShutdownPreThreadsStop() {
   // WARNING: During logoff/shutdown (WM_ENDSESSION) we may not have enough
   // time to get here. If you have something that *must* happen on end session,
   // consider putting it in BrowserProcessImpl::EndSession.
-  PrefService* prefs = g_browser_process->local_state();
-
   metrics::MetricsService* metrics = g_browser_process->metrics_service();
-  if (metrics)
-    metrics->RecordCompletedSessionEnd();
+  if (metrics) {
+    // TODO(crbug/1338797): LogCleanShutdown() is called earlier on in
+    // shutdown. See whether this call can be removed.
+    metrics->LogCleanShutdown();
+  }
 
   bool restart_last_session = RecordShutdownInfoPrefs();
-
-  prefs->CommitPendingWrite();
+  g_browser_process->local_state()->CommitPendingWrite();
 
 #if BUILDFLAG(ENABLE_RLZ)
   // Cleanup any statics created by RLZ. Must be done before NotificationService

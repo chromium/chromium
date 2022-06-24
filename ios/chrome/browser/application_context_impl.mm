@@ -170,7 +170,7 @@ void ApplicationContextImpl::StartTearDown() {
   // IO thread will handle that URLFetcher operation before going away.)
   metrics::MetricsService* metrics_service = GetMetricsService();
   if (metrics_service)
-    metrics_service->RecordCompletedSessionEnd();
+    metrics_service->LogCleanShutdown();
   metrics_services_manager_.reset();
   network_time_tracker_.reset();
 

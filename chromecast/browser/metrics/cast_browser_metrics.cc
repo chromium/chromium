@@ -101,7 +101,7 @@ void CastBrowserMetrics::Initialize() {
 void CastBrowserMetrics::Finalize() {
 #if !BUILDFLAG(IS_ANDROID)
   // Signal that the session has exited cleanly.
-  metrics_service_client_->GetMetricsService()->RecordCompletedSessionEnd();
+  metrics_service_client_->GetMetricsService()->LogCleanShutdown();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
