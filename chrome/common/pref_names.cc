@@ -2379,9 +2379,11 @@ const char kDemoModeConfig[] = "demo_mode.config";
 // A string pref holding the value of the current country for demo sessions.
 const char kDemoModeCountry[] = "demo_mode.country";
 
-// A string pref holding the value of the retailer and store id input for demo
-// sessions.
-const char kDemoModeRetailerAndStoreIdInput[] = "demo_mode.retailer_id";
+// A string pref holding the value of the retailer id input for demo sessions.
+const char kDemoModeRetailerId[] = "demo_mode.retailer_id";
+
+// A string pref holding the value of the store id input for demo sessions.
+const char kDemoModeStoreId[] = "demo_mode.store_id";
 
 // A string pref holding the value of the default locale for demo sessions.
 const char kDemoModeDefaultLocale[] = "demo_mode.default_locale";

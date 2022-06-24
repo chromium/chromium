@@ -255,8 +255,14 @@ TEST_F(ChromeOSMetricsProviderTest, DemoModeDimensions) {
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kOnline);
   const std::string expected_country = "CA";
+  const std::string expected_retailer_id = "ABC";
+  const std::string expected_store_id = "12345";
   g_browser_process->local_state()->SetString("demo_mode.country",
                                               expected_country);
+  g_browser_process->local_state()->SetString("demo_mode.retailer_id",
+                                              expected_retailer_id);
+  g_browser_process->local_state()->SetString("demo_mode.store_id",
+                                              expected_store_id);
 
   TestChromeOSMetricsProvider provider;
   provider.OnDidCreateMetricsLog();
@@ -265,9 +271,19 @@ TEST_F(ChromeOSMetricsProviderTest, DemoModeDimensions) {
 
   ASSERT_TRUE(system_profile.has_demo_mode_dimensions());
   ASSERT_TRUE(system_profile.demo_mode_dimensions().has_country());
+  ASSERT_TRUE(system_profile.demo_mode_dimensions().has_retailer());
+  ASSERT_TRUE(
+      system_profile.demo_mode_dimensions().retailer().has_retailer_id());
+  ASSERT_TRUE(system_profile.demo_mode_dimensions().retailer().has_store_id());
   std::string country = system_profile.demo_mode_dimensions().country();
+  std::string retailer_id =
+      system_profile.demo_mode_dimensions().retailer().retailer_id();
+  std::string store_id =
+      system_profile.demo_mode_dimensions().retailer().store_id();
 
   EXPECT_EQ(country, expected_country);
+  EXPECT_EQ(retailer_id, expected_retailer_id);
+  EXPECT_EQ(store_id, expected_store_id);
 }
 
 TEST_F(ChromeOSMetricsProviderTest, TpmFirmwareVersion) {

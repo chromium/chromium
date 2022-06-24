@@ -47,7 +47,9 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/network/network_handler.h"
@@ -587,6 +589,11 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_EQ("admin-us@cros-demo-mode.com",
             DemoSetupController::GetSubOrganizationEmail());
   OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+
+  EXPECT_EQ("ABC", g_browser_process->local_state()->GetString(
+                       prefs::kDemoModeRetailerId));
+  EXPECT_EQ("1234", g_browser_process->local_state()->GetString(
+                        prefs::kDemoModeStoreId));
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());

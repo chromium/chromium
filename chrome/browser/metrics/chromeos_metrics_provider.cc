@@ -308,6 +308,11 @@ void ChromeOSMetricsProvider::WriteDemoModeDimensionMetrics(
   PrefService* pref = g_browser_process->local_state();
   std::string demo_country = pref->GetString(prefs::kDemoModeCountry);
   demo_mode_dimensions->set_country(demo_country);
+
+  metrics::SystemProfileProto_DemoModeDimensions_Retailer* retailer =
+      demo_mode_dimensions->mutable_retailer();
+  retailer->set_retailer_id(pref->GetString(prefs::kDemoModeRetailerId));
+  retailer->set_store_id(pref->GetString(prefs::kDemoModeStoreId));
 }
 
 void ChromeOSMetricsProvider::WriteLinkedAndroidPhoneProto(

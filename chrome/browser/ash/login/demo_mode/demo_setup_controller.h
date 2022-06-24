@@ -254,6 +254,9 @@ class DemoSetupController
   // Sets current setup step.
   void SetCurrentSetupStep(DemoSetupStep current_step);
 
+  // Sets retailer and store id in local pref.
+  void SetRetailerAndStoreIdInPref();
+
   // Finish the flow with an error.
   void SetupFailed(const DemoSetupError& error);
 
