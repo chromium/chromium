@@ -207,6 +207,10 @@ bool GPUDevice::ValidateTextureFormatUsage(V8GPUTextureFormat format,
       requiredFeature = "texture-compression-astc";
       break;
 
+    case V8GPUTextureFormat::Enum::kDepth32FloatStencil8:
+      requiredFeature = "depth32float-stencil8";
+      break;
+
     default:
       return true;
   }
