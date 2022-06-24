@@ -56,7 +56,6 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
 
   // ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;
-  void OnColorModeThemed(bool is_themed) override {}
 
  private:
   friend class DictationBubbleControllerTest;

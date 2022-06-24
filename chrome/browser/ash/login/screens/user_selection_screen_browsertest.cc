@@ -299,8 +299,6 @@ class DarkLightEnabledTest : public LoginManagerTest,
       run_loop_->Quit();
   }
 
-  void OnColorModeThemed(bool is_themed) override {}
-
   void WaitForColorModeChange() {
     if (!wait_for_color_mode_change_)
       return;
