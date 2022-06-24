@@ -12,13 +12,15 @@ window.ontransitionend = function() {
 document.timeline.playbackRate = 0;
 document.timeline.currentTime = 0;
 
-requestAnimationFrame(function() {
-  document.body.style.transition = 'background 100ms';
-  document.body.style.background = 'green';
+document.body.onload = function() {
+  requestAnimationFrame(function() {
+    document.body.style.transition = 'background 100ms';
+    document.body.style.background = 'green';
 
-  setTimeout(function() {
-    document.timeline.currentTime = 100;
-    document.body.offsetTop; // Forces a style recalc, on-demand timing update.
+    setTimeout(function() {
+      document.timeline.currentTime = 100;
+      document.body.offsetTop; // Forces a style recalc, on-demand timing update.
+    });
   });
-});
+};
 </script>
