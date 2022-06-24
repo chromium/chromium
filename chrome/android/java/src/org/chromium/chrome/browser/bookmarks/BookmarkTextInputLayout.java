@@ -56,14 +56,14 @@ public class BookmarkTextInputLayout extends TextInputLayout {
     /**
      * @return Trimmed text for validation.
      */
-    String getTrimmedText() {
+    public String getTrimmedText() {
         return getEditText().getText().toString().trim();
     }
 
     /**
      * @return Whether the content is empty.
      */
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return TextUtils.isEmpty(getTrimmedText());
     }
 
@@ -72,7 +72,7 @@ public class BookmarkTextInputLayout extends TextInputLayout {
      * If there is a need for extra validation, this method should be overridden
      * and extra validation statements should be added after calling super.validate()
      */
-    void validate() {
+    public void validate() {
         if (mEmptyErrorMessage != null) {
             setError(isEmpty() ? mEmptyErrorMessage : null);
         }

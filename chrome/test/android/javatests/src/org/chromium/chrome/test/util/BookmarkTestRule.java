@@ -14,7 +14,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.bookmarks.BookmarkActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 

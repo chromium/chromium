@@ -99,7 +99,7 @@ public class BookmarkModel extends BookmarkBridge {
      * Calls {@link BookmarkBridge#moveBookmark(BookmarkId, BookmarkId, int)} for the given
      * bookmark list. The bookmarks are appended at the end.
      */
-    void moveBookmarks(List<BookmarkId> bookmarkIds, BookmarkId newParentId) {
+    public void moveBookmarks(List<BookmarkId> bookmarkIds, BookmarkId newParentId) {
         int appendIndex = getChildCount(newParentId);
         for (int i = 0; i < bookmarkIds.size(); ++i) {
             moveBookmark(bookmarkIds.get(i), newParentId, appendIndex + i);
@@ -109,7 +109,7 @@ public class BookmarkModel extends BookmarkBridge {
     /**
      * @see org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem#getTitle()
      */
-    String getBookmarkTitle(BookmarkId bookmarkId) {
+    public String getBookmarkTitle(BookmarkId bookmarkId) {
         BookmarkItem bookmarkItem = getBookmarkById(bookmarkId);
         if (bookmarkItem == null) return "";
         return bookmarkItem.getTitle();

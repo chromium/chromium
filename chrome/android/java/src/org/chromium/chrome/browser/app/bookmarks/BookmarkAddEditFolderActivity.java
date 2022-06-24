@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.bookmarks;
+package org.chromium.chrome.browser.app.bookmarks;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +22,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 
@@ -33,12 +35,11 @@ import java.util.List;
  * mode and editing mode. Depending on different modes, it should be started via two static creator
  * functions.
  */
-public class BookmarkAddEditFolderActivity extends SynchronousInitializationActivity
-        implements OnClickListener {
+public class BookmarkAddEditFolderActivity
+        extends SynchronousInitializationActivity implements OnClickListener {
     static final String INTENT_IS_ADD_MODE = "BookmarkAddEditFolderActivity.isAddMode";
     static final String INTENT_BOOKMARK_ID = "BookmarkAddEditFolderActivity.BookmarkId";
-    static final String
-            INTENT_CREATED_BOOKMARK = "BookmarkAddEditFolderActivity.createdBookmark";
+    static final String INTENT_CREATED_BOOKMARK = "BookmarkAddEditFolderActivity.createdBookmark";
     static final int PARENT_FOLDER_REQUEST_CODE = 10;
 
     private boolean mIsAddMode;
@@ -59,8 +60,11 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
         @Override
         public void bookmarkModelChanged() {
             if (mIsAddMode) {
-                if (mModel.doesBookmarkExist(mParentId)) updateParent(mParentId);
-                else updateParent(mModel.getDefaultFolder());
+                if (mModel.doesBookmarkExist(mParentId)) {
+                    updateParent(mParentId);
+                } else {
+                    updateParent(mModel.getDefaultFolder());
+                }
             } else {
                 // Partner bookmark deletion is notified via bookmarkModelChanged().
                 if (mModel.doesBookmarkExist(mFolderId)) {
@@ -72,8 +76,8 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
         }
 
         @Override
-        public void bookmarkNodeMoved(BookmarkItem oldParent, int oldIndex, BookmarkItem newParent,
-                int newIndex) {
+        public void bookmarkNodeMoved(
+                BookmarkItem oldParent, int oldIndex, BookmarkItem newParent, int newIndex) {
             if (!oldParent.getId().equals(newParent.getId())
                     && mModel.getChildAt(newParent.getId(), newIndex).equals(mFolderId)) {
                 updateParent(newParent.getId());
@@ -103,8 +107,8 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
      * Starts an add folder activity. This method should only be called by
      * {@link BookmarkFolderSelectActivity}.
      */
-    public static void startAddFolderActivity(BookmarkFolderSelectActivity activity,
-            List<BookmarkId> bookmarksToMove) {
+    public static void startAddFolderActivity(
+            BookmarkFolderSelectActivity activity, List<BookmarkId> bookmarksToMove) {
         assert bookmarksToMove.size() > 0;
         Intent intent = new Intent(activity, BookmarkAddEditFolderActivity.class);
         intent.putExtra(INTENT_IS_ADD_MODE, true);
@@ -114,8 +118,8 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
         }
         intent.putStringArrayListExtra(
                 BookmarkFolderSelectActivity.INTENT_BOOKMARKS_TO_MOVE, bookmarkStrings);
-        activity.startActivityForResult(intent,
-                BookmarkFolderSelectActivity.CREATE_FOLDER_REQUEST_CODE);
+        activity.startActivityForResult(
+                intent, BookmarkFolderSelectActivity.CREATE_FOLDER_REQUEST_CODE);
     }
 
     @Override
@@ -174,8 +178,7 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
         assert v == mParentTextView;
 
         if (mIsAddMode) {
-            BookmarkFolderSelectActivity.startNewFolderSelectActivity(
-                    this, mBookmarksToMove);
+            BookmarkFolderSelectActivity.startNewFolderSelectActivity(this, mBookmarksToMove);
         } else {
             BookmarkFolderSelectActivity.startFolderSelectActivity(this, mFolderId);
         }
@@ -245,8 +248,8 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
         super.onActivityResult(requestCode, resultCode, data);
         assert mIsAddMode;
         if (requestCode == PARENT_FOLDER_REQUEST_CODE && resultCode == RESULT_OK) {
-            BookmarkId selectedBookmark = BookmarkId.getBookmarkIdFromString(data.getStringExtra(
-                    BookmarkFolderSelectActivity.INTENT_SELECTED_FOLDER));
+            BookmarkId selectedBookmark = BookmarkId.getBookmarkIdFromString(
+                    data.getStringExtra(BookmarkFolderSelectActivity.INTENT_SELECTED_FOLDER));
             updateParent(selectedBookmark);
         }
     }

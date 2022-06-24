@@ -20,10 +20,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -46,6 +48,7 @@ import org.chromium.ui.test.util.UiDisableIf;
  * Tests for the personalized signin promo on the Bookmarks page.
  */
 @RunWith(ParameterizedRunner.class)
+@Batch(Batch.PER_CLASS)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableIf.Device(type = {UiDisableIf.TABLET})

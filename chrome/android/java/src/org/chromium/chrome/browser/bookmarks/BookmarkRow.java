@@ -19,6 +19,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -321,8 +323,7 @@ public abstract class BookmarkRow
         mDragHandle.setOnTouchListener(l);
     }
 
-    @VisibleForTesting
-    String getTitle() {
+    public String getTitle() {
         return String.valueOf(mTitleView.getText());
     }
 
@@ -351,7 +352,7 @@ public abstract class BookmarkRow
     }
 
     @VisibleForTesting
-    View getDragHandleViewForTests() {
+    public View getDragHandleViewForTests() {
         return mDragHandle;
     }
 }

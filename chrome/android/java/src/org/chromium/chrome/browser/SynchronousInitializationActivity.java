@@ -8,7 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
 
-import org.chromium.chrome.browser.bookmarks.BookmarkActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 
 /**

@@ -54,7 +54,7 @@ import java.util.List;
 /**
  * BaseAdapter for {@link RecyclerView}. It manages bookmarks to list there.
  */
-class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
+public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         implements BookmarkUIObserver, SyncService.SyncStateChangedListener {
     private static final int MAXIMUM_NUMBER_OF_SEARCH_RESULTS = 500;
     private static final String EMPTY_QUERY = null;
@@ -433,7 +433,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
     /**
      * Refresh the list of bookmarks within the currently visible folder.
      */
-    void refresh() {
+    public void refresh() {
         // Tell the RecyclerView to update its elements.
         if (mElements != null) notifyDataSetChanged();
     }
@@ -443,7 +443,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
      *
      * @param query The query text to search for.
      */
-    void search(String query) {
+    public void search(String query) {
         mSearchText = query.trim();
         List<BookmarkId> result =
                 mDelegate.getModel().searchBookmarks(mSearchText, MAXIMUM_NUMBER_OF_SEARCH_RESULTS);
@@ -615,8 +615,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         return isReorderable(getItemByHolder(viewHolder));
     }
 
-    @VisibleForTesting
-    BookmarkId getIdByPosition(int position) {
+    public BookmarkId getIdByPosition(int position) {
         BookmarkListEntry entry = getItemByPosition(position);
         if (entry == null || entry.getBookmarkItem() == null) return null;
         return entry.getBookmarkItem().getId();
@@ -647,7 +646,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
     }
 
     @VisibleForTesting
-    void simulateSignInForTests() {
+    public void simulateSignInForTests() {
         syncStateChanged();
         onFolderStateSet(mCurrentFolder);
     }

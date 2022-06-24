@@ -300,7 +300,7 @@ public class BookmarkBridge {
         }
 
         // TODO(https://crbug.com/1019217): Remove when BookmarkModel is stubbed in tests instead.
-        void forceEditableForTesting() {
+        public void forceEditableForTesting() {
             mForceEditableForTesting = true;
         }
     }
@@ -1133,8 +1133,7 @@ public class BookmarkBridge {
         return BookmarkBridgeJni.get().isBookmarked(mNativeBookmarkBridge, url);
     }
 
-    @VisibleForTesting
-    BookmarkId getPartnerFolderId() {
+    public BookmarkId getPartnerFolderId() {
         ThreadUtils.assertOnUiThread();
         assert mIsNativeBookmarkModelLoaded;
         return BookmarkBridgeJni.get().getPartnerFolderId(

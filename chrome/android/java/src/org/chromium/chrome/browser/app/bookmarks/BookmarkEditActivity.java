@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.bookmarks;
+package org.chromium.chrome.browser.app.bookmarks;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +19,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -62,8 +64,8 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         super.onCreate(savedInstanceState);
 
         mModel = new BookmarkModel();
-        mBookmarkId = BookmarkId.getBookmarkIdFromString(
-                getIntent().getStringExtra(INTENT_BOOKMARK_ID));
+        mBookmarkId =
+                BookmarkId.getBookmarkIdFromString(getIntent().getStringExtra(INTENT_BOOKMARK_ID));
         mModel.addObserver(mBookmarkModelObserver);
         BookmarkItem item = mModel.getBookmarkById(mBookmarkId);
         if (!mModel.doesBookmarkExist(mBookmarkId) || item == null) {
@@ -162,8 +164,7 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
                 mModel.setBookmarkTitle(mBookmarkId, title);
             }
 
-            if (!mUrlEditText.isEmpty()
-                    && mModel.getBookmarkById(mBookmarkId).isUrlEditable()) {
+            if (!mUrlEditText.isEmpty() && mModel.getBookmarkById(mBookmarkId).isUrlEditable()) {
                 GURL fixedUrl = UrlFormatter.fixupUrl(url);
                 if (fixedUrl.isValid() && !fixedUrl.equals(originalUrl)) {
                     mModel.setBookmarkUrl(mBookmarkId, fixedUrl);

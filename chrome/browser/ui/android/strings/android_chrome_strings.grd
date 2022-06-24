@@ -277,10 +277,6 @@ CHAR_LIMIT guidelines:
         USB
       </message>
 
-      <message name="IDS_UNSUPPORTED" desc="Message displayed to the user when an attempted action is not supported.">
-        Unsupported
-      </message>
-
       <!-- Sign-in, sync and personalization preferences -->
       <message name="IDS_PREFS_SECTION_ACCOUNT_AND_GOOGLE_SERVICES" desc="Title for the group of account-related entries and google services in Settings. [CHAR_LIMIT=32]">
         You and Google

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.bookmarks;
+package org.chromium.chrome.browser.app.bookmarks;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,6 +30,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
@@ -47,14 +50,11 @@ import java.util.List;
  * Note this fragment will not be restarted by OS. It will be dismissed if chrome is killed in
  * background.
  */
-public class BookmarkFolderSelectActivity extends SynchronousInitializationActivity implements
-        AdapterView.OnItemClickListener {
-    static final String
-            INTENT_SELECTED_FOLDER = "BookmarkFolderSelectActivity.selectedFolder";
-    static final String
-            INTENT_IS_CREATING_FOLDER = "BookmarkFolderSelectActivity.isCreatingFolder";
-    static final String
-            INTENT_BOOKMARKS_TO_MOVE = "BookmarkFolderSelectActivity.bookmarksToMove";
+public class BookmarkFolderSelectActivity
+        extends SynchronousInitializationActivity implements AdapterView.OnItemClickListener {
+    static final String INTENT_SELECTED_FOLDER = "BookmarkFolderSelectActivity.selectedFolder";
+    static final String INTENT_IS_CREATING_FOLDER = "BookmarkFolderSelectActivity.isCreatingFolder";
+    static final String INTENT_BOOKMARKS_TO_MOVE = "BookmarkFolderSelectActivity.bookmarksToMove";
     static final String INTENT_BOOKMARK_MOVE_RESULT =
             "BookmarkFolderSelectActivity.bookmarkMoveResult";
     static final int CREATE_FOLDER_REQUEST_CODE = 13;
@@ -130,8 +130,8 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
         bookmarks.toArray(bookmarksArray);
         Intent intent = BookmarkFolderSelectActivity.createIntent(
                 activity, /*createFolder=*/true, bookmarksArray);
-        activity.startActivityForResult(intent,
-                BookmarkAddEditFolderActivity.PARENT_FOLDER_REQUEST_CODE);
+        activity.startActivityForResult(
+                intent, BookmarkAddEditFolderActivity.PARENT_FOLDER_REQUEST_CODE);
     }
 
     @Override
@@ -170,8 +170,7 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
         if (mIsCreatingFolder) {
             mParentId = mModel.getMobileFolderId();
         } else {
-            mParentId = mModel.getBookmarkById(mBookmarksToMove.get(0))
-                    .getParentId();
+            mParentId = mModel.getBookmarkById(mBookmarksToMove.get(0)).getParentId();
         }
 
         setContentView(R.layout.bookmark_folder_select_activity);
@@ -209,9 +208,8 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
         List<FolderListEntry> entryList = new ArrayList<>(folderList.size() + 3);
 
         if (!mIsCreatingFolder) {
-            entryList.add(new FolderListEntry(null, 0,
-                    getString(R.string.bookmark_add_folder), false,
-                    FolderListEntry.TYPE_NEW_FOLDER));
+            entryList.add(new FolderListEntry(null, 0, getString(R.string.bookmark_add_folder),
+                    false, FolderListEntry.TYPE_NEW_FOLDER));
         }
 
         FolderListEntry scrollToEntry = null;
@@ -323,8 +321,8 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
         boolean mIsSelected;
         int mType;
 
-        public FolderListEntry(BookmarkId bookmarkId, int depth, String title, boolean isSelected,
-                int type) {
+        public FolderListEntry(
+                BookmarkId bookmarkId, int depth, String title, boolean isSelected, int type) {
             assert type == TYPE_NEW_FOLDER || type == TYPE_NORMAL;
             mDepth = depth;
             mId = bookmarkId;
@@ -345,8 +343,8 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
         List<FolderListEntry> mEntryList = new ArrayList<>();
 
         public FolderListAdapter(Context context) {
-            mBasePadding = context.getResources()
-                    .getDimensionPixelSize(R.dimen.bookmark_folder_item_left);
+            mBasePadding =
+                    context.getResources().getDimensionPixelSize(R.dimen.bookmark_folder_item_left);
             mPaddingIncrement = mBasePadding * 2;
         }
 
@@ -434,8 +432,8 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
          * Sets up padding for the entry
          */
         private void setUpPadding(FolderListEntry entry, View view) {
-            int paddingStart = mBasePadding + Math.min(entry.mDepth, MAX_FOLDER_DEPTH)
-                    * mPaddingIncrement;
+            int paddingStart =
+                    mBasePadding + Math.min(entry.mDepth, MAX_FOLDER_DEPTH) * mPaddingIncrement;
             ViewCompat.setPaddingRelative(view, paddingStart, view.getPaddingTop(), mBasePadding,
                     view.getPaddingBottom());
         }

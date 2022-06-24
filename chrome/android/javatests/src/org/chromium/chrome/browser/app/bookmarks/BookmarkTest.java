@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.bookmarks;
+package org.chromium.chrome.browser.app.bookmarks;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
@@ -65,8 +65,24 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
+import org.chromium.chrome.browser.bookmarks.BookmarkActionBar;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
+import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
+import org.chromium.chrome.browser.bookmarks.BookmarkFolderRow;
+import org.chromium.chrome.browser.bookmarks.BookmarkItemRow;
+import org.chromium.chrome.browser.bookmarks.BookmarkItemsAdapter;
+import org.chromium.chrome.browser.bookmarks.BookmarkListEntry;
+import org.chromium.chrome.browser.bookmarks.BookmarkManager;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkPage;
+import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader;
+import org.chromium.chrome.browser.bookmarks.BookmarkRow;
+import org.chromium.chrome.browser.bookmarks.BookmarkUIState;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.PowerBookmarkShoppingItemRow;
+import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;

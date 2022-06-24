@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.bookmarks;
+package org.chromium.chrome.browser.app.bookmarks;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkManager;
+import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
@@ -23,9 +25,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
  * tablet the bookmark UI is shown inside of a tab (see {@link BookmarkPage}).
  */
 public class BookmarkActivity extends SnackbarActivity {
-
     private BookmarkManager mBookmarkManager;
-    static final int EDIT_BOOKMARK_REQUEST_CODE = 14;
+    public static final int EDIT_BOOKMARK_REQUEST_CODE = 14;
     public static final String INTENT_VISIT_BOOKMARK_ID = "BookmarkEditActivity.VisitBookmarkId";
 
     @Override
@@ -54,8 +55,8 @@ public class BookmarkActivity extends SnackbarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == EDIT_BOOKMARK_REQUEST_CODE && resultCode == RESULT_OK) {
-            BookmarkId bookmarkId = BookmarkId.getBookmarkIdFromString(data.getStringExtra(
-                    INTENT_VISIT_BOOKMARK_ID));
+            BookmarkId bookmarkId = BookmarkId.getBookmarkIdFromString(
+                    data.getStringExtra(INTENT_VISIT_BOOKMARK_ID));
             mBookmarkManager.openBookmark(bookmarkId);
         }
     }
