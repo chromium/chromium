@@ -1633,6 +1633,29 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
   ExpectRequestIdTokenStatusUKM(IdTokenStatus::kDisabledInFlags);
 }
 
+TEST_F(BasicFederatedAuthRequestImplTest,
+       MetricsForFeatureIsDisabledNotDoubleCountedWithUnhandledRequest) {
+  test_api_permission_delegate_->permission_override_ =
+      std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
+                     ApiPermissionStatus::BLOCKED_VARIATIONS);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.wait_for_callback = false;
+  RequestExpectations expectations = {/*return_status=*/absl::nullopt,
+                                      /*devtools_issue_status*/ absl::nullopt,
+                                      /*fetched_endpoints=*/0};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  // Delete the request before DelayTimer kicks in.
+  federated_auth_request_impl_->ResetAndDeleteThis();
+
+  // If double counted, the the samples would not be unique so the following
+  // checks will fail.
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
+                                       IdTokenStatus::kDisabledInFlags, 1);
+  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kDisabledInFlags);
+}
+
 // Test that embargo is requested if the
 // IdentityRequestDialogController::ShowAccountsDialog() callback requests it.
 TEST_F(BasicFederatedAuthRequestImplTest, RequestEmbargo) {

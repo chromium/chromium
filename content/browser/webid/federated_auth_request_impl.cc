@@ -245,8 +245,18 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   if (auth_request_callback_) {
     DCHECK(!revoke_callback_);
     DCHECK(!logout_callback_);
-    RecordRequestIdTokenStatus(IdTokenStatus::kUnhandledRequest,
-                               render_frame_host_->GetPageUkmSourceId());
+    // If we have completed the request, e.g. when the token is returned or the
+    // API is aborted, `auth_request_callback_` would be null so we won't double
+    // count. If the request was failed but we have not yet rejected the
+    // promise, e.g. when the user has declined the permission or the API is
+    // disabled etc., we have already reported the errors to console. i.e.
+    // `errors_logged_to_console_` would be true so we won't double count
+    // either. We record `kUnhandledRequest` only when the user refreshed,
+    // closed or left the page while the UI is displayed.
+    if (!errors_logged_to_console_) {
+      RecordRequestIdTokenStatus(IdTokenStatus::kUnhandledRequest,
+                                 render_frame_host_->GetPageUkmSourceId());
+    }
     CompleteRequest(FederatedAuthRequestResult::kError, "",
                     /*should_call_callback=*/true);
   }
@@ -1388,7 +1398,7 @@ void FederatedAuthRequestImpl::OnRejectRequest() {
     // API is aborted, `auth_request_callback_` would be null so we won't double
     // count. If the request was failed but we have not yet rejected the
     // promise, e.g. when the user has declined the permission or the API is
-    // disabled etc., we have already report the errors to console. i.e.
+    // disabled etc., we have already reported the errors to console. i.e.
     // `errors_logged_to_console_` would be true so we won't double count
     // either. We record `kUserInterfaceTimedOut` only when the UI is displayed
     // and then time out without user interaction.
