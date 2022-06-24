@@ -207,9 +207,8 @@ BackendImpl::~BackendImpl() {
   }
 }
 
-net::Error BackendImpl::Init(CompletionOnceCallback callback) {
+void BackendImpl::Init(CompletionOnceCallback callback) {
   background_queue_.Init(std::move(callback));
-  return net::ERR_IO_PENDING;
 }
 
 int BackendImpl::SyncInit() {

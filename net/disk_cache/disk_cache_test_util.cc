@@ -78,6 +78,17 @@ bool CheckCacheIntegrity(const base::FilePath& path,
 }
 
 // -----------------------------------------------------------------------
+TestBackendResultCompletionCallback::TestBackendResultCompletionCallback() =
+    default;
+
+TestBackendResultCompletionCallback::~TestBackendResultCompletionCallback() =
+    default;
+
+disk_cache::BackendResultCallback
+TestBackendResultCompletionCallback::callback() {
+  return base::BindOnce(&TestBackendResultCompletionCallback::SetResult,
+                        base::Unretained(this));
+}
 
 TestEntryResultCompletionCallback::TestEntryResultCompletionCallback() =
     default;

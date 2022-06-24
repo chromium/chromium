@@ -321,9 +321,9 @@ void StressTheCache(int iteration) {
   g_data->cache->SetFlags(disk_cache::kNoLoadProtection);
 
   net::TestCompletionCallback cb;
-  int rv = g_data->cache->Init(cb.callback());
+  g_data->cache->Init(cb.callback());
 
-  if (cb.GetResult(rv) != net::OK) {
+  if (cb.WaitForResult() != net::OK) {
     printf("Unable to initialize cache.\n");
     return;
   }

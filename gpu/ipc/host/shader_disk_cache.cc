@@ -561,14 +561,18 @@ void ShaderDiskCache::Init() {
   }
   is_initialized_ = true;
 
-  int rv = disk_cache::CreateCacheBackend(
+  disk_cache::BackendResult rv = disk_cache::CreateCacheBackend(
       net::SHADER_CACHE, net::CACHE_BACKEND_DEFAULT,
       /*file_operations=*/nullptr, cache_path_.Append(kGpuCachePath),
-      CacheSizeBytes(), disk_cache::ResetHandling::kResetOnError, nullptr,
-      &backend_, base::BindOnce(&ShaderDiskCache::CacheCreatedCallback, this));
+      CacheSizeBytes(), disk_cache::ResetHandling::kResetOnError,
+      /*net_log=*/nullptr,
+      base::BindOnce(&ShaderDiskCache::CacheCreatedCallback, this));
 
-  if (rv == net::OK)
+  if (rv.net_error == net::OK) {
+    NOTREACHED();  // This shouldn't actually happen with a non-memory backend.
+    backend_ = std::move(rv.backend);
     cache_available_ = true;
+  }
 }
 
 void ShaderDiskCache::Cache(const std::string& key, const std::string& shader) {
@@ -608,11 +612,12 @@ int ShaderDiskCache::SetAvailableCallback(
   return net::ERR_IO_PENDING;
 }
 
-void ShaderDiskCache::CacheCreatedCallback(int rv) {
-  if (rv != net::OK) {
-    LOG(ERROR) << "Shader Cache Creation failed: " << rv;
+void ShaderDiskCache::CacheCreatedCallback(disk_cache::BackendResult result) {
+  if (result.net_error != net::OK) {
+    LOG(ERROR) << "Shader Cache Creation failed: " << result.net_error;
     return;
   }
+  backend_ = std::move(result.backend);
   helper_ =
       std::make_unique<ShaderDiskReadHelper>(this, shader_loaded_callback_);
   helper_->LoadCache();

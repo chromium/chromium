@@ -120,14 +120,15 @@ class CacheStorageBlobToDiskCacheTest : public testing::Test {
   }
 
   void InitCache() {
-    int rv = CreateCacheBackend(
+    disk_cache::BackendResult backend_result = CreateCacheBackend(
         net::MEMORY_CACHE, net::CACHE_BACKEND_DEFAULT,
         /*file_operations=*/nullptr, base::FilePath(),
         (CacheStorageBlobToDiskCache::kBufferSize * 100) /* max bytes */,
         disk_cache::ResetHandling::kNeverReset, nullptr /* net log */,
-        &cache_backend_, base::DoNothing());
+        base::DoNothing());
     // The memory cache runs synchronously.
-    EXPECT_EQ(net::OK, rv);
+    EXPECT_EQ(net::OK, backend_result.net_error);
+    cache_backend_ = std::move(backend_result.backend);
     EXPECT_TRUE(cache_backend_);
 
     disk_cache::EntryResult result =

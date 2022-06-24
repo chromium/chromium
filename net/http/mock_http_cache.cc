@@ -649,12 +649,10 @@ const std::vector<std::string>& MockDiskCache::GetExternalCacheHits() const {
 
 //-----------------------------------------------------------------------------
 
-int MockBackendFactory::CreateBackend(
+disk_cache::BackendResult MockBackendFactory::CreateBackend(
     NetLog* net_log,
-    std::unique_ptr<disk_cache::Backend>* backend,
-    CompletionOnceCallback callback) {
-  *backend = std::make_unique<MockDiskCache>();
-  return OK;
+    disk_cache::BackendResultCallback callback) {
+  return disk_cache::BackendResult::Make(std::make_unique<MockDiskCache>());
 }
 
 //-----------------------------------------------------------------------------
@@ -811,43 +809,41 @@ disk_cache::EntryResult MockDiskCacheNoCB::CreateEntry(
 
 //-----------------------------------------------------------------------------
 
-int MockBackendNoCbFactory::CreateBackend(
+disk_cache::BackendResult MockBackendNoCbFactory::CreateBackend(
     NetLog* net_log,
-    std::unique_ptr<disk_cache::Backend>* backend,
-    CompletionOnceCallback callback) {
-  *backend = std::make_unique<MockDiskCacheNoCB>();
-  return OK;
+    disk_cache::BackendResultCallback callback) {
+  return disk_cache::BackendResult::Make(std::make_unique<MockDiskCacheNoCB>());
 }
 
 //-----------------------------------------------------------------------------
 
 MockBlockingBackendFactory::MockBlockingBackendFactory() = default;
-
 MockBlockingBackendFactory::~MockBlockingBackendFactory() = default;
 
-int MockBlockingBackendFactory::CreateBackend(
+disk_cache::BackendResult MockBlockingBackendFactory::CreateBackend(
     NetLog* net_log,
-    std::unique_ptr<disk_cache::Backend>* backend,
-    CompletionOnceCallback callback) {
+    disk_cache::BackendResultCallback callback) {
   if (!block_) {
-    if (!fail_)
-      *backend = std::make_unique<MockDiskCache>();
-    return Result();
+    return MakeResult();
   }
 
-  backend_ =  backend;
   callback_ = std::move(callback);
-  return ERR_IO_PENDING;
+  return disk_cache::BackendResult::MakeError(ERR_IO_PENDING);
 }
 
 void MockBlockingBackendFactory::FinishCreation() {
   block_ = false;
   if (!callback_.is_null()) {
-    if (!fail_)
-      *backend_ = std::make_unique<MockDiskCache>();
     // Running the callback might delete |this|.
-    std::move(callback_).Run(Result());
+    std::move(callback_).Run(MakeResult());
   }
+}
+
+disk_cache::BackendResult MockBlockingBackendFactory::MakeResult() {
+  if (fail_)
+    return disk_cache::BackendResult::MakeError(ERR_FAILED);
+  else
+    return disk_cache::BackendResult::Make(std::make_unique<MockDiskCache>());
 }
 
 }  // namespace net

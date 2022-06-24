@@ -513,34 +513,24 @@ void GeneratedCodeCache::DeleteEntry(const GURL& url,
 }
 
 void GeneratedCodeCache::CreateBackend() {
-  // Create a new Backend pointer that cleans itself if the GeneratedCodeCache
-  // instance is not live when the CreateCacheBackend finishes.
-  scoped_refptr<base::RefCountedData<ScopedBackendPtr>> shared_backend_ptr =
-      new base::RefCountedData<ScopedBackendPtr>();
-
-  net::CompletionOnceCallback create_backend_complete =
-      base::BindOnce(&GeneratedCodeCache::DidCreateBackend,
-                     weak_ptr_factory_.GetWeakPtr(), shared_backend_ptr);
-
   // If the initialization of the existing cache fails, this call would delete
   // all the contents and recreates a new one.
-  int rv = disk_cache::CreateCacheBackend(
+  disk_cache::BackendResult result = disk_cache::CreateCacheBackend(
       CodeCacheTypeToNetCacheType(cache_type_), net::CACHE_BACKEND_SIMPLE,
       /*file_operations=*/nullptr, path_, max_size_bytes_,
-      disk_cache::ResetHandling::kResetOnError, nullptr,
-      &shared_backend_ptr->data, std::move(create_backend_complete));
-  if (rv != net::ERR_IO_PENDING) {
-    DidCreateBackend(shared_backend_ptr, rv);
+      disk_cache::ResetHandling::kResetOnError, /*net_log=*/nullptr,
+      base::BindOnce(&GeneratedCodeCache::DidCreateBackend,
+                     weak_ptr_factory_.GetWeakPtr()));
+  if (result.net_error != net::ERR_IO_PENDING) {
+    DidCreateBackend(std::move(result));
   }
 }
 
-void GeneratedCodeCache::DidCreateBackend(
-    scoped_refptr<base::RefCountedData<ScopedBackendPtr>> backend_ptr,
-    int rv) {
-  if (rv != net::OK) {
+void GeneratedCodeCache::DidCreateBackend(disk_cache::BackendResult result) {
+  if (result.net_error != net::OK) {
     backend_state_ = kFailed;
   } else {
-    backend_ = std::move(backend_ptr->data);
+    backend_ = std::move(result.backend);
     backend_state_ = kInitialized;
   }
   IssuePendingOperations();

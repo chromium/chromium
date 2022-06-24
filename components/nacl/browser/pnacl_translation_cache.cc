@@ -341,27 +341,31 @@ int PnaclTranslationCache::Init(net::CacheType cache_type,
                                 const base::FilePath& cache_dir,
                                 int cache_size,
                                 CompletionOnceCallback callback) {
-  int rv = disk_cache::CreateCacheBackend(
+  disk_cache::BackendResult result = disk_cache::CreateCacheBackend(
       cache_type, net::CACHE_BACKEND_DEFAULT, /*file_operations=*/nullptr,
       cache_dir, cache_size, disk_cache::ResetHandling::kResetOnError,
       nullptr, /* dummy net log */
-      &disk_cache_,
       base::BindOnce(&PnaclTranslationCache::OnCreateBackendComplete,
                      AsWeakPtr()));
-  if (rv == net::ERR_IO_PENDING) {
+  if (result.net_error == net::OK) {
+    disk_cache_ = std::move(result.backend);
+  } else if (result.net_error == net::ERR_IO_PENDING) {
     init_callback_ = std::move(callback);
   }
-  return rv;
+  return result.net_error;
 }
 
-void PnaclTranslationCache::OnCreateBackendComplete(int rv) {
-  if (rv < 0) {
-    LOG(ERROR) << "Backend init failed:" << net::ErrorToString(rv);
+void PnaclTranslationCache::OnCreateBackendComplete(
+    disk_cache::BackendResult result) {
+  if (result.net_error < 0) {
+    LOG(ERROR) << "Backend init failed:"
+               << net::ErrorToString(result.net_error);
   }
+  disk_cache_ = std::move(result.backend);
   // Invoke our client's callback function.
   if (!init_callback_.is_null()) {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(init_callback_), rv));
+        FROM_HERE, base::BindOnce(std::move(init_callback_), result.net_error));
   }
 }
 

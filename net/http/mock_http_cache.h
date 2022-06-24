@@ -280,9 +280,9 @@ class MockDiskCache : public disk_cache::Backend {
 
 class MockBackendFactory : public HttpCache::BackendFactory {
  public:
-  int CreateBackend(NetLog* net_log,
-                    std::unique_ptr<disk_cache::Backend>* backend,
-                    CompletionOnceCallback callback) override;
+  disk_cache::BackendResult CreateBackend(
+      NetLog* net_log,
+      disk_cache::BackendResultCallback callback) override;
 };
 
 class MockHttpCache {
@@ -358,9 +358,9 @@ class MockDiskCacheNoCB : public MockDiskCache {
 
 class MockBackendNoCbFactory : public HttpCache::BackendFactory {
  public:
-  int CreateBackend(NetLog* net_log,
-                    std::unique_ptr<disk_cache::Backend>* backend,
-                    CompletionOnceCallback callback) override;
+  disk_cache::BackendResult CreateBackend(
+      NetLog* net_log,
+      disk_cache::BackendResultCallback callback) override;
 };
 
 // This backend factory allows us to control the backend instantiation.
@@ -369,24 +369,24 @@ class MockBlockingBackendFactory : public HttpCache::BackendFactory {
   MockBlockingBackendFactory();
   ~MockBlockingBackendFactory() override;
 
-  int CreateBackend(NetLog* net_log,
-                    std::unique_ptr<disk_cache::Backend>* backend,
-                    CompletionOnceCallback callback) override;
+  disk_cache::BackendResult CreateBackend(
+      NetLog* net_log,
+      disk_cache::BackendResultCallback callback) override;
 
   // Completes the backend creation. Any blocked call will be notified via the
   // provided callback.
   void FinishCreation();
 
-  std::unique_ptr<disk_cache::Backend>* backend() { return backend_; }
   void set_fail(bool fail) { fail_ = fail; }
 
-  CompletionOnceCallback ReleaseCallback() { return std::move(callback_); }
+  disk_cache::BackendResultCallback ReleaseCallback() {
+    return std::move(callback_);
+  }
 
  private:
-  int Result() { return fail_ ? ERR_FAILED : OK; }
+  disk_cache::BackendResult MakeResult();
 
-  raw_ptr<std::unique_ptr<disk_cache::Backend>> backend_ = nullptr;
-  CompletionOnceCallback callback_;
+  disk_cache::BackendResultCallback callback_;
   bool block_ = true;
   bool fail_ = false;
 };

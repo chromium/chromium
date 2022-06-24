@@ -5695,7 +5695,7 @@ TEST_F(HttpCacheTest, SimpleGET_WaitForBackend_CancelCreate) {
   EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
-// Tests that we can delete the cache while creating the backend.
+// Tests that we can delete the HttpCache while creating the backend.
 TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend) {
   MockBlockingBackendFactory* factory = new MockBlockingBackendFactory();
   auto cache = std::make_unique<MockHttpCache>(base::WrapUnique(factory));
@@ -5714,20 +5714,16 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend) {
   // The request should be creating the disk cache.
   EXPECT_FALSE(c->callback.have_result());
 
-  // We cannot call FinishCreation because the factory itself will go away with
-  // the cache.
-  CompletionOnceCallback callback = factory->ReleaseCallback();
-  std::unique_ptr<disk_cache::Backend>* backend = factory->backend();
+  // Manually arrange for completion to happen after ~HttpCache.
+  // This can't be done via FinishCreation() since that's in `factory`, and
+  // that's owned by `cache`.
+  disk_cache::BackendResultCallback callback = factory->ReleaseCallback();
 
   cache.reset();
   base::RunLoop().RunUntilIdle();
 
-  // Even though |HttpCache| is destroyed, the Backend that was passed in to
-  // disk_cache::CreateCacheBackend() must still be valid until the callback is
-  // called.
-  backend->reset();
-  // |callback| will destroy |backend|.
-  std::move(callback).Run(ERR_ABORTED);
+  // Simulate the backend completion callback running now the HttpCache is gone.
+  std::move(callback).Run(disk_cache::BackendResult::MakeError(ERR_ABORTED));
 }
 
 // Tests that we can delete the cache while creating the backend, from within

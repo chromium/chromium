@@ -136,7 +136,6 @@ class CONTENT_EXPORT GeneratedCodeCache {
 
  private:
   class PendingOperation;
-  using ScopedBackendPtr = std::unique_ptr<disk_cache::Backend>;
 
   // State of the backend.
   enum BackendState { kInitializing, kInitialized, kFailed };
@@ -156,9 +155,7 @@ class CONTENT_EXPORT GeneratedCodeCache {
 
   // Creates a simple_disk_cache backend.
   void CreateBackend();
-  void DidCreateBackend(
-      scoped_refptr<base::RefCountedData<ScopedBackendPtr>> backend_ptr,
-      int rv);
+  void DidCreateBackend(disk_cache::BackendResult result);
 
   // Adds operation to the appropriate queue.
   void EnqueueOperation(std::unique_ptr<PendingOperation> op);

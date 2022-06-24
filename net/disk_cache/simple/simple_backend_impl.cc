@@ -248,7 +248,7 @@ void SimpleBackendImpl::SetTaskRunnerForTesting(
       std::move(task_runner));
 }
 
-net::Error SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
+void SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
   auto index_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::WithBaseSyncPrimitives(),
        base::TaskPriority::USER_BLOCKING,
@@ -273,7 +273,6 @@ net::Error SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
                      GetCacheType()),
       base::BindOnce(&SimpleBackendImpl::InitializeIndex, AsWeakPtr(),
                      std::move(completion_callback)));
-  return net::ERR_IO_PENDING;
 }
 
 bool SimpleBackendImpl::SetMaxSize(int64_t max_bytes) {

@@ -684,20 +684,16 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
       const base::FilePath& path,
       bool reset,
       CreateSimpleCacheCallback callback) override {
-    auto backend_holder = base::MakeRefCounted<
-        base::RefCountedData<std::unique_ptr<disk_cache::Backend>>>();
     const auto reset_mode = reset ? disk_cache::ResetHandling::kReset
                                   : disk_cache::ResetHandling::kResetOnError;
-    int rv = disk_cache::CreateCacheBackend(
+    disk_cache::BackendResult result = disk_cache::CreateCacheBackend(
         net::DISK_CACHE, net::CACHE_BACKEND_SIMPLE,
         base::MakeRefCounted<network::MojoBackendFileOperationsFactory>(
             std::move(factory)),
         path, 64 * 1024 * 1024, reset_mode, net::NetLog::Get(),
-        &backend_holder->data,
         base::BindOnce(&NetworkServiceTestImpl::OnCacheCreated,
-                       weak_factory_.GetWeakPtr(), backend_holder,
-                       std::move(callback)));
-    DCHECK_EQ(rv, net::ERR_IO_PENDING);
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    DCHECK_EQ(result.net_error, net::ERR_IO_PENDING);
   }
 
  private:
@@ -706,15 +702,10 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     latest_memory_pressure_level_ = memory_pressure_level;
   }
 
-  void OnCacheCreated(
-      scoped_refptr<base::RefCountedData<std::unique_ptr<disk_cache::Backend>>>
-          backend_holder,
-      CreateSimpleCacheCallback callback,
-      int rv) {
-    DCHECK(backend_holder);
-    std::unique_ptr<disk_cache::Backend> backend =
-        std::move(backend_holder->data);
-    if (rv != net::OK) {
+  void OnCacheCreated(CreateSimpleCacheCallback callback,
+                      disk_cache::BackendResult result) {
+    std::unique_ptr<disk_cache::Backend> backend = std::move(result.backend);
+    if (result.net_error != net::OK) {
       DCHECK(!backend);
       std::move(callback).Run(mojo::NullRemote());
       return;

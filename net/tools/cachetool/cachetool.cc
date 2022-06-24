@@ -29,6 +29,7 @@
 #include "net/http/http_util.h"
 
 using disk_cache::Backend;
+using disk_cache::BackendResult;
 using disk_cache::Entry;
 using disk_cache::EntryResult;
 
@@ -750,16 +751,17 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  std::unique_ptr<Backend> cache_backend;
-  net::TestCompletionCallback cb;
-  int rv = disk_cache::CreateCacheBackend(
+  TestBackendResultCompletionCallback cb;
+  BackendResult result = disk_cache::CreateCacheBackend(
       net::DISK_CACHE, backend_type, /*file_operations=*/nullptr, cache_path,
-      INT_MAX, disk_cache::ResetHandling::kNeverReset, nullptr, &cache_backend,
+      INT_MAX, disk_cache::ResetHandling::kNeverReset, /*net_log=*/nullptr,
       cb.callback());
-  if (cb.GetResult(rv) != net::OK) {
+  result = cb.GetResult(std::move(result));
+  if (result.net_error != net::OK) {
     std::cerr << "Invalid cache." << std::endl;
     return 1;
   }
+  std::unique_ptr<Backend> cache_backend = std::move(result.backend);
 
   ProgramArgumentCommandMarshal program_argument_marshal(
       cache_backend.get(),

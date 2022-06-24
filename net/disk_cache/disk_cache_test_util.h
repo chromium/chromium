@@ -39,6 +39,31 @@ bool CheckCacheIntegrity(const base::FilePath& path,
 
 // -----------------------------------------------------------------------
 
+// Like net::TestCompletionCallback, but for BackendResultCallback.
+struct BackendResultIsPendingHelper {
+  bool operator()(const disk_cache::BackendResult& result) const {
+    return result.net_error == net::ERR_IO_PENDING;
+  }
+};
+using TestBackendResultCompletionCallbackBase =
+    net::internal::TestCompletionCallbackTemplate<disk_cache::BackendResult,
+                                                  BackendResultIsPendingHelper>;
+
+class TestBackendResultCompletionCallback
+    : public TestBackendResultCompletionCallbackBase {
+ public:
+  TestBackendResultCompletionCallback();
+
+  TestBackendResultCompletionCallback(
+      const TestBackendResultCompletionCallback&) = delete;
+  TestBackendResultCompletionCallback& operator=(
+      const TestBackendResultCompletionCallback&) = delete;
+
+  ~TestBackendResultCompletionCallback() override;
+
+  disk_cache::BackendResultCallback callback();
+};
+
 // Like net::TestCompletionCallback, but for EntryResultCallback.
 
 struct EntryResultIsPendingHelper {

@@ -82,7 +82,7 @@ class ShaderDiskCache : public base::RefCounted<ShaderDiskCache> {
   ~ShaderDiskCache();
 
   void Init();
-  void CacheCreatedCallback(int rv);
+  void CacheCreatedCallback(disk_cache::BackendResult rv);
 
   disk_cache::Backend* backend() { return backend_.get(); }
 

@@ -2485,38 +2485,31 @@ void CacheStorageCache::CreateBackend(ErrorCallback callback) {
   int64_t max_bytes = memory_only_ ? std::numeric_limits<int>::max()
                                    : std::numeric_limits<int64_t>::max();
 
-  std::unique_ptr<ScopedBackendPtr> backend_ptr(new ScopedBackendPtr());
-
-  // Temporary pointer so that backend_ptr can be Pass()'d in Bind below.
-  ScopedBackendPtr* backend = backend_ptr.get();
-
   auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&CacheStorageCache::CreateBackendDidCreate,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(backend_ptr)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
   DCHECK(scheduler_->IsRunningExclusiveOperation());
-  int rv = disk_cache::CreateCacheBackend(
+  disk_cache::BackendResult result = disk_cache::CreateCacheBackend(
       cache_type, net::CACHE_BACKEND_SIMPLE, /*file_operations=*/nullptr, path_,
-      max_bytes, disk_cache::ResetHandling::kNeverReset, nullptr, backend,
+      max_bytes, disk_cache::ResetHandling::kNeverReset, /*net_log=*/nullptr,
       base::BindOnce(&CacheStorageCache::DeleteBackendCompletedIO,
                      weak_ptr_factory_.GetWeakPtr()),
       std::move(split_callback.first));
-  if (rv != net::ERR_IO_PENDING)
-    std::move(split_callback.second).Run(rv);
+  if (result.net_error != net::ERR_IO_PENDING)
+    std::move(split_callback.second).Run(std::move(result));
 }
 
 void CacheStorageCache::CreateBackendDidCreate(
     CacheStorageCache::ErrorCallback callback,
-    std::unique_ptr<ScopedBackendPtr> backend_ptr,
-    int rv) {
-  if (rv != net::OK) {
+    disk_cache::BackendResult result) {
+  if (result.net_error != net::OK) {
     std::move(callback).Run(
         MakeErrorStorage(ErrorStorageType::kCreateBackendDidCreateFailed));
     return;
   }
 
-  backend_ = std::move(*backend_ptr);
+  backend_ = std::move(result.backend);
   std::move(callback).Run(CacheStorageError::kSuccess);
 }
 

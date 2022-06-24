@@ -390,15 +390,15 @@ void DiskCacheTestWithCache::CreateBackend(uint32_t flags) {
             /*file_operations=*/nullptr, cache_path_,
             /* cleanup_tracker = */ nullptr, simple_file_tracker_.get(), size_,
             type_, /*net_log = */ nullptr);
-    int rv = simple_backend->Init(cb.callback());
-    ASSERT_THAT(cb.GetResult(rv), IsOk());
+    simple_backend->Init(cb.callback());
+    ASSERT_THAT(cb.WaitForResult(), IsOk());
     simple_cache_impl_ = simple_backend.get();
     cache_ = std::move(simple_backend);
     if (simple_cache_wait_for_index_) {
       net::TestCompletionCallback wait_for_index_cb;
       simple_cache_impl_->index()->ExecuteWhenReady(
           wait_for_index_cb.callback());
-      rv = wait_for_index_cb.WaitForResult();
+      int rv = wait_for_index_cb.WaitForResult();
       ASSERT_THAT(rv, IsOk());
     }
     return;
@@ -419,6 +419,6 @@ void DiskCacheTestWithCache::CreateBackend(uint32_t flags) {
     cache_impl_->SetNewEviction();
   cache_impl_->SetFlags(flags);
   net::TestCompletionCallback cb;
-  int rv = cache_impl_->Init(cb.callback());
-  ASSERT_THAT(cb.GetResult(rv), IsOk());
+  cache_impl_->Init(cb.callback());
+  ASSERT_THAT(cb.WaitForResult(), IsOk());
 }

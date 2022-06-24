@@ -317,8 +317,10 @@ namespace {
 
 void BackendInitCallback(base::WaitableEvent* signal,
                          net::Error* error,
-                         int rv) {
-  *error = static_cast<net::Error>(rv);
+                         std::unique_ptr<disk_cache::Backend>* backend,
+                         disk_cache::BackendResult result) {
+  *error = result.net_error;
+  *backend = std::move(result.backend);
   signal->Signal();
 }
 
@@ -332,16 +334,19 @@ void DawnCachingInterface::DefaultCacheBackendFactory(
     std::unique_ptr<disk_cache::Backend>* backend,
     base::WaitableEvent* signal,
     net::Error* error) {
-  *error = disk_cache::CreateCacheBackend(
+  disk_cache::BackendResult result = disk_cache::CreateCacheBackend(
       cache_type, net::CACHE_BACKEND_BLOCKFILE,
       /*file_operations=*/nullptr, path,
       /*max_bytes=*/cache_size, disk_cache::ResetHandling::kNeverReset,
-      /*net_log=*/nullptr, backend,
+      /*net_log=*/nullptr,
       base::BindOnce(&BackendInitCallback, base::Unretained(signal),
-                     base::Unretained(error)));
+                     base::Unretained(error), base::Unretained(backend)));
+
+  *error = result.net_error;
   if (*error == net::ERR_IO_PENDING) {
     return;
   }
+  *backend = std::move(result.backend);
   signal->Signal();
 }
 

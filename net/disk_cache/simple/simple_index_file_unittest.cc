@@ -603,10 +603,10 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
       /*file_tracker=*/nullptr, 0, net::DISK_CACHE,
       /*net_log=*/nullptr);
   net::TestCompletionCallback cb;
-  int rv = simple_cache->Init(cb.callback());
-  EXPECT_THAT(cb.GetResult(rv), IsOk());
+  simple_cache->Init(cb.callback());
+  EXPECT_THAT(cb.WaitForResult(), IsOk());
   simple_cache->index()->ExecuteWhenReady(cb.callback());
-  rv = cb.WaitForResult();
+  int rv = cb.WaitForResult();
   EXPECT_THAT(rv, IsOk());
   simple_cache.reset();
   cleanup_tracker = nullptr;

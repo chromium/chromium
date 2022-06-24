@@ -45,6 +45,7 @@ class ApplicationStatusListener;
 
 namespace disk_cache {
 class Backend;
+struct BackendResult;
 class BackendFileOperationsFactory;
 class Entry;
 class EntryResult;
@@ -74,15 +75,14 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
    public:
     virtual ~BackendFactory() = default;
 
-    // The actual method to build the backend. Returns a net error code. If
-    // ERR_IO_PENDING is returned, the |callback| will be notified when the
-    // operation completes, and |backend| must remain valid until the
-    // notification arrives.
+    // The actual method to build the backend. The return value and `callback`
+    // conventions match disk_cache::CreateCacheBackend
+    //
     // The implementation must not access the factory object after invoking the
-    // |callback| because the object can be deleted from within the callback.
-    virtual int CreateBackend(NetLog* net_log,
-                              std::unique_ptr<disk_cache::Backend>* backend,
-                              CompletionOnceCallback callback) = 0;
+    // `callback` because the object can be deleted from within the callback.
+    virtual disk_cache::BackendResult CreateBackend(
+        NetLog* net_log,
+        base::OnceCallback<void(disk_cache::BackendResult)> callback) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
     virtual void SetAppStatusListener(
@@ -110,9 +110,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     static std::unique_ptr<BackendFactory> InMemory(int max_bytes);
 
     // BackendFactory implementation.
-    int CreateBackend(NetLog* net_log,
-                      std::unique_ptr<disk_cache::Backend>* backend,
-                      CompletionOnceCallback callback) override;
+    disk_cache::BackendResult CreateBackend(
+        NetLog* net_log,
+        base::OnceCallback<void(disk_cache::BackendResult)> callback) override;
 
 #if BUILDFLAG(IS_ANDROID)
     void SetAppStatusListener(
@@ -184,8 +184,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // Retrieves the cache backend for this HttpCache instance. If the backend
   // is not initialized yet, this method will initialize it. The return value is
   // a network error code, and it could be ERR_IO_PENDING, in which case the
-  // |callback| will be notified when the operation completes. The pointer that
-  // receives the |backend| must remain valid until the operation completes.
+  // `callback` will be notified when the operation completes. The pointer that
+  // receives the `backend` must remain valid until the operation completes.
+  // `callback` will get cancelled if the HttpCache is destroyed.
   int GetBackend(disk_cache::Backend** backend,
                  CompletionOnceCallback callback);
 
@@ -405,10 +406,13 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
                                   WorkItemOperation operation,
                                   PendingOp* pending_op);
 
-  // Creates the |backend| object and notifies the |callback| when the operation
-  // completes. Returns an error code.
-  int CreateBackend(disk_cache::Backend** backend,
-                    CompletionOnceCallback callback);
+  // Creates the `disk_cache_` object and notifies the `callback` when the
+  // operation completes. Returns an error code.
+  int CreateBackend(CompletionOnceCallback callback);
+
+  void ReportGetBackendResult(disk_cache::Backend** backend,
+                              CompletionOnceCallback callback,
+                              int net_error);
 
   // Makes sure that the backend creation is complete before allowing the
   // provided transaction to use the object. Returns an error code.
@@ -622,14 +626,20 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // This is necessary because |pending_op| owns a disk_cache::Backend that has
   // been passed in to CreateCacheBackend(), therefore must live until callback
   // is called.
-  static void OnPendingOpComplete(const base::WeakPtr<HttpCache>& cache,
+  static void OnPendingOpComplete(base::WeakPtr<HttpCache> cache,
                                   PendingOp* pending_op,
                                   int result);
 
   // Variant for Open/Create method family, which has a different signature.
-  static void OnPendingCreationOpComplete(const base::WeakPtr<HttpCache>& cache,
+  static void OnPendingCreationOpComplete(base::WeakPtr<HttpCache> cache,
                                           PendingOp* pending_op,
                                           disk_cache::EntryResult result);
+
+  // Variant for CreateCacheBackend, which has a different signature.
+  static void OnPendingBackendCreationOpComplete(
+      base::WeakPtr<HttpCache> cache,
+      PendingOp* pending_op,
+      disk_cache::BackendResult result);
 
   // Processes the backend creation notification.
   void OnBackendCreated(int result, PendingOp* pending_op);

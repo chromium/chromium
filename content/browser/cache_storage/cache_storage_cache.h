@@ -296,7 +296,6 @@ class CONTENT_EXPORT CacheStorageCache {
       base::OnceCallback<void(blink::mojom::CacheStorageError,
                               std::unique_ptr<QueryCacheResults>)>;
   using Entries = std::vector<disk_cache::Entry*>;
-  using ScopedBackendPtr = std::unique_ptr<disk_cache::Backend>;
   using BlobToDiskCacheIDMap =
       base::IDMap<std::unique_ptr<CacheStorageBlobToDiskCache>>;
 
@@ -526,8 +525,7 @@ class CONTENT_EXPORT CacheStorageCache {
   // success). The callback will always be called. Virtual for tests.
   virtual void CreateBackend(ErrorCallback callback);
   void CreateBackendDidCreate(ErrorCallback callback,
-                              std::unique_ptr<ScopedBackendPtr> backend_ptr,
-                              int rv);
+                              disk_cache::BackendResult result);
 
   // Calculate the size and padding of the cache.
   void CalculateCacheSizePadding(SizePaddingCallback callback);
