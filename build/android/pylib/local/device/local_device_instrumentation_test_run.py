@@ -1209,21 +1209,6 @@ class LocalDeviceInstrumentationTestRun(
     has_batch_limit = self._test_instance.test_launcher_batch_limit is not None
     return is_tryjob and has_filter and has_batch_limit
 
-  def _IsFlakeEndorserRun(self):
-    """Checks whether this test run is part of the flake endorser.
-
-    Returns:
-      True iff this is being run on a trybot and the current step is part of the
-      flake endorser.
-    """
-    is_tryjob = self._test_instance.skia_gold_properties.IsTryjobRun()
-    # Flake endorser shards automatically pass in --gtest_repeat,
-    # --gtest_filter, and --test-launcher-retry-limit. This is similar to retry
-    # without patch steps, but does NOT include --test-launcher-batch-limit.
-    has_filter = bool(self._test_instance.test_filter)
-    has_batch_limit = self._test_instance.test_launcher_batch_limit is not None
-    return is_tryjob and has_filter and not has_batch_limit
-
   def _ProcessSkiaGoldRenderTestResults(self, device, results):
     gold_dir = posixpath.join(self._render_tests_device_output_dir,
                               _DEVICE_GOLD_DIR)
@@ -1301,16 +1286,6 @@ class LocalDeviceInstrumentationTestRun(
         gold_session = self._skia_gold_session_manager.GetSkiaGoldSession(
             keys_input=json_path)
 
-        # Both retry without patch steps and flake endorser runs run into an
-        # issue where they can clobber untriaged results we care about with
-        # previously triaged (usually good) results. So, run those in dryrun
-        # mode. In the case of a flake endorser run, we want to re-run the
-        # comparison without dryrun if the dryrun fails so that the image that
-        # needs triaging is uploaded.
-        should_force_dryrun = (self._IsRetryWithoutPatch()
-                               or self._IsFlakeEndorserRun())
-        should_redo_on_failed_dryrun = self._IsFlakeEndorserRun()
-
         try:
           status, error = gold_session.RunComparison(
               name=render_name,
@@ -1318,23 +1293,11 @@ class LocalDeviceInstrumentationTestRun(
               output_manager=self._env.output_manager,
               use_luci=use_luci,
               optional_keys=optional_dict,
-              force_dryrun=should_force_dryrun)
+              force_dryrun=self._IsRetryWithoutPatch())
         except Exception as e:  # pylint: disable=broad-except
-          error = e
-          if should_redo_on_failed_dryrun:
-            try:
-              status, error = gold_session.RunComparison(
-                  name=render_name,
-                  png_file=image_path,
-                  output_manager=self._env.output_manager,
-                  use_luci=use_luci,
-                  optional_keys=optional_dict,
-                  force_dryrun=False)
-            except Exception as inner_e:  # pylint: disable=broad-except
-              error = inner_e
           _FailTestIfNecessary(results, full_test_name)
           _AppendToLog(results, full_test_name,
-                       'Skia Gold comparison raised exception: %s' % error)
+                       'Skia Gold comparison raised exception: %s' % e)
           continue
 
         if not status:
