@@ -3694,6 +3694,21 @@
             ]
         }
     ],
+    "EcheSWA": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EcheSWA"
+                    ]
+                }
+            ]
+        }
+    ],
     "ElementSuperRareData": [
         {
             "platforms": [
