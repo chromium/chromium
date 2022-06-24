@@ -1428,14 +1428,9 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
                                TopChromeShownState::kFullyHidden);
 }
 
-// Flaky on ChromeOS Release bots. https://crbug.com/1033648
-#if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG)
-#define MAYBE_TestToggleChromeVox DISABLED_TestToggleChromeVox
-#else
-#define MAYBE_TestToggleChromeVox TestToggleChromeVox
-#endif
+// Flaky on ChromeOS bots. https://crbug.com/1033648
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       MAYBE_TestToggleChromeVox) {
+                       DISABLED_TestToggleChromeVox) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
