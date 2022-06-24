@@ -190,12 +190,8 @@ void AssistantPageView::RequestFocus() {
   if (!AssistantUiController::Get())  // May be |nullptr| in tests.
     return;
 
-  switch (AssistantUiController::Get()->GetModel()->ui_mode()) {
-    case AssistantUiMode::kLauncherEmbeddedUi:
-      if (assistant_main_view_)
-        assistant_main_view_->RequestFocus();
-      break;
-  }
+  if (assistant_main_view_)
+    assistant_main_view_->RequestFocus();
 }
 
 void AssistantPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

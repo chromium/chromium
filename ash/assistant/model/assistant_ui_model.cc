@@ -32,15 +32,6 @@ void AssistantUiModel::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void AssistantUiModel::SetUiMode(AssistantUiMode ui_mode,
-                                 bool due_to_interaction) {
-  if (ui_mode == ui_mode_)
-    return;
-
-  ui_mode_ = ui_mode;
-  NotifyUiModeChanged(due_to_interaction);
-}
-
 void AssistantUiModel::SetVisible(AssistantEntryPoint entry_point) {
   SetVisibility(AssistantVisibility::kVisible, entry_point,
                 /*exit_point=*/absl::nullopt);
@@ -102,11 +93,6 @@ void AssistantUiModel::SetVisibility(
 void AssistantUiModel::NotifyKeyboardTraversalModeChanged() {
   for (AssistantUiModelObserver& observer : observers_)
     observer.OnKeyboardTraversalModeChanged(keyboard_traversal_mode_);
-}
-
-void AssistantUiModel::NotifyUiModeChanged(bool due_to_interaction) {
-  for (AssistantUiModelObserver& observer : observers_)
-    observer.OnUiModeChanged(ui_mode_, due_to_interaction);
 }
 
 void AssistantUiModel::NotifyUiVisibilityChanged(

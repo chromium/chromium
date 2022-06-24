@@ -129,7 +129,6 @@ void AssistantUiControllerImpl::ShowUi(AssistantEntryPoint entry_point) {
     return;
   }
 
-  model_.SetUiMode(AssistantUiMode::kLauncherEmbeddedUi);
   model_.SetVisible(entry_point);
 }
 
@@ -171,11 +170,6 @@ void AssistantUiControllerImpl::ToggleUi(
   CloseUi(exit_point.value());
 }
 
-void AssistantUiControllerImpl::OnInputModalityChanged(
-    InputModality input_modality) {
-  UpdateUiMode();
-}
-
 void AssistantUiControllerImpl::OnInteractionStateChanged(
     InteractionState interaction_state) {
   if (interaction_state != InteractionState::kActive)
@@ -185,21 +179,6 @@ void AssistantUiControllerImpl::OnInteractionStateChanged(
   // not already showing. We don't have enough information here to know what
   // the interaction source is.
   ShowUi(AssistantEntryPoint::kUnspecified);
-
-  // We also need to ensure that we're in the appropriate UI mode if we aren't
-  // already so that the interaction is visible to the user. Note that we
-  // indicate that this UI mode change is occurring due to an interaction so
-  // that we won't inadvertently stop the interaction due to the UI mode change.
-  UpdateUiMode(AssistantUiMode::kLauncherEmbeddedUi,
-               /*due_to_interaction=*/true);
-}
-
-void AssistantUiControllerImpl::OnMicStateChanged(MicState mic_state) {
-  // When the mic is opened we update the UI mode to ensure that the user is
-  // being presented with the main stage. When closing the mic it is appropriate
-  // to stay in whatever UI mode we are currently in.
-  if (mic_state == MicState::kOpen)
-    UpdateUiMode();
 }
 
 void AssistantUiControllerImpl::OnAssistantControllerConstructed() {
@@ -274,19 +253,6 @@ void AssistantUiControllerImpl::OnOverviewModeWillStart() {
 void AssistantUiControllerImpl::ShowUnboundErrorToast() {
   ShowToast(kUnboundServiceToastId, ToastCatalogName::kAssistantUnboundService,
             IDS_ASH_ASSISTANT_ERROR_GENERIC);
-}
-
-void AssistantUiControllerImpl::UpdateUiMode(
-    absl::optional<AssistantUiMode> ui_mode,
-    bool due_to_interaction) {
-  // If a UI mode is provided, we will use it in lieu of updating UI mode on the
-  // basis of interaction/widget visibility state.
-  if (ui_mode.has_value()) {
-    model_.SetUiMode(ui_mode.value(), due_to_interaction);
-    return;
-  }
-
-  model_.SetUiMode(AssistantUiMode::kLauncherEmbeddedUi, due_to_interaction);
 }
 
 }  // namespace ash
