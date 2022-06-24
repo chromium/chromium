@@ -1110,6 +1110,7 @@ robolectric_binary("chrome_junit_tests") {
     "//components/browser_ui/display_cutout/android:java",
     "//components/browser_ui/media/android:java",
     "//components/browser_ui/notifications/android:java",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/share/android:java",
     "//components/browser_ui/site_settings/android:java",
     "//components/browser_ui/styles/android:java",
@@ -1249,7 +1250,6 @@ android_library("chrome_unit_test_util_java") {
     "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsIntentTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/download/MockDownloadNotificationService.java",
     "javatests/src/org/chromium/chrome/browser/download/TestDownloadDirectoryProvider.java",
-    "javatests/src/org/chromium/chrome/browser/homepage/HomepageTestRule.java",
     "javatests/src/org/chromium/chrome/browser/tabmodel/TestTabModelDirectory.java",
   ]
 
@@ -1261,8 +1261,6 @@ android_library("chrome_unit_test_util_java") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//components/offline_items_collection/core:core_java",
-    "//components/policy/android:policy_java",
-    "//components/policy/android:policy_java_test_support",
     "//content/public/android:content_main_dex_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:runner_java",

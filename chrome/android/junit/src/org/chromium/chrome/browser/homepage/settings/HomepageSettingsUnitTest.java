@@ -7,36 +7,55 @@ package org.chromium.chrome.browser.homepage.settings;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle.State;
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.metrics.test.ShadowRecordUserAction;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
+import org.chromium.chrome.browser.homepage.settings.HomepageSettingsUnitTest.ShadowUrlFormatter;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithEditText;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.base.TestActivity;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 /**
  * Test for {@link HomepageSettings} to check the UI components and the interactions.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
-public class HomepageSettingsFragmentTest {
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowGURL.class, ShadowUrlFormatter.class, ShadowLooper.class,
+                ShadowRecordUserAction.class})
+public class HomepageSettingsUnitTest {
     private static final String ASSERT_MESSAGE_SWITCH_ENABLE = "Switch should be enabled.";
     private static final String ASSERT_MESSAGE_SWITCH_DISABLE = "Switch should be disabled.";
     private static final String ASSERT_MESSAGE_RADIO_BUTTON_ENABLED =
@@ -59,21 +78,34 @@ public class HomepageSettingsFragmentTest {
     private static final String ASSERT_HOMEPAGE_MANAGER_SETTINGS =
             "HomepageManager#getHomepageUri is different than test homepage settings.";
 
-    private static final String ASSERT_HOMEPAGE_LOCATION_HISTOGRAM_COUNT =
-            "Count for user action <Settings.Homepage.LocationChanged_V2> is different.";
     private static final String ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH =
             "HomepageLocationType is different than test settings.";
 
-    private static final String TEST_URL_FOO = "http://127.0.0.1:8000/foo.html";
-    private static final String TEST_URL_BAR = "http://127.0.0.1:8000/bar.html";
-    private static final String CHROME_NTP = UrlConstants.NTP_NON_NATIVE_URL;
+    private static final String TEST_URL_FOO = JUnitTestGURLs.URL_1;
+    private static final String TEST_URL_BAR = JUnitTestGURLs.URL_2;
+    private static final String CHROME_NTP = JUnitTestGURLs.NTP_URL;
 
-    @Rule
-    public SettingsActivityTestRule<HomepageSettings> mTestRule =
-            new SettingsActivityTestRule<>(HomepageSettings.class);
+    @Implements(UrlFormatter.class)
+    static class ShadowUrlFormatter {
+        @Implementation
+        public static GURL fixupUrl(String uri) {
+            return new GURL(uri);
+        }
+    }
 
     @Rule
     public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
+
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock
+    public HomepagePolicyManager mMockHomepagePolicyManger;
+    @Mock
+    public PartnerBrowserCustomizations mMockPartnerBrowserCustomizations;
+
+    private ActivityScenario<TestActivity> mActivityScenario;
+    private TestActivity mActivity;
 
     private ChromeSwitchPreference mSwitch;
     private RadioButtonGroupHomepagePreference mRadioGroupPreference;
@@ -82,10 +114,37 @@ public class HomepageSettingsFragmentTest {
     private RadioButtonWithDescription mChromeNtpRadioButton;
     private RadioButtonWithEditText mCustomUriRadioButton;
 
-    private void launchSettingsActivity() {
-        mTestRule.startSettingsActivity();
-        HomepageSettings fragment = mTestRule.getFragment();
-        Assert.assertNotNull(fragment);
+    @Before
+    public void setUp() {
+        HomepagePolicyManager.setInstanceForTests(mMockHomepagePolicyManger);
+        PartnerBrowserCustomizations.setInstanceForTesting(mMockPartnerBrowserCustomizations);
+        mActivityScenario = ActivityScenario.launch(TestActivity.class);
+        mActivityScenario.onActivity(activity -> {
+            mActivity = activity;
+            // Needed for HomepageSettings to inflate correctly.
+            mActivity.setTheme(R.style.ColorOverlay_ChromiumAndroid);
+        });
+    }
+
+    @After
+    public void tearDown() {
+        ShadowRecordUserAction.reset();
+        mActivityScenario.close();
+        PartnerBrowserCustomizations.setInstanceForTesting(null);
+        HomepagePolicyManager.setInstanceForTests(null);
+    }
+
+    private void launchHomepageSettings() {
+        String tag = "HomepageSettings";
+        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(android.R.id.content, HomepageSettings.class, null, tag)
+                .commit();
+
+        mActivityScenario.moveToState(State.STARTED);
+        HomepageSettings fragment =
+                (HomepageSettings) mActivity.getSupportFragmentManager().findFragmentById(
+                        android.R.id.content);
 
         mSwitch = (ChromeSwitchPreference) fragment.findPreference(
                 HomepageSettings.PREF_HOMEPAGE_SWITCH);
@@ -95,18 +154,20 @@ public class HomepageSettingsFragmentTest {
         Assert.assertTrue(
                 "RadioGroupPreference should be visible when Homepage Conversion is enabled.",
                 mRadioGroupPreference.isVisible());
+        Assert.assertThat("Title text view is null.", mRadioGroupPreference.getTitleTextView(),
+                Matchers.notNullValue());
+        Assert.assertThat("Chrome NTP radio button is null.",
+                mRadioGroupPreference.getChromeNTPRadioButton(), Matchers.notNullValue());
+        Assert.assertThat("Custom URI radio button is null.",
+                mRadioGroupPreference.getCustomUriRadioButton(), Matchers.notNullValue());
 
         mTitleTextView = mRadioGroupPreference.getTitleTextView();
         mChromeNtpRadioButton = mRadioGroupPreference.getChromeNTPRadioButton();
         mCustomUriRadioButton = mRadioGroupPreference.getCustomUriRadioButton();
-
-        Assert.assertNotNull("Title text view is null.", mTitleTextView);
-        Assert.assertNotNull("Chrome NTP radio button is null.", mChromeNtpRadioButton);
-        Assert.assertNotNull("Custom URI radio button is null.", mCustomUriRadioButton);
     }
 
-    private void finishSettingsActivity() throws Exception {
-        ApplicationTestUtils.finishActivity(mTestRule.getActivity());
+    private void finishSettingsActivity() {
+        mActivityScenario.moveToState(State.DESTROYED);
     }
 
     @Test
@@ -116,7 +177,7 @@ public class HomepageSettingsFragmentTest {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_BAR);
         mHomepageTestRule.useChromeNTPForTest();
 
-        launchSettingsActivity();
+        launchHomepageSettings();
 
         Assert.assertTrue(ASSERT_MESSAGE_SWITCH_ENABLE, mSwitch.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
@@ -138,10 +199,10 @@ public class HomepageSettingsFragmentTest {
     @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_ChromeNTP_WithPartner() {
-        PartnerBrowserCustomizations.getInstance().setHomepageForTests(TEST_URL_FOO);
+        setPartnerHomepage(TEST_URL_FOO);
         mHomepageTestRule.useChromeNTPForTest();
 
-        launchSettingsActivity();
+        launchHomepageSettings();
 
         Assert.assertTrue(ASSERT_MESSAGE_SWITCH_ENABLE, mSwitch.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
@@ -158,9 +219,6 @@ public class HomepageSettingsFragmentTest {
         Assert.assertEquals(ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageLocationType.USER_CUSTOMIZED_NTP,
                 HomepageManager.getInstance().getHomepageLocationType());
-
-        // Reset partner provided information
-        PartnerBrowserCustomizations.destroy();
     }
 
     @Test
@@ -169,7 +227,7 @@ public class HomepageSettingsFragmentTest {
     public void testStartUp_Customized() {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_BAR);
 
-        launchSettingsActivity();
+        launchHomepageSettings();
 
         Assert.assertTrue(ASSERT_MESSAGE_SWITCH_ENABLE, mSwitch.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
@@ -192,10 +250,11 @@ public class HomepageSettingsFragmentTest {
     @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_Policies_Customized() {
-        // Set mock policies
-        mHomepageTestRule.setHomepagePolicyForTest(TEST_URL_BAR);
+        setHomepagePolicy(TEST_URL_BAR);
+        Mockito.doReturn(true).when(mMockHomepagePolicyManger).isHomepageLocationPolicyEnabled();
+        Mockito.doReturn(TEST_URL_BAR).when(mMockHomepagePolicyManger).getHomepagePreference();
 
-        launchSettingsActivity();
+        launchHomepageSettings();
 
         // When policy enabled, all components should be disabled.
         Assert.assertFalse(ASSERT_MESSAGE_SWITCH_DISABLE, mSwitch.isEnabled());
@@ -222,10 +281,9 @@ public class HomepageSettingsFragmentTest {
     @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_Policies_NTP() {
-        // Set mock policies
-        mHomepageTestRule.setHomepagePolicyForTest(CHROME_NTP);
+        setHomepagePolicy(CHROME_NTP);
 
-        launchSettingsActivity();
+        launchHomepageSettings();
 
         Assert.assertFalse(ASSERT_MESSAGE_SWITCH_DISABLE, mSwitch.isEnabled());
         Assert.assertFalse(ASSERT_MESSAGE_RADIO_BUTTON_DISABLED, mChromeNtpRadioButton.isEnabled());
@@ -247,10 +305,10 @@ public class HomepageSettingsFragmentTest {
     @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_DefaultToPartner() {
-        PartnerBrowserCustomizations.getInstance().setHomepageForTests(TEST_URL_FOO);
+        setPartnerHomepage(TEST_URL_FOO);
         mHomepageTestRule.useDefaultHomepageForTest();
 
-        launchSettingsActivity();
+        launchHomepageSettings();
 
         Assert.assertTrue(ASSERT_MESSAGE_SWITCH_ENABLE, mSwitch.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
@@ -268,9 +326,6 @@ public class HomepageSettingsFragmentTest {
         Assert.assertEquals(ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
                 HomepageLocationType.PARTNER_PROVIDED_OTHER,
                 HomepageManager.getInstance().getHomepageLocationType());
-
-        // Reset partner provided information
-        PartnerBrowserCustomizations.destroy();
     }
 
     @Test
@@ -279,7 +334,7 @@ public class HomepageSettingsFragmentTest {
     public void testStartUp_DefaultToNTP() {
         mHomepageTestRule.useDefaultHomepageForTest();
 
-        launchSettingsActivity();
+        launchHomepageSettings();
 
         Assert.assertTrue(ASSERT_MESSAGE_SWITCH_ENABLE, mSwitch.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
@@ -307,7 +362,7 @@ public class HomepageSettingsFragmentTest {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_BAR);
         mHomepageTestRule.disableHomepageForTest();
 
-        launchSettingsActivity();
+        launchHomepageSettings();
 
         Assert.assertTrue(ASSERT_MESSAGE_SWITCH_ENABLE, mSwitch.isEnabled());
         Assert.assertFalse(ASSERT_MESSAGE_RADIO_BUTTON_DISABLED, mChromeNtpRadioButton.isEnabled());
@@ -335,8 +390,7 @@ public class HomepageSettingsFragmentTest {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_FOO);
         mHomepageTestRule.useChromeNTPForTest();
 
-        launchSettingsActivity();
-        LocationChangedCounter actionCounter = new LocationChangedCounter();
+        launchHomepageSettings();
 
         Assert.assertTrue(ASSERT_MESSAGE_SWITCH_ENABLE, mSwitch.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_TITLE_ENABLED, mTitleTextView.isEnabled());
@@ -352,7 +406,7 @@ public class HomepageSettingsFragmentTest {
                 mCustomUriRadioButton.getPrimaryText().toString());
 
         // Click the switch
-        TestThreadUtils.runOnUiThreadBlocking(() -> mSwitch.performClick());
+        mSwitch.performClick();
         Assert.assertFalse("After toggle the switch, " + ASSERT_MESSAGE_TITLE_DISABLED,
                 mTitleTextView.isEnabled());
         Assert.assertFalse("After toggle the switch, " + ASSERT_MESSAGE_RADIO_BUTTON_DISABLED,
@@ -369,7 +423,7 @@ public class HomepageSettingsFragmentTest {
         Assert.assertEquals(ASSERT_MESSAGE_EDIT_TEXT, TEST_URL_FOO,
                 mCustomUriRadioButton.getPrimaryText().toString());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mSwitch.performClick());
+        mSwitch.performClick();
         Assert.assertTrue(ASSERT_MESSAGE_TITLE_ENABLED, mTitleTextView.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mCustomUriRadioButton.isEnabled());
@@ -382,10 +436,8 @@ public class HomepageSettingsFragmentTest {
         Assert.assertEquals(ASSERT_MESSAGE_EDIT_TEXT, TEST_URL_FOO,
                 mCustomUriRadioButton.getPrimaryText().toString());
 
-        Assert.assertEquals(
-                "Histogram for location change should not change when toggling switch preference.",
-                0, actionCounter.locationChangedCount);
-        actionCounter.tearDown();
+        // Histogram for location change should not change when toggling switch preference.
+        assertUserActionRecorded(false);
     }
 
     /**
@@ -396,8 +448,7 @@ public class HomepageSettingsFragmentTest {
     @Feature({"Homepage"})
     public void testCheckRadioButtons() throws Exception {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_FOO);
-        launchSettingsActivity();
-        LocationChangedCounter counter = new LocationChangedCounter();
+        launchHomepageSettings();
 
         // Initial state check
         Assert.assertTrue(ASSERT_MESSAGE_SWITCH_CHECK, mSwitch.isChecked());
@@ -410,8 +461,7 @@ public class HomepageSettingsFragmentTest {
                 mCustomUriRadioButton.getPrimaryText().toString());
         Assert.assertEquals(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS, TEST_URL_FOO, HomepageManager.getHomepageUri());
-        Assert.assertEquals(
-                ASSERT_HOMEPAGE_LOCATION_HISTOGRAM_COUNT, 0, counter.locationChangedCount);
+        assertUserActionRecorded(false);
 
         // Check radio button to select NTP as homepage. Homepage is not changed yet at this time.
         checkRadioButtonAndWait(mChromeNtpRadioButton);
@@ -420,8 +470,7 @@ public class HomepageSettingsFragmentTest {
                 ASSERT_MESSAGE_RADIO_BUTTON_CUSTOMIZED_CHECK, mCustomUriRadioButton.isChecked());
         Assert.assertEquals(ASSERT_MESSAGE_EDIT_TEXT, TEST_URL_FOO,
                 mCustomUriRadioButton.getPrimaryText().toString());
-        Assert.assertEquals(
-                ASSERT_HOMEPAGE_LOCATION_HISTOGRAM_COUNT, 0, counter.locationChangedCount);
+        assertUserActionRecorded(false);
 
         // Check back to customized radio button
         checkRadioButtonAndWait(mCustomUriRadioButton);
@@ -436,8 +485,7 @@ public class HomepageSettingsFragmentTest {
         finishSettingsActivity();
         Assert.assertEquals(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS, TEST_URL_FOO, HomepageManager.getHomepageUri());
-        Assert.assertEquals(
-                ASSERT_HOMEPAGE_LOCATION_HISTOGRAM_COUNT, 0, counter.locationChangedCount);
+        assertUserActionRecorded(false);
     }
 
     /**
@@ -448,8 +496,7 @@ public class HomepageSettingsFragmentTest {
     @Feature({"Homepage"})
     public void testChangeCustomized() throws Exception {
         mHomepageTestRule.useChromeNTPForTest();
-        launchSettingsActivity();
-        LocationChangedCounter actionCounter = new LocationChangedCounter();
+        launchHomepageSettings();
 
         // Initial state check
         Assert.assertTrue(ASSERT_MESSAGE_SWITCH_CHECK, mSwitch.isChecked());
@@ -460,18 +507,14 @@ public class HomepageSettingsFragmentTest {
                 ASSERT_MESSAGE_EDIT_TEXT, "", mCustomUriRadioButton.getPrimaryText().toString());
         Assert.assertTrue(ASSERT_HOMEPAGE_MANAGER_SETTINGS,
                 UrlUtilities.isNTPUrl(HomepageManager.getHomepageUri()));
-        Assert.assertEquals(
-                ASSERT_HOMEPAGE_LOCATION_HISTOGRAM_COUNT, 0, actionCounter.locationChangedCount);
+        assertUserActionRecorded(false);
 
         // Update the text box. To do this, request focus for customized radio button so that the
         // checked option will be changed.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCustomUriRadioButton.getEditTextForTests().requestFocus();
-            mCustomUriRadioButton.setPrimaryText(TEST_URL_FOO);
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            return mCustomUriRadioButton.getEditTextForTests().isFocused();
-        }, "EditText never got the focus.");
+        mCustomUriRadioButton.getEditTextForTests().requestFocus();
+        mCustomUriRadioButton.setPrimaryText(TEST_URL_FOO);
+        Assert.assertTrue("EditText never got the focus.",
+                mCustomUriRadioButton.getEditTextForTests().isFocused());
 
         // Radio Button should switched to customized homepage.
         Assert.assertFalse(
@@ -480,34 +523,38 @@ public class HomepageSettingsFragmentTest {
                 ASSERT_MESSAGE_RADIO_BUTTON_CUSTOMIZED_CHECK, mCustomUriRadioButton.isChecked());
 
         // Update the text box and exit the activity, homepage should change accordingly.
-        // Also, homepage should be fixed as a valid URL.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mCustomUriRadioButton.setPrimaryText("127.0.0.1:8000/bar.html"));
+        mCustomUriRadioButton.setPrimaryText(TEST_URL_BAR);
         finishSettingsActivity();
 
         Assert.assertEquals(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS, TEST_URL_BAR, HomepageManager.getHomepageUri());
-        Assert.assertEquals(
-                ASSERT_HOMEPAGE_LOCATION_HISTOGRAM_COUNT, 1, actionCounter.locationChangedCount);
-
-        actionCounter.tearDown();
+        assertUserActionRecorded(true);
     }
 
     private void checkRadioButtonAndWait(RadioButtonWithDescription radioButton) {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { TouchCommon.singleClickView(radioButton, 5, 5); });
-        CriteriaHelper.pollUiThread(radioButton::isChecked, "Radio button is never checked.");
+        TouchCommon.singleClickView(radioButton, 5, 5);
+        ShadowLooper.idleMainLooper();
+        Assert.assertTrue("RadioButton is not checked.", radioButton.isChecked());
     }
 
-    /**
-     * Record user action "Settings.Homepage.LocationChanged"
-     */
-    private static class LocationChangedCounter extends UserActionTester {
-        public int locationChangedCount;
+    private void setPartnerHomepage(String partnerHomepage) {
+        Mockito.doReturn(true)
+                .when(mMockPartnerBrowserCustomizations)
+                .isHomepageProviderAvailableAndEnabled();
+        Mockito.doReturn(new GURL(partnerHomepage))
+                .when(mMockPartnerBrowserCustomizations)
+                .getHomePageUrl();
+    }
 
-        @Override
-        public void onActionRecorded(String action) {
-            if (action.equals("Settings.Homepage.LocationChanged_V2")) ++locationChangedCount;
-        }
+    private void setHomepagePolicy(String homepagePolicy) {
+        Mockito.doReturn(true).when(mMockHomepagePolicyManger).isHomepageLocationPolicyEnabled();
+        Mockito.doReturn(homepagePolicy).when(mMockHomepagePolicyManger).getHomepagePreference();
+    }
+
+    private void assertUserActionRecorded(boolean recorded) {
+        Assert.assertEquals(
+                "User action <Settings.Homepage.LocationChanged_V2> record differently.", recorded,
+                ShadowRecordUserAction.getSamples().contains(
+                        "Settings.Homepage.LocationChanged_V2"));
     }
 }

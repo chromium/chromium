@@ -35,7 +35,7 @@ public class JUnitTestGURLs {
     public static final String SEARCH_2_URL = "https://www.google.com/search?q=query";
     public static final String INITIAL_URL = "https://initial.com";
     public static final String SPECULATED_URL = "https://speculated.com";
-    public static final String NTP_URL = "chrome://newtab";
+    public static final String NTP_URL = "chrome://newtab/";
     public static final String DOM_DISILLER_URL = "distiller://url";
     public static final String RED_1 = "https://www.red.com/page1";
     public static final String RED_2 = "https://www.red.com/page2";
