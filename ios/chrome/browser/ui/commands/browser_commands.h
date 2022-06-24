@@ -32,9 +32,7 @@
     // TODO(crbug.com/1323775): Remove QRScannerCommands conformance.
     QRScannerCommands,
     // TODO(crbug.com/1323778): Remove SnackbarCommands conformance.
-    SnackbarCommands,
-    // TODO(crbug.com/1323783): Remove LensCommands conformance.
-    LensCommands>
+    SnackbarCommands>
 
 // Closes the current tab.
 // TODO(crbug.com/1272498): Refactor this command away; call sites should close
