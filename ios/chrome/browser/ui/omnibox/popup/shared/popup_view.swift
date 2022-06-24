@@ -295,6 +295,7 @@ struct PopupView: View {
   var body: some View {
     listView
       .onAppear(perform: onAppear)
+      .measureVisibleSuggestionCount(with: self.uiConfiguration, updating: self.model)
   }
 
   @ViewBuilder
@@ -439,7 +440,7 @@ struct PopupView_Previews: PreviewProvider {
 
   static func model() -> PopupModel {
     PopupModel(
-      matches: [PopupMatch.previews], headers: ["Suggestions"], delegate: nil)
+      matches: [PopupMatch.previews], headers: ["Suggestions"], dataSource: nil, delegate: nil)
   }
 
   static var previews: some View {
@@ -460,7 +461,7 @@ struct PopupView_Previews: PreviewProvider {
     sample.environment(\.locale, .init(identifier: "ar"))
 
     PopupView(model: model(), uiConfiguration: PopupUIConfiguration.previewsConfigurationIPad())
-      .previewDevice(PreviewDevice(rawValue: "iPad Pro (11-inch)"))
+      .previewDevice(PreviewDevice(rawValue: "iPad Pro (11-inch) (3rd generation)"))
 
     let darkSample = sample.environment(\.colorScheme, .dark)
 

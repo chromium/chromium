@@ -29,6 +29,7 @@
 
 @property(nonatomic, assign) BOOL incognito;
 @property(nonatomic, weak) id<AutocompleteResultConsumerDelegate> delegate;
+@property(nonatomic, weak) id<AutocompleteResultDataSource> dataSource;
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;
 @property(nonatomic, weak) id<FaviconRetriever> faviconRetriever;
 

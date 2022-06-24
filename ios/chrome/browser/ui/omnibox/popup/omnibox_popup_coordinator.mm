@@ -99,6 +99,7 @@
   if (base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
     self.model = [[PopupModel alloc] initWithMatches:@[]
                                              headers:@[]
+                                          dataSource:self.mediator
                                             delegate:self.pedalExtractor];
     ToolbarConfiguration* toolbarConfiguration = [[ToolbarConfiguration alloc]
         initWithStyle:isIncognito ? INCOGNITO : NORMAL];
@@ -140,6 +141,7 @@
     popupViewController.imageRetriever = self.mediator;
     popupViewController.faviconRetriever = self.mediator;
     popupViewController.delegate = self.mediator;
+    popupViewController.dataSource = self.mediator;
     popupViewController.incognito = isIncognito;
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:popupViewController

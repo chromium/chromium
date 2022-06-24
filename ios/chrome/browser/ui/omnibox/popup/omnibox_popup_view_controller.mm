@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"
 #include "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
+#import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
@@ -28,6 +29,9 @@
 
 namespace {
 const CGFloat kTopAndBottomPadding = 8.0;
+// Percentage of the suggestion height that needs to be visible in order to
+// consider the suggestion as visible.
+const CGFloat kVisibleSuggestionThreshold = 0.6;
 }  // namespace
 
 @interface OmniboxPopupViewController () <UITableViewDataSource,
@@ -186,6 +190,38 @@ const CGFloat kTopAndBottomPadding = 8.0;
 // Set text alignment for popup cells.
 - (void)setTextAlignment:(NSTextAlignment)alignment {
   self.alignment = alignment;
+}
+
+- (void)computeSizeAndRequestUpdate {
+  CGFloat keyboardHeight =
+      [[KeyboardObserverHelper sharedKeyboardObserver] visibleKeyboardHeight];
+  CGRect tableViewFrameInMainScreenCoordinateSpace =
+      [self.tableView convertRect:self.tableView.bounds
+                toCoordinateSpace:UIScreen.mainScreen.coordinateSpace];
+  // Computes the visible area between the omnibox and the keyboard.
+  CGFloat visibleTableViewHeight =
+      CurrentScreenHeight() -
+      tableViewFrameInMainScreenCoordinateSpace.origin.y - keyboardHeight -
+      self.tableView.contentInset.top;
+
+  // Use font size to estimate the size of a omnibox search suggestion.
+  CGFloat fontSizeHeight = [@"T" sizeWithAttributes:@{
+                             NSFontAttributeName : [UIFont
+                                 preferredFontForTextStyle:UIFontTextStyleBody]
+                           }]
+                               .height;
+  // Add padding to the estimated row height and set its minimum to be at
+  // `kOmniboxPopupCellMinimumHeight`.
+  CGFloat estimatedRowHeight = MAX(fontSizeHeight + 2 * kTopAndBottomPadding,
+                                   kOmniboxPopupCellMinimumHeight);
+  CGFloat visibleRows = visibleTableViewHeight / estimatedRowHeight;
+  // A row is considered visible if `kVisibleSuggestionTreshold` percent of its
+  // height is visible.
+  NSInteger visibleSuggestionCount =
+      floor(visibleRows + (1.0 - kVisibleSuggestionThreshold));
+
+  [self.dataSource
+      requestResultsWithVisibleSuggestionCount:visibleSuggestionCount];
 }
 
 #pragma mark - OmniboxSuggestionCommands

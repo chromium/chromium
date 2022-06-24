@@ -43,6 +43,7 @@ class OmniboxPopupMediatorDelegate {
 };
 
 @interface OmniboxPopupMediator : NSObject <AutocompleteResultConsumerDelegate,
+                                            AutocompleteResultDataSource,
                                             ImageRetriever,
                                             FaviconRetriever>
 

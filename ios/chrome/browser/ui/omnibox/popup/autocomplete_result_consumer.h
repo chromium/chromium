@@ -57,6 +57,25 @@
 // Sets the semantic content attribute of the popup content.
 - (void)setSemanticContentAttribute:
     (UISemanticContentAttribute)semanticContentAttribute;
+
+// Tells the consumer to compute the number of suggestions it can show. And to
+// request new results from its data source `AutocompleteResultDataSource`.
+- (void)computeSizeAndRequestUpdate;
+
+@end
+
+// An abstract data source for autocomplete results.
+@protocol AutocompleteResultDataSource <NSObject>
+
+// Request suggestions from the data source.
+// `n` is the number of suggestions that are considered visible. Meaning the
+// user doesn't have to scroll or hide the keyboard to see those `n` first
+// suggestions.
+- (void)requestResultsWithVisibleSuggestionCount:
+    (NSInteger)visibleSuggestionCount
+    __attribute__((swift_name("requestResults(visibleSuggestionCount:)")));
+;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_AUTOCOMPLETE_RESULT_CONSUMER_H_

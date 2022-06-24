@@ -335,7 +335,7 @@ void AutocompleteResult::SortAndCull(
   }
 
   // Group search suggestions above URL suggestions.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (matches_.size() > 2 &&
       !base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
 #else

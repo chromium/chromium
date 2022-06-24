@@ -5,6 +5,17 @@
 import SwiftUI
 import ios_chrome_common_ui_colors_swift
 
+/// PreferenceKey to listen to changes of a view's size.
+struct PopupMatchRowSizePreferenceKey: PreferenceKey {
+  static var defaultValue = CGSize.zero
+  // This function determines how to combine the preference values for two
+  // child views. In the absence of any better combination method, just use the
+  // second value.
+  static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+    value = nextValue()
+  }
+}
+
 struct PopupMatchRowView: View {
   enum Colors {
     static let highlightingColor = Color(
@@ -40,6 +51,7 @@ struct PopupMatchRowView: View {
 
   @State var isPressed = false
   @State var childView = CGSize.zero
+  @State var currentSize = CGSize.zero
 
   var button: some View {
 
@@ -135,7 +147,9 @@ struct PopupMatchRowView: View {
   var body: some View {
     ZStack {
       // This hides system separators when disabling them is not possible.
-      backgroundColor
+      backgroundColor.notifyOnSizeChange { size in
+        currentSize = size
+      }
 
       if shouldDisplayCustomSeparator {
         VStack {
@@ -206,6 +220,7 @@ struct PopupMatchRowView: View {
       .environment(\.layoutDirection, layoutDirection)
     }
     .frame(maxWidth: .infinity, minHeight: Dimensions.minHeight)
+    .preference(key: PopupMatchRowSizePreferenceKey.self, value: self.currentSize)
   }
 
   var backgroundColor: Color {

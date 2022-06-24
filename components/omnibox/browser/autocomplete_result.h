@@ -252,6 +252,12 @@ class AutocompleteResult {
       const AutocompleteResult& new_result,
       bool in_start);
 
+  // This method implements a stateful stable partition. Matches which are
+  // search types, and their submatches regardless of type, are shifted
+  // earlier in the range, while non-search types and their submatches
+  // are shifted later.
+  static void GroupSuggestionsBySearchVsURL(iterator begin, iterator end);
+
   // This value should be comfortably larger than any max-autocomplete-matches
   // under consideration.
   static constexpr size_t kMaxAutocompletePositionValue = 30;
@@ -317,12 +323,6 @@ class AutocompleteResult {
       size_t max_matches,
       size_t max_url_count,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
-
-  // This method implements a stateful stable partition. Matches which are
-  // search types, and their submatches regardless of type, are shifted
-  // earlier in the range, while non-search types and their submatches
-  // are shifted later.
-  static void GroupSuggestionsBySearchVsURL(iterator begin, iterator end);
 
   // If we have SearchProvider search suggestions, demote OnDeviceProvider
   // search suggestions, since, which in general have lower quality than

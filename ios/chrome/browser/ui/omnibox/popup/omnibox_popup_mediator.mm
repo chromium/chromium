@@ -68,6 +68,47 @@ const CGFloat kOmniboxIconSize = 16;
   _currentResult.CopyFrom(result);
 
   self.hasResults = !_currentResult.empty();
+  if (base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
+    [self.consumer computeSizeAndRequestUpdate];
+  } else {
+    // Avoid calling consumer visible size and set all suggestions as visible to
+    // get only one grouping.
+    [self requestResultsWithVisibleSuggestionCount:_currentResult.size()];
+  }
+}
+
+- (void)updateWithResults:(const AutocompleteResult&)result {
+  [self updateMatches:result];
+  self.open = !result.empty();
+  [self.presenter updatePopup];
+}
+
+- (void)setTextAlignment:(NSTextAlignment)alignment {
+  [self.consumer setTextAlignment:alignment];
+}
+
+- (void)setSemanticContentAttribute:
+    (UISemanticContentAttribute)semanticContentAttribute {
+  [self.consumer setSemanticContentAttribute:semanticContentAttribute];
+}
+
+#pragma mark - AutocompleteResultDataSource
+
+- (void)requestResultsWithVisibleSuggestionCount:
+    (NSInteger)visibleSuggestionCount {
+  size_t visibleSuggestions =
+      MIN(visibleSuggestionCount, (NSInteger)_currentResult.size());
+  if (visibleSuggestions > 0) {
+    // Groups visible suggestions by search vs url. Skip the first suggestion
+    // because it's the omnibox content.
+    AutocompleteResult::GroupSuggestionsBySearchVsURL(
+        std::next(_currentResult.begin()),
+        std::next(_currentResult.begin(), visibleSuggestions));
+  }
+  // Groups hidden suggestions by search vs url.
+  AutocompleteResult::GroupSuggestionsBySearchVsURL(
+      std::next(_currentResult.begin(), visibleSuggestions),
+      _currentResult.end());
 
   NSArray<id<AutocompleteSuggestion>>* matches = [self wrappedMatches];
 
@@ -98,21 +139,6 @@ const CGFloat kOmniboxIconSize = 16;
   }
 
   return wrappedMatches;
-}
-
-- (void)updateWithResults:(const AutocompleteResult&)result {
-  [self updateMatches:result];
-  self.open = !result.empty();
-  [self.presenter updatePopup];
-}
-
-- (void)setTextAlignment:(NSTextAlignment)alignment {
-  [self.consumer setTextAlignment:alignment];
-}
-
-- (void)setSemanticContentAttribute:
-    (UISemanticContentAttribute)semanticContentAttribute {
-  [self.consumer setSemanticContentAttribute:semanticContentAttribute];
 }
 
 #pragma mark - AutocompleteResultConsumerDelegate
