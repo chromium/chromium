@@ -320,6 +320,10 @@
         'goma': 'gpu_tests_release_bot',
         'reclient': 'gpu_tests_release_bot_reclient',
       },
+      'Comparison Mac (reclient)': {
+        'goma': 'gpu_tests_release_bot_minimal_symbols_no_nacl',
+        'reclient': 'gpu_tests_release_bot_minimal_symbols_reclient',
+      },
       'Comparison Simple Chrome (reclient)': {
         'goma': 'chromeos_amd64-generic_use_fake_dbus_clients_goma',
         'reclient': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
