@@ -637,6 +637,18 @@ apps::mojom::IntentFilterPtr CreateNoteTakingFilterMojom() {
   return apps::ConvertIntentFilterToMojomIntentFilter(CreateNoteTakingFilter());
 }
 
+apps::IntentFilterPtr CreateLockScreenFilter() {
+  auto intent_filter = std::make_unique<apps::IntentFilter>();
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAction,
+                                         kIntentActionStartOnLockScreen,
+                                         apps::PatternMatchType::kNone);
+  return intent_filter;
+}
+
+apps::mojom::IntentFilterPtr CreateLockScreenFilterMojom() {
+  return apps::ConvertIntentFilterToMojomIntentFilter(CreateLockScreenFilter());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(crbug.com/1253219): Use FilePaths in intents to avoid dependency on
 // File Manager.

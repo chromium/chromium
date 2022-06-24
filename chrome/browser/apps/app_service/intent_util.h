@@ -111,6 +111,14 @@ apps::IntentFilterPtr CreateNoteTakingFilter();
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 apps::mojom::IntentFilterPtr CreateNoteTakingFilterMojom();
 
+// Create an intent filter for an app capable of running on the lock screen.
+apps::IntentFilterPtr CreateLockScreenFilter();
+
+// Create a mojom intent filter for an app capable of running on the lock
+// screen.
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+apps::mojom::IntentFilterPtr CreateLockScreenFilterMojom();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Create an intent struct with filesystem:// type URLs from the file paths and
 // mime types of a list of files. This util has to live under chrome/ because it

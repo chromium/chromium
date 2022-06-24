@@ -885,10 +885,8 @@ const base::Feature kWebOTPAssertionFeaturePolicy{
 
 // Enable the web lockscreen API implementation
 // (https://github.com/WICG/lock-screen) in Chrome.
-#if BUILDFLAG(IS_CHROMEOS)
 const base::Feature kWebLockScreenApi{"WebLockScreenApi",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
 
 // Controls whether to isolate sites of documents that specify an eligible
 // Cross-Origin-Opener-Policy header.  Note that this is only intended to be

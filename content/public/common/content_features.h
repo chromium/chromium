@@ -215,9 +215,7 @@ CONTENT_EXPORT extern const base::Feature kDisableProcessReuse;
 CONTENT_EXPORT extern const base::Feature
     kSkipEarlyCommitPendingForCrashedFrame;
 CONTENT_EXPORT extern const base::Feature kUserMediaCaptureOnFocus;
-#if BUILDFLAG(IS_CHROMEOS)
 CONTENT_EXPORT extern const base::Feature kWebLockScreenApi;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 CONTENT_EXPORT extern const base::Feature kWebOTP;
 CONTENT_EXPORT extern const base::Feature kWebOTPAssertionFeaturePolicy;
 CONTENT_EXPORT extern const base::Feature kSpareRendererForSitePerProcess;

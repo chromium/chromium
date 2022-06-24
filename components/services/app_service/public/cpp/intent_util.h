@@ -27,6 +27,7 @@ extern const char kIntentActionView[];
 extern const char kIntentActionSend[];
 extern const char kIntentActionSendMultiple[];
 extern const char kIntentActionCreateNote[];
+extern const char kIntentActionStartOnLockScreen[];
 // A request to edit a file in an app. Must include an attached file.
 extern const char kIntentActionEdit[];
 extern const char kIntentActionPotentialFileHandler[];
@@ -73,7 +74,10 @@ apps::IntentPtr MakeIntentForActivity(const std::string& activity,
 apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url);
 
 // Create an intent struct for a Create Note action.
-apps::mojom::IntentPtr CreateCreateNoteIntent();
+apps::IntentPtr CreateCreateNoteIntent();
+
+// Create an intent struct for a "Start On Lock Screen" action.
+apps::IntentPtr CreateStartOnLockScreenIntent();
 
 // Create an intent struct with the list of files with action kIntentActionView.
 apps::mojom::IntentPtr CreateViewIntentFromFiles(

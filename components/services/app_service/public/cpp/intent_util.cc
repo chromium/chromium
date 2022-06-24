@@ -91,6 +91,7 @@ const char kIntentActionView[] = "view";
 const char kIntentActionSend[] = "send";
 const char kIntentActionSendMultiple[] = "send_multiple";
 const char kIntentActionCreateNote[] = "create_note";
+const char kIntentActionStartOnLockScreen[] = "start_on_lock_screen";
 const char kIntentActionEdit[] = "edit";
 const char kIntentActionPotentialFileHandler[] = "potential_file_handler";
 
@@ -166,10 +167,12 @@ apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url) {
   return intent;
 }
 
-apps::mojom::IntentPtr CreateCreateNoteIntent() {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = kIntentActionCreateNote;
-  return intent;
+apps::IntentPtr CreateCreateNoteIntent() {
+  return std::make_unique<apps::Intent>(kIntentActionCreateNote);
+}
+
+apps::IntentPtr CreateStartOnLockScreenIntent() {
+  return std::make_unique<apps::Intent>(kIntentActionStartOnLockScreen);
 }
 
 apps::mojom::IntentPtr CreateViewIntentFromFiles(

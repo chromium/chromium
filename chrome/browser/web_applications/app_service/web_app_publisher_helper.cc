@@ -18,6 +18,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
@@ -54,7 +55,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -63,6 +63,7 @@
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/clear_site_data_utils.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
@@ -224,6 +225,12 @@ apps::mojom::InstallSource ConvertInstallSourceToMojom(
 
 bool IsNoteTakingWebApp(const web_app::WebApp& web_app) {
   return web_app.note_taking_new_note_url().is_valid();
+}
+
+bool IsLockScreenCapable(const web_app::WebApp& web_app) {
+  if (!base::FeatureList::IsEnabled(features::kWebLockScreenApi))
+    return false;
+  return web_app.lock_screen_start_url().is_valid();
 }
 
 }  // namespace
@@ -561,9 +568,6 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
           provider_->os_integration_manager().GetEnabledFileHandlers(
               web_app->app_id())));
 
-  if (IsNoteTakingWebApp(*web_app))
-    app->intent_filters.push_back(apps_util::CreateNoteTakingFilter());
-
   // These filters are used by the settings page to display would-be-handled
   // extensions even when the feature is not enabled for the app, whereas
   // `GetEnabledFileHandlers` above only returns the ones that currently are
@@ -580,6 +584,12 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
             /*file_extensions=*/
             {extensions_set.begin(), extensions_set.end()})));
   }
+
+  if (IsNoteTakingWebApp(*web_app))
+    app->intent_filters.push_back(apps_util::CreateNoteTakingFilter());
+
+  if (IsLockScreenCapable(*web_app))
+    app->intent_filters.push_back(apps_util::CreateLockScreenFilter());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (web_app->app_id() == crostini::kCrostiniTerminalSystemAppId) {
@@ -673,6 +683,9 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
 
   if (IsNoteTakingWebApp(*web_app))
     app->intent_filters.push_back(apps_util::CreateNoteTakingFilterMojom());
+
+  if (IsLockScreenCapable(*web_app))
+    app->intent_filters.push_back(apps_util::CreateLockScreenFilterMojom());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (web_app->app_id() == crostini::kCrostiniTerminalSystemAppId) {

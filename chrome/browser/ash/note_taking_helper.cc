@@ -213,7 +213,8 @@ NoteTakingHelper::LaunchResult LaunchWebAppInternal(const std::string& app_id,
   // They can just launch without the intent.
   if (has_note_taking_intent_filter) {
     apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-        app_id, ui::EF_NONE, apps_util::CreateCreateNoteIntent(),
+        app_id, ui::EF_NONE,
+        ConvertIntentToMojomIntent(apps_util::CreateCreateNoteIntent()),
         apps::mojom::LaunchSource::kFromShelf);
   } else {
     apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
