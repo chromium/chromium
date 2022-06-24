@@ -107,7 +107,7 @@ const invokers = [
     supported: false,
   },
 ];
-["auto","hint","async"].forEach(type => {
+["auto","hint","manual"].forEach(type => {
   invokers.forEach(testcase => {
     let t_set = [1], s_set = [1], h_set = [1];
     if (testcase.supported) {

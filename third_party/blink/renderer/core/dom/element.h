@@ -163,11 +163,11 @@ enum class PopupValueType {
   kNone,
   kAuto,
   kHint,
-  kAsync,
+  kManual,
 };
 constexpr const char* kPopupTypeValueAuto = "auto";
 constexpr const char* kPopupTypeValueHint = "hint";
-constexpr const char* kPopupTypeValueAsync = "async";
+constexpr const char* kPopupTypeValueManual = "manual";
 
 enum class PopupTriggerAction {
   kNone,

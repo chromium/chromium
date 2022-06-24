@@ -28,15 +28,15 @@ rootWebArea
 ++++++++inlineTextBox name='Search input pointing to hidden hint '
 ++++++genericContainer ignored invisible
 ++++++++staticText ignored name='Hint'
-++++++button name='Hide button pointing to hidden async'
-++++++++staticText name='Hide button pointing to hidden async'
-++++++++++inlineTextBox name='Hide button pointing to hidden async'
+++++++button name='Hide button pointing to hidden manual'
+++++++++staticText name='Hide button pointing to hidden manual'
+++++++++++inlineTextBox name='Hide button pointing to hidden manual'
 ++++++textField
 ++++++++genericContainer
-++++++staticText name='Email input pointing to hidden async '
-++++++++inlineTextBox name='Email input pointing to hidden async '
+++++++staticText name='Email input pointing to hidden manual '
+++++++++inlineTextBox name='Email input pointing to hidden manual '
 ++++++genericContainer ignored invisible
-++++++++staticText ignored name='Async'
+++++++++staticText ignored name='Manual'
 ++++++button name='Button pointing to showing popup'
 ++++++++staticText name='Button pointing to showing popup'
 ++++++++++inlineTextBox name='Button pointing to showing popup'
@@ -57,16 +57,16 @@ rootWebArea
 ++++++++genericContainer
 ++++++++++staticText name='Hint (nested)'
 ++++++++++++inlineTextBox name='Hint (nested)'
-++++++button name='Hide button pointing to showing async'
-++++++++staticText name='Hide button pointing to showing async'
-++++++++++inlineTextBox name='Hide button pointing to showing async'
+++++++button name='Hide button pointing to showing manual'
+++++++++staticText name='Hide button pointing to showing manual'
+++++++++++inlineTextBox name='Hide button pointing to showing manual'
 ++++++textField
 ++++++++genericContainer
-++++++staticText name='Text input pointing to showing async '
-++++++++inlineTextBox name='Text input pointing to showing async '
+++++++staticText name='Text input pointing to showing manual '
+++++++++inlineTextBox name='Text input pointing to showing manual '
 ++++++genericContainer
-++++++++staticText name='Async'
-++++++++++inlineTextBox name='Async'
+++++++++staticText name='Manual'
+++++++++++inlineTextBox name='Manual'
 ++++++button name='Button pointing to non-popup'
 ++++++++staticText name='Button pointing to non-popup'
 ++++++++++inlineTextBox name='Button pointing to non-popup'

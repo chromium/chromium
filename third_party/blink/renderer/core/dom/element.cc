@@ -2438,8 +2438,8 @@ void Element::UpdatePopupAttribute(String value) {
     type = PopupValueType::kAuto;
   } else if (EqualIgnoringASCIICase(value, kPopupTypeValueHint)) {
     type = PopupValueType::kHint;
-  } else if (EqualIgnoringASCIICase(value, kPopupTypeValueAsync)) {
-    type = PopupValueType::kAsync;
+  } else if (EqualIgnoringASCIICase(value, kPopupTypeValueManual)) {
+    type = PopupValueType::kManual;
   } else {
     type = PopupValueType::kNone;
   }
@@ -3224,7 +3224,7 @@ Node::InsertionNotificationRequest Element::InsertedInto(
                    WTF::Bind(
                        [](Element* popup) {
                          if (popup && popup->isConnected() &&
-                             (popup->PopupType() == PopupValueType::kAsync ||
+                             (popup->PopupType() == PopupValueType::kManual ||
                               !popup->GetDocument().PopupOrHintShowing())) {
                            popup->showPopUp(ASSERT_NO_EXCEPTION);
                          }

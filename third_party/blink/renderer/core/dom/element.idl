@@ -151,7 +151,7 @@ dictionary IsVisibleOptions {
     // The Popup API
     [MeasureAs=ElementShowPopup,RuntimeEnabled=HTMLPopupAttribute,RaisesException] void showPopUp();
     [MeasureAs=ElementHidePopup,RuntimeEnabled=HTMLPopupAttribute,RaisesException] void hidePopUp();
-    [Unscopable,CEReactions,RuntimeEnabled=HTMLPopupAttribute,MeasureAs=AnyPopupAttribute,Reflect,ReflectOnly=("auto","hint","async"),ReflectEmpty="auto",ReflectInvalid] attribute DOMString? popUp;
+    [Unscopable,CEReactions,RuntimeEnabled=HTMLPopupAttribute,MeasureAs=AnyPopupAttribute,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid] attribute DOMString? popUp;
     [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute boolean defaultOpen;
 
     // Experimental accessibility API

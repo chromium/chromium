@@ -11,8 +11,8 @@
 <div popup=hint id=p2b defaultopen>This is a hint popup with defaultopen, which should NOT be open upon load</div>
 <div popup id=p3>Also not visible</div>
 
-<div popup=async id=p4 defaultopen>This is an async popup with defaultopen, which should be open upon load</div>
-<div popup=async id=p5 defaultopen>This is an async popup with defaultopen, which should be open upon load</div>
+<div popup=manual id=p4 defaultopen>This is a manual popup with defaultopen, which should be open upon load</div>
+<div popup=manual id=p5 defaultopen>This is a manual popup with defaultopen, which should be open upon load</div>
 
 <script>
   requestAnimationFrame(() => {
@@ -26,8 +26,8 @@
         assert_true(p2.defaultOpen,'defaultopen should be present/true, even if not opened');
 
         assert_false(p2b.matches(':top-layer'),'Only the first popup/hint with defaultopen should be open on load');
-        assert_true(p4.matches(':top-layer'),'defaultopen should open all async popups');
-        assert_true(p5.matches(':top-layer'),'defaultopen should open all async popups');
+        assert_true(p4.matches(':top-layer'),'defaultopen should open all manual popups');
+        assert_true(p5.matches(':top-layer'),'defaultopen should open all manual popups');
 
         assert_false(p3.matches(':top-layer'));
         p3.setAttribute('defaultopen','');

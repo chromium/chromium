@@ -7,15 +7,15 @@
 
 <div id=popup popup>Popup</div>
 <div id=hint popup=hint>Hint</div>
-<div id=async popup=async>Async</div>
-<div id=async2 popup=async>Async</div>
+<div id=manual popup=manual>Async</div>
+<div id=manual2 popup=manual>Async</div>
 
 <script>
-function assert_state_1(popupOpen,hintOpen,asyncOpen,async2Open) {
+function assert_state_1(popupOpen,hintOpen,manualOpen,manual2Open) {
   assert_equals(popup.matches(':top-layer'),popupOpen,'popup open state is incorrect');
   assert_equals(hint.matches(':top-layer'),hintOpen,'hint open state is incorrect');
-  assert_equals(async.matches(':top-layer'),asyncOpen,'async open state is incorrect');
-  assert_equals(async2.matches(':top-layer'),async2Open,'async2 open state is incorrect');
+  assert_equals(manual.matches(':top-layer'),manualOpen,'manual open state is incorrect');
+  assert_equals(manual2.matches(':top-layer'),manual2Open,'manual2 open state is incorrect');
 }
 test(() => {
   assert_state_1(false,false,false,false);
@@ -23,9 +23,9 @@ test(() => {
   assert_state_1(true,false,false,false);
   hint.showPopUp();
   assert_state_1(true,true,false,false);
-  async.showPopUp();
+  manual.showPopUp();
   assert_state_1(true,true,true,false);
-  async2.showPopUp();
+  manual2.showPopUp();
   assert_state_1(true,true,true,true);
   hint.hidePopUp();
   assert_state_1(true,false,true,true);
@@ -36,26 +36,26 @@ test(() => {
   assert_state_1(true,true,true,true);
   popup.hidePopUp();
   assert_state_1(false,false,true,true);
-  async.hidePopUp();
+  manual.hidePopUp();
   assert_state_1(false,false,false,true);
-  async2.hidePopUp();
+  manual2.hidePopUp();
   assert_state_1(false,false,false,false);
-},'hints and asyncs do not close popups');
+},'hints and manuals do not close popups');
 
 test(() => {
   assert_state_1(false,false,false,false);
   hint.showPopUp();
-  async.showPopUp();
-  async2.showPopUp();
+  manual.showPopUp();
+  manual2.showPopUp();
   assert_state_1(false,true,true,true);
   popup.showPopUp();
   assert_state_1(true,false,true,true);
   popup.hidePopUp();
   assert_state_1(false,false,true,true);
-  async.hidePopUp();
-  async2.hidePopUp();
+  manual.hidePopUp();
+  manual2.hidePopUp();
   assert_state_1(false,false,false,false);
-},'popups close hints but not asyncs');
+},'popups close hints but not manuals');
 </script>
 
 <div id=popup1 popup>Popup 1

@@ -9,9 +9,9 @@
 <button showpopup=hint1>Show button pointing to hidden hint</button>
 <input type=search showpopup=hint1>Search input pointing to hidden hint</button>
 <div popup=hint id=hint1>Hint</div>
-<button hidepopup=async1>Hide button pointing to hidden async</button>
-<input type=email hidepopup=async1>Email input pointing to hidden async</button>
-<div popup=async id=async1>Async</div>
+<button hidepopup=manual1>Hide button pointing to hidden manual</button>
+<input type=email hidepopup=manual1>Email input pointing to hidden manual</button>
+<div popup=manual id=manual1>Manual</div>
 
 <button togglepopup=popup2>Button pointing to showing popup</button>
 <input type=tel togglepopup=popup2>Tel input pointing to showing popup</button>
@@ -20,13 +20,13 @@
 <div popup id=popup2>Popup
   <div popup=hint id=hint2>Hint (nested)</div>
 </div>
-<button hidepopup=async2>Hide button pointing to showing async</button>
-<input type=text hidepopup=async2>Text input pointing to showing async</button>
-<div popup=async id=async2>Async</div>
+<button hidepopup=manual2>Hide button pointing to showing manual</button>
+<input type=text hidepopup=manual2>Text input pointing to showing manual</button>
+<div popup=manual id=manual2>Manual</div>
 <script>
   popup2.showPopUp();
   hint2.showPopUp();
-  async2.showPopUp();
+  manual2.showPopUp();
 </script>
 
 <button togglepopup=noattr>Button pointing to non-popup</button>

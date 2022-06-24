@@ -417,7 +417,7 @@ promise_test(async () => {
 
 <div popup id=p10>Popup</div>
 <div popup=hint id=p11>Hint</div>
-<div popup=async id=p12>Async</div>
+<div popup=manual id=p12>Manual</div>
 <style>
   #p10 {top:100px;}
   #p11 {top:200px;}
@@ -427,26 +427,26 @@ promise_test(async () => {
 promise_test(async () => {
   const popup = document.querySelector('#p10');
   const hint = document.querySelector('#p11');
-  const async = document.querySelector('#p12');
+  const manual = document.querySelector('#p12');
   // All three can be open at once, if shown in this order:
   popup.showPopUp();
   hint.showPopUp();
-  async.showPopUp();
+  manual.showPopUp();
   assert_true(popup.matches(':top-layer'));
   assert_true(hint.matches(':top-layer'));
-  assert_true(async.matches(':top-layer'));
+  assert_true(manual.matches(':top-layer'));
   // The hint was opened last, so clicking it shouldn't close anything:
   await clickOn(hint);
   assert_true(popup.matches(':top-layer'),'popup should stay open');
   assert_true(hint.matches(':top-layer'),'hint should stay open');
-  assert_true(async.matches(':top-layer'),'async does not light dismiss');
-  // Clicking outside should close the hint and popup, but not the async:
+  assert_true(manual.matches(':top-layer'),'manual does not light dismiss');
+  // Clicking outside should close the hint and popup, but not the manual:
   await clickOn(outside);
   assert_false(popup.matches(':top-layer'),'popup should close');
   assert_false(hint.matches(':top-layer'),'hint should close');
-  assert_true(async.matches(':top-layer'),'async does not light dismiss');
-  async.hidePopUp();
-  assert_false(async.matches(':top-layer'));
+  assert_true(manual.matches(':top-layer'),'manual does not light dismiss');
+  manual.hidePopUp();
+  assert_false(manual.matches(':top-layer'));
   popup.showPopUp();
   hint.showPopUp();
   assert_true(popup.matches(':top-layer'));

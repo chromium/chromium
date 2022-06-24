@@ -11,7 +11,7 @@
   <div popup="">Pop up</div>
   <div popup=auto>Pop up</div>
   <div popup=hint>Pop up</div>
-  <div popup=async>Pop up</div>
+  <div popup=manual>Pop up</div>
 </div>
 
 <div id=nonpopups>
@@ -158,7 +158,7 @@
     assert_false(popUp.matches(':top-layer'));
     popUp.showPopUp();
     assert_true(popUp.matches(':top-layer'));
-    popUp.setAttribute('popup','async');
+    popUp.setAttribute('popup','manual');
     assert_false(popUp.matches(':top-layer'));
     popUp.showPopUp();
     assert_true(popUp.matches(':top-layer'));
@@ -175,7 +175,7 @@
     }
   }
 
-  ["auto","hint","async"].forEach(type => {
+  ["auto","hint","manual"].forEach(type => {
     test((t) => {
       const popUp = createPopUp(t);
       popUp.setAttribute('popup',type);
