@@ -284,10 +284,8 @@ if (include_polymer) {
   group("closure_compile") {
     deps = [
       ":cr_elements_resources",
-      "cr_button:closure_compile",
       "cr_checkbox:closure_compile",
       "cr_dialog:closure_compile",
-      "cr_expand_button:closure_compile",
       "cr_fingerprint:closure_compile",
       "cr_icon_button:closure_compile",
       "cr_input:closure_compile",
@@ -314,8 +312,12 @@ if (include_polymer) {
       "policy:closure_compile_module",
     ]
 
-    if (is_chromeos) {
-      deps += [ "chromeos:closure_compile" ]
+    if (is_chromeos_ash) {
+      deps += [
+        "chromeos:closure_compile",
+        "cr_button:closure_compile",
+        "cr_expand_button:closure_compile",
+      ]
     }
   }
 

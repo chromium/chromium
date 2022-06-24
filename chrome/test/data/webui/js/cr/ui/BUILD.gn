@@ -5,6 +5,14 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
+# While some of these tests are still run on Desktop platforms, they cover long-
+# deprecated code that is exclusively used by 2 UIs
+# (chrome://bluetooth-internals and chrome://apps). These UIs have decided to
+# remove typechecking, so tests for code exclusive to these UIs do not need to
+# be typechecked. No new uses of this deprecated code should be added, so there
+# should also be no additions of references to these targets on Desktop.
+assert(is_chromeos_ash)
+
 js_library("array_data_model_test") {
   deps = [
     "../../..:chai_assert",
@@ -29,38 +37,36 @@ js_library("context_menu_handler_test") {
   ]
 }
 
-if (is_chromeos_ash) {
-  js_library("grid_test") {
-    deps = [
-      "../../..:chai_assert",
-      "//ui/webui/resources/js/cr/ui:array_data_model.m",
-      "//ui/webui/resources/js/cr/ui:grid.m",
-    ]
-  }
+js_library("grid_test") {
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+    "//ui/webui/resources/js/cr/ui:grid.m",
+  ]
+}
 
-  js_library("list_selection_model_test") {
-    deps = [
-      ":list_selection_model_test_util",
-      "../../..:chai_assert",
-      "//ui/webui/resources/js/cr/ui:list_selection_model.m",
-    ]
-  }
+js_library("list_selection_model_test") {
+  deps = [
+    ":list_selection_model_test_util",
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
+  ]
+}
 
-  js_library("list_selection_model_test_util") {
-    deps = [
-      "../../..:chai_assert",
-      "//ui/webui/resources/js/cr/ui:list_selection_model.m",
-      "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
-    ]
-  }
+js_library("list_selection_model_test_util") {
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
+    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
+  ]
+}
 
-  js_library("list_single_selection_model_test") {
-    deps = [
-      ":list_selection_model_test_util",
-      "../../..:chai_assert",
-      "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
-    ]
-  }
+js_library("list_single_selection_model_test") {
+  deps = [
+    ":list_selection_model_test_util",
+    "../../..:chai_assert",
+    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
+  ]
 }
 
 js_library("list_test") {
@@ -103,18 +109,13 @@ js_type_check("closure_compile") {
     ":array_data_model_test",
     ":command_test",
     ":context_menu_handler_test",
+    ":grid_test",
+    ":list_selection_model_test",
+    ":list_selection_model_test_util",
+    ":list_single_selection_model_test",
     ":list_test",
     ":menu_button_test",
     ":menu_test",
     ":position_util_test",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      ":grid_test",
-      ":list_selection_model_test",
-      ":list_selection_model_test_util",
-      ":list_single_selection_model_test",
-    ]
-  }
 }

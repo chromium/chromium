@@ -2,19 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [ ":cr_button" ]
-}
+if (is_chromeos_ash) {
+  js_type_check("closure_compile") {
+    uses_legacy_modules = true
+    deps = [ ":cr_button" ]
+  }
 
-js_library("cr_button") {
-  deps = [
-    "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-ripple-behavior-extracted",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager",
-  ]
+  js_library("cr_button") {
+    deps = [
+      "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-ripple-behavior-extracted",
+      "//ui/webui/resources/js/cr/ui:focus_outline_manager",
+    ]
+  }
 }
 
 polymer_modulizer("cr_button") {

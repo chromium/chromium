@@ -294,14 +294,12 @@ group("closure_compile") {
   deps = [
     ":closure_compile_local",
     "inline_login:closure_compile",
-    "js/cr/ui:closure_compile",
-
-    # TODO(crbug.com/1000989): Add page specific targets here.
   ]
   if (is_chromeos_ash) {
     deps += [
       "chromeos:closure_compile",
       "cr_components/chromeos:closure_compile",
+      "js/cr/ui:closure_compile",
       "nearby_share:closure_compile",
       "nearby_share/shared:closure_compile",
       "settings/chromeos:closure_compile",
