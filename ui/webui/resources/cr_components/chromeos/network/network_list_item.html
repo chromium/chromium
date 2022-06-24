@@ -228,6 +228,7 @@
     </div>
     <template is="dom-if" if="[[isCellularUnlockDialogOpen_]]" restamp>
       <sim-lock-dialogs
+          global-policy="[[globalPolicy]]"
           is-dialog-open="{{isCellularUnlockDialogOpen_}}"
           device-state="[[deviceState]]">
       </sim-lock-dialogs>

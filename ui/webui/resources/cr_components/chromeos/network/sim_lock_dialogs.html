@@ -135,6 +135,11 @@
         close-text="[[i18n('close')]]">
       <div slot="title">[[i18n('networkSimLockedTitle')]]</div>
       <div slot="body">
+        <template is="dom-if" if="[[isSimPinLockRestricted_]]">
+          <div id="adminSubtitle">
+            [[i18n('networkSimLockPolicyAdminSubtitle')]]
+          </div>
+        </template>
         <network-password-input id="unlockPin"
             value="{{pin_}}"
             on-enter="sendUnlockPin_"

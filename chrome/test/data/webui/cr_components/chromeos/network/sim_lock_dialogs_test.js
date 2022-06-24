@@ -68,6 +68,12 @@ suite('NetworkSimLockDialogsTest', function() {
       simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 3}
     };
     verifyDialogShown('unlockPinDialog', deviceState);
+    assertFalse(!!simLockDialog.$$(`#adminSubtitle`));
+    simLockDialog.globalPolicy = {
+      allowCellularSimLock: false,
+    };
+    await flushAsync();
+    assertTrue(!!simLockDialog.$$(`#adminSubtitle`));
   });
 
   test('Show Unlock PUK dialog', async function() {

@@ -157,6 +157,7 @@
 
 <template is="dom-if" if="[[showSimLockDialog_]]" restamp>
   <sim-lock-dialogs
+      global-policy="[[globalPolicy_]]"
       is-dialog-open="{{showSimLockDialog_}}"
       device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
   </sim-lock-dialogs>

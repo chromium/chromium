@@ -102,6 +102,7 @@
 
     <template is="dom-if" if="[[isDialogOpen_]]" restamp>
       <sim-lock-dialogs
+          global-policy="[[globalPolicy]]"
           show-change-pin="[[showChangePin_]]"
           is-dialog-open="{{isDialogOpen_}}"
           device-state="[[deviceState]]">
