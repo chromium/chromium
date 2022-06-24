@@ -52,11 +52,22 @@ const blankURLWithHeaders = headers => {
   return url;
 };
 
-const registerAttributionSrc = (t, {
+const eligibleHeader = 'Attribution-Reporting-Eligible';
+
+const registerAttributionSrc = async (t, {
   source,
   trigger,
   cookie,
+  method = 'img',
 }) => {
+  const searchParams = new URLSearchParams(location.search);
+
+  if (method === 'variant') {
+    method = searchParams.get('method');
+  }
+
+  const eligible = searchParams.get('eligible');
+
   const headers = [];
 
   if (source) {
@@ -84,8 +95,57 @@ const registerAttributionSrc = (t, {
                   }])));
   }
 
-  const img = document.createElement('img');
-  img.attributionSrc = blankURLWithHeaders(headers);
+  const url = blankURLWithHeaders(headers);
+
+  switch (method) {
+    case 'img':
+      const img = document.createElement('img');
+      if (eligible === null) {
+        img.attributionSrc = url;
+      } else {
+        img.attributionSrc = '';
+        img.src = url;
+      }
+      return 'event';
+    case 'script':
+      // TODO(apaseltiner): Support optional attributionsrc value.
+      const script = document.createElement('script');
+      script.attributionSrc = url;
+      return 'event';
+    case 'a':
+      // TODO(apaseltiner): Support optional attributionsrc value.
+      const a = document.createElement('a');
+      a.attributionSrc = url;
+      a.href = blankURL();
+      a.target = '_blank';
+      a.textContent = 'link';
+      document.body.appendChild(a);
+      await test_driver.click(a);
+      return 'navigation';
+    case 'open':
+      // TODO(apaseltiner): Support optional attributionsrc value.
+      await test_driver.bless('open window', () => {
+        open(blankURL(), '_blank', `attributionsrc=${encodeURIComponent(url)}`);
+      });
+      return 'navigation';
+    case 'fetch':
+      const headers = {};
+      if (eligible !== null) {
+        headers[eligibleHeader] = eligible;
+      }
+      await fetch(url, {headers});
+      return 'event';
+    case 'xhr':
+      const req = new XMLHttpRequest();
+      req.open('GET', url);
+      if (eligible !== null) {
+        req.setRequestHeader(eligibleHeader, eligible);
+      }
+      req.send();
+      return 'event';
+    default:
+      throw `unknown method "${method}"`;
+  }
 };
 
 /**
