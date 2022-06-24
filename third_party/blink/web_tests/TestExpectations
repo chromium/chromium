@@ -6191,7 +6191,6 @@ crbug.com/1249176 [ Mac11-arm64 ] webaudio/Analyser/realtimeanalyser-freq-data.h
 crbug.com/1249176 [ Mac11-arm64 ] webaudio/Oscillator/no-dezippering.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/offsetparent-old-behavior/external/wpt/shadow-dom/accesskey.tentative.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/interfaces/TextTrackCue/endTime.html [ Failure ]
-crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webaudio/the-audio-api/the-convolvernode-interface/realtime-conv.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/shadow-dom/accesskey.tentative.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/service-workers/idlharness.https.any.worker.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/dom/xslt/transformToFragment.tentative.window.html [ Failure ]
@@ -7044,3 +7043,7 @@ crbug.com/1338420 [ Linux ] external/wpt/event-timing/interactionid-tap.html [ S
 
 # Flaky on multiple platforms
 crbug.com/1338536 http/tests/devtools/oopif/oopif-elements-nesting.js [ Failure Pass ]
+
+# Sheriff 2022-06-24
+crbug.com/1339211 [ Mac ] external/wpt/css/css-text-decor/text-decoration-thickness-fixed.html [ Failure Pass ]
+crbug.com/1339214 [ Mac ] external/wpt/webaudio/the-audio-api/the-convolvernode-interface/realtime-conv.html [ Failure Pass ]
