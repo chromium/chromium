@@ -48,4 +48,6 @@ export interface IContext {
   findElement(
     selector: string
   ): Promise<BrowsingContext.PROTO.FindElementResult>;
+
+  addChild(child: IContext): void;
 }

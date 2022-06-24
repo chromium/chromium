@@ -221,7 +221,14 @@ export class TargetContext extends Context {
           this.#cdpClient
         );
         Context.addContext(frameContext);
-        this.addChild(frameContext);
+        Context.getKnownContext(params.parentFrameId).addChild(frameContext);
+
+        await this.#eventManager.sendEvent(
+          new BrowsingContext.ContextCreatedEvent(
+            frameContext.serializeToBidiValue(0)
+          ),
+          frameContext.getContextId()
+        );
       }
     );
 

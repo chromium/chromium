@@ -171,10 +171,7 @@ export class BrowsingContextProcessor {
     const context = Context.getKnownContext(
       (params.target as Script.ContextTarget).context
     );
-    return await context.scriptEvaluate(
-      params.expression,
-      params.awaitPromise !== false // `awaitPromise` by default is `true`.
-    );
+    return await context.scriptEvaluate(params.expression, params.awaitPromise);
   }
 
   async process_script_callFunction(
@@ -189,7 +186,7 @@ export class BrowsingContextProcessor {
         type: 'undefined',
       }, // `this` is `undefined` by default.
       params.arguments || [], // `arguments` is `[]` by default.
-      params.awaitPromise !== false // `awaitPromise` is `true` by default.
+      params.awaitPromise
     );
   }
 
