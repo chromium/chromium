@@ -32,6 +32,10 @@
 #include "components/policy/core/common/schema_registry_tracking_policy_provider.h"
 #include "components/policy/policy_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/policy/restricted_mgs_policy_provider.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -228,6 +232,16 @@ void ProfilePolicyConnector::Init(
   }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // `RestrictedMGSPolicyProvider::Create()` returns a nullptr when we are not
+  // in a Managed Guest Session.
+  restricted_mgs_policy_provider = RestrictedMGSPolicyProvider::Create();
+  if (restricted_mgs_policy_provider) {
+    restricted_mgs_policy_provider->Init(schema_registry);
+    policy_providers_.push_back(restricted_mgs_policy_provider.get());
+  }
+#endif
+
   std::vector<std::unique_ptr<PolicyMigrator>> migrators;
 #if BUILDFLAG(IS_WIN)
   migrators.push_back(
@@ -285,6 +299,11 @@ void ProfilePolicyConnector::Shutdown() {
 
   if (special_user_policy_provider_)
     special_user_policy_provider_->Shutdown();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (restricted_mgs_policy_provider)
+    restricted_mgs_policy_provider->Shutdown();
 #endif
 
   for (auto& wrapped_policy_provider : wrapped_policy_providers_) {

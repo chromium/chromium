@@ -5586,6 +5586,8 @@ static_library("browser") {
       "policy/messaging_layer/util/manual_test_heartbeat_event.h",
       "policy/messaging_layer/util/manual_test_heartbeat_event_factory.cc",
       "policy/messaging_layer/util/manual_test_heartbeat_event_factory.h",
+      "policy/restricted_mgs_policy_provider.cc",
+      "policy/restricted_mgs_policy_provider.h",
       "policy/system_features_disable_list_policy_handler.cc",
       "policy/system_features_disable_list_policy_handler.h",
       "renderer_context_menu/quick_answers_menu_observer.cc",

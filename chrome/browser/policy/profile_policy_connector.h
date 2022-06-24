@@ -154,6 +154,10 @@ class ProfilePolicyConnector final {
       nullptr;
   raw_ptr<const CloudPolicyStore> policy_store_ = nullptr;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ConfigurationPolicyProvider> restricted_mgs_policy_provider;
+#endif
+
   // |policy_providers_| contains a list of the policy providers available for
   // the PolicyService of this connector, in decreasing order of priority.
   //
