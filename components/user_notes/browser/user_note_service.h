@@ -92,6 +92,11 @@ class UserNoteService : public KeyedService,
                           std::string selector,
                           gfx::Rect rect);
 
+  // Called by a note manager when a user selects a web highlight in the page.
+  // This causes the associated note to become focused in the UserNotesUI.
+  void OnWebHighlightFocused(const base::UnguessableToken& id,
+                             content::RenderFrameHost* rfh);
+
   // UserNotesUIDelegate implementation.
   void OnNoteSelected(const base::UnguessableToken& id,
                       content::RenderFrameHost* rfh) override;

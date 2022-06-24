@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_USER_NOTES_INTERFACES_USER_NOTES_UI_H_
 #define COMPONENTS_USER_NOTES_INTERFACES_USER_NOTES_UI_H_
 
-#include <string>
-
 #include "base/unguessable_token.h"
 #include "ui/gfx/geometry/rect.h"
 

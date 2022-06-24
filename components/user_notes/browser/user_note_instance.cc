@@ -57,6 +57,10 @@ void UserNoteInstance::DidFinishAttachment(const gfx::Rect& rect) {
   std::move(did_finish_attachment_callback_).Run();
 }
 
+void UserNoteInstance::OnWebHighlightFocused() {
+  parent_manager_->OnWebHighlightFocused(model_->id());
+}
+
 void UserNoteInstance::OnNoteDetached() {
   rect_ = gfx::Rect();
   DCHECK(IsDetached());

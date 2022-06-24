@@ -62,6 +62,10 @@ void UserNoteManager::RemoveNote(const base::UnguessableToken& id) {
   instance_map_.erase(entry_it);
 }
 
+void UserNoteManager::OnWebHighlightFocused(const base::UnguessableToken& id) {
+  service_->OnWebHighlightFocused(id, &page().GetMainDocument());
+}
+
 void UserNoteManager::AddNoteInstance(std::unique_ptr<UserNoteInstance> note) {
   AddNoteInstance(std::move(note), base::DoNothing());
 }

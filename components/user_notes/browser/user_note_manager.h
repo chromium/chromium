@@ -50,6 +50,10 @@ class UserNoteManager : public content::PageUserData<UserNoteManager> {
   // Destroys the note instance associated with the given GUID.
   void RemoveNote(const base::UnguessableToken& id);
 
+  // Notifies the service that the web highlight has been focused for the given
+  // id and RenderFrameHost.
+  void OnWebHighlightFocused(const base::UnguessableToken& id);
+
   // Stores the given note instance into this object's instance map, then kicks
   // off its asynchronous initialization in the renderer process, passing it the
   // provided callback for when it finishes.

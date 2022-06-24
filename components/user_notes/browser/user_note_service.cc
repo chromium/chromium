@@ -160,6 +160,15 @@ void UserNoteService::OnAddNoteRequested(content::RenderFrameHost* frame,
   ui->StartNoteCreation(instance_raw);
 }
 
+void UserNoteService::OnWebHighlightFocused(const base::UnguessableToken& id,
+                                            content::RenderFrameHost* rfh) {
+  DCHECK(IsUserNotesEnabled());
+  DCHECK(rfh);
+  UserNotesUI* ui = delegate_->GetUICoordinatorForFrame(rfh);
+  DCHECK(ui);
+  ui->FocusNote(id);
+}
+
 void UserNoteService::OnNoteSelected(const base::UnguessableToken& id,
                                      content::RenderFrameHost* rfh) {
   DCHECK(IsUserNotesEnabled());
