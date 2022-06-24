@@ -11,7 +11,7 @@ GEN_INCLUDE([
 /** Test fixture for array_util.js. */
 RepeatedEventHandlerTest = class extends SelectToSpeakE2ETest {};
 
-TEST_F(
+AX_TEST_F(
     'RepeatedEventHandlerTest', 'RepeatedEventHandledOnce', async function() {
       const root = await this.runWithLoadedTree('');
       this.handlerCallCount = 0;
@@ -31,7 +31,7 @@ TEST_F(
           this.newCallback(() => assertEquals(this.handlerCallCount, 1)), 0);
     });
 
-TEST_F(
+AX_TEST_F(
     'RepeatedEventHandlerTest', 'NoEventsHandledAfterStopListening',
     async function() {
       const root = await this.runWithLoadedTree('');

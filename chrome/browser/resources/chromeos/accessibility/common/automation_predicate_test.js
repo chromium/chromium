@@ -7,7 +7,7 @@ GEN_INCLUDE(['../select_to_speak/select_to_speak_e2e_test_base.js']);
 /** Test fixture for automation_predicate.js. */
 AutomationPredicateTest = class extends SelectToSpeakE2ETest {};
 
-TEST_F('AutomationPredicateTest', 'EquivalentRoles', async function() {
+AX_TEST_F('AutomationPredicateTest', 'EquivalentRoles', async function() {
   const site = `
     <input type="text"></input>
     <input role="combobox"></input>

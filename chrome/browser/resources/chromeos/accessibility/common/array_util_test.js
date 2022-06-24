@@ -8,7 +8,7 @@ GEN_INCLUDE(['../select_to_speak/select_to_speak_e2e_test_base.js']);
 /** Test fixture for array_util.js. */
 ArrayUtilTest = class extends SelectToSpeakE2ETest {};
 
-SYNC_TEST_F('ArrayUtilTest', 'ContentsAreEqual', function() {
+AX_TEST_F('ArrayUtilTest', 'ContentsAreEqual', function() {
   const even1 = [2, 4, 6, 8];
   const even2 = [2, 4, 6, 8];
   const odd = [1, 3, 5, 7, 9];
