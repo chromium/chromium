@@ -6291,11 +6291,15 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
               IsUserScrollable()) {
             return true;
           }
+          if (!GetElement() || !GetDocument())
+            return false;
+          int tab_index = GetElement()->tabIndex();
+          bool is_focused = GetElement() == GetDocument()->FocusedElement();
+          bool is_in_tab_order_or_focused = tab_index >= 0 || is_focused;
           // Don't repair name from contents to focusable elements unless
-          // tabbable, because providing a repaired accessible name often
-          // leads to redundant verbalizations.
-          return GetElement() && GetElement()->tabIndex() >= 0 &&
-                 CanSetFocusAttribute();
+          // tabbable or focused, because providing a repaired accessible name
+          // often leads to redundant verbalizations.
+          return is_in_tab_order_or_focused && CanSetFocusAttribute();
         }
       }
       break;
