@@ -45,6 +45,7 @@ import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
+import "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
 import "third_party/blink/public/mojom/portal/portal.mojom";
@@ -575,6 +576,9 @@ struct CreateNewWindowParams {
 
   // Governs how downloads are handled if `target_url` results in a download.
   blink.mojom.NavigationDownloadPolicy download_policy;
+
+  // Additional parameters for creating picture-in-picture windows.
+  blink.mojom.PictureInPictureWindowOptions? pip_options;
 };
 
 // Operation result when the renderer asks the browser to create a new window.

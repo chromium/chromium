@@ -57,6 +57,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/resize_utils.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -157,6 +160,35 @@ bool AdjustNavigateParamsForURL(NavigateParams* params) {
 
   return true;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+gfx::Rect CalculateInitialPictureInPictureWindowBounds(
+    float initial_aspect_ratio) {
+  // TODO(https://crbug.com/1327797): This copies a bunch of logic from
+  // OverlayWindowViews. The sizing logic should be delegated to a PiP-specific
+  // controller.
+  gfx::Rect work_area =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  gfx::Rect window_bounds(work_area.width() / 5, work_area.height() / 5);
+  float aspect_ratio = (initial_aspect_ratio > 0) ? initial_aspect_ratio : 1.0;
+  gfx::SizeRectToAspectRatio(gfx::ResizeEdge::kTopLeft, aspect_ratio,
+                             gfx::Size(0, 0), work_area.size(), &window_bounds);
+
+  int window_diff_width = work_area.right() - window_bounds.width();
+  int window_diff_height = work_area.bottom() - window_bounds.height();
+
+  // Keep a margin distance of 2% the average of the two window size
+  // differences, keeping the margins consistent.
+  int buffer = (window_diff_width + window_diff_height) / 2 * 0.02;
+
+  gfx::Point default_origin =
+      gfx::Point(window_diff_width - buffer, window_diff_height - buffer);
+  default_origin += work_area.OffsetFromOrigin();
+  window_bounds.set_origin(default_origin);
+
+  return window_bounds;
+}
+#endif  // !IS_CHROMEOS_LACROS
 
 // Returns a Browser and tab index. The browser can host the navigation or
 // tab addition specified in |params|.  This might just return the same
@@ -272,9 +304,15 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
         Browser::CreateParams browser_params(Browser::TYPE_PICTURE_IN_PICTURE,
                                              profile, params.user_gesture);
         browser_params.trusted_source = params.trusted_source;
-        browser_params.initial_bounds = params.window_bounds;
         browser_params.picture_in_picture_window_title =
             params.source_contents->GetLastCommittedURL().GetContent();
+        if (params.contents_to_insert) {
+          browser_params.initial_bounds =
+              CalculateInitialPictureInPictureWindowBounds(
+                  params.contents_to_insert
+                      ->GetPictureInPictureInitialAspectRatio());
+        }
+
         return {Browser::Create(browser_params), -1};
       }
 #else   // !IS_CHROMEOS_LACROS

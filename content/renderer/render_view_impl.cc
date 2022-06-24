@@ -261,7 +261,9 @@ WebView* RenderViewImpl::CreateView(
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::SessionStorageNamespaceId& session_storage_namespace_id,
     bool& consumed_user_gesture,
-    const absl::optional<blink::Impression>& impression) {
+    const absl::optional<blink::Impression>& impression,
+    const absl::optional<blink::WebPictureInPictureWindowOptions>&
+        pip_options) {
   consumed_user_gesture = false;
   RenderFrameImpl* creator_frame = RenderFrameImpl::FromWebFrame(creator);
   mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
@@ -300,6 +302,14 @@ WebView* RenderViewImpl::CreateView(
   params->form_submission_post_content_type = request.HttpContentType().Utf8();
 
   params->impression = impression;
+
+  if (pip_options) {
+    CHECK_EQ(policy, blink::kWebNavigationPolicyPictureInPicture);
+    auto pip_mojom_opts = blink::mojom::PictureInPictureWindowOptions::New();
+    pip_mojom_opts->initial_aspect_ratio = pip_options->initial_aspect_ratio;
+    pip_mojom_opts->lock_aspect_ratio = pip_options->lock_aspect_ratio;
+    params->pip_options = std::move(pip_mojom_opts);
+  }
 
   params->download_policy.ApplyDownloadFramePolicy(
       /*is_opener_navigation=*/false, request.HasUserGesture(),

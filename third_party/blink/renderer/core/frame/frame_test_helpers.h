@@ -307,15 +307,17 @@ class TestWebViewClient : public WebViewClient {
   void DestroyChildViews();
 
   // WebViewClient overrides.
-  WebView* CreateView(WebLocalFrame* opener,
-                      const WebURLRequest&,
-                      const WebWindowFeatures&,
-                      const WebString& name,
-                      WebNavigationPolicy,
-                      network::mojom::blink::WebSandboxFlags,
-                      const SessionStorageNamespaceId&,
-                      bool& consumed_user_gesture,
-                      const absl::optional<Impression>&) override;
+  WebView* CreateView(
+      WebLocalFrame* opener,
+      const WebURLRequest&,
+      const WebWindowFeatures&,
+      const WebString& name,
+      WebNavigationPolicy,
+      network::mojom::blink::WebSandboxFlags,
+      const SessionStorageNamespaceId&,
+      bool& consumed_user_gesture,
+      const absl::optional<Impression>&,
+      const absl::optional<WebPictureInPictureWindowOptions>&) override;
 
  private:
   WTF::Vector<std::unique_ptr<WebViewHelper>> child_web_views_;

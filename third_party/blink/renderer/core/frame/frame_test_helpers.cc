@@ -975,15 +975,17 @@ void TestWebViewClient::DestroyChildViews() {
   child_web_views_.clear();
 }
 
-WebView* TestWebViewClient::CreateView(WebLocalFrame* opener,
-                                       const WebURLRequest&,
-                                       const WebWindowFeatures&,
-                                       const WebString& name,
-                                       WebNavigationPolicy,
-                                       network::mojom::blink::WebSandboxFlags,
-                                       const SessionStorageNamespaceId&,
-                                       bool& consumed_user_gesture,
-                                       const absl::optional<Impression>&) {
+WebView* TestWebViewClient::CreateView(
+    WebLocalFrame* opener,
+    const WebURLRequest&,
+    const WebWindowFeatures&,
+    const WebString& name,
+    WebNavigationPolicy,
+    network::mojom::blink::WebSandboxFlags,
+    const SessionStorageNamespaceId&,
+    bool& consumed_user_gesture,
+    const absl::optional<Impression>&,
+    const absl::optional<WebPictureInPictureWindowOptions>&) {
   auto webview_helper = std::make_unique<WebViewHelper>();
   WebView* result = webview_helper->InitializeWithOpener(opener);
   child_web_views_.push_back(std::move(webview_helper));

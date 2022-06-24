@@ -32,6 +32,9 @@ specific_include_rules = {
     "+ash/wm/desks/desks_controller.h",
     "+ash/wm/desks/desks_test_util.h",
   ],
+  "browser_navigator_browsertest\.cc": [
+    "+ash/shell.h",
+  ],
   "fullscreen_controller_interactive_browsertest\.cc": [
     "+ash/shell.h",
   ],

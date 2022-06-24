@@ -254,6 +254,10 @@ class WebContents : public PageNavigator,
     // Enables contents to hold wake locks, for example, to keep the screen on
     // while playing video.
     bool enable_wake_locks = true;
+
+    // Options specific to WebContents created for picture-in-picture windows.
+    float initial_picture_in_picture_aspect_ratio = 0;
+    bool lock_picture_in_picture_aspect_ratio = false;
   };
 
   // Creates a new WebContents.
@@ -1308,6 +1312,12 @@ class WebContents : public PageNavigator,
 
   // Returns the value from CreateParams::creator_location.
   virtual const base::Location& GetCreatorLocation() = 0;
+
+  // Returns the initial_aspect_ratio value from CreateParams.
+  virtual float GetPictureInPictureInitialAspectRatio() = 0;
+
+  // Returns the lock_aspect_ratio value from CreateParams.
+  virtual bool GetPictureInPictureLockAspectRatio() = 0;
 
   // Hide or show the browser controls for the given WebContents, based on
   // allowed states, desired state and whether the transition should be animated

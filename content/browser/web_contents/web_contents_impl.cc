@@ -2314,6 +2314,14 @@ const base::Location& WebContentsImpl::GetCreatorLocation() {
   return creator_location_;
 }
 
+float WebContentsImpl::GetPictureInPictureInitialAspectRatio() {
+  return pip_initial_aspect_ratio_;
+}
+
+bool WebContentsImpl::GetPictureInPictureLockAspectRatio() {
+  return pip_lock_aspect_ratio_;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void WebContentsImpl::SetPrimaryMainFrameImportance(
     ChildProcessImportance importance) {
@@ -2992,6 +3000,10 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   TRACE_EVENT0("content", "WebContentsImpl::Init");
 
   creator_location_ = params.creator_location;
+
+  pip_initial_aspect_ratio_ = params.initial_picture_in_picture_aspect_ratio;
+
+  pip_lock_aspect_ratio_ = params.lock_picture_in_picture_aspect_ratio;
 
   // This is set before initializing the render manager since
   // RenderFrameHostManager::Init calls back into us via its delegate to ask if
@@ -3931,6 +3943,13 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   // the opener's process will not given the routing IDs for the new
   // objects.
   create_params.renderer_initiated_creation = !is_new_browsing_instance;
+
+  if (params.pip_options) {
+    create_params.initial_picture_in_picture_aspect_ratio =
+        params.pip_options->initial_aspect_ratio;
+    create_params.lock_picture_in_picture_aspect_ratio =
+        params.pip_options->lock_aspect_ratio;
+  }
 
   std::unique_ptr<WebContentsImpl> new_contents;
   if (!is_guest) {

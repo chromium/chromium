@@ -1884,21 +1884,31 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
 // BrowserNavigatorTest instead.
 // See crbug.com/1320453 for why this is off for lacros.
 class BrowserNavigatorWithPictureInPictureTest : public BrowserNavigatorTest {
- public:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kPictureInPictureV2};
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
                        Disposition_PictureInPicture_Open) {
+  // The WebContents holds the parameters from the PiP request.
+  WebContents::CreateParams web_contents_params(browser()->profile());
+  web_contents_params.initial_picture_in_picture_aspect_ratio = 0.5;
+
   // Opening a picture in picture window should create a new browser.
   NavigateParams params(MakeNavigateParams(browser()));
   params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+  params.contents_to_insert = WebContents::Create(web_contents_params);
   Navigate(&params);
 
   // Should not re-use the browser.
   EXPECT_NE(browser(), params.browser);
   EXPECT_TRUE(params.browser->is_type_picture_in_picture());
+
+  // The window should have respected the initial aspect ratio.
+  const gfx::Rect override_bounds = params.browser->override_bounds();
+  const float aspect_ratio = static_cast<float>(override_bounds.width()) /
+                             static_cast<float>(override_bounds.height());
+  EXPECT_FLOAT_EQ(0.5, aspect_ratio);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,

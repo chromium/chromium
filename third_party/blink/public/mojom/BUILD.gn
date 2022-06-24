@@ -157,6 +157,7 @@ mojom("mojom_platform") {
     "permissions_policy/policy_disposition.mojom",
     "permissions_policy/policy_value.mojom",
     "picture_in_picture/picture_in_picture.mojom",
+    "picture_in_picture_window_options/picture_in_picture_window_options.mojom",
     "plugins/plugin_registry.mojom",
     "prerender/prerender.mojom",
     "presentation/presentation.mojom",

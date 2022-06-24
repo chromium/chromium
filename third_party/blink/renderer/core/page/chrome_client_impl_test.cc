@@ -95,15 +95,17 @@ class FakeChromeClientForAutofill : public EmptyChromeClient {
 
 class ViewCreatingClient : public frame_test_helpers::TestWebViewClient {
  public:
-  WebView* CreateView(WebLocalFrame* opener,
-                      const WebURLRequest&,
-                      const WebWindowFeatures&,
-                      const WebString& name,
-                      WebNavigationPolicy,
-                      network::mojom::blink::WebSandboxFlags,
-                      const SessionStorageNamespaceId&,
-                      bool& consumed_user_gesture,
-                      const absl::optional<Impression>&) override {
+  WebView* CreateView(
+      WebLocalFrame* opener,
+      const WebURLRequest&,
+      const WebWindowFeatures&,
+      const WebString& name,
+      WebNavigationPolicy,
+      network::mojom::blink::WebSandboxFlags,
+      const SessionStorageNamespaceId&,
+      bool& consumed_user_gesture,
+      const absl::optional<Impression>&,
+      const absl::optional<WebPictureInPictureWindowOptions>&) override {
     return web_view_helper_.InitializeWithOpener(opener);
   }
 

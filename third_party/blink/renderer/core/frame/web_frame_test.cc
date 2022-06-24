@@ -7502,15 +7502,17 @@ class TestNewWindowWebViewClient
   ~TestNewWindowWebViewClient() override = default;
 
   // frame_test_helpers::TestWebFrameClient:
-  WebView* CreateView(WebLocalFrame*,
-                      const WebURLRequest&,
-                      const WebWindowFeatures&,
-                      const WebString&,
-                      WebNavigationPolicy,
-                      network::mojom::blink::WebSandboxFlags,
-                      const SessionStorageNamespaceId&,
-                      bool& consumed_user_gesture,
-                      const absl::optional<Impression>&) override {
+  WebView* CreateView(
+      WebLocalFrame*,
+      const WebURLRequest&,
+      const WebWindowFeatures&,
+      const WebString&,
+      WebNavigationPolicy,
+      network::mojom::blink::WebSandboxFlags,
+      const SessionStorageNamespaceId&,
+      bool& consumed_user_gesture,
+      const absl::optional<Impression>&,
+      const absl::optional<WebPictureInPictureWindowOptions>&) override {
     EXPECT_TRUE(false);
     return nullptr;
   }

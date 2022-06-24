@@ -555,6 +555,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool HasActiveEffectivelyFullscreenVideo() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   const base::Location& GetCreatorLocation() override;
+  float GetPictureInPictureInitialAspectRatio() override;
+  bool GetPictureInPictureLockAspectRatio() override;
   void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                   cc::BrowserControlsState current,
                                   bool animate) override;
@@ -2295,6 +2297,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Stores WebContents::CreateParams::creator_location_.
   base::Location creator_location_;
+
+  // Stores WebContents::CreateParams::initial_aspect_ratio.
+  float pip_initial_aspect_ratio_ = 0;
+
+  // Stores WebContents::CreateParams::lock_aspect_ratio.
+  bool pip_lock_aspect_ratio_ = false;
 
   VisibleTimeRequestTrigger visible_time_request_trigger_;
 
