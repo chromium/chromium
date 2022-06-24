@@ -121,6 +121,7 @@ src/webgpu/examples.spec.ts
 src/webgpu/listing.ts
 src/webgpu/api/operation/labels.spec.ts
 src/webgpu/api/operation/onSubmittedWorkDone.spec.ts
+src/webgpu/api/operation/reflection.spec.ts
 src/webgpu/api/operation/uncapturederror.spec.ts
 src/webgpu/api/operation/adapter/requestAdapterInfo.spec.ts
 src/webgpu/api/operation/adapter/requestDevice.spec.ts
