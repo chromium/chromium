@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/page/create_window.h"
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
@@ -83,8 +84,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
   unsigned key_begin, key_end;
   unsigned value_begin, value_end;
 
-  String buffer = feature_string.LowerASCII();
-  unsigned length = buffer.length();
+  const String buffer = feature_string.LowerASCII();
+  const unsigned length = buffer.length();
   for (unsigned i = 0; i < length;) {
     // skip to first non-separator (start of key name), but don't skip
     // past the end of the string
@@ -201,10 +202,19 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       window_features.persistent = true;
     } else if (attribution_reporting_enabled &&
                key_string == "attributionsrc") {
+      // attributionsrc values are URLs, and as such their original case needs
+      // to be retained for correctness. Positions in both `feature_string` and
+      // `buffer` correspond because ASCII-lowercasing doesn't add, remove, or
+      // swap character positions; it only does in-place transformations of
+      // capital ASCII characters. See crbug.com/1338698 for details.
+      DCHECK_EQ(feature_string.length(), buffer.length());
+      const StringView original_case_value_string(feature_string, value_begin,
+                                                  value_end - value_begin);
+
       // attributionsrc values are encoded in order to support embedded special
       // characters, such as '='.
-      const String decoded = DecodeURLEscapeSequences(value_string.ToString(),
-                                                      DecodeURLMode::kUTF8);
+      const String decoded = DecodeURLEscapeSequences(
+          original_case_value_string.ToString(), DecodeURLMode::kUTF8);
 
       if (!decoded.IsEmpty()) {
         window_features.impression =
