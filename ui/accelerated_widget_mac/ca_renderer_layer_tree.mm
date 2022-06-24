@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/metal_util/hdr_copier_layer.h"
 #include "media/base/mac/color_space_util_mac.h"
@@ -281,6 +282,31 @@ void CARendererLayerTree::CommitScheduledCALayers(
   // tree, they will be removed from the CALayer tree in this deallocation.
   old_tree.reset();
   has_committed_ = true;
+
+  // UMA for updated IOSurfaces.
+  int total_io_surfaces =
+      changed_io_surfaces_during_commit_ + unchanged_io_surfaces_during_commit_;
+  if (total_io_surfaces > 0) {
+    // Total changed IOSurface size perframe. Use 100M as a max for this
+    // histogram. IOSurface size = w x h x bpp x planes. A 32 bpp HD surface
+    // takes ~8M bytes.
+    base::UmaHistogramCustomCounts(
+        "Compositing.Renderer.CALayer.ChangedIOSurfacesSizePerFrame",
+        total_updated_io_surface_size_during_commit_, 1 /*=min*/,
+        100000000 /*=exclusive_max*/, 50 /*=buckets*/);
+
+    // The number of changed IOSurfaces per frame.
+    base::UmaHistogramCustomCounts(
+        "Compositing.Renderer.CALayer.ChangedIOSurfacesPerFrame",
+        changed_io_surfaces_during_commit_, 1 /*=min*/, 300 /*=exclusive_max*/,
+        50 /*=buckets*/);
+
+    int changed_io_surface_percentage =
+        changed_io_surfaces_during_commit_ * 100 / total_io_surfaces;
+    base::UmaHistogramPercentage(
+        "Compositing.Renderer.CALayer.ChangedIOSurfacesPercentagePerFrame",
+        changed_io_surface_percentage);
+  }
 }
 
 void CARendererLayerTree::MatchLayersToOldTreeV1(
@@ -906,6 +932,10 @@ void CARendererLayerTree::ContentLayer::CommitToCA() {
       if (update_contents) {
         if (io_surface_) {
           [ca_layer_ setContents:static_cast<id>(io_surface_.get())];
+          // Used for UMA
+          tree()->changed_io_surfaces_during_commit_++;
+          tree()->total_updated_io_surface_size_during_commit_ +=
+              IOSurfaceGetAllocSize(io_surface_);
         } else if (solid_color_contents_) {
           [ca_layer_ setContents:solid_color_contents_->GetContents()];
         } else {
@@ -913,6 +943,10 @@ void CARendererLayerTree::ContentLayer::CommitToCA() {
         }
         if ([ca_layer_ respondsToSelector:(@selector(setContentsScale:))])
           [ca_layer_ setContentsScale:tree()->scale_factor_];
+      } else {
+        // Used for UMA
+        if (io_surface_)
+          tree()->unchanged_io_surfaces_during_commit_++;
       }
       break;
   }

@@ -271,6 +271,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   bool has_committed_ = false;
   const bool allow_av_sample_buffer_display_layer_ = true;
   const bool allow_solid_color_layers_ = true;
+
+  int changed_io_surfaces_during_commit_ = 0;
+  int unchanged_io_surfaces_during_commit_ = 0;
+  int total_updated_io_surface_size_during_commit_ = 0;
 };
 
 }  // namespace ui

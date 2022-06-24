@@ -461,6 +461,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Compositing.Renderer.CALayer.ChangedIOSurfacesPercentagePerFrame"
+    units="%" expires_after="2023-02-20">
+  <owner>magchen@chromium.org</owner>
+  <owner>ccameron@chromium.org</owner>
+  <summary>
+    The percentage of changed IOSurface number in all IOSurface per frame.
+    Recorded during the CALayer Tree commit to CoreAnimation on Mac.
+  </summary>
+</histogram>
+
+<histogram name="Compositing.Renderer.CALayer.ChangedIOSurfacesPerFrame"
+    units="surfaces" expires_after="2023-02-20">
+  <owner>magchen@chromium.org</owner>
+  <owner>ccameron@chromium.org</owner>
+  <summary>
+    The number of IOSurfaces changed per frame. Recorded during the CALayer Tree
+    commit to CoreAnimation on Mac.
+  </summary>
+</histogram>
+
+<histogram name="Compositing.Renderer.CALayer.ChangedIOSurfacesSizePerFrame"
+    units="bytes" expires_after="2023-02-20">
+  <owner>magchen@chromium.org</owner>
+  <owner>ccameron@chromium.org</owner>
+  <summary>
+    Total IOSurfaces area size updated per frame. Recorded during the CALayer
+    Tree commit to CoreAnimation on Mac.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Renderer.CALayer.OddOffsetVideo" enum="OddOffset"
     expires_after="2022-11-20">
   <owner>magchen@chromium.org</owner>
