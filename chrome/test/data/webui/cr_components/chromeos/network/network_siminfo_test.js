@@ -146,7 +146,7 @@ suite('NetworkSiminfoTest', function() {
     const getChangePinButton = () => simInfo.$$('#changePinButton');
     const getSimLockButton = () => simInfo.$$('#simLockButton');
     const getSimLockButtonTooltip = () => simInfo.$$('#inActiveSimLockTooltip');
-    const getSimLockPolicyIcon = () => simInfo.$$('cr-policy-indicator');
+    const getSimLockPolicyIcon = () => simInfo.$$('#simLockPolicyIcon');
 
     // No icon if policy does not disable SIM PIN locking.
     assertFalse(!!getSimLockPolicyIcon());
@@ -166,6 +166,19 @@ suite('NetworkSiminfoTest', function() {
     assertTrue(getSimLockButton().checked);
     assertFalse(!!getSimLockButtonTooltip());
     assertTrue(!!getSimLockPolicyIcon());
+
+    // Policy controlled icon should not show if SIM PIN locking is not
+    // restricted.
+    simInfo.globalPolicy = {
+      allowCellularSimLock: true,
+    };
+    await flushAsync();
+    assertFalse(!!getSimLockPolicyIcon());
+
+    simInfo.globalPolicy = {
+      allowCellularSimLock: false,
+    };
+    await flushAsync();
 
     // Unlocked primary SIM with lock setting disabled. Change button should not
     // be visible, and toggle should be visible, off, and disabled to prevent

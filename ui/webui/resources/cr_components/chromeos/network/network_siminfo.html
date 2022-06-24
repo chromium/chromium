@@ -88,7 +88,7 @@
         </template>
         <template is="dom-if" if="[[shouldShowPolicyIndicator_(isActiveSim_,
             isSimPinLockRestricted_)]]" restamp>
-          <cr-policy-indicator indicator-type="devicePolicy">
+          <cr-policy-indicator id="simLockPolicyIcon" indicator-type="devicePolicy">
           </cr-policy-indicator>
         </template>
         <cr-toggle id="simLockButton"

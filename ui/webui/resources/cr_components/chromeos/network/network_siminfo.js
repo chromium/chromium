@@ -320,7 +320,7 @@ Polymer({
    * @private
    */
   shouldShowPolicyIndicator_() {
-    return this.isSimLockPolicyEnabled_ && this.isActiveSim_;
+    return this.isSimPinLockRestricted_ && this.isActiveSim_;
   },
 
   /**
