@@ -43,13 +43,13 @@ base::Time GetAnnotatedVisitsToCluster::GetBeginTimeOnDayBoundary(
 
 GetAnnotatedVisitsToCluster::GetAnnotatedVisitsToCluster(
     IncompleteVisitMap incomplete_visit_map,
-    base::Time begin_time,
+    base::Time begin_time_limit,
     QueryClustersContinuationParams continuation_params,
     bool recent_first,
     Callback callback)
     : incomplete_visit_map_(incomplete_visit_map),
       begin_time_limit_(
-          std::max(begin_time, base::Time::Now() - base::Days(90))),
+          std::max(begin_time_limit, base::Time::Now() - base::Days(90))),
       continuation_params_(continuation_params),
       recent_first_(recent_first),
       callback_(std::move(callback)) {
@@ -64,16 +64,9 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     history::HistoryDatabase* db) {
   base::ElapsedThreadTimer query_visits_timer;
 
-  // The end time used in the initial history request for completed visits.
-  // This is the upper bound time of all the visits fetched. Used later to add
-  // incomplete visits from the same time range we scanned for completed visits.
-  // Cached here as `continuation_params` will be updated after each history
-  // request.
-  base::Time original_end_time = continuation_params_.continuation_time;
-
   history::QueryOptions options;
-  // Accumulate 1 day at a time of visits to avoid breaking up clusters.
 
+  // Accumulate 1 day at a time of visits to avoid breaking up clusters.
   while (annotated_visits_.empty() && !continuation_params_.is_done) {
     // Because `base::Time::Now()` may change during the async history request,
     // and because determining whether history was exhausted depends on whether
@@ -82,15 +75,15 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     const auto now = base::Time::Now();
 
     options = GetHistoryQueryOptions(backend, now);
+    DCHECK(!options.begin_time.is_null());
+    DCHECK(!options.end_time.is_null());
     if (options.begin_time == options.end_time)
       break;
     // Tack on all the newly fetched visits onto our accumulator vector.
     bool limited_by_max_count = AddUnclusteredVisits(backend, options);
+    AddIncompleteVisits(backend, options.begin_time, options.end_time);
     IncrementContinuationParams(options, limited_by_max_count, now);
   }
-
-  AddIncompleteVisits(backend, continuation_params_.continuation_time,
-                      original_end_time);
 
   base::UmaHistogramTimes(
       "History.Clusters.Backend.QueryAnnotatedVisits.ThreadTime",
@@ -194,10 +187,8 @@ void GetAnnotatedVisitsToCluster::AddIncompleteVisits(
     // `options.max_count`.
     const auto& visit_time =
         incomplete_visit_context_annotations.visit_row.visit_time;
-    if ((!begin_time.is_null() && visit_time < begin_time) ||
-        (!end_time.is_null() && visit_time >= end_time)) {
+    if (visit_time < begin_time || visit_time >= end_time)
       continue;
-    }
 
     // Discard any incomplete visits that were already fetched from History.
     // This can happen when History finishes writing the rows after we snapshot

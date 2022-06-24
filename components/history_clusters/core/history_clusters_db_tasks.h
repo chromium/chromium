@@ -38,7 +38,7 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
 
   GetAnnotatedVisitsToCluster(
       IncompleteVisitMap incomplete_visit_map,
-      base::Time begin_time,
+      base::Time begin_time_limit,
       QueryClustersContinuationParams continuation_params,
       bool recent_first,
       Callback callback);
