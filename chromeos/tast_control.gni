@@ -312,6 +312,10 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.AppGeditFilesharing",
   "crostini.AppGeditFilesharing.stable",
 
+  # http://b/236710501
+  "crostini.AppAndroidStudio.stable",
+  "crostini.AppGeditUnshareFolder.stable",
+
   # http://crbug.com/1338038
   "arc.IMEBlockingVK",
 
