@@ -64,22 +64,19 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
       policies.GetValue(policy_name(), base::Value::Type::LIST);
   DCHECK(value);
   int item_index = 0;
-  for (const auto& item : value->GetListDeprecated()) {
+  for (const auto& item : value->GetList()) {
     // The vendor and product ID descriptors of a USB devices should be
     // unsigned short integers.
     int device_index = 0;
-    auto* devices_list =
-        item.FindKeyOfType(kDevicesKey, base::Value::Type::LIST);
+    auto* devices_list = item.GetDict().FindList(kDevicesKey);
     DCHECK(devices_list);
-    for (const auto& device : devices_list->GetListDeprecated()) {
-      auto* vendor_id_value =
-          device.FindKeyOfType(kVendorIdKey, base::Value::Type::INTEGER);
-      auto* product_id_value =
-          device.FindKeyOfType(kProductIdKey, base::Value::Type::INTEGER);
-      if (product_id_value) {
+    for (const auto& device : *devices_list) {
+      absl::optional<int> vendor_id = device.GetDict().FindInt(kVendorIdKey);
+      absl::optional<int> product_id = device.GetDict().FindInt(kProductIdKey);
+      if (product_id.has_value()) {
         // If a |product_id| is specified, then a |vendor_id| must also be
         // specified. Otherwise, the policy is invalid.
-        if (!vendor_id_value) {
+        if (!vendor_id.has_value()) {
           error_path = base::StringPrintf(kErrorPathTemplate, item_index,
                                           kDevicesKey, device_index);
           error = kMissingVendorIdError;
@@ -92,9 +89,9 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
 
     // The allowlisted URLs should be valid.
     int url_index = 0;
-    auto* urls_list = item.FindKeyOfType(kUrlsKey, base::Value::Type::LIST);
+    auto* urls_list = item.GetDict().FindList(kUrlsKey);
     DCHECK(urls_list);
-    for (const auto& url_value : urls_list->GetListDeprecated()) {
+    for (const auto& url_value : *urls_list) {
       const std::string url_error_path = base::StringPrintf(
           kErrorPathTemplate, item_index, kUrlsKey, url_index);
 

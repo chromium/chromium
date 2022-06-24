@@ -46,10 +46,9 @@ class PolicyCertServiceFactoryMigrationTest : public testing::Test {
   }
 
   bool LocalStateContains(const char* value) {
-    return base::Contains(local_state_.Get()
-                              ->GetList(prefs::kUsedPolicyCertificates)
-                              ->GetListDeprecated(),
-                          base::Value(value));
+    return base::Contains(
+        local_state_.Get()->GetValueList(prefs::kUsedPolicyCertificates),
+        base::Value(value));
   }
 
  protected:

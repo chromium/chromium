@@ -484,64 +484,66 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest, ApplyPolicySettings) {
   ASSERT_TRUE(pref_value->is_list());
 
   // Ensure that the kManagedWebUsbAllowDevicesForUrls pref is set correctly.
-  const auto& list = pref_value->GetListDeprecated();
+  const auto& list = pref_value->GetList();
   ASSERT_EQ(2ul, list.size());
 
   // Check the first item's devices list.
-  const base::Value* devices = list[0].FindKey(kDevicesKey);
-  ASSERT_TRUE(devices);
+  const base::Value::List* first_devices_list =
+      list[0].GetDict().FindList(kDevicesKey);
+  ASSERT_TRUE(first_devices_list);
 
-  const auto& first_devices_list = devices->GetListDeprecated();
-  ASSERT_EQ(2ul, first_devices_list.size());
+  ASSERT_EQ(2ul, first_devices_list->size());
 
-  const base::Value* vendor_id = first_devices_list[0].FindKey(kVendorIdKey);
+  const base::Value* vendor_id =
+      (*first_devices_list)[0].GetDict().Find(kVendorIdKey);
   ASSERT_TRUE(vendor_id);
   EXPECT_EQ(1234, vendor_id->GetInt());
 
-  const base::Value* product_id = first_devices_list[0].FindKey(kProductIdKey);
+  const base::Value* product_id =
+      (*first_devices_list)[0].GetDict().Find(kProductIdKey);
   ASSERT_TRUE(product_id);
   EXPECT_EQ(5678, product_id->GetInt());
 
-  vendor_id = first_devices_list[1].FindKey(kVendorIdKey);
+  vendor_id = (*first_devices_list)[1].GetDict().Find(kVendorIdKey);
   ASSERT_TRUE(vendor_id);
   EXPECT_EQ(4321, vendor_id->GetInt());
 
-  product_id = first_devices_list[1].FindKey(kProductIdKey);
+  product_id = (*first_devices_list)[1].GetDict().Find(kProductIdKey);
   EXPECT_FALSE(product_id);
 
   // Check the first item's urls list.
-  const base::Value* urls = list[0].FindKey(kUrlsKey);
-  ASSERT_TRUE(urls);
+  const base::Value::List* first_urls_list =
+      list[0].GetDict().FindList(kUrlsKey);
+  ASSERT_TRUE(first_urls_list);
 
-  const auto& first_urls_list = urls->GetListDeprecated();
-  ASSERT_EQ(2ul, first_urls_list.size());
-  ASSERT_TRUE(first_urls_list[0].is_string());
-  ASSERT_TRUE(first_urls_list[1].is_string());
+  ASSERT_EQ(2ul, first_urls_list->size());
+  ASSERT_TRUE((*first_urls_list)[0].is_string());
+  ASSERT_TRUE((*first_urls_list)[1].is_string());
   EXPECT_EQ("https://google.com,https://google.com",
-            first_urls_list[0].GetString());
-  EXPECT_EQ("https://www.youtube.com", first_urls_list[1].GetString());
+            (*first_urls_list)[0].GetString());
+  EXPECT_EQ("https://www.youtube.com", (*first_urls_list)[1].GetString());
 
   // Check the second item's devices list.
-  devices = list[1].FindKey(kDevicesKey);
-  ASSERT_TRUE(devices);
+  const base::Value::List* second_devices_list =
+      list[1].GetDict().FindList(kDevicesKey);
+  ASSERT_TRUE(second_devices_list);
 
-  const auto& second_devices_list = devices->GetListDeprecated();
-  ASSERT_EQ(1ul, second_devices_list.size());
+  ASSERT_EQ(1ul, second_devices_list->size());
 
-  vendor_id = second_devices_list[0].FindKey(kVendorIdKey);
+  vendor_id = (*second_devices_list)[0].GetDict().Find(kVendorIdKey);
   EXPECT_FALSE(vendor_id);
 
-  product_id = second_devices_list[0].FindKey(kProductIdKey);
+  product_id = (*second_devices_list)[0].GetDict().Find(kProductIdKey);
   EXPECT_FALSE(product_id);
 
   // Check the second item's urls list.
-  urls = list[1].FindKey(kUrlsKey);
-  ASSERT_TRUE(urls);
+  const base::Value::List* second_urls_list =
+      list[1].GetDict().FindList(kUrlsKey);
+  ASSERT_TRUE(second_urls_list);
 
-  const auto& second_urls_list = urls->GetListDeprecated();
-  ASSERT_EQ(1ul, second_urls_list.size());
-  ASSERT_TRUE(second_urls_list[0].is_string());
-  EXPECT_EQ("https://chromium.org,", second_urls_list[0].GetString());
+  ASSERT_EQ(1ul, second_urls_list->size());
+  ASSERT_TRUE((*second_urls_list)[0].is_string());
+  EXPECT_EQ("https://chromium.org,", (*second_urls_list)[0].GetString());
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,

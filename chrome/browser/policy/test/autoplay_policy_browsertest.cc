@@ -114,12 +114,13 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayAllowlist_Allowed) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with our origin.
-  std::vector<base::Value> allowlist;
-  allowlist.push_back(base::Value(embedded_test_server()->GetURL("/").spec()));
+  base::Value::List allowlist;
+  allowlist.Append(embedded_test_server()->GetURL("/").spec());
 
   // Update policy to allow autoplay for our test origin.
   PolicyMap policies;
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
@@ -136,12 +137,13 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowlist_PatternAllowed) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with our origin.
-  std::vector<base::Value> allowlist;
-  allowlist.push_back(base::Value("127.0.0.1:*"));
+  base::Value::List allowlist;
+  allowlist.Append("127.0.0.1:*");
 
   // Update policy to allow autoplay for our test origin.
   PolicyMap policies;
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
@@ -158,12 +160,13 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowlist_Missing) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with a random origin.
-  std::vector<base::Value> allowlist;
-  allowlist.push_back(base::Value("https://www.example.com"));
+  base::Value::List allowlist;
+  allowlist.Append("https://www.example.com");
 
   // Update policy to allow autoplay for a random origin.
   PolicyMap policies;
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was not allowed.
@@ -196,11 +199,12 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayDeniedByPolicy) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with a random origin.
-  std::vector<base::Value> allowlist;
-  allowlist.push_back(base::Value("https://www.example.com"));
+  base::Value::List allowlist;
+  allowlist.Append("https://www.example.com");
 
   // Update policy to allow autoplay for a random origin.
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was not allowed.
@@ -233,11 +237,12 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayDeniedAllowedWithURL) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with our test origin.
-  std::vector<base::Value> allowlist;
-  allowlist.push_back(base::Value(embedded_test_server()->GetURL("/").spec()));
+  base::Value::List allowlist;
+  allowlist.Append(embedded_test_server()->GetURL("/").spec());
 
   // Update policy to allow autoplay for our test origin.
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
@@ -266,11 +271,12 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest,
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with our test origin.
-  std::vector<base::Value> allowlist;
-  allowlist.push_back(base::Value(embedded_test_server()->GetURL("/").spec()));
+  base::Value::List allowlist;
+  allowlist.Append(embedded_test_server()->GetURL("/").spec());
 
   // Update policy to allow autoplay for our test origin.
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
@@ -333,13 +339,13 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyFencedFrameTest,
   NavigateAndCheckAutoplayAllowed(false);
 
   // Create a test allowlist with our origin.
-  std::vector<base::Value> allowlist;
-  allowlist.emplace_back(
-      base::Value(embedded_test_server()->GetURL("/").spec()));
+  base::Value::List allowlist;
+  allowlist.Append(embedded_test_server()->GetURL("/").spec());
 
   // Update policy to allow autoplay for our test origin.
   PolicyMap policies;
-  SetPolicy(&policies, key::kAutoplayAllowlist, base::Value(allowlist));
+  SetPolicy(&policies, key::kAutoplayAllowlist,
+            base::Value(std::move(allowlist)));
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
