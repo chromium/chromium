@@ -238,15 +238,15 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, BasicIframe) {
 
 // TODO(crbug.com/1324437): Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
-                       DISABLED_PermissionContextBase) {
+                       PermissionContextBase) {
   // HTTPS needed for GEOLOCATION permission
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(https_server.Start());
 
-  GURL url_a(https_server.GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server.GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server.GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server.GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(web_contents(), url_a));
