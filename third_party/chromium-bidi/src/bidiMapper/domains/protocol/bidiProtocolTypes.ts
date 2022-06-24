@@ -440,7 +440,7 @@ export namespace Script {
   // }
   const ScriptEvaluateParametersSchema = zod.object({
     expression: zod.string(),
-    awaitPromise: zod.boolean(),
+    awaitPromise: zod.boolean().optional(),
     target: TargetSchema,
     resultOwnership: OwnershipModelSchema.optional(),
   });
@@ -473,7 +473,7 @@ export namespace Script {
     target: TargetSchema,
     arguments: zod.array(ArgumentValueSchema).optional(),
     this: ArgumentValueSchema.optional(),
-    awaitPromise: zod.boolean(),
+    awaitPromise: zod.boolean().optional(),
     resultOwnership: OwnershipModelSchema.optional(),
   });
 
