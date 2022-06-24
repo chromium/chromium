@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "remoting/host/chromoting_host_services_provider.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
+#include "remoting/host/native_messaging/log_message_handler.h"
 
 namespace remoting {
 
@@ -95,12 +96,15 @@ class RemoteWebAuthnNativeMessagingHost final
   void SendClientDisconnectedMessage();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  raw_ptr<extensions::NativeMessageHost::Client> client_ = nullptr;
   std::unique_ptr<ChromotingHostServicesProvider> host_service_api_client_;
   mojo::Remote<mojom::WebAuthnProxy> remote_;
   mojo::RemoteSet<mojom::WebAuthnRequestCanceller> request_cancellers_;
   base::flat_map<base::Value, mojo::RemoteSetElementId>
       id_to_request_canceller_;
+
+  // Only available after Start() is called.
+  raw_ptr<extensions::NativeMessageHost::Client> client_ = nullptr;
+  std::unique_ptr<LogMessageHandler> log_message_handler_;
 
   base::RepeatingClosure on_request_canceller_disconnected_for_testing_;
 
