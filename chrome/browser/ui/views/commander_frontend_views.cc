@@ -95,6 +95,11 @@ class CommanderWebView : public views::WebView {
     return event_handler_.HandleKeyboardEvent(event, owner_->GetFocusManager());
   }
 
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override {
+    return true;
+  }
+
   void AddedToWidget() override {
     views::WebView::AddedToWidget();
     holder()->SetCornerRadii(gfx::RoundedCornersF(kCornerRadius));
