@@ -70,6 +70,8 @@ using SettingValue = enterprise_signals::SettingValue;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
+using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::WithArgs;
 
@@ -1048,25 +1050,6 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-class MockMissiveClient : public ::chromeos::FakeMissiveClient {
- public:
-  MockMissiveClient() = default;
-  ~MockMissiveClient() override = default;
-
-  MockMissiveClient(const MockMissiveClient& other) = delete;
-  MockMissiveClient& operator=(const MockMissiveClient& other) = delete;
-
-  void Init() override {}
-
-  MissiveClient::TestInterface* GetTestInterface() override { return this; }
-
-  MOCK_METHOD(void,
-              EnqueueRecord,
-              (const ::reporting::Priority,
-               ::reporting::Record,
-               base::OnceCallback<void(::reporting::Status)>),
-              (override));
-};
 
 // Test for API enterprise.reportingPrivate.enqueueRecord
 class EnterpriseReportingPrivateEnqueueRecordFunctionTest
@@ -1078,7 +1061,7 @@ class EnterpriseReportingPrivateEnqueueRecordFunctionTest
 
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
-    ::chromeos::MissiveClient::InitializeFake<MockMissiveClient>();
+    ::chromeos::MissiveClient::InitializeFake();
     function_ =
         base::MakeRefCounted<EnterpriseReportingPrivateEnqueueRecordFunction>();
     const auto record = GetTestRecord();
@@ -1108,6 +1091,18 @@ class EnterpriseReportingPrivateEnqueueRecordFunctionTest
     return record;
   }
 
+  void VerifyNoRecordsEnqueued(::reporting::Priority priority =
+                                   ::reporting::Priority::BACKGROUND_BATCH) {
+    ::chromeos::MissiveClient::TestInterface* const missive_test_interface =
+        ::chromeos::MissiveClient::Get()->GetTestInterface();
+    ASSERT_TRUE(missive_test_interface);
+
+    const std::vector<::reporting::Record>& records =
+        missive_test_interface->GetEnqueuedRecords(priority);
+
+    ASSERT_THAT(records, IsEmpty());
+  }
+
   std::vector<uint8_t> serialized_record_data_;
   scoped_refptr<extensions::EnterpriseReportingPrivateEnqueueRecordFunction>
       function_;
@@ -1133,25 +1128,25 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue);
   policy::SetDMTokenForTesting(dm_token);
 
-  auto* const reporting_client =
-      static_cast<MockMissiveClient*>(::chromeos::MissiveClient::Get());
-  EXPECT_CALL(*reporting_client, EnqueueRecord(_, _, _))
-      .WillOnce(WithArgs<1, 2>(
-          Invoke([&](::reporting::Record record,
-                     base::OnceCallback<void(::reporting::Status)>
-                         completion_callback) {
-            EXPECT_THAT(record.destination(),
-                        Eq(::reporting::Destination::TELEMETRY_METRIC));
-            EXPECT_THAT(record.dm_token(), StrEq(dm_token.value()));
-            EXPECT_THAT(record.data(), StrEq(GetTestRecord().data()));
-
-            std::move(completion_callback).Run(::reporting::Status::StatusOK());
-          })));
-
   extension_function_test_utils::RunFunction(function_.get(), std::move(params),
                                              browser(),
                                              extensions::api_test_utils::NONE);
   EXPECT_EQ(function_->GetError(), kNoError);
+
+  ::chromeos::MissiveClient::TestInterface* const missive_test_interface =
+      ::chromeos::MissiveClient::Get()->GetTestInterface();
+  ASSERT_TRUE(missive_test_interface);
+
+  const std::vector<::reporting::Record>& background_batch_records =
+      missive_test_interface->GetEnqueuedRecords(
+          ::reporting::Priority::BACKGROUND_BATCH);
+
+  ASSERT_THAT(background_batch_records, SizeIs(1));
+  EXPECT_THAT(background_batch_records[0].destination(),
+              Eq(::reporting::Destination::TELEMETRY_METRIC));
+  EXPECT_THAT(background_batch_records[0].dm_token(), StrEq(dm_token.value()));
+  EXPECT_THAT(background_batch_records[0].data(),
+              StrEq(GetTestRecord().data()));
 }
 
 TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
@@ -1175,10 +1170,6 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
 
-  auto* const reporting_client =
-      static_cast<MockMissiveClient*>(::chromeos::MissiveClient::Get());
-  EXPECT_CALL(*reporting_client, EnqueueRecord(_, _, _)).Times(0);
-
   extension_function_test_utils::RunFunction(function_.get(), std::move(params),
                                              browser(),
                                              extensions::api_test_utils::NONE);
@@ -1186,6 +1177,8 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   EXPECT_EQ(function_->GetError(),
             EnterpriseReportingPrivateEnqueueRecordFunction::
                 kErrorInvalidEnqueueRecordRequest);
+
+  VerifyNoRecordsEnqueued();
 }
 
 TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
@@ -1208,10 +1201,6 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
 
-  auto* const reporting_client =
-      static_cast<MockMissiveClient*>(::chromeos::MissiveClient::Get());
-  EXPECT_CALL(*reporting_client, EnqueueRecord(_, _, _)).Times(0);
-
   extension_function_test_utils::RunFunction(function_.get(), std::move(params),
                                              browser(),
                                              extensions::api_test_utils::NONE);
@@ -1219,6 +1208,8 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   EXPECT_EQ(function_->GetError(),
             EnterpriseReportingPrivateEnqueueRecordFunction::
                 kErrorProfileNotAffiliated);
+
+  VerifyNoRecordsEnqueued();
 }
 
 TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
@@ -1238,10 +1229,6 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   // Set up invalid DM token
   policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidTokenForTesting());
 
-  auto* const reporting_client =
-      static_cast<MockMissiveClient*>(::chromeos::MissiveClient::Get());
-  EXPECT_CALL(*reporting_client, EnqueueRecord(_, _, _)).Times(0);
-
   extension_function_test_utils::RunFunction(function_.get(), std::move(params),
                                              browser(),
                                              extensions::api_test_utils::NONE);
@@ -1249,6 +1236,8 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   EXPECT_EQ(function_->GetError(),
             EnterpriseReportingPrivateEnqueueRecordFunction::
                 kErrorCannotAssociateRecordWithUser);
+
+  VerifyNoRecordsEnqueued();
 }
 
 TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
@@ -1277,10 +1266,6 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
 
-  auto* const reporting_client =
-      static_cast<MockMissiveClient*>(::chromeos::MissiveClient::Get());
-  EXPECT_CALL(*reporting_client, EnqueueRecord(_, _, _)).Times(0);
-
   extension_function_test_utils::RunFunction(function_.get(), std::move(params),
                                              browser(),
                                              extensions::api_test_utils::NONE);
@@ -1288,6 +1273,8 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   EXPECT_EQ(function_->GetError(),
             EnterpriseReportingPrivateEnqueueRecordFunction::
                 kErrorInvalidEnqueueRecordRequest);
+
+  VerifyNoRecordsEnqueued();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
