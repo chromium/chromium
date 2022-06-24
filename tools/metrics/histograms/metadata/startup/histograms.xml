@@ -205,6 +205,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.DurationSinceLastBackgroundTime" units="ms"
+    expires_after="2022-12-31">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <summary>
+    Android: The elapsed time from the last time when Chrome goes to background
+    till it becomes foreground again. The histogram is recorded when
+    onResumeWithNative() is called.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Startup.Android.FeedContentFirstLoadedTime"
     units="ms" expires_after="2022-10-23">
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->
