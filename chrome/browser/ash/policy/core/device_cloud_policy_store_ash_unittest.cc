@@ -132,10 +132,10 @@ class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
   void ResetToNonEnterprise() {
     store_->RemoveObserver(&observer_);
     store_.reset();
-    chromeos::install_attributes_util::InstallAttributesSet("enterprise.owned",
-                                                            std::string());
+    ash::install_attributes_util::InstallAttributesSet("enterprise.owned",
+                                                       std::string());
     install_attributes_ = std::make_unique<ash::InstallAttributes>(
-        chromeos::FakeInstallAttributesClient::Get());
+        ash::FakeInstallAttributesClient::Get());
     store_ = std::make_unique<DeviceCloudPolicyStoreAsh>(
         device_settings_service_.get(), install_attributes_.get(),
         base::ThreadTaskRunnerHandle::Get());

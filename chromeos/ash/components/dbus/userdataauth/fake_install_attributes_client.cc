@@ -16,7 +16,7 @@
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "components/policy/proto/install_attributes.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -226,4 +226,4 @@ bool FakeInstallAttributesClient::LoadInstallAttributes() {
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

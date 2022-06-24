@@ -9,7 +9,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 // Used to track the fake instance, mirrors the instance in the base class.
@@ -154,4 +154,4 @@ std::vector<uint8_t> FakeCryptohomeMiscClient::GetStubSystemSalt() {
                               kStubSystemSalt + std::size(kStubSystemSalt) - 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

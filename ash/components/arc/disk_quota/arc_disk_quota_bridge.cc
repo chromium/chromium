@@ -107,7 +107,7 @@ void ArcDiskQuotaBridge::SetAccountId(const AccountId& account_id) {
 }
 
 void ArcDiskQuotaBridge::IsQuotaSupported(IsQuotaSupportedCallback callback) {
-  chromeos::ArcQuotaClient::Get()->GetArcDiskFeatures(
+  ash::ArcQuotaClient::Get()->GetArcDiskFeatures(
       user_data_auth::GetArcDiskFeaturesRequest(),
       base::BindOnce(
           [](IsQuotaSupportedCallback callback,
@@ -128,7 +128,7 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForUid(
     GetCurrentSpaceForUidCallback callback) {
   user_data_auth::GetCurrentSpaceForArcUidRequest request;
   request.set_uid(uid);
-  chromeos::ArcQuotaClient::Get()->GetCurrentSpaceForArcUid(
+  ash::ArcQuotaClient::Get()->GetCurrentSpaceForArcUid(
       request,
       base::BindOnce(
           [](GetCurrentSpaceForUidCallback callback, int uid,
@@ -152,7 +152,7 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForGid(
     GetCurrentSpaceForGidCallback callback) {
   user_data_auth::GetCurrentSpaceForArcGidRequest request;
   request.set_gid(gid);
-  chromeos::ArcQuotaClient::Get()->GetCurrentSpaceForArcGid(
+  ash::ArcQuotaClient::Get()->GetCurrentSpaceForArcGid(
       request,
       base::BindOnce(
           [](GetCurrentSpaceForGidCallback callback, int gid,
@@ -176,7 +176,7 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForProjectId(
     GetCurrentSpaceForProjectIdCallback callback) {
   user_data_auth::GetCurrentSpaceForArcProjectIdRequest request;
   request.set_project_id(project_id);
-  chromeos::ArcQuotaClient::Get()->GetCurrentSpaceForArcProjectId(
+  ash::ArcQuotaClient::Get()->GetCurrentSpaceForArcProjectId(
       request,
       base::BindOnce(
           [](GetCurrentSpaceForProjectIdCallback callback, int project_id,
@@ -214,7 +214,7 @@ void ArcDiskQuotaBridge::SetProjectId(uint32_t project_id,
   request.set_child_path(child_path.value());
   *request.mutable_account_id() =
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
-  chromeos::ArcQuotaClient::Get()->SetProjectId(
+  ash::ArcQuotaClient::Get()->SetProjectId(
       request,
       base::BindOnce(
           [](SetProjectIdCallback callback, const int project_id,

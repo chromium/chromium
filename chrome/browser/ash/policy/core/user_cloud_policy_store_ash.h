@@ -16,12 +16,12 @@
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store_base.h"
 
-namespace base {
-class SequencedTaskRunner;
+namespace ash {
+class CryptohomeMiscClient;
 }
 
-namespace chromeos {
-class CryptohomeMiscClient;
+namespace base {
+class SequencedTaskRunner;
 }
 
 namespace policy {
@@ -41,7 +41,7 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
   // notably signature validation is disabled.  It is essential that this flag
   // is only set when install attributes are locked into Active Directory mode.
   UserCloudPolicyStoreAsh(
-      chromeos::CryptohomeMiscClient* cryptohome_misc_client,
+      ash::CryptohomeMiscClient* cryptohome_misc_client,
       ash::SessionManagerClient* session_manager_client,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const AccountId& account_id,

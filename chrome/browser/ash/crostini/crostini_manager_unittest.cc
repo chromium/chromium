@@ -251,8 +251,8 @@ class CrostiniManagerTest : public testing::Test {
         ->WaylandServer()
         ->OverrideServerForTesting(vm_tools::launch::TERMINA, nullptr, {});
 
-    chromeos::CryptohomeMiscClient::InitializeFake();
-    chromeos::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(false);
+    ash::CryptohomeMiscClient::InitializeFake();
+    ash::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(false);
     policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
@@ -266,7 +266,7 @@ class CrostiniManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    chromeos::CryptohomeMiscClient::Shutdown();
+    ash::CryptohomeMiscClient::Shutdown();
     g_browser_process->platform_part()->ShutdownSchedulerConfigurationManager();
     scoped_user_manager_.reset();
     crostini_manager_->Shutdown();
@@ -408,7 +408,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmPowerwashRequestError) {
       enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
 
   // Set cryptohome requiring powerwash.
-  chromeos::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(true);
+  ash::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(true);
   policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
 
   NotificationDisplayServiceTester notification_service(profile());
@@ -444,9 +444,9 @@ TEST_F(CrostiniManagerTest,
 
   // Reset cryptohome state to undefined and make cryptohome unavailable.
   policy::PowerwashRequirementsChecker::ResetForTesting();
-  chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
+  ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
   policy::PowerwashRequirementsChecker::Initialize();
-  chromeos::FakeCryptohomeMiscClient::Get()->ReportServiceIsNotAvailable();
+  ash::FakeCryptohomeMiscClient::Get()->ReportServiceIsNotAvailable();
 
   NotificationDisplayServiceTester notification_service(profile());
 

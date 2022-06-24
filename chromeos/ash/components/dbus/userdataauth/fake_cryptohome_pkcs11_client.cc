@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 // Used to track the fake instance, mirrors the instance in the base class.
@@ -86,4 +86,4 @@ void FakeCryptohomePkcs11Client::ReportServiceIsNotAvailable() {
     std::move(callback).Run(false);
 }
 
-}  // namespace chromeos
+}  // namespace ash

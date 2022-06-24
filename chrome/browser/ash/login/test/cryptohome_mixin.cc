@@ -20,8 +20,8 @@ CryptohomeMixin::~CryptohomeMixin() = default;
 
 void CryptohomeMixin::MarkUserAsExisting(const AccountId& user) {
   auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(user);
-  if (chromeos::FakeUserDataAuthClient::Get() != nullptr) {
-    chromeos::FakeUserDataAuthClient::Get()->AddExistingUser(account_id);
+  if (FakeUserDataAuthClient::Get() != nullptr) {
+    FakeUserDataAuthClient::Get()->AddExistingUser(account_id);
   } else {
     pending_users_.emplace(account_id);
   }
@@ -30,8 +30,8 @@ void CryptohomeMixin::MarkUserAsExisting(const AccountId& user) {
 void CryptohomeMixin::SetUpOnMainThread() {
   while (!pending_users_.empty()) {
     auto user = pending_users_.front();
-    chromeos::FakeUserDataAuthClient::Get()->AddExistingUser(user);
-    chromeos::FakeUserDataAuthClient::Get()->CreateUserProfileDir(user);
+    FakeUserDataAuthClient::Get()->AddExistingUser(user);
+    FakeUserDataAuthClient::Get()->CreateUserProfileDir(user);
     pending_users_.pop();
   }
 }

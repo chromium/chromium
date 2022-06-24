@@ -68,7 +68,7 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
                                     cryptohome_id.account_id());
     command_line->AppendSwitchASCII(
         switches::kLoginProfile,
-        chromeos::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id));
+        UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id));
   }
 
   void SetUpOnMainThread() override {

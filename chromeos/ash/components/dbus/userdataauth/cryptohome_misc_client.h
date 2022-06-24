@@ -17,7 +17,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // CryptohomeMiscClient is used to communicate with the
 // org.chromium.CryptohomeMisc interface within org.chromium.UserDataAuth
@@ -100,12 +100,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) CryptohomeMiscClient {
   virtual ~CryptohomeMiscClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source code migration is finished.
-namespace ash {
-using ::chromeos::CryptohomeMiscClient;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_CRYPTOHOME_MISC_CLIENT_H_

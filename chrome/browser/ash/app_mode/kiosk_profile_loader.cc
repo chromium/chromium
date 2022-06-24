@@ -35,7 +35,6 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::UserDataAuthClient;
 using ::content::BrowserThread;
 
 KioskAppLaunchError::Error LoginFailureToKioskAppLaunchError(

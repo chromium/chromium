@@ -22,7 +22,7 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -429,4 +429,4 @@ TEST_F(InstallAttributesClientTest, BlockingInstallAttributesGetStatus) {
                      expected_blocking_install_attributes_get_status_reply_));
 }
 
-}  // namespace chromeos
+}  // namespace ash

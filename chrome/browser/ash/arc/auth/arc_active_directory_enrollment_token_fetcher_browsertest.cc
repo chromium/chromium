@@ -273,9 +273,9 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   // ArcActiveDirectoryEnrollmentTokenFetcher will succeed to fetch the DM
   // token.
   void StoreCorrectDmToken() {
-    chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
-        chromeos::FakeCryptohomeMiscClient::GetStubSystemSalt());
-    chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
+    ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
+        ash::FakeCryptohomeMiscClient::GetStubSystemSalt());
+    ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
     // Store a fake DM token.
     base::RunLoop run_loop;
     auto dm_token_storage = std::make_unique<policy::DMTokenStorage>(
@@ -296,9 +296,9 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   // Does not store a correct DM token.
   // ArcActiveDirectoryEnrollmentTokenFetcher will fail to fetch the DM token.
   void FailDmToken() {
-    chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
+    ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
         std::vector<uint8_t>());
-    chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
+    ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
   }
 
   void FetchEnrollmentToken(base::RunLoop* run_loop,

@@ -355,7 +355,7 @@ void EasyUnlockCreateKeysOperation::OnGetSystemSalt(
                                              auth_key->GetSecret());
   *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
       cryptohome::Identification(user_context_.GetAccountId()));
-  chromeos::UserDataAuthClient::Get()->AddKey(
+  UserDataAuthClient::Get()->AddKey(
       request, base::BindOnce(&EasyUnlockCreateKeysOperation::OnKeyCreated,
                               weak_ptr_factory_.GetWeakPtr(), index, user_key));
 }

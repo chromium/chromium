@@ -117,7 +117,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::AnomalyDetectorClient>(bus);
   InitializeDBusClient<chromeos::ArcAppfuseProviderClient>(bus);
   InitializeDBusClient<chromeos::ArcCameraClient>(bus);
-  InitializeDBusClient<chromeos::ArcQuotaClient>(bus);
+  InitializeDBusClient<ArcQuotaClient>(bus);
   InitializeDBusClient<chromeos::ArcSensorServiceClient>(bus);
   InitializeDBusClient<chromeos::AttestationClient>(bus);
   InitializeDBusClient<AuthPolicyClient>(bus);
@@ -128,8 +128,8 @@ void InitializeDBus() {
   InitializeDBusClient<ConciergeClient>(bus);
   InitializeDBusClient<CrasAudioClient>(bus);
   InitializeDBusClient<cros_healthd::CrosHealthdClient>(bus);
-  InitializeDBusClient<chromeos::CryptohomeMiscClient>(bus);
-  InitializeDBusClient<chromeos::CryptohomePkcs11Client>(bus);
+  InitializeDBusClient<CryptohomeMiscClient>(bus);
+  InitializeDBusClient<CryptohomePkcs11Client>(bus);
   InitializeDBusClient<CupsProxyClient>(bus);
   InitializeDBusClient<chromeos::DlcserviceClient>(bus);
   InitializeDBusClient<chromeos::DlpClient>(bus);
@@ -139,7 +139,7 @@ void InitializeDBus() {
 #if BUILDFLAG(ENABLE_HIBERNATE)
   InitializeDBusClient<HibermanClient>(bus);
 #endif
-  InitializeDBusClient<chromeos::InstallAttributesClient>(bus);
+  InitializeDBusClient<InstallAttributesClient>(bus);
   InitializeDBusClient<IpPeripheralServiceClient>(bus);
   InitializeDBusClient<KerberosClient>(bus);
   InitializeDBusClient<chromeos::LorgnetteManagerClient>(bus);
@@ -161,7 +161,7 @@ void InitializeDBus() {
   InitializeDBusClient<TypecdClient>(bus);
   InitializeDBusClient<chromeos::U2FClient>(bus);
   InitializeDBusClient<chromeos::UpdateEngineClient>(bus);
-  InitializeDBusClient<chromeos::UserDataAuthClient>(bus);
+  InitializeDBusClient<UserDataAuthClient>(bus);
   InitializeDBusClient<UpstartClient>(bus);
   InitializeDBusClient<chromeos::VmPluginDispatcherClient>(bus);
 
@@ -221,7 +221,7 @@ void ShutdownDBus() {
   // Other D-Bus clients are shut down, also in reverse order of initialization.
   chromeos::VmPluginDispatcherClient::Shutdown();
   UpstartClient::Shutdown();
-  chromeos::UserDataAuthClient::Shutdown();
+  UserDataAuthClient::Shutdown();
   chromeos::UpdateEngineClient::Shutdown();
   chromeos::U2FClient::Shutdown();
   TypecdClient::Shutdown();
@@ -249,7 +249,7 @@ void ShutdownDBus() {
   chromeos::LorgnetteManagerClient::Shutdown();
   KerberosClient::Shutdown();
   IpPeripheralServiceClient::Shutdown();
-  chromeos::InstallAttributesClient::Shutdown();
+  InstallAttributesClient::Shutdown();
 #if BUILDFLAG(ENABLE_HIBERNATE)
   HibermanClient::Shutdown();
 #endif
@@ -259,8 +259,8 @@ void ShutdownDBus() {
   chromeos::DlcserviceClient::Shutdown();
   chromeos::DlpClient::Shutdown();
   CupsProxyClient::Shutdown();
-  chromeos::CryptohomePkcs11Client::Shutdown();
-  chromeos::CryptohomeMiscClient::Shutdown();
+  CryptohomePkcs11Client::Shutdown();
+  CryptohomeMiscClient::Shutdown();
   cros_healthd::CrosHealthdClient::Shutdown();
   CrasAudioClient::Shutdown();
   ConciergeClient::Shutdown();
@@ -269,7 +269,7 @@ void ShutdownDBus() {
   BiodClient::Shutdown();
   AuthPolicyClient::Shutdown();
   chromeos::AttestationClient::Shutdown();
-  chromeos::ArcQuotaClient::Shutdown();
+  ArcQuotaClient::Shutdown();
   chromeos::ArcCameraClient::Shutdown();
   chromeos::ArcAppfuseProviderClient::Shutdown();
   chromeos::AnomalyDetectorClient::Shutdown();

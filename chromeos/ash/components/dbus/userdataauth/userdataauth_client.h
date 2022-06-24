@@ -16,7 +16,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // UserDataAuthClient is used to communicate with the org.chromium.UserDataAuth
 // service exposed by cryptohomed. All method should be called from the origin
@@ -293,12 +293,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual ~UserDataAuthClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::UserDataAuthClient;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::UserDataAuthClient;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_USERDATAAUTH_CLIENT_H_

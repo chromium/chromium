@@ -17,7 +17,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using chromeos::FakeCryptohomeMiscClient;
+using ash::FakeCryptohomeMiscClient;
 
 namespace policy {
 
@@ -48,7 +48,7 @@ class DMTokenStorageTest : public testing::Test {
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CryptohomeMiscClient::InitializeFake();
+    ash::CryptohomeMiscClient::InitializeFake();
     SetSaltAvailable();
 
     chromeos::SystemSaltGetter::Initialize();
@@ -57,7 +57,7 @@ class DMTokenStorageTest : public testing::Test {
   void TearDown() override {
     dm_token_storage_.reset();
     chromeos::SystemSaltGetter::Shutdown();
-    chromeos::CryptohomeMiscClient::Shutdown();
+    ash::CryptohomeMiscClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     base::RunLoop().RunUntilIdle();
   }

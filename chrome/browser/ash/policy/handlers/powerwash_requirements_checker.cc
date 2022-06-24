@@ -100,7 +100,7 @@ void OnCryptohomeAvailability(base::OnceClosure on_initialized_callback,
       std::move(on_initialized_callback).Run();
     return;
   }
-  chromeos::CryptohomeMiscClient::Get()->CheckHealth(
+  ash::CryptohomeMiscClient::Get()->CheckHealth(
       user_data_auth::CheckHealthRequest(),
       base::BindOnce(OnCryptohomeCheckHealth,
                      std::move(on_initialized_callback)));
@@ -110,14 +110,14 @@ void OnCryptohomeAvailability(base::OnceClosure on_initialized_callback,
 
 // static
 void PowerwashRequirementsChecker::Initialize() {
-  chromeos::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
+  ash::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(OnCryptohomeAvailability, base::OnceClosure{}));
 }
 
 // static
 void PowerwashRequirementsChecker::InitializeSynchronouslyForTesting() {
   base::RunLoop run_loop;
-  chromeos::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
+  ash::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(OnCryptohomeAvailability, run_loop.QuitClosure()));
   run_loop.Run();
 }

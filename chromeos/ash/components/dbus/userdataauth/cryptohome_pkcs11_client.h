@@ -16,7 +16,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // CryptohomePkcs11Client is used to communicate with the
 // org.chromium.CryptohomePkcs11 interface within org.chromium.UserDataAuth
@@ -67,11 +67,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) CryptohomePkcs11Client {
   virtual ~CryptohomePkcs11Client();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::CryptohomePkcs11Client;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::CryptohomePkcs11Client;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_CRYPTOHOME_PKCS11_CLIENT_H_

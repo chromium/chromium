@@ -22,7 +22,7 @@
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // The default timeout for all method call within CryptohomeMisc interface.
@@ -67,7 +67,7 @@ class CryptohomeMiscClientImpl : public CryptohomeMiscClient {
         ::user_data_auth::kUserDataAuthServiceName,
         dbus::ObjectPath(::user_data_auth::kUserDataAuthServicePath));
     blocking_method_caller_ =
-        std::make_unique<BlockingMethodCaller>(bus, proxy_);
+        std::make_unique<chromeos::BlockingMethodCaller>(bus, proxy_);
   }
 
   // CryptohomeMiscClient override:
@@ -224,7 +224,7 @@ class CryptohomeMiscClientImpl : public CryptohomeMiscClient {
   dbus::ObjectProxy* proxy_ = nullptr;
 
   // For making blocking dbus calls.
-  std::unique_ptr<BlockingMethodCaller> blocking_method_caller_;
+  std::unique_ptr<chromeos::BlockingMethodCaller> blocking_method_caller_;
 
   base::WeakPtrFactory<CryptohomeMiscClientImpl> weak_factory_{this};
 };
@@ -265,4 +265,4 @@ CryptohomeMiscClient* CryptohomeMiscClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

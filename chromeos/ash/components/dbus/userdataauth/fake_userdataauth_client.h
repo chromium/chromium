@@ -19,7 +19,7 @@
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     : public UserDataAuthClient {
@@ -400,12 +400,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::FakeUserDataAuthClient;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::FakeUserDataAuthClient;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_

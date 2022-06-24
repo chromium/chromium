@@ -28,13 +28,13 @@ class PowerwashRequirementsCheckerTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    chromeos::CryptohomeMiscClient::InitializeFake();
+    ash::CryptohomeMiscClient::InitializeFake();
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
   }
 
   void TearDown() override {
     BrowserWithTestWindowTest::TearDown();
-    chromeos::CryptohomeMiscClient::Shutdown();
+    ash::CryptohomeMiscClient::Shutdown();
   }
 
   void SetupUserWithAffiliation(bool is_affiliated) {
@@ -49,7 +49,7 @@ class PowerwashRequirementsCheckerTest : public BrowserWithTestWindowTest {
   }
 
   void SetupCryptohomeRequiresPowerwash(bool requires_powerwash) {
-    chromeos::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(
+    ash::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(
         requires_powerwash);
     PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
   }
@@ -148,7 +148,7 @@ TEST_F(
   SetupUserWithAffiliation(false);
   SetDeviceRebootOnUserSignoutPolicy(RebootOnSignOutPolicy::ALWAYS);
   PowerwashRequirementsChecker::ResetForTesting();
-  chromeos::FakeCryptohomeMiscClient::Get()->set_cryptohome_error(
+  ash::FakeCryptohomeMiscClient::Get()->set_cryptohome_error(
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
   SetupCryptohomeRequiresPowerwash(false);
 
@@ -162,7 +162,7 @@ TEST_F(PowerwashRequirementsCheckerTest,
   SetupUserWithAffiliation(false);
   SetDeviceRebootOnUserSignoutPolicy(RebootOnSignOutPolicy::ALWAYS);
   PowerwashRequirementsChecker::ResetForTesting();
-  chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
+  ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
   // Cryptohome will never response and initialization callbacks will never be
   // called.
   PowerwashRequirementsChecker::Initialize();
@@ -170,7 +170,7 @@ TEST_F(PowerwashRequirementsCheckerTest,
   EXPECT_EQ(PowerwashRequirementsChecker::State::kUndefined, GetStateForArc());
   EXPECT_EQ(PowerwashRequirementsChecker::State::kUndefined,
             GetStateForCrostini());
-  chromeos::FakeCryptohomeMiscClient::Get()->ReportServiceIsNotAvailable();
+  ash::FakeCryptohomeMiscClient::Get()->ReportServiceIsNotAvailable();
 }
 
 TEST_F(
@@ -179,9 +179,9 @@ TEST_F(
   SetupUserWithAffiliation(false);
   SetDeviceRebootOnUserSignoutPolicy(RebootOnSignOutPolicy::ALWAYS);
   PowerwashRequirementsChecker::ResetForTesting();
-  chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
+  ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
   PowerwashRequirementsChecker::Initialize();
-  chromeos::FakeCryptohomeMiscClient::Get()->ReportServiceIsNotAvailable();
+  ash::FakeCryptohomeMiscClient::Get()->ReportServiceIsNotAvailable();
 
   EXPECT_EQ(PowerwashRequirementsChecker::State::kUndefined, GetStateForArc());
   EXPECT_EQ(PowerwashRequirementsChecker::State::kUndefined,

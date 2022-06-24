@@ -911,7 +911,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     chromeos::CrasAudioHandler::InitializeForTesting();
-    chromeos::UserDataAuthClient::InitializeFake();
+    ash::UserDataAuthClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::AttestationClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
@@ -937,7 +937,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::TpmManagerClient::Shutdown();
     chromeos::AttestationClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::UserDataAuthClient::Shutdown();
+    ash::UserDataAuthClient::Shutdown();
     chromeos::CrasAudioHandler::Shutdown();
     chromeos::UpdateEngineClient::Shutdown();
     ash::KioskAppManager::Shutdown();

@@ -22,7 +22,7 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -339,4 +339,4 @@ TEST_F(CryptohomeMiscClientTest, BlockingGetSanitizedUsernameInvalidProtobuf) {
   EXPECT_EQ(result_reply, absl::nullopt);
 }
 
-}  // namespace chromeos
+}  // namespace ash

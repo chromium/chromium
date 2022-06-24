@@ -172,7 +172,7 @@ void ExtendedAuthenticatorImpl::DoAuthenticateToCheck(
           cryptohome_parameter_utils::CreateAuthorizationKeyDefFromUserContext(
               user_context));
   request.set_unlock_webauthn_secret(unlock_webauthn_secret);
-  chromeos::UserDataAuthClient::Get()->CheckKey(
+  UserDataAuthClient::Get()->CheckKey(
       request, base::BindOnce(&ExtendedAuthenticatorImpl::OnOperationComplete<
                                   ::user_data_auth::CheckKeyReply>,
                               this, "Cryptohome-CheckKeyEx-End", user_context,

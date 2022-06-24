@@ -12,8 +12,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace install_attributes_util {
+namespace ash::install_attributes_util {
 
 bool InstallAttributesGet(const std::string& name, std::string* value) {
   ::user_data_auth::InstallAttributesGetRequest request;
@@ -91,5 +90,4 @@ bool InstallAttributesIsFirstInstall() {
   return state == user_data_auth::InstallAttributesState::FIRST_INSTALL;
 }
 
-}  // namespace install_attributes_util
-}  // namespace chromeos
+}  // namespace ash::install_attributes_util

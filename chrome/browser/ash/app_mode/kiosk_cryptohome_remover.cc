@@ -28,8 +28,6 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::UserDataAuthClient;
-
 void ScheduleDelayedCryptohomeRemoval(const AccountId& account_id) {
   PrefService* const local_state = g_browser_process->local_state();
   {

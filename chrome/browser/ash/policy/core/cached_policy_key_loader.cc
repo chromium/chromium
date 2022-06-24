@@ -34,7 +34,7 @@ const size_t kKeySizeLimit = 16 * 1024;
 }  // namespace
 
 CachedPolicyKeyLoader::CachedPolicyKeyLoader(
-    chromeos::CryptohomeMiscClient* cryptohome_misc_client,
+    ash::CryptohomeMiscClient* cryptohome_misc_client,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const AccountId& account_id,
     const base::FilePath& user_policy_key_dir)

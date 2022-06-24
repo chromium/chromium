@@ -16,7 +16,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // ArcQuotaClient is used to communicate with the org.chromium.ArcQuota
 // interface within org.chromium.UserDataAuth service exposed by cryptohomed.
@@ -88,11 +88,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) ArcQuotaClient {
   virtual ~ArcQuotaClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::ArcQuotaClient;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_ARC_QUOTA_CLIENT_H_

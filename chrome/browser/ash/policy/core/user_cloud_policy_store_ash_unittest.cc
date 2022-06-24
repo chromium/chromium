@@ -59,7 +59,7 @@ base::FilePath GetUserPolicyKeyFile(
     const base::FilePath& user_policy_dir,
     const cryptohome::AccountIdentifier& cryptohome_id) {
   const std::string sanitized_username =
-      chromeos::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id);
+      ash::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id);
   return user_policy_dir.AppendASCII(sanitized_username)
       .AppendASCII("policy.pub");
 }
@@ -244,7 +244,7 @@ class UserCloudPolicyStoreAshTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  chromeos::FakeCryptohomeMiscClient cryptohome_misc_client_;
+  ash::FakeCryptohomeMiscClient cryptohome_misc_client_;
   std::unique_ptr<FakeSessionManagerClient> session_manager_client_;
   UserPolicyBuilder policy_;
   MockCloudPolicyStoreObserver observer_;

@@ -22,7 +22,7 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -232,4 +232,4 @@ TEST_F(ArcQuotaClientTest, SetProjectId) {
       ProtobufEquals(result_reply.value(), expected_set_project_id_reply_));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -218,7 +218,7 @@ AffiliatedInvalidationServiceProviderImplTest::
 }
 
 void AffiliatedInvalidationServiceProviderImplTest::SetUp() {
-  chromeos::CryptohomeMiscClient::InitializeFake();
+  ash::CryptohomeMiscClient::InitializeFake();
   chromeos::SystemSaltGetter::Initialize();
   ASSERT_TRUE(profile_manager_.SetUp());
 
@@ -243,7 +243,7 @@ void AffiliatedInvalidationServiceProviderImplTest::TearDown() {
           BrowserContextKeyedServiceFactory::TestingFactory());
   DeviceOAuth2TokenServiceFactory::Shutdown();
   chromeos::SystemSaltGetter::Shutdown();
-  chromeos::CryptohomeMiscClient::Shutdown();
+  ash::CryptohomeMiscClient::Shutdown();
 }
 
 Profile*

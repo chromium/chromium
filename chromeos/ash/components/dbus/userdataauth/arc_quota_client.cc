@@ -21,7 +21,7 @@
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // The default timeout for all method call within ArcQuota interface.
@@ -211,4 +211,4 @@ ArcQuotaClient* ArcQuotaClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

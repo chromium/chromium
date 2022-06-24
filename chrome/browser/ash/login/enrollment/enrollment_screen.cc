@@ -378,7 +378,7 @@ void EnrollmentScreen::CheckInstallAttributesState() {
     return;
   }
   user_data_auth::InstallAttributesState state =
-      chromeos::install_attributes_util::InstallAttributesGetStatus();
+      install_attributes_util::InstallAttributesGetStatus();
 
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.

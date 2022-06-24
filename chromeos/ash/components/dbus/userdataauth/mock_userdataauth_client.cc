@@ -8,7 +8,7 @@
 
 #include "base/notreached.h"
 
-namespace chromeos {
+namespace ash {
 
 MockUserDataAuthClient::MockUserDataAuthClient() {}
 MockUserDataAuthClient::~MockUserDataAuthClient() = default;
@@ -26,4 +26,4 @@ void MockUserDataAuthClient::RemoveObserver(Observer* observer) {
   NOTIMPLEMENTED();
 }
 
-}  // namespace chromeos
+}  // namespace ash

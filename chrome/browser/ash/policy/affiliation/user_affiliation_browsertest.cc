@@ -139,8 +139,7 @@ class UserAffiliationBrowserTest
                                       cryptohome_id.account_id());
       command_line->AppendSwitchASCII(
           ash::switches::kLoginProfile,
-          chromeos::UserDataAuthClient::GetStubSanitizedUsername(
-              cryptohome_id));
+          ash::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id));
     }
   }
 

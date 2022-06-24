@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeInstallAttributesClient
     : public InstallAttributesClient {
@@ -119,12 +119,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeInstallAttributesClient
       pending_wait_for_service_to_be_available_callbacks_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::FakeInstallAttributesClient;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_INSTALL_ATTRIBUTES_CLIENT_H_

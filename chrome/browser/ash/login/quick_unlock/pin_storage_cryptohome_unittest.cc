@@ -133,7 +133,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
     // Ensure that has_authorization_request() would return true.
     request.mutable_authorization_request();
     base::RunLoop run_loop;
-    chromeos::UserDataAuthClient::Get()->AddKey(
+    UserDataAuthClient::Get()->AddKey(
         request, base::BindOnce(
                      [](base::OnceClosure closure,
                         absl::optional<::user_data_auth::AddKeyReply> reply) {
@@ -161,7 +161,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
     // Ensure that has_authorization_request() would return true.
     request.mutable_authorization_request();
     base::RunLoop run_loop;
-    chromeos::UserDataAuthClient::Get()->AddKey(
+    UserDataAuthClient::Get()->AddKey(
         request, base::BindOnce(
                      [](base::OnceClosure closure,
                         absl::optional<::user_data_auth::AddKeyReply> reply) {

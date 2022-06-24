@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomePkcs11Client
     : public CryptohomePkcs11Client {
@@ -63,6 +63,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomePkcs11Client
       pending_wait_for_service_to_be_available_callbacks_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_CRYPTOHOME_PKCS11_CLIENT_H_

@@ -26,7 +26,7 @@ LookupKeyUploader::LookupKeyUploader(
     : policy_store_(policy_store),
       prefs_(pref_service),
       certificate_uploader_(certificate_uploader),
-      cryptohome_misc_client_(chromeos::CryptohomeMiscClient::Get()),
+      cryptohome_misc_client_(ash::CryptohomeMiscClient::Get()),
       clock_(base::DefaultClock::GetInstance()) {
   // Can be null in tests.
   if (policy_store_)

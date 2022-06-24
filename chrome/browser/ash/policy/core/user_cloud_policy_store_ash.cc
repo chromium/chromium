@@ -37,7 +37,7 @@ std::string ExtractDomain(const std::string& username) {
 }  // namespace
 
 UserCloudPolicyStoreAsh::UserCloudPolicyStoreAsh(
-    chromeos::CryptohomeMiscClient* cryptohome_misc_client,
+    ash::CryptohomeMiscClient* cryptohome_misc_client,
     ash::SessionManagerClient* session_manager_client,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const AccountId& account_id,

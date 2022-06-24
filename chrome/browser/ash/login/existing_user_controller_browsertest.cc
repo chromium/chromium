@@ -893,7 +893,7 @@ class ExistingUserControllerActiveDirectoryTest
     AuthPolicyClient::InitializeFake();
     FakeAuthPolicyClient::Get()->DisableOperationDelayForTesting();
     // Required for tpm_util. Will be destroyed in browser shutdown.
-    chromeos::UserDataAuthClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
 
     RefreshDevicePolicy();
     policy_provider_.SetDefaultReturns(

@@ -26,7 +26,7 @@ namespace ash {
 // This class should be created after DBus has been initialized and destroyed
 // before DBus has been shutdown.
 // This class must be instantiated on the UI thread.
-class LowDiskNotification : public chromeos::UserDataAuthClient::Observer {
+class LowDiskNotification : public UserDataAuthClient::Observer {
  public:
   // Registers this class as the UserDataAuthClient LowDiskSpaceHandler.
   LowDiskNotification();

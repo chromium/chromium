@@ -22,7 +22,7 @@
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -950,4 +950,4 @@ void FakeUserDataAuthClient::AddExistingUser(
   DCHECK(was_inserted) << "User already exists: " << account_id.account_id();
 }
 
-}  // namespace chromeos
+}  // namespace ash

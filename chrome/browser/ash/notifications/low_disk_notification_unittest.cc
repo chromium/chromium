@@ -43,7 +43,7 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    chromeos::UserDataAuthClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
 
     GetCrosSettingsHelper()->ReplaceDeviceSettingsProviderWithStub();
     GetCrosSettingsHelper()->SetBoolean(kDeviceShowLowDiskSpaceNotification,
@@ -69,7 +69,7 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
 
   void TearDown() override {
     low_disk_notification_.reset();
-    chromeos::UserDataAuthClient::Shutdown();
+    UserDataAuthClient::Shutdown();
     BrowserWithTestWindowTest::TearDown();
   }
 

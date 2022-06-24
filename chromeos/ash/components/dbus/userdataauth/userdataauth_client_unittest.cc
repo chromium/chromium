@@ -21,7 +21,7 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -600,4 +600,4 @@ TEST_F(UserDataAuthClientTest, DircryptoMigrationProgressSignal) {
   EXPECT_EQ(observer.dircrypto_progress_count(), 2);
 }
 
-}  // namespace chromeos
+}  // namespace ash

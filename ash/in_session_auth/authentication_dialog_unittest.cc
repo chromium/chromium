@@ -36,7 +36,7 @@ class AuthenticationDialogTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-    chromeos::UserDataAuthClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
     auth_token_provider_ = std::make_unique<MockInSessionAuthTokenProvider>();
   }
 

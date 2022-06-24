@@ -76,7 +76,7 @@ class AuthPerformerTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  ::testing::StrictMock<chromeos::MockUserDataAuthClient> mock_client_;
+  ::testing::StrictMock<MockUserDataAuthClient> mock_client_;
   std::unique_ptr<UserContext> context_;
 };
 

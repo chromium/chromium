@@ -59,8 +59,8 @@ void DeviceSettingsTestBase::SetUp() {
   owner_key_util_ = new ownership::MockOwnerKeyUtil();
   device_settings_service_ = std::make_unique<DeviceSettingsService>();
   ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-  chromeos::UserDataAuthClient::InitializeFake();
-  chromeos::CryptohomeMiscClient::InitializeFake();
+  UserDataAuthClient::InitializeFake();
+  CryptohomeMiscClient::InitializeFake();
   PowerManagerClient::InitializeFake();
   chromeos::TpmManagerClient::InitializeFake();
   OwnerSettingsServiceAshFactory::SetDeviceSettingsServiceForTesting(
@@ -87,8 +87,8 @@ void DeviceSettingsTestBase::TearDown() {
   device_settings_service_.reset();
   chromeos::TpmManagerClient::Shutdown();
   PowerManagerClient::Shutdown();
-  chromeos::CryptohomeMiscClient::Shutdown();
-  chromeos::UserDataAuthClient::Shutdown();
+  CryptohomeMiscClient::Shutdown();
+  UserDataAuthClient::Shutdown();
   ConciergeClient::Shutdown();
   device_policy_.reset();
   base::RunLoop().RunUntilIdle();

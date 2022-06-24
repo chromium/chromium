@@ -17,7 +17,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // InstallAttributesClient is used to communicate with the
 // org.chromium.InstallAttributes interface within org.chromium.UserDataAuth
@@ -117,12 +117,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) InstallAttributesClient {
   virtual ~InstallAttributesClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::InstallAttributesClient;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_INSTALL_ATTRIBUTES_CLIENT_H_

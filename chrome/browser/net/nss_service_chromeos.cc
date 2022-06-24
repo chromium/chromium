@@ -99,7 +99,7 @@ void GetTPMInfoForUserOnUIThread(const AccountId& account_id,
            << " " << account_id.Serialize() << " " << username_hash;
   std::unique_ptr<ash::TPMTokenInfoGetter> scoped_token_info_getter =
       ash::TPMTokenInfoGetter::CreateForUserToken(
-          account_id, chromeos::CryptohomePkcs11Client::Get(),
+          account_id, ash::CryptohomePkcs11Client::Get(),
           base::ThreadTaskRunnerHandle::Get());
   ash::TPMTokenInfoGetter* token_info_getter = scoped_token_info_getter.get();
 

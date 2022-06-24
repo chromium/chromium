@@ -75,7 +75,7 @@ class FakeTaskRunner : public base::TaskRunner {
 // Implementation of CryptohomePkcs11Client used in these tests.
 // TestCryptohomePkcs11Client overrides all CryptohomePkcs11Client methods used
 // in TPMTokenInfoGetter tests.
-class TestCryptohomePkcs11Client : public chromeos::FakeCryptohomePkcs11Client {
+class TestCryptohomePkcs11Client : public FakeCryptohomePkcs11Client {
  public:
   // |account_id|: The user associated with the TPMTokenInfoGetter that will be
   // using the TestCryptohomePkcs11Client. Should be empty for system token.

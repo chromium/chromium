@@ -59,7 +59,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc::SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
     chromeos::AnomalyDetectorClient::InitializeFake();
-    chromeos::CryptohomeMiscClient::InitializeFake();
+    ash::CryptohomeMiscClient::InitializeFake();
     chromeos::VmPluginDispatcherClient::InitializeFake();
     lock_to_single_user_manager_ = std::make_unique<LockToSingleUserManager>();
 
@@ -104,7 +104,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc_service_manager_->set_browser_context(nullptr);
     arc_service_manager_.reset();
     chromeos::VmPluginDispatcherClient::Shutdown();
-    chromeos::CryptohomeMiscClient::Shutdown();
+    ash::CryptohomeMiscClient::Shutdown();
     chromeos::AnomalyDetectorClient::Shutdown();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
@@ -163,7 +163,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   }
 
   bool is_device_locked() const {
-    return chromeos::FakeCryptohomeMiscClient::Get()
+    return ash::FakeCryptohomeMiscClient::Get()
         ->is_device_locked_to_single_user();
   }
 
@@ -270,7 +270,7 @@ TEST_F(LockToSingleUserManagerTest, NeverLockTest) {
 }
 
 TEST_F(LockToSingleUserManagerTest, DbusCallErrorTest) {
-  chromeos::FakeCryptohomeMiscClient::Get()->set_cryptohome_error(
+  ash::FakeCryptohomeMiscClient::Get()->set_cryptohome_error(
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
   SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
   LogInUser(false /* is_affiliated */);

@@ -73,12 +73,12 @@
 using testing::Return;
 using testing::_;
 
+using ash::UserDataAuthClient;
 using chromeos::ShillDeviceClient;
 using chromeos::ShillIPConfigClient;
 using chromeos::ShillManagerClient;
 using chromeos::ShillProfileClient;
 using chromeos::ShillServiceClient;
-using chromeos::UserDataAuthClient;
 
 using extensions::NetworkingPrivateDelegate;
 using extensions::NetworkingPrivateDelegateFactory;
@@ -163,7 +163,7 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     request.set_username(
         cryptohome::CreateAccountIdentifierFromAccountId(user->GetAccountId())
             .account_id());
-    chromeos::CryptohomeMiscClient::Get()->GetSanitizedUsername(
+    ash::CryptohomeMiscClient::Get()->GetSanitizedUsername(
         request,
         base::BindOnce(
             [](std::string* out,

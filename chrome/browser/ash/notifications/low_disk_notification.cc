@@ -44,13 +44,13 @@ namespace ash {
 
 LowDiskNotification::LowDiskNotification()
     : notification_interval_(kNotificationInterval) {
-  DCHECK(chromeos::UserDataAuthClient::Get());
-  chromeos::UserDataAuthClient::Get()->AddObserver(this);
+  DCHECK(UserDataAuthClient::Get());
+  UserDataAuthClient::Get()->AddObserver(this);
 }
 
 LowDiskNotification::~LowDiskNotification() {
-  DCHECK(chromeos::UserDataAuthClient::Get());
-  chromeos::UserDataAuthClient::Get()->RemoveObserver(this);
+  DCHECK(UserDataAuthClient::Get());
+  UserDataAuthClient::Get()->RemoveObserver(this);
 }
 
 void LowDiskNotification::LowDiskSpace(

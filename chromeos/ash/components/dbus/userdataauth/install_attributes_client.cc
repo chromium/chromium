@@ -22,7 +22,7 @@
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // The default timeout for all method call within InstallAttributes interface.
@@ -68,7 +68,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
         ::user_data_auth::kUserDataAuthServiceName,
         dbus::ObjectPath(::user_data_auth::kUserDataAuthServicePath));
     blocking_method_caller_ =
-        std::make_unique<BlockingMethodCaller>(bus, proxy_);
+        std::make_unique<chromeos::BlockingMethodCaller>(bus, proxy_);
   }
 
   // InstallAttributesClient override:
@@ -259,7 +259,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
   dbus::ObjectProxy* proxy_ = nullptr;
 
   // For making blocking dbus calls.
-  std::unique_ptr<BlockingMethodCaller> blocking_method_caller_;
+  std::unique_ptr<chromeos::BlockingMethodCaller> blocking_method_caller_;
 
   base::WeakPtrFactory<InstallAttributesClientImpl> weak_factory_{this};
 };
@@ -300,4 +300,4 @@ InstallAttributesClient* InstallAttributesClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

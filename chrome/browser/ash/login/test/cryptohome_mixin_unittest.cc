@@ -19,14 +19,14 @@ class CryptohomeMixinTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    if (chromeos::FakeUserDataAuthClient::Get() != nullptr) {
-      chromeos::FakeUserDataAuthClient::Shutdown();
+    if (FakeUserDataAuthClient::Get() != nullptr) {
+      FakeUserDataAuthClient::Shutdown();
     }
   }
 
  protected:
   void InitializeFakeUserDataAuthClient() {
-    chromeos::UserDataAuthClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
   }
 
   std::unique_ptr<CryptohomeMixin> cryptohome_mixin_;

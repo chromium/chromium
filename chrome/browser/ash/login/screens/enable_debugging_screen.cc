@@ -121,7 +121,7 @@ void EnableDebuggingScreen::OnRemoveRootfsVerification(bool success) {
 
 void EnableDebuggingScreen::WaitForCryptohome() {
   UpdateUIState(EnableDebuggingScreenView::UI_STATE_WAIT);
-  chromeos::UserDataAuthClient* client = chromeos::UserDataAuthClient::Get();
+  UserDataAuthClient* client = UserDataAuthClient::Get();
   client->WaitForServiceToBeAvailable(base::BindOnce(
       &EnableDebuggingScreen::OnCryptohomeDaemonAvailabilityChecked,
       weak_ptr_factory_.GetWeakPtr()));

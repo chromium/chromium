@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
     : public UserDataAuthClient {
@@ -182,12 +182,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
               (override));
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::UserDataAuthClient;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_MOCK_USERDATAAUTH_CLIENT_H_

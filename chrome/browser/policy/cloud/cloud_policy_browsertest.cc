@@ -299,7 +299,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     ASSERT_TRUE(base::PathService::Get(
         chromeos::dbus_paths::DIR_USER_POLICY_KEYS, &user_policy_key_dir));
     std::string sanitized_username =
-        chromeos::UserDataAuthClient::GetStubSanitizedUsername(
+        ash::UserDataAuthClient::GetStubSanitizedUsername(
             cryptohome::CreateAccountIdentifierFromAccountId(
                 AccountId::FromUserEmail(GetTestUser())));
     user_policy_key_file_ = user_policy_key_dir.AppendASCII(sanitized_username)

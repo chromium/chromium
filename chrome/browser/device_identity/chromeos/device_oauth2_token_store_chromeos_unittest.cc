@@ -44,10 +44,10 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
       : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
-    chromeos::CryptohomeMiscClient::InitializeFake();
-    chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
-    chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
-        chromeos::FakeCryptohomeMiscClient::GetStubSystemSalt());
+    ash::CryptohomeMiscClient::InitializeFake();
+    ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
+    ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
+        ash::FakeCryptohomeMiscClient::GetStubSystemSalt());
 
     chromeos::SystemSaltGetter::Initialize();
 
@@ -63,7 +63,7 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
     base::ThreadPoolInstance::Get()->FlushForTesting();
     ash::DeviceSettingsService::Get()->UnsetSessionManager();
     chromeos::SystemSaltGetter::Shutdown();
-    chromeos::CryptohomeMiscClient::Shutdown();
+    ash::CryptohomeMiscClient::Shutdown();
   }
 
   void SetUpDefaultValues() {
@@ -72,25 +72,25 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
   }
 
   void InitWithPendingSalt(chromeos::DeviceOAuth2TokenStoreChromeOS* store) {
-    chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
+    ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
         std::vector<uint8_t>());
-    chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
+    ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
     store->Init(base::BindLambdaForTesting([](bool, bool) {}));
     SetUpDefaultValues();
   }
 
   void InitStore(chromeos::DeviceOAuth2TokenStoreChromeOS* store) {
-    chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
+    ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
         std::vector<uint8_t>());
-    chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
+    ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
 
     DeviceOAuth2TokenStoreInitWaiter init_waiter;
     store->Init(init_waiter.GetCallback());
 
     // Make the system salt available.
-    chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
-        chromeos::FakeCryptohomeMiscClient::GetStubSystemSalt());
-    chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
+    ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
+        ash::FakeCryptohomeMiscClient::GetStubSystemSalt());
+    ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
 
     // Wait for init to complete before continuing with the test.
     EXPECT_TRUE(init_waiter.Wait());
@@ -121,9 +121,8 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
 };
 
 TEST_F(DeviceOAuth2TokenStoreChromeOSTest, InitSuccessful) {
-  chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
-      std::vector<uint8_t>());
-  chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
+  ash::FakeCryptohomeMiscClient::Get()->set_system_salt(std::vector<uint8_t>());
+  ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
 
   chromeos::DeviceOAuth2TokenStoreChromeOS store(
       scoped_testing_local_state_.Get());
@@ -137,9 +136,9 @@ TEST_F(DeviceOAuth2TokenStoreChromeOSTest, InitSuccessful) {
   EXPECT_FALSE(init_waiter.HasInitBeenCalled());
 
   // Make the system salt available.
-  chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
-      chromeos::FakeCryptohomeMiscClient::GetStubSystemSalt());
-  chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
+  ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
+      ash::FakeCryptohomeMiscClient::GetStubSystemSalt());
+  ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
   ASSERT_TRUE(init_waiter.Wait());
 
   EXPECT_TRUE(init_waiter.HasInitBeenCalled());
@@ -170,9 +169,9 @@ TEST_F(DeviceOAuth2TokenStoreChromeOSTest, SaveEncryptedTokenEarly) {
   EXPECT_EQ("test-token", store.GetRefreshToken());
 
   // Make the system salt available.
-  chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
-      chromeos::FakeCryptohomeMiscClient::GetStubSystemSalt());
-  chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
+  ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
+      ash::FakeCryptohomeMiscClient::GetStubSystemSalt());
+  ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
   base::RunLoop().RunUntilIdle();
 
   // The original token should still be present.

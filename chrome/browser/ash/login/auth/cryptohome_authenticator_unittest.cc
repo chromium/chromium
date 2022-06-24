@@ -121,7 +121,7 @@ bool CreateOwnerKeyInSlot(PK11SlotInfo* slot) {
 }
 
 // Fake UserDataAuthClient implementation for this test.
-class TestUserDataAuthClient : public ::chromeos::FakeUserDataAuthClient {
+class TestUserDataAuthClient : public FakeUserDataAuthClient {
  public:
   TestUserDataAuthClient() = default;
 

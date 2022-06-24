@@ -142,7 +142,7 @@ void LockToSingleUserManager::LockToSingleUser() {
           user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   RebootOnSignOutRequest request;
   request.mutable_account_id()->CopyFrom(account_id);
-  chromeos::CryptohomeMiscClient::Get()->LockToSingleUserMountUntilReboot(
+  ash::CryptohomeMiscClient::Get()->LockToSingleUserMountUntilReboot(
       request,
       base::BindOnce(
           &LockToSingleUserManager::OnLockToSingleUserMountUntilRebootDone,

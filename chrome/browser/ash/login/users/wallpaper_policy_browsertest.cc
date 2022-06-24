@@ -147,7 +147,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
     EXPECT_TRUE(base::PathService::Get(
         chromeos::dbus_paths::DIR_USER_POLICY_KEYS, &user_keys_dir));
     const std::string sanitized_user_id =
-        chromeos::UserDataAuthClient::GetStubSanitizedUsername(
+        UserDataAuthClient::GetStubSanitizedUsername(
             cryptohome::CreateAccountIdentifierFromAccountId(account_id));
     const base::FilePath user_key_file =
         user_keys_dir.AppendASCII(sanitized_user_id).AppendASCII("policy.pub");

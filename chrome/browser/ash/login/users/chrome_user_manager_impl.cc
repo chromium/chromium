@@ -275,7 +275,7 @@ void CheckProfileForSanity() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kTestType))
     return;
 
-  chromeos::UserDataAuthClient::Get()->IsMounted(
+  UserDataAuthClient::Get()->IsMounted(
       user_data_auth::IsMountedRequest(),
       base::BindOnce(&CheckCryptohomeIsMounted));
 
@@ -1396,7 +1396,7 @@ void ChromeUserManagerImpl::AsyncRemoveCryptohome(
 
   user_data_auth::RemoveRequest request;
   *request.mutable_identifier() = account_id_proto;
-  chromeos::UserDataAuthClient::Get()->Remove(
+  UserDataAuthClient::Get()->Remove(
       request, base::BindOnce(&OnRemoveUserComplete, account_id));
 }
 

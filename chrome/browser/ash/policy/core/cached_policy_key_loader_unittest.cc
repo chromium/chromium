@@ -54,7 +54,7 @@ class CachedPolicyKeyLoaderTest : public testing::Test {
 
   base::FilePath user_policy_key_file() const {
     const std::string sanitized_username =
-        chromeos::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id_);
+        ash::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id_);
     return user_policy_keys_dir()
         .AppendASCII(sanitized_username)
         .AppendASCII("policy.pub");
@@ -74,7 +74,7 @@ class CachedPolicyKeyLoaderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-  chromeos::FakeCryptohomeMiscClient cryptohome_misc_client_;
+  ash::FakeCryptohomeMiscClient cryptohome_misc_client_;
   const AccountId account_id_ = AccountId::FromUserEmail(kTestUserName);
   const cryptohome::AccountIdentifier cryptohome_id_ =
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_);

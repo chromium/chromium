@@ -43,7 +43,7 @@ const test::UIPath kPinKeyboardInput = {"pin-setup", "pinKeyboard",
 // which perform the necessary setup so that the PIN setup screen is shown.
 class PinSetupScreenTest : public OobeBaseTest {
  public:
-  PinSetupScreenTest() { chromeos::UserDataAuthClient::InitializeFake(); }
+  PinSetupScreenTest() { UserDataAuthClient::InitializeFake(); }
 
   ~PinSetupScreenTest() override = default;
 

@@ -62,7 +62,7 @@ class LookupKeyUploaderTest : public ash::DeviceSettingsTestBase {
   bool NeedsUpload() { return lookup_key_uploader_->needs_upload_; }
 
   void SetCryptohomeReplyTo(const std::string& rsu_device_id) {
-    chromeos::FakeCryptohomeMiscClient::Get()->set_rsu_device_id(rsu_device_id);
+    ash::FakeCryptohomeMiscClient::Get()->set_rsu_device_id(rsu_device_id);
   }
 
   void AdvanceTime() { clock_.Advance(lookup_key_uploader_->kRetryFrequency); }

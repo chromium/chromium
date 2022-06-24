@@ -393,8 +393,8 @@ class ArcSessionManagerTest : public ArcSessionManagerTestBase {
     GetFakeUserManager()->AddUser(account_id);
     GetFakeUserManager()->LoginUser(account_id);
 
-    chromeos::CryptohomeMiscClient::InitializeFake();
-    chromeos::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(false);
+    ash::CryptohomeMiscClient::InitializeFake();
+    ash::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(false);
     policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
 
     ASSERT_EQ(ArcSessionManager::State::NOT_INITIALIZED,
@@ -402,7 +402,7 @@ class ArcSessionManagerTest : public ArcSessionManagerTestBase {
   }
 
   void TearDown() override {
-    chromeos::CryptohomeMiscClient::Shutdown();
+    ash::CryptohomeMiscClient::Shutdown();
     ArcSessionManagerTestBase::TearDown();
   }
 };
@@ -2201,11 +2201,11 @@ class ArcSessionManagerPowerwashTest : public ArcSessionManagerTestBase {
 
   void SetUp() override {
     ArcSessionManagerTestBase::SetUp();
-    chromeos::CryptohomeMiscClient::InitializeFake();
+    ash::CryptohomeMiscClient::InitializeFake();
   }
 
   void TearDown() override {
-    chromeos::CryptohomeMiscClient::Shutdown();
+    ash::CryptohomeMiscClient::Shutdown();
     ArcSessionManagerTestBase::TearDown();
   }
 };
@@ -2235,7 +2235,7 @@ TEST_F(ArcSessionManagerPowerwashTest, PowerwashRequestBlocksArcStart) {
       enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
 
   // Initialize cryptohome to require powerwash.
-  chromeos::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(true);
+  ash::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(true);
   policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
 
   arc_session_manager()->SetProfile(profile());

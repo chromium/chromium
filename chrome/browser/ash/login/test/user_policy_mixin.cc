@@ -74,7 +74,7 @@ void UserPolicyMixin::SetUpUserKeysFile(const std::string& user_key_bits) {
                                &user_keys_dir));
 
   const std::string sanitized_username =
-      chromeos::UserDataAuthClient::GetStubSanitizedUsername(
+      UserDataAuthClient::GetStubSanitizedUsername(
           cryptohome::CreateAccountIdentifierFromAccountId(account_id_));
   const base::FilePath user_key_file =
       user_keys_dir.AppendASCII(sanitized_username).AppendASCII("policy.pub");

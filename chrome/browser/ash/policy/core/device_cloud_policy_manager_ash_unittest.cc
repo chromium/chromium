@@ -197,13 +197,13 @@ class DeviceCloudPolicyManagerAshTest
     base::RunLoop().RunUntilIdle();
 
     if (set_empty_system_salt_) {
-      chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
+      ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
           std::vector<uint8_t>());
     }
 
     ash::InstallAttributesClient::InitializeFake();
     install_attributes_ = std::make_unique<ash::InstallAttributes>(
-        chromeos::FakeInstallAttributesClient::Get());
+        ash::FakeInstallAttributesClient::Get());
     store_ = new DeviceCloudPolicyStoreAsh(device_settings_service_.get(),
                                            install_attributes_.get(),
                                            base::ThreadTaskRunnerHandle::Get());

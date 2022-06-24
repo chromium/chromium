@@ -22,7 +22,7 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -179,4 +179,4 @@ TEST_F(CryptohomePkcs11ClientTest, Pkcs11GetTpmTokenInfo) {
                              expected_pkcs11_get_tpm_token_info_reply_));
 }
 
-}  // namespace chromeos
+}  // namespace ash

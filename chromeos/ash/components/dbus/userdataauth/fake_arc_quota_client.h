@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeArcQuotaClient
     : public ArcQuotaClient {
@@ -69,6 +69,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeArcQuotaClient
       pending_wait_for_service_to_be_available_callbacks_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_ARC_QUOTA_CLIENT_H_
