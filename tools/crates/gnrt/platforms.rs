@@ -58,6 +58,14 @@ pub fn is_supported(platform: &Platform) -> bool {
     }
 }
 
+pub fn supported_os_cfgs_for_testing() -> &'static [Cfg] {
+    supported_os_cfgs()
+}
+
+pub fn supported_named_platforms_for_testing() -> &'static [&'static str] {
+    SUPPORTED_NAMED_PLATFORMS
+}
+
 fn supported_os_cfgs() -> &'static [Cfg] {
     static CFG_SET: OnceCell<Vec<Cfg>> = OnceCell::new();
     CFG_SET.get_or_init(|| {
@@ -95,32 +103,3 @@ static SUPPORTED_NAMED_PLATFORMS: &'static [&'static str] = &[
     "x86_64-apple-darwin",
     "aarch64-apple-darwin",
 ];
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    use std::str::FromStr;
-
-    use cargo_platform::CfgExpr;
-
-    #[test]
-    fn test_is_supported() {
-        for named_platform in SUPPORTED_NAMED_PLATFORMS {
-            assert!(is_supported(&Platform::Name(named_platform.to_string())));
-        }
-
-        assert!(!is_supported(&Platform::Name("x86_64-unknown-redox".to_string())));
-        assert!(!is_supported(&Platform::Name("wasm32-wasi".to_string())));
-
-        for os in supported_os_cfgs() {
-            assert!(is_supported(&Platform::Cfg(CfgExpr::Value(os.clone()))));
-        }
-
-        assert!(!is_supported(&Platform::Cfg(CfgExpr::from_str("target_os = \"redox\"").unwrap())));
-        assert!(!is_supported(&Platform::Cfg(CfgExpr::from_str("target_os = \"haiku\"").unwrap())));
-        assert!(!is_supported(&Platform::Cfg(
-            CfgExpr::from_str("target_arch = \"sparc\"").unwrap()
-        )));
-    }
-}

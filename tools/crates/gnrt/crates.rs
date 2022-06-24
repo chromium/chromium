@@ -263,32 +263,3 @@ fn into_io_result<T, E: Into<Box<dyn std::error::Error + Send + Sync>>>(
 ) -> io::Result<T> {
     result.map_err(|e| io::Error::new(io::ErrorKind::Other, e))
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn epoch_from_str() {
-        use Epoch::{Major, Minor};
-        use EpochParseError::*;
-        assert_eq!(Epoch::from_str("v1"), Ok(Major(1)));
-        assert_eq!(Epoch::from_str("v2"), Ok(Major(2)));
-        assert_eq!(Epoch::from_str("v0_3"), Ok(Minor(3)));
-        assert_eq!(Epoch::from_str("0_1"), Err(BadFormat));
-        assert_eq!(Epoch::from_str("v1_9"), Err(BadVersion));
-        assert_eq!(Epoch::from_str("v0_0"), Err(BadVersion));
-        assert_eq!(Epoch::from_str("v0_1_2"), Err(BadFormat));
-        assert_eq!(Epoch::from_str("v1_0"), Err(BadVersion));
-        assert!(matches!(Epoch::from_str("v1_0foo"), Err(InvalidInt(_))));
-        assert!(matches!(Epoch::from_str("vx_1"), Err(InvalidInt(_))));
-    }
-
-    #[test]
-    fn epoch_to_string() {
-        use Epoch::{Major, Minor};
-        assert_eq!(Major(1).to_string(), "v1");
-        assert_eq!(Major(2).to_string(), "v2");
-        assert_eq!(Minor(3).to_string(), "v0_3");
-    }
-}

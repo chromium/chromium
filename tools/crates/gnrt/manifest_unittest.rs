@@ -1,0 +1,139 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+use rust_gtest_interop::prelude::*;
+
+use gnrt_lib::manifest::*;
+
+#[gtest(ManifestTest, ParseSingleFullDependency)]
+fn test() {
+    expect_eq!(
+        toml::de::from_str(concat!(
+            "version = \"1.0.0\"\n",
+            "features = [\"foo\", \"bar\"]\n",
+            "allow-first-party-usage = false\n",
+            "build-script-outputs = [\"stuff.rs\"]\n",
+        )),
+        Ok(FullDependency {
+            version: Some(Version("1.0.0".to_string())),
+            features: vec!["foo".to_string(), "bar".to_string()],
+            allow_first_party_usage: false,
+            build_script_outputs: vec!["stuff.rs".to_string()],
+        })
+    );
+
+    expect_eq!(
+        toml::de::from_str(concat!(
+            "version = \"3.14.159\"\n",
+            "build-script-outputs = [\"generated.rs\"]\n",
+        )),
+        Ok(FullDependency {
+            version: Some(Version("3.14.159".to_string())),
+            features: vec![],
+            allow_first_party_usage: true,
+            build_script_outputs: vec!["generated.rs".to_string()],
+        })
+    );
+}
+
+#[gtest(ManifestTest, ParseManifest)]
+fn test() {
+    let manifest: ThirdPartyManifest = toml::de::from_str(concat!(
+        "[dependencies]\n",
+        "cxx = \"1\"\n",
+        "serde = \"1\"\n",
+        "rustversion = {version = \"1\", build-script-outputs = [\"version.rs\"]}",
+        "\n",
+        "[dependencies.unicode-linebreak]\n",
+        "version = \"0.1\"\n",
+        "allow-first-party-usage = false\n",
+        "build-script-outputs = [ \"table.rs\" ]\n",
+        "\n",
+        "[dev-dependencies]\n",
+        "syn = {version = \"1\", features = [\"full\"]}\n",
+    ))
+    .unwrap();
+
+    expect_eq!(
+        manifest.dependency_spec.dependencies.get("cxx"),
+        Some(&Dependency::Short(Version("1".to_string())))
+    );
+    expect_eq!(
+        manifest.dependency_spec.dependencies.get("serde"),
+        Some(&Dependency::Short(Version("1".to_string())))
+    );
+
+    expect_eq!(
+        manifest.dependency_spec.dependencies.get("rustversion"),
+        Some(&Dependency::Full(FullDependency {
+            version: Some(Version("1".to_string())),
+            features: vec![],
+            allow_first_party_usage: true,
+            build_script_outputs: vec!["version.rs".to_string()],
+        }))
+    );
+
+    expect_eq!(
+        manifest.dependency_spec.dependencies.get("unicode-linebreak"),
+        Some(&Dependency::Full(FullDependency {
+            version: Some(Version("0.1".to_string())),
+            features: vec![],
+            allow_first_party_usage: false,
+            build_script_outputs: vec!["table.rs".to_string()],
+        }))
+    );
+
+    expect_eq!(
+        manifest.dependency_spec.dev_dependencies.get("syn"),
+        Some(&Dependency::Full(FullDependency {
+            version: Some(Version("1".to_string())),
+            features: vec!["full".to_string()],
+            allow_first_party_usage: true,
+            build_script_outputs: vec![],
+        }))
+    );
+}
+
+#[gtest(ManifestTest, SerializeManifestWithPatches)]
+fn test() {
+    let manifest = CargoManifest {
+        package: CargoPackage {
+            name: "chromium".to_string(),
+            version: Version("0.1.0".to_string()),
+            edition: Default::default(),
+        },
+        workspace: None,
+        dependency_spec: DependencySpec {
+            dependencies: DependencySet::new(),
+            dev_dependencies: DependencySet::new(),
+            build_dependencies: DependencySet::new(),
+        },
+        patches: vec![(
+            "crates-io".to_string(),
+            vec![(
+                "foo_v1".to_string(),
+                CargoPatch {
+                    path: "third_party/rust/foo/v1/crate".to_string(),
+                    package: "foo".to_string(),
+                },
+            )]
+            .into_iter()
+            .collect(),
+        )]
+        .into_iter()
+        .collect(),
+    };
+
+    expect_eq!(
+        toml::to_string(&manifest).unwrap(),
+        "[package]
+name = \"chromium\"
+version = \"0.1.0\"
+edition = \"2021\"
+[patch.crates-io.foo_v1]
+path = \"third_party/rust/foo/v1/crate\"
+package = \"foo\"
+"
+    )
+}
