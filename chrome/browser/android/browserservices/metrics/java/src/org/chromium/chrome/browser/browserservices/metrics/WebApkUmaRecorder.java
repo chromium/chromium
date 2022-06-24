@@ -159,6 +159,13 @@ public class WebApkUmaRecorder {
                 settingValue, ContentSettingValues.NUM_SETTINGS);
     }
 
+    /** Records the notification permission request result for a WebAPK. */
+    public static void recordNotificationPermissionRequestResult(
+            @ContentSettingValues int settingValue) {
+        RecordHistogram.recordEnumeratedHistogram("WebApk.Notification.PermissionRequestResult",
+                settingValue, ContentSettingValues.NUM_SETTINGS);
+    }
+
     /**
      * Records whether installing a WebAPK from Google Play succeeded. If not, records the reason
      * that the install failed.
