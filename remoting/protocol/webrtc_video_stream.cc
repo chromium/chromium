@@ -142,7 +142,7 @@ void WebrtcVideoStream::OnCaptureResult(
   current_frame_stats_->capture_delay =
       base::Milliseconds(frame ? frame->capture_time_ms() : 0);
 
-  if (!frame) {
+  if (!frame || frame->size().is_empty()) {
     scheduler_->OnFrameCaptured(nullptr);
     return;
   }
