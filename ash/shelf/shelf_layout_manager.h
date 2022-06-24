@@ -510,6 +510,10 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   // the shelf to be auto hidden.
   bool IsShelfAutoHideForFullscreenMaximized() const;
 
+  // Returns whether the active window for the shelf is a defined stylus app
+  // in `kStylusAppIds`.
+  bool IsActiveWindowStylusApp() const;
+
   // Returns true if the home gesture handler should handle the event.
   bool ShouldHomeGestureHandleEvent(float scroll_y) const;
 

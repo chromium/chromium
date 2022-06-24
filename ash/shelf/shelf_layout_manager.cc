@@ -115,6 +115,14 @@ constexpr int kMaxAutoHideShowShelfRegionSize = 10;
 // Delay before showing the shelf. This is after the mouse stops moving.
 constexpr int kShelfPalmRejectionSwipeOffset = 80;
 
+const constexpr char* const kStylusAppIds[] = {
+    "fhapgmpiiiigioilnjmkiohjhlegnceb",  // Cursive/A4
+    "eilembjdkfgodjkcjnpgpaenohkicgjd",  // Google Keep Web
+    "ifeodkfobgahmoofeclbhkdacaaopkek",  // Google Keep ARC
+    "gjcfgmjegppjhimhlldbhhkfgkdjngcc",  // Squid
+    "afihfgfghkmdmggakhkgnfhlikhdpima",  // Infinite Painter
+};
+
 // Returns the `aura::client::DragDropClient` for the given `shelf_widget`. Note
 // that this may return `nullptr` if the browser is performing its shutdown
 // sequence.
@@ -2274,6 +2282,27 @@ bool ShelfLayoutManager::IsShelfAutoHideForFullscreenMaximized() const {
          active_window->autohide_shelf_when_maximized_or_fullscreen();
 }
 
+bool ShelfLayoutManager::IsActiveWindowStylusApp() const {
+  WindowState* active_window_state = WindowState::ForActiveWindow();
+  if (!active_window_state)
+    return false;
+
+  aura::Window* active_window = active_window_state->window();
+
+  if (!active_window || active_window->GetRootWindow() !=
+                            shelf_widget_->GetNativeWindow()->GetRootWindow()) {
+    return false;
+  }
+
+  const ShelfID active_id =
+      ShelfID::Deserialize(active_window->GetProperty(kShelfIDKey));
+
+  if (active_id.IsNull())
+    return false;
+
+  return base::Contains(kStylusAppIds, active_id.app_id);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Gesture drag related functions:
 bool ShelfLayoutManager::StartGestureDrag(
@@ -2510,7 +2539,8 @@ bool ShelfLayoutManager::StartShelfDrag(const ui::LocatedEvent& event_in_screen,
     // For tablet mode, we allow a certain offset between the drag event offset
     // and the hotseat location to avoid accidentally extendeing the hotseat in
     // certain conditions.
-    drag_amount_ = is_tablet_mode ? GetShelfSwipeOffset() : 0;
+    drag_amount_ =
+        is_tablet_mode && IsActiveWindowStylusApp() ? GetShelfSwipeOffset() : 0;
   }
 
   // If the start location is above the shelf (e.g., on the extended hotseat),
