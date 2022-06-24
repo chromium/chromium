@@ -5,11 +5,19 @@
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 
 #include "base/containers/contains.h"
+#include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/installable_manager.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/installation/installation.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/aura/window.h"
 
 namespace {
@@ -112,6 +120,8 @@ void WebsiteMetrics::OnTabStripModelChanged(
                                   selection);
       break;
     case TabStripModelChange::kReplaced:
+      OnTabStripModelChangeReplace(*change.GetReplace());
+      break;
     case TabStripModelChange::kMoved:
     case TabStripModelChange::kSelectionOnly:
       break;
@@ -165,6 +175,10 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
     TabStripModel* tab_strip_model,
     const TabStripModelChange::Remove& remove,
     const TabStripSelectionChange& selection) {
+  for (const auto& removed_tab : remove.contents) {
+    webcontents_to_ukm_key_.erase(removed_tab.contents);
+  }
+
   // Last tab detached.
   if (tab_strip_model->count() == 0) {
     // Unobserve the activation client of the root window of the browser's aura
@@ -180,9 +194,15 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
     auto it = window_to_web_contents_.find(window);
     if (it != window_to_web_contents_.end()) {
       webcontents_to_observer_map_.erase(it->second);
+      webcontents_to_ukm_key_.erase(it->second);
       window_to_web_contents_.erase(it);
     }
   }
+}
+
+void WebsiteMetrics::OnTabStripModelChangeReplace(
+    const TabStripModelChange::Replace& replace) {
+  webcontents_to_ukm_key_.erase(replace.old_contents);
 }
 
 void WebsiteMetrics::OnActiveTabChanged(aura::Window* window,
@@ -210,8 +230,55 @@ void WebsiteMetrics::OnActiveTabChanged(aura::Window* window,
   // url.
 }
 
-void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* contents) {
-  // TODO(crbug.com/1334173): Update for the activated url.
+void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
+  // TODO(crbug.com/1334173): Calculate the usage time for the url.
+
+  // If there is an app for the url, we don't need to record the url, because
+  // the app metrics can record the usage time metrics.
+  if (GetInstanceAppIdForWebContents(web_contents).has_value()) {
+    webcontents_to_ukm_key_.erase(web_contents);
+    return;
+  }
+
+  // When the primary page of `web_contents` is changed called by
+  // contents::WebContentsObserver::PrimaryPageChanged(), set the visible url as
+  // default value for the ukm key url.
+  webcontents_to_ukm_key_[web_contents] = web_contents->GetVisibleURL();
+
+  // WebContents in app windows are filtered out in OnBrowserAdded. installed
+  // web apps opened in tabs are filtered out too. So every WebContents here
+  // must be a website not installed. Check the manifest to get the scope or the
+  // start url if there is a manifest.
+  webapps::InstallableParams params;
+  params.valid_manifest = true;
+  webapps::InstallableManager* manager =
+      webapps::InstallableManager::FromWebContents(web_contents);
+  DCHECK(manager);
+  manager->GetData(
+      params,
+      base::BindOnce(&WebsiteMetrics::OnDidPerformInstallableWebAppCheck,
+                     weak_factory_.GetWeakPtr(), web_contents));
+}
+
+void WebsiteMetrics::OnDidPerformInstallableWebAppCheck(
+    content::WebContents* web_contents,
+    const webapps::InstallableData& data) {
+  auto it = webcontents_to_ukm_key_.find(web_contents);
+  if (it == webcontents_to_ukm_key_.end()) {
+    // If the `web_contents` has been removed or replaced, we don't need to set
+    // the url.
+    return;
+  }
+
+  if (blink::IsEmptyManifest(data.manifest)) {
+    return;
+  }
+
+  if (!data.manifest.scope.is_empty()) {
+    it->second = data.manifest.scope;
+  } else if (!data.manifest.start_url.is_empty()) {
+    it->second = data.manifest.start_url;
+  }
 }
 
 }  // namespace apps

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -18,9 +19,14 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
+#include "url/gurl.h"
 
 class Browser;
 class Profile;
+
+namespace webapps {
+struct InstallableData;
+}
 
 namespace apps {
 
@@ -90,12 +96,19 @@ class WebsiteMetrics : public BrowserListObserver,
                                    TabStripModel* tab_strip_model,
                                    const TabStripModelChange::Remove& remove,
                                    const TabStripSelectionChange& selection);
+  void OnTabStripModelChangeReplace(
+      const TabStripModelChange::Replace& replace);
   void OnActiveTabChanged(aura::Window* window,
                           content::WebContents* old_contents,
                           content::WebContents* new_contents);
 
   // Called by |WebsiteMetrics::ActiveTabWebContentsObserver|.
   void OnWebContentsUpdated(content::WebContents* contents);
+
+  // Callback invoked by the InstallableManager once it has finished checking
+  // all other installable properties.
+  void OnDidPerformInstallableWebAppCheck(content::WebContents* web_contents,
+                                          const webapps::InstallableData& data);
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
@@ -106,6 +119,17 @@ class WebsiteMetrics : public BrowserListObserver,
                  std::unique_ptr<ActiveTabWebContentsObserver>>
       webcontents_to_observer_map_;
 
+  // The map from the web_contents to the ukm key url. When the url for web
+  // contents is updated in OnWebContentsUpdated, we can get the previous url
+  // from this map to calculate the usage time for the previous url.
+  //
+  // If the url is used for an app, it won't be added to the map, because the
+  // app metrics can record the usage time metrics.
+  //
+  // If the website has a manifest, we might use the scope or the start url as
+  // the ukm key url. Otherwise, the visible url is used as the ukm key url.
+  std::map<content::WebContents*, GURL> webcontents_to_ukm_key_;
+
   // A set of observed activation clients for all browser's windows.
   base::ScopedMultiSourceObservation<wm::ActivationClient,
                                      wm::ActivationChangeObserver>
@@ -114,6 +138,8 @@ class WebsiteMetrics : public BrowserListObserver,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_observation_{this};
+
+  base::WeakPtrFactory<WebsiteMetrics> weak_factory_{this};
 };
 
 }  // namespace apps
