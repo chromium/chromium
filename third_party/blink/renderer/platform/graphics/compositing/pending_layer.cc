@@ -97,7 +97,7 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
   // true when !has_text to simplify code.
   DCHECK(has_text_ || text_known_to_be_on_opaque_background_);
   if (const absl::optional<gfx::RectF>& visibility_limit =
-          VisibilityLimit(property_tree_state_)) {
+          VisibilityLimit(GetPropertyTreeState())) {
     bounds_.Intersect(*visibility_limit);
     if (bounds_.IsEmpty())
       draws_content_ = false;
@@ -138,7 +138,7 @@ gfx::RectF PendingLayer::MapRectKnownToBeOpaque(
     return gfx::RectF();
 
   FloatClipRect float_clip_rect(rect_known_to_be_opaque_);
-  GeometryMapper::LocalToAncestorVisualRect(property_tree_state_, new_state,
+  GeometryMapper::LocalToAncestorVisualRect(GetPropertyTreeState(), new_state,
                                             float_clip_rect);
   return float_clip_rect.IsTight() ? float_clip_rect.Rect() : gfx::RectF();
 }
@@ -148,7 +148,7 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
   result->SetArray("bounds", RectAsJSONArray(bounds_));
   result->SetArray("rect_known_to_be_opaque",
                    RectAsJSONArray(rect_known_to_be_opaque_));
-  result->SetObject("property_tree_state", property_tree_state_.ToJSON());
+  result->SetObject("property_tree_state", GetPropertyTreeState().ToJSON());
   result->SetArray("offset_of_decomposited_transforms",
                    VectorAsJSONArray(offset_of_decomposited_transforms_));
   std::unique_ptr<JSONArray> json_chunks = std::make_unique<JSONArray>();
@@ -173,7 +173,7 @@ gfx::RectF PendingLayer::VisualRectForOverlapTesting(
     const PropertyTreeState& ancestor_state) const {
   FloatClipRect visual_rect(bounds_);
   GeometryMapper::LocalToAncestorVisualRect(
-      property_tree_state_, ancestor_state, visual_rect,
+      GetPropertyTreeState(), ancestor_state, visual_rect,
       kIgnoreOverlayScrollbarSize, kNonInclusiveIntersect,
       kExpandVisualRectForCompositingOverlap);
   return visual_rect.Rect();
@@ -188,7 +188,7 @@ void PendingLayer::Upcast(const PropertyTreeState& new_state) {
     has_decomposited_blend_mode_ = true;
 
   FloatClipRect float_clip_rect(bounds_);
-  GeometryMapper::LocalToAncestorVisualRect(property_tree_state_, new_state,
+  GeometryMapper::LocalToAncestorVisualRect(GetPropertyTreeState(), new_state,
                                             float_clip_rect);
   bounds_ = float_clip_rect.Rect();
 
@@ -348,7 +348,7 @@ bool PendingLayer::PropertyTreeStateChanged(
   if (change_of_decomposited_transforms_ >= change)
     return true;
 
-  return property_tree_state_.ChangedToRoot(change);
+  return GetPropertyTreeState().ChangedToRoot(change);
 }
 
 bool PendingLayer::MightOverlap(const PendingLayer& other) const {
