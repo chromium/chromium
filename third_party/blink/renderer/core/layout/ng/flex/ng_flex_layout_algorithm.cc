@@ -1969,8 +1969,10 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeItemContributions(
   if (child_style.ResolvedFlexShrink(parent_style) == 0.f)
     item_contributions.sizes.Encompass(flex_base_size_border_box);
 
-  item_contributions.sizes.Constrain(item.min_max_main_sizes_.max_size);
-  item_contributions.sizes.Encompass(item.min_max_main_sizes_.min_size);
+  item_contributions.sizes.Constrain(item.min_max_main_sizes_.max_size +
+                                     item.main_axis_border_padding_);
+  item_contributions.sizes.Encompass(item.min_max_main_sizes_.min_size +
+                                     item.main_axis_border_padding_);
   return item_contributions;
 }
 
@@ -2135,8 +2137,10 @@ NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfSingleLineRowContainer() {
         max_content_largest_fraction.ApplyLargestFlexFractionToItem(
             child_style, item.flex_base_content_size_);
 
-    item_final_contribution.Constrain(item.min_max_main_sizes_.max_size);
-    item_final_contribution.Encompass(item.min_max_main_sizes_.min_size);
+    item_final_contribution.Constrain(item.min_max_main_sizes_.max_size +
+                                      item.main_axis_border_padding_);
+    item_final_contribution.Encompass(item.min_max_main_sizes_.min_size +
+                                      item.main_axis_border_padding_);
 
     container_sizes += item_final_contribution;
 
