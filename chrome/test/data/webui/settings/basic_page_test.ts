@@ -9,7 +9,6 @@ import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
 import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, StatusAction, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -40,11 +39,11 @@ class TestPrivacyGuideBrowserProxy extends TestBrowserProxy implements
 
 suite('SettingsBasicPage', () => {
   let page: SettingsBasicPageElement;
+  let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      privacyGuideEnabled: false,
-    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
   });
 
   setup(async function() {
@@ -55,6 +54,9 @@ suite('SettingsBasicPage', () => {
     Router.getInstance().navigateTo(routes.BASIC);
 
     page = document.createElement('settings-basic-page');
+    page.prefs = settingsPrefs.prefs!;
+    // Don't show the privacy guide promo in regular tests.
+    page.setPrefValue('privacy_guide.viewed', true);
     document.body.appendChild(page);
     page.scroller = document.body;
 
@@ -262,6 +264,7 @@ suite('SettingsBasicPage', () => {
   });
 });
 
+// TODO(crbug/1215630): Remove once the privacy guide promo has been removed.
 suite('PrivacyGuidePromo', () => {
   let page: SettingsBasicPageElement;
   let settingsPrefs: SettingsPrefsElement;
@@ -274,12 +277,13 @@ suite('PrivacyGuidePromo', () => {
   });
 
   setup(async function() {
-    assertTrue(loadTimeData.getBoolean('privacyGuideEnabled'));
     privacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
     PrivacyGuideBrowserProxyImpl.setInstance(privacyGuideBrowserProxy);
     document.body.innerHTML = '';
     page = document.createElement('settings-basic-page');
     page.prefs = settingsPrefs.prefs!;
+    // The promo is only shown when privacy guide hasn't been visited yet.
+    page.setPrefValue('privacy_guide.viewed', false);
     document.body.appendChild(page);
     page.scroller = document.body;
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -306,15 +310,12 @@ suite('PrivacyGuidePromo', () => {
 
   // Same as the SometimesMoreSectionsShown test in the suite above, but
   // including the privacy guide.
-  // TODO(crbug.com/1215630): Merge this test with the
-  // SometimesMoreSectionsShown test when the privacy guide flag is removed.
   test('SometimesMoreSectionsShownWithPrivacyGuide', async () => {
     const whenDone = eventToPromise('show-container', page);
     Router.getInstance().navigateTo(routes.PRIVACY);
     await whenDone;
     await flushTasks();
     await privacyGuideBrowserProxy.whenCalled('incrementPromoImpressionCount');
-
 
     const activeSections =
         page.shadowRoot!.querySelectorAll<SettingsSectionElement>(
@@ -368,12 +369,8 @@ suite('PrivacyGuidePromo', () => {
   });
 
   test('privacyGuidePromoNoThanksTest', function() {
-    // Make sure the pref is set and that privacy guide has never been seen
-    // before.
-    page.prefs.privacy_guide.viewed.value = false;
-    flush();
-
     assertTrue(isChildVisible(page, '#privacyGuidePromo'));
+    assertFalse(page.getPref('privacy_guide.viewed').value);
 
     // Click the no thanks button.
     const privacyGuidePromo =
@@ -388,6 +385,8 @@ suite('PrivacyGuidePromo', () => {
   });
 
   test('privacyGuidePromoStartMetrics', async function() {
+    assertTrue(isChildVisible(page, '#privacyGuidePromo'));
+
     // Click the start button.
     const privacyGuidePromo =
         page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePromo')!;

@@ -267,8 +267,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   private updatePrivacyGuidePromoVisibility_() {
-    if (this.pageVisibility.privacy === false ||
-        !loadTimeData.getBoolean('privacyGuideEnabled') || this.isManaged_ ||
+    if (this.pageVisibility.privacy === false || this.isManaged_ ||
         this.isChildUser_ || this.prefs === undefined ||
         this.getPref('privacy_guide.viewed').value ||
         this.privacyGuideBrowserProxy_.getPromoImpressionCount() >=

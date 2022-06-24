@@ -71,7 +71,6 @@ suite('PrivacyPage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: true,
-      privacyGuideEnabled: false,
     });
 
     settingsPrefs = document.createElement('settings-prefs');
@@ -120,10 +119,6 @@ suite('PrivacyPage', function() {
 
     webUIListenerCallback('cookieSettingDescriptionChanged', testLabels[1]);
     assertEquals(page.$.cookiesLinkRow.subLabel, testLabels[1]);
-  });
-
-  test('privacyGuideRowNotVisible', function() {
-    assertFalse(isChildVisible(page, '#privacyGuideLinkRow'));
   });
 
   test('ContentSettingsVisibility', async function() {
@@ -240,7 +235,7 @@ suite('PrivacySandboxEnabled', function() {
   });
 });
 
-suite('PrivacyGuideEnabled', function() {
+suite('PrivacyGuideRowTests', function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;

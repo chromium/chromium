@@ -5058,15 +5058,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "privacy-guide",
-    "owners": [
-      "rainhard",
-      "andzaytsev",
-      "msramek",
-      "chrome-friendly-settings@google.com"],
-    "expiry_milestone": 106
-  },
-  {
     "name": "privacy-guide-2",
     "owners": [
       "rainhard",

@@ -322,16 +322,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("userCannotManuallyEnterPassword", false);
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  bool privacy_guide_enabled =
-      !chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild() &&
-      base::FeatureList::IsEnabled(features::kPrivacyGuide);
-  html_source->AddBoolean("privacyGuideEnabled", privacy_guide_enabled);
-
   html_source->AddBoolean(
       "privacyGuide2Enabled",
-      // #privacy-guide-2 only has effect if #privacy-guide is enabled too.
-      privacy_guide_enabled &&
-          base::FeatureList::IsEnabled(features::kPrivacyGuide2));
+      base::FeatureList::IsEnabled(features::kPrivacyGuide2));
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));

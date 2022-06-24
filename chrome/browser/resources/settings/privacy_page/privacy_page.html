@@ -45,7 +45,7 @@
             label="$i18n{clearBrowsingData}"
             sub-label="$i18n{clearBrowsingDataDescription}"
             on-click="onClearBrowsingDataTap_"></cr-link-row>
-        <template is="dom-if" if="[[enablePrivacyGuide_]]">
+        <template is="dom-if" if="[[showPrivacyGuideEntryPoint_]]">
           <cr-link-row id="privacyGuideLinkRow" class="hr"
               start-icon="settings20:wind-rose"
               label="$i18n{privacyGuideLabel}"

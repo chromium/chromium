@@ -1245,9 +1245,6 @@ extern const char kOmniboxTriggerForPrerender2Description[];
 extern const char kSupportSearchSuggestionForPrerender2Name[];
 extern const char kSupportSearchSuggestionForPrerender2Description[];
 
-extern const char kPrivacyGuideName[];
-extern const char kPrivacyGuideDescription[];
-
 extern const char kPrivacyGuide2Name[];
 extern const char kPrivacyGuide2Description[];
 

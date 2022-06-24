@@ -2227,15 +2227,9 @@ const char kSupportSearchSuggestionForPrerender2Description[] =
     "Allows Prerender2 to prerender search suggestions provided by the default "
     "search engine. Requires chrome://flags/#enable-prerender2 to be enabled";
 
-const char kPrivacyGuideName[] = "Privacy Guide";
-const char kPrivacyGuideDescription[] =
-    "Shows a new subpage in Settings that helps the user to review various "
-    "privacy settings.";
-
 const char kPrivacyGuide2Name[] = "Privacy Guide V2";
 const char kPrivacyGuide2Description[] =
-    "Enables UI updates for Privacy Guide. This requires #privacy-guide to "
-    "also be enabled";
+    "Enables UI updates for Privacy Guide.";
 
 const char kPrivacyGuideAndroidName[] = "Privacy Guide on Android";
 const char kPrivacyGuideAndroidDescription[] =

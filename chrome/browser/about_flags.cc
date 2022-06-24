@@ -7961,10 +7961,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kPerformantSplitViewResizing)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"privacy-guide", flag_descriptions::kPrivacyGuideName,
-     flag_descriptions::kPrivacyGuideDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kPrivacyGuide)},
-
     {"privacy-guide-2", flag_descriptions::kPrivacyGuide2Name,
      flag_descriptions::kPrivacyGuide2Description, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPrivacyGuide2)},

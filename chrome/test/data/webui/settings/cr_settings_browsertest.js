@@ -78,11 +78,6 @@ var CrSettingsBasicPageTest = class extends CrSettingsBrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/basic_page_test.js&host=webui-test';
   }
-
-  /** @override */
-  get featureListInternal() {
-    return {enabled: ['features::kPrivacyGuide']};
-  }
 };
 
 // TODO(crbug.com/1298753): Flaky on Mac.
@@ -421,7 +416,6 @@ var CrSettingsPrivacyPageTest = class extends CrSettingsBrowserTest {
   get featureListInternal() {
     return {
       enabled: [
-        'features::kPrivacyGuide',
         'features::kPrivacyGuide2',
       ]
     };
@@ -449,8 +443,8 @@ TEST_F('CrSettingsPrivacyPageTest', 'PrivacySandboxEnabled', function() {
   runMochaSuite('PrivacySandboxEnabled');
 });
 
-TEST_F('CrSettingsPrivacyPageTest', 'PrivacyGuideEnabled', function() {
-  runMochaSuite('PrivacyGuideEnabled');
+TEST_F('CrSettingsPrivacyPageTest', 'PrivacyGuideRowTests', function() {
+  runMochaSuite('PrivacyGuideRowTests');
 });
 
 TEST_F('CrSettingsPrivacyPageTest', 'PrivacyGuide2Disabled', function() {
@@ -489,7 +483,6 @@ var CrSettingsPrivacyGuidePageTest = class extends CrSettingsBrowserTest {
   get featureListInternal() {
     return {
       enabled: [
-        'features::kPrivacyGuide',
         'features::kPrivacyGuide2',
       ]
     };

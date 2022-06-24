@@ -18,9 +18,7 @@ function addPrivacyChildRoutes(r: SettingsRoutes) {
 
   r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
 
-  if (loadTimeData.getBoolean('privacyGuideEnabled')) {
-    r.PRIVACY_GUIDE = r.PRIVACY.createChild('guide');
-  }
+  r.PRIVACY_GUIDE = r.PRIVACY.createChild('guide');
   r.SITE_SETTINGS = r.PRIVACY.createChild('/content');
   r.COOKIES = r.PRIVACY.createChild('/cookies');
   r.SECURITY = r.PRIVACY.createChild('/security');

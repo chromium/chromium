@@ -162,14 +162,14 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
       },
 
-      enablePrivacyGuide_: {
+      showPrivacyGuideEntryPoint_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('privacyGuideEnabled'),
+        value: true,
       },
 
       enablePrivacyGuidePage_: {
         type: Boolean,
-        computed: 'computeEnablePrivacyGuidePage_(enablePrivacyGuide_)',
+        computed: 'computeEnablePrivacyGuidePage_(showPrivacyGuideEntryPoint_)',
       },
 
       isPrivacySandboxRestricted_: {
@@ -249,7 +249,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableSecurityKeysSubpage_: boolean;
   private enableQuietNotificationPromptsSetting_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
-  private enablePrivacyGuide_: boolean;
+  private showPrivacyGuideEntryPoint_: boolean;
   private enablePrivacyGuidePage_: boolean;
   private isPrivacySandboxRestricted_: boolean;
   private focusConfig_: FocusConfig;
@@ -297,7 +297,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         Router.getInstance().getCurrentRoute() === routes.CLEAR_BROWSER_DATA;
     this.showPrivacyGuideDialog_ =
         Router.getInstance().getCurrentRoute() === routes.PRIVACY_GUIDE &&
-        this.enablePrivacyGuide_ &&
+        this.showPrivacyGuideEntryPoint_ &&
         loadTimeData.getBoolean('privacyGuide2Enabled');
   }
 
@@ -398,7 +398,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     // However, if the user was managed before and is no longer now, then do not
     // make the privacy guide entry point visible, as the Settings route for
     // privacy guide would still be unavailable until the page is reloaded.
-    this.enablePrivacyGuide_ = this.enablePrivacyGuide_ && !isManaged;
+    this.showPrivacyGuideEntryPoint_ =
+        this.showPrivacyGuideEntryPoint_ && !isManaged;
   }
 
   private onSyncStatusChanged_(syncStatus: SyncStatus) {
@@ -407,12 +408,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     // no longer now then do not make the privacy guide entry point visible, as
     // the Settings route for privacy guide would still be unavailable until
     // the page is reloaded.
-    this.enablePrivacyGuide_ =
-        this.enablePrivacyGuide_ && !syncStatus.childUser;
+    this.showPrivacyGuideEntryPoint_ =
+        this.showPrivacyGuideEntryPoint_ && !syncStatus.childUser;
   }
 
   private computeEnablePrivacyGuidePage_() {
-    return this.enablePrivacyGuide_ &&
+    return this.showPrivacyGuideEntryPoint_ &&
         !loadTimeData.getBoolean('privacyGuide2Enabled');
   }
 
