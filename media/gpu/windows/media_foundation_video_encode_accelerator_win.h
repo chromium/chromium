@@ -13,11 +13,13 @@
 
 #include <memory>
 
+#include "base/atomic_ref_count.h"
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/win/shlwapi.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/bitrate.h"
@@ -37,7 +39,8 @@ namespace media {
 // correct task runners. It starts an internal encoder thread on which
 // VideoEncodeAccelerator implementation tasks are posted.
 class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
-    : public VideoEncodeAccelerator {
+    : public VideoEncodeAccelerator,
+      public IMFAsyncCallback {
  public:
   explicit MediaFoundationVideoEncodeAccelerator(
       const gpu::GpuPreferences& gpu_preferences,
@@ -62,6 +65,13 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void Destroy() override;
   bool IsGpuFrameResizeSupported() override;
 
+  // IMFAsyncCallback implementation
+  IFACEMETHODIMP GetParameters(DWORD* pdwFlags, DWORD* pdwQueue) override;
+  IFACEMETHODIMP Invoke(IMFAsyncResult* pAsyncResult) override;
+  IFACEMETHODIMP_(ULONG) AddRef() override;
+  IFACEMETHODIMP_(ULONG) Release() override;
+  IFACEMETHODIMP QueryInterface(REFIID riid, void** ppv) override;
+
   // Preloads dlls required for encoding. Returns true if all required dlls are
   // correctly loaded.
   static bool PreSandboxInitialization();
@@ -77,6 +87,19 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Holds output buffers coming from the encoder.
   class EncodeOutput;
+
+  // Pending encode input.
+  struct PendingInput;
+
+  // Encoder state.
+  enum State {
+    kUninitialized,
+    kInitializing,
+    kEncoding,
+    kDraining,
+    kFlushing,
+    kError,
+  };
 
   // Get supported profiles for specific codec.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesForCodec(
@@ -99,6 +122,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Helper function to notify the client of an error on
   // |main_client_task_runner_|.
   void NotifyError(VideoEncodeAccelerator::Error error);
+
+  // Set the encoder state to |state| on |encoder_thread_task_runner_|.
+  void SetState(State state);
 
   // Encoding task to be run on |encoder_thread_task_runner_|.
   void EncodeTask(scoped_refptr<VideoFrame> frame, bool force_keyframe);
@@ -124,15 +150,11 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Checks for and copies encoded output on |encoder_thread_task_runner_|.
   void ProcessOutput();
 
-  // Drains pending output samples on |encoder_thread_task_runner_|.
-  void DrainPendingOutputs();
+  // After draining outputs, restart stream on |encoder_thread_task_runner_|.
+  void RestartStream();
 
-  // Tries to deliver the input frame to the encoder.
-  bool TryToDeliverInputFrame(scoped_refptr<VideoFrame> frame,
-                              bool force_keyframe);
-
-  // Tries to return a bitstream buffer to the client.
-  void TryToReturnBitstreamBuffer();
+  // Asynchronous event handler
+  void MediaEventHandler(MediaEventType event_type);
 
   // Inserts the output buffers for reuse on |encoder_thread_task_runner_|.
   void UseOutputBitstreamBufferTask(
@@ -158,6 +180,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Perform D3D11 scaling operation
   HRESULT PerformD3DScaling(ID3D11Texture2D* input_texture);
 
+  // Callback when the encoder is ready for accepting input.
+  void OnInitCompleted();
+
   const bool compatible_with_win7_;
   const bool disable_dynamic_framerate_update_;
 
@@ -165,12 +190,18 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   base::circular_deque<std::unique_ptr<BitstreamBufferRef>>
       bitstream_buffer_queue_;
 
+  // Input frame queue for encoding on next METransformNeedInput event.
+  base::circular_deque<PendingInput> pending_input_queue_;
+
   // EncodeOutput needs to be copied into a BitstreamBufferRef as a FIFO.
   base::circular_deque<std::unique_ptr<EncodeOutput>> encoder_output_queue_;
 
   // Counter of outputs which is used to assign temporal layer indexes
   // according to the corresponding layer pattern. Reset for every key frame.
   uint32_t outputs_since_keyframe_count_ = 0;
+
+  // Encoder state. Encode tasks will only run in kEncoding state.
+  State state_;
 
   // This parser is used to assign temporalId.
   H264Parser h264_parser_;
@@ -196,6 +227,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   Microsoft::WRL::ComPtr<IMFTransform> encoder_;
   Microsoft::WRL::ComPtr<ICodecAPI> codec_api_;
   Microsoft::WRL::ComPtr<IMFMediaEventGenerator> event_generator_;
+  base::AtomicRefCount async_callback_ref_{1};
 
   DWORD input_stream_id_;
   DWORD output_stream_id_;
@@ -204,6 +236,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   Microsoft::WRL::ComPtr<IMFMediaType> imf_output_media_type_;
 
   bool input_required_;
+
   Microsoft::WRL::ComPtr<IMFSample> input_sample_;
   Microsoft::WRL::ComPtr<IMFSample> output_sample_;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor_;
