@@ -60,19 +60,27 @@ source_set("v4l2") {
     "v4l2_video_decoder_backend_stateless.h",
     "v4l2_video_decoder_delegate_h264.cc",
     "v4l2_video_decoder_delegate_h264.h",
-    "v4l2_video_decoder_delegate_h264_legacy.cc",
-    "v4l2_video_decoder_delegate_h264_legacy.h",
     "v4l2_video_decoder_delegate_vp8.cc",
     "v4l2_video_decoder_delegate_vp8.h",
-    "v4l2_video_decoder_delegate_vp8_legacy.cc",
-    "v4l2_video_decoder_delegate_vp8_legacy.h",
     "v4l2_video_decoder_delegate_vp9.cc",
     "v4l2_video_decoder_delegate_vp9.h",
-    "v4l2_video_decoder_delegate_vp9_legacy.cc",
-    "v4l2_video_decoder_delegate_vp9_legacy.h",
-    "v4l2_video_encode_accelerator.cc",
-    "v4l2_video_encode_accelerator.h",
   ]
+
+  if (is_chromeos) {
+    sources += [
+      "v4l2_video_decoder_delegate_h264_legacy.cc",
+      "v4l2_video_decoder_delegate_h264_legacy.h",
+      "v4l2_video_decoder_delegate_vp8_legacy.cc",
+      "v4l2_video_decoder_delegate_vp8_legacy.h",
+      "v4l2_video_decoder_delegate_vp9_legacy.cc",
+      "v4l2_video_decoder_delegate_vp9_legacy.h",
+
+      # TODO(crbug.com/901264): Encoders use hack for passing offset
+      # within a DMA-buf, which is not supported upstream.
+      "v4l2_video_encode_accelerator.cc",
+      "v4l2_video_encode_accelerator.h",
+    ]
+  }
 
   libs = [
     "EGL",

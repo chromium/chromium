@@ -179,10 +179,13 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   // removed. See crbug/879971
   size_t BufferId() const;
 
+  // ConfigStore is ChromeOS-specific legacy stuff
+#if BUILDFLAG(IS_CHROMEOS)
   // Set the passed config store to this buffer.
   // This method is only used for backward compatibility until the config
   // store is deprecated and should not be called by new code.
   void SetConfigStore(uint32_t config_store);
+#endif
 
   V4L2WritableBufferRef(const V4L2WritableBufferRef&) = delete;
   V4L2WritableBufferRef& operator=(const V4L2WritableBufferRef&) = delete;

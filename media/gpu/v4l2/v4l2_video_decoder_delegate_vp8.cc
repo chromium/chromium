@@ -4,8 +4,12 @@
 
 #include "v4l2_video_decoder_delegate_vp8.h"
 
+// ChromeOS specific header; does not exist upstream
+#if BUILDFLAG(IS_CHROMEOS)
 #define __LINUX_MEDIA_VP8_CTRLS_LEGACY_H
 #include <linux/media/vp8-ctrls-upstream.h>
+#endif
+
 #include <linux/videodev2.h>
 
 #include <type_traits>

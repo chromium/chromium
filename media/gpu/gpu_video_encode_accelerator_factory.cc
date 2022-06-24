@@ -44,8 +44,14 @@ std::unique_ptr<VideoEncodeAccelerator> CreateV4L2VEA() {
   scoped_refptr<V4L2Device> device = V4L2Device::Create();
   if (!device)
     return nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/901264): Encoders use hack for passing offset within
+  // a DMA-buf, which is not supported upstream.
   return base::WrapUnique<VideoEncodeAccelerator>(
       new V4L2VideoEncodeAccelerator(std::move(device)));
+#else
+  return nullptr;
+#endif
 }
 #endif
 

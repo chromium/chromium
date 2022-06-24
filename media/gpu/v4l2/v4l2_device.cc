@@ -849,12 +849,15 @@ size_t V4L2WritableBufferRef::BufferId() const {
   return buffer_data_->v4l2_buffer_.index;
 }
 
+// ConfigStore is ChromeOS-specific legacy stuff
+#if BUILDFLAG(IS_CHROMEOS)
 void V4L2WritableBufferRef::SetConfigStore(uint32_t config_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer_data_);
 
   buffer_data_->v4l2_buffer_.config_store = config_store;
 }
+#endif
 
 V4L2ReadableBuffer::V4L2ReadableBuffer(const struct v4l2_buffer& v4l2_buffer,
                                        base::WeakPtr<V4L2Queue> queue,

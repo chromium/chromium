@@ -4,7 +4,10 @@
 
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
 
+// ChromeOS specific header; does not exist upstream
+#if BUILDFLAG(IS_CHROMEOS)
 #include <linux/media/vp9-ctrls-upstream.h>
+#endif
 
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"

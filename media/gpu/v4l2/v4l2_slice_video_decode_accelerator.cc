@@ -294,10 +294,15 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
           std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get()),
           video_profile_, config.container_color_space);
     } else {
+#if BUILDFLAG(IS_CHROMEOS)
       decoder_ = std::make_unique<H264Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateH264Legacy>(this,
                                                                device_.get()),
           video_profile_, config.container_color_space);
+#else
+      NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
+      return false;
+#endif
     }
   } else if (video_profile_ >= VP8PROFILE_MIN &&
              video_profile_ <= VP8PROFILE_MAX) {
@@ -306,10 +311,15 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
           std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()),
           config.container_color_space);
     } else {
+#if BUILDFLAG(IS_CHROMEOS)
       decoder_ = std::make_unique<VP8Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP8Legacy>(this,
                                                               device_.get()),
           config.container_color_space);
+#else
+      NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
+      return false;
+#endif
     }
   } else if (video_profile_ >= VP9PROFILE_MIN &&
              video_profile_ <= VP9PROFILE_MAX) {
@@ -327,10 +337,15 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
           video_profile_, config.container_color_space);
 
     } else {
+#if BUILDFLAG(IS_CHROMEOS)
       decoder_ = std::make_unique<VP9Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP9Legacy>(this,
                                                               device_.get()),
           video_profile_, config.container_color_space);
+#else
+      NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
+      return false;
+#endif
     }
   } else {
     NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
@@ -2135,9 +2150,15 @@ V4L2SliceVideoDecodeAccelerator::CreateSurface() {
         std::move(*input_buffer), std::move(*output_buffer),
         output_record.output_frame, std::move(*request_ref));
   } else {
+// ConfigStore is ChromeOS-specific legacy stuff
+#if BUILDFLAG(IS_CHROMEOS)
     dec_surface = new V4L2ConfigStoreDecodeSurface(std::move(*input_buffer),
                                                    std::move(*output_buffer),
                                                    output_record.output_frame);
+#else
+    NOTREACHED() << "ConfigStore not supported.";
+    return nullptr;
+#endif
   }
 
   DVLOGF(4) << "Created surface " << input << " -> " << output;

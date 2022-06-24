@@ -282,8 +282,15 @@ V4L2StatelessVideoDecoderBackend::CreateSurface() {
         std::move(*input_buf), std::move(*output_buf), std::move(frame),
         std::move(*request_ref));
   } else {
+    // ConfigStore is ChromeOS-specific legacy stuff
+    // TODO(b/222774780): Remove when all legacy implementations are gone.
+#if BUILDFLAG(IS_CHROMEOS)
     dec_surface = new V4L2ConfigStoreDecodeSurface(
         std::move(*input_buf), std::move(*output_buf), std::move(frame));
+#else
+    NOTREACHED() << "ConfigStore not supported.";
+    return nullptr;
+#endif
   }
 
   return dec_surface;
@@ -692,10 +699,15 @@ bool V4L2StatelessVideoDecoderBackend::CreateAvd() {
           std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get()),
           profile_, color_space_);
     } else {
+#if BUILDFLAG(IS_CHROMEOS)
       avd_ = std::make_unique<H264Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateH264Legacy>(this,
                                                                device_.get()),
           profile_, color_space_);
+#else
+      VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);
+      return false;
+#endif
     }
   } else if (profile_ >= VP8PROFILE_MIN && profile_ <= VP8PROFILE_MAX) {
     if (input_queue_->SupportsRequests()) {
@@ -703,10 +715,15 @@ bool V4L2StatelessVideoDecoderBackend::CreateAvd() {
           std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()),
           color_space_);
     } else {
+#if BUILDFLAG(IS_CHROMEOS)
       avd_ = std::make_unique<VP8Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP8Legacy>(this,
                                                               device_.get()),
           color_space_);
+#else
+      VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);
+      return false;
+#endif
     }
   } else if (profile_ >= VP9PROFILE_MIN && profile_ <= VP9PROFILE_MAX) {
     if (input_queue_->SupportsRequests()) {
@@ -722,10 +739,15 @@ bool V4L2StatelessVideoDecoderBackend::CreateAvd() {
           std::make_unique<V4L2VideoDecoderDelegateVP9>(this, device_.get()),
           profile_, color_space_);
     } else {
+#if BUILDFLAG(IS_CHROMEOS)
       avd_ = std::make_unique<VP9Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP9Legacy>(this,
                                                               device_.get()),
           profile_, color_space_);
+#else
+      VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);
+      return false;
+#endif
     }
   } else {
     VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);
