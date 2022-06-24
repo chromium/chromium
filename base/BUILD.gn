@@ -2878,35 +2878,37 @@ source_set("base_stack_sampling_profiler_test_util") {
   }
 }
 
-bundle_data("base_unittests_bundle_data") {
-  testonly = true
-  sources = [
-    "//tools/metrics/histograms/enums.xml",
-    "test/data/file_util/binary_file.bin",
-    "test/data/file_util/binary_file_diff.bin",
-    "test/data/file_util/binary_file_same.bin",
-    "test/data/file_util/blank_line.txt",
-    "test/data/file_util/blank_line_crlf.txt",
-    "test/data/file_util/crlf.txt",
-    "test/data/file_util/different.txt",
-    "test/data/file_util/different_first.txt",
-    "test/data/file_util/different_last.txt",
-    "test/data/file_util/empty1.txt",
-    "test/data/file_util/empty2.txt",
-    "test/data/file_util/first1.txt",
-    "test/data/file_util/first2.txt",
-    "test/data/file_util/original.txt",
-    "test/data/file_util/same.txt",
-    "test/data/file_util/same_length.txt",
-    "test/data/file_util/shortened.txt",
-    "test/data/json/bom_feff.json",
-    "test/data/pe_image_reader/signed.exe",
-    "test/data/serializer_nested_test.json",
-    "test/data/serializer_test.json",
-    "test/data/serializer_test_nowhitespace.json",
-  ]
-  outputs = [ "{{bundle_resources_dir}}/" +
-              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+if (is_apple) {
+  bundle_data("base_unittests_bundle_data") {
+    testonly = true
+    sources = [
+      "//tools/metrics/histograms/enums.xml",
+      "test/data/file_util/binary_file.bin",
+      "test/data/file_util/binary_file_diff.bin",
+      "test/data/file_util/binary_file_same.bin",
+      "test/data/file_util/blank_line.txt",
+      "test/data/file_util/blank_line_crlf.txt",
+      "test/data/file_util/crlf.txt",
+      "test/data/file_util/different.txt",
+      "test/data/file_util/different_first.txt",
+      "test/data/file_util/different_last.txt",
+      "test/data/file_util/empty1.txt",
+      "test/data/file_util/empty2.txt",
+      "test/data/file_util/first1.txt",
+      "test/data/file_util/first2.txt",
+      "test/data/file_util/original.txt",
+      "test/data/file_util/same.txt",
+      "test/data/file_util/same_length.txt",
+      "test/data/file_util/shortened.txt",
+      "test/data/json/bom_feff.json",
+      "test/data/pe_image_reader/signed.exe",
+      "test/data/serializer_nested_test.json",
+      "test/data/serializer_test.json",
+      "test/data/serializer_test_nowhitespace.json",
+    ]
+    outputs = [ "{{bundle_resources_dir}}/" +
+                "{{source_root_relative_dir}}/{{source_file_part}}" ]
+  }
 }
 
 if (is_apple) {
@@ -3389,14 +3391,14 @@ test("base_unittests") {
   ]
 
   if (is_apple) {
+    public_deps = [ ":base_unittests_bundle_data" ]
+
     deps += [ ":base_unittests_arc" ]
   }
 
   if (!is_ios) {
     sources += [ "allocator/partition_allocator/tagging_unittest.cc" ]
   }
-
-  public_deps = [ ":base_unittests_bundle_data" ]
 
   data = [
     "test/data/",
