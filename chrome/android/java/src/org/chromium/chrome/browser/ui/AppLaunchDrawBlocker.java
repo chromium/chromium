@@ -76,11 +76,18 @@ public class AppLaunchDrawBlocker {
     private final Supplier<Boolean> mIsInstantStartEnabledSupplier;
 
     /**
+     * An app draw blocker that takes care of blocking the draw when we are restoring tabs with
+     * Incognito.
+     */
+    private final IncognitoRestoreAppLaunchDrawBlocker mIncognitoRestoreAppLaunchDrawBlocker;
+
+    /**
      * Whether to return false from #onPreDraw of the content view to prevent drawing the browser UI
      * before the tab is ready.
      */
     private boolean mBlockDrawForInitialTab;
     private boolean mBlockDrawForOverviewPage;
+    private boolean mBlockDrawForIncognitoRestore;
     private long mTimeStartedBlockingDrawForInitialTab;
 
     /**
@@ -94,13 +101,17 @@ public class AppLaunchDrawBlocker {
      * @param isTabletSupplier {@link Supplier<Boolean>} for whether the device is a tablet.
      * @param shouldShowTabSwitcherOnStartSupplier {@link Supplier<Boolean>} for whether the tab
      *        switcher should be shown on start.
+     * @param incognitoRestoreAppLaunchDrawBlockerFactory Factory to create
+     *    {@link IncognitoRestoreAppLaunchDrawBlocker}.
      */
     public AppLaunchDrawBlocker(@NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<View> viewSupplier, @NonNull Supplier<Intent> intentSupplier,
             @NonNull Supplier<Boolean> shouldIgnoreIntentSupplier,
             @NonNull Supplier<Boolean> isTabletSupplier,
             @NonNull Supplier<Boolean> shouldShowTabSwitcherOnStartSupplier,
-            @NonNull Supplier<Boolean> isInstantStartEnabledSupplier) {
+            @NonNull Supplier<Boolean> isInstantStartEnabledSupplier,
+            @NonNull IncognitoRestoreAppLaunchDrawBlockerFactory
+                    incognitoRestoreAppLaunchDrawBlockerFactory) {
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mViewSupplier = viewSupplier;
         mInflationObserver = new InflationObserver() {
@@ -110,6 +121,7 @@ public class AppLaunchDrawBlocker {
             @Override
             public void onPostInflationStartup() {
                 maybeBlockDraw();
+                maybeBlockDrawForIncognitoRestore();
             }
         };
         mActivityLifecycleDispatcher.register(mInflationObserver);
@@ -128,12 +140,16 @@ public class AppLaunchDrawBlocker {
         mIsTabletSupplier = isTabletSupplier;
         mShouldShowOverviewPageOnStartSupplier = shouldShowTabSwitcherOnStartSupplier;
         mIsInstantStartEnabledSupplier = isInstantStartEnabledSupplier;
+        mIncognitoRestoreAppLaunchDrawBlocker = incognitoRestoreAppLaunchDrawBlockerFactory.create(
+                intentSupplier, shouldIgnoreIntentSupplier, activityLifecycleDispatcher,
+                this::onIncognitoRestoreUnblockConditionsFired);
     }
 
     /** Unregister lifecycle observers. */
     public void destroy() {
         mActivityLifecycleDispatcher.unregister(mInflationObserver);
         mActivityLifecycleDispatcher.unregister(mStartStopWithNativeObserver);
+        mIncognitoRestoreAppLaunchDrawBlocker.destroy();
     }
 
     /** Should be called when the initial tab is available. */
@@ -156,11 +172,36 @@ public class AppLaunchDrawBlocker {
         mBlockDrawForOverviewPage = false;
     }
 
+    /**
+     * A method that is passed as a {@link Runnable} to {@link
+     * IncognitoRestoreAppLaunchDrawBlocker}.
+     *
+     * This gets fired when all the conditions needed to unblock the draw from the Incognito restore
+     * are fired.
+     */
+    private void onIncognitoRestoreUnblockConditionsFired() {
+        if (mBlockDrawForIncognitoRestore) {
+            recordBlockDrawForIncognitoRestoreHistograms();
+            mBlockDrawForIncognitoRestore = false;
+        }
+    }
+
     private void writeSearchEngineHadLogoPref() {
         boolean searchEngineHasLogo =
                 TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, searchEngineHasLogo);
+    }
+
+    /**
+     * Conditionally blocks the draw independently from the other clients for the Incognito restore
+     * use-case.
+     */
+    private void maybeBlockDrawForIncognitoRestore() {
+        if (!mIncognitoRestoreAppLaunchDrawBlocker.shouldBlockDraw()) return;
+        mBlockDrawForIncognitoRestore = true;
+        ViewDrawBlocker.blockViewDrawUntilReady(
+                mViewSupplier.get(), () -> !mBlockDrawForIncognitoRestore);
     }
 
     /** Only block the draw if we believe the initial tab will be the NTP. */
@@ -275,5 +316,18 @@ public class AppLaunchDrawBlocker {
         }
         RecordHistogram.recordEnumeratedHistogram(APP_LAUNCH_BLOCK_DRAW_ACCURACY_UMA, enumEntry,
                 BlockDrawForInitialTabAccuracy.COUNT);
+    }
+
+    /**
+     * TODO(crbug.com/1227656): Add the histogram to record the time we blocked the draw.
+     */
+    private void recordBlockDrawForIncognitoRestoreHistograms() {}
+
+    /**
+     * A test only method. Don't use in production code.
+     */
+    @VisibleForTesting
+    public void setBlockDrawForIncognitoRestore(boolean blockDraw) {
+        mBlockDrawForIncognitoRestore = blockDraw;
     }
 }
