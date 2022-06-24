@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -147,7 +147,6 @@ void %(export)s %(name)s(%(params)s) {
 # following named parameters:
 #   guard_name: The macro to use as the header guard.
 #   namespace: The namespace for the stub functions.
-#   logging_include: Header file where the logging function is defined.
 STUB_HEADER_PREAMBLE = """// This is generated file. Do not modify directly.
 
 #ifndef %(guard_name)s
@@ -466,7 +465,7 @@ def QuietRun(args, filter=None, write_to=sys.stdout):
   with |filter|."""
   popen = subprocess.Popen(args, stdout=subprocess.PIPE)
   out, _ = popen.communicate()
-  for line in out.splitlines():
+  for line in out.decode('utf-8').splitlines():
     if not filter or not line.startswith(filter):
       write_to.write(line + '\n')
   return popen.returncode
@@ -786,7 +785,6 @@ class PosixStubWriter(object):
       namespace: The namespace these functions should be in.
       header_guard: The macro to use as our header guard.
       outfile: The output handle to populate.
-      logging_include: Header file where the logging function is defined.
     """
     outfile.write(STUB_HEADER_PREAMBLE % {
         'guard_name': header_guard,
