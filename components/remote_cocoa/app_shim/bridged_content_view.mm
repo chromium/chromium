@@ -516,9 +516,12 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // Currently there seems to be no use case to pass non-character events routed
   // from insertText: handlers to the View hierarchy.
   if (isFinalInsertForKeyEvent && ![self hasMarkedText]) {
+    int flags = ui::EF_NONE;
+    if ([_keyDownEvent isARepeat])
+      flags |= ui::EF_IS_REPEAT;
     ui::KeyEvent charEvent([text characterAtIndex:0],
                            ui::KeyboardCodeFromNSEvent(_keyDownEvent),
-                           ui::DomCodeFromNSEvent(_keyDownEvent), ui::EF_NONE);
+                           ui::DomCodeFromNSEvent(_keyDownEvent), flags);
     [self handleKeyEvent:&charEvent];
     _hasUnhandledKeyDownEvent = NO;
     if (charEvent.handled())
