@@ -43,9 +43,9 @@ void RecordUma(CropToResult result) {
 
 #if !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1332628): Turn on by default.
+// TODO(crbug.com/1332628): Remove this flag once it's clear it's not necessary.
 const base::Feature kCropTopPromiseWaitsForFirstFrame{
-    "CropTopPromiseWaitsForFirstFrame", base::FEATURE_DISABLED_BY_DEFAULT};
+    "CropTopPromiseWaitsForFirstFrame", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If crop_id is the empty string, returns an empty base::Token.
 // If crop_id is a valid UUID, returns a base::Token representing the ID.
