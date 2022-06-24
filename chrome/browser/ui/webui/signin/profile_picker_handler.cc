@@ -372,80 +372,80 @@ void ProfilePickerHandler::EnableStartupMetrics() {
 }
 
 void ProfilePickerHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "mainViewInitialize",
       base::BindRepeating(&ProfilePickerHandler::HandleMainViewInitialize,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "launchSelectedProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleLaunchSelectedProfile,
                           base::Unretained(this), /*open_settings=*/false));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openManageProfileSettingsSubPage",
       base::BindRepeating(&ProfilePickerHandler::HandleLaunchSelectedProfile,
                           base::Unretained(this), /*open_settings=*/true));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "launchGuestProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleLaunchGuestProfile,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "askOnStartupChanged",
       base::BindRepeating(&ProfilePickerHandler::HandleAskOnStartupChanged,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getNewProfileSuggestedThemeInfo",
       base::BindRepeating(
           &ProfilePickerHandler::HandleGetNewProfileSuggestedThemeInfo,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getProfileThemeInfo",
       base::BindRepeating(&ProfilePickerHandler::HandleGetProfileThemeInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "removeProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleRemoveProfile,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getProfileStatistics",
       base::BindRepeating(&ProfilePickerHandler::HandleGetProfileStatistics,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "selectAccountLacros",
       base::BindRepeating(&ProfilePickerHandler::HandleSelectAccountLacros,
                           base::Unretained(this)));
   // TODO(crbug.com/1115056): Consider renaming this message to
   // 'createLocalProfile' as this is only used for local profiles.
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getAvailableIcons",
       base::BindRepeating(&ProfilePickerHandler::HandleGetAvailableIcons,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "createProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleCreateProfile,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getSwitchProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleGetSwitchProfile,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "confirmProfileSwitch",
       base::BindRepeating(&ProfilePickerHandler::HandleConfirmProfileSwitch,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "cancelProfileSwitch",
       base::BindRepeating(&ProfilePickerHandler::HandleCancelProfileSwitch,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setProfileName",
       base::BindRepeating(&ProfilePickerHandler::HandleSetProfileName,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "recordSignInPromoImpression",
       base::BindRepeating(
           &ProfilePickerHandler::HandleRecordSignInPromoImpression,
           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getAvailableAccounts",
       base::BindRepeating(&ProfilePickerHandler::HandleGetAvailableAccounts,
                           base::Unretained(this)));
@@ -477,7 +477,7 @@ void ProfilePickerHandler::OnJavascriptDisallowed() {
 }
 
 void ProfilePickerHandler::HandleMainViewInitialize(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   if (!creation_time_on_startup_.is_null() && !main_view_initialized_) {
     // This function can be called multiple times if the page is reloaded. The
     // histogram is only recorded once.
@@ -492,12 +492,12 @@ void ProfilePickerHandler::HandleMainViewInitialize(
 
 void ProfilePickerHandler::HandleLaunchSelectedProfile(
     bool open_settings,
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   TRACE_EVENT1("browser", "ProfilePickerHandler::HandleLaunchSelectedProfile",
-               "args", args->DebugString());
-  if (args->GetListDeprecated().empty())
+               "args", args.DebugString());
+  if (args.empty())
     return;
-  const base::Value& profile_path_value = args->GetListDeprecated()[0];
+  const base::Value& profile_path_value = args[0];
 
   absl::optional<base::FilePath> profile_path =
       base::ValueToFilePath(profile_path_value);
@@ -566,7 +566,7 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
 }
 
 void ProfilePickerHandler::HandleLaunchGuestProfile(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   // TODO(crbug.com/1063856): Add check |IsGuestModeEnabled| once policy
   // checking has been added to the UI.
   profiles::SwitchToGuestProfile(
@@ -575,8 +575,7 @@ void ProfilePickerHandler::HandleLaunchGuestProfile(
 }
 
 void ProfilePickerHandler::HandleAskOnStartupChanged(
-    const base::ListValue* args) {
-  const auto& list = args->GetListDeprecated();
+    const base::Value::List& list) {
   if (list.empty() || !list[0].is_bool())
     return;
   const bool show_on_startup = list[0].GetBool();
@@ -587,10 +586,10 @@ void ProfilePickerHandler::HandleAskOnStartupChanged(
 }
 
 void ProfilePickerHandler::HandleGetNewProfileSuggestedThemeInfo(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (IsSelectingSecondaryAccount(web_ui())) {
@@ -625,13 +624,13 @@ void ProfilePickerHandler::HandleGetNewProfileSuggestedThemeInfo(
 }
 
 void ProfilePickerHandler::HandleGetProfileThemeInfo(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
-  const base::Value& user_theme_choice = args->GetListDeprecated()[1];
-  int color_id = user_theme_choice.FindIntKey("colorId").value();
-  absl::optional<SkColor> color = user_theme_choice.FindDoubleKey("color");
+  CHECK_EQ(2U, args.size());
+  const base::Value& callback_id = args[0];
+  const base::Value::Dict& user_theme_choice = args[1].GetDict();
+  int color_id = user_theme_choice.FindInt("colorId").value();
+  absl::optional<SkColor> color = user_theme_choice.FindDouble("color");
   base::Value dict;
   switch (color_id) {
     case kDefaultThemeColorId:
@@ -655,25 +654,24 @@ void ProfilePickerHandler::HandleGetProfileThemeInfo(
 }
 
 void ProfilePickerHandler::HandleGetAvailableIcons(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
       callback_id,
       base::Value(profiles::GetCustomProfileAvatarIconsAndLabels()));
 }
 
-void ProfilePickerHandler::HandleCreateProfile(const base::ListValue* args) {
-  CHECK_EQ(4U, args->GetListDeprecated().size());
-  std::u16string profile_name =
-      base::UTF8ToUTF16(args->GetListDeprecated()[0].GetString());
+void ProfilePickerHandler::HandleCreateProfile(const base::Value::List& args) {
+  CHECK_EQ(4U, args.size());
+  std::u16string profile_name = base::UTF8ToUTF16(args[0].GetString());
   // profileColor is undefined for the default theme.
   absl::optional<SkColor> profile_color;
-  if (args->GetListDeprecated()[1].is_int())
-    profile_color = args->GetListDeprecated()[1].GetInt();
-  size_t avatar_index = args->GetListDeprecated()[2].GetInt();
-  bool create_shortcut = args->GetListDeprecated()[3].GetBool();
+  if (args[1].is_int())
+    profile_color = args[1].GetInt();
+  size_t avatar_index = args[2].GetInt();
+  bool create_shortcut = args[3].GetBool();
   base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);
   CHECK(!profile_name.empty());
 
@@ -690,10 +688,11 @@ void ProfilePickerHandler::HandleCreateProfile(const base::ListValue* args) {
                           create_shortcut));
 }
 
-void ProfilePickerHandler::HandleGetSwitchProfile(const base::ListValue* args) {
+void ProfilePickerHandler::HandleGetSwitchProfile(
+    const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
   int avatar_icon_size =
       kProfileCardAvatarSize * web_ui()->GetDeviceScaleFactor();
   base::FilePath profile_path = ProfilePicker::GetSwitchProfilePath();
@@ -707,10 +706,10 @@ void ProfilePickerHandler::HandleGetSwitchProfile(const base::ListValue* args) {
 }
 
 void ProfilePickerHandler::HandleConfirmProfileSwitch(
-    const base::ListValue* args) {
-  if (args->GetListDeprecated().empty())
+    const base::Value::List& args) {
+  if (args.empty())
     return;
-  const base::Value& profile_path_value = args->GetListDeprecated()[0];
+  const base::Value& profile_path_value = args[0];
 
   absl::optional<base::FilePath> profile_path =
       base::ValueToFilePath(profile_path_value);
@@ -726,7 +725,7 @@ void ProfilePickerHandler::HandleConfirmProfileSwitch(
 }
 
 void ProfilePickerHandler::HandleCancelProfileSwitch(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   ProfilePicker::CancelSignedInFlow();
 }
 
@@ -795,14 +794,14 @@ void ProfilePickerHandler::OnProfileCreationSuccess(
 }
 
 void ProfilePickerHandler::HandleRecordSignInPromoImpression(
-    const base::ListValue* /*args*/) {
+    const base::Value::List& /*args*/) {
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER);
 }
 
-void ProfilePickerHandler::HandleSetProfileName(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  const base::Value& profile_path_value = args->GetListDeprecated()[0];
+void ProfilePickerHandler::HandleSetProfileName(const base::Value::List& args) {
+  CHECK_EQ(2U, args.size());
+  const base::Value& profile_path_value = args[0];
   absl::optional<base::FilePath> profile_path =
       base::ValueToFilePath(profile_path_value);
 
@@ -810,8 +809,7 @@ void ProfilePickerHandler::HandleSetProfileName(const base::ListValue* args) {
     NOTREACHED();
     return;
   }
-  std::u16string profile_name =
-      base::UTF8ToUTF16(args->GetListDeprecated()[1].GetString());
+  std::u16string profile_name = base::UTF8ToUTF16(args[1].GetString());
   base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);
   CHECK(!profile_name.empty());
   ProfileAttributesEntry* entry =
@@ -822,9 +820,9 @@ void ProfilePickerHandler::HandleSetProfileName(const base::ListValue* args) {
   entry->SetLocalProfileName(profile_name, /*is_default_name=*/false);
 }
 
-void ProfilePickerHandler::HandleRemoveProfile(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const base::Value& profile_path_value = args->GetListDeprecated()[0];
+void ProfilePickerHandler::HandleRemoveProfile(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& profile_path_value = args[0];
   absl::optional<base::FilePath> profile_path =
       base::ValueToFilePath(profile_path_value);
 
@@ -844,10 +842,10 @@ void ProfilePickerHandler::HandleRemoveProfile(const base::ListValue* args) {
 }
 
 void ProfilePickerHandler::HandleGetProfileStatistics(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  const base::Value& profile_path_value = args->GetListDeprecated()[0];
+  CHECK_EQ(1U, args.size());
+  const base::Value& profile_path_value = args[0];
   absl::optional<base::FilePath> profile_path =
       base::ValueToFilePath(profile_path_value);
   if (!profile_path)
@@ -892,12 +890,11 @@ void ProfilePickerHandler::OnProfileStatisticsReceived(
 }
 
 void ProfilePickerHandler::HandleSelectAccountLacros(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  absl::optional<SkColor> profile_color =
-      args->GetListDeprecated()[0].GetIfInt();
-  const std::string& gaia_id = args->GetListDeprecated()[1].GetString();
+  CHECK_EQ(2U, args.size());
+  absl::optional<SkColor> profile_color = args[0].GetIfInt();
+  const std::string& gaia_id = args[1].GetString();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (IsSelectingSecondaryAccount(web_ui())) {
@@ -1183,7 +1180,7 @@ void ProfilePickerHandler::HandleOpenAshAccountSettingsPage(
 }
 
 void ProfilePickerHandler::HandleGetAvailableAccounts(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
   UpdateAvailableAccounts();
 }

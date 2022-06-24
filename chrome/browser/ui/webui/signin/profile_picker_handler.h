@@ -73,29 +73,29 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
       ProfilePickerEnterpriseCreationFlowBrowserTest,
       CreateSignedInProfileSigninAlreadyExists_CancelSwitch);
 
-  void HandleMainViewInitialize(const base::ListValue* args);
+  void HandleMainViewInitialize(const base::Value::List& args);
   void HandleLaunchSelectedProfile(bool open_settings,
-                                   const base::ListValue* args);
-  void HandleLaunchGuestProfile(const base::ListValue* args);
-  void HandleAskOnStartupChanged(const base::ListValue* args);
-  void HandleRemoveProfile(const base::ListValue* args);
-  void HandleGetProfileStatistics(const base::ListValue* args);
-  void HandleSetProfileName(const base::ListValue* args);
+                                   const base::Value::List& args);
+  void HandleLaunchGuestProfile(const base::Value::List& args);
+  void HandleAskOnStartupChanged(const base::Value::List& args);
+  void HandleRemoveProfile(const base::Value::List& args);
+  void HandleGetProfileStatistics(const base::Value::List& args);
+  void HandleSetProfileName(const base::Value::List& args);
 
   // TODO(crbug.com/1115056): Move to new handler for profile creation.
-  void HandleSelectAccountLacros(const base::ListValue* args);
-  void HandleGetNewProfileSuggestedThemeInfo(const base::ListValue* args);
-  void HandleGetProfileThemeInfo(const base::ListValue* args);
-  void HandleGetAvailableIcons(const base::ListValue* args);
-  void HandleCreateProfile(const base::ListValue* args);
+  void HandleSelectAccountLacros(const base::Value::List& args);
+  void HandleGetNewProfileSuggestedThemeInfo(const base::Value::List& args);
+  void HandleGetProfileThemeInfo(const base::Value::List& args);
+  void HandleGetAvailableIcons(const base::Value::List& args);
+  void HandleCreateProfile(const base::Value::List& args);
 
   // Profile switch screen:
-  void HandleGetSwitchProfile(const base::ListValue* args);
-  void HandleConfirmProfileSwitch(const base::ListValue* args);
-  void HandleCancelProfileSwitch(const base::ListValue* args);
+  void HandleGetSwitchProfile(const base::Value::List& args);
+  void HandleConfirmProfileSwitch(const base::Value::List& args);
+  void HandleCancelProfileSwitch(const base::Value::List& args);
 
   // |args| is unused.
-  void HandleRecordSignInPromoImpression(const base::ListValue* args);
+  void HandleRecordSignInPromoImpression(const base::Value::List& args);
 
   void OnLoadSigninFinished(bool success);
   void GatherProfileStatistics(Profile* profile);
@@ -146,7 +146,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 
   // List of available accounts used by the profile choice and the account
   // selection screens.
-  void HandleGetAvailableAccounts(const base::ListValue* args);
+  void HandleGetAvailableAccounts(const base::Value::List& args);
 
   // Queries accounts available for addition in the profile, and ends up sending
   // them to the WebUI page.

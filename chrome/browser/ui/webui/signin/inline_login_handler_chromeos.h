@@ -37,7 +37,7 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
   void RegisterMessages() override;
   void SetExtraInitParams(base::Value::Dict& params) override;
   void CompleteLogin(const CompleteLoginParams& params) override;
-  void HandleDialogClose(const base::ListValue* args) override;
+  void HandleDialogClose(const base::Value::List& args) override;
 
  private:
   // A callback for `GetAccounts` invoked from `CompleteLogin`.

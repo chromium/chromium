@@ -542,15 +542,15 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
   // opened.
   void OpenProfileFromPicker(const base::FilePath& profile_path,
                              bool open_settings) {
-    base::ListValue args;
-    args.GetList().Append(base::FilePathToValue(profile_path));
-    profile_picker_handler()->HandleLaunchSelectedProfile(open_settings, &args);
+    base::Value::List args;
+    args.Append(base::FilePathToValue(profile_path));
+    profile_picker_handler()->HandleLaunchSelectedProfile(open_settings, args);
   }
 
   // Simulates a click on "Browse as Guest".
   void OpenGuestFromPicker() {
-    base::ListValue args;
-    profile_picker_handler()->HandleLaunchGuestProfile(&args);
+    base::Value::List args;
+    profile_picker_handler()->HandleLaunchGuestProfile(args);
   }
 
   // Creates a new profile without opening a browser.
@@ -1305,12 +1305,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Imitate creating a new profile through the profile picker.
   ProfilePickerHandler* handler = profile_picker_handler();
-  base::ListValue args;
-  args.GetList().Append(u"My Profile");  // Profile name.
-  args.GetList().Append(base::Value());  // Profile color.
-  args.GetList().Append(0);              // Avatar index.
-  args.GetList().Append(false);          // Create shortcut.
-  handler->HandleCreateProfile(&args);
+  base::Value::List args;
+  args.Append(u"My Profile");  // Profile name.
+  args.Append(base::Value());  // Profile color.
+  args.Append(0);              // Avatar index.
+  args.Append(false);          // Create shortcut.
+  handler->HandleCreateProfile(args);
 
   BrowserAddedWaiter(1u).Wait();
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
@@ -1557,9 +1557,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   // Simulate clicking on the confirm switch button.
   ProfilePickerHandler* handler = profile_picker_handler();
-  base::ListValue args;
-  args.GetList().Append(base::FilePathToValue(other_path));
-  handler->HandleConfirmProfileSwitch(&args);
+  base::Value::List args;
+  args.Append(base::FilePathToValue(other_path));
+  handler->HandleConfirmProfileSwitch(args);
 
   // Browser for a pre-existing profile is displayed.
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
@@ -1606,8 +1606,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   // Simulate clicking on the cancel button.
   ProfilePickerHandler* handler = profile_picker_handler();
-  base::ListValue args;
-  handler->HandleCancelProfileSwitch(&args);
+  base::Value::List args;
+  handler->HandleCancelProfileSwitch(args);
 
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();

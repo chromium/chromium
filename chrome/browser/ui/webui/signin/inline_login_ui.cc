@@ -362,13 +362,14 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<chromeos::InlineLoginHandlerChromeOS>(
           base::BindRepeating(&WebDialogUIBase::CloseDialog,
-                              weak_factory_.GetWeakPtr(), nullptr /* args */)));
+                              weak_factory_.GetWeakPtr(),
+                              base::Value::List() /* args */)));
   if (profile->IsChild()) {
     web_ui->AddMessageHandler(
         std::make_unique<chromeos::EduCoexistenceLoginHandler>(
             base::BindRepeating(&WebDialogUIBase::CloseDialog,
                                 weak_factory_.GetWeakPtr(),
-                                nullptr /* args */)));
+                                base::Value::List() /* args */)));
   }
 
 #else

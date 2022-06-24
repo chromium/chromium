@@ -4219,9 +4219,9 @@ class StartupBrowserCreatorPickerInfobarTest
   // opened.
   void OpenProfileFromPicker(const base::FilePath& profile_path,
                              bool open_settings) {
-    base::ListValue args;
-    args.GetList().Append(base::FilePathToValue(profile_path));
-    profile_picker_handler()->HandleLaunchSelectedProfile(open_settings, &args);
+    base::Value::List args;
+    args.Append(base::FilePathToValue(profile_path));
+    profile_picker_handler()->HandleLaunchSelectedProfile(open_settings, args);
   }
 
   // Returns the profile picker webUI handler. The profile picker must be opened

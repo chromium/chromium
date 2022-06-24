@@ -44,23 +44,23 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
 
  private:
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "reauthenticateAccount",
         base::BindRepeating(
             &MigrationMessageHandler::HandleReauthenticateAccount,
             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "closeDialog",
         base::BindRepeating(&MigrationMessageHandler::HandleCloseDialog,
                             base::Unretained(this)));
   }
 
   // WebUI "reauthenticateAccount" message callback.
-  void HandleReauthenticateAccount(const base::ListValue* args) {
+  void HandleReauthenticateAccount(const base::Value::List& args) {
     AllowJavascript();
 
-    CHECK(!args->GetListDeprecated().empty());
-    const std::string& account_email = args->GetListDeprecated()[0].GetString();
+    CHECK(!args.empty());
+    const std::string& account_email = args[0].GetString();
 
     Profile* profile = Profile::FromWebUI(web_ui());
     ::GetAccountManagerFacade(profile->GetPath().value())
@@ -71,7 +71,7 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
     HandleCloseDialog(args);
   }
 
-  void HandleCloseDialog(const base::ListValue* args) {
+  void HandleCloseDialog(const base::Value::List& args) {
     AllowJavascript();
 
     close_dialog_closure_.Run();
@@ -120,7 +120,7 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
 
   web_ui->AddMessageHandler(std::make_unique<MigrationMessageHandler>(
       base::BindRepeating(&WebDialogUI::CloseDialog, weak_factory_.GetWeakPtr(),
-                          nullptr /* args */)));
+                          base::Value::List() /* args */)));
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, html_source);

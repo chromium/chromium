@@ -213,7 +213,7 @@ void CrostiniInstallerUI::OnPageClosed() {
   page_closed_ = true;
   // CloseDialog() is a no-op if we are not in a dialog (e.g. user
   // access the page using the URL directly, which is not supported).
-  ui::MojoWebDialogUI::CloseDialog(nullptr);
+  ui::MojoWebDialogUI::CloseDialog(base::Value::List());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CrostiniInstallerUI)

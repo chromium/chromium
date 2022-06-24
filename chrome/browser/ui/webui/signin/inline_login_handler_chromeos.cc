@@ -310,7 +310,7 @@ void InlineLoginHandlerChromeOS::CompleteLogin(
 }
 
 void InlineLoginHandlerChromeOS::HandleDialogClose(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   close_dialog_closure_.Run();
 }
 
