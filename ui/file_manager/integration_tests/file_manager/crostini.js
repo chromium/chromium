@@ -131,13 +131,13 @@ testcase.pluginVmDirectoryNotSharedErrorDialog = async () => {
   const appOptions = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, ['#tasks-menu [tabindex]']);
   chrome.test.assertEq(
-      1, appOptions.filter(el => el.text == 'Open with App (Windows)').length);
+      1, appOptions.filter(el => el.text == 'App (Windows)').length);
 
   // Click on the Plugin VM app, and wait for error dialog.
-  await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [
-    `#tasks-menu [tabindex]:nth-of-type(${
-        appOptions.map(el => el.text).indexOf('Open with App (Windows)') + 1})`
-  ]);
+  await remoteCall.callRemoteTestUtil(
+      'fakeMouseClick', appId,
+      [`#tasks-menu [tabindex]:nth-of-type(${
+          appOptions.map(el => el.text).indexOf('App (Windows)') + 1})`]);
   await remoteCall.waitUntilTaskExecutes(
       appId, pluginVmAppDescriptor, ['failed_plugin_vm_directory_not_shared']);
   await remoteCall.waitForElement(
@@ -206,13 +206,13 @@ testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
   const appOptions = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, ['#tasks-menu [tabindex]']);
   chrome.test.assertEq(
-      1, appOptions.filter(el => el.text == 'Open with App (Windows)').length);
+      1, appOptions.filter(el => el.text == 'App (Windows)').length);
 
   // Click on the Plugin VM app, and wait for error dialog.
-  await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [
-    `#tasks-menu [tabindex]:nth-of-type(${
-        appOptions.map(el => el.text).indexOf('Open with App (Windows)') + 1})`
-  ]);
+  await remoteCall.callRemoteTestUtil(
+      'fakeMouseClick', appId,
+      [`#tasks-menu [tabindex]:nth-of-type(${
+          appOptions.map(el => el.text).indexOf('App (Windows)') + 1})`]);
   await remoteCall.waitUntilTaskExecutes(
       appId, pluginVmAppDescriptor, ['failed_plugin_vm_directory_not_shared']);
   await remoteCall.waitForElement(

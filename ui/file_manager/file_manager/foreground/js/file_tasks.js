@@ -469,38 +469,6 @@ export class FileTasks {
         task.iconType = 'generic';
       }
 
-      // Add verb to title.
-      if (task.verb) {
-        let verbButtonLabel = '';
-        switch (task.verb) {
-          case chrome.fileManagerPrivate.Verb.ADD_TO:
-            verbButtonLabel = 'ADD_TO_VERB_BUTTON_LABEL';
-            break;
-          case chrome.fileManagerPrivate.Verb.PACK_WITH:
-            verbButtonLabel = 'PACK_WITH_VERB_BUTTON_LABEL';
-            break;
-          case chrome.fileManagerPrivate.Verb.SHARE_WITH:
-            // Even when the task has SHARE_WITH verb, we don't prefix the title
-            // with "Share with" when the task is from SEND/SEND_MULTIPLE intent
-            // handlers from Android apps, since the title can already have an
-            // appropriate verb.
-            if (!(taskType == 'arc' &&
-                  (parsedActionId == 'send' ||
-                   parsedActionId == 'send_multiple'))) {
-              verbButtonLabel = 'SHARE_WITH_VERB_BUTTON_LABEL';
-            }
-            break;
-          case chrome.fileManagerPrivate.Verb.OPEN_WITH:
-            verbButtonLabel = 'OPEN_WITH_VERB_BUTTON_LABEL';
-            break;
-          default:
-            console.error('Invalid task verb: ' + task.verb);
-        }
-        if (verbButtonLabel) {
-          task.label = loadTimeData.getStringF(verbButtonLabel, task.title);
-        }
-      }
-
       result.push(task);
     }
 

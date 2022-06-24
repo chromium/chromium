@@ -470,18 +470,6 @@
   <message name="IDS_FILE_BROWSER_GO_TO_FILE_LOCATION_BUTTON_LABEL" desc="Menu item label, navigating the user to the file's containing folder.">
     Go to file location
   </message>
-  <message name="IDS_FILE_BROWSER_OPEN_WITH_VERB_BUTTON_LABEL" desc="Verb that describe the action of opening one or more files or directories with the given extension.">
-    Open with <ph name="EXTENSION_NAME">$1<ex>Gallery</ex></ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_ADD_TO_VERB_BUTTON_LABEL" desc="Verb that describes the uploading or addition of one or multiple files or directories to the given extension.">
-    Add to <ph name="EXTENSION_NAME">$1<ex>Evernote</ex></ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_PACK_WITH_VERB_BUTTON_LABEL" desc="Verb that describes the packing or archiving of one or multiple files or directories with the given extension.">
-    Pack with <ph name="EXTENSION_NAME">$1<ex>ZIP</ex></ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_SHARE_WITH_VERB_BUTTON_LABEL" desc="Verb that describes the action of sharing/attaching/sending files with the given application.">
-    Share with <ph name="EXTENSION_NAME">$1<ex>GMail</ex></ph>
-  </message>
   <message name="IDS_FILE_BROWSER_ZIP_SELECTION_BUTTON_LABEL" desc="Menu item label, showing dialog to create zip file for selected files.">
     Zip selection
   </message>
