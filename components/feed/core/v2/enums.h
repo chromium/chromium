@@ -40,6 +40,9 @@ enum class LoadType {
   // The stored stream data and the loaded model will not be affected if the
   // network request fails.
   kManualRefresh = 3,
+  // Same as kBackgroundRefresh but specifically scheduled based on user
+  // interaction with the feed.
+  kFeedCloseBackgroundRefresh = 4,
 };
 
 // This must be kept in sync with FeedLoadStreamStatus in enums.xml.

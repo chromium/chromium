@@ -52,6 +52,8 @@ feedwire::FeedQuery::RequestReason GetRequestReason(
                  // TODO(b/185848601): Switch back to PREFETCHED_WEB_FEED when
                  // the server supports it.
                  : feedwire::FeedQuery::INTERACTIVE_WEB_FEED;
+    case LoadType::kFeedCloseBackgroundRefresh:
+      return feedwire::FeedQuery::APP_CLOSE_REFRESH;
     case LoadType::kLoadMore:
       NOTREACHED();
       return feedwire::FeedQuery::MANUAL_REFRESH;
@@ -324,6 +326,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
             base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
                            GetWeakPtr()));
         break;
+      case LoadType::kFeedCloseBackgroundRefresh:
       case LoadType::kBackgroundRefresh:
         network.SendApiRequest<QueryBackgroundFeedDiscoverApi>(
             request, account_info, std::move(request_metadata),

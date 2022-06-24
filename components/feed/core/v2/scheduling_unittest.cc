@@ -33,11 +33,13 @@ TEST(RequestSchedule, CanSerialize) {
   RequestSchedule schedule;
   schedule.anchor_time = kAnchorTime;
   schedule.refresh_offsets = {base::Hours(1), base::Hours(6)};
+  schedule.type = RequestSchedule::Type::kScheduledRefresh;
 
   const base::Value schedule_value = RequestScheduleToValue(schedule);
   ASSERT_EQ(R"({
    "anchor": "11644495200000000",
-   "offsets": [ "3600000000", "21600000000" ]
+   "offsets": [ "3600000000", "21600000000" ],
+   "type": 0
 }
 )",
             ToJSON(schedule_value));
@@ -46,6 +48,24 @@ TEST(RequestSchedule, CanSerialize) {
       RequestScheduleFromValue(schedule_value);
   EXPECT_EQ(schedule.anchor_time, deserialized_schedule.anchor_time);
   EXPECT_EQ(schedule.refresh_offsets, deserialized_schedule.refresh_offsets);
+  EXPECT_EQ(schedule.type, deserialized_schedule.type);
+}
+
+TEST(RequestSchedule, GetScheduleType) {
+  RequestSchedule schedule;
+  schedule.anchor_time = kAnchorTime;
+  schedule.refresh_offsets = {base::Hours(1), base::Hours(6)};
+  schedule.type = RequestSchedule::Type::kScheduledRefresh;
+  EXPECT_EQ(RequestSchedule::Type::kScheduledRefresh,
+            RequestScheduleFromValue(RequestScheduleToValue(schedule)).type);
+  schedule.type = RequestSchedule::Type::kFeedCloseRefresh;
+  base::Value schedule_value = RequestScheduleToValue(schedule);
+  EXPECT_EQ(RequestSchedule::Type::kFeedCloseRefresh,
+            RequestScheduleFromValue(schedule_value).type);
+  // Default to kScheduledRefresh if the type isn't valid.
+  schedule_value.GetDict().Set("type", -1);
+  EXPECT_EQ(RequestSchedule::Type::kScheduledRefresh,
+            RequestScheduleFromValue(schedule_value).type);
 }
 
 class NextScheduledRequestTimeTest : public testing::Test {

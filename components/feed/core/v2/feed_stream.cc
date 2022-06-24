@@ -109,6 +109,16 @@ ContentOrder GetValidWebFeedContentOrder(const PrefService& pref_service) {
   return ContentOrder::kGrouped;
 }
 
+LoadType RequestScheduleTypeToLoadType(RequestSchedule::Type type) {
+  switch (type) {
+    case RequestSchedule::Type::kFeedCloseRefresh:
+      return LoadType::kFeedCloseBackgroundRefresh;
+    case RequestSchedule::Type::kScheduledRefresh:
+    default:
+      return LoadType::kBackgroundRefresh;
+  }
+}
+
 }  // namespace
 
 FeedStream::Stream::Stream(const StreamType& stream_type)
@@ -1033,14 +1043,17 @@ void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
       ShouldAttemptLoad(stream_type, LoadType::kBackgroundRefresh)
           .load_stream_status;
 
+  RequestSchedule request_schedule =
+      feed::prefs::GetRequestSchedule(task_id, *profile_prefs_);
+  LoadType load_type = RequestScheduleTypeToLoadType(request_schedule.type);
+
   // If `do_not_attempt_reason` indicates the stream shouldn't be loaded, it's
   // unlikely that criteria will change, so we skip rescheduling.
   if (do_not_attempt_reason == LoadStreamStatus::kNoStatus ||
       do_not_attempt_reason == LoadStreamStatus::kModelAlreadyLoaded) {
     // Schedule the next refresh attempt. If a new refresh schedule is returned
     // through this refresh, it will be overwritten.
-    SetRequestSchedule(
-        task_id, feed::prefs::GetRequestSchedule(task_id, *profile_prefs_));
+    SetRequestSchedule(task_id, std::move(request_schedule));
   }
 
   if (do_not_attempt_reason != LoadStreamStatus::kNoStatus) {
@@ -1051,7 +1064,7 @@ void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
 
   LoadStreamTask::Options options;
   options.stream_type = stream_type;
-  options.load_type = LoadType::kBackgroundRefresh;
+  options.load_type = load_type;
   options.refresh_even_when_not_stale = true;
   task_queue_.AddTask(FROM_HERE,
                       std::make_unique<LoadStreamTask>(
@@ -1455,6 +1468,7 @@ void FeedStream::ScheduleFeedCloseRefresh(const StreamType& type) {
   RequestSchedule schedule;
   schedule.anchor_time = base::Time::Now();
   schedule.refresh_offsets = {delay, delay * 2, delay * 3};
+  schedule.type = RequestSchedule::Type::kFeedCloseRefresh;
   SetRequestSchedule(type, std::move(schedule));
 }
 
