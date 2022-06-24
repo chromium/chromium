@@ -1320,16 +1320,17 @@ AttributionStorageSql::GetEventLevelReportsInternal(base::Time max_report_time,
   return reports;
 }
 
-absl::optional<base::Time> AttributionStorageSql::GetNextReportTime(
-    base::Time time) {
+absl::optional<base::Time> AttributionStorageSql::GetNextReportTime() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return absl::nullopt;
 
+  base::Time now = base::Time::Now();
+
   absl::optional<base::Time> next_event_level_report_time =
-      GetNextEventLevelReportTime(time);
+      GetNextEventLevelReportTime(now);
   absl::optional<base::Time> next_aggregatable_report_time =
-      GetNextAggregatableAttributionReportTime(time);
+      GetNextAggregatableAttributionReportTime(now);
 
   return AttributionReport::MinReportTime(next_event_level_report_time,
                                           next_aggregatable_report_time);

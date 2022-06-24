@@ -1836,7 +1836,7 @@ TEST_F(AttributionStorageTest, GetNextEventReportTime) {
   const auto origin_a = url::Origin::Create(GURL("https://a.example/"));
   const auto origin_b = url::Origin::Create(GURL("https://b.example/"));
 
-  EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), absl::nullopt);
+  EXPECT_EQ(storage()->GetNextReportTime(), absl::nullopt);
 
   storage()->StoreSource(SourceBuilder().SetReportingOrigin(origin_a).Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
@@ -1844,9 +1844,6 @@ TEST_F(AttributionStorageTest, GetNextEventReportTime) {
                 TriggerBuilder().SetReportingOrigin(origin_a).Build()));
 
   const base::Time report_time_a = base::Time::Now() + kReportDelay;
-
-  EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), report_time_a);
-  EXPECT_EQ(storage()->GetNextReportTime(report_time_a), absl::nullopt);
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
   storage()->StoreSource(SourceBuilder().SetReportingOrigin(origin_b).Build());
@@ -1856,9 +1853,13 @@ TEST_F(AttributionStorageTest, GetNextEventReportTime) {
 
   const base::Time report_time_b = base::Time::Now() + kReportDelay;
 
-  EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), report_time_a);
-  EXPECT_EQ(storage()->GetNextReportTime(report_time_a), report_time_b);
-  EXPECT_EQ(storage()->GetNextReportTime(report_time_b), absl::nullopt);
+  EXPECT_EQ(storage()->GetNextReportTime(), report_time_a);
+
+  task_environment_.FastForwardBy(report_time_a - base::Time::Now());
+  EXPECT_EQ(storage()->GetNextReportTime(), report_time_b);
+
+  task_environment_.FastForwardBy(report_time_b - base::Time::Now());
+  EXPECT_EQ(storage()->GetNextReportTime(), absl::nullopt);
 }
 
 TEST_F(AttributionStorageTest, GetAttributionReports_Shuffles) {
@@ -2146,7 +2147,7 @@ TEST_F(AttributionStorageTest,
 TEST_F(AttributionStorageTest, GetNextReportTime) {
   delegate()->set_max_attributions_per_source(1);
 
-  EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), absl::nullopt);
+  EXPECT_EQ(storage()->GetNextReportTime(), absl::nullopt);
 
   storage()->StoreSource(TestAggregatableSourceProvider().GetBuilder().Build());
 
@@ -2155,9 +2156,6 @@ TEST_F(AttributionStorageTest, GetNextReportTime) {
 
   const base::Time report_time_a = base::Time::Now() + kReportDelay;
 
-  EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), report_time_a);
-  EXPECT_EQ(storage()->GetNextReportTime(report_time_a), absl::nullopt);
-
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
   EXPECT_EQ(AttributionTrigger::AggregatableResult::kSuccess,
@@ -2165,10 +2163,6 @@ TEST_F(AttributionStorageTest, GetNextReportTime) {
                 DefaultAggregatableTriggerBuilder().Build()));
 
   const base::Time report_time_b = base::Time::Now() + kReportDelay;
-
-  EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), report_time_a);
-  EXPECT_EQ(storage()->GetNextReportTime(report_time_a), report_time_b);
-  EXPECT_EQ(storage()->GetNextReportTime(report_time_b), absl::nullopt);
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
@@ -2179,10 +2173,16 @@ TEST_F(AttributionStorageTest, GetNextReportTime) {
 
   base::Time report_time_c = base::Time::Now() + kReportDelay;
 
-  EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), report_time_a);
-  EXPECT_EQ(storage()->GetNextReportTime(report_time_a), report_time_b);
-  EXPECT_EQ(storage()->GetNextReportTime(report_time_b), report_time_c);
-  EXPECT_EQ(storage()->GetNextReportTime(report_time_c), absl::nullopt);
+  EXPECT_EQ(storage()->GetNextReportTime(), report_time_a);
+
+  task_environment_.FastForwardBy(report_time_a - base::Time::Now());
+  EXPECT_EQ(storage()->GetNextReportTime(), report_time_b);
+
+  task_environment_.FastForwardBy(report_time_b - base::Time::Now());
+  EXPECT_EQ(storage()->GetNextReportTime(), report_time_c);
+
+  task_environment_.FastForwardBy(report_time_c - base::Time::Now());
+  EXPECT_EQ(storage()->GetNextReportTime(), absl::nullopt);
 }
 
 TEST_F(AttributionStorageTest, SourceEventIdSanitized) {
