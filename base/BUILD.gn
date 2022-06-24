@@ -2900,6 +2900,7 @@ bundle_data("base_unittests_bundle_data") {
     "test/data/file_util/same_length.txt",
     "test/data/file_util/shortened.txt",
     "test/data/json/bom_feff.json",
+    "test/data/pe_image_reader/signed.exe",
     "test/data/serializer_nested_test.json",
     "test/data/serializer_test.json",
     "test/data/serializer_test_nowhitespace.json",
