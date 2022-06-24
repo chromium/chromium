@@ -41,7 +41,8 @@ content::WebUIDataSource* CreateNetInternalsHTMLSource() {
   source->SetDefaultResource(IDR_NET_INTERNALS_INDEX_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
+      "script-src chrome://resources chrome://test chrome://webui-test "
+      "'self';");
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
   source->DisableTrustedTypesCSP();

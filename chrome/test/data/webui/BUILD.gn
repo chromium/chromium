@@ -123,7 +123,6 @@ if (include_js_tests) {
     ]
 
     deps = [
-      "net_internals:preprocess",
       "//build:branding_buildflags",
       "//chrome/browser/ui",
       "//crypto:buildflags",
@@ -207,11 +206,7 @@ if (include_js_tests) {
       ]
     }
 
-    data = [
-      "$root_gen_dir/chrome/test/data/webui/net_internals/main_test.js",
-      "$root_gen_dir/chrome/test/data/webui/net_internals/test_util.js",
-      "$root_gen_dir/ui/webui/resources/js/load_time_data.js",
-    ]
+    data = [ "$root_gen_dir/ui/webui/resources/js/load_time_data.js" ]
 
     if (is_chromeos_ash || is_win || is_mac) {
       deps += [ "inline_login:preprocess" ]
@@ -424,6 +419,7 @@ generate_grd("build_grd") {
     "history:build_grdp",
     "js:build_grdp",
     "metrics_reporter:build_grdp",
+    "net_internals:build_grdp",
     "new_tab_page:build_grdp",
     "privacy_sandbox:build_grdp",
     "settings:build_grdp",
@@ -440,6 +436,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/downloads/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/history/resources.grdp",
+    "$target_gen_dir/net_internals/resources.grdp",
     "$target_gen_dir/new_tab_page/resources.grdp",
     "$target_gen_dir/side_panel/resources.grdp",
     "$target_gen_dir/metrics_reporter/resources.grdp",
