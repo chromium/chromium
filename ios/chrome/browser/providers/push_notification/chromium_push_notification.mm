@@ -11,12 +11,21 @@
 namespace ios {
 namespace provider {
 
-void InitializeConfiguration() {
+void InitializeConfiguration(id<SingleSignOnService> sso_service) {
   // Chromium does not initialize push notification configurations
 }
 
-void RegisterDevice() {
+void RegisterDevice(NSData* device_token) {
   // Chromium does not register devices for push notifications
+}
+
+void RegisterDeviceWithAPNS(UIApplication* application) {
+  // Chromium does not register devices with Apple Push Notification Service
+  // (APNS) for push notifications
+}
+
+void RequestPushNotificationPermission() {
+  // Chromium does not request push notification permissions
 }
 
 }  // namespace provider

@@ -11,12 +11,20 @@
 namespace ios {
 namespace provider {
 
-void InitializeConfiguration() {
+void InitializeConfiguration(id<SingleSignOnService> sso_service) {
   // Test implementation does nothing.
 }
 
-void RegisterDevice() {
+void RegisterDevice(NSData* device_token) {
   // Test implementation does nothing.
+}
+
+void RegisterDeviceWithAPNS(UIApplication* application) {
+  // Test implementation does nothing.
+}
+
+void RequestPushNotificationPermission() {
+  // Test implementation does noting.
 }
 
 }  // namespace provider
