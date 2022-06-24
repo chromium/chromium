@@ -15,7 +15,7 @@ import {eventToPromise, flushTasks, isVisible} from '../../test_util.js';
 /** @type {string} */
 const ONLINE_TITLE = 'Thanks for your feedback';
 /** @type {string} */
-const OFFLINE_TITLE = 'You are offline now. Feedback will be sent later.';
+const OFFLINE_TITLE = 'You\'re offline. Feedback will be sent later.';
 
 /** @type {string} */
 const ONLINE_MESSAGE =
@@ -88,8 +88,9 @@ export function confirmationPageTest() {
     } else {
       assertTrue(page.i18nExists('thankYouNoteOnline'));
       assertEquals(OFFLINE_TITLE, getElementContent(page, '.page-title'));
-      assertTrue(page.i18nExists('thankYouNoteOffline'));
       assertEquals(OFFLINE_MESSAGE, getElementContent(page, '#message'));
+      assertTrue(page.i18nExists('confirmationTitleOffline'));
+      assertTrue(page.i18nExists('thankYouNoteOffline'));
     }
 
     // verify help resources exist

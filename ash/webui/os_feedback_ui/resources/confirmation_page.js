@@ -70,9 +70,8 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
    * @protected
    */
   getTitle_() {
-    // TODO(xiangdongkong): Localize the strings.
     if (this.isOffline_()) {
-      return 'You are offline now. Feedback will be sent later.';
+      return this.i18n('confirmationTitleOffline');
     }
     return this.i18n('confirmationTitleOnline');
   }
