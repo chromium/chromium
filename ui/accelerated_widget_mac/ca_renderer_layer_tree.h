@@ -103,8 +103,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
     // Append a new content layer, without modifying the actual CALayer
     // structure.
-    bool AddContentLayer(CARendererLayerTree* tree,
-                         const CARendererLayerParams& params);
+    bool AddContentLayer(const CARendererLayerParams& params);
 
     // Downgrade all downgradeable AVSampleBufferDisplayLayers to be normal
     // CALayers.
@@ -119,7 +118,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
     // Return true if the CALayer tree is just a video layer on a black or
     // transparent background, false otherwise.
-    bool WantsFullcreenLowPowerBackdrop() const;
+    bool WantsFullscreenLowPowerBackdrop() const;
 
     // Tree that owns `this`.
     const raw_ptr<CARendererLayerTree> tree_;
@@ -148,8 +147,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // See the behavior of RootLayer for the effects of these functions on the
     // |ca_layer| member and |old_layer| argument.
     ~ClipAndSortingLayer();
-    void AddContentLayer(CARendererLayerTree* tree,
-                         const CARendererLayerParams& params);
+    void AddContentLayer(const CARendererLayerParams& params);
     void CommitToCA();
     CARendererLayerTree* tree() { return parent_layer_->tree_; }
 
@@ -182,8 +180,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // See the behavior of RootLayer for the effects of these functions on the
     // |ca_layer| member and |old_layer| argument.
     ~TransformLayer();
-    void AddContentLayer(CARendererLayerTree* tree,
-                         const CARendererLayerParams& params);
+    void AddContentLayer(const CARendererLayerParams& params);
     void CommitToCA();
     CARendererLayerTree* tree() { return parent_layer_->tree(); }
 

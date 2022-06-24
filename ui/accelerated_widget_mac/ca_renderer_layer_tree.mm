@@ -263,7 +263,7 @@ bool CARendererLayerTree::ScheduleCALayer(const CARendererLayerParams& params) {
     DLOG(ERROR) << "ScheduleCALayer called after CommitScheduledCALayers.";
     return false;
   }
-  return root_layer_.AddContentLayer(this, params);
+  return root_layer_.AddContentLayer(params);
 }
 
 void CARendererLayerTree::CommitScheduledCALayers(
@@ -297,13 +297,10 @@ void CARendererLayerTree::MatchLayersToOldTreeV1(
 
   // Iterate and match clip and sorting layers.
   auto old_clip_and_sorting_layer_it =
-      root_layer_.old_layer_
-          ? root_layer_.old_layer_->clip_and_sorting_layers_.begin()
-          : std::list<ClipAndSortingLayer>::iterator();
+      root_layer_.old_layer_->clip_and_sorting_layers_.begin();
   for (auto& clip_and_sorting_layer : root_layer_.clip_and_sorting_layers_) {
-    if (root_layer_.old_layer_ &&
-        old_clip_and_sorting_layer_it !=
-            root_layer_.old_layer_->clip_and_sorting_layers_.end()) {
+    if (old_clip_and_sorting_layer_it !=
+        root_layer_.old_layer_->clip_and_sorting_layers_.end()) {
       clip_and_sorting_layer.old_layer_ =
           old_clip_and_sorting_layer_it->weak_factory_for_new_layer_
               .GetWeakPtr();
@@ -342,7 +339,7 @@ void CARendererLayerTree::MatchLayersToOldTreeV1(
   }
 }
 
-bool CARendererLayerTree::RootLayer::WantsFullcreenLowPowerBackdrop() const {
+bool CARendererLayerTree::RootLayer::WantsFullscreenLowPowerBackdrop() const {
   bool found_video_layer = false;
   for (auto& clip_layer : clip_and_sorting_layers_) {
     for (auto& transform_layer : clip_layer.transform_layers_) {
@@ -585,7 +582,6 @@ CARendererLayerTree::ContentLayer::~ContentLayer() {
 }
 
 bool CARendererLayerTree::RootLayer::AddContentLayer(
-    CARendererLayerTree* tree,
     const CARendererLayerParams& params) {
   bool needs_new_clip_and_sorting_layer = true;
 
@@ -623,12 +619,11 @@ bool CARendererLayerTree::RootLayer::AddContentLayer(
         this, params.is_clipped, params.clip_rect, params.rounded_corner_bounds,
         params.sorting_context_id, is_singleton_sorting_context);
   }
-  clip_and_sorting_layers_.back().AddContentLayer(tree, params);
+  clip_and_sorting_layers_.back().AddContentLayer(params);
   return true;
 }
 
 void CARendererLayerTree::ClipAndSortingLayer::AddContentLayer(
-    CARendererLayerTree* tree,
     const CARendererLayerParams& params) {
   bool needs_new_transform_layer = true;
   if (!transform_layers_.empty()) {
@@ -638,11 +633,10 @@ void CARendererLayerTree::ClipAndSortingLayer::AddContentLayer(
   }
   if (needs_new_transform_layer)
     transform_layers_.emplace_back(this, params.transform);
-  transform_layers_.back().AddContentLayer(tree, params);
+  transform_layers_.back().AddContentLayer(params);
 }
 
 void CARendererLayerTree::TransformLayer::AddContentLayer(
-    CARendererLayerTree* tree,
     const CARendererLayerParams& params) {
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface;
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
@@ -680,11 +674,11 @@ void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,
     [superlayer addSublayer:ca_layer_];
     [superlayer setBorderWidth:0];
   }
-  if ([ca_layer_ superlayer] != superlayer) {
-    DLOG(ERROR) << "CARendererLayerTree root layer not attached to tree.";
-  }
 
-  if (WantsFullcreenLowPowerBackdrop()) {
+  DCHECK_EQ([ca_layer_ superlayer], superlayer)
+      << "CARendererLayerTree root layer not attached to tree.";
+
+  if (WantsFullscreenLowPowerBackdrop()) {
     // In fullscreen low power mode there exists a single video layer on a
     // solid black background.
     const gfx::RectF bg_rect(
@@ -766,9 +760,9 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA() {
     [rounded_corner_ca_layer_ setSublayerTransform:CATransform3DIdentity];
     [rounded_corner_ca_layer_ setCornerRadius:0];
   }
-  if ([clipping_ca_layer_ superlayer] != superlayer) {
-    DLOG(ERROR) << "CARendererLayerTree root layer not attached to tree.";
-  }
+
+  DCHECK_EQ([clipping_ca_layer_ superlayer], superlayer)
+      << "CARendererLayerTree root layer not attached to tree.";
 
   if (update_is_clipped)
     [clipping_ca_layer_ setMasksToBounds:is_clipped_];
