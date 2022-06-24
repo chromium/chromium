@@ -60,8 +60,7 @@ WORKER_TEST_GLOBS = [
     'webgpu:api,validation,buffer,mapping:*',
 ]
 
-HTML_FILENAME = os.path.join('gen', 'third_party', 'dawn', 'webgpu-cts',
-                             'test_page.html')
+HTML_FILENAME = os.path.join('webgpu-cts', 'test_page.html')
 
 
 async def StartWebsocketServer() -> None:
@@ -197,7 +196,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls._build_dir = cls.browser._browser_backend.build_dir
     # pylint:enable=protected-access
     cls.SetStaticServerDirs([
-        cls._build_dir,
+        os.path.join(cls._build_dir, 'gen', 'third_party', 'dawn'),
     ])
 
   @classmethod
