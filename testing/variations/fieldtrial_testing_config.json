@@ -8246,6 +8246,33 @@
             ]
         }
     ],
+    "TimedHTMLParserBudget": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "20x500x2",
+                    "params": {
+                        "default-parser-budget": "20ms",
+                        "long-parser-budget": "500ms",
+                        "num-yields-with-default-budget": "2"
+                    },
+                    "enable_features": [
+                        "TimedHTMLParserBudget"
+                    ]
+                }
+            ]
+        }
+    ],
     "TouchToFillPasswordSubmissionStudy": [
         {
             "platforms": [
