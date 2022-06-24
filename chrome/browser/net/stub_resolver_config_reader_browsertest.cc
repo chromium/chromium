@@ -115,7 +115,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   // Mark as not enterprise managed.
 #if BUILDFLAG(IS_WIN)
   base::win::ScopedDomainStateForTesting scoped_domain(false);
-  EXPECT_FALSE(base::IsEnterpriseDevice());
+  // TODO(crbug.com/1339062): What is the correct function to use here?
+  EXPECT_FALSE(base::win::IsEnrolledToDomain());
 #endif
 
   std::string good_post_template = "https://foo.test/";
