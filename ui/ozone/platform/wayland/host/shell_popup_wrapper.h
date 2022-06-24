@@ -61,6 +61,13 @@ class ShellPopupWrapper {
                       OwnedWindowAnchorGravity* anchor_gravity,
                       OwnedWindowConstraintAdjustment* constraints) const;
 
+  // Whether the protocol supports surface decoration.
+  virtual bool SupportsDecoration() = 0;
+
+  // Must only be called if SupportsDecoration() returns true.
+  // Decorates the surface with a drop shadow.
+  virtual void Decorate() = 0;
+
  protected:
   // Asks the compositor to take explicit-grab for this popup.
   virtual void Grab(uint32_t serial) = 0;

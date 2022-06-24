@@ -238,6 +238,18 @@ void XDGPopupWrapperImpl::Grab(uint32_t serial) {
   xdg_popup_grab(xdg_popup_.get(), connection_->seat()->wl_object(), serial);
 }
 
+bool XDGPopupWrapperImpl::SupportsDecoration() {
+  if (!aura_popup_)
+    return false;
+  uint32_t version = zaura_popup_get_version(aura_popup_.get());
+  return version >= ZAURA_POPUP_SET_DECORATION_SINCE_VERSION;
+}
+
+void XDGPopupWrapperImpl::Decorate() {
+  zaura_popup_set_decoration(aura_popup_.get(),
+                             ZAURA_POPUP_DECORATION_TYPE_SHADOW);
+}
+
 wl::Object<xdg_positioner> XDGPopupWrapperImpl::CreatePositioner() {
   wl::Object<xdg_positioner> positioner(
       xdg_wm_base_create_positioner(connection_->shell()));

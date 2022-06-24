@@ -207,6 +207,15 @@ void ZXDGPopupV6WrapperImpl::Grab(uint32_t serial) {
                      serial);
 }
 
+bool ZXDGPopupV6WrapperImpl::SupportsDecoration() {
+  // zxdg_popup_v6 doesn't support frame configuration.
+  return false;
+}
+
+void ZXDGPopupV6WrapperImpl::Decorate() {
+  NOTREACHED();
+}
+
 wl::Object<zxdg_positioner_v6> ZXDGPopupV6WrapperImpl::CreatePositioner() {
   wl::Object<zxdg_positioner_v6> positioner(
       zxdg_shell_v6_create_positioner(connection_->shell_v6()));

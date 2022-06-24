@@ -35,6 +35,8 @@ class ZXDGPopupV6WrapperImpl : public ShellPopupWrapper {
   bool SetBounds(const gfx::Rect& new_bounds) override;
   void SetWindowGeometry(const gfx::Rect& bounds) override;
   void Grab(uint32_t serial) override;
+  bool SupportsDecoration() override;
+  void Decorate() override;
 
  private:
   wl::Object<zxdg_positioner_v6> CreatePositioner();

@@ -48,9 +48,8 @@ class WaylandPopup : public WaylandWindow {
   // Creates a popup window, which is visible as a menu window.
   bool CreateShellPopup();
 
-  // Initializes the aura-shell surface, in the case aura-shell EXO extension
-  // is available.
-  void InitializeAuraShellSurface();
+  // Decorates the surface, which requires custom extensions based on exo.
+  void UpdateDecoration();
 
   // Returns bounds with origin relative to parent window's origin.
   gfx::Rect AdjustPopupWindowPosition();
@@ -59,6 +58,12 @@ class WaylandPopup : public WaylandWindow {
   // know anything about the version.
   std::unique_ptr<ShellPopupWrapper> shell_popup_;
 
+  // Set to true if the surface is decorated via aura_popup -- the custom exo
+  // extension to xdg_popup.
+  bool decorated_via_aura_popup_ = false;
+
+  // Exists only if the frame is decorated via aura_surface. This is the
+  // deprecated path and can be removed once Ash is >= M105.
   wl::Object<zaura_surface> aura_surface_;
 
   PlatformWindowShadowType shadow_type_ = PlatformWindowShadowType::kNone;
