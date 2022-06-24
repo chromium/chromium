@@ -177,7 +177,7 @@ source_set("test_support") {
   ]
 }
 
-junit_binary("paint_preview_junit_tests") {
+robolectric_binary("paint_preview_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/paintpreview/player/PlayerManagerTest.java",
     "junit/src/org/chromium/components/paintpreview/player/PlayerUserFrustrationDetectorTest.java",

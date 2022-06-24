@@ -468,7 +468,7 @@ android_resources("ui_javatest_resources") {
   android_manifest = "junit/AndroidManifest.xml"
 }
 
-junit_binary("ui_junit_tests") {
+robolectric_binary("ui_junit_tests") {
   sources = [
     "junit/src/org/chromium/ui/AsyncViewProviderTest.java",
     "junit/src/org/chromium/ui/AsyncViewStubTest.java",

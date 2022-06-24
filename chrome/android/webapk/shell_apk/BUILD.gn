@@ -383,7 +383,7 @@ android_library("shell_apk_javatests") {
   ]
 }
 
-junit_binary("webapk_shell_apk_junit_tests") {
+robolectric_binary("webapk_shell_apk_junit_tests") {
   package_name = "org.chromium.test"
   sources = [
     "junit/src/org/chromium/webapk/shell_apk/HostBrowserClassLoaderTest.java",
@@ -406,7 +406,7 @@ junit_binary("webapk_shell_apk_junit_tests") {
   ]
 }
 
-junit_binary("webapk_shell_apk_h2o_junit_tests") {
+robolectric_binary("webapk_shell_apk_h2o_junit_tests") {
   package_name = "org.chromium.test"
   sources = [
     "junit/src/org/chromium/webapk/shell_apk/CustomAndroidOsShadowAsyncTask.java",

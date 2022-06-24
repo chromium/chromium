@@ -1327,19 +1327,20 @@ if (enable_java_templates) {
     }
   }
 
-  # Declare a Junit executable target
+  # Declare a Robolectric host side test binary.
   #
-  # This target creates an executable from java code for running as a junit test
-  # suite. The executable will be in the output folder's /bin/ directory.
+  # This target creates an executable from java code for running as a
+  # Robolectric test suite. The executable will be in the output folder's /bin/
+  # directory.
   #
   # Supports all variables of java_binary().
   #
   # Example
-  #   junit_binary("foo") {
+  #   robolectric_binary("foo") {
   #     sources = [ "org/chromium/foo/FooTest.java" ]
   #     deps = [ ":bar_java" ]
   #   }
-  template("junit_binary") {
+  template("robolectric_binary") {
     testonly = true
 
     _main_class = "org.chromium.testing.local.JunitTestMain"
@@ -1430,8 +1431,8 @@ if (enable_java_templates) {
       build_config = _build_config
       min_sdk_version = default_min_sdk_version
       deps = _java_assetres_deps + [
-               ":$_compile_resources_target_name",
                ":$_build_config_target_name",
+               ":$_compile_resources_target_name",
              ]
 
       is_robolectric_apk = true
@@ -1455,7 +1456,7 @@ if (enable_java_templates) {
 
     java_library_impl(_java_binary_target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY + [ "deps" ])
-      type = "junit_binary"
+      type = "robolectric_binary"
       main_target_name = invoker.target_name
 
       deps = _invoker_deps
@@ -1501,6 +1502,14 @@ if (enable_java_templates) {
         ":$_build_config_target_name",
         ":$_java_binary_target_name",
       ]
+    }
+  }
+
+  # Alias for robolectric_binary pending cleanup. https://crbug.com/1336818.
+  template("junit_binary") {
+    robolectric_binary(target_name) {
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     }
   }
 
@@ -2114,7 +2123,7 @@ if (enable_java_templates) {
       defines = []
 
       # Set these even when !use_final_fields so that they have correct default
-      # values within junit_binary(), which ignores jar_excluded_patterns.
+      # values within robolectric_binary(), which ignores jar_excluded_patterns.
       if (enable_java_asserts) {
         defines += [ "_ENABLE_ASSERTS" ]
       }
@@ -3251,9 +3260,9 @@ if (enable_java_templates) {
 
     if (_is_bundle_module) {
       _final_deps += [
-                       ":$_merge_manifest_target",
                        ":$_build_config_target",
                        ":$_compile_resources_target",
+                       ":$_merge_manifest_target",
                      ] + _all_native_libs_deps
       if (_optimize_resources) {
         _final_deps += [ ":$_optimize_resources_target" ]
@@ -3384,8 +3393,8 @@ if (enable_java_templates) {
         } else {
           loadable_modules = _loadable_modules
           deps += _all_native_libs_deps + [
-                    ":$_merge_manifest_target",
                     ":$_compile_resources_target",
+                    ":$_merge_manifest_target",
                   ]
 
           if (defined(_final_dex_path)) {
@@ -5008,8 +5017,8 @@ if (enable_java_templates) {
               "@FileArg($_rebased_build_config:deps_info:trace_event_rewritten_device_classpath)",
             ]
             deps = [
-                     _trace_event_rewriter_target,
                      ":$_build_config_target",
+                     _trace_event_rewriter_target,
                    ] + _module_java_targets
           }
         }

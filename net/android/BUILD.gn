@@ -223,7 +223,7 @@ java_cpp_enum("net_android_java_enums_srcjar") {
   ]
 }
 
-junit_binary("net_junit_tests") {
+robolectric_binary("net_junit_tests") {
   sources = [
     "junit/src/org/chromium/net/HttpNegotiateAuthenticatorTest.java",
     "junit/src/org/chromium/net/NetworkTrafficAnnotationTagTest.java",

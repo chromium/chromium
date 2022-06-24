@@ -618,7 +618,7 @@ android_library("content_javatests") {
   data_deps = [ "//net:test_support" ]
 }
 
-junit_binary("content_junit_tests") {
+robolectric_binary("content_junit_tests") {
   sources = [
     "junit/src/org/chromium/content/browser/BindingManagerTest.java",
     "junit/src/org/chromium/content/browser/ChildProcessRankingTest.java",

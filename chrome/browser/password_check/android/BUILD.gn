@@ -77,7 +77,7 @@ android_library("public_ui_java") {
   ]
 }
 
-junit_binary("password_check_junit_tests") {
+robolectric_binary("password_check_junit_tests") {
   testonly = true
 
   sources = [ "junit/src/org/chromium/chrome/browser/password_check/PasswordCheckControllerTest.java" ]

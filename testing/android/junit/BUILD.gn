@@ -28,7 +28,7 @@ robolectric_library("junit_test_support") {
   ]
 }
 
-junit_binary("junit_unit_tests") {
+robolectric_binary("junit_unit_tests") {
   sources = [
     "javatests/src/org/chromium/testing/local/GtestFilterTest.java",
     "javatests/src/org/chromium/testing/local/GtestLoggerTest.java",

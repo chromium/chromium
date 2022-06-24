@@ -67,7 +67,7 @@ if (enable_java_templates) {
       sources = [ "junit/res/values/strings.xml" ]
       mergeable_android_manifests = [ "junit/AndroidManifest_mergetest.xml" ]
     }
-    junit_binary("build_junit_tests") {
+    robolectric_binary("build_junit_tests") {
       # Test has no JNI, so skip JNI Generator step.
       generate_final_jni = false
       resources_package = "org.chromium.build"

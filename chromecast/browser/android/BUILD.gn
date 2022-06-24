@@ -249,7 +249,7 @@ android_library("cast_browser_java") {
   ]
 }
 
-junit_binary("cast_shell_junit_tests") {
+robolectric_binary("cast_shell_junit_tests") {
   sources = [
     "junit/src/org/chromium/chromecast/shell/AsyncTaskRunnerTest.java",
     "junit/src/org/chromium/chromecast/shell/CastAudioFocusRequestTest.java",

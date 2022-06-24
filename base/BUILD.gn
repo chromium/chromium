@@ -4415,7 +4415,7 @@ if (is_android) {
     ]
   }
 
-  junit_binary("base_junit_tests") {
+  robolectric_binary("base_junit_tests") {
     sources = [
       "android/junit/src/org/chromium/base/ApplicationStatusTest.java",
       "android/junit/src/org/chromium/base/CallbackControllerTest.java",

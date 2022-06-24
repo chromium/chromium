@@ -43,7 +43,7 @@ _java_leaf_types = [
   "dist_jar",
   "java_annotation_processor",
   "java_binary",
-  "junit_binary",
+  "robolectric_binary",
 ]
 
 # All _java_resource_types targets must conform to these patterns.
@@ -892,8 +892,6 @@ template("test_runner_script") {
       data += [ "$root_build_dir/bin/helper/${invoker.test_suite}" ]
 
       deps += [ ":${invoker.test_suite}$build_config_target_suffix" ]
-      _junit_binary_build_config =
-          "${target_gen_dir}/${invoker.test_suite}.build_config.json"
 
       _rebased_robolectric_runtime_deps_dir =
           rebase_path("//third_party/robolectric/lib", root_build_dir)
@@ -2048,7 +2046,7 @@ if (enable_java_templates) {
   }
 
   # A template that is used to compile all resources needed by a binary
-  # (e.g. an android_apk or a junit_binary) into an intermediate .ar_
+  # (e.g. an android_apk or a robolectric_binary) into an intermediate .ar_
   # archive. It can also generate an associated .srcjar that contains the
   # final R.java sources for all resource packages the binary depends on.
   #
@@ -3184,7 +3182,7 @@ if (enable_java_templates) {
   #
   # Variables:
   #  type: type of Java target, valid values: 'java_library', 'java_binary',
-  #    'junit_binary', 'java_annotation_processor', and 'android_apk'
+  #    'robolectric_binary', 'java_annotation_processor', and 'android_apk'
   #  main_target_name: optional. If provided, overrides target_name when
   #    creating sub-targets (e.g. "${main_target_name}__dex") and
   #    some output files (e.g. "${main_target_name}.sources"). Only used
@@ -3206,7 +3204,7 @@ if (enable_java_templates) {
   #  output_name: Optional output name for the final jar path. Used to
   #    determine the name of the final jar. Default is to use the same
   #    name as jar_path, if provided, or main_target_name.
-  #  main_class: Main Java class name for 'java_binary', 'junit_binary' and
+  #  main_class: Main Java class name for 'java_binary', 'robolectric_binary' and
   #    'java_annotation_processor' target types. Should not be set for other
   #    ones.
   #  deps: Dependencies for this target.
@@ -3288,7 +3286,7 @@ if (enable_java_templates) {
   #    list of string resources to keep in the base split APK for any bundle
   #    that uses this target.
   #
-  # For 'java_binary' and 'junit_binary' targets only. Ignored by others:
+  # For 'java_binary' and 'robolectric_binary' targets only. Ignored by others:
   #
   #  wrapper_script_name: Optional name for the generated wrapper script.
   #    Default is main target name.
@@ -3303,7 +3301,7 @@ if (enable_java_templates) {
     _is_prebuilt = defined(invoker.jar_path)
     _type = invoker.type
     _is_annotation_processor = _type == "java_annotation_processor"
-    _is_java_binary = _type == "java_binary" || _type == "junit_binary"
+    _is_java_binary = _type == "java_binary" || _type == "robolectric_binary"
     _supports_android =
         defined(invoker.supports_android) && invoker.supports_android
     _requires_android =

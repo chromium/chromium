@@ -57,7 +57,7 @@ following required keys:
 
     * [java_binary](#target_java_binary)
     * [java_annotation_processor](#target_java_annotation_processor)
-    * [junit_binary](#target_junit_binary)
+    * [robolectric_binary](#target_robolectric_binary)
     * [java_library](#target_java_library)
     * [android_assets](#target_android_assets)
     * [android_resources](#target_android_resources)
@@ -339,7 +339,7 @@ collection of all `deps_info['device_jar_path']` entries for the target and all
 its dependencies.
 
 
-## <a name="target_junit_binary">Target type `junit_binary`</a>:
+## <a name="target_robolectric_binary">Target type `robolectric_binary`</a>:
 
 A target type for JUnit-specific binaries. Identical to
 [`java_binary`](#target_java_binary) in the context of `.build_config` files,
@@ -578,7 +578,7 @@ from util import resource_utils
 
 # Types that should never be used as a dependency of another build config.
 _ROOT_TYPES = ('android_apk', 'java_binary', 'java_annotation_processor',
-               'junit_binary', 'android_app_bundle')
+               'robolectric_binary', 'android_app_bundle')
 # Types that should not allow code deps to pass through.
 _RESOURCE_TYPES = ('android_assets', 'android_resources', 'system_java_library')
 
@@ -1207,7 +1207,7 @@ def main(argv):
       'java_annotation_processor': ['build_config', 'main_class'],
       'java_binary': ['build_config'],
       'java_library': ['build_config', 'host_jar_path'] + lib_options,
-      'junit_binary': ['build_config'],
+      'robolectric_binary': ['build_config'],
       'system_java_library': ['build_config', 'unprocessed_jar_path'],
       'android_app_bundle': ['build_config', 'module_build_configs'],
   }
@@ -1259,10 +1259,11 @@ def main(argv):
     raise Exception(
         '--supports-android is required when using --requires-android')
 
-  is_java_target = options.type in (
-      'java_binary', 'junit_binary', 'java_annotation_processor',
-      'java_library', 'android_apk', 'dist_aar', 'dist_jar',
-      'system_java_library', 'android_app_bundle_module')
+  is_java_target = options.type in ('java_binary', 'robolectric_binary',
+                                    'java_annotation_processor', 'java_library',
+                                    'android_apk', 'dist_aar', 'dist_jar',
+                                    'system_java_library',
+                                    'android_app_bundle_module')
 
   is_static_library_dex_provider_target = (
       options.static_library_dependent_configs and options.proguard_enabled)
@@ -1414,7 +1415,8 @@ def main(argv):
   # once we can generate the JNI registration based on APK / module targets as
   # opposed to groups and libraries.
   if is_apk_or_module_target or options.type in ('group', 'java_library',
-                                                 'junit_binary', 'dist_aar'):
+                                                 'robolectric_binary',
+                                                 'dist_aar'):
     deps_info['jni'] = {}
     all_java_sources = [c['java_sources_file'] for c in all_library_deps
                         if 'java_sources_file' in c]
@@ -1422,7 +1424,7 @@ def main(argv):
       all_java_sources.append(options.java_sources_file)
 
   if is_apk_or_module_target or options.type in ('group', 'java_library',
-                                                 'junit_binary'):
+                                                 'robolectric_binary'):
     if options.apk_proto_resources:
       deps_info['proto_resources_path'] = options.apk_proto_resources
 
@@ -1530,7 +1532,7 @@ def main(argv):
     if options.package_name:
       deps_info['package_name'] = options.package_name
 
-  if options.type in ('android_resources', 'android_apk', 'junit_binary',
+  if options.type in ('android_resources', 'android_apk', 'robolectric_binary',
                       'dist_aar', 'android_app_bundle_module', 'java_library'):
     dependency_zips = []
     dependency_zip_overlays = []
@@ -1687,7 +1689,7 @@ def main(argv):
         device_classpath.extend(c for c in d.get('device_classpath', [])
                                 if c not in device_classpath)
 
-  if options.type in ('dist_jar', 'java_binary', 'junit_binary'):
+  if options.type in ('dist_jar', 'java_binary', 'robolectric_binary'):
     # The classpath to use to run this target.
     host_classpath = []
     if options.host_jar_path:
@@ -1834,7 +1836,8 @@ def main(argv):
   deps_info['extra_main_r_text_files'] = sorted(extra_main_r_text_files)
 
   if is_apk_or_module_target or options.type in ('group', 'java_library',
-                                                 'junit_binary', 'dist_aar'):
+                                                 'robolectric_binary',
+                                                 'dist_aar'):
     deps_info['jni']['all_source'] = sorted(set(all_java_sources))
 
   system_jars = [c['unprocessed_jar_path'] for c in system_library_deps]
@@ -2083,7 +2086,7 @@ def main(argv):
     java_resources_jars.sort()
     config['java_resources_jars'] = java_resources_jars
 
-  if is_apk_or_module_target or options.type == 'junit_binary':
+  if is_apk_or_module_target or options.type == 'robolectric_binary':
     # android_resources deps which had recursive_resource_deps set should not
     # have the manifests from the recursively collected deps added to this
     # module. This keeps the manifest declarations in the child DFMs, since they

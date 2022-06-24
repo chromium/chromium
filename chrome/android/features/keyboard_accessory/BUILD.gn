@@ -119,7 +119,7 @@ android_library("test_java") {
   ]
 }
 
-junit_binary("keyboard_accessory_junit_tests") {
+robolectric_binary("keyboard_accessory_junit_tests") {
   testonly = true
 
   sources = [

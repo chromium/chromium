@@ -429,7 +429,7 @@ robolectric_library("junit_test_support") {
   sources = [ "org/chromium/weblayer_private/payments/test_support/WebLayerPaymentRequestBuilder.java" ]
 }
 
-junit_binary("weblayer_junit_tests") {
+robolectric_binary("weblayer_junit_tests") {
   testonly = true
   sources = [ "org/chromium/weblayer_private/payments/WebLayerPaymentRequestServiceTest.java" ]
   resources_package = "org.chromium.weblayer_private.test"

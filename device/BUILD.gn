@@ -455,7 +455,7 @@ if (is_android) {
     srcjar_deps = [ ":bluetooth_test_javagen" ]
   }
 
-  junit_binary("device_junit_tests") {
+  robolectric_binary("device_junit_tests") {
     sources = [
       "gamepad/android/junit/src/org/chromium/device/gamepad/GamepadDeviceTest.java",
       "gamepad/android/junit/src/org/chromium/device/gamepad/GamepadMappingsTest.java",

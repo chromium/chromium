@@ -165,7 +165,7 @@ generate_jni("jni_headers") {
   ]
 }
 
-junit_binary("password_manager_junit_tests") {
+robolectric_binary("password_manager_junit_tests") {
   testonly = true
 
   sources = [

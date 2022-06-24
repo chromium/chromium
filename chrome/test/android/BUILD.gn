@@ -209,7 +209,7 @@ instrumentation_test_apk("chrome_java_test_pagecontroller_codelab") {
   }
 }
 
-junit_binary("chrome_java_test_pagecontroller_junit_tests") {
+robolectric_binary("chrome_java_test_pagecontroller_junit_tests") {
   testonly = true
   sources = [
     "javatests/src/org/chromium/chrome/test/pagecontroller/utils/BySelectorIndexUi2LocatorTest.java",

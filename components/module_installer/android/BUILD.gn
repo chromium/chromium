@@ -44,7 +44,7 @@ android_library("module_installer_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
-junit_binary("module_installer_junit_tests") {
+robolectric_binary("module_installer_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/module_installer/builder/ModuleEngineTest.java",
     "junit/src/org/chromium/components/module_installer/builder/ModuleTest.java",

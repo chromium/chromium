@@ -376,7 +376,7 @@ if (is_android) {
     ]
   }
 
-  junit_binary("cast_base_junit_tests") {
+  robolectric_binary("cast_base_junit_tests") {
     java_test_dir = "//chromecast/base/java/test"
     sources = [
       "$java_test_dir/org/chromium/chromecast/base/BothTest.java",

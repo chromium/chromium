@@ -1035,7 +1035,7 @@ if (!is_ios) {
   }
 }
 if (is_android) {
-  junit_binary("components_junit_tests") {
+  robolectric_binary("components_junit_tests") {
     deps = [
       "//components/android_autofill/browser/junit:components_autofill_junit_tests",
       "//components/background_task_scheduler:components_background_task_scheduler_junit_tests",
