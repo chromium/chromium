@@ -672,6 +672,17 @@ IN_PROC_BROWSER_TEST_P(DictationTest,
   WaitForRecognitionStopped();
 }
 
+IN_PROC_BROWSER_TEST_P(DictationTest, NoExtraSpaceForPunctuation) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("Hello world", "Hello world");
+  SendFinalResultAndWaitForTextAreaValue(".", "Hello world.");
+  SendFinalResultAndWaitForTextAreaValue("Goodnight", "Hello world. Goodnight");
+  SendFinalResultAndWaitForTextAreaValue("!", "Hello world. Goodnight!");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
 class DictationCommandsTest : public DictationTest {
  protected:
   DictationCommandsTest() {}
