@@ -3004,31 +3004,6 @@
             ]
         }
     ],
-    "DeferBeginMainFrameDuringLoading": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled50_20220425",
-                    "params": {
-                        "recent_begin_main_frame_cutoff": "50ms"
-                    },
-                    "enable_features": [
-                        "DeferBeginMainFrameDuringLoading"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeferredShaping": [
         {
             "platforms": [

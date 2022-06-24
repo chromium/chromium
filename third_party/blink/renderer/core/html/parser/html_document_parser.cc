@@ -834,14 +834,10 @@ bool HTMLDocumentParser::PumpTokenizer() {
     ConstructTreeFromHTMLToken();
     if (!should_run_until_completion && !IsPaused()) {
       DCHECK_EQ(task_runner_state_->GetMode(), kAllowDeferredParsing);
-
-      DCHECK(base::FeatureList::IsEnabled(
-                 features::kDeferBeginMainFrameDuringLoading) ||
-             scheduler_->DontDeferBeginMainFrame());
       if (TimedParserBudgetEnabled())
         should_yield = chunk_parsing_timer_.Elapsed() >= timed_budget;
       else
-        should_yield = budget <= 0 && scheduler_->DontDeferBeginMainFrame();
+        should_yield = budget <= 0;
       should_yield |= scheduler_->ShouldYieldForHighPriorityWork();
       should_yield &= task_runner_state_->HaveExitedHeader();
 

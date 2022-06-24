@@ -1480,12 +1480,6 @@ const base::Feature kClientHintsSaveData{"ClientHintsSaveData",
 const base::Feature kEstablishGpuChannelAsync{
     "EstablishGpuChannelAsync", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kDeferBeginMainFrameDuringLoading{
-    "DeferBeginMainFrameDuringLoading", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::FeatureParam<base::TimeDelta> kRecentBeginMainFrameCutoff = {
-    &kDeferBeginMainFrameDuringLoading, "recent_begin_main_frame_cutoff",
-    base::Milliseconds(150)};
-
 const base::Feature kDecodeScriptSourceOffThread{
     "DecodeScriptSourceOffThread", base::FEATURE_DISABLED_BY_DEFAULT};
 

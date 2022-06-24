@@ -567,9 +567,6 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
   mbi_compositor_task_runner_per_agent_scheduling_group =
       base::FeatureList::IsEnabled(
           kMbiCompositorTaskRunnerPerAgentSchedulingGroup);
-
-  can_defer_begin_main_frame_during_loading =
-      base::FeatureList::IsEnabled(features::kDeferBeginMainFrameDuringLoading);
 }
 
 MainThreadSchedulerImpl::AnyThread::~AnyThread() = default;
@@ -1164,11 +1161,6 @@ void MainThreadSchedulerImpl::DidAnimateForInputOnCompositorThread() {
   base::AutoLock lock(any_thread_lock_);
   any_thread().fling_compositor_escalation_deadline =
       helper_.NowTicks() + base::Milliseconds(kFlingEscalationLimitMillis);
-}
-
-void MainThreadSchedulerImpl::DidRunBeginMainFrame() {
-  base::AutoLock lock(any_thread_lock_);
-  any_thread().last_main_frame_time = base::TimeTicks::Now();
 }
 
 void MainThreadSchedulerImpl::UpdateForInputEventOnCompositorThread(
@@ -2064,16 +2056,6 @@ MainThreadSchedulerImpl::GetPendingUserInputInfo(
     bool include_continuous) const {
   base::AutoLock lock(any_thread_lock_);
   return any_thread().pending_input_monitor.Info(include_continuous);
-}
-
-bool MainThreadSchedulerImpl::DontDeferBeginMainFrame() const {
-  if (!scheduling_settings().can_defer_begin_main_frame_during_loading)
-    return true;
-
-  base::AutoLock lock(any_thread_lock_);
-  return IsAnyMainFrameWaitingForFirstContentfulPaint() ||
-         (base::TimeTicks::Now() - any_thread().last_main_frame_time) >
-             features::kRecentBeginMainFrameCutoff.Get();
 }
 
 void MainThreadSchedulerImpl::RunIdleTask(Thread::IdleTask task,

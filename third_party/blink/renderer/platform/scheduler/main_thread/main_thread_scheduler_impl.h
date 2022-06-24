@@ -146,10 +146,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // If enabled, per-AgentGroupScheduler CompositorTaskRunner will be used
     // instead of per-MainThreadScheduler CompositorTaskRunner.
     bool mbi_compositor_task_runner_per_agent_scheduling_group;
-
-    // If enabled, the parser may continue parsing if BeginMainFrame was
-    // recently called.
-    bool can_defer_begin_main_frame_during_loading;
   };
 
   static const char* UseCaseToString(UseCase use_case);
@@ -188,7 +184,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void DidHandleInputEventOnMainThread(const WebInputEvent& web_input_event,
                                        WebInputEventResult result) override;
   void DidAnimateForInputOnCompositorThread() override;
-  void DidRunBeginMainFrame() override;
+  void DidRunBeginMainFrame() override {}
   void SetRendererHidden(bool hidden) override;
   void SetRendererBackgrounded(bool backgrounded) override;
 #if BUILDFLAG(IS_ANDROID)
@@ -210,7 +206,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void SetRendererProcessType(WebRendererProcessType type) override;
   Vector<WebInputEventAttribution> GetPendingUserInputInfo(
       bool include_continuous) const override;
-  bool DontDeferBeginMainFrame() const override;
 
   // ThreadScheduler implementation:
   void PostIdleTask(const base::Location&, Thread::IdleTask) override;
@@ -888,7 +883,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         waiting_for_any_main_frame_meaningful_paint;
     TraceableState<bool, TracingCategory::kInfo>
         have_seen_input_since_navigation;
-    base::TimeTicks last_main_frame_time;
   };
 
   struct CompositorThreadOnly {

@@ -157,10 +157,6 @@ class PLATFORM_EXPORT ThreadScheduler {
     return {};
   }
 
-  // Returns true if BeginMainFrame should be called soon, for example if it
-  // hasn't been called for a long period of time.
-  virtual bool DontDeferBeginMainFrame() const { return true; }
-
   // Associates |isolate| to the scheduler.
   virtual void SetV8Isolate(v8::Isolate* isolate) = 0;
 
