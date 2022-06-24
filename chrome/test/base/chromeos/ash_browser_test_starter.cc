@@ -40,7 +40,9 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   env->SetVar("XDG_RUNTIME_DIR", scoped_temp_dir_xdg_.GetPath().AsUTF8Unsafe());
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  scoped_feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+  scoped_feature_list_.InitWithFeatures(
+      {chromeos::features::kLacrosSupport, chromeos::features::kLacrosPrimary},
+      {});
   command_line->AppendSwitch("enable-wayland-server");
   command_line->AppendSwitch("no-startup-window");
   return true;
