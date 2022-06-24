@@ -117,6 +117,9 @@ bool MessagePumpLibevent::WatchFileDescriptor(int fd,
                                               int mode,
                                               FdWatchController* controller,
                                               FdWatcher* delegate) {
+  TRACE_EVENT("base", "MessagePumpLibevent::WatchFileDescriptor", "fd", fd,
+              "persistent", persistent, "watch_read", mode & WATCH_READ,
+              "watch_write", mode & WATCH_WRITE);
   DCHECK_GE(fd, 0);
   DCHECK(controller);
   DCHECK(delegate);
@@ -327,7 +330,9 @@ void MessagePumpLibevent::OnLibeventNotification(int fd,
 
   // Trace events must begin after the above BeginWorkItem() so that the
   // ensuing "ThreadController active" outscopes all the events under it.
-  TRACE_EVENT("toplevel", "OnLibevent", "fd", fd);
+  TRACE_EVENT("toplevel", "OnLibevent", "controller_created_from",
+              controller->created_from_location(), "fd", fd, "flags", flags,
+              "context", context);
   TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION heap_profiler_scope(
       controller->created_from_location().file_name());
 
@@ -351,6 +356,9 @@ void MessagePumpLibevent::OnLibeventNotification(int fd,
 // Called if a byte is received on the wakeup pipe.
 // static
 void MessagePumpLibevent::OnWakeup(int socket, short flags, void* context) {
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"),
+              "MessagePumpLibevent::OnWakeup", "socket", socket, "flags", flags,
+              "context", context);
   MessagePumpLibevent* that = static_cast<MessagePumpLibevent*>(context);
   DCHECK(that->wakeup_pipe_out_ == socket);
 
