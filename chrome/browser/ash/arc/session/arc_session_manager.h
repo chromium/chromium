@@ -28,7 +28,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class ArcAppLauncher;
-class PrefService;
 class Profile;
 
 namespace arc {
@@ -138,15 +137,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   static void SetUiEnabledForTesting(bool enabled);
   static void SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(bool enabled);
   static void EnableCheckAndroidManagementForTesting(bool enable);
-  static std::string GenerateFakeSerialNumberForTesting(
-      const std::string& chromeos_user,
-      const std::string& salt);
-  static std::string GetOrCreateSerialNumberForTesting(
-      PrefService* local_state,
-      const std::string& chromeos_user,
-      const std::string& arc_salt_on_disk);
-  static bool ReadSaltOnDiskForTesting(const base::FilePath& salt_path,
-                                       std::string* out_salt);
 
   // Returns true if ARC is allowed to run for the current session.
   // TODO(hidehiko): The name is very close to IsArcAllowedForProfile(), but

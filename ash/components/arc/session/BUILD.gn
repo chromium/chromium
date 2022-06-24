@@ -37,6 +37,8 @@ static_library("session") {
     "arc_vm_client_adapter.h",
     "file_system_status.cc",
     "file_system_status.h",
+    "serial_number_util.cc",
+    "serial_number_util.h",
   ]
 
   deps = [
@@ -114,6 +116,7 @@ source_set("unit_tests") {
     "connection_holder_unittest.cc",
     "connection_notifier_unittest.cc",
     "file_system_status_unittest.cc",
+    "serial_number_util_unittest.cc",
   ]
 
   deps = [
