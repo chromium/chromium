@@ -1139,98 +1139,7 @@ const FeatureEntry::FeatureVariation kOmniboxDocumentProviderVariations[] = {
     {"server and client scores", kOmniboxDocumentProviderServerAndClientScoring,
      std::size(kOmniboxDocumentProviderServerAndClientScoring), nullptr}};
 
-// 3 permutations of the 2 rich autocompletion params:
-// - Title AC: Autocompletes suggestions when the input matches the title.
-//   E.g. Space Sh | [ttle - Wikipedia] (en.wikipedia.org/wiki/Space_Shuttle)
-// - Non-Prefix AC: Autocompletes suggestions when the input is not necessarily
-//   a prefix.
-//   E.g. [en.wikipe dia.org/] wiki/Spac | [e_Shuttle] (Space Shuttle -
-//   Wikipedia)
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionTitle[] = {
-    {"RichAutocompletionAutocompleteTitles", "true"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionNonPrefix[] = {
-    {"RichAutocompletionAutocompleteNonPrefixAll", "true"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionTitleNonPrefix[] = {
-    {"RichAutocompletionAutocompleteTitles", "true"},
-    {"RichAutocompletionAutocompleteNonPrefixAll", "true"}};
-
-const FeatureEntry::FeatureVariation kOmniboxRichAutocompletionVariations[] = {
-    {"Title AC", kOmniboxRichAutocompletionTitle,
-     std::size(kOmniboxRichAutocompletionTitle), nullptr},
-    {"Non-Prefix AC", kOmniboxRichAutocompletionNonPrefix,
-     std::size(kOmniboxRichAutocompletionNonPrefix), nullptr},
-    {"Title AC & Non-Prefix AC", kOmniboxRichAutocompletionTitleNonPrefix,
-     std::size(kOmniboxRichAutocompletionTitleNonPrefix), nullptr}};
-
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionMinChar00[] = {
-    {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
-    {"RichAutocompletionAutocompleteNonPrefixMinChar", "0"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionMinChar03[] = {
-    {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
-    {"RichAutocompletionAutocompleteNonPrefixMinChar", "3"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionMinChar05[] = {
-    {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
-    {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionMinChar33[] = {
-    {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-    {"RichAutocompletionAutocompleteNonPrefixMinChar", "3"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionMinChar35[] = {
-    {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-    {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionMinChar55[] = {
-    {"RichAutocompletionAutocompleteTitlesMinChar", "5"},
-    {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
-
-const FeatureEntry::FeatureVariation
-    kOmniboxRichAutocompletionMinCharVariations[] = {
-        {"Title 0 / Non Prefix 0", kOmniboxRichAutocompletionMinChar00,
-         std::size(kOmniboxRichAutocompletionMinChar00), nullptr},
-        {"Title 0 / Non Prefix 3", kOmniboxRichAutocompletionMinChar03,
-         std::size(kOmniboxRichAutocompletionMinChar03), nullptr},
-        {"Title 0 / Non Prefix 5", kOmniboxRichAutocompletionMinChar05,
-         std::size(kOmniboxRichAutocompletionMinChar05), nullptr},
-        {"Title 3 / Non Prefix 3", kOmniboxRichAutocompletionMinChar33,
-         std::size(kOmniboxRichAutocompletionMinChar33), nullptr},
-        {"Title 3 / Non Prefix 5", kOmniboxRichAutocompletionMinChar35,
-         std::size(kOmniboxRichAutocompletionMinChar35), nullptr},
-        {"Title 5 / Non Prefix 5", kOmniboxRichAutocompletionMinChar55,
-         std::size(kOmniboxRichAutocompletionMinChar55), nullptr}};
-
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionShortcutText3[] = {
-    {"RichAutocompletionAutocompleteShortcutText", "true"},
-    {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionShortcutText5[] = {
-    {"RichAutocompletionAutocompleteShortcutText", "true"},
-    {"RichAutocompletionAutocompleteShortcutTextMinChar", "5"}};
-
-const FeatureEntry::FeatureVariation
-    kOmniboxRichAutocompletionShortcutTextVariations[] = {
-        {"Shortcut Text 3", kOmniboxRichAutocompletionShortcutText3,
-         std::size(kOmniboxRichAutocompletionShortcutText3), nullptr},
-        {"Shortcut Text 5", kOmniboxRichAutocompletionShortcutText5,
-         std::size(kOmniboxRichAutocompletionShortcutText5), nullptr}};
-
-const FeatureEntry::FeatureParam
-    kOmniboxRichAutocompletionAdditionalTextHide[] = {
-        {"RichAutocompletionAutocompleteShowAdditionalText", "false"}};
-
-const FeatureEntry::FeatureVariation
-    kOmniboxRichAutocompletionShowAdditionalTextVariations[] = {
-        {"Show Additional Text", {}, 0, nullptr},
-        {"Hide Additional Text", kOmniboxRichAutocompletionAdditionalTextHide,
-         std::size(kOmniboxRichAutocompletionAdditionalTextHide), nullptr}};
-
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionPreferUrls[] = {
-    {"RichAutocompletionAutocompletePreferUrlsOverPrefixes", "true"}};
-
-const FeatureEntry::FeatureVariation
-    kOmniboxRichAutocompletionPreferUrlsOverPrefixesVariations[] = {
-        {"Prefer prefixes", {}, 0, nullptr},
-        {"Prefer URLs", kOmniboxRichAutocompletionPreferUrls,
-         std::size(kOmniboxRichAutocompletionPreferUrls), nullptr}};
-
-// A limited number of combinations of the above variations that are most
-// promising.
+// A limited number of combinations of the rich autocompletion params.
 const FeatureEntry::FeatureParam
     kOmniboxRichAutocompletionConservativeModerate[] = {
         {"RichAutocompletionAutocompleteTitles", "true"},
@@ -1243,11 +1152,21 @@ const FeatureEntry::FeatureParam
         {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
         {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
         {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive[] = {
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive2[] = {
+    {"RichAutocompletionAutocompleteTitles", "true"},
+    {"RichAutocompletionAutocompleteTitlesMinChar", "2"},
+    {"RichAutocompletionAutocompleteShortcutText", "true"},
+    {"RichAutocompletionAutocompleteShortcutTextMinChar", "2"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive3[] = {
     {"RichAutocompletionAutocompleteTitles", "true"},
     {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
     {"RichAutocompletionAutocompleteShortcutText", "true"},
     {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive4[] = {
+    {"RichAutocompletionAutocompleteTitles", "true"},
+    {"RichAutocompletionAutocompleteTitlesMinChar", "4"},
+    {"RichAutocompletionAutocompleteShortcutText", "true"},
+    {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"}};
 
 const FeatureEntry::FeatureVariation
     kOmniboxRichAutocompletionPromisingVariations[] = {
@@ -1258,9 +1177,16 @@ const FeatureEntry::FeatureVariation
          "3/5",
          kOmniboxRichAutocompletionConservativeModerate2,
          std::size(kOmniboxRichAutocompletionConservativeModerate2), nullptr},
-        {"Aggressive - Title Shortcut Title 3, Shortcut Text 3",
-         kOmniboxRichAutocompletionAggressive,
-         std::size(kOmniboxRichAutocompletionAggressive), nullptr}};
+        {"Aggressive 2 - Title Shortcut Title 2, Shortcut Text 2",
+         kOmniboxRichAutocompletionAggressive2,
+         std::size(kOmniboxRichAutocompletionAggressive2), nullptr},
+        {"Aggressive 3 - Title Shortcut Title 3, Shortcut Text 3",
+         kOmniboxRichAutocompletionAggressive3,
+         std::size(kOmniboxRichAutocompletionAggressive3), nullptr},
+        {"Aggressive 4 - Title Shortcut Title 4, Shortcut Text 4",
+         kOmniboxRichAutocompletionAggressive4,
+         std::size(kOmniboxRichAutocompletionAggressive4), nullptr},
+};
 
 const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceTitle[] = {
     {"OmniboxBookmarkPathsUiReplaceTitle", "true"}};
@@ -5072,44 +4998,6 @@ const FeatureEntry kFeatureEntries[] = {
          omnibox::kDocumentProvider,
          kOmniboxDocumentProviderVariations,
          "OmniboxDocumentProviderNonDogfoodExperiments")},
-    {"omnibox-rich-autocompletion",
-     flag_descriptions::kOmniboxRichAutocompletionName,
-     flag_descriptions::kOmniboxRichAutocompletionDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kRichAutocompletion,
-                                    kOmniboxRichAutocompletionVariations,
-                                    "OmniboxBundledExperimentV1")},
-    {"omnibox-rich-autocompletion-min-char",
-     flag_descriptions::kOmniboxRichAutocompletionMinCharName,
-     flag_descriptions::kOmniboxRichAutocompletionMinCharDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kRichAutocompletion,
-                                    kOmniboxRichAutocompletionMinCharVariations,
-                                    "OmniboxBundledExperimentV1")},
-    {"omnibox-rich-autocompletion-shortcut-text",
-     flag_descriptions::kOmniboxRichAutocompletionShortcutTextName,
-     flag_descriptions::kOmniboxRichAutocompletionShortcutTextDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kRichAutocompletion,
-         kOmniboxRichAutocompletionShortcutTextVariations,
-         "OmniboxBundledExperimentV1")},
-    {"omnibox-rich-autocompletion-show-additional-text",
-     flag_descriptions::kOmniboxRichAutocompletionShowAdditionalTextName,
-     flag_descriptions::kOmniboxRichAutocompletionShowAdditionalTextDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kRichAutocompletion,
-         kOmniboxRichAutocompletionShowAdditionalTextVariations,
-         "OmniboxBundledExperimentV1")},
-    {"omnibox-rich-autocompletion-prefer-urls-over-prefixes",
-     flag_descriptions::kOmniboxRichAutocompletionPreferUrlsOverPrefixesName,
-     flag_descriptions::
-         kOmniboxRichAutocompletionPreferUrlsOverPrefixesDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kRichAutocompletion,
-         kOmniboxRichAutocompletionPreferUrlsOverPrefixesVariations,
-         "OmniboxBundledExperimentV1")},
     {"omnibox-rich-autocompletion-promising",
      flag_descriptions::kOmniboxRichAutocompletionPromisingName,
      flag_descriptions::kOmniboxRichAutocompletionPromisingDescription,

@@ -1877,39 +1877,13 @@ const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[] =
     "apps running which affects local file access (e.g. anti-virus software) "
     "and are experiencing searchbox typing lags.";
 
-const char kOmniboxRichAutocompletionName[] = "Omnibox Rich Autocompletion";
-const char kOmniboxRichAutocompletionDescription[] =
-    "Allow autocompletion for titles and non-prefixes. I.e. suggestions whose "
-    "titles or URLs contain the user input as a continuous chunk, but not "
-    "necessarily a prefix, can be the default suggestion. Typically, only "
-    "suggestions whose URLs are prefixed by the user input can be. The "
-    "potential variations toggle 4 params: 1) 'Title UI' displays titles, 2) "
-    "'2-Line UI' includes titles (and URLs when autocompleting titles) on a "
-    "2nd line, 3) 'Title AC' autocompletes titles, and 4) 'Non-Prefix AC' "
-    "autocompletes non-prefixes.";
-const char kOmniboxRichAutocompletionMinCharName[] =
-    "Omnibox Rich Autocompletion Min Characters";
-const char kOmniboxRichAutocompletionMinCharDescription[] =
-    "Specifies min input character length to trigger rich autocompletion.";
-const char kOmniboxRichAutocompletionShortcutTextName[] =
-    "Omnibox Rich Autocompletion Shortcut Text";
-const char kOmniboxRichAutocompletionShortcutTextDescription[] =
-    "Allow autocompletion for shortcut texts.";
-const char kOmniboxRichAutocompletionShowAdditionalTextName[] =
-    "Omnibox Rich Autocompletion Show Additional Text";
-const char kOmniboxRichAutocompletionShowAdditionalTextDescription[] =
-    "Show the suggestion title or URL additional text when the input matches "
-    "the URL or title respectively. Defaults to true.";
-const char kOmniboxRichAutocompletionPreferUrlsOverPrefixesName[] =
-    "Omnibox Rich Autocompletion Prefer URLs over prefixes";
-const char kOmniboxRichAutocompletionPreferUrlsOverPrefixesDescription[] =
-    "When the input matches both a suggestion's title's prefix and its URL's "
-    "non-prefix, autocomplete the URL.";
 const char kOmniboxRichAutocompletionPromisingName[] =
     "Omnibox Rich Autocompletion Promising Combinations";
 const char kOmniboxRichAutocompletionPromisingDescription[] =
-    "Allow autocompletion for titles and non-prefixes; see Omnibox Rich "
-    "Autocompletion.";
+    "Allow autocompletion for titles and non-prefixes. Suggestions whose "
+    "titles or URLs contain the user input as a continuous chunk, but not "
+    "necessarily a prefix, can be the default suggestion. Otherwise, only "
+    "suggestions whose URLs are prefixed by the user input can be.";
 
 const char kOmniboxSiteSearchStarterPackName[] =
     "Omnibox Site Search Starter Pack";

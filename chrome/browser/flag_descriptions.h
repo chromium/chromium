@@ -1053,16 +1053,6 @@ extern const char kOmniboxOnDeviceHeadSuggestionsDescription[];
 extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[];
 extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[];
 
-extern const char kOmniboxRichAutocompletionName[];
-extern const char kOmniboxRichAutocompletionDescription[];
-extern const char kOmniboxRichAutocompletionMinCharName[];
-extern const char kOmniboxRichAutocompletionMinCharDescription[];
-extern const char kOmniboxRichAutocompletionShortcutTextName[];
-extern const char kOmniboxRichAutocompletionShortcutTextDescription[];
-extern const char kOmniboxRichAutocompletionShowAdditionalTextName[];
-extern const char kOmniboxRichAutocompletionShowAdditionalTextDescription[];
-extern const char kOmniboxRichAutocompletionPreferUrlsOverPrefixesName[];
-extern const char kOmniboxRichAutocompletionPreferUrlsOverPrefixesDescription[];
 extern const char kOmniboxRichAutocompletionPromisingName[];
 extern const char kOmniboxRichAutocompletionPromisingDescription[];
 
