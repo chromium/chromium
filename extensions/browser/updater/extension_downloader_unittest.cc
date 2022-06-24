@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extensions_test.h"
@@ -74,20 +75,31 @@ class ExtensionDownloaderTest : public ExtensionsTest {
     return helper->downloader().pending_tasks_;
   }
 
+  // Creates an update manifest for several extensions. Provided values should
+  // be tuples of (extension id, version, URL to the CRX file).
+  std::string CreateUpdateManifest(
+      const std::vector<std::tuple<ExtensionId, std::string, std::string>>&
+          extensions) {
+    std::string content =
+        "<?xml version='1.0' encoding='UTF-8'?>"
+        "<gupdate xmlns='http://www.google.com/update2/response'"
+        "                protocol='2.0'>";
+    for (const auto& [id, version, codebase] : extensions) {
+      content += base::StringPrintf(
+          " <app appid='%s'>"
+          "  <updatecheck codebase='%s' version='%s' prodversionmin='1.1' />"
+          " </app>",
+          id.c_str(), codebase.c_str(), version.c_str());
+    }
+    content += "</gupdate>";
+    return content;
+  }
+
   std::string CreateUpdateManifest(const std::string& extension_id,
                                    const std::string& extension_version) {
-    return "<?xml version='1.0' encoding='UTF-8'?>"
-           "<gupdate xmlns='http://www.google.com/update2/response'"
-           "                protocol='2.0'>"
-           " <app appid='" +
-           extension_id +
-           "'>"
-           "  <updatecheck codebase='http://example.com/extension_1.2.3.4.crx'"
-           "               version='" +
-           extension_version +
-           "' prodversionmin='1.1' />"
-           " </app>"
-           "</gupdate>";
+    return CreateUpdateManifest(
+        {std::make_tuple(extension_id, extension_version,
+                         "http://example.com/extension_1.2.3.4.crx")});
   }
 
   void SetHelperHandlers(ExtensionDownloaderTestHelper* helper,
@@ -572,6 +584,123 @@ TEST_F(ExtensionDownloaderTest, TestManifestFetchFailureAfterCacheMiss) {
   content::RunAllTasksUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(&helper.delegate());
+}
+
+// Tests that multiple requests (with different `request_id`) are handled
+// correctly.
+TEST_F(ExtensionDownloaderTest, TestMultipleRequests) {
+  ExtensionDownloaderTestHelper helper;
+
+  ExtensionDownloaderTask task1 = CreateDownloaderTask(
+      kTestExtensionId, extension_urls::GetWebstoreUpdateUrl());
+  task1.request_id = 0;
+  ExtensionDownloaderTask task2 = CreateDownloaderTask(
+      kTestExtensionId2, extension_urls::GetWebstoreUpdateUrl());
+  task2.request_id = 1;
+
+  helper.test_url_loader_factory().SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::vector<std::tuple<ExtensionId, std::string, std::string>>
+            extensions;
+        if (request.url.spec().find(std::string("%3D") + kTestExtensionId +
+                                    "%26") != std::string::npos) {
+          extensions.emplace_back(kTestExtensionId, "1.0",
+                                  "https://example.com/extension1.crx");
+        }
+        if (request.url.spec().find(std::string("%3D") + kTestExtensionId2 +
+                                    "%26") != std::string::npos) {
+          extensions.emplace_back(kTestExtensionId2, "1.0",
+                                  "https://example.com/extension2.crx");
+        }
+        helper.test_url_loader_factory().AddResponse(
+            request.url.spec(), CreateUpdateManifest(extensions), net::HTTP_OK);
+      }));
+
+  MockExtensionDownloaderDelegate& delegate = helper.delegate();
+  EXPECT_CALL(delegate, IsExtensionPending(kTestExtensionId))
+      .WillOnce(Return(true));
+  EXPECT_CALL(delegate, IsExtensionPending(kTestExtensionId2))
+      .WillOnce(Return(true));
+  std::map<ExtensionId, std::set<int>> results;
+  EXPECT_CALL(delegate, OnExtensionDownloadFinished_(_, _, _, _, _, _))
+      .WillRepeatedly(
+          [&](const CRXFileInfo& file, bool file_ownership_passed,
+              const GURL& download_url,
+              const ExtensionDownloaderDelegate::PingResult& ping_result,
+              const std::set<int>& request_ids,
+              ExtensionDownloaderDelegate::InstallCallback& callback) {
+            ASSERT_EQ(results.count(file.extension_id), 0u);
+            results[file.extension_id] = request_ids;
+          });
+
+  helper.downloader().AddPendingExtension(std::move(task1));
+  helper.downloader().AddPendingExtension(std::move(task2));
+  helper.downloader().StartAllPending(nullptr);
+
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(results.size(), 2u);
+  EXPECT_EQ(results[kTestExtensionId], std::set<int>({0}));
+  EXPECT_EQ(results[kTestExtensionId2], std::set<int>({1}));
+
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+}
+
+// Tests that multiple requests (with different `request_id`) are handled
+// correctly when they are used to fetch the same extension.
+TEST_F(ExtensionDownloaderTest, TestMultipleRequestsSameExtension) {
+  ExtensionDownloaderTestHelper helper;
+
+  ExtensionDownloaderTask task1 = CreateDownloaderTask(
+      kTestExtensionId, extension_urls::GetWebstoreUpdateUrl());
+  task1.request_id = 0;
+  ExtensionDownloaderTask task2 = CreateDownloaderTask(
+      kTestExtensionId, extension_urls::GetWebstoreUpdateUrl());
+  task2.request_id = 1;
+
+  helper.test_url_loader_factory().SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url.spec() == "https://example.com/extension1.crx") {
+          helper.test_url_loader_factory().AddResponse(request.url.spec(), "",
+                                                       net::HTTP_OK);
+          return;
+        }
+        ASSERT_NE(request.url.spec().find(std::string("%3D") +
+                                          kTestExtensionId + "%26"),
+                  std::string::npos);
+        std::vector<std::tuple<ExtensionId, std::string, std::string>>
+            extensions;
+        extensions.emplace_back(kTestExtensionId, "1.0",
+                                "https://example.com/extension1.crx");
+        helper.test_url_loader_factory().AddResponse(
+            request.url.spec(), CreateUpdateManifest(extensions), net::HTTP_OK);
+      }));
+
+  MockExtensionDownloaderDelegate& delegate = helper.delegate();
+  EXPECT_CALL(delegate, IsExtensionPending(kTestExtensionId))
+      .WillRepeatedly(Return(true));
+  std::map<ExtensionId, std::set<int>> results;
+  EXPECT_CALL(delegate, OnExtensionDownloadFinished_(_, _, _, _, _, _))
+      .WillRepeatedly(
+          [&](const CRXFileInfo& file, bool file_ownership_passed,
+              const GURL& download_url,
+              const ExtensionDownloaderDelegate::PingResult& ping_result,
+              const std::set<int>& request_ids,
+              ExtensionDownloaderDelegate::InstallCallback& callback) {
+            DCHECK(results.count(file.extension_id) == 0);
+            results[file.extension_id] = request_ids;
+          });
+
+  helper.downloader().AddPendingExtension(std::move(task1));
+  helper.downloader().AddPendingExtension(std::move(task2));
+  helper.downloader().StartAllPending(nullptr);
+
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(results.size(), 1u);
+  EXPECT_EQ(results[kTestExtensionId], std::set<int>({0, 1}));
+
+  testing::Mock::VerifyAndClearExpectations(&delegate);
 }
 
 }  // namespace extensions

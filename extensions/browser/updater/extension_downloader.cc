@@ -1283,6 +1283,12 @@ void ExtensionDownloader::OnExtensionLoadComplete(base::FilePath crx_path) {
   const base::TimeDelta& backoff_delay = base::Milliseconds(0);
 
   ExtensionFetch& active_request = *extensions_queue_.active_request();
+#if DCHECK_IS_ON()
+  std::set<int> tasks_request_ids;
+  for (const ExtensionDownloaderTask& task : active_request.associated_tasks)
+    tasks_request_ids.insert(task.request_id);
+  DCHECK(active_request.request_ids == tasks_request_ids);
+#endif
   const ExtensionId& id = active_request.id;
   if (!crx_path.empty()) {
     RETRY_HISTOGRAM("CrxFetchSuccess",
