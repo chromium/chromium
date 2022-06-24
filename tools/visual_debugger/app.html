@@ -234,6 +234,7 @@
       <option>100%</option>
       <option>50%</option>
       <option>200%</option>
+      <option>Free Camera</option>
     </select>
   </div>
 
@@ -418,10 +419,34 @@
     scrubberDraw.addEventListener('input', () => {
       player.freezeFrame(scrubberFrame.value, scrubberDraw.value);
     });
+
+    let currentMouseX = 0;
+    let currentMouseY = 0;
+    let zoom = 100;
     const viewerScale = document.querySelector("#viewerscale");
     viewerScale.addEventListener('input', () => {
-      player.setViewerScale(viewerScale.value);
+      if (viewerScale.value != "Free Camera") {
+        player.setViewerScale(viewerScale.value);
+        zoom = parseInt(viewerScale.value);
+      }
+      else {
+        player.setViewerScale(zoom);
+        canvas.addEventListener('mouseenter', () => {
+          canvas.addEventListener('mousemove', function (event) {
+            currentMouseX = Math.round(event.offsetX);
+            currentMouseY = Math.round(event.offsetY);
+          });
+        });
+        canvas.addEventListener('wheel', function(e) {
+          e.preventDefault();
+          var delta = e.deltaY;
+          
+          viewer.zoomToMouse(currentMouseX, currentMouseY, delta);
+
+        }, {passive:false});
+      }
     });
+
     const viewerOrientation = document.querySelector("#viewerorientation");
     viewerOrientation.addEventListener('input', () => {
       player.setViewerOrientation(viewerOrientation.value);

@@ -217,12 +217,14 @@ class Viewer {
   constructor(canvas, log) {
     this.canvas_ = canvas;
     this.logContainer_ = log;
-    this.drawContext_ = this.canvas_.getContext('2d');
+    this.drawContext_ = this.canvas_.getContext("2d");
 
     this.currentFrameIndex_ = -1;
     this.viewScale = 1.0;
     this.viewOrientation = 0;
     this.transformMatrix = [[1,0],[0,1]]; // Identity matrix
+    this.translationX = 0;
+    this.translationY = 0;
   }
 
   updateCurrentFrame() {
@@ -267,6 +269,8 @@ class Viewer {
     frame.updateCanvasOrientationAndSize(this.canvas_,
                 this.viewOrientation, this.viewScale);
     this.updateTransformMatrix(this.viewOrientation);
+    // this.drawContext_.translate(this.translationX, this.translationY);
+    frame.updateCanvasSize(this.canvas_, this.viewScale);
     frame.draw(this.canvas_, this.drawContext_,
                 this.viewScale, this.viewOrientation,
                 this.transformMatrix);
@@ -304,6 +308,21 @@ class Viewer {
   unfreeze() {
     const frame = this.getCurrentFrame();
     if (frame) frame.unfreeze();
+  }
+
+  zoomToMouse(currentMouseX, currentMouseY, delta) {
+    var factor = 1.1;
+    if (delta > 0) {
+      factor = 0.9;
+    }
+    // this.translationX = currentMouseX;
+    // this.translationY = currentMouseY;
+    // this.updateCurrentFrame();
+    this.viewScale *= factor;
+    this.updateCurrentFrame();
+    // this.translationX = -currentMouseX;
+    // this.translationY = -currentMouseY;
+    // this.updateCurrentFrame();
   }
 };
 
