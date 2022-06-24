@@ -50,7 +50,7 @@ NSMenuItem* FindMenuItem(NSEvent* key, NSMenu* menu) {
     if (submenu) {
       if (submenu != [NSApp servicesMenu])
         result = FindMenuItem(key, submenu);
-    } else if ([item cr_firesForKeyEvent:key]) {
+    } else if ([item cr_firesForKeyEquivalentEvent:key]) {
       result = item;
     }
 
@@ -233,7 +233,7 @@ CommandForKeyEventResult CommandForKeyEvent(NSEvent* event) {
   // Scan through keycodes and see if it corresponds to one of the non-menu
   // shortcuts.
   for (NSMenuItem* menu_item : GetMenuItemsNotPresentInMainMenu()) {
-    if ([menu_item cr_firesForKeyEvent:event])
+    if ([menu_item cr_firesForKeyEquivalentEvent:event])
       return ShortcutCommand(menu_item.tag);
   }
 

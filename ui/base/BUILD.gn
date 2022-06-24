@@ -293,6 +293,8 @@ component("base") {
       "cocoa/flipped_view.mm",
       "cocoa/menu_controller.h",
       "cocoa/menu_controller.mm",
+      "cocoa/nsmenu_additions.h",
+      "cocoa/nsmenu_additions.mm",
       "cocoa/nsmenuitem_additions.h",
       "cocoa/nsmenuitem_additions.mm",
       "cocoa/permissions_utils.h",
@@ -962,6 +964,7 @@ test("ui_base_unittests") {
   if (is_mac) {
     sources += [
       "cocoa/defaults_utils_unittest.mm",
+      "cocoa/nsmenu_additions_unittest.mm",
       "cocoa/nsmenuitem_additions_unittest.mm",
       "interaction/element_tracker_mac_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",

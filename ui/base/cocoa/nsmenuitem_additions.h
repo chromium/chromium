@@ -11,10 +11,10 @@
 
 @interface NSMenuItem (ChromeAdditions)
 
-// Returns true exactly if the menu item would fire if it would be put into
-// a menu and then |menu performKeyEquivalent:event| was called.
-// This method always returns NO if the menu item is not enabled.
-- (BOOL)cr_firesForKeyEvent:(NSEvent*)event;
+// Returns YES if the menu item is enabled and a call to
+// [menu performKeyEquivalent:`event`] would cause the
+// menu item to fire.
+- (BOOL)cr_firesForKeyEquivalentEvent:(NSEvent*)event;
 
 @end
 
@@ -31,6 +31,14 @@ void COMPONENT_EXPORT(UI_BASE)
 // held.
 bool COMPONENT_EXPORT(UI_BASE)
     IsKeyboardLayoutCommandQwerty(NSString* layout_id);
+
+// Returns a suitable keyboard shortcut modifier mask for `event`. In
+// particular, NSEventModifierFlagFunction may be present in the event's
+// modifiers but it may not indicate the user is pressing the Function key (it
+// exists, for example, when pressing a function key like Up Arrow). This
+// distinction matters when evaluating a key event as a possible keyboard
+// shortcut.
+NSUInteger COMPONENT_EXPORT(UI_BASE) ModifierMaskForKeyEvent(NSEvent* event);
 
 }  // namespace cocoa
 }  // namespace ui
