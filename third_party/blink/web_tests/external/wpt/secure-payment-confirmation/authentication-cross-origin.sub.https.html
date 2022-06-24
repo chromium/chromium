@@ -7,6 +7,10 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="utils.sub.js"></script>
+
+<!-- This test requires a non-empty body to workaround https://github.com/web-platform-tests/wpt/issues/34563 -->
+<body><div>Non-empty body</div></body>
+
 <script>
 'use strict';
 
@@ -28,6 +32,7 @@ promise_test(async t => {
 
   // Create a credential for the WPT alt domain.
   const credential = await createCredentialForAltDomain();
+  assert_equals(credential.error, null);
 
   const challenge = 'server challenge';
   const payeeOrigin = 'https://merchant.com';

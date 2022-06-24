@@ -80,7 +80,7 @@ async function createCredentialForAltDomain() {
   // Setup the result promise, and then trigger credential creation.
   const resultPromise = new Promise(resolve => {
       window.addEventListener('message', function handler(evt) {
-        if (evt.source === frame.contentWindow) {
+        if (evt.source === frame.contentWindow && evt.data.type == 'spc_result') {
           document.body.removeChild(frame);
           window.removeEventListener('message', handler);
 
