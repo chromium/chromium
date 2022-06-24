@@ -508,8 +508,6 @@ bool Buffer::ProduceTransferableResource(
                                                   sync_token, texture_target_);
     resource->is_overlay_candidate = is_overlay_candidate_;
     resource->format = viz::GetResourceFormat(gpu_memory_buffer_->GetFormat());
-    resource->synchronization_type =
-        viz::TransferableResource::SynchronizationType::kReleaseFence;
 
     // The contents texture will be released when no longer used by the
     // compositor.
