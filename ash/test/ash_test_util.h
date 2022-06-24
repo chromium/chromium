@@ -5,11 +5,13 @@
 #ifndef ASH_TEST_ASH_TEST_UTIL_H_
 #define ASH_TEST_ASH_TEST_UTIL_H_
 
+#include <cstddef>
+
 namespace base {
 class FilePath;
 }
 
-namespace ash::test {
+namespace ash {
 
 // Takes a screenshot of the primary display and saves the screenshot picture to
 // the location specified by `file_path`. Returns true if the screenshot is
@@ -20,6 +22,10 @@ namespace ash::test {
 // file matching `file_path`, the existing file will be overwritten.
 bool TakePrimaryDisplayScreenshotAndSave(const base::FilePath& file_path);
 
-}  // namespace ash::test
+// Returns true if the system tray of the root window specified by
+// `root_window_index` is visible.
+bool IsSystemTrayForRootWindowVisible(size_t root_window_index);
+
+}  // namespace ash
 
 #endif

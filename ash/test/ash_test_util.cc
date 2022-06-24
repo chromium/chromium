@@ -4,14 +4,17 @@
 
 #include "ash/test/ash_test_util.h"
 
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot_aura.h"
 
-namespace ash::test {
+namespace ash {
 
 namespace {
 void SnapshotCallback(base::RunLoop* run_loop,
@@ -47,4 +50,11 @@ bool TakePrimaryDisplayScreenshotAndSave(const base::FilePath& file_path) {
   return written_size == data_size;
 }
 
-}  // namespace ash::test
+bool IsSystemTrayForRootWindowVisible(size_t root_window_index) {
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  RootWindowController* controller =
+      RootWindowController::ForWindow(root_windows[root_window_index]);
+  return controller->GetStatusAreaWidget()->unified_system_tray()->GetVisible();
+}
+
+}  // namespace ash
