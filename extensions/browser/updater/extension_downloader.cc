@@ -325,6 +325,12 @@ void ExtensionDownloader::DoStartAllPending() {
   ReportStats();
   url_stats_ = URLStats();
 
+  if (g_test_delegate) {
+    g_test_delegate->StartUpdateCheck(this, delegate_,
+                                      std::move(pending_tasks_));
+    pending_tasks_.clear();
+    return;
+  }
   // We limit the number of extensions grouped together in one batch to avoid
   // running into the limits on the length of http GET requests, so there might
   // be multiple ManifestFetchData* objects with the same update_url.
@@ -443,10 +449,6 @@ void ExtensionDownloader::ReportStats() const {
 
 void ExtensionDownloader::StartUpdateCheck(
     std::unique_ptr<ManifestFetchData> fetch_data) {
-  if (g_test_delegate) {
-    g_test_delegate->StartUpdateCheck(this, delegate_, std::move(fetch_data));
-    return;
-  }
   const ExtensionIdSet extension_ids = fetch_data->GetExtensionIds();
   if (!ExtensionsBrowserClient::Get()->IsBackgroundUpdateAllowed()) {
     NotifyExtensionsDownloadStageChanged(

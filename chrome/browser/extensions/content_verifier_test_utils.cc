@@ -32,18 +32,22 @@ void DownloaderTestDelegate::AddResponse(const ExtensionId& extension_id,
       std::make_pair(base::Version(version_string), crx_path);
 }
 
-const std::vector<std::unique_ptr<ManifestFetchData>>&
-DownloaderTestDelegate::requests() {
+const std::vector<ExtensionDownloaderTask>& DownloaderTestDelegate::requests() {
   return requests_;
 }
 
 void DownloaderTestDelegate::StartUpdateCheck(
     ExtensionDownloader* downloader,
     ExtensionDownloaderDelegate* delegate,
-    std::unique_ptr<ManifestFetchData> fetch_data) {
-  requests_.push_back(std::move(fetch_data));
-  const ManifestFetchData* data = requests_.back().get();
-  const ExtensionIdSet extension_ids = data->GetExtensionIds();
+    std::vector<ExtensionDownloaderTask> tasks) {
+  ExtensionIdSet extension_ids;
+  std::set<int> request_ids;
+  for (ExtensionDownloaderTask& task : tasks) {
+    extension_ids.insert(task.id);
+    request_ids.insert(task.request_id);
+  }
+  for (ExtensionDownloaderTask& task : tasks)
+    requests_.push_back(std::move(task));
   for (const auto& id : extension_ids) {
     if (base::Contains(responses_, id)) {
       CRXFileInfo crx_info(responses_[id].second, GetTestVerifierFormat());
@@ -59,7 +63,7 @@ void DownloaderTestDelegate::StartUpdateCheck(
               &ExtensionDownloaderDelegate::OnExtensionDownloadFinished,
               base::Unretained(delegate), crx_info,
               false /* pass_file_ownership */, GURL(),
-              ExtensionDownloaderDelegate::PingResult(), data->request_ids(),
+              ExtensionDownloaderDelegate::PingResult(), request_ids,
               ExtensionDownloaderDelegate::InstallCallback()));
     }
   }
