@@ -118,8 +118,7 @@ QtUi::QtUi() = default;
 QtUi::~QtUi() = default;
 
 std::unique_ptr<ui::LinuxInputMethodContext> QtUi::CreateInputMethodContext(
-    ui::LinuxInputMethodContextDelegate* delegate,
-    bool is_simple) const {
+    ui::LinuxInputMethodContextDelegate* delegate) const {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
