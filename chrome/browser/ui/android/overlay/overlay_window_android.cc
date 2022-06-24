@@ -122,7 +122,6 @@ void OverlayWindowAndroid::Destroy(JNIEnv* env) {
     window_android_ = nullptr;
   }
 
-  controller_->FocusInitiator();
   controller_->OnWindowDestroyed(/*should_pause_video=*/true);
 }
 
@@ -153,6 +152,7 @@ void OverlayWindowAndroid::OnViewSizeChanged(JNIEnv* env,
 }
 
 void OverlayWindowAndroid::OnBackToTab(JNIEnv* env) {
+  controller_->FocusInitiator();
   Hide();
 }
 
