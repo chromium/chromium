@@ -72,26 +72,28 @@ void EmptyTrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
     return;
   }
 
-  RemoveTrashDirectory(it);
+  RemoveTrashSubDirectory(it, kFilesFolderName);
 }
 
-void EmptyTrashIOTask::RemoveTrashDirectory(
-    TrashPathsMap::const_iterator& trash_location) {
+void EmptyTrashIOTask::RemoveTrashSubDirectory(
+    TrashPathsMap::const_iterator& trash_location,
+    const std::string& folder_name_to_remove) {
   const base::FilePath trash_path =
       trash_location->second.trash_parent_path.Append(
           trash_location->second.relative_folder_path);
   const storage::FileSystemURL trash_url =
       file_system_context_->CreateCrackedFileSystemURL(
           storage_key_, storage::FileSystemType::kFileSystemTypeLocal,
-          trash_path);
+          trash_path.Append(folder_name_to_remove));
 
   progress_.outputs.emplace_back(trash_url, absl::nullopt);
 
   auto complete_callback = base::BindPostTask(
       base::SequencedTaskRunnerHandle::Get(),
-      base::BindOnce(&EmptyTrashIOTask::OnRemoveTrashDirectory,
+      base::BindOnce(&EmptyTrashIOTask::OnRemoveTrashSubDirectory,
                      weak_ptr_factory_.GetWeakPtr(),
-                     base::OwnedRef(trash_location)));
+                     base::OwnedRef(trash_location),
+                     std::move(folder_name_to_remove)));
 
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -101,12 +103,18 @@ void EmptyTrashIOTask::RemoveTrashDirectory(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EmptyTrashIOTask::OnRemoveTrashDirectory(TrashPathsMap::const_iterator& it,
-                                              base::File::Error status) {
+void EmptyTrashIOTask::OnRemoveTrashSubDirectory(
+    TrashPathsMap::const_iterator& it,
+    const std::string& removed_folder_name,
+    base::File::Error status) {
   progress_.outputs[progress_.outputs.size() - 1].error = status;
   if (status != base::File::FILE_OK) {
     LOG(ERROR) << "Failed to remove trash directory " << status;
     Complete(State::kError);
+    return;
+  }
+  if (removed_folder_name == kFilesFolderName) {
+    RemoveTrashSubDirectory(it, kInfoFolderName);
     return;
   }
   it++;
@@ -115,7 +123,7 @@ void EmptyTrashIOTask::OnRemoveTrashDirectory(TrashPathsMap::const_iterator& it,
     return;
   }
 
-  RemoveTrashDirectory(it);
+  RemoveTrashSubDirectory(it, kFilesFolderName);
 }
 
 // Calls the completion callback for the task. `progress_` should not be

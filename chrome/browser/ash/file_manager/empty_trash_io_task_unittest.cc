@@ -27,7 +27,7 @@ namespace {
 
 using ::base::test::RunClosure;
 using ::testing::AllOf;
-using ::testing::ElementsAre;
+using ::testing::ContainerEq;
 using ::testing::Field;
 using ::testing::IsEmpty;
 
@@ -43,22 +43,53 @@ MATCHER_P(EntryStatusPaths, matcher, "") {
   return testing::ExplainMatchResult(matcher, paths, result_listener);
 }
 
+struct TrashDirectoriesAndSubDirectories {
+  std::vector<base::FilePath> trash_directories;
+  std::vector<base::FilePath> trash_subdirectories;
+};
+
 class EmptyTrashIOTaskTest : public TrashBaseTest {
  public:
   EmptyTrashIOTaskTest() = default;
 
   EmptyTrashIOTaskTest(const EmptyTrashIOTaskTest&) = delete;
   EmptyTrashIOTaskTest& operator=(const EmptyTrashIOTaskTest&) = delete;
+
+  base::FilePath SetupTrashDirectory(
+      const base::FilePath& trash_parent_path,
+      const std::string& relative_trash_folder,
+      std::vector<base::FilePath>& trash_subdirectories) {
+    base::FilePath trash_directory =
+        trash_parent_path.Append(relative_trash_folder);
+    EXPECT_TRUE(EnsureTrashDirectorySetup(trash_directory));
+
+    trash_subdirectories.emplace_back(trash_directory.Append(kFilesFolderName));
+    trash_subdirectories.emplace_back(trash_directory.Append(kInfoFolderName));
+    return trash_directory;
+  }
+
+  const TrashDirectoriesAndSubDirectories SetupTrashAndReturnDirectories() {
+    TrashDirectoriesAndSubDirectories directories;
+
+    // Setup ~/MyFiles/.Trash
+    directories.trash_directories.emplace_back(SetupTrashDirectory(
+        my_files_dir_, kTrashFolderName, directories.trash_subdirectories));
+
+    // Setup ~/MyFiles/Downloads/.Trash
+    directories.trash_directories.emplace_back(SetupTrashDirectory(
+        downloads_dir_, kTrashFolderName, directories.trash_subdirectories));
+
+    // Setup /media/fuse/termina_hash_pengiun/.local/share/Trash
+    directories.trash_directories.emplace_back(SetupTrashDirectory(
+        crostini_dir_, ".local/share/Trash", directories.trash_subdirectories));
+
+    return directories;
+  }
 };
 
 TEST_F(EmptyTrashIOTaskTest, EnabledTrashDirsAreTrashed) {
-  base::FilePath my_files_trash_dir = my_files_dir_.Append(kTrashFolderName);
-  base::FilePath downloads_trash_dir = downloads_dir_.Append(kTrashFolderName);
-  base::FilePath crostini_trash_dir =
-      crostini_dir_.Append(".local/share/Trash");
-  ASSERT_TRUE(EnsureTrashDirectorySetup(my_files_trash_dir));
-  ASSERT_TRUE(EnsureTrashDirectorySetup(downloads_trash_dir));
-  ASSERT_TRUE(EnsureTrashDirectorySetup(crostini_trash_dir));
+  const auto [trash_directories, trash_subdirectories] =
+      SetupTrashAndReturnDirectories();
 
   base::RunLoop run_loop;
   base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
@@ -66,13 +97,12 @@ TEST_F(EmptyTrashIOTaskTest, EnabledTrashDirsAreTrashed) {
 
   // We should get one complete callback to be invoked once with a success
   // message and the list of outputs containing the enabled trash locations.
-  EXPECT_CALL(complete_callback,
-              Run(AllOf(Field(&ProgressStatus::state, State::kSuccess),
-                        Field(&ProgressStatus::sources, IsEmpty()),
-                        Field(&ProgressStatus::outputs,
-                              EntryStatusPaths(ElementsAre(
-                                  my_files_trash_dir, downloads_trash_dir,
-                                  crostini_trash_dir))))))
+  EXPECT_CALL(
+      complete_callback,
+      Run(AllOf(Field(&ProgressStatus::state, State::kSuccess),
+                Field(&ProgressStatus::sources, IsEmpty()),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusPaths(ContainerEq(trash_subdirectories))))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   EmptyTrashIOTask task(kTestStorageKey, profile_.get(), file_system_context_,
@@ -80,9 +110,16 @@ TEST_F(EmptyTrashIOTaskTest, EnabledTrashDirsAreTrashed) {
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
 
-  ASSERT_FALSE(base::PathExists(my_files_trash_dir));
-  ASSERT_FALSE(base::PathExists(downloads_trash_dir));
-  ASSERT_FALSE(base::PathExists(crostini_trash_dir));
+  // Ensure the trash parent paths still exist, e.g. ~/MyFiles/.Trash
+  for (const auto& directory_path : trash_directories) {
+    ASSERT_TRUE(base::PathExists(directory_path));
+  }
+
+  // Ensure the subdirectories in the trash folder are removed, e.g.
+  // ~/MyFiles/.Trash/{files,info}
+  for (const auto& subdirectory_path : trash_subdirectories) {
+    ASSERT_FALSE(base::PathExists(subdirectory_path));
+  }
 }
 
 }  // namespace

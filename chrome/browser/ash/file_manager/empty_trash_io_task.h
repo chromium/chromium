@@ -47,14 +47,16 @@ class EmptyTrashIOTask : public IOTask {
   void Cancel() override;
 
  private:
-  // Removes the entire trash directory (e.g. .Trash) recursively. It only
-  // iterates over the enabled trash locations.
-  void RemoveTrashDirectory(TrashPathsMap::const_iterator& trash_location);
+  // Removes the entire trash subdirectory (e.g. .Trash/files) recursively. It
+  // only iterates over the enabled trash locations.
+  void RemoveTrashSubDirectory(TrashPathsMap::const_iterator& trash_location,
+                               const std::string& folder_name_to_remove);
 
   // After removing the trash directory, continue iterating until there are no
   // more enabled trash directories left.
-  void OnRemoveTrashDirectory(TrashPathsMap::const_iterator& it,
-                              base::File::Error status);
+  void OnRemoveTrashSubDirectory(TrashPathsMap::const_iterator& it,
+                                 const std::string& removed_folder_name,
+                                 base::File::Error status);
 
   // Finish up and invoke the `complete_callback_`.
   void Complete(State state);
