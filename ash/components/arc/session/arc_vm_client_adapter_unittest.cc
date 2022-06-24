@@ -1877,6 +1877,14 @@ TEST_F(ArcVmClientAdapterTest, GmsCoreLowMemoryKillerProtection_FlagEnabled) {
       req.params(), "androidboot.arc_enable_gmscore_lmk_protection=1"));
 }
 
+TEST_F(ArcVmClientAdapterTest, GmsCoreLowMemoryKillerProtection_Default) {
+  StartMiniArc();
+
+  auto req = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(base::Contains(
+      req.params(), "androidboot.arc_enable_gmscore_lmk_protection=1"));
+}
+
 TEST_F(ArcVmClientAdapterTest, BroadcastPreANRDefault) {
   StartMiniArc();
   auto request = GetTestConciergeClient()->start_arc_vm_request();

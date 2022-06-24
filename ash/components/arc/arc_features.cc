@@ -225,7 +225,7 @@ const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB{&kVmBalloonPolicy,
 // Controls experimental key GMS Core and related services protection against to
 // be killed by low memory killer in ARCVM.
 const base::Feature kVmGmsCoreLowMemoryKillerProtection{
-    "ArcVmGmsCoreLowMemoryKillerProtection", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ArcVmGmsCoreLowMemoryKillerProtection", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls experimental key to enable pre-ANR handling for BroadcastQueue in
 // ARCVM.
