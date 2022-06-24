@@ -70,7 +70,9 @@ class ExecutableTestRunner(TestRunner):
             '--test-launcher-filter-file',
             help='Filter file(s) passed to target test process. Use ";" to '
             'separate multiple filter files.')
-
+        parser.add_argument('test_process_args',
+                            nargs='*',
+                            help='Arguments for the test process.')
         args, child_args = parser.parse_known_args(self._test_args)
         if args.isolated_script_test_output:
             self._isolated_script_test_output = args.isolated_script_test_output
@@ -95,6 +97,7 @@ class ExecutableTestRunner(TestRunner):
                 args.test_launcher_filter_file.split(';'))
             child_args.append('--test-launcher-filter-file=' +
                               ';'.join(test_launcher_filter_files))
+        child_args.extend(args.test_process_args)
         return child_args
 
     def _postprocess(self, test_runner: FfxTestRunner) -> None:
