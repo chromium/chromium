@@ -1129,6 +1129,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.DatabaseSqliteError" enum="SqliteLoggedResultCode"
+    expires_after="2022-12-23">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>asully@chromium.org</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    The exact database error encountered when initializing the database, if
+    failed.
+  </summary>
+</histogram>
+
 <histogram name="History.DeleteFTSIndexDatabases" units="units"
     expires_after="2018-08-30">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
@@ -1596,17 +1607,6 @@ chromium-metrics-reviews@google.com.
     Whether the notice about other forms of browsing history was shown in the
     header of the History page when the header was displayed. The header is
     refreshed with every history query.
-  </summary>
-</histogram>
-
-<histogram name="History.SqliteDatabaseError" enum="SqliteLoggedResultCode"
-    expires_after="2022-10-23">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    The exact database error encountered when initializing the database, if
-    failed.
   </summary>
 </histogram>
 
