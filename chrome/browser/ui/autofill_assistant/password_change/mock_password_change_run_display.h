@@ -36,7 +36,7 @@ class MockPasswordChangeRunDisplay : public PasswordChangeRunDisplay {
               (const std::vector<PromptChoice>&),
               (override));
   MOCK_METHOD(void,
-              ShowGeneratedPasswordPrompt,
+              ShowUseGeneratedPasswordPrompt,
               (const std::u16string&,
                const std::u16string&,
                const std::u16string&,

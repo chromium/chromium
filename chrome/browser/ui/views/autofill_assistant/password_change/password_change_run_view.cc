@@ -172,7 +172,7 @@ void PasswordChangeRunView::ShowBasePrompt(
   }
 }
 
-void PasswordChangeRunView::ShowGeneratedPasswordPrompt(
+void PasswordChangeRunView::ShowUseGeneratedPasswordPrompt(
     const std::u16string& title,
     const std::u16string& suggested_password,
     const std::u16string& description,

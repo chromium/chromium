@@ -57,9 +57,9 @@ class ApcExternalActionDelegate
       const autofill_assistant::password_change::BasePromptSpecification&
           base_prompt) override;
   void OnBasePromptChoiceSelected(size_t choice_index) override;
-  void ShowGeneratedPasswordPrompt(
+  void ShowUseGeneratedPasswordPrompt(
       const autofill_assistant::password_change::
-          GeneratedPasswordPromptSpecification& password_prompt,
+          UseGeneratedPasswordPromptSpecification& password_prompt,
       const std::u16string& generated_password) override;
   void OnGeneratedPasswordSelected(bool selected) override;
   void ShowStartingScreen(const GURL& url) override;
@@ -83,7 +83,7 @@ class ApcExternalActionDelegate
           specification);
   void HandleGeneratedPasswordPrompt(
       const autofill_assistant::password_change::
-          GeneratedPasswordPromptSpecification& specification);
+          UseGeneratedPasswordPromptSpecification& specification);
   void HandleUpdateSidePanel(
       const autofill_assistant::password_change::UpdateSidePanelSpecification&
           specification);

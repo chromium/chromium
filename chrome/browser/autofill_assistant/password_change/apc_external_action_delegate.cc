@@ -51,8 +51,8 @@ void ApcExternalActionDelegate::OnActionRequested(
       HandleBasePrompt(spec.base_prompt());
       break;
     case GenericPasswordChangeSpecification::SpecificationCase::
-        kGeneratedPasswordPrompt:
-      HandleGeneratedPasswordPrompt(spec.generated_password_prompt());
+        kUseGeneratedPasswordPrompt:
+      HandleGeneratedPasswordPrompt(spec.use_generated_password_prompt());
       break;
     case GenericPasswordChangeSpecification::SpecificationCase::
         kUpdateSidePanel:
@@ -170,16 +170,16 @@ void ApcExternalActionDelegate::OnBasePromptChoiceSelected(
   EndAction(true, std::move(serialized_result));
 }
 
-void ApcExternalActionDelegate::ShowGeneratedPasswordPrompt(
+void ApcExternalActionDelegate::ShowUseGeneratedPasswordPrompt(
     const autofill_assistant::password_change::
-        GeneratedPasswordPromptSpecification& password_prompt,
+        UseGeneratedPasswordPromptSpecification& password_prompt,
     const std::u16string& generated_password) {
   // Showing the prompt will override both the title and the description. Since
   // they cannot be reconstructed from the model due to the additional field
   // for the password, we clear the model.
   model_.title = std::u16string();
   model_.description = std::u16string();
-  password_change_run_display_->ShowGeneratedPasswordPrompt(
+  password_change_run_display_->ShowUseGeneratedPasswordPrompt(
       base::UTF8ToUTF16(password_prompt.title()), generated_password,
       base::UTF8ToUTF16(password_prompt.description()),
       PasswordChangeRunDisplay::PromptChoice{
@@ -194,11 +194,22 @@ void ApcExternalActionDelegate::ShowGeneratedPasswordPrompt(
               password_prompt.generated_password_choice().highlighted()});
 }
 
-void ApcExternalActionDelegate::OnGeneratedPasswordSelected(bool selected) {
+void ApcExternalActionDelegate::OnGeneratedPasswordSelected(
+    bool generated_password_accepted) {
   password_change_run_display_->ClearPrompt();
   SetTitle(std::u16string());
 
-  // TODO(crbug.com/1331202): Terminate action and send return value.
+  autofill_assistant::password_change::UseGeneratedPasswordPromptSpecification::
+      Result result;
+  result.set_generated_password_accepted(generated_password_accepted);
+
+  std::string serialized_result;
+  if (!result.SerializeToString(&serialized_result)) {
+    DLOG(ERROR) << "unable to base prompt result";
+    EndAction(false);
+    return;
+  }
+  EndAction(true, std::move(serialized_result));
 }
 
 void ApcExternalActionDelegate::ShowStartingScreen(const GURL& url) {
@@ -244,8 +255,10 @@ void ApcExternalActionDelegate::HandleBasePrompt(
 
 void ApcExternalActionDelegate::HandleGeneratedPasswordPrompt(
     const autofill_assistant::password_change::
-        GeneratedPasswordPromptSpecification& specification) {
-  EndAction(false);
+        UseGeneratedPasswordPromptSpecification& specification) {
+  // TODO(crbug.com/1331202): Replace this hardcoded password with the real
+  // generated one.
+  ShowUseGeneratedPasswordPrompt(specification, u"verySecretPassword123");
 }
 
 void ApcExternalActionDelegate::HandleUpdateSidePanel(

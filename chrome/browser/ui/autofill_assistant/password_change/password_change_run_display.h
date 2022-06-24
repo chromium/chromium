@@ -54,7 +54,7 @@ class PasswordChangeRunDisplay {
   // Shows a generated password prompt for the password passed as a parameter.
   // Offers two buttons, one to accept the generated password and one to
   // choose manually. Relies on the controller calling `ClearPrompt` to close.
-  virtual void ShowGeneratedPasswordPrompt(
+  virtual void ShowUseGeneratedPasswordPrompt(
       const std::u16string& title,
       const std::u16string& generated_password,
       const std::u16string& description,

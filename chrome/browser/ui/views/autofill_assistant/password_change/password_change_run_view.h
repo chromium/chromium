@@ -62,7 +62,7 @@ class PasswordChangeRunView : public views::View,
   void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) override;
   void ShowBasePrompt(const std::vector<PromptChoice>& options) override;
-  void ShowGeneratedPasswordPrompt(
+  void ShowUseGeneratedPasswordPrompt(
       const std::u16string& title,
       const std::u16string& generated_password,
       const std::u16string& description,

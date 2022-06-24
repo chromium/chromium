@@ -40,9 +40,9 @@ class MockPasswordChangeRunController : public PasswordChangeRunController {
       (override));
   MOCK_METHOD(void, OnBasePromptChoiceSelected, (size_t), (override));
   MOCK_METHOD(void,
-              ShowGeneratedPasswordPrompt,
+              ShowUseGeneratedPasswordPrompt,
               (const autofill_assistant::password_change::
-                   GeneratedPasswordPromptSpecification&,
+                   UseGeneratedPasswordPromptSpecification&,
                const std::u16string&),
               (override));
   MOCK_METHOD(void, ShowStartingScreen, (const GURL&), (override));

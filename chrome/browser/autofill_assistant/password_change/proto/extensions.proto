@@ -71,7 +71,7 @@ message BasePromptSpecification {
 
 // Prompts the user to accept a generated password and shows that password
 // to the user.
-message GeneratedPasswordPromptSpecification {
+message UseGeneratedPasswordPromptSpecification {
   // Reserved value for the return key.
   reserved 1;
 
@@ -114,7 +114,7 @@ message UpdateSidePanelSpecification {
 message GenericPasswordChangeSpecification {
   oneof specification {
     BasePromptSpecification base_prompt = 1;
-    GeneratedPasswordPromptSpecification generated_password_prompt = 2;
+    UseGeneratedPasswordPromptSpecification use_generated_password_prompt = 2;
     UpdateSidePanelSpecification update_side_panel = 3;
   }
 }

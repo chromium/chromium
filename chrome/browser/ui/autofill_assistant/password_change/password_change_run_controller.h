@@ -53,9 +53,9 @@ class PasswordChangeRunController {
   virtual void OnBasePromptChoiceSelected(size_t choice_index) = 0;
 
   // Shows a generated password prompt and receives the response from the view.
-  virtual void ShowGeneratedPasswordPrompt(
+  virtual void ShowUseGeneratedPasswordPrompt(
       const autofill_assistant::password_change::
-          GeneratedPasswordPromptSpecification& password_prompt,
+          UseGeneratedPasswordPromptSpecification& password_prompt,
       const std::u16string& suggested_password) = 0;
   // Called on user interaction with the prompt. `selected` indicates whether
   // the automatically generated password was selected or not.

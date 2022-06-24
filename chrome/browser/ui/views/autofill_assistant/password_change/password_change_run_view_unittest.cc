@@ -144,8 +144,8 @@ TEST_F(PasswordChangeRunViewTest, CreateBasePromptAndClick) {
 
 TEST_F(PasswordChangeRunViewTest, CreateSuggestedPasswordPromptAndAccept) {
   std::vector<PromptChoice> choices = CreatePromptChoices();
-  view()->ShowGeneratedPasswordPrompt(kTitle, kPassword, kDescription,
-                                      choices[0], choices[1]);
+  view()->ShowUseGeneratedPasswordPrompt(kTitle, kPassword, kDescription,
+                                         choices[0], choices[1]);
 
   views::View* button_container = GetButtonContainer();
   ASSERT_TRUE(button_container);
