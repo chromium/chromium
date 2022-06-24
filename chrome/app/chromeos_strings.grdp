@@ -6220,8 +6220,11 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_THEME_SELECTION_TITLE" desc="Title of the theme selection screen.">
     Personalize your display theme
   </message>
-  <message name="IDS_THEME_SELECTION_DESCRIPTION" desc="Description of the theme selection screen.">
+  <message name="IDS_THEME_SELECTION_DESCRIPTION_CLAMSHELL" desc="Description of the theme selection screen for clamshell devices.">
     Choose the theme that fits your needs. To change your theme, wallpaper, screen saver, and more, just right-click on the desktop.
+  </message>
+  <message name="IDS_THEME_SELECTION_DESCRIPTION_TABLET" desc="Description of the theme selection screen for tablets.">
+    Choose the theme that fits your needs. To change your theme, wallpaper, screen saver, and more, just touch &amp; hold on the desktop.
   </message>
   <message name="IDS_THEME_LIGHT_LABEL" desc="Name of the light theme button">
     Light theme
