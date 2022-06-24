@@ -5031,6 +5031,16 @@
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
+      'Mac12 Tests': {
+        'mixins': [
+            'mac_12_x64',
+            'isolate_profile_data',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests_no_nacl',
+          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
+        },
+      },
       'Mac12 Tests (dbg)': {
         'mixins': [
             'mac_12_x64',

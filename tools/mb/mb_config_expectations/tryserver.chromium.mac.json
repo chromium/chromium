@@ -557,6 +557,15 @@
       "use_goma": true
     }
   },
+  "mac12-tests": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "use_goma": true
+    }
+  },
   "mac_chromium_10.13_rel_ng": {
     "gn_args": {
       "dcheck_always_on": true,

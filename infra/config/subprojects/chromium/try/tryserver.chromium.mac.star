@@ -179,6 +179,14 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac12-tests",
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/Mac12 Tests",
+    ],
+)
+
+try_.builder(
     name = "mac_chromium_archive_rel_ng",
     mirrors = [
         "ci/mac-archive-rel",

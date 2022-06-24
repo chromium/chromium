@@ -296,6 +296,17 @@
           'quickrun_shards': 10,
         },
       },
+      'Mac12 Tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': None,
+            },
+          ],
+          'shards': 25,
+          'quickrun_shards': 26,
+        },
+      },
       'Mac12 Tests (dbg)': {
         'experiment_percentage': 100,
         'args': [
@@ -906,6 +917,9 @@
       'Mac11 Tests': {
         'ci_only': True,
       },
+      'Mac12 Tests': {
+        'ci_only': True,
+      },
       'Mac12 Tests (dbg)': {
         # crbug.com/1042757
         'swarming': {
@@ -1512,6 +1526,12 @@
         'experiment_percentage': 100,
       },
       'Mac11 Tests': {
+        'swarming': {
+          'shards': 12,
+          'quickrun_shards': 10,
+        },
+      },
+      'Mac12 Tests': {
         'swarming': {
           'shards': 12,
           'quickrun_shards': 10,
@@ -2234,6 +2254,11 @@
         'experiment_percentage': 100,
       },
       'Mac11 Tests': {
+        'swarming': {
+          'quickrun_shards': 6,
+        },
+      },
+      'Mac12 Tests': {
         'swarming': {
           'quickrun_shards': 6,
         },
@@ -3040,6 +3065,11 @@
           'shards': 4,
         },
       },
+      'Mac12 Tests': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'ToTLinuxTSan': {
         'swarming': {
           'shards': 6,
@@ -3135,6 +3165,9 @@
         ],
       },
       'Mac11 Tests': {
+        'ci_only': True,
+      },
+      'Mac12 Tests': {
         'ci_only': True,
       },
       'chromeos-amd64-generic-rel': {
