@@ -424,23 +424,23 @@ void StorageHandler::ClearDataForOrigin(
 }
 
 void StorageHandler::GetUsageAndQuota(
-    const String& origin,
+    const String& origin_string,
     std::unique_ptr<GetUsageAndQuotaCallback> callback) {
   if (!storage_partition_)
     return callback->sendFailure(Response::InternalError());
 
-  GURL origin_url(origin);
-  if (!origin_url.is_valid()) {
+  GURL origin_url(origin_string);
+  url::Origin origin = url::Origin::Create(origin_url);
+  if (!origin_url.is_valid() || origin.opaque()) {
     return callback->sendFailure(
-        Response::ServerError(origin + " is not a valid URL"));
+        Response::ServerError(origin_string + " is not a valid URL"));
   }
 
   storage::QuotaManager* manager = storage_partition_->GetQuotaManager();
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&GetUsageAndQuotaOnIOThread, base::RetainedRef(manager),
-                     blink::StorageKey(url::Origin::Create(origin_url)),
-                     std::move(callback)));
+                     blink::StorageKey(origin), std::move(callback)));
 }
 
 void StorageHandler::OverrideQuotaForOrigin(
@@ -476,62 +476,65 @@ void StorageHandler::OverrideQuotaForOrigin(
 
 // TODO(https://crbug.com/1199077): We should think about how this function
 // should be exposed when migrating to storage keys.
-Response StorageHandler::TrackCacheStorageForOrigin(const std::string& origin) {
+Response StorageHandler::TrackCacheStorageForOrigin(
+    const std::string& origin_string) {
   if (!storage_partition_)
     return Response::InternalError();
 
-  GURL origin_url(origin);
-  if (!origin_url.is_valid())
-    return Response::InvalidParams(origin + " is not a valid URL");
+  GURL origin_url(origin_string);
+  url::Origin origin = url::Origin::Create(origin_url);
+  if (!origin_url.is_valid() || origin.opaque())
+    return Response::InvalidParams(origin_string + " is not a valid URL");
 
-  GetCacheStorageObserver()->TrackStorageKey(
-      blink::StorageKey(url::Origin::Create(origin_url)));
+  GetCacheStorageObserver()->TrackStorageKey(blink::StorageKey(origin));
   return Response::Success();
 }
 
 // TODO(https://crbug.com/1199077): We should think about how this function
 // should be exposed when migrating to storage keys.
 Response StorageHandler::UntrackCacheStorageForOrigin(
-    const std::string& origin) {
+    const std::string& origin_string) {
   if (!storage_partition_)
     return Response::InternalError();
 
-  GURL origin_url(origin);
-  if (!origin_url.is_valid())
-    return Response::InvalidParams(origin + " is not a valid URL");
+  GURL origin_url(origin_string);
+  url::Origin origin = url::Origin::Create(origin_url);
+  if (!origin_url.is_valid() || origin.opaque())
+    return Response::InvalidParams(origin_string + " is not a valid URL");
 
-  GetCacheStorageObserver()->UntrackStorageKey(
-      blink::StorageKey(url::Origin::Create(origin_url)));
+  GetCacheStorageObserver()->UntrackStorageKey(blink::StorageKey(origin));
   return Response::Success();
 }
 
-Response StorageHandler::TrackIndexedDBForOrigin(const std::string& origin) {
+Response StorageHandler::TrackIndexedDBForOrigin(
+    const std::string& origin_string) {
   if (!storage_partition_)
     return Response::InternalError();
 
-  GURL origin_url(origin);
-  if (!origin_url.is_valid())
-    return Response::InvalidParams(origin + " is not a valid URL");
+  GURL origin_url(origin_string);
+  url::Origin origin = url::Origin::Create(origin_url);
+  if (!origin_url.is_valid() || origin.opaque())
+    return Response::InvalidParams(origin_string + " is not a valid URL");
 
   // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
   // function once the Chrome DevTools Protocol (CDP) supports StorageKey.
-  GetIndexedDBObserver()->TrackOrigin(
-      blink::StorageKey(url::Origin::Create(origin_url)));
+  GetIndexedDBObserver()->TrackOrigin(blink::StorageKey(origin));
   return Response::Success();
 }
 
-Response StorageHandler::UntrackIndexedDBForOrigin(const std::string& origin) {
+Response StorageHandler::UntrackIndexedDBForOrigin(
+    const std::string& origin_string) {
   if (!storage_partition_)
     return Response::InternalError();
 
-  GURL origin_url(origin);
-  if (!origin_url.is_valid())
-    return Response::InvalidParams(origin + " is not a valid URL");
+  GURL origin_url(origin_string);
+  url::Origin origin = url::Origin::Create(origin_url);
+  if (!origin_url.is_valid() || origin.opaque())
+    return Response::InvalidParams(origin_string + " is not a valid URL");
 
   // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
   // function once the Chrome DevTools Protocol (CDP) supports StorageKey.
-  GetIndexedDBObserver()->UntrackOrigin(
-      blink::StorageKey(url::Origin::Create(origin_url)));
+  GetIndexedDBObserver()->UntrackOrigin(blink::StorageKey(origin));
   return Response::Success();
 }
 
