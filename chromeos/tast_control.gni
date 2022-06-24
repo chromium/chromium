@@ -327,6 +327,9 @@ tast_disabled_tests_from_chrome_all = [
 
   # http://crbug.com/1338201
   "ui.ChromeCrashLoggedIn.gpu_process_breakpad",
+
+  # http://crbug.com/1309278
+  "policy.ChromeOsLockOnIdleSuspend",
 ]
 
 # To create filters to be used on specific builders add them like this:
