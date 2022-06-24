@@ -242,6 +242,20 @@ void BlinkNotificationServiceImpl::DisplayPersistentNotification(
     const blink::NotificationResources& notification_resources,
     DisplayPersistentNotificationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // The renderer should have checked and disallowed the request for fenced
+  // frames and thrown an error in
+  // blink::ServiceWorkerRegistrationNotifications. Report a bad message if the
+  // renderer if the renderer side check didn't happen for some reason.
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      service_worker_context_->GetLiveRegistration(
+          service_worker_registration_id);
+  if (registration && registration->ancestor_frame_type() ==
+                          blink::mojom::AncestorFrameType::kFencedFrame) {
+    mojo::ReportBadMessage("Notification is not allowed in a fenced frame");
+    return;
+  }
+
   if (!ValidateNotificationDataAndResources(platform_notification_data,
                                             notification_resources))
     return;

@@ -193,6 +193,16 @@ void PushMessagingManager::Subscribe(
     return;
   }
 
+  // The renderer should have checked and disallowed the request for fenced
+  // frames and thrown an exception in blink::PushManager. Report a bad message
+  // if the renderer if the renderer side check didn't happen for some reason.
+  if (service_worker_registration->ancestor_frame_type() ==
+      blink::mojom::AncestorFrameType::kFencedFrame) {
+    bad_message::ReceivedBadMessage(render_process_host_.GetID(),
+                                    bad_message::PMM_SUBSCRIBE_IN_FENCED_FRAME);
+    return;
+  }
+
   const url::Origin& origin = service_worker_registration->key().origin();
 
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(

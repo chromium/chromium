@@ -73,6 +73,15 @@ ScriptPromise PushManager::subscribe(
                                       "Window is detached.");
     return ScriptPromise();
   }
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "subscribe() is not allowed in fenced frames.");
+    return ScriptPromise();
+  }
+
   if (!registration_->active()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kAbortError,

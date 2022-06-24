@@ -36,6 +36,12 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
     const NotificationOptions* options,
     ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "showNotification() is not allowed in fenced frames.");
+    return ScriptPromise();
+  }
 
   // If context object's active worker is null, reject the promise with a
   // TypeError exception.
