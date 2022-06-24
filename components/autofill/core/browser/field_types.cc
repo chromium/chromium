@@ -23,10 +23,16 @@ ServerFieldType ToSafeServerFieldType(
            // Shipping addresses (values [44,50]) are deprecated.
            !(44 <= t && t <= 50) &&
            // Probably-account creation password (value 94) is deprecated.
-           !(t == 94) &&
+           t != 94 &&
+           // Billing addresses (values [37,43], 78, 80, 82, 84) are deprecated.
+           !(37 <= t && t <= 43) && t != 78 && t != 80 && t != 82 && t != 84 &&
+           // Billing phone numbers (values [62,66]) are deprecated.
+           !(62 <= t && t <= 66) &&
+           // Billing names (values [67, 72]) are deprecated.
+           !(67 <= t && t <= 72) &&
            // Fax numbers (values [20,24]) are deprecated in Chrome, but still
            // supported by the server.
-           !(t >= PHONE_FAX_NUMBER && t <= PHONE_FAX_WHOLE_NUMBER);
+           !(PHONE_FAX_NUMBER <= t && t <= PHONE_FAX_WHOLE_NUMBER);
   };
   return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
                             : fallback_value;
@@ -79,32 +85,6 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
     case ADDRESS_HOME_FLOOR:
       return true;
-
-    // Billing address types that should not be returned by GetStorableType().
-    case NAME_BILLING_FIRST:
-    case NAME_BILLING_MIDDLE:
-    case NAME_BILLING_LAST:
-    case NAME_BILLING_MIDDLE_INITIAL:
-    case NAME_BILLING_FULL:
-    case NAME_BILLING_SUFFIX:
-    case PHONE_BILLING_NUMBER:
-    case PHONE_BILLING_CITY_CODE:
-    case PHONE_BILLING_COUNTRY_CODE:
-    case PHONE_BILLING_CITY_AND_NUMBER:
-    case PHONE_BILLING_WHOLE_NUMBER:
-    case ADDRESS_BILLING_LINE1:
-    case ADDRESS_BILLING_LINE2:
-    case ADDRESS_BILLING_LINE3:
-    case ADDRESS_BILLING_APT_NUM:
-    case ADDRESS_BILLING_CITY:
-    case ADDRESS_BILLING_STATE:
-    case ADDRESS_BILLING_ZIP:
-    case ADDRESS_BILLING_COUNTRY:
-    case ADDRESS_BILLING_STREET_ADDRESS:
-    case ADDRESS_BILLING_SORTING_CODE:
-    case ADDRESS_BILLING_DEPENDENT_LOCALITY:
-      NOTREACHED();
-      return false;
 
     case CREDIT_CARD_NAME_FULL:
     case CREDIT_CARD_NAME_FIRST:
@@ -205,18 +185,6 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "NAME_FULL";
     case NAME_SUFFIX:
       return "NAME_SUFFIX";
-    case NAME_BILLING_FIRST:
-      return "NAME_BILLING_FIRST";
-    case NAME_BILLING_MIDDLE:
-      return "NAME_BILLING_MIDDLE";
-    case NAME_BILLING_LAST:
-      return "NAME_BILLING_LAST";
-    case NAME_BILLING_MIDDLE_INITIAL:
-      return "NAME_BILLING_MIDDLE_INITIAL";
-    case NAME_BILLING_FULL:
-      return "NAME_BILLING_FULL";
-    case NAME_BILLING_SUFFIX:
-      return "NAME_BILLING_SUFFIX";
     case EMAIL_ADDRESS:
       return "EMAIL_ADDRESS";
     case PHONE_HOME_NUMBER:
@@ -271,22 +239,6 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "ADDRESS_HOME_ZIP";
     case ADDRESS_HOME_COUNTRY:
       return "ADDRESS_HOME_COUNTRY";
-    case ADDRESS_BILLING_LINE1:
-      return "ADDRESS_BILLING_LINE1";
-    case ADDRESS_BILLING_LINE2:
-      return "ADDRESS_BILLING_LINE2";
-    case ADDRESS_BILLING_LINE3:
-      return "ADDRESS_BILLING_LINE3";
-    case ADDRESS_BILLING_APT_NUM:
-      return "ADDRESS_BILLING_APT_NUM";
-    case ADDRESS_BILLING_CITY:
-      return "ADDRESS_BILLING_CITY";
-    case ADDRESS_BILLING_STATE:
-      return "ADDRESS_BILLING_STATE";
-    case ADDRESS_BILLING_ZIP:
-      return "ADDRESS_BILLING_ZIP";
-    case ADDRESS_BILLING_COUNTRY:
-      return "ADDRESS_BILLING_COUNTRY";
     case BIRTHDATE_DAY:
       return "BIRTHDATE_DAY";
     case BIRTHDATE_MONTH:
@@ -319,16 +271,6 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "COMPANY_NAME";
     case FIELD_WITH_DEFAULT_VALUE:
       return "FIELD_WITH_DEFAULT_VALUE";
-    case PHONE_BILLING_NUMBER:
-      return "PHONE_BILLING_NUMBER";
-    case PHONE_BILLING_CITY_CODE:
-      return "PHONE_BILLING_CITY_CODE";
-    case PHONE_BILLING_COUNTRY_CODE:
-      return "PHONE_BILLING_COUNTRY_CODE";
-    case PHONE_BILLING_CITY_AND_NUMBER:
-      return "PHONE_BILLING_CITY_AND_NUMBER";
-    case PHONE_BILLING_WHOLE_NUMBER:
-      return "PHONE_BILLING_WHOLE_NUMBER";
     case MERCHANT_EMAIL_SIGNUP:
       return "MERCHANT_EMAIL_SIGNUP";
     case MERCHANT_PROMO_CODE:
@@ -339,16 +281,10 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "ACCOUNT_CREATION_PASSWORD";
     case ADDRESS_HOME_STREET_ADDRESS:
       return "ADDRESS_HOME_STREET_ADDRESS";
-    case ADDRESS_BILLING_STREET_ADDRESS:
-      return "ADDRESS_BILLING_STREET_ADDRESS";
     case ADDRESS_HOME_SORTING_CODE:
       return "ADDRESS_HOME_SORTING_CODE";
-    case ADDRESS_BILLING_SORTING_CODE:
-      return "ADDRESS_BILLING_SORTING_CODE";
     case ADDRESS_HOME_DEPENDENT_LOCALITY:
       return "ADDRESS_HOME_DEPENDENT_LOCALITY";
-    case ADDRESS_BILLING_DEPENDENT_LOCALITY:
-      return "ADDRESS_BILLING_DEPENDENT_LOCALITY";
     case NOT_ACCOUNT_CREATION_PASSWORD:
       return "NOT_ACCOUNT_CREATION_PASSWORD";
     case USERNAME:

@@ -30,7 +30,6 @@ void RationalizePhoneNumberFields(
     ServerFieldType current_field_type = field->Type().GetStorableType();
     switch (current_field_type) {
       case PHONE_HOME_NUMBER:
-      case PHONE_BILLING_NUMBER:
         if (!found_number_field) {
           found_number_field = field;
           if (field->max_length < 5) {
@@ -51,24 +50,20 @@ void RationalizePhoneNumberFields(
         break;
       case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
       case PHONE_HOME_CITY_CODE:
-      case PHONE_BILLING_CITY_CODE:
         if (!found_city_code_field)
           found_city_code_field = field;
         break;
       case PHONE_HOME_COUNTRY_CODE:
-      case PHONE_BILLING_COUNTRY_CODE:
         if (!found_country_code_field)
           found_country_code_field = field;
         break;
       case PHONE_HOME_CITY_AND_NUMBER:
       case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
-      case PHONE_BILLING_CITY_AND_NUMBER:
         DCHECK(!phone_number_found && !found_city_and_number_field);
         found_city_and_number_field = field;
         phone_number_found = true;
         break;
       case PHONE_HOME_WHOLE_NUMBER:
-      case PHONE_BILLING_WHOLE_NUMBER:
         DCHECK(!phone_number_found && !found_whole_number_field);
         found_whole_number_field = field;
         phone_number_found = true;
@@ -125,29 +120,24 @@ void RationalizePhoneNumberFields(
     ServerFieldType current_field_type = field->Type().GetStorableType();
     switch (current_field_type) {
       case PHONE_HOME_NUMBER:
-      case PHONE_BILLING_NUMBER:
         if (field != found_number_field && field != found_number_field_second)
           field->set_only_fill_when_focused(true);
         break;
       case PHONE_HOME_CITY_CODE:
       case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
-      case PHONE_BILLING_CITY_CODE:
         if (field != found_city_code_field)
           field->set_only_fill_when_focused(true);
         break;
       case PHONE_HOME_COUNTRY_CODE:
-      case PHONE_BILLING_COUNTRY_CODE:
         if (field != found_country_code_field)
           field->set_only_fill_when_focused(true);
         break;
       case PHONE_HOME_CITY_AND_NUMBER:
       case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
-      case PHONE_BILLING_CITY_AND_NUMBER:
         if (field != found_city_and_number_field)
           field->set_only_fill_when_focused(true);
         break;
       case PHONE_HOME_WHOLE_NUMBER:
-      case PHONE_BILLING_WHOLE_NUMBER:
         if (field != found_whole_number_field)
           field->set_only_fill_when_focused(true);
         break;

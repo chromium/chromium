@@ -90,10 +90,6 @@ INSTANTIATE_TEST_SUITE_P(AddressI18nTest,
                          FieldTypeUnidirectionalConversionsTest,
                          testing::Values(
                              FieldTypeUnidirectionalConversionsTestCase{
-                                 ADDRESS_BILLING_LINE1, STREET_ADDRESS},
-                             FieldTypeUnidirectionalConversionsTestCase{
-                                 ADDRESS_BILLING_LINE2, STREET_ADDRESS},
-                             FieldTypeUnidirectionalConversionsTestCase{
                                  ADDRESS_HOME_LINE1, STREET_ADDRESS},
                              FieldTypeUnidirectionalConversionsTestCase{
                                  ADDRESS_HOME_LINE2, STREET_ADDRESS}));

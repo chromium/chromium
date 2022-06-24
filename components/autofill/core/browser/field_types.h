@@ -68,15 +68,9 @@ enum ServerFieldType {
   ADDRESS_HOME_STATE = 34,
   ADDRESS_HOME_ZIP = 35,
   ADDRESS_HOME_COUNTRY = 36,
-  ADDRESS_BILLING_LINE1 = 37,
-  ADDRESS_BILLING_LINE2 = 38,
-  ADDRESS_BILLING_APT_NUM = 39,
-  ADDRESS_BILLING_CITY = 40,
-  ADDRESS_BILLING_STATE = 41,
-  ADDRESS_BILLING_ZIP = 42,
-  ADDRESS_BILLING_COUNTRY = 43,
 
-  // ADDRESS_SHIPPING values [44,50] are deprecated.
+  // ADDRESS_BILLING values [37, 43] are deprecated.
+  // ADDRESS_SHIPPING values [44, 50] are deprecated.
 
   CREDIT_CARD_NAME_FULL = 51,
   CREDIT_CARD_NUMBER = 52,
@@ -93,18 +87,8 @@ enum ServerFieldType {
   // Generic type whose default value is known.
   FIELD_WITH_DEFAULT_VALUE = 61,
 
-  PHONE_BILLING_NUMBER = 62,
-  PHONE_BILLING_CITY_CODE = 63,
-  PHONE_BILLING_COUNTRY_CODE = 64,
-  PHONE_BILLING_CITY_AND_NUMBER = 65,
-  PHONE_BILLING_WHOLE_NUMBER = 66,
-
-  NAME_BILLING_FIRST = 67,
-  NAME_BILLING_MIDDLE = 68,
-  NAME_BILLING_LAST = 69,
-  NAME_BILLING_MIDDLE_INITIAL = 70,
-  NAME_BILLING_FULL = 71,
-  NAME_BILLING_SUFFIX = 72,
+  // PHONE_BILLING values [62, 66] are deprecated.
+  // NAME_BILLING values [67, 72] are deprecated.
 
   // Field types for options generally found in merchant buyflows. Given that
   // these are likely to be filled out differently on a case by case basis,
@@ -124,7 +108,7 @@ enum ServerFieldType {
   //   123 Main Street,
   //   Apt. #42
   ADDRESS_HOME_STREET_ADDRESS = 77,
-  ADDRESS_BILLING_STREET_ADDRESS = 78,
+  // ADDRESS_BILLING_STREET_ADDRESS 78 is deprecated.
 
   // A sorting code is similar to a postal code. However, whereas a postal code
   // normally refers to a single geographical location, a sorting code often
@@ -132,17 +116,17 @@ enum ServerFieldType {
   // might be geographically distributed. The most prominent example of a
   // sorting code system is CEDEX in France.
   ADDRESS_HOME_SORTING_CODE = 79,
-  ADDRESS_BILLING_SORTING_CODE = 80,
+  // ADDRESS_BILLING_SORTING_CODE 80 is deprecated.
 
   // A dependent locality is a subunit of a locality, where a "locality" is
   // roughly equivalent to a city. Examples of dependent localities include
   // inner-city districts and suburbs.
   ADDRESS_HOME_DEPENDENT_LOCALITY = 81,
-  ADDRESS_BILLING_DEPENDENT_LOCALITY = 82,
+  // ADDRESS_BILLING_DEPENDENT_LOCALITY 82 is deprecated.
 
   // The third line of the street address.
   ADDRESS_HOME_LINE3 = 83,
-  ADDRESS_BILLING_LINE3 = 84,
+  // ADDRESS_BILLING_LINE3 84 is deprecated.
 
   // Inverse of ACCOUNT_CREATION_PASSWORD. Sent when there is data that
   // a previous upload of ACCOUNT_CREATION_PASSWORD was incorrect.

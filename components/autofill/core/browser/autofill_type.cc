@@ -24,14 +24,6 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case NAME_FULL_WITH_HONORIFIC_PREFIX:
       return FieldTypeGroup::kName;
 
-    case NAME_BILLING_FIRST:
-    case NAME_BILLING_MIDDLE:
-    case NAME_BILLING_LAST:
-    case NAME_BILLING_MIDDLE_INITIAL:
-    case NAME_BILLING_FULL:
-    case NAME_BILLING_SUFFIX:
-      return FieldTypeGroup::kNameBilling;
-
     case EMAIL_ADDRESS:
     case USERNAME_AND_EMAIL_ADDRESS:
       return FieldTypeGroup::kEmail;
@@ -47,13 +39,6 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case PHONE_HOME_WHOLE_NUMBER:
     case PHONE_HOME_EXTENSION:
       return FieldTypeGroup::kPhoneHome;
-
-    case PHONE_BILLING_NUMBER:
-    case PHONE_BILLING_CITY_CODE:
-    case PHONE_BILLING_COUNTRY_CODE:
-    case PHONE_BILLING_CITY_AND_NUMBER:
-    case PHONE_BILLING_WHOLE_NUMBER:
-      return FieldTypeGroup::kPhoneBilling;
 
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
@@ -77,19 +62,6 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
     case ADDRESS_HOME_FLOOR:
       return FieldTypeGroup::kAddressHome;
-
-    case ADDRESS_BILLING_LINE1:
-    case ADDRESS_BILLING_LINE2:
-    case ADDRESS_BILLING_LINE3:
-    case ADDRESS_BILLING_APT_NUM:
-    case ADDRESS_BILLING_CITY:
-    case ADDRESS_BILLING_STATE:
-    case ADDRESS_BILLING_ZIP:
-    case ADDRESS_BILLING_COUNTRY:
-    case ADDRESS_BILLING_STREET_ADDRESS:
-    case ADDRESS_BILLING_SORTING_CODE:
-    case ADDRESS_BILLING_DEPENDENT_LOCALITY:
-      return FieldTypeGroup::kAddressBilling;
 
     case CREDIT_CARD_NAME_FULL:
     case CREDIT_CARD_NAME_FIRST:
@@ -260,80 +232,8 @@ bool AutofillType::IsUnknown() const {
 }
 
 ServerFieldType AutofillType::GetStorableType() const {
-  // Map billing types to the equivalent non-billing types.
-  switch (server_type_) {
-    case ADDRESS_BILLING_LINE1:
-      return ADDRESS_HOME_LINE1;
-
-    case ADDRESS_BILLING_LINE2:
-      return ADDRESS_HOME_LINE2;
-
-    case ADDRESS_BILLING_LINE3:
-      return ADDRESS_HOME_LINE3;
-
-    case ADDRESS_BILLING_APT_NUM:
-      return ADDRESS_HOME_APT_NUM;
-
-    case ADDRESS_BILLING_CITY:
-      return ADDRESS_HOME_CITY;
-
-    case ADDRESS_BILLING_STATE:
-      return ADDRESS_HOME_STATE;
-
-    case ADDRESS_BILLING_ZIP:
-      return ADDRESS_HOME_ZIP;
-
-    case ADDRESS_BILLING_COUNTRY:
-      return ADDRESS_HOME_COUNTRY;
-
-    case PHONE_BILLING_WHOLE_NUMBER:
-      return PHONE_HOME_WHOLE_NUMBER;
-
-    case PHONE_BILLING_NUMBER:
-      return PHONE_HOME_NUMBER;
-
-    case PHONE_BILLING_CITY_CODE:
-      return PHONE_HOME_CITY_CODE;
-
-    case PHONE_BILLING_COUNTRY_CODE:
-      return PHONE_HOME_COUNTRY_CODE;
-
-    case PHONE_BILLING_CITY_AND_NUMBER:
-      return PHONE_HOME_CITY_AND_NUMBER;
-
-    case NAME_BILLING_FIRST:
-      return NAME_FIRST;
-
-    case NAME_BILLING_MIDDLE:
-      return NAME_MIDDLE;
-
-    case NAME_BILLING_LAST:
-      return NAME_LAST;
-
-    case NAME_BILLING_MIDDLE_INITIAL:
-      return NAME_MIDDLE_INITIAL;
-
-    case NAME_BILLING_FULL:
-      return NAME_FULL;
-
-    case NAME_BILLING_SUFFIX:
-      return NAME_SUFFIX;
-
-    case ADDRESS_BILLING_STREET_ADDRESS:
-      return ADDRESS_HOME_STREET_ADDRESS;
-
-    case ADDRESS_BILLING_SORTING_CODE:
-      return ADDRESS_HOME_SORTING_CODE;
-
-    case ADDRESS_BILLING_DEPENDENT_LOCALITY:
-      return ADDRESS_HOME_DEPENDENT_LOCALITY;
-
-    case UNKNOWN_TYPE:
-      break;  // Try to parse HTML types instead.
-
-    default:
-      return server_type_;
-  }
+  if (server_type_ != UNKNOWN_TYPE)
+    return server_type_;
 
   switch (html_type_) {
     case HTML_TYPE_UNSPECIFIED:

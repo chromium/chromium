@@ -2728,8 +2728,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   available_field_types.insert(ADDRESS_HOME_LINE1);
   available_field_types.insert(ADDRESS_HOME_LINE2);
   available_field_types.insert(ADDRESS_HOME_COUNTRY);
-  available_field_types.insert(ADDRESS_BILLING_LINE1);
-  available_field_types.insert(ADDRESS_BILLING_LINE2);
   available_field_types.insert(EMAIL_ADDRESS);
   available_field_types.insert(PHONE_HOME_WHOLE_NUMBER);
 
@@ -2739,7 +2737,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   upload.set_client_version(GetProductNameAndVersionForUserAgent());
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
-  upload.set_data_present("144200030e");
+  upload.set_data_present("1442000308");
   upload.set_passwords_revealed(false);
   upload.set_password_has_lowercase_letter(true);
   upload.set_password_length(10u);
@@ -2784,10 +2782,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
     form.fields.push_back(field);
     test::InitializePossibleTypesAndValidities(
         possible_field_types, possible_field_types_validities,
-        {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_BILLING_LINE1,
-         ADDRESS_BILLING_LINE2},
-        {AutofillProfile::VALID, AutofillProfile::VALID,
-         AutofillProfile::INVALID, AutofillProfile::INVALID});
+        {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2},
+        {AutofillProfile::VALID, AutofillProfile::VALID});
   }
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -2812,9 +2808,9 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   // Create an additional 2 fields (total of 7).  Put the appropriate autofill
   // type on the different address fields.
   test::FillUploadField(upload.add_field(), 509334676U, "address", "text",
-                        nullptr, {30U, 31U, 37U, 38U}, {2, 2, 3, 3});
+                        nullptr, {30U, 31U}, {2, 2});
   test::FillUploadField(upload.add_field(), 509334676U, "address", "text",
-                        nullptr, {30U, 31U, 37U, 38U}, {2, 2, 3, 3});
+                        nullptr, {30U, 31U}, {2, 2});
 
   EXPECT_THAT(form_structure->EncodeUploadRequest(available_field_types, false,
                                                   std::string(), true, true),
@@ -2911,8 +2907,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   available_field_types.insert(ADDRESS_HOME_LINE1);
   available_field_types.insert(ADDRESS_HOME_LINE2);
   available_field_types.insert(ADDRESS_HOME_COUNTRY);
-  available_field_types.insert(ADDRESS_BILLING_LINE1);
-  available_field_types.insert(ADDRESS_BILLING_LINE2);
   available_field_types.insert(EMAIL_ADDRESS);
   available_field_types.insert(PHONE_HOME_WHOLE_NUMBER);
 
@@ -2922,7 +2916,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   upload.set_client_version(GetProductNameAndVersionForUserAgent());
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
-  upload.set_data_present("144200030e");
+  upload.set_data_present("1442000308");
   upload.set_passwords_revealed(false);
   upload.set_password_has_lowercase_letter(true);
   upload.set_password_length(10u);
@@ -3037,8 +3031,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   available_field_types.insert(ADDRESS_HOME_LINE1);
   available_field_types.insert(ADDRESS_HOME_LINE2);
   available_field_types.insert(ADDRESS_HOME_COUNTRY);
-  available_field_types.insert(ADDRESS_BILLING_LINE1);
-  available_field_types.insert(ADDRESS_BILLING_LINE2);
   available_field_types.insert(EMAIL_ADDRESS);
   available_field_types.insert(PHONE_HOME_WHOLE_NUMBER);
 
@@ -3048,7 +3040,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   upload.set_client_version(GetProductNameAndVersionForUserAgent());
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
-  upload.set_data_present("144200030e");
+  upload.set_data_present("1442000308");
   upload.set_passwords_revealed(false);
   upload.set_password_has_lowercase_letter(true);
   upload.set_password_length(10u);
@@ -3160,8 +3152,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   available_field_types.insert(ADDRESS_HOME_LINE1);
   available_field_types.insert(ADDRESS_HOME_LINE2);
   available_field_types.insert(ADDRESS_HOME_COUNTRY);
-  available_field_types.insert(ADDRESS_BILLING_LINE1);
-  available_field_types.insert(ADDRESS_BILLING_LINE2);
   available_field_types.insert(EMAIL_ADDRESS);
   available_field_types.insert(PHONE_HOME_WHOLE_NUMBER);
 
@@ -3172,7 +3162,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   upload.set_client_version(GetProductNameAndVersionForUserAgent());
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
-  upload.set_data_present("144200030e");
+  upload.set_data_present("1442000308");
   upload.set_passwords_revealed(false);
   upload.set_password_has_lowercase_letter(true);
   upload.set_password_length(10u);
@@ -3208,8 +3198,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
     form.fields.push_back(field);
     test::InitializePossibleTypesAndValidities(
         possible_field_types, possible_field_types_validities,
-        {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_BILLING_LINE1,
-         ADDRESS_BILLING_LINE2});
+        {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
   }
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -3242,9 +3231,9 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   }
   // Put the appropriate autofill type on the different address fields.
   test::FillUploadField(upload.mutable_field(5), 509334676U, "address", "text",
-                        nullptr, {31U, 37U, 38U});
+                        nullptr, 31U);
   test::FillUploadField(upload.mutable_field(6), 509334676U, "address", "text",
-                        nullptr, {31U, 37U, 38U});
+                        nullptr, 31U);
 
   EXPECT_THAT(form_structure->EncodeUploadRequest(available_field_types, false,
                                                   std::string(), true, true),
@@ -3260,8 +3249,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
     form.fields.push_back(field);
     test::InitializePossibleTypesAndValidities(
         possible_field_types, possible_field_types_validities,
-        {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_BILLING_LINE1,
-         ADDRESS_BILLING_LINE2});
+        {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
   }
   form_structure = std::make_unique<FormStructure>(form);
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
@@ -7246,13 +7234,13 @@ TEST_F(FormStructureTestImpl,
   AddFieldSuggestionToForm(form_suggestion, form.fields[8], ADDRESS_HOME_STATE);
   AddFieldSuggestionToForm(form_suggestion, form.fields[9], NAME_FULL);
   AddFieldSuggestionToForm(form_suggestion, form.fields[10],
-                           ADDRESS_BILLING_STATE);
+                           ADDRESS_HOME_STATE);
   // third section
   AddFieldSuggestionToForm(form_suggestion, form.fields[11],
-                           ADDRESS_BILLING_STATE);
+                           ADDRESS_HOME_STATE);
   AddFieldSuggestionToForm(form_suggestion, form.fields[12], NAME_FULL);
   AddFieldSuggestionToForm(form_suggestion, form.fields[13],
-                           ADDRESS_BILLING_STATE);
+                           ADDRESS_HOME_STATE);
 
   std::string response_string = SerializeAndEncode(response);
 
@@ -7399,15 +7387,15 @@ TEST_F(FormStructureTestImpl,
                            ADDRESS_HOME_COUNTRY);
   AddFieldSuggestionToForm(form_suggestion, form.fields[7], ADDRESS_HOME_CITY);
   AddFieldSuggestionToForm(form_suggestion, form.fields[8],
-                           ADDRESS_BILLING_COUNTRY);
+                           ADDRESS_HOME_COUNTRY);
   // third section
   AddFieldSuggestionToForm(form_suggestion, form.fields[9], ADDRESS_HOME_CITY);
   AddFieldSuggestionToForm(form_suggestion, form.fields[10],
-                           ADDRESS_BILLING_COUNTRY);
+                           ADDRESS_HOME_COUNTRY);
   AddFieldSuggestionToForm(form_suggestion, form.fields[11],
                            ADDRESS_HOME_COUNTRY);
   AddFieldSuggestionToForm(form_suggestion, form.fields[12],
-                           ADDRESS_BILLING_COUNTRY);
+                           ADDRESS_HOME_COUNTRY);
   AddFieldSuggestionToForm(form_suggestion, form.fields[13],
                            ADDRESS_HOME_COUNTRY);
 
@@ -7487,8 +7475,7 @@ TEST_F(FormStructureTestImpl,
   AddFieldSuggestionToForm(form_suggestion, form.fields[1], ADDRESS_HOME_STATE);
   AddFieldSuggestionToForm(form_suggestion, form.fields[2], ADDRESS_HOME_STATE);
   AddFieldSuggestionToForm(form_suggestion, form.fields[3], NAME_FULL);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[4],
-                           ADDRESS_BILLING_STATE);
+  AddFieldSuggestionToForm(form_suggestion, form.fields[4], ADDRESS_HOME_STATE);
 
   std::string response_string = SerializeAndEncode(response);
 
@@ -8243,8 +8230,8 @@ TEST_F(FormStructureTestImpl, NoSplitByRecurringPhoneFieldType) {
   form_structure.set_overall_field_type_for_testing(1, PHONE_HOME_NUMBER);
   form_structure.set_overall_field_type_for_testing(2, PHONE_HOME_NUMBER);
   form_structure.set_overall_field_type_for_testing(3, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(4, PHONE_BILLING_NUMBER);
-  form_structure.set_overall_field_type_for_testing(5, PHONE_BILLING_NUMBER);
+  form_structure.set_overall_field_type_for_testing(4, PHONE_HOME_NUMBER);
+  form_structure.set_overall_field_type_for_testing(5, PHONE_HOME_NUMBER);
   form_structure.set_overall_field_type_for_testing(6, ADDRESS_HOME_COUNTRY);
 
   std::vector<FormStructure*> forms;

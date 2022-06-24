@@ -94,39 +94,30 @@ ServerFieldType TypeForField(AddressField address_field) {
 
 bool FieldForType(ServerFieldType server_type, AddressField* field) {
   switch (server_type) {
-    case ADDRESS_BILLING_COUNTRY:
     case ADDRESS_HOME_COUNTRY:
       if (field)
         *field = ::i18n::addressinput::COUNTRY;
       return true;
-    case ADDRESS_BILLING_STATE:
     case ADDRESS_HOME_STATE:
       if (field)
         *field = ::i18n::addressinput::ADMIN_AREA;
       return true;
-    case ADDRESS_BILLING_CITY:
     case ADDRESS_HOME_CITY:
       if (field)
         *field = ::i18n::addressinput::LOCALITY;
       return true;
-    case ADDRESS_BILLING_DEPENDENT_LOCALITY:
     case ADDRESS_HOME_DEPENDENT_LOCALITY:
       if (field)
         *field = ::i18n::addressinput::DEPENDENT_LOCALITY;
       return true;
-    case ADDRESS_BILLING_SORTING_CODE:
     case ADDRESS_HOME_SORTING_CODE:
       if (field)
         *field = ::i18n::addressinput::SORTING_CODE;
       return true;
-    case ADDRESS_BILLING_ZIP:
     case ADDRESS_HOME_ZIP:
       if (field)
         *field = ::i18n::addressinput::POSTAL_CODE;
       return true;
-    case ADDRESS_BILLING_STREET_ADDRESS:
-    case ADDRESS_BILLING_LINE1:
-    case ADDRESS_BILLING_LINE2:
     case ADDRESS_HOME_STREET_ADDRESS:
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
@@ -137,7 +128,6 @@ bool FieldForType(ServerFieldType server_type, AddressField* field) {
       if (field)
         *field = ::i18n::addressinput::ORGANIZATION;
       return true;
-    case NAME_BILLING_FULL:
     case NAME_FULL:
       if (field)
         *field = ::i18n::addressinput::RECIPIENT;

@@ -340,13 +340,6 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case PHONE_FAX_COUNTRY_CODE:
         case PHONE_FAX_CITY_AND_NUMBER:
         case PHONE_FAX_WHOLE_NUMBER:
-        case ADDRESS_BILLING_LINE1:
-        case ADDRESS_BILLING_LINE2:
-        case ADDRESS_BILLING_APT_NUM:
-        case ADDRESS_BILLING_CITY:
-        case ADDRESS_BILLING_STATE:
-        case ADDRESS_BILLING_ZIP:
-        case ADDRESS_BILLING_COUNTRY:
         case CREDIT_CARD_NAME_FULL:
         case CREDIT_CARD_NUMBER:
         case CREDIT_CARD_EXP_MONTH:
@@ -358,25 +351,10 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case CREDIT_CARD_VERIFICATION_CODE:
         case COMPANY_NAME:
         case FIELD_WITH_DEFAULT_VALUE:
-        case PHONE_BILLING_NUMBER:
-        case PHONE_BILLING_CITY_CODE:
-        case PHONE_BILLING_COUNTRY_CODE:
-        case PHONE_BILLING_CITY_AND_NUMBER:
-        case PHONE_BILLING_WHOLE_NUMBER:
-        case NAME_BILLING_FIRST:
-        case NAME_BILLING_MIDDLE:
-        case NAME_BILLING_LAST:
-        case NAME_BILLING_MIDDLE_INITIAL:
-        case NAME_BILLING_FULL:
-        case NAME_BILLING_SUFFIX:
         case MERCHANT_EMAIL_SIGNUP:
         case MERCHANT_PROMO_CODE:
         case PASSWORD:
         case ACCOUNT_CREATION_PASSWORD:
-        case ADDRESS_BILLING_STREET_ADDRESS:
-        case ADDRESS_BILLING_SORTING_CODE:
-        case ADDRESS_BILLING_DEPENDENT_LOCALITY:
-        case ADDRESS_BILLING_LINE3:
         case NOT_ACCOUNT_CREATION_PASSWORD:
         case USERNAME:
         case USERNAME_AND_EMAIL_ADDRESS:

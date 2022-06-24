@@ -35,7 +35,7 @@ MobileLabelFormatter::MobileLabelFormatter(
                      focused_field_type,
                      groups,
                      field_types) {
-  const FieldTypeGroup focused_group = GetFocusedNonBillingGroup();
+  const FieldTypeGroup focused_group = AutofillType(focused_field_type).group();
 
   could_show_email_ = HasUnfocusedEmailField(focused_group, groups) &&
                       !HaveSameEmailAddresses(profiles, app_locale);

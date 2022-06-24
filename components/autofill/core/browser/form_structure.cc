@@ -1720,7 +1720,6 @@ void FormStructure::RationalizeCreditCardFieldPredictions(
         cc_cvc_found = true;
         break;
       case ADDRESS_HOME_ZIP:
-      case ADDRESS_BILLING_ZIP:
         // Zip/Postal code often appears as part of a Credit Card form. Do
         // not count it as a non-cc-related field.
         break;
@@ -2169,8 +2168,6 @@ void FormStructure::RationalizeRepeatedFields(
   RationalizeAddressLineFields(
       &(sectioned_field_indexes_by_type[ADDRESS_HOME_STREET_ADDRESS]),
       form_interactions_ukm_logger, log_manager);
-  // Since the billing types are mapped to the non-billing ones, no need to
-  // take care of ADDRESS_BILLING_STATE and .. .
   RationalizeAddressStateCountry(
       &(sectioned_field_indexes_by_type[ADDRESS_HOME_STATE]),
       &(sectioned_field_indexes_by_type[ADDRESS_HOME_COUNTRY]),

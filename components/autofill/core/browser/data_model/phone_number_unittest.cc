@@ -241,7 +241,7 @@ TEST(PhoneNumberTest, PhoneCombineHelper) {
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
   PhoneNumber::PhoneCombineHelper number1;
-  EXPECT_FALSE(number1.SetInfo(AutofillType(ADDRESS_BILLING_CITY), u"1"));
+  EXPECT_FALSE(number1.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), u"1"));
   EXPECT_TRUE(number1.SetInfo(AutofillType(PHONE_HOME_COUNTRY_CODE), u"1"));
   EXPECT_TRUE(number1.SetInfo(AutofillType(PHONE_HOME_CITY_CODE), u"650"));
   EXPECT_TRUE(number1.SetInfo(AutofillType(PHONE_HOME_NUMBER), u"2345678"));

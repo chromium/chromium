@@ -55,8 +55,6 @@
 namespace payments {
 
 namespace {
-const auto kBillingAddressType = autofill::ADDRESS_BILLING_LINE1;
-
 // This is preferred to SelectValue, since only SetSelectedRow fires the events
 // as if done by a user.
 void SelectComboboxRowForValue(views::Combobox* combobox,
@@ -791,9 +789,9 @@ void PaymentRequestBrowserTestBase::SetComboboxValue(
 
 void PaymentRequestBrowserTestBase::SelectBillingAddress(
     const std::string& billing_address_id) {
-  views::Combobox* address_combobox(
-      static_cast<views::Combobox*>(dialog_view()->GetViewByID(
-          EditorViewController::GetInputFieldViewId(kBillingAddressType))));
+  views::Combobox* address_combobox(static_cast<views::Combobox*>(
+      dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
+          autofill::ADDRESS_HOME_LINE1))));
   ASSERT_NE(address_combobox, nullptr);
   autofill::AddressComboboxModel* address_combobox_model(
       static_cast<autofill::AddressComboboxModel*>(
