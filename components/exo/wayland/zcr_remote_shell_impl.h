@@ -89,6 +89,8 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   void OnRemoteSurfaceDestroyed(wl_resource* resource);
 
   // Overridden from display::DisplayObserver:
+  void OnWillProcessDisplayChanges() override;
+  void OnDidProcessDisplayChanges() override;
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;
   void OnDisplayTabletStateChanged(display::TabletState state) override;
@@ -108,6 +110,8 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   WaylandRemoteShellEventMapping const event_mapping_;
 
  private:
+  friend class WaylandRemoteShellTest;
+
   void ScheduleSendDisplayMetrics(int delay_ms);
 
   // Returns the transform that a display's output is currently adjusted for.
@@ -165,6 +169,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   // in v2 this is always false.
   bool use_default_scale_cancellation_;
 
+  bool in_display_update_;
   bool needs_send_display_metrics_ = true;
 
   int layout_mode_ = ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_WINDOWED;

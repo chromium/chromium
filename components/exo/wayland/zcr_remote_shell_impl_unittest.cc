@@ -8,6 +8,7 @@
 #include <wayland-server.h>
 
 #include <memory>
+#include <vector>
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -24,6 +25,10 @@
 namespace exo {
 namespace wayland {
 namespace {
+
+const int kDefaultWindowLength = 100;
+
+enum class RemoteShellEventType { kSendBoundsChanged, kSendWorkspaceInfo };
 
 struct WlDisplayDeleter {
   void operator()(wl_display* ptr) const { wl_display_destroy(ptr); }
@@ -53,7 +58,7 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
   void SetUp() override {
     test::ExoTestBase::SetUp();
 
-    ResetCounter();
+    ResetEventRecords();
 
     UpdateDisplay("800x600");
 
@@ -86,14 +91,22 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
     ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enable);
   }
 
-  void ResetCounter() { send_bounds_changed_counter_ = 0; }
+  void ResetEventRecords() {
+    remote_shell_event_sequence_.clear();
+    remote_shell_requested_bounds_changes_.clear();
+  }
 
   WaylandRemoteShell* shell() { return shell_.get(); }
 
   wl_client* wl_client() { return wl_client_.get(); }
 
-  static int send_bounds_changed_counter() {
-    return send_bounds_changed_counter_;
+  static std::vector<RemoteShellEventType> remote_shell_event_sequence() {
+    return remote_shell_event_sequence_;
+  }
+
+  static std::vector<WaylandRemoteShell::BoundsChangeData>
+  remote_shell_requested_bounds_changes() {
+    return remote_shell_requested_bounds_changes_;
   }
 
   static int last_desktop_focus_state() { return last_desktop_focus_state_; }
@@ -108,7 +121,9 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
 
   std::unique_ptr<WaylandRemoteShell> shell_;
 
-  static int send_bounds_changed_counter_;
+  static std::vector<RemoteShellEventType> remote_shell_event_sequence_;
+  static std::vector<WaylandRemoteShell::BoundsChangeData>
+      remote_shell_requested_bounds_changes_;
 
   static uint32_t last_desktop_focus_state_;
 
@@ -130,13 +145,20 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
           uint32_t) {},
       /*send_bounds_changed=*/
       +[](struct wl_resource*,
-          uint32_t,
-          uint32_t,
-          int32_t,
-          int32_t,
-          int32_t,
-          int32_t,
-          uint32_t) { send_bounds_changed_counter_++; },
+          uint32_t display_id_hi,
+          uint32_t display_id_lo,
+          int32_t x,
+          int32_t y,
+          int32_t width,
+          int32_t height,
+          uint32_t reason) {
+        remote_shell_event_sequence_.push_back(
+            RemoteShellEventType::kSendBoundsChanged);
+        remote_shell_requested_bounds_changes_.emplace_back(
+            (((int64_t)display_id_hi << 32) | display_id_lo),
+            gfx::Rect(x, y, width, height),
+            static_cast<zcr_remote_surface_v1_bounds_change_reason>(reason));
+      },
       /*send_activated=*/
       +[](struct wl_resource*, struct wl_resource*, struct wl_resource*) {},
       /*send_desktop_focus_state_changed=*/
@@ -162,7 +184,10 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
           int32_t,
           int32_t,
           uint32_t,
-          struct wl_array*) {},
+          struct wl_array*) {
+        remote_shell_event_sequence_.push_back(
+            RemoteShellEventType::kSendWorkspaceInfo);
+      },
       /*send_drag_finished=*/
       +[](struct wl_resource*, int32_t, int32_t, int32_t) {},
       /*send_drag_started=*/+[](struct wl_resource*, uint32_t) {},
@@ -178,12 +203,15 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
       /*set_use_default_scale_cancellation_since_version=*/0,
   };
 };
-int WaylandRemoteShellTest::send_bounds_changed_counter_ = 0;
+std::vector<RemoteShellEventType>
+    WaylandRemoteShellTest::remote_shell_event_sequence_;
+std::vector<WaylandRemoteShell::BoundsChangeData>
+    WaylandRemoteShellTest::remote_shell_requested_bounds_changes_;
 uint32_t WaylandRemoteShellTest::last_desktop_focus_state_ = 0;
 
 // Test that all bounds change requests are deferred while the tablet transition
 // is happening until it's finished.
-TEST_F(WaylandRemoteShellTest, DeferBoundsChangeWhileTabletTransition) {
+TEST_F(WaylandRemoteShellTest, TabletTransition) {
   // Setup buffer/surface/window.
   const gfx::Size buffer_size(256, 256);
   std::unique_ptr<Buffer> buffer(
@@ -211,12 +239,258 @@ TEST_F(WaylandRemoteShellTest, DeferBoundsChangeWhileTabletTransition) {
   surface->Commit();
 
   // Enable tablet mode.
-  ResetCounter();
+  ResetEventRecords();
   EnableTabletMode(true);
   task_environment()->FastForwardBy(base::Seconds(1));
   task_environment()->RunUntilIdle();
 
-  EXPECT_EQ(send_bounds_changed_counter(), 1);
+  const auto expected_sequence = std::vector<RemoteShellEventType>{
+      RemoteShellEventType::kSendWorkspaceInfo,
+      RemoteShellEventType::kSendBoundsChanged};
+  EXPECT_EQ(expected_sequence, remote_shell_event_sequence());
+  // TODO(b/236432849): Add a reasonable bounds check.
+}
+
+// Verifies bounds change events and workspace info events are triggered with
+// proper values and in proper order when display zoom happens. A bounds change
+// event must be triggered only for PIP.
+TEST_F(WaylandRemoteShellTest, DisplayZoom) {
+  const gfx::Size buffer_size(256, 256);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface);
+  auto shell_surface =
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
+  ScopedWlResource wl_res(wl_resource_create(
+      wl_client(), &zcr_remote_surface_v2_interface, /*version=*/1, /*id=*/0));
+  shell_surface->set_delegate(
+      shell()->CreateShellSurfaceDelegate(wl_res.get()));
+  surface->Attach(buffer.get());
+  surface->Commit();
+  auto* const window = shell_surface->GetWidget()->GetNativeWindow();
+  const display::Display& display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+
+  // Test a restored window.
+  shell_surface->SetRestored();
+  shell_surface->SetGeometry(
+      gfx::Rect(100, 100, kDefaultWindowLength, kDefaultWindowLength));
+  surface->Commit();
+  ResetEventRecords();
+  ash::Shell::Get()->display_manager()->ZoomDisplay(display.id(), /*up=*/true);
+  task_environment()->RunUntilIdle();
+  const auto expected_sequence_for_restored = std::vector<RemoteShellEventType>{
+      RemoteShellEventType::kSendWorkspaceInfo};
+  EXPECT_EQ(expected_sequence_for_restored, remote_shell_event_sequence());
+
+  // Test a maximized window.
+  shell_surface->SetMaximized();
+  surface->Commit();
+  ResetEventRecords();
+  ash::Shell::Get()->display_manager()->ZoomDisplay(display.id(), /*up=*/true);
+  task_environment()->RunUntilIdle();
+  const auto expected_sequence_for_maximized =
+      std::vector<RemoteShellEventType>{
+          RemoteShellEventType::kSendWorkspaceInfo};
+  EXPECT_EQ(expected_sequence_for_maximized, remote_shell_event_sequence());
+
+  // Test a PIP window.
+  shell_surface->SetPip();
+  // Place PIP at the bottom-right corner so the position will be adjusted with
+  // display size change. This means no bounds change event is triggered if PIP
+  // is at the top-left corner, but this is fine as the position doesn't need
+  // to be adjusted on the client side.
+  shell_surface->SetGeometry(
+      gfx::Rect(display.bounds().right() - kDefaultWindowLength,
+                display.bounds().bottom() - kDefaultWindowLength,
+                kDefaultWindowLength, kDefaultWindowLength));
+  surface->Commit();
+  ResetEventRecords();
+  ash::Shell::Get()->display_manager()->ZoomDisplay(display.id(), /*up=*/true);
+  task_environment()->RunUntilIdle();
+  const auto expected_sequence_for_pip = std::vector<RemoteShellEventType>{
+      RemoteShellEventType::kSendWorkspaceInfo,
+      RemoteShellEventType::kSendBoundsChanged};
+  EXPECT_EQ(remote_shell_event_sequence(), expected_sequence_for_pip);
+  ASSERT_EQ(1UL, remote_shell_requested_bounds_changes().size());
+  const auto bounds_change = remote_shell_requested_bounds_changes()[0];
+  EXPECT_EQ(display.id(), bounds_change.display_id);
+  // Verify that the new bounds is scaled larger in pixels.
+  EXPECT_GT(kDefaultWindowLength, bounds_change.bounds_in_display.width());
+  EXPECT_GT(kDefaultWindowLength, bounds_change.bounds_in_display.height());
+  EXPECT_EQ(ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_PIP,
+            bounds_change.reason);
+}
+
+// Verifies bounds change events and workspace info events are triggered with
+// proper values and in proper order when display rotation happens. A bounds
+// change event must be triggered only for PIP.
+TEST_F(WaylandRemoteShellTest, DisplayRotation) {
+  const gfx::Size buffer_size(256, 256);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface);
+  auto shell_surface =
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
+  ScopedWlResource wl_res(wl_resource_create(
+      wl_client(), &zcr_remote_surface_v2_interface, /*version=*/1, /*id=*/0));
+  shell_surface->set_delegate(
+      shell()->CreateShellSurfaceDelegate(wl_res.get()));
+  surface->Attach(buffer.get());
+  surface->Commit();
+  auto* const window = shell_surface->GetWidget()->GetNativeWindow();
+  const display::Display& display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+
+  // Test a restored window.
+  shell_surface->SetRestored();
+  shell_surface->SetGeometry(
+      gfx::Rect(100, 100, kDefaultWindowLength, kDefaultWindowLength));
+  surface->Commit();
+  ResetEventRecords();
+  ash::Shell::Get()->display_manager()->SetDisplayRotation(
+      display.id(), display::Display::ROTATE_90,
+      display::Display::RotationSource::ACCELEROMETER);
+  task_environment()->RunUntilIdle();
+  const auto expected_sequence_for_restored = std::vector<RemoteShellEventType>{
+      RemoteShellEventType::kSendWorkspaceInfo};
+  EXPECT_EQ(expected_sequence_for_restored, remote_shell_event_sequence());
+
+  // Test a maximized window.
+  shell_surface->SetMaximized();
+  surface->Commit();
+  ResetEventRecords();
+  ash::Shell::Get()->display_manager()->SetDisplayRotation(
+      display.id(), display::Display::ROTATE_180,
+      display::Display::RotationSource::ACCELEROMETER);
+  task_environment()->RunUntilIdle();
+  const auto expected_sequence_for_maximized =
+      std::vector<RemoteShellEventType>{
+          RemoteShellEventType::kSendWorkspaceInfo,
+          RemoteShellEventType::kSendBoundsChanged};
+  EXPECT_EQ(expected_sequence_for_maximized, remote_shell_event_sequence());
+
+  // Test a PIP window.
+  shell_surface->SetPip();
+  // Place PIP at the bottom-right corner so the position will be adjusted with
+  // display rotation.
+  shell_surface->SetGeometry(
+      gfx::Rect(display.bounds().right(), display.bounds().bottom(),
+                kDefaultWindowLength, kDefaultWindowLength));
+  surface->Commit();
+  const gfx::Rect bounds = window->GetBoundsInScreen();
+  const int right_inset = display.bounds().right() - bounds.right();
+  const int bottom_inset = display.bounds().bottom() - bounds.bottom();
+  ResetEventRecords();
+  ash::Shell::Get()->display_manager()->SetDisplayRotation(
+      display.id(), display::Display::ROTATE_270,
+      display::Display::RotationSource::ACCELEROMETER);
+  task_environment()->RunUntilIdle();
+  const auto expected_sequence_for_pip = std::vector<RemoteShellEventType>{
+      RemoteShellEventType::kSendWorkspaceInfo,
+      RemoteShellEventType::kSendBoundsChanged};
+  EXPECT_EQ(expected_sequence_for_pip, remote_shell_event_sequence());
+  ASSERT_EQ(1UL, remote_shell_requested_bounds_changes().size());
+  const auto bounds_change = remote_shell_requested_bounds_changes()[0];
+  EXPECT_EQ(display.id(), bounds_change.display_id);
+  const display::Display& rotated_display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  const int expected_x =
+      rotated_display.bounds().right() - right_inset - kDefaultWindowLength;
+  const int expected_y =
+      rotated_display.bounds().bottom() - bottom_inset - kDefaultWindowLength;
+  const gfx::Rect expected_bounds = gfx::Rect(
+      expected_x, expected_y, kDefaultWindowLength, kDefaultWindowLength);
+  EXPECT_EQ(expected_bounds, bounds_change.bounds_in_display);
+  EXPECT_EQ(ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_PIP,
+            bounds_change.reason);
+}
+
+// Removing secandary display and re-reconnect it restores the bounds of
+// windows on secandary display. This test verifies bounds change events
+// and workspace info events are triggered with proper values and in
+// proper order.
+TEST_F(WaylandRemoteShellTest, DisplayRemovalAddition) {
+  const gfx::Size buffer_size(256, 256);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface);
+  auto shell_surface =
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
+  ScopedWlResource wl_res(wl_resource_create(
+      wl_client(), &zcr_remote_surface_v2_interface, /*version=*/1, /*id=*/0));
+  shell_surface->set_delegate(
+      shell()->CreateShellSurfaceDelegate(wl_res.get()));
+  surface->Attach(buffer.get());
+  shell_surface->SetRestored();
+  shell_surface->SetGeometry(
+      gfx::Rect(100, 100, kDefaultWindowLength, kDefaultWindowLength));
+  surface->Commit();
+
+  // Add secondary display with a different scale factor.
+  UpdateDisplay("800x600,800x600*2");
+  auto* display_manager = ash::Shell::Get()->display_manager();
+  const int64_t primary_display_id = display_manager->GetDisplayAt(0).id();
+  const int64_t secondary_display_id = display_manager->GetDisplayAt(1).id();
+  display::ManagedDisplayInfo primary_display_info =
+      display_manager->GetDisplayInfo(primary_display_id);
+  display::ManagedDisplayInfo secondary_display_info =
+      display_manager->GetDisplayInfo(secondary_display_id);
+
+  // Move the window to the secandary display.
+  const int initial_x = 100;
+  const int initial_y = 100;
+  shell_surface->SetBounds(secondary_display_id,
+                           gfx::Rect(initial_x, initial_y, kDefaultWindowLength,
+                                     kDefaultWindowLength));
+  surface->Commit();
+
+  // Disconnect secondary display.
+  ResetEventRecords();
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(primary_display_info);
+  display_manager->OnNativeDisplaysChanged(display_info_list);
+  task_environment()->RunUntilIdle();
+  const auto event_sequence_disconnect = std::vector<RemoteShellEventType>{
+      RemoteShellEventType::kSendWorkspaceInfo,
+      RemoteShellEventType::kSendBoundsChanged};
+  EXPECT_EQ(remote_shell_event_sequence(), event_sequence_disconnect);
+
+  ASSERT_EQ(1UL, remote_shell_requested_bounds_changes().size());
+  const auto bounds_change = remote_shell_requested_bounds_changes()[0];
+  EXPECT_EQ(bounds_change.display_id, primary_display_id);
+  // Verify the new bounds is scaled in pixles with the scale factor of the
+  // primary display.
+  const gfx::Rect expected_bounds_after_disconnection = gfx::Rect(
+      initial_x, initial_y, kDefaultWindowLength / 2, kDefaultWindowLength / 2);
+  EXPECT_EQ(expected_bounds_after_disconnection,
+            bounds_change.bounds_in_display);
+  EXPECT_EQ(ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_MOVE,
+            bounds_change.reason);
+
+  // Reconnects the previously connected secondary display.
+  ResetEventRecords();
+  display_info_list.push_back(secondary_display_info);
+  display_manager->OnNativeDisplaysChanged(display_info_list);
+  task_environment()->RunUntilIdle();
+  // Reconnecting the secondary display seems to cause two workspace info
+  // events: One for a display metrics change for the primary display, and the
+  // other for a display addition event of the secondary display.
+  const auto event_sequence_reconnect = std::vector<RemoteShellEventType>{
+      RemoteShellEventType::kSendWorkspaceInfo,
+      RemoteShellEventType::kSendWorkspaceInfo,
+      RemoteShellEventType::kSendBoundsChanged};
+  EXPECT_EQ(event_sequence_reconnect, remote_shell_event_sequence());
+  ASSERT_EQ(1UL, remote_shell_requested_bounds_changes().size());
+  const auto bounds_change_to_secondary =
+      remote_shell_requested_bounds_changes()[0];
+  EXPECT_EQ(secondary_display_id, bounds_change_to_secondary.display_id);
+  const gfx::Rect expected_bounds_after_reconnection = gfx::Rect(
+      initial_x, initial_y, kDefaultWindowLength, kDefaultWindowLength);
+  EXPECT_EQ(expected_bounds_after_reconnection,
+            bounds_change_to_secondary.bounds_in_display);
+  EXPECT_EQ(ZCR_REMOTE_SURFACE_V1_BOUNDS_CHANGE_REASON_MOVE,
+            bounds_change_to_secondary.reason);
 }
 
 // Test that the desktop focus state event is called with the proper value in
