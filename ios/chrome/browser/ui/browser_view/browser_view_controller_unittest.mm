@@ -130,26 +130,24 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+
     id mockActivityServiceCommandHandler =
         OCMProtocolMock(@protocol(ActivityServiceCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mockActivityServiceCommandHandler
-                     forProtocol:@protocol(ActivityServiceCommands)];
+    [dispatcher startDispatchingToTarget:mockActivityServiceCommandHandler
+                             forProtocol:@protocol(ActivityServiceCommands)];
     id mockFindInPageCommandHandler =
         OCMProtocolMock(@protocol(FindInPageCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mockFindInPageCommandHandler
-                     forProtocol:@protocol(FindInPageCommands)];
+    [dispatcher startDispatchingToTarget:mockFindInPageCommandHandler
+                             forProtocol:@protocol(FindInPageCommands)];
     id mockTextZoomCommandHandler =
         OCMProtocolMock(@protocol(TextZoomCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mockTextZoomCommandHandler
-                     forProtocol:@protocol(TextZoomCommands)];
+    [dispatcher startDispatchingToTarget:mockTextZoomCommandHandler
+                             forProtocol:@protocol(TextZoomCommands)];
     id mockPageInfoCommandHandler =
         OCMProtocolMock(@protocol(PageInfoCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mockPageInfoCommandHandler
-                     forProtocol:@protocol(PageInfoCommands)];
+    [dispatcher startDispatchingToTarget:mockPageInfoCommandHandler
+                             forProtocol:@protocol(PageInfoCommands)];
 
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
     // to ApplicationSettingsCommands, that needs to be mocked and dispatched
@@ -158,10 +156,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         OCMProtocolMock(@protocol(ApplicationCommands));
     id mockApplicationSettingsCommandHandler =
         OCMProtocolMock(@protocol(ApplicationSettingsCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mockApplicationCommandHandler
-                     forProtocol:@protocol(ApplicationCommands)];
-    [browser_->GetCommandDispatcher()
+    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher
         startDispatchingToTarget:mockApplicationSettingsCommandHandler
                      forProtocol:@protocol(ApplicationSettingsCommands)];
 
@@ -190,21 +187,23 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     fake_prerender_service_ = std::make_unique<FakePrerenderService>();
 
-    bubble_presenter_ = [[BubblePresenter alloc]
-        initWithBrowserState:chrome_browser_state_.get()];
-
     download_manager_coordinator_ = [[DownloadManagerCoordinator alloc]
         initWithBaseViewController:[[UIViewController alloc] init]
                            browser:browser_.get()];
 
-    toolbar_coordinator_adaptor_ = [[ToolbarCoordinatorAdaptor alloc]
-        initWithDispatcher:browser_->GetCommandDispatcher()];
+    toolbar_coordinator_adaptor_ =
+        [[ToolbarCoordinatorAdaptor alloc] initWithDispatcher:dispatcher];
 
     primary_toolbar_coordinator_ =
         [[PrimaryToolbarCoordinator alloc] initWithBrowser:browser_.get()];
 
     secondary_toolbar_coordinator_ =
         [[SecondaryToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+
+    bubble_presenter_ = [[BubblePresenter alloc]
+        initWithBrowserState:chrome_browser_state_.get()];
+    [dispatcher startDispatchingToTarget:bubble_presenter_
+                             forProtocol:@protocol(HelpCommands)];
 
     tab_strip_coordinator_ =
         [[TabStripCoordinator alloc] initWithBrowser:browser_.get()];
@@ -231,13 +230,12 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.bookmarkInteractionController =
         bookmark_interaction_controller_;
 
-    bvc_ = [[BrowserViewController alloc]
-                       initWithBrowser:browser_.get()
-        browserContainerViewController:container_
-           browserViewControllerHelper:bvc_helper_
-                            dispatcher:browser_->GetCommandDispatcher()
-                   keyCommandsProvider:key_commands_provider_
-                          dependencies:dependencies];
+    bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
+                           browserContainerViewController:container_
+                              browserViewControllerHelper:bvc_helper_
+                                               dispatcher:dispatcher
+                                      keyCommandsProvider:key_commands_provider_
+                                             dependencies:dependencies];
 
     // Force the view to load.
     UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectZero];

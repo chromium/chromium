@@ -537,9 +537,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     _prerenderService->SetDelegate(self);
   }
 
-  _bubblePresenter =
-      [[BubblePresenter alloc] initWithBrowserState:browserState];
-
   _primaryToolbarCoordinator =
       [[PrimaryToolbarCoordinator alloc] initWithBrowser:self.browser];
 
@@ -552,6 +549,13 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   [_toolbarCoordinatorAdaptor addToolbarCoordinator:_primaryToolbarCoordinator];
   [_toolbarCoordinatorAdaptor
       addToolbarCoordinator:_secondaryToolbarCoordinator];
+
+  _bubblePresenter =
+      [[BubblePresenter alloc] initWithBrowserState:browserState];
+  _bubblePresenter.toolbarHandler =
+      HandlerForProtocol(_dispatcher, ToolbarCommands);
+  [_dispatcher startDispatchingToTarget:_bubblePresenter
+                            forProtocol:@protocol(HelpCommands)];
 
   _sideSwipeController =
       [[SideSwipeController alloc] initWithBrowser:self.browser];
@@ -609,6 +613,9 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
 - (void)updateViewControllerDependencies {
   _bookmarkInteractionController.parentController = self.viewController;
+
+  _bubblePresenter.delegate = self.viewController;
+  _bubblePresenter.rootViewController = self.viewController;
 }
 
 // Destroys the browser view controller dependencies.
@@ -634,7 +641,11 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _toolbarCoordinatorAdaptor = nil;
   _secondaryToolbarCoordinator = nil;
   _primaryToolbarCoordinator = nil;
+
+  [_dispatcher stopDispatchingToTarget:_bubblePresenter];
+  [_bubblePresenter stop];
   _bubblePresenter = nil;
+
   _prerenderService = nil;
 
   [self.downloadManagerCoordinator stop];

@@ -1075,8 +1075,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.tabStripView = nil;
   }
 
-  [self.commandDispatcher stopDispatchingToTarget:_bubblePresenter];
-  [_bubblePresenter stop];
   _bubblePresenter = nil;
 
   [self.commandDispatcher stopDispatchingToTarget:self];
@@ -1196,14 +1194,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Install fake status bar for iPad iOS7
   [self installFakeStatusBar];
-
-  _bubblePresenter.delegate = self;
-  _bubblePresenter.rootViewController = self;
-  _bubblePresenter.toolbarHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), ToolbarCommands);
-  [self.browser->GetCommandDispatcher()
-      startDispatchingToTarget:_bubblePresenter
-                   forProtocol:@protocol(HelpCommands)];
 
   [self buildToolbarAndTabStrip];
   [self setUpViewLayout:YES];
