@@ -4,14 +4,26 @@
 
 #include "base/scoped_add_feature_flags.h"
 
+#include <cstring>
 #include <string>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
+
+namespace {
+
+// Converts a string to CommandLine::StringType, which is std::wstring on
+// Windows and std::string on other platforms.
+CommandLine::StringType ToCommandLineStringType(StringPiece s) {
+  return CommandLine::StringType(s.begin(), s.end());
+}
+
+}  // namespace
 
 TEST(ScopedAddFeatureFlags, ConflictWithExistingFlags) {
   CommandLine command_line(CommandLine::NO_PROGRAM);
@@ -40,6 +52,14 @@ TEST(ScopedAddFeatureFlags, ConflictWithExistingFlags) {
             command_line.GetSwitchValueASCII(switches::kEnableFeatures));
   EXPECT_EQ(std::string("ExistingDisabledFoo,ExistingDisabledBar,DisabledBaz"),
             command_line.GetSwitchValueASCII(switches::kDisableFeatures));
+
+  // There should not be duplicate --enable-features or --disable-features flags
+  EXPECT_EQ(
+      ToCommandLineStringType(
+          " --enable-features=ExistingEnabledFoo,ExistingEnabledBar,EnabledBaz"
+          " --disable-features=ExistingDisabledFoo,ExistingDisabledBar,"
+          "DisabledBaz"),
+      JoinString(command_line.argv(), ToCommandLineStringType(" ")));
 }
 
 TEST(ScopedAddFeatureFlags, FlagWithParameter) {

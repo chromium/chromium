@@ -29,8 +29,10 @@ ScopedAddFeatureFlags::ScopedAddFeatureFlags(CommandLine* command_line)
 }
 
 ScopedAddFeatureFlags::~ScopedAddFeatureFlags() {
+  command_line_->RemoveSwitch(switches::kEnableFeatures);
   command_line_->AppendSwitchASCII(switches::kEnableFeatures,
                                    JoinString(enabled_features_, ","));
+  command_line_->RemoveSwitch(switches::kDisableFeatures);
   command_line_->AppendSwitchASCII(switches::kDisableFeatures,
                                    JoinString(disabled_features_, ","));
 }
