@@ -61,8 +61,7 @@ class ScopedFfxConfig(AbstractContextManager):
                 # doesn't already restore the old value.
                 if  self._old_value != \
                     run_ffx_command(['config', 'get', self._name],
-                                    capture_output=True,
-                                    encoding='utf-8').stdout.strip():
+                                    capture_output=True).stdout.strip():
                     run_ffx_command(
                         ['config', 'set', self._name, self._old_value])
 
@@ -93,6 +92,11 @@ class FfxEmulator(AbstractContextManager):
         node_name_suffix = random.randint(1, 9999)
         self._node_name = f'fuchsia-emulator-{node_name_suffix}'
 
+        # Always set the download path parallel to Fuchsia SDK directory
+        # so that old product bundles can be properly removed.
+        self._scoped_pb_storage = ScopedFfxConfig(
+            'pbms.storage.path', os.path.join(SDK_ROOT, os.pardir, 'images'))
+
     @staticmethod
     def _check_ssh_config_file() -> None:
         """Checks for ssh keys and generates them if they are missing."""
@@ -110,8 +114,11 @@ class FfxEmulator(AbstractContextManager):
         # redownload.
         list_cmd = run_ffx_command(('product-bundle', 'list'),
                                    capture_output=True)
+        sdk_version = run_ffx_command(('sdk', 'version'),
+                                      capture_output=True).stdout.strip()
         for line in list_cmd.stdout.splitlines():
-            if self._product_bundle in line and '*' in line:
+            if (self._product_bundle in line and sdk_version in line
+                    and '*' in line):
                 return
 
         run_ffx_command(('product-bundle', 'get', self._product_bundle))
@@ -123,6 +130,7 @@ class FfxEmulator(AbstractContextManager):
             The node name of the emulator.
         """
 
+        self._scoped_pb_storage.__enter__()
         self._check_ssh_config_file()
         self._download_product_bundle_if_necessary()
         emu_command = [
@@ -143,6 +151,8 @@ class FfxEmulator(AbstractContextManager):
         # The emulator might have shut down unexpectedly, so this command
         # might fail.
         run_ffx_command(('emu', 'stop', self._node_name), check=False)
+
+        self._scoped_pb_storage.__exit__(exc_type, exc_value, traceback)
 
         # Do not suppress exceptions.
         return False
