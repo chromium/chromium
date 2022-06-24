@@ -3,7 +3,7 @@ noparent = True
 include_rules = [
   "+ash/constants",
   "+base",
-  "+chromeos/dbus",
+  "+chromeos/ash/components/dbus",
   "+components/prefs",
   "+device/bluetooth",
   "+media",

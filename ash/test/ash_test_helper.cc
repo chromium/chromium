@@ -38,8 +38,8 @@
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/system/system_monitor.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
-#include "chromeos/dbus/audio/cras_audio_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -114,7 +114,7 @@ AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
   display::ResetDisplayIdForTest();
   display::SetInternalDisplayIds({});
 
-  chromeos::CrasAudioClient::InitializeFake();
+  CrasAudioClient::InitializeFake();
   // Create CrasAudioHandler for testing since g_browser_process is not
   // created in AshTestBase tests.
   CrasAudioHandler::InitializeForTesting();
@@ -165,7 +165,7 @@ void AshTestHelper::TearDown() {
   chromeos::LoginState::Shutdown();
 
   CrasAudioHandler::Shutdown();
-  chromeos::CrasAudioClient::Shutdown();
+  CrasAudioClient::Shutdown();
 
   // The PowerPolicyController holds a pointer to the PowerManagementClient, so
   // shut the controller down first.

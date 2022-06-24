@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/audio_node.h"
 
 #include <stdint.h>
 
@@ -12,7 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 AudioNode::AudioNode() = default;
 
@@ -78,4 +78,4 @@ uint64_t AudioNode::StableDeviceId() const {
   return has_v2_stable_device_id ? stable_device_id_v2 : stable_device_id_v1;
 }
 
-}  // namespace chromeos
+}  // namespace ash

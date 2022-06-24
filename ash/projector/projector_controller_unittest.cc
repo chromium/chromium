@@ -34,8 +34,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/dbus/audio/audio_node.h"
-#include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -197,13 +197,13 @@ TEST_F(ProjectorControllerTest, OnAudioNodesChanged) {
 
   const AudioNodeInfo kInternalMic[] = {
       {true, 55555, "Fake Mic", "INTERNAL_MIC", "Internal Mic"}};
-  const chromeos::AudioNode audio_node = chromeos::AudioNode(
+  const AudioNode audio_node = AudioNode(
       kInternalMic->is_input, kInternalMic->id,
       /*has_v2_stable_device_id=*/false, kInternalMic->id,
       /*stable_device_id_v2=*/0, kInternalMic->device_name, kInternalMic->type,
       kInternalMic->name, /*active=*/false,
       /*plugged_time=*/0, /*max_supported_channels=*/1, /*audio_effect=*/1);
-  chromeos::FakeCrasAudioClient::Get()->SetAudioNodesForTesting({audio_node});
+  FakeCrasAudioClient::Get()->SetAudioNodesForTesting({audio_node});
 
   CrasAudioHandler::Get()->SetActiveInputNodes({kInternalMic->id});
   EXPECT_CALL(mock_client_,

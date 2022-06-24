@@ -90,7 +90,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//chromeos/dbus/audio",
     "//chromeos/dbus/cec_service:unit_tests",
     "//chromeos/dbus/cros_disks:unit_tests",
     "//chromeos/dbus/cryptohome",
@@ -118,7 +117,6 @@ source_set("unit_tests") {
     "//third_party/icu",
   ]
   sources = [
-    "audio/cras_audio_client_unittest.cc",
     "blocking_method_caller_unittest.cc",
     "dbus_thread_manager_unittest.cc",
     "native_timer_unittest.cc",

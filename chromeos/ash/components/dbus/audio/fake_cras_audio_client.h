@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_AUDIO_FAKE_CRAS_AUDIO_CLIENT_H_
-#define CHROMEOS_DBUS_AUDIO_FAKE_CRAS_AUDIO_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_FAKE_CRAS_AUDIO_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_FAKE_CRAS_AUDIO_CLIENT_H_
 
 #include <stdint.h>
 
@@ -11,9 +11,9 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // The CrasAudioClient implementation used on Linux desktop.
 class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
@@ -146,6 +146,11 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_AUDIO_FAKE_CRAS_AUDIO_CLIENT_H_
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::FakeCrasAudioClient;
+}
+
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_FAKE_CRAS_AUDIO_CLIENT_H_

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 
 #include <utility>
 
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -379,4 +379,4 @@ AudioNodeList::iterator FakeCrasAudioClient::FindNode(uint64_t node_id) {
       [node_id](const AudioNode& node) { return node_id == node.id; });
 }
 
-}  // namespace chromeos
+}  // namespace ash

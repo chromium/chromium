@@ -54,7 +54,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/audio/cras_audio_handler.h"
-#include "chromeos/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #endif
 
 using ::testing::_;
@@ -329,7 +329,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
                             base::Unretained(this)));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::CrasAudioClient::InitializeFake();
+    ash::CrasAudioClient::InitializeFake();
     ash::CrasAudioHandler::InitializeForTesting();
 #endif
   }
@@ -338,7 +338,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
     audio_manager_->Shutdown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::CrasAudioHandler::Shutdown();
-    chromeos::CrasAudioClient::Shutdown();
+    ash::CrasAudioClient::Shutdown();
 #endif
   }
 

@@ -24,7 +24,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/audio/cras_audio_handler.h"
-#include "chromeos/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #endif
 
 namespace content {
@@ -148,7 +148,7 @@ OutOfProcessPPAPITest::OutOfProcessPPAPITest() {
 
 void OutOfProcessPPAPITest::SetUp() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::CrasAudioClient::InitializeFake();
+  ash::CrasAudioClient::InitializeFake();
   ash::CrasAudioHandler::InitializeForTesting();
 #endif
   ContentBrowserTest::SetUp();
@@ -158,7 +158,7 @@ void OutOfProcessPPAPITest::TearDown() {
   ContentBrowserTest::TearDown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::CrasAudioHandler::Shutdown();
-  chromeos::CrasAudioClient::Shutdown();
+  ash::CrasAudioClient::Shutdown();
 #endif
 }
 

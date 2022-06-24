@@ -1896,7 +1896,7 @@ test("content_browsertests") {
   if (is_chromeos_ash) {
     deps += [
       "//ash/components/audio",
-      "//chromeos/dbus/audio",
+      "//chromeos/ash/components/dbus/audio",
       "//chromeos/system",
     ]
   }
@@ -2875,7 +2875,7 @@ test("content_unittests") {
     deps += [
       "//ash/components/audio",
       "//ash/constants:constants",
-      "//chromeos/dbus/audio",
+      "//chromeos/ash/components/dbus/audio",
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",
     ]

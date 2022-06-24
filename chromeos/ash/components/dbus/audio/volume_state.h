@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_AUDIO_VOLUME_STATE_H_
-#define CHROMEOS_DBUS_AUDIO_VOLUME_STATE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_VOLUME_STATE_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_VOLUME_STATE_H_
 
 #include <stdint.h>
 
@@ -11,7 +11,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 struct COMPONENT_EXPORT(DBUS_AUDIO) VolumeState {
   int32_t output_volume;
@@ -24,6 +24,6 @@ struct COMPONENT_EXPORT(DBUS_AUDIO) VolumeState {
   std::string ToString() const;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_AUDIO_VOLUME_STATE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_VOLUME_STATE_H_

@@ -452,7 +452,7 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     deps += [
       "//ash/components/audio",
-      "//chromeos/dbus/audio",
+      "//chromeos/ash/components/dbus/audio",
     ]
 
     if (use_cras) {

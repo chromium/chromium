@@ -21,9 +21,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/audio/audio_node.h"
-#include "chromeos/dbus/audio/cras_audio_client.h"
-#include "chromeos/dbus/audio/volume_state.h"
+#include "chromeos/ash/components/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/volume_state.h"
 #include "media/base/video_facing.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -52,7 +52,7 @@ using OnNoiseCancellationSupportedCallback = base::OnceCallback<void()>;
 // This class is not thread safe. The public functions should be called on
 // browser main thread.
 class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
-    : public chromeos::CrasAudioClient::Observer,
+    : public CrasAudioClient::Observer,
       public ui::MicrophoneMuteSwitchMonitor::Observer,
       public AudioPrefObserver,
       public media::VideoCaptureObserver,
@@ -432,7 +432,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
  private:
   friend class CrasAudioHandlerTest;
 
-  // chromeos::CrasAudioClient::Observer overrides.
+  // CrasAudioClient::Observer overrides.
   void AudioClientRestarted() override;
   void NodesChanged() override;
   void ActiveOutputNodeChanged(uint64_t node_id) override;
@@ -481,8 +481,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Sets up the additional active audio node's state.
   void SetupAdditionalActiveAudioNodeState(uint64_t node_id);
 
-  AudioDevice ConvertAudioNodeWithModifiedPriority(
-      const chromeos::AudioNode& node);
+  AudioDevice ConvertAudioNodeWithModifiedPriority(const AudioNode& node);
 
   const AudioDevice* GetDeviceFromStableDeviceId(
       uint64_t stable_device_id) const;
@@ -525,7 +524,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Updates the current audio nodes list and switches the active device
   // if needed.
-  void UpdateDevicesAndSwitchActive(const chromeos::AudioNodeList& nodes);
+  void UpdateDevicesAndSwitchActive(const AudioNodeList& nodes);
 
   // Returns true if the current active device is changed to
   // |new_active_device|.
@@ -537,14 +536,14 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // *|device_removed| indicates if any devices have been removed.
   // *|active_device_removed| indicates if the current active device has been
   // removed.
-  bool HasDeviceChange(const chromeos::AudioNodeList& new_nodes,
+  bool HasDeviceChange(const AudioNodeList& new_nodes,
                        bool is_input,
                        AudioDevicePriorityQueue* new_discovered,
                        bool* device_removed,
                        bool* active_device_removed);
 
   // Handles dbus callback for GetNodes.
-  void HandleGetNodes(absl::optional<chromeos::AudioNodeList> node_list);
+  void HandleGetNodes(absl::optional<AudioNodeList> node_list);
 
   void HandleGetNumActiveOutputStreams(
       absl::optional<int> num_active_output_streams);

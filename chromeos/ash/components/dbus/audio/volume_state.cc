@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/audio/volume_state.h"
+#include "chromeos/ash/components/dbus/audio/volume_state.h"
 
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 
-namespace chromeos {
+namespace ash {
 
 VolumeState::VolumeState()
     : output_volume(0),
@@ -29,4 +29,4 @@ std::string VolumeState::ToString() const {
   return result;
 }
 
-}  // namespace chromeos
+}  // namespace ash

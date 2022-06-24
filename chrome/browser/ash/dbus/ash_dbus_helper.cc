@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
@@ -49,7 +50,6 @@
 #include "chromeos/dbus/arc/arc_camera_client.h"
 #include "chromeos/dbus/arc/arc_sensor_service_client.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/audio/cras_audio_client.h"
 #include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -126,7 +126,7 @@ void InitializeDBus() {
   InitializeDBusClient<CiceroneClient>(bus);
   // ConciergeClient depends on CiceroneClient.
   InitializeDBusClient<ConciergeClient>(bus);
-  InitializeDBusClient<chromeos::CrasAudioClient>(bus);
+  InitializeDBusClient<CrasAudioClient>(bus);
   InitializeDBusClient<cros_healthd::CrosHealthdClient>(bus);
   InitializeDBusClient<chromeos::CryptohomeMiscClient>(bus);
   InitializeDBusClient<chromeos::CryptohomePkcs11Client>(bus);
@@ -262,7 +262,7 @@ void ShutdownDBus() {
   chromeos::CryptohomePkcs11Client::Shutdown();
   chromeos::CryptohomeMiscClient::Shutdown();
   cros_healthd::CrosHealthdClient::Shutdown();
-  chromeos::CrasAudioClient::Shutdown();
+  CrasAudioClient::Shutdown();
   ConciergeClient::Shutdown();
   CiceroneClient::Shutdown();
   chromeos::CdmFactoryDaemonClient::Shutdown();

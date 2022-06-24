@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_AUDIO_CRAS_AUDIO_CLIENT_H_
-#define CHROMEOS_DBUS_AUDIO_CRAS_AUDIO_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_CRAS_AUDIO_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_CRAS_AUDIO_CLIENT_H_
 
 #include <stdint.h>
 
@@ -14,8 +14,8 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "chromeos/dbus/audio/audio_node.h"
-#include "chromeos/dbus/audio/volume_state.h"
+#include "chromeos/ash/components/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/volume_state.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -23,7 +23,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // CrasAudioClient is used to communicate with the cras audio dbus interface.
 class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
@@ -243,12 +243,11 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   virtual ~CrasAudioClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::CrasAudioClient;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::CrasAudioClient;
 }
 
-#endif  // CHROMEOS_DBUS_AUDIO_CRAS_AUDIO_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_CRAS_AUDIO_CLIENT_H_

@@ -30,9 +30,6 @@
 namespace ash {
 namespace {
 
-using ::chromeos::AudioNode;
-using ::chromeos::AudioNodeList;
-using ::chromeos::CrasAudioClient;
 using ::std::max;
 using ::std::min;
 

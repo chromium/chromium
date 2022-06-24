@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_AUDIO_AUDIO_NODE_H_
-#define CHROMEOS_DBUS_AUDIO_AUDIO_NODE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_AUDIO_NODE_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_AUDIO_NODE_H_
 
 #include <stdint.h>
 
@@ -12,7 +12,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 // Structure to hold AudioNode data received from cras.
 struct COMPONENT_EXPORT(DBUS_AUDIO) AudioNode {
@@ -55,6 +55,11 @@ struct COMPONENT_EXPORT(DBUS_AUDIO) AudioNode {
 
 typedef std::vector<AudioNode> AudioNodeList;
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_AUDIO_AUDIO_NODE_H_
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::AudioNode;
+}
+
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_AUDIO_AUDIO_NODE_H_

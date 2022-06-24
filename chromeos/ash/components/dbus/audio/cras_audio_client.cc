@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 
 #include <stdint.h>
 
@@ -12,14 +12,14 @@
 #include "base/callback_helpers.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -1147,4 +1147,4 @@ CrasAudioClient* CrasAudioClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

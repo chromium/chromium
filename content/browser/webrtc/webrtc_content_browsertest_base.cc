@@ -23,7 +23,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/audio/cras_audio_handler.h"
-#include "chromeos/dbus/audio/cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #endif
 
 namespace content {
@@ -44,7 +44,7 @@ void WebRtcContentBrowserTestBase::SetUp() {
   // We need pixel output when we dig pixels out of video tags for verification.
   EnablePixelOutput();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::CrasAudioClient::InitializeFake();
+  ash::CrasAudioClient::InitializeFake();
   ash::CrasAudioHandler::InitializeForTesting();
 #endif
   ContentBrowserTest::SetUp();
@@ -56,7 +56,7 @@ void WebRtcContentBrowserTestBase::TearDown() {
   ContentBrowserTest::TearDown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::CrasAudioHandler::Shutdown();
-  chromeos::CrasAudioClient::Shutdown();
+  ash::CrasAudioClient::Shutdown();
 #endif
 }
 

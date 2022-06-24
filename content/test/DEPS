@@ -12,7 +12,7 @@ include_rules = [
 
   # For WebRTC tests.
   "+ash/components/audio",
-  "+chromeos/dbus/audio",
+  "+chromeos/ash/components/dbus/audio",
   "+chromeos/network/network_handler.h",
   "+chromeos/network/network_state.h",
   "+chromeos/network/network_state_handler.h",

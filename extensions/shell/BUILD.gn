@@ -231,8 +231,8 @@ source_set("app_shell_lib") {
       "//ash/components/audio",
       "//ash/components/disks",
       "//ash/constants",
+      "//chromeos/ash/components/dbus/audio",
       "//chromeos/dbus",
-      "//chromeos/dbus/audio",
       "//chromeos/dbus/hermes",
       "//chromeos/dbus/power",
       "//chromeos/login/login_state",
@@ -362,8 +362,8 @@ test("app_shell_unittests") {
     ]
     deps += [
       "//ash/components/audio",
+      "//chromeos/ash/components/dbus/audio",
       "//chromeos/dbus:test_support",
-      "//chromeos/dbus/audio",
       "//chromeos/dbus/power",
     ]
   }

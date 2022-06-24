@@ -12,7 +12,7 @@
 #include "ash/components/audio/audio_devices_pref_handler.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/ref_counted.h"
-#include "chromeos/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +81,7 @@ const uint32_t kInputAudioEffect = 1;
 const uint32_t kOutputAudioEffect = 0;
 
 AudioDevice CreateAudioDevice(const AudioNodeInfo& info, int version) {
-  return AudioDevice(chromeos::AudioNode(
+  return AudioDevice(AudioNode(
       info.is_input, info.id, version == 2, info.id /* stable_device_id_v1 */,
       version == 1 ? 0 : info.id ^ 0xFF /* stable_device_id_v2 */,
       info.device_name, info.type, info.name, false, 0,

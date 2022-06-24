@@ -13,7 +13,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/switches.h"
@@ -25,9 +25,9 @@ namespace extensions {
 
 using ::ash::AudioDevice;
 using ::ash::AudioDeviceList;
+using ::ash::AudioNode;
+using ::ash::AudioNodeList;
 using ::ash::CrasAudioHandler;
-using ::chromeos::AudioNode;
-using ::chromeos::AudioNodeList;
 
 const uint64_t kJabraSpeaker1Id = 30001;
 const uint64_t kJabraSpeaker1StableDeviceId = 80001;
@@ -110,8 +110,8 @@ class AudioApiTest : public ShellApiTest {
   }
 
   void ChangeAudioNodes(const AudioNodeList& audio_nodes) {
-    chromeos::FakeCrasAudioClient::Get()
-        ->SetAudioNodesAndNotifyObserversForTesting(audio_nodes);
+    ash::FakeCrasAudioClient::Get()->SetAudioNodesAndNotifyObserversForTesting(
+        audio_nodes);
     base::RunLoop().RunUntilIdle();
   }
 

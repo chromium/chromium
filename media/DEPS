@@ -38,13 +38,13 @@ include_rules = [
 
 specific_include_rules = {
   "audio_manager_unittest.cc": [
-    "+chromeos/dbus"
+    "+chromeos/ash/components/dbus"
   ],
   "cras_input_unittest.cc": [
-    "+chromeos/dbus"
+    "+chromeos/ash/components/dbus"
   ],
   "cras_unified_unittest.cc": [
-    "+chromeos/dbus"
+    "+chromeos/ash/components/dbus"
   ],
   "fuchsia_video_decoder_unittest.cc": [
     "+components/viz/test/test_context_support.h",
