@@ -849,7 +849,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     self.settingsDestination,
   ];
 
-  if (IsSmartSortingNewOverflowMenuEnabled()) {
+  if (self.destinationUsageHistory && IsSmartSortingNewOverflowMenuEnabled()) {
     baseDestinations = [self.destinationUsageHistory
         generateDestinationsList:baseDestinations];
   }
