@@ -1794,6 +1794,8 @@ crbug.com/1147859 virtual/css-highlight-overlay-painting/* [ Skip ]
 
 crbug.com/1303102 external/wpt/css/css-images/object-view-box* [ Skip ]
 
+crbug.com/1303102 virtual/document-transition/wpt_internal/document-transition/new-content-with-overflow-zoomed.html [ Skip ]
+crbug.com/1303102 virtual/document-transition/wpt_internal/document-transition/old-content-with-overflow-zoomed.html [ Skip ]
 crbug.com/1321217 virtual/document-transition/wpt_internal/document-transition/old-content-with-overflow.html [ Skip ]
 crbug.com/1321217 virtual/document-transition/wpt_internal/document-transition/new-content-with-overflow.html [ Skip ]
 crbug.com/1303102 virtual/document-transition/wpt_internal/document-transition/no-root-capture.html [ Skip ]

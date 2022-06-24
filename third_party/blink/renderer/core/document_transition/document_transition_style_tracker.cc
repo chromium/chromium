@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/document_transition/document_transition_style_tracker.h"
 
+#include <limits>
+
 #include "components/viz/common/shared_element_resource_id.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -416,7 +418,6 @@ void DocumentTransitionStyleTracker::CaptureResolved() {
     element_data->cached_border_box_size_in_css_space =
         element_data->border_box_size_in_css_space;
     element_data->cached_viewport_matrix = element_data->viewport_matrix;
-    element_data->cached_device_pixel_ratio = element_data->device_pixel_ratio;
     element_data->cached_visual_overflow_rect_in_layout_space =
         element_data->visual_overflow_rect_in_layout_space;
     element_data->effect_node = nullptr;
@@ -687,7 +688,7 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
       continue;
     }
 
-    float device_pixel_ratio = document_->DevicePixelRatio();
+    const float device_pixel_ratio = document_->DevicePixelRatio();
     TransformationMatrix viewport_matrix =
         layout_object->LocalToAbsoluteTransform();
     viewport_matrix.Zoom(1.0 / device_pixel_ratio);
@@ -703,6 +704,11 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
                          LayoutUnit(entry_size->blockSize()))
             : LayoutSize(LayoutUnit(entry_size->blockSize()),
                          LayoutUnit(entry_size->inlineSize()));
+    if (float effective_zoom = layout_object->StyleRef().EffectiveZoom();
+        std::abs(effective_zoom - device_pixel_ratio) >=
+        std::numeric_limits<float>::epsilon()) {
+      border_box_size_in_css_space.Scale(effective_zoom / device_pixel_ratio);
+    }
 
     PhysicalRect visual_overflow_rect_in_layout_space;
     if (auto* box = DynamicTo<LayoutBox>(layout_object))
@@ -713,7 +719,6 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
     if (viewport_matrix == element_data->viewport_matrix &&
         border_box_size_in_css_space ==
             element_data->border_box_size_in_css_space &&
-        device_pixel_ratio == element_data->device_pixel_ratio &&
         visual_overflow_rect_in_layout_space ==
             element_data->visual_overflow_rect_in_layout_space &&
         writing_mode == element_data->container_writing_mode) {
@@ -722,7 +727,6 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
 
     element_data->viewport_matrix = viewport_matrix;
     element_data->border_box_size_in_css_space = border_box_size_in_css_space;
-    element_data->device_pixel_ratio = device_pixel_ratio;
     element_data->visual_overflow_rect_in_layout_space =
         visual_overflow_rect_in_layout_space;
     element_data->container_writing_mode = writing_mode;
@@ -965,6 +969,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
         })CSS");
   }
 
+  float device_pixel_ratio = document_->DevicePixelRatio();
   for (auto& entry : element_data_map_) {
     const auto& document_transition_tag = entry.key.GetString();
     auto& element_data = entry.value;
@@ -988,8 +993,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
           height: %dpx;
           transform: %s;
           writing-mode: %s;
-        }
-        )CSS",
+        })CSS",
         border_box_in_css_space.width(), border_box_in_css_space.height(),
         ComputedStyleUtils::ValueForTransformationMatrix(
             element_data->viewport_matrix, 1, false)
@@ -998,7 +1002,6 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
             .c_str(),
         writing_mode_stream.str().c_str());
 
-    float device_pixel_ratio = document_->DevicePixelRatio();
     absl::optional<String> incoming_inset = ComputeInsetDifference(
         element_data->visual_overflow_rect_in_layout_space,
         border_box_in_css_space, device_pixel_ratio);
@@ -1008,8 +1011,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
       builder.AppendFormat(
           R"CSS({
             object-view-box: %s;
-          }
-          )CSS",
+          })CSS",
           incoming_inset->Utf8().c_str());
     }
 
@@ -1022,8 +1024,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
       builder.AppendFormat(
           R"CSS({
             object-view-box: %s;
-          }
-          )CSS",
+          })CSS",
           outgoing_inset->Utf8().c_str());
     }
 
@@ -1042,8 +1043,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
              width: %dpx;
              height: %dpx;
             }
-           }
-           )CSS",
+          })CSS",
           ComputedStyleUtils::ValueForTransformationMatrix(
               element_data->cached_viewport_matrix, 1, false)
               ->CssText()
