@@ -108,29 +108,29 @@ TEST(ProtocolTraits, PrimitiveValueSerialization) {
 }
 
 template <typename... Args>
-std::vector<base::Value> MakeList(Args&&... args) {
-  std::vector<base::Value> res;
-  (res.push_back(base::Value(std::forward<Args>(args))), ...);
+base::Value::List MakeList(Args&&... args) {
+  base::Value::List res;
+  (res.Append(std::forward<Args>(args)), ...);
   return res;
 }
 
 TEST(ProtocolTraits, ListValueSerialization) {
-  EXPECT_THAT(
-      ConvertTo<std::vector<int>>(base::Value(std::vector<base::Value>())),
-      Eq(std::vector<int>()));
-  EXPECT_THAT(RoundTrip(base::Value(std::vector<base::Value>())),
-              IsJson(base::Value(base::Value::Type::LIST)));
+  EXPECT_THAT(ConvertTo<std::vector<int>>(base::Value(base::Value::List())),
+              Eq(std::vector<int>()));
+  EXPECT_THAT(RoundTrip(base::Value(base::Value::List())),
+              IsJson(base::Value(base::Value::List())));
 
-  std::vector<base::Value> list = MakeList(2, 3, 5);
-  EXPECT_THAT(ConvertTo<std::vector<int>>(base::Value(list)),
+  base::Value::List list = MakeList(2, 3, 5);
+  base::Value list_value = base::Value(list.Clone());
+  EXPECT_THAT(ConvertTo<std::vector<int>>(list_value),
               Eq(std::vector<int>{2, 3, 5}));
-  EXPECT_THAT(ConvertTo<base::Value>(list), IsJson(base::Value(list)));
-  EXPECT_THAT(RoundTrip(base::Value(list)), IsJson(base::Value(list)));
+  EXPECT_THAT(ConvertTo<base::Value>(list), IsJson(list_value));
+  EXPECT_THAT(RoundTrip(list_value), IsJson(list_value));
 
-  std::vector<base::Value> list_of_lists =
-      MakeList(list, MakeList("foo", "bar", "bazz"), MakeList(base::Value()));
-  EXPECT_THAT(RoundTrip(base::Value(list_of_lists)),
-              IsJson(base::Value(list_of_lists)));
+  base::Value list_of_lists_value =
+      base::Value(MakeList(list_value.Clone(), MakeList("foo", "bar", "bazz"),
+                           MakeList(base::Value())));
+  EXPECT_THAT(RoundTrip(list_of_lists_value), IsJson(list_of_lists_value));
 }
 
 TEST(ProtocolTraits, DictValueSerialization) {

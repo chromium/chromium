@@ -25,7 +25,7 @@ namespace traits {
 using String = std::string;
 using Value = base::Value;
 using DictionaryValue = base::Value::Dict;
-using ListValue = std::vector<base::Value>;
+using ListValue = base::Value::List;
 
 }  // namespace traits
 
@@ -46,6 +46,13 @@ struct CRDTP_EXPORT ProtocolTypeTraits<traits::DictionaryValue> {
   static bool Deserialize(DeserializerState* state,
                           traits::DictionaryValue* value);
   static void Serialize(const traits::DictionaryValue& value,
+                        std::vector<uint8_t>* bytes);
+};
+
+template <>
+struct CRDTP_EXPORT ProtocolTypeTraits<traits::ListValue> {
+  static bool Deserialize(DeserializerState* state, traits::ListValue* value);
+  static void Serialize(const traits::ListValue& value,
                         std::vector<uint8_t>* bytes);
 };
 
