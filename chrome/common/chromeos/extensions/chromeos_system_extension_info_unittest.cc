@@ -7,8 +7,8 @@
 #include "base/command_line.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(ChromeOSSystemExtensionInfo, AllowlistedExtensionsSizeEqualsToOne) {
-  ASSERT_EQ(2u, chromeos::GetChromeOSSystemExtensionInfosSize());
+TEST(ChromeOSSystemExtensionInfo, CheckAllowlistedExtensionsSize) {
+  ASSERT_EQ(3u, chromeos::GetChromeOSSystemExtensionInfosSize());
 }
 
 TEST(ChromeOSSystemExtensionInfo, GoogleExtension) {
@@ -29,6 +29,16 @@ TEST(ChromeOSSystemExtensionInfo, HPExtension) {
       chromeos::GetChromeOSExtensionInfoForId(hp_extension_id);
   EXPECT_EQ("HP", extension_info.manufacturer);
   EXPECT_EQ("https://hpcs-appschr.hpcloud.hp.com/*", extension_info.pwa_origin);
+}
+
+TEST(ChromeOSSystemExtensionInfo, ASUSExtension) {
+  const auto& asus_extension_id = "hdnhcpcfohaeangjpkcjkgmgmjanbmeo";
+  ASSERT_TRUE(chromeos::IsChromeOSSystemExtension(asus_extension_id));
+
+  const auto extension_info =
+      chromeos::GetChromeOSExtensionInfoForId(asus_extension_id);
+  EXPECT_EQ("ASUS", extension_info.manufacturer);
+  EXPECT_EQ("https://dlcdnccls.asus.com/*", extension_info.pwa_origin);
 }
 
 TEST(ChromeOSSystemExtensionInfo, ManufacturerOverride) {

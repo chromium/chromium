@@ -38,7 +38,10 @@ const ChromeOSSystemExtensionInfos& getMap() {
        {/*manufacturer=*/"HP", /*pwa_origin=*/"*://www.google.com/*"}},
       {/*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",
        {/*manufacturer=*/"HP",
-        /*pwa_origin=*/"https://hpcs-appschr.hpcloud.hp.com/*"}}};
+        /*pwa_origin=*/"https://hpcs-appschr.hpcloud.hp.com/*"}},
+      {/*extension_id=*/"hdnhcpcfohaeangjpkcjkgmgmjanbmeo",
+       {/*manufacturer=*/"ASUS",
+        /*pwa_origin=*/"https://dlcdnccls.asus.com/*"}}};
 
   return kExtensionIdToExtensionInfoMap;
 }
