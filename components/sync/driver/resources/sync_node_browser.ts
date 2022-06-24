@@ -6,26 +6,22 @@ import 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {getAllNodes} from './chrome_sync.js';
+import {getAllNodes, SyncNode, SyncNodeMap} from './chrome_sync.js';
 
 /**
  * A helper function to determine if a node is the root of its type.
- *
- * @param {!Object} node The node to check.
  */
-function isTypeRootNode(node) {
+function isTypeRootNode(node: SyncNode): boolean {
   return node.PARENT_ID === 'r' && node.UNIQUE_SERVER_TAG !== '';
 }
 
 /**
  * A helper function to determine if a node is a child of the given parent.
- *
- * @param {!Object} parent node.
- * @param {!Object} node The node to check.
  */
-function isChildOf(parentNode, node) {
+function isChildOf(parentNode: SyncNode, node: SyncNode) {
   if (node.PARENT_ID !== '') {
     return node.PARENT_ID === parentNode.ID;
   } else {
@@ -42,10 +38,10 @@ function isChildOf(parentNode, node) {
  * If this proves to be slow and expensive, we should experiment with moving
  * this functionality to C++ instead.
  */
-function nodeComparator(nodeA, nodeB) {
+function nodeComparator(nodeA: SyncNode, nodeB: SyncNode): number {
   if (nodeA.hasOwnProperty('positionIndex') &&
       nodeB.hasOwnProperty('positionIndex')) {
-    return nodeA.positionIndex - nodeB.positionIndex;
+    return nodeA.positionIndex! - nodeB.positionIndex!;
   } else if (nodeA.NON_UNIQUE_NAME !== nodeB.NON_UNIQUE_NAME) {
     return nodeA.NON_UNIQUE_NAME.localeCompare(nodeB.NON_UNIQUE_NAME);
   } else {
@@ -55,60 +51,69 @@ function nodeComparator(nodeA, nodeB) {
 
 /**
  * Updates the node detail view with the details for the given node.
- * @param {!Object} node The struct representing the node we want to display.
+ * @param node The struct representing the node we want to display.
  */
-function updateNodeDetailView(node) {
-  const nodeDetailsView = $('node-details');
+function updateNodeDetailView(node: CrTreeItemElement) {
+  const nodeDetailsView = document.querySelector<HTMLElement>('#node-details');
+  assert(nodeDetailsView);
   nodeDetailsView.hidden = false;
-  jstProcess(new JsEvalContext(node.detail.payload), nodeDetailsView);
+  const detail = node.detail as {payload: SyncNode};
+  jstProcess(new JsEvalContext(detail.payload), nodeDetailsView);
 }
 
 /**
  * Updates the 'Last refresh time' display.
- * @param {string} str The text to display.
+ * @param str The text to display.
  */
-function setLastRefreshTime(str) {
-  $('node-browser-refresh-time').textContent = str;
+function setLastRefreshTime(str: string) {
+  const refreshTime =
+      document.querySelector<HTMLElement>('#node-browser-refresh-time');
+  assert(refreshTime);
+  refreshTime.textContent = str;
 }
 
 /**
  * Clears any existing UI state.  Useful prior to a refresh.
  */
 function clear() {
-  const treeContainer = $('sync-node-tree-container');
+  const treeContainer =
+      document.querySelector<HTMLElement>('#sync-node-tree-container');
+  assert(treeContainer);
   while (treeContainer.firstChild) {
     treeContainer.removeChild(treeContainer.firstChild);
   }
 
-  const nodeDetailsView = $('node-details');
+  const nodeDetailsView = document.querySelector<HTMLElement>('#node-details');
+  assert(nodeDetailsView);
   nodeDetailsView.hidden = true;
 }
 
-function setNode(treeItem, node) {
-  treeItem.detail.payload = node;
+function setNode(treeItem: CrTreeItemElement, node: SyncNode) {
+  (treeItem.detail as {payload: SyncNode}).payload = node;
   treeItem.label = node.NON_UNIQUE_NAME;
   if (node.IS_DIR) {
     treeItem.toggleAttribute('may-have-children', true);
 
     // Load children on expand.
     treeItem.toggleAttribute('expanded', false);
-    treeItem.addEventListener('cr-tree-item-expand', handleExpand(treeItem));
+    treeItem.addEventListener(
+        'cr-tree-item-expand', () => handleExpand(treeItem));
   } else {
     treeItem.classList.add('leaf');
   }
 }
 
-function handleExpand(treeItem) {
+function handleExpand(treeItem: CrTreeItemElement) {
   if (treeItem.hasChildren) {
     return;
   }
 
-  const treeItemData = treeItem.detail.payload;
-  const treeData = treeItem.tree.detail.payload;
+  const treeItemData = (treeItem.detail as {payload: SyncNode}).payload;
+  const treeData = (treeItem.tree!.detail as {payload: SyncNode[]}).payload;
   const children = treeData.filter(node => isChildOf(treeItemData, node));
   children.sort(nodeComparator);
 
-  children.forEach(function(node) {
+  children.forEach(function(node: SyncNode) {
     const item = document.createElement('cr-tree-item');
     treeItem.add(item);
     setNode(item, node);
@@ -119,24 +124,29 @@ function handleExpand(treeItem) {
  * Fetch the latest set of nodes and refresh the UI.
  */
 function refresh() {
-  $('node-browser-refresh-button').disabled = true;
+  const refreshButton =
+      document.querySelector<HTMLButtonElement>('#node-browser-refresh-button');
+  assert(refreshButton);
+  refreshButton.disabled = true;
 
   clear();
   setLastRefreshTime('In progress since ' + (new Date()).toLocaleString());
 
-  getAllNodes(function(nodeMap) {
-    let nodes = [];
+  getAllNodes(function(nodeMap: SyncNodeMap) {
+    let nodes: SyncNode[] = [];
     if (nodeMap && nodeMap.length > 0) {
       // Put all nodes into one big list that ignores the type.
       nodes = nodeMap.map(x => x.nodes).reduce((a, b) => a.concat(b));
     }
 
-    const treeContainer = $('sync-node-tree-container');
+    const treeContainer =
+        document.querySelector<HTMLElement>('#sync-node-tree-container');
+    assert(treeContainer);
     const tree = document.createElement('cr-tree');
     tree.id = 'sync-node-tree';
     tree.addEventListener('cr-tree-change', () => {
       if (tree.selectedItem) {
-        updateNodeDetailView(tree.selectedItem);
+        updateNodeDetailView(tree.selectedItem as CrTreeItemElement);
       }
     });
     treeContainer.appendChild(tree);
@@ -151,27 +161,36 @@ function refresh() {
     });
 
     setLastRefreshTime((new Date()).toLocaleString());
-    $('node-browser-refresh-button').disabled = false;
+    refreshButton.disabled = false;
   });
 }
 
-document.addEventListener('DOMContentLoaded', function(e) {
-  $('node-browser-refresh-button').addEventListener('click', refresh);
-  const splitter = document.querySelector('#sync-node-splitter');
+document.addEventListener('DOMContentLoaded', () => {
+  const refreshButton =
+      document.querySelector<HTMLButtonElement>('#node-browser-refresh-button');
+  assert(refreshButton);
+  refreshButton.addEventListener('click', refresh);
+  const splitter = document.querySelector<HTMLElement>('#sync-node-splitter');
+  assert(splitter);
   splitter.addEventListener('resize', () => {
-    const treeElement = document.querySelector('#sync-node-tree-container');
+    const treeElement =
+        document.querySelector<HTMLElement>('#sync-node-tree-container');
+    assert(treeElement);
     const newWidth = parseFloat(treeElement.style.width);
     treeElement.style.minWidth = Math.max(newWidth, 50) + 'px';
   });
 
   // Automatically trigger a refresh the first time this tab is selected.
-  document.querySelector('cr-tab-box')
-      .addEventListener('selected-index-change', function f(e) {
-        if (document.querySelector('#sync-browser-tab')
-                .hasAttribute('selected')) {
-          document.querySelector('cr-tab-box')
-              .removeEventListener('selected-index-change', f);
-          refresh();
-        }
-      });
+  const tabBox = document.querySelector('cr-tab-box');
+  assert(tabBox);
+  tabBox.addEventListener('selected-index-change', function f() {
+    const syncBrowserTab =
+        document.querySelector<HTMLElement>('#sync-browser-tab');
+    assert(syncBrowserTab);
+    if (syncBrowserTab.hasAttribute('selected')) {
+      assert(tabBox);
+      tabBox.removeEventListener('selected-index-change', f);
+      refresh();
+    }
+  });
 });

@@ -16,8 +16,8 @@ import './search.js';
 import './strings.m.js';
 import './invalidations.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
 
 // Allow platform specific CSS rules.
 //
@@ -27,4 +27,6 @@ if (isWindows) {
   document.documentElement.setAttribute('os', 'win');
 }
 
-document.querySelector('cr-tab-box').hidden = false;
+const tabBox = document.querySelector('cr-tab-box');
+assert(tabBox);
+tabBox.hidden = false;

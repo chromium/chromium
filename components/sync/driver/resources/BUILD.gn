@@ -20,18 +20,18 @@ preprocess_if_expr("preprocess_css") {
 }
 
 #TODO(crbug.com/986001): Migrate the files below to TypeScript.
-preprocessed_files = [ "sync_index.js" ]
+preprocessed_files = [ "sync_index.ts" ]
 non_preprocessed_files = [
   "about.js",
   "chrome_sync.ts",
   "data.js",
   "invalidations.js",
   "search.ts",
-  "sync_log.js",
-  "sync_node_browser.js",
+  "sync_log.ts",
+  "sync_node_browser.ts",
   "sync_search.ts",
   "traffic_log.js",
-  "user_events.js",
+  "user_events.ts",
 ]
 
 preprocess_if_expr("preprocess") {
@@ -53,6 +53,7 @@ ts_library("build_ts") {
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
+    "jstemplate.d.ts",
   ]
   deps = [ "//ui/webui/resources:library" ]
   extra_deps = [

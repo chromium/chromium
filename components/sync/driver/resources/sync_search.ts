@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {getAllNodes, SyncNodeList, SyncNodeMap, Timer} from './chrome_sync.js';
+import {getAllNodes, SyncNode, SyncNodeMap, Timer} from './chrome_sync.js';
 
 const ERROR_ATTR: string = 'error';
 const SELECTED_ATTR: string = 'selected';
@@ -131,7 +131,7 @@ export class SyncSearchManager {
       const regex = new RegExp(query);
       getAllNodes((nodeMap: SyncNodeMap) => {
         // Put all nodes into one big list that ignores the type.
-        const nodes: SyncNodeList =
+        const nodes: SyncNode[] =
             nodeMap.map(x => x.nodes).reduce((a, b) => a.concat(b));
         if (this.currSearchId_ !== searchId) {
           return;
