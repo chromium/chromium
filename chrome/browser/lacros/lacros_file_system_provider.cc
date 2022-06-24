@@ -162,3 +162,8 @@ void LacrosFileSystemProvider::OnExtensionUnloaded(
           extension->id(),
           reason == extensions::UnloadedExtensionReason::PROFILE_SHUTDOWN);
 }
+
+void LacrosFileSystemProvider::OnShutdown(
+    extensions::ExtensionRegistry* registry) {
+  extension_observation_.Reset();
+}

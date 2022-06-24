@@ -41,6 +41,7 @@ class LacrosFileSystemProvider : public crosapi::mojom::FileSystemProvider,
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const extensions::Extension* extension,
                            extensions::UnloadedExtensionReason reason) override;
+  void OnShutdown(extensions::ExtensionRegistry* registry) override;
 
  private:
   // Mojo endpoint that's responsible for receiving messages from Ash.
