@@ -495,13 +495,20 @@ void DisplayOverlayController::OnApplyMenuState() {
 }
 
 void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED)
-    ProcessPressedEvent(*event);
+  if (display_mode_ == DisplayMode::kView ||
+      event->type() != ui::ET_MOUSE_PRESSED) {
+    return;
+  }
+
+  ProcessPressedEvent(*event);
 }
 
 void DisplayOverlayController::OnTouchEvent(ui::TouchEvent* event) {
-  if (event->type() == ui::ET_TOUCH_PRESSED)
-    ProcessPressedEvent(*event);
+  if (display_mode_ == DisplayMode::kView ||
+      event->type() != ui::ET_TOUCH_PRESSED) {
+    return;
+  }
+  ProcessPressedEvent(*event);
 }
 
 void DisplayOverlayController::OnColorModeChanged(bool dark_mode_enabled) {

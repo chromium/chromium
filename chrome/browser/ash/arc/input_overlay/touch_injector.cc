@@ -490,7 +490,15 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     if (new_touch_event)
       return SendEventFinally(continuation, new_touch_event.get());
 
-    return DiscardEvent(continuation);
+    // TODO(b/237037540): workaround for b/233785660. Theoretically it
+    // should discard the event if original touch-move or touch-release with
+    // same ID is not rewritten due to missing original touch-press. But
+    // thinking of real world user cases, it's unlikely to trigger any issues
+    // with sending original event. The logic is already complicated in
+    // |RewriteEvent()| so here it uses a workaround. The menu entry will be
+    // removed and simplify the logic in future version, then it will be
+    // fundamentally improved.
+    return SendEvent(continuation, &event);
   }
 
   if (mouse_lock_ && mouse_lock_->Process(event))
