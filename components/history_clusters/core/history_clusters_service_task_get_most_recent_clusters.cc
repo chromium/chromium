@@ -48,7 +48,7 @@ HistoryClustersServiceTaskGetMostRecentClusters::
 
 void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
   // Shouldn't request more clusters if history has been exhausted.
-  DCHECK(!continuation_params_.is_done);
+  DCHECK(!continuation_params_.exhausted_all_visits);
 
   if (!backend_) {
     // Early exit if we won't be able to cluster visits.

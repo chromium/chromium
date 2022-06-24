@@ -103,7 +103,14 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   QueryClustersContinuationParams continuation_params_;
 
   // Whether to begin with the most recent visits and iterate towards older
-  // visits, or vice versa.
+  // visits, or vice versa. Since persistent clustering begins with older
+  // visits, clustered visits will be older than unclustered visits (except
+  // unclustered sync visits). Therefore, when `recent_first_` is true,
+  // unclustered visits are iterated 1st and
+  // `continuation_params_.exhausted_unclustered_visits` will be set true before
+  // (or simultaneously) with `.exhausted_all_visits`. When `recent_first_` is
+  // false, both will be set true only when all visits until now have been
+  // iterated; i.e. `.exhausted_unclustered_visits == .exhausted_all_visits`.
   bool recent_first_ = true;
 
   // How many days of clustered visits to include. When 0, will return only 1

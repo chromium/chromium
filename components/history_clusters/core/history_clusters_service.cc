@@ -343,7 +343,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   // haven't reached the soft cap `max_keyword_phrases` (or there is no cap).
   constexpr char kKeywordCacheThreadTimeUmaName[] =
       "History.Clusters.KeywordCache.ThreadTime";
-  if (!continuation_params.is_done &&
+  if (!continuation_params.exhausted_all_visits &&
       (keyword_accumulator->size() < max_keyword_phrases ||
        url_keyword_accumulator->size() < max_keyword_phrases)) {
     cache_keyword_query_task_ = QueryClusters(

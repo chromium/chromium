@@ -56,7 +56,7 @@ GetAnnotatedVisitsToCluster::GetAnnotatedVisitsToCluster(
       days_of_clustered_visits_(days_of_clustered_visits),
       callback_(std::move(callback)) {
   // Callers shouldn't ask for more visits if they've been exhausted.
-  DCHECK(!continuation_params.exhausted_history);
+  DCHECK(!continuation_params.exhausted_unclustered_visits);
   DCHECK_GE(days_of_clustered_visits_, 0);
 }
 
@@ -70,7 +70,8 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
   history::QueryOptions options;
 
   // Accumulate 1 day at a time of visits to avoid breaking up clusters.
-  while (annotated_visits_.empty() && !continuation_params_.is_done) {
+  while (annotated_visits_.empty() &&
+         !continuation_params_.exhausted_all_visits) {
     // Because `base::Time::Now()` may change during the async history request,
     // and because determining whether history was exhausted depends on whether
     // the query reached `Now()`, `now` tracks `Now()` at the time the query
@@ -261,8 +262,8 @@ void GetAnnotatedVisitsToCluster::IncrementContinuationParams(
     // than now.
     if (continuation_params_.continuation_time <= begin_time_limit_ ||
         continuation_params_.continuation_time >= now) {
-      continuation_params_.exhausted_history = true;
-      continuation_params_.is_done = true;
+      continuation_params_.exhausted_unclustered_visits = true;
+      continuation_params_.exhausted_all_visits = true;
     }
   }
 }
@@ -286,7 +287,7 @@ void GetAnnotatedVisitsToCluster::AddClusteredVisits(
   // If we found a cluster and are iterating recent_first_, then we've reached
   // the cluster threshold and have no more unclustered visits remaining.
   if (!cluster_ids.empty() && recent_first_)
-    continuation_params_.exhausted_history = true;
+    continuation_params_.exhausted_unclustered_visits = true;
 
   // Add the clustered visits, adding 1 cluster at a time so that partial
   // clusters aren't added.

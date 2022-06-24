@@ -411,15 +411,15 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
   // are no 3-to-29-day-old visits.
   visits = next_query_clusters();
   EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(4));
-  EXPECT_FALSE(continuation_params.exhausted_history);
-  EXPECT_FALSE(continuation_params.is_done);
+  EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
+  EXPECT_FALSE(continuation_params.exhausted_all_visits);
 
   // 4th query should return visit 7, a 90-day-old incomplete visit, since there
   // are no 31-to-89-day-old visits.
   visits = next_query_clusters();
   EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(7));
-  EXPECT_TRUE(continuation_params.exhausted_history);
-  EXPECT_TRUE(continuation_params.is_done);
+  EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+  EXPECT_TRUE(continuation_params.exhausted_all_visits);
 }
 
 TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
@@ -450,8 +450,8 @@ TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(4));
     EXPECT_TRUE(continuation_params.is_continuation);
     EXPECT_FALSE(continuation_params.is_partial_day);
-    EXPECT_FALSE(continuation_params.exhausted_history);
-    EXPECT_FALSE(continuation_params.is_done);
+    EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
   }
   {
     // 2nd query should return the next oldest, 2-day-old visit.
@@ -461,8 +461,8 @@ TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
     EXPECT_TRUE(clusters.empty());
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(1));
     EXPECT_TRUE(continuation_params.is_continuation);
-    EXPECT_FALSE(continuation_params.exhausted_history);
-    EXPECT_FALSE(continuation_params.is_done);
+    EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
   }
   {
     // 3rd query should return the next oldest, 1-day-old visits. Visit 3 is
@@ -473,8 +473,8 @@ TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
     EXPECT_TRUE(clusters.empty());
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(5, 2));
     EXPECT_TRUE(continuation_params.is_continuation);
-    EXPECT_FALSE(continuation_params.exhausted_history);
-    EXPECT_FALSE(continuation_params.is_done);
+    EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
   }
   {
     // 4th query should return no visits; all visits were exhausted.
@@ -483,8 +483,8 @@ TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
     const auto& visits = clusters_and_visits.second;
     EXPECT_TRUE(clusters.empty());
     EXPECT_TRUE(visits.empty());
-    EXPECT_TRUE(continuation_params.exhausted_history);
-    EXPECT_TRUE(continuation_params.is_done);
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_TRUE(continuation_params.exhausted_all_visits);
   }
 }
 
@@ -513,8 +513,8 @@ TEST_F(HistoryClustersServiceTest, QueryClusteredVisits) {
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(1));
     EXPECT_TRUE(continuation_params.is_continuation);
     EXPECT_FALSE(continuation_params.is_partial_day);
-    EXPECT_FALSE(continuation_params.exhausted_history);
-    EXPECT_FALSE(continuation_params.is_done);
+    EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
   }
   {
     // 2nd query should get the 2-day-old visit and the adjacent
@@ -525,8 +525,8 @@ TEST_F(HistoryClustersServiceTest, QueryClusteredVisits) {
     const auto& visits = clusters_and_visits.second;
     EXPECT_THAT(clusters, testing::ElementsAre(1));
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(2, 5));
-    EXPECT_TRUE(continuation_params.exhausted_history);
-    EXPECT_FALSE(continuation_params.is_done);
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
   }
 }
 

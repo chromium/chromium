@@ -182,33 +182,35 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
     QueryClustersState state(nullptr, "");
 
     // If the response clusters is empty, the callback should not be invoked.
-    InjectRawClustersAndExpectNoCallback(&state, {},
-                                         {base::Time(),
-                                          /*is_continuation=*/false,
-                                          /*is_partial_day=*/false,
-                                          /*exhausted_history=*/false,
-                                          /*is_done=*/false});
+    InjectRawClustersAndExpectNoCallback(
+        &state, {},
+        {base::Time(),
+         /*is_continuation=*/false,
+         /*is_partial_day=*/false,
+         /*exhausted_unclustered_visits=*/false,
+         /*exhausted_all_visits=*/false});
 
     // Likewise if the response clusters is filtered.
-    InjectRawClustersAndExpectNoCallback(&state, {hidden_cluster},
-                                         {base::Time(),
-                                          /*is_continuation=*/false,
-                                          /*is_partial_day=*/false,
-                                          /*exhausted_history=*/false,
-                                          /*is_done=*/false});
+    InjectRawClustersAndExpectNoCallback(
+        &state, {hidden_cluster},
+        {base::Time(),
+         /*is_continuation=*/false,
+         /*is_partial_day=*/false,
+         /*exhausted_unclustered_visits=*/false,
+         /*exhausted_all_visits=*/false});
 
     // Even if the clusters is empty, the callback should be called when history
     // is exhausted.
     // Also, `is_continuation` should be false since this is the first time the
     // callbacks invoked even though there's been 2 earlier
     // `HistoryClusterService` responses.
-    auto result =
-        InjectRawClustersAndAwaitPostProcessing(&state, {},
-                                                {base::Time(),
-                                                 /*is_continuation=*/false,
-                                                 /*is_partial_day=*/false,
-                                                 /*exhausted_history=*/true,
-                                                 /*is_done=*/true});
+    auto result = InjectRawClustersAndAwaitPostProcessing(
+        &state, {},
+        {base::Time(),
+         /*is_continuation=*/false,
+         /*is_partial_day=*/false,
+         /*exhausted_unclustered_visits=*/true,
+         /*exhausted_all_visits=*/true});
     EXPECT_EQ(result.cluster_batch.size(), 0u);
     EXPECT_EQ(result.query, "");
     EXPECT_EQ(result.can_load_more, false);
@@ -220,13 +222,13 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
 
     // `is_continuation` should be false on the first callback.
     // `can_load_more` should be true on non-last callback.
-    auto result =
-        InjectRawClustersAndAwaitPostProcessing(&state, {visible_cluster},
-                                                {base::Time(),
-                                                 /*is_continuation=*/false,
-                                                 /*is_partial_day=*/false,
-                                                 /*exhausted_history=*/false,
-                                                 /*is_done=*/false});
+    auto result = InjectRawClustersAndAwaitPostProcessing(
+        &state, {visible_cluster},
+        {base::Time(),
+         /*is_continuation=*/false,
+         /*is_partial_day=*/false,
+         /*exhausted_unclustered_visits=*/false,
+         /*exhausted_all_visits=*/false});
     EXPECT_EQ(result.cluster_batch.size(), 1u);
     EXPECT_EQ(result.query, "");
     EXPECT_EQ(result.can_load_more, true);
@@ -234,26 +236,26 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
 
     // `is_continuation` should be true on non-first callback.
     // `can_load_more` should be true on non-last callback.
-    result =
-        InjectRawClustersAndAwaitPostProcessing(&state, {visible_cluster},
-                                                {base::Time(),
-                                                 /*is_continuation=*/true,
-                                                 /*is_partial_day=*/false,
-                                                 /*exhausted_history=*/false,
-                                                 /*is_done=*/false});
+    result = InjectRawClustersAndAwaitPostProcessing(
+        &state, {visible_cluster},
+        {base::Time(),
+         /*is_continuation=*/true,
+         /*is_partial_day=*/false,
+         /*exhausted_unclustered_visits=*/false,
+         /*exhausted_all_visits=*/false});
     EXPECT_EQ(result.cluster_batch.size(), 1u);
     EXPECT_EQ(result.query, "");
     EXPECT_EQ(result.can_load_more, true);
     EXPECT_EQ(result.is_continuation, true);
 
     // `can_load_more` should be false on the last callback.
-    result =
-        InjectRawClustersAndAwaitPostProcessing(&state, {visible_cluster},
-                                                {base::Time(),
-                                                 /*is_continuation=*/true,
-                                                 /*is_partial_day=*/false,
-                                                 /*exhausted_history=*/true,
-                                                 /*is_done=*/true});
+    result = InjectRawClustersAndAwaitPostProcessing(
+        &state, {visible_cluster},
+        {base::Time(),
+         /*is_continuation=*/true,
+         /*is_partial_day=*/false,
+         /*exhausted_unclustered_visits=*/true,
+         /*exhausted_all_visits=*/true});
     EXPECT_EQ(result.cluster_batch.size(), 1u);
     EXPECT_EQ(result.query, "");
     EXPECT_EQ(result.can_load_more, false);
