@@ -128,10 +128,15 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
 }
 
 void FloatController::Float(aura::Window* window) {
+  if (window == float_window_)
+    return;
+
+  // TODO(shidi): temporary remove the DCHECK, will implement proper trigger on
+  // crbug/1339095.
+
   // Only one floating window is allowed, reset previously floated window.
   ResetFloatedWindow();
   DCHECK(!float_window_);
-  DCHECK(window->GetProperty(chromeos::kWindowToggleFloatKey));
   float_window_ = window;
   float_window_observation_.Observe(float_window_);
   aura::Window* float_container =
@@ -145,7 +150,8 @@ void FloatController::Float(aura::Window* window) {
 }
 
 void FloatController::Unfloat(aura::Window* window) {
-  DCHECK(!window->GetProperty(chromeos::kWindowToggleFloatKey));
+  if (window != float_window_)
+    return;
   //  Re-parent window to active desk container.
   desks_util::GetActiveDeskContainerForRoot(float_window_->GetRootWindow())
       ->AddChild(float_window_);
@@ -158,6 +164,7 @@ void FloatController::Unfloat(aura::Window* window) {
 }
 
 void FloatController::ResetFloatedWindow() {
+  // TODO(shidi): Remove `kWindowToggleFloatKey` and implement event trigger.
   if (float_window_)
     float_window_->SetProperty(chromeos::kWindowToggleFloatKey, false);
 }
