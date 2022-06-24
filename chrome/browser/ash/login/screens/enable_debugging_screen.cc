@@ -89,8 +89,8 @@ void EnableDebuggingScreen::HandleLearnMore() {
   LoginWebDialog* dialog = new LoginWebDialog(
       Profile::FromWebUI(
           LoginDisplayHost::default_host()->GetOobeUI()->web_ui()),
-      nullptr, LoginDisplayHost::default_host()->GetNativeWindow(),
-      std::u16string(), data_url);
+      LoginDisplayHost::default_host()->GetNativeWindow(), std::u16string(),
+      data_url);
   dialog->Show();
 }
 
