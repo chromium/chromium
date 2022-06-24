@@ -7,6 +7,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/buildflag.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
@@ -69,7 +70,13 @@ class BertModelExecutorTest : public testing::Test {
   std::unique_ptr<BertModelHandler> model_handler_;
 };
 
-TEST_F(BertModelExecutorTest, ValidBertModel) {
+// TODO(crbug.com/1337687): Test is timing out on certain platforms.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+#define MAYBE_ValidBertModel DISABLED_ValidBertModel
+#else
+#define MAYBE_ValidBertModel ValidBertModel
+#endif
+TEST_F(BertModelExecutorTest, MAYBE_ValidBertModel) {
   CreateModelHandler();
 
   PushModelFileToModelExecutor(/*is_valid=*/true);
