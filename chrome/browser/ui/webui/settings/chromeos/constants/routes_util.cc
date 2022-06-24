@@ -118,6 +118,7 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       // Accessibility section.
       chromeos::settings::mojom::kAccessibilitySectionPath,
       chromeos::settings::mojom::kManageAccessibilitySubpagePath,
+      chromeos::settings::mojom::kTextToSpeechPagePath,
       chromeos::settings::mojom::kTextToSpeechSubpagePath,
       chromeos::settings::mojom::kSwitchAccessOptionsSubpagePath,
       chromeos::settings::mojom::kCaptionsSubpagePath,

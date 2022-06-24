@@ -212,8 +212,11 @@ function createOSSettingsRoutes() {
     r.MANAGE_ACCESSIBILITY = createSubpage(
         r.OS_ACCESSIBILITY, mojom.MANAGE_ACCESSIBILITY_SUBPAGE_PATH,
         Subpage.kManageAccessibility);
+    r.TEXT_TO_SPEECH = createSubpage(
+        r.OS_ACCESSIBILITY, mojom.TEXT_TO_SPEECH_PAGE_PATH,
+        Subpage.kTextToSpeechPage);
     r.MANAGE_TTS_SETTINGS = createSubpage(
-        r.MANAGE_ACCESSIBILITY, mojom.TEXT_TO_SPEECH_SUBPAGE_PATH,
+        r.TEXT_TO_SPEECH, mojom.TEXT_TO_SPEECH_SUBPAGE_PATH,
         Subpage.kTextToSpeech);
     r.MANAGE_SWITCH_ACCESS_SETTINGS = createSubpage(
         r.MANAGE_ACCESSIBILITY, mojom.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,

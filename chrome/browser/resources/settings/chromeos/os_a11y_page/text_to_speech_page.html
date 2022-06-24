@@ -1,0 +1,60 @@
+<style include="settings-shared">
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .sub-item {
+    margin-inline-start: var(--cr-section-indent-width);
+  }
+
+  .settings-box,
+  settings-toggle-button,
+  cr-link-row {
+    margin-inline-end: var(--cr-section-padding);
+    margin-inline-start: var(--cr-section-indent-padding);
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+</style>
+<h2>$i18n{textToSpeechHeading}</h2>
+<settings-toggle-button
+    pref="{{prefs.settings.accessibility}}"
+    label="$i18n{chromeVoxLabel}"
+    deep-link-focus-id$="[[Setting.kChromeVox]]">
+</settings-toggle-button>
+<iron-collapse opened="[[prefs.settings.accessibility.value]]">
+  <div class="sub-item">
+    <cr-link-row id="chromeVoxSubpageButton"
+        class="settings-box" on-click="onChromeVoxSettingsTap_"
+        label="$i18n{chromeVoxOptionsLabel}" external>
+    </cr-link-row>
+  </div>
+  <div class="sub-item">
+    <cr-link-row id="chromeVoxTutorialButton"
+        class="settings-box" on-click="onChromeVoxTutorialTap_"
+        label="$i18n{chromeVoxTutorialLabel}" external>
+    </cr-link-row>
+  </div>
+</iron-collapse>
+<settings-toggle-button
+    pref="{{prefs.settings.a11y.select_to_speak}}"
+    class="hr"
+    label="$i18n{selectToSpeakTitle}"
+    sub-label="[[getSelectToSpeakDescription_(
+        prefs.settings.a11y.select_to_speak.value, hasKeyboard_)]]"
+    deep-link-focus-id$="[[Setting.kSelectToSpeak]]">
+</settings-toggle-button>
+<iron-collapse opened="[[prefs.settings.a11y.select_to_speak.value]]">
+  <div class="sub-item">
+    <cr-link-row id="selectToSpeakSubpageButton"
+        class="settings-box" on-click="onSelectToSpeakSettingsTap_"
+        label="$i18n{selectToSpeakOptionsLabel}" external>
+      </cr-link-row>
+  </div>
+</iron-collapse>
+
+<cr-link-row id="ttsSubpageButton" class="hr"
+    label="$i18n{manageTtsSettings}" on-click="onManageTtsSettingsTap_"
+    sub-label="$i18n{ttsSettingsLinkDescription}"
+    role-description="$i18n{subpageArrowRoleDescription}" embedded>
+</cr-link-row>

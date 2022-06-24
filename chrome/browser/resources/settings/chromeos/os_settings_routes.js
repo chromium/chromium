@@ -95,6 +95,7 @@ import {Route} from '../router.js';
  *   STYLUS: !Route,
  *   SYNC: !Route,
  *   SYNC_ADVANCED: !Route,
+ *   TEXT_TO_SPEECH: !Route,
  * }}
  */
 export let OsSettingsRoutes;

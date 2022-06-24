@@ -258,8 +258,7 @@ suite('ManageAccessibilityPageTests', function() {
 
     const params = new URLSearchParams();
     params.append('settingId', '1522');
-    Router.getInstance().navigateTo(
-        routes.MANAGE_ACCESSIBILITY, params);
+    Router.getInstance().navigateTo(routes.MANAGE_ACCESSIBILITY, params);
 
     flush();
 
@@ -390,42 +389,52 @@ suite('ManageAccessibilityPageTests', function() {
         page.computeDictationLocaleSubtitle_());
   });
 
-  [{selector: '#ttsSubpageButton', route: routes.MANAGE_TTS_SETTINGS},
-   {
-     selector: '#captionsSubpageButton',
-     route: routes.MANAGE_CAPTION_SETTINGS
-   },
-   {selector: '#displaySubpageButton', route: routes.DISPLAY},
-   {selector: '#keyboardSubpageButton', route: routes.KEYBOARD},
-   {selector: '#pointerSubpageButton', route: routes.POINTERS},
-  ].forEach(({selector, route}) => {
-    test(
-        `should focus ${selector} button when returning from ${
-            route.path} subpage`,
-        async () => {
-          initPage();
-          flush();
-          const router = Router.getInstance();
+  [true, false].forEach(isAccessibilityOSSettingsVisibilityEnabled => {
+    loadTimeData.overrideValues({isAccessibilityOSSettingsVisibilityEnabled});
 
-          const subpageButton = page.shadowRoot.querySelector(selector);
-          assertTrue(!!subpageButton);
+    const selectorRouteList = [
+      {
+        selector: '#captionsSubpageButton',
+        route: routes.MANAGE_CAPTION_SETTINGS
+      },
+      {selector: '#displaySubpageButton', route: routes.DISPLAY},
+      {selector: '#keyboardSubpageButton', route: routes.KEYBOARD},
+      {selector: '#pointerSubpageButton', route: routes.POINTERS}
+    ];
 
-          subpageButton.click();
-          assertEquals(route, router.getCurrentRoute());
-          assertNotEquals(
-              subpageButton, page.shadowRoot.activeElement,
-              `${selector} should not be focused`);
+    if (!isAccessibilityOSSettingsVisibilityEnabled) {
+      selectorRouteList.push(
+          {selector: '#ttsSubpageButton', route: routes.MANAGE_TTS_SETTINGS});
+    }
 
-          const popStateEventPromise = eventToPromise('popstate', window);
-          router.navigateToPreviousRoute();
-          await popStateEventPromise;
-          await waitBeforeNextRender(page);
+    selectorRouteList.forEach(({selector, route}) => {
+      test(
+          `should focus ${selector} button when returning from ${
+              route.path} subpage`,
+          async () => {
+            initPage();
+            flush();
+            const router = Router.getInstance();
 
-          assertEquals(
-              routes.MANAGE_ACCESSIBILITY, router.getCurrentRoute());
-          assertEquals(
-              subpageButton, page.shadowRoot.activeElement,
-              `${selector} should be focused`);
-        });
+            const subpageButton = page.shadowRoot.querySelector(selector);
+            assertTrue(!!subpageButton);
+
+            subpageButton.click();
+            assertEquals(route, router.getCurrentRoute());
+            assertNotEquals(
+                subpageButton, page.shadowRoot.activeElement,
+                `${selector} should not be focused`);
+
+            const popStateEventPromise = eventToPromise('popstate', window);
+            router.navigateToPreviousRoute();
+            await popStateEventPromise;
+            await waitBeforeNextRender(page);
+
+            assertEquals(routes.MANAGE_ACCESSIBILITY, router.getCurrentRoute());
+            assertEquals(
+                subpageButton, page.shadowRoot.activeElement,
+                `${selector} should be focused`);
+          });
+    });
   });
 });

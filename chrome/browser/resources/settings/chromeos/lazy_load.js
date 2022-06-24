@@ -24,6 +24,7 @@ import './guest_os/guest_os_shared_usb_devices.js';
 import './guest_os/guest_os_shared_paths.js';
 import './os_a11y_page/os_a11y_page.js';
 import './os_a11y_page/manage_a11y_page.js';
+import './os_a11y_page/text_to_speech_page.js';
 import './os_a11y_page/switch_access_action_assignment_dialog.js';
 import './os_a11y_page/switch_access_action_assignment_pane.js';
 import './os_a11y_page/switch_access_setup_guide_dialog.js';

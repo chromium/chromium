@@ -14,6 +14,7 @@ import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared_css.js';
 import './manage_a11y_page.js';
+import './text_to_speech_page.js';
 import './switch_access_subpage.js';
 import './tts_subpage.js';
 
@@ -92,7 +93,19 @@ class OsSettingsA11YPageElement extends OsSettingsA11YPageElementBase {
           if (routes.MANAGE_ACCESSIBILITY) {
             map.set(routes.MANAGE_ACCESSIBILITY.path, '#subpage-trigger');
           }
+          if (routes.TEXT_TO_SPEECH) {
+            map.set(routes.TEXT_TO_SPEECH.path, '#text-to-speech-page-trigger');
+          }
           return map;
+        },
+      },
+
+      /** @private */
+      isAccessibilityOSSettingsVisibilityEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilityOSSettingsVisibilityEnabled');
         },
       },
 
@@ -198,6 +211,11 @@ class OsSettingsA11YPageElement extends OsSettingsA11YPageElementBase {
   /** @private */
   onManageAccessibilityFeaturesTap_() {
     Router.getInstance().navigateTo(routes.MANAGE_ACCESSIBILITY);
+  }
+
+  /** @private */
+  onTextToSpeechTap_() {
+    Router.getInstance().navigateTo(routes.TEXT_TO_SPEECH);
   }
 }
 

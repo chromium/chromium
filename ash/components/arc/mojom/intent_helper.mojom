@@ -168,8 +168,9 @@ enum ChromePage {
   // 73-76 are removed intentionally. Do not reuse them.
   SMARTPRIVACY = 77,
   PRIVACYHUB = 78,
+  TEXTTOSPEECH = 79,
 
-  // Next value to be used is 79.
+  // Next value to be used is 80.
 };
 
 // Describes an unique chrome app.

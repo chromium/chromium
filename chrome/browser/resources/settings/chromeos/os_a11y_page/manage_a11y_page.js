@@ -222,6 +222,15 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
+      /** @private */
+      isAccessibilityOSSettingsVisibilityEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilityOSSettingsVisibilityEnabled');
+        },
+      },
+
       /**
        * Whether the user is in kiosk mode.
        * @private
@@ -497,17 +506,16 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
    *    2. If it is enabled, whether a physical keyboard is present.
    * @param {boolean} enabled
    * @param {boolean} hasKeyboard
-   * @param {string} disabledString String to show when Select-to-Speak is
-   *    disabled.
-   * @param {string} keyboardString String to show when there is a physical
-   *    keyboard
-   * @param {string} noKeyboardString String to show when there is no keyboard
    * @private
    */
-  getSelectToSpeakDescription_(
-      enabled, hasKeyboard, disabledString, keyboardString, noKeyboardString) {
-    return !enabled ? disabledString :
-                      hasKeyboard ? keyboardString : noKeyboardString;
+  getSelectToSpeakDescription_(enabled, hasKeyboard) {
+    if (!enabled) {
+      return this.i18n('selectToSpeakDisabledDescription');
+    }
+    if (hasKeyboard) {
+      return this.i18n('selectToSpeakDescription');
+    }
+    return this.i18n('selectToSpeakDescriptionWithoutKeyboard');
   }
 
   /**

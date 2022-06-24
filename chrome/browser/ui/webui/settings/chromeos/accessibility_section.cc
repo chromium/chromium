@@ -90,7 +90,9 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        {IDS_OS_SETTINGS_TAG_A11Y_DOCKED_MAGNIFIER_ALT1,
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11y_CHROMEVOX,
-       mojom::kManageAccessibilitySubpagePath,
+       ::features::IsAccessibilityOSSettingsVisibilityEnabled()
+           ? mojom::kTextToSpeechPagePath
+           : mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -194,7 +196,9 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        {IDS_OS_SETTINGS_TAG_A11Y_AUTOMATICALLY_CLICK_ALT1,
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_A11Y_SELECT_TO_SPEAK,
-       mojom::kManageAccessibilitySubpagePath,
+       ::features::IsAccessibilityOSSettingsVisibilityEnabled()
+           ? mojom::kTextToSpeechPagePath
+           : mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -356,12 +360,33 @@ GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetA11yVisibilitySearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE,
+       mojom::kTextToSpeechPagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kTextToSpeechPage},
+       {IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE_ALT1,
+        IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE_ALT2,
+        IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE_ALT3,
+        IDS_OS_SETTINGS_TAG_A11Y_TEXT_TO_SPEECH_PAGE_ALT4,
+        SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
 bool IsLiveCaptionEnabled() {
   return captions::IsLiveCaptionFeatureSupported();
 }
 
 bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
   return ::features::IsMagnifierContinuousMouseFollowingModeSettingEnabled();
+}
+
+bool IsAccessibilityOSSettingsVisibilityEnabled() {
+  return ::features::IsAccessibilityOSSettingsVisibilityEnabled();
 }
 
 bool IsSwitchAccessTextAllowed() {
@@ -438,6 +463,10 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_SLIDER_MIN_MAX_ARIA_ROLE_DESCRIPTION},
       {"manageAccessibilityFeatures",
        IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES},
+      {"textToSpeechLinkTitle",
+       IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_TITLE},
+      {"textToSpeechLinkDescription",
+       IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_DESCRIPTION},
       {"optionsInMenuLabel", IDS_SETTINGS_OPTIONS_IN_MENU_LABEL},
       {"largeMouseCursorLabel", IDS_SETTINGS_LARGE_MOUSE_CURSOR_LABEL},
       {"largeMouseCursorSizeLabel", IDS_SETTINGS_LARGE_MOUSE_CURSOR_SIZE_LABEL},
@@ -795,6 +824,9 @@ void AccessibilitySection::AddLoadTimeData(
       "isMagnifierContinuousMouseFollowingModeSettingEnabled",
       IsMagnifierContinuousMouseFollowingModeSettingEnabled());
 
+  html_source->AddBoolean("isAccessibilityOSSettingsVisibilityEnabled",
+                          IsAccessibilityOSSettingsVisibilityEnabled());
+
   ::settings::AddCaptionSubpageStrings(html_source);
 }
 
@@ -860,6 +892,15 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Subpage::kManageAccessibility, mojom::SearchResultIcon::kA11y,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kManageAccessibilitySubpagePath);
+
+  // Text-to-speech page.
+  if (IsAccessibilityOSSettingsVisibilityEnabled()) {
+    generator->RegisterTopLevelSubpage(
+        IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_TITLE,
+        mojom::Subpage::kTextToSpeechPage, mojom::SearchResultIcon::kA11y,
+        mojom::SearchResultDefaultRank::kMedium, mojom::kTextToSpeechPagePath);
+  }
+
   static constexpr mojom::Setting kManageAccessibilitySettings[] = {
       mojom::Setting::kChromeVox,
       mojom::Setting::kSelectToSpeak,
@@ -993,6 +1034,10 @@ void AccessibilitySection::UpdateSearchTags() {
   } else {
     updater.RemoveSearchTags(
         GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
+  }
+
+  if (IsAccessibilityOSSettingsVisibilityEnabled()) {
+    updater.AddSearchTags(GetA11yVisibilitySearchConcepts());
   }
 
   if (!pref_service_->GetBoolean(

@@ -1523,6 +1523,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES" desc="In the settings tab, the title of a link that opens a screen allowing the user to change accessibility features.">
     Manage accessibility features
   </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change text-to-speech accessibility features.">
+    Text-to-Speech
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change text-to-speech accessibility features.">
+    ChromeVox screen reader and select-to-speak
+  </message>
 
   <!-- Account Manager (OS settings) -->
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2" desc="Description of the Account Manager Settings page for child users. Shown just below the title of the page.">
