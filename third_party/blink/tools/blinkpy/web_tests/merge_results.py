@@ -42,7 +42,7 @@ import types
 BLINK_TOOLS_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
 if BLINK_TOOLS_PATH not in sys.path:
-  sys.path.append(BLINK_TOOLS_PATH)
+    sys.path.append(BLINK_TOOLS_PATH)
 
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.log_utils import configure_logging
@@ -737,13 +737,18 @@ def ensure_empty_dir(fs, directory, allow_existing, remove_existing):
     if fs.exists(merged_output_json):
         fs.remove(merged_output_json)
 
-    # Fuchsia specific Additional logs to be cleaned
-    fuchsia_log_files = [f for f in fs.listdir(directory)
-                         if fs.isfile(fs.join(directory, f))]
-    for file_name in fuchsia_log_files:
-        path = fs.join(directory, file_name)
-        if fs.exists(path):
-            fs.remove(path)
+    # Fuchsia specific additional logs to be cleaned. Check if 'ffx_log' exists
+    # or not first, otherwise webgpu_blink_web_tests will hang forever.
+    # TODO: work with fuchsia team to remove this special case
+    if fs.exists(fs.join(directory, 'ffx_log')):
+        fuchsia_log_files = [
+            f for f in fs.listdir(directory)
+            if fs.isfile(fs.join(directory, f))
+        ]
+        for file_name in fuchsia_log_files:
+            path = fs.join(directory, file_name)
+            if fs.exists(path):
+                fs.remove(path)
 
 
 def mark_missing_shards(summary_json,

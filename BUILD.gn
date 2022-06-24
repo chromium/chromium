@@ -1536,7 +1536,7 @@ if (!is_ios) {
     data = [
       "//third_party/blink/web_tests/FlagSpecificConfig",
       "//third_party/blink/web_tests/WebGPUExpectations",
-      "//third_party/blink/web_tests/external/wpt/webgpu/",
+      "//third_party/blink/web_tests/wpt_internal/",
       "//third_party/webgpu-cts/scripts/",
     ]
   }
