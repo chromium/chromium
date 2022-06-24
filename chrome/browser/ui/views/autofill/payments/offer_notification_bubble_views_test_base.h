@@ -109,6 +109,20 @@ class OfferNotificationBubbleViewsTestBase
   // can be expected on UI elements if desired.
   std::string GetDefaultTestPromoCode() const;
 
+  // Returns the value prop string used for the default test GPay promo code,
+  // so that it can be expected on UI elements if desired.
+  std::string GetDefaultTestValuePropText() const;
+
+  // Returns the see details string used for the default test GPay promo code.
+  std::string GetDefaultTestSeeDetailsText() const;
+
+  // Returns the user instructions string used for the default GPay promo code
+  // data.
+  std::string GetDefaultTestUsageInstructionsText() const;
+
+  // Returns the offer details url string used for the default GPay promo code.
+  std::string GetDefaultTestDetailsUrlString() const;
+
  private:
   raw_ptr<PersonalDataManager> personal_data_;
   raw_ptr<CouponService> coupon_service_;

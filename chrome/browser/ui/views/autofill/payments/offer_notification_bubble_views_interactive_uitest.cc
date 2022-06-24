@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_handler.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -149,6 +150,8 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   const AutofillOfferData::OfferType test_offer_type_;
 };
 
+// TODO(https://crbug.com/1334806): Split parameterized tests that are
+// applicable for only one offer type.
 INSTANTIATE_TEST_SUITE_P(
     GpayCardLinked,
     OfferNotificationBubbleViewsInteractiveUiTest,
@@ -157,6 +160,10 @@ INSTANTIATE_TEST_SUITE_P(
     FreeListingCoupon,
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER));
+INSTANTIATE_TEST_SUITE_P(
+    GPayPromoCode,
+    OfferNotificationBubbleViewsInteractiveUiTest,
+    testing::Values(AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER));
 
 // TODO(https://crbug.com/1289161): Flaky failures.
 #if BUILDFLAG(IS_LINUX)
@@ -447,10 +454,12 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        TooltipAndAccessibleName) {
-  // Applies to promo code offers only, as card-linked offers do not have a
+  // Applies to free listing coupons offers only, as other offers do not have a
   // clickable promo code copy button.
-  if (test_offer_type_ == AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER)
+  if (test_offer_type_ !=
+      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
     return;
+  }
 
   ShowBubbleForOfferAndVerify();
   ASSERT_TRUE(GetOfferNotificationBubbleViews());
@@ -475,10 +484,12 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        CopyPromoCode) {
-  // Applies to promo code offers only, as card-linked offers do not have a
+  // Applies to free listing coupons offers only, as other offers do not have a
   // clickable promo code copy button.
-  if (test_offer_type_ == AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER)
+  if (test_offer_type_ !=
+      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
     return;
+  }
 
   ShowBubbleForOfferAndVerify();
   ASSERT_TRUE(GetOfferNotificationBubbleViews());
@@ -504,6 +515,35 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       "Autofill.OfferNotificationBubblePromoCodeButtonClicked." +
           GetSubhistogramNameForOfferType(),
       true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
+                       ShowGPayPromoCodeBubble) {
+  // Applies to GPay promo code offers only.
+  if (test_offer_type_ != AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER) {
+    return;
+  }
+
+  ShowBubbleForOfferAndVerify();
+  ASSERT_TRUE(GetOfferNotificationBubbleViews());
+  ASSERT_TRUE(IsIconVisible());
+
+  auto* promo_code_styled_label =
+      GetOfferNotificationBubbleViews()->promo_code_label_.get();
+  auto* promo_code_usage_instructions_ =
+      GetOfferNotificationBubbleViews()->instructions_label_.get();
+
+  EXPECT_EQ(promo_code_styled_label->GetText(),
+            base::ASCIIToUTF16(GetDefaultTestValuePropText()) + u" " +
+                base::ASCIIToUTF16(GetDefaultTestSeeDetailsText()));
+  EXPECT_EQ(promo_code_usage_instructions_->GetText(),
+            base::ASCIIToUTF16(GetDefaultTestUsageInstructionsText()));
+
+  // Simulate clicking on see details part of the text.
+  GetOfferNotificationBubbleViews()->OnPromoCodeSeeDetailsClicked();
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      GURL(GetDefaultTestDetailsUrlString()));
 }
 
 }  // namespace autofill

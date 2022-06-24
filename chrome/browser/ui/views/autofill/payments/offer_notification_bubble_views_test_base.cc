@@ -22,22 +22,29 @@
 namespace autofill {
 
 const char kDefaultTestPromoCode[] = "5PCTOFFSHOES";
+const char kDefaultTestValuePropText[] = "5% off on shoes. Up to $50.";
+const char kDefaultTestSeeDetailsText[] = "See details";
+const char kDefaultTestUsageInstructionsText[] =
+    "Click the promo code field at checkout to autofill it.";
+const char kDefaultTestDetailsUrlString[] = "https://pay.google.com";
 
 OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase(
     bool promo_code_flag_enabled) {
   if (promo_code_flag_enabled) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kAutofillEnableOfferNotificationForPromoCodes, {}},
-         {commerce::kRetailCoupons,
-          {{commerce::kRetailCouponsWithCodeParam, "true"}}}},
+        {{commerce::kRetailCoupons,
+          {{commerce::kRetailCouponsWithCodeParam, "true"}}},
+         {features::kAutofillEnableOfferNotificationForPromoCodes, {}},
+         {features::kAutofillFillMerchantPromoCodeFields, {}}},
         /*disabled_features=*/{});
   } else {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{
+            commerce::kRetailCoupons,
             features::kAutofillEnableOfferNotificationForPromoCodes,
-            commerce::kRetailCoupons});
+            features::kAutofillFillMerchantPromoCodeFields});
   }
 }
 
@@ -97,10 +104,10 @@ OfferNotificationBubbleViewsTestBase::CreateFreeListingCouponDataWithDomains(
   for (auto url : domains)
     merchant_origins.emplace_back(url.DeprecatedGetOriginAsURL());
   DisplayStrings display_strings;
-  display_strings.value_prop_text = "5% off on shoes. Up to $50.";
-  display_strings.see_details_text = "See details";
+  display_strings.value_prop_text = GetDefaultTestValuePropText();
+  display_strings.see_details_text = GetDefaultTestSeeDetailsText();
   display_strings.usage_instructions_text =
-      "Click the promo code field at checkout to autofill it.";
+      GetDefaultTestUsageInstructionsText();
   auto promo_code = GetDefaultTestPromoCode();
   return std::make_unique<AutofillOfferData>(
       AutofillOfferData::FreeListingCouponOffer(
@@ -117,12 +124,12 @@ OfferNotificationBubbleViewsTestBase::CreateGPayPromoCodeOfferDataWithDomains(
   for (auto url : domains)
     merchant_origins.emplace_back(url.DeprecatedGetOriginAsURL());
   DisplayStrings display_strings;
-  display_strings.value_prop_text = "5% off on shoes. Up to $50.";
-  display_strings.see_details_text = "See details";
+  display_strings.value_prop_text = GetDefaultTestValuePropText();
+  display_strings.see_details_text = GetDefaultTestSeeDetailsText();
   display_strings.usage_instructions_text =
-      "Click the promo code field at checkout to autofill it.";
+      GetDefaultTestUsageInstructionsText();
   auto promo_code = GetDefaultTestPromoCode();
-  GURL offer_details_url = GURL("https://pay.google.com");
+  GURL offer_details_url = GURL(GetDefaultTestDetailsUrlString());
   return std::make_unique<AutofillOfferData>(
       AutofillOfferData::GPayPromoCodeOffer(offer_id, expiry, merchant_origins,
                                             offer_details_url, display_strings,
@@ -250,6 +257,27 @@ void OfferNotificationBubbleViewsTestBase::UpdateFreeListingCouponDisplayTime(
 std::string OfferNotificationBubbleViewsTestBase::GetDefaultTestPromoCode()
     const {
   return kDefaultTestPromoCode;
+}
+
+std::string OfferNotificationBubbleViewsTestBase::GetDefaultTestValuePropText()
+    const {
+  return kDefaultTestValuePropText;
+}
+
+std::string OfferNotificationBubbleViewsTestBase::GetDefaultTestSeeDetailsText()
+    const {
+  return kDefaultTestSeeDetailsText;
+}
+
+std::string
+OfferNotificationBubbleViewsTestBase::GetDefaultTestUsageInstructionsText()
+    const {
+  return kDefaultTestUsageInstructionsText;
+}
+
+std::string
+OfferNotificationBubbleViewsTestBase::GetDefaultTestDetailsUrlString() const {
+  return kDefaultTestDetailsUrlString;
 }
 
 AutofillOfferManager* OfferNotificationBubbleViewsTestBase::GetOfferManager() {
