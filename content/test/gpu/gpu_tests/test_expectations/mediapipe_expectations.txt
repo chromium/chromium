@@ -72,6 +72,8 @@
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
+crbug.com/1338989 [ linux amd angle-vulkan ] MediaPipe_mediapipe_scoob_part2_test [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################

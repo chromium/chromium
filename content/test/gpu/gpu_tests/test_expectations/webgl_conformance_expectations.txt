@@ -534,6 +534,14 @@ crbug.com/1021428 [ linux angle-vulkan passthrough intel ] WebglExtension_WEBGL_
 # Linux AMD RX 5500 XT
 crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 
+# Linux NVIDIA / VANGLE - bot NVIDIA driver is too old.
+crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/constructors/glsl-construct-vec-mat-index.html [ Failure ]
+crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/functions/glsl-function-abs.html [ Failure ]
+crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/functions/glsl-function-ceil.html [ Failure ]
+crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/functions/glsl-function-faceforward.html [ Failure ]
+crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
+crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL/pow/pow_017_to_024.html [ Failure ]
+
 ####################
 # Android failures #
 ####################

@@ -6373,6 +6373,20 @@ crbug.com/1293591 images/color-profile-svg-fill-text.html [ Failure Pass ]
 crbug.com/1293591 images/color-profile-svg.html [ Failure Pass ]
 crbug.com/1293591 images/jpeg-with-color-profile.html [ Failure Pass ]
 
+# crbug.com/1339051: some ref tests generate output with minor differences.
+crbug.com/1339051 [ Linux ] compositing/text-on-scaled-layer.html [ Failure ]
+crbug.com/1339051 [ Linux ] external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
+crbug.com/1339051 [ Linux ] fast/forms/color/color-picker-appearance-zoom125.html [ Failure ]
+crbug.com/1339051 [ Linux ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
+crbug.com/1339051 [ Linux ] virtual/document-transition/wpt_internal/document-transition/content-with-transform-new-image.html [ Failure ]
+crbug.com/1339051 [ Linux ] virtual/document-transition/wpt_internal/document-transition/object-view-box-old-image.html [ Failure ]
+crbug.com/1339051 [ Linux ] virtual/document-transition/wpt_internal/document-transition/web-animations-api.html [ Failure ]
+crbug.com/1339051 [ Linux ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-canvasFilter.https.html [ Failure ]
+crbug.com/1339051 [ Linux ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-filter.https.html [ Failure ]
+crbug.com/1339051 [ Linux ] virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
+crbug.com/1339051 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-createImageBitmap-out-of-bounds-src.html [ Failure ]
+crbug.com/1339051 [ Linux ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces.html [ Failure ]
+
 # Sheriff 2021-09-27
 # Revisit once crbug.com/1123886 is addressed.
 # Likely has the same root cause for crashes.

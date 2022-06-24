@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Test Width = 1000
+PASS Test Height = 1000
+FAIL Test Width = 10000 assert_equals: expected 255 but got 0
+FAIL Test Height = 10000 assert_equals: expected 255 but got 0
+PASS Test Width = 32000
+PASS Test Height = 32000
+Harness: the test ran to completion.
+

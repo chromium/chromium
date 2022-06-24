@@ -1831,3 +1831,13 @@ crbug.com/591099 fast/css3-text/css3-text-decoration/text-underline-position/tex
 crbug.com/591099 editing/selection/paint-hyphen.html [ Failure Pass ]
 
 crbug.com/1012289 external/wpt/css/css-lists/list-style-type-string-005b.html [ Failure ]
+
+# crbug.com/1339051: some ref tests generate output with minor differences.
+crbug.com/1339051 external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
+crbug.com/1339051 virtual/backface-visibility-interop/external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
+crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/content-with-transform-new-image.html [ Failure ]
+crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/new-and-old-sizes-match.html [ Failure ]
+crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/object-view-box-old-image.html [ Failure ]
+crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/web-animations-api.html [ Failure ]
+crbug.com/1339051 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-canvasFilter.https.html [ Failure ]
+crbug.com/1339051 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-filter.https.html [ Failure ]
