@@ -19,7 +19,9 @@ import './network_logs_ui.js';
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {NetworkUIBrowserProxy, NetworkUIBrowserProxyImpl} from './network_ui_browser_proxy.js';
 
 
@@ -64,9 +66,19 @@ Polymer({
       value: 0,
     },
 
+    /** @private */
     hostname_: {
       type: String,
       value: '',
+    },
+
+    /** @private */
+    isGuestModeActive_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isGuestModeActive') &&
+            loadTimeData.getBoolean('isGuestModeActive');
+      }
     },
   },
 

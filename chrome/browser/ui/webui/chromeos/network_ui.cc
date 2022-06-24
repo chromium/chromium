@@ -670,6 +670,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   html->DisableTrustedTypesCSP();
 
   html->AddLocalizedStrings(localized_strings);
+  html->AddBoolean("isGuestModeActive", IsGuestModeActive());
   network_health::AddResources(html);
   network_diagnostics::AddResources(html);
   cellular_setup::AddLocalizedStrings(html);
