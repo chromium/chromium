@@ -128,7 +128,6 @@ class FamilyInfoFetcher {
   void FamilyMembersFetched(const std::string& response);
 
   raw_ptr<Consumer> consumer_;
-  const CoreAccountId primary_account_id_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
