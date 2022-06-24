@@ -82,56 +82,25 @@ using ::testing::SaveArg;
 
 enum class AutoEnrollmentProtocol { kFRE = 0, kInitialEnrollment = 1 };
 
-enum class PsmState { kEnabled = 0, kDisabled = 1 };
-
-// Holds the state of the AutoEnrollmentClientImplTest and its subclass i.e.
-// PsmHelperTest. It will be used to run their tests with different values.
-struct AutoEnrollmentClientImplTestState final {
-  AutoEnrollmentClientImplTestState(
-      AutoEnrollmentProtocol auto_enrollment_protocol,
-      PsmState psm_state)
-      : auto_enrollment_protocol(auto_enrollment_protocol),
-        psm_state(psm_state) {}
-
-  AutoEnrollmentProtocol auto_enrollment_protocol;
-  PsmState psm_state;
-};
-
-class AutoEnrollmentClientImplTest
-    : public testing::TestWithParam<AutoEnrollmentClientImplTestState> {
+class AutoEnrollmentClientImplBaseTest : public testing::Test {
  public:
-  AutoEnrollmentClientImplTest(const AutoEnrollmentClientImplTest&) = delete;
-  AutoEnrollmentClientImplTest& operator=(const AutoEnrollmentClientImplTest&) =
+  AutoEnrollmentClientImplBaseTest(const AutoEnrollmentClientImplBaseTest&) =
       delete;
+  AutoEnrollmentClientImplBaseTest& operator=(
+      const AutoEnrollmentClientImplBaseTest&) = delete;
 
  protected:
-  AutoEnrollmentClientImplTest()
+  explicit AutoEnrollmentClientImplBaseTest(AutoEnrollmentProtocol protocol)
       : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()),
         local_state_(scoped_testing_local_state_.Get()),
-        state_(AUTO_ENROLLMENT_STATE_PENDING) {}
-
-  void SetUp() override {
+        state_(AUTO_ENROLLMENT_STATE_PENDING),
+        protocol_(protocol) {
     CreateClient(kPowerStart, kPowerLimit);
-    ASSERT_FALSE(local_state_->GetUserPref(prefs::kShouldAutoEnroll));
-    ASSERT_FALSE(local_state_->GetUserPref(prefs::kAutoEnrollmentPowerLimit));
   }
 
-  void TearDown() override {
+  ~AutoEnrollmentClientImplBaseTest() override {
     // Flush any deletion tasks.
     base::RunLoop().RunUntilIdle();
-  }
-
-  AutoEnrollmentProtocol GetAutoEnrollmentProtocol() const {
-    return GetParam().auto_enrollment_protocol;
-  }
-
-  PsmState GetPsmState() const { return GetParam().psm_state; }
-
-  std::string GetAutoEnrollmentProtocolUmaSuffix() const {
-    return GetAutoEnrollmentProtocol() ==
-                   AutoEnrollmentProtocol::kInitialEnrollment
-               ? kUMASuffixInitialEnrollment
-               : kUMASuffixFRE;
   }
 
   void CreateClient(int power_initial, int power_limit) {
@@ -142,21 +111,17 @@ class AutoEnrollmentClientImplTest
     base::RunLoop().RunUntilIdle();
 
     auto progress_callback =
-        base::BindRepeating(&AutoEnrollmentClientImplTest::ProgressCallback,
+        base::BindRepeating(&AutoEnrollmentClientImplBaseTest::ProgressCallback,
                             base::Unretained(this));
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &url_loader_factory_);
 
-    if (GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE) {
+    if (protocol_ == AutoEnrollmentProtocol::kFRE) {
       client_ = AutoEnrollmentClientImpl::FactoryImpl().CreateForFRE(
           progress_callback, service_.get(), local_state_,
           shared_url_loader_factory_, kStateKey, power_initial, power_limit);
     } else {
-      // PSM has to be enabled whenever creating a client for initial
-      // enrollment.
-      DCHECK_EQ(GetPsmState(), PsmState::kEnabled);
-
       // Store a non-owned smart pointer of FakePsmRlweDmserverClient in
       // `fake_psm_rlwe_dmserver_client_ptr_`.
       auto fake_psm_rlwe_dmserver_client =
@@ -180,21 +145,6 @@ class AutoEnrollmentClientImplTest
             DoAll(service_->CaptureJobType(&failed_job_type_),
                   service_->CaptureRequest(&last_request_),
                   service_->SendJobResponseAsync(net_error, response_code)))
-        .RetiresOnSaturation();
-  }
-
-  void ServerWillReply(int64_t modulus, bool with_hashes, bool with_id_hash) {
-    // This method should be called only when the client has been created for
-    // FRE use case.
-    ASSERT_EQ(GetAutoEnrollmentProtocol(), AutoEnrollmentProtocol::kFRE);
-
-    em::DeviceManagementResponse response =
-        GetAutoEnrollmentResponse(modulus, with_hashes, with_id_hash);
-
-    EXPECT_CALL(job_creation_handler_, OnJobCreation)
-        .WillOnce(DoAll(service_->CaptureJobType(&auto_enrollment_job_type_),
-                        service_->CaptureRequest(&last_request_),
-                        service_->SendJobOKAsync(response)))
         .RetiresOnSaturation();
   }
 
@@ -238,7 +188,7 @@ class AutoEnrollmentClientImplTest
       bool is_license_packaged_with_device,
       em::DeviceInitialEnrollmentStateResponse::LicensePackagingSKU
           license_sku) {
-    if (GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE) {
+    if (protocol_ == AutoEnrollmentProtocol::kFRE) {
       ServerWillSendStateForFRE(management_domain, restore_mode,
                                 device_disabled_message, absl::nullopt);
     } else {
@@ -246,15 +196,6 @@ class AutoEnrollmentClientImplTest
           management_domain, is_license_packaged_with_device, license_sku,
           MapRestoreModeToInitialEnrollmentMode(restore_mode));
     }
-  }
-
-  DeviceManagementService::JobConfiguration::JobType
-  GetStateRetrievalJobType() {
-    return GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE
-               ? DeviceManagementService::JobConfiguration::
-                     TYPE_DEVICE_STATE_RETRIEVAL
-               : DeviceManagementService::JobConfiguration::
-                     TYPE_INITIAL_ENROLLMENT_STATE_RETRIEVAL;
   }
 
   void ServerWillSendStateForFRE(
@@ -311,7 +252,7 @@ class AutoEnrollmentClientImplTest
 
   DeviceManagementService::JobConfiguration::JobType
   GetExpectedStateRetrievalJobType() {
-    return GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE
+    return protocol_ == AutoEnrollmentProtocol::kFRE
                ? DeviceManagementService::JobConfiguration::
                      TYPE_DEVICE_STATE_RETRIEVAL
                : DeviceManagementService::JobConfiguration::
@@ -324,41 +265,10 @@ class AutoEnrollmentClientImplTest
                         SaveArg<0>(job)));
   }
 
-  void ServerReplyAsyncJobWithAutoEnrollmentResponse(
-      int64_t modulus,
-      bool with_hashes,
-      bool with_id_hash,
-      DeviceManagementService::JobForTesting* job) {
-    em::DeviceManagementResponse response =
-        GetAutoEnrollmentResponse(modulus, with_hashes, with_id_hash);
-    service_->SendJobOKNow(job, response);
-  }
-
   void ServerRepliesEmptyResponseForAsyncJob(
       DeviceManagementService::JobForTesting* job) {
     em::DeviceManagementResponse dummy_response;
     service_->SendJobOKNow(job, dummy_response);
-  }
-
-  bool HasCachedDecision() {
-    // This method should be called only when the client has been created for
-    // FRE use case.
-    EXPECT_EQ(GetAutoEnrollmentProtocol(), AutoEnrollmentProtocol::kFRE);
-
-    return local_state_->GetUserPref(prefs::kShouldAutoEnroll);
-  }
-
-  void VerifyCachedResult(bool should_enroll, int power_limit) {
-    // This method should be called only when the client has been created for
-    // FRE use case.
-    EXPECT_EQ(GetAutoEnrollmentProtocol(), AutoEnrollmentProtocol::kFRE);
-
-    base::Value value_should_enroll(should_enroll);
-    base::Value value_power_limit(power_limit);
-    EXPECT_EQ(value_should_enroll,
-              *local_state_->GetUserPref(prefs::kShouldAutoEnroll));
-    EXPECT_EQ(value_power_limit,
-              *local_state_->GetUserPref(prefs::kAutoEnrollmentPowerLimit));
   }
 
   bool HasServerBackedState() {
@@ -370,7 +280,7 @@ class AutoEnrollmentClientImplTest
                                const std::string& expected_disabled_message,
                                bool expected_is_license_packaged_with_device,
                                const std::string& expected_license_type) {
-    if (GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE) {
+    if (protocol_ == AutoEnrollmentProtocol::kFRE) {
       VerifyServerBackedStateForFRE(expected_management_domain,
                                     expected_restore_mode,
                                     expected_disabled_message);
@@ -419,7 +329,7 @@ class AutoEnrollmentClientImplTest
       const std::string* actual_restore_mode =
           state_dict->FindStringKey(kDeviceStateMode);
       EXPECT_TRUE(actual_restore_mode);
-      EXPECT_EQ(GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE
+      EXPECT_EQ(protocol_ == AutoEnrollmentProtocol::kFRE
                     ? expected_restore_mode
                     : MapDeviceRestoreStateToDeviceInitialState(
                           expected_restore_mode),
@@ -461,51 +371,6 @@ class AutoEnrollmentClientImplTest
     EXPECT_EQ(*actual_license_type, expected_license_type);
   }
 
-  // Expects one sample for |kUMAHashDanceNetworkErrorCode| which has value of
-  // |network_error|.
-  void ExpectHashDanceNetworkErrorHistogram(int network_error) const {
-    // This method should be called only when the client has been created for
-    // FRE use case.
-    EXPECT_EQ(GetAutoEnrollmentProtocol(), AutoEnrollmentProtocol::kFRE);
-
-    histogram_tester_.ExpectBucketCount(
-        kUMAHashDanceNetworkErrorCode + GetAutoEnrollmentProtocolUmaSuffix(),
-        network_error, /*expected_count=*/1);
-  }
-
-  // Expects a sample for |kUMAHashDanceRequestStatus| with count
-  // |dm_status_count|.
-  void ExpectHashDanceRequestStatusHistogram(DeviceManagementStatus dm_status,
-                                             int dm_status_count) const {
-    // This method should be called only when the client has been created for
-    // FRE use case.
-    EXPECT_EQ(GetAutoEnrollmentProtocol(), AutoEnrollmentProtocol::kFRE);
-
-    histogram_tester_.ExpectBucketCount(
-        kUMAHashDanceRequestStatus + GetAutoEnrollmentProtocolUmaSuffix(),
-        dm_status, dm_status_count);
-  }
-
-  // Expects a sample for |kUMAHashDanceProtocolTime| to have value
-  // |expected_time_recorded|.
-  // if |success_time_recorded| is true it expects one sample for
-  // |kUMAHashDanceSuccessTime| to have value |expected_time_recorded|.
-  // Otherwise, expects no sample for |kUMAHashDanceSuccessTime|.
-  void ExpectHashDanceExecutionTimeHistogram(
-      base::TimeDelta expected_time_recorded,
-      bool success_time_recorded) const {
-    // This method should be called only when the client has been created for
-    // FRE use case.
-    EXPECT_EQ(GetAutoEnrollmentProtocol(), AutoEnrollmentProtocol::kFRE);
-
-    histogram_tester_.ExpectUniqueTimeSample(
-        kUMAHashDanceProtocolTime + GetAutoEnrollmentProtocolUmaSuffix(),
-        expected_time_recorded, /*expected_count=*/1);
-    histogram_tester_.ExpectUniqueTimeSample(
-        kUMAHashDanceSuccessTime + GetAutoEnrollmentProtocolUmaSuffix(),
-        expected_time_recorded, success_time_recorded ? 1 : 0);
-  }
-
   const em::DeviceAutoEnrollmentRequest& auto_enrollment_request() {
     return last_request_.auto_enrollment_request();
   }
@@ -536,8 +401,6 @@ class AutoEnrollmentClientImplTest
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
   DeviceManagementService::JobConfiguration::JobType last_async_job_type_ =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
-  DeviceManagementService::JobConfiguration::JobType auto_enrollment_job_type_ =
-      DeviceManagementService::JobConfiguration::TYPE_INVALID;
   DeviceManagementService::JobConfiguration::JobType state_retrieval_job_type_ =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
 
@@ -546,14 +409,108 @@ class AutoEnrollmentClientImplTest
       nullptr;
 
  private:
+  const AutoEnrollmentProtocol protocol_;
+  network::TestURLLoaderFactory url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  std::unique_ptr<AutoEnrollmentClient> client_;
+};
+
+class AutoEnrollmentClientImplTest : public AutoEnrollmentClientImplBaseTest {
+ protected:
+  AutoEnrollmentClientImplTest()
+      : AutoEnrollmentClientImplBaseTest(AutoEnrollmentProtocol::kFRE) {}
+
+  void SetUp() override {
+    ASSERT_FALSE(local_state_->GetUserPref(prefs::kShouldAutoEnroll));
+    ASSERT_FALSE(local_state_->GetUserPref(prefs::kAutoEnrollmentPowerLimit));
+
+    AutoEnrollmentClientImplBaseTest::SetUp();
+  }
+
+  void ServerWillReply(int64_t modulus, bool with_hashes, bool with_id_hash) {
+    em::DeviceManagementResponse response =
+        GetAutoEnrollmentResponse(modulus, with_hashes, with_id_hash);
+
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .WillOnce(DoAll(service_->CaptureJobType(&auto_enrollment_job_type_),
+                        service_->CaptureRequest(&last_request_),
+                        service_->SendJobOKAsync(response)))
+        .RetiresOnSaturation();
+  }
+
+  void ServerReplyAsyncJobWithAutoEnrollmentResponse(
+      int64_t modulus,
+      bool with_hashes,
+      bool with_id_hash,
+      DeviceManagementService::JobForTesting* job) {
+    em::DeviceManagementResponse response =
+        GetAutoEnrollmentResponse(modulus, with_hashes, with_id_hash);
+    service_->SendJobOKNow(job, response);
+  }
+
+  bool HasCachedDecision() {
+    return local_state_->GetUserPref(prefs::kShouldAutoEnroll);
+  }
+
+  void VerifyCachedResult(bool should_enroll, int power_limit) {
+    base::Value value_should_enroll(should_enroll);
+    base::Value value_power_limit(power_limit);
+    EXPECT_EQ(value_should_enroll,
+              *local_state_->GetUserPref(prefs::kShouldAutoEnroll));
+    EXPECT_EQ(value_power_limit,
+              *local_state_->GetUserPref(prefs::kAutoEnrollmentPowerLimit));
+  }
+
+  // Expects one sample for |kUMAHashDanceNetworkErrorCode| which has value of
+  // |network_error|.
+  void ExpectHashDanceNetworkErrorHistogram(int network_error) const {
+    histogram_tester_.ExpectBucketCount(
+        std::string(kUMAHashDanceNetworkErrorCode) + kUMASuffixFRE,
+        network_error, /*expected_count=*/1);
+  }
+
+  // Expects a sample for |kUMAHashDanceRequestStatus| with count
+  // |dm_status_count|.
+  void ExpectHashDanceRequestStatusHistogram(DeviceManagementStatus dm_status,
+                                             int dm_status_count) const {
+    histogram_tester_.ExpectBucketCount(
+        std::string(kUMAHashDanceRequestStatus) + kUMASuffixFRE, dm_status,
+        dm_status_count);
+  }
+
+  // Expects a sample for |kUMAHashDanceProtocolTime| to have value
+  // |expected_time_recorded|.
+  // if |success_time_recorded| is true it expects one sample for
+  // |kUMAHashDanceSuccessTime| to have value |expected_time_recorded|.
+  // Otherwise, expects no sample for |kUMAHashDanceSuccessTime|.
+  void ExpectHashDanceExecutionTimeHistogram(
+      base::TimeDelta expected_time_recorded,
+      bool success_time_recorded) const {
+    histogram_tester_.ExpectUniqueTimeSample(
+        std::string(kUMAHashDanceProtocolTime) + kUMASuffixFRE,
+        expected_time_recorded, /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueTimeSample(
+        std::string(kUMAHashDanceSuccessTime) + kUMASuffixFRE,
+        expected_time_recorded, success_time_recorded ? 1 : 0);
+  }
+
+  void ExpectHashDanceSyncExecutionTimeHistogram(bool success_time_recorded) {
+    // Note: The expected time is the difference between starting off the
+    // client, and finishing executing the protocol successfully. In this test,
+    // the protocol requests are synchronized. Then the recorded time will be
+    // zero.
+    ExpectHashDanceExecutionTimeHistogram(
+        /*expected_time_recorded=*/base::TimeDelta(), success_time_recorded);
+  }
+
+  DeviceManagementService::JobConfiguration::JobType auto_enrollment_job_type_ =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
+
+ private:
   em::DeviceManagementResponse GetAutoEnrollmentResponse(
       int64_t modulus,
       bool with_hashes,
       bool with_id_hash) const {
-    // This method should be called only when the client has been created for
-    // FRE use case.
-    EXPECT_EQ(GetAutoEnrollmentProtocol(), AutoEnrollmentProtocol::kFRE);
-
     em::DeviceManagementResponse response;
     em::DeviceAutoEnrollmentResponse* enrollment_response =
         response.mutable_auto_enrollment_response();
@@ -573,13 +530,9 @@ class AutoEnrollmentClientImplTest
 
     return response;
   }
-
-  network::TestURLLoaderFactory url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  std::unique_ptr<AutoEnrollmentClient> client_;
 };
 
-TEST_P(AutoEnrollmentClientImplTest, NetworkFailure) {
+TEST_F(AutoEnrollmentClientImplTest, NetworkFailure) {
   ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -592,7 +545,7 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailure) {
   EXPECT_FALSE(HasServerBackedState());
 }
 
-TEST_P(AutoEnrollmentClientImplTest, EmptyReply) {
+TEST_F(AutoEnrollmentClientImplTest, EmptyReply) {
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
                   /*with_id_hash=*/false);
   client()->Start();
@@ -602,11 +555,7 @@ TEST_P(AutoEnrollmentClientImplTest, EmptyReply) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -616,7 +565,7 @@ TEST_P(AutoEnrollmentClientImplTest, EmptyReply) {
   EXPECT_FALSE(HasServerBackedState());
 }
 
-TEST_P(AutoEnrollmentClientImplTest, ClientUploadsRightBits) {
+TEST_F(AutoEnrollmentClientImplTest, ClientUploadsRightBits) {
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
                   /*with_id_hash=*/false);
   client()->Start();
@@ -626,11 +575,7 @@ TEST_P(AutoEnrollmentClientImplTest, ClientUploadsRightBits) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -645,7 +590,7 @@ TEST_P(AutoEnrollmentClientImplTest, ClientUploadsRightBits) {
   EXPECT_FALSE(HasServerBackedState());
 }
 
-TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenFail) {
+TEST_F(AutoEnrollmentClientImplTest, AskForMoreThenFail) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/32, /*with_hashes=*/false,
                   /*with_id_hash=*/false);
@@ -665,7 +610,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenFail) {
   EXPECT_FALSE(HasServerBackedState());
 }
 
-TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenEvenMore) {
+TEST_F(AutoEnrollmentClientImplTest, AskForMoreThenEvenMore) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/32, /*with_hashes=*/false,
                   /*with_id_hash=*/false);
@@ -678,11 +623,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenEvenMore) {
 
   // Verify Hash dance protocol overall execution time histogram has been
   // recorded correctly. And its success time histogram has not been recorded.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/false);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -692,7 +633,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenEvenMore) {
   EXPECT_FALSE(HasServerBackedState());
 }
 
-TEST_P(AutoEnrollmentClientImplTest, AskForLess) {
+TEST_F(AutoEnrollmentClientImplTest, AskForLess) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/8, /*with_hashes=*/false, /*with_id_hash=*/false);
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
@@ -708,11 +649,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskForLess) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -725,7 +662,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskForLess) {
       kDisabledMessage, kWithLicense, kDeviceStateLicenseTypeEducation);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, AskForSame) {
+TEST_F(AutoEnrollmentClientImplTest, AskForSame) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/16, /*with_hashes=*/false,
                   /*with_id_hash=*/false);
@@ -742,11 +679,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSame) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -759,7 +692,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSame) {
                           kDisabledMessage, kNotWithLicense, kNoLicenseType);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, AskForSameTwice) {
+TEST_F(AutoEnrollmentClientImplTest, AskForSameTwice) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/16, /*with_hashes=*/false,
                   /*with_id_hash=*/false);
@@ -772,11 +705,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSameTwice) {
 
   // Verify Hash dance protocol overall execution time histogram has been
   // recorded correctly. And its success time histogram has not been recorded.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/false);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -786,7 +715,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSameTwice) {
   EXPECT_FALSE(HasServerBackedState());
 }
 
-TEST_P(AutoEnrollmentClientImplTest, AskForTooMuch) {
+TEST_F(AutoEnrollmentClientImplTest, AskForTooMuch) {
   ServerWillReply(/*modulus=*/512, /*with_hashes=*/false,
                   /*with_id_hash=*/false);
   client()->Start();
@@ -796,11 +725,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskForTooMuch) {
 
   // Verify Hash dance protocol overall execution time histogram has been
   // recorded correctly. And its success time histogram has not been recorded.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/false);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -810,7 +735,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskForTooMuch) {
   EXPECT_FALSE(HasServerBackedState());
 }
 
-TEST_P(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
+TEST_F(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/100, /*with_hashes=*/false,
                   /*with_id_hash=*/false);
@@ -823,11 +748,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -841,7 +762,7 @@ TEST_P(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
   EXPECT_FALSE(HasServerBackedState());
 }
 
-TEST_P(AutoEnrollmentClientImplTest, ConsumerDevice) {
+TEST_F(AutoEnrollmentClientImplTest, ConsumerDevice) {
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/false);
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -850,11 +771,7 @@ TEST_P(AutoEnrollmentClientImplTest, ConsumerDevice) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -870,7 +787,7 @@ TEST_P(AutoEnrollmentClientImplTest, ConsumerDevice) {
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
+TEST_F(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
@@ -885,11 +802,7 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -908,7 +821,7 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollmentStateRetrivalfailure) {
+TEST_F(AutoEnrollmentClientImplTest, ForcedReEnrollmentStateRetrivalfailure) {
   InSequence sequence;
 
   const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
@@ -972,7 +885,7 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollmentStateRetrivalfailure) {
   EXPECT_FALSE(device_state_job.IsActive());
 }
 
-TEST_P(AutoEnrollmentClientImplTest, ForcedEnrollmentZeroTouch) {
+TEST_F(AutoEnrollmentClientImplTest, ForcedEnrollmentZeroTouch) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
@@ -987,11 +900,7 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedEnrollmentZeroTouch) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1010,7 +919,7 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedEnrollmentZeroTouch) {
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
+TEST_F(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
@@ -1025,11 +934,7 @@ TEST_P(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1042,7 +947,7 @@ TEST_P(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
                           kDisabledMessage, kNotWithLicense, kNoLicenseType);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, DeviceDisabled) {
+TEST_F(AutoEnrollmentClientImplTest, DeviceDisabled) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState("example.com",
@@ -1056,11 +961,7 @@ TEST_P(AutoEnrollmentClientImplTest, DeviceDisabled) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1072,7 +973,7 @@ TEST_P(AutoEnrollmentClientImplTest, DeviceDisabled) {
                           kDisabledMessage, kNotWithLicense, kNoLicenseType);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, NoReEnrollment) {
+TEST_F(AutoEnrollmentClientImplTest, NoReEnrollment) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(std::string(),
@@ -1086,11 +987,7 @@ TEST_P(AutoEnrollmentClientImplTest, NoReEnrollment) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1108,7 +1005,7 @@ TEST_P(AutoEnrollmentClientImplTest, NoReEnrollment) {
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, NoBitsUploaded) {
+TEST_F(AutoEnrollmentClientImplTest, NoBitsUploaded) {
   CreateClient(/*power_initial=*/0, /*power_limit=*/0);
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
                   /*with_id_hash=*/false);
@@ -1119,11 +1016,7 @@ TEST_P(AutoEnrollmentClientImplTest, NoBitsUploaded) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1137,7 +1030,7 @@ TEST_P(AutoEnrollmentClientImplTest, NoBitsUploaded) {
   EXPECT_FALSE(HasServerBackedState());
 }
 
-TEST_P(AutoEnrollmentClientImplTest, ManyBitsUploaded) {
+TEST_F(AutoEnrollmentClientImplTest, ManyBitsUploaded) {
   int64_t bottom62 = INT64_C(0x386e7244d097c3e6);
   for (int i = 0; i <= 62; ++i) {
     CreateClient(/*power_initial=*/i, /*power_limit=*/i);
@@ -1160,7 +1053,7 @@ TEST_P(AutoEnrollmentClientImplTest, ManyBitsUploaded) {
   }
 }
 
-TEST_P(AutoEnrollmentClientImplTest, MoreThan32BitsUploaded) {
+TEST_F(AutoEnrollmentClientImplTest, MoreThan32BitsUploaded) {
   CreateClient(/*power_initial=*/10, /*power_limit=*/37);
   InSequence sequence;
   ServerWillReply(/*modulus=*/INT64_C(1) << 37, /*with_hashes=*/false,
@@ -1178,11 +1071,7 @@ TEST_P(AutoEnrollmentClientImplTest, MoreThan32BitsUploaded) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1195,7 +1084,7 @@ TEST_P(AutoEnrollmentClientImplTest, MoreThan32BitsUploaded) {
                           kDisabledMessage, kNotWithLicense, kNoLicenseType);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, ReuseCachedDecision) {
+TEST_F(AutoEnrollmentClientImplTest, ReuseCachedDecision) {
   // No bucket download requests should be issued.
   EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
   local_state_->SetUserPref(prefs::kShouldAutoEnroll,
@@ -1223,7 +1112,7 @@ TEST_P(AutoEnrollmentClientImplTest, ReuseCachedDecision) {
                           kDisabledMessage, kNotWithLicense, kNoLicenseType);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, RetryIfPowerLargerThanCached) {
+TEST_F(AutoEnrollmentClientImplTest, RetryIfPowerLargerThanCached) {
   local_state_->SetUserPref(prefs::kShouldAutoEnroll,
                             std::make_unique<base::Value>(false));
   local_state_->SetUserPref(prefs::kAutoEnrollmentPowerLimit,
@@ -1244,11 +1133,7 @@ TEST_P(AutoEnrollmentClientImplTest, RetryIfPowerLargerThanCached) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1260,7 +1145,7 @@ TEST_P(AutoEnrollmentClientImplTest, RetryIfPowerLargerThanCached) {
                           kDisabledMessage, kNotWithLicense, kNoLicenseType);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, NetworkChangeRetryAfterErrors) {
+TEST_F(AutoEnrollmentClientImplTest, NetworkChangeRetryAfterErrors) {
   ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -1317,7 +1202,7 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkChangeRetryAfterErrors) {
                           kDisabledMessage, kNotWithLicense, kNoLicenseType);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonWithPendingRequest) {
+TEST_F(AutoEnrollmentClientImplTest, CancelAndDeleteSoonWithPendingRequest) {
   DeviceManagementService::JobForTesting job;
   ServerWillReplyAsync(&job);
   EXPECT_FALSE(job.IsActive());
@@ -1341,7 +1226,7 @@ TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonWithPendingRequest) {
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_PENDING);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, NetworkChangedAfterCancelAndDeleteSoon) {
+TEST_F(AutoEnrollmentClientImplTest, NetworkChangedAfterCancelAndDeleteSoon) {
   DeviceManagementService::JobForTesting job;
   ServerWillReplyAsync(&job);
   EXPECT_FALSE(job.IsActive());
@@ -1378,7 +1263,7 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkChangedAfterCancelAndDeleteSoon) {
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_PENDING);
 }
 
-TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonAfterCompletion) {
+TEST_F(AutoEnrollmentClientImplTest, CancelAndDeleteSoonAfterCompletion) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
   ServerWillSendState(
@@ -1404,7 +1289,7 @@ TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonAfterCompletion) {
   EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
 }
 
-TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonAfterNetworkFailure) {
+TEST_F(AutoEnrollmentClientImplTest, CancelAndDeleteSoonAfterNetworkFailure) {
   ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -1422,7 +1307,7 @@ TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonAfterNetworkFailure) {
   EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
 }
 
-TEST_P(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
+TEST_F(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
   // This test verifies that if the first request fails due to a network
   // problem then the second request will correctly handle an updated
   // modulus request from the server.
@@ -1463,11 +1348,7 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
 
   // Verify Hash dance protocol overall execution time and its success time
   // histograms were recorded correctly with the same value.
-  // Note: The expected time is the difference between starting off the client,
-  // and finishing executing the protocol successfully. In this test, the
-  // protocol requests are synchronized. Then the recorded time will be zero.
-  ExpectHashDanceExecutionTimeHistogram(
-      /*expected_time_recorded=*/base::TimeDelta(),
+  ExpectHashDanceSyncExecutionTimeHistogram(
       /*success_time_recorded=*/true);
 
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
@@ -1481,19 +1362,10 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
 }
 
-// PSM is disabed to test only Hash dance for FRE case extensively instead. That
-// is because PSM is running only for initial enrollment, and Hash dance for FRE
-// use case.
-INSTANTIATE_TEST_SUITE_P(FRE,
-                         AutoEnrollmentClientImplTest,
-                         testing::Values(AutoEnrollmentClientImplTestState(
-                             AutoEnrollmentProtocol::kFRE,
-                             PsmState::kDisabled)));
-
 using AutoEnrollmentClientImplFREToInitialEnrollmentTest =
     AutoEnrollmentClientImplTest;
 
-TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
+TEST_F(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
        NoReEnrollmentInitialEnrollmentLicensePackaging) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
@@ -1525,7 +1397,7 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
 }
 
-TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
+TEST_F(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
        NoReEnrollmentInitialEnrollmentZeroTouch) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
@@ -1561,7 +1433,7 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH);
 }
 
-TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
+TEST_F(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
        NoReEnrollmentInitialEnrollmentGuaranteed) {
   InSequence sequence;
   ServerWillReply(/*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true);
@@ -1597,18 +1469,9 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
 }
 
-// PSM is disabed to test only Hash dance for FRE case extensively instead. That
-// is because PSM is running only for initial enrollment, and Hash dance for FRE
-// use case.
-INSTANTIATE_TEST_SUITE_P(FREToInitialEnrollment,
-                         AutoEnrollmentClientImplFREToInitialEnrollmentTest,
-                         testing::Values(AutoEnrollmentClientImplTestState(
-                             AutoEnrollmentProtocol::kFRE,
-                             PsmState::kDisabled)));
-
 // This class is used to test PSM for initial enrollment test cases only.
 // Therefore, the PsmState param has to be kEnabled.
-class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplTest {
+class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplBaseTest {
  protected:
   // Indicates the state of the PSM protocol.
   enum class StateDiscoveryResult {
@@ -1622,16 +1485,11 @@ class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplTest {
     kSuccessHasServerSideState = 2,
   };
 
-  PsmHelperInitialEnrollmentTest() {}
-  ~PsmHelperInitialEnrollmentTest() {
-    // Flush any deletion tasks.
-    base::RunLoop().RunUntilIdle();
-  }
+  PsmHelperInitialEnrollmentTest()
+      : AutoEnrollmentClientImplBaseTest(
+            AutoEnrollmentProtocol::kInitialEnrollment) {}
 
   void SetUp() override {
-    // Verify that PSM is enabled (i.e. PsmState has value kEnable).
-    ASSERT_EQ(GetPsmState(), PsmState::kEnabled);
-
     // Verify that all PSM prefs have not been set before.
     ASSERT_EQ(local_state_->GetUserPref(prefs::kShouldRetrieveDeviceState),
               nullptr);
@@ -1639,7 +1497,7 @@ class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplTest {
               nullptr);
     ASSERT_EQ(local_state_->GetUserPref(prefs::kEnrollmentPsmResult), nullptr);
 
-    AutoEnrollmentClientImplTest::SetUp();
+    AutoEnrollmentClientImplBaseTest::SetUp();
   }
 
   void PsmWillReplyWith(PsmResult psm_result,
@@ -1690,7 +1548,7 @@ class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplTest {
       const PsmHelperInitialEnrollmentTest&) = delete;
 };
 
-TEST_P(PsmHelperInitialEnrollmentTest,
+TEST_F(PsmHelperInitialEnrollmentTest,
        RetryLogicAfterNetworkFailureForRlweQueryResponse) {
   PsmWillReplyWith(PsmResult::kServerError);
 
@@ -1718,7 +1576,7 @@ TEST_P(PsmHelperInitialEnrollmentTest,
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
 }
 
-TEST_P(PsmHelperInitialEnrollmentTest,
+TEST_F(PsmHelperInitialEnrollmentTest,
        RetryLogicAfterMembershipSuccessfullyRetrieved) {
   const bool kExpectedMembershipResult = false;
   const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
@@ -1774,7 +1632,7 @@ TEST_P(PsmHelperInitialEnrollmentTest,
   }
 }
 
-TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalSucceed) {
+TEST_F(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalSucceed) {
   const bool kExpectedMembershipResult = true;
   const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
   const base::Time kExpectedPsmDeterminationTimestamp =
@@ -1824,7 +1682,7 @@ TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalSucceed) {
   }
 }
 
-TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalFailed) {
+TEST_F(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalFailed) {
   const bool kExpectedMembershipResult = true;
   const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
   const base::Time kExpectedPsmDeterminationTimestamp =
@@ -1864,15 +1722,6 @@ TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalFailed) {
     EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
   }
 }
-
-// PSM is enabled to test initial enrollment case extensively only.
-// Note that: PSM is running only for initial enrollment, and Hash dance for
-// FRE use case.
-INSTANTIATE_TEST_SUITE_P(PsmForInitialEnrollment,
-                         PsmHelperInitialEnrollmentTest,
-                         testing::Values(AutoEnrollmentClientImplTestState(
-                             AutoEnrollmentProtocol::kInitialEnrollment,
-                             PsmState::kEnabled)));
 
 }  // namespace
 }  // namespace policy
