@@ -5697,7 +5697,9 @@
     'wpt_web_tests': {
       'wpt_tests_suite': {
         'args': [
-          '--child-processes=20',
+          '--child-processes=8',
+          '--run-by-dir=0',
+          '--no-restart-on-new-group',
         ],
         'merge': {
           'args': [

@@ -97515,7 +97515,9 @@
     "isolated_scripts": [
       {
         "args": [
-          "--child-processes=20"
+          "--child-processes=8",
+          "--run-by-dir=0",
+          "--no-restart-on-new-group"
         ],
         "experiment_percentage": 100,
         "isolate_name": "wpt_tests_isolate",
