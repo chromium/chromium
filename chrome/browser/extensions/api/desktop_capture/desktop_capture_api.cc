@@ -102,8 +102,13 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
   if (!target_render_frame_host)
     return RespondNow(Error(kTargetTabRequiredFromServiceWorker));
 
-  return Execute(params->sources, target_render_frame_host, origin,
-                 target_name);
+  const bool exclude_system_audio =
+      params->options &&
+      params->options->system_audio ==
+          api::desktop_capture::SYSTEM_AUDIO_PREFERENCE_ENUM_EXCLUDE;
+
+  return Execute(params->sources, exclude_system_audio,
+                 target_render_frame_host, origin, target_name);
 }
 
 std::string DesktopCaptureChooseDesktopMediaFunction::GetExtensionTargetName()

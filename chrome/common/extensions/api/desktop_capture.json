@@ -12,6 +12,12 @@
         "type": "string",
         "enum": ["screen", "window", "tab", "audio"],
         "description": "Enum used to define set of desktop media sources used in chooseDesktopMedia()."
+      },
+      {
+        "id": "SystemAudioPreferenceEnum",
+        "type": "string",
+        "enum": ["include", "exclude"],
+        "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-systemaudiopreferenceenum\">SystemAudioPreferenceEnum</a>."
       }
     ],
     "functions": [
@@ -31,6 +37,20 @@
             "name": "targetTab",
             "optional": true,
             "description": "Optional tab for which the stream is created. If not specified then the resulting stream can be used only by the calling extension. The stream can only be used by frames in the given tab whose security origin matches <code>tab.url</code>. The tab's origin must be a secure origin, e.g. HTTPS."
+          },
+          {
+            "type": "object",
+            "name": "options",
+            "optional": true,
+            "nodoc": true,
+            "properties": {
+              "systemAudio": {
+                "$ref": "SystemAudioPreferenceEnum",
+                "optional": true,
+                "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamconstraints-systemaudio\">systemAudio</a>."
+              }
+            },
+            "description": "Mirrors members of <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamconstraints\">DisplayMediaStreamConstraints</a> which need to be applied before the user makes their selection, and must therefore be provided to chooseDesktopMedia() rather than be deferred to getUserMedia()."
           },
           {
             "type": "function",
