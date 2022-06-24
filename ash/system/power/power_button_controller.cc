@@ -524,17 +524,16 @@ void PowerButtonController::ParsePowerButtonPositionSwitch() {
   if (!cl->HasSwitch(switches::kAshPowerButtonPosition))
     return;
 
-  std::unique_ptr<base::DictionaryValue> position_info =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(
-          cl->GetSwitchValueASCII(switches::kAshPowerButtonPosition)));
-  if (!position_info) {
+  absl::optional<base::Value> parsed_json = base::JSONReader::Read(
+      cl->GetSwitchValueASCII(switches::kAshPowerButtonPosition));
+  if (!parsed_json || !parsed_json->is_dict()) {
     LOG(ERROR) << switches::kAshPowerButtonPosition << " flag has no value";
     return;
   }
 
-  const std::string* edge = position_info->FindStringKey(kEdgeField);
-  absl::optional<double> position =
-      position_info->FindDoubleKey(kPositionField);
+  const base::Value::Dict& position_info = parsed_json->GetDict();
+  const std::string* edge = position_info.FindString(kEdgeField);
+  absl::optional<double> position = position_info.FindDouble(kPositionField);
 
   if (!edge || !position) {
     LOG(ERROR) << "Both " << kEdgeField << " field and " << kPositionField

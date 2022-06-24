@@ -77,24 +77,22 @@ std::unique_ptr<google::protobuf::MessageLite> DecodedMessageToProto(
 // static
 std::unique_ptr<MessageWrapper> MessageWrapper::FromRawMessage(
     const std::string& message) {
-  std::unique_ptr<base::Value> json_value =
-      base::JSONReader::ReadDeprecated(message);
+  absl::optional<base::Value> json_value = base::JSONReader::Read(message);
   if (!json_value) {
     return nullptr;
   }
 
-  std::unique_ptr<base::DictionaryValue> json_dictionary =
-      base::DictionaryValue::From(std::move(json_value));
+  const base::Value::Dict* json_dictionary = json_value->GetIfDict();
   if (!json_dictionary) {
     return nullptr;
   }
 
-  absl::optional<int> message_type = json_dictionary->FindIntKey(kJsonTypeKey);
+  absl::optional<int> message_type = json_dictionary->FindInt(kJsonTypeKey);
   if (!message_type)
     return nullptr;
 
   const std::string* encoded_message =
-      json_dictionary->FindStringKey(kJsonDataKey);
+      json_dictionary->FindString(kJsonDataKey);
   if (!encoded_message)
     return nullptr;
 

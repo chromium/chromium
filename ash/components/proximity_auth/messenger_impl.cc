@@ -16,7 +16,6 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/values.h"
 
 namespace proximity_auth {
 
@@ -40,7 +39,7 @@ const char kMessageTypeUnlockResponse[] = "unlock_response";
 const char kUnlockEventName[] = "easy_unlock";
 
 // Serializes the |value| to a JSON string and returns the result.
-std::string SerializeValueToJson(const base::Value& value) {
+std::string SerializeValueToJson(const base::Value::Dict& value) {
   std::string json;
   base::JSONWriter::Write(value, &json);
   return json;
@@ -49,8 +48,8 @@ std::string SerializeValueToJson(const base::Value& value) {
 // Returns the message type represented by the |message|. This is a convenience
 // wrapper that should only be called when the |message| is known to specify its
 // message type, i.e. this should not be called for untrusted input.
-std::string GetMessageType(const base::DictionaryValue& message) {
-  const std::string* type = message.FindStringKey(kTypeKey);
+std::string GetMessageType(const base::Value::Dict& message) {
+  const std::string* type = message.FindString(kTypeKey);
   return type ? *type : std::string();
 }
 
@@ -76,9 +75,9 @@ void MessengerImpl::RemoveObserver(MessengerObserver* observer) {
 }
 
 void MessengerImpl::DispatchUnlockEvent() {
-  base::DictionaryValue message;
-  message.SetStringKey(kTypeKey, kMessageTypeLocalEvent);
-  message.SetStringKey(kNameKey, kUnlockEventName);
+  base::Value::Dict message;
+  message.Set(kTypeKey, kMessageTypeLocalEvent);
+  message.Set(kNameKey, kUnlockEventName);
   queued_messages_.push_back(PendingMessage(message));
   ProcessMessageQueue();
 }
@@ -90,16 +89,16 @@ void MessengerImpl::RequestDecryption(const std::string& challenge) {
                         base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                         &encrypted_message_data_base64);
 
-  base::DictionaryValue message;
-  message.SetStringKey(kTypeKey, kMessageTypeDecryptRequest);
-  message.SetStringKey(kEncryptedDataKey, encrypted_message_data_base64);
+  base::Value::Dict message;
+  message.Set(kTypeKey, kMessageTypeDecryptRequest);
+  message.Set(kEncryptedDataKey, encrypted_message_data_base64);
   queued_messages_.push_back(PendingMessage(message));
   ProcessMessageQueue();
 }
 
 void MessengerImpl::RequestUnlock() {
-  base::DictionaryValue message;
-  message.SetStringKey(kTypeKey, kMessageTypeUnlockRequest);
+  base::Value::Dict message;
+  message.Set(kTypeKey, kMessageTypeUnlockRequest);
   queued_messages_.push_back(PendingMessage(message));
   ProcessMessageQueue();
 }
@@ -115,8 +114,7 @@ MessengerImpl::PendingMessage::PendingMessage() = default;
 
 MessengerImpl::PendingMessage::~PendingMessage() = default;
 
-MessengerImpl::PendingMessage::PendingMessage(
-    const base::DictionaryValue& message)
+MessengerImpl::PendingMessage::PendingMessage(const base::Value::Dict& message)
     : json_message(SerializeValueToJson(message)),
       type(GetMessageType(message)) {}
 
@@ -140,7 +138,7 @@ void MessengerImpl::ProcessMessageQueue() {
 }
 
 void MessengerImpl::HandleRemoteStatusUpdateMessage(
-    const base::DictionaryValue& message) {
+    const base::Value::Dict& message) {
   std::unique_ptr<RemoteStatusUpdate> status_update =
       RemoteStatusUpdate::Deserialize(message);
   if (!status_update) {
@@ -153,8 +151,8 @@ void MessengerImpl::HandleRemoteStatusUpdateMessage(
 }
 
 void MessengerImpl::HandleDecryptResponseMessage(
-    const base::DictionaryValue& message) {
-  const std::string* base64_data = message.FindStringKey(kDataKey);
+    const base::Value::Dict& message) {
+  const std::string* base64_data = message.FindString(kDataKey);
   std::string decrypted_data;
   if (!base64_data || base64_data->empty()) {
     PA_LOG(ERROR) << "Decrypt response missing '" << kDataKey << "' value.";
@@ -169,7 +167,7 @@ void MessengerImpl::HandleDecryptResponseMessage(
 }
 
 void MessengerImpl::HandleUnlockResponseMessage(
-    const base::DictionaryValue& message) {
+    const base::Value::Dict& message) {
   for (auto& observer : observers_)
     observer.OnUnlockResponse(true);
 }
@@ -185,18 +183,14 @@ void MessengerImpl::OnMessageReceived(const std::string& payload) {
 
 void MessengerImpl::HandleMessage(const std::string& message) {
   // The decoded message should be a JSON string.
-  std::unique_ptr<base::Value> message_value =
-      base::JSONReader::ReadDeprecated(message);
+  absl::optional<base::Value> message_value = base::JSONReader::Read(message);
   if (!message_value || !message_value->is_dict()) {
     PA_LOG(ERROR) << "Unable to parse message as JSON:\n" << message;
     return;
   }
 
-  base::DictionaryValue* message_dictionary;
-  bool success = message_value->GetAsDictionary(&message_dictionary);
-  DCHECK(success);
-
-  const std::string* type = message_dictionary->FindStringKey(kTypeKey);
+  const base::Value::Dict& message_dictionary = message_value->GetDict();
+  const std::string* type = message_dictionary.FindString(kTypeKey);
   if (!type) {
     PA_LOG(ERROR) << "Missing '" << kTypeKey << "' key in message:\n "
                   << message;
@@ -205,7 +199,7 @@ void MessengerImpl::HandleMessage(const std::string& message) {
 
   // Remote status updates can be received out of the blue.
   if (*type == kMessageTypeRemoteStatusUpdate) {
-    HandleRemoteStatusUpdateMessage(*message_dictionary);
+    HandleRemoteStatusUpdateMessage(message_dictionary);
     return;
   }
 
@@ -232,9 +226,9 @@ void MessengerImpl::HandleMessage(const std::string& message) {
   }
 
   if (*type == kMessageTypeDecryptResponse)
-    HandleDecryptResponseMessage(*message_dictionary);
+    HandleDecryptResponseMessage(message_dictionary);
   else if (*type == kMessageTypeUnlockResponse)
-    HandleUnlockResponseMessage(*message_dictionary);
+    HandleUnlockResponseMessage(message_dictionary);
   else
     NOTREACHED();  // There are no other message types that expect a response.
 

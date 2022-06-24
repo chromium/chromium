@@ -35,32 +35,30 @@ void ParseJson(const std::string& json,
                std::string& wifi_connection_state,
                bool& debug_mode,
                std::string& gaia_id) {
-  std::unique_ptr<base::Value> message_value =
-      base::JSONReader::ReadDeprecated(json);
-  base::DictionaryValue* message_dictionary;
-  message_value->GetAsDictionary(&message_dictionary);
+  absl::optional<base::Value> message_value = base::JSONReader::Read(json);
+  base::Value::Dict* message_dictionary = message_value->GetIfDict();
   const std::string* device_name_ptr =
-      message_dictionary->FindStringKey(kJsonDeviceNameKey);
+      message_dictionary->FindString(kJsonDeviceNameKey);
   if (device_name_ptr)
     device_name = *device_name_ptr;
   const std::string* board_name_ptr =
-      message_dictionary->FindStringKey(kJsonBoardNameKey);
+      message_dictionary->FindString(kJsonBoardNameKey);
   if (board_name_ptr)
     board_name = *board_name_ptr;
   absl::optional<bool> tablet_mode_opt =
-      message_dictionary->FindBoolKey(kJsonTabletModeKey);
+      message_dictionary->FindBool(kJsonTabletModeKey);
   if (tablet_mode_opt.has_value())
     tablet_mode = tablet_mode_opt.value();
   const std::string* wifi_connection_state_ptr =
-      message_dictionary->FindStringKey(kJsonWifiConnectionStateKey);
+      message_dictionary->FindString(kJsonWifiConnectionStateKey);
   if (wifi_connection_state_ptr)
     wifi_connection_state = *wifi_connection_state_ptr;
   absl::optional<bool> debug_mode_opt =
-      message_dictionary->FindBoolKey(kJsonDebugModeKey);
+      message_dictionary->FindBool(kJsonDebugModeKey);
   if (debug_mode_opt.has_value())
     debug_mode = debug_mode_opt.value();
   const std::string* gaia_id_ptr =
-      message_dictionary->FindStringKey(kJsonGaiaIdKey);
+      message_dictionary->FindString(kJsonGaiaIdKey);
   if (gaia_id_ptr)
     gaia_id = *gaia_id_ptr;
 }

@@ -62,42 +62,39 @@ const char* const kV3Features[] = {
 
 std::unique_ptr<WireMessage> DeserializeJsonMessageBody(
     const std::string& serialized_message_body) {
-  std::unique_ptr<base::Value> body_value =
-      base::JSONReader::ReadDeprecated(serialized_message_body);
+  absl::optional<base::Value> body_value =
+      base::JSONReader::Read(serialized_message_body);
   if (!body_value || !body_value->is_dict()) {
     PA_LOG(WARNING) << "Unable to parse message as JSON.";
     return nullptr;
   }
 
-  base::DictionaryValue* body;
-  if (!body_value->GetAsDictionary(&body))
-    NOTREACHED();
-
-  std::string payload_base64;
-  if (!body->GetString(kPayloadKey, &payload_base64)) {
+  const base::Value::Dict& body = body_value->GetDict();
+  const std::string* payload_base64 = body.FindString(kPayloadKey);
+  if (!payload_base64) {
     // Legacy case: Message without a payload.
     return base::WrapUnique(new WireMessage(serialized_message_body));
   }
 
-  if (payload_base64.empty()) {
+  if (payload_base64->empty()) {
     PA_LOG(WARNING) << "Message contains empty payload.";
     return nullptr;
   }
 
   std::string payload;
-  if (!base::Base64UrlDecode(payload_base64,
+  if (!base::Base64UrlDecode(*payload_base64,
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                              &payload)) {
     PA_LOG(WARNING) << "Payload contains invalid base64 encoding.";
     return nullptr;
   }
 
-  std::string feature;
-  if (!body->GetString(kFeatureKey, &feature) || feature.empty()) {
-    feature = kDefaultFeature;
+  const std::string* feature = body.FindString(kFeatureKey);
+  if (!feature || feature->empty()) {
+    return base::WrapUnique(new WireMessage(payload, kDefaultFeature));
   }
 
-  return base::WrapUnique(new WireMessage(payload, feature));
+  return base::WrapUnique(new WireMessage(payload, *feature));
 }
 
 std::unique_ptr<WireMessage> DeserializeV3OrV4Message(

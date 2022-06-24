@@ -2639,20 +2639,20 @@ void AcceleratorControllerImpl::ParseSideVolumeButtonLocationInfo() {
     return;
   }
 
-  std::unique_ptr<base::DictionaryValue> info_in_dict =
-      base::DictionaryValue::From(
-          base::JSONReader::ReadDeprecated(location_info));
-  if (!info_in_dict) {
+  absl::optional<base::Value> parsed_json =
+      base::JSONReader::Read(location_info);
+  if (!parsed_json || !parsed_json->is_dict()) {
     LOG(ERROR) << "JSONReader failed reading side volume button location info: "
                << location_info;
     return;
   }
 
-  const std::string* region = info_in_dict->FindStringKey(kVolumeButtonRegion);
+  const base::Value::Dict& info_in_dict = parsed_json->GetDict();
+  const std::string* region = info_in_dict.FindString(kVolumeButtonRegion);
   if (region)
     side_volume_button_location_.region = *region;
 
-  const std::string* side = info_in_dict->FindStringKey(kVolumeButtonSide);
+  const std::string* side = info_in_dict.FindString(kVolumeButtonSide);
   if (side)
     side_volume_button_location_.side = *side;
 }
