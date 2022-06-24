@@ -1,0 +1,59 @@
+diff --git a/base/third_party/cityhash_v103/src/city_v103.cc b/base/third_party/cityhash_v103/src/city_v103.cc
+index 4aa37301088b4..7866e6cee8187 100644
+--- a/base/third_party/cityhash_v103/src/city_v103.cc
++++ b/base/third_party/cityhash_v103/src/city_v103.cc
+@@ -117,7 +117,7 @@ static uint64 Rotate(uint64 val, int shift) {
+ // Equivalent to Rotate(), but requires the second arg to be non-zero.
+ // On x86-64, and probably others, it's possible for this to compile
+ // to a single instruction if both args are already in registers.
+-static uint64 RotateByAtLeast1(uint64 val, int shift) {
++static uint64 RotateByAtLeast1(uint64 val, size_t shift) {
+   return (val >> shift) | (val << (64 - shift));
+ }
+ 
+@@ -140,11 +140,11 @@ static uint64 HashLen0to16(const char* s, size_t len) {
+     return HashLen16(len + (a << 3), Fetch32(s + len - 4));
+   }
+   if (len > 0) {
+-    uint8 a = s[0];
+-    uint8 b = s[len >> 1];
+-    uint8 c = s[len - 1];
++    uint8 a = static_cast<uint8>(s[0]);
++    uint8 b = static_cast<uint8>(s[len >> 1]);
++    uint8 c = static_cast<uint8>(s[len - 1]);
+     uint32 y = static_cast<uint32>(a) + (static_cast<uint32>(b) << 8);
+-    uint32 z = len + (static_cast<uint32>(c) << 2);
++    uint32 z = static_cast<uint32>(len) + (static_cast<uint32>(c) << 2);
+     return ShiftMix(y * k2 ^ z * k3) * k2;
+   }
+   return k2;
+@@ -266,15 +266,15 @@ static uint128 CityMurmur(const char* s, size_t len, uint128 seed) {
+   uint64 b = Uint128High64(seed);
+   uint64 c = 0;
+   uint64 d = 0;
+-  signed long l = len - 16;
+-  if (l <= 0) {  // len <= 16
++  if (len <= 16) {
+     a = ShiftMix(a * k1) * k1;
+     c = b * k1 + HashLen0to16(s, len);
+     d = ShiftMix(a + (len >= 8 ? Fetch64(s) : c));
+-  } else {  // len > 16
++  } else {
+     c = HashLen16(Fetch64(s + len - 8) + k1, a);
+     d = HashLen16(b + len, c + Fetch64(s + len - 16));
+     a += d;
++    // len > 16 here, so do...while is safe
+     do {
+       a ^= ShiftMix(Fetch64(s) * k1) * k1;
+       a *= k1;
+@@ -283,8 +283,8 @@ static uint128 CityMurmur(const char* s, size_t len, uint128 seed) {
+       c *= k1;
+       d ^= c;
+       s += 16;
+-      l -= 16;
+-    } while (l > 0);
++      len -= 16;
++    } while (len > 16);
+   }
+   a = HashLen16(a, c);
+   b = HashLen16(d, b);

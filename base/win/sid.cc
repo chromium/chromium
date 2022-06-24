@@ -24,7 +24,8 @@ namespace win {
 
 namespace {
 
-absl::optional<DWORD> WellKnownCapabilityToRid(WellKnownCapability capability) {
+absl::optional<long>  // NOLINT(runtime/int)
+WellKnownCapabilityToRid(WellKnownCapability capability) {
   switch (capability) {
     case WellKnownCapability::kInternetClient:
       return SECURITY_CAPABILITY_INTERNET_CLIENT;
@@ -153,12 +154,14 @@ Sid::Sid(const void* sid, size_t length)
 }
 
 absl::optional<Sid> Sid::FromKnownCapability(WellKnownCapability capability) {
-  absl::optional<DWORD> capability_rid = WellKnownCapabilityToRid(capability);
+  absl::optional<long> capability_rid =  // NOLINT(runtime/int)
+      WellKnownCapabilityToRid(capability);
   if (!capability_rid)
     return absl::nullopt;
   SID_IDENTIFIER_AUTHORITY capability_authority = {
       SECURITY_APP_PACKAGE_AUTHORITY};
-  DWORD sub_authorities[] = {SECURITY_CAPABILITY_BASE_RID, *capability_rid};
+  DWORD sub_authorities[] = {SECURITY_CAPABILITY_BASE_RID,
+                             static_cast<DWORD>(*capability_rid)};
   return FromSubAuthorities(&capability_authority, std::size(sub_authorities),
                             sub_authorities);
 }

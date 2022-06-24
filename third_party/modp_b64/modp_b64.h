@@ -138,7 +138,7 @@ size_t modp_b64_decode(char* dest, const char* src, size_t len);
 inline std::string& modp_b64_encode(std::string& s)
 {
     std::string x(modp_b64_encode_len(s.size()), '\0');
-    size_t d = modp_b64_encode(const_cast<char*>(x.data()), s.data(), (int)s.size());
+    size_t d = modp_b64_encode(const_cast<char*>(x.data()), s.data(), s.size());
     x.erase(d, std::string::npos);
     s.swap(x);
     return s;
@@ -156,7 +156,7 @@ inline std::string& modp_b64_encode(std::string& s)
 inline std::string& modp_b64_decode(std::string& s)
 {
     std::string x(modp_b64_decode_len(s.size()), '\0');
-    size_t d = modp_b64_decode(const_cast<char*>(x.data()), s.data(), (int)s.size());
+    size_t d = modp_b64_decode(const_cast<char*>(x.data()), s.data(), s.size());
     if (d == MODP_B64_ERROR) {
         x.clear();
     } else {

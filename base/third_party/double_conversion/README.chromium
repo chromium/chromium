@@ -13,4 +13,4 @@ Description:
 Provides binary-decimal and decimal-binary routines for IEEE doubles.
 
 Local Modifications:
-None.
+Added cast - https://github.com/google/double-conversion/pull/182
