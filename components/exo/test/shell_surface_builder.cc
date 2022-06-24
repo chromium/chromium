@@ -9,9 +9,10 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "components/exo/buffer.h"
+#include "components/exo/display.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
-#include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/exo_test_base.h"
 #include "components/exo/xdg_shell_surface.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "ui/aura/env.h"
@@ -128,12 +129,6 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetOrigin(const gfx::Point& origin) {
   return *this;
 }
 
-ShellSurfaceBuilder& ShellSurfaceBuilder::SetParent(ShellSurface* parent) {
-  DCHECK(!built_);
-  parent_shell_surface_ = parent;
-  return *this;
-}
-
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetUseSystemModalContainer() {
   DCHECK(!built_);
   use_system_modal_container_ = true;
@@ -178,9 +173,21 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetCentered() {
   return *this;
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetParent(ShellSurface* parent) {
+  DCHECK(!built_);
+  parent_shell_surface_ = parent;
+  return *this;
+}
+
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetAsPopup() {
   DCHECK(!built_);
   popup_ = true;
+  return *this;
+}
+
+ShellSurfaceBuilder& ShellSurfaceBuilder::EnableDefaultScaleCancellation() {
+  DCHECK(!built_);
+  default_scale_cancellation_ = true;
   return *this;
 }
 
@@ -201,44 +208,89 @@ Surface* ShellSurfaceBuilder::AddChildSurface(Surface* parent,
 }
 
 std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
+  // Create a ShellSurface instance.
   DCHECK(!built_);
+  DCHECK(isConfigurationValidForShellSurface());
   built_ = true;
   Holder* holder = new Holder();
   holder->AddRootSurface(root_buffer_size_, root_buffer_format_);
-
-  int container = use_system_modal_container_
-                      ? ash::kShellWindowId_SystemModalContainer
-                      : ash::desks_util::GetActiveDeskContainerId();
-
   auto shell_surface = std::make_unique<ShellSurface>(
-      holder->root_surface, origin_, can_minimize_, container);
+      holder->root_surface, origin_, can_minimize_, GetContainer());
   shell_surface->host_window()->SetProperty(kBuilderResourceHolderKey, holder);
 
+  // Set the properties specific to ShellSurface.
   if (parent_shell_surface_)
     shell_surface->SetParent(parent_shell_surface_);
-
-  if (disable_movement_)
-    shell_surface->DisableMovement();
-
-  if (!max_size_.IsEmpty())
-    shell_surface->SetMaximumSize(max_size_);
-
-  if (!min_size_.IsEmpty())
-    shell_surface->SetMaximumSize(min_size_);
-
   if (popup_)
     shell_surface->SetPopup();
 
+  SetCommonPropertiesAndCommitIfNecessary(shell_surface.get());
+
+  return shell_surface;
+}
+
+std::unique_ptr<ClientControlledShellSurface>
+ShellSurfaceBuilder::BuildClientControlledShellSurface() {
+  // Create a ClientControlledShellSurface instance.
+  DCHECK(!built_);
+  DCHECK(isConfigurationValidForClientControlledShellSurface());
+  built_ = true;
+  Holder* holder = new Holder();
+  holder->AddRootSurface(root_buffer_size_, root_buffer_format_);
+  auto shell_surface = Display().CreateOrGetClientControlledShellSurface(
+      holder->root_surface, GetContainer(),
+      WMHelper::GetInstance()->GetDefaultDeviceScaleFactor(),
+      default_scale_cancellation_);
+  shell_surface->host_window()->SetProperty(kBuilderResourceHolderKey, holder);
+
+  // Set the properties specific to ClientControlledShellSurface.
+  shell_surface->SetApplicationId("arc");
+  // ARC's default min size is non-empty.
+  if (!min_size_.has_value())
+    shell_surface->SetMinimumSize(gfx::Size(1, 1));
+  shell_surface->set_delegate(
+      std::make_unique<ClientControlledShellSurfaceDelegate>(
+          shell_surface.get()));
+
+  SetCommonPropertiesAndCommitIfNecessary(shell_surface.get());
+
+  return shell_surface;
+}
+
+bool ShellSurfaceBuilder::isConfigurationValidForShellSurface() {
+  return !default_scale_cancellation_;
+}
+
+bool ShellSurfaceBuilder::
+    isConfigurationValidForClientControlledShellSurface() {
+  return !parent_shell_surface_ && !popup_;
+}
+
+void ShellSurfaceBuilder::SetCommonPropertiesAndCommitIfNecessary(
+    ShellSurfaceBase* shell_surface) {
+  if (disable_movement_)
+    shell_surface->DisableMovement();
+
+  if (max_size_.has_value())
+    shell_surface->SetMaximumSize(max_size_.value());
+
+  if (min_size_.has_value())
+    shell_surface->SetMinimumSize(min_size_.value());
+
   if (commit_on_build_) {
-    holder->root_surface->Commit();
+    shell_surface->root_surface()->Commit();
     if (centered_)
       ash::CenterWindow(shell_surface->GetWidget()->GetNativeWindow());
   } else {
     // 'SetCentered' requires its shell surface to be committed when creatted.
     DCHECK(!centered_);
   }
+}
 
-  return shell_surface;
+int ShellSurfaceBuilder::GetContainer() {
+  return use_system_modal_container_
+             ? ash::kShellWindowId_SystemModalContainer
+             : ash::desks_util::GetActiveDeskContainerId();
 }
 
 }  // namespace test
