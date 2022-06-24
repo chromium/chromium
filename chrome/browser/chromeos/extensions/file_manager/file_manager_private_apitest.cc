@@ -768,3 +768,54 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockCopy) {
   EXPECT_TRUE(RunExtensionTest("file_browser/dlp_block", {},
                                {.load_as_component = true}));
 }
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+
+  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+
+  const base::FilePath blocked_file_path =
+      temp_dir_.GetPath().Append("blocked_file.txt");
+  const base::FilePath unrestricted_file_path =
+      temp_dir_.GetPath().Append("unrestricted_file.txt");
+  const base::FilePath untracked_file_path =
+      temp_dir_.GetPath().Append("untracked_file.txt");
+
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    base::File blocked_test_file(
+        blocked_file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(blocked_test_file.IsValid());
+
+    base::File unrestricted_test_file(
+        unrestricted_file_path,
+        base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(unrestricted_test_file.IsValid());
+
+    base::File untracked_test_file(
+        untracked_file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(untracked_test_file.IsValid());
+  }
+
+  base::MockCallback<chromeos::DlpClient::AddFileCallback> add_file_cb;
+  EXPECT_CALL(add_file_cb, Run).Times(2);
+  dlp::AddFileRequest request;
+  request.set_file_path(blocked_file_path.value());
+  request.set_source_url("https://example1.com");
+  chromeos::DlpClient::Get()->AddFile(request, add_file_cb.Get());
+  request.set_file_path(unrestricted_file_path.value());
+  request.set_source_url("https://example2.com");
+  chromeos::DlpClient::Get()->AddFile(request, add_file_cb.Get());
+
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule)
+      .WillOnce(testing::Return(policy::DlpRulesManager::Level::kBlock))
+      .WillOnce(testing::Return(policy::DlpRulesManager::Level::kAllow))
+      .RetiresOnSaturation();
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata", {},
+                               {.load_as_component = true}));
+}
