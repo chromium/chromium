@@ -24771,7 +24771,7 @@
     },
     {
       'name': 'StartupBrowserWindowLaunchSuppressed',
-      'owners': ['jityao@chromium.org', 'hendrich@chromium.org'],
+      'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:76-'],

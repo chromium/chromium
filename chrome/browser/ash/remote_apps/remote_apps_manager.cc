@@ -354,7 +354,7 @@ gfx::ImageSkia RemoteAppsManager::GetPlaceholderIcon(const std::string& id,
 apps::mojom::MenuItemsPtr RemoteAppsManager::GetMenuModel(
     const std::string& id) {
   apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
-  // TODO(jityao): Temporary string for menu item.
+  // TODO(b/236785623): Temporary string for menu item.
   apps::AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
                        &menu_items);
   return menu_items;

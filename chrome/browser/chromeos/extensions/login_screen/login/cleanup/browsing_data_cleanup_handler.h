@@ -13,7 +13,6 @@ namespace chromeos {
 // A cleanup handler which clears the profile's browsing data using
 // `BrowsingDataRemover`. See `chrome_browsing_data_remover::ALL_DATA_TYPES`
 // for the list of data types removed.
-// TODO(jityao, b:200678974) Add browser tests.
 class BrowsingDataCleanupHandler
     : public CleanupHandler,
       public content::BrowsingDataRemover::Observer {

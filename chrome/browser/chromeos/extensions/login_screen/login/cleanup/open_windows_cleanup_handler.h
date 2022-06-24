@@ -16,7 +16,6 @@ namespace chromeos {
 // A cleanup handler which closes all open browser windows. Windows created by
 // the chrome.app.window are not closed but they will be handled separately by
 // the extension and app cleanup handler.
-// TODO(jityao, b:200678974) Add browser tests.
 class OpenWindowsCleanupHandler : public CleanupHandler {
  public:
   OpenWindowsCleanupHandler();

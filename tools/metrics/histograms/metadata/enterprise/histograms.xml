@@ -1652,7 +1652,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.LoginApiCleanup.{CleanupHandler}.Success"
     enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>jityao@google.com</owner>
   <owner>hendrich@chromium.org</owner>
   <summary>ChromeOS only. Records if cleanup handler succeeded.</summary>
   <token key="CleanupHandler" variants="CleanupHandler"/>
@@ -1660,7 +1659,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.LoginApiCleanup.{CleanupHandler}.Timing" units="ms"
     expires_after="2022-12-31">
-  <owner>jityao@google.com</owner>
   <owner>hendrich@chromium.org</owner>
   <summary>
     ChromeOS only. Records the duration the cleanup handler took.

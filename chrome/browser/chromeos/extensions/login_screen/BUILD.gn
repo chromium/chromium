@@ -73,7 +73,7 @@ source_set("login_screen") {
   }
 }
 
-# TODO(jityao, b/215502706): Move tests back into chrome/test/BUILD.gn.
+# TODO(b/215502706): Move tests back into chrome/test/BUILD.gn.
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

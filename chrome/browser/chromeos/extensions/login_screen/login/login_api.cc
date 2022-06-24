@@ -341,7 +341,7 @@ LoginEndSharedSessionFunction::~LoginEndSharedSessionFunction() = default;
 
 ExtensionFunction::ResponseAction LoginEndSharedSessionFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(jityao, b:217155485): Enable for Lacros after cleanup handlers are
+  // TODO(b:217155485): Enable for Lacros after cleanup handlers are
   // added.
   return RespondNow(Error(kCannotBeCalledFromLacros));
 #else

@@ -10,7 +10,6 @@
 namespace chromeos {
 
 // A cleanup handler which clears the profile's clipboard.
-// TODO(jityao, b:200678974) Add browser tests.
 class ClipboardCleanupHandler : public CleanupHandler {
  public:
   ClipboardCleanupHandler();
