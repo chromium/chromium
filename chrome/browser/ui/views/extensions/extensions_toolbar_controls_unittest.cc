@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
@@ -366,4 +367,46 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
     WaitForAnimation();
     EXPECT_TRUE(IsRequestAccessButtonVisible());
   }
+}
+
+// TODO(crbug.com/1339370): Withholding host permissions is flaky when the test
+// is run multiple times.
+TEST_F(ExtensionsToolbarControlsUnitTest,
+       DISABLED_RequestAccessButton_OnPressedExecuteAction) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  const GURL url("http://www.example.com");
+  web_contents_tester->NavigateAndCommit(url);
+  WaitForAnimation();
+  LayoutContainerIfNecessary();
+
+  constexpr char kActivatedUserAction[] =
+      "Extensions.Toolbar.ExtensionActivatedFromRequestAccessButton";
+  base::UserActionTester user_action_tester;
+  extensions::SitePermissionsHelper permissions(browser()->profile());
+
+  // Request access button is visible because extension A is requesting
+  // access.
+  ASSERT_TRUE(request_access_button()->GetVisible());
+  EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 0);
+  EXPECT_EQ(permissions.GetSiteAccess(*extension, url),
+            extensions::SitePermissionsHelper::SiteAccess::kOnClick);
+
+  ClickButton(request_access_button());
+
+  WaitForAnimation();
+  LayoutContainerIfNecessary();
+
+  // Verify request access button is hidden since extension executed its
+  // action. Extension's site access should have not changed, since clicking the
+  // button grants one time access.
+  ASSERT_FALSE(request_access_button()->GetVisible());
+  EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 1);
+  EXPECT_EQ(permissions.GetSiteAccess(*extension, url),
+            extensions::SitePermissionsHelper::SiteAccess::kOnClick);
 }

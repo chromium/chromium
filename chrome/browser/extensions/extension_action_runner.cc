@@ -87,43 +87,23 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
     bool grant_tab_permissions) {
   if (grant_tab_permissions) {
     int blocked_actions = GetBlockedActions(extension->id());
-    if (blocked_actions & kRefreshRequiredActionsMask) {
-      const GURL& url = web_contents()->GetLastCommittedURL();
-      // An extension that wants to run but it is currently blocked must have
-      // "on click" access.
-      constexpr SitePermissionsHelper::SiteAccess kExpectedSiteAccess =
-          SitePermissionsHelper::SiteAccess::kOnClick;
-      DCHECK_EQ(
-          kExpectedSiteAccess,
-          SitePermissionsHelper(Profile::FromBrowserContext(browser_context_))
-              .GetSiteAccess(*extension, url));
+    GrantTabPermissions(extension);
 
-      // Running the action does not update permissions.
-      constexpr bool update_permissions = false;
-      ShowReloadPageBubble(
-          extension, update_permissions,
-          base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
-                         weak_factory_.GetWeakPtr(), extension->id(), url,
-                         kExpectedSiteAccess, kExpectedSiteAccess));
-
-      return ExtensionAction::ACTION_NONE;
-    }
-    TabHelper::FromWebContents(web_contents())
-        ->active_tab_permission_granter()
-        ->GrantIfRequested(extension);
-    // If the extension had blocked actions, granting active tab will have
-    // run the extension. Don't execute further since clicking should run
-    // blocked actions *or* the normal extension action, not both.
+    // If the extension had blocked actions before granting tab permissions,
+    // granting active tab will have run the extension. Don't execute further
+    // since clicking should run blocked actions *or* the normal extension
+    // action, not both.
     if (blocked_actions)
       return ExtensionAction::ACTION_NONE;
   }
 
+  // Anything that gets here should have a page or browser action, and not
+  // blocked actions.
   ExtensionAction* extension_action =
       ExtensionActionManager::Get(browser_context_)
           ->GetExtensionAction(*extension);
-
-  // Anything that gets here should have a page or browser action.
   DCHECK(extension_action);
+
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents()).id();
   if (!extension_action->GetIsVisible(tab_id))
     return ExtensionAction::ACTION_NONE;
@@ -135,6 +115,34 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
       ->DispatchExtensionActionClicked(*extension_action, web_contents(),
                                        extension);
   return ExtensionAction::ACTION_NONE;
+}
+
+void ExtensionActionRunner::GrantTabPermissions(const Extension* extension) {
+  int blocked_actions = GetBlockedActions(extension->id());
+  if ((blocked_actions & kRefreshRequiredActionsMask) == 0) {
+    // No refresh needed; immediately grant permissions.
+    TabHelper::FromWebContents(web_contents())
+        ->active_tab_permission_granter()
+        ->GrantIfRequested(extension);
+    return;
+  }
+
+  const GURL& url = web_contents()->GetLastCommittedURL();
+  // An extension that wants to run but it is currently blocked must have
+  // "on click" access.
+  constexpr SitePermissionsHelper::SiteAccess kExpectedSiteAccess =
+      SitePermissionsHelper::SiteAccess::kOnClick;
+  DCHECK_EQ(SitePermissionsHelper(Profile::FromBrowserContext(browser_context_))
+                .GetSiteAccess(*extension, url),
+            kExpectedSiteAccess);
+
+  // Running the action does not update permissions.
+  constexpr bool update_permissions = false;
+  ShowReloadPageBubble(
+      extension, update_permissions,
+      base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
+                     weak_factory_.GetWeakPtr(), extension->id(), url,
+                     kExpectedSiteAccess, kExpectedSiteAccess));
 }
 
 void ExtensionActionRunner::HandlePageAccessModified(
@@ -171,8 +179,18 @@ void ExtensionActionRunner::HandlePageAccessModified(
 
 void ExtensionActionRunner::OnActiveTabPermissionGranted(
     const Extension* extension) {
-  if (!ignore_active_tab_granted_ && WantsToRun(extension))
+  if (ignore_active_tab_granted_)
+    return;
+
+  if (WantsToRun(extension)) {
     RunBlockedActions(extension);
+  } else {
+    // TODO(emiliapaz): This is a slight abuse of this observer since it
+    // triggers OnExtensionActionUpdated(), but active tab being granted really
+    // isn't an extension action state change. Consider using the notification
+    // permissions observer.
+    NotifyChange(extension);
+  }
 }
 
 void ExtensionActionRunner::OnWebRequestBlocked(const Extension* extension) {

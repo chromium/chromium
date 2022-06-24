@@ -4,12 +4,19 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_dialog_view.h"
@@ -65,24 +72,24 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
     ExtensionsRequestAccessButtonHoverCard::HideBubble();
   }
 
-  ExtensionsToolbarContainer* const container =
-      GetExtensionsToolbarContainer(browser_);
-  DCHECK(container);
-
   content::WebContents* web_contents = GetActiveWebContents();
-  views::View* const anchor_view = container->GetExtensionsButton();
-  bool requires_refresh =
-      ExtensionActionViewController::AnyActionRequiresPageRefreshToRun(
-          extensions_requesting_access_, web_contents);
+  extensions::ExtensionActionRunner* action_runner =
+      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
+  if (!action_runner)
+    return;
 
-  if (requires_refresh) {
-    // TODO(crbug.com/1319555): Display blocked action dialog. Currently, the
-    // dialog only supports one extension, and here we can have multiple
-    // extensions.
-  } else {
-    ShowExtensionsRequestAccessDialogView(web_contents, anchor_view,
-                                          extensions_requesting_access_);
-  }
+  // TODO(crbug.com/1319555): Grant tab permissions for all extensions
+  // requesting access. For this we need to add support for handling multiple
+  // extensions in the ExtensionActionRunner and ReloadPageDialog.
+  DCHECK_GT(extensions_requesting_access_.size(), 0u);
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(browser_->profile())
+          ->enabled_extensions()
+          .GetByID(extensions_requesting_access_[0]->GetId());
+  DCHECK(extension);
+  base::RecordAction(base::UserMetricsAction(
+      "Extensions.Toolbar.ExtensionActivatedFromRequestAccessButton"));
+  action_runner->GrantTabPermissions(extension);
 }
 
 // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
