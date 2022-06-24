@@ -209,10 +209,9 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   bool IsNextFrameSinceLastAggregation() const;
 
   // Returns surface damage rect. This is based on changes from the
-  // CompositorFrame aggregated last frame. If |include_per_quad_damage| then
-  // the damage_rect will include unioned per quad damage, otherwise it will be
-  // limited to the root render passes damage_rect.
-  gfx::Rect GetSurfaceDamage(bool include_per_quad_damage) const;
+  // CompositorFrame aggregated last frame. This limited to the root render
+  // passes damage_rect and does not include individual quads that add damage.
+  gfx::Rect GetSurfaceDamage() const;
 
   // Returns the root render pass output_rect.
   const gfx::Rect& GetOutputRect() const;
@@ -234,7 +233,6 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   base::flat_map<CompositorRenderPassId, ResolvedPassData*> render_pass_id_map_;
   base::flat_map<CompositorRenderPassId, AggregatedRenderPassId>
       aggregated_id_map_;
-  gfx::Rect root_damage_rect_;
 
   uint64_t previous_frame_index_ = kInvalidFrameIndex;
 

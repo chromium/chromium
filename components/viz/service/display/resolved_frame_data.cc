@@ -106,8 +106,6 @@ void ResolvedFrameData::UpdateForActiveFrame(
   render_pass_id_map_.reserve(num_render_pass);
   resolved_passes_.reserve(num_render_pass);
 
-  root_damage_rect_ = render_passes.back()->damage_rect;
-
   auto& child_to_parent_map =
       resource_provider_->GetChildToParentMap(child_resource_id_);
 
@@ -127,17 +125,14 @@ void ResolvedFrameData::UpdateForActiveFrame(
     fixed.remapped_id = remapped_id;
     fixed.is_root = i == num_render_pass - 1;
 
-    bool add_quad_damage_to_root_damage_rect =
-        fixed.is_root && render_pass->has_per_quad_damage;
-
     // Loop through the quads, remapping resource ids and storing them.
     auto& draw_quads = fixed.draw_quads;
     draw_quads.reserve(render_pass->quad_list.size());
     for (auto* quad : render_pass->quad_list) {
-      if (add_quad_damage_to_root_damage_rect) {
+      if (render_pass->has_per_quad_damage) {
         auto optional_damage = GetOptionalDamageRectFromQuad(quad);
         if (optional_damage.has_value()) {
-          root_damage_rect_.Union(optional_damage.value());
+          fixed.prewalk_quads.push_back(quad);
         }
       }
 
@@ -269,8 +264,7 @@ bool ResolvedFrameData::IsNextFrameSinceLastAggregation() const {
          frame_index_ == previous_frame_index_ + 1;
 }
 
-gfx::Rect ResolvedFrameData::GetSurfaceDamage(
-    bool include_per_quad_damage) const {
+gfx::Rect ResolvedFrameData::GetSurfaceDamage() const {
   DCHECK(valid_);
 
   // The |damage_rect| set in |SurfaceAnimationManager| is the |output_rect|.
@@ -286,9 +280,6 @@ gfx::Rect ResolvedFrameData::GetSurfaceDamage(
   if (IsSameFrameAsLastAggregation()) {
     return gfx::Rect();
   } else if (IsNextFrameSinceLastAggregation()) {
-    if (include_per_quad_damage)
-      return root_damage_rect_;
-
     return resolved_passes_.back().render_pass().damage_rect;
   }
 
