@@ -11,6 +11,7 @@
 #include "base/process/process.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -103,6 +104,7 @@ void SetBrowserStartupIsComplete() {
   if (IsBrowserStartupComplete())
     return;
 
+  TRACE_EVENT0("startup", "SetBrowserStartupIsComplete");
   g_startup_complete_flag.Get().Set();
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
