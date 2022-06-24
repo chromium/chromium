@@ -115,7 +115,7 @@ TEST_F(
       manager.connect({address: 'abcd', connected: false, paired: false});
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'ChromeVoxBluetoothBrailleDisplayManagerWebUITest', 'Listener', function() {
       const manager = new BluetoothBrailleDisplayManager();
       const listener = new FakeBluetoothBrailleDisplayManagerListener();

@@ -50,7 +50,7 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
 };
 
 // TODO(crbug.com/1318133): Test times out flakily.
-TEST_F(
+AX_TEST_F(
     'ChromeVoxOptionsTest', 'DISABLED_NumberReadingStyleSelect',
     async function() {
       const [mockFeedback, evt] = await this.loadOptionsPage();
@@ -82,7 +82,7 @@ TEST_F(
 
 // TODO(crbug.com/1128926, crbug.com/1172387):
 // Test times out flakily.
-TEST_F(
+AX_TEST_F(
     'ChromeVoxOptionsTest', 'DISABLED_PunctuationEchoSelect', async function() {
       const [mockFeedback, evt] = await this.loadOptionsPage();
       const PUNCTUATION_ECHO_NONE = '0';
@@ -128,7 +128,7 @@ TEST_F(
 
 // TODO(crbug.com/1128926, crbug.com/1172387):
 // Test times out flakily.
-TEST_F('ChromeVoxOptionsTest', 'DISABLED_SmartStickyMode', async function() {
+AX_TEST_F('ChromeVoxOptionsTest', 'DISABLED_SmartStickyMode', async function() {
   const [mockFeedback, evt] = await this.loadOptionsPage();
   const smartStickyModeCheckbox = evt.target.find({
     role: RoleType.CHECK_BOX,
@@ -156,7 +156,7 @@ TEST_F('ChromeVoxOptionsTest', 'DISABLED_SmartStickyMode', async function() {
 
 // TODO(crbug.com/1169396, crbug.com/1172387):
 // Test times out or crashes flakily.
-TEST_F('ChromeVoxOptionsTest', 'DISABLED_UsePitchChanges', async function() {
+AX_TEST_F('ChromeVoxOptionsTest', 'DISABLED_UsePitchChanges', async function() {
   const [mockFeedback, evt] = await this.loadOptionsPage();
   const pitchChangesCheckbox = evt.target.find({
     role: RoleType.CHECK_BOX,
