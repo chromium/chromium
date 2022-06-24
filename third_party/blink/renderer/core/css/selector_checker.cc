@@ -243,7 +243,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
 
   if (sub_result.dynamic_pseudo != kPseudoIdNone) {
     result.dynamic_pseudo = sub_result.dynamic_pseudo;
-    result.custom_highlight_name = sub_result.custom_highlight_name;
+    result.custom_highlight_name = std::move(sub_result.custom_highlight_name);
   }
 
   if (context.selector->IsLastInTagHistory())
