@@ -630,12 +630,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DCLayerResult.Texture"
-    enum="DCLayerResult" expires_after="2022-05-01">
+    enum="DCLayerResult" expires_after="2023-06-15">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
     Recorded for each texture quad (on overlay processing) the reason it was or
-    wasn't put in an overlay.
+    wasn't put in an overlay. (This metric might be lack of coverage between
+    2022-05-01 and 2022-06-24 due to metric expiration.)
   </summary>
 </histogram>
 
@@ -691,12 +692,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.IsUnderlay" enum="BooleanUnderlay"
-    expires_after="2022-07-03">
+    expires_after="2023-06-15">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
     Recorded for each video quad during the video playback whether it is an
-    underlay or an overlay
+    underlay or an overlay.
   </summary>
 </histogram>
 
@@ -711,20 +712,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.OverlayFormatUsed3" enum="DXGI_FORMAT"
-    expires_after="2022-05-01">
+    expires_after="2023-06-15">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <summary>
     Which overlay format was chosen for YUV overlays. Recorded once per GPU
-    process launch only if hardware overlays are supported.
+    process launch only if hardware overlays are supported. (Might be lack of
+    metrics coverage between 2022-05-01 and 2022-06-24 due to metric
+    expiration.)
   </summary>
 </histogram>
 
 <histogram name="GPU.DirectComposition.OverlaysSupported"
-    enum="BooleanOverlaySupported" expires_after="2021-10-04">
+    enum="BooleanOverlaySupported" expires_after="2023-06-15">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
-  <summary>True if Chrome will try to use DirectComposition overlays.</summary>
+  <owner>magchen@chromium.org</owner>
+  <summary>
+    True if Chrome will try to use DirectComposition overlays. (Might be lack of
+    metrics coverage between 2021-10-04 and 2022-06-24 due to metric
+    expiration.)
+  </summary>
 </histogram>
 
 <histogram base="true" name="GPU.DirectComposition.SwapChainCreationResult2"
@@ -752,20 +761,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.SwapChainFormat3" enum="DXGI_FORMAT"
-    expires_after="2020-12-31">
+    expires_after="2023-06-15">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <summary>
     What format was used for each overlay swap chain on each swap buffers.
+    (Might be lack of metrics coverage between 2020-12-31 and 2022-06-24 due to
+    metric expiration.)
   </summary>
 </histogram>
 
 <histogram name="GPU.DirectComposition.VideoPresentationMode"
-    enum="DirectCompositionVideoPresentationMode" expires_after="2022-03-06">
+    enum="DirectCompositionVideoPresentationMode" expires_after="2023-06-15">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
   <summary>
     What code path was used to present a video frame. Recorded on each present.
+    (Might be lack of metrics coverage between 2022-03-06 and 2022-06-24 due to
+    metric expiration.)
   </summary>
 </histogram>
 
