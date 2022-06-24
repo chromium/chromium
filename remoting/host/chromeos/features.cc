@@ -8,5 +8,7 @@ namespace remoting::features {
 
 const base::Feature kEnableMultiMonitorsInCrd{"EnableMultiMonitorsInCrd",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kEnableCrdAdminRemoteAccess{
+    "EnableCrdAdminRemoteAccess", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace remoting::features
