@@ -7508,10 +7508,9 @@ void RenderFrameHostImpl::CreateFencedFrame(
   fenced_frames_.push_back(
       std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
-  fenced_frame->CreateProxyAndAttachToOuterFrameTree();
+  RenderFrameProxyHost* proxy_host =
+      fenced_frame->CreateProxyAndAttachToOuterFrameTree();
   fenced_frame->Bind(std::move(pending_receiver));
-
-  RenderFrameProxyHost* proxy_host = fenced_frame->GetProxyToInnerMainFrame();
 
   // Since the fenced frame is newly created and has yet to commit a navigation,
   // this state is default-constructed.
