@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/views_delegate.h"
@@ -66,7 +67,7 @@ class TestViewsDelegate : public ViewsDelegate {
 
  private:
 #if BUILDFLAG(IS_MAC)
-  ui::ContextFactory* context_factory_ = nullptr;
+  raw_ptr<ui::ContextFactory> context_factory_ = nullptr;
 #endif
   bool use_desktop_native_widgets_ = false;
   bool use_transparent_windows_ = false;

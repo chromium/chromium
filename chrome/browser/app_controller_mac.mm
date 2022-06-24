@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "chrome/browser/app_controller_mac.h"
 
 #include <dispatch/dispatch.h>
@@ -468,7 +470,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     // kDestroyProfileOnBrowserClose or kUpdateHistoryEntryPointsInIncognito
     // are enabled.
     if (ObserveRegularProfiles() || ObserveOTRProfiles()) {
-      profile_manager_observer_.Observe(profile_manager_);
+      profile_manager_observer_.Observe(profile_manager_.get());
       for (Profile* profile : profile_manager_->GetLoadedProfiles()) {
         profile_observers_.AddObservation(profile);
         Profile* otr_profile =
@@ -550,7 +552,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};
 
-  ProfileManager* const profile_manager_;
+  const raw_ptr<ProfileManager> profile_manager_;
   AppController* const app_controller_;  // Weak; owns us.
 };
 

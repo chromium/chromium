@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/mac/mac_logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
@@ -74,7 +75,7 @@ class CertDatabase::Notifier {
                                    SecKeychainCallbackInfo* info,
                                    void* context);
 
-  CertDatabase* const cert_db_;
+  const raw_ptr<CertDatabase> cert_db_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   bool registered_ = false;
   bool called_shutdown_ = false;

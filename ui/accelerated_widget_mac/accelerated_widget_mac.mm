@@ -44,7 +44,7 @@ void AcceleratedWidgetMac::SetNSView(AcceleratedWidgetMacNSView* view) {
 
 void AcceleratedWidgetMac::ResetNSView() {
   last_ca_layer_params_valid_ = false;
-  view_ = NULL;
+  view_ = nullptr;
 }
 
 const gfx::CALayerParams* AcceleratedWidgetMac::GetCALayerParams() const {

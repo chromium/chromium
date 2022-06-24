@@ -725,7 +725,7 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
   }
 
 #if BUILDFLAG(IS_MAC)
-  base::PortProvider* port_provider_;
+  raw_ptr<base::PortProvider> port_provider_;
 #endif
 };
 

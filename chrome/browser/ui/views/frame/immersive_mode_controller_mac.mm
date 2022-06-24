@@ -8,6 +8,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/cocoa/scoped_menu_bar_lock.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -205,7 +206,7 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   void LockDestroyed(AnimateReveal);
   void SetMenuRevealed(bool revealed);
 
-  BrowserView* browser_view_ = nullptr;  // weak
+  raw_ptr<BrowserView> browser_view_ = nullptr;  // weak
   std::unique_ptr<ImmersiveRevealedLock> focus_lock_;
   std::unique_ptr<ImmersiveRevealedLock> menu_lock_;
   bool enabled_ = false;

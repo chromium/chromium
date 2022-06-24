@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/test/fake_output_surface_client.h"
@@ -517,8 +518,8 @@ class CALayerOverlayRPDQTest : public CALayerOverlayTest {
         &damage_rect_, &content_bounds_);
   }
   AggregatedRenderPassList pass_list_;
-  AggregatedRenderPass* pass_;
-  AggregatedRenderPassDrawQuad* quad_;
+  raw_ptr<AggregatedRenderPass> pass_;
+  raw_ptr<AggregatedRenderPassDrawQuad> quad_;
   AggregatedRenderPassId render_pass_id_;
   cc::FilterOperations filters_;
   cc::FilterOperations backdrop_filters_;

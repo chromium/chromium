@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MAC_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MAC_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node.h"
@@ -59,7 +60,7 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   BrowserAccessibilityCocoa* CreateNativeWrapper();
 
   // Manager of the native cocoa node. We own this object.
-  ui::AXPlatformNodeMac* platform_node_ = nullptr;
+  raw_ptr<ui::AXPlatformNodeMac> platform_node_ = nullptr;
 };
 
 }  // namespace content

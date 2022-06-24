@@ -6,6 +6,7 @@
 #define CONTENT_APP_SHIM_REMOTE_COCOA_WEB_CONTENTS_VIEW_COCOA_H_
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
 #import "ui/base/cocoa/base_view.h"
@@ -30,10 +31,10 @@ CONTENT_EXPORT
   // Instances of this class are owned by both host_ and AppKit. It is
   // possible for an instance to outlive its webContentsView_. The host_ must
   // call -clearHostAndView in its destructor.
-  remote_cocoa::mojom::WebContentsNSViewHost* _host;
+  raw_ptr<remote_cocoa::mojom::WebContentsNSViewHost> _host;
 
   // The interface exported to views::Views that embed this as a sub-view.
-  ui::ViewsHostableView* _viewsHostableView;
+  raw_ptr<ui::ViewsHostableView> _viewsHostableView;
 
   base::scoped_nsobject<WebDragSource> _dragSource;
   BOOL _mouseDownCanMoveWindow;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "chrome/browser/ui/cocoa/apps/app_shim_menu_controller_mac.h"
 
 #import <Cocoa/Cocoa.h>
@@ -123,9 +125,9 @@ class AppShimMenuControllerBrowserTest
     return window_list.front();
   }
 
-  const extensions::Extension* app_1_ = nullptr;
-  const extensions::Extension* app_2_ = nullptr;
-  const extensions::Extension* hosted_app_ = nullptr;
+  raw_ptr<const extensions::Extension> app_1_ = nullptr;
+  raw_ptr<const extensions::Extension> app_2_ = nullptr;
+  raw_ptr<const extensions::Extension> hosted_app_ = nullptr;
   NSUInteger initial_menu_item_count_ = 0;
 };
 

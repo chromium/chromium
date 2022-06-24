@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/mac/scoped_mach_port.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/libfuzzer/fuzzers/mach/mach_message.pb.h"
 
 namespace mach_fuzzer {
@@ -36,7 +37,7 @@ struct SendableMessage {
   std::vector<SendablePort> ports;
 
   // Pointer to the header of the message stored in |buffer|.
-  mach_msg_header_t* header = nullptr;
+  raw_ptr<mach_msg_header_t> header = nullptr;
 };
 
 // Converts the given protobuf message into a live Mach message, including port

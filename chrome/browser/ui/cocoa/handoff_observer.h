@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_COCOA_HANDOFF_OBSERVER_H_
 #define CHROME_BROWSER_UI_COCOA_HANDOFF_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -67,7 +69,7 @@ class HandoffObserver : public BrowserListObserver,
 
   // This pointer is always up to date, and points to the most recently
   // activated browser, or nullptr if no browsers exist.
-  Browser* active_browser_ = nullptr;
+  raw_ptr<Browser> active_browser_ = nullptr;
 
   // Instances of this class should be owned by their |delegate_|.
   NSObject<HandoffObserverDelegate>* delegate_;

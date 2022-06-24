@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -96,7 +97,7 @@ class PrintBackendCupsIppHelperTest : public ::testing::Test {
     printer_.reset();
   }
 
-  ipp_t* ipp_;
+  raw_ptr<ipp_t> ipp_;
   std::unique_ptr<MockCupsOptionProvider> printer_;
 };
 

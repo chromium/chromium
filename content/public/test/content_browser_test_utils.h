@@ -219,7 +219,7 @@ class RenderWidgetHostViewCocoaObserver {
       rwhvcocoa_swizzlers_;
   static std::map<WebContents*, RenderWidgetHostViewCocoaObserver*> observers_;
 
-  WebContents* const web_contents_;
+  const raw_ptr<WebContents> web_contents_;
 };
 
 void SetWindowBounds(gfx::NativeWindow window, const gfx::Rect& bounds);

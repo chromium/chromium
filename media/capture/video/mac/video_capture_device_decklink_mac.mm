@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -91,7 +92,7 @@ class DeckLinkCaptureDelegate
   // Weak reference to the captured frames client, used also for error messages
   // and logging. Initialized on construction and used until cleared by calling
   // ResetVideoCaptureDeviceReference().
-  media::VideoCaptureDeviceDeckLinkMac* frame_receiver_;
+  raw_ptr<media::VideoCaptureDeviceDeckLinkMac> frame_receiver_;
 
   // This is used to control the video capturing device input interface.
   ScopedDeckLinkPtr<IDeckLinkInput> decklink_input_;
@@ -349,7 +350,7 @@ void DeckLinkCaptureDelegate::SendLogString(const std::string& message) {
 void DeckLinkCaptureDelegate::ResetVideoCaptureDeviceReference() {
   DCHECK(thread_checker_.CalledOnValidThread());
   base::AutoLock lock(lock_);
-  frame_receiver_ = NULL;
+  frame_receiver_ = nullptr;
 }
 
 }  // namespace

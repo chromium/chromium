@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/mac/mac_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -133,9 +134,9 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_ = nullptr;
-  StubNotificationDispatcherMac* banner_dispatcher_ = nullptr;
-  StubNotificationDispatcherMac* alert_dispatcher_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<StubNotificationDispatcherMac> banner_dispatcher_ = nullptr;
+  raw_ptr<StubNotificationDispatcherMac> alert_dispatcher_ = nullptr;
 };
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {

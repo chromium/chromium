@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/run_loop.h"
@@ -264,7 +265,7 @@ class H264VideoToolboxEncoderTest : public ::testing::Test {
   scoped_refptr<CastEnvironment> cast_environment_;
   std::unique_ptr<VideoEncoder> encoder_;
   OperationalStatus operational_status_;
-  TestPowerSource* power_source_;  // Owned by the power monitor.
+  raw_ptr<TestPowerSource> power_source_;  // Owned by the power monitor.
 };
 
 // static

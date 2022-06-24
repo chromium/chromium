@@ -27,6 +27,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -137,7 +138,7 @@ class AUHALStream : public AudioOutputStream {
   void ReportAndResetStats();
 
   // Our creator, the audio manager needs to be notified when we close.
-  AudioManagerMac* const manager_;
+  const raw_ptr<AudioManagerMac> manager_;
 
   const AudioParameters params_;
 
@@ -155,7 +156,7 @@ class AUHALStream : public AudioOutputStream {
   size_t number_of_frames_requested_ GUARDED_BY(lock_);
 
   // Pointer to the object that will provide the audio samples.
-  AudioSourceCallback* source_ GUARDED_BY(lock_);
+  raw_ptr<AudioSourceCallback> source_ GUARDED_BY(lock_);
 
   // Holds the stream format details such as bitrate.
   AudioStreamBasicDescription output_format_;

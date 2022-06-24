@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 
 namespace safe_browsing {
 namespace dmg {
@@ -80,7 +81,8 @@ class UDIFParser {
   // Parses the blkx plist trailer structure.
   bool ParseBlkx();
 
-  ReadStream* const stream_;  // The stream backing the UDIF image. Weak.
+  const raw_ptr<ReadStream>
+      stream_;  // The stream backing the UDIF image. Weak.
   std::vector<std::string> partition_names_;  // The names of all partitions.
   // All blocks in the UDIF image.
   std::vector<std::unique_ptr<const UDIFBlock>> blocks_;

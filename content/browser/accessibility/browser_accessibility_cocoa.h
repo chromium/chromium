@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_COCOA_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_COCOA_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 #include <string>
 #include <vector>
@@ -56,7 +58,7 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // This class converts it into a format Cocoa can query.
 @interface BrowserAccessibilityCocoa : AXPlatformNodeCocoa {
  @private
-  content::BrowserAccessibility* _owner;
+  raw_ptr<content::BrowserAccessibility> _owner;
   // An array of children of this object. Cached to avoid re-computing.
   base::scoped_nsobject<NSMutableArray> _children;
   // Whether the children have changed and need to be updated.

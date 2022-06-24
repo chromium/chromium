@@ -8,6 +8,7 @@
 #define UI_GL_GL_UTILS_H_
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gpu_preference.h"
@@ -106,7 +107,7 @@ class GL_EXPORT ScopedEnableTextureRectangleInShaderCompiler {
   ~ScopedEnableTextureRectangleInShaderCompiler();
 
  private:
-  gl::GLApi* gl_api_;
+  raw_ptr<gl::GLApi> gl_api_;
 #endif
 };
 

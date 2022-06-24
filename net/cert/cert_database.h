@@ -5,6 +5,7 @@
 #ifndef NET_CERT_CERT_DATABASE_H_
 #define NET_CERT_CERT_DATABASE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
@@ -91,7 +92,7 @@ class NET_EXPORT CertDatabase {
 
   class Notifier;
   friend class Notifier;
-  Notifier* notifier_ = nullptr;
+  raw_ptr<Notifier> notifier_ = nullptr;
 #endif
 };
 

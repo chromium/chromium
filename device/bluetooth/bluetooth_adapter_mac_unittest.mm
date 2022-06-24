@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <Foundation/Foundation.h>
 
 #include <memory>
@@ -215,7 +217,7 @@ class BluetoothAdapterMacTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> ui_task_runner_;
   scoped_refptr<BluetoothAdapter> adapter_;
-  BluetoothAdapterMac* adapter_mac_;
+  raw_ptr<BluetoothAdapterMac> adapter_mac_;
   scoped_refptr<FakeBluetoothLowEnergyDeviceWatcherMac>
       fake_low_energy_device_watcher_;
   TestBluetoothAdapterObserver observer_;

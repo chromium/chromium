@@ -4,6 +4,8 @@
 
 #include "chrome/app_shim/app_shim_controller.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 #include <mach/message.h>
 
@@ -48,7 +50,7 @@
 // profile menu NSMenuItems) and C++ (the mojo methods called by
 // AppShimController).
 @interface ProfileMenuTarget : NSObject {
-  AppShimController* _controller;
+  raw_ptr<AppShimController> _controller;
 }
 - (instancetype)initWithController:(AppShimController*)controller;
 - (void)clearController;
@@ -79,7 +81,7 @@
 // the profile menu NSMenuItems) and C++ (the mojo methods called by
 // AppShimController).
 @interface ApplicationDockMenuTarget : NSObject {
-  AppShimController* _controller;
+  raw_ptr<AppShimController> _controller;
 }
 - (instancetype)initWithController:(AppShimController*)controller;
 - (void)clearController;

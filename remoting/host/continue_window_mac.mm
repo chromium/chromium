@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/continue_window.h"
 
 #import <Cocoa/Cocoa.h>
@@ -20,7 +21,7 @@
  @private
   base::scoped_nsobject<NSMutableArray> _shades;
   base::scoped_nsobject<NSAlert> _continue_alert;
-  remoting::ContinueWindow* _continue_window;
+  raw_ptr<remoting::ContinueWindow> _continue_window;
 }
 
 - (instancetype)initWithWindow:(remoting::ContinueWindow*)continue_window;

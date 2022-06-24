@@ -669,7 +669,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
 
   // A temporary pointer to the current output buffer. Only non-null when
   // writing an access unit. Accessed by the AudioFile write callback function.
-  std::string* output_buffer_;
+  raw_ptr<std::string> output_buffer_;
 
   // The |AudioConverter| is responsible for AAC encoding. This is a Core Audio
   // object, not to be confused with |media::AudioConverter|.

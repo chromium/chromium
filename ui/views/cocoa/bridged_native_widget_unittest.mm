@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 
 #import <Cocoa/Cocoa.h>
@@ -379,7 +381,7 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
     ui::CocoaTest::SetUp();
 
     Widget::InitParams init_params;
-    init_params.native_widget = native_widget_mac_;
+    init_params.native_widget = native_widget_mac_.get();
     init_params.type = type_;
     init_params.ownership = ownership_;
     init_params.opacity = opacity_;
@@ -406,7 +408,7 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
  protected:
   std::unique_ptr<Widget> widget_;
-  MockNativeWidgetMac* native_widget_mac_;  // Weak. Owned by |widget_|.
+  raw_ptr<MockNativeWidgetMac> native_widget_mac_;  // Weak. Owned by |widget_|.
 
   // Use a frameless window, otherwise Widget will try to center the window
   // before the tests covering the Init() flow are ready to do that.
@@ -877,7 +879,7 @@ class BridgedNativeWidgetInitTest : public BridgedNativeWidgetTestBase {
 
   void PerformInit() {
     Widget::InitParams init_params;
-    init_params.native_widget = native_widget_mac_;
+    init_params.native_widget = native_widget_mac_.get();
     init_params.type = type_;
     init_params.ownership = ownership_;
     init_params.opacity = opacity_;

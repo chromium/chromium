@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_APP_CONTROLLER_MAC_H_
 #define CHROME_BROWSER_APP_CONTROLLER_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #if defined(__OBJC__)
 
 #import <AuthenticationServices/AuthenticationServices.h>
@@ -53,7 +55,7 @@ class ColorProvider;
 
   // The profile last used by a Browser. It is this profile that was used to
   // build the user-data specific main menu items.
-  Profile* _lastProfile;
+  raw_ptr<Profile> _lastProfile;
 
   // The ProfileObserver observes the ProfileAttrbutesStorage and gets notified
   // when a profile has been deleted.
@@ -69,7 +71,7 @@ class ColorProvider;
   // pointer to a BookmarkMenuBridge for each profile. |bookmarkMenuBridge_| is
   // a weak pointer that is updated to match the corresponding cache entry
   // during a profile switch.
-  BookmarkMenuBridge* _bookmarkMenuBridge;
+  raw_ptr<BookmarkMenuBridge> _bookmarkMenuBridge;
   std::map<base::FilePath, std::unique_ptr<BookmarkMenuBridge>>
       _profileBookmarkMenuBridgeMap;
 
@@ -129,7 +131,7 @@ class ColorProvider;
   BOOL _tabRestoreWasEnabled;
 
   // The color provider associated with the last active browser view.
-  const ui::ColorProvider* _lastActiveColorProvider;
+  raw_ptr<const ui::ColorProvider> _lastActiveColorProvider;
 }
 
 @property(readonly, nonatomic) BOOL startupComplete;

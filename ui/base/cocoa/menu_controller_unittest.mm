@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include "base/run_loop.h"
@@ -202,7 +204,7 @@ class OwningDelegate : public Delegate {
     *did_delete_ = true;
   }
 
-  bool* did_delete_;
+  raw_ptr<bool> did_delete_;
   SimpleMenuModel model_;
   base::scoped_nsobject<WatchedLifetimeMenuController> controller_;
 };
@@ -217,11 +219,11 @@ class FontListMenuModel : public SimpleMenuModel {
       : SimpleMenuModel(delegate), font_list_(font_list), index_(index) {}
   ~FontListMenuModel() override {}
   const gfx::FontList* GetLabelFontListAt(int index) const override {
-    return (index == index_) ? font_list_ : NULL;
+    return (index == index_) ? font_list_.get() : nullptr;
   }
 
  private:
-  const gfx::FontList* font_list_;
+  raw_ptr<const gfx::FontList> font_list_;
   const int index_;
 };
 

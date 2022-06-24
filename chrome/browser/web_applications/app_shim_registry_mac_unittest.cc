@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,7 +30,7 @@ class AppShimRegistryTest : public testing::Test {
   }
 
  protected:
-  AppShimRegistry* registry_ = nullptr;
+  raw_ptr<AppShimRegistry> registry_ = nullptr;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
 };
 

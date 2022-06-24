@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include "base/mac/foundation_util.h"
@@ -71,7 +73,7 @@ class BrowserWindowDefaultTouchBarUnitTest : public BrowserWithTestWindowTest {
   }
 
   CocoaTestHelper cocoa_test_helper_;
-  CommandUpdater* command_updater_;  // Weak, owned by Browser.
+  raw_ptr<CommandUpdater> command_updater_;  // Weak, owned by Browser.
 
   std::unique_ptr<TemplateURLServiceFactoryTestUtil> template_service_util_;
 

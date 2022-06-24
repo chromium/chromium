@@ -15,6 +15,7 @@
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/mac/scoped_mach_port.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
@@ -54,7 +55,7 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
    private:
     int fd_ = -1;
     int mode_ = 0;
-    FdWatcher* watcher_ = nullptr;
+    raw_ptr<FdWatcher> watcher_ = nullptr;
     WeakPtr<MessagePumpKqueue> pump_;
   };
 
@@ -92,7 +93,7 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
 
    private:
     mach_port_t port_ = MACH_PORT_NULL;
-    MachPortWatcher* watcher_ = nullptr;
+    raw_ptr<MachPortWatcher> watcher_ = nullptr;
     WeakPtr<MessagePumpKqueue> pump_;
     const Location from_here_;
   };

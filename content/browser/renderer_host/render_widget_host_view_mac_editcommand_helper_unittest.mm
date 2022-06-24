@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "content/browser/renderer_host/render_widget_host_view_mac_editcommand_helper.h"
 
 #import <Cocoa/Cocoa.h>
@@ -41,7 +43,7 @@ using content::RenderWidgetHostViewMac;
 // Class that owns a RenderWidgetHostViewMac.
 @interface RenderWidgetHostNSViewHostOwner
     : NSObject <RenderWidgetHostNSViewHostOwner> {
-  RenderWidgetHostViewMac* _rwhvm;
+  raw_ptr<RenderWidgetHostViewMac> _rwhvm;
 }
 
 - (id)initWithRenderWidgetHostViewMac:(RenderWidgetHostViewMac*)rwhvm;

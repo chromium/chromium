@@ -4,6 +4,8 @@
 
 #include "chrome/updater/mac/privileged_helper/service.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <Foundation/Foundation.h>
 
 #include <string>
@@ -31,7 +33,7 @@
 
 @interface PrivilegedHelperServiceImpl
     : NSObject <PrivilegedHelperServiceProtocol> {
-  updater::PrivilegedHelperService* _service;
+  raw_ptr<updater::PrivilegedHelperService> _service;
   scoped_refptr<updater::PrivilegedHelperServer> _server;
   scoped_refptr<base::SequencedTaskRunner> _callbackRunner;
 }

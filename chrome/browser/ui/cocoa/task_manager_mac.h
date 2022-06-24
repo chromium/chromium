@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_COCOA_TASK_MANAGER_MAC_H_
 #define CHROME_BROWSER_UI_COCOA_TASK_MANAGER_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <vector>
@@ -30,8 +32,8 @@ class TaskManagerMac;
  @private
   NSTableView* _tableView;
   NSButton* _endProcessButton;
-  task_manager::TaskManagerMac* _taskManagerMac;     // weak
-  task_manager::TaskManagerTableModel* _tableModel;  // weak
+  raw_ptr<task_manager::TaskManagerMac> _taskManagerMac;     // weak
+  raw_ptr<task_manager::TaskManagerTableModel> _tableModel;  // weak
 
   base::scoped_nsobject<WindowSizeAutosaver> _size_saver;
 

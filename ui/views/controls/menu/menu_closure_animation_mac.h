@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/animation.h"
@@ -83,8 +84,8 @@ class VIEWS_EXPORT MenuClosureAnimationMac
   base::OnceClosure callback_;
   base::OneShotTimer timer_;
   std::unique_ptr<gfx::Animation> fade_animation_;
-  MenuItemView* item_;
-  SubmenuView* menu_;
+  raw_ptr<MenuItemView> item_;
+  raw_ptr<SubmenuView> menu_;
   AnimationStep step_;
 };
 

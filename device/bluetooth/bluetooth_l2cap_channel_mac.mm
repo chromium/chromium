@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_classic_device_mac.h"
 #include "device/bluetooth/bluetooth_socket_mac.h"
 
@@ -15,7 +16,7 @@
 @interface BluetoothL2capChannelDelegate
     : NSObject <IOBluetoothL2CAPChannelDelegate> {
  @private
-  device::BluetoothL2capChannelMac* _channel;  // weak
+  raw_ptr<device::BluetoothL2capChannelMac> _channel;  // weak
 }
 
 - (instancetype)initWithChannel:(device::BluetoothL2capChannelMac*)channel;

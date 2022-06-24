@@ -822,6 +822,6 @@ void InProcessBrowserTest::QuitBrowsers() {
   // get deleted.
   content::RunAllPendingInMessageLoop();
   delete autorelease_pool_;
-  autorelease_pool_ = NULL;
+  autorelease_pool_ = nullptr;
 #endif
 }

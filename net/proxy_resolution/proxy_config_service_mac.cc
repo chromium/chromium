@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
@@ -180,7 +181,7 @@ class ProxyConfigServiceMac::Helper
   friend class base::RefCountedThreadSafe<Helper>;
   ~Helper() = default;
 
-  ProxyConfigServiceMac* parent_;
+  raw_ptr<ProxyConfigServiceMac> parent_;
 };
 
 void ProxyConfigServiceMac::Forwarder::SetDynamicStoreNotificationKeys(

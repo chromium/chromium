@@ -14,6 +14,7 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioplugininterface.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
@@ -191,7 +192,7 @@ class XboxControllerMac final : public AbstractHapticGamepad {
 
   uint32_t location_id_ = 0;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   XInputType xinput_type_ = kXInputTypeNone;
   GamepadId gamepad_id_ = GamepadId::kUnknownGamepad;

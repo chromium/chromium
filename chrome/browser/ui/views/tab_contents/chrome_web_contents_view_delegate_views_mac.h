@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 
@@ -60,7 +61,7 @@ class ChromeWebContentsViewDelegateViewsMac
   ChromeWebContentsViewFocusHelper* GetFocusHelper() const;
 
   // The WebContents that owns the view.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // The context menu. Callbacks are asynchronous so we need to keep it around.
   std::unique_ptr<RenderViewContextMenuBase> context_menu_;

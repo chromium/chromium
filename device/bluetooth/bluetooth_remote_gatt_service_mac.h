@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 
 @class CBCharacteristic;
@@ -78,7 +79,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceMac
       CBDescriptor* cb_descriptor) const;
 
   // bluetooth_device_mac_ owns instances of this class.
-  BluetoothLowEnergyDeviceMac* bluetooth_device_mac_;
+  raw_ptr<BluetoothLowEnergyDeviceMac> bluetooth_device_mac_;
   // A service from CBPeripheral.services.
   base::scoped_nsobject<CBService> service_;
   bool is_primary_;

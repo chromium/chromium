@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_MAC_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <string>
@@ -544,7 +546,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   // Interface through which the NSView is to be manipulated. This points either
   // to |in_process_ns_view_bridge_| or to |remote_ns_view_|.
-  remote_cocoa::mojom::RenderWidgetHostNSView* ns_view_ = nullptr;
+  raw_ptr<remote_cocoa::mojom::RenderWidgetHostNSView> ns_view_ = nullptr;
 
   // If |ns_view_| is hosted in this process, then this will be non-null,
   // and may be used to query the actual RenderWidgetHostViewCocoa that is being
@@ -585,10 +587,10 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   bool is_loading_;
 
   // Our parent host view, if this is a popup.  NULL otherwise.
-  RenderWidgetHostViewMac* popup_parent_host_view_;
+  raw_ptr<RenderWidgetHostViewMac> popup_parent_host_view_;
 
   // Our child popup host. NULL if we do not have a child popup.
-  RenderWidgetHostViewMac* popup_child_host_view_;
+  raw_ptr<RenderWidgetHostViewMac> popup_child_host_view_;
 
   // Display link for getting vsync info.
   scoped_refptr<ui::DisplayLinkMac> display_link_;

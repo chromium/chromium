@@ -14,6 +14,7 @@
 #include "base/atomicops.h"
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"
@@ -89,9 +90,9 @@ class PCMQueueInAudioInputStream : public AudioInputStream {
   void CheckInputStartupSuccess();
 
   // Manager that owns this stream, used for closing down.
-  AudioManagerMac* manager_;
+  raw_ptr<AudioManagerMac> manager_;
   // We use the callback mostly to periodically supply the recorded audio data.
-  AudioInputCallback* callback_;
+  raw_ptr<AudioInputCallback> callback_;
   // Structure that holds the stream format details such as bitrate.
   AudioStreamBasicDescription format_;
   // Handle to the OS audio queue object.

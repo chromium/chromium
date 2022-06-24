@@ -30,6 +30,7 @@
 #ifndef BASE_MESSAGE_LOOP_MESSAGE_PUMP_MAC_H_
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_MAC_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 
 
@@ -248,7 +249,7 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   CFRunLoopObserverRef enter_exit_observer_;
 
   // (weak) Delegate passed as an argument to the innermost Run call.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   base::TimerSlack timer_slack_;
 

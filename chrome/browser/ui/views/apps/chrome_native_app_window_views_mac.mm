@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "chrome/browser/ui/views/apps/chrome_native_app_window_views_mac.h"
 
 #import <Cocoa/Cocoa.h>
@@ -18,7 +20,7 @@
 @interface ResizeNotificationObserver : NSObject {
  @private
   // Weak. Owns us.
-  ChromeNativeAppWindowViewsMac* _nativeAppWindow;
+  raw_ptr<ChromeNativeAppWindowViewsMac> _nativeAppWindow;
 }
 - (instancetype)initForNativeAppWindow:
     (ChromeNativeAppWindowViewsMac*)nativeAppWindow;

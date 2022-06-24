@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 #include <memory>
 #include <utility>
@@ -226,7 +228,7 @@ class AppLifetimeMonitorObserver : public apps::AppLifetimeMonitor::Observer {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   int activated_count_ = 0;
   int deactivated_count_ = 0;
 };

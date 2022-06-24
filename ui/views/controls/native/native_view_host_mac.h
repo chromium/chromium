@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/cocoa/views_hostable.h"
 #include "ui/views/controls/native/native_view_host_wrapper.h"
 #include "ui/views/views_export.h"
@@ -71,7 +72,7 @@ class NativeViewHostMac : public NativeViewHostWrapper,
   NativeWidgetMacNSWindowHost* GetNSWindowHost() const;
 
   // Our associated NativeViewHost. Owns this.
-  NativeViewHost* host_;
+  raw_ptr<NativeViewHost> host_;
 
   // Retain the native view as it may be destroyed at an unpredictable time.
   base::scoped_nsobject<NSView> native_view_;
@@ -79,7 +80,7 @@ class NativeViewHostMac : public NativeViewHostWrapper,
   // If |native_view| supports the ViewsHostable protocol, then this is the
   // the corresponding ViewsHostableView interface (which is implemeted only
   // by WebContents and tests).
-  ui::ViewsHostableView* native_view_hostable_ = nullptr;
+  raw_ptr<ui::ViewsHostableView> native_view_hostable_ = nullptr;
 };
 
 }  // namespace views

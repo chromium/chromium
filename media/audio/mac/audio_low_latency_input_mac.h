@@ -44,6 +44,7 @@
 
 #include "base/atomicops.h"
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -169,7 +170,7 @@ class MEDIA_EXPORT AUAudioInputStream
   base::ThreadChecker thread_checker_;
 
   // Our creator, the audio manager needs to be notified when we close.
-  AudioManagerMac* const manager_;
+  const raw_ptr<AudioManagerMac> manager_;
 
   // The audio parameters requested when creating the stream.
   const AudioParameters input_params_;
@@ -184,7 +185,7 @@ class MEDIA_EXPORT AUAudioInputStream
   size_t io_buffer_frame_size_;
 
   // Pointer to the object that will receive the recorded audio samples.
-  AudioInputCallback* sink_;
+  raw_ptr<AudioInputCallback> sink_;
 
   // Structure that holds the desired output format of the stream.
   // Note that, this format can differ from the device(=input) format.

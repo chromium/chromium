@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/apple_apsl/dnsinfo.h"
 
 namespace {
@@ -46,7 +47,7 @@ class DnsInfoApi {
   dns_configuration_free_t dns_configuration_free = nullptr;
 
  private:
-  void* handle_;
+  raw_ptr<void> handle_;
 };
 
 const DnsInfoApi& GetDnsInfoApi() {

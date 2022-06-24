@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_controller.h"
 
 #include "base/command_line.h"
@@ -36,7 +38,7 @@
   // The style of the fullscreen toolbar.
   FullscreenToolbarStyle _toolbarStyle;
 
-  BrowserView* _browserView;  // weak
+  raw_ptr<BrowserView> _browserView;  // weak
 }
 
 - (instancetype)initWithBrowserView:(BrowserView*)browserView {

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "net/base/network_config_watcher_mac.h"
@@ -60,7 +61,7 @@ class ProxyConfigServiceMac : public ProxyConfigService {
     void OnNetworkConfigChange(CFArrayRef changed_keys) override;
 
    private:
-    ProxyConfigServiceMac* const proxy_config_service_;
+    const raw_ptr<ProxyConfigServiceMac> proxy_config_service_;
   };
 
   // Methods directly called by the NetworkConfigWatcherMac::Delegate:

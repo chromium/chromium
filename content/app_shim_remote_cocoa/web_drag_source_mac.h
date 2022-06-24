@@ -5,6 +5,8 @@
 #ifndef CONTENT_APP_SHIM_REMOTE_COCOA_WEB_DRAG_SOURCE_MAC_H_
 #define CONTENT_APP_SHIM_REMOTE_COCOA_WEB_DRAG_SOURCE_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <memory>
@@ -33,7 +35,7 @@ CONTENT_EXPORT
  @private
   // The host through which to communicate with the WebContentsImpl. Owns
   // |self| and resets |host_| via clearHostAndWebContentsView.
-  remote_cocoa::mojom::WebContentsNSViewHost* _host;
+  raw_ptr<remote_cocoa::mojom::WebContentsNSViewHost> _host;
 
   // The view from which the drag was initiated. Weak reference.
   // An instance of this class may outlive |contentsView_|. The destructor of

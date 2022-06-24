@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/common/select_file_dialog.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -66,7 +67,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
     gfx::NativeWindow parent_window;
 
     // |params| user data associated with this file dialog.
-    void* params;
+    raw_ptr<void> params;
 
     // Bridge to the Cocoa NSSavePanel.
     mojo::Remote<remote_cocoa::mojom::SelectFileDialog> select_file_dialog;

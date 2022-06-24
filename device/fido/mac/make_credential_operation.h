@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/mac/credential_store.h"
@@ -70,7 +71,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOperation : public Operation {
       TouchIdContext::Create();
 
   const CtapMakeCredentialRequest request_;
-  TouchIdCredentialStore* const credential_store_;
+  const raw_ptr<TouchIdCredentialStore> credential_store_;
   Callback callback_;
 };
 

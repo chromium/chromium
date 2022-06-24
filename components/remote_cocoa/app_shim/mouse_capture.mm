@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "components/remote_cocoa/app_shim/mouse_capture.h"
 
 #import <Cocoa/Cocoa.h>
@@ -38,7 +40,7 @@ class CocoaMouseCapture::ActiveEventTap {
   // The currently active event tap, or null if there is none.
   static ActiveEventTap* g_active_event_tap;
 
-  CocoaMouseCapture* owner_;  // Weak. Owns this.
+  raw_ptr<CocoaMouseCapture> owner_;  // Weak. Owns this.
   id local_monitor_;
   id global_monitor_;
   ui::WeakPtrNSObjectFactory<CocoaMouseCapture> factory_;

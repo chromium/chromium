@@ -5,6 +5,7 @@
 #ifndef SERVICES_DEVICE_GEOLOCATION_CORE_LOCATION_PROVIDER_H_
 #define SERVICES_DEVICE_GEOLOCATION_CORE_LOCATION_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
@@ -41,7 +42,7 @@ class CoreLocationProvider : public LocationProvider,
   void OnSystemPermissionUpdated(
       LocationSystemPermissionStatus new_status) override;
 
-  GeolocationManager* geolocation_manager_;
+  raw_ptr<GeolocationManager> geolocation_manager_;
   // References to the observer lists are kept to ensure their lifetime as the
   // BrowserProcess may destroy its reference on the UI Thread before we
   // destroy this provider.

@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -46,7 +47,7 @@ class NetworkChangeNotifierMac: public NetworkChangeNotifier {
     void OnNetworkConfigChange(CFArrayRef changed_keys) override;
 
    private:
-    NetworkChangeNotifierMac* const net_config_watcher_;
+    const raw_ptr<NetworkChangeNotifierMac> net_config_watcher_;
   };
 
  private:

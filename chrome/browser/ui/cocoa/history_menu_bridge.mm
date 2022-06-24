@@ -103,7 +103,7 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
 
   tab_restore_service_ = TabRestoreServiceFactory::GetForProfile(profile_);
   if (tab_restore_service_) {
-    tab_restore_service_observation_.Observe(tab_restore_service_);
+    tab_restore_service_observation_.Observe(tab_restore_service_.get());
     // If the tab entries are already loaded, invoke the observer method to
     // build the "Recently Closed" section. Otherwise it will be when the
     // backend loads.

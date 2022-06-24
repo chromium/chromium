@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/app_window/native_app_window.h"
 
 #import <Cocoa/Cocoa.h>
@@ -79,7 +80,7 @@ class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
     }
   }
 
-  const extensions::Extension* app_;
+  raw_ptr<const extensions::Extension> app_;
 };
 
 }  // namespace

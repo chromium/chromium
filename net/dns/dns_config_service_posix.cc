@@ -16,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -208,7 +209,7 @@ class DnsConfigServicePosix::ConfigReader : public SerialWorker {
   };
 
   // Raw pointer to owning DnsConfigService.
-  DnsConfigServicePosix* const service_;
+  const raw_ptr<DnsConfigServicePosix> service_;
 };
 
 DnsConfigServicePosix::DnsConfigServicePosix()

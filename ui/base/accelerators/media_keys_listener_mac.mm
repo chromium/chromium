@@ -6,6 +6,8 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 #include <Carbon/Carbon.h>
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/hidsystem/ev_keymap.h>
@@ -63,7 +65,7 @@ class MediaKeysListenerImpl : public MediaKeysListener {
   void StartEventTapIfNecessary();
   void StopEventTapIfNecessary();
 
-  MediaKeysListener::Delegate* delegate_;
+  raw_ptr<MediaKeysListener::Delegate> delegate_;
   const Scope scope_;
   // Event tap for intercepting mac media keys.
   CFMachPortRef event_tap_ = nullptr;

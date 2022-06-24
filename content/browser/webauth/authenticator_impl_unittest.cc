@@ -8163,7 +8163,7 @@ class TouchIdAuthenticatorImplTest : public AuthenticatorImplTest {
   }
 
   TestAuthenticatorContentBrowserClient test_client_;
-  ContentBrowserClient* old_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> old_client_ = nullptr;
   device::fido::mac::AuthenticatorConfig config_{
       .keychain_access_group = "test-keychain-access-group",
       .metadata_secret = "TestMetadataSecret"};

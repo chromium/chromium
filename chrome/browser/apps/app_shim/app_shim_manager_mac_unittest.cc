@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -99,8 +100,8 @@ class MockDelegate : public AppShimManager::Delegate {
   }
 
  private:
-  ShimLaunchedCallback* launch_shim_callback_capture_ = nullptr;
-  ShimTerminatedCallback* terminated_shim_callback_capture_ = nullptr;
+  raw_ptr<ShimLaunchedCallback> launch_shim_callback_capture_ = nullptr;
+  raw_ptr<ShimTerminatedCallback> terminated_shim_callback_capture_ = nullptr;
   bool allow_shim_to_connect_ = true;
 };
 
@@ -234,7 +235,7 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
   const bool is_from_bookmark_;
   // Note that |launch_result_| is optional so that we can track whether or not
   // the callback to set it has arrived.
-  absl::optional<chrome::mojom::AppShimLaunchResult>* launch_result_;
+  raw_ptr<absl::optional<chrome::mojom::AppShimLaunchResult>> launch_result_;
   base::WeakPtrFactory<TestingAppShimHostBootstrap> weak_factory_;
 };
 
@@ -512,7 +513,7 @@ class AppShimManagerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  MockDelegate* delegate_;
+  raw_ptr<MockDelegate> delegate_;
   std::unique_ptr<TestingAppShimManager> manager_;
   base::FilePath profile_path_a_;
   base::FilePath profile_path_b_;

@@ -5,6 +5,8 @@
 #ifndef UI_BASE_TEST_WINDOWED_NSNOTIFICATION_OBSERVER_H_
 #define UI_BASE_TEST_WINDOWED_NSNOTIFICATION_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Foundation/Foundation.h>
 
 #import "base/mac/scoped_nsobject.h"
@@ -21,7 +23,7 @@ class RunLoop;
  @private
   base::scoped_nsobject<NSString> _bundleId;
   int _notificationCount;
-  base::RunLoop* _runLoop;
+  raw_ptr<base::RunLoop> _runLoop;
 }
 
 @property(readonly, nonatomic) int notificationCount;

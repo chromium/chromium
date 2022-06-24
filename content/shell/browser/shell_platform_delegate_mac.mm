@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
@@ -26,7 +27,7 @@
 // tear-down process. Is responsible for deleting itself when done.
 @interface ContentShellWindowDelegate : NSObject <NSWindowDelegate> {
  @private
-  content::Shell* _shell;
+  raw_ptr<content::Shell> _shell;
 }
 - (id)initWithShell:(content::Shell*)shell;
 @end
@@ -68,7 +69,7 @@
 
 @interface CrShellWindow : UnderlayOpenGLHostingWindow {
  @private
-  content::Shell* _shell;
+  raw_ptr<content::Shell> _shell;
 }
 - (void)setShell:(content::Shell*)shell;
 - (void)showDevTools:(id)sender;

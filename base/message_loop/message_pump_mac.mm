@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "base/message_loop/message_pump_mac.h"
 
 #import <Foundation/Foundation.h>
@@ -151,7 +153,7 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
   }
 
  private:
-  MessagePumpCFRunLoopBase* const owner_;  // Weak. Owns this.
+  const raw_ptr<MessagePumpCFRunLoopBase> owner_;  // Weak. Owns this.
   const int mode_index_;
 };
 
@@ -239,7 +241,7 @@ void MessagePumpCFRunLoopBase::Detach() {}
 
 // Must be called on the run loop thread.
 MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask)
-    : delegate_(NULL),
+    : delegate_(nullptr),
       timer_slack_(base::TIMER_SLACK_NONE),
       nesting_level_(0),
       run_nesting_level_(0),

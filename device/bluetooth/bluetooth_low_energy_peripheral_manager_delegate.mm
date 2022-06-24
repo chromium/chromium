@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 
 namespace device {
@@ -34,8 +35,8 @@ class BluetoothLowEnergyPeripheralManagerBridge {
   }
 
  private:
-  BluetoothLowEnergyAdvertisementManagerMac* advertisement_manager_;
-  BluetoothAdapterMac* adapter_;
+  raw_ptr<BluetoothLowEnergyAdvertisementManagerMac> advertisement_manager_;
+  raw_ptr<BluetoothAdapterMac> adapter_;
 };
 
 }  // namespace device

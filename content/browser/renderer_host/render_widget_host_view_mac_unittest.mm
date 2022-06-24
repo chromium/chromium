@@ -13,6 +13,7 @@
 #include "base/containers/queue.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -553,7 +554,7 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
   testing::NiceMock<MockRenderWidgetHostOwnerDelegate> mock_owner_delegate_;
   std::unique_ptr<MockRenderWidgetHostImpl> host_;
-  RenderWidgetHostViewMac* rwhv_mac_ = nullptr;
+  raw_ptr<RenderWidgetHostViewMac> rwhv_mac_ = nullptr;
   base::scoped_nsobject<RenderWidgetHostViewCocoa> rwhv_cocoa_;
   base::scoped_nsobject<CocoaTestHelperWindow> window_;
 
@@ -1737,7 +1738,7 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
   std::unique_ptr<MockRenderProcessHost> child_process_host_;
   scoped_refptr<SiteInstanceGroup> child_site_instance_group_;
   std::unique_ptr<MockRenderWidgetHostImpl> child_widget_;
-  TestRenderWidgetHostView* child_view_;
+  raw_ptr<TestRenderWidgetHostView> child_view_;
 
  private:
   std::unique_ptr<TestBrowserContext> child_browser_context_;

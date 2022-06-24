@@ -5,6 +5,8 @@
 #ifndef UI_BASE_COCOA_TOOL_TIP_BASE_VIEW_H_
 #define UI_BASE_COCOA_TOOL_TIP_BASE_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <AppKit/AppKit.h>
 
 #include "base/component_export.h"
@@ -18,7 +20,7 @@ COMPONENT_EXPORT(UI_BASE)
  @private
   // These are part of the magic tooltip code from WebKit's WebHTMLView:
   id _trackingRectOwner;  // (not retained)
-  void* _trackingRectUserData;
+  raw_ptr<void> _trackingRectUserData;
   NSTrackingRectTag _lastToolTipTag;
   base::scoped_nsobject<NSString> _toolTip;
 }

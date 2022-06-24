@@ -67,6 +67,7 @@ views::LayoutManager::view_setting_visibility_on_
 FullscreenController::deactivated_contents_
 content::RenderWidgetHostInputEventRouter::touch_target_
 content::RenderWidgetHostInputEventRouter::touchpad_gesture_target_
+base::MessagePumpLibevent::run_state_
 
 # Populated manually - incompatibilities with tracing in not-rewritten platform specific code
 TabStripModelChange::RemovedTab::contents
@@ -243,6 +244,8 @@ ui::WeakPtrNSObjectFactory::handle_
 content::NativeEventProcessorObserver::event_
 image_editor::EventCaptureMac::web_contents_view_
 image_editor::EventCaptureMac::window_
+content::ScopedNotifyNativeEventProcessorObserver::event_
+device::fido::mac::TouchIdCredentialStore::authentication_context_
 
 # Populated manually - struct is part of separate binary and must be a POD
 # https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/mac/app_mode_common.mm;l=64

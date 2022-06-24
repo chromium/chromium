@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_MAC_H_
 #define CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <list>
@@ -184,7 +186,7 @@ class WebContentsViewMac : public WebContentsView,
   std::list<RenderWidgetHostViewMac*> GetChildViews();
 
   // The WebContentsImpl whose contents we display.
-  WebContentsImpl* web_contents_;
+  raw_ptr<WebContentsImpl> web_contents_;
 
   // Destination for drag-drop.
   base::scoped_nsobject<WebDragDest> drag_dest_;
@@ -203,7 +205,7 @@ class WebContentsViewMac : public WebContentsView,
   std::list<base::WeakPtr<RenderWidgetHostViewBase>> child_views_;
 
   // Interface to the views::View host of this view.
-  ViewsHostableView::Host* views_host_ = nullptr;
+  raw_ptr<ViewsHostableView::Host> views_host_ = nullptr;
 
   // The accessibility element specified via ViewsHostableSetParentAccessible.
   gfx::NativeViewAccessible views_host_accessibility_element_ = nil;

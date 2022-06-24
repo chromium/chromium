@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "ui/shell_dialogs/select_file_dialog_mac.h"
 
 #include "base/callback_forward.h"
@@ -75,10 +77,10 @@ class SelectFileDialogMacTest : public ::testing::Test,
     SelectFileDialog::Type type = SelectFileDialog::SELECT_SAVEAS_FILE;
     std::u16string title;
     base::FilePath default_path;
-    SelectFileDialog::FileTypeInfo* file_types = nullptr;
+    raw_ptr<SelectFileDialog::FileTypeInfo> file_types = nullptr;
     int file_type_index = 0;
     base::FilePath::StringType default_extension;
-    void* params = nullptr;
+    raw_ptr<void> params = nullptr;
   };
 
   // Helper method to create a dialog with the given `args`. Returns the created

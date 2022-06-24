@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SYSTEM_MEDIA_CONTROLS_MAC_REMOTE_COMMAND_CENTER_DELEGATE_COCOA_H_
 #define COMPONENTS_SYSTEM_MEDIA_CONTROLS_MAC_REMOTE_COMMAND_CENTER_DELEGATE_COCOA_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 #import <MediaPlayer/MediaPlayer.h>
 
@@ -16,7 +18,8 @@ class RemoteCommandCenterDelegate;
 
 @interface RemoteCommandCenterDelegateCocoa : NSObject {
  @private
-  system_media_controls::internal::RemoteCommandCenterDelegate* _delegate;
+  raw_ptr<system_media_controls::internal::RemoteCommandCenterDelegate>
+      _delegate;
 }
 
 - (instancetype)initWithDelegate:

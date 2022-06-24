@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/mac/dispatch_source_mach.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -61,7 +62,7 @@ class MachBootstrapAcceptor {
   mach_port_t port();
 
   mojo::NamedPlatformChannel::ServerName server_name_;
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   mojo::PlatformChannelServerEndpoint endpoint_;
   std::unique_ptr<base::DispatchSourceMach> dispatch_source_;
 };

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/utility/safe_browsing/mac/convert_big_endian.h"
@@ -139,7 +140,7 @@ class HFSForkReadStream : public ReadStream {
   off_t Seek(off_t offset, int whence) override;
 
  private:
-  HFSIterator* const hfs_;  // The HFS+ iterator.
+  const raw_ptr<HFSIterator> hfs_;  // The HFS+ iterator.
   const HFSPlusForkData fork_;  // The fork to be read.
   uint8_t current_extent_;  // The current extent index in the fork.
   bool read_current_extent_;  // Whether the current_extent_ has been read.
@@ -190,7 +191,7 @@ class HFSBTreeIterator {
   // have it or its contents iterated over.
   bool IsKeyUnexported(const std::u16string& path);
 
-  ReadStream* stream_;  // The stream backing the catalog file.
+  raw_ptr<ReadStream> stream_;  // The stream backing the catalog file.
   BTHeaderRec header_;  // The header B-tree node.
 
   // Maps CNIDs to their full path. This is used to construct full paths for
@@ -215,7 +216,7 @@ class HFSBTreeIterator {
   size_t current_leaf_offset_;  // The offset in |leaf_data_|.
 
   // Pointer to |leaf_data_| as a BTNodeDescriptor.
-  const BTNodeDescriptor* current_leaf_;
+  raw_ptr<const BTNodeDescriptor> current_leaf_;
   Entry current_record_;  // The record read at |current_leaf_offset_|.
 
   // Constant, string16 versions of the __APPLE_API_PRIVATE values.

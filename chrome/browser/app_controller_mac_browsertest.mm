@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
@@ -303,7 +305,7 @@ class AppControllerPlatformAppBrowserTest
                                     "1234");
   }
 
-  const BrowserList* active_browser_list_;
+  raw_ptr<const BrowserList> active_browser_list_;
 };
 
 // Test that if only a platform app window is open and no browser windows are
@@ -367,7 +369,7 @@ class AppControllerWebAppBrowserTest : public InProcessBrowserTest {
     return "http://example.com/";
   }
 
-  const BrowserList* active_browser_list_;
+  raw_ptr<const BrowserList> active_browser_list_;
 };
 
 // Test that in web app mode a reopen event opens the app URL.
@@ -409,7 +411,7 @@ class AppControllerProfilePickerBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  const BrowserList* active_browser_list_;
+  raw_ptr<const BrowserList> active_browser_list_;
 };
 
 // Test that for a guest last profile, commandDispatch should open UserManager

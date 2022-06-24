@@ -13,7 +13,7 @@
 namespace extensions {
 
 ShellDesktopControllerMac::ShellDesktopControllerMac()
-    : app_window_client_(new ShellAppWindowClient), app_window_(NULL) {
+    : app_window_client_(new ShellAppWindowClient), app_window_(nullptr) {
   AppWindowClient::Set(app_window_client_.get());
 }
 
@@ -32,7 +32,7 @@ void ShellDesktopControllerMac::CloseAppWindows() {
   if (app_window_) {
     ui::BaseWindow* window = app_window_->GetBaseWindow();
     window->Close();  // Close() deletes |app_window_|.
-    app_window_ = NULL;
+    app_window_ = nullptr;
   }
 }
 

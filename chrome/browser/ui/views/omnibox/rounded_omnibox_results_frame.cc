@@ -36,7 +36,7 @@ constexpr int kElevation = 16;
 #if !defined(USE_AURA)
 
 struct WidgetEventPair {
-  views::Widget* widget;
+  raw_ptr<views::Widget> widget;
   std::unique_ptr<ui::MouseEvent> event;
 };
 

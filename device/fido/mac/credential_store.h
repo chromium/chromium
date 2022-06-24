@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/mac/foundation_util.h"
+#include "base/memory/raw_ptr.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/platform_credential_store.h"

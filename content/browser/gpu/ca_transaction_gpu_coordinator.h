@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_GPU_CA_TRANSACTION_GPU_COORDINATOR_H_
 #define CONTENT_BROWSER_GPU_CA_TRANSACTION_GPU_COORDINATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
@@ -44,7 +45,7 @@ class CATransactionGPUCoordinator
 
   // The GpuProcessHost to use to initiate GPU-side CATransactions. This is only
   // to be accessed on the IO thread.
-  GpuProcessHost* host_ = nullptr;
+  raw_ptr<GpuProcessHost> host_ = nullptr;
 
   // The number CATransactions that have not yet completed. This is only to be
   // accessed on the UI thread.

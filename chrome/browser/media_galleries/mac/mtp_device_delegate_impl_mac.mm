@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "components/storage_monitor/image_capture_device.h"
 #include "components/storage_monitor/image_capture_device_manager.h"
@@ -70,7 +71,7 @@ class MTPDeviceDelegateImplMac::DeviceListener
   base::scoped_nsobject<ImageCaptureDevice> camera_device_;
 
   // Weak pointer
-  MTPDeviceDelegateImplMac* delegate_;
+  raw_ptr<MTPDeviceDelegateImplMac> delegate_;
 };
 
 void MTPDeviceDelegateImplMac::DeviceListener::OpenCameraSession(
@@ -122,7 +123,7 @@ void MTPDeviceDelegateImplMac::DeviceListener::DeviceRemoved() {
 }
 
 void MTPDeviceDelegateImplMac::DeviceListener::ResetDelegate() {
-  delegate_ = NULL;
+  delegate_ = nullptr;
 }
 
 MTPDeviceDelegateImplMac::MTPDeviceDelegateImplMac(

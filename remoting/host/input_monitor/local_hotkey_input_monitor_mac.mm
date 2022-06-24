@@ -4,6 +4,8 @@
 
 #include "remoting/host/input_monitor/local_hotkey_input_monitor.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <AppKit/AppKit.h>
 
 #include <cstdint>
@@ -65,7 +67,7 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
 @interface LocalHotkeyInputMonitorManager : NSObject {
  @private
   GTMCarbonHotKey* _hotKey;
-  remoting::LocalHotkeyInputMonitorMac::EventHandler* _monitor;
+  raw_ptr<remoting::LocalHotkeyInputMonitorMac::EventHandler> _monitor;
 }
 
 - (instancetype)initWithMonitor:

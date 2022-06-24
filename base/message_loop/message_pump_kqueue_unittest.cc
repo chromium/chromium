@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
@@ -24,7 +25,7 @@ namespace {
 class MessagePumpKqueueTest : public testing::Test {
  public:
   MessagePumpKqueueTest()
-      : pump_(new MessagePumpKqueue()), executor_(WrapUnique(pump_)) {}
+      : pump_(new MessagePumpKqueue()), executor_(WrapUnique(pump_.get())) {}
 
   MessagePumpKqueue* pump() { return pump_; }
 
@@ -51,7 +52,7 @@ class MessagePumpKqueueTest : public testing::Test {
   }
 
  private:
-  MessagePumpKqueue* pump_;  // Weak, owned by |executor_|.
+  raw_ptr<MessagePumpKqueue> pump_;  // Weak, owned by |executor_|.
   SingleThreadTaskExecutor executor_;
 };
 

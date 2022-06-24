@@ -22,6 +22,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -265,7 +266,7 @@ struct AppShimManager::ProfileState {
   AppShimHost* GetHost() const;
 
   // Weak, owns |this|.
-  AppShimManager::AppState* const app_state;
+  const raw_ptr<AppShimManager::AppState> app_state;
 
   // The AppShimHost for apps that are not multi-profile.
   const std::unique_ptr<AppShimHost> single_profile_host;

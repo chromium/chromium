@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #import "base/mac/foundation_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -42,14 +43,14 @@ class QuitWithAppsControllerInteractiveTest
       const QuitWithAppsControllerInteractiveTest&) = delete;
 
  protected:
-  QuitWithAppsControllerInteractiveTest() : app_(NULL) {}
+  QuitWithAppsControllerInteractiveTest() : app_(nullptr) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PlatformAppBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kAppsKeepChromeAliveInTests);
   }
 
-  const extensions::Extension* app_;
+  raw_ptr<const extensions::Extension> app_;
 };
 
 }  // namespace

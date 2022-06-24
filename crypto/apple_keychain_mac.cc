@@ -4,6 +4,7 @@
 
 #include "crypto/apple_keychain.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "crypto/mac_security_services_lock.h"
 
@@ -34,7 +35,7 @@ class OptionalOutParameter {
   operator T() const { return value_; }
 
  private:
-  T* const out_;
+  const raw_ptr<T> out_;
   T value_;
 };
 

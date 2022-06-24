@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/menu/menu_pre_target_handler.h"
 
@@ -34,7 +35,7 @@ class MenuPreTargetHandlerMac : public MenuPreTargetHandler,
                                           bool* was_handled) final;
 
   std::unique_ptr<NativeWidgetMacEventMonitor> monitor_;
-  MenuController* const controller_;  // Weak. Owns |this|.
+  const raw_ptr<MenuController> controller_;  // Weak. Owns |this|.
 };
 
 }  // namespace views

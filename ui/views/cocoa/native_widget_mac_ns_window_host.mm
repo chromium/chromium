@@ -657,7 +657,7 @@ void NativeWidgetMacNSWindowHost::SetParent(
   // close the Widget.
   // https://crbug.com/957927
   remote_cocoa::ApplicationHost* new_application_host =
-      new_parent ? new_parent->application_host() : application_host_;
+      new_parent ? new_parent->application_host() : application_host_.get();
   if (new_application_host != application_host_) {
     DLOG(ERROR) << "Cannot migrate views::NativeWidget to another process, "
                    "closing it instead.";

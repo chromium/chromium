@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 
 #if defined(__OBJC__)
@@ -46,7 +47,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT CocoaMouseCapture {
   // Deactivates the event tap if still active.
   void OnOtherClientGotCapture();
 
-  CocoaMouseCaptureDelegate* delegate_;  // Weak. Owns this.
+  raw_ptr<CocoaMouseCaptureDelegate> delegate_;  // Weak. Owns this.
 
   // The active event tap for this capture. Owned by this, but can be cleared
   // out early if another instance of CocoaMouseCapture is created.

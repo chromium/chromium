@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "ui/views/cocoa/drag_drop_client_mac.h"
 
 #import <Cocoa/Cocoa.h>
@@ -203,7 +205,7 @@ class DragDropClientMacTest : public WidgetTest {
     widget_->Show();
 
     target_ = new DragDropView();
-    widget_->non_client_view()->frame_view()->AddChildView(target_);
+    widget_->non_client_view()->frame_view()->AddChildView(target_.get());
     target_->SetBoundsRect(bounds);
 
     drag_drop_client()->source_operation_ = ui::DragDropTypes::DRAG_COPY;
@@ -216,10 +218,10 @@ class DragDropClientMacTest : public WidgetTest {
   }
 
  protected:
-  Widget* widget_ = nullptr;
-  remote_cocoa::NativeWidgetNSWindowBridge* bridge_ = nullptr;
-  NativeWidgetMacNSWindowHost* ns_window_host_ = nullptr;
-  DragDropView* target_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge> bridge_ = nullptr;
+  raw_ptr<NativeWidgetMacNSWindowHost> ns_window_host_ = nullptr;
+  raw_ptr<DragDropView> target_ = nullptr;
   base::scoped_nsobject<MockDraggingInfo> dragging_info_;
 };
 
@@ -343,7 +345,7 @@ TEST_F(DragDropClientMacTest, CloseWidgetOnDrop) {
   SetData(data);
 
   target_ = new DragDropCloseView();
-  widget_->non_client_view()->frame_view()->AddChildView(target_);
+  widget_->non_client_view()->frame_view()->AddChildView(target_.get());
   target_->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
   target_->set_formats(ui::OSExchangeData::STRING | ui::OSExchangeData::URL);
 

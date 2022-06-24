@@ -4,6 +4,8 @@
 
 #include "components/storage_monitor/image_capture_device_manager.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <ImageCaptureCore/ImageCaptureCore.h>
 
 #import "components/storage_monitor/image_capture_device.h"
@@ -31,7 +33,7 @@ storage_monitor::ImageCaptureDeviceManager* g_image_capture_device_manager =
   // Guaranteed to outlive this class.
   // TODO(gbillock): Update when ownership chains go up through
   // a StorageMonitor subclass.
-  storage_monitor::StorageMonitor::Receiver* _notifications;
+  raw_ptr<storage_monitor::StorageMonitor::Receiver> _notifications;
 }
 
 - (void)setNotifications:
@@ -51,7 +53,7 @@ storage_monitor::ImageCaptureDeviceManager* g_image_capture_device_manager =
 - (instancetype)init {
   if ((self = [super init])) {
     _cameras.reset([[NSMutableArray alloc] init]);
-    _notifications = NULL;
+    _notifications = nullptr;
 
     _deviceBrowser.reset([[ICDeviceBrowser alloc] init]);
     [_deviceBrowser setDelegate:self];

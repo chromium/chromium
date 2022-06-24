@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/environment.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -107,7 +108,7 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
 
  private:
   media::SeekableBuffer buffer_;
-  FILE* file_;
+  raw_ptr<FILE> file_;
   int bytes_to_write_;
 };
 

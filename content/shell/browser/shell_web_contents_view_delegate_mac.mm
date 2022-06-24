@@ -4,6 +4,8 @@
 
 #include "content/shell/browser/shell_web_contents_view_delegate.h"
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <memory>
@@ -42,7 +44,7 @@ enum {
 
 @interface ShellContextMenuDelegate : NSObject<NSMenuDelegate> {
  @private
-  content::ShellWebContentsViewDelegate* _delegate;
+  raw_ptr<content::ShellWebContentsViewDelegate> _delegate;
 }
 @end
 

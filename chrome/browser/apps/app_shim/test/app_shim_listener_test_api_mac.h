@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_APP_SHIM_TEST_APP_SHIM_LISTENER_TEST_API_MAC_H_
 #define CHROME_BROWSER_APPS_APP_SHIM_TEST_APP_SHIM_LISTENER_TEST_API_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 class AppShimListener;
 
 namespace base {
@@ -28,7 +30,7 @@ class AppShimListenerTestApi {
   const base::FilePath& directory_in_tmp();
 
  private:
-  AppShimListener* listener_;  // Not owned.
+  raw_ptr<AppShimListener> listener_;  // Not owned.
 };
 
 }  // namespace test

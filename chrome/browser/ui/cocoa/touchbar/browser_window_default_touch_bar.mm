@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_default_touch_bar.h"
 
 #include <memory>
@@ -260,8 +262,8 @@ class TouchBarNotificationBridge : public CommandObserver,
 
  private:
   BrowserWindowDefaultTouchBar* owner_;  // Weak.
-  Browser* browser_;                     // Weak.
-  content::WebContents* contents_;       // Weak.
+  raw_ptr<Browser> browser_;             // Weak.
+  raw_ptr<content::WebContents> contents_;  // Weak.
 
   // Used to monitor the optional home button pref.
   BooleanPrefMember show_home_button_;

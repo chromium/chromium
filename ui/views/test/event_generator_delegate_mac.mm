@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
@@ -328,7 +330,7 @@ class EventGeneratorDelegateMac : public ui::EventTarget,
  private:
   static EventGeneratorDelegateMac* instance_;
 
-  ui::test::EventGenerator* owner_;
+  raw_ptr<ui::test::EventGenerator> owner_;
   base::scoped_nsobject<NSWindow> target_window_;
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_pressed_;
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_location_;

@@ -17,6 +17,7 @@
 
 #include "base/containers/queue.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -235,7 +236,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   const gpu::GpuDriverBugWorkarounds workarounds_;
   std::unique_ptr<MediaLog> media_log_;
 
-  VideoDecodeAccelerator::Client* client_ = nullptr;
+  raw_ptr<VideoDecodeAccelerator::Client> client_ = nullptr;
   State state_ = STATE_DECODING;
 
   // Queue of pending flush tasks. This is used to drop frames when a reset

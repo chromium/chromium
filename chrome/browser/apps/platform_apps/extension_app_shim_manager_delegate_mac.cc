@@ -11,6 +11,7 @@
 
 #include "apps/launcher.h"
 #include "base/containers/adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -77,7 +78,7 @@ class EnableViaPrompt : public ExtensionEnableFlowDelegate {
   void ExtensionEnableFlowFinished() override { delete this; }
   void ExtensionEnableFlowAborted(bool user_initiated) override { delete this; }
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::string extension_id_;
   base::OnceCallback<void()> callback_;
   std::unique_ptr<ExtensionEnableFlow> flow_;

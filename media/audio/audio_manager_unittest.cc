@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1016,7 +1017,7 @@ class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
 
  private:
   const int expected_frames_per_buffer_;
-  base::WaitableEvent* event_;
+  raw_ptr<base::WaitableEvent> event_;
 };
 
 // Test that we can create an AudioOutputStream with kMinAudioBufferSize and
