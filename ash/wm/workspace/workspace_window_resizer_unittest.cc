@@ -189,12 +189,14 @@ class WorkspaceWindowResizerTest : public AshTestBase {
   }
 
   void DragToMaximize(aura::Window* window) {
+    window->SetBounds(gfx::Rect(200, 200));
     std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window);
     resizer->Drag(gfx::PointF(400.f, 400.f), 0);
     resizer->Drag(gfx::PointF(400.f, 2.f), 0);
     DwellCountdownTimerFireNow();
     resizer->CompleteDrag();
     ASSERT_TRUE(WindowState::Get(window)->IsMaximized());
+    ASSERT_TRUE(WindowState::Get(window)->HasRestoreBounds());
     resizer.reset();
   }
 
