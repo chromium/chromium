@@ -66,7 +66,7 @@ void JavaScriptDialogHelper::RunJavaScriptDialog(
   web_view_permission_helper->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_JAVASCRIPT_DIALOG, request_info,
       base::BindOnce(&JavaScriptDialogHelper::OnPermissionResponse,
-                     base::Unretained(this), std::move(callback)),
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
       false /* allowed_by_default */);
 }
 
