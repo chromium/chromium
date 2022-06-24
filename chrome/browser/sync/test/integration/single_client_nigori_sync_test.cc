@@ -1376,6 +1376,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
       "Sync.TrustedVaultDownloadKeysStatus",
       /*sample=*/syncer::TrustedVaultDownloadKeysStatus::kSuccess,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultURLFetchResponse.DownloadKeys",
+      /*sample=*/200,
+      /*expected_bucket_count=*/1);
 }
 
 // Regression test for crbug.com/1267391: after following key rotation the

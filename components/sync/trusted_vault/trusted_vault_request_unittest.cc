@@ -92,7 +92,8 @@ class TrustedVaultRequestTest : public testing::Test {
 
     auto request = std::make_unique<TrustedVaultRequest>(
         http_method, GURL(kRequestUrl), request_body,
-        shared_url_loader_factory_);
+        shared_url_loader_factory_,
+        TrustedVaultURLFetchReasonForUMA::kUnspecified);
     request->FetchAccessTokenAndSendRequest(account_id, &access_token_fetcher,
                                             std::move(completion_callback));
     return request;

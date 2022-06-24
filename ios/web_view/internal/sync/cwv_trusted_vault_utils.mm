@@ -44,7 +44,9 @@ syncer::TrustedVaultDeviceRegistrationStateForUMA CWVConvertTrustedVaultState(
 }
 
 + (void)logTrustedVaultDidReceiveHTTPStatusCode:(NSInteger)statusCode {
-  syncer::RecordTrustedVaultURLFetchResponse(statusCode, /*net_error=*/0);
+  syncer::RecordTrustedVaultURLFetchResponse(
+      statusCode, /*net_error=*/0,
+      syncer::TrustedVaultURLFetchReasonForUMA::kUnspecified);
 }
 
 + (void)logTrustedVaultDidFailKeyDistribution:(NSError*)error {
