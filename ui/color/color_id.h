@@ -190,7 +190,8 @@
   E_CPONLY(kColorAshActionLabelFocusRingError) \
   E_CPONLY(kColorAshActionLabelFocusRingHover) \
   \
-  E_CPONLY(kColorAshAppListFocusRing) \
+  /* TODO(skau): Remove Compat value when dark/light mode launches. */ \
+  E_CPONLY(kColorAshAppListFocusRingCompat) \
   E_CPONLY(kColorAshAppListFocusRingNoKeyboard) \
   E_CPONLY(kColorAshAppListSeparator) \
   E_CPONLY(kColorAshAppListSeparatorLight) \

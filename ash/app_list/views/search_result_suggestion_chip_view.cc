@@ -10,6 +10,7 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -54,11 +55,20 @@ void LogAppLaunch(int index_in_container) {
   base::RecordAction(base::UserMetricsAction("AppList_OpenSuggestedApp"));
 }
 
+// Copied from AppListColorProvider.
+bool ShouldUseDarkLightColors() {
+  return features::IsDarkLightModeEnabled() ||
+         features::IsProductivityLauncherEnabled();
+}
+
 }  // namespace
 
 SearchResultSuggestionChipView::SearchResultSuggestionChipView(
     AppListViewDelegate* view_delegate)
-    : view_delegate_(view_delegate) {
+    : focus_ring_color_(ShouldUseDarkLightColors()
+                            ? ui::kColorAshFocusRing
+                            : ui::kColorAshAppListFocusRingCompat),
+      view_delegate_(view_delegate) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
   // able to submit accessibility checks, but this focusable View needs to
@@ -69,7 +79,7 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
                           base::Unretained(this)));
 
   SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColorId(ui::kColorAshAppListFocusRing);
+  views::FocusRing::Get(this)->SetColorId(focus_ring_color_);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InstallPillHighlightPathGenerator(this);
@@ -154,7 +164,7 @@ void SearchResultSuggestionChipView::OnPaintBackground(gfx::Canvas* canvas) {
   // Focus Ring should only be visible when keyboard traversal is occurring.
   views::FocusRing::Get(this)->SetColorId(
       view_delegate_->KeyboardTraversalEngaged()
-          ? ui::kColorAshAppListFocusRing
+          ? focus_ring_color_
           : ui::kColorAshAppListFocusRingNoKeyboard);
 }
 
