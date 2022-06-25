@@ -668,7 +668,8 @@ TODO(crbug.com/1035895): Document updater crash reporting.
 The feature allows installed products to pre-register and later run command
 lines in the format `c:\path-to-exe\exe.exe {params}` (elevated for system
 applications). `{params}` is optional and can also include replaceable
-parameters substituted at runtime.
+parameters substituted at runtime. Multiple app commands can be registered per
+`app_id`.
 
 The program path is always an absolute path. Additionally, for system
 applications,  the program path is also a child of %ProgramFiles% or

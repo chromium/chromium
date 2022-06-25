@@ -18,6 +18,8 @@
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/win/app_command_runner.h"
+#include "chrome/updater/win/win_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -282,14 +284,8 @@ class LegacyAppCommandWebImpl
       const std::wstring& command_id,
       Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& web_impl);
 
-  HRESULT Initialize(UpdaterScope scope, const std::wstring& command_format);
-
-  absl::optional<std::wstring> FormatCommandLine(
-      const std::vector<std::wstring>& substitutions) const;
-
-  base::FilePath executable_;
-  std::vector<std::wstring> parameters_;
   base::Process process_;
+  AppCommandRunner app_command_runner_;
 
   friend class LegacyAppCommandWebImplTest;
 };

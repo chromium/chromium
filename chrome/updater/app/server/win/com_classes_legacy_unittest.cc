@@ -57,52 +57,6 @@ class LegacyAppCommandWebImplTest : public testing::Test {
 
   void TearDown() override { DeleteAppClientKey(GetTestScope(), kAppId1); }
 
-  template <typename T>
-  absl::optional<std::wstring> MakeCommandLine(
-      T web,
-      const std::vector<std::wstring>& parameters) {
-    absl::optional<std::wstring> cmd = web->FormatCommandLine(parameters);
-    if (!cmd)
-      return absl::nullopt;
-
-    const std::wstring command_line =
-        web->executable_.value().find_first_of(L' ') == std::wstring::npos
-            ? web->executable_.value()
-            : base::CommandLine(web->executable_).GetCommandLineString();
-    return cmd->empty() ? command_line
-                        : base::StrCat({command_line, L" ", *cmd});
-  }
-
-  absl::optional<std::wstring> FormatCommandLine(
-      const std::wstring& command_line_format,
-      const std::vector<std::wstring>& parameters) {
-    LegacyAppCommandWebImpl web;
-    if (HRESULT hr = web.Initialize(GetTestScope(), command_line_format);
-        FAILED(hr)) {
-      return absl::nullopt;
-    }
-
-    return MakeCommandLine(&web, parameters);
-  }
-
-  absl::optional<std::wstring> FormatCommandLine(
-      const std::wstring& app_id,
-      const std::wstring& command_id,
-      const std::wstring& command_line_format,
-      const std::vector<std::wstring>& parameters) {
-    CreateAppCommandRegistry(GetTestScope(), app_id, command_id,
-                             command_line_format);
-
-    Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
-    if (HRESULT hr = LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
-            GetTestScope(), app_id, command_id, app_command_web);
-        FAILED(hr)) {
-      return absl::nullopt;
-    }
-
-    return MakeCommandLine(app_command_web, parameters);
-  }
-
   HRESULT CreateAppCommandWeb(
       const std::wstring& app_id,
       const std::wstring& command_id,
@@ -156,11 +110,6 @@ TEST_F(LegacyAppCommandWebImplTest, NoApp) {
 
 TEST_F(LegacyAppCommandWebImplTest, NoCmd) {
   NoCmdTest();
-}
-
-TEST_F(LegacyAppCommandWebImplTest, LoadCommand) {
-  EXPECT_EQ(FormatCommandLine(kAppId1, kCmdId1, kCmdLineValid, {}).value(),
-            kCmdLineValid);
 }
 
 TEST_F(LegacyAppCommandWebImplTest, Execute) {

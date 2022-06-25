@@ -34,6 +34,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/win/app_command_runner.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -583,60 +584,22 @@ HRESULT LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
     const std::wstring& app_id,
     const std::wstring& command_id,
     Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& web_impl) {
-  const HKEY root = UpdaterScopeToHKeyRoot(scope);
-  const std::wstring app_key_name = base::StrCat({CLIENTS_KEY, app_id});
-  std::wstring command_format;
-
-  if (const base::win::RegKey command_key(
-          root,
-          base::StrCat(
-              {app_key_name, L"\\", kRegKeyCommands, L"\\", command_id})
-              .c_str(),
-          Wow6432(KEY_QUERY_VALUE));
-      !command_key.Valid()) {
-    const base::win::RegKey app_key(root, app_key_name.c_str(),
-                                    Wow6432(KEY_QUERY_VALUE));
-    if (!app_key.HasValue(command_id.c_str()))
-      return HRESULT_FROM_WIN32(ERROR_BAD_COMMAND);
-
-    // Older command layout format:
-    //     Update\Clients\{`app_id`}
-    //         REG_SZ `command_id` == {command format}
-    if (const LONG result =
-            app_key.ReadValue(command_id.c_str(), &command_format);
-        result != ERROR_SUCCESS) {
-      return HRESULT_FROM_WIN32(result);
-    }
-  } else {
-    // New command layout format:
-    //     Update\Clients\{`app_id`}\Commands\`command_id`
-    //         REG_SZ "CommandLine" == {command format}
-    if (const LONG result =
-            command_key.ReadValue(kRegValueCommandLine, &command_format);
-        result != ERROR_SUCCESS) {
-      return HRESULT_FROM_WIN32(result);
-    }
-  }
+  Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> web;
 
   if (HRESULT hr =
-          Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(&web_impl);
+          Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(&web);
       FAILED(hr)) {
     return hr;
   }
 
-  return web_impl->Initialize(scope, command_format);
-}
+  if (HRESULT hr = AppCommandRunner::LoadAppCommand(scope, app_id, command_id,
+                                                    web->app_command_runner_);
+      FAILED(hr)) {
+    return hr;
+  }
 
-HRESULT LegacyAppCommandWebImpl::Initialize(
-    UpdaterScope scope,
-    const std::wstring& command_format) {
-  return GetAppCommandFormatComponents(scope, command_format, executable_,
-                                       parameters_);
-}
-
-absl::optional<std::wstring> LegacyAppCommandWebImpl::FormatCommandLine(
-    const std::vector<std::wstring>& substitutions) const {
-  return FormatAppCommandLine(parameters_, substitutions);
+  web_impl.Swap(web);
+  return S_OK;
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
@@ -691,7 +654,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
     substitutions.push_back(substitution_string.value());
   }
 
-  return ExecuteAppCommand(executable_, parameters_, substitutions, process_);
+  return app_command_runner_.Run(substitutions, process_);
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::GetTypeInfoCount(UINT*) {
