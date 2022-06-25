@@ -436,6 +436,7 @@ void DownloadBubbleRowView::UpdateProgressBar() {
         ui_info_.is_progress_bar_looping
             ? -1
             : static_cast<double>(model_->PercentComplete()) / 100);
+    progress_bar_->SetPaused(model_->IsPaused());
   } else if (progress_bar_->GetVisible()) {
     // Hide the progress bar.
     progress_bar_->SetVisible(false);

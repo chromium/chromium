@@ -147,11 +147,20 @@ void ProgressBar::SetValue(double value) {
   MaybeNotifyAccessibilityValueChanged();
 }
 
+void ProgressBar::SetPaused(bool is_paused) {
+  if (is_paused_ == is_paused)
+    return;
+
+  is_paused_ = is_paused;
+  OnPropertyChanged(&is_paused_, kPropertyEffectsPaint);
+}
+
 SkColor ProgressBar::GetForegroundColor() const {
   if (foreground_color_)
     return foreground_color_.value();
 
-  return GetColorProvider()->GetColor(ui::kColorProgressBar);
+  return GetColorProvider()->GetColor(GetPaused() ? ui::kColorProgressBarPaused
+                                                  : ui::kColorProgressBar);
 }
 
 void ProgressBar::SetForegroundColor(SkColor color) {
@@ -266,6 +275,7 @@ void ProgressBar::MaybeNotifyAccessibilityValueChanged() {
 BEGIN_METADATA(ProgressBar, View)
 ADD_PROPERTY_METADATA(SkColor, ForegroundColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(bool, Paused)
 END_METADATA
 
 }  // namespace views
