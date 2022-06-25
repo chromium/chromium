@@ -204,10 +204,6 @@ public class SplitCompatApplication extends Application {
             if (AppLocaleUtils.shouldUseSystemManagedLocale()) {
                 AppLocaleUtils.maybeMigrateOverrideLanguage();
             }
-
-            // Initializes the support for dynamic feature modules. This calls SplitCompat.install
-            // which if done in onCreate breaks emulated splits on Android T+.
-            ModuleUtil.initApplication();
         }
 
         BuildInfo.setFirebaseAppId(FirebaseConfig.getFirebaseAppId());

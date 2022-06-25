@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.vr.OnExitVrRequestListener;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.embedder_support.browser_context.PartitionResolverSupplier;
+import org.chromium.components.module_installer.util.ModuleUtil;
 import org.chromium.components.version_info.Channel;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.url.GURL;
@@ -68,6 +69,9 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
 
             ApplicationStatus.registerStateListenerForAllActivities(
                     ChromePowerModeVoter.getInstance());
+
+            // Initializes the support for dynamic feature modules (browser only).
+            ModuleUtil.initApplication();
 
             if (VersionConstants.CHANNEL == Channel.CANARY) {
                 GURL.setReportDebugThrowableCallback(
