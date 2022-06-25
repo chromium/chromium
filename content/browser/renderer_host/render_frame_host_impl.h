@@ -1869,7 +1869,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return required_csp_.get();
   }
 
-  bool IsAnonymous() const;
+  bool IsAnonymous() const override;
 
   bool is_fenced_frame_opaque_url() const {
     return is_fenced_frame_opaque_url_;

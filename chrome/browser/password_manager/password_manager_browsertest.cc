@@ -81,6 +81,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -4434,21 +4435,25 @@ class MockPrerenderPasswordManagerDriver
             });
   }
 
-  void WaitForPasswordFormParsedAndRendered() {
+  void WaitFor(uint32_t wait_type) {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
-    wait_type_ = WAIT_FOR_PASSWORD_FORMS::WAIT_FOR_PARSED |
-                 WAIT_FOR_PASSWORD_FORMS::WAIT_FOR_RENDERED;
+    wait_type_ = wait_type;
     run_loop.Run();
   }
 
- private:
+  void WaitForPasswordFormParsedAndRendered() {
+    WaitFor(WAIT_FOR_PASSWORD_FORMS::WAIT_FOR_PARSED |
+            WAIT_FOR_PASSWORD_FORMS::WAIT_FOR_RENDERED);
+  }
+
   enum WAIT_FOR_PASSWORD_FORMS {
     WAIT_FOR_NOTHING = 0,
     WAIT_FOR_PARSED = 1 << 0,    // Waits for PasswordFormsParsed().
     WAIT_FOR_RENDERED = 1 << 1,  // Waits for PasswordFormsRendered().
   };
 
+ private:
   void RemoveWaitType(uint32_t arrived) {
     wait_type_ &= ~arrived;
     if (wait_type_ == WAIT_FOR_NOTHING && quit_closure_)
@@ -4791,6 +4796,152 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   EXPECT_TRUE(host_observer.was_activated());
 
   mock->WaitForPasswordFormParsedAndRendered();
+}
+
+/// Inject the mock driver when navigation happens in main frame.
+class MockPasswordManagerDriverInjector : public content::WebContentsObserver {
+ public:
+  explicit MockPasswordManagerDriverInjector(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  ~MockPasswordManagerDriverInjector() override = default;
+
+  MockPrerenderPasswordManagerDriver* GetMockForFrame(
+      content::RenderFrameHost* rfh) {
+    return static_cast<MockPrerenderPasswordManagerDriver*>(
+        GetDriverForFrame(rfh)->ReceiverForTesting().impl());
+  }
+
+ private:
+  password_manager::ContentPasswordManagerDriver* GetDriverForFrame(
+      content::RenderFrameHost* rfh) {
+    password_manager::ContentPasswordManagerDriverFactory* driver_factory =
+        password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
+            web_contents());
+    return driver_factory->GetDriverForFrame(rfh);
+  }
+
+  // content::WebContentsObserver:
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    mocks_.push_back(std::make_unique<
+                     testing::StrictMock<MockPrerenderPasswordManagerDriver>>(
+        GetDriverForFrame(navigation_handle->GetRenderFrameHost())));
+  }
+
+  std::vector<std::unique_ptr<MockPrerenderPasswordManagerDriver>> mocks_;
+};
+
+// Test class for testing password manager with AnonymousIframe enabled.
+class PasswordManagerAnonymousIframeTest : public PasswordManagerBrowserTest {
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    PasswordManagerBrowserTest::SetUpOnMainThread();
+  }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
+    PasswordManagerBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerAnonymousIframeTest, NoFormsSeen) {
+  GURL main_frame_url = embedded_test_server()->GetURL(
+      "/password/password_form_in_anonymous_iframe.html");
+  MockPasswordManagerDriverInjector injector(WebContents());
+  PasswordsNavigationObserver nav_observer(WebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+  nav_observer.Wait();
+
+  content::RenderFrameHost* main_rfh = WebContents()->GetPrimaryMainFrame();
+  // Check behavior on a normal iframe:
+  {
+    ASSERT_TRUE(content::ExecJs(
+        main_rfh, R"(create_iframe('/empty.html', 'iframe', false);)"));
+    content::RenderFrameHost* child_rfh = ChildFrameAt(main_rfh, 0);
+    ASSERT_NE(child_rfh, nullptr);
+    MockPrerenderPasswordManagerDriver* mock =
+        injector.GetMockForFrame(child_rfh);
+    ASSERT_NE(mock, nullptr);
+    EXPECT_CALL(*mock, PasswordFormsParsed).Times(1);
+    ASSERT_TRUE(
+        content::ExecJs(child_rfh, "window.parent.inject_form(document);"));
+    mock->WaitFor(MockPrerenderPasswordManagerDriver::WAIT_FOR_PASSWORD_FORMS::
+                      WAIT_FOR_PARSED);
+  }
+
+  // Check what happens when using an anonymous iframe instead:
+  {
+    ASSERT_TRUE(content::ExecJs(
+        main_rfh, "create_iframe('/empty.html', 'iframe', true);"));
+    content::RenderFrameHost* child_rfh =
+        ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 1);
+    ASSERT_NE(child_rfh, nullptr);
+    MockPrerenderPasswordManagerDriver* mock =
+        injector.GetMockForFrame(child_rfh);
+    ASSERT_NE(mock, nullptr);
+    EXPECT_CALL(*mock, PasswordFormsParsed).Times(0);
+    ASSERT_TRUE(
+        content::ExecJs(child_rfh, "window.parent.inject_form(document);"));
+    base::RunLoop().RunUntilIdle();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerAnonymousIframeTest,
+                       DisablePasswordManagerOnAnonymousIframe) {
+  GURL base_url = https_test_server().GetURL("a.test", "/");
+  GURL main_frame_url = https_test_server().GetURL(
+      "a.test", "/password/password_form_in_anonymous_iframe.html");
+  GURL form_url = https_test_server().GetURL(
+      "a.test", "/password/crossite_iframe_content.html");
+
+  // 1. Store the username/password
+  password_manager::PasswordStoreInterface* password_store =
+      PasswordStoreFactory::GetForProfile(browser()->profile(),
+                                          ServiceAccessType::IMPLICIT_ACCESS)
+          .get();
+  password_manager::PasswordForm signin_form;
+  signin_form.signon_realm = base_url.spec();
+  signin_form.url = base_url;
+  signin_form.action = base_url;
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"pa55w0rd";
+  password_store->AddLogin(signin_form);
+
+  // 2. Load the form again, from a normal and an anonymous iframe.
+  PasswordsNavigationObserver reload_observer(WebContents());
+  reload_observer.SetPathToWaitFor(
+      "/password/password_form_in_anonymous_iframe.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+  reload_observer.Wait();
+  EXPECT_TRUE(content::ExecJs(
+      WebContents(),
+      content::JsReplace("create_iframe($1, 'normal', false); ", form_url)));
+  EXPECT_TRUE(content::ExecJs(
+      WebContents(),
+      content::JsReplace("create_iframe($1, 'anonymous', true); ", form_url)));
+  content::WaitForLoadStop(WebContents());
+  content::RenderFrameHost* iframe_normal =
+      ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 0);
+  content::RenderFrameHost* iframe_anonymous =
+      ChildFrameAt(WebContents()->GetPrimaryMainFrame(), 1);
+
+  EXPECT_EQ("pa55w0rd",
+            content::EvalJs(iframe_normal,
+                            "window.parent.check_password(document);"));
+  EXPECT_EQ("not found",
+            content::EvalJs(iframe_anonymous,
+                            "window.parent.check_password(document);"));
+
+  // 3. Navigate the normal iframe to be an anonymous iframe.
+  EXPECT_TRUE(content::ExecJs(
+      WebContents(), "document.getElementById('normal').anonymous = true"));
+  EXPECT_TRUE(content::ExecJs(
+      WebContents(),
+      content::JsReplace("document.getElementById('normal').src = $1",
+                         form_url)));
+  content::WaitForLoadStop(WebContents());
+  EXPECT_EQ("not found",
+            content::EvalJs(iframe_normal,
+                            "window.parent.check_password(document);"));
 }
 
 }  // namespace

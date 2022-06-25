@@ -249,6 +249,9 @@ void ChromePasswordManagerClient::BindPasswordGenerationDriver(
     mojo::PendingAssociatedReceiver<autofill::mojom::PasswordGenerationDriver>
         receiver,
     content::RenderFrameHost* rfh) {
+  // [spec] https://wicg.github.io/anonymous-iframe/#spec-autofill
+  if (rfh->IsAnonymous())
+    return;
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents)
     return;

@@ -109,8 +109,18 @@ void ContentPasswordManagerDriverFactory::RenderFrameDeleted(
 
 void ContentPasswordManagerDriverFactory::DidFinishNavigation(
     content::NavigationHandle* navigation) {
-  if (!navigation->IsInPrimaryMainFrame() || navigation->IsSameDocument() ||
-      !navigation->HasCommitted()) {
+  if (navigation->IsSameDocument() || !navigation->HasCommitted()) {
+    return;
+  }
+
+  // Unbind receiver if the frame is anonymous, noted that anonymous frames are
+  // always iframes.
+  if (!navigation->IsInPrimaryMainFrame()) {
+    if (auto* driver = GetDriverForFrame(navigation->GetRenderFrameHost())) {
+      if (navigation->GetRenderFrameHost()->IsAnonymous()) {
+        driver->UnbindReceiver();
+      }
+    }
     return;
   }
 

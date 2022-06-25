@@ -1046,6 +1046,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // example, helper methods for MojoJs to better work with Web API objects.
   virtual void EnableMojoJsBindings(mojom::ExtraMojoJsFeaturesPtr features) = 0;
 
+  // Whether the current document is loaded inside an anonymous iframe. Updated
+  // on every cross-document navigation.
+  virtual bool IsAnonymous() const = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class RenderFrameHostImpl;

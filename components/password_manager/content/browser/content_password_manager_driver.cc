@@ -110,7 +110,13 @@ ContentPasswordManagerDriver::GetForRenderFrameHost(
 void ContentPasswordManagerDriver::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
         pending_receiver) {
+  if (render_frame_host_->IsAnonymous())
+    return;
   password_manager_receiver_.Bind(std::move(pending_receiver));
+}
+
+void ContentPasswordManagerDriver::UnbindReceiver() {
+  password_manager_receiver_.reset();
 }
 
 int ContentPasswordManagerDriver::GetId() const {
