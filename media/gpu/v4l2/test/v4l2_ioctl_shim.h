@@ -21,7 +21,6 @@ class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
  public:
   MmapedBuffer(const base::PlatformFile decode_fd,
                const struct v4l2_buffer& v4l2_buffer);
-  ~MmapedBuffer();
 
   class MmapedPlane {
    public:
@@ -47,6 +46,7 @@ class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
  private:
   friend class base::RefCounted<MmapedBuffer>;
 
+  ~MmapedBuffer();
   MmapedBuffer(const MmapedBuffer&) = delete;
   MmapedBuffer& operator=(const MmapedBuffer&) = delete;
 
