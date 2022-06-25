@@ -45,5 +45,15 @@
     "additional_compile_targets": [
       "all"
     ]
+  },
+  "mac-arm64-rel reclient staging": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "mac-arm64-rel reclient test": {
+    "additional_compile_targets": [
+      "all"
+    ]
   }
 }

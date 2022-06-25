@@ -665,6 +665,8 @@
       'Win x64 Builder reclient test': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'ios-simulator reclient staging': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-simulator reclient test': 'ios_simulator_debug_static_bot_xctest_reclient',
+      'mac-arm64-rel reclient staging': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
+      'mac-arm64-rel reclient test': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
     },
 
     'chromium.rust': {
@@ -2992,6 +2994,10 @@
 
     'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl': [
       'arm64', 'gpu_tests', 'release_bot', 'minimal_symbols', 'disable_nacl',
+    ],
+
+    'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient': [
+      'arm64', 'gpu_tests', 'release_bot_reclient', 'minimal_symbols', 'disable_nacl',
     ],
 
     'mac_arm64_gpu_tests_release_trybot_no_symbols': [

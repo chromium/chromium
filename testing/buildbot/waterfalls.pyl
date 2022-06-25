@@ -5420,6 +5420,20 @@
           'xctest',
         ],
       },
+      'mac-arm64-rel reclient staging': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=5119;drc=0cad2921efb9c2d4248496f10eb24aa1d9769dd4
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'mac-arm64-rel reclient test': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=5119;drc=0cad2921efb9c2d4248496f10eb24aa1d9769dd4
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
     },
   },
   {

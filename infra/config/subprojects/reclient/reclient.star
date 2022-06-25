@@ -294,3 +294,47 @@ fyi_reclient_staging_builder(
     cores = None,
     xcode = xcode.x13main,
 )
+
+fyi_reclient_staging_builder(
+    name = "mac-arm64-rel reclient staging",
+    builder_spec = builder_config.copy_from(
+        "ci/mac-arm64-rel",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "enable_reclient",
+                    "reclient_staging",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    console_view_category = "mac",
+    os = os.MAC_DEFAULT,
+    builderless = True,
+    cores = None,
+)
+
+fyi_reclient_test_builder(
+    name = "mac-arm64-rel reclient test",
+    builder_spec = builder_config.copy_from(
+        "ci/mac-arm64-rel",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "enable_reclient",
+                    "reclient_test",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    console_view_category = "mac",
+    os = os.MAC_DEFAULT,
+    builderless = True,
+    cores = None,
+)
