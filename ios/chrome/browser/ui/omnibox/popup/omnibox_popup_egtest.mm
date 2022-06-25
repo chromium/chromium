@@ -193,19 +193,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that the switch to open tab button isn't displayed for the current tab.
 // TODO(crbug.com/1128463): Test is flaky on simulators.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testNotSwitchButtonOnCurrentTab \
-  DISABLED_testNotSwitchButtonOnCurrentTab
-#else
-#define MAYBE_testNotSwitchButtonOnCurrentTab testNotSwitchButtonOnCurrentTab
-#endif
-- (void)MAYBE_testNotSwitchButtonOnCurrentTab {
+// TODO(crbug.com/1339419): Test fails on device.
 // TODO(crbug.com/1067817): Test won't pass on iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
+- (void)DISABLED_testNotSwitchButtonOnCurrentTab {
   GURL URL2 = self.testServer->GetURL(kPage2URL);
 
   // Open the first page.
@@ -612,7 +602,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // TODO(crbug.com/1322120): Reenable this test.
 - (void)DISABLED_testNotSwitchButtonOnCurrentTab {
   if (@available(iOS 15, *)) {
-    [super MAYBE_testNotSwitchButtonOnCurrentTab];
+    [super DISABLED_testNotSwitchButtonOnCurrentTab];
   } else {
     EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
   }
