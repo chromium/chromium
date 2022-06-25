@@ -556,6 +556,7 @@ void MultideviceHandler::HandleCancelAppsSetup(const base::Value::List& args) {
   DCHECK(features::IsEcheSWAEnabled());
   DCHECK(apps_access_operation_);
 
+  apps_access_manager_->NotifyAppsAccessCanceled();
   apps_access_operation_.reset();
 }
 

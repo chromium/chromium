@@ -52,6 +52,7 @@ class AppsAccessManagerImpl
   AccessStatus GetAccessStatus() const override;
   void SetAccessStatusInternal(AccessStatus access_status) override;
   void OnSetupRequested() override;
+  void NotifyAppsAccessCanceled() override;
 
   // EcheMessageReceiver::Observer:
   void OnGetAppsAccessStateResponseReceived(

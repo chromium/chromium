@@ -45,13 +45,20 @@ class AppsAccessManager {
     // The permission request time out after 20 seconds.
     kUserActionTimeout = 4,
 
-    // The permission request is canceled because the device screen off.
-    kUserActionCanceled = 5,
+    // The permission request is canceled from the remote device, e.g. device
+    // screen off.
+    kUserActionRemoteInterrupt = 5,
 
     // System exceptions thrown out.
     kSystemError = 6,
 
-    kMaxValue = kSystemError
+    // The permission request is canceled from the onboarding UI.
+    kUserActionCanceled = 7,
+
+    // The permission request is canceled when the device is disconnected.
+    kFailedConnection = 8,
+
+    kMaxValue = kFailedConnection
   };
 
   class Observer : public base::CheckedObserver {
@@ -68,6 +75,7 @@ class AppsAccessManager {
   virtual ~AppsAccessManager();
 
   virtual AccessStatus GetAccessStatus() const = 0;
+  virtual void NotifyAppsAccessCanceled() = 0;
 
   // Starts an attempt to enable the apps access.
   std::unique_ptr<AppsAccessSetupOperation> AttemptAppsAccessSetup(

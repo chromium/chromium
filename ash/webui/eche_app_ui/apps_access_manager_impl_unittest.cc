@@ -15,6 +15,7 @@
 #include "ash/webui/eche_app_ui/fake_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/pref_names.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +25,9 @@ namespace eche_app {
 
 using AccessStatus =
     ash::phonehub::MultideviceFeatureAccessManager::AccessStatus;
+
+using OnboardingUserActionMetric =
+    AppsAccessManagerImpl::OnboardingUserActionMetric;
 
 namespace {
 class FakeObserver : public AppsAccessManager::Observer {
@@ -165,6 +169,10 @@ class AppsAccessManagerImplTest : public testing::Test {
     fake_multidevice_setup_client_.SetFeatureState(feature, feature_state);
   }
 
+  void NotifyAppsAccessCanceled() {
+    return apps_access_manager_->NotifyAppsAccessCanceled();
+  }
+
   multidevice_setup::FakeMultiDeviceSetupClient*
   fake_multidevice_setup_client() {
     return &fake_multidevice_setup_client_;
@@ -293,6 +301,8 @@ TEST_F(AppsAccessManagerImplTest, StartDisconnectedAndNoAccess) {
 }
 
 TEST_F(AppsAccessManagerImplTest, StartConnectingAndNoAccess) {
+  base::HistogramTester histograms;
+
   // Set initial state to connecting.
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
   SetFeatureStatus(FeatureStatus::kConnecting);
@@ -324,6 +334,9 @@ TEST_F(AppsAccessManagerImplTest, StartConnectingAndNoAccess) {
   EXPECT_EQ(AppsAccessSetupOperation::Status::kCompletedSuccessfully,
             GetAppsAccessSetupOperationStatus());
   EXPECT_FALSE(IsSetupOperationInProgress());
+  histograms.ExpectBucketCount(
+      kEcheOnboardingHistogramName,
+      OnboardingUserActionMetric::kUserActionPermissionGranted, 1);
 }
 
 TEST_F(AppsAccessManagerImplTest, StartConnectedAndNoAccess) {
@@ -356,6 +369,8 @@ TEST_F(AppsAccessManagerImplTest, StartConnectedAndNoAccess) {
 }
 
 TEST_F(AppsAccessManagerImplTest, SimulateUserRejectedError) {
+  base::HistogramTester histograms;
+
   // Set initial state to connected.
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
   SetFeatureStatus(FeatureStatus::kConnected);
@@ -383,9 +398,14 @@ TEST_F(AppsAccessManagerImplTest, SimulateUserRejectedError) {
   EXPECT_EQ(AppsAccessSetupOperation::Status::kCompletedUserRejected,
             GetAppsAccessSetupOperationStatus());
   EXPECT_FALSE(IsSetupOperationInProgress());
+  histograms.ExpectBucketCount(
+      kEcheOnboardingHistogramName,
+      OnboardingUserActionMetric::kUserActionPermissionRejected, 1);
 }
 
-TEST_F(AppsAccessManagerImplTest, SimulateOperationFailedOrCancelled) {
+TEST_F(AppsAccessManagerImplTest, SimulateOperationFailedOrCanceled) {
+  base::HistogramTester histograms;
+
   // Set initial state to connected.
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
   SetFeatureStatus(FeatureStatus::kConnected);
@@ -413,6 +433,9 @@ TEST_F(AppsAccessManagerImplTest, SimulateOperationFailedOrCancelled) {
   EXPECT_EQ(AppsAccessSetupOperation::Status::kOperationFailedOrCancelled,
             GetAppsAccessSetupOperationStatus());
   EXPECT_FALSE(IsSetupOperationInProgress());
+  histograms.ExpectBucketCount(kEcheOnboardingHistogramName,
+                               OnboardingUserActionMetric::kUserActionTimeout,
+                               1);
 
   // Simulate flipping the access state to not granted.
   FakeGetAppsAccessStateResponse(
@@ -439,6 +462,9 @@ TEST_F(AppsAccessManagerImplTest, SimulateOperationFailedOrCancelled) {
   EXPECT_EQ(AppsAccessSetupOperation::Status::kOperationFailedOrCancelled,
             GetAppsAccessSetupOperationStatus());
   EXPECT_FALSE(IsSetupOperationInProgress());
+  histograms.ExpectBucketCount(
+      kEcheOnboardingHistogramName,
+      OnboardingUserActionMetric::kUserActionRemoteInterrupt, 1);
 
   // Simulate flipping the access state to not granted.
   FakeGetAppsAccessStateResponse(
@@ -465,6 +491,8 @@ TEST_F(AppsAccessManagerImplTest, SimulateOperationFailedOrCancelled) {
   EXPECT_EQ(AppsAccessSetupOperation::Status::kOperationFailedOrCancelled,
             GetAppsAccessSetupOperationStatus());
   EXPECT_FALSE(IsSetupOperationInProgress());
+  histograms.ExpectBucketCount(kEcheOnboardingHistogramName,
+                               OnboardingUserActionMetric::kSystemError, 1);
 }
 
 TEST_F(AppsAccessManagerImplTest, SimulateConnectingToDisconnected) {
@@ -767,6 +795,83 @@ TEST_F(AppsAccessManagerImplTest,
       /*expected_enabled=*/false, /*expected_auth_token=*/absl::nullopt,
       /*success=*/true);
   EXPECT_EQ(1u, GetNumObserverCalls());
+}
+
+TEST_F(AppsAccessManagerImplTest, LogSetupCancelWhenAppsAccessCanceled) {
+  base::HistogramTester histograms;
+
+  // Set initial state to connecting.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
+  SetFeatureStatus(FeatureStatus::kConnecting);
+
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Start a setup operation with enabled and connecting status and access
+  // not granted.
+  auto operation = StartSetupOperation();
+  EXPECT_TRUE(operation);
+
+  // Simulate changing states from connecting to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+  SetFeatureStatus(FeatureStatus::kConnected);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(1u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_TRUE(IsSetupOperationInProgress());
+
+  // Notify the apps access setup operation is canceled.
+  NotifyAppsAccessCanceled();
+
+  // Verify the metric logs the expected event.
+  histograms.ExpectBucketCount(kEcheOnboardingHistogramName,
+                               OnboardingUserActionMetric::kUserActionCanceled,
+                               1);
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       LogFailConnectionWhenCanceledAndDisconnected) {
+  base::HistogramTester histograms;
+
+  // Set initial state to connecting.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
+  SetFeatureStatus(FeatureStatus::kConnecting);
+
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Start a setup operation with enabled and connecting status and access
+  // not granted.
+  auto operation = StartSetupOperation();
+  EXPECT_TRUE(operation);
+
+  // Simulate changing states from connecting to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+  SetFeatureStatus(FeatureStatus::kConnected);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(1u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_TRUE(IsSetupOperationInProgress());
+
+  // Simulate changing states from connected to disconnected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  SetFeatureStatus(FeatureStatus::kDisconnected);
+
+  // Notify the apps access setup operation is canceled.
+  NotifyAppsAccessCanceled();
+
+  // Verify the metric logs the expected event.
+  histograms.ExpectBucketCount(kEcheOnboardingHistogramName,
+                               OnboardingUserActionMetric::kFailedConnection,
+                               1);
 }
 
 }  // namespace eche_app

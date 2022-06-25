@@ -97,6 +97,18 @@ void AppsAccessManagerImpl::OnSetupRequested() {
   }
 }
 
+void AppsAccessManagerImpl::NotifyAppsAccessCanceled() {
+  if (connection_manager_->GetStatus() == ConnectionStatus::kDisconnected) {
+    base::UmaHistogramEnumeration(
+        kEcheOnboardingHistogramName,
+        OnboardingUserActionMetric::kFailedConnection);
+  } else {
+    base::UmaHistogramEnumeration(
+        kEcheOnboardingHistogramName,
+        OnboardingUserActionMetric::kUserActionCanceled);
+  }
+}
+
 void AppsAccessManagerImpl::OnGetAppsAccessStateResponseReceived(
     proto::GetAppsAccessStateResponse apps_access_state_response) {
   if (apps_access_state_response.result() == proto::Result::RESULT_NO_ERROR) {
@@ -111,16 +123,21 @@ void AppsAccessManagerImpl::OnSendAppsSetupResponseReceived(
     proto::SendAppsSetupResponse apps_setup_response) {
   if (apps_setup_response.result() == proto::Result::RESULT_NO_ERROR) {
     current_apps_access_state_ = apps_setup_response.apps_access_state();
+
+    // Log the no error response after |current_apps_access_state_| is updated.
+    LogAppsSetupResponse(apps_setup_response.result());
     AccessStatus access_status = ComputeAppsAccessState();
     SetAccessStatusInternal(access_status);
   } else if (IsSetupOperationInProgress()) {
+    // Log the error response before we change the setup operation to not in
+    // progress.
+    LogAppsSetupResponse(apps_setup_response.result());
     SetAppsSetupOperationStatus(
         (apps_setup_response.result() ==
          proto::Result::RESULT_ERROR_USER_REJECTED)
             ? AppsAccessSetupOperation::Status::kCompletedUserRejected
             : AppsAccessSetupOperation::Status::kOperationFailedOrCancelled);
   }
-  LogAppsSetupResponse(apps_setup_response.result());
 }
 
 void AppsAccessManagerImpl::OnAppPolicyStateChange(
@@ -334,9 +351,13 @@ bool AppsAccessManagerImpl::IsEligibleForOnboarding(
 
 void AppsAccessManagerImpl::LogAppsSetupResponse(
     proto::Result apps_setup_result) {
+  if (!IsSetupOperationInProgress())
+    return;
+
   switch (apps_setup_result) {
     case proto::Result::RESULT_NO_ERROR:
-      if (GetAccessStatus() == AccessStatus::kAccessGranted) {
+      if (current_apps_access_state_ ==
+          proto::AppsAccessState::ACCESS_GRANTED) {
         base::UmaHistogramEnumeration(
             kEcheOnboardingHistogramName,
             OnboardingUserActionMetric::kUserActionPermissionGranted);
@@ -355,7 +376,7 @@ void AppsAccessManagerImpl::LogAppsSetupResponse(
     case proto::Result::RESULT_ERROR_ACTION_CANCELED:
       base::UmaHistogramEnumeration(
           kEcheOnboardingHistogramName,
-          OnboardingUserActionMetric::kUserActionCanceled);
+          OnboardingUserActionMetric::kUserActionRemoteInterrupt);
       break;
     case proto::Result::RESULT_ERROR_SYSTEM:
       base::UmaHistogramEnumeration(kEcheOnboardingHistogramName,
