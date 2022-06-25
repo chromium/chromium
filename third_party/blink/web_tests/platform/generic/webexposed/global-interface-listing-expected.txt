@@ -2628,8 +2628,6 @@ interface FederatedCredential : Credential
     getter provider
     method constructor
     method login
-    method logout
-    method revoke
 interface File : Blob
     attribute @@toStringTag
     getter lastModified

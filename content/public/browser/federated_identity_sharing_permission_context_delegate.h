@@ -37,12 +37,6 @@ class FederatedIdentitySharingPermissionContextDelegate {
   virtual void GrantSharingPermission(const url::Origin& relying_party,
                                       const url::Origin& identity_provider,
                                       const std::string& account_id) = 0;
-
-  // Revoke a previously-provided grant from the identity provider for the
-  // relying party and the given account.
-  virtual void RevokeSharingPermission(const url::Origin& relying_party,
-                                       const url::Origin& identity_provider,
-                                       const std::string& account_id) = 0;
 };
 
 }  // namespace content

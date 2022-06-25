@@ -42,9 +42,6 @@ class ShellFederatedPermissionContext
   void GrantSharingPermission(const url::Origin& relying_party,
                               const url::Origin& identity_provider,
                               const std::string& account_id) override;
-  void RevokeSharingPermission(const url::Origin& relying_party,
-                               const url::Origin& identity_provider,
-                               const std::string& account_id) override;
 
   // FederatedIdentityActiveSessionPermissionContextDelegate
   bool HasActiveSession(const url::Origin& relying_party,

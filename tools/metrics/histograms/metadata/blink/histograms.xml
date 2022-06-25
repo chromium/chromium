@@ -872,6 +872,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.Status.Revoke" enum="FedCmRevokeStatus"
     expires_after="M110">
+  <obsolete>
+    Revoke is deprecated. Removed in June 2022.
+  </obsolete>
   <owner>yigu@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
   <summary>Records the status of a revoke call to the FedCM API.</summary>

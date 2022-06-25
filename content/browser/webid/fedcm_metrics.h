@@ -51,32 +51,6 @@ enum class FedCmRequestIdTokenStatus {
   kMaxValue = kUserInterfaceTimedOut
 };
 
-// This enum describes the status of a revocation call to the FedCM API.
-enum class FedCmRevokeStatus {
-  // Don't change the meaning or the order of these values because they are
-  // being recorded in metrics and in sync with the counterpart in enums.xml.
-  kSuccess,
-  kTooManyRequests,
-  kUnhandledRequest,
-  kNoNetworkManager,
-  kNoAccountToRevoke,
-  kRevokeUrlIsCrossOrigin,
-  kRevocationFailedOnServer,
-  kManifestHttpNotFound,
-  kManifestNoResponse,
-  kManifestInvalidResponse,
-  kDisabledInSettings,
-  kDisabledInFlags,
-  kManifestListHttpNotFound,
-  kManifestListNoResponse,
-  kManifestListInvalidResponse,
-  kManifestNotInManifestList,
-  kManifestListTooBig,
-  kThirdPartyCookiesBlocked,
-
-  kMaxValue = kThirdPartyCookiesBlocked
-};
-
 // Records the time from when a call to the API was made to when the accounts
 // dialog is shown.
 void RecordShowAccountsDialogTime(base::TimeDelta duration,
@@ -103,9 +77,6 @@ void RecordIdTokenResponseAndTurnaroundTime(
 // Records the status of the |RequestIdToken| call.
 void RecordRequestIdTokenStatus(FedCmRequestIdTokenStatus status,
                                 ukm::SourceId source_id);
-
-// Records the status of the |Revoke| call.
-void RecordRevokeStatus(FedCmRevokeStatus status, ukm::SourceId source_id);
 
 // Records whether the user selected account is for sign-in or not.
 void RecordIsSignInUser(bool is_sign_in);

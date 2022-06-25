@@ -40702,6 +40702,9 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FedCmRevokeStatus">
+  <obsolete>
+    Removed as of 06/2022. Revoke is deprecated.
+  </obsolete>
   <int value="0" label="Success"/>
   <int value="1" label="TooManyRequests"/>
   <int value="2" label="UnhandledRequest"/>

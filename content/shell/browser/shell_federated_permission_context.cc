@@ -57,14 +57,6 @@ void ShellFederatedPermissionContext::GrantSharingPermission(
       relying_party.Serialize(), identity_provider.Serialize(), account_id));
 }
 
-void ShellFederatedPermissionContext::RevokeSharingPermission(
-    const url::Origin& relying_party,
-    const url::Origin& identity_provider,
-    const std::string& account_id) {
-  sharing_permissions_.erase(std::tuple(
-      relying_party.Serialize(), identity_provider.Serialize(), account_id));
-}
-
 // FederatedIdentityActiveSessionPermissionContextDelegate
 bool ShellFederatedPermissionContext::HasActiveSession(
     const url::Origin& relying_party,

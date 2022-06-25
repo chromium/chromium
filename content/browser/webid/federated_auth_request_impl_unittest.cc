@@ -45,7 +45,6 @@ using blink::mojom::LogoutRpsRequest;
 using blink::mojom::LogoutRpsRequestPtr;
 using blink::mojom::LogoutRpsStatus;
 using blink::mojom::RequestIdTokenStatus;
-using blink::mojom::RevokeStatus;
 using AccountList = content::IdpNetworkRequestManager::AccountList;
 using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
@@ -53,9 +52,6 @@ using Entry = ukm::builders::Blink_FedCm;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using IdTokenStatus = content::FedCmRequestIdTokenStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
-using LogoutResponse = content::IdpNetworkRequestManager::LogoutResponse;
-using RevokeResponse = content::IdpNetworkRequestManager::RevokeResponse;
-using RevokeStatusForMetrics = content::FedCmRevokeStatus;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using ::testing::_;
@@ -157,7 +153,6 @@ struct MockConfiguration {
   AccountList accounts;
   FetchStatus token_response;
   bool delay_token_response;
-  RevokeResponse revoke_response;
   bool customized_dialog;
   bool wait_for_callback;
   std::string post_request_body;
@@ -184,7 +179,6 @@ static const MockConfiguration kConfigurationValid{
     kAccounts,
     FetchStatus::kSuccess,
     false /* delay_token_response */,
-    RevokeResponse::kSuccess,
     false /* customized_dialog */,
     true /* wait_for_callback */,
     "" /* post_request_body */};
@@ -279,44 +273,6 @@ class LogoutRpsRequestCallbackHelper {
   LogoutRpsStatus status_;
 };
 
-// Helper class for receiving the Revoke method callback.
-class RevokeRequestCallbackHelper {
- public:
-  RevokeRequestCallbackHelper() = default;
-  ~RevokeRequestCallbackHelper() = default;
-
-  RevokeRequestCallbackHelper(const RevokeRequestCallbackHelper&) = delete;
-  RevokeRequestCallbackHelper& operator=(const RevokeRequestCallbackHelper&) =
-      delete;
-
-  RevokeStatus status() const { return status_; }
-
-  // This can only be called once per lifetime of this object.
-  base::OnceCallback<void(RevokeStatus)> callback() {
-    return base::BindOnce(&RevokeRequestCallbackHelper::ReceiverMethod,
-                          base::Unretained(this));
-  }
-
-  // Returns when callback() is called, which can be immediately if it has
-  // already been called.
-  void WaitForCallback() {
-    if (was_called_)
-      return;
-    wait_for_callback_loop_.Run();
-  }
-
- private:
-  void ReceiverMethod(RevokeStatus status) {
-    status_ = status;
-    was_called_ = true;
-    wait_for_callback_loop_.Quit();
-  }
-
-  bool was_called_ = false;
-  base::RunLoop wait_for_callback_loop_;
-  RevokeStatus status_;
-};
-
 LogoutRpsRequestPtr MakeLogoutRequest(const std::string& endpoint,
                                       const std::string& account_id) {
   auto request = LogoutRpsRequest::New();
@@ -365,14 +321,6 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                         TokenRequestCallback callback) override {
     delegate_->SendTokenRequest(token_url, account, request,
                                 std::move(callback));
-  }
-
-  void SendRevokeRequest(const GURL& revoke_url,
-                         const std::string& client_id,
-                         const std::string& hint,
-                         RevokeCallback callback) override {
-    delegate_->SendRevokeRequest(revoke_url, client_id, hint,
-                                 std::move(callback));
   }
 
   void SendLogout(const GURL& logout_url, LogoutCallback callback) override {
@@ -453,14 +401,6 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       std::move(bound_callback).Run();
   }
 
-  void SendRevokeRequest(const GURL& revoke_url,
-                         const std::string& client_id,
-                         const std::string& hint,
-                         RevokeCallback callback) override {
-    fetched_endpoints_ |= FetchedEndpoint::REVOCATION;
-    std::move(callback).Run(config_.revoke_response);
-  }
-
   int get_fetched_endpoints() { return fetched_endpoints_; }
 
  protected:
@@ -521,17 +461,6 @@ class IdpNetworkRequestManagerParamChecker
     EXPECT_EQ(expected_selected_account_id_, account);
     TestIdpNetworkRequestManager::SendTokenRequest(token_url, account, request,
                                                    std::move(callback));
-  }
-
-  void SendRevokeRequest(const GURL& revoke_url,
-                         const std::string& client_id,
-                         const std::string& hint,
-                         RevokeCallback callback) override {
-    EXPECT_EQ(config_.manifest.revocation_endpoint, revoke_url);
-    EXPECT_EQ(expected_client_id_, client_id);
-    EXPECT_EQ(expected_revocation_hint_, hint);
-    TestIdpNetworkRequestManager::SendRevokeRequest(revoke_url, client_id, hint,
-                                                    std::move(callback));
   }
 
  private:
@@ -747,25 +676,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return logout_helper.status();
   }
 
-  RevokeStatus PerformRevokeRequest(const MockConfiguration& configuration,
-                                    const char* account_id) {
-    test_network_request_manager_->SetTestConfig(configuration);
-
-    RevokeRequestCallbackHelper revoke_helper;
-    request_remote_->Revoke(GURL(kProviderUrl), kClientId, account_id,
-                            revoke_helper.callback());
-
-    // Ensure that the request makes its way to FederatedAuthRequestImpl.
-    request_remote_.FlushForTesting();
-    // Fast forward clock so that the pending
-    // FederatedAuthRequestImpl::OnRejectRequest() task, if any, gets a
-    // chance to run.
-    task_environment()->FastForwardBy(base::Minutes(10));
-
-    revoke_helper.WaitForCallback();
-    return revoke_helper.status();
-  }
-
   void SetMockExpectations(const RequestParameters& request_parameters,
                            const RequestExpectations& expectations,
                            const MockConfiguration& config) {
@@ -826,24 +736,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     for (const auto* const entry : entries) {
       const int64_t* metric =
           ukm_recorder()->GetEntryMetric(entry, "Status_RequestIdToken");
-      if (metric && *metric != static_cast<int>(status))
-        FAIL() << "Unexpected status was recorded";
-    }
-
-    SUCCEED();
-  }
-
-  void ExpectRevokeStatusUKM(RevokeStatusForMetrics status) {
-    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
-
-    if (entries.empty())
-      FAIL() << "No RevokeStatus was recorded";
-
-    // There are multiple types of metrics under the same FedCM UKM. We need to
-    // make sure that the metric only includes the expected one.
-    for (const auto* const entry : entries) {
-      const int64_t* metric =
-          ukm_recorder()->GetEntryMetric(entry, "Status_Revoke");
       if (metric && *metric != static_cast<int>(status))
         FAIL() << "Unexpected status was recorded";
     }
@@ -1369,99 +1261,6 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
 
   ASSERT_FALSE(displayed_accounts.empty());
   EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignIn);
-}
-
-TEST_F(FederatedAuthRequestImplTest, Revoke) {
-  constexpr char kHint[] = "foo@bar.com";
-
-  // Pretend the request permission has been granted for this account.
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermissionForAnyAccount(
-                  _, url::Origin::Create(GURL(kIdpTestOrigin))))
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
-              RevokeSharingPermission(
-                  _, url::Origin::Create(GURL(kIdpTestOrigin)), kHint));
-
-  std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
-      std::make_unique<IdpNetworkRequestManagerParamChecker>();
-  checker->SetExpectations(kClientId, /* expected_selected_account_id=*/"",
-                           kHint);
-  SetNetworkRequestManager(std::move(checker));
-
-  base::RunLoop ukm_loop;
-  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
-                                        ukm_loop.QuitClosure());
-
-  auto status = PerformRevokeRequest(kConfigurationValid, kHint);
-  EXPECT_EQ(RevokeStatus::kSuccess, status);
-  EXPECT_EQ(FetchedEndpoint::MANIFEST | FetchedEndpoint::REVOCATION |
-                FetchedEndpoint::MANIFEST_LIST,
-            test_network_request_manager_->get_fetched_endpoints());
-
-  ukm_loop.Run();
-
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Revoke",
-                                       RevokeStatusForMetrics::kSuccess, 1);
-
-  ExpectRevokeStatusUKM(RevokeStatusForMetrics::kSuccess);
-}
-
-TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
-  constexpr char kHint[] = "foo@bar.com";
-
-  // Pretend the request permission has been denied for this account.
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermissionForAnyAccount(
-                  _, url::Origin::Create(GURL(kIdpTestOrigin))))
-      .WillOnce(Return(false));
-
-  base::RunLoop ukm_loop;
-  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
-                                        ukm_loop.QuitClosure());
-
-  auto status = PerformRevokeRequest(kConfigurationValid, kHint);
-  EXPECT_EQ(RevokeStatus::kError, status);
-  EXPECT_EQ(0, test_network_request_manager_->get_fetched_endpoints());
-
-  ukm_loop.Run();
-  histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.Status.Revoke", RevokeStatusForMetrics::kNoAccountToRevoke,
-      1);
-
-  ExpectRevokeStatusUKM(RevokeStatusForMetrics::kNoAccountToRevoke);
-}
-
-TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
-  base::RunLoop ukm_loop;
-  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
-                                        ukm_loop.QuitClosure());
-
-  EXPECT_EQ(kConfigurationValid.accounts.size(), 1u);
-  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
-              kConfigurationValid);
-
-  ukm_loop.Run();
-
-  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
-                                     1);
-  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 1);
-  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 0);
-  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 1);
-  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
-
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       IdTokenStatus::kSuccess, 1);
-
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.IsSignInUser", 0, 1);
-
-  ExpectTimingUKM("Timing.ShowAccountsDialog");
-  ExpectTimingUKM("Timing.ContinueOnDialog");
-  ExpectTimingUKM("Timing.IdTokenResponse");
-  ExpectTimingUKM("Timing.TurnaroundTime");
-  ExpectNoTimingUKM("Timing.CancelOnDialog");
-
-  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kSuccess);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {

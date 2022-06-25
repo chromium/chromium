@@ -1,4 +1,4 @@
-import { RequestIdTokenStatus, LogoutStatus, LogoutRpsStatus, RevokeStatus, FederatedAuthRequest, FederatedAuthRequestReceiver } from '/gen/third_party/blink/public/mojom/webid/federated_auth_request.mojom.m.js';
+import { RequestIdTokenStatus, LogoutRpsStatus, FederatedAuthRequest, FederatedAuthRequestReceiver } from '/gen/third_party/blink/public/mojom/webid/federated_auth_request.mojom.m.js';
 
 function toMojoIdTokenStatus(status) {
   return RequestIdTokenStatus["k" + status];
@@ -15,9 +15,7 @@ export class MockFederatedAuthRequest {
     this.interceptor_.start();
     this.idToken_ = null;
     this.status_ = RequestIdTokenStatus.kError;
-    this.logoutStatus_ = LogoutStatus.kNotLoggedIn;
     this.logoutRpsStatus_ = LogoutRpsStatus.kError;
-    this.revokeStatus_ = RevokeStatus.kError;
     this.returnPending_ = false;
     this.pendingPromiseResolve_ = null;
   }
@@ -44,27 +42,11 @@ export class MockFederatedAuthRequest {
     this.returnPending_ = true;
   }
 
-  logoutReturn(status) {
-    let validated = LogoutStatus[status];
-    if (validated === undefined)
-      throw new Error("Invalid status: " + status);
-    this.logoutStatus_ = validated;
-  }
-
   logoutRpsReturn(status) {
     let validated = LogoutRpsStatus[status];
     if (validated === undefined)
       throw new Error("Invalid status: " + status);
     this.logoutRpsStatus_ = validated;
-  }
-
-  // Causes the subsequent `FederatedCredential.revoke` to reject with this
-  // status.
-  revokeReturn(status) {
-    let validated = RevokeStatus[status];
-    if (validated === undefined)
-      throw new Error("Invalid status: " + status);
-    this.revokeStatus_ = validated;
   }
 
   // Implements
@@ -90,19 +72,9 @@ export class MockFederatedAuthRequest {
     this.pendingPromiseResolve_ = null;
   }
 
-  async logout() {
-    return Promise.resolve({status: this.logoutStatus_});
-  }
-
   async logoutRps(logout_endpoints) {
     return Promise.resolve({
       status: this.logoutRpsStatus_
-    });
-  }
-
-  async revoke(provider, client_id, account_id) {
-    return Promise.resolve({
-      status: this.revokeStatus_
     });
   }
 
@@ -111,7 +83,6 @@ export class MockFederatedAuthRequest {
     this.status_ = RequestIdTokenStatus.kError;
     this.logoutRpsStatus_ = LogoutRpsStatus.kError;
     this.receiver_.$.close();
-    this.revokeStatus_ = RevokeStatus.kError;
     this.interceptor_.stop();
 
     // Clean up and reset mock stubs asynchronously, so that the blink side

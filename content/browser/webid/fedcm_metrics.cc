@@ -67,14 +67,6 @@ void RecordRequestIdTokenStatus(FedCmRequestIdTokenStatus status,
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.RequestIdToken", status);
 }
 
-void RecordRevokeStatus(FedCmRevokeStatus status, ukm::SourceId source_id) {
-  ukm::builders::Blink_FedCm builder(source_id);
-  builder.SetStatus_Revoke(static_cast<int>(status));
-  builder.Record(ukm::UkmRecorder::Get());
-
-  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.Revoke", status);
-}
-
 void RecordIsSignInUser(bool is_sign_in) {
   UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.IsSignInUser", is_sign_in);
 }

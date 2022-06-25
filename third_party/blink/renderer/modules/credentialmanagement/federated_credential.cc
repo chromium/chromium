@@ -28,9 +28,7 @@ namespace blink {
 
 namespace {
 using mojom::blink::LogoutRpsStatus;
-using mojom::blink::LogoutStatus;
 using mojom::blink::RequestIdTokenStatus;
-using mojom::blink::RevokeStatus;
 
 constexpr char kFederatedCredentialType[] = "federated";
 
@@ -93,15 +91,6 @@ void OnRequestIdToken(ScriptPromiseResolver* resolver,
   }
 }
 
-void OnLogoutResponse(ScriptPromiseResolver* resolver, LogoutStatus status) {
-  if (status == LogoutStatus::kNotLoggedIn) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "User not logged in."));
-    return;
-  }
-  resolver->Resolve();
-}
-
 void OnLogoutRpsResponse(ScriptPromiseResolver* resolver,
                          LogoutRpsStatus status) {
   // TODO(kenrb); There should be more thought put into how this API works.
@@ -112,15 +101,6 @@ void OnLogoutRpsResponse(ScriptPromiseResolver* resolver,
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNetworkError, "Error logging out endpoints."));
 
-    return;
-  }
-  resolver->Resolve();
-}
-
-void OnRevoke(ScriptPromiseResolver* resolver, RevokeStatus status) {
-  if (status != RevokeStatus::kSuccess) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError, "Error revoking token."));
     return;
   }
   resolver->Resolve();
@@ -246,30 +226,6 @@ bool FederatedCredential::IsFederatedCredential() const {
   return true;
 }
 
-ScriptPromise FederatedCredential::logout(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-  if (provider_url_.IsEmpty()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "FederatedCredential object must be created by "
-        "navigator.credentials.get for logout"));
-    return promise;
-  }
-  if (id().IsEmpty()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "No account hint was provided to navigator.credentials.get"));
-    return promise;
-  }
-
-  auto* auth_request =
-      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-  auth_request->Logout(provider_url_, id(),
-                       WTF::Bind(&OnLogoutResponse, WrapPersistent(resolver)));
-  return promise;
-}
-
 ScriptPromise FederatedCredential::login(
     ScriptState* script_state,
     FederatedAccountLoginRequest* request) {
@@ -364,46 +320,6 @@ ScriptPromise FederatedCredential::logoutRps(
   fedcm_logout_request->LogoutRps(
       std::move(logout_requests),
       WTF::Bind(&OnLogoutRpsResponse, WrapPersistent(resolver)));
-  return promise;
-}
-
-ScriptPromise FederatedCredential::revoke(ScriptState* script_state,
-                                          const String& hint,
-                                          ExceptionState& exception_state) {
-  ExecutionContext* context = ExecutionContext::From(script_state);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  // An empty provider_url_ means this credential wasn't created by
-  // CredentialsContainer::get, skipping various checks. So we reject the
-  // promise here.
-  if (provider_url_.IsEmpty()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "FederatedCredential object must be created by "
-        "navigator.credentials.get for revocation"));
-    return promise;
-  }
-
-  if (hint.IsEmpty()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "hint cannot be empty"));
-    return promise;
-  }
-
-  HeapMojoRemote<mojom::blink::FederatedAuthRequest> auth_request(context);
-  context->GetBrowserInterfaceBroker().GetInterface(
-      auth_request.BindNewPipeAndPassReceiver(
-          context->GetTaskRunner(TaskType::kUserInteraction)));
-
-  ContentSecurityPolicy* policy =
-      resolver->GetExecutionContext()
-          ->GetContentSecurityPolicyForCurrentWorld();
-  if (IsRejectingPromiseDueToCSP(policy, resolver, provider_url_))
-    return promise;
-
-  auth_request->Revoke(provider_url_, client_id_, hint,
-                       WTF::Bind(&OnRevoke, WrapPersistent(resolver)));
   return promise;
 }
 

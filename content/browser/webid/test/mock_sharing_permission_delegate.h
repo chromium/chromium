@@ -39,12 +39,6 @@ class MockSharingPermissionDelegate
                const url::Origin& identity_provider,
                const std::string& account_id),
               (override));
-  MOCK_METHOD(void,
-              RevokeSharingPermission,
-              (const url::Origin& relying_party,
-               const url::Origin& identity_provider,
-               const std::string& account_id),
-              (override));
 };
 
 }  // namespace content
