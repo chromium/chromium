@@ -39,13 +39,14 @@ bool AdaptiveChargingController::IsAdaptiveChargingSupported() {
 
 void AdaptiveChargingController::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
+  bool is_on_charger_now = false;
+  if (proto.has_external_power()) {
+    is_on_charger_now =
+        proto.external_power() == power_manager::PowerSupplyProperties::AC;
+  }
+
 #if DCHECK_IS_ON()
   if (features::IsAdaptiveChargingForTestingEnabled()) {
-    bool is_on_charger_now = false;
-    if (proto.has_external_power()) {
-      is_on_charger_now =
-          proto.external_power() == power_manager::PowerSupplyProperties::AC;
-    }
     if (!is_on_charger_ && is_on_charger_now) {
       nudge_controller_->ShowNudgeForTesting();  // IN-TEST
       notification_controller_->ShowAdaptiveChargingNotification(
@@ -55,6 +56,20 @@ void AdaptiveChargingController::PowerChanged(
     return;
   }
 #endif  // DCHECK_IS_ON()
+
+  // Nudge and notification should be shown only if heuristic is enabled for
+  // this user.
+  if (!proto.has_adaptive_charging_heuristic_enabled() ||
+      !proto.adaptive_charging_heuristic_enabled()) {
+    notification_controller_->CloseAdaptiveChargingNotification();
+    return;
+  }
+
+  // Showing educational nudge.
+  if (!is_on_charger_ && is_on_charger_now)
+    nudge_controller_->ShowNudge();
+
+  is_on_charger_ = is_on_charger_now;
 
   // Return if this change does not contain any adaptive_delaying_charge info.
   if (!proto.has_adaptive_delaying_charge())
@@ -66,17 +81,12 @@ void AdaptiveChargingController::PowerChanged(
 
   is_adaptive_delaying_charge_ = proto.adaptive_delaying_charge();
 
-  // Nudge and notification should be shown only if heuristic is enabled for
-  // this user and the adaptive charging is actually active.
-  if (!proto.has_adaptive_charging_heuristic_enabled() ||
-      !proto.adaptive_charging_heuristic_enabled() ||
-      !is_adaptive_delaying_charge_) {
+  // Notification should be shown only if the adaptive charging is actually
+  // active.
+  if (!is_adaptive_delaying_charge_) {
     notification_controller_->CloseAdaptiveChargingNotification();
     return;
   }
-
-  // The nudge will only be shown alongside the notification once.
-  nudge_controller_->ShowNudge();
 
   if (proto.has_battery_time_to_full_sec() &&
       proto.battery_time_to_full_sec() > 0) {

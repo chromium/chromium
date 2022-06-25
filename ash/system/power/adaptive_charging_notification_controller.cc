@@ -26,6 +26,7 @@ namespace {
 
 constexpr char kNotifierId[] = "adaptive-charging-notify";
 constexpr char kInfoNotificationId[] = "adaptive-charging-notify-info";
+constexpr base::TimeDelta kTimeDeltaRoundingInterval = base::Minutes(30);
 
 }  // namespace
 
@@ -46,7 +47,10 @@ void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
     notification_message = l10n_util::GetStringFUTF16(
         IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_MESSAGE_TEMPORARY,
         base::TimeFormatTimeOfDayWithHourClockType(
-            base::Time::Now() + base::Hours(hours_to_full.value()),
+            base::Time::FromDeltaSinceWindowsEpoch(
+                base::Time::Now().ToDeltaSinceWindowsEpoch().RoundToMultiple(
+                    kTimeDeltaRoundingInterval)) +
+                base::Hours(hours_to_full.value()),
             base::GetHourClockType(), base::kKeepAmPm));
   } else {
     notification_message = l10n_util::GetStringUTF16(

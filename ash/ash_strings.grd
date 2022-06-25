@@ -5024,7 +5024,7 @@ New install
         Your battery is kept at 80% while plugged in to extend battery life.
       </message>
       <message name="IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_MESSAGE_TEMPORARY" desc="Notification message explaining the battery is temporarily at 80%. The message includes the predicted time at which charging will resume.">
-        Your battery is temporarily at 80% while plugged in to extend battery life. Your battery will fully charge by <ph name="FULLY_CHARGE_TIME">$1<ex>7:30 AM</ex></ph>.
+        Extending your battery life. Battery will fully charge by <ph name="FULLY_CHARGE_TIME">$1<ex>7:30 AM</ex></ph>.
       </message>
       <message name="IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_FULLY_CHARGE_NOW_BUTTON_TEXT" desc="Text in notification button to fully charge the device.">
         Fully charge now
