@@ -5,16 +5,16 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.view.View;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceViewHolder;
 
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.FaviconLoader;
+import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 import org.chromium.components.browser_ui.settings.ImageButtonPreference;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.url.GURL;
 
 /**
@@ -25,12 +25,15 @@ public class FledgePreference extends ImageButtonPreference {
 
     // The ETLD+1 that used Fledge.
     private final @NonNull String mSite;
+    private final LargeIconBridge mLargeIconBridge;
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetched;
 
-    public FledgePreference(Context context, @NonNull String site) {
+    public FledgePreference(
+            Context context, @NonNull String site, LargeIconBridge largeIconBridge) {
         super(context);
         mSite = site;
+        mLargeIconBridge = largeIconBridge;
         setTitle(site);
     }
 
@@ -43,23 +46,20 @@ public class FledgePreference extends ImageButtonPreference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
+        ImageView icon = (ImageView) holder.findViewById(android.R.id.icon);
+        FaviconViewUtils.formatIconForFavicon(getContext().getResources(), icon);
+
         if (!mFaviconFetched) {
-            // Start the favicon fetching. Will respond in onFaviconAvailable.
             // Since Fledge is only available in secure contexts, use https as scheme.
-            new FaviconLoader(Profile.getLastUsedRegularProfile(), getContext().getResources(),
-                    new GURL("https://" + mSite), this::onFaviconAvailable);
+            FaviconLoader.loadFavicon(getContext(), mLargeIconBridge, new GURL("https://" + mSite),
+                    this::onFaviconAvailable);
             mFaviconFetched = true;
         }
-
-        float density = getContext().getResources().getDisplayMetrics().density;
-        int iconPadding = Math.round(FAVICON_PADDING_DP * density);
-        View iconView = holder.findViewById(android.R.id.icon);
-        iconView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding);
     }
 
-    private void onFaviconAvailable(Bitmap image) {
-        if (image != null) {
-            setIcon(new BitmapDrawable(getContext().getResources(), image));
+    private void onFaviconAvailable(Drawable drawable) {
+        if (drawable != null) {
+            setIcon(drawable);
         }
     }
 }

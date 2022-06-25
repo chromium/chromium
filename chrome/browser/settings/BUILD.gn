@@ -16,6 +16,7 @@ android_library("java") {
     "//chrome/browser/ui/android/favicon:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/favicon/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//url:gurl_java",

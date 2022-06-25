@@ -147,6 +147,7 @@ include_rules = [
   "+components/exo",
   "+components/external_intents",
   "+components/favicon_base",
+  "+components/favicon/android",
   "+components/favicon/content",
   "+components/favicon/core",
   "+components/feature_engagement",

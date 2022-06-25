@@ -16,10 +16,12 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
 
@@ -49,6 +51,7 @@ public class AdPersonalizationFragment
     private Preference mRemovedSitesPreference;
 
     private Preference mDescriptionPreference;
+    private LargeIconBridge mLargeIconBridge;
 
     public void setSnackbarManager(SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
@@ -93,6 +96,15 @@ public class AdPersonalizationFragment
         View view = super.onCreateView(inflater, container, savedInstanceState);
         getListView().setItemAnimator(null);
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mLargeIconBridge != null) {
+            mLargeIconBridge.destroy();
+            mLargeIconBridge = null;
+        }
     }
 
     private void updatePreferences() {
@@ -144,8 +156,12 @@ public class AdPersonalizationFragment
     private void populateFledge(List<String> currentFledgeSites, List<String> blockedFledgeSites) {
         mFledgeCategory.removeAll();
         mFledgeCategory.setVisible(true);
+        if (mLargeIconBridge == null) {
+            mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile());
+        }
         for (String site : currentFledgeSites) {
-            FledgePreference preference = new FledgePreference(getContext(), site);
+            FledgePreference preference =
+                    new FledgePreference(getContext(), site, mLargeIconBridge);
             preference.setImage(R.drawable.btn_close,
                     getResources().getString(
                             R.string.privacy_sandbox_remove_site_button_description, site));

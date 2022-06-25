@@ -5,7 +5,7 @@
 package org.chromium.components.browser_ui.site_settings;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 
@@ -43,7 +43,7 @@ public interface SiteSettingsDelegate {
      * @param callback A callback that will be called with the favicon bitmap, or null if no
      *     favicon could be found or generated.
      */
-    void getFaviconImageForURL(GURL faviconUrl, Callback<Bitmap> callback);
+    void getFaviconImageForURL(GURL faviconUrl, Callback<Drawable> callback);
 
     /**
      * @return true if the given category type should be shown in the SiteSettings Fragment.
@@ -124,4 +124,9 @@ public interface SiteSettingsDelegate {
      * Dismisses the Privacy Sandbox snackbar, if active.
      */
     void dismissPrivacySandboxSnackbar();
+
+    /**
+     * Called when the view this delegate is assigned to gets destroyed.
+     */
+    void onDestroyView();
 }

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.site_settings;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
@@ -32,6 +32,7 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
@@ -48,10 +49,19 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     private final Profile mProfile;
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private PrivacySandboxSnackbarController mPrivacySandboxController;
+    private LargeIconBridge mLargeIconBridge;
 
     public ChromeSiteSettingsDelegate(Context context, Profile profile) {
         mContext = context;
         mProfile = profile;
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mLargeIconBridge != null) {
+            mLargeIconBridge.destroy();
+            mLargeIconBridge = null;
+        }
     }
 
     /**
@@ -83,8 +93,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public void getFaviconImageForURL(GURL faviconUrl, Callback<Bitmap> callback) {
-        new FaviconLoader(mProfile, mContext.getResources(), faviconUrl, callback);
+    public void getFaviconImageForURL(GURL faviconUrl, Callback<Drawable> callback) {
+        if (mLargeIconBridge == null) {
+            mLargeIconBridge = new LargeIconBridge(mProfile);
+        }
+        FaviconLoader.loadFavicon(mContext, mLargeIconBridge, faviconUrl, callback);
     }
 
     @Override

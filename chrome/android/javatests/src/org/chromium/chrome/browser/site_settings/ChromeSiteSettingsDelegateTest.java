@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.site_settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.test.filters.SmallTest;
 
@@ -61,7 +61,7 @@ public class ChromeSiteSettingsDelegateTest {
 
         // Hold the Bitmap in an array because it gets assigned to in a closure, and all captured
         // variables have to be effectively final.
-        Bitmap[] holder = new Bitmap[1];
+        Drawable[] holder = new Drawable[1];
         CallbackHelper helper = new CallbackHelper();
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
             mSiteSettingsDelegate.getFaviconImageForURL(
@@ -72,9 +72,9 @@ public class ChromeSiteSettingsDelegateTest {
         });
         helper.waitForCallback(helper.getCallCount());
 
-        Bitmap favicon = holder[0];
+        Drawable favicon = holder[0];
         assertThat(favicon).isNotNull();
-        assertThat(favicon.getWidth()).isGreaterThan(0);
-        assertThat(favicon.getHeight()).isGreaterThan(0);
+        assertThat(favicon.getIntrinsicWidth()).isGreaterThan(0);
+        assertThat(favicon.getIntrinsicHeight()).isGreaterThan(0);
     }
 }

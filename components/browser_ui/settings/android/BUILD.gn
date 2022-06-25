@@ -19,6 +19,7 @@ android_library("java") {
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ClickableSpansTextMessagePreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ExpandablePreferenceGroup.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/FaviconViewUtils.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ImageButtonPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/LearnMorePreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/LongSummaryTextMessagePreference.java",
@@ -44,6 +45,7 @@ android_resources("java_resources") {
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_java_resources",
   ]

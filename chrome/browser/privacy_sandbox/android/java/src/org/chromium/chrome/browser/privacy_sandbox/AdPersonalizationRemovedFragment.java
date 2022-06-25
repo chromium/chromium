@@ -16,9 +16,11 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.favicon.LargeIconBridge;
 
 /**
  * Settings fragment for privacy sandbox settings.
@@ -35,6 +37,7 @@ public class AdPersonalizationRemovedFragment
     private PreferenceCategory mFledgeCategory;
     private Preference mEmptyFledgePreference;
     private SnackbarManager mSnackbarManager;
+    private LargeIconBridge mLargeIconBridge;
 
     public void setSnackbarManager(SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
@@ -58,6 +61,10 @@ public class AdPersonalizationRemovedFragment
         mEmptyFledgePreference = findPreference(EMPTY_FLEDGE_PREFERENCE);
         assert mEmptyFledgePreference != null;
 
+        if (mLargeIconBridge == null) {
+            mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile());
+        }
+
         for (Topic topic : PrivacySandboxBridge.getBlockedTopics()) {
             TopicPreference preference = new TopicPreference(getContext(), topic);
             preference.setImage(R.drawable.ic_add,
@@ -69,7 +76,8 @@ public class AdPersonalizationRemovedFragment
             mTopicsCategory.addPreference(preference);
         }
         for (String site : PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay()) {
-            FledgePreference preference = new FledgePreference(getContext(), site);
+            FledgePreference preference =
+                    new FledgePreference(getContext(), site, mLargeIconBridge);
             preference.setImage(R.drawable.ic_add,
                     getResources().getString(
                             R.string.privacy_sandbox_add_site_button_description, site));
@@ -87,6 +95,15 @@ public class AdPersonalizationRemovedFragment
         View view = super.onCreateView(inflater, container, savedInstanceState);
         getListView().setItemAnimator(null);
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mLargeIconBridge != null) {
+            mLargeIconBridge.destroy();
+            mLargeIconBridge = null;
+        }
     }
 
     private void allowTopic(Topic topic) {
