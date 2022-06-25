@@ -5,6 +5,7 @@
 #include "ash/system/time/date_helper.h"
 
 #include "ash/shell.h"
+#include "ash/system/locale/locale_update_controller_impl.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/i18n/unicodestring.h"
@@ -148,9 +149,16 @@ DateHelper::DateHelper()
   DCHECK(U_SUCCESS(status));
   CalculateLocalWeekTitles();
   time_zone_settings_observer_.Observe(system::TimezoneSettings::GetInstance());
+
+  // Not using a scoped observer since the Shell can be destructed before this
+  // `DateHelper` instance gets destructed.
+  Shell::Get()->locale_update_controller()->AddObserver(this);
 }
 
-DateHelper::~DateHelper() = default;
+DateHelper::~DateHelper() {
+  if (Shell::HasInstance())
+    Shell::Get()->locale_update_controller()->RemoveObserver(this);
+}
 
 void DateHelper::ResetFormatters() {
   day_of_month_formatter_ = CreateSimpleDateFormatter("d");
@@ -218,6 +226,10 @@ void DateHelper::TimezoneChanged(const icu::TimeZone& timezone) {
   gregorian_calendar_->setTimeZone(
       system::TimezoneSettings::GetInstance()->GetTimezone());
   Shell::Get()->system_tray_model()->calendar_model()->RedistributeEvents();
+}
+
+void DateHelper::OnLocaleChanged() {
+  CalculateLocalWeekTitles();
 }
 
 }  // namespace ash
