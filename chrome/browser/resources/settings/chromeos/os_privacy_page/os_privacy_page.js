@@ -291,6 +291,13 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     // </if>
   }
 
+  /** @override */
+  ready() {
+    super.ready();
+
+    this.addEventListener('auth-token-invalid', this.onAuthTokenInvalid_);
+  }
+
   /**
    * @param {!Route} route
    */
@@ -354,6 +361,14 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
    * */
   onAuthTokenObtained_(e) {
     this.authToken_ = e.detail;
+  }
+
+  /**
+   * Should request the password again to get latest token.
+   * @private
+   */
+  onAuthTokenInvalid_() {
+    this.setModes_ = undefined;
   }
 
   /**

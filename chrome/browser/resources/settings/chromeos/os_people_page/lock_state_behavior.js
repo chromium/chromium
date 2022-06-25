@@ -131,10 +131,21 @@ export const LockStateBehaviorImpl = {
    * @param {string} authToken The token returned by
    *                           QuickUnlockPrivate.getAuthToken
    * @param {boolean} enabled
+   * @param {function(boolean): void} onComplete
    * @see quickUnlockPrivate.setLockScreenEnabled
    */
-  setLockScreenEnabled(authToken, enabled) {
-    this.quickUnlockPrivate.setLockScreenEnabled(authToken, enabled);
+  setLockScreenEnabled(authToken, enabled, onComplete) {
+    this.quickUnlockPrivate.setLockScreenEnabled(authToken, enabled, () => {
+      let success = true;
+      if (chrome.runtime.lastError) {
+        console.warn(
+            'setLockScreenEnabled failed: ' + chrome.runtime.lastError.message);
+        success = false;
+      }
+      if (onComplete) {
+        onComplete(success);
+      }
+    });
   },
 
   /**
@@ -198,9 +209,10 @@ export class LockStateBehaviorInterface {
    * @param {string} authToken The token returned by
    *                           QuickUnlockPrivate.getAuthToken
    * @param {boolean} enabled
+   * @param {function(boolean): void} onComplete
    * @see quickUnlockPrivate.setLockScreenEnabled
    */
-  setLockScreenEnabled(authToken, enabled) {}
+  setLockScreenEnabled(authToken, enabled, onComplete) {}
 }
 
 /** @polymerBehavior */

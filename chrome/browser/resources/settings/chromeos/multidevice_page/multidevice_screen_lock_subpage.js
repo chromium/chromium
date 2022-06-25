@@ -177,7 +177,7 @@ class SettingsMultideviceScreenLockSubpageElement extends
    * */
   onAuthTokenObtained_(e) {
     this.authToken_ = e.detail;
-    this.setLockScreenEnabled(this.authToken_.token, true);
+    this.setLockScreenEnabled(this.authToken_.token, true, (success) => {});
     this.isScreenLockEnabled = true;
     // Avoid dialog.close() of password_prompt_dialog.ts to close main dialog
     this.isPasswordDialogShowing = true;

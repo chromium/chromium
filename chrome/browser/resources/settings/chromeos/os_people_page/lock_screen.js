@@ -284,7 +284,15 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       target.checked = !target.checked;
       return;
     }
-    this.setLockScreenEnabled(this.authToken.token, target.checked);
+    this.setLockScreenEnabled(
+        this.authToken.token, target.checked, (success) => {
+          if (!success) {
+            target.checked = !target.checked;
+            const authTokenInvalid = new CustomEvent(
+                'auth-token-invalid', {bubbles: true, composed: true});
+            this.dispatchEvent(authTokenInvalid);
+          }
+        });
   }
 
   /**
