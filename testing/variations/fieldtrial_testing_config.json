@@ -3358,6 +3358,7 @@
         {
             "platforms": [
                 "linux",
+                "mac",
                 "windows"
             ],
             "experiments": [
