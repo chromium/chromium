@@ -28,4 +28,10 @@ void TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(
 TargetDeviceConnectionBrokerFactory*
     TargetDeviceConnectionBrokerFactory::test_factory_ = nullptr;
 
+TargetDeviceConnectionBrokerFactory::TargetDeviceConnectionBrokerFactory() =
+    default;
+
+TargetDeviceConnectionBrokerFactory::~TargetDeviceConnectionBrokerFactory() =
+    default;
+
 }  // namespace ash::quick_start

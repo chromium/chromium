@@ -14,6 +14,10 @@
 
 namespace ash {
 
+namespace quick_start {
+class TargetDeviceBootstrapController;
+}
+
 class QuickStartScreen : public BaseScreen {
  public:
   using TView = QuickStartView;
@@ -40,6 +44,9 @@ class QuickStartScreen : public BaseScreen {
   void OnUserAction(const base::Value::List& args) override;
 
   void SendRandomFiguresForTesting() const;
+
+  std::unique_ptr<ash::quick_start::TargetDeviceBootstrapController>
+      bootstrap_controller_;
 
   base::WeakPtr<TView> view_;
   ScreenExitCallback exit_callback_;

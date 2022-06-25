@@ -11,6 +11,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/chromeos/login/quick_start_screen_handler.h"
+#include "chromeos/ash/components/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chromeos/ash/components/oobe_quick_start/verification_shapes.h"
 
 namespace ash {
@@ -26,6 +27,9 @@ std::string QuickStartScreen::GetResultString(Result result) {
 QuickStartScreen::QuickStartScreen(base::WeakPtr<TView> view,
                                    const ScreenExitCallback& exit_callback)
     : BaseScreen(QuickStartView::kScreenId, OobeScreenPriority::DEFAULT),
+      bootstrap_controller_(
+          std::make_unique<
+              ash::quick_start::TargetDeviceBootstrapController>()),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -40,6 +44,8 @@ void QuickStartScreen::ShowImpl() {
     return;
 
   view_->Show();
+  bootstrap_controller_->StartAdvertising();
+
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&QuickStartScreen::SendRandomFiguresForTesting,  // IN-TEST
@@ -47,7 +53,9 @@ void QuickStartScreen::ShowImpl() {
       base::Seconds(1));
 }
 
-void QuickStartScreen::HideImpl() {}
+void QuickStartScreen::HideImpl() {
+  bootstrap_controller_->StopAdvertising();
+}
 
 void QuickStartScreen::OnUserAction(const base::Value::List& args) {
   SendRandomFiguresForTesting();  // IN-TEST

@@ -12,6 +12,8 @@ source_set("oobe_quick_start") {
     "//base",
   ]
   sources = [
+    "target_device_bootstrap_controller.cc",
+    "target_device_bootstrap_controller.h",
     "verification_shapes.cc",
     "verification_shapes.h",
   ]
@@ -26,5 +28,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
   ]
-  sources = [ "verification_shapes_unittest.cc" ]
+  sources = [
+    "target_device_bootstrap_controller_unittest.cc",
+    "verification_shapes_unittest.cc",
+  ]
 }

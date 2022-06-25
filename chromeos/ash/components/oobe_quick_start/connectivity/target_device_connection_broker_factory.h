@@ -20,8 +20,14 @@ class TargetDeviceConnectionBrokerFactory {
   static void SetFactoryForTesting(
       TargetDeviceConnectionBrokerFactory* test_factory);
 
+  TargetDeviceConnectionBrokerFactory();
+  TargetDeviceConnectionBrokerFactory(TargetDeviceConnectionBrokerFactory&) =
+      delete;
+  TargetDeviceConnectionBrokerFactory& operator=(
+      TargetDeviceConnectionBrokerFactory&) = delete;
+  virtual ~TargetDeviceConnectionBrokerFactory();
+
  protected:
-  virtual ~TargetDeviceConnectionBrokerFactory() = default;
   virtual std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance() = 0;
 
  private:
