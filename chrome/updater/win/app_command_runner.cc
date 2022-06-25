@@ -200,6 +200,39 @@ HRESULT AppCommandRunner::LoadAppCommand(UpdaterScope scope,
                                        app_command_runner.parameters_);
 }
 
+std::vector<AppCommandRunner>
+AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(
+    UpdaterScope scope,
+    const std::wstring& app_id) {
+  const HKEY root = UpdaterScopeToHKeyRoot(scope);
+  const std::wstring commands_key_name =
+      base::StrCat({CLIENTS_KEY, app_id, L"\\", kRegKeyCommands});
+
+  std::vector<AppCommandRunner> app_command_runners;
+  for (base::win::RegistryKeyIterator it(root, commands_key_name.c_str(),
+                                         KEY_WOW64_32KEY);
+       it.Valid(); ++it) {
+    const base::win::RegKey command_key(
+        root, base::StrCat({commands_key_name, L"\\", it.Name()}).c_str(),
+        Wow6432(KEY_QUERY_VALUE));
+    if (!command_key.Valid())
+      continue;
+
+    DWORD auto_run = 0;
+    if (command_key.ReadValueDW(kRegValueAutoRunOnOSUpgrade, &auto_run) !=
+            ERROR_SUCCESS ||
+        !auto_run) {
+      continue;
+    }
+
+    AppCommandRunner runner;
+    if (SUCCEEDED(LoadAppCommand(scope, app_id, it.Name(), runner)))
+      app_command_runners.push_back(runner);
+  }
+
+  return app_command_runners;
+}
+
 HRESULT AppCommandRunner::Run(const std::vector<std::wstring>& substitutions,
                               base::Process& process) const {
   if (executable_.empty() || process.IsValid()) {

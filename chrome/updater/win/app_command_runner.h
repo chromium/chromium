@@ -42,6 +42,12 @@ class AppCommandRunner {
                                 const std::wstring& command_id,
                                 AppCommandRunner& app_command_runner);
 
+  // Loads and returns a vector of `AppCommandRunner` objects corresponding to
+  // "AutoRunOnOsUpgradeAppCommands" for `app_id`.
+  static std::vector<AppCommandRunner> LoadAutoRunOnOsUpgradeAppCommands(
+      UpdaterScope scope,
+      const std::wstring& app_id);
+
   // Runs the AppCommand with the provided `substitutions` and populates
   // `process` if successful.
   HRESULT Run(const std::vector<std::wstring>& substitutions,

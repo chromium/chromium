@@ -28,6 +28,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "chrome/updater/auto_run_on_os_upgrade_task.h"
 #include "chrome/updater/check_for_updates_task.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
@@ -308,6 +309,11 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
                      base::MakeRefCounted<CheckForUpdatesTask>(
                          config_, base::BindOnce(&UpdateServiceImpl::UpdateAll,
                                                  this, base::DoNothing()))));
+  new_tasks.push_back(
+      base::BindOnce(&AutoRunOnOsUpgradeTask::Run,
+                     base::MakeRefCounted<AutoRunOnOsUpgradeTask>(
+                         GetUpdaterScope(), persisted_data_)));
+
   const auto barrier_closure =
       base::BarrierClosure(new_tasks.size(), std::move(callback));
   for (auto& task : new_tasks) {

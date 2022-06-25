@@ -234,15 +234,15 @@ interface IAppCommandWeb : IDispatch {
   [propget] HRESULT status([out, retval] UINT*);
   [propget] HRESULT exitCode([out, retval] DWORD*);
   [propget] HRESULT output([out, retval] BSTR*);
-  HRESULT execute([in, optional] VARIANT parameter1,
-                  [in, optional] VARIANT parameter2,
-                  [in, optional] VARIANT parameter3,
-                  [in, optional] VARIANT parameter4,
-                  [in, optional] VARIANT parameter5,
-                  [in, optional] VARIANT parameter6,
-                  [in, optional] VARIANT parameter7,
-                  [in, optional] VARIANT parameter8,
-                  [in, optional] VARIANT parameter9);
+  HRESULT execute([in, optional] VARIANT substitution1,
+                  [in, optional] VARIANT substitution2,
+                  [in, optional] VARIANT substitution3,
+                  [in, optional] VARIANT substitution4,
+                  [in, optional] VARIANT substitution5,
+                  [in, optional] VARIANT substitution6,
+                  [in, optional] VARIANT substitution7,
+                  [in, optional] VARIANT substitution8,
+                  [in, optional] VARIANT substitution9);
 };
 
 [

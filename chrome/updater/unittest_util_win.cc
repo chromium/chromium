@@ -22,6 +22,29 @@
 
 namespace updater {
 
+namespace {
+
+void CreateAppCommandRegistryHelper(UpdaterScope scope,
+                                    const std::wstring& app_id,
+                                    const std::wstring& cmd_id,
+                                    const std::wstring& cmd_line,
+                                    bool auto_run_on_os_upgrade) {
+  CreateAppClientKey(scope, app_id);
+  base::win::RegKey command_key;
+  EXPECT_EQ(command_key.Create(UpdaterScopeToHKeyRoot(scope),
+                               GetAppCommandKeyName(app_id, cmd_id).c_str(),
+                               Wow6432(KEY_WRITE)),
+            ERROR_SUCCESS);
+  EXPECT_EQ(command_key.WriteValue(kRegValueCommandLine, cmd_line.c_str()),
+            ERROR_SUCCESS);
+  if (auto_run_on_os_upgrade) {
+    EXPECT_EQ(command_key.WriteValue(kRegValueAutoRunOnOSUpgrade, 1U),
+              ERROR_SUCCESS);
+  }
+}
+
+}  // namespace
+
 std::wstring GetClientKeyName(const std::wstring& app_id) {
   return base::StrCat({CLIENTS_KEY, app_id});
 }
@@ -49,14 +72,14 @@ void CreateAppCommandRegistry(UpdaterScope scope,
                               const std::wstring& app_id,
                               const std::wstring& cmd_id,
                               const std::wstring& cmd_line) {
-  CreateAppClientKey(scope, app_id);
-  base::win::RegKey command_key;
-  EXPECT_EQ(command_key.Create(UpdaterScopeToHKeyRoot(scope),
-                               GetAppCommandKeyName(app_id, cmd_id).c_str(),
-                               Wow6432(KEY_WRITE)),
-            ERROR_SUCCESS);
-  EXPECT_EQ(command_key.WriteValue(kRegValueCommandLine, cmd_line.c_str()),
-            ERROR_SUCCESS);
+  CreateAppCommandRegistryHelper(scope, app_id, cmd_id, cmd_line, false);
+}
+
+void CreateAppCommandOSUpgradeRegistry(UpdaterScope scope,
+                                       const std::wstring& app_id,
+                                       const std::wstring& cmd_id,
+                                       const std::wstring& cmd_line) {
+  CreateAppCommandRegistryHelper(scope, app_id, cmd_id, cmd_line, true);
 }
 
 void SetupCmdExe(UpdaterScope scope,

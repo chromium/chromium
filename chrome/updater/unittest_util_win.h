@@ -38,6 +38,13 @@ void CreateAppCommandRegistry(UpdaterScope scope,
                               const std::wstring& cmd_id,
                               const std::wstring& cmd_line);
 
+// Similar to `CreateAppCommandRegistry`, and then marks the AppCommand to run
+// on OS upgrades.
+void CreateAppCommandOSUpgradeRegistry(UpdaterScope scope,
+                                       const std::wstring& app_id,
+                                       const std::wstring& cmd_id,
+                                       const std::wstring& cmd_line);
+
 // Returns the path to "cmd.exe" in `cmd_exe_command_line` based on the current
 // test scope:
 // * "%systemroot%\system32\cmd.exe" for user `scope`.

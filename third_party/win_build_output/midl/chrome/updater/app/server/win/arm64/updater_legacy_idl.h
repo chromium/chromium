@@ -1252,15 +1252,15 @@ EXTERN_C const IID IID_IAppCommandWeb;
             /* [retval][out] */ BSTR *__MIDL__IAppCommandWeb0002) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE execute( 
-            /* [optional][in] */ VARIANT parameter1,
-            /* [optional][in] */ VARIANT parameter2,
-            /* [optional][in] */ VARIANT parameter3,
-            /* [optional][in] */ VARIANT parameter4,
-            /* [optional][in] */ VARIANT parameter5,
-            /* [optional][in] */ VARIANT parameter6,
-            /* [optional][in] */ VARIANT parameter7,
-            /* [optional][in] */ VARIANT parameter8,
-            /* [optional][in] */ VARIANT parameter9) = 0;
+            /* [optional][in] */ VARIANT substitution1,
+            /* [optional][in] */ VARIANT substitution2,
+            /* [optional][in] */ VARIANT substitution3,
+            /* [optional][in] */ VARIANT substitution4,
+            /* [optional][in] */ VARIANT substitution5,
+            /* [optional][in] */ VARIANT substitution6,
+            /* [optional][in] */ VARIANT substitution7,
+            /* [optional][in] */ VARIANT substitution8,
+            /* [optional][in] */ VARIANT substitution9) = 0;
         
     };
     
@@ -1345,15 +1345,15 @@ EXTERN_C const IID IID_IAppCommandWeb;
         DECLSPEC_XFGVIRT(IAppCommandWeb, execute)
         HRESULT ( STDMETHODCALLTYPE *execute )( 
             IAppCommandWeb * This,
-            /* [optional][in] */ VARIANT parameter1,
-            /* [optional][in] */ VARIANT parameter2,
-            /* [optional][in] */ VARIANT parameter3,
-            /* [optional][in] */ VARIANT parameter4,
-            /* [optional][in] */ VARIANT parameter5,
-            /* [optional][in] */ VARIANT parameter6,
-            /* [optional][in] */ VARIANT parameter7,
-            /* [optional][in] */ VARIANT parameter8,
-            /* [optional][in] */ VARIANT parameter9);
+            /* [optional][in] */ VARIANT substitution1,
+            /* [optional][in] */ VARIANT substitution2,
+            /* [optional][in] */ VARIANT substitution3,
+            /* [optional][in] */ VARIANT substitution4,
+            /* [optional][in] */ VARIANT substitution5,
+            /* [optional][in] */ VARIANT substitution6,
+            /* [optional][in] */ VARIANT substitution7,
+            /* [optional][in] */ VARIANT substitution8,
+            /* [optional][in] */ VARIANT substitution9);
         
         END_INTERFACE
     } IAppCommandWebVtbl;
@@ -1400,8 +1400,8 @@ EXTERN_C const IID IID_IAppCommandWeb;
 #define IAppCommandWeb_get_output(This,__MIDL__IAppCommandWeb0002)	\
     ( (This)->lpVtbl -> get_output(This,__MIDL__IAppCommandWeb0002) ) 
 
-#define IAppCommandWeb_execute(This,parameter1,parameter2,parameter3,parameter4,parameter5,parameter6,parameter7,parameter8,parameter9)	\
-    ( (This)->lpVtbl -> execute(This,parameter1,parameter2,parameter3,parameter4,parameter5,parameter6,parameter7,parameter8,parameter9) ) 
+#define IAppCommandWeb_execute(This,substitution1,substitution2,substitution3,substitution4,substitution5,substitution6,substitution7,substitution8,substitution9)	\
+    ( (This)->lpVtbl -> execute(This,substitution1,substitution2,substitution3,substitution4,substitution5,substitution6,substitution7,substitution8,substitution9) ) 
 
 #endif /* COBJMACROS */
 

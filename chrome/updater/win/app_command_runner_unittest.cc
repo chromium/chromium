@@ -8,6 +8,8 @@
 #include <shlobj.h>
 #include <windows.h>
 
+#include <algorithm>
+#include <array>
 #include <string>
 #include <vector>
 
@@ -318,6 +320,35 @@ TEST_F(AppCommandRunnerTest, Run) {
         TestTimeouts::action_max_timeout(), &exit_code));
     EXPECT_EQ(exit_code, test_case.expected_exit_code);
   }
+}
+
+TEST_F(AppCommandRunnerTest, LoadAutoRunOnOsUpgradeAppCommands) {
+  const struct {
+    const std::vector<std::wstring> input;
+    const wchar_t* command_id;
+  } test_cases[] = {
+      {{L"/c", L"exit 7"}, kCmdId1},
+      {{L"/c", L"exit 5420"}, kCmdId2},
+  };
+
+  std::for_each(
+      std::begin(test_cases), std::end(test_cases), [&](const auto& test_case) {
+        CreateAppCommandOSUpgradeRegistry(
+            GetTestScope(), kAppId1, test_case.command_id,
+            base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
+                          base::JoinString(test_case.input, L" ")}));
+      });
+
+  const std::vector<AppCommandRunner> app_command_runners =
+      AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(GetTestScope(),
+                                                          kAppId1);
+
+  ASSERT_EQ(std::size(app_command_runners), std::size(test_cases));
+  std::for_each(app_command_runners.begin(), app_command_runners.end(),
+                [&](const auto& app_command_runner) {
+                  base::Process process;
+                  EXPECT_HRESULT_SUCCEEDED(app_command_runner.Run({}, process));
+                });
 }
 
 }  // namespace updater

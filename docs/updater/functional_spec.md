@@ -685,6 +685,7 @@ App commands are registered in the registry with the following formats:
 ```
     Update\Clients\{`app_id`}\Commands\`command_id`
         REG_SZ "CommandLine" == {command format}
+        {optional} REG_DWORD "AutoRunOnOSUpgrade" == {1}
 ```
 * Older command layout format, which may be deprecated in the future:
 ```
@@ -697,6 +698,10 @@ Example `{command format}`: `c:\path-to\echo.exe %1 %2 %3 StaticParam4`
 As shown above, `{command format}` needs to be the complete path to an
 executable followed by optional parameters.
 
+If "AutoRunOnOSUpgrade" is non-zero, the command is invoked when the updater
+detects an OS upgrade. In this case, `command format` must contain only static
+parameters, since this command is called automatically with no substitutions.
+
 #### Usage
 Once registered, commands may be invoked using the `execute` method in the
 `IAppCommandWeb` interface.
@@ -707,15 +712,15 @@ interface IAppCommandWeb : IDispatch {
   [propget] HRESULT status([out, retval] UINT*);
   [propget] HRESULT exitCode([out, retval] DWORD*);
   [propget] HRESULT output([out, retval] BSTR*);
-  HRESULT execute([in, optional] VARIANT parameter1,
-                  [in, optional] VARIANT parameter2,
-                  [in, optional] VARIANT parameter3,
-                  [in, optional] VARIANT parameter4,
-                  [in, optional] VARIANT parameter5,
-                  [in, optional] VARIANT parameter6,
-                  [in, optional] VARIANT parameter7,
-                  [in, optional] VARIANT parameter8,
-                  [in, optional] VARIANT parameter9);
+  HRESULT execute([in, optional] VARIANT substitution1,
+                  [in, optional] VARIANT substitution2,
+                  [in, optional] VARIANT substitution3,
+                  [in, optional] VARIANT substitution4,
+                  [in, optional] VARIANT substitution5,
+                  [in, optional] VARIANT substitution6,
+                  [in, optional] VARIANT substitution7,
+                  [in, optional] VARIANT substitution8,
+                  [in, optional] VARIANT substitution9);
 };
 ```
 
@@ -730,8 +735,8 @@ cmd = app.command(command);
 cmd.execute();
 ```
 
-Parameters placeholders (`%1-%9`) are filled by the numbered parameters in
-`IAppCommandWeb::execute`. Placeholders without corresponding parameters
+Parameters placeholders (`%1-%9`) are filled by the numbered substitutions in
+`IAppCommandWeb::execute`. Placeholders without corresponding substitutions
 cause the execution to fail.
 
 Clients may poll for the execution status of commands that they have invoked by
@@ -746,7 +751,7 @@ as `%ProgramFiles%` for security, since it runs elevated.
 * placeholders take the form of a percent character `%` followed by a digit.
 Literal `%` characters are escaped by doubling them.
 
-For example, if parameters to `IAppCommandWeb::execute` are `AA` and `BB`
+For example, if substitutions to `IAppCommandWeb::execute` are `AA` and `BB`
 respectively, a command format of:
   `echo.exe %1 %%2 %%%2`
 becomes the command line
