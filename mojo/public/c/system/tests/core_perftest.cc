@@ -222,8 +222,8 @@ class CorePerftest : public testing::Test {
     readers.clear();
 
     char sub_test_name[200];
-    sprintf(sub_test_name, "%uw_%ur_%ubytes", num_writers, num_readers,
-            static_cast<unsigned>(num_bytes));
+    snprintf(sub_test_name, sizeof(sub_test_name), "%uw_%ur_%ubytes",
+             num_writers, num_readers, static_cast<unsigned>(num_bytes));
     mojo::test::LogPerfResult(
         "MessagePipe_Threaded_Writes", sub_test_name,
         1000000.0 * static_cast<double>(num_writes) / (end_time - start_time),
