@@ -80,7 +80,7 @@ ExtensionApiFrameIdMap* ExtensionApiFrameIdMap::Get() {
 int ExtensionApiFrameIdMap::GetFrameId(content::RenderFrameHost* rfh) {
   if (!rfh)
     return kInvalidFrameId;
-  if (rfh->GetParentOrOuterDocument())
+  if (!rfh->IsInPrimaryMainFrame())
     return rfh->GetFrameTreeNodeId();
   return kTopFrameId;
 }
@@ -88,7 +88,7 @@ int ExtensionApiFrameIdMap::GetFrameId(content::RenderFrameHost* rfh) {
 // static
 int ExtensionApiFrameIdMap::GetFrameId(
     content::NavigationHandle* navigation_handle) {
-  return !navigation_handle->GetParentFrameOrOuterDocument()
+  return navigation_handle->IsInPrimaryMainFrame()
              ? kTopFrameId
              : navigation_handle->GetFrameTreeNodeId();
 }
