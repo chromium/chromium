@@ -185,7 +185,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   absl::optional<std::string> GetAppManifestId(const AppId& app_id) const;
   const std::string* GetAppLaunchQueryParams(const AppId& app_id) const;
   const apps::ShareTarget* GetAppShareTarget(const AppId& app_id) const;
-  blink::mojom::HandleLinks GetAppHandleLinks(const AppId& app_id) const;
   const apps::FileHandlers* GetAppFileHandlers(const AppId& app_id) const;
   bool IsAppFileHandlerPermissionBlocked(const web_app::AppId& app_id) const;
   bool IsIsolated(const AppId& app_id) const;

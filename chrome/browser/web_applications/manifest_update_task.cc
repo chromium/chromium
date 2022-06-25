@@ -403,9 +403,6 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   if (install_info_->capture_links != app->capture_links())
     return true;
 
-  if (install_info_->handle_links != app->handle_links())
-    return true;
-
   if (app->file_handlers() != install_info_->file_handlers)
     return true;
 

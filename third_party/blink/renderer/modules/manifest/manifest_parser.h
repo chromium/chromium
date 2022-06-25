@@ -474,10 +474,6 @@ class MODULES_EXPORT ManifestParser {
   mojom::blink::ManifestUserPreferencesPtr ParseUserPreferences(
       const JSONObject* object);
 
-  // Parse the `handle_links` field of the manifest as defined in:
-  // https://github.com/WICG/pwa-url-handler/blob/main/handle_links/explainer.md
-  mojom::blink::HandleLinks ParseHandleLinks(const JSONObject* object);
-
   // Parses the 'tab_strip' field of the manifest as defined in:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/tabbed-mode-explainer.md
   mojom::blink::ManifestTabStripPtr ParseTabStrip(const JSONObject* object);

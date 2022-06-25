@@ -392,7 +392,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"ViewportHeightClientHintHeader",
            blink::features::kViewportHeightClientHintHeader},
           {"WebAppDarkMode", blink::features::kWebAppEnableDarkMode},
-          {"WebAppHandleLinks", blink::features::kWebAppEnableHandleLinks},
           {"WebAppLaunchHandler", blink::features::kWebAppEnableLaunchHandler},
           {"WebAppTabStrip", features::kDesktopPWAsTabStrip},
           {"WebAppTranslations", blink::features::kWebAppEnableTranslations},

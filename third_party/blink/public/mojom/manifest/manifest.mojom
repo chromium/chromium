@@ -8,7 +8,6 @@ import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/capture_links.mojom";
-import "third_party/blink/public/mojom/manifest/handle_links.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -121,11 +120,6 @@ struct Manifest {
   // experiment. See:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/user-preferences-explainer.md
   ManifestUserPreferences? user_preferences;
-
-  // TODO(crbug.com/1254457): This field is non-standard and part of a Chrome
-  // experiment. See:
-  // https://github.com/WICG/pwa-url-handler/blob/main/handle_links/explainer.md
-  HandleLinks handle_links;
 
   // TODO(crbug.com/897314): This field is non-standard and part of a Chrome
   // experiment. See:

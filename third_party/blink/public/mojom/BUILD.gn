@@ -122,7 +122,6 @@ mojom("mojom_platform") {
     "locks/lock_manager.mojom",
     "manifest/capture_links.mojom",
     "manifest/display_mode.mojom",
-    "manifest/handle_links.mojom",
     "manifest/manifest.mojom",
     "manifest/manifest_manager.mojom",
     "manifest/manifest_observer.mojom",

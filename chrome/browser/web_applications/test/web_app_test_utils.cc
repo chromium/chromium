@@ -61,7 +61,6 @@
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom-shared.h"
-#include "third_party/blink/public/mojom/manifest/handle_links.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -526,8 +525,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   if (random.next_bool())
     app->SetParentAppId(base::NumberToString(random.next_uint()));
-
-  app->SetHandleLinks(random.next_enum<blink::mojom::HandleLinks>());
 
   if (random.next_bool())
     app->SetPermissionsPolicy(CreateRandomPermissionsPolicy(random));

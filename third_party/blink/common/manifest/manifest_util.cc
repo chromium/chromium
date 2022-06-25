@@ -130,16 +130,6 @@ mojom::CaptureLinks CaptureLinksFromString(const std::string& capture_links) {
   return mojom::CaptureLinks::kUndefined;
 }
 
-mojom::HandleLinks HandleLinksFromString(const std::string& handle_links) {
-  if (base::EqualsCaseInsensitiveASCII(handle_links, "auto"))
-    return mojom::HandleLinks::kAuto;
-  if (base::EqualsCaseInsensitiveASCII(handle_links, "preferred"))
-    return mojom::HandleLinks::kPreferred;
-  if (base::EqualsCaseInsensitiveASCII(handle_links, "not-preferred"))
-    return mojom::HandleLinks::kNotPreferred;
-  return mojom::HandleLinks::kUndefined;
-}
-
 bool ParsedRouteTo::operator==(const ParsedRouteTo& other) const {
   auto AsTuple = [](const auto& item) {
     return std::tie(item.route_to, item.legacy_existing_client_value);

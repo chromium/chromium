@@ -3427,7 +3427,7 @@ enum WebFeature {
   kRTCLocalSdpModificationIceUfragPwd = 4106,
   kWebNfcNdefMakeReadOnly = 4107,
   kV8Navigator_DeprecatedURNToURL_Method = 4108,
-  kWebAppManifestHandleLinks = 4109,
+  kOBSOLETE_WebAppManifestHandleLinks = 4109,
   kHTMLParamElementURLParameterInUsePdf = 4110,
   kHTMLParamElementURLParameterInUseNonPdf = 4111,
   kWebTransportServerCertificateHashes = 4112,

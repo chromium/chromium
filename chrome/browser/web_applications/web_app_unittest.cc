@@ -196,7 +196,6 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
    "file_handler_approval_state": "kRequiresPrompt",
    "file_handler_os_integration_state": "kDisabled",
    "file_handlers": [  ],
-   "handle_links": "kUndefined",
    "install_source_for_metrics": "not set",
    "install_time": "1601-01-01 00:00:00.000 UTC",
    "is_from_sync_and_pending_installation": false,
@@ -249,12 +248,12 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   EXPECT_EQ(base::JSONReader::Read(R"JSON({
-  "!app_id": "eajjdjobhihlgobdfaehiiheinneagde",
+   "!app_id": "eajjdjobhihlgobdfaehiiheinneagde",
    "!name": "Name1234",
    "additional_search_terms": [ "Foo_1234_0" ],
    "allowed_launch_protocols": [ "web+test_1234_0", "web+test_1234_1" ],
    "app_service_icon_url": "chrome://app-icon/eajjdjobhihlgobdfaehiiheinneagde/32",
-   "app_size_in_bytes": "3687618762",
+   "app_size_in_bytes": "4226285750",
    "background_color": "rgba(77,188,194,0.9686274509803922)",
    "capture_links": "kNone",
    "chromeos_data": null,
@@ -263,7 +262,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
    },
    "dark_mode_background_color": "none",
    "dark_mode_theme_color": "none",
-   "data_size_in_bytes": "2102337622",
+   "data_size_in_bytes": "3687618762",
    "description": "Description1234",
    "disallowed_launch_protocols": [ "web+disallowed_1234_0", "web+disallowed_1234_1", "web+disallowed_1234_2", "web+disallowed_1234_3" ],
    "display_mode": "standalone",
@@ -392,8 +391,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       "launch_type": "kSingleClient",
       "name": "2591174844 file"
    } ],
-   "handle_links": "kUndefined",
-   "install_source_for_metrics": 2,
+   "install_source_for_metrics": 17,
    "install_time": "1970-01-10 21:57:36.131 UTC",
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": true,
@@ -409,16 +407,16 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
    "lock_screen_start_url": "https://example.com/scope1234/lock_screen_start_url3206632378",
    "management_type_to_external_configuration_map": {
       "Default": {
-         "install_urls": [ "https://example.com/installer1_1234/" ],
-         "is_placeholder": true
-      },
-      "SubApp": {
-         "install_urls": [ "https://example.com/installer2_1234/" ],
+         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
          "is_placeholder": false
       },
-      "WebAppStore": {
+      "SubApp": {
          "install_urls": [ "https://example.com/installer1_1234/" ],
          "is_placeholder": true
+      },
+      "WebAppStore": {
+         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
+         "is_placeholder": false
       }
    },
    "manifest_icons": [ {
@@ -435,6 +433,17 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
    "manifest_url": "https://example.com/manifest1234.json",
    "note_taking_new_note_url": "",
    "parent_app_id": "1112833914",
+   "permissions_policy": [ {
+      "allowed_origins": [ "https://app-1994259750.com", "https://app-1994259751.com", "https://app-1994259752.com", "https://app-1994259753.com", "https://app-1994259754.com" ],
+      "feature": "accelerometer",
+      "matches_all_origins": false,
+      "matches_opaque_src": false
+   }, {
+      "allowed_origins": [ "https://app-1994259750.com", "https://app-1994259751.com", "https://app-1994259752.com", "https://app-1994259753.com", "https://app-1994259754.com" ],
+      "feature": "accelerometer",
+      "matches_all_origins": false,
+      "matches_opaque_src": false
+   } ],
    "protocol_handlers": [ {
       "protocol": "web+test24741963850",
       "url": "https://example.com/24741963850"

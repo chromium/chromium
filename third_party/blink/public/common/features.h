@@ -373,8 +373,6 @@ BLINK_COMMON_EXPORT extern const base::Feature
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableDarkMode;
 
-BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableHandleLinks;
-
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableLaunchHandler;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableLaunchHandlerV1API;

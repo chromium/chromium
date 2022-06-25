@@ -873,12 +873,6 @@ const base::Feature kLogUnexpectedIPCPostedToBackForwardCachedDocuments{
 const base::Feature kWebAppEnableDarkMode{"WebAppEnableDarkMode",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the "handle_links" manifest field for web apps.
-// Explainer:
-// https://github.com/WICG/pwa-url-handler/blob/main/handle_links/explainer.md
-const base::Feature kWebAppEnableHandleLinks{"WebAppEnableHandleLinks",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the "launch_handler" manifest field for web apps.
 // Explainer: https://github.com/WICG/sw-launch/blob/main/launch_handler.md
 const base::Feature kWebAppEnableLaunchHandler{
