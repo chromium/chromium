@@ -22,7 +22,7 @@ class SidePanelBrowserTest extends PolymerTest {
 var SidePanelAppTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/side_panel_app_test.js&host=webui-test';
+    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/side_panel_app_test.js';
   }
 };
 
@@ -33,7 +33,7 @@ TEST_F('SidePanelAppTest', 'All', function() {
 var SidePanelBookmarksListTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmarks_list_test.js&host=webui-test';
+    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmarks_list_test.js';
   }
 };
 
@@ -45,7 +45,7 @@ TEST_F('SidePanelBookmarksListTest', 'All', function() {
 var SidePanelBookmarkFolderTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmark_folder_test.js&host=webui-test';
+    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmark_folder_test.js';
   }
 };
 
@@ -57,7 +57,7 @@ TEST_F('SidePanelBookmarkFolderTest', 'All', function() {
 var SidePanelBookmarksDragManagerTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmarks_drag_manager_test.js&host=webui-test';
+    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/bookmarks_drag_manager_test.js';
   }
 };
 
@@ -68,7 +68,7 @@ TEST_F('SidePanelBookmarksDragManagerTest', 'All', function() {
 var ReadingListAppTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/reading_list/reading_list_app_test.js&host=webui-test';
+    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/reading_list/reading_list_app_test.js';
   }
 };
 
@@ -79,7 +79,7 @@ TEST_F('ReadingListAppTest', 'All', function() {
 var ReadAnythingAppTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/read_anything/read_anything_app_test.js&host=webui-test';
+    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/read_anything/read_anything_app_test.js';
   }
 };
 

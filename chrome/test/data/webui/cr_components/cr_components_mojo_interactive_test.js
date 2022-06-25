@@ -23,7 +23,7 @@ var CrComponentsMostVisitedFocusTest =
     class extends CrComponentsMojoInteractiveTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=cr_components/most_visited_focus_test.js&host=webui-test';
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/most_visited_focus_test.js';
   }
 };
 

@@ -13,7 +13,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var PrivacySandboxTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/privacy_sandbox_test.js&host=webui-test';
+    return 'chrome://settings/test_loader.html?module=settings/privacy_sandbox_test.js';
   }
 };
 

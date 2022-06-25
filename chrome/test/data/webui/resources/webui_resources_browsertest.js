@@ -39,7 +39,7 @@ var WebUIResourcesListPropertyUpdateMixinTest =
     class extends WebUIResourcesBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=resources/list_property_update_mixin_tests.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=resources/list_property_update_mixin_tests.js';
   }
 };
 

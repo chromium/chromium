@@ -30,7 +30,7 @@ var SupportToolTest = class extends SupportToolInteractiveTest {
   /** @override */
   get browsePreload() {
     return 'chrome://support-tool/test_loader.html?' +
-        'module=support_tool/support_tool_test.js&host=webui-test';
+        'module=support_tool/support_tool_test.js';
   }
 };
 

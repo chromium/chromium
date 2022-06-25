@@ -11,7 +11,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 var CastFeedbackUITest = class extends PolymerTest {
   get browsePreload() {
     return 'chrome://cast-feedback/test_loader.html?' +
-        'module=media_router/cast_feedback_ui_test.js&host=webui-test';
+        'module=media_router/cast_feedback_ui_test.js';
   }
 };
 

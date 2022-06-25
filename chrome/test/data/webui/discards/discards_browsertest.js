@@ -10,7 +10,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var DiscardsTest = class extends testing.Test {
   /** @override */
   get browsePreload() {
-    return 'chrome://discards/test_loader.html?module=discards/discards_test.js&host=webui-test';
+    return 'chrome://discards/test_loader.html?module=discards/discards_test.js';
   }
 };
 

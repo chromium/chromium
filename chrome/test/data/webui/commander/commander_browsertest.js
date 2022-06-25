@@ -10,7 +10,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var CommanderWebUIBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://commander/test_loader.html?module=commander/commander_app_test.js&host=webui-test';
+    return 'chrome://commander/test_loader.html?module=commander/commander_app_test.js';
   }
 };
 

@@ -34,7 +34,7 @@ class AccessCodeCastBrowserTest extends PolymerTest {
 var AccessCodeCastAppTest = class extends AccessCodeCastBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://access-code-cast/test_loader.html?module=access_code_cast/access_code_cast_app_test.js&host=webui-test';
+    return 'chrome://access-code-cast/test_loader.html?module=access_code_cast/access_code_cast_app_test.js';
   }
 };
 
@@ -45,7 +45,7 @@ TEST_F('AccessCodeCastAppTest', 'All', function() {
 var AccessCodeCastBrowserProxyTest = class extends AccessCodeCastBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://access-code-cast/test_loader.html?module=access_code_cast/browser_proxy_test.js&host=webui-test';
+    return 'chrome://access-code-cast/test_loader.html?module=access_code_cast/browser_proxy_test.js';
   }
 };
 
@@ -56,7 +56,7 @@ TEST_F('AccessCodeCastBrowserProxyTest', 'All', function() {
 var AccessCodeCastErrorMessageTest = class extends AccessCodeCastBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://access-code-cast/test_loader.html?module=access_code_cast/error_message_test.js&host=webui-test';
+    return 'chrome://access-code-cast/test_loader.html?module=access_code_cast/error_message_test.js';
   }
 };
 
@@ -67,7 +67,7 @@ TEST_F('AccessCodeCastErrorMessageTest', 'All', function() {
 var AccessCodeCastPasscodeInputTest = class extends AccessCodeCastBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://access-code-cast/test_loader.html?module=access_code_cast/passcode_input_test.js&host=webui-test';
+    return 'chrome://access-code-cast/test_loader.html?module=access_code_cast/passcode_input_test.js';
   }
 };
 

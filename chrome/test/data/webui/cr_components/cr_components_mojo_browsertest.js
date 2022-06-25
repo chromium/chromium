@@ -24,7 +24,7 @@ var CrComponentsCustomizeThemesTest =
     class extends CrComponentsMojoBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=cr_components/customize_themes_test.js&host=webui-test';
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/customize_themes_test.js';
   }
 };
 
@@ -59,7 +59,7 @@ var CrComponentsHistoryClustersTest =
     class extends CrComponentsMojoBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://history/test_loader.html?module=cr_components/history_clusters_test.js&host=webui-test';
+    return 'chrome://history/test_loader.html?module=cr_components/history_clusters_test.js';
   }
 };
 
@@ -70,7 +70,7 @@ TEST_F('CrComponentsHistoryClustersTest', 'All', function() {
 var CrComponentsMostVisitedTest = class extends CrComponentsMojoBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=cr_components/most_visited_test.js&host=webui-test';
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/most_visited_test.js';
   }
 };
 

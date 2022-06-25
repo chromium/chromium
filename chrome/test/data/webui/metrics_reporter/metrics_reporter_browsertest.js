@@ -12,7 +12,7 @@ var MetricsReporterTest = class extends testing.Test {
     // MetricsReporter needs a host that enables BINDINGS_POLICY_MOJO_WEB_UI.
     // Any WebUI host should work, but chrome://webui-test or chrome://test
     // won't work.
-    return 'chrome://new-tab-page/test_loader.html?module=metrics_reporter/metrics_reporter_test.js&host=webui-test';
+    return 'chrome://new-tab-page/test_loader.html?module=metrics_reporter/metrics_reporter_test.js';
   }
 
   get isAsync() {

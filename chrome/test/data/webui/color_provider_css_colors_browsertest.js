@@ -7,7 +7,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var ColorProviderCSSColorsTest = class extends testing.Test {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=color_provider_css_colors_test.js&host=webui-test';
+    return 'chrome://test/test_loader.html?module=color_provider_css_colors_test.js';
   }
 
   /** @override */
