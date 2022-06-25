@@ -78,7 +78,7 @@ class DictionaryHasValueMatcher
                 << "' is not a dictionary";
       return false;
     }
-    const base::Value* sub_value = value.FindKey(key_);
+    const base::Value* sub_value = value.GetDict().Find(key_);
     if (!sub_value) {
       *listener << "Dictionary '" << FormatAsJSON(value)
                 << "' does not have key '" << key_ << "'";
@@ -130,8 +130,9 @@ class DictionaryHasValuesMatcher
     }
 
     bool ok = true;
-    for (auto template_dict_item : template_value_.DictItems()) {
-      const base::Value* sub_value = value.FindKey(template_dict_item.first);
+    for (auto template_dict_item : template_value_.GetDict()) {
+      const base::Value* sub_value =
+          value.GetDict().Find(template_dict_item.first);
       if (!sub_value) {
         *listener << "\nDictionary does not have key '"
                   << template_dict_item.first << "'";

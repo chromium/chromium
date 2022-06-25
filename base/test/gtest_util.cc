@@ -56,18 +56,18 @@ std::vector<TestIdentifier> GetCompiledInTests() {
 bool WriteCompiledInTestsToFile(const FilePath& path) {
   std::vector<TestIdentifier> tests(GetCompiledInTests());
 
-  Value::ListStorage storage;
+  Value::List storage;
   for (const TestIdentifier& i : tests) {
-    Value test_info(Value::Type::DICTIONARY);
-    test_info.SetStringKey("test_case_name", i.test_case_name);
-    test_info.SetStringKey("test_name", i.test_name);
-    test_info.SetStringKey("file", i.file);
-    test_info.SetIntKey("line", i.line);
-    storage.push_back(std::move(test_info));
+    Value::Dict test_info;
+    test_info.Set("test_case_name", i.test_case_name);
+    test_info.Set("test_name", i.test_name);
+    test_info.Set("file", i.file);
+    test_info.Set("line", i.line);
+    storage.Append(std::move(test_info));
   }
 
   JSONFileValueSerializer serializer(path);
-  return serializer.Serialize(Value(std::move(storage)));
+  return serializer.Serialize(storage);
 }
 
 bool ReadTestNamesFromFile(const FilePath& path,
@@ -84,23 +84,24 @@ bool ReadTestNamesFromFile(const FilePath& path,
     return false;
 
   std::vector<TestIdentifier> result;
-  for (const Value& item : value->GetListDeprecated()) {
+  for (const Value& item : value->GetList()) {
     if (!item.is_dict())
       return false;
 
-    const std::string* test_case_name = item.FindStringKey("test_case_name");
+    const Value::Dict& dict = item.GetDict();
+    const std::string* test_case_name = dict.FindString("test_case_name");
     if (!test_case_name || !IsStringASCII(*test_case_name))
       return false;
 
-    const std::string* test_name = item.FindStringKey("test_name");
+    const std::string* test_name = dict.FindString("test_name");
     if (!test_name || !IsStringASCII(*test_name))
       return false;
 
-    const std::string* file = item.FindStringKey("file");
+    const std::string* file = dict.FindString("file");
     if (!file || !IsStringASCII(*file))
       return false;
 
-    absl::optional<int> line = item.FindIntKey("line");
+    absl::optional<int> line = dict.FindInt("line");
     if (!line.has_value())
       return false;
 

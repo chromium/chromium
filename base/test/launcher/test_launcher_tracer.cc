@@ -5,6 +5,7 @@
 #include "base/test/launcher/test_launcher_tracer.h"
 
 #include "base/json/json_file_value_serializer.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 
@@ -32,24 +33,25 @@ int TestLauncherTracer::RecordProcessExecution(TimeTicks start_time,
 bool TestLauncherTracer::Dump(const FilePath& path) {
   AutoLock lock(lock_);
 
-  Value::ListStorage json_events_storage;
+  Value::List json_events_list;
   for (const Event& event : events_) {
-    Value json_event(Value::Type::DICTIONARY);
-    json_event.SetStringKey("name", event.name);
-    json_event.SetStringKey("ph", "X");
-    json_event.SetIntKey(
-        "ts", (event.timestamp - trace_start_time_).InMicroseconds());
-    json_event.SetIntKey("dur", event.duration.InMicroseconds());
-    json_event.SetIntKey("tid", event.thread_id);
+    Value::Dict json_event;
+    json_event.Set("name", event.name);
+    json_event.Set("ph", "X");
+    json_event.Set("ts",
+                   checked_cast<int>(
+                       (event.timestamp - trace_start_time_).InMicroseconds()));
+    json_event.Set("dur", checked_cast<int>(event.duration.InMicroseconds()));
+    json_event.Set("tid", checked_cast<int>(event.thread_id));
 
     // Add fake values required by the trace viewer.
-    json_event.SetIntKey("pid", 0);
+    json_event.Set("pid", 0);
 
-    json_events_storage.push_back(std::move(json_event));
+    json_events_list.Append(std::move(json_event));
   }
 
   JSONFileValueSerializer serializer(path);
-  return serializer.Serialize(Value(std::move(json_events_storage)));
+  return serializer.Serialize(json_events_list);
 }
 
 }  // namespace base
