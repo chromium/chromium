@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Turn dark mode on</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />Unqualified components<ph name="LINK_END" /> found. To make sure that all qualified components are identified, update your Chrome OS to the latest version.</translation>
 <translation id="2180197493692062006">Something went wrong. Try reopening the app.</translation>
+<translation id="2182088270354640012">Thanks for the feedback. Your feedback helps improve Chrome OS and will be reviewed by the Chrome OS team. Because of the number of reports submitted, you won’t receive a direct reply.</translation>
 <translation id="2209788852729124853">Reset traffic counters</translation>
 <translation id="2212733584906323460">Name resolution</translation>
 <translation id="2217935453350629363">Current speed</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Restarting...</translation>
 <translation id="2533048460510040082">Suggested help content</translation>
 <translation id="2536159006530886390">Cannot connect to Internet.</translation>
+<translation id="256360469103926202">Your feedback helps improve Chrome OS and will be reviewed by our team. Because of the large number of reports, we won’t be able to send a reply.</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
 <translation id="2584559707064218956">To set up, go to Settings</translation>
 <translation id="2619761439309613843">Daily Refresh</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Looking for scanners</translation>
 <translation id="3246869037381808805">Print jobs older than 1 day will be removed</translation>
 <translation id="3268178239013324452">Failed – Door open</translation>
+<translation id="3275729367986477355">Avatar image</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit file}other{Edit files}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Key direction</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">For more help, go to the <ph name="BEGIN_LINK" />Help Centre<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Compression algorithm</translation>
 <translation id="4794140124556169553">Running a CPU test may affect your system performance</translation>
+<translation id="4800589996161293643">Chromebook community</translation>
 <translation id="4804818685124855865">Disconnect</translation>
 <translation id="4808449224298348341">Cancelled print job <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Light theme</translation>
@@ -488,6 +492,7 @@
 Try tapping the mic to ask me anything.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Sign out</translation>
+<translation id="522307662484862935">Don't include email address</translation>
 <translation id="5227902338748591677">Dark theme schedule</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -614,6 +619,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6284632978374966585">Turn Dark theme on</translation>
 <translation id="6295178529664209245">Continue repair?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> test has been cancelled</translation>
+<translation id="631063167932043783">Explore app</translation>
 <translation id="6319207335391420837">Update firmware on <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Turn on screensaver</translation>
 <translation id="6325525973963619867">Failed</translation>
@@ -720,6 +726,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7297226631177386107">Can't connect through firewall to HTTPS websites</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Ask the experts in the Chromebook Help forum</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; press Search plus Space to see the result in Google Search.</translation>
 <translation id="7343649194310845056">Network devices</translation>
@@ -762,6 +769,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="773153675489693198">Cycle count</translation>
 <translation id="7747039790905080783">Pre-shared key</translation>
 <translation id="7762130827864645708">Your password change was successful. Please use the new password from now on.</translation>
+<translation id="7762839321248874531">Send <ph name="BEGIN_LINK1" />system and app info<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Domain suffix match</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7784116172884276937">No DNS servers are set up</translation>
@@ -831,6 +839,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8382302752385457774">White-label</translation>
 <translation id="8395584934117017006">This <ph name="DEVICE_TYPE" /> is enterprise managed</translation>
 <translation id="8398927464629426868">The rate at which the device is currently charging or discharging</translation>
+<translation id="8420955526972171689">Run tests and troubleshooting for hardware issues</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Internal keyboard</translation>
 <translation id="8431300646573772016">What's new with Chrome OS</translation>
