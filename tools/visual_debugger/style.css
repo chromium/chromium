@@ -90,3 +90,10 @@ button#disconnect {
   background: rgba(255, 0, 0, 0.2);;
   color: black;
 }
+
+button#live {
+  outline-color: black;
+  --mdc-theme-primary:#FF0000;
+  --mdc-theme-on-primary:black;
+  opacity: 0.8;
+}

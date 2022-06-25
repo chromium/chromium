@@ -196,7 +196,6 @@
   <div class='section' id='controls'>
     <div id='buttons'>
       <button class="mdc-button mdc-button--outline" id='prev'>
-        <div class="mdc-button__ripple"></div>
         <span class="mdc-button__label"><i class="material-icons-outlined">skip_previous</i> Previous frame</span>
       </button>
       <button class="mdc-button mdc-button--outline" id='play'>
@@ -208,8 +207,11 @@
         <span class="mdc-button__label"><i class="material-icons-outlined">pause_circle_outline</i> Pause</span>
       </button>
       <button class="mdc-button mdc-button--outline" id='next'>
-        <div class="mdc-button__ripple"></div>
         <span class="mdc-button__label">Next frame <i class="material-icons-outlined">skip_next</i></span>
+      </button>
+      <button class="mdc-button mdc-button--raised" style="visibility:hidden" id='live'>
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">Live <i class="material-icons-outlined">fast_forward</i></span>
       </button>
 
     </div>
@@ -396,10 +398,13 @@
 
     document.querySelector('#pause').addEventListener('click', () => {
       player.pause();
+      pause.setAttribute('style', 'background:#000000;color:white');
+      live.setAttribute('style', 'visibility:visible');
     });
 
     document.querySelector('#play').addEventListener('click', () => {
       player.play();
+      pause.removeAttribute('style');
     });
 
     document.querySelector('#prev').addEventListener('click', () => {
@@ -410,9 +415,19 @@
       player.forward();
     });
 
+    document.querySelector('#live').addEventListener('click', () => {
+      player.freezeFrame(DrawFrame.count());
+      player.play();
+      has_disconnected = false;
+      live.setAttribute('style', 'visibility:hidden');
+      pause.removeAttribute('style');
+    });
+
     const scrubberFrame = document.querySelector('#scrubberframe');
     scrubberFrame.addEventListener('input', () => {
       player.freezeFrame(scrubberFrame.value);
+      pause.setAttribute('style', 'background:#000000;color:white');
+      live.setAttribute('style', 'visibility:visible');
     });
 
     const scrubberDraw = document.querySelector('#scrubberdraw');
