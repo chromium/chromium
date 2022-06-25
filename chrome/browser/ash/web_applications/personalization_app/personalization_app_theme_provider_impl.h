@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_THEME_PROVIDER_IMPL_H_
 
 #include "ash/public/cpp/style/color_mode_observer.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/webui/personalization_app/personalization_app_theme_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -69,7 +69,8 @@ class PersonalizationAppThemeProviderImpl
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  base::ScopedObservation<ash::ColorProvider, ash::ColorModeObserver>
+  base::ScopedObservation<ash::DarkLightModeControllerImpl,
+                          ash::ColorModeObserver>
       color_mode_observer_{this};
 
   mojo::Receiver<ash::personalization_app::mojom::ThemeProvider>

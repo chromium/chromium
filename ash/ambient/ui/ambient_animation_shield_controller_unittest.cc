@@ -6,7 +6,7 @@
 
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -30,9 +30,10 @@ class AmbientAnimationShieldControllerTest : public AmbientAshTestBase {
   }
 
   void SetDarkModeEnabled(bool dark_mode_enabled) {
-    CHECK(AshColorProvider::Get());
-    if (AshColorProvider::Get()->IsDarkModeEnabled() != dark_mode_enabled)
-      AshColorProvider::Get()->ToggleColorMode();
+    auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+    CHECK(dark_light_mode_controller);
+    if (dark_light_mode_controller->IsDarkModeEnabled() != dark_mode_enabled)
+      dark_light_mode_controller->ToggleColorMode();
   }
 
   std::unique_ptr<views::View> CreateShieldView() {

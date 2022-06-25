@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 
 namespace arc {
 
@@ -45,12 +46,12 @@ SkColor GetCrOSColor(cros_styles::ColorName color_name) {
 }
 
 bool IsDarkModeEnabled() {
-  auto* provider = ash::ColorProvider::Get();
-  // |provider| may return null in unit testing
-  if (!provider)
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  // |dark_light_mode_controller| may return null in unit testing.
+  if (!dark_light_mode_controller)
     return false;
   return ash::features::IsDarkLightModeEnabled() &&
-         provider->IsDarkModeEnabled();
+         dark_light_mode_controller->IsDarkModeEnabled();
 }
 
 }  // namespace arc

@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
@@ -267,8 +268,9 @@ void HoldingSpaceItemView::OnThemeChanged() {
       kCheckmarkBackgroundSize));
   checkmark_->SetImage(gfx::CreateVectorIcon(
       kCheckIcon, kHoldingSpaceIconSize,
-      ash_color_provider->IsDarkModeEnabled() ? gfx::kGoogleGrey900
-                                              : SK_ColorWHITE));
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+          ? gfx::kGoogleGrey900
+          : SK_ColorWHITE));
 
   // Focused/selected layers.
   InvalidateLayer(focused_layer_owner_->layer());

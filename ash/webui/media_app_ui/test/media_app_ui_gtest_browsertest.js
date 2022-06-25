@@ -8,7 +8,7 @@
 GEN('#include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"');
 
 GEN('#include "ash/constants/ash_features.h"');
-GEN('#include "ash/public/cpp/style/color_provider.h"');
+GEN('#include "ash/public/cpp/style/dark_light_mode_controller.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "third_party/blink/public/common/features.h"');
@@ -60,7 +60,7 @@ var MediaAppUIWithDarkLightModeGtestBrowserTest =
   get testGenPreamble() {
     return () => {
       // Switch to light mode.
-      GEN('ash::ColorProvider::Get()->SetDarkModeEnabledForTest(false);');
+      GEN('ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);');
     };
   }
 };
@@ -83,7 +83,7 @@ var MediaAppUIWithDarkLightModeDarkGtestBrowserTest =
   get testGenPreamble() {
     return () => {
       // Switch to dark mode.
-      GEN('ash::ColorProvider::Get()->SetDarkModeEnabledForTest(true);');
+      GEN('ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(true);');
     };
   }
 };

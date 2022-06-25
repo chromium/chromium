@@ -10,7 +10,7 @@
 GEN('#include "ash/webui/help_app_ui/test/help_app_ui_browsertest.h"');
 
 GEN('#include "ash/constants/ash_features.h"');
-GEN('#include "ash/public/cpp/style/color_provider.h"');
+GEN('#include "ash/public/cpp/style/dark_light_mode_controller.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -63,7 +63,7 @@ var HelpAppUIWithDarkLightModeGtestBrowserTest =
   get testGenPreamble() {
     return () => {
       // Switch to dark mode.
-      GEN('ash::ColorProvider::Get()->SetDarkModeEnabledForTest(true);');
+      GEN('ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(true);');
     };
   }
 };

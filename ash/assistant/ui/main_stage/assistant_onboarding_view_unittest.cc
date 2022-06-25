@@ -23,10 +23,10 @@
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/session/user_info.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -308,7 +308,8 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
          SkColorSetRGB(0xaa, 0x00, 0xb8)},
         {gfx::kGoogleBlue800, gfx::kGoogleBlue200, gfx::kGoogleBlue800}};
     const bool is_dark_light_enabled = features::IsDarkLightModeEnabled();
-    const bool is_dark_mode_status = ColorProvider::Get()->IsDarkModeEnabled();
+    const bool is_dark_mode_status =
+        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
     const int color_index =
         is_dark_light_enabled ? (is_dark_mode_status ? 1 : 2) : 0;
     return kForegroundColors[index][color_index];
@@ -488,13 +489,15 @@ TEST_F(AssistantOnboardingViewTest, DarkAndLightTheme) {
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);
   AshColorProvider* color_provider = AshColorProvider::Get();
-  color_provider->OnActiveUserPrefServiceChanged(
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
 
   ShowAssistantUi();
 
-  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
   const SkColor initial_greeting_label_color =
       greeting_label()->GetEnabledColor();
   const SkColor initial_intro_label_color = intro_label()->GetEnabledColor();
@@ -505,8 +508,9 @@ TEST_F(AssistantOnboardingViewTest, DarkAndLightTheme) {
   EXPECT_EQ(initial_intro_label_color, intial_text_primary_color);
 
   // Switch the color mode.
-  color_provider->ToggleColorMode();
-  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
+  dark_light_mode_controller->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status,
+            dark_light_mode_controller->IsDarkModeEnabled());
   const SkColor text_primary_color = color_provider->GetContentLayerColor(
       ColorProvider::ContentLayerType::kTextColorPrimary);
   EXPECT_NE(intial_text_primary_color, text_primary_color);

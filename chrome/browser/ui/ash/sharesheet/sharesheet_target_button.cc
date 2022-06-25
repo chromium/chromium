@@ -9,6 +9,7 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
@@ -117,9 +118,10 @@ void SharesheetTargetButton::OnThemeChanged() {
   gfx::ImageSkia circle_icon =
       gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
           ::sharesheet::kIconSize / 2,
-          cros_styles::ResolveColor(cros_styles::ColorName::kBgColorElevation1,
-                                    color_provider->IsDarkModeEnabled(),
-                                    /*use_debug_colors=*/false),
+          cros_styles::ResolveColor(
+              cros_styles::ColorName::kBgColorElevation1,
+              ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled(),
+              /*use_debug_colors=*/false),
           icon);
 
   // TODO(crbug.com/1184414): Replace hard-coded values when shadow styles

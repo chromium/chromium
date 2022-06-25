@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/callback_helpers.h"
@@ -720,8 +721,8 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionDarkLightModeEnabledTest,
   aura::Window* dialog_window =
       frame_host->GetNativeView()->GetToplevelWindow();
 
-  auto* color_provider = ash::ColorProvider::Get();
-  bool dark_mode_enabled = color_provider->IsDarkModeEnabled();
+  auto* dark_light_mode_controller = ash::DarkLightModeController::Get();
+  bool dark_mode_enabled = dark_light_mode_controller->IsDarkModeEnabled();
   SkColor initial_active_color =
       dialog_window->GetProperty(chromeos::kFrameActiveColorKey);
   SkColor initial_inactive_color =
@@ -731,7 +732,8 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionDarkLightModeEnabledTest,
 
   // Switch the color mode.
   prefs->SetBoolean(ash::prefs::kDarkModeEnabled, !dark_mode_enabled);
-  EXPECT_EQ(!dark_mode_enabled, color_provider->IsDarkModeEnabled());
+  EXPECT_EQ(!dark_mode_enabled,
+            dark_light_mode_controller->IsDarkModeEnabled());
 
   // Active and invactive colors in the other mode should be different from the
   // initial mode.

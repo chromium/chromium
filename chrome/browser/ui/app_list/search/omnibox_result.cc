@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -176,13 +176,13 @@ OmniboxResult::OmniboxResult(Profile* profile,
     InitializeButtonActions({ash::SearchResultActionType::kRemove});
   }
 
-  if (ash::ColorProvider::Get())
-    ash::ColorProvider::Get()->AddObserver(this);
+  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
+    dark_light_mode_controller->AddObserver(this);
 }
 
 OmniboxResult::~OmniboxResult() {
-  if (ash::ColorProvider::Get())
-    ash::ColorProvider::Get()->RemoveObserver(this);
+  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
+    dark_light_mode_controller->RemoveObserver(this);
 }
 
 void OmniboxResult::Open(int event_flags) {

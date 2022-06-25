@@ -13,6 +13,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/math_util.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -37,10 +38,11 @@ TEST_F(UiElementContainerViewTest, DarkAndLightTheme) {
       chromeos::features::kDarkLightMode);
   ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
 
-  auto* color_provider = AshColorProvider::Get();
-  color_provider->OnActiveUserPrefServiceChanged(
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
 
   ShowAssistantUi();
 
@@ -53,8 +55,8 @@ TEST_F(UiElementContainerViewTest, DarkAndLightTheme) {
                 ColorProvider::ContentLayerType::kSeparatorColor));
 
   // Switch the color mode.
-  color_provider->ToggleColorMode();
-  const bool dark_mode_status = color_provider->IsDarkModeEnabled();
+  dark_light_mode_controller->ToggleColorMode();
+  const bool dark_mode_status = dark_light_mode_controller->IsDarkModeEnabled();
   ASSERT_NE(initial_dark_mode_status, dark_mode_status);
 
   EXPECT_EQ(indicator->GetBackground()->get_color(),

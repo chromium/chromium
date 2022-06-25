@@ -14,6 +14,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -421,9 +422,10 @@ void LoginAuthFactorsView::ShowCheckmark() {
   checkmark_icon_->SetVisible(true);
   SetArrowVisibility(false);
   if (arrow_button_was_visible) {
-    const auto& resource = AshColorProvider::Get()->IsDarkModeEnabled()
-                               ? IDR_LOGIN_ARROW_CHECKMARK_SPINNER_DARKMODE
-                               : IDR_LOGIN_ARROW_CHECKMARK_SPINNER_LIGHTMODE;
+    const auto& resource =
+        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+            ? IDR_LOGIN_ARROW_CHECKMARK_SPINNER_DARKMODE
+            : IDR_LOGIN_ARROW_CHECKMARK_SPINNER_LIGHTMODE;
     checkmark_icon_->SetAnimation(resource, kCheckmarkAnimationDuration,
                                   kCheckmarkAnimationNumFrames);
   } else {

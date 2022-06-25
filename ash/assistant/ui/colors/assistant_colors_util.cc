@@ -6,7 +6,7 @@
 
 #include "ash/assistant/ui/colors/assistant_colors.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/feature_list.h"
 
 namespace ash {
@@ -31,7 +31,7 @@ SkColor ResolveAssistantColor(assistant_colors::ColorName color_name) {
     return GetDarkLightModeFlagOffColor(color_name);
 
   return assistant_colors::ResolveColor(
-      color_name, ColorProvider::Get()->IsDarkModeEnabled(),
+      color_name, DarkLightModeController::Get()->IsDarkModeEnabled(),
       base::FeatureList::IsEnabled(
           ash::features::kSemanticColorsDebugOverride));
 }

@@ -6,6 +6,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/style_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -120,7 +121,7 @@ void ActionEditMenu::InitActionTapEditMenu() {
   if (!color_provider)
     return;
   auto bg_color = color_provider->GetBackgroundColorInMode(
-      color_provider->IsDarkModeEnabled());
+      ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
   SetBackground(views::CreateRoundedRectBackground(bg_color, kCornerRadius));
 
   // Add each binding button.

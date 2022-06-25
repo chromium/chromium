@@ -6,10 +6,9 @@
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -45,12 +44,13 @@ using AssistantOnboardingSuggestionViewTest = AshTestBase;
 TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_TRUE(features::IsDarkLightModeEnabled());
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kDarkModeEnabled, false);
-  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
+  ASSERT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
@@ -99,7 +99,7 @@ TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
 
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+  ASSERT_TRUE(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
 
   // 0x4c is for 30% alpha. 255*0.3=76.5. 0x4c is 76 in hex.
   EXPECT_EQ(suggestion_view_0->GetBackground()->get_color(),

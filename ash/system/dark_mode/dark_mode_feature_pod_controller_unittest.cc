@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/system/dark_mode/dark_mode_feature_pod_controller.h"
+
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -24,8 +24,8 @@ TEST_F(DarkModeFeaturePodControllerTest, ToggleDarkMode) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kDarkLightMode);
 
-  AshColorProvider* provider = AshColorProvider::Get();
-  provider->OnActiveUserPrefServiceChanged(
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
 
   UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
@@ -44,21 +44,22 @@ TEST_F(DarkModeFeaturePodControllerTest, ToggleDarkMode) {
   EXPECT_TRUE(controller->GetAutoScheduleEnabled());
 
   // Check that the statuses of toggle and dark mode are consistent.
-  bool dark_mode_enabled = provider->IsDarkModeEnabled();
+  bool dark_mode_enabled = dark_light_mode_controller->IsDarkModeEnabled();
   EXPECT_EQ(dark_mode_enabled, button->IsToggled());
 
   // Pressing the dark mode button should disable the scheduling and switch the
   // dark mode status.
   dark_mode_feature_pod_controller->OnIconPressed();
   EXPECT_FALSE(controller->GetAutoScheduleEnabled());
-  EXPECT_EQ(!dark_mode_enabled, provider->IsDarkModeEnabled());
+  EXPECT_EQ(!dark_mode_enabled,
+            dark_light_mode_controller->IsDarkModeEnabled());
   EXPECT_EQ(!dark_mode_enabled, button->IsToggled());
 
   // Pressing the dark mode button again should only switch the dark mode status
   // while maintaining the disabled status of scheduling.
   dark_mode_feature_pod_controller->OnIconPressed();
   EXPECT_FALSE(controller->GetAutoScheduleEnabled());
-  EXPECT_EQ(dark_mode_enabled, provider->IsDarkModeEnabled());
+  EXPECT_EQ(dark_mode_enabled, dark_light_mode_controller->IsDarkModeEnabled());
   EXPECT_EQ(dark_mode_enabled, button->IsToggled());
   system_tray->CloseBubble();
 }

@@ -9,12 +9,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -120,7 +119,8 @@ TEST_F(AssistantButtonTest, IconColorTypeDefaultLight) {
 TEST_F(AssistantButtonTest, IconColorType) {
   base::test::ScopedFeatureList scoped_feature_list_enable_dark_light_mode(
       chromeos::features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
 
   AssistantButton::InitParams params;
@@ -144,8 +144,8 @@ TEST_F(AssistantButtonTest, IconColorType) {
       *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
                              gfx::kGoogleGrey200)
            .bitmap();
-  auto* color_provider = AshColorProvider::Get();
-  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
 
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       initial_dark_mode_status ? dark_mode_expected_image
@@ -153,8 +153,8 @@ TEST_F(AssistantButtonTest, IconColorType) {
       *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
 
   // Switch the color mode.
-  color_provider->ToggleColorMode();
-  const bool dark_mode_status = color_provider->IsDarkModeEnabled();
+  dark_light_mode_controller->ToggleColorMode();
+  const bool dark_mode_status = dark_light_mode_controller->IsDarkModeEnabled();
   ASSERT_NE(initial_dark_mode_status, dark_mode_status);
 
   // Manually triggers OnThemeChanged as the button is not attached to an UI
@@ -225,7 +225,8 @@ TEST_F(AssistantButtonTest, FocusAndHoverColor) {
 TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
   base::test::ScopedFeatureList scoped_feature_list_enable_dark_light_mode(
       chromeos::features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
 
   AssistantButton::InitParams params;
@@ -246,8 +247,8 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
   const SkColor light_icon_color = gfx::kGoogleGrey900;
   const SkColor dark_icon_color = gfx::kGoogleGrey200;
 
-  auto* color_provider = AshColorProvider::Get();
-  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
 
   SkBitmap dark_light_mode_button_image_with_focus =
       CreateExpectedImageWithFocus(
@@ -283,8 +284,8 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
       dark_light_mode_button_image_without_focus, canvas.GetBitmap()));
 
   // Switch the color mode.
-  color_provider->ToggleColorMode();
-  const bool dark_mode_status = color_provider->IsDarkModeEnabled();
+  dark_light_mode_controller->ToggleColorMode();
+  const bool dark_mode_status = dark_light_mode_controller->IsDarkModeEnabled();
   ASSERT_NE(initial_dark_mode_status, dark_mode_status);
 
   canvas.RecreateBackingCanvas(gfx::Size(kSizeInDip, kSizeInDip),

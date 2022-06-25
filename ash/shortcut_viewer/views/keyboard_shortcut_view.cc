@@ -26,6 +26,7 @@
 #include "ash/shortcut_viewer/views/keyboard_shortcut_item_view.h"
 #include "ash/shortcut_viewer/views/ksv_search_box_view.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/bind.h"
 #include "base/i18n/string_search.h"
 #include "base/metrics/user_metrics.h"
@@ -79,7 +80,8 @@ constexpr SkColor kSearchIllustrationIconColorDark =
 // Custom No Results image view to handle color theme changes.
 class KSVNoResultsImageView : public views::ImageView {
  public:
-  KSVNoResultsImageView() : color_provider_(ash::ColorProvider::Get()) {}
+  KSVNoResultsImageView()
+      : dark_light_mode_controller_(ash::DarkLightModeControllerImpl::Get()) {}
 
   KSVNoResultsImageView(const KSVNoResultsImageView&) = delete;
   KSVNoResultsImageView operator=(const KSVNoResultsImageView&) = delete;
@@ -91,7 +93,7 @@ class KSVNoResultsImageView : public views::ImageView {
     ImageView::OnThemeChanged();
 
     if (ash::features::IsDarkLightModeEnabled() &&
-        color_provider_->IsDarkModeEnabled()) {
+        dark_light_mode_controller_->IsDarkModeEnabled()) {
       SetImage(gfx::CreateVectorIcon(ash::kKsvSearchNoResultDarkIcon,
                                      kSearchIllustrationIconColorDark));
     } else {
@@ -101,7 +103,7 @@ class KSVNoResultsImageView : public views::ImageView {
   }
 
  private:
-  ash::ColorProvider* const color_provider_;
+  ash::DarkLightModeControllerImpl* const dark_light_mode_controller_;
 };
 
 // Creates the no search result view.
@@ -169,7 +171,8 @@ class ShortcutsListScrollView : public views::ScrollView {
     views::ScrollView::OnThemeChanged();
 
     SetBackgroundColor(color_provider_->GetBackgroundColorInMode(
-        /*use_dark_color=*/color_provider_->IsDarkModeEnabled()));
+        /*use_dark_color=*/ash::DarkLightModeControllerImpl::Get()
+            ->IsDarkModeEnabled()));
   }
 
   void OnBlur() override { SetHasFocusIndicator(false); }
@@ -694,8 +697,8 @@ KeyboardShortcutView::GetFoundShortcutItemsForTesting() const {
 
 void KeyboardShortcutView::UpdateBackgroundColor() {
   const SkColor background_color = color_provider_->GetBackgroundColorInMode(
-      /*use_dark_mode=*/ash::features::IsDarkLightModeEnabled() &&
-      color_provider_->IsDarkModeEnabled());
+      /*use_dark_color=*/ash::features::IsDarkLightModeEnabled() &&
+      ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
 
   SetBackground(views::CreateSolidBackground(background_color));
 }
@@ -705,8 +708,8 @@ void KeyboardShortcutView::UpdateActiveAndInactiveFrameColor() {
   window->SetProperty(chromeos::kTrackDefaultFrameColors,
                       /*value=*/false);
   const SkColor background_color = color_provider_->GetBackgroundColorInMode(
-      /*use_dark_mode=*/ash::features::IsDarkLightModeEnabled() &&
-      color_provider_->IsDarkModeEnabled());
+      /*use_dark_color=*/ash::features::IsDarkLightModeEnabled() &&
+      ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
   window->SetProperty(chromeos::kFrameActiveColorKey, background_color);
   window->SetProperty(chromeos::kFrameInactiveColorKey, background_color);
 }

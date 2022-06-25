@@ -6,12 +6,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/search_box/search_box_view_base.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -211,7 +211,7 @@ bool KSVSearchBoxView::ShouldUseFocusedColors() {
 
 bool KSVSearchBoxView::ShouldUseDarkThemeColors() {
   return ash::features::IsDarkLightModeEnabled() &&
-         ash::ColorProvider::Get()->IsDarkModeEnabled();
+         ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
 }
 
 }  // namespace keyboard_shortcut_viewer

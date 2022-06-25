@@ -7,7 +7,7 @@
 #include <array>
 
 #include "ash/ambient/ui/ambient_view_ids.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/gfx/canvas.h"
@@ -119,7 +119,7 @@ void AmbientShieldView::InitLayout() {
     view->SetProperty(views::kFlexBehaviorKey, kScaleUnbounded);
 
   // TODO(b/223270660): Listen for dark/light mode changes.
-  bool dark_mode = AshColorProvider::Get()->IsDarkModeEnabled();
+  bool dark_mode = DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
   const auto& colors = dark_mode ? kDarkModeColors : kLightModeColors;
 
   top->SetBackground(views::CreateSolidBackground(colors.front()));

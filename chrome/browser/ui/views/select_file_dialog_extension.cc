@@ -13,6 +13,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/feature_list.h"
@@ -197,10 +198,10 @@ class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate,
       : chromeos::SystemWebDialogDelegate(url, title),
         id_(id),
         parent_(std::move(parent)) {
-    ash::ColorProvider::Get()->AddObserver(this);
+    ash::DarkLightModeController::Get()->AddObserver(this);
   }
   ~SystemFilesAppDialogDelegate() override {
-    ash::ColorProvider::Get()->RemoveObserver(this);
+    ash::DarkLightModeController::Get()->RemoveObserver(this);
   }
 
   void SetModal(bool modal) {
@@ -282,8 +283,10 @@ void SelectFileDialogExtension::ListenerDestroyed() {
 
 void SelectFileDialogExtension::ExtensionDialogClosing(
     ExtensionDialog* /*dialog*/) {
-  if (!ash::features::IsFileManagerSwaEnabled() && ash::ColorProvider::Get())
-    ash::ColorProvider::Get()->RemoveObserver(this);
+  if (!ash::features::IsFileManagerSwaEnabled() &&
+      ash::DarkLightModeController::Get()) {
+    ash::DarkLightModeController::Get()->RemoveObserver(this);
+  }
   profile_ = nullptr;
   owner_window_ = nullptr;
   // Release our reference to the underlying dialog to allow it to close.
@@ -531,7 +534,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
     dialog_params.title_inactive_color =
         color_provider->GetInactiveDialogTitleBarColor();
 
-    ash::ColorProvider::Get()->AddObserver(this);
+    ash::DarkLightModeController::Get()->AddObserver(this);
 
     ExtensionDialog* dialog = ExtensionDialog::Show(
         file_manager_url, parent_window, profile_, web_contents,

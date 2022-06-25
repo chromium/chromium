@@ -17,7 +17,6 @@
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
@@ -41,7 +40,7 @@ AssistantControllerImpl::AssistantControllerImpl() {
   // provide an opportunity to turn on/off A11Y features.
   Shell::Get()->accessibility_controller()->AddObserver(this);
 
-  color_mode_observer_.Observe(AshColorProvider::Get());
+  color_mode_observer_.Observe(DarkLightModeControllerImpl::Get());
 
   NotifyConstructed();
 }
@@ -80,7 +79,7 @@ void AssistantControllerImpl::SetAssistant(
   OnAccessibilityStatusChanged();
 
   ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
-  OnColorModeChanged(AshColorProvider::Get()->IsDarkModeEnabled());
+  OnColorModeChanged(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
 
   if (assistant) {
     for (AssistantControllerObserver& observer : observers_)

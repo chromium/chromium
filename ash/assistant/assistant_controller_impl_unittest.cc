@@ -17,7 +17,7 @@
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
@@ -277,16 +277,18 @@ TEST_F(AssistantControllerImplTest, ColorModeIsUpdated) {
       Shell::Get()->session_controller()->GetPrimaryUserPrefService();
   ASSERT_TRUE(active_user_pref_service);
 
-  auto* color_provider = AshColorProvider::Get();
-  color_provider->OnActiveUserPrefServiceChanged(active_user_pref_service);
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
+      active_user_pref_service);
   controller()->SetAssistant(test_assistant_service());
-  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
   ASSERT_TRUE(test_assistant_service()->dark_mode_enabled().has_value());
   EXPECT_EQ(initial_dark_mode_status,
             test_assistant_service()->dark_mode_enabled().value());
 
   // Switch the color mode.
-  color_provider->ToggleColorMode();
+  dark_light_mode_controller->ToggleColorMode();
   ASSERT_TRUE(test_assistant_service()->dark_mode_enabled().has_value());
   EXPECT_NE(initial_dark_mode_status,
             test_assistant_service()->dark_mode_enabled().value());

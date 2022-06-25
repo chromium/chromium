@@ -9,7 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/input_method.h"
@@ -76,7 +76,7 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
 
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       input_method_observer_{this};
-  base::ScopedObservation<AshColorProvider, ColorModeObserver>
+  base::ScopedObservation<DarkLightModeControllerImpl, ColorModeObserver>
       color_mode_observer_{this};
 };
 

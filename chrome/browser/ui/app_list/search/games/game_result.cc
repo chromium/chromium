@@ -11,7 +11,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/containers/fixed_flat_set.h"
@@ -49,11 +49,11 @@ bool IsDarkModeEnabled() {
   // case.
   if (ash::features::IsProductivityLauncherEnabled())
     return true;
-  auto* provider = ash::ColorProvider::Get();
-  if (!provider)
+  auto* dark_light_mode_controller = ash::DarkLightModeController::Get();
+  if (!dark_light_mode_controller)
     return false;
   return ash::features::IsDarkLightModeEnabled() &&
-         provider->IsDarkModeEnabled();
+         dark_light_mode_controller->IsDarkModeEnabled();
 }
 
 // Calculates the side length of the largest square that will fit in a circle of
@@ -97,13 +97,13 @@ GameResult::GameResult(Profile* profile,
   app_discovery_service->GetIcon(
       game.GetAppId(), dimension_, apps::ResultType::kGameSearchCatalog,
       base::BindOnce(&GameResult::OnIconLoaded, weak_factory_.GetWeakPtr()));
-  if (ash::ColorProvider::Get())
-    ash::ColorProvider::Get()->AddObserver(this);
+  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
+    dark_light_mode_controller->AddObserver(this);
 }
 
 GameResult::~GameResult() {
-  if (ash::ColorProvider::Get())
-    ash::ColorProvider::Get()->RemoveObserver(this);
+  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
+    dark_light_mode_controller->RemoveObserver(this);
 }
 
 void GameResult::Open(int event_flags) {

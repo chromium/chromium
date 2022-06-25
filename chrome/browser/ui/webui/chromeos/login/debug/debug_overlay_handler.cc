@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/debug/debug_overlay_handler.h"
 
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -134,7 +134,7 @@ void DebugOverlayHandler::HandleCaptureScreenshot(const std::string& name) {
     if (add_resolution_to_filename_)
       filename.append("_" + rect.size().ToString());
 
-    if (ash::ColorProvider::Get()->IsDarkModeEnabled()) {
+    if (ash::DarkLightModeController::Get()->IsDarkModeEnabled()) {
       filename.append("_dark");
     }
 
@@ -147,8 +147,8 @@ void DebugOverlayHandler::HandleCaptureScreenshot(const std::string& name) {
 }
 
 void DebugOverlayHandler::ToggleColorMode() {
-  ash::ColorProvider::Get()->SetDarkModeEnabledForTest(  // IN-TEST
-      !ash::ColorProvider::Get()->IsDarkModeEnabled());
+  ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(  // IN-TEST
+      !ash::DarkLightModeController::Get()->IsDarkModeEnabled());
 }
 
 }  // namespace chromeos

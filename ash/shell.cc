@@ -830,9 +830,12 @@ Shell::~Shell() {
   keyboard_backlight_color_controller_.reset();
   rgb_keyboard_manager_.reset();
 
-  // `AshColorProvider` observes `WallPaperController` and must be destructed
-  // before it.
   ash_color_provider_.reset();
+
+  // Depends on `geolocation_controller_` and `wallpaper_controller_`, so it
+  // must be destructed before the geolocation controller and wallpaper
+  // controller.
+  dark_light_mode_controller_.reset();
 
   // These members access Shell in their destructors.
   wallpaper_controller_.reset();
@@ -860,10 +863,6 @@ Shell::~Shell() {
   docked_magnifier_controller_ = nullptr;
   // Similarly for PrivacyScreenController.
   privacy_screen_controller_ = nullptr;
-
-  // Depends on `geolocation_controller_`, so it must be destructed before the
-  // geolocation controller.
-  dark_light_mode_controller_.reset();
 
   geolocation_controller_.reset();
 

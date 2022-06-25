@@ -5,7 +5,7 @@
 #include "ash/app_list/views/ghost_image_view.h"
 
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -75,7 +75,7 @@ void GhostImageView::DoAnimation(bool hide) {
 void GhostImageView::OnPaint(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(AshColorProvider::Get()->IsDarkModeEnabled()
+  flags.setColor(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
                      ? gfx::kGoogleGrey200
                      : gfx::kGoogleGrey900);
   flags.setAlpha(kGhostColorOpacity);

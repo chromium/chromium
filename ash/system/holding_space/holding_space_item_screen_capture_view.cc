@@ -9,6 +9,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
@@ -153,7 +154,8 @@ void HoldingSpaceItemScreenCaptureView::UpdateImage() {
 
   image_->SetImage(item()->image().GetImageSkia(
       kHoldingSpaceScreenCaptureSize,
-      /*dark_background=*/AshColorProvider::Get()->IsDarkModeEnabled()));
+      /*dark_background=*/DarkLightModeControllerImpl::Get()
+          ->IsDarkModeEnabled()));
   SchedulePaint();
 }
 

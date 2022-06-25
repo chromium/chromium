@@ -6,24 +6,14 @@
 #define ASH_STYLE_ASH_COLOR_PROVIDER_H_
 
 #include "ash/ash_export.h"
-#include "ash/login/ui/login_data_dispatcher.h"
-#include "ash/public/cpp/login_types.h"
-#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "base/callback_helpers.h"
-#include "base/observer_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 
-class AccountId;
-class PrefChangeRegistrar;
-class PrefRegistrySimple;
-class PrefService;
-
 namespace ash {
-class ColorModeObserver;
 
+// TODO(minch): AshColorProvider is not needed to be a class now.
 // The color provider for system UI. It provides colors for Shield layer, Base
 // layer, Controls layer and Content layer. Shield layer is a combination of
 // color, opacity and blur which may change depending on the context, it is
@@ -34,10 +24,7 @@ class ColorModeObserver;
 // state of an interactive element (active/inactive states). Content layer means
 // the UI elements, e.g., separator, text, icon. The color of an element in
 // system UI will be the combination of the colors of the four layers.
-class ASH_EXPORT AshColorProvider : public SessionObserver,
-                                    public ColorProvider,
-                                    public LoginDataDispatcher::Observer,
-                                    public WallpaperControllerObserver {
+class ASH_EXPORT AshColorProvider : public ColorProvider {
  public:
   AshColorProvider();
   AshColorProvider(const AshColorProvider& other) = delete;
@@ -54,12 +41,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // power status icon inside status area is a dual tone icon.
   static SkColor GetSecondToneColor(SkColor color_of_first_tone);
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
-  // SessionObserver:
-  void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
-  void OnSessionStateChanged(session_manager::SessionState state) override;
-
   // ColorProvider:
   SkColor GetShieldLayerColor(ShieldLayerType type) const override;
   SkColor GetBaseLayerColor(BaseLayerType type) const override;
@@ -71,18 +52,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
       SkColor background_color = gfx::kPlaceholderColor) const override;
   std::pair<SkColor, float> GetInvertedInkDropBaseColorAndOpacity(
       SkColor background_color = gfx::kPlaceholderColor) const override;
-  void AddObserver(ColorModeObserver* observer) override;
-  void RemoveObserver(ColorModeObserver* observer) override;
-  // TODO(minch): Rename to ShouldUseDarkColors.
-  bool IsDarkModeEnabled() const override;
-  void SetDarkModeEnabledForTest(bool enabled) override;
-
-  // LoginDataDispatcher::Observer:
-  void OnOobeDialogStateChanged(OobeDialogState state) override;
-  void OnFocusPod(const AccountId& account_id) override;
-
-  // WallpaperControllerObserver:
-  void OnWallpaperColorsChanged() override;
 
   // Gets the color of |type| of the corresponding layer based on the current
   // inverted color mode. For views that need LIGHT colors while DARK mode is
@@ -102,13 +71,7 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // Gets the background color in the desired color mode dark/light.
   SkColor GetBackgroundColorInMode(bool use_dark_color) const;
 
-  // Toggles pref |kDarkModeEnabled|.
-  void ToggleColorMode();
-
  private:
-  friend class ScopedLightModeAsDefault;
-  friend class ScopedAssistantLightModeAsDefault;
-
   // Gets the color of |type| of the corresponding layer. Returns color based on
   // the current inverted color mode if |inverted| is true.
   SkColor GetShieldLayerColorImpl(ShieldLayerType type, bool inverted) const;
@@ -132,35 +95,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // dark mode if |use_dark_color| is true.
   SkColor GetBackgroundThemedColorImpl(SkColor default_color,
                                        bool use_dark_color) const;
-
-  // Notifies all the observers on color mode changes and refreshes the system's
-  // colors on this change.
-  void NotifyColorModeChanges();
-
-  // Returns a closure which calls `NotifyIfDarkModeChanged` if the dark mode
-  // changed between creation and getting out of scope.
-  base::ScopedClosureRunner GetNotifyOnDarkModeChangeClosure();
-  void NotifyIfDarkModeChanged(bool old_is_dark_mode_enabled);
-
-  // The default color is DARK when the DarkLightMode feature is disabled. But
-  // we can also override it to LIGHT through ScopedLightModeAsDefault. This is
-  // done to help keeping some of the UI elements as LIGHT by default before
-  // launching the DarkLightMode feature. Overriding only if the DarkLightMode
-  // feature is disabled. This variable will be removed once fully launched the
-  // DarkLightMode feature.
-  bool override_light_mode_as_default_ = false;
-
-  // Temporary field for testing purposes while OOBE WebUI is being migrated.
-  absl::optional<bool> is_dark_mode_enabled_in_oobe_for_testing_;
-
-  OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;
-
-  // absl::nullopt in case no user pod is focused.
-  absl::optional<bool> is_dark_mode_enabled_for_focused_pod_;
-
-  base::ObserverList<ColorModeObserver> observers_;
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  PrefService* active_user_pref_service_ = nullptr;  // Not owned.
 };
 
 }  // namespace ash

@@ -10,7 +10,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -57,26 +57,30 @@ ArcSystemUIBridge* ArcSystemUIBridge::GetForBrowserContextForTesting(
 ArcSystemUIBridge::ArcSystemUIBridge(content::BrowserContext* context,
                                      ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {
-  ash::ColorProvider* provider = ash::ColorProvider::Get();
-  if (provider)  // for unit tests
-    provider->AddObserver(this);
+  // `dark_light_mode_controller` might be nullptr in unit tests.
+  if (auto* dark_light_mode_controller =
+          ash::DarkLightModeControllerImpl::Get()) {
+    dark_light_mode_controller->AddObserver(this);
+  }
   arc_bridge_service_->system_ui()->AddObserver(this);
 }
 
 ArcSystemUIBridge::~ArcSystemUIBridge() {
-  ash::ColorProvider* provider = ash::ColorProvider::Get();
-  if (provider)  // for unit tests
-    provider->RemoveObserver(this);
+  // `dark_light_mode_controller` might be nullptr in unit tests.
+  if (auto* dark_light_mode_controller =
+          ash::DarkLightModeControllerImpl::Get()) {
+    dark_light_mode_controller->RemoveObserver(this);
+  }
   arc_bridge_service_->system_ui()->RemoveObserver(this);
 }
 
 void ArcSystemUIBridge::OnConnectionReady() {
-  ash::ColorProvider* provider = ash::ColorProvider::Get();
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
   bool dark_theme_status = false;
   // Checking to see if the flag is enabled because provider returns dark
   // mode when the flag is default.
-  if (provider && ash::features::IsDarkLightModeEnabled())
-    dark_theme_status = provider->IsDarkModeEnabled();
+  if (dark_light_mode_controller && ash::features::IsDarkLightModeEnabled())
+    dark_theme_status = dark_light_mode_controller->IsDarkModeEnabled();
 
   if (!ArcSystemUIBridge::SendDeviceDarkThemeState(dark_theme_status)) {
     LOG(ERROR) << "OnConnectionReady failed to get System UI instance for "

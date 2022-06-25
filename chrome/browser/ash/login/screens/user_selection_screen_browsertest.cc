@@ -11,7 +11,7 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -275,7 +275,7 @@ class DarkLightEnabledTest : public LoginManagerTest,
 
  protected:
   void StartLogin(const AccountId& account_id) {
-    ash::ColorProvider::Get()->AddObserver(this);
+    ash::DarkLightModeControllerImpl::Get()->AddObserver(this);
     wait_for_color_mode_change_ = true;
     LoginDisplayHost::default_host()
         ->GetWizardContext()
@@ -283,7 +283,7 @@ class DarkLightEnabledTest : public LoginManagerTest,
     login_manager_mixin_.LoginWithDefaultContext(
         LoginManagerMixin::TestUserInfo(account_id));
     WaitForColorModeChange();
-    ash::ColorProvider::Get()->RemoveObserver(this);
+    ash::DarkLightModeControllerImpl::Get()->RemoveObserver(this);
   }
   void FinishLogin() {
     LoginDisplayHost::default_host()
@@ -320,31 +320,33 @@ class DarkLightEnabledTest : public LoginManagerTest,
 // OOBE + login of the first user.
 IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_PRE_OobeLogin) {
   OobeScreenWaiter(chromeos::UserCreationView::kScreenId).Wait();
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 
   StartLogin(user1);
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
   auto* profile = ProfileManager::GetActiveUserProfile();
   profile->GetPrefs()->SetBoolean(prefs::kDarkModeEnabled, true);
   // Still not enabled because OOBE is shown.
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 
   FinishLogin();
   // Oobe is hidden - prefs are applied.
-  EXPECT_TRUE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
 }
 
 // "Add person" flow.
 IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_OobeLogin) {
   // Oobe is hidden - prefs of the focused user are applied.
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_TRUE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  EXPECT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
 
   LoginScreenTestApi::ClickAddUserButton();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   OobeScreenWaiter(chromeos::UserCreationView::kScreenId).Wait();
   // Oobe is shown - switch to the light mode.
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 
   // Close the dialog with the `cancel` accelerator.
   LoginDisplayHost::default_host()->HandleAccelerator(
@@ -354,33 +356,34 @@ IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_OobeLogin) {
   })).Wait();
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   // Switch back.
-  EXPECT_TRUE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
 
   LoginScreenTestApi::ClickAddUserButton();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   OobeScreenWaiter(chromeos::UserCreationView::kScreenId).Wait();
 
   StartLogin(user2);
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
   FinishLogin();
   auto* profile = ProfileManager::GetActiveUserProfile();
   profile->GetPrefs()->SetBoolean(prefs::kDarkModeEnabled, true);
-  EXPECT_TRUE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
 
   profile->GetPrefs()->SetBoolean(prefs::kDarkModeEnabled, false);
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 }
 
 // Test focusing different pods.
 IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, OobeLogin) {
   ASSERT_EQ(LoginScreenTestApi::GetFocusedUser(), user2);
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 
   ASSERT_TRUE(LoginScreenTestApi::FocusUser(user1));
-  EXPECT_TRUE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
 
   ASSERT_TRUE(LoginScreenTestApi::FocusUser(user2));
-  EXPECT_FALSE(ash::ColorProvider::Get()->IsDarkModeEnabled());
+  EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
 }
 
 }  // namespace

@@ -8,6 +8,7 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
@@ -166,7 +167,7 @@ void InputMenuView::Init() {
       views::BoxLayout::Orientation::kVertical));
   auto* color_provider = ash::AshColorProvider::Get();
   auto bg_color = color_provider->GetBackgroundColorInMode(
-      color_provider->IsDarkModeEnabled());
+      ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
   SetBackground(views::CreateRoundedRectBackground(bg_color, kCornerRadius));
   SkColor color = color_provider->GetContentLayerColor(
       ash::AshColorProvider::ContentLayerType::kTextColorPrimary);

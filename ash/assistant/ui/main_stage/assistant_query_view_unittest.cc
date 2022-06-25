@@ -12,7 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -31,13 +31,14 @@ using AssistantQueryViewUnittest = AssistantAshTestBase;
 TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);
-  auto* color_provider = AshColorProvider::Get();
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
 
-  color_provider->OnActiveUserPrefServiceChanged(
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
 
   ShowAssistantUi();
-  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
 
   const views::View* query_view =
       page_view()->GetViewByID(AssistantViewID::kQueryView);
@@ -60,8 +61,9 @@ TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
                                 /*use_debug_colors=*/false));
 
   // Switch the color mode.
-  color_provider->ToggleColorMode();
-  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
+  dark_light_mode_controller->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status,
+            dark_light_mode_controller->IsDarkModeEnabled());
 
   EXPECT_EQ(
       high_confidence_label->GetEnabledColor(),

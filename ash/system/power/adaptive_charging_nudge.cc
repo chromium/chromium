@@ -6,7 +6,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/tray/system_nudge_label.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -54,7 +54,7 @@ std::unique_ptr<SystemNudgeLabel> AdaptiveChargingNudge::CreateLabelView()
 }
 
 const gfx::VectorIcon& AdaptiveChargingNudge::GetIcon() const {
-  return AshColorProvider::Get()->IsDarkModeEnabled()
+  return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
              ? kAdaptiveChargingNudgeDarkIcon
              : kAdaptiveChargingNudgeLightIcon;
 }

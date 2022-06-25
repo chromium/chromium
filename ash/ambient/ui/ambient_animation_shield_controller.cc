@@ -16,9 +16,10 @@ AmbientAnimationShieldController::AmbientAnimationShieldController(
     : shield_view_(std::move(shield_view)), parent_view_(parent_view) {
   DCHECK(shield_view_);
   DCHECK(parent_view_);
-  color_provider_observer_.Observe(AshColorProvider::Get());
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  color_provider_observer_.Observe(dark_light_mode_controller);
   // Call OnColorModeChanged() directly to capture the initial dark-mode value.
-  OnColorModeChanged(AshColorProvider::Get()->IsDarkModeEnabled());
+  OnColorModeChanged(dark_light_mode_controller->IsDarkModeEnabled());
 }
 
 AmbientAnimationShieldController::~AmbientAnimationShieldController() = default;

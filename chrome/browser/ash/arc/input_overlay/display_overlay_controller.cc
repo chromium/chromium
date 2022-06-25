@@ -8,9 +8,8 @@
 
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
@@ -60,13 +59,17 @@ DisplayOverlayController::DisplayOverlayController(
   AddOverlay(first_launch ? DisplayMode::kEducation : DisplayMode::kView);
   touch_injector_->set_display_overlay_controller(this);
   ash::Shell::Get()->AddPreTargetHandler(this);
-  if (ash::ColorProvider::Get())
-    ash::ColorProvider::Get()->AddObserver(this);
+  if (auto* dark_light_mode_controller =
+          ash::DarkLightModeControllerImpl::Get()) {
+    dark_light_mode_controller->AddObserver(this);
+  }
 }
 
 DisplayOverlayController::~DisplayOverlayController() {
-  if (ash::ColorProvider::Get())
-    ash::ColorProvider::Get()->RemoveObserver(this);
+  if (auto* dark_light_mode_controller =
+          ash::DarkLightModeControllerImpl::Get()) {
+    dark_light_mode_controller->RemoveObserver(this);
+  }
   ash::Shell::Get()->RemovePreTargetHandler(this);
   touch_injector_->set_display_overlay_controller(nullptr);
   RemoveOverlayIfAny();

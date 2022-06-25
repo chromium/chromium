@@ -16,7 +16,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -133,7 +133,8 @@ void MediaStringView::OnThemeChanged() {
   media_text_->SetShadows(ambient::util::GetTextShadowValues(
       GetColorProvider(), settings_.text_shadow_elevation));
 
-  const bool dark_mode_enabled = AshColorProvider::Get()->IsDarkModeEnabled();
+  const bool dark_mode_enabled =
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
   DCHECK(icon_);
   icon_->SetImage(gfx::CreateVectorIcon(kMusicNoteIcon, kMusicNoteIconSizeDip,
                                         dark_mode_enabled

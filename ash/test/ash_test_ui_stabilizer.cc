@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/time/time_override.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -86,9 +86,9 @@ void AshTestUiStabilizer::MaybeSetDarkMode() {
   if (!features::IsDarkLightModeEnabled())
     return;
 
-  auto* color_provider = AshColorProvider::Get();
-  if (!color_provider->IsDarkModeEnabled())
-    color_provider->ToggleColorMode();
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  if (!dark_light_mode_controller->IsDarkModeEnabled())
+    dark_light_mode_controller->ToggleColorMode();
 }
 
 void AshTestUiStabilizer::SetWallPaper(const gfx::Size& wallpaper_size) {

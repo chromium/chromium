@@ -29,7 +29,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
@@ -632,7 +632,7 @@ void DownloadGooglePhotosImage(
 
 // Returns an appropriate ColorMode value based on the Light/Dark mode state.
 OnlineWallpaperVariantInfoFetcher::ColorMode GetColorMode() {
-  return Shell::Get()->ash_color_provider()->IsDarkModeEnabled()
+  return Shell::Get()->dark_light_mode_controller()->IsDarkModeEnabled()
              ? OnlineWallpaperVariantInfoFetcher::ColorMode::kDarkMode
              : OnlineWallpaperVariantInfoFetcher::ColorMode::kLightMode;
 }
@@ -1663,15 +1663,17 @@ void WallpaperControllerImpl::OnRootWindowAdded(aura::Window* root_window) {
 }
 
 void WallpaperControllerImpl::OnShellInitialized() {
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
-  Shell::Get()->overview_controller()->AddObserver(this);
-  Shell::Get()->ash_color_provider()->AddObserver(this);
+  auto* shell = Shell::Get();
+  shell->tablet_mode_controller()->AddObserver(this);
+  shell->overview_controller()->AddObserver(this);
+  shell->dark_light_mode_controller()->AddObserver(this);
 }
 
 void WallpaperControllerImpl::OnShellDestroying() {
-  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-  Shell::Get()->overview_controller()->RemoveObserver(this);
-  Shell::Get()->ash_color_provider()->RemoveObserver(this);
+  auto* shell = Shell::Get();
+  shell->tablet_mode_controller()->RemoveObserver(this);
+  shell->overview_controller()->RemoveObserver(this);
+  shell->dark_light_mode_controller()->RemoveObserver(this);
 }
 
 void WallpaperControllerImpl::OnWallpaperResized() {

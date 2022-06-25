@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_progress_indicator_util.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
@@ -291,7 +292,8 @@ class HoldingSpaceTrayIconPreview::ImageLayerOwner
   void UpdateVisualState() override {
     if (item_ && image_skia_.isNull()) {
       image_skia_ = item_->image().GetImageSkia(
-          layer()->size(), AshColorProvider::Get()->IsDarkModeEnabled());
+          layer()->size(),
+          DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
     }
   }
 

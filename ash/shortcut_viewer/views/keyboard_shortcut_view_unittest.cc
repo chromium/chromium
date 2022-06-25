@@ -9,7 +9,7 @@
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/views/keyboard_shortcut_item_view.h"
 #include "ash/shortcut_viewer/views/ksv_search_box_view.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -301,7 +301,8 @@ TEST_F(KeyboardShortcutViewTest, FrameAndBackgroundColorUpdates) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(chromeos::features::kDarkLightMode);
   ash::AshTestBase::SimulateGuestLogin();
-  ash::AshColorProvider::Get()->SetDarkModeEnabledForTest(false);
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->SetDarkModeEnabledForTest(false);
   // Show the widget.
   Toggle();
 
@@ -312,7 +313,7 @@ TEST_F(KeyboardShortcutViewTest, FrameAndBackgroundColorUpdates) {
             window->GetProperty(chromeos::kFrameInactiveColorKey));
   EXPECT_EQ(kTitleAndFrameColorLight, GetView()->GetBackground()->get_color());
 
-  ash::AshColorProvider::Get()->ToggleColorMode();
+  dark_light_mode_controller->ToggleColorMode();
 
   EXPECT_EQ(kTitleAndFrameColorDark,
             window->GetProperty(chromeos::kFrameActiveColorKey));

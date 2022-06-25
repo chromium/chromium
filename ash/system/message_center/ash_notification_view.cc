@@ -16,6 +16,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
@@ -1435,9 +1436,10 @@ SkColor AshNotificationView::CalculateIconAndButtonsColor(
     return default_color;
 
   // TODO(crbug/1294459): re-evaluate contrast, maybe increase or use fixed HSL
-  float minContrastRatio = AshColorProvider::Get()->IsDarkModeEnabled()
-                               ? minContrastRatio = kDarkModeMinContrastRatio
-                               : color_utils::kMinimumReadableContrastRatio;
+  float minContrastRatio =
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+          ? minContrastRatio = kDarkModeMinContrastRatio
+          : color_utils::kMinimumReadableContrastRatio;
 
   // Actual color is kTransparent80, but BlendForMinContrast requires opaque.
   SkColor bg_color = AshColorProvider::Get()->GetBaseLayerColor(

@@ -14,6 +14,7 @@
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/shortcut_viewer/views/bubble_view.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -63,7 +64,7 @@ class KSVSeparatorImageView : public views::ImageView {
     DCHECK(color_provider_);
     SkColor kShortcutBubbleSeparatorColor = kShortcutBubbleSeparatorColorLight;
     if (ash::features::IsDarkLightModeEnabled() &&
-        color_provider_->IsDarkModeEnabled()) {
+        ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()) {
       kShortcutBubbleSeparatorColor = color_provider_->GetContentLayerColor(
           ash::ColorProvider::ContentLayerType::kTextColorSecondary);
     }

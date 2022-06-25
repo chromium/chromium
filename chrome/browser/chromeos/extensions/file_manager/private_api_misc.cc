@@ -16,7 +16,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
@@ -1279,12 +1279,12 @@ void FileManagerPrivateInternalGetRecentFilesFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetFrameColorFunction::Run() {
   ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
-  auto* color_provider = ash::ColorProvider::Get();
   std::string frame_color = SkColorToHexString(SK_ColorWHITE);
-  if (color_provider) {
+  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get()) {
     frame_color = SkColorToHexString(cros_styles::ResolveColor(
-        cros_styles::ColorName::kBgColor, color_provider->IsDarkModeEnabled(),
-        /*use_debug_color=*/false));
+        cros_styles::ColorName::kBgColor,
+        dark_light_mode_controller->IsDarkModeEnabled(),
+        /*use_debug_colors=*/false));
   }
   return RespondNow(OneArgument(base::Value(frame_color)));
 }

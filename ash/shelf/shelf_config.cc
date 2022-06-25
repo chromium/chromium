@@ -11,6 +11,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -492,7 +493,7 @@ AshColorProvider::BaseLayerType ShelfConfig::GetShelfBaseLayerType() const {
   if (!is_in_app())
     return AshColorProvider::BaseLayerType::kTransparent60;
 
-  return AshColorProvider::Get()->IsDarkModeEnabled()
+  return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
              ? AshColorProvider::BaseLayerType::kTransparent90
              : AshColorProvider::BaseLayerType::kOpaque;
 }

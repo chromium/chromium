@@ -12,6 +12,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/network/network_icon_animation.h"
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/tray/tray_constants.h"
@@ -303,7 +304,7 @@ NetworkIconImpl::NetworkIconImpl(const std::string& guid,
                                  IconType icon_type,
                                  NetworkType network_type)
     : icon_type_(icon_type),
-      is_dark_themed_(AshColorProvider::Get()->IsDarkModeEnabled()) {
+      is_dark_themed_(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()) {
   // Default image is null.
 }
 
@@ -335,8 +336,10 @@ void NetworkIconImpl::Update(const NetworkStateProperties* network,
     dirty = true;
   }
 
-  if (is_dark_themed_ != AshColorProvider::Get()->IsDarkModeEnabled()) {
-    is_dark_themed_ = AshColorProvider::Get()->IsDarkModeEnabled();
+  const bool is_dark_themed =
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+  if (is_dark_themed_ != is_dark_themed) {
+    is_dark_themed_ = is_dark_themed;
     dirty = true;
   }
 

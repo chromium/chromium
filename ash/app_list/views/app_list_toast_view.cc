@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "components/vector_icons/vector_icons.h"
@@ -388,7 +389,7 @@ void AppListToastView::UpdateIconImage() {
   // Default to dark_icon_ if dark/light mode feature is not enabled.
   const gfx::VectorIcon* themed_icon =
       !features::IsDarkLightModeEnabled() ||
-              AshColorProvider::Get()->IsDarkModeEnabled()
+              DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
           ? dark_icon_
           : light_icon_;
   icon_->SetImage(ui::ImageModel::FromVectorIcon(

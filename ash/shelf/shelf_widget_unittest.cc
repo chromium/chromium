@@ -23,6 +23,7 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -178,7 +179,8 @@ TEST_F(ShelfWidgetDarkLightModeTest, TabletModeTransition) {
             shelf_widget->GetShelfBackgroundColor());
   EXPECT_EQ(0.0, shelf_widget->GetOpaqueBackground()->background_blur());
 
-  ash::AshColorProvider::Get()->ToggleColorMode();
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->ToggleColorMode();
 
   EXPECT_EQ(AshColorProvider::Get()->GetBaseLayerColor(
                 AshColorProvider::BaseLayerType::kTransparent60),
@@ -196,7 +198,7 @@ TEST_F(ShelfWidgetDarkLightModeTest, TabletModeTransition) {
             shelf_widget->GetShelfBackgroundColor());
   EXPECT_GT(shelf_widget->GetOpaqueBackground()->background_blur(), 0.0f);
 
-  ash::AshColorProvider::Get()->ToggleColorMode();
+  dark_light_mode_controller->ToggleColorMode();
 
   EXPECT_EQ(AshColorProvider::Get()->GetBaseLayerColor(
                 AshColorProvider::BaseLayerType::kTransparent80),
@@ -219,7 +221,8 @@ TEST_F(ShelfWidgetDarkLightModeTest, TabletModeTransitionWithWindowOpen) {
             shelf_widget->GetShelfBackgroundColor());
   EXPECT_EQ(0.0f, shelf_widget->GetOpaqueBackground()->background_blur());
 
-  ash::AshColorProvider::Get()->ToggleColorMode();
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->ToggleColorMode();
 
   EXPECT_EQ(AshColorProvider::Get()->GetBaseLayerColor(
                 AshColorProvider::BaseLayerType::kOpaque),
@@ -237,7 +240,7 @@ TEST_F(ShelfWidgetDarkLightModeTest, TabletModeTransitionWithWindowOpen) {
             shelf_widget->GetShelfBackgroundColor());
   EXPECT_GT(shelf_widget->GetOpaqueBackground()->background_blur(), 0.0f);
 
-  ash::AshColorProvider::Get()->ToggleColorMode();
+  dark_light_mode_controller->ToggleColorMode();
 
   EXPECT_EQ(AshColorProvider::Get()->GetBaseLayerColor(
                 AshColorProvider::BaseLayerType::kTransparent80),
