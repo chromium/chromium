@@ -150,7 +150,7 @@ config("skia_library_config") {
   }
 
   # Settings for text blitting, chosen to approximate the system browser.
-  if (is_linux || is_chromeos) {
+  if (is_chromeos) {
     defines += [
       "SK_GAMMA_EXPONENT=1.2",
       "SK_GAMMA_CONTRAST=0.2",
@@ -160,6 +160,12 @@ config("skia_library_config") {
       "SK_GAMMA_APPLY_TO_A8",
       "SK_GAMMA_EXPONENT=1.4",
       "SK_GAMMA_CONTRAST=0.0",
+    ]
+  } else if (is_linux) {
+    defines += [
+      "SK_GAMMA_APPLY_TO_A8",
+      "SK_GAMMA_EXPONENT=1.8",
+      "SK_GAMMA_CONTRAST=0.5",
     ]
   } else if (is_win) {
     defines += [
