@@ -448,4 +448,48 @@ public class AnswerSuggestionProcessorUnitTest {
         Assert.assertEquals(icon1, newIcon1);
         Assert.assertEquals(icon2, newIcon2);
     }
+
+    @Test
+    @SmallTest
+    public void checkColorReversalRequired_ReturnsFalseIfOmniBoxAnswerColorReversalIsFalse() {
+        // Function should return false if omniBoxAnswerColorReversal is false regardless of
+        // omniBoxAnswerColorReversalFinanceOnly value and answer type.
+        for (@AnswerType int type : ANSWER_TYPES) {
+            Assert.assertEquals(false,
+                    AnswerSuggestionProcessor.checkColorReversalRequired(type, false, false));
+            Assert.assertEquals(
+                    false, AnswerSuggestionProcessor.checkColorReversalRequired(type, false, true));
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void
+    checkColorReversalRequired_ReturnsTrueIfOmniBoxAnswerColorReversalIsTrueAndFinanceOnlyIsFalse() {
+        // Function should return true if omniBoxAnswerColorReversal and
+        // omniBoxAnswerColorReversalFinanceOnly are true regardless of answer type.
+        for (@AnswerType int type : ANSWER_TYPES) {
+            Assert.assertEquals(
+                    true, AnswerSuggestionProcessor.checkColorReversalRequired(type, true, false));
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void
+    checkColorReversalRequired_ReturnsTrueIfAnswerIsFinanceAndFinanceOnlyIsTrue_AndFailsOtherwise() {
+        for (@AnswerType int type : ANSWER_TYPES) {
+            if (type == AnswerType.FINANCE) {
+                // Function should return true if omniBoxAnswerColorReversal and
+                // omniBoxAnswerColorReversalFinanceOnly are true and answer type is finance.
+                Assert.assertEquals(true,
+                        AnswerSuggestionProcessor.checkColorReversalRequired(type, true, true));
+            } else {
+                // Function should return false if omniBoxAnswerColorReversal and
+                // omniBoxAnswerColorReversalFinanceOnly are true and answer type is otherwise.
+                Assert.assertEquals(false,
+                        AnswerSuggestionProcessor.checkColorReversalRequired(type, true, true));
+            }
+        }
+    }
 }

@@ -403,6 +403,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/DropdownItemViewInfoListManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/FaviconFetcherUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/answer/AnswerSuggestionProcessorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/answer/AnswerTextNewLayoutUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionProcessorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionViewProcessorUnitTest.java",

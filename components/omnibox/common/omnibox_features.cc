@@ -250,6 +250,13 @@ const base::Feature kAdaptiveSuggestionsCount{"OmniboxAdaptiveSuggestionsCount",
 const base::Feature kClipboardSuggestionContentHidden = {
     "ClipboardSuggestionContentHidden", enabled_by_default_android_only};
 
+// If enabled, finance ticker answer from omnibox will reverse the color for
+// stock ticker. only colors being swapped are those that represent "growth" and
+// "loss" to represent colors red and green in a way that is appropriate for a
+// given country/culture
+const base::Feature kFinanceTickerColorReverse = {
+    "FinanceTickerColorReverse", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, frequently visited sites are presented in form of a single row
 // with a carousel of tiles, instead of one URL per row.
 extern const base::Feature kMostVisitedTiles{"OmniboxMostVisitedTiles",

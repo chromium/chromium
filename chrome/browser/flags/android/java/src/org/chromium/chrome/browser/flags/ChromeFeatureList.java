@@ -356,6 +356,7 @@ public abstract class ChromeFeatureList {
     public static final String FEED_LOADING_PLACEHOLDER = "FeedLoadingPlaceholder";
     public static final String FEED_RELIABILITY_LOGGING = "FeedReliabilityLogging";
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
+    public static final String FINANCE_TICKER_COLOR_REVERSE = "FinanceTickerColorReverse";
     public static final String FIXED_UMA_SESSION_RESUME_ORDER = "FixedUmaSessionResumeOrder";
     public static final String FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS =
             "FocusOmniboxInIncognitoTabIntents";

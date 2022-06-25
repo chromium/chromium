@@ -339,6 +339,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &offline_pages::kOfflinePagesLivePageSharingFeature,
     &offline_pages::kPrefetchingOfflinePagesFeature,
     &omnibox::kAdaptiveSuggestionsCount,
+    &omnibox::kFinanceTickerColorReverse,
     &omnibox::kMostVisitedTiles,
     &omnibox::kOmniboxAssistantVoiceSearch,
     &omnibox::kOmniboxSpareRenderer,
