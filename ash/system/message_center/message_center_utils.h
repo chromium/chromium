@@ -75,6 +75,7 @@ void FadeOutView(views::View* view,
 // Slide out animation using AnimationBuilder.
 void SlideOutView(views::View* view,
                   base::OnceClosure on_animation_ended,
+                  base::OnceClosure on_animation_aborted,
                   int delay_in_ms,
                   int duration_in_ms,
                   gfx::Tween::Type tween_type = gfx::Tween::LINEAR,

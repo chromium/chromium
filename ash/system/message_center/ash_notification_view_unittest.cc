@@ -1078,4 +1078,30 @@ TEST_F(AshNotificationViewTest, OnThemeChangedWithoutMessageLabel) {
   EXPECT_EQ(nullptr, GetMessageLabel(notification_view()));
 }
 
+TEST_F(AshNotificationViewTest, DuplicateGroupChildRemovalWithAnimation) {
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
+
+  auto notification = CreateTestNotification();
+
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  auto* notification_view =
+      GetNotificationViewFromMessageCenter(notification->id());
+  MakeNotificationGroupParent(
+      notification_view,
+      2 * message_center_style::kMaxGroupedNotificationsInCollapsedState);
+
+  notification_view->ToggleExpand();
+  EXPECT_TRUE(notification_view->IsExpanded());
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Ensure a duplicate call to RemoveGroupNotification does not cause a crash.
+  auto* child_view = GetFirstGroupedChildNotificationView(notification_view);
+  notification_view->RemoveGroupNotification(child_view->notification_id());
+  notification_view->RemoveGroupNotification(child_view->notification_id());
+}
+
 }  // namespace ash
