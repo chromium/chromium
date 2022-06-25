@@ -337,12 +337,11 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   void SetupUserPolicy(const std::string& network_configs_json) {
     base::Value network_configs(base::Value::Type::LIST);
     if (!network_configs_json.empty()) {
-      base::JSONReader::ValueWithError parsed_json =
-          base::JSONReader::ReadAndReturnValueWithError(
-              network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
-      ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-      ASSERT_TRUE(parsed_json.value->is_list());
-      network_configs = std::move(*parsed_json.value);
+      auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+          network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
+      ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+      ASSERT_TRUE(parsed_json->is_list());
+      network_configs = std::move(*parsed_json);
     }
     managed_config_handler_->SetPolicy(
         ::onc::ONC_SOURCE_USER_POLICY, helper_.UserHash(), network_configs,
@@ -354,12 +353,11 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
                          const base::Value& global_config) {
     base::Value network_configs(base::Value::Type::LIST);
     if (!network_configs_json.empty()) {
-      base::JSONReader::ValueWithError parsed_json =
-          base::JSONReader::ReadAndReturnValueWithError(
-              network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
-      ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-      ASSERT_TRUE(parsed_json.value->is_list());
-      network_configs = std::move(*parsed_json.value);
+      auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+          network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
+      ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+      ASSERT_TRUE(parsed_json->is_list());
+      network_configs = std::move(*parsed_json);
     }
     managed_config_handler_->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
                                        std::string(),  // no username hash

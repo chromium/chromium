@@ -113,15 +113,15 @@ void PrefModelAssociator::InitPrefAndAssociate(
   if (sync_pref.IsValid()) {
     const sync_pb::PreferenceSpecifics& preference = GetSpecifics(sync_pref);
     DCHECK(pref_name == preference.name());
-    base::JSONReader::ValueWithError parsed_json =
+    base::JSONReader::Result parsed_json =
         base::JSONReader::ReadAndReturnValueWithError(preference.value());
-    if (!parsed_json.value) {
+    if (!parsed_json.has_value()) {
       LOG(ERROR) << "Failed to deserialize value of preference '" << pref_name
-                 << "': " << parsed_json.error_message;
+                 << "': " << parsed_json.error().message;
       return;
     }
     std::unique_ptr<base::Value> sync_value =
-        base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
+        base::Value::ToUniquePtrValue(std::move(*parsed_json));
 
     if (user_pref_value) {
       DVLOG(1) << "Found user pref value for " << pref_name;
@@ -453,15 +453,14 @@ absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
 // static
 absl::optional<base::Value> PrefModelAssociator::ReadPreferenceSpecifics(
     const sync_pb::PreferenceSpecifics& preference) {
-  base::JSONReader::ValueWithError parsed_json =
+  base::JSONReader::Result parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(preference.value());
-  if (!parsed_json.value) {
-    std::string err =
-        "Failed to deserialize preference value: " + parsed_json.error_message;
-    LOG(ERROR) << err;
+  if (!parsed_json.has_value()) {
+    LOG(ERROR) << "Failed to deserialize preference value: "
+               << parsed_json.error().message;
     return absl::nullopt;
   }
-  return std::move(parsed_json.value);
+  return std::move(*parsed_json);
 }
 
 void PrefModelAssociator::AddSyncedPrefObserver(const std::string& name,

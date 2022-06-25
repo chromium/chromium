@@ -325,16 +325,15 @@ std::vector<CapturedSiteParams> GetCapturedSites(
   // Parse json text content to json value node.
   base::Value root_node;
   {
-    JSONReader::ValueWithError value_with_error =
-        JSONReader::ReadAndReturnValueWithError(
-            json_text, JSONParserOptions::JSON_PARSE_RFC);
-    if (!value_with_error.value) {
+    auto value_with_error = JSONReader::ReadAndReturnValueWithError(
+        json_text, JSONParserOptions::JSON_PARSE_RFC);
+    if (!value_with_error.has_value()) {
       LOG(WARNING) << "Could not load test config from json file: "
                    << "`testcases.json` because: "
-                   << value_with_error.error_message;
+                   << value_with_error.error().message;
       return sites;
     }
-    root_node = std::move(value_with_error.value.value());
+    root_node = std::move(*value_with_error);
   }
   base::Value* list_node = root_node.FindListKey("tests");
   if (!list_node) {

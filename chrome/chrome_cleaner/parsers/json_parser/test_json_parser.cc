@@ -12,16 +12,15 @@ namespace chrome_cleaner {
 
 void TestJsonParser::Parse(const std::string& json,
                            ParseDoneCallback callback) {
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json, base::JSON_PARSE_CHROMIUM_EXTENSIONS |
-                    base::JSON_ALLOW_TRAILING_COMMAS |
-                    base::JSON_REPLACE_INVALID_CHARACTERS);
-  if (value_with_error.value) {
-    std::move(callback).Run(std::move(value_with_error.value), absl::nullopt);
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      json, base::JSON_PARSE_CHROMIUM_EXTENSIONS |
+                base::JSON_ALLOW_TRAILING_COMMAS |
+                base::JSON_REPLACE_INVALID_CHARACTERS);
+  if (value_with_error.has_value()) {
+    std::move(callback).Run(std::move(*value_with_error), absl::nullopt);
   } else {
     std::move(callback).Run(
-        absl::nullopt, absl::make_optional(value_with_error.error_message));
+        absl::nullopt, absl::make_optional(value_with_error.error().message));
   }
 }
 

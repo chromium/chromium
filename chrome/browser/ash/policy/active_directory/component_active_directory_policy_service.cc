@@ -73,16 +73,15 @@ std::string GetPolicyValue(const std::string& policy_fetch_response_blob) {
 // Parses |json| to a base::Value. Returns nullptr and prints errors
 // on failure.
 absl::optional<base::Value> ParseJsonToDict(const std::string& json) {
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!value_with_error.value) {
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      json, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value_with_error.has_value()) {
     LOG(ERROR) << "Could not parse policy value as JSON: "
-               << value_with_error.error_message;
+               << value_with_error.error().message;
     return absl::nullopt;
   }
 
-  base::Value value = std::move(value_with_error.value.value());
+  base::Value value = std::move(*value_with_error);
   if (!value.is_dict()) {
     LOG(ERROR) << "The JSON policy value is not a dictionary.";
     return absl::nullopt;

@@ -133,16 +133,16 @@ void BindInProcessService(
 
 void ParsingComplete(scoped_refptr<DataDecoder::CancellationFlag> is_cancelled,
                      DataDecoder::ValueParseCallback callback,
-                     base::JSONReader::ValueWithError value_with_error) {
+                     base::JSONReader::Result value_with_error) {
   if (is_cancelled->data)
     return;
 
-  if (!value_with_error.value) {
+  if (!value_with_error.has_value()) {
     std::move(callback).Run(
-        DataDecoder::ValueOrError::Error(value_with_error.error_message));
+        DataDecoder::ValueOrError::Error(value_with_error.error().message));
   } else {
     std::move(callback).Run(
-        DataDecoder::ValueOrError::Value(std::move(*value_with_error.value)));
+        DataDecoder::ValueOrError::Value(std::move(*value_with_error)));
   }
 }
 
@@ -213,7 +213,7 @@ void DataDecoder::ParseJson(const std::string& json,
                     return;
                   }
 
-                  base::JSONReader::ValueWithError value_with_error =
+                  auto value_with_error =
                       base::JSONReader::ReadAndReturnValueWithError(
                           *result.value, base::JSON_PARSE_RFC);
                   ParsingComplete(is_cancelled, std::move(callback),

@@ -82,18 +82,16 @@ void OobeConfiguration::OnConfigurationCheck(bool has_configuration,
     return;
   }
 
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          configuration, base::JSON_PARSE_CHROMIUM_EXTENSIONS |
-                             base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!parsed_json.value) {
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      configuration,
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS | base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!parsed_json.has_value()) {
     LOG(ERROR) << "Error parsing OOBE configuration: "
-               << parsed_json.error_message;
-  } else if (!configuration::ValidateConfiguration(*parsed_json.value)) {
+               << parsed_json.error().message;
+  } else if (!configuration::ValidateConfiguration(*parsed_json)) {
     LOG(ERROR) << "Invalid OOBE configuration";
   } else {
-    configuration_ =
-        base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
+    configuration_ = base::Value::ToUniquePtrValue(std::move(*parsed_json));
     UpdateConfigurationValues();
   }
   NotifyObservers();

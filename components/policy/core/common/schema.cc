@@ -1445,15 +1445,15 @@ absl::optional<base::Value> Schema::ParseToDictAndValidate(
     const std::string& schema,
     int validator_options,
     std::string* error) {
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          schema, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS |
-                      base::JSONParserOptions::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  *error = value_with_error.error_message;
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      schema, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS |
+                  base::JSONParserOptions::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
-  if (!value_with_error.value)
+  if (!value_with_error.has_value()) {
+    *error = value_with_error.error().message;
     return absl::nullopt;
-  base::Value json = std::move(value_with_error.value.value());
+  }
+  base::Value json = std::move(*value_with_error);
   if (!json.is_dict()) {
     *error = "Schema must be a JSON object";
     return absl::nullopt;

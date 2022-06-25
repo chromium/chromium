@@ -22,9 +22,9 @@ namespace {
 // Verifies that |json| can be sanitized by JsonSanitizer, and that the output
 // JSON is parsed to the same exact value as the original JSON.
 void CheckSuccess(const std::string& json) {
-  base::JSONReader::ValueWithError original_parse =
+  auto original_parse =
       base::JSONReader::ReadAndReturnValueWithError(json, base::JSON_PARSE_RFC);
-  ASSERT_TRUE(original_parse.value);
+  ASSERT_TRUE(original_parse.has_value());
 
   base::RunLoop loop;
   bool result_received = false;
@@ -32,11 +32,10 @@ void CheckSuccess(const std::string& json) {
       json, base::BindLambdaForTesting([&](JsonSanitizer::Result result) {
         result_received = true;
         ASSERT_TRUE(result.value);
-        base::JSONReader::ValueWithError reparse =
-            base::JSONReader::ReadAndReturnValueWithError(*result.value,
-                                                          base::JSON_PARSE_RFC);
-        ASSERT_TRUE(reparse.value);
-        EXPECT_EQ(*reparse.value, *original_parse.value);
+        auto reparse = base::JSONReader::ReadAndReturnValueWithError(
+            *result.value, base::JSON_PARSE_RFC);
+        ASSERT_TRUE(reparse.has_value());
+        EXPECT_EQ(*reparse, *original_parse);
         loop.Quit();
       }));
 

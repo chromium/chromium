@@ -284,8 +284,8 @@ TEST(InvalidatorRegistrarWithMemoryTest, RestoresInterestingTopics) {
 
   auto stored_topics =
       base::JSONReader::ReadAndReturnValueWithError(kStoredTopicsJson);
-  ASSERT_TRUE(stored_topics.value) << stored_topics.error_message;
-  pref_service.Set(kTopicsToHandler, std::move(*stored_topics.value));
+  ASSERT_TRUE(stored_topics.has_value()) << stored_topics.error().message;
+  pref_service.Set(kTopicsToHandler, std::move(*stored_topics));
 
   // Create an invalidator and make sure it correctly restored state from the
   // pref.
@@ -342,12 +342,12 @@ TEST(InvalidatorRegistrarWithMemoryTest, ClearsTopicsWithObsoleteOwnerNames) {
         }})";
   auto initial_stored_topics =
       base::JSONReader::ReadAndReturnValueWithError(kInitialStoredTopics);
-  ASSERT_TRUE(initial_stored_topics.value)
-      << initial_stored_topics.error_message;
+  ASSERT_TRUE(initial_stored_topics.has_value())
+      << initial_stored_topics.error().message;
 
-  pref_service.Set(kTopicsToHandler, initial_stored_topics.value->Clone());
+  pref_service.Set(kTopicsToHandler, initial_stored_topics->Clone());
 
-  ASSERT_EQ(*initial_stored_topics.value, *pref_service.Get(kTopicsToHandler));
+  ASSERT_EQ(*initial_stored_topics, *pref_service.Get(kTopicsToHandler));
 
   InvalidatorRegistrarWithMemory::ClearTopicsWithObsoleteOwnerNames(
       &pref_service);
@@ -366,10 +366,10 @@ TEST(InvalidatorRegistrarWithMemoryTest, ClearsTopicsWithObsoleteOwnerNames) {
           "sender_full_of_cloud": {}})";
   auto expected_stored_topics =
       base::JSONReader::ReadAndReturnValueWithError(kExpectedStoredTopics);
-  ASSERT_TRUE(expected_stored_topics.value)
-      << expected_stored_topics.error_message;
+  ASSERT_TRUE(expected_stored_topics.has_value())
+      << expected_stored_topics.error().message;
 
-  EXPECT_EQ(*expected_stored_topics.value, *pref_service.Get(kTopicsToHandler));
+  EXPECT_EQ(*expected_stored_topics, *pref_service.Get(kTopicsToHandler));
 }
 
 // This test verifies that topics are not unsubscribed after browser restart
@@ -396,8 +396,8 @@ TEST(InvalidatorRegistrarWithMemoryTest, ShouldKeepSubscriptionsAfterRestart) {
 
   auto stored_topics =
       base::JSONReader::ReadAndReturnValueWithError(kStoredTopicsJson);
-  ASSERT_TRUE(stored_topics.value) << stored_topics.error_message;
-  pref_service.Set(kTopicsToHandler, std::move(*stored_topics.value));
+  ASSERT_TRUE(stored_topics.has_value()) << stored_topics.error().message;
+  pref_service.Set(kTopicsToHandler, std::move(*stored_topics));
 
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
       &pref_service, "sender_id", /*migrate_old_prefs=*/false);

@@ -80,13 +80,12 @@ void CreateRequestValueFromJSON(const std::string& json,
   using extensions::api::file_system_provider_internal::
       GetActionsRequestedSuccess::Params;
 
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(json);
-  ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
+  ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
 
-  ASSERT_TRUE(parsed_json.value->is_list());
+  ASSERT_TRUE(parsed_json->is_list());
   std::unique_ptr<Params> params(
-      Params::Create(parsed_json.value->GetListDeprecated()));
+      Params::Create(parsed_json->GetListDeprecated()));
   ASSERT_TRUE(params.get());
   *result = RequestValue::CreateForGetActionsSuccess(std::move(params));
   ASSERT_TRUE(result->get());

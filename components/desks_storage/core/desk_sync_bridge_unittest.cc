@@ -1703,12 +1703,11 @@ TEST_F(DeskSyncBridgeTest, GetTemplateJsonShouldReturnList) {
 
         EXPECT_TRUE(!templates_json.empty());
 
-        base::JSONReader::ValueWithError parsed_json =
-            base::JSONReader::ReadAndReturnValueWithError(
-                base::StringPiece(templates_json));
+        auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+            base::StringPiece(templates_json));
 
-        EXPECT_TRUE(parsed_json.value.has_value());
-        EXPECT_TRUE(parsed_json.value->is_list());
+        EXPECT_TRUE(parsed_json.has_value());
+        EXPECT_TRUE(parsed_json->is_list());
 
         // Content of the conversion is tested in:
         // components/desks_storage/core/desk_template_conversion_unittests.cc

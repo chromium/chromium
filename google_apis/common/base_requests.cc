@@ -85,9 +85,8 @@ absl::optional<std::string> MapJsonErrorToReason(
 }
 
 std::unique_ptr<base::Value> ParseJson(const std::string& json) {
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(json);
-  if (!parsed_json.value) {
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
+  if (!parsed_json.has_value()) {
     std::string trimmed_json;
     if (json.size() < 80) {
       trimmed_json = json;
@@ -99,11 +98,11 @@ std::unique_ptr<base::Value> ParseJson(const std::string& json) {
                              json.substr(json.size() - 10).c_str());
     }
     LOG(WARNING) << "Error while parsing entry response: "
-                 << parsed_json.error_message << ", json:\n"
+                 << parsed_json.error().message << ", json:\n"
                  << trimmed_json;
     return nullptr;
   }
-  return base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
+  return base::Value::ToUniquePtrValue(std::move(*parsed_json));
 }
 
 UrlFetchRequestBase::UrlFetchRequestBase(

@@ -227,24 +227,23 @@ bool ParseServerResponse(const GURL& server_url,
           << response_body;
 
   // Parse the response, ignoring comments.
-  base::JSONReader::ValueWithError parsed_json =
+  auto parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(response_body);
-  if (!parsed_json.value) {
+  if (!parsed_json.has_value()) {
     PrintTimeZoneError(server_url,
-                       "JSONReader failed: " + parsed_json.error_message,
+                       "JSONReader failed: " + parsed_json.error().message,
                        timezone);
     RecordUmaEvent(TIMEZONE_REQUEST_EVENT_RESPONSE_MALFORMED);
     return false;
   }
 
   const base::DictionaryValue* response_object = NULL;
-  if (!parsed_json.value->GetAsDictionary(&response_object)) {
-    PrintTimeZoneError(
-        server_url,
-        "Unexpected response type : " +
-            base::StringPrintf(
-                "%u", static_cast<unsigned int>(parsed_json.value->type())),
-        timezone);
+  if (!parsed_json->GetAsDictionary(&response_object)) {
+    PrintTimeZoneError(server_url,
+                       "Unexpected response type : " +
+                           base::StringPrintf("%u", static_cast<unsigned int>(
+                                                        parsed_json->type())),
+                       timezone);
     RecordUmaEvent(TIMEZONE_REQUEST_EVENT_RESPONSE_MALFORMED);
     return false;
   }

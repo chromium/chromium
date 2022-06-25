@@ -61,17 +61,16 @@ void DeskModel::SetPolicyDeskTemplates(const std::string& policy_json) {
   policy_entries_.clear();
 
   base::StringPiece raw_json = base::StringPiece(policy_json);
-  base::JSONReader::ValueWithError parsed_list =
-      base::JSONReader::ReadAndReturnValueWithError(raw_json);
-  if (!parsed_list.value)
+  auto parsed_list = base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  if (!parsed_list.has_value())
     return;
 
-  if (!parsed_list.value->is_list()) {
+  if (!parsed_list->is_list()) {
     LOG(WARNING) << "Expected JSON list in admin templates policy.";
     return;
   }
 
-  for (auto& desk_template : parsed_list.value->GetListDeprecated()) {
+  for (auto& desk_template : parsed_list->GetListDeprecated()) {
     std::unique_ptr<ash::DeskTemplate> dt =
         desk_template_conversion::ParseDeskTemplateFromSource(
             desk_template, ash::DeskTemplateSource::kPolicy);

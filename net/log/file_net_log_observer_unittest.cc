@@ -122,12 +122,11 @@ struct ParsedNetLog {
     return ::testing::AssertionFailure() << "input is empty";
   }
 
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(input);
-  if (!parsed_json.value) {
-    return ::testing::AssertionFailure() << parsed_json.error_message;
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(input);
+  if (!parsed_json.has_value()) {
+    return ::testing::AssertionFailure() << parsed_json.error().message;
   }
-  root = std::move(*parsed_json.value);
+  root = std::move(*parsed_json);
 
   const base::Value::Dict* dict = root.GetIfDict();
   if (!dict) {

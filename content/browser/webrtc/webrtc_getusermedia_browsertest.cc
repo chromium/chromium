@@ -140,16 +140,15 @@ class WebRtcGetUserMediaBrowserTest : public WebRtcContentBrowserTestBase {
         "getSources()");
     EXPECT_FALSE(devices_as_json.empty());
 
-    base::JSONReader::ValueWithError parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(
-            devices_as_json, base::JSON_ALLOW_TRAILING_COMMAS);
+    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+        devices_as_json, base::JSON_ALLOW_TRAILING_COMMAS);
 
-    ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-    EXPECT_EQ(parsed_json.value->type(), base::Value::Type::LIST);
+    ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+    EXPECT_EQ(parsed_json->type(), base::Value::Type::LIST);
 
-    ASSERT_TRUE(parsed_json.value->is_list());
+    ASSERT_TRUE(parsed_json->is_list());
 
-    for (const auto& entry : parsed_json.value->GetListDeprecated()) {
+    for (const auto& entry : parsed_json->GetListDeprecated()) {
       const base::DictionaryValue* dict;
       std::string kind;
       std::string device_id;

@@ -262,18 +262,17 @@ base::flat_set<ParsingResult> PasswordScriptsFetcherImpl::ParseResponse(
   if (!response_body)
     return {ParsingResult::kNoResponse};
 
-  base::JSONReader::ValueWithError data =
-      base::JSONReader::ReadAndReturnValueWithError(*response_body);
+  auto data = base::JSONReader::ReadAndReturnValueWithError(*response_body);
 
-  if (data.value == absl::nullopt) {
-    DVLOG(1) << "Parse error: " << data.error_message;
+  if (!data.has_value()) {
+    DVLOG(1) << "Parse error: " << data.error().message;
     return {ParsingResult::kInvalidJson};
   }
-  if (!data.value->is_dict())
+  if (!data->is_dict())
     return {ParsingResult::kInvalidJson};
 
   base::flat_set<ParsingResult> warnings;
-  for (const auto script_it : data.value->DictItems()) {
+  for (const auto script_it : data->DictItems()) {
     // |script_it.first| is an identifier (normally, a domain name, e.g.
     // example.com) that we don't care about.
     // |script_it.second| provides domain-specific parameters.

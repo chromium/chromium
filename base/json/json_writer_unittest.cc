@@ -203,10 +203,10 @@ TEST(JSONWriterTest, TestMaxDepthWithValidNodes) {
   }
 
   // Ensure we can read and write the JSON
-  JSONReader::ValueWithError json_val = JSONReader::ReadAndReturnValueWithError(
+  auto json_val = JSONReader::ReadAndReturnValueWithError(
       nested_json, JSON_ALLOW_TRAILING_COMMAS);
-  EXPECT_TRUE(json_val.value);
-  const Value& value = json_val.value.value();
+  EXPECT_TRUE(json_val.has_value());
+  const Value& value = *json_val;
   std::string serialized;
   EXPECT_TRUE(JSONWriter::Write(value, &serialized));
 }

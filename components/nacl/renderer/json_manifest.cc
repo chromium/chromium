@@ -388,16 +388,16 @@ bool JsonManifest::Init(const std::string& manifest_json_data,
                         ErrorInfo* error_info) {
   CHECK(error_info);
 
-  base::JSONReader::ValueWithError parsed_json =
+  auto parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(manifest_json_data);
-  if (!parsed_json.value) {
+  if (!parsed_json.has_value()) {
     error_info->error = PP_NACL_ERROR_MANIFEST_PARSING;
     error_info->string = std::string("manifest JSON parsing failed: ") +
-                         parsed_json.error_message;
+                         parsed_json.error().message;
     return false;
   }
   std::unique_ptr<base::Value> json_data =
-      base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
+      base::Value::ToUniquePtrValue(std::move(*parsed_json));
   // Ensure it's actually a dictionary before capturing as dictionary_.
   base::DictionaryValue* json_dict = nullptr;
   if (!json_data->GetAsDictionary(&json_dict)) {

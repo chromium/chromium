@@ -202,9 +202,9 @@ TEST(JSONReaderTest, Doubles) {
   EXPECT_DOUBLE_EQ(122.416294033786585, root->GetDouble());
 
   // This is syntaxtically valid, but out of range of a double.
-  auto value_with_error =
+  auto value =
       JSONReader::ReadAndReturnValueWithError("1e1000", JSON_PARSE_RFC);
-  ASSERT_FALSE(value_with_error.value);
+  ASSERT_FALSE(value.has_value());
 }
 
 TEST(JSONReaderTest, FractionalNumbers) {
@@ -678,10 +678,9 @@ TEST(JSONReaderTest, ReadFromFile) {
   std::string input;
   ASSERT_TRUE(ReadFileToString(path.AppendASCII("bom_feff.json"), &input));
 
-  JSONReader::ValueWithError root =
-      JSONReader::ReadAndReturnValueWithError(input);
-  ASSERT_TRUE(root.value) << root.error_message;
-  EXPECT_TRUE(root.value->is_dict());
+  auto root = JSONReader::ReadAndReturnValueWithError(input);
+  ASSERT_TRUE(root.has_value()) << root.error().message;
+  EXPECT_TRUE(root->is_dict());
 }
 
 // Tests that the root of a JSON object can be deleted safely while its
@@ -768,20 +767,18 @@ TEST(JSONReaderTest, InvalidSanity) {
 
   for (size_t i = 0; i < std::size(kInvalidJson); ++i) {
     LOG(INFO) << "Sanity test " << i << ": <" << kInvalidJson[i] << ">";
-    JSONReader::ValueWithError root =
-        JSONReader::ReadAndReturnValueWithError(kInvalidJson[i]);
-    EXPECT_FALSE(root.value);
-    EXPECT_NE("", root.error_message);
+    auto root = JSONReader::ReadAndReturnValueWithError(kInvalidJson[i]);
+    EXPECT_FALSE(root.has_value());
+    EXPECT_NE("", root.error().message);
   }
 }
 
 TEST(JSONReaderTest, IllegalTrailingNull) {
   const char json[] = {'"', 'n', 'u', 'l', 'l', '"', '\0'};
   std::string json_string(json, sizeof(json));
-  JSONReader::ValueWithError root =
-      JSONReader::ReadAndReturnValueWithError(json_string);
-  EXPECT_FALSE(root.value);
-  EXPECT_NE("", root.error_message);
+  auto root = JSONReader::ReadAndReturnValueWithError(json_string);
+  EXPECT_FALSE(root.has_value());
+  EXPECT_NE("", root.error().message);
 }
 
 TEST(JSONReaderTest, ASCIIControlCodes) {
@@ -1038,11 +1035,11 @@ TEST(JSONReaderTest, LineColumnCounting) {
     auto test_case = kCases[i];
     SCOPED_TRACE(StringPrintf("case %u: \"%s\"", i, test_case.input));
 
-    JSONReader::ValueWithError root = JSONReader::ReadAndReturnValueWithError(
+    auto root = JSONReader::ReadAndReturnValueWithError(
         test_case.input, JSON_PARSE_RFC | JSON_ALLOW_CONTROL_CHARS);
-    EXPECT_FALSE(root.value);
-    EXPECT_EQ(test_case.error_line, root.error_line);
-    EXPECT_EQ(test_case.error_column, root.error_column);
+    EXPECT_FALSE(root.has_value());
+    EXPECT_EQ(test_case.error_line, root.error().line);
+    EXPECT_EQ(test_case.error_column, root.error().column);
   }
 }
 
@@ -1071,21 +1068,21 @@ TEST(JSONReaderTest, ChromiumExtensions) {
     SCOPED_TRACE(testing::Message() << "case " << i);
     const auto& test_case = kCases[i];
 
-    JSONReader::ValueWithError result = JSONReader::ReadAndReturnValueWithError(
-        test_case.input, JSON_PARSE_RFC);
-    EXPECT_FALSE(result.value);
+    auto result = JSONReader::ReadAndReturnValueWithError(test_case.input,
+                                                          JSON_PARSE_RFC);
+    EXPECT_FALSE(result.has_value());
 
     result = JSONReader::ReadAndReturnValueWithError(
         test_case.input, JSON_PARSE_RFC | test_case.option);
-    EXPECT_TRUE(result.value);
+    EXPECT_TRUE(result.has_value());
 
     result = JSONReader::ReadAndReturnValueWithError(
         test_case.input, JSON_PARSE_CHROMIUM_EXTENSIONS);
-    EXPECT_TRUE(result.value);
+    EXPECT_TRUE(result.has_value());
 
     result = JSONReader::ReadAndReturnValueWithError(
         test_case.input, JSON_PARSE_CHROMIUM_EXTENSIONS & ~test_case.option);
-    EXPECT_FALSE(result.value);
+    EXPECT_FALSE(result.has_value());
   }
 }
 

@@ -404,11 +404,14 @@ class PolicyTestCases {
       return;
     }
     base::DictionaryValue* dict = nullptr;
-    base::JSONReader::ValueWithError parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(json);
-    if (!parsed_json.value || !parsed_json.value->GetAsDictionary(&dict)) {
+    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
+    if (!parsed_json.has_value()) {
       ADD_FAILURE() << "Error parsing policy_test_cases.json: "
-                    << parsed_json.error_message;
+                    << parsed_json.error().message;
+      return;
+    } else if (!parsed_json->GetAsDictionary(&dict)) {
+      ADD_FAILURE()
+          << "Error parsing policy_test_cases.json: Expected dictionary.";
       return;
     }
     for (auto it : dict->DictItems()) {

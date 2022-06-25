@@ -37,19 +37,19 @@ const char* const kChildKinds[] = {"functions", "events"};
 std::unique_ptr<base::DictionaryValue> LoadSchemaDictionary(
     const std::string& name,
     const base::StringPiece& schema) {
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(schema);
+  auto result = base::JSONReader::ReadAndReturnValueWithError(schema);
 
   // Tracking down http://crbug.com/121424
   char buf[128];
   base::snprintf(buf, std::size(buf), "%s: (%d) '%s'", name.c_str(),
-                 result.value ? static_cast<int>(result.value->type()) : -1,
-                 result.error_message.c_str());
+                 result.has_value() ? static_cast<int>(result->type()) : -1,
+                 !result.has_value() ? result.error().message.c_str() : "");
 
-  CHECK(result.value) << result.error_message << " for schema " << schema;
-  CHECK(result.value->is_dict()) << " for schema " << schema;
+  CHECK(result.has_value())
+      << result.error().message << " for schema " << schema;
+  CHECK(result->is_dict()) << " for schema " << schema;
   return base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(std::move(*result.value)));
+      base::Value::ToUniquePtrValue(std::move(*result)));
 }
 
 const base::DictionaryValue* FindListItem(const base::ListValue* list,

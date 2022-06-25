@@ -104,10 +104,9 @@ constexpr const char kJsonCalculateTargetUpperLeft[] =
 TEST(PositionTest, TestParseJson) {
   // Parse valid Json.
   std::unique_ptr<Position> pos = std::make_unique<Position>();
-  base::JSONReader::ValueWithError json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJson);
-  EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
-  EXPECT_TRUE(pos->ParseFromJson(json_value.value.value()));
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(kValidJson);
+  EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
+  EXPECT_TRUE(pos->ParseFromJson(*json_value));
   EXPECT_TRUE(pos->anchor() == gfx::PointF(0, 0));
   EXPECT_TRUE(pos->anchor_to_target() == gfx::Vector2dF(0.5, 0.5));
   pos.reset();
@@ -116,8 +115,8 @@ TEST(PositionTest, TestParseJson) {
   pos = std::make_unique<Position>();
   json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonNoAnchorPoint);
-  EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
-  EXPECT_TRUE(pos->ParseFromJson(json_value.value.value()));
+  EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
+  EXPECT_TRUE(pos->ParseFromJson(*json_value));
   EXPECT_TRUE(pos->anchor() == gfx::PointF(0, 0));
   EXPECT_TRUE(pos->anchor_to_target() == gfx::Vector2dF(0.1796875, 0.25));
   pos.reset();
@@ -126,49 +125,48 @@ TEST(PositionTest, TestParseJson) {
   pos = std::make_unique<Position>();
   json_value = base::JSONReader::ReadAndReturnValueWithError(
       kInValidJsonWrongAnchorPoint);
-  EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
-  EXPECT_FALSE(pos->ParseFromJson(json_value.value.value()));
+  EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
+  EXPECT_FALSE(pos->ParseFromJson(*json_value));
   pos.reset();
 
   // Parse invalid Json with incomplete anchor point.
   pos = std::make_unique<Position>();
   json_value = base::JSONReader::ReadAndReturnValueWithError(
       kInValidJsonIncompleteAnchorPoint);
-  EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
-  EXPECT_FALSE(pos->ParseFromJson(json_value.value.value()));
+  EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
+  EXPECT_FALSE(pos->ParseFromJson(*json_value));
   pos.reset();
 
   // Parse invalid Json with too much values for vector to target.
   pos = std::make_unique<Position>();
   json_value = base::JSONReader::ReadAndReturnValueWithError(
       kInValidJsonTooMuchVectorToTarget);
-  EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
-  EXPECT_FALSE(pos->ParseFromJson(json_value.value.value()));
+  EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
+  EXPECT_FALSE(pos->ParseFromJson(*json_value));
   pos.reset();
 
   // Parse invalid Json with wrong vector to target.
   pos = std::make_unique<Position>();
   json_value = base::JSONReader::ReadAndReturnValueWithError(
       kInValidJsonWrongVectorToTarget);
-  EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
-  EXPECT_FALSE(pos->ParseFromJson(json_value.value.value()));
+  EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
+  EXPECT_FALSE(pos->ParseFromJson(*json_value));
   pos.reset();
 
   // Parse invalid Json with target position outside of the window.
   pos = std::make_unique<Position>();
   json_value =
       base::JSONReader::ReadAndReturnValueWithError(kInValidJsonOutSideWindow);
-  EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
-  EXPECT_FALSE(pos->ParseFromJson(json_value.value.value()));
+  EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
+  EXPECT_FALSE(pos->ParseFromJson(*json_value));
   pos.reset();
 }
 
 TEST(PositionTest, TestCalculatePosition) {
   // Calculate the target position in the center.
   std::unique_ptr<Position> pos = std::make_unique<Position>();
-  base::JSONReader::ValueWithError json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJson);
-  pos->ParseFromJson(json_value.value.value());
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(kValidJson);
+  pos->ParseFromJson(*json_value);
   gfx::RectF bounds(200, 400);
   gfx::PointF target = pos->CalculatePosition(bounds);
   EXPECT_TRUE(target == gfx::PointF(100, 200));
@@ -178,7 +176,7 @@ TEST(PositionTest, TestCalculatePosition) {
   pos = std::make_unique<Position>();
   json_value = base::JSONReader::ReadAndReturnValueWithError(
       kJsonCalculateTargetUpperLeft);
-  pos->ParseFromJson(json_value.value.value());
+  pos->ParseFromJson(*json_value);
   target = pos->CalculatePosition(bounds);
   EXPECT_TRUE(std::abs(target.x() - 40) < 0.0001);
   EXPECT_TRUE(std::abs(target.y() - 80) < 0.0001);

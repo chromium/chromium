@@ -277,18 +277,18 @@ absl::optional<PublicKeyset> ReadAndParsePublicKeys(const base::FilePath& file,
     return absl::nullopt;
   }
 
-  base::JSONReader::ValueWithError value_with_error =
+  auto value_with_error =
       base::JSONReader::ReadAndReturnValueWithError(contents);
-  if (!value_with_error.value) {
+  if (!value_with_error.has_value()) {
     if (error_msg) {
       *error_msg =
           base::StrCat({"Failed to parse \"", contents,
-                        "\" as JSON: ", value_with_error.error_message});
+                        "\" as JSON: ", value_with_error.error().message});
     }
     return absl::nullopt;
   }
 
-  std::vector<PublicKey> keys = GetPublicKeys(*value_with_error.value);
+  std::vector<PublicKey> keys = GetPublicKeys(*value_with_error);
   if (keys.empty()) {
     if (error_msg) {
       *error_msg =

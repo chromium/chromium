@@ -618,11 +618,11 @@ void CheckServiceWorkerStatus(const GURL& url,
 }
 
 void SetWebAppSettingsListPref(Profile* profile, const base::StringPiece pref) {
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(
-          pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  DCHECK(result.value && result.value->is_list()) << result.error_message;
-  profile->GetPrefs()->Set(prefs::kWebAppSettings, std::move(*result.value));
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  DCHECK(result.has_value()) << result.error().message;
+  DCHECK(result->is_list());
+  profile->GetPrefs()->Set(prefs::kWebAppSettings, std::move(*result));
 }
 
 }  // namespace test

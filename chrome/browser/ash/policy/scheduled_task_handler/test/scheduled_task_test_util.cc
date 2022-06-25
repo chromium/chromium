@@ -26,12 +26,10 @@ namespace policy {
 namespace {
 void DecodeJsonStringAndNormalize(const std::string& json_string,
                                   base::Value* value) {
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json_string, base::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_EQ(parsed_json.error_message, "");
-  ASSERT_TRUE(parsed_json.value);
-  *value = std::move(*parsed_json.value);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      json_string, base::JSON_ALLOW_TRAILING_COMMAS);
+  ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+  *value = std::move(*parsed_json);
 }
 
 // Creates a JSON policy for daily device scheduled tasks.

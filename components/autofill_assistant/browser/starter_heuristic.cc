@@ -55,14 +55,16 @@ void StarterHeuristic::InitFromTrialParams() {
     VLOG(2) << "Field trial parameter not set";
     return;
   }
-  absl::optional<base::Value> dict = base::JSONReader::Read(parameters);
-  if (!dict || !dict->is_dict()) {
+  auto dict = base::JSONReader::ReadAndReturnValueWithError(parameters);
+  if (!dict.has_value() || !dict->is_dict()) {
     VLOG(1) << "Failed to parse field trial params as JSON object: "
             << parameters;
     if (VLOG_IS_ON(1)) {
-      auto err = base::JSONReader::ReadAndReturnValueWithError(parameters);
-      VLOG(1) << err.error_message << ", line: " << err.error_line
-              << ", col: " << err.error_column;
+      if (dict.has_value())
+        VLOG(1) << "Expecting a dictionary";
+      else
+        VLOG(1) << dict.error().message << ", line: " << dict.error().line
+                << ", col: " << dict.error().column;
     }
     return;
   }

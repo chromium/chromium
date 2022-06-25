@@ -144,10 +144,9 @@ class StubRecommendAppsFetcher : public RecommendAppsFetcher {
       delegate_->OnLoadSuccess(base::Value());
       return;
     }
-    absl::optional<base::Value> output =
-        base::JSONReader::ReadAndReturnValueWithError(kJsonResponse).value;
+    auto output = base::JSONReader::ReadAndReturnValueWithError(kJsonResponse);
     ASSERT_TRUE(output.has_value());
-    delegate_->OnLoadSuccess(std::move(output.value()));
+    delegate_->OnLoadSuccess(std::move(*output));
   }
 
   void SimulateParseError() {

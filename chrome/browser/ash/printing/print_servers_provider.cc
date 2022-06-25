@@ -49,18 +49,17 @@ TaskResults ParseData(int task_id, std::unique_ptr<std::string> data) {
     return task_data;
   }
 
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          *data, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  if (!value_with_error.value) {
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      *data, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value_with_error.has_value()) {
     LOG(WARNING) << "Failed to parse print servers policy ("
-                 << value_with_error.error_message << ") on line "
-                 << value_with_error.error_line << " at position "
-                 << value_with_error.error_column;
+                 << value_with_error.error().message << ") on line "
+                 << value_with_error.error().line << " at position "
+                 << value_with_error.error().column;
     return task_data;
   }
 
-  base::Value& json_blob = value_with_error.value.value();
+  base::Value& json_blob = *value_with_error;
   if (!json_blob.is_list()) {
     LOG(WARNING) << "Failed to parse print servers policy "
                  << "(an array was expected)";

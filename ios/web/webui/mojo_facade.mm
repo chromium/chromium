@@ -78,17 +78,16 @@ std::string MojoFacade::HandleMojoMessage(
 
 MojoFacade::MessageNameAndArguments MojoFacade::GetMessageNameAndArguments(
     const std::string& mojo_message_as_json) {
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(mojo_message_as_json,
-                                                    base::JSON_PARSE_RFC);
-  CHECK(value_with_error.value);
-  CHECK(value_with_error.value->is_dict());
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      mojo_message_as_json, base::JSON_PARSE_RFC);
+  CHECK(value_with_error.has_value());
+  CHECK(value_with_error->is_dict());
 
-  const std::string* name = value_with_error.value->FindStringKey("name");
+  const std::string* name = value_with_error->FindStringKey("name");
   CHECK(name);
 
-  base::Value* args = value_with_error.value->FindKeyOfType(
-      "args", base::Value::Type::DICTIONARY);
+  base::Value* args =
+      value_with_error->FindKeyOfType("args", base::Value::Type::DICTIONARY);
   CHECK(args);
 
   return {*name, std::move(*args)};

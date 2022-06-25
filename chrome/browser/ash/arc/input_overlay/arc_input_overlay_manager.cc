@@ -129,14 +129,13 @@ input_overlay::TouchInjector* ArcInputOverlayManager::ReadDefaultData(
     LOG(WARNING) << "No content for: " << package_name;
     return nullptr;
   }
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(json_file);
-  DCHECK(result.value) << "Could not load input overlay data file: "
-                       << result.error_message;
-  if (!result.value)
+  auto result = base::JSONReader::ReadAndReturnValueWithError(json_file);
+  DCHECK(result.has_value())
+      << "Could not load input overlay data file: " << result.error().message;
+  if (!result.has_value())
     return nullptr;
 
-  base::Value& root = result.value.value();
+  base::Value& root = *result;
   std::unique_ptr<input_overlay::TouchInjector> injector =
       std::make_unique<input_overlay::TouchInjector>(
           top_level_window,

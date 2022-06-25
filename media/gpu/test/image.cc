@@ -134,16 +134,16 @@ bool Image::LoadMetadata() {
 
   auto metadata_result =
       base::JSONReader::ReadAndReturnValueWithError(json_data);
-  if (!metadata_result.value) {
+  if (!metadata_result.has_value()) {
     VLOGF(1) << "Failed to parse image metadata: " << json_path << ": "
-             << metadata_result.error_message;
+             << metadata_result.error().message;
     return false;
   }
-  absl::optional<base::Value> metadata = std::move(metadata_result.value);
+  base::Value& metadata = *metadata_result;
 
   // Get the pixel format from the json data.
   const base::Value* pixel_format =
-      metadata->FindKeyOfType("pixel_format", base::Value::Type::STRING);
+      metadata.FindKeyOfType("pixel_format", base::Value::Type::STRING);
   if (!pixel_format) {
     VLOGF(1) << "Key \"pixel_format\" is not found in " << json_path;
     return false;
@@ -156,13 +156,13 @@ bool Image::LoadMetadata() {
 
   // Get the image dimensions from the json data.
   const base::Value* width =
-      metadata->FindKeyOfType("width", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("width", base::Value::Type::INTEGER);
   if (!width) {
     VLOGF(1) << "Key \"width\" is not found in " << json_path;
     return false;
   }
   const base::Value* height =
-      metadata->FindKeyOfType("height", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("height", base::Value::Type::INTEGER);
   if (!height) {
     VLOGF(1) << "Key \"height\" is not found in " << json_path;
     return false;
@@ -174,7 +174,7 @@ bool Image::LoadMetadata() {
   // area.
   visible_rect_ = gfx::Rect(size_);
   const base::Value* visible_rect_info =
-      metadata->FindKeyOfType("visible_rect", base::Value::Type::LIST);
+      metadata.FindKeyOfType("visible_rect", base::Value::Type::LIST);
   if (visible_rect_info) {
     base::Value::ConstListView values = visible_rect_info->GetListDeprecated();
     if (values.size() != 4) {
@@ -191,7 +191,7 @@ bool Image::LoadMetadata() {
 
   // Get the image rotation info from the json data.
   const base::Value* rotation =
-      metadata->FindKeyOfType("rotation", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("rotation", base::Value::Type::INTEGER);
   if (!rotation) {
     // Default rotation value is VIDEO_ROTATION_0
     rotation_ = VIDEO_ROTATION_0;
@@ -217,7 +217,7 @@ bool Image::LoadMetadata() {
 
   // Get the image checksum from the json data.
   const base::Value* checksum =
-      metadata->FindKeyOfType("checksum", base::Value::Type::STRING);
+      metadata.FindKeyOfType("checksum", base::Value::Type::STRING);
   if (!checksum) {
     VLOGF(1) << "Key \"checksum\" is not found in " << json_path;
     return false;

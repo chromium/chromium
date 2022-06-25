@@ -124,17 +124,16 @@ AutofillAssistantOnboardingFetcher::ParseResponse(
     return Metrics::OnboardingFetcherResultStatus::kNoBody;
   }
 
-  base::JSONReader::ValueWithError data =
-      base::JSONReader::ReadAndReturnValueWithError(*response_body);
+  auto data = base::JSONReader::ReadAndReturnValueWithError(*response_body);
 
-  if (data.value == absl::nullopt) {
-    DVLOG(1) << "Parse error: " << data.error_message;
+  if (!data.has_value()) {
+    DVLOG(1) << "Parse error: " << data.error().message;
     return Metrics::OnboardingFetcherResultStatus::kInvalidJson;
   }
-  if (!data.value->is_dict()) {
+  if (!data->is_dict()) {
     return Metrics::OnboardingFetcherResultStatus::kInvalidData;
   }
-  return ExtractStrings(*data.value, onboarding_strings_)
+  return ExtractStrings(*data, onboarding_strings_)
              ? Metrics::OnboardingFetcherResultStatus::kOk
              : Metrics::OnboardingFetcherResultStatus::kInvalidData;
 }

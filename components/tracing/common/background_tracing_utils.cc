@@ -61,22 +61,21 @@ GetBackgroundTracingConfigFromFile(const base::FilePath& config_file) {
     return nullptr;
   }
 
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          config_text, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!value_with_error.value) {
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      config_text, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value_with_error.has_value()) {
     LOG(ERROR) << "Background tracing has incorrect config: "
-               << value_with_error.error_message;
+               << value_with_error.error().message;
     return nullptr;
   }
 
-  if (!value_with_error.value->is_dict()) {
+  if (!value_with_error->is_dict()) {
     LOG(ERROR) << "Background tracing config is not a dict";
     return nullptr;
   }
 
-  auto config = content::BackgroundTracingConfig::FromDict(
-      std::move(*(value_with_error.value)));
+  auto config =
+      content::BackgroundTracingConfig::FromDict(std::move(*value_with_error));
 
   if (!config) {
     LOG(ERROR) << "Background tracing config dict has invalid contents";

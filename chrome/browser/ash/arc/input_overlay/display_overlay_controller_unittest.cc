@@ -65,9 +65,8 @@ class DisplayOverlayControllerTest : public exo::test::ExoTestBase {
         arc_test_window_->GetWindow(),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<AppDataProto>, const std::string&) {}));
-    base::JSONReader::ValueWithError json_value =
-        base::JSONReader::ReadAndReturnValueWithError(kValidJson);
-    injector_->ParseActions(json_value.value.value());
+    auto json_value = base::JSONReader::ReadAndReturnValueWithError(kValidJson);
+    injector_->ParseActions(*json_value);
     controller_ =
         std::make_unique<DisplayOverlayController>(injector_.get(), false);
   }

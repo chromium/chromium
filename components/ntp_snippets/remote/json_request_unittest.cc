@@ -52,15 +52,14 @@ MATCHER_P(EqualsJSON, json, "equals JSON") {
     return false;
   }
 
-  base::JSONReader::ValueWithError actual =
-      base::JSONReader::ReadAndReturnValueWithError(arg);
-  if (!actual.value) {
-    *result_listener << "input:" << actual.error_line << ":"
-                     << actual.error_column << ": "
-                     << "parse error: " << actual.error_message;
+  auto actual = base::JSONReader::ReadAndReturnValueWithError(arg);
+  if (!actual.has_value()) {
+    *result_listener << "input:" << actual.error().line << ":"
+                     << actual.error().column << ": "
+                     << "parse error: " << actual.error().message;
     return false;
   }
-  return *expected == *actual.value;
+  return *expected == *actual;
 }
 
 }  // namespace

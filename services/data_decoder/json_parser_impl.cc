@@ -19,13 +19,12 @@ JsonParserImpl::~JsonParserImpl() = default;
 void JsonParserImpl::Parse(const std::string& json,
                            uint32_t options,
                            ParseCallback callback) {
-  base::JSONReader::ValueWithError ret =
-      base::JSONReader::ReadAndReturnValueWithError(json, options);
-  if (ret.value) {
-    std::move(callback).Run(std::move(ret.value), absl::nullopt);
+  auto ret = base::JSONReader::ReadAndReturnValueWithError(json, options);
+  if (ret.has_value()) {
+    std::move(callback).Run(std::move(*ret), absl::nullopt);
   } else {
-    std::move(callback).Run(absl::nullopt,
-                            absl::make_optional(std::move(ret.error_message)));
+    std::move(callback).Run(
+        absl::nullopt, absl::make_optional(std::move(ret.error().message)));
   }
 }
 

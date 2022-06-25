@@ -31,16 +31,18 @@ base::RepeatingCallback<absl::optional<ArcFeatures>()>*
 absl::optional<ArcFeatures> ParseFeaturesJson(base::StringPiece input_json) {
   ArcFeatures arc_features;
 
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(input_json);
-  if (!parsed_json.value || !parsed_json.value->is_dict()) {
-    LOG(ERROR) << "Error parsing feature JSON: " << parsed_json.error_message;
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(input_json);
+  if (!parsed_json.has_value()) {
+    LOG(ERROR) << "Error parsing feature JSON: " << parsed_json.error().message;
+    return absl::nullopt;
+  } else if (!parsed_json->is_dict()) {
+    LOG(ERROR) << "Error parsing feature JSON: Expected a dictionary.";
     return absl::nullopt;
   }
 
   // Parse each item under features.
   const base::Value* feature_list =
-      parsed_json.value->FindKeyOfType("features", base::Value::Type::LIST);
+      parsed_json->FindKeyOfType("features", base::Value::Type::LIST);
   if (!feature_list) {
     LOG(ERROR) << "No feature list in JSON.";
     return absl::nullopt;
@@ -63,9 +65,8 @@ absl::optional<ArcFeatures> ParseFeaturesJson(base::StringPiece input_json) {
   }
 
   // Parse each item under unavailable_features.
-  const base::Value* unavailable_feature_list =
-      parsed_json.value->FindKeyOfType("unavailable_features",
-                                       base::Value::Type::LIST);
+  const base::Value* unavailable_feature_list = parsed_json->FindKeyOfType(
+      "unavailable_features", base::Value::Type::LIST);
   if (!unavailable_feature_list) {
     LOG(ERROR) << "No unavailable feature list in JSON.";
     return absl::nullopt;
@@ -84,8 +85,8 @@ absl::optional<ArcFeatures> ParseFeaturesJson(base::StringPiece input_json) {
   }
 
   // Parse each item under properties.
-  const base::Value* properties = parsed_json.value->FindKeyOfType(
-      "properties", base::Value::Type::DICTIONARY);
+  const base::Value* properties =
+      parsed_json->FindKeyOfType("properties", base::Value::Type::DICTIONARY);
   if (!properties) {
     LOG(ERROR) << "No properties in JSON.";
     return absl::nullopt;
@@ -100,7 +101,7 @@ absl::optional<ArcFeatures> ParseFeaturesJson(base::StringPiece input_json) {
   }
 
   // Parse the Play Store version
-  const base::Value* play_version = parsed_json.value->FindKeyOfType(
+  const base::Value* play_version = parsed_json->FindKeyOfType(
       "play_store_version", base::Value::Type::STRING);
   if (!play_version) {
     LOG(ERROR) << "No Play Store version in JSON.";

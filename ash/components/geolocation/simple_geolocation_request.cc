@@ -192,14 +192,14 @@ bool ParseServerResponse(const GURL& server_url,
   // Parse the response, ignoring comments.
   auto response_result =
       base::JSONReader::ReadAndReturnValueWithError(response_body);
-  if (!response_result.value) {
-    PrintGeolocationError(server_url,
-                          "JSONReader failed: " + response_result.error_message,
-                          position);
+  if (!response_result.has_value()) {
+    PrintGeolocationError(
+        server_url, "JSONReader failed: " + response_result.error().message,
+        position);
     RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
     return false;
   }
-  base::Value response_value = std::move(*response_result.value);
+  base::Value response_value = std::move(*response_result);
 
   if (!response_value.is_dict()) {
     PrintGeolocationError(

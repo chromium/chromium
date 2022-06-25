@@ -428,15 +428,14 @@ bool ComponentCloudPolicyStore::ValidateData(const std::string& data,
 bool ComponentCloudPolicyStore::ParsePolicy(const std::string& data,
                                             PolicyMap* policy,
                                             std::string* error) {
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          data, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  if (!value_with_error.value) {
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      data, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value_with_error.has_value()) {
     *error =
-        base::StrCat({"Invalid JSON blob: ", value_with_error.error_message});
+        base::StrCat({"Invalid JSON blob: ", value_with_error.error().message});
     return false;
   }
-  base::Value json = std::move(value_with_error.value.value());
+  base::Value json = std::move(*value_with_error);
   if (!json.is_dict()) {
     *error = "The JSON blob is not a dictionary.";
     return false;

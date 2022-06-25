@@ -189,21 +189,20 @@ int ProcessJsonString(const std::string& json_input,
                       const content::AttributionSimulationOptions& options,
                       bool copy_input_to_output,
                       int json_write_options) {
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json_input, base::JSONParserOptions::JSON_PARSE_RFC);
-  if (!result.value) {
-    std::cerr << "failed to deserialize input: " << result.error_message
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      json_input, base::JSONParserOptions::JSON_PARSE_RFC);
+  if (!result.has_value()) {
+    std::cerr << "failed to deserialize input: " << result.error().message
               << std::endl;
     return 1;
   }
 
   base::Value input_copy;
   if (copy_input_to_output)
-    input_copy = result.value->Clone();
+    input_copy = result->Clone();
 
-  base::Value output = content::RunAttributionSimulation(
-      std::move(*result.value), options, std::cerr);
+  base::Value output =
+      content::RunAttributionSimulation(std::move(*result), options, std::cerr);
   if (output.type() == base::Value::Type::NONE)
     return 1;
 

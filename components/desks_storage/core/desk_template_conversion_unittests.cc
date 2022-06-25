@@ -126,15 +126,14 @@ class DeskTemplateConversionTest : public testing::Test {
 
 TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
   base::StringPiece raw_json = base::StringPiece(kValidTemplateBrowser);
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
 
-  EXPECT_TRUE(parsed_json.value.has_value());
-  EXPECT_TRUE(parsed_json.value->is_dict());
+  EXPECT_TRUE(parsed_json.has_value());
+  EXPECT_TRUE(parsed_json->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> dt =
       desk_template_conversion::ParseDeskTemplateFromSource(
-          parsed_json.value.value(), ash::DeskTemplateSource::kPolicy);
+          *parsed_json, ash::DeskTemplateSource::kPolicy);
 
   EXPECT_TRUE(dt != nullptr);
   EXPECT_EQ(dt->uuid(), base::GUID::ParseCaseInsensitive(kTestUuidBrowser));
@@ -186,15 +185,14 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
 TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   base::StringPiece raw_json =
       base::StringPiece(kValidTemplateChromeAndProgressive);
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
 
-  EXPECT_TRUE(parsed_json.value.has_value());
-  EXPECT_TRUE(parsed_json.value->is_dict());
+  EXPECT_TRUE(parsed_json.has_value());
+  EXPECT_TRUE(parsed_json->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> dt =
       desk_template_conversion::ParseDeskTemplateFromSource(
-          parsed_json.value.value(), ash::DeskTemplateSource::kPolicy);
+          *parsed_json, ash::DeskTemplateSource::kPolicy);
 
   EXPECT_TRUE(dt != nullptr);
   EXPECT_EQ(dt->uuid(),
@@ -273,44 +271,41 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
 
 TEST_F(DeskTemplateConversionTest, EmptyJsonTest) {
   base::StringPiece raw_json = base::StringPiece(kEmptyJson);
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
 
-  EXPECT_TRUE(parsed_json.value.has_value());
-  EXPECT_TRUE(parsed_json.value->is_dict());
+  EXPECT_TRUE(parsed_json.has_value());
+  EXPECT_TRUE(parsed_json->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> dt =
       desk_template_conversion::ParseDeskTemplateFromSource(
-          parsed_json.value.value(), ash::DeskTemplateSource::kPolicy);
+          *parsed_json, ash::DeskTemplateSource::kPolicy);
   EXPECT_TRUE(dt == nullptr);
 }
 
 TEST_F(DeskTemplateConversionTest, ParsesWithDefaultValueSetToTemplates) {
   base::StringPiece raw_json = base::StringPiece(kTemplateWithoutType);
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
 
-  EXPECT_TRUE(parsed_json.value.has_value());
-  EXPECT_TRUE(parsed_json.value->is_dict());
+  EXPECT_TRUE(parsed_json.has_value());
+  EXPECT_TRUE(parsed_json->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> dt =
       desk_template_conversion::ParseDeskTemplateFromSource(
-          parsed_json.value.value(), ash::DeskTemplateSource::kPolicy);
+          *parsed_json, ash::DeskTemplateSource::kPolicy);
   EXPECT_TRUE(dt);
   EXPECT_EQ(ash::DeskTemplateType::kTemplate, dt->type());
 }
 
 TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {
   base::StringPiece raw_json = base::StringPiece(kValidTemplateBrowser);
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
 
-  EXPECT_TRUE(parsed_json.value.has_value());
-  EXPECT_TRUE(parsed_json.value->is_dict());
+  EXPECT_TRUE(parsed_json.has_value());
+  EXPECT_TRUE(parsed_json->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       desk_template_conversion::ParseDeskTemplateFromSource(
-          parsed_json.value.value(), ash::DeskTemplateSource::kPolicy);
+          *parsed_json, ash::DeskTemplateSource::kPolicy);
 
   apps::AppRegistryCache* app_cache =
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
@@ -319,20 +314,19 @@ TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {
       desk_template_conversion::SerializeDeskTemplateAsPolicy(
           desk_template.get(), app_cache);
 
-  EXPECT_EQ(parsed_json.value, desk_template_value);
+  EXPECT_EQ(*parsed_json, desk_template_value);
 }
 
 TEST_F(DeskTemplateConversionTest, ToJsonIgnoreUnsupportedApp) {
   base::StringPiece raw_json = base::StringPiece(kValidTemplateBrowser);
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
 
-  EXPECT_TRUE(parsed_json.value.has_value());
-  EXPECT_TRUE(parsed_json.value->is_dict());
+  EXPECT_TRUE(parsed_json.has_value());
+  EXPECT_TRUE(parsed_json->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       desk_template_conversion::ParseDeskTemplateFromSource(
-          parsed_json.value.value(), ash::DeskTemplateSource::kUser);
+          *parsed_json, ash::DeskTemplateSource::kUser);
 
   // Adding this unsupported app should not change the serialized JSON content.
   saved_desk_test_util::AddGenericAppWindow(
@@ -346,21 +340,20 @@ TEST_F(DeskTemplateConversionTest, ToJsonIgnoreUnsupportedApp) {
       desk_template_conversion::SerializeDeskTemplateAsPolicy(
           desk_template.get(), app_cache);
 
-  EXPECT_EQ(parsed_json.value, desk_template_value);
+  EXPECT_EQ(*parsed_json, desk_template_value);
 }
 
 TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonAppTest) {
   base::StringPiece raw_json =
       base::StringPiece(kValidTemplateChromeAndProgressive);
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
 
-  EXPECT_TRUE(parsed_json.value.has_value());
-  EXPECT_TRUE(parsed_json.value->is_dict());
+  EXPECT_TRUE(parsed_json.has_value());
+  EXPECT_TRUE(parsed_json->is_dict());
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       desk_template_conversion::ParseDeskTemplateFromSource(
-          parsed_json.value.value(), ash::DeskTemplateSource::kPolicy);
+          *parsed_json, ash::DeskTemplateSource::kPolicy);
 
   apps::AppRegistryCache* app_cache =
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
@@ -369,7 +362,7 @@ TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonAppTest) {
       desk_template_conversion::SerializeDeskTemplateAsPolicy(
           desk_template.get(), app_cache);
 
-  EXPECT_EQ(parsed_json.value, desk_template_value);
+  EXPECT_EQ(*parsed_json, desk_template_value);
 }
 
 TEST_F(DeskTemplateConversionTest, EnsureLacrosBrowserWindowsSavedProperly) {

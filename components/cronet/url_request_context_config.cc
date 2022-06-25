@@ -355,20 +355,19 @@ URLRequestContextConfig::ParseExperimentalOptions(
   if (unparsed_experimental_options.empty())
     unparsed_experimental_options = "{}";
   DVLOG(1) << "Experimental Options:" << unparsed_experimental_options;
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          unparsed_experimental_options);
-  if (!parsed_json.value) {
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      unparsed_experimental_options);
+  if (!parsed_json.has_value()) {
     LOG(ERROR) << "Parsing experimental options failed: '"
                << unparsed_experimental_options << "', error "
-               << parsed_json.error_message;
+               << parsed_json.error().message;
     return absl::nullopt;
   }
 
-  base::Value::Dict* experimental_options_dict = parsed_json.value->GetIfDict();
+  base::Value::Dict* experimental_options_dict = parsed_json->GetIfDict();
   if (!experimental_options_dict) {
     LOG(ERROR) << "Experimental options string is not a dictionary: "
-               << *parsed_json.value;
+               << *parsed_json;
     return absl::nullopt;
   }
 

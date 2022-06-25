@@ -1088,13 +1088,15 @@ Status WritePrefsFile(
     const std::string& template_string,
     const base::DictionaryValue* custom_prefs,
     const base::FilePath& path) {
-  base::JSONReader::ValueWithError parsed_json =
+  auto parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(template_string);
-  base::DictionaryValue* prefs;
-  if (!parsed_json.value || !parsed_json.value->GetAsDictionary(&prefs)) {
+  if (!parsed_json.has_value())
     return Status(kUnknownError, "cannot parse internal JSON template: " +
-                                     parsed_json.error_message);
-  }
+                                     parsed_json.error().message);
+
+  base::DictionaryValue* prefs;
+  if (!parsed_json->GetAsDictionary(&prefs))
+    return Status(kUnknownError, "malformed prefs dictionary");
 
   if (custom_prefs) {
     for (base::DictionaryValue::Iterator it(*custom_prefs); !it.IsAtEnd();

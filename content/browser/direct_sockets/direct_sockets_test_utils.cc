@@ -171,10 +171,10 @@ void AsyncJsRunner::DomOperationResponse(RenderFrameHost* render_frame_host,
 
   auto parsed = base::JSONReader::ReadAndReturnValueWithError(
       json_string, base::JSON_ALLOW_TRAILING_COMMAS);
-  DCHECK(parsed.value);
-  DCHECK_EQ(parsed.value->type(), base::Value::Type::LIST);
+  DCHECK(parsed.has_value());
+  DCHECK_EQ(parsed->type(), base::Value::Type::LIST);
 
-  const auto& list = parsed.value->GetList();
+  const auto& list = parsed->GetList();
   DCHECK_EQ(list.size(), 2U);
   DCHECK(list[0].is_string());
   DCHECK(list[1].is_string());

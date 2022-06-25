@@ -337,15 +337,13 @@ class ClientCertResolverTest : public testing::Test,
             "CommonName": "B CA"
           }
         })";
-    base::JSONReader::ValueWithError parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(
-            test_onc_pattern, base::JSON_ALLOW_TRAILING_COMMAS);
-    ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
+    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+        test_onc_pattern, base::JSON_ALLOW_TRAILING_COMMAS);
+    ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
 
     client_cert_config->onc_source = onc_source;
     client_cert_config->client_cert_type = ::onc::client_cert::kPattern;
-    client_cert_config->pattern.ReadFromONCDictionary(
-        parsed_json.value->GetDict());
+    client_cert_config->pattern.ReadFromONCDictionary(parsed_json->GetDict());
   }
 
   // Sets up a policy with a certificate pattern that matches any client cert
@@ -377,17 +375,16 @@ class ClientCertResolverTest : public testing::Test,
 
   void SetManagedNetworkPolicy(::onc::ONCSource onc_source,
                                base::StringPiece policy_json) {
-    base::JSONReader::ValueWithError parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(
-            policy_json,
-            base::JSON_ALLOW_TRAILING_COMMAS | base::JSON_ALLOW_CONTROL_CHARS);
-    ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-    ASSERT_TRUE(parsed_json.value->is_list());
+    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+        policy_json,
+        base::JSON_ALLOW_TRAILING_COMMAS | base::JSON_ALLOW_CONTROL_CHARS);
+    ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+    ASSERT_TRUE(parsed_json->is_list());
 
     std::string user_hash =
         onc_source == ::onc::ONC_SOURCE_USER_POLICY ? kUserHash : "";
     managed_config_handler_->SetPolicy(
-        onc_source, user_hash, *parsed_json.value,
+        onc_source, user_hash, *parsed_json,
         /*global_network_config=*/base::Value(base::Value::Type::DICTIONARY));
   }
 

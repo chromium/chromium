@@ -401,12 +401,12 @@ bool ParseServerResponse(const std::string& response_body,
   // Parse the response, ignoring comments.
   auto response_result =
       base::JSONReader::ReadAndReturnValueWithError(response_body);
-  if (!response_result.value) {
+  if (!response_result.has_value()) {
     LOG(WARNING) << "ParseServerResponse() : JSONReader failed : "
-                 << response_result.error_message;
+                 << response_result.error().message;
     return false;
   }
-  base::Value response_value = std::move(*response_result.value);
+  base::Value response_value = std::move(*response_result);
 
   if (!response_value.is_dict()) {
     VLOG(1) << "ParseServerResponse() : Unexpected response type "

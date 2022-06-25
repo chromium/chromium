@@ -348,15 +348,18 @@ base::Value ReadDictionaryFromJson(const std::string& json) {
     NET_LOG(DEBUG) << "Empty json string";
     return base::Value();
   }
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json, base::JSON_PARSE_CHROMIUM_EXTENSIONS |
-                    base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!parsed_json.value || !parsed_json.value->is_dict()) {
-    NET_LOG(ERROR) << "Invalid JSON Dictionary: " << parsed_json.error_message;
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      json,
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS | base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!parsed_json.has_value()) {
+    NET_LOG(ERROR) << "Invalid JSON Dictionary: "
+                   << parsed_json.error().message;
+    return base::Value();
+  } else if (!parsed_json->is_dict()) {
+    NET_LOG(ERROR) << "Invalid JSON Dictionary: Expected a dictionary.";
     return base::Value();
   }
-  return std::move(*parsed_json.value);
+  return std::move(*parsed_json);
 }
 
 base::Value Decrypt(const std::string& passphrase, const base::Value& root) {

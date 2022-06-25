@@ -191,15 +191,14 @@ namespace {
   if (!result)
     return true;
 
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!parsed_json.value) {
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      json, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!parsed_json.has_value()) {
     *result = nullptr;
-    DLOG(ERROR) << parsed_json.error_message;
+    DLOG(ERROR) << parsed_json.error().message;
     return false;
   }
-  *result = base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
+  *result = base::Value::ToUniquePtrValue(std::move(*parsed_json));
 
   return true;
 }
@@ -1795,13 +1794,12 @@ EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
                           "Cannot communicate with DOMMessageQueue.");
     }
 
-    base::JSONReader::ValueWithError parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(
-            json, base::JSON_ALLOW_TRAILING_COMMAS);
-    if (!parsed_json.value)
-      return EvalJsResult(base::Value(), parsed_json.error_message);
+    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+        json, base::JSON_ALLOW_TRAILING_COMMAS);
+    if (!parsed_json.has_value())
+      return EvalJsResult(base::Value(), parsed_json.error().message);
     result_type = JavaScriptExecutionResultType::kSuccess;
-    return EvalJsResult(parsed_json.value->Clone(), std::string());
+    return EvalJsResult(parsed_json->Clone(), std::string());
   } else if (dom_message_queue.HasMessages()) {
     return EvalJsResult(base::Value(),
                         "Calling domAutomationController.send is only allowed "

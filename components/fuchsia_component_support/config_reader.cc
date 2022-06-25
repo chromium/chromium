@@ -38,13 +38,12 @@ base::Value ReadConfigFile(const base::FilePath& path) {
   bool loaded = base::ReadFileToString(path, &file_content);
   CHECK(loaded) << "Couldn't read config file: " << path;
 
-  base::JSONReader::ValueWithError parsed =
-      base::JSONReader::ReadAndReturnValueWithError(file_content);
-  CHECK(parsed.value) << "Failed to parse " << path << ": "
-                      << parsed.error_message;
-  CHECK(parsed.value->is_dict()) << "Config is not a JSON dictionary: " << path;
+  auto parsed = base::JSONReader::ReadAndReturnValueWithError(file_content);
+  CHECK(parsed.has_value())
+      << "Failed to parse " << path << ": " << parsed.error().message;
+  CHECK(parsed->is_dict()) << "Config is not a JSON dictionary: " << path;
 
-  return std::move(*parsed.value);
+  return std::move(*parsed);
 }
 
 absl::optional<base::Value> ReadConfigsFromDir(const base::FilePath& dir) {

@@ -233,13 +233,13 @@ class PreinstalledWebAppManagerBrowserTestBase
     PreinstalledWebAppManager::SetFileUtilsForTesting(file_utils.get());
 
     std::vector<base::Value> app_configs;
-    base::JSONReader::ValueWithError json_parse_result =
+    auto json_parse_result =
         base::JSONReader::ReadAndReturnValueWithError(app_config_string);
-    EXPECT_TRUE(json_parse_result.value)
-        << "JSON parse error: " << json_parse_result.error_message;
-    if (!json_parse_result.value)
+    EXPECT_TRUE(json_parse_result.has_value())
+        << "JSON parse error: " << json_parse_result.error().message;
+    if (!json_parse_result.has_value())
       return absl::nullopt;
-    app_configs.push_back(*std::move(json_parse_result.value));
+    app_configs.push_back(std::move(*json_parse_result));
     PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
     absl::optional<webapps::InstallResultCode> code;

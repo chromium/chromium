@@ -97,23 +97,21 @@ TEST(PerformanceMarkTest, BuildJSONValue) {
           .ToLocalChecked(),
       kDoNotExternalize);
 
-  base::JSONReader::ValueWithError parsed_json =
+  auto parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(json_string.Utf8());
-  EXPECT_TRUE(parsed_json.value->is_dict());
+  EXPECT_TRUE(parsed_json->is_dict());
 
-  EXPECT_EQ(expected_name,
-            parsed_json.value->GetDict().FindString("name")->c_str());
+  EXPECT_EQ(expected_name, parsed_json->GetDict().FindString("name")->c_str());
   EXPECT_EQ(expected_entry_type,
-            parsed_json.value->GetDict().FindString("entryType")->c_str());
+            parsed_json->GetDict().FindString("entryType")->c_str());
   EXPECT_EQ(expected_start_time,
-            parsed_json.value->GetDict().FindDouble("startTime").value());
+            parsed_json->GetDict().FindDouble("startTime").value());
   EXPECT_EQ(expected_duration,
-            parsed_json.value->GetDict().FindDouble("duration").value());
-  EXPECT_EQ(
-      expected_navigation_count,
-      (uint32_t)parsed_json.value->GetDict().FindInt("navigationId").value());
+            parsed_json->GetDict().FindDouble("duration").value());
+  EXPECT_EQ(expected_navigation_count,
+            (uint32_t)parsed_json->GetDict().FindInt("navigationId").value());
 
-  EXPECT_EQ(5ul, parsed_json.value->GetDict().size());
+  EXPECT_EQ(5ul, parsed_json->GetDict().size());
 }
 
 }  // namespace blink
