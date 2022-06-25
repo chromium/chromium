@@ -9,41 +9,41 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
-class Value;
 class FilePath;
 
 namespace test_launcher_utils {
 
 // Validate |dict_value| value in |key| is equal to |expected_value|
-bool ValidateKeyValue(const Value& dict_value,
+bool ValidateKeyValue(const Value::Dict& dict,
                       const std::string& key,
                       const std::string& expected_value);
 
 // Validate |dict_value| value in |key| is equal to |expected_value|
-bool ValidateKeyValue(const Value& dict_value,
+bool ValidateKeyValue(const Value::Dict& dict,
                       const std::string& key,
                       int64_t expected_value);
 
 // Validate |iteration_data| contains one test result under |test_name|
 // with |status|, |result_part_count| number of result parts and additional
 // fields that only generated after execution when |have_running_info|.
-bool ValidateTestResult(const Value* iteration_data,
+bool ValidateTestResult(const Value::Dict& iteration_data,
                         const std::string& test_name,
                         const std::string& status,
                         size_t result_part_count,
                         bool have_running_info = true);
 
 // Validate test_locations contains all tests in |test_case_name|.
-bool ValidateTestLocations(const Value* test_locations,
+bool ValidateTestLocations(const Value::Dict& test_locations,
                            const std::string& test_case_name);
 
 // Validate test_locations contains the correct file name and line number.
-bool ValidateTestLocation(const Value* test_locations,
+bool ValidateTestLocation(const Value::Dict& test_locations,
                           const std::string& test_name,
                           const std::string& file,
                           int line);

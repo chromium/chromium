@@ -245,27 +245,26 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RunMockTests) {
       base::test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
-  base::Value* val = root->FindDictKey("test_locations");
-  ASSERT_TRUE(val);
-  EXPECT_EQ(3u, val->DictSize());
+  base::Value::Dict* dict = root->GetDict().FindDict("test_locations");
+  ASSERT_TRUE(dict);
+  EXPECT_EQ(3u, dict->size());
   EXPECT_TRUE(base::test_launcher_utils::ValidateTestLocations(
-      val, "MockContentBrowserTest"));
+      *dict, "MockContentBrowserTest"));
 
-  val = root->FindListKey("per_iteration_data");
-  ASSERT_TRUE(val);
-  ASSERT_EQ(1u, val->GetListDeprecated().size());
+  base::Value::List* list = root->GetDict().FindList("per_iteration_data");
+  ASSERT_TRUE(list);
+  ASSERT_EQ(1u, list->size());
 
-  base::Value* iteration_val = &(val->GetListDeprecated()[0]);
-  ASSERT_TRUE(iteration_val);
-  ASSERT_TRUE(iteration_val->is_dict());
-  EXPECT_EQ(3u, iteration_val->DictSize());
+  base::Value::Dict* iteration_dict = (*list)[0].GetIfDict();
+  ASSERT_TRUE(iteration_dict);
+  EXPECT_EQ(3u, iteration_dict->size());
   // We expect the result to be stripped of disabled prefix.
   EXPECT_TRUE(base::test_launcher_utils::ValidateTestResult(
-      iteration_val, "MockContentBrowserTest.PassTest", "SUCCESS", 0u));
+      *iteration_dict, "MockContentBrowserTest.PassTest", "SUCCESS", 0u));
   EXPECT_TRUE(base::test_launcher_utils::ValidateTestResult(
-      iteration_val, "MockContentBrowserTest.FailTest", "FAILURE", 1u));
+      *iteration_dict, "MockContentBrowserTest.FailTest", "FAILURE", 1u));
   EXPECT_TRUE(base::test_launcher_utils::ValidateTestResult(
-      iteration_val, "MockContentBrowserTest.CrashTest", "CRASH", 0u));
+      *iteration_dict, "MockContentBrowserTest.CrashTest", "CRASH", 0u));
 }
 
 #endif

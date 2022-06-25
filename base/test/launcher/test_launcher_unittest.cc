@@ -550,52 +550,51 @@ TEST_F(TestLauncherTest, StableSharding) {
 }
 
 // Validate |iteration_data| contains one test result matching |result|.
-bool ValidateTestResultObject(const Value* iteration_data,
+bool ValidateTestResultObject(const Value::Dict& iteration_data,
                               TestResult& test_result) {
-  const Value* results = iteration_data->FindListKey(test_result.full_name);
+  const Value::List* results = iteration_data.FindList(test_result.full_name);
   if (!results) {
     ADD_FAILURE() << "Results not found";
     return false;
   }
-  if (1u != results->GetListDeprecated().size()) {
-    ADD_FAILURE() << "Expected one result, actual: "
-                  << results->GetListDeprecated().size();
+  if (1u != results->size()) {
+    ADD_FAILURE() << "Expected one result, actual: " << results->size();
     return false;
   }
-  const Value& val = results->GetListDeprecated()[0];
-  if (!val.is_dict()) {
+  const Value::Dict* dict = (*results)[0].GetIfDict();
+  if (!dict) {
     ADD_FAILURE() << "Unexpected type";
     return false;
   }
 
   using test_launcher_utils::ValidateKeyValue;
-  bool result = ValidateKeyValue(val, "elapsed_time_ms",
+  bool result = ValidateKeyValue(*dict, "elapsed_time_ms",
                                  test_result.elapsed_time.InMilliseconds());
 
-  if (!val.FindBoolKey("losless_snippet").value_or(false)) {
+  if (!dict->FindBool("losless_snippet").value_or(false)) {
     ADD_FAILURE() << "losless_snippet expected to be true";
     result = false;
   }
 
-  result &= ValidateKeyValue(val, "output_snippet", test_result.output_snippet);
+  result &=
+      ValidateKeyValue(*dict, "output_snippet", test_result.output_snippet);
 
   std::string base64_output_snippet;
   Base64Encode(test_result.output_snippet, &base64_output_snippet);
   result &=
-      ValidateKeyValue(val, "output_snippet_base64", base64_output_snippet);
+      ValidateKeyValue(*dict, "output_snippet_base64", base64_output_snippet);
 
-  result &= ValidateKeyValue(val, "status", test_result.StatusAsString());
+  result &= ValidateKeyValue(*dict, "status", test_result.StatusAsString());
 
-  const Value* value = val.FindListKey("result_parts");
-  if (test_result.test_result_parts.size() !=
-      value->GetListDeprecated().size()) {
+  const Value::List* list = dict->FindList("result_parts");
+  if (test_result.test_result_parts.size() != list->size()) {
     ADD_FAILURE() << "test_result_parts count is not valid";
     return false;
   }
 
   for (unsigned i = 0; i < test_result.test_result_parts.size(); i++) {
     TestResultPart result_part = test_result.test_result_parts.at(i);
-    const Value& part_dict = value->GetListDeprecated()[i];
+    const Value::Dict& part_dict = (*list)[i].GetDict();
 
     result &= ValidateKeyValue(part_dict, "type", result_part.TypeAsString());
     result &= ValidateKeyValue(part_dict, "file", result_part.file_name);
@@ -611,21 +610,21 @@ bool ValidateTestResultObject(const Value* iteration_data,
 bool ValidateStringList(const absl::optional<Value>& root,
                         const std::string& key,
                         std::vector<const char*> values) {
-  const Value* val = root->FindListKey(key);
-  if (!val) {
+  const Value::List* list = root->GetDict().FindList(key);
+  if (!list) {
     ADD_FAILURE() << "|root| has no list_value in key: " << key;
     return false;
   }
 
-  if (values.size() != val->GetListDeprecated().size()) {
+  if (values.size() != list->size()) {
     ADD_FAILURE() << "expected size: " << values.size()
-                  << ", actual size:" << val->GetListDeprecated().size();
+                  << ", actual size:" << list->size();
     return false;
   }
 
   for (unsigned i = 0; i < values.size(); i++) {
-    if (!val->GetListDeprecated()[i].is_string() &&
-        val->GetListDeprecated()[i].GetString().compare(values.at(i))) {
+    if (!(*list)[i].is_string() &&
+        (*list)[i].GetString().compare(values.at(i))) {
       ADD_FAILURE() << "Expected list values do not match actual list";
       return false;
     }
@@ -676,24 +675,23 @@ TEST_F(TestLauncherTest, JsonSummary) {
       ValidateStringList(root, "disabled_tests",
                          {"Test.firstTestDisabled", "TestDisabled.firstTest"}));
 
-  const Value* val = root->FindDictKey("test_locations");
-  ASSERT_TRUE(val);
-  EXPECT_EQ(2u, val->DictSize());
-  ASSERT_TRUE(test_launcher_utils::ValidateTestLocation(val, "Test.firstTest",
+  const Value::Dict* dict = root->GetDict().FindDict("test_locations");
+  ASSERT_TRUE(dict);
+  EXPECT_EQ(2u, dict->size());
+  ASSERT_TRUE(test_launcher_utils::ValidateTestLocation(*dict, "Test.firstTest",
                                                         "File", 100));
-  ASSERT_TRUE(test_launcher_utils::ValidateTestLocation(val, "Test.secondTest",
-                                                        "File", 100));
+  ASSERT_TRUE(test_launcher_utils::ValidateTestLocation(
+      *dict, "Test.secondTest", "File", 100));
 
-  val = root->FindListKey("per_iteration_data");
-  ASSERT_TRUE(val);
-  ASSERT_EQ(2u, val->GetListDeprecated().size());
-  for (size_t i = 0; i < val->GetListDeprecated().size(); i++) {
-    const Value* iteration_val = &(val->GetListDeprecated()[i]);
-    ASSERT_TRUE(iteration_val);
-    ASSERT_TRUE(iteration_val->is_dict());
-    EXPECT_EQ(2u, iteration_val->DictSize());
-    EXPECT_TRUE(ValidateTestResultObject(iteration_val, first_result));
-    EXPECT_TRUE(ValidateTestResultObject(iteration_val, second_result));
+  const Value::List* list = root->GetDict().FindList("per_iteration_data");
+  ASSERT_TRUE(list);
+  ASSERT_EQ(2u, list->size());
+  for (const auto& iteration_val : *list) {
+    ASSERT_TRUE(iteration_val.is_dict());
+    const base::Value::Dict& iteration_dict = iteration_val.GetDict();
+    EXPECT_EQ(2u, iteration_dict.size());
+    EXPECT_TRUE(ValidateTestResultObject(iteration_dict, first_result));
+    EXPECT_TRUE(ValidateTestResultObject(iteration_dict, second_result));
   }
 }
 
@@ -721,23 +719,22 @@ TEST_F(TestLauncherTest, JsonSummaryWithDisabledTests) {
   // Validate the resulting JSON file is the expected output.
   absl::optional<Value> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
-  Value* val = root->FindDictKey("test_locations");
-  ASSERT_TRUE(val);
-  EXPECT_EQ(1u, val->DictSize());
+  Value::Dict* dict = root->GetDict().FindDict("test_locations");
+  ASSERT_TRUE(dict);
+  EXPECT_EQ(1u, dict->size());
   EXPECT_TRUE(test_launcher_utils::ValidateTestLocation(
-      val, "Test.DISABLED_Test", "File", 100));
+      *dict, "Test.DISABLED_Test", "File", 100));
 
-  val = root->FindListKey("per_iteration_data");
-  ASSERT_TRUE(val);
-  ASSERT_EQ(1u, val->GetListDeprecated().size());
+  Value::List* list = root->GetDict().FindList("per_iteration_data");
+  ASSERT_TRUE(list);
+  ASSERT_EQ(1u, list->size());
 
-  Value* iteration_val = &(val->GetListDeprecated()[0]);
-  ASSERT_TRUE(iteration_val);
-  ASSERT_TRUE(iteration_val->is_dict());
-  EXPECT_EQ(1u, iteration_val->DictSize());
+  Value::Dict* iteration_dict = (*list)[0].GetIfDict();
+  ASSERT_TRUE(iteration_dict);
+  EXPECT_EQ(1u, iteration_dict->size());
   // We expect the result to be stripped of disabled prefix.
   test_result.full_name = "Test.Test";
-  EXPECT_TRUE(ValidateTestResultObject(iteration_val, test_result));
+  EXPECT_TRUE(ValidateTestResultObject(*iteration_dict, test_result));
 }
 
 // Matches a std::tuple<const FilePath&, const FilePath&> where the first
@@ -881,29 +878,29 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
   absl::optional<Value> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
-  Value* val = root->FindDictKey("test_locations");
-  ASSERT_TRUE(val);
-  EXPECT_EQ(4u, val->DictSize());
+  const Value::Dict* dict = root->GetDict().FindDict("test_locations");
+  ASSERT_TRUE(dict);
+  EXPECT_EQ(4u, dict->size());
 
-  EXPECT_TRUE(test_launcher_utils::ValidateTestLocations(val, "MockUnitTests"));
+  EXPECT_TRUE(
+      test_launcher_utils::ValidateTestLocations(*dict, "MockUnitTests"));
 
-  val = root->FindListKey("per_iteration_data");
-  ASSERT_TRUE(val);
-  ASSERT_EQ(1u, val->GetListDeprecated().size());
+  const Value::List* list = root->GetDict().FindList("per_iteration_data");
+  ASSERT_TRUE(list);
+  ASSERT_EQ(1u, list->size());
 
-  Value* iteration_val = &(val->GetListDeprecated()[0]);
-  ASSERT_TRUE(iteration_val);
-  ASSERT_TRUE(iteration_val->is_dict());
-  EXPECT_EQ(4u, iteration_val->DictSize());
+  const Value::Dict* iteration_dict = (*list)[0].GetIfDict();
+  ASSERT_TRUE(iteration_dict);
+  EXPECT_EQ(4u, iteration_dict->size());
   // We expect the result to be stripped of disabled prefix.
   EXPECT_TRUE(test_launcher_utils::ValidateTestResult(
-      iteration_val, "MockUnitTests.PassTest", "SUCCESS", 0u));
+      *iteration_dict, "MockUnitTests.PassTest", "SUCCESS", 0u));
   EXPECT_TRUE(test_launcher_utils::ValidateTestResult(
-      iteration_val, "MockUnitTests.FailTest", "FAILURE", 1u));
+      *iteration_dict, "MockUnitTests.FailTest", "FAILURE", 1u));
   EXPECT_TRUE(test_launcher_utils::ValidateTestResult(
-      iteration_val, "MockUnitTests.CrashTest", "CRASH", 0u));
+      *iteration_dict, "MockUnitTests.CrashTest", "CRASH", 0u));
   EXPECT_TRUE(test_launcher_utils::ValidateTestResult(
-      iteration_val, "MockUnitTests.NoRunTest", "NOTRUN", 0u,
+      *iteration_dict, "MockUnitTests.NoRunTest", "NOTRUN", 0u,
       /*have_running_info=*/false));
 }
 
@@ -997,12 +994,12 @@ TEST_F(UnitTestLauncherDelegateTester, LeakedChildProcess) {
   absl::optional<Value> root = test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
-  Value* val = root->FindDictKey("test_locations");
-  ASSERT_TRUE(val);
-  EXPECT_EQ(1u, val->DictSize());
+  Value::Dict* dict = root->GetDict().FindDict("test_locations");
+  ASSERT_TRUE(dict);
+  EXPECT_EQ(1u, dict->size());
 
   EXPECT_TRUE(test_launcher_utils::ValidateTestLocations(
-      val, "LeakedChildProcessTest"));
+      *dict, "LeakedChildProcessTest"));
 
   // Validate that the leaked child caused the batch to error-out.
   EXPECT_EQ(exit_code, 1);
