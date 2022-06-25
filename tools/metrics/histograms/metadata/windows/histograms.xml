@@ -231,6 +231,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.ParallelDllLoadingEnabled" enum="BooleanEnabled"
+    expires_after="never">
+<!-- expires-never: Needed to measure third party incompatibilities on Windows which could happen at any time. -->
+
+  <owner>forshaw@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Records whether or not parallel DLL loading is enabled for the browser
+    process executable. This is recorded once per browser session, on startup.
+  </summary>
+</histogram>
+
 <histogram name="Windows.ParentProcessNameHash" enum="ProcessNameHash"
     expires_after="never">
 <!-- expires-never: Needed to measure third party incompatibilities on Windows which could happen at any time. -->

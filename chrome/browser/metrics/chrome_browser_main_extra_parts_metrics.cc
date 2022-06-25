@@ -76,7 +76,10 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/win/base_win_buildflags.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/shell_integration_win.h"
@@ -185,57 +188,6 @@ void RecordMicroArchitectureStats() {
 #endif  // defined(ARCH_CPU_X86_FAMILY)
   base::UmaHistogramSparse("Platform.LogicalCpuCount",
                            base::SysInfo::NumberOfProcessors());
-}
-
-#if BUILDFLAG(IS_WIN)
-bool IsApplockerRunning();
-#endif  // BUILDFLAG(IS_WIN)
-
-// Called on a background thread, with low priority to avoid slowing down
-// startup with metrics that aren't trivial to compute.
-void RecordStartupMetrics() {
-#if BUILDFLAG(IS_WIN)
-  const base::win::OSInfo& os_info = *base::win::OSInfo::GetInstance();
-  int patch = os_info.version_number().patch;
-  int build = os_info.version_number().build;
-  int patch_level = 0;
-
-  if (patch < 65536 && build < 65536)
-    patch_level = MAKELONG(patch, build);
-  DCHECK(patch_level) << "Windows version too high!";
-  base::UmaHistogramSparse("Windows.PatchLevel", patch_level);
-
-  int kernel32_patch = os_info.Kernel32VersionNumber().patch;
-  int kernel32_build = os_info.Kernel32VersionNumber().build;
-  int kernel32_patch_level = 0;
-  if (kernel32_patch < 65536 && kernel32_build < 65536)
-    kernel32_patch_level = MAKELONG(kernel32_patch, kernel32_build);
-  DCHECK(kernel32_patch_level) << "Windows kernel32.dll version too high!";
-  base::UmaHistogramSparse("Windows.PatchLevelKernel32", kernel32_patch_level);
-
-  base::UmaHistogramBoolean("Windows.HasHighResolutionTimeTicks",
-                            base::TimeTicks::IsHighResolution());
-
-  // Determine if Applocker is enabled and running. This does not check if
-  // Applocker rules are being enforced.
-  base::UmaHistogramBoolean("Windows.ApplockerRunning", IsApplockerRunning());
-  crypto::MeasureTPMAvailabilityWin();
-#endif  // BUILDFLAG(IS_WIN)
-
-  bluetooth_utility::ReportBluetoothAvailability();
-
-  // Record whether Chrome is the default browser or not.
-  // Disabled on Linux due to hanging browser tests, see crbug.com/1216328.
-#if !BUILDFLAG(IS_LINUX)
-  shell_integration::DefaultWebClientState default_state =
-      shell_integration::GetDefaultBrowser();
-  base::UmaHistogramEnumeration("DefaultBrowser.State", default_state,
-                                shell_integration::NUM_DEFAULT_STATES);
-#endif  // !BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  RecordChromeOSChannel();
-#endif
 }
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
@@ -495,11 +447,95 @@ bool IsApplockerRunning() {
   return status.dwCurrentState == SERVICE_RUNNING;
 }
 
+// This registry key is not fully documented but there is information on it
+// here:
+// https://blogs.blackberry.com/en/2017/10/windows-10-parallel-loading-breakdown.
+bool IsParallelDllLoadingEnabled() {
+  // Parallel DLL loading is only available on Windows 10 and above.
+  if (base::win::GetVersion() < base::win::Version::WIN10)
+    return false;
+  base::FilePath exe_path;
+  if (!base::PathService::Get(base::FILE_EXE, &exe_path))
+    return false;
+  const wchar_t kIFEOKey[] =
+      L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution "
+      L"Options\\";
+  std::wstring browser_process_key = kIFEOKey + exe_path.BaseName().value();
+
+  base::win::RegKey key;
+  if (ERROR_SUCCESS != key.Open(HKEY_LOCAL_MACHINE, browser_process_key.c_str(),
+                                KEY_QUERY_VALUE))
+    return true;
+
+  const wchar_t kMaxLoaderThreads[] = L"MaxLoaderThreads";
+  DWORD max_loader_threads = 0;
+  if (ERROR_SUCCESS != key.ReadValueDW(kMaxLoaderThreads, &max_loader_threads))
+    return true;
+
+  // Note: If LoaderThreads is 0, it will be set to the default value of 4.
+  return max_loader_threads != 1;
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 void RecordDisplayHDRStatus(const display::Display& display) {
   base::UmaHistogramBoolean("Hardware.Display.SupportsHDR",
                             display.color_spaces().SupportsHDR());
+}
+
+// Called on a background thread, with low priority to avoid slowing down
+// startup with metrics that aren't trivial to compute.
+void RecordStartupMetrics() {
+#if BUILDFLAG(IS_WIN)
+  const base::win::OSInfo& os_info = *base::win::OSInfo::GetInstance();
+  int patch = os_info.version_number().patch;
+  int build = os_info.version_number().build;
+  int patch_level = 0;
+
+  if (patch < 65536 && build < 65536)
+    patch_level = MAKELONG(patch, build);
+  DCHECK(patch_level) << "Windows version too high!";
+  base::UmaHistogramSparse("Windows.PatchLevel", patch_level);
+
+  int kernel32_patch = os_info.Kernel32VersionNumber().patch;
+  int kernel32_build = os_info.Kernel32VersionNumber().build;
+  int kernel32_patch_level = 0;
+  if (kernel32_patch < 65536 && kernel32_build < 65536)
+    kernel32_patch_level = MAKELONG(kernel32_patch, kernel32_build);
+  DCHECK(kernel32_patch_level) << "Windows kernel32.dll version too high!";
+  base::UmaHistogramSparse("Windows.PatchLevelKernel32", kernel32_patch_level);
+
+  base::UmaHistogramBoolean("Windows.HasHighResolutionTimeTicks",
+                            base::TimeTicks::IsHighResolution());
+
+  // Determine if Applocker is enabled and running. This does not check if
+  // Applocker rules are being enforced.
+  base::UmaHistogramBoolean("Windows.ApplockerRunning", IsApplockerRunning());
+
+  // Determine whether parallel DLL loading is enabled for the browser process
+  // executable. This is disabled by default on fresh Windows installations, but
+  // the registry key that controls this might have been removed. Having the
+  // parallel DLL loader enabled might affect both sandbox and early startup
+  // behavior.
+  base::UmaHistogramBoolean("Windows.ParallelDllLoadingEnabled",
+                            IsParallelDllLoadingEnabled());
+  crypto::MeasureTPMAvailabilityWin();
+#endif  // BUILDFLAG(IS_WIN)
+
+  bluetooth_utility::ReportBluetoothAvailability();
+
+  // Record whether Chrome is the default browser or not.
+  // Disabled on Linux due to hanging browser tests, see crbug.com/1216328.
+#if !BUILDFLAG(IS_LINUX)
+  shell_integration::DefaultWebClientState default_state =
+      shell_integration::GetDefaultBrowser();
+  base::UmaHistogramEnumeration("DefaultBrowser.State", default_state,
+                                shell_integration::NUM_DEFAULT_STATES);
+#endif  // !BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  RecordChromeOSChannel();
+#endif
 }
 
 }  // namespace
