@@ -79,8 +79,6 @@ class ArcDefaultAppList : public arc::ArcSessionManagerObserver {
   bool HasHiddenPackage(const std::string& package_name) const;
   // Marks default app |app_id| as hidden in case |hidden| is true.
   void SetAppHidden(const std::string& app_id, bool hidden);
-  // Marks all default apps from the package |package_name| as hidden.
-  void SetAppsHiddenForPackage(const std::string& package_name);
 
   // Returns map of apps that are visible and not filtered.
   std::map<std::string, const AppInfo*> GetActiveApps() const;
