@@ -7,7 +7,12 @@
 
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 
+#include <linux/v4l2-controls.h>
+
+// ChromeOS specific header; does not exist upstream
+#if BUILDFLAG(IS_CHROMEOS)
 #include <linux/media/vp9-ctrls-upstream.h>
+#endif
 
 #include <set>
 

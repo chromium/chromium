@@ -13,12 +13,18 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+// AV1 stateless decoding not supported upstream yet
+#if BUILDFLAG(IS_CHROMEOS)
 #include "media/gpu/v4l2/test/av1_decoder.h"
+#endif
 #include "media/gpu/v4l2/test/h264_decoder.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
 #include "media/gpu/v4l2/test/vp9_decoder.h"
 
+// AV1 stateless decoding not supported upstream yet
+#if BUILDFLAG(IS_CHROMEOS)
 using media::v4l2_test::Av1Decoder;
+#endif
 using media::v4l2_test::H264Decoder;
 using media::v4l2_test::VideoDecoder;
 using media::v4l2_test::Vp9Decoder;
@@ -76,7 +82,12 @@ std::unique_ptr<VideoDecoder> CreateVideoDecoder(
     const base::MemoryMappedFile& stream) {
   CHECK(stream.IsValid());
 
-  std::unique_ptr<VideoDecoder> decoder = Av1Decoder::Create(stream);
+  std::unique_ptr<VideoDecoder> decoder;
+
+// AV1 stateless decoding not supported upstream yet
+#if BUILDFLAG(IS_CHROMEOS)
+  decoder = Av1Decoder::Create(stream);
+#endif
 
   if (!decoder)
     decoder = Vp9Decoder::Create(stream);

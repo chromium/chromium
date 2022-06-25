@@ -4,7 +4,13 @@
 
 #include "media/gpu/v4l2/test/vp9_decoder.h"
 
+#include <linux/v4l2-controls.h>
+
+// ChromeOS specific header; does not exist upstream
+#if BUILDFLAG(IS_CHROMEOS)
 #include <linux/media/vp9-ctrls-upstream.h>
+#endif
+
 #include <sys/ioctl.h>
 
 #include "base/bits.h"

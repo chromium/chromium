@@ -167,8 +167,6 @@ source_set("unit_test") {
 executable("v4l2_stateless_decoder") {
   testonly = true
   sources = [
-    "test/av1_decoder.cc",
-    "test/av1_decoder.h",
     "test/av1_pix_fmt.h",
     "test/h264_decoder.cc",
     "test/h264_decoder.h",
@@ -180,6 +178,13 @@ executable("v4l2_stateless_decoder") {
     "test/vp9_decoder.cc",
     "test/vp9_decoder.h",
   ]
+
+  if (is_chromeos) {
+    sources += [
+      "test/av1_decoder.cc",
+      "test/av1_decoder.h",
+    ]
+  }
 
   deps = [
     "//base",
