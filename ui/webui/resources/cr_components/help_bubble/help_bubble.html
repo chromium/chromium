@@ -5,7 +5,7 @@
   }
 
   .arrow {
-    background-color: var(--iph-bubble-background);
+    background-color: var(--help-bubble-background);
     height: 16px;
     position: absolute;
     transform: rotate(-45deg);
@@ -49,30 +49,30 @@
     font-size: 14px;
   }
 
-  .iph-bubble {
-    --iph-bubble-background: var(--google-blue-700);
-    --iph-bubble-text-color: var(--google-grey-200);
-    background-color: var(--iph-bubble-background);
+  .help-bubble {
+    --help-bubble-background: var(--google-blue-700);
+    --help-bubble-text-color: var(--google-grey-200);
+    background-color: var(--help-bubble-background);
     border-radius: 8px;
-    color: var(--iph-bubble-text-color);
+    color: var(--help-bubble-text-color);
     padding: 12px 16px;
     width: 362px;
   }
 
-  .iph-bubble-container {
+  .help-bubble-container {
     display: none;
     opacity: 0;
   }
 
-  :host([open]) .iph-bubble-container
+  :host([open]) .help-bubble-container
   {
     display: block;
     opacity: 1;
   }
 </style>
 
-<div class="iph-bubble-container">
-  <div class="iph-bubble">
+<div class="help-bubble-container">
+  <div class="help-bubble">
     <div class="body">[[body]]</div>
     <div class="arrow"></div>
   </div>

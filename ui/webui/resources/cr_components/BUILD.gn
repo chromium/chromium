@@ -214,7 +214,6 @@ preprocess_if_expr("preprocess_src_ts") {
   in_folder = "."
   out_folder = preprocess_folder
   in_files = [
-    "iph_bubble/iph_bubble.ts",
     "localized_link/localized_link.ts",
     "managed_dialog/managed_dialog.ts",
     "managed_footnote/managed_footnote.ts",
@@ -228,7 +227,6 @@ preprocess_if_expr("preprocess_generated_ts") {
   in_folder = target_gen_dir
   out_folder = preprocess_folder
   in_files = [
-    "iph_bubble/iph_bubble.html.ts",
     "localized_link/localized_link.html.ts",
     "managed_dialog/managed_dialog.html.ts",
     "managed_footnote/managed_footnote.html.ts",
@@ -382,7 +380,6 @@ if (is_chromeos_ash) {
 
 html_to_wrapper("html_wrapper_files") {
   in_files = [
-    "iph_bubble/iph_bubble.html",
     "localized_link/localized_link.html",
     "managed_dialog/managed_dialog.html",
     "managed_footnote/managed_footnote.html",

@@ -32,6 +32,29 @@ TEST_F('CrComponentsCustomizeThemesTest', 'All', function() {
   mocha.run();
 });
 
+var CrComponentsHelpBubbleMixinTest =
+    class extends CrComponentsMojoBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/help_bubble_mixin_test.js';
+  }
+};
+
+TEST_F('CrComponentsHelpBubbleMixinTest', 'All', function() {
+  mocha.run();
+});
+
+var CrComponentsHelpBubbleTest = class extends CrComponentsMojoBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/help_bubble_test.js';
+  }
+};
+
+TEST_F('CrComponentsHelpBubbleTest', 'All', function() {
+  mocha.run();
+});
+
 var CrComponentsHistoryClustersTest =
     class extends CrComponentsMojoBrowserTest {
   /** @override */

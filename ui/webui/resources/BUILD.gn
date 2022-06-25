@@ -54,6 +54,7 @@ generate_grd("build_grd") {
       "cr_components:build_grdp",
       "cr_components/app_management:build_grdp",
       "cr_components/customize_themes:build_grdp",
+      "cr_components/help_bubble:build_grdp",
       "cr_components/most_visited:build_grdp",
       "cr_elements:build_grdp",
       "js/browser_command:build_grdp",
@@ -61,10 +62,11 @@ generate_grd("build_grd") {
     ]
     grdp_files += [
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_components/app_management/resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_components/cr_components_resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_components/customize_themes/resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_components/help_bubble/resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_components/most_visited/resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/app_management/resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
       "$root_gen_dir/ui/webui/resources/js/browser_command/resources.grdp",
     ]
@@ -336,8 +338,6 @@ ts_library("library") {
 
   if (include_polymer) {
     in_files += [
-      "cr_components/iph_bubble/iph_bubble.html.ts",
-      "cr_components/iph_bubble/iph_bubble.ts",
       "cr_components/localized_link/localized_link.html.ts",
       "cr_components/localized_link/localized_link.ts",
       "cr_components/managed_footnote/managed_footnote.html.ts",

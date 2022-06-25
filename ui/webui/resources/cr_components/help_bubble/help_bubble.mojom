@@ -1,0 +1,71 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module help_bubble.mojom;
+
+// Where the help bubble floats relative to its anchor.
+enum HelpBubblePosition {
+  ABOVE,
+  BELOW,
+  LEFT,
+  RIGHT
+};
+
+// Simplified version of user_education::HelpBubbleButtonParams.
+struct HelpBubbleButtonParams {
+  string text;
+  bool is_default = false;
+};
+
+// Simplified version of user_education::HelpBubbleParams.
+struct HelpBubbleParams {
+  // Holds the name of the ElementIdentifier used to trigger the help bubble
+  // from native code. The HelpBubbleMixin then maps this to a specific HTML
+  // element ID.
+  string native_identifier;
+
+  HelpBubblePosition position = HelpBubblePosition.BELOW;
+  string? title_text;
+  string body_text;
+  array<HelpBubbleButtonParams> buttons;
+};
+
+// Used by the component to bootstrap bidirectional communication.
+interface HelpBubbleHandlerFactory {
+  // The component calls this method when it is first initialized.
+  CreateHelpBubbleHandler(
+           pending_remote<HelpBubbleClient> client,
+           pending_receiver<HelpBubbleHandler> handler);
+};
+
+// Represents the primary application with the user education logic that wants
+// to display help bubbles on an external surface.
+interface HelpBubbleHandler {
+  // Indicates that the visibility of the help bubble host component host has
+  // changed.
+  HelpBubbleHostVisibilityChanged(bool visible);
+
+  // Notifies that a help bubble button has been pressed and the help bubble is
+  // closing as a result.
+  HelpBubbleButtonPressed(int8 button);
+
+  // Called when the help bubble is closed, either because the element it is
+  // associated with goes away, or because the user canceled it.
+  HelpBubbleClosed(bool by_user);
+};
+
+// Represents an external surface (WebUI, etc.) that can display help bubbles.
+// The implementing UI should use a HelpBubbleMixin and have a <help-bubble>
+// element.
+interface HelpBubbleClient {
+  // Shows a help bubble with parameters defined by `data` attached to `target`.
+  ShowHelpBubble(HelpBubbleParams data);
+
+  // Toggles focus to the help bubble or to its anchor point.
+  ToggleFocusForAccessibility();
+
+  // Invoked to hide the currently-displayed help bubble if it should no longer
+  // be shown.
+  HideHelpBubble();
+};
