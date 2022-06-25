@@ -782,6 +782,17 @@ chromium-metrics-reviews@google.com.
   <summary>The result of each modem FW install attempt.</summary>
 </histogram>
 
+<histogram name="Platform.Modemfwd.FWInstallTime" units="seconds"
+    expires_after="2023-06-17">
+  <owner>ujjwalpande@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Metric to track time taken by modemfwd helpers in seconds to flash the
+    firmwares to modem. Values will be reported only for successful flashing
+    cases as flashing times in case of failures could be misleading.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Modemfwd.FWUpdateLocation"
     enum="ModemfwdFWUpdateLocation" expires_after="2023-04-15">
   <owner>andrewlassalle@google.com</owner>
