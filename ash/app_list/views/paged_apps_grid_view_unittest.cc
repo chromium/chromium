@@ -13,6 +13,7 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test/test_focus_change_listener.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
+#include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/app_list_view.h"
@@ -30,6 +31,7 @@
 #include "base/test/task_environment.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/button/label_button.h"
@@ -67,6 +69,12 @@ class PagedAppsGridViewTestBase : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
+
+    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
+    search_model_ = std::make_unique<SearchModel>();
+    Shell::Get()->app_list_controller()->SetActiveModel(
+        /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
+
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
     grid_test_api_ = std::make_unique<test::AppsGridViewTestApi>(
         GetAppListTestHelper()->GetRootPagedAppsGridView());
@@ -101,6 +109,8 @@ class PagedAppsGridViewTestBase : public AshTestBase {
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
+  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
+  std::unique_ptr<SearchModel> search_model_;
 };
 
 // Tests with ProductivityLauncher enabled.
@@ -677,6 +687,137 @@ TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
   // Verify that another row appears once the toast is closed.
   EXPECT_EQ(3, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
   EXPECT_FALSE(toast_container->IsToastVisible());
+}
+
+// Test that when quickly dragging and removing the last item from a folder, the
+// item view layers which are created when entering cardified state are
+// destroyed once the exit cardified item animations are complete.
+TEST_F(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  app_list_test_model_->CreateSingleItemFolder("folder_id", "Item_0");
+  app_list_test_model_->PopulateApps(5);
+  UpdateLayout();
+
+  auto* generator = GetEventGenerator();
+  auto* helper = GetAppListTestHelper();
+
+  GetPagedAppsGridView()->SetCardifiedStateEndedTestCallback(
+      base::BindLambdaForTesting(
+          [&]() { LOG(ERROR) << "wowee TESTING OnCardifiedStateEnded!!!"; }));
+
+  // Open the folder.
+  EXPECT_TRUE(GetPagedAppsGridView()->GetItemViewAt(0)->is_folder());
+  LeftClickOn(GetPagedAppsGridView()->GetItemViewAt(0));
+  ASSERT_TRUE(helper->IsInFolderView());
+
+  // Wait for folder opening animations to complete.
+  base::RunLoop folder_animation_waiter;
+  helper->GetAppsContainerView()
+      ->app_list_folder_view()
+      ->SetAnimationDoneTestCallback(base::BindLambdaForTesting(
+          [&]() { folder_animation_waiter.Quit(); }));
+  folder_animation_waiter.Run();
+
+  AppListItemView* item_view = helper->GetFullscreenFolderView()
+                                   ->items_grid_view()
+                                   ->view_model()
+                                   ->view_at(0);
+  generator->MoveMouseTo(item_view->GetBoundsInScreen().CenterPoint());
+
+  // Begin drag on the single item within the folder.
+  generator->PressLeftButton();
+  item_view->FireMouseDragTimerForTest();
+
+  // Move the mouse outside of the folder.
+  generator->MoveMouseTo(helper->GetAppsContainerView()
+                             ->app_list_folder_view()
+                             ->GetBoundsInScreen()
+                             .bottom_center() +
+                         gfx::Vector2d(0, item_view->height()));
+
+  // End the drag.
+  ASSERT_TRUE(helper->GetFullscreenFolderView()
+                  ->items_grid_view()
+                  ->FireFolderItemReparentTimerForTest());
+  generator->ReleaseLeftButton();
+  ASSERT_FALSE(helper->IsInFolderView());
+
+  const views::ViewModelT<AppListItemView>* view_model =
+      GetPagedAppsGridView()->view_model();
+  EXPECT_EQ(6u, view_model->view_size());
+
+  // Ensure all items have layers right after ending drag.
+  for (size_t i = 0; i < view_model->view_size(); i++)
+    EXPECT_TRUE(view_model->view_at(i)->layer());
+
+  // Wait for each item's layer animation to complete.
+  LayerAnimationStoppedWaiter animation_waiter;
+  for (size_t i = 0; i < view_model->view_size(); i++) {
+    if (view_model->view_at(i)->layer())
+      animation_waiter.Wait(view_model->view_at(i)->layer());
+  }
+
+  // When each item's layer animation is complete, their layers should have been
+  // removed.
+  for (size_t i = 0; i < view_model->view_size(); i++)
+    EXPECT_FALSE(view_model->view_at(i)->layer());
+
+  EXPECT_EQ(0,
+            GetPagedAppsGridView()
+                ->GetBoundsAnimationForCardifiedStateInProgressCountForTest());
+}
+
+// Test the case of beginning an item drag and then immediately ending the drag.
+// This will cause the entering cardified state animations to get interrupted by
+// the exiting animations. It could be possible that this animation interrupt
+// triggers `OnCardifiedStateEnded()` twice, so test that cardified state ended
+// only happens once.
+TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  app_list_test_model_->PopulateApps(5);
+  UpdateLayout();
+
+  auto* generator = GetEventGenerator();
+
+  // Set the callback to count how many times the cardified state is ended.
+  int number_of_times_cardified_state_ended = 0;
+  GetPagedAppsGridView()->SetCardifiedStateEndedTestCallback(
+      base::BindLambdaForTesting(
+          [&]() { number_of_times_cardified_state_ended++; }));
+
+  const views::ViewModelT<AppListItemView>* view_model =
+      GetPagedAppsGridView()->view_model();
+  AppListItemView* item_view = view_model->view_at(1);
+  generator->MoveMouseTo(item_view->GetBoundsInScreen().CenterPoint());
+
+  // Begin drag.
+  generator->PressLeftButton();
+  item_view->FireMouseDragTimerForTest();
+
+  // Drag the item a short distance and immediately release drag.
+  generator->MoveMouseBy(100, 100);
+  generator->ReleaseLeftButton();
+
+  // Wait for each item's layer animation to complete.
+  LayerAnimationStoppedWaiter animation_waiter;
+  for (size_t i = 0; i < view_model->view_size(); i++) {
+    if (view_model->view_at(i)->layer())
+      animation_waiter.Wait(view_model->view_at(i)->layer());
+  }
+
+  // When each item's layer animation is complete, their layers should have been
+  // removed.
+  for (size_t i = 0; i < view_model->view_size(); i++)
+    EXPECT_FALSE(view_model->view_at(i)->layer());
+  EXPECT_EQ(0,
+            GetPagedAppsGridView()
+                ->GetBoundsAnimationForCardifiedStateInProgressCountForTest());
+
+  // Now that cardified item animations are complete, make sure that
+  // `OnCardifiedStateEnded()` is only called once.
+  EXPECT_EQ(1, number_of_times_cardified_state_ended);
 }
 
 }  // namespace

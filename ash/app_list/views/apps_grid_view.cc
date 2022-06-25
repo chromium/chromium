@@ -1448,9 +1448,8 @@ void AppsGridView::AnimateToIdealBounds() {
 
     const bool current_visible = visible_bounds.Intersects(current);
     const bool target_visible = visible_bounds.Intersects(target);
-    const bool visible = !IsViewHiddenForFolderReorder(view) &&
-                         !IsViewHiddenForDrag(view) &&
-                         (current_visible || target_visible);
+    const bool visible =
+        !IsViewExplicitlyHidden(view) && (current_visible || target_visible);
 
     if (visible && view->has_pending_row_change()) {
       view->reset_has_pending_row_change();
@@ -2765,6 +2764,10 @@ bool AppsGridView::IsViewHiddenForFolderReorder(const views::View* view) const {
 
 bool AppsGridView::IsUnderWholeGridAnimation() const {
   return grid_animation_status_ != AppListGridAnimationStatus::kEmpty;
+}
+
+bool AppsGridView::IsViewExplicitlyHidden(const views::View* view) const {
+  return IsViewHiddenForDrag(view) || IsViewHiddenForFolderReorder(view);
 }
 
 void AppsGridView::MaybeAbortWholeGridAnimation() {

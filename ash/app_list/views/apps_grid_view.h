@@ -294,6 +294,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // continue section). This function is public for testing.
   bool IsUnderWholeGridAnimation() const;
 
+  // Returns whether `view` is hidden due to drag or folder reorder.
+  bool IsViewExplicitlyHidden(const views::View* view) const;
+
   // Aborts the active whole-grid animation (for reordering, or hide continue
   // section), if any.
   void MaybeAbortWholeGridAnimation();

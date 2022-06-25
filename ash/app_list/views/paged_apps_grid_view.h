@@ -209,6 +209,14 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Animates items to their ideal bounds when the reorder nudge gets removed.
   void AnimateOnNudgeRemoved();
 
+  int GetBoundsAnimationForCardifiedStateInProgressCountForTest() {
+    return bounds_animation_for_cardified_state_in_progress_;
+  }
+
+  // Set the callback that runs when cardified state has ended.
+  void SetCardifiedStateEndedTestCallback(
+      base::RepeatingClosure cardified_ended_callback);
+
  private:
   friend class test::AppsGridViewTest;
 
@@ -256,6 +264,9 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void EndAppsGridCardifiedView();
   // Animates individual elements of the apps grid to and from cardified state.
   void AnimateCardifiedState();
+  // Animate app list items in the app grid to and from cardified state.
+  void AnimateAppListItemsForCardifiedState(
+      const gfx::Vector2d& translate_offset);
   // Call OnBoundsAnimatorDone when all layer animations finish.
   void MaybeCallOnBoundsAnimatorDone();
   // Translates the items container view to center the current page in the apps
@@ -355,10 +366,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // scaling applied from cardified state.
   int unscaled_first_page_vertical_tile_padding_ = 0;
 
-  // Cardified animation observers.
-  std::vector<std::unique_ptr<ui::ImplicitAnimationObserver>>
-      animation_observers_;
-
   // A margin added to the height of the clip rect used for clipping the
   // cardified state's background cards.
   int margin_for_gradient_mask_ = 0;
@@ -367,6 +374,9 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // If true, ignore the calls on `UpdateOpacity()`.
   bool lock_opacity_ = false;
+
+  // The callback that runs once cardified state is ended.
+  base::RepeatingClosure cardified_state_ended_test_callback_;
 
   base::WeakPtrFactory<PagedAppsGridView> weak_ptr_factory_{this};
 };
