@@ -12,8 +12,7 @@ struct Options {
   bool check_ipc = false;
   bool check_gmock_objects = false;
   bool check_layout_object_methods = false;
-  bool checked_ptr_as_trivial_member = false;
-  bool raw_ptr_template_as_trivial_member = false;
+  bool raw_ref_template_as_trivial_member = false;
 };
 
 }  // namespace chrome_checker
