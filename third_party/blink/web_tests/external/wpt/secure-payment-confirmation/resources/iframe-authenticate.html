@@ -19,34 +19,39 @@ window.addEventListener('message', async function handler(evt) {
   const challenge = 'server challenge';
   const payeeOrigin = 'https://merchant.com';
   const displayName = 'Troycard ***1234';
-  const request = new PaymentRequest([{
-    supportedMethods: 'secure-payment-confirmation',
-    data: {
-      credentialIds: [credentialId],
-      challenge: Uint8Array.from(challenge, c => c.charCodeAt(0)),
-      payeeOrigin,
-      rpId,
-      timeout: 60000,
-      instrument: {
-        displayName,
-        icon: ICON_URL,
-      },
-    }
-  }], PAYMENT_DETAILS);
 
-  test_driver.set_test_context(window.parent);
-  await test_driver.bless('user activation');
-  const responsePromise = request.show();
+  try {
+    const request = new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [credentialId],
+        challenge: Uint8Array.from(challenge, c => c.charCodeAt(0)),
+        payeeOrigin,
+        rpId,
+        timeout: 60000,
+        instrument: {
+          displayName,
+          icon: ICON_URL,
+        },
+      }
+    }], PAYMENT_DETAILS);
 
-  const response = await responsePromise;
-  await response.complete('success');
+    test_driver.set_test_context(window.parent);
+    await test_driver.bless('user activation');
+    const responsePromise = request.show();
 
-  const cred = response.details;
+    const response = await responsePromise;
+    await response.complete('success');
 
-  // Let our parent know the results. Some WebAuthn fields cannot be cloned, so
-  // we have to do some teardown ourselves.
-  const clientDataJSON = JSON.parse(arrayBufferToString(cred.response.clientDataJSON))
-  window.parent.postMessage({ type: 'spc_result', id: cred.id, clientDataJSON }, '*');
+    const cred = response.details;
+
+    // Let our parent know the results. Some WebAuthn fields cannot be cloned, so
+    // we have to do some teardown ourselves.
+    const clientDataJSON = JSON.parse(arrayBufferToString(cred.response.clientDataJSON))
+    window.parent.postMessage({ type: 'spc_result', id: cred.id, clientDataJSON }, '*');
+  } catch (e) {
+    window.parent.postMessage({ type: 'spc_result', error: e }, '*');
+  }
 });
 
 // Now let our parent know that we are ready to receive the credential ID.

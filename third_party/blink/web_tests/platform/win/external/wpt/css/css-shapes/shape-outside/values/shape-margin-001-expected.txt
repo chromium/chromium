@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+PASS 10cm - inline
+PASS 10mm - inline
+PASS 10in - inline
+PASS 10pt - inline
+PASS 10pc - inline
+PASS 10em - inline
+PASS 10ex - inline
+PASS 10ch - inline
+PASS 10rem - inline
+PASS 10vw - inline
+PASS 10vh - inline
+PASS 10vmin - inline
+PASS 10vmax - inline
+PASS 10cm - computed
+PASS 10mm - computed
+PASS 10in - computed
+PASS 10pt - computed
+PASS 10pc - computed
+PASS 10em - computed
+FAIL 10ex - computed assert_equals: expected "128px" but got "130.08px"
+PASS 10ch - computed
+PASS 10rem - computed
+PASS 10vw - computed
+PASS 10vh - computed
+PASS 10vmin - computed
+PASS 10vmax - computed
+Harness: the test ran to completion.
+
