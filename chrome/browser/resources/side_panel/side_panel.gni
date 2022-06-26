@@ -36,20 +36,5 @@ ts_files = web_component_files + non_web_component_files
 
 mojo_files = [
   "bookmarks/bookmarks.mojom-webui.js",
-  "read_anything/read_anything.mojom-webui.js",
   "reading_list/reading_list.mojom-webui.js",
-]
-
-# TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.
-mojo_files += [
-  "read_anything/ax_constants.mojom-webui.js",
-  "read_anything/ax_enums.mojom-webui.js",
-  "read_anything/ax_action_data.mojom-webui.js",
-  "read_anything/ax_event.mojom-webui.js",
-  "read_anything/ax_event_intent.mojom-webui.js",
-  "read_anything/ax_node_data.mojom-webui.js",
-  "read_anything/ax_relative_bounds.mojom-webui.js",
-  "read_anything/ax_tree_data.mojom-webui.js",
-  "read_anything/ax_tree_id.mojom-webui.js",
-  "read_anything/ax_tree_update.mojom-webui.js",
 ]

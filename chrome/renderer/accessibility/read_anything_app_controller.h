@@ -81,6 +81,27 @@ class ReadAnythingAppController
   bool IsStaticText(ui::AXNodeID ax_node_id);
   void OnConnected();
 
+  // The following methods are used for testing ReadAnythingAppTest.
+  // Snapshot_lite is a data structure which resembles an AXTreeUpdate. E.g.:
+  //   const axTree = {
+  //     root_id: 1,
+  //     nodes: [
+  //       {
+  //         id: 1,
+  //         role: 'rootWebArea',
+  //         child_ids: [2],
+  //       },
+  //       {
+  //         id: 2,
+  //         role: 'staticText',
+  //         name: 'Some text.',
+  //       },
+  //     ],
+  //   };
+  void SetContentForTesting(v8::Local<v8::Value> v8_snapshot_lite,
+                            std::vector<ui::AXNodeID> content_node_ids);
+  void SetFontNameForTesting(std::string new_font_name);
+
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id);
 
   content::RenderFrame* render_frame_;

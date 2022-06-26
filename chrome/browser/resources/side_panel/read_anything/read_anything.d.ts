@@ -47,6 +47,29 @@ declare namespace chrome {
     // element is added to the document.
     function onConnected(): void;
 
+    // Set the content. Used by tests only.
+    // SnapshotLite is a data structure which resembles an AXTreeUpdate. E.g.:
+    //   const axTree = {
+    //     rootId: 1,
+    //     nodes: [
+    //       {
+    //         id: 1,
+    //         role: 'rootWebArea',
+    //         childIds: [2],
+    //       },
+    //       {
+    //         id: 2,
+    //         role: 'staticText',
+    //         name: 'Some text.',
+    //       },
+    //     ],
+    //   };
+    function setContentForTesting(
+        snapshotLite: Object, contentNodeIds: number[]): void;
+
+    // Set the font name. Used by tests only.
+    function setFontNameForTesting(newFontName: string): void;
+
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.
     ////////////////////////////////////////////////////////////////

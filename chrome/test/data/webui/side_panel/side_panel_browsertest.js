@@ -6,9 +6,8 @@
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
-GEN('#include "build/build_config.h"');
-GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "ui/accessibility/accessibility_features.h"');
 
 /* eslint-disable no-var */
 
@@ -80,6 +79,11 @@ var ReadAnythingAppTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/read_anything/read_anything_app_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['features::kReadAnything']};
   }
 };
 

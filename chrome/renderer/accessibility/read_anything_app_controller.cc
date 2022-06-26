@@ -12,6 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
+#include "gin/converter.h"
+#include "gin/dictionary.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -24,6 +26,120 @@
 #include "ui/accessibility/ax_tree_update.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
+
+namespace {
+
+// The following methods convert v8::Value types to an AXTreeUpdate. This is not
+// a complete conversion (thus way gin::Converter<ui::AXTreeUpdate> is not used
+// or implemented) but just converting the bare minimum data types needed for
+// the ReadAnythingAppTest.
+
+void SetAXNodeDataChildIds(v8::Isolate* isolate,
+                           gin::Dictionary* v8_dict,
+                           ui::AXNodeData* ax_node_data) {
+  v8::Local<v8::Value> v8_child_ids;
+  v8_dict->Get("childIds", &v8_child_ids);
+  gin::Converter<std::vector<int32_t>>::FromV8(isolate, v8_child_ids,
+                                               &ax_node_data->child_ids);
+}
+
+void SetAXNodeDataHierarchicalLevel(v8::Isolate* isolate,
+                                    gin::Dictionary* v8_dict,
+                                    ui::AXNodeData* ax_node_data) {
+  v8::Local<v8::Value> v8_hierarchical_level;
+  v8_dict->Get("hierarchicalLevel", &v8_hierarchical_level);
+  int32_t hierarchical_level;
+  gin::Converter<int32_t>::FromV8(isolate, v8_hierarchical_level,
+                                  &hierarchical_level);
+  ax_node_data->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
+                                hierarchical_level);
+}
+
+void SetAXNodeDataId(v8::Isolate* isolate,
+                     gin::Dictionary* v8_dict,
+                     ui::AXNodeData* ax_node_data) {
+  v8::Local<v8::Value> v8_id;
+  v8_dict->Get("id", &v8_id);
+  gin::Converter<int32_t>::FromV8(isolate, v8_id, &ax_node_data->id);
+}
+
+void SetAXNodeDataName(v8::Isolate* isolate,
+                       gin::Dictionary* v8_dict,
+                       ui::AXNodeData* ax_node_data) {
+  v8::Local<v8::Value> v8_name;
+  v8_dict->Get("name", &v8_name);
+  std::string name;
+  gin::Converter<std::string>::FromV8(isolate, v8_name, &name);
+  ax_node_data->SetName(name);
+  ax_node_data->SetNameFrom(ax::mojom::NameFrom::kContents);
+}
+
+void SetAXNodeDataRole(v8::Isolate* isolate,
+                       gin::Dictionary* v8_dict,
+                       ui::AXNodeData* ax_node_data) {
+  v8::Local<v8::Value> v8_role;
+  v8_dict->Get("role", &v8_role);
+  std::string role_name;
+  gin::Converter<std::string>::FromV8(isolate, v8_role, &role_name);
+  if (role_name == "rootWebArea")
+    ax_node_data->role = ax::mojom::Role::kRootWebArea;
+  else if (role_name == "heading")
+    ax_node_data->role = ax::mojom::Role::kHeading;
+  else if (role_name == "link")
+    ax_node_data->role = ax::mojom::Role::kLink;
+  else if (role_name == "paragraph")
+    ax_node_data->role = ax::mojom::Role::kParagraph;
+  else if (role_name == "staticText")
+    ax_node_data->role = ax::mojom::Role::kStaticText;
+}
+
+void SetAXNodeDataUrl(v8::Isolate* isolate,
+                      gin::Dictionary* v8_dict,
+                      ui::AXNodeData* ax_node_data) {
+  v8::Local<v8::Value> v8_url;
+  v8_dict->Get("url", &v8_url);
+  std::string url;
+  gin::Converter<std::string>::FromV8(isolate, v8_url, &url);
+  ax_node_data->AddStringAttribute(ax::mojom::StringAttribute::kUrl, url);
+}
+
+void SetAXTreeUpdateRootId(v8::Isolate* isolate,
+                           gin::Dictionary* v8_dict,
+                           ui::AXTreeUpdate* snapshot) {
+  v8::Local<v8::Value> v8_root_id;
+  v8_dict->Get("rootId", &v8_root_id);
+  gin::Converter<int32_t>::FromV8(isolate, v8_root_id, &snapshot->root_id);
+}
+
+ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> v8_snapshot_lite) {
+  ui::AXTreeUpdate snapshot;
+  gin::Dictionary v8_snapshot_dict(
+      isolate, v8::Local<v8::Object>::Cast(v8_snapshot_lite));
+  SetAXTreeUpdateRootId(isolate, &v8_snapshot_dict, &snapshot);
+
+  v8::Local<v8::Value> v8_nodes;
+  v8_snapshot_dict.Get("nodes", &v8_nodes);
+  std::vector<v8::Local<v8::Value>> v8_nodes_vector;
+  gin::Converter<std::vector<v8::Local<v8::Value>>>::FromV8(isolate, v8_nodes,
+                                                            &v8_nodes_vector);
+
+  for (v8::Local<v8::Value> v8_node : v8_nodes_vector) {
+    ui::AXNodeData ax_node_data;
+    gin::Dictionary v8_node_dict(isolate, v8::Local<v8::Object>::Cast(v8_node));
+    SetAXNodeDataId(isolate, &v8_node_dict, &ax_node_data);
+    SetAXNodeDataName(isolate, &v8_node_dict, &ax_node_data);
+    SetAXNodeDataChildIds(isolate, &v8_node_dict, &ax_node_data);
+    SetAXNodeDataRole(isolate, &v8_node_dict, &ax_node_data);
+    SetAXNodeDataHierarchicalLevel(isolate, &v8_node_dict, &ax_node_data);
+    SetAXNodeDataUrl(isolate, &v8_node_dict, &ax_node_data);
+    snapshot.nodes.push_back(ax_node_data);
+  }
+  return snapshot;
+}
+
+}  // namespace
 
 // static
 gin::WrapperInfo ReadAnythingAppController::kWrapperInfo = {
@@ -104,7 +220,11 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("isLink", &ReadAnythingAppController::IsLink)
       .SetMethod("isParagraph", &ReadAnythingAppController::IsParagraph)
       .SetMethod("isStaticText", &ReadAnythingAppController::IsStaticText)
-      .SetMethod("onConnected", &ReadAnythingAppController::OnConnected);
+      .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
+      .SetMethod("setContentForTesting",
+                 &ReadAnythingAppController::SetContentForTesting)
+      .SetMethod("setFontNameForTesting",
+                 &ReadAnythingAppController::SetFontNameForTesting);
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::ContentNodeIds() {
@@ -186,6 +306,20 @@ void ReadAnythingAppController::OnConnected() {
       page_handler_.BindNewPipeAndPassReceiver());
   render_frame_->GetBrowserInterfaceBroker()->GetInterface(
       std::move(page_handler_factory_receiver));
+}
+
+void ReadAnythingAppController::SetFontNameForTesting(
+    std::string new_font_name) {
+  OnFontNameChange(new_font_name);
+}
+
+void ReadAnythingAppController::SetContentForTesting(
+    v8::Local<v8::Value> v8_snapshot_lite,
+    std::vector<ui::AXNodeID> content_node_ids) {
+  v8::Isolate* isolate = blink::MainThreadIsolate();
+  ui::AXTreeUpdate snapshot =
+      GetSnapshotFromV8SnapshotLite(isolate, v8_snapshot_lite);
+  OnAXTreeDistilled(snapshot, content_node_ids);
 }
 
 ui::AXNode* ReadAnythingAppController::GetAXNode(ui::AXNodeID ax_node_id) {

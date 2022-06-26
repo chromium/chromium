@@ -8,7 +8,6 @@ assert(!is_android)
 
 mojom("mojo_bindings") {
   sources = [ "read_anything.mojom" ]
-  webui_module_path = "/"
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/accessibility/mojom",
