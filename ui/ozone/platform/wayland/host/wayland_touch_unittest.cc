@@ -35,6 +35,11 @@ ACTION_P(CloneEvent, ptr) {
   *ptr = Event::Clone(*arg0);
 }
 
+bool CompareFloat(float a, float b) {
+  constexpr float kEpsilon = std::numeric_limits<float>::epsilon();
+  return std::isnan(a) ? std::isnan(b) : fabs(a - b) < kEpsilon;
+}
+
 }  // namespace
 
 class WaylandTouchTest : public WaylandTest {
@@ -64,12 +69,19 @@ class WaylandTouchTest : public WaylandTest {
   void CheckEventType(
       ui::EventType event_type,
       ui::Event* event,
-      ui::EventPointerType pointer_type = ui::EventPointerType::kTouch) {
+      ui::EventPointerType pointer_type = ui::EventPointerType::kTouch,
+      float force = std::numeric_limits<float>::quiet_NaN(),
+      float tilt_x = 0.0,
+      float tilt_y = 0.0) {
     ASSERT_TRUE(event);
     ASSERT_TRUE(event->IsTouchEvent());
 
     auto* touch_event = event->AsTouchEvent();
     EXPECT_EQ(event_type, touch_event->type());
+    EXPECT_EQ(pointer_type, touch_event->pointer_details().pointer_type);
+    EXPECT_TRUE(CompareFloat(force, touch_event->pointer_details().force));
+    EXPECT_TRUE(CompareFloat(tilt_x, touch_event->pointer_details().tilt_x));
+    EXPECT_TRUE(CompareFloat(tilt_y, touch_event->pointer_details().tilt_y));
   }
 
   raw_ptr<wl::TestTouch> touch_;
@@ -127,7 +139,8 @@ TEST_P(WaylandTouchTest, TouchPressAndMotionWithStylus) {
   wl_touch_send_frame(touch_->resource());
 
   Sync();
-  CheckEventType(ui::ET_TOUCH_RELEASED, event.get());
+  CheckEventType(ui::ET_TOUCH_RELEASED, event.get(),
+                 ui::EventPointerType::kPen);
 }
 
 // Tests that touch events with stylus pen work. This variant of the test sends
@@ -137,27 +150,36 @@ TEST_P(WaylandTouchTest, TouchPressAndMotionWithStylus2) {
   std::unique_ptr<Event> event;
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(CloneEvent(&event));
 
+  uint32_t time = 0;
   wl_touch_send_down(touch_->resource(), 1, 0, surface_->resource(), 0 /* id */,
                      wl_fixed_from_int(50), wl_fixed_from_int(100));
   zcr_touch_stylus_v2_send_tool(touch_->touch_stylus()->resource(), 0 /* id */,
                                 ZCR_TOUCH_STYLUS_V2_TOOL_TYPE_PEN);
+  zcr_touch_stylus_v2_send_force(touch_->touch_stylus()->resource(), ++time,
+                                 0 /* id */, wl_fixed_from_double(1.0f));
+  zcr_touch_stylus_v2_send_tilt(touch_->touch_stylus()->resource(), ++time,
+                                0 /* id */, wl_fixed_from_double(-45),
+                                wl_fixed_from_double(45));
   wl_touch_send_frame(touch_->resource());
 
   Sync();
-  CheckEventType(ui::ET_TOUCH_PRESSED, event.get(), ui::EventPointerType::kPen);
+  CheckEventType(ui::ET_TOUCH_PRESSED, event.get(), ui::EventPointerType::kPen,
+                 1.0f /* force */, -45.0f /* tilt_x */, 45.0f /* tilt_y */);
 
   wl_touch_send_motion(touch_->resource(), 500, 0 /* id */,
                        wl_fixed_from_int(100), wl_fixed_from_int(100));
   wl_touch_send_frame(touch_->resource());
 
   Sync();
-  CheckEventType(ui::ET_TOUCH_MOVED, event.get(), ui::EventPointerType::kPen);
+  CheckEventType(ui::ET_TOUCH_MOVED, event.get(), ui::EventPointerType::kPen,
+                 1.0f /* force */, -45.0f /* tilt_x */, 45.0f /* tilt_y */);
 
   wl_touch_send_up(touch_->resource(), 1, 1000, 0 /* id */);
   wl_touch_send_frame(touch_->resource());
 
   Sync();
-  CheckEventType(ui::ET_TOUCH_RELEASED, event.get());
+  CheckEventType(ui::ET_TOUCH_RELEASED, event.get(), ui::EventPointerType::kPen,
+                 1.0f /* force */, -45.0f /* tilt_x */, 45.0f /* tilt_y */);
 }
 
 // Tests that touch focus is correctly set and released.

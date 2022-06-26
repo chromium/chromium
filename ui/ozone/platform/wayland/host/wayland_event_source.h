@@ -137,6 +137,9 @@ class WaylandEventSource : public PlatformEventSource,
   const WaylandWindow* GetTouchTarget(PointerId id) const override;
   void OnTouchStylusToolChanged(PointerId pointer_id,
                                 EventPointerType pointer_type) override;
+  void OnTouchStylusForceChanged(PointerId pointer_id, float force) override;
+  void OnTouchStylusTiltChanged(PointerId pointer_id,
+                                const gfx::Vector2dF& tilt) override;
 
   // WaylandZwpPointerGesture::Delegate:
   void OnPinchEvent(EventType event_type,

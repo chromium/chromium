@@ -150,7 +150,10 @@ void WaylandTouch::Force(void* data,
                          uint32_t time,
                          uint32_t id,
                          wl_fixed_t force) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* touch = static_cast<WaylandTouch*>(data);
+  DCHECK(touch);
+
+  touch->delegate_->OnTouchStylusForceChanged(id, wl_fixed_to_double(force));
 }
 
 // static
@@ -160,7 +163,12 @@ void WaylandTouch::Tilt(void* data,
                         uint32_t id,
                         wl_fixed_t tilt_x,
                         wl_fixed_t tilt_y) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* touch = static_cast<WaylandTouch*>(data);
+  DCHECK(touch);
+
+  touch->delegate_->OnTouchStylusTiltChanged(
+      id,
+      gfx::Vector2dF(wl_fixed_to_double(tilt_x), wl_fixed_to_double(tilt_y)));
 }
 
 }  // namespace ui

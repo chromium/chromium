@@ -108,6 +108,9 @@ class WaylandTouch::Delegate {
   virtual const WaylandWindow* GetTouchTarget(PointerId id) const = 0;
   virtual void OnTouchStylusToolChanged(PointerId pointer_id,
                                         EventPointerType pointer_type) = 0;
+  virtual void OnTouchStylusForceChanged(PointerId pointer_id, float force) = 0;
+  virtual void OnTouchStylusTiltChanged(PointerId pointer_id,
+                                        const gfx::Vector2dF& tilt) = 0;
 };
 
 }  // namespace ui

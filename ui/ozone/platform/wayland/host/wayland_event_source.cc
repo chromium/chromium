@@ -501,6 +501,18 @@ void WaylandEventSource::OnTouchStylusToolChanged(
   DCHECK(inserted);
 }
 
+void WaylandEventSource::OnTouchStylusForceChanged(PointerId pointer_id,
+                                                   float force) {
+  DCHECK(last_touch_stylus_data_[pointer_id].has_value());
+  last_touch_stylus_data_[pointer_id]->force = force;
+}
+
+void WaylandEventSource::OnTouchStylusTiltChanged(PointerId pointer_id,
+                                                  const gfx::Vector2dF& tilt) {
+  DCHECK(last_touch_stylus_data_[pointer_id].has_value());
+  last_touch_stylus_data_[pointer_id]->tilt = tilt;
+}
+
 const WaylandWindow* WaylandEventSource::GetTouchTarget(PointerId id) const {
   const auto it = touch_points_.find(id);
   return it == touch_points_.end() ? nullptr : it->second->window.get();
@@ -656,7 +668,12 @@ absl::optional<PointerDetails> WaylandEventSource::AmendStylusData(
     return absl::nullopt;
   }
 
-  return PointerDetails(it->second->type, pointer_id);
+  // The values below come from the default values in pointer_details.cc|h.
+  return PointerDetails(it->second->type, pointer_id,
+                        /*radius_x=*/1.0f,
+                        /*radius_y=*/1.0f, it->second->force,
+                        /*twist=*/0.0f, it->second->tilt.x(),
+                        it->second->tilt.y());
 }
 
 }  // namespace ui
