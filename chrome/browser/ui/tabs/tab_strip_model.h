@@ -24,7 +24,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_order_controller.h"
 #include "chrome/browser/ui/tabs/tab_switch_event_latency_recorder.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -402,7 +401,7 @@ class TabStripModel : public TabGroupController {
 
   // Returns the WebContents that opened the WebContents at |index|, or NULL if
   // there is no opener on record.
-  content::WebContents* GetOpenerOfWebContentsAt(int index);
+  content::WebContents* GetOpenerOfWebContentsAt(const int index) const;
 
   // Changes the |opener| of the WebContents at |index|.
   // Note: |opener| must be in this tab strip. Also a tab must not be its own
@@ -636,11 +635,6 @@ class TabStripModel : public TabGroupController {
   // corresponding browser command exists, false otherwise.
   static bool ContextMenuCommandToBrowserCommand(int cmd_id, int* browser_cmd);
 
-  // Access the order controller. Exposed only for unit tests.
-  TabStripModelOrderController* order_controller() const {
-    return order_controller_.get();
-  }
-
   // Returns the index of the next WebContents in the sequence of WebContentses
   // spawned by the specified WebContents after |start_index|.
   int GetIndexOfNextWebContentsOpenedBy(const content::WebContents* opener,
@@ -657,17 +651,15 @@ class TabStripModel : public TabGroupController {
       absl::optional<tab_groups::TabGroupId> collapsing_group) const;
 
   // Forget all opener relationships, to reduce unpredictable tab switching
-  // behavior in complex session states. The exact circumstances under which
-  // this method is called are left up to TabStripModelOrderController.
+  // behavior in complex session states.
   void ForgetAllOpeners();
 
   // Forgets the opener relationship of the specified WebContents.
   void ForgetOpener(content::WebContents* contents);
 
-  // Returns true if the opener relationships present for |contents| should be
-  // reset when _any_ active tab change occurs (rather than just one outside the
-  // current tree of openers).
-  bool ShouldResetOpenerOnActiveTabChange(content::WebContents* contents) const;
+  // Determine where to place a newly opened tab by using the supplied
+  // transition and foreground flag to figure out how it was opened.
+  int DetermineInsertionIndex(ui::PageTransition transition, bool foreground);
 
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
@@ -677,6 +669,11 @@ class TabStripModel : public TabGroupController {
 
   class WebContentsData;
   struct DetachNotifications;
+
+  // Perform tasks associated with changes to the model. Change the Active Index
+  // and notify observers.
+  void OnChange(const TabStripModelChange& change,
+                const TabStripSelectionChange& selection);
 
   // Detaches the WebContents at the specified |index| from this strip. |reason|
   // is used to indicate to observers what is going to happen to the WebContents
@@ -875,6 +872,17 @@ class TabStripModel : public TabGroupController {
   // group, possibly by setting or clearing its group.
   void EnsureGroupContiguity(int index);
 
+  // Returns a valid index to be selected after the tab at |removing_index| is
+  // closed. If |index| is after |removing_index|, |index| is adjusted to
+  // reflect the fact that |removing_index| is going away.
+  int GetTabIndexAfterClosing(int index, int removing_index) const;
+
+  // Takes the |selection| change and decides whether to forget the openers.
+  void OnActiveTabChanged(const TabStripSelectionChange& selection);
+
+  // Determine where to shift selection after a tab is closed.
+  absl::optional<int> DetermineNewSelectedIndex(int removed_index) const;
+
   // The WebContents data currently hosted within this TabStripModel. This must
   // be kept in sync with |selection_model_|.
   std::vector<std::unique_ptr<WebContentsData>> contents_data_;
@@ -893,10 +901,6 @@ class TabStripModel : public TabGroupController {
 
   // True if all tabs are currently being closed via CloseAllTabs.
   bool closing_all_ = false;
-
-  // An object that determines where new Tabs should be inserted and where
-  // selection should move when a Tab is closed.
-  std::unique_ptr<TabStripModelOrderController> order_controller_;
 
   // This must be kept in sync with |contents_data_|.
   ui::ListSelectionModel selection_model_;

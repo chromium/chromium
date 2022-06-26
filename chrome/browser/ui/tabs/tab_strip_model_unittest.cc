@@ -798,8 +798,7 @@ TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
 }
 
 static int GetInsertionIndex(TabStripModel* tabstrip) {
-  return tabstrip->order_controller()->DetermineInsertionIndex(
-      ui::PAGE_TRANSITION_LINK, false);
+  return tabstrip->DetermineInsertionIndex(ui::PAGE_TRANSITION_LINK, false);
 }
 
 static void InsertWebContentses(TabStripModel* tabstrip,
@@ -901,8 +900,8 @@ TEST_F(TabStripModelTest, TestInsertionIndexDetermination) {
   // opener tab.
   std::unique_ptr<WebContents> fg_link_contents = CreateWebContents();
   WebContents* raw_fg_link_contents = fg_link_contents.get();
-  int insert_index = tabstrip.order_controller()->DetermineInsertionIndex(
-      ui::PAGE_TRANSITION_LINK, true);
+  int insert_index =
+      tabstrip.DetermineInsertionIndex(ui::PAGE_TRANSITION_LINK, true);
   EXPECT_EQ(1, insert_index);
   tabstrip.InsertWebContentsAt(
       insert_index, std::move(fg_link_contents),
@@ -917,8 +916,8 @@ TEST_F(TabStripModelTest, TestInsertionIndexDetermination) {
   // Now open a new empty tab. It should open at the end of the strip.
   std::unique_ptr<WebContents> fg_nonlink_contents = CreateWebContents();
   WebContents* raw_fg_nonlink_contents = fg_nonlink_contents.get();
-  insert_index = tabstrip.order_controller()->DetermineInsertionIndex(
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK, true);
+  insert_index =
+      tabstrip.DetermineInsertionIndex(ui::PAGE_TRANSITION_AUTO_BOOKMARK, true);
   EXPECT_EQ(tabstrip.count(), insert_index);
   // We break the opener relationship...
   tabstrip.InsertWebContentsAt(insert_index, std::move(fg_nonlink_contents),

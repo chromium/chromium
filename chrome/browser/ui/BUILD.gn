@@ -1370,8 +1370,6 @@ static_library("ui") {
       "tabs/tab_strip_model_delegate.h",
       "tabs/tab_strip_model_observer.cc",
       "tabs/tab_strip_model_observer.h",
-      "tabs/tab_strip_model_order_controller.cc",
-      "tabs/tab_strip_model_order_controller.h",
       "tabs/tab_strip_model_stats_recorder.cc",
       "tabs/tab_strip_model_stats_recorder.h",
       "tabs/tab_style.cc",
