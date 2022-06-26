@@ -334,18 +334,23 @@ pre {
       </div>
     </template>
     <div class="question">
-      <div class="h2">$i18n{emailField}</div>
+      <!-- Show the email field only if the user is logged into Chrome
+           (i.e. |userEmail_| is set). -->
       <cr-checkbox checked="{{allowContactByEmail_}}"
                    aria-description="$i18n{allowContactByEmail}"
-                   id="allow-contact-by-email">
+                   id="allow-contact-by-email"
+                   hidden="[[!userEmail_]]">
         <span class="checkbox-label">
           $i18n{allowContactByEmail}
         </span>
       </cr-checkbox>
+      <!-- We do not allow the user to edit the email address.
+           See b/228865049 for context. -->
       <cr-input placeholder="$i18n{yourEmailAddress}"
-                value="{{userEmail_}}"
+                value="[[userEmail_]]"
                 type="text"
-                disabled="[[!allowContactByEmail_]]">
+                hidden="[[!allowContactByEmail_]]"
+                disabled="true">
       </cr-input>
       <cr-checkbox checked="{{attachLogs_}}"
                    aria-description="$i18n{sendLogs}">
