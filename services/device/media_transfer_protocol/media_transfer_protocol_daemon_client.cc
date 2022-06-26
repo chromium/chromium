@@ -38,7 +38,8 @@ mojom::MtpStorageInfo GetMojoMtpStorageInfoFromProtobuf(
       protobuf.storage_type(), protobuf.filesystem_type(),
       protobuf.access_capability(), protobuf.max_capacity(),
       protobuf.free_space_in_bytes(), protobuf.free_space_in_objects(),
-      protobuf.storage_description(), protobuf.volume_identifier());
+      protobuf.storage_description(), protobuf.volume_identifier(),
+      protobuf.serial_number());
 }
 
 // The MediaTransferProtocolDaemonClient implementation.
