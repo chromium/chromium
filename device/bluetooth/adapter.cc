@@ -18,6 +18,7 @@
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/device.h"
 #include "device/bluetooth/discovery_session.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/public/mojom/connect_result_type_converter.h"
 #include "device/bluetooth/server_socket.h"
@@ -108,6 +109,8 @@ void Adapter::GetInfo(GetInfoCallback callback) {
   adapter_info->name = adapter_->GetName();
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   adapter_info->system_name = adapter_->GetSystemName();
+  adapter_info->floss =
+      base::FeatureList::IsEnabled(floss::features::kFlossEnabled);
 #endif
   adapter_info->initialized = adapter_->IsInitialized();
   adapter_info->present = adapter_->IsPresent();
