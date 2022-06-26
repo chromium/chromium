@@ -1,0 +1,523 @@
+This is a testharness.js-based test.
+PASS inset(10cm round 10cm) - inline
+PASS inset(10cm round 10cm / 10cm) - inline
+PASS inset(10cm round 10cm / 10cm 20cm) - inline
+PASS inset(10cm round 10cm / 10cm 20cm 30cm) - inline
+PASS inset(10cm round 10cm / 10cm 20cm 30cm 40cm) - inline
+PASS inset(10cm round 10cm 20cm) - inline
+PASS inset(10cm round 10cm 20cm / 10cm) - inline
+PASS inset(10cm round 10cm 20cm / 10cm 20cm) - inline
+PASS inset(10cm round 10cm 20cm / 10cm 20cm 30cm) - inline
+PASS inset(10cm round 10cm 20cm / 10cm 20cm 30cm 40cm) - inline
+PASS inset(10cm round 10cm 20cm 30cm) - inline
+PASS inset(10cm round 10cm 20cm 30cm / 10cm) - inline
+PASS inset(10cm round 10cm 20cm 30cm / 10cm 20cm) - inline
+PASS inset(10cm round 10cm 20cm 30cm / 10cm 20cm 30cm) - inline
+PASS inset(10cm round 10cm 20cm 30cm / 10cm 20cm 30cm 40cm) - inline
+PASS inset(10cm round 10cm 20cm 30cm 40cm) - inline
+PASS inset(10cm round 10cm 20cm 30cm 40cm / 10cm) - inline
+PASS inset(10cm round 10cm 20cm 30cm 40cm / 10cm 20cm) - inline
+PASS inset(10cm round 10cm 20cm 30cm 40cm / 10cm 20cm 30cm) - inline
+PASS inset(10cm round 10cm 20cm 30cm 40cm / 10cm 20cm 30cm 40cm) - inline
+PASS inset(10mm round 10mm) - inline
+PASS inset(10mm round 10mm / 10mm) - inline
+PASS inset(10mm round 10mm / 10mm 20mm) - inline
+PASS inset(10mm round 10mm / 10mm 20mm 30mm) - inline
+PASS inset(10mm round 10mm / 10mm 20mm 30mm 40mm) - inline
+PASS inset(10mm round 10mm 20mm) - inline
+PASS inset(10mm round 10mm 20mm / 10mm) - inline
+PASS inset(10mm round 10mm 20mm / 10mm 20mm) - inline
+PASS inset(10mm round 10mm 20mm / 10mm 20mm 30mm) - inline
+PASS inset(10mm round 10mm 20mm / 10mm 20mm 30mm 40mm) - inline
+PASS inset(10mm round 10mm 20mm 30mm) - inline
+PASS inset(10mm round 10mm 20mm 30mm / 10mm) - inline
+PASS inset(10mm round 10mm 20mm 30mm / 10mm 20mm) - inline
+PASS inset(10mm round 10mm 20mm 30mm / 10mm 20mm 30mm) - inline
+PASS inset(10mm round 10mm 20mm 30mm / 10mm 20mm 30mm 40mm) - inline
+PASS inset(10mm round 10mm 20mm 30mm 40mm) - inline
+PASS inset(10mm round 10mm 20mm 30mm 40mm / 10mm) - inline
+PASS inset(10mm round 10mm 20mm 30mm 40mm / 10mm 20mm) - inline
+PASS inset(10mm round 10mm 20mm 30mm 40mm / 10mm 20mm 30mm) - inline
+PASS inset(10mm round 10mm 20mm 30mm 40mm / 10mm 20mm 30mm 40mm) - inline
+PASS inset(10in round 10in) - inline
+PASS inset(10in round 10in / 10in) - inline
+PASS inset(10in round 10in / 10in 20in) - inline
+PASS inset(10in round 10in / 10in 20in 30in) - inline
+PASS inset(10in round 10in / 10in 20in 30in 40in) - inline
+PASS inset(10in round 10in 20in) - inline
+PASS inset(10in round 10in 20in / 10in) - inline
+PASS inset(10in round 10in 20in / 10in 20in) - inline
+PASS inset(10in round 10in 20in / 10in 20in 30in) - inline
+PASS inset(10in round 10in 20in / 10in 20in 30in 40in) - inline
+PASS inset(10in round 10in 20in 30in) - inline
+PASS inset(10in round 10in 20in 30in / 10in) - inline
+PASS inset(10in round 10in 20in 30in / 10in 20in) - inline
+PASS inset(10in round 10in 20in 30in / 10in 20in 30in) - inline
+PASS inset(10in round 10in 20in 30in / 10in 20in 30in 40in) - inline
+PASS inset(10in round 10in 20in 30in 40in) - inline
+PASS inset(10in round 10in 20in 30in 40in / 10in) - inline
+PASS inset(10in round 10in 20in 30in 40in / 10in 20in) - inline
+PASS inset(10in round 10in 20in 30in 40in / 10in 20in 30in) - inline
+PASS inset(10in round 10in 20in 30in 40in / 10in 20in 30in 40in) - inline
+PASS inset(10pt round 10pt) - inline
+PASS inset(10pt round 10pt / 10pt) - inline
+PASS inset(10pt round 10pt / 10pt 20pt) - inline
+PASS inset(10pt round 10pt / 10pt 20pt 30pt) - inline
+PASS inset(10pt round 10pt / 10pt 20pt 30pt 40pt) - inline
+PASS inset(10pt round 10pt 20pt) - inline
+PASS inset(10pt round 10pt 20pt / 10pt) - inline
+PASS inset(10pt round 10pt 20pt / 10pt 20pt) - inline
+PASS inset(10pt round 10pt 20pt / 10pt 20pt 30pt) - inline
+PASS inset(10pt round 10pt 20pt / 10pt 20pt 30pt 40pt) - inline
+PASS inset(10pt round 10pt 20pt 30pt) - inline
+PASS inset(10pt round 10pt 20pt 30pt / 10pt) - inline
+PASS inset(10pt round 10pt 20pt 30pt / 10pt 20pt) - inline
+PASS inset(10pt round 10pt 20pt 30pt / 10pt 20pt 30pt) - inline
+PASS inset(10pt round 10pt 20pt 30pt / 10pt 20pt 30pt 40pt) - inline
+PASS inset(10pt round 10pt 20pt 30pt 40pt) - inline
+PASS inset(10pt round 10pt 20pt 30pt 40pt / 10pt) - inline
+PASS inset(10pt round 10pt 20pt 30pt 40pt / 10pt 20pt) - inline
+PASS inset(10pt round 10pt 20pt 30pt 40pt / 10pt 20pt 30pt) - inline
+PASS inset(10pt round 10pt 20pt 30pt 40pt / 10pt 20pt 30pt 40pt) - inline
+PASS inset(10pc round 10pc) - inline
+PASS inset(10pc round 10pc / 10pc) - inline
+PASS inset(10pc round 10pc / 10pc 20pc) - inline
+PASS inset(10pc round 10pc / 10pc 20pc 30pc) - inline
+PASS inset(10pc round 10pc / 10pc 20pc 30pc 40pc) - inline
+PASS inset(10pc round 10pc 20pc) - inline
+PASS inset(10pc round 10pc 20pc / 10pc) - inline
+PASS inset(10pc round 10pc 20pc / 10pc 20pc) - inline
+PASS inset(10pc round 10pc 20pc / 10pc 20pc 30pc) - inline
+PASS inset(10pc round 10pc 20pc / 10pc 20pc 30pc 40pc) - inline
+PASS inset(10pc round 10pc 20pc 30pc) - inline
+PASS inset(10pc round 10pc 20pc 30pc / 10pc) - inline
+PASS inset(10pc round 10pc 20pc 30pc / 10pc 20pc) - inline
+PASS inset(10pc round 10pc 20pc 30pc / 10pc 20pc 30pc) - inline
+PASS inset(10pc round 10pc 20pc 30pc / 10pc 20pc 30pc 40pc) - inline
+PASS inset(10pc round 10pc 20pc 30pc 40pc) - inline
+PASS inset(10pc round 10pc 20pc 30pc 40pc / 10pc) - inline
+PASS inset(10pc round 10pc 20pc 30pc 40pc / 10pc 20pc) - inline
+PASS inset(10pc round 10pc 20pc 30pc 40pc / 10pc 20pc 30pc) - inline
+PASS inset(10pc round 10pc 20pc 30pc 40pc / 10pc 20pc 30pc 40pc) - inline
+PASS inset(10em round 10em) - inline
+PASS inset(10em round 10em / 10em) - inline
+PASS inset(10em round 10em / 10em 20em) - inline
+PASS inset(10em round 10em / 10em 20em 30em) - inline
+PASS inset(10em round 10em / 10em 20em 30em 40em) - inline
+PASS inset(10em round 10em 20em) - inline
+PASS inset(10em round 10em 20em / 10em) - inline
+PASS inset(10em round 10em 20em / 10em 20em) - inline
+PASS inset(10em round 10em 20em / 10em 20em 30em) - inline
+PASS inset(10em round 10em 20em / 10em 20em 30em 40em) - inline
+PASS inset(10em round 10em 20em 30em) - inline
+PASS inset(10em round 10em 20em 30em / 10em) - inline
+PASS inset(10em round 10em 20em 30em / 10em 20em) - inline
+PASS inset(10em round 10em 20em 30em / 10em 20em 30em) - inline
+PASS inset(10em round 10em 20em 30em / 10em 20em 30em 40em) - inline
+PASS inset(10em round 10em 20em 30em 40em) - inline
+PASS inset(10em round 10em 20em 30em 40em / 10em) - inline
+PASS inset(10em round 10em 20em 30em 40em / 10em 20em) - inline
+PASS inset(10em round 10em 20em 30em 40em / 10em 20em 30em) - inline
+PASS inset(10em round 10em 20em 30em 40em / 10em 20em 30em 40em) - inline
+PASS inset(10ex round 10ex) - inline
+PASS inset(10ex round 10ex / 10ex) - inline
+PASS inset(10ex round 10ex / 10ex 20ex) - inline
+PASS inset(10ex round 10ex / 10ex 20ex 30ex) - inline
+PASS inset(10ex round 10ex / 10ex 20ex 30ex 40ex) - inline
+PASS inset(10ex round 10ex 20ex) - inline
+PASS inset(10ex round 10ex 20ex / 10ex) - inline
+PASS inset(10ex round 10ex 20ex / 10ex 20ex) - inline
+PASS inset(10ex round 10ex 20ex / 10ex 20ex 30ex) - inline
+PASS inset(10ex round 10ex 20ex / 10ex 20ex 30ex 40ex) - inline
+PASS inset(10ex round 10ex 20ex 30ex) - inline
+PASS inset(10ex round 10ex 20ex 30ex / 10ex) - inline
+PASS inset(10ex round 10ex 20ex 30ex / 10ex 20ex) - inline
+PASS inset(10ex round 10ex 20ex 30ex / 10ex 20ex 30ex) - inline
+PASS inset(10ex round 10ex 20ex 30ex / 10ex 20ex 30ex 40ex) - inline
+PASS inset(10ex round 10ex 20ex 30ex 40ex) - inline
+PASS inset(10ex round 10ex 20ex 30ex 40ex / 10ex) - inline
+PASS inset(10ex round 10ex 20ex 30ex 40ex / 10ex 20ex) - inline
+PASS inset(10ex round 10ex 20ex 30ex 40ex / 10ex 20ex 30ex) - inline
+PASS inset(10ex round 10ex 20ex 30ex 40ex / 10ex 20ex 30ex 40ex) - inline
+PASS inset(10ch round 10ch) - inline
+PASS inset(10ch round 10ch / 10ch) - inline
+PASS inset(10ch round 10ch / 10ch 20ch) - inline
+PASS inset(10ch round 10ch / 10ch 20ch 30ch) - inline
+PASS inset(10ch round 10ch / 10ch 20ch 30ch 40ch) - inline
+PASS inset(10ch round 10ch 20ch) - inline
+PASS inset(10ch round 10ch 20ch / 10ch) - inline
+PASS inset(10ch round 10ch 20ch / 10ch 20ch) - inline
+PASS inset(10ch round 10ch 20ch / 10ch 20ch 30ch) - inline
+PASS inset(10ch round 10ch 20ch / 10ch 20ch 30ch 40ch) - inline
+PASS inset(10ch round 10ch 20ch 30ch) - inline
+PASS inset(10ch round 10ch 20ch 30ch / 10ch) - inline
+PASS inset(10ch round 10ch 20ch 30ch / 10ch 20ch) - inline
+PASS inset(10ch round 10ch 20ch 30ch / 10ch 20ch 30ch) - inline
+PASS inset(10ch round 10ch 20ch 30ch / 10ch 20ch 30ch 40ch) - inline
+PASS inset(10ch round 10ch 20ch 30ch 40ch) - inline
+PASS inset(10ch round 10ch 20ch 30ch 40ch / 10ch) - inline
+PASS inset(10ch round 10ch 20ch 30ch 40ch / 10ch 20ch) - inline
+PASS inset(10ch round 10ch 20ch 30ch 40ch / 10ch 20ch 30ch) - inline
+PASS inset(10ch round 10ch 20ch 30ch 40ch / 10ch 20ch 30ch 40ch) - inline
+PASS inset(10rem round 10rem) - inline
+PASS inset(10rem round 10rem / 10rem) - inline
+PASS inset(10rem round 10rem / 10rem 20rem) - inline
+PASS inset(10rem round 10rem / 10rem 20rem 30rem) - inline
+PASS inset(10rem round 10rem / 10rem 20rem 30rem 40rem) - inline
+PASS inset(10rem round 10rem 20rem) - inline
+PASS inset(10rem round 10rem 20rem / 10rem) - inline
+PASS inset(10rem round 10rem 20rem / 10rem 20rem) - inline
+PASS inset(10rem round 10rem 20rem / 10rem 20rem 30rem) - inline
+PASS inset(10rem round 10rem 20rem / 10rem 20rem 30rem 40rem) - inline
+PASS inset(10rem round 10rem 20rem 30rem) - inline
+PASS inset(10rem round 10rem 20rem 30rem / 10rem) - inline
+PASS inset(10rem round 10rem 20rem 30rem / 10rem 20rem) - inline
+PASS inset(10rem round 10rem 20rem 30rem / 10rem 20rem 30rem) - inline
+PASS inset(10rem round 10rem 20rem 30rem / 10rem 20rem 30rem 40rem) - inline
+PASS inset(10rem round 10rem 20rem 30rem 40rem) - inline
+PASS inset(10rem round 10rem 20rem 30rem 40rem / 10rem) - inline
+PASS inset(10rem round 10rem 20rem 30rem 40rem / 10rem 20rem) - inline
+PASS inset(10rem round 10rem 20rem 30rem 40rem / 10rem 20rem 30rem) - inline
+PASS inset(10rem round 10rem 20rem 30rem 40rem / 10rem 20rem 30rem 40rem) - inline
+PASS inset(10vw round 10vw) - inline
+PASS inset(10vw round 10vw / 10vw) - inline
+PASS inset(10vw round 10vw / 10vw 20vw) - inline
+PASS inset(10vw round 10vw / 10vw 20vw 30vw) - inline
+PASS inset(10vw round 10vw / 10vw 20vw 30vw 40vw) - inline
+PASS inset(10vw round 10vw 20vw) - inline
+PASS inset(10vw round 10vw 20vw / 10vw) - inline
+PASS inset(10vw round 10vw 20vw / 10vw 20vw) - inline
+PASS inset(10vw round 10vw 20vw / 10vw 20vw 30vw) - inline
+PASS inset(10vw round 10vw 20vw / 10vw 20vw 30vw 40vw) - inline
+PASS inset(10vw round 10vw 20vw 30vw) - inline
+PASS inset(10vw round 10vw 20vw 30vw / 10vw) - inline
+PASS inset(10vw round 10vw 20vw 30vw / 10vw 20vw) - inline
+PASS inset(10vw round 10vw 20vw 30vw / 10vw 20vw 30vw) - inline
+PASS inset(10vw round 10vw 20vw 30vw / 10vw 20vw 30vw 40vw) - inline
+PASS inset(10vw round 10vw 20vw 30vw 40vw) - inline
+PASS inset(10vw round 10vw 20vw 30vw 40vw / 10vw) - inline
+PASS inset(10vw round 10vw 20vw 30vw 40vw / 10vw 20vw) - inline
+PASS inset(10vw round 10vw 20vw 30vw 40vw / 10vw 20vw 30vw) - inline
+PASS inset(10vw round 10vw 20vw 30vw 40vw / 10vw 20vw 30vw 40vw) - inline
+PASS inset(10vh round 10vh) - inline
+PASS inset(10vh round 10vh / 10vh) - inline
+PASS inset(10vh round 10vh / 10vh 20vh) - inline
+PASS inset(10vh round 10vh / 10vh 20vh 30vh) - inline
+PASS inset(10vh round 10vh / 10vh 20vh 30vh 40vh) - inline
+PASS inset(10vh round 10vh 20vh) - inline
+PASS inset(10vh round 10vh 20vh / 10vh) - inline
+PASS inset(10vh round 10vh 20vh / 10vh 20vh) - inline
+PASS inset(10vh round 10vh 20vh / 10vh 20vh 30vh) - inline
+PASS inset(10vh round 10vh 20vh / 10vh 20vh 30vh 40vh) - inline
+PASS inset(10vh round 10vh 20vh 30vh) - inline
+PASS inset(10vh round 10vh 20vh 30vh / 10vh) - inline
+PASS inset(10vh round 10vh 20vh 30vh / 10vh 20vh) - inline
+PASS inset(10vh round 10vh 20vh 30vh / 10vh 20vh 30vh) - inline
+PASS inset(10vh round 10vh 20vh 30vh / 10vh 20vh 30vh 40vh) - inline
+PASS inset(10vh round 10vh 20vh 30vh 40vh) - inline
+PASS inset(10vh round 10vh 20vh 30vh 40vh / 10vh) - inline
+PASS inset(10vh round 10vh 20vh 30vh 40vh / 10vh 20vh) - inline
+PASS inset(10vh round 10vh 20vh 30vh 40vh / 10vh 20vh 30vh) - inline
+PASS inset(10vh round 10vh 20vh 30vh 40vh / 10vh 20vh 30vh 40vh) - inline
+PASS inset(10vmin round 10vmin) - inline
+PASS inset(10vmin round 10vmin / 10vmin) - inline
+PASS inset(10vmin round 10vmin / 10vmin 20vmin) - inline
+PASS inset(10vmin round 10vmin / 10vmin 20vmin 30vmin) - inline
+PASS inset(10vmin round 10vmin / 10vmin 20vmin 30vmin 40vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin / 10vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin / 10vmin 20vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin / 10vmin 20vmin 30vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin / 10vmin 20vmin 30vmin 40vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin 30vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin 30vmin / 10vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin 30vmin / 10vmin 20vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin 30vmin / 10vmin 20vmin 30vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin 30vmin / 10vmin 20vmin 30vmin 40vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin 30vmin 40vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin 30vmin 40vmin / 10vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin 30vmin 40vmin / 10vmin 20vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin 30vmin 40vmin / 10vmin 20vmin 30vmin) - inline
+PASS inset(10vmin round 10vmin 20vmin 30vmin 40vmin / 10vmin 20vmin 30vmin 40vmin) - inline
+PASS inset(10vmax round 10vmax) - inline
+PASS inset(10vmax round 10vmax / 10vmax) - inline
+PASS inset(10vmax round 10vmax / 10vmax 20vmax) - inline
+PASS inset(10vmax round 10vmax / 10vmax 20vmax 30vmax) - inline
+PASS inset(10vmax round 10vmax / 10vmax 20vmax 30vmax 40vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax / 10vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax / 10vmax 20vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax / 10vmax 20vmax 30vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax / 10vmax 20vmax 30vmax 40vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax 30vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax 30vmax / 10vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax 30vmax / 10vmax 20vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax 30vmax / 10vmax 20vmax 30vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax 30vmax / 10vmax 20vmax 30vmax 40vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax 30vmax 40vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax 30vmax 40vmax / 10vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax 30vmax 40vmax / 10vmax 20vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax 30vmax 40vmax / 10vmax 20vmax 30vmax) - inline
+PASS inset(10vmax round 10vmax 20vmax 30vmax 40vmax / 10vmax 20vmax 30vmax 40vmax) - inline
+PASS inset(10cm round 10cm) - computed
+PASS inset(10cm round 10cm / 10cm) - computed
+PASS inset(10cm round 10cm / 10cm 20cm) - computed
+PASS inset(10cm round 10cm / 10cm 20cm 30cm) - computed
+PASS inset(10cm round 10cm / 10cm 20cm 30cm 40cm) - computed
+PASS inset(10cm round 10cm 20cm) - computed
+PASS inset(10cm round 10cm 20cm / 10cm) - computed
+PASS inset(10cm round 10cm 20cm / 10cm 20cm) - computed
+PASS inset(10cm round 10cm 20cm / 10cm 20cm 30cm) - computed
+PASS inset(10cm round 10cm 20cm / 10cm 20cm 30cm 40cm) - computed
+PASS inset(10cm round 10cm 20cm 30cm) - computed
+PASS inset(10cm round 10cm 20cm 30cm / 10cm) - computed
+PASS inset(10cm round 10cm 20cm 30cm / 10cm 20cm) - computed
+PASS inset(10cm round 10cm 20cm 30cm / 10cm 20cm 30cm) - computed
+PASS inset(10cm round 10cm 20cm 30cm / 10cm 20cm 30cm 40cm) - computed
+PASS inset(10cm round 10cm 20cm 30cm 40cm) - computed
+PASS inset(10cm round 10cm 20cm 30cm 40cm / 10cm) - computed
+PASS inset(10cm round 10cm 20cm 30cm 40cm / 10cm 20cm) - computed
+PASS inset(10cm round 10cm 20cm 30cm 40cm / 10cm 20cm 30cm) - computed
+PASS inset(10cm round 10cm 20cm 30cm 40cm / 10cm 20cm 30cm 40cm) - computed
+PASS inset(10mm round 10mm) - computed
+PASS inset(10mm round 10mm / 10mm) - computed
+PASS inset(10mm round 10mm / 10mm 20mm) - computed
+PASS inset(10mm round 10mm / 10mm 20mm 30mm) - computed
+PASS inset(10mm round 10mm / 10mm 20mm 30mm 40mm) - computed
+PASS inset(10mm round 10mm 20mm) - computed
+PASS inset(10mm round 10mm 20mm / 10mm) - computed
+PASS inset(10mm round 10mm 20mm / 10mm 20mm) - computed
+PASS inset(10mm round 10mm 20mm / 10mm 20mm 30mm) - computed
+PASS inset(10mm round 10mm 20mm / 10mm 20mm 30mm 40mm) - computed
+PASS inset(10mm round 10mm 20mm 30mm) - computed
+PASS inset(10mm round 10mm 20mm 30mm / 10mm) - computed
+PASS inset(10mm round 10mm 20mm 30mm / 10mm 20mm) - computed
+PASS inset(10mm round 10mm 20mm 30mm / 10mm 20mm 30mm) - computed
+PASS inset(10mm round 10mm 20mm 30mm / 10mm 20mm 30mm 40mm) - computed
+PASS inset(10mm round 10mm 20mm 30mm 40mm) - computed
+PASS inset(10mm round 10mm 20mm 30mm 40mm / 10mm) - computed
+PASS inset(10mm round 10mm 20mm 30mm 40mm / 10mm 20mm) - computed
+PASS inset(10mm round 10mm 20mm 30mm 40mm / 10mm 20mm 30mm) - computed
+PASS inset(10mm round 10mm 20mm 30mm 40mm / 10mm 20mm 30mm 40mm) - computed
+PASS inset(10in round 10in) - computed
+PASS inset(10in round 10in / 10in) - computed
+PASS inset(10in round 10in / 10in 20in) - computed
+PASS inset(10in round 10in / 10in 20in 30in) - computed
+PASS inset(10in round 10in / 10in 20in 30in 40in) - computed
+PASS inset(10in round 10in 20in) - computed
+PASS inset(10in round 10in 20in / 10in) - computed
+PASS inset(10in round 10in 20in / 10in 20in) - computed
+PASS inset(10in round 10in 20in / 10in 20in 30in) - computed
+PASS inset(10in round 10in 20in / 10in 20in 30in 40in) - computed
+PASS inset(10in round 10in 20in 30in) - computed
+PASS inset(10in round 10in 20in 30in / 10in) - computed
+PASS inset(10in round 10in 20in 30in / 10in 20in) - computed
+PASS inset(10in round 10in 20in 30in / 10in 20in 30in) - computed
+PASS inset(10in round 10in 20in 30in / 10in 20in 30in 40in) - computed
+PASS inset(10in round 10in 20in 30in 40in) - computed
+PASS inset(10in round 10in 20in 30in 40in / 10in) - computed
+PASS inset(10in round 10in 20in 30in 40in / 10in 20in) - computed
+PASS inset(10in round 10in 20in 30in 40in / 10in 20in 30in) - computed
+PASS inset(10in round 10in 20in 30in 40in / 10in 20in 30in 40in) - computed
+PASS inset(10pt round 10pt) - computed
+PASS inset(10pt round 10pt / 10pt) - computed
+PASS inset(10pt round 10pt / 10pt 20pt) - computed
+PASS inset(10pt round 10pt / 10pt 20pt 30pt) - computed
+PASS inset(10pt round 10pt / 10pt 20pt 30pt 40pt) - computed
+PASS inset(10pt round 10pt 20pt) - computed
+PASS inset(10pt round 10pt 20pt / 10pt) - computed
+PASS inset(10pt round 10pt 20pt / 10pt 20pt) - computed
+PASS inset(10pt round 10pt 20pt / 10pt 20pt 30pt) - computed
+PASS inset(10pt round 10pt 20pt / 10pt 20pt 30pt 40pt) - computed
+PASS inset(10pt round 10pt 20pt 30pt) - computed
+PASS inset(10pt round 10pt 20pt 30pt / 10pt) - computed
+PASS inset(10pt round 10pt 20pt 30pt / 10pt 20pt) - computed
+PASS inset(10pt round 10pt 20pt 30pt / 10pt 20pt 30pt) - computed
+PASS inset(10pt round 10pt 20pt 30pt / 10pt 20pt 30pt 40pt) - computed
+PASS inset(10pt round 10pt 20pt 30pt 40pt) - computed
+PASS inset(10pt round 10pt 20pt 30pt 40pt / 10pt) - computed
+PASS inset(10pt round 10pt 20pt 30pt 40pt / 10pt 20pt) - computed
+PASS inset(10pt round 10pt 20pt 30pt 40pt / 10pt 20pt 30pt) - computed
+PASS inset(10pt round 10pt 20pt 30pt 40pt / 10pt 20pt 30pt 40pt) - computed
+PASS inset(10pc round 10pc) - computed
+PASS inset(10pc round 10pc / 10pc) - computed
+PASS inset(10pc round 10pc / 10pc 20pc) - computed
+PASS inset(10pc round 10pc / 10pc 20pc 30pc) - computed
+PASS inset(10pc round 10pc / 10pc 20pc 30pc 40pc) - computed
+PASS inset(10pc round 10pc 20pc) - computed
+PASS inset(10pc round 10pc 20pc / 10pc) - computed
+PASS inset(10pc round 10pc 20pc / 10pc 20pc) - computed
+PASS inset(10pc round 10pc 20pc / 10pc 20pc 30pc) - computed
+PASS inset(10pc round 10pc 20pc / 10pc 20pc 30pc 40pc) - computed
+PASS inset(10pc round 10pc 20pc 30pc) - computed
+PASS inset(10pc round 10pc 20pc 30pc / 10pc) - computed
+PASS inset(10pc round 10pc 20pc 30pc / 10pc 20pc) - computed
+PASS inset(10pc round 10pc 20pc 30pc / 10pc 20pc 30pc) - computed
+PASS inset(10pc round 10pc 20pc 30pc / 10pc 20pc 30pc 40pc) - computed
+PASS inset(10pc round 10pc 20pc 30pc 40pc) - computed
+PASS inset(10pc round 10pc 20pc 30pc 40pc / 10pc) - computed
+PASS inset(10pc round 10pc 20pc 30pc 40pc / 10pc 20pc) - computed
+PASS inset(10pc round 10pc 20pc 30pc 40pc / 10pc 20pc 30pc) - computed
+PASS inset(10pc round 10pc 20pc 30pc 40pc / 10pc 20pc 30pc 40pc) - computed
+PASS inset(10em round 10em) - computed
+PASS inset(10em round 10em / 10em) - computed
+PASS inset(10em round 10em / 10em 20em) - computed
+PASS inset(10em round 10em / 10em 20em 30em) - computed
+PASS inset(10em round 10em / 10em 20em 30em 40em) - computed
+PASS inset(10em round 10em 20em) - computed
+PASS inset(10em round 10em 20em / 10em) - computed
+PASS inset(10em round 10em 20em / 10em 20em) - computed
+PASS inset(10em round 10em 20em / 10em 20em 30em) - computed
+PASS inset(10em round 10em 20em / 10em 20em 30em 40em) - computed
+PASS inset(10em round 10em 20em 30em) - computed
+PASS inset(10em round 10em 20em 30em / 10em) - computed
+PASS inset(10em round 10em 20em 30em / 10em 20em) - computed
+PASS inset(10em round 10em 20em 30em / 10em 20em 30em) - computed
+PASS inset(10em round 10em 20em 30em / 10em 20em 30em 40em) - computed
+PASS inset(10em round 10em 20em 30em 40em) - computed
+PASS inset(10em round 10em 20em 30em 40em / 10em) - computed
+PASS inset(10em round 10em 20em 30em 40em / 10em 20em) - computed
+PASS inset(10em round 10em 20em 30em 40em / 10em 20em 30em) - computed
+PASS inset(10em round 10em 20em 30em 40em / 10em 20em 30em 40em) - computed
+PASS inset(10ex round 10ex) - computed
+PASS inset(10ex round 10ex / 10ex) - computed
+PASS inset(10ex round 10ex / 10ex 20ex) - computed
+PASS inset(10ex round 10ex / 10ex 20ex 30ex) - computed
+PASS inset(10ex round 10ex / 10ex 20ex 30ex 40ex) - computed
+PASS inset(10ex round 10ex 20ex) - computed
+PASS inset(10ex round 10ex 20ex / 10ex) - computed
+PASS inset(10ex round 10ex 20ex / 10ex 20ex) - computed
+PASS inset(10ex round 10ex 20ex / 10ex 20ex 30ex) - computed
+PASS inset(10ex round 10ex 20ex / 10ex 20ex 30ex 40ex) - computed
+PASS inset(10ex round 10ex 20ex 30ex) - computed
+PASS inset(10ex round 10ex 20ex 30ex / 10ex) - computed
+PASS inset(10ex round 10ex 20ex 30ex / 10ex 20ex) - computed
+PASS inset(10ex round 10ex 20ex 30ex / 10ex 20ex 30ex) - computed
+PASS inset(10ex round 10ex 20ex 30ex / 10ex 20ex 30ex 40ex) - computed
+PASS inset(10ex round 10ex 20ex 30ex 40ex) - computed
+PASS inset(10ex round 10ex 20ex 30ex 40ex / 10ex) - computed
+PASS inset(10ex round 10ex 20ex 30ex 40ex / 10ex 20ex) - computed
+PASS inset(10ex round 10ex 20ex 30ex 40ex / 10ex 20ex 30ex) - computed
+PASS inset(10ex round 10ex 20ex 30ex 40ex / 10ex 20ex 30ex 40ex) - computed
+PASS inset(10ch round 10ch) - computed
+PASS inset(10ch round 10ch / 10ch) - computed
+PASS inset(10ch round 10ch / 10ch 20ch) - computed
+PASS inset(10ch round 10ch / 10ch 20ch 30ch) - computed
+PASS inset(10ch round 10ch / 10ch 20ch 30ch 40ch) - computed
+PASS inset(10ch round 10ch 20ch) - computed
+PASS inset(10ch round 10ch 20ch / 10ch) - computed
+PASS inset(10ch round 10ch 20ch / 10ch 20ch) - computed
+PASS inset(10ch round 10ch 20ch / 10ch 20ch 30ch) - computed
+PASS inset(10ch round 10ch 20ch / 10ch 20ch 30ch 40ch) - computed
+PASS inset(10ch round 10ch 20ch 30ch) - computed
+PASS inset(10ch round 10ch 20ch 30ch / 10ch) - computed
+PASS inset(10ch round 10ch 20ch 30ch / 10ch 20ch) - computed
+PASS inset(10ch round 10ch 20ch 30ch / 10ch 20ch 30ch) - computed
+PASS inset(10ch round 10ch 20ch 30ch / 10ch 20ch 30ch 40ch) - computed
+PASS inset(10ch round 10ch 20ch 30ch 40ch) - computed
+PASS inset(10ch round 10ch 20ch 30ch 40ch / 10ch) - computed
+PASS inset(10ch round 10ch 20ch 30ch 40ch / 10ch 20ch) - computed
+PASS inset(10ch round 10ch 20ch 30ch 40ch / 10ch 20ch 30ch) - computed
+PASS inset(10ch round 10ch 20ch 30ch 40ch / 10ch 20ch 30ch 40ch) - computed
+PASS inset(10rem round 10rem) - computed
+PASS inset(10rem round 10rem / 10rem) - computed
+PASS inset(10rem round 10rem / 10rem 20rem) - computed
+PASS inset(10rem round 10rem / 10rem 20rem 30rem) - computed
+PASS inset(10rem round 10rem / 10rem 20rem 30rem 40rem) - computed
+PASS inset(10rem round 10rem 20rem) - computed
+PASS inset(10rem round 10rem 20rem / 10rem) - computed
+PASS inset(10rem round 10rem 20rem / 10rem 20rem) - computed
+PASS inset(10rem round 10rem 20rem / 10rem 20rem 30rem) - computed
+PASS inset(10rem round 10rem 20rem / 10rem 20rem 30rem 40rem) - computed
+PASS inset(10rem round 10rem 20rem 30rem) - computed
+PASS inset(10rem round 10rem 20rem 30rem / 10rem) - computed
+PASS inset(10rem round 10rem 20rem 30rem / 10rem 20rem) - computed
+PASS inset(10rem round 10rem 20rem 30rem / 10rem 20rem 30rem) - computed
+PASS inset(10rem round 10rem 20rem 30rem / 10rem 20rem 30rem 40rem) - computed
+PASS inset(10rem round 10rem 20rem 30rem 40rem) - computed
+PASS inset(10rem round 10rem 20rem 30rem 40rem / 10rem) - computed
+PASS inset(10rem round 10rem 20rem 30rem 40rem / 10rem 20rem) - computed
+PASS inset(10rem round 10rem 20rem 30rem 40rem / 10rem 20rem 30rem) - computed
+PASS inset(10rem round 10rem 20rem 30rem 40rem / 10rem 20rem 30rem 40rem) - computed
+PASS inset(10vw round 10vw) - computed
+PASS inset(10vw round 10vw / 10vw) - computed
+PASS inset(10vw round 10vw / 10vw 20vw) - computed
+PASS inset(10vw round 10vw / 10vw 20vw 30vw) - computed
+PASS inset(10vw round 10vw / 10vw 20vw 30vw 40vw) - computed
+PASS inset(10vw round 10vw 20vw) - computed
+PASS inset(10vw round 10vw 20vw / 10vw) - computed
+PASS inset(10vw round 10vw 20vw / 10vw 20vw) - computed
+PASS inset(10vw round 10vw 20vw / 10vw 20vw 30vw) - computed
+PASS inset(10vw round 10vw 20vw / 10vw 20vw 30vw 40vw) - computed
+PASS inset(10vw round 10vw 20vw 30vw) - computed
+PASS inset(10vw round 10vw 20vw 30vw / 10vw) - computed
+PASS inset(10vw round 10vw 20vw 30vw / 10vw 20vw) - computed
+PASS inset(10vw round 10vw 20vw 30vw / 10vw 20vw 30vw) - computed
+PASS inset(10vw round 10vw 20vw 30vw / 10vw 20vw 30vw 40vw) - computed
+PASS inset(10vw round 10vw 20vw 30vw 40vw) - computed
+PASS inset(10vw round 10vw 20vw 30vw 40vw / 10vw) - computed
+PASS inset(10vw round 10vw 20vw 30vw 40vw / 10vw 20vw) - computed
+PASS inset(10vw round 10vw 20vw 30vw 40vw / 10vw 20vw 30vw) - computed
+PASS inset(10vw round 10vw 20vw 30vw 40vw / 10vw 20vw 30vw 40vw) - computed
+PASS inset(10vh round 10vh) - computed
+PASS inset(10vh round 10vh / 10vh) - computed
+PASS inset(10vh round 10vh / 10vh 20vh) - computed
+PASS inset(10vh round 10vh / 10vh 20vh 30vh) - computed
+PASS inset(10vh round 10vh / 10vh 20vh 30vh 40vh) - computed
+PASS inset(10vh round 10vh 20vh) - computed
+PASS inset(10vh round 10vh 20vh / 10vh) - computed
+PASS inset(10vh round 10vh 20vh / 10vh 20vh) - computed
+PASS inset(10vh round 10vh 20vh / 10vh 20vh 30vh) - computed
+PASS inset(10vh round 10vh 20vh / 10vh 20vh 30vh 40vh) - computed
+PASS inset(10vh round 10vh 20vh 30vh) - computed
+PASS inset(10vh round 10vh 20vh 30vh / 10vh) - computed
+PASS inset(10vh round 10vh 20vh 30vh / 10vh 20vh) - computed
+PASS inset(10vh round 10vh 20vh 30vh / 10vh 20vh 30vh) - computed
+PASS inset(10vh round 10vh 20vh 30vh / 10vh 20vh 30vh 40vh) - computed
+PASS inset(10vh round 10vh 20vh 30vh 40vh) - computed
+PASS inset(10vh round 10vh 20vh 30vh 40vh / 10vh) - computed
+PASS inset(10vh round 10vh 20vh 30vh 40vh / 10vh 20vh) - computed
+PASS inset(10vh round 10vh 20vh 30vh 40vh / 10vh 20vh 30vh) - computed
+PASS inset(10vh round 10vh 20vh 30vh 40vh / 10vh 20vh 30vh 40vh) - computed
+PASS inset(10vmin round 10vmin) - computed
+PASS inset(10vmin round 10vmin / 10vmin) - computed
+PASS inset(10vmin round 10vmin / 10vmin 20vmin) - computed
+PASS inset(10vmin round 10vmin / 10vmin 20vmin 30vmin) - computed
+PASS inset(10vmin round 10vmin / 10vmin 20vmin 30vmin 40vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin / 10vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin / 10vmin 20vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin / 10vmin 20vmin 30vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin / 10vmin 20vmin 30vmin 40vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin 30vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin 30vmin / 10vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin 30vmin / 10vmin 20vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin 30vmin / 10vmin 20vmin 30vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin 30vmin / 10vmin 20vmin 30vmin 40vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin 30vmin 40vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin 30vmin 40vmin / 10vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin 30vmin 40vmin / 10vmin 20vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin 30vmin 40vmin / 10vmin 20vmin 30vmin) - computed
+PASS inset(10vmin round 10vmin 20vmin 30vmin 40vmin / 10vmin 20vmin 30vmin 40vmin) - computed
+PASS inset(10vmax round 10vmax) - computed
+PASS inset(10vmax round 10vmax / 10vmax) - computed
+PASS inset(10vmax round 10vmax / 10vmax 20vmax) - computed
+PASS inset(10vmax round 10vmax / 10vmax 20vmax 30vmax) - computed
+PASS inset(10vmax round 10vmax / 10vmax 20vmax 30vmax 40vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax / 10vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax / 10vmax 20vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax / 10vmax 20vmax 30vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax / 10vmax 20vmax 30vmax 40vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax 30vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax 30vmax / 10vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax 30vmax / 10vmax 20vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax 30vmax / 10vmax 20vmax 30vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax 30vmax / 10vmax 20vmax 30vmax 40vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax 30vmax 40vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax 30vmax 40vmax / 10vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax 30vmax 40vmax / 10vmax 20vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax 30vmax 40vmax / 10vmax 20vmax 30vmax) - computed
+PASS inset(10vmax round 10vmax 20vmax 30vmax 40vmax / 10vmax 20vmax 30vmax 40vmax) - computed
+Harness: the test ran to completion.
+

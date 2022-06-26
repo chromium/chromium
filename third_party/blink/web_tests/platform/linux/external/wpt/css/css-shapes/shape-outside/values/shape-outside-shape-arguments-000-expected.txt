@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS 0-valued - inline
+PASS Font relative units - inline
+PASS View relative units - inline
+PASS Fixed units - inline
+PASS Percentage units - inline
+PASS 0-valued - computed
+PASS Font relative units - computed
+PASS View relative units - computed
+PASS Fixed units - computed
+PASS Percentage units - computed
+Harness: the test ran to completion.
+
