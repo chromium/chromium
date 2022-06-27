@@ -132,7 +132,7 @@ const base::Feature kAutofillFillCreditCardAsPerFormatString{
 // HideViewAndDie() function, but as a delayed task.
 // TODO(crbug.com/1277218): Cleanup when launched.
 const base::Feature kAutofillDelayPopupControllerDeletion{
-    "AutofillDelayPopupControllerDeletion", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillDelayPopupControllerDeletion", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Kill switch for Autofill filling.
 const base::Feature kAutofillDisableFilling{"AutofillDisableFilling",
