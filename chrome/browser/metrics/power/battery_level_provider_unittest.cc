@@ -12,103 +12,81 @@ namespace {
 
 class FakeBatteryLevelProvider : public BatteryLevelProvider {
  public:
-  using BatteryInterface = BatteryLevelProvider::BatteryInterface;
+  using BatteryDetails = BatteryLevelProvider::BatteryDetails;
 
   FakeBatteryLevelProvider() = default;
 
   static BatteryState MakeBatteryState(
-      const std::vector<BatteryInterface>& battery_interfaces) {
-    return BatteryLevelProvider::MakeBatteryState(battery_interfaces);
+      const std::vector<BatteryDetails>& battery_details) {
+    return BatteryLevelProvider::MakeBatteryState(battery_details);
   }
 };
 
 }  // namespace
 
-using BatteryInterface = FakeBatteryLevelProvider::BatteryInterface;
-
-TEST(BatteryLevelProviderTest, NoInterface) {
-  auto state = FakeBatteryLevelProvider::MakeBatteryState({});
-  EXPECT_EQ(0U, state.interface_count);
-  EXPECT_EQ(0U, state.battery_count);
-  EXPECT_FALSE(state.charge_level.has_value());
-  EXPECT_FALSE(state.on_battery);
-}
+using BatteryDetails = FakeBatteryLevelProvider::BatteryDetails;
 
 TEST(BatteryLevelProviderTest, NoBattery) {
-  auto state =
-      FakeBatteryLevelProvider::MakeBatteryState({BatteryInterface(false)});
-  EXPECT_EQ(1U, state.interface_count);
-  EXPECT_EQ(0U, state.battery_count);
-  EXPECT_FALSE(state.charge_level.has_value());
-  EXPECT_FALSE(state.on_battery);
+  auto state = FakeBatteryLevelProvider::MakeBatteryState({});
+  EXPECT_EQ(0, state.battery_count);
+  EXPECT_TRUE(state.is_external_power_connected);
+  EXPECT_FALSE(state.current_capacity.has_value());
+  EXPECT_FALSE(state.full_charged_capacity.has_value());
+  EXPECT_NE(base::TimeTicks(), state.capture_time);
 }
 
-TEST(BatteryLevelProviderTest, PluggedBattery) {
+TEST(BatteryLevelProviderTest, SingleBatteryWithExternalPower) {
   auto state = FakeBatteryLevelProvider::MakeBatteryState(
-      {BatteryInterface({true, 42, 100})});
-  EXPECT_EQ(1U, state.interface_count);
-  EXPECT_EQ(1U, state.battery_count);
-  ASSERT_TRUE(state.charge_level.has_value());
-  EXPECT_EQ(0.42, *state.charge_level);
-  EXPECT_FALSE(state.on_battery);
+      {BatteryDetails({.is_external_power_connected = true,
+                       .current_capacity = 42,
+                       .full_charged_capacity = 100})});
+  EXPECT_EQ(1, state.battery_count);
+  EXPECT_TRUE(state.is_external_power_connected);
+  EXPECT_EQ(42U, state.current_capacity);
+  EXPECT_EQ(100U, state.full_charged_capacity);
+  EXPECT_NE(base::TimeTicks(), state.capture_time);
 }
 
-TEST(BatteryLevelProviderTest, DischargingBattery) {
+TEST(BatteryLevelProviderTest, SingleBatteryDischarging) {
   auto state = FakeBatteryLevelProvider::MakeBatteryState(
-      {BatteryInterface({false, 42, 100})});
-  EXPECT_EQ(1U, state.interface_count);
-  EXPECT_EQ(1U, state.battery_count);
-  ASSERT_TRUE(state.charge_level.has_value());
-  EXPECT_EQ(0.42, *state.charge_level);
-  EXPECT_TRUE(state.on_battery);
+      {BatteryDetails({.is_external_power_connected = false,
+                       .current_capacity = 42,
+                       .full_charged_capacity = 100})});
+  EXPECT_EQ(1, state.battery_count);
+  EXPECT_FALSE(state.is_external_power_connected);
+  EXPECT_EQ(42U, state.current_capacity);
+  EXPECT_EQ(100U, state.full_charged_capacity);
+  EXPECT_NE(base::TimeTicks(), state.capture_time);
 }
 
-TEST(BatteryLevelProviderTest, InvalidBattery) {
-  auto state =
-      FakeBatteryLevelProvider::MakeBatteryState({BatteryInterface(true)});
-  EXPECT_EQ(1U, state.interface_count);
-  EXPECT_EQ(1U, state.battery_count);
-  EXPECT_FALSE(state.charge_level.has_value());
-  EXPECT_FALSE(state.on_battery);
-}
-
-TEST(BatteryLevelProviderTest, MultipleInterfaces) {
+TEST(BatteryLevelProviderTest, MultipleBatteriesWithExternalPower) {
   auto state = FakeBatteryLevelProvider::MakeBatteryState(
-      {BatteryInterface(false), BatteryInterface({false, 42, 100})});
-  EXPECT_EQ(2U, state.interface_count);
-  EXPECT_EQ(1U, state.battery_count);
-  ASSERT_TRUE(state.charge_level.has_value());
-  EXPECT_EQ(0.42, *state.charge_level);
-  EXPECT_TRUE(state.on_battery);
-}
-
-TEST(BatteryLevelProviderTest, MultipleBatteries) {
-  auto state = FakeBatteryLevelProvider::MakeBatteryState(
-      {BatteryInterface({true, 10, 100}), BatteryInterface({false, 30, 100})});
-  EXPECT_EQ(2U, state.interface_count);
-  EXPECT_EQ(2U, state.battery_count);
-  ASSERT_TRUE(state.charge_level.has_value());
-  EXPECT_EQ(0.20, *state.charge_level);
-  EXPECT_FALSE(state.on_battery);
+      {BatteryDetails({.is_external_power_connected = false,
+                       .current_capacity = 42,
+                       .full_charged_capacity = 100}),
+       BatteryDetails({.is_external_power_connected = true,
+                       .current_capacity = 10,
+                       .full_charged_capacity = 100})});
+  EXPECT_EQ(2, state.battery_count);
+  EXPECT_TRUE(state.is_external_power_connected);
+  EXPECT_EQ(absl::nullopt, state.current_capacity);
+  EXPECT_EQ(absl::nullopt, state.full_charged_capacity);
+  EXPECT_NE(base::TimeTicks(), state.capture_time);
 }
 
 TEST(BatteryLevelProviderTest, MultipleBatteriesDischarging) {
   auto state = FakeBatteryLevelProvider::MakeBatteryState(
-      {BatteryInterface({false, 10, 100}), BatteryInterface({false, 30, 100})});
-  EXPECT_EQ(2U, state.interface_count);
-  EXPECT_EQ(2U, state.battery_count);
-  ASSERT_TRUE(state.charge_level.has_value());
-  EXPECT_EQ(0.20, *state.charge_level);
-  EXPECT_TRUE(state.on_battery);
-}
-
-TEST(BatteryLevelProviderTest, MultipleBatteriesInvalid) {
-  auto state = FakeBatteryLevelProvider::MakeBatteryState(
-      {BatteryInterface(true), BatteryInterface({false, 10, 100})});
-  EXPECT_EQ(2U, state.interface_count);
-  EXPECT_EQ(2U, state.battery_count);
-  EXPECT_FALSE(state.charge_level.has_value());
-  EXPECT_FALSE(state.on_battery);
+      {BatteryDetails({.is_external_power_connected = false,
+                       .current_capacity = 42,
+                       .full_charged_capacity = 100}),
+       BatteryDetails({.is_external_power_connected = false,
+                       .current_capacity = 10,
+                       .full_charged_capacity = 100})});
+  EXPECT_EQ(2, state.battery_count);
+  EXPECT_FALSE(state.is_external_power_connected);
+  EXPECT_EQ(absl::nullopt, state.current_capacity);
+  EXPECT_EQ(absl::nullopt, state.full_charged_capacity);
+  EXPECT_NE(base::TimeTicks(), state.capture_time);
 }
 
 #endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()

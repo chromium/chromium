@@ -29,12 +29,14 @@ enum class BatteryDischargeMode {
   kDischarging = 0,
   kPluggedIn = 1,
   kStateChanged = 2,
-  kChargeLevelUnavailable = 3,
+  kRetrievalError = 3,
   kNoBattery = 4,
   kBatteryLevelIncreased = 5,
   kInvalidInterval = 6,
   kMacFullyCharged = 7,
-  kMaxValue = kMacFullyCharged
+  kMultipleBatteries = 8,
+  kFullChargedCapacityIsZero = 9,
+  kMaxValue = kFullChargedCapacityIsZero
 };
 
 struct BatteryDischarge {
@@ -48,8 +50,9 @@ struct BatteryDischarge {
 // If the discharge rate isn't valid, the returned rate is nullopt and the
 // reason is indicated per BatteryDischargeMode.
 BatteryDischarge GetBatteryDischargeDuringInterval(
-    const BatteryLevelProvider::BatteryState& previous_battery_state,
-    const BatteryLevelProvider::BatteryState& new_battery_state,
+    const absl::optional<BatteryLevelProvider::BatteryState>&
+        previous_battery_state,
+    const absl::optional<BatteryLevelProvider::BatteryState>& new_battery_state,
     base::TimeDelta interval_duration);
 
 // Report battery metrics to histograms with |suffixes|.

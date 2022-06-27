@@ -152,7 +152,7 @@ int64_t PowerMetricsReporter::GetBucketForSampleForTesting(
 
 #if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 void PowerMetricsReporter::OnFirstBatteryStateSampled(
-    const BatteryLevelProvider::BatteryState& battery_state) {
+    const absl::optional<BatteryLevelProvider::BatteryState>& battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   battery_state_ = battery_state;
 }
@@ -230,7 +230,8 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
     const ProcessMonitor::Metrics& aggregated_process_metrics,
     base::TimeDelta interval_duration,
     base::TimeTicks battery_sample_begin_time,
-    const BatteryLevelProvider::BatteryState& new_battery_state) {
+    const absl::optional<BatteryLevelProvider::BatteryState>&
+        new_battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Report time it took to sample the battery state.

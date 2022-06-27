@@ -10677,13 +10677,15 @@ Called by update_bad_message_reasons.py.-->
   <int value="0" label="Battery discharging"/>
   <int value="1" label="Battery plugged-in"/>
   <int value="2" label="Power state changed"/>
-  <int value="3" label="Charge level unavailable"/>
+  <int value="3" label="Error occurred while retrieving battery information"/>
   <int value="4" label="No battery"/>
   <int value="5" label="Battery level increased while disconnected"/>
   <int value="6" label="Invalid interval"/>
   <int value="7"
       label="Discharge rate could not be evaluated because Mac is fully
              charged"/>
+  <int value="8" label="More than 1 battery"/>
+  <int value="9" label="The battery's fully charged capacity is 0."/>
 </enum>
 
 <enum name="BatteryInfoSampleResult">

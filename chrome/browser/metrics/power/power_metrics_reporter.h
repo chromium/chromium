@@ -73,7 +73,8 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   ~PowerMetricsReporter() override;
 
 #if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
-  BatteryLevelProvider::BatteryState& battery_state_for_testing() {
+  absl::optional<BatteryLevelProvider::BatteryState>&
+  battery_state_for_testing() {
     return battery_state_;
   }
 #endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
@@ -84,7 +85,7 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
 #if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
   // Called when the initial battery state is obtained.
   void OnFirstBatteryStateSampled(
-      const BatteryLevelProvider::BatteryState& battery_state);
+      const absl::optional<BatteryLevelProvider::BatteryState>& battery_state);
 #endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
   // Starts the timer for the long interval. On Mac, this will fire for the
@@ -113,7 +114,8 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
       const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeDelta interval_duration,
       base::TimeTicks battery_sample_begin_time,
-      const BatteryLevelProvider::BatteryState& new_battery_state);
+      const absl::optional<BatteryLevelProvider::BatteryState>&
+          new_battery_state);
 #endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
   // Called when the long interval (and the short one on Mac) ends.
@@ -156,8 +158,7 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
 #if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
   std::unique_ptr<BatteryLevelProvider> battery_level_provider_;
 
-  BatteryLevelProvider::BatteryState battery_state_{0, 0, absl::nullopt, false,
-                                                    base::TimeTicks::Now()};
+  absl::optional<BatteryLevelProvider::BatteryState> battery_state_;
 #endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
   base::TimeTicks interval_begin_;
