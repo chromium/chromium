@@ -8,6 +8,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
@@ -22,6 +23,9 @@ class CSSContainerValues : public MediaValuesDynamic {
   // supported.
   absl::optional<double> Width() const override { return width_; }
   absl::optional<double> Height() const override { return height_; }
+  const ComputedStyle* GetComputedStyle() const override {
+    return style_.get();
+  }
 
  protected:
   float EmFontSize() const override;
@@ -31,6 +35,8 @@ class CSSContainerValues : public MediaValuesDynamic {
   WritingMode GetWritingMode() const override { return writing_mode_; }
 
  private:
+  // The current computed style for the container.
+  scoped_refptr<const ComputedStyle> style_;
   // Container width in CSS pixels.
   absl::optional<double> width_;
   // Container height in CSS pixels.

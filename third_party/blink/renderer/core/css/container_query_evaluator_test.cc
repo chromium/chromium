@@ -6,13 +6,21 @@
 
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
+#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -50,6 +58,33 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     evaluator->ContainerChanged(
         GetDocument(), *style,
         PhysicalSize(LayoutUnit(width), LayoutUnit(height)), contained_axes);
+    return evaluator->Eval(*container_query);
+  }
+
+  bool Eval(String query,
+            String custom_property_name,
+            String custom_property_value) {
+    CSSTokenizer tokenizer(custom_property_value);
+    CSSParserTokenStream stream(tokenizer);
+    CSSTokenizedValue tokenized_value = CSSParserImpl::ConsumeValue(stream);
+    const CSSParserContext* context =
+        StrictCSSParserContext(SecureContextMode::kSecureContext);
+    CSSCustomPropertyDeclaration* value =
+        CSSVariableParser::ParseDeclarationValue(tokenized_value, false,
+                                                 *context);
+    DCHECK(value);
+
+    scoped_refptr<ComputedStyle> style =
+        GetDocument().GetStyleResolver().InitialStyleForElement();
+    style->SetVariableData(AtomicString(custom_property_name), value->Value(),
+                           false);
+
+    auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
+    evaluator->ContainerChanged(GetDocument(), *style,
+                                PhysicalSize(LayoutUnit(100), LayoutUnit(100)),
+                                PhysicalAxes{kPhysicalAxisNone});
+
+    ContainerQuery* container_query = ParseContainer(query);
     return evaluator->Eval(*container_query);
   }
 
@@ -402,6 +437,28 @@ TEST_F(ContainerQueryEvaluatorTest, Printing) {
   EXPECT_EQ(
       target->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()),
       Color(0, 128, 0));
+}
+
+TEST_F(ContainerQueryEvaluatorTest, CustomPropertyStyleQuery) {
+  EXPECT_FALSE(Eval("style(--my-prop)", "--my-prop", "10px"));
+  EXPECT_FALSE(Eval("style(--my-prop:)", "--my-prop", "10px"));
+  EXPECT_FALSE(Eval("style(--my-prop: )", "--my-prop", "10px"));
+
+  EXPECT_FALSE(Eval("style(--my-prop)", "--my-prop", ""));
+  EXPECT_TRUE(Eval("style(--my-prop:)", "--my-prop", ""));
+  EXPECT_TRUE(Eval("style(--my-prop: )", "--my-prop", ""));
+
+  EXPECT_FALSE(Eval("style(--my-prop)", "--my-prop", " "));
+  EXPECT_FALSE(Eval("style(--my-prop:)", "--my-prop", " "));
+  EXPECT_FALSE(Eval("style(--my-prop: )", "--my-prop", " "));
+
+  EXPECT_TRUE(Eval("style(--my-prop:10px)", "--my-prop", "10px"));
+  EXPECT_TRUE(Eval("style(--my-prop: 10px)", "--my-prop", "10px"));
+  EXPECT_FALSE(Eval("style(--my-prop:10px )", "--my-prop", "10px"));
+  EXPECT_FALSE(Eval("style(--my-prop:10px)", "--my-prop", "10px "));
+  EXPECT_FALSE(Eval("style(--my-prop: 10px)", "--my-prop", "10px "));
+  EXPECT_TRUE(Eval("style(--my-prop:10px )", "--my-prop", "10px "));
+  EXPECT_TRUE(Eval("style(--my-prop: 10px )", "--my-prop", "10px "));
 }
 
 }  // namespace blink

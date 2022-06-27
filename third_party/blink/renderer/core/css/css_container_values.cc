@@ -15,6 +15,7 @@ CSSContainerValues::CSSContainerValues(Document& document,
                                        absl::optional<double> width,
                                        absl::optional<double> height)
     : MediaValuesDynamic(document.GetFrame()),
+      style_(&style),
       width_(width),
       height_(height),
       writing_mode_(style.GetWritingMode()),

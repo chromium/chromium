@@ -38,6 +38,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
+#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -1367,9 +1368,16 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
   DCHECK(!bounds.IsRange());
   DCHECK(bounds.right.op == MediaQueryOperator::kNone);
   DCHECK(bounds.right.IsValid());
+  DCHECK(bounds.right.value.IsCSSValue());
+  DCHECK(media_values_->GetComputedStyle());
 
-  // TODO(crbug.com/1302630): Implement computed style comparison.
-  return KleeneValue::kFalse;
+  return base::ValuesEquivalent(
+             media_values_->GetComputedStyle()->GetVariableData(
+                 AtomicString(feature.Name())),
+             To<CSSCustomPropertyDeclaration>(bounds.right.value.GetCSSValue())
+                 .Value())
+             ? KleeneValue::kTrue
+             : KleeneValue::kFalse;
 }
 
 }  // namespace blink
