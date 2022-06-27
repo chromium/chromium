@@ -230,7 +230,18 @@ bool PrerenderHostObserver::was_activated() const {
 
 PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
     : get_web_contents_fn_(fn) {
-  feature_list_.InitWithFeatures({blink::features::kPrerender2},
+  std::vector<base::Feature> enabled_features;
+#if !BUILDFLAG(IS_ANDROID)
+  // Prerender2 for Speculation Rules should be enabled by default on Android.
+  // To test the default behavior on Android, explicitly enable the feature only
+  // on non-Android.
+  //
+  // This is useful for preventing breakages by future changes on the complex
+  // flag structure. See review comments on https://crrev.com/c/3670822 for
+  // details.
+  enabled_features.push_back(blink::features::kPrerender2);
+#endif
+  feature_list_.InitWithFeatures(enabled_features,
                                  // Disable the memory requirement of Prerender2
                                  // so the test can run on any bot.
                                  {blink::features::kPrerender2MemoryControls});
