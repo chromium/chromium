@@ -55,6 +55,9 @@ class WaylandEventSource : public PlatformEventSource,
                            public WaylandZwpPointerGestures::Delegate,
                            public WaylandZwpRelativePointerManager::Delegate {
  public:
+  static void ConvertEventToTarget(const EventTarget* new_target,
+                                   LocatedEvent* event);
+
   WaylandEventSource(wl_display* display,
                      wl_event_queue* event_queue,
                      WaylandWindowManager* window_manager,
@@ -162,6 +165,7 @@ class WaylandEventSource : public PlatformEventSource,
     PointerFrame& operator=(const PointerFrame&);
     PointerFrame& operator=(PointerFrame&&);
 
+    WaylandWindow* target = nullptr;
     absl::optional<uint32_t> axis_source;
     float dx = 0.0f;
     float dy = 0.0f;
@@ -205,6 +209,12 @@ class WaylandEventSource : public PlatformEventSource,
 
   // Wrap up method to support async touch release processing.
   void OnTouchReleaseInternal(PointerId id);
+
+  // Set the target to the event, then dispatch the event.
+  void SetTargetAndDispatchEvent(Event* event, EventTarget* target);
+
+  // Find and set the target for the touch event, then dispatch the event.
+  void SetTouchTargetAndDispatchTouchEvent(TouchEvent* event);
 
   const raw_ptr<WaylandWindowManager> window_manager_;
 

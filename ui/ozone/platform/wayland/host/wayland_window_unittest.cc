@@ -2876,16 +2876,22 @@ TEST_P(WaylandWindowTest, CreatesPopupOnButtonPressSerial) {
 
     Sync();
 
-    constexpr uint32_t enter_serial = 1;
-    constexpr uint32_t button_press_serial = 2;
-    constexpr uint32_t button_release_serial = 3;
+    constexpr uint32_t keyboard_enter_serial = 1;
+    constexpr uint32_t pointer_enter_serial = 2;
+    constexpr uint32_t button_press_serial = 3;
+    constexpr uint32_t button_release_serial = 4;
 
     wl::MockSurface* toplevel_surface = server_.GetObject<wl::MockSurface>(
         window_->root_surface()->GetSurfaceId());
     struct wl_array empty;
     wl_array_init(&empty);
-    wl_keyboard_send_enter(server_.seat()->keyboard()->resource(), enter_serial,
-                           toplevel_surface->resource(), &empty);
+    wl_keyboard_send_enter(server_.seat()->keyboard()->resource(),
+                           keyboard_enter_serial, toplevel_surface->resource(),
+                           &empty);
+
+    wl_pointer_send_enter(server_.seat()->pointer()->resource(),
+                          pointer_enter_serial, toplevel_surface->resource(),
+                          wl_fixed_from_int(0), wl_fixed_from_int(0));
 
     // Send two events - button down and button up.
     wl_pointer_send_button(server_.seat()->pointer()->resource(),

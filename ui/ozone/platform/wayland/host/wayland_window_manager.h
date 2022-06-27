@@ -99,6 +99,9 @@ class WaylandWindowManager {
   // Returns all stored windows.
   std::vector<WaylandWindow*> GetAllWindows() const;
 
+  // Returns true if the |window| still exists.
+  bool IsWindowValid(const WaylandWindow* window) const;
+
   void AddWindow(gfx::AcceleratedWidget widget, WaylandWindow* window);
   void RemoveWindow(gfx::AcceleratedWidget widget);
   void AddSubsurface(gfx::AcceleratedWidget widget,

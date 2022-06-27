@@ -229,4 +229,12 @@ std::vector<WaylandWindow*> WaylandWindowManager::GetAllWindows() const {
   return result;
 }
 
+bool WaylandWindowManager::IsWindowValid(const WaylandWindow* window) const {
+  for (auto pair : window_map_) {
+    if (pair.second == window)
+      return true;
+  }
+  return false;
+}
+
 }  // namespace ui

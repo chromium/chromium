@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/events/event_target.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -52,7 +53,8 @@ using WidgetSubsurfaceSet = base::flat_set<std::unique_ptr<WaylandSubsurface>>;
 
 class WaylandWindow : public PlatformWindow,
                       public PlatformEventDispatcher,
-                      public WmDragHandler {
+                      public WmDragHandler,
+                      public EventTarget {
  public:
   WaylandWindow(const WaylandWindow&) = delete;
   WaylandWindow& operator=(const WaylandWindow&) = delete;
@@ -203,6 +205,14 @@ class WaylandWindow : public PlatformWindow,
   // PlatformEventDispatcher
   bool CanDispatchEvent(const PlatformEvent& event) override;
   uint32_t DispatchEvent(const PlatformEvent& event) override;
+
+  // EventTarget:
+  bool CanAcceptEvent(const Event& event) override;
+  EventTarget* GetParentTarget() override;
+  std::unique_ptr<EventTargetIterator> GetChildIterator() const override;
+  EventTargeter* GetEventTargeter() override;
+  void ConvertEventToTarget(const EventTarget* target,
+                            LocatedEvent* event) const override;
 
   // Handles the configuration events coming from the shell objects.
   // The width and height come in DIP of the output that the surface is
@@ -374,8 +384,6 @@ class WaylandWindow : public PlatformWindow,
 
   // Initializes the WaylandWindow with supplied properties.
   bool Initialize(PlatformWindowInitProperties properties);
-
-  void UpdateCursorPositionFromEvent(const Event* event);
 
   uint32_t DispatchEventToDelegate(const PlatformEvent& native_event);
 
