@@ -5,22 +5,8 @@
 
 # crbug.com/1314115
 -SharedImageGLBackingProduceDawnTest.Basic
--WebGPUMailboxTest.AssociateMailboxCmd*
--WebGPUMailboxTest.AssociateOnTwoDevicesAtTheSameTime*
--WebGPUMailboxTest.DissociateMailboxCmd*
--WebGPUMailboxTest.ErrorWhenUsingTextureAfterDissociate*
--WebGPUMailboxTest.ReadUninitializedSharedImage*
--WebGPUMailboxTest.ReadWritableUninitializedSharedImage*
--WebGPUMailboxTest.UseA_UseB_DestroyA_DestroyB*
--WebGPUMailboxTest.WriteToMailboxThenReadFromIt*
--WebGPUTest.RequestDeviceAfterContextLost
--WebGPUTest.FlushNoCommands
--WebGPUTest.ImplicitFallbackAdapterIsDisallowed
--WebGPUTest.ReportLoss
--WebGPUTest.ReportLossReentrant
--WebGPUTest.RequestAdapterAfterContextLost
--WebGPUTest.RequestDeviceWitUnsupportedFeature
--WebGPUTest.SPIRVIsDisallowed
+-WebGPUMailboxTest.*
+-WebGPUTest.*
 
 # crbug.com/1314124
 -ExternalVkImageFactoryTest.SkiaVulkanWrite_DawnRead
