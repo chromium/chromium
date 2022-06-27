@@ -168,8 +168,7 @@ function setUpPasswordManagerInternals() {
 }
 
 function enableResetCacheButton() {
-  document.getElementById('reset-cache-fake-button').style.display =
-      'inline-block';
+  document.getElementById('reset-cache-fake-button').style.display = 'inline';
 }
 
 function notifyAboutIncognito(isIncognito) {
@@ -294,9 +293,8 @@ function setUpLogDisplayConfig() {
     input.addEventListener('change', changeHandler);
     changeHandler();  // Call once to initialize |logDiv|'s classes.
     const label = document.createElement('label');
-    label.setAttribute('for', `checkbox-${scope}`);
-    label.innerText = scope;
-    checkboxPlaceholder.appendChild(input);
+    label.appendChild(input);
+    label.appendChild(document.createTextNode(' ' + scope));
     checkboxPlaceholder.appendChild(label);
   }
 }

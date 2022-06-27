@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest, ResetCache) {
   // Wait for reset-fake-button to become visible
   constexpr char kGetResetButtonDisplayStyle[] =
       "document.getElementById('reset-cache-fake-button').style.display";
-  while ("inline-block" != EvalJs(kGetResetButtonDisplayStyle))
+  while ("inline" != EvalJs(kGetResetButtonDisplayStyle))
     SpinRunLoop();
 
   // Trigger reset button.
