@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill_assistant/password_change/apc_external_action_delegate.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -16,6 +17,8 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill_assistant/browser/public/external_action.pb.h"
+#include "components/autofill_assistant/browser/public/external_action_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -157,7 +160,7 @@ void ApcExternalActionDelegate::OnBasePromptChoiceSelected(
     return;
   }
 
-  DCHECK(choice_index < base_prompt_return_values_.size());
+  CHECK(choice_index < base_prompt_return_values_.size());
   autofill_assistant::password_change::BasePromptSpecification::Result result;
   result.set_selected_tag(base_prompt_return_values_[choice_index]);
 
@@ -247,10 +250,16 @@ void ApcExternalActionDelegate::HandleBasePrompt(
         specification) {
   base_prompt_should_send_payload_ = specification.has_output_key();
 
-  // TODO(crbug.com/1331202): Set up DOM checking and matching of DOM conditions
-  // to return values.
-
+  // TODO(crbug.com/1331202): If this causes flickering, separate prompt
+  // argument extraction and showing the base prompt.
   ShowBasePrompt(specification);
+
+  // `this` outlives the script controller, therefore we can pass an unretained
+  // pointer.
+  std::move(start_dom_checks_callback_)
+      .Run(base::BindRepeating(
+          &ApcExternalActionDelegate::OnBasePromptDomUpdateReceived,
+          base::Unretained(this)));
 }
 
 void ApcExternalActionDelegate::HandleGeneratedPasswordPrompt(
@@ -265,6 +274,31 @@ void ApcExternalActionDelegate::HandleUpdateSidePanel(
     const autofill_assistant::password_change::UpdateSidePanelSpecification&
         specification) {
   EndAction(false);
+}
+
+void ApcExternalActionDelegate::OnBasePromptDomUpdateReceived(
+    const autofill_assistant::external::ElementConditionsUpdate& update) {
+  // To ensure predictable behavior, we always choose the condition with the
+  // smallest index if there are multiple fulfilled conditions.
+  size_t minimum_satisfied_index = base_prompt_return_values_.size();
+
+  for (const auto& condition : update.results()) {
+    if (condition.satisfied()) {
+      // Ids must be within the range of the return values vector.
+      if (condition.id() < 0 || static_cast<size_t>(condition.id()) >=
+                                    base_prompt_return_values_.size()) {
+        DLOG(ERROR) << "dom condition id is out of bounds";
+        EndAction(false);
+        return;
+      }
+      minimum_satisfied_index = std::min(minimum_satisfied_index,
+                                         static_cast<size_t>(condition.id()));
+    }
+  }
+
+  if (minimum_satisfied_index < base_prompt_return_values_.size()) {
+    OnBasePromptChoiceSelected(minimum_satisfied_index);
+  }
 }
 
 base::WeakPtr<PasswordChangeRunController>

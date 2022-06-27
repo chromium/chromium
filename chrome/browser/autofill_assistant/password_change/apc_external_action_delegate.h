@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
+#include "components/autofill_assistant/browser/public/external_action.pb.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -87,6 +88,9 @@ class ApcExternalActionDelegate
   void HandleUpdateSidePanel(
       const autofill_assistant::password_change::UpdateSidePanelSpecification&
           specification);
+
+  void OnBasePromptDomUpdateReceived(
+      const autofill_assistant::external::ElementConditionsUpdate& update);
 
   // The callback that terminates the current action.
   base::OnceCallback<void(const autofill_assistant::external::Result& result)>

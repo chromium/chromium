@@ -4412,6 +4412,7 @@ static_library("browser") {
       "//chrome/services/media_gallery_util/public/cpp",
       "//components/accuracy_tips",
       "//components/app_constants",
+      "//components/autofill_assistant/browser/public:proto",
       "//components/commerce/core:public",
       "//components/constrained_window",
       "//components/device_signals/core/browser",

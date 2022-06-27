@@ -5,6 +5,8 @@
 #include "chrome/browser/autofill_assistant/password_change/apc_external_action_delegate.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_password_change_run_display.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill_assistant/browser/public/external_action.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -46,6 +49,17 @@ constexpr char16_t kInterruptTitle[] = u"Title during interrupt";
 constexpr char16_t kInterruptDescription[] = u"Description during interrupt";
 
 constexpr char kUrl[] = "https://wwww.example.com";
+
+autofill_assistant::external::ElementConditionsUpdate CreateDomUpdate(
+    const std::vector<std::pair<int, bool>>& updates) {
+  autofill_assistant::external::ElementConditionsUpdate proto;
+  for (const auto& [id, satisfied] : updates) {
+    auto* result = proto.add_results();
+    result->set_id(id);
+    result->set_satisfied(satisfied);
+  }
+  return proto;
+}
 
 // Helper function to create a sample proto for a base prompt.
 autofill_assistant::password_change::BasePromptSpecification
@@ -213,8 +227,7 @@ TEST_F(ApcExternalActionDelegateTest, ReceiveInvalidAction) {
   EXPECT_FALSE(result.has_result_info());
 }
 
-TEST_F(ApcExternalActionDelegateTest,
-       ReceiveBasePromptAction_WithoutDomConditions) {
+TEST_F(ApcExternalActionDelegateTest, ReceiveBasePromptAction_FromViewClick) {
   base::MockOnceCallback<void(
       const autofill_assistant::external::Result& result)>
       result_callback;
@@ -228,8 +241,8 @@ TEST_F(ApcExternalActionDelegateTest,
   autofill_assistant::external::Result result;
   EXPECT_CALL(result_callback, Run).WillOnce(SaveArg<0>(&result));
 
-  // DOM checks will never be started.
-  EXPECT_CALL(start_dom_checks_callback, Run).Times(0);
+  // DOM checks are always started.
+  EXPECT_CALL(start_dom_checks_callback, Run);
 
   autofill_assistant::password_change::BasePromptSpecification proto =
       CreateBasePrompt();
@@ -266,7 +279,91 @@ TEST_F(ApcExternalActionDelegateTest,
 }
 
 TEST_F(ApcExternalActionDelegateTest,
-       ReceiveBasePromptAction_WithoutDomConditionsAndWithoutResultKey) {
+       ReceiveBasePromptAction_FromDomCondition) {
+  base::MockOnceCallback<void(
+      const autofill_assistant::external::Result& result)>
+      result_callback;
+  base::MockOnceCallback<void(DomUpdateCallback)> start_dom_checks_callback;
+
+  std::vector<PasswordChangeRunDisplay::PromptChoice> choices;
+  EXPECT_CALL(*display(), ShowBasePrompt);
+
+  // Save the prompt result.
+  autofill_assistant::external::Result result;
+  EXPECT_CALL(result_callback, Run).WillOnce(SaveArg<0>(&result));
+
+  // DOM checks are started.
+  DomUpdateCallback dom_update_callback;
+  EXPECT_CALL(start_dom_checks_callback, Run)
+      .WillOnce(SaveArg<0>(&dom_update_callback));
+
+  autofill_assistant::password_change::BasePromptSpecification proto =
+      CreateBasePrompt();
+  action_delegate()->OnActionRequested(CreateAction(proto),
+                                       start_dom_checks_callback.Get(),
+                                       result_callback.Get());
+
+  // But no result is sent yet.
+  EXPECT_FALSE(result.has_success());
+
+  // After receiving a valid DOM condition ...
+  EXPECT_CALL(*display(), ClearPrompt);
+  dom_update_callback.Run(CreateDomUpdate({{1, true}, {0, true}}));
+
+  // ... there is now a result.
+  EXPECT_TRUE(result.has_success());
+  EXPECT_TRUE(result.success());
+  EXPECT_TRUE(result.has_result_info() &&
+              result.result_info().has_result_payload());
+  autofill_assistant::password_change::BasePromptSpecification::Result
+      prompt_result;
+  ASSERT_TRUE(
+      prompt_result.ParseFromString(result.result_info().result_payload()));
+
+  EXPECT_TRUE(prompt_result.has_selected_tag());
+  // The result with index 0 is selected even though the arguments of the
+  // DomUpdateCallback were not ordered.
+  EXPECT_EQ(prompt_result.selected_tag(), kPromptTag1);
+}
+
+TEST_F(ApcExternalActionDelegateTest,
+       ReceiveBasePromptAction_FailOnInvalidDomCondition) {
+  base::MockOnceCallback<void(
+      const autofill_assistant::external::Result& result)>
+      result_callback;
+  base::MockOnceCallback<void(DomUpdateCallback)> start_dom_checks_callback;
+
+  std::vector<PasswordChangeRunDisplay::PromptChoice> choices;
+  EXPECT_CALL(*display(), ShowBasePrompt);
+
+  // Save the prompt result.
+  autofill_assistant::external::Result result;
+  EXPECT_CALL(result_callback, Run).WillOnce(SaveArg<0>(&result));
+
+  // DOM checks are started.
+  DomUpdateCallback dom_update_callback;
+  EXPECT_CALL(start_dom_checks_callback, Run)
+      .WillOnce(SaveArg<0>(&dom_update_callback));
+
+  autofill_assistant::password_change::BasePromptSpecification proto =
+      CreateBasePrompt();
+  action_delegate()->OnActionRequested(CreateAction(proto),
+                                       start_dom_checks_callback.Get(),
+                                       result_callback.Get());
+
+  // But no result is sent yet.
+  EXPECT_FALSE(result.has_success());
+
+  // After receiving an invalid DOM condition ...
+  dom_update_callback.Run(CreateDomUpdate({{-1, true}, {0, true}}));
+
+  // ... the action fails.
+  EXPECT_TRUE(result.has_success());
+  EXPECT_FALSE(result.success());
+}
+
+TEST_F(ApcExternalActionDelegateTest,
+       ReceiveBasePromptAction_FromViewClickWithoutResultKey) {
   // TODO: Check that we do not send a result if the result key field is not
   // set.
   base::MockOnceCallback<void(
@@ -282,8 +379,8 @@ TEST_F(ApcExternalActionDelegateTest,
   autofill_assistant::external::Result result;
   EXPECT_CALL(result_callback, Run).WillOnce(SaveArg<0>(&result));
 
-  // DOM checks will never be started.
-  EXPECT_CALL(start_dom_checks_callback, Run).Times(0);
+  // DOM checks are started.
+  EXPECT_CALL(start_dom_checks_callback, Run);
 
   autofill_assistant::password_change::BasePromptSpecification proto =
       CreateBasePrompt();

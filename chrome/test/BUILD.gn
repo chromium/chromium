@@ -6857,6 +6857,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/app_constants",
+      "//components/autofill_assistant/browser/public:proto",
       "//components/autofill_assistant/browser/public:unit_test_support",
       "//components/chrome_cleaner/test:test_name_helper",
       "//components/endpoint_fetcher:endpoint_fetcher",
