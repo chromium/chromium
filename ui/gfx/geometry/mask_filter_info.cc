@@ -17,15 +17,19 @@ bool MaskFilterInfo::Transform(const gfx::Transform& transform) {
   if (!transform.TransformRRectF(&rounded_corner_bounds_))
     return false;
 
-  if (!gradient_mask_.IsEmpty())
-    gradient_mask_.Transform(transform);
+  if (gradient_mask_ && !gradient_mask_->IsEmpty())
+    gradient_mask_->Transform(transform);
 
   return true;
 }
 
 std::string MaskFilterInfo::ToString() const {
-  return "MaskFilterInfo{" + rounded_corner_bounds_.ToString() +
-         ", gradient_mask=" + gradient_mask_.ToString() + "}";
+  std::string result = "MaskFilterInfo{" + rounded_corner_bounds_.ToString();
+
+  if (gradient_mask_)
+    result += ", gradient_mask=" + gradient_mask_->ToString() + "}";
+
+  return result;
 }
 
 }  // namespace gfx
