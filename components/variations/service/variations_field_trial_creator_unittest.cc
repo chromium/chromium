@@ -299,6 +299,8 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
     TestPlatformFieldTrials platform_field_trials;
     return VariationsFieldTrialCreator::SetUpFieldTrials(
         /*variation_ids=*/std::vector<std::string>(),
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kForceVariationIds),
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
         /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
         metrics_state_manager_.get(), &platform_field_trials,
@@ -848,6 +850,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   // active.
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/std::vector<std::string>(),
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kForceVariationIds),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
       metrics_state_manager.get(), &platform_field_trials, &safe_seed_manager,

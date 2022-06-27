@@ -11,6 +11,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_crash_keys.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -106,10 +107,13 @@ void FeatureListCreator::SetUpFieldTrials() {
   std::vector<std::string> variation_ids;
   auto feature_list = std::make_unique<base::FeatureList>();
 
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
   variations_service_->SetUpFieldTrials(
       variation_ids,
-      content::GetSwitchDependentFeatureOverrides(
-          *base::CommandLine::ForCurrentProcess()),
+      command_line->GetSwitchValueASCII(
+          variations::switches::kForceVariationIds),
+      content::GetSwitchDependentFeatureOverrides(*command_line),
       std::move(feature_list), &weblayer_field_trials_);
   variations::InitCrashKeys();
 #else
