@@ -348,13 +348,11 @@ FirstPartySetsManager::SetsByOwner FirstPartySetsManager::SetsInternal(
   FirstPartySetsManager::SetsByOwner sets;
   for (const auto& pair : *sets_) {
     const net::SchemefulSite& member = pair.first;
-    const net::SchemefulSite& owner = pair.second;
-    auto set = sets.find(owner);
-    if (set == sets.end()) {
-      sets.emplace(owner, std::initializer_list<net::SchemefulSite>{member});
-    } else {
-      set->second.insert(member);
-    }
+    net::SchemefulSite owner = pair.second;
+    auto set = sets.emplace(std::make_pair(std::move(owner),
+                                           std::set<net::SchemefulSite>()))
+                   .first;
+    set->second.insert(member);
   }
 
   return sets;
