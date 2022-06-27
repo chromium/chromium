@@ -191,6 +191,11 @@ extern const char kAutofillVisualImprovementsForSuggestionUiDescription[];
 extern const char kAutofillTypeSpecificPopupWidthName[];
 extern const char kAutofillTypeSpecificPopupWidthDescription[];
 
+extern const char
+    kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseName[];
+extern const char
+    kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseDescription[];
+
 extern const char kAutofillEnableManualFallbackForVirtualCardsName[];
 extern const char kAutofillEnableManualFallbackForVirtualCardsDescription[];
 

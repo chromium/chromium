@@ -324,6 +324,17 @@ const char kAutofillTypeSpecificPopupWidthDescription[] =
     "Controls if different width limits are used for the popup that provides "
     "Autofill suggestions, depending on the type of data that is filled.";
 
+const char kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseName[] =
+    "Enable parsing of the GetDetailsForEnrollResponseDetails in the "
+    "UploadCardResponseDetails";
+const char
+    kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseDescription[] =
+        "When enabled, the GetDetailsForEnrollResponseDetails in the "
+        "UploadCardResponseDetails will be parsed, which will allow the "
+        "Virtual Card Enrollment flow to skip making a new GetDetailsForEnroll "
+        "request. This is an optimization to improve the latency of the "
+        "Virtual Card Enrollment flow.";
+
 const char kAutofillEnableManualFallbackForVirtualCardsName[] =
     "Show manual fallback for virtual cards";
 const char kAutofillEnableManualFallbackForVirtualCardsDescription[] =

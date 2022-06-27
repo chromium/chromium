@@ -55319,6 +55319,8 @@ from previous Chrome versions.
   <int value="-1740519217" label="disable-software-rasterizer"/>
   <int value="-1740093155" label="UnifiedMediaView:disabled"/>
   <int value="-1738416948" label="OptimizationHints:enabled"/>
+  <int value="-1738273185"
+      label="AutofillEnableGetDetailsForEnrollParsingInUploadCardResponse:disabled"/>
   <int value="-1738015645" label="ForceAppLanguagePrompt:disabled"/>
   <int value="-1737769448" label="WebUITabStripTabDragIntegration:disabled"/>
   <int value="-1736075054" label="EnableFullscreenAppList:enabled"/>
@@ -56185,6 +56187,8 @@ from previous Chrome versions.
   <int value="-1201741587" label="DataReductionProxyDecidesTransform:disabled"/>
   <int value="-1201183153" label="enable-centered-app-list"/>
   <int value="-1199738132" label="MediaAppMultiWindow:disabled"/>
+  <int value="-1199416041"
+      label="AutofillEnableGetDetailsForEnrollParsingInUploadCardResponse:enabled"/>
   <int value="-1199159971"
       label="ContextualSuggestionsIPHReverseScroll:enabled"/>
   <int value="-1198304634"

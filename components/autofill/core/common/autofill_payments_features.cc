@@ -53,6 +53,15 @@ const base::Feature kAutofillCreditCardAuthentication{
 const base::Feature kAutofillCreditCardUploadFeedback{
     "AutofillCreditCardUploadFeedback", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, the GetDetailsForEnrollResponseDetails in the
+// UploadCardResponseDetails will be parsed, which will allow the Virtual Card
+// Enrollment flow to skip making a new GetDetailsForEnroll request. This is an
+// optimization to improve the latency of the Virtual Card Enrollment flow.
+const base::Feature
+    kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse{
+        "AutofillEnableGetDetailsForEnrollParsingInUploadCardResponse",
+        base::FEATURE_ENABLED_BY_DEFAULT};
+
 // When enabled, enable manual falling component for virtual cards on Android.
 const base::Feature kAutofillEnableManualFallbackForVirtualCards{
     "AutofillEnableManualFallbackForVirtualCards",
@@ -98,7 +107,7 @@ const base::Feature kAutofillEnableUnmaskCardRequestSetInstrumentId{
 // autofill flows (for example, downstream and upstream), and from the settings
 // page.
 const base::Feature kAutofillEnableUpdateVirtualCardEnrollment{
-    "AutofillEnableUpdateVirtualCardEnrollment",
+  "AutofillEnableUpdateVirtualCardEnrollment",
 #if BUILDFLAG(IS_IOS)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else

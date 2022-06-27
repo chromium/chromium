@@ -405,6 +405,11 @@
     "expiry_milestone": 106
   },
   {
+    "name": "autofill-enable-get-details-for-enroll-parsing-in-upload-card-response",
+    "owners": [ "vinnypersky@google.com", "siyua" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "autofill-enable-manual-fallback-for-virtual-cards",
     "owners": [ "siashah", "siyua" ],
     "expiry_milestone": 106
