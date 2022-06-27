@@ -7014,3 +7014,6 @@ crbug.com/1323627 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile
 
 # Sheriff 2022-05-11
 crbug.com/1324428 fast/webgl/canvas-toDataURL-crash.html [ Crash Pass ]
+
+# Disable the failing test on M103 branch to satisfy M103 builders.
+crbug.com/1339106 [ Mac ] svg/W3C-SVG-1.1/pservers-grad-05-b.svg [ Failure ]
