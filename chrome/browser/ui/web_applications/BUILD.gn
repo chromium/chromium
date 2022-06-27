@@ -1,0 +1,30 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_browser_controller_unittest.cc",
+    "share_target_utils_unittest.cc",
+    "web_app_launch_manager_unittest.cc",
+    "web_app_launch_utils_unittest.cc",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [ "file_stream_data_pipe_getter_unittest.cc" ]
+  }
+
+  deps = [
+    "//chrome/browser",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_unit_tests",
+    "//components/services/app_service/public/cpp:intents",
+    "//content/test:test_support",
+    "//storage/browser:test_support",
+  ]
+}
