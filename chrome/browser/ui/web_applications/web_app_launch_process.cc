@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "extensions/common/constants.h"
@@ -292,7 +293,9 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
     // TODO(crbug.com/1213776): Expose share target in the LaunchParams and
     // don't navigate if navigate_existing_client: never is in effect.
     NavigateParams nav_params = NavigateParamsForShareTarget(
-        browser, *share_target, *params_.intent, params_.launch_files);
+        browser, *share_target,
+        *apps::ConvertMojomIntentToIntent(params_.intent),
+        params_.launch_files);
     nav_params.disposition = navigation_disposition;
     return {
         .web_contents = NavigateWebAppUsingParams(params_.app_id, nav_params),
