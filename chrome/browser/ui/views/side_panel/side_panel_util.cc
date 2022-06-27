@@ -77,3 +77,10 @@ void SidePanelUtil::RecordSidePanelOpen(
   if (trigger.has_value())
     base::UmaHistogramEnumeration("SidePanel.OpenTrigger", trigger.value());
 }
+
+void SidePanelUtil::RecordSidePanelClosed(base::TimeTicks opened_timestamp) {
+  base::RecordAction(base::UserMetricsAction("SidePanel.Hide"));
+
+  base::UmaHistogramLongTimes("SidePanel.OpenDuration",
+                              base::TimeTicks::Now() - opened_timestamp);
+}

@@ -1112,6 +1112,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SidePanel.OpenDuration" units="ms" expires_after="2023-06-04">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records how long the side panel was open for (capped at 1 hour) starting
+    when the side panel is triggered to be opened. Note this might be different
+    than when the side panel becomes visible due to delays for loading content.
+    Recorded when the side panel is closed.
+  </summary>
+</histogram>
+
 <histogram name="SidePanel.OpenTrigger" enum="SidePanelOpenTrigger"
     expires_after="2023-06-04">
   <owner>corising@chromium.org</owner>

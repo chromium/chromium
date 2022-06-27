@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_
 
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
@@ -36,6 +37,7 @@ class SidePanelUtil {
       views::View* content_view);
 
   static void RecordSidePanelOpen(absl::optional<SidePanelOpenTrigger> trigger);
+  static void RecordSidePanelClosed(base::TimeTicks opened_timestamp);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_

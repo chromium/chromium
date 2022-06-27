@@ -8,8 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -178,6 +176,7 @@ void SidePanelCoordinator::Show(
 
   if (GetContentView() == nullptr) {
     InitializeSidePanel();
+    opened_timestamp_ = base::TimeTicks::Now();
     SidePanelUtil::RecordSidePanelOpen(open_trigger);
     // Record usage for side panel promo.
     feature_engagement::TrackerFactory::GetForBrowserContext(
@@ -242,7 +241,7 @@ void SidePanelCoordinator::Close() {
   if (views::View* content_view = GetContentView())
     browser_view_->right_aligned_side_panel()->RemoveChildViewT(content_view);
   header_combobox_ = nullptr;
-  base::RecordAction(base::UserMetricsAction("SidePanel.Hide"));
+  SidePanelUtil::RecordSidePanelClosed(opened_timestamp_);
 }
 
 void SidePanelCoordinator::Toggle() {

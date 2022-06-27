@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_COORDINATOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -117,6 +118,11 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // When true, prevent loading delays when switching between side panel
   // entries.
   bool no_delays_for_testing_ = false;
+
+  // Timestamp of when the side panel was opened. Updated when the side panel is
+  // triggered to be opened, not when visibility changes. These can differ due
+  // to delays for loading content. This is used for metrics.
+  base::TimeTicks opened_timestamp_;
 
   const raw_ptr<BrowserView> browser_view_;
   raw_ptr<SidePanelRegistry> global_registry_;
