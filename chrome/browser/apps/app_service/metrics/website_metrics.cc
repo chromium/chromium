@@ -153,6 +153,16 @@ void WebsiteMetrics::HistoryServiceBeingDeleted(
   history_observation_.Reset();
 }
 
+void WebsiteMetrics::OnFiveMinutes() {
+  // TODO(crbug.com/1334173): Save the usage time records to the local user
+  // perf.
+}
+
+void WebsiteMetrics::OnTwoHours() {
+  // TODO(crbug.com/1334173): Records the usage time UKM, and reset the local
+  // variables after recording the UKM.
+}
+
 void WebsiteMetrics::OnTabStripModelChangeInsert(
     TabStripModel* tab_strip_model,
     const TabStripModelChange::Insert& insert,

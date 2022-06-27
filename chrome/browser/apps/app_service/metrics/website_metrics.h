@@ -68,6 +68,12 @@ class WebsiteMetrics : public BrowserListObserver,
   void HistoryServiceBeingDeleted(
       history::HistoryService* history_service) override;
 
+  // Save the usage time records to the local user perf.
+  void OnFiveMinutes();
+
+  // Records the usage time UKM each 2 hours.
+  void OnTwoHours();
+
  private:
   friend class WebsiteMetricsBrowserTest;
 

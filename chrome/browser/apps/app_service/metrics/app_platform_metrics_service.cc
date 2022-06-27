@@ -98,11 +98,13 @@ void AppPlatformMetricsService::CheckForNewDay() {
 void AppPlatformMetricsService::CheckForFiveMinutes() {
   app_platform_app_metrics_->OnFiveMinutes();
   app_platform_input_metrics_->OnFiveMinutes();
+  website_metrics_->OnFiveMinutes();
 }
 
 void AppPlatformMetricsService::CheckForNoisyAppKMReportingInterval() {
   app_platform_app_metrics_->OnTwoHours();
   app_platform_input_metrics_->OnTwoHours();
+  website_metrics_->OnTwoHours();
 }
 
 }  // namespace apps
