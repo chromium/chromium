@@ -30926,7 +30926,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'owners': ['file://third_party/blink/renderer/core/frame/OWNERS', 'shaseley@chromium.org', 'bokan@chromium.org', 'dcheng@chromium.org', 'japhet@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:101-104', 'chrome.*:101-104', 'android:101-104'],
+      'supported_on': ['chrome_os:101-107', 'chrome.*:101-107', 'android:101-107'],
       'features': {
         'per_profile': True,
         'dynamic_refresh': True,

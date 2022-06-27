@@ -1218,9 +1218,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   DeviceOAuth2TokenStoreDesktop::RegisterPrefs(registry);
 #endif
 
-  registry->RegisterBooleanPref(
-      policy::policy_prefs::kSetTimeoutWithout1MsClampEnabled, false);
-
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   screen_ai::RegisterLocalStatePrefs(registry);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

@@ -18376,7 +18376,7 @@
         },
         "prefs": {
           "policy.set_timeout_without_1ms_clamp": {
-            "location": "local_state"
+            "location": "user_profile"
           }
         }
       }
