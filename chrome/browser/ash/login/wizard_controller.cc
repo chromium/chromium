@@ -1397,6 +1397,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       ShowEulaScreen();
       break;
     case NetworkScreen::Result::CONNECTED_DEMO:
+    case NetworkScreen::Result::NOT_APPLICABLE_CONNECTED_DEMO:
       DCHECK(demo_setup_controller_);
       demo_setup_controller_->set_demo_config(
           DemoSession::DemoModeConfig::kOnline);
@@ -1410,6 +1411,8 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       InitiateOOBEUpdate();
       break;
     case NetworkScreen::Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT:
+    case NetworkScreen::Result::
+        NOT_APPLICABLE_CONNECTED_DEMO_CONSOLIDATED_CONSENT:
       DCHECK(demo_setup_controller_);
       demo_setup_controller_->set_demo_config(
           DemoSession::DemoModeConfig::kOnline);

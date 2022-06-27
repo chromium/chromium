@@ -37,7 +37,9 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
     BACK_DEMO,
     BACK_OS_INSTALL,
     NOT_APPLICABLE,
-    NOT_APPLICABLE_CONSOLIDATED_CONSENT
+    NOT_APPLICABLE_CONSOLIDATED_CONSENT,
+    NOT_APPLICABLE_CONNECTED_DEMO,
+    NOT_APPLICABLE_CONNECTED_DEMO_CONSOLIDATED_CONSENT
   };
 
   static std::string GetResultString(Result result);
