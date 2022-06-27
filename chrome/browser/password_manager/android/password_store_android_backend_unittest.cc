@@ -169,6 +169,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
     return lifecycle_helper_;
   }
   MockSyncDelegate* sync_delegate() { return sync_delegate_; }
+  syncer::TestSyncService* sync_service() { return &sync_service_; }
   PasswordSyncControllerDelegateAndroid* sync_controller_delegate() {
     return sync_controller_delegate_;
   }
@@ -218,8 +219,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   CreatePasswordSyncControllerDelegate() {
     auto unique_delegate = std::make_unique<
         PasswordSyncControllerDelegateAndroid>(
-        std::make_unique<NiceMock<MockPasswordSyncControllerDelegateBridge>>(),
-        sync_delegate_);
+        std::make_unique<NiceMock<MockPasswordSyncControllerDelegateBridge>>());
     sync_controller_delegate_ = unique_delegate.get();
     return unique_delegate;
   }
@@ -228,6 +228,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   raw_ptr<StrictMock<MockPasswordStoreAndroidBackendBridge>> bridge_;
   raw_ptr<FakePasswordManagerLifecycleHelper> lifecycle_helper_;
   raw_ptr<PasswordSyncControllerDelegateAndroid> sync_controller_delegate_;
+  syncer::TestSyncService sync_service_;
   raw_ptr<MockSyncDelegate> sync_delegate_;
   TestingPrefServiceSimple prefs_;
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -580,8 +581,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
        OnExternalErrorCausingExperimentUnenrollment) {
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  syncer::TestSyncService sync_service;
-  backend().OnSyncServiceInitialized(&sync_service);
+  backend().OnSyncServiceInitialized(sync_service());
 
   const JobId kJobId{1337};
   base::HistogramTester histogram_tester;
@@ -620,8 +620,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
        OnExternalDeveloperErrorNotCausingExperimentUnenrollment) {
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  syncer::TestSyncService sync_service;
-  backend().OnSyncServiceInitialized(&sync_service);
+  backend().OnSyncServiceInitialized(sync_service());
 
   const JobId kJobId{1337};
   base::HistogramTester histogram_tester;
@@ -659,8 +658,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
        OnExternalPassphraseRequiredCausingExperimentUnenrollment) {
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
-  syncer::TestSyncService sync_service;
-  backend().OnSyncServiceInitialized(&sync_service);
+  backend().OnSyncServiceInitialized(sync_service());
 
   const JobId kJobId{1337};
   base::HistogramTester histogram_tester;
@@ -701,11 +699,10 @@ TEST_F(PasswordStoreAndroidBackendTest,
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
 
-  syncer::TestSyncService sync_service;
-  backend().OnSyncServiceInitialized(&sync_service);
+  backend().OnSyncServiceInitialized(sync_service());
 
-  ASSERT_FALSE(sync_service.GetAuthError().IsTransientError());
-  ASSERT_FALSE(sync_service.GetAuthError().IsPersistentError());
+  ASSERT_FALSE(sync_service()->GetAuthError().IsTransientError());
+  ASSERT_FALSE(sync_service()->GetAuthError().IsPersistentError());
 
   const JobId kJobId{1337};
   base::HistogramTester histogram_tester;
@@ -733,13 +730,12 @@ TEST_F(PasswordStoreAndroidBackendTest,
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
 
-  syncer::TestSyncService sync_service;
-  backend().OnSyncServiceInitialized(&sync_service);
+  backend().OnSyncServiceInitialized(sync_service());
 
   GoogleServiceAuthError transient_error(
       GoogleServiceAuthError::CONNECTION_FAILED);
   ASSERT_TRUE(transient_error.IsTransientError());
-  sync_service.SetAuthError(transient_error);
+  sync_service()->SetAuthError(transient_error);
 
   const JobId kJobId{1337};
   base::HistogramTester histogram_tester;
@@ -767,13 +763,12 @@ TEST_F(PasswordStoreAndroidBackendTest,
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
 
-  syncer::TestSyncService sync_service;
-  backend().OnSyncServiceInitialized(&sync_service);
+  backend().OnSyncServiceInitialized(sync_service());
 
   GoogleServiceAuthError persistent_error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
   ASSERT_TRUE(persistent_error.IsPersistentError());
-  sync_service.SetAuthError(persistent_error);
+  sync_service()->SetAuthError(persistent_error);
 
   const JobId kJobId{1337};
   base::HistogramTester histogram_tester;
@@ -988,10 +983,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
 
-  syncer::TestSyncService sync_service;
-  backend().OnSyncServiceInitialized(&sync_service);
+  backend().OnSyncServiceInitialized(sync_service());
 
-  EXPECT_TRUE(sync_service.HasObserver(sync_controller_delegate()));
+  EXPECT_TRUE(sync_service()->HasObserver(sync_controller_delegate()));
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
@@ -1045,19 +1039,17 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
 TEST_F(PasswordStoreAndroidBackendTest,
        RecordActiveStatusOnSyncServiceInitialized) {
   base::HistogramTester histogram_tester;
-  syncer::TestSyncService sync_service;
-  sync_service.GetUserSettings()->SetSelectedTypes(
+  sync_service()->GetUserSettings()->SetSelectedTypes(
       false, {syncer::UserSelectableType::kPasswords});
-  backend().OnSyncServiceInitialized(&sync_service);
+  backend().OnSyncServiceInitialized(sync_service());
   histogram_tester.ExpectUniqueSample(
       kUPMActiveHistogram, UnifiedPasswordManagerActiveStatus::kActive, 1);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, RecordInactiveStatusSyncOff) {
   base::HistogramTester histogram_tester;
-  syncer::TestSyncService sync_service;
-  sync_service.GetUserSettings()->SetSelectedTypes(false, {});
-  backend().OnSyncServiceInitialized(&sync_service);
+  sync_service()->GetUserSettings()->SetSelectedTypes(false, {});
+  backend().OnSyncServiceInitialized(sync_service());
   histogram_tester.ExpectUniqueSample(
       kUPMActiveHistogram, UnifiedPasswordManagerActiveStatus::kInactiveSyncOff,
       1);
@@ -1065,12 +1057,11 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordInactiveStatusSyncOff) {
 
 TEST_F(PasswordStoreAndroidBackendTest, RecordInactiveStatusUnenrolled) {
   base::HistogramTester histogram_tester;
-  syncer::TestSyncService sync_service;
-  sync_service.GetUserSettings()->SetSelectedTypes(
+  sync_service()->GetUserSettings()->SetSelectedTypes(
       false, {syncer::UserSelectableType::kPasswords});
   prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
                       true);
-  backend().OnSyncServiceInitialized(&sync_service);
+  backend().OnSyncServiceInitialized(sync_service());
   histogram_tester.ExpectUniqueSample(
       kUPMActiveHistogram,
       UnifiedPasswordManagerActiveStatus::kInactiveUnenrolledDueToErrors, 1);

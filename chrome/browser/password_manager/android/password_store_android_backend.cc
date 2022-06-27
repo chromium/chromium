@@ -389,8 +389,7 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
   sync_controller_delegate_ =
       std::make_unique<PasswordSyncControllerDelegateAndroid>(
-          std::make_unique<PasswordSyncControllerDelegateBridgeImpl>(),
-          sync_delegate_.get());
+          std::make_unique<PasswordSyncControllerDelegateBridgeImpl>());
 }
 
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
@@ -683,7 +682,7 @@ void PasswordStoreAndroidBackend::OnSyncServiceInitialized(
     LogUPMActiveStatus(sync_service, prefs_);
   }
   sync_service_ = sync_service;
-  sync_service->AddObserver(sync_controller_delegate_.get());
+  sync_controller_delegate_->OnSyncServiceInitialized(sync_service);
 }
 
 void PasswordStoreAndroidBackend::OnCompleteWithLogins(

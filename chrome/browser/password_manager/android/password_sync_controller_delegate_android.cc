@@ -19,6 +19,8 @@ namespace password_manager {
 
 namespace {
 
+using sync_util::IsPasswordSyncEnabled;
+
 std::string BuildCredentialManagerNotificationMetricName(
     const std::string& suffix) {
   return "PasswordManager.SyncControllerDelegateNotifiesCredentialManager." +
@@ -28,9 +30,8 @@ std::string BuildCredentialManagerNotificationMetricName(
 }  // namespace
 
 PasswordSyncControllerDelegateAndroid::PasswordSyncControllerDelegateAndroid(
-    std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge,
-    PasswordStoreBackend::SyncDelegate* sync_delegate)
-    : bridge_(std::move(bridge)), sync_delegate_(sync_delegate) {
+    std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge)
+    : bridge_(std::move(bridge)) {
   DCHECK(bridge_);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
@@ -40,21 +41,18 @@ PasswordSyncControllerDelegateAndroid::
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordSyncControllerDelegateAndroid::CreateProxyModelControllerDelegate() {
-  // CreateSyncControllerDelegate is called during sync service initialization
-  // and this is the perfect timing to cache sync status and syncing account.
-  // This should be posted to allow sync service finish initialization.
-  // TODO(crbug.com/1260837): Check whether there is a better way to do it.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &PasswordSyncControllerDelegateAndroid::UpdateSyncStatusOnStartUp,
-          weak_ptr_factory_.GetWeakPtr()));
-
   return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
       base::SequencedTaskRunnerHandle::Get(),
       base::BindRepeating(
           &PasswordSyncControllerDelegateAndroid::GetWeakPtrToBaseClass,
           base::Unretained(this)));
+}
+
+void PasswordSyncControllerDelegateAndroid::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {
+  sync_service_ = sync_service;
+  sync_observation_.Observe(sync_service);
+  is_sync_enabled_ = IsSyncEnabled(IsPasswordSyncEnabled(sync_service_));
 }
 
 void PasswordSyncControllerDelegateAndroid::OnSyncStarting(
@@ -74,7 +72,6 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStarting(
   }
 
   is_sync_enabled_ = IsSyncEnabled(true);
-  syncing_account_ = sync_delegate_->GetSyncingAccount();
 
   // Set |skip_engine_connection| to true to indicate that, actually, this sync
   // datatype doesn't depend on the built-in SyncEngine to communicate changes
@@ -103,7 +100,6 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStopping(
       // storage to local storage.
       NOTIMPLEMENTED();
       is_sync_enabled_ = IsSyncEnabled(false);
-      syncing_account_ = absl::nullopt;
       break;
   }
 }
@@ -164,15 +160,6 @@ void PasswordSyncControllerDelegateAndroid::OnCredentialManagerError(
     base::UmaHistogramSparse(
         BuildCredentialManagerNotificationMetricName("APIErrorCode"),
         api_error_code);
-  }
-}
-
-void PasswordSyncControllerDelegateAndroid::UpdateSyncStatusOnStartUp() {
-  is_sync_enabled_ = IsSyncEnabled(sync_delegate_->IsSyncingPasswordsEnabled());
-
-  if (is_sync_enabled_.has_value() &&
-      is_sync_enabled_.value() == IsSyncEnabled(true)) {
-    syncing_account_ = sync_delegate_->GetSyncingAccount();
   }
 }
 
