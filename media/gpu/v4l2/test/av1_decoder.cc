@@ -471,8 +471,8 @@ void Av1Decoder::CopyFrameData(const libgav1::ObuFrameHeader& frame_hdr,
 
   scoped_refptr<MmapedBuffer> buffer = queue->GetBuffer(0);
 
-  memcpy(static_cast<uint8_t*>(buffer->mmaped_planes()[0].start_addr),
-         ivf_frame_data_, ivf_frame_header_.frame_size);
+  buffer->mmaped_planes()[0].CopyIn(ivf_frame_data_,
+                                    ivf_frame_header_.frame_size);
 }
 
 std::set<int> Av1Decoder::RefreshReferenceSlots(

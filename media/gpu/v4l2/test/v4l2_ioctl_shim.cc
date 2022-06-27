@@ -114,7 +114,7 @@ MmapedBuffer::MmapedBuffer(const base::PlatformFile ioctl_fd,
 }
 
 MmapedBuffer::~MmapedBuffer() {
-  for (const auto& [start_addr, length] : mmaped_planes_)
+  for (const auto& [start_addr, length, bytes_used] : mmaped_planes_)
     munmap(start_addr, length);
 }
 
@@ -400,7 +400,7 @@ bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
 
   for (uint32_t i = 0; i < queue->num_planes(); ++i) {
     v4l2_buffer.m.planes[i].length = buffer->mmaped_planes()[i].length;
-    v4l2_buffer.m.planes[i].bytesused = buffer->mmaped_planes()[i].length;
+    v4l2_buffer.m.planes[i].bytesused = buffer->mmaped_planes()[i].bytes_used;
     v4l2_buffer.m.planes[i].data_offset = 0;
   }
 

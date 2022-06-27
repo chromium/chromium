@@ -6,8 +6,10 @@
 #define MEDIA_GPU_V4L2_TEST_V4L2_IOCTL_SHIM_H_
 
 #include <linux/videodev2.h>
+#include <string.h>
 
 #include "base/files/memory_mapped_file.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -25,17 +27,22 @@ class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
   class MmapedPlane {
    public:
     void* start_addr;
-    size_t length;
+    const size_t length;
+    size_t bytes_used;
 
-    MmapedPlane(void* start, size_t len) {
-      start_addr = start;
-      length = len;
+    MmapedPlane(void* start, size_t len) : start_addr(start), length(len){};
+
+    void CopyIn(const uint8_t* frame_data, size_t frame_size) {
+      LOG_ASSERT(frame_size < length)
+          << "Not enough memory allocated to copy into.";
+      bytes_used = frame_size;
+      memcpy(static_cast<uint8_t*>(start_addr), frame_data, frame_size);
     }
   };
 
   using MmapedPlanes = std::vector<MmapedPlane>;
 
-  MmapedPlanes mmaped_planes() const { return mmaped_planes_; }
+  MmapedPlanes& mmaped_planes() { return mmaped_planes_; }
 
   uint32_t buffer_id() const { return buffer_id_; }
   void set_buffer_id(uint32_t buffer_id) { buffer_id_ = buffer_id; }
