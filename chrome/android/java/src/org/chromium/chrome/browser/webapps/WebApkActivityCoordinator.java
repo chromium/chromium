@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.webapps;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
-import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TwaRegistrar;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -31,7 +31,7 @@ import dagger.Lazy;
 public class WebApkActivityCoordinator implements DestroyObserver {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Lazy<WebApkUpdateManager> mWebApkUpdateManager;
-    private final TwaRegistrar mTwaRegistrar;
+    private final InstalledWebappRegistrar mInstalledWebappRegistrar;
 
     @Inject
     public WebApkActivityCoordinator(
@@ -40,14 +40,15 @@ public class WebApkActivityCoordinator implements DestroyObserver {
             WebApkActivityLifecycleUmaTracker webApkActivityLifecycleUmaTracker,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intendDataProvider,
-            Lazy<WebApkUpdateManager> webApkUpdateManager, TwaRegistrar twaRegistrar) {
+            Lazy<WebApkUpdateManager> webApkUpdateManager,
+            InstalledWebappRegistrar installedWebappRegistrar) {
         // We don't need to do anything with |disclosureController|, |disclosureInfobar| and
         // |webApkActivityLifecycleUmaTracker|. We just need to resolve
         // them so that they start working.
 
         mIntentDataProvider = intendDataProvider;
         mWebApkUpdateManager = webApkUpdateManager;
-        mTwaRegistrar = twaRegistrar;
+        mInstalledWebappRegistrar = installedWebappRegistrar;
 
         deferredStartupWithStorageHandler.addTask((storage, didCreateStorage) -> {
             if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
@@ -78,7 +79,7 @@ public class WebApkActivityCoordinator implements DestroyObserver {
             return;
         }
 
-        mTwaRegistrar.registerClient(packageName, origin);
+        mInstalledWebappRegistrar.registerClient(packageName, origin);
         PermissionUpdater.get().onWebApkLaunch(origin, packageName);
     }
 

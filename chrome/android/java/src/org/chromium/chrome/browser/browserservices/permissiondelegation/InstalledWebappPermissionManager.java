@@ -230,7 +230,7 @@ public class InstalledWebappPermissionManager {
 
     @Nullable
     private static String getAppNameForPackage(String packageName) {
-        // TODO(peconn): Dedupe logic with ClientAppDataRecorder.
+        // TODO(peconn): Dedupe logic with InstalledWebappDataRecorder.
         try {
             PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
             int getAppInfoFlags = 0;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity;
+package org.chromium.chrome.browser.browserservices;
 
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
 
@@ -20,27 +20,27 @@ import javax.inject.Named;
 import dagger.Lazy;
 
 /**
- * Records in all the appropriate places that a TWA has successfully been verified.
+ * Records in all the appropriate places that an installed webapp (TWA or WebAPK) has successfully
+ * been verified.
  */
-public class TwaRegistrar {
+public class InstalledWebappRegistrar {
     private final Context mAppContext;
     private final PermissionUpdater mPermissionUpdater;
-    private final Lazy<ClientAppDataRecorder> mClientAppDataRecorder;
+    private final Lazy<InstalledWebappDataRecorder> mDataRecorder;
 
     // These origins have already been registered so we don't need to do so again.
     private final Set<Origin> mRegisteredOrigins = new HashSet<>();
 
     @Inject
-    public TwaRegistrar(@Named(APP_CONTEXT) Context appContext, PermissionUpdater permissionUpdater,
-            Lazy<ClientAppDataRecorder> clientAppDataRecorder) {
+    public InstalledWebappRegistrar(@Named(APP_CONTEXT) Context appContext,
+            PermissionUpdater permissionUpdater, Lazy<InstalledWebappDataRecorder> dataRecorder) {
         mAppContext = appContext;
-
         mPermissionUpdater = permissionUpdater;
-        mClientAppDataRecorder = clientAppDataRecorder;
+        mDataRecorder = dataRecorder;
     }
 
     /**
-     * Registers to various stores that the client app is linked with the origin.
+     * Registers to various stores that the app is linked with the origin.
      *
      * We do this here, when the Trusted Web Activity UI is shown instead of in OriginVerifier when
      * verification completes because when an origin is being verified, we don't know whether it is
@@ -62,7 +62,7 @@ public class TwaRegistrar {
         if (mRegisteredOrigins.contains(origin)) return;
 
         // Register that we should wipe data for this origin when the client app is uninstalled.
-        mClientAppDataRecorder.get().register(packageName, origin);
+        mDataRecorder.get().register(packageName, origin);
         // Register that we trust the client app to handle permission for this origin and update
         // Chrome's permission for the origin.
         mPermissionUpdater.onOriginVerified(origin, packageName);

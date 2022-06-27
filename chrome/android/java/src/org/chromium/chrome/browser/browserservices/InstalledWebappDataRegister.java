@@ -20,24 +20,32 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Records whether Chrome has data relevant to a Trusted Web Activity Client.
+ * Records whether Chrome has data relevant to an installed webapp (TWA or WebAPK).
  *
  * Lifecycle: Most of the data used by this class modifies the underlying {@link SharedPreferences}
  * (which are global and preserved across Chrome restarts).
  * Thread safety: This object should only be accessed on a single thread at any time.
  */
-public class ClientAppDataRegister {
+public class InstalledWebappDataRegister {
+    /**
+     * The shared preferences file name. If you modify this you'll have to migrate old data.
+     */
     private static final String PREFS_FILE = "trusted_web_activity_client_apps";
+
+    /**
+     * The key to the set of UIDs stored as strings in shared preferences. If you modify this
+     * you'll have to migrate old data.
+     */
     private static final String UIDS_KEY = "trusted_web_activity_uids";
 
     /* Preferences unique to this class. */
     private final SharedPreferences mPreferences;
 
-    /** Creates a ClientAppDataRegister. */
-    public ClientAppDataRegister() {
+    /** Creates a InstalledWebappDataRegister. */
+    public InstalledWebappDataRegister() {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            mPreferences = ContextUtils.getApplicationContext()
-                    .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
+            mPreferences = ContextUtils.getApplicationContext().getSharedPreferences(
+                    PREFS_FILE, Context.MODE_PRIVATE);
         }
 
         // Trigger a Preferences read in a background thread to try to load the Preferences file
@@ -51,8 +59,8 @@ public class ClientAppDataRegister {
      * |origin|. |domain| is stored as well in order to not have to derive it from origin while
      * handling uninstallation or data clear, since that would require loading native libraries.
      */
-    public void registerPackageForOrigin(int uid, String appName, String packageName,
-            String domain, Origin origin) {
+    public void registerPackageForOrigin(
+            int uid, String appName, String packageName, String domain, Origin origin) {
         // Store the UID in the main Chrome Preferences.
         Set<String> uids = getUids();
         uids.add(String.valueOf(uid));
@@ -130,7 +138,6 @@ public class ClientAppDataRegister {
     /* package */ Set<String> getOriginsForRegisteredUid(int uid) {
         return mPreferences.getStringSet(createOriginKey(uid), Collections.emptySet());
     }
-
 
     // Methods below create the Preferences keys to access the data associated with given app uid.
     // If you modify any of them you'll have to migrate old data.

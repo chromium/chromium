@@ -38,7 +38,7 @@ public class TrustedWebActivitySettingsLauncher {
         Integer applicationUid = getApplicationUid(context, packageName);
         if (applicationUid == null) return;
 
-        ClientAppDataRegister register = new ClientAppDataRegister();
+        InstalledWebappDataRegister register = new InstalledWebappDataRegister();
         Collection<String> domains = register.getDomainsForRegisteredUid(applicationUid);
         Collection<String> origins = register.getOriginsForRegisteredUid(applicationUid);
         if (domains.isEmpty() || origins.isEmpty()) {

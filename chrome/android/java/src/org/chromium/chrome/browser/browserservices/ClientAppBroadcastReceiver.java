@@ -70,24 +70,25 @@ public class ClientAppBroadcastReceiver extends BroadcastReceiver {
     ));
 
     private final ClearDataStrategy mClearDataStrategy;
-    private final ClientAppDataRegister mRegister;
+    private final InstalledWebappDataRegister mDataRegister;
     private final BrowserServicesStore mStore;
     private final PermissionUpdater mPermissionUpdater;
 
     /** Constructor with default dependencies for Android. */
     @Inject
     public ClientAppBroadcastReceiver() {
-        this(new ClearDataStrategy(), new ClientAppDataRegister(),
+        this(new ClearDataStrategy(), new InstalledWebappDataRegister(),
                 new BrowserServicesStore(
                         ChromeApplicationImpl.getComponent().resolveSharedPreferencesManager()),
                 ChromeApplicationImpl.getComponent().resolveTwaPermissionUpdater());
     }
 
     /** Constructor to allow dependency injection in tests. */
-    public ClientAppBroadcastReceiver(ClearDataStrategy strategy, ClientAppDataRegister register,
-            BrowserServicesStore store, PermissionUpdater permissionUpdater) {
+    public ClientAppBroadcastReceiver(ClearDataStrategy strategy,
+            InstalledWebappDataRegister dataRegister, BrowserServicesStore store,
+            PermissionUpdater permissionUpdater) {
         mClearDataStrategy = strategy;
-        mRegister = register;
+        mDataRegister = dataRegister;
         mStore = store;
         mPermissionUpdater = permissionUpdater;
     }
@@ -118,41 +119,41 @@ public class ClientAppBroadcastReceiver extends BroadcastReceiver {
 
         try (TimingMetric unused = TimingMetric.mediumWallTime(
                      BrowserServicesTimingMetrics.CLIENT_APP_DATA_LOAD_TIME)) {
-            // The ClientAppDataRegister (because it uses Preferences) is loaded lazily, so to time
-            // opening the file we must include the first read as well.
-            if (!mRegister.chromeHoldsDataForPackage(uid)) {
+            // The {@link InstalledWebappDataRegister} (because it uses Preferences) is loaded
+            // lazily, so to time opening the file we must include the first read as well.
+            if (!mDataRegister.chromeHoldsDataForPackage(uid)) {
                 Log.d(TAG, "Chrome holds no data for package.");
                 return;
             }
         }
 
-        mClearDataStrategy.execute(context, mRegister, mPermissionUpdater, uid, uninstalled);
+        mClearDataStrategy.execute(context, mDataRegister, mPermissionUpdater, uid, uninstalled);
         clearPreferences(uid, uninstalled);
     }
 
     private void clearPreferences(int uid, boolean uninstalled) {
-        String packageName = mRegister.getPackageNameForRegisteredUid(uid);
+        String packageName = mDataRegister.getPackageNameForRegisteredUid(uid);
         mStore.removeTwaDisclosureAcceptanceForPackage(packageName);
         if (uninstalled) {
-            mRegister.removePackage(uid);
+            mDataRegister.removePackage(uid);
         }
     }
 
     /** Implemented as a class partially for historic reasons, partially to help testing. */
     static class ClearDataStrategy {
-        public void execute(Context context, ClientAppDataRegister register,
+        public void execute(Context context, InstalledWebappDataRegister dataRegister,
                 PermissionUpdater permissionUpdater, int uid, boolean uninstalled) {
             // Retrieving domains and origins ahead of time, because the register is about to be
             // cleaned up.
-            Set<String> domains = register.getDomainsForRegisteredUid(uid);
-            Set<String> origins = register.getOriginsForRegisteredUid(uid);
+            Set<String> domains = dataRegister.getDomainsForRegisteredUid(uid);
+            Set<String> origins = dataRegister.getOriginsForRegisteredUid(uid);
 
             for (String originAsString : origins) {
                 Origin origin = Origin.create(originAsString);
                 if (origin != null) permissionUpdater.onClientAppUninstalled(origin);
             }
 
-            String appName = register.getAppNameForRegisteredUid(uid);
+            String appName = dataRegister.getAppNameForRegisteredUid(uid);
             Intent intent = ClearDataDialogActivity
                     .createIntent(context, appName, domains, origins, uninstalled);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);

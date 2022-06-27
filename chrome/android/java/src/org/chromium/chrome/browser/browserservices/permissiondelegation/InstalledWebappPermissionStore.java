@@ -39,10 +39,10 @@ import java.util.Set;
  * each installed app.
  *
  * A key difference between this class and the
- * {@link org.chromium.chrome.browser.browserservices.ClientAppDataRegister} is that the register
- * stores data keyed by the client app, whereas this class stores data keyed by the origin. There
- * may be two client apps installed for the same origin, the ClientAppDataRegister will hold two
- * entries, whereas this class will hold one entry.
+ * {@link org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister} is that the
+ * register stores data keyed by the client app, whereas this class stores data keyed by the origin.
+ * There may be two client apps installed for the same origin, the InstalledWebappDataRegister will
+ * hold two entries, whereas this class will hold one entry.
  *
  * Lifecycle: This class is designed to be owned by
  * {@link org.chromium.chrome.browser.webapps.WebappRegistry}, get it from there, don't create your

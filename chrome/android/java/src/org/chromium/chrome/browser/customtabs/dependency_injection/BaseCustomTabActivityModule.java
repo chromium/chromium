@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.dependency_injection;
 
-import org.chromium.chrome.browser.browserservices.ClientAppDataRegister;
+import org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaIntentHandlingStrategy;
 import org.chromium.chrome.browser.browserservices.ui.controller.EmptyVerifier;
@@ -109,8 +109,8 @@ public class BaseCustomTabActivityModule {
     }
 
     @Provides
-    public ClientAppDataRegister provideClientAppDataRegister() {
-        return new ClientAppDataRegister();
+    public InstalledWebappDataRegister provideInstalledWebappDataRegister() {
+        return new InstalledWebappDataRegister();
     }
 
     @Provides

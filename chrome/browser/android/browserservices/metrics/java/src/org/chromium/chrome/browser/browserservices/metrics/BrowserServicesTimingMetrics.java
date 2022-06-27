@@ -18,7 +18,7 @@ public class BrowserServicesTimingMetrics {
 
     /**
      * Records a {@link WallTimingMetric} for the amount of time spent opening the
-     * {@link ClientAppDataRegister}.
+     * {@link InstalledWebappDataRegister}.
      */
     public static final String CLIENT_APP_DATA_LOAD_TIME = "BrowserServices.ClientAppDataLoad";
 

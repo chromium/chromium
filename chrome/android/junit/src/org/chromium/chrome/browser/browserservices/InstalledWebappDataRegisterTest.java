@@ -17,22 +17,22 @@ import org.chromium.components.embedder_support.util.Origin;
 import java.util.Set;
 
 /**
- * Tests for {@link ClientAppDataRegister}.
+ * Tests for {@link InstalledWebappDataRegister}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ClientAppDataRegisterTest {
+public class InstalledWebappDataRegisterTest {
     private static final int UID = 23;
     private static final String APP_NAME = "Example App";
     private static final String APP_PACKAGE = "com.example.app";
     private static final String DOMAIN = "example.com";
     private static final String OTHER_DOMAIN = "otherexample.com";
 
-    private ClientAppDataRegister mRegister;
+    private InstalledWebappDataRegister mRegister;
 
     @Before
     public void setUp() {
-        mRegister = new ClientAppDataRegister();
+        mRegister = new InstalledWebappDataRegister();
     }
 
     @Test
@@ -92,7 +92,7 @@ public class ClientAppDataRegisterTest {
     }
 
     private void register(String domain) {
-        mRegister.registerPackageForOrigin(UID, APP_NAME, APP_PACKAGE, domain,
-                Origin.create("https://www." + domain));
+        mRegister.registerPackageForOrigin(
+                UID, APP_NAME, APP_PACKAGE, domain, Origin.create("https://www." + domain));
     }
 }

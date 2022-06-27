@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity;
+package org.chromium.chrome.browser.browserservices;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -29,16 +29,15 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.browserservices.ClientAppDataRegister;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 
 /**
- * Tests for {@link ClientAppDataRecorder}.
+ * Tests for {@link InstalledWebappDataRecorder}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
-public class ClientAppDataRecorderTest {
+public class InstalledWebappDataRecorderTest {
     private static final int APP_UID = 123;
     private static final String APP_NAME = "Example App";
     private static final String APP_PACKAGE = "com.example.app";
@@ -47,11 +46,11 @@ public class ClientAppDataRecorderTest {
     private static final Origin OTHER_ORIGIN = Origin.create("https://www.other.com/");
 
     @Mock
-    private ClientAppDataRegister mRegister;
+    private InstalledWebappDataRegister mRegister;
     @Mock
     private PackageManager mPackageManager;
 
-    private ClientAppDataRecorder mRecorder;
+    private InstalledWebappDataRecorder mRecorder;
 
     private static String transform(String origin) {
         // Just an arbitrary string transformation so we can check it is applied.
@@ -84,7 +83,7 @@ public class ClientAppDataRecorderTest {
             }
         });
 
-        mRecorder = new ClientAppDataRecorder(context, mRegister);
+        mRecorder = new InstalledWebappDataRecorder(context, mRegister);
     }
 
     @After

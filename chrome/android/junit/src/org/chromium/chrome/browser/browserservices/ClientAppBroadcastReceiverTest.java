@@ -43,7 +43,7 @@ import java.util.Set;
 @Config(manifest = Config.NONE)
 public class ClientAppBroadcastReceiverTest {
     @Mock public Context mContext;
-    @Mock public ClientAppDataRegister mDataRegister;
+    @Mock public InstalledWebappDataRegister mDataRegister;
     @Mock public ClientAppBroadcastReceiver.ClearDataStrategy mMockStrategy;
     @Mock
     public PermissionUpdater mPermissionUpdater;
