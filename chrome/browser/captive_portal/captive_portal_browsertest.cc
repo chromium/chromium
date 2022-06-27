@@ -1803,7 +1803,9 @@ void CaptivePortalBrowserTest::RunNavigateLoadingTabToTimeoutTest(
   // it must happen before the captive_portal::CaptivePortalService sends out
   // its test request, so waiting for PortalObserver to see that request
   // prevents it from confusing the MultiNavigationObservers used later.
-  tab_strip_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   browser->OpenURL(content::OpenURLParams(timeout_url, content::Referrer(),
                                           WindowOpenDisposition::CURRENT_TAB,
                                           ui::PAGE_TRANSITION_TYPED, false));
@@ -1820,7 +1822,9 @@ void CaptivePortalBrowserTest::RunNavigateLoadingTabToTimeoutTest(
   WaitForJobs(1);
 
   // Simulate logging in.
-  tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   SetSlowSSLLoadTime(tab_reloader, base::Days(1));
   Login(browser, 1 /* num_loading_tabs */, 0 /* num_timed_out_tabs */,
         1 /* expected_portal_checks */);
@@ -2423,12 +2427,16 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, LoginExtraNavigations) {
 
   // Activate the timed out tab and navigate it to a timeout again.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  tab_strip_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   FastTimeoutBehindCaptivePortal(browser(), false);
 
   // Activate and navigate the captive portal tab.  This should not trigger a
   // reload of the tab with the error.
-  tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   NavigateLoginTab(browser(), 0, 1);
 
   // Simulate logging in.
@@ -2488,7 +2496,9 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, TwoBrokenTabs) {
 
   SlowLoadBehindCaptivePortal(browser(), false);
 
-  tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   Login(browser(), 2 /* num_loading_tabs */, 0 /* num_timed_out_tabs */,
         1 /* expected_portal_checks */);
   FailLoadsAfterLogin(browser(), 2);
@@ -2506,7 +2516,9 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, AbortLoad) {
 
   // Switch back to the hung tab from the login tab, and abort the navigation.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  tab_strip_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   chrome::Stop(browser());
   navigation_observer.WaitForNavigations(1);
 
@@ -2516,7 +2528,9 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, AbortLoad) {
   EXPECT_EQ(captive_portal::CaptivePortalTabReloader::STATE_NONE,
             GetStateOfTabReloaderAt(browser(), 0));
 
-  tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   Login(browser(), 0 /* num_loading_tabs */, 0 /* num_timed_out_tabs */,
         1 /* expected_portal_checks */);
 }
@@ -2531,14 +2545,18 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, NavigateBrokenTab) {
 
   // Navigate the error tab to a non-error page.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  tab_strip_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title2.html")));
   EXPECT_EQ(captive_portal::CaptivePortalTabReloader::STATE_NONE,
             GetStateOfTabReloaderAt(browser(), 0));
 
   // Simulate logging in.
-  tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   Login(browser(), 0 /* num_loading_tabs */, 0 /* num_timed_out_tabs */,
         1 /* expected_portal_checks */);
 }
@@ -2600,7 +2618,9 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, GoBack) {
 
   // Activate the error page tab again and go back.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  tab_strip_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
   navigation_observer.WaitForNavigations(1);
 

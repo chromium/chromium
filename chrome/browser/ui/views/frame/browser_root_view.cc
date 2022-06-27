@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -280,7 +281,9 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
       if (whole_scroll_offset < 0 &&
           model->active_index() + 1 < model->count()) {
         chrome::SelectNextTab(
-            browser, {TabStripModel::GestureType::kWheel, event.time_stamp()});
+            browser, TabStripUserGestureDetails(
+                         TabStripUserGestureDetails::GestureType::kWheel,
+                         event.time_stamp()));
         return true;
       }
 
@@ -288,7 +291,9 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
       // tab-strip.
       if (whole_scroll_offset > 0 && model->active_index() > 0) {
         chrome::SelectPreviousTab(
-            browser, {TabStripModel::GestureType::kWheel, event.time_stamp()});
+            browser, TabStripUserGestureDetails(
+                         TabStripUserGestureDetails::GestureType::kWheel,
+                         event.time_stamp()));
         return true;
       }
     }

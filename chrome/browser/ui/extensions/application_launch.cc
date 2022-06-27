@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -251,7 +252,9 @@ WebContents* OpenApplicationTab(Profile* profile,
       tab_index = model->GetIndexOfWebContents(existing_tab);
     }
     if (params.tabstrip_add_types & TabStripModel::ADD_ACTIVE) {
-      model->ActivateTabAt(tab_index, {TabStripModel::GestureType::kOther});
+      model->ActivateTabAt(
+          tab_index, TabStripUserGestureDetails(
+                         TabStripUserGestureDetails::GestureType::kOther));
     }
 
     contents = existing_tab;

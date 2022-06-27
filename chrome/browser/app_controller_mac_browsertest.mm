@@ -1131,7 +1131,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
 
   // Test that switching tabs updates the handoff URL.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(g_handoff_url, test_url1);
   EXPECT_TRUE(base::EndsWith(g_handoff_title, u"title1.html"));
 

@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -789,7 +790,10 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   if (!contents && urls.empty() && window_type == Browser::TYPE_NORMAL) {
     chrome::NewTab(new_window);
   }
-  chrome::SelectNumberedTab(new_window, 0, {TabStripModel::GestureType::kNone});
+  chrome::SelectNumberedTab(
+      new_window, 0,
+      TabStripUserGestureDetails(
+          TabStripUserGestureDetails::GestureType::kNone));
 
   if (focused) {
     new_window->window()->Show();

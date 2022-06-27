@@ -104,7 +104,8 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
     EXPECT_TRUE(
         AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
     browser()->tab_strip_model()->ActivateTabAt(
-        0, {TabStripModel::GestureType::kOther});
+        0, TabStripUserGestureDetails(
+               TabStripUserGestureDetails::GestureType::kOther));
     return extensions::ExtensionTabUtil::GetTabId(
         browser()->tab_strip_model()->GetActiveWebContents());
   }

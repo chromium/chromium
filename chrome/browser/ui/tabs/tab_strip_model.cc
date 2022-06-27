@@ -588,7 +588,8 @@ void TabStripModel::SendDetachWebContentsNotifications(
   }
 }
 
-void TabStripModel::ActivateTabAt(int index, UserGestureDetails user_gesture) {
+void TabStripModel::ActivateTabAt(int index,
+                                  TabStripUserGestureDetails user_gesture) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   CHECK(ContainsIndex(index));
@@ -596,16 +597,17 @@ void TabStripModel::ActivateTabAt(int index, UserGestureDetails user_gesture) {
 
   // Maybe increment count of tabs 'scrubbed' by mouse or key press for
   // histogram data.
-  if (user_gesture.type == GestureType::kMouse ||
-      user_gesture.type == GestureType::kKeyboard) {
+  if (user_gesture.type == TabStripUserGestureDetails::GestureType::kMouse ||
+      user_gesture.type == TabStripUserGestureDetails::GestureType::kKeyboard) {
     constexpr base::TimeDelta kMaxTimeConsideredScrubbing =
         base::Milliseconds(1500);
     base::TimeDelta elapsed_time_since_tab_switch =
         base::TimeTicks::Now() - last_tab_switch_timestamp_;
     if (elapsed_time_since_tab_switch <= kMaxTimeConsideredScrubbing) {
-      if (user_gesture.type == GestureType::kMouse)
+      if (user_gesture.type == TabStripUserGestureDetails::GestureType::kMouse)
         ++tabs_scrubbed_by_mouse_press_count_;
-      else if (user_gesture.type == GestureType::kKeyboard)
+      else if (user_gesture.type ==
+               TabStripUserGestureDetails::GestureType::kKeyboard)
         ++tabs_scrubbed_by_key_press_count_;
     }
   }
@@ -613,16 +615,16 @@ void TabStripModel::ActivateTabAt(int index, UserGestureDetails user_gesture) {
 
   TabSwitchEventLatencyRecorder::EventType event_type;
   switch (user_gesture.type) {
-    case GestureType::kMouse:
+    case TabStripUserGestureDetails::GestureType::kMouse:
       event_type = TabSwitchEventLatencyRecorder::EventType::kMouse;
       break;
-    case GestureType::kKeyboard:
+    case TabStripUserGestureDetails::GestureType::kKeyboard:
       event_type = TabSwitchEventLatencyRecorder::EventType::kKeyboard;
       break;
-    case GestureType::kTouch:
+    case TabStripUserGestureDetails::GestureType::kTouch:
       event_type = TabSwitchEventLatencyRecorder::EventType::kTouch;
       break;
-    case GestureType::kWheel:
+    case TabStripUserGestureDetails::GestureType::kWheel:
       event_type = TabSwitchEventLatencyRecorder::EventType::kWheel;
       break;
     default:
@@ -633,11 +635,12 @@ void TabStripModel::ActivateTabAt(int index, UserGestureDetails user_gesture) {
                                                         event_type);
   ui::ListSelectionModel new_model = selection_model_;
   new_model.SetSelectedIndex(index);
-  SetSelection(std::move(new_model),
-               user_gesture.type != GestureType::kNone
-                   ? TabStripModelObserver::CHANGE_REASON_USER_GESTURE
-                   : TabStripModelObserver::CHANGE_REASON_NONE,
-               /*triggered_by_other_operation=*/false);
+  SetSelection(
+      std::move(new_model),
+      user_gesture.type != TabStripUserGestureDetails::GestureType::kNone
+          ? TabStripModelObserver::CHANGE_REASON_USER_GESTURE
+          : TabStripModelObserver::CHANGE_REASON_NONE,
+      /*triggered_by_other_operation=*/false);
 }
 
 void TabStripModel::RecordTabScrubbingMetrics() {
@@ -1106,15 +1109,15 @@ void TabStripModel::CloseSelectedTabs() {
             CLOSE_CREATE_HISTORICAL_TAB | CLOSE_USER_GESTURE);
 }
 
-void TabStripModel::SelectNextTab(UserGestureDetails detail) {
+void TabStripModel::SelectNextTab(TabStripUserGestureDetails detail) {
   SelectRelativeTab(TabRelativeDirection::kNext, detail);
 }
 
-void TabStripModel::SelectPreviousTab(UserGestureDetails detail) {
+void TabStripModel::SelectPreviousTab(TabStripUserGestureDetails detail) {
   SelectRelativeTab(TabRelativeDirection::kPrevious, detail);
 }
 
-void TabStripModel::SelectLastTab(UserGestureDetails detail) {
+void TabStripModel::SelectLastTab(TabStripUserGestureDetails detail) {
   ActivateTabAt(count() - 1, detail);
 }
 
@@ -2104,7 +2107,7 @@ TabStripSelectionChange TabStripModel::SetSelection(
 }
 
 void TabStripModel::SelectRelativeTab(TabRelativeDirection direction,
-                                      UserGestureDetails detail) {
+                                      TabStripUserGestureDetails detail) {
   // This may happen during automated testing or if a user somehow buffers
   // many key accelerators.
   if (contents_data_.empty())

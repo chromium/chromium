@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
@@ -787,13 +788,13 @@ bool CanResetZoom(content::WebContents* contents) {
 }
 
 void SelectNextTab(Browser* browser,
-                   TabStripModel::UserGestureDetails gesture_detail) {
+                   TabStripUserGestureDetails gesture_detail) {
   base::RecordAction(UserMetricsAction("SelectNextTab"));
   browser->tab_strip_model()->SelectNextTab(gesture_detail);
 }
 
 void SelectPreviousTab(Browser* browser,
-                       TabStripModel::UserGestureDetails gesture_detail) {
+                       TabStripUserGestureDetails gesture_detail) {
   base::RecordAction(UserMetricsAction("SelectPrevTab"));
   browser->tab_strip_model()->SelectPreviousTab(gesture_detail);
 }
@@ -810,7 +811,7 @@ void MoveTabPrevious(Browser* browser) {
 
 void SelectNumberedTab(Browser* browser,
                        int index,
-                       TabStripModel::UserGestureDetails gesture_detail) {
+                       TabStripUserGestureDetails gesture_detail) {
   int visible_count = 0;
   for (int i = 0; i < browser->tab_strip_model()->count(); i++) {
     if (browser->tab_strip_model()->IsTabCollapsed(i)) {
@@ -826,7 +827,7 @@ void SelectNumberedTab(Browser* browser,
 }
 
 void SelectLastTab(Browser* browser,
-                   TabStripModel::UserGestureDetails gesture_detail) {
+                   TabStripUserGestureDetails gesture_detail) {
   for (int i = browser->tab_strip_model()->count() - 1; i >= 0; i--) {
     if (!browser->tab_strip_model()->IsTabCollapsed(i)) {
       base::RecordAction(UserMetricsAction("SelectLastTab"));

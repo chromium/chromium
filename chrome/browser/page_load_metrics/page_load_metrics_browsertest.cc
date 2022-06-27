@@ -2638,7 +2638,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   ASSERT_TRUE(tab_strip);
   ASSERT_EQ(2, tab_strip->count());
   ASSERT_EQ(0, tab_strip->active_index());
-  tab_strip->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tab_strip->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
 
   session_restore_paint_waiter.WaitForForegroundTabs(1);
 

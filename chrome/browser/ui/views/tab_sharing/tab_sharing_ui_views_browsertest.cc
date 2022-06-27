@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -123,7 +124,8 @@ scoped_refptr<MediaStreamCaptureIndicator> GetCaptureIndicator() {
 
 void ActivateTab(Browser* browser, int tab) {
   browser->tab_strip_model()->ActivateTabAt(
-      tab, {TabStripModel::GestureType::kMouse});
+      tab, TabStripUserGestureDetails(
+               TabStripUserGestureDetails::GestureType::kMouse));
 }
 
 constexpr int kNullTabIndex = -1;

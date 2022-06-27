@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 
 HoverTabSelector::HoverTabSelector(TabStripModel* tab_strip_model)
     : tab_strip_model_(tab_strip_model), tab_transition_tab_index_(-1) {
@@ -48,7 +49,9 @@ void HoverTabSelector::CancelTabTransition() {
 void HoverTabSelector::PerformTabTransition() {
   DCHECK(tab_transition_tab_index_ >= 0 &&
          tab_transition_tab_index_ < tab_strip_model_->count());
-  tab_strip_model_->ActivateTabAt(tab_transition_tab_index_,
-                                  {TabStripModel::GestureType::kOther});
+  tab_strip_model_->ActivateTabAt(
+      tab_transition_tab_index_,
+      TabStripUserGestureDetails(
+          TabStripUserGestureDetails::GestureType::kOther));
 }
 

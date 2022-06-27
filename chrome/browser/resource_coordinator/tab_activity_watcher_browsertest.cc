@@ -211,7 +211,8 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTestWithBackgroundLogDisabled,
   test_clock.Advance(base::Minutes(1));
 
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   test_clock.Advance(base::Minutes(1));
 
   // A background tab is scored successfully.
@@ -257,7 +258,8 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTest, SwitchTabs) {
 
   // Switching to another tab logs the previously active tab.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   {
     SCOPED_TRACE("");
     ukm_entry_checker_->ExpectNewEntry(kTabMetricsEntryName, kTabUrls[2],
@@ -266,7 +268,8 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTest, SwitchTabs) {
   }
 
   browser()->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   {
     SCOPED_TRACE("");
     ukm_entry_checker_->ExpectNewEntry(kTabMetricsEntryName, kTabUrls[0],
@@ -339,7 +342,8 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTest, BeforeUnloadHandler) {
 
   // Sanity check: the new tab doesn't have a beforeunload handler.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   {
     SCOPED_TRACE("");
     ukm_entry_checker_->ExpectNewEntry(kTabMetricsEntryName, test_urls_[0],
@@ -388,7 +392,8 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTest, TabDrag) {
       1, std::move(owned_dragged_contents), TabStripModel::ADD_NONE);
   dragged_contents->WasShown();
   browser_2->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(0, ukm_entry_checker_->NumNewEntriesRecorded(kFOCEntryName));
 
   // The first tab in this window was backgrounded when the new one was
@@ -481,7 +486,8 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTestWithBackgroundLogEnabled,
   // Switching to first tab logs a forgrounded event for test_urls_[0]
   // and a backgrounded event for test_urls_[1].
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   {
     SCOPED_TRACE("");
     ukm_entry_checker_->ExpectNewEntry(kTabMetricsEntryName, test_urls_[1],
@@ -572,7 +578,8 @@ IN_PROC_BROWSER_TEST_F(
   test_clock.Advance(base::Minutes(1));
   // Activate tab@0.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   test_clock.Advance(base::Minutes(1));
 
   // TabManager_TabMetrics should not have been logged yet.
@@ -609,7 +616,8 @@ IN_PROC_BROWSER_TEST_F(
   // Reactivate tab@1 should log a ForegroundedOrClosed event with LabelId as
   // label_id_1.
   browser()->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   test_clock.Advance(base::Minutes(1));
   {
     SCOPED_TRACE("");
@@ -696,7 +704,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Switching to first tab logs a forgrounded event for test_urls_[0].
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   {
     SCOPED_TRACE("");
     UkmMetricMap expected_metrics = {
@@ -832,7 +841,8 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherPrerenderingTest,
 
   // Switching to another tab logs the previously active tab.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   {
     SCOPED_TRACE("");
     ukm_entry_checker_->ExpectNewEntry(kTabMetricsEntryName, test_urls_[1],
@@ -851,7 +861,8 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherPrerenderingTest,
 
   // Switching to another tab logs the previously active tab.
   browser()->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   {
     SCOPED_TRACE("");
     UkmMetricMap expected_metrics = kBasicMetricValues;

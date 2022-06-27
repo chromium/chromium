@@ -291,7 +291,8 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
   EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(2)));
 
   // Kill the third tab after making second tab active.
-  tsm()->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tsm()->ActivateTabAt(1, TabStripUserGestureDetails(
+                              TabStripUserGestureDetails::GestureType::kOther));
 
   // Advance time so everything is urgent discardable again.
   test_clock_.Advance(kBackgroundUrgentProtectionTime);
@@ -443,7 +444,8 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   EXPECT_TRUE(tab_manager->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
 
   // Activate the 2nd tab.
-  tsm->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  tsm->ActivateTabAt(1, TabStripUserGestureDetails(
+                            TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(1, tsm->active_index());
 
   // Advance the clock for less than the protection time.

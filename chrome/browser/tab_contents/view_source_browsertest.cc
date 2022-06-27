@@ -215,7 +215,8 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
 
   // Switch back to the first tab and navigate it cross-process.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIVersionURL)));
   EXPECT_TRUE(chrome::CanViewSource(browser()));

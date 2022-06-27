@@ -5585,7 +5585,8 @@ IN_PROC_BROWSER_TEST_F(DownloadShelfTest, PerWindowShelf) {
 
   // Go to the first tab.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
   // The shelf should now be closed.

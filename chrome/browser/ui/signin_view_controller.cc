@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin_modal_dialog_impl.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -372,8 +373,10 @@ void SigninViewController::ShowDiceSigninTab(
           signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS) {
         // Extensions do not activate the tab to prevent misbehaving
         // extensions to keep focusing the signin tab.
-        tab_strip->ActivateTabAt(dice_tab_index,
-                                 {TabStripModel::GestureType::kOther});
+        tab_strip->ActivateTabAt(
+            dice_tab_index,
+            TabStripUserGestureDetails(
+                TabStripUserGestureDetails::GestureType::kOther));
       }
       // Do not create a new signin tab, because there is already one.
       return;

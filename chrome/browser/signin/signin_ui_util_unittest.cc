@@ -422,7 +422,9 @@ TEST_F(SigninUiUtilTest, MergeDiceSigninTab) {
   ASSERT_EQ(0, tab_strip->active_index());
   GURL other_url = GURL("http://example.com");
   AddTab(browser(), other_url);
-  tab_strip->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  tab_strip->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(other_url, tab_strip->GetActiveWebContents()->GetVisibleURL());
   ASSERT_EQ(0, tab_strip->active_index());
 

@@ -565,7 +565,8 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_IsolateExtensions) {
   // be three processes estimated by IsolateExtensions: one for extension3, one
   // for extension1's background page, and one for the web iframe in tab2.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension3->GetResourceURL("blank_iframe.html")));
   details = new TestMemoryDetails();

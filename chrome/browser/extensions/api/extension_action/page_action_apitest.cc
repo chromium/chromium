@@ -222,7 +222,8 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, TestTriggerPageAction) {
       browser(), embedded_test_server()->GetURL("/simple.html")));
   chrome::NewTab(browser());
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
 
   // Give the extension time to show the page action on the tab.
   WaitForPageActionVisibilityChangeTo(1);

@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
@@ -270,13 +271,14 @@ void BrowserTabStripController::SelectTab(int model_index,
       content::PeakGpuMemoryTracker::Create(
           content::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
 
-  TabStripModel::UserGestureDetails gesture_detail(
-      TabStripModel::GestureType::kOther, event.time_stamp());
-  TabStripModel::GestureType type = TabStripModel::GestureType::kOther;
+  TabStripUserGestureDetails gesture_detail(
+      TabStripUserGestureDetails::GestureType::kOther, event.time_stamp());
+  TabStripUserGestureDetails::GestureType type =
+      TabStripUserGestureDetails::GestureType::kOther;
   if (event.type() == ui::ET_MOUSE_PRESSED)
-    type = TabStripModel::GestureType::kMouse;
+    type = TabStripUserGestureDetails::GestureType::kMouse;
   else if (event.type() == ui::ET_GESTURE_TAP_DOWN)
-    type = TabStripModel::GestureType::kTouch;
+    type = TabStripUserGestureDetails::GestureType::kTouch;
   gesture_detail.type = type;
   model_->ActivateTabAt(model_index, gesture_detail);
 
@@ -390,14 +392,18 @@ bool BrowserTabStripController::ToggleTabGroupCollapsedState(
         base::RecordAction(base::UserMetricsAction("TabGroups_CannotCollapse"));
         return false;
       }
-      model_->ActivateTabAt(next_active.value(),
-                            {TabStripModel::GestureType::kOther});
+      model_->ActivateTabAt(
+          next_active.value(),
+          TabStripUserGestureDetails(
+              TabStripUserGestureDetails::GestureType::kOther));
     } else {
       // If the active tab is not in the group that is toggling to collapse,
       // reactive the active tab to deselect any other potentially selected
       // tabs.
-      model_->ActivateTabAt(GetActiveIndex(),
-                            {TabStripModel::GestureType::kOther});
+      model_->ActivateTabAt(
+          GetActiveIndex(),
+          TabStripUserGestureDetails(
+              TabStripUserGestureDetails::GestureType::kOther));
     }
     if (origin != ToggleTabGroupCollapsedStateOrigin::kImplicitAction) {
       base::RecordAction(

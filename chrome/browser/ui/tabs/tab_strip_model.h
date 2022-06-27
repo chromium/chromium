@@ -24,6 +24,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_switch_event_latency_recorder.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -302,35 +303,14 @@ class TabStripModel : public TabGroupController {
   // Detaches the WebContents at the specified index and immediately deletes it.
   void DetachAndDeleteWebContentsAt(int index);
 
-  // User gesture type that triggers ActivateTabAt. kNone indicates that it was
-  // not triggered by a user gesture, but by a by-product of some other action.
-  enum class GestureType {
-    kMouse,
-    kTouch,
-    kWheel,
-    kKeyboard,
-    kOther,
-    kTabMenu,
-    kNone
-  };
-
-  // Encapsulates user gesture information for tab activation
-  struct UserGestureDetails {
-    UserGestureDetails(GestureType type,
-                       base::TimeTicks time_stamp = base::TimeTicks::Now())
-        : type(type), time_stamp(time_stamp) {}
-
-    GestureType type;
-    base::TimeTicks time_stamp;
-  };
-
   // Makes the tab at the specified index the active tab. |gesture_detail.type|
   // contains the gesture type that triggers the tab activation.
   // |gesture_detail.time_stamp| contains the timestamp of the user gesture, if
   // any.
-  void ActivateTabAt(int index,
-                     UserGestureDetails gesture_detail =
-                         UserGestureDetails(GestureType::kNone));
+  void ActivateTabAt(
+      int index,
+      TabStripUserGestureDetails gesture_detail = TabStripUserGestureDetails(
+          TabStripUserGestureDetails::GestureType::kNone));
 
   // Report histogram metrics for the number of tabs 'scrubbed' within a given
   // interval of time. Scrubbing is considered to be a tab activated for <= 1.5
@@ -493,13 +473,16 @@ class TabStripModel : public TabGroupController {
 
   // Select adjacent tabs
   void SelectNextTab(
-      UserGestureDetails detail = UserGestureDetails(GestureType::kOther));
+      TabStripUserGestureDetails detail = TabStripUserGestureDetails(
+          TabStripUserGestureDetails::GestureType::kOther));
   void SelectPreviousTab(
-      UserGestureDetails detail = UserGestureDetails(GestureType::kOther));
+      TabStripUserGestureDetails detail = TabStripUserGestureDetails(
+          TabStripUserGestureDetails::GestureType::kOther));
 
   // Selects the last tab in the tab strip.
   void SelectLastTab(
-      UserGestureDetails detail = UserGestureDetails(GestureType::kOther));
+      TabStripUserGestureDetails detail = TabStripUserGestureDetails(
+          TabStripUserGestureDetails::GestureType::kOther));
 
   // Moves the active in the specified direction. Respects group boundaries.
   void MoveTabNext();
@@ -800,7 +783,7 @@ class TabStripModel : public TabGroupController {
 
   // Selects either the next tab (kNext), or the previous tab (kPrevious).
   void SelectRelativeTab(TabRelativeDirection direction,
-                         UserGestureDetails detail);
+                         TabStripUserGestureDetails detail);
 
   // Moves the active tabs into the next slot (kNext), or the
   // previous slot (kPrevious). Respects group boundaries and creates

@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/share_target_utils.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
@@ -345,7 +345,9 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
       /*is_renderer_initiated=*/false));
 
   content::WebContents* web_contents = tab_strip->GetActiveWebContents();
-  tab_strip->ActivateTabAt(tab_index, {TabStripModel::GestureType::kOther});
+  tab_strip->ActivateTabAt(
+      tab_index, TabStripUserGestureDetails(
+                     TabStripUserGestureDetails::GestureType::kOther));
   SetWebContentsActingAsApp(web_contents, params_.app_id);
   return {.web_contents = web_contents, .did_navigate = true};
 }

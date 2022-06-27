@@ -646,7 +646,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
   int target_index =
       browser()->tab_strip_model()->GetIndexOfWebContents(target_tab);
   browser()->tab_strip_model()->ActivateTabAt(
-      target_index, {TabStripModel::GestureType::kOther});
+      target_index, TabStripUserGestureDetails(
+                        TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(target_tab, browser()->tab_strip_model()->GetActiveWebContents());
 
   // We navigate to a FileURL so that the origin will change, which should
@@ -688,7 +689,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
   int target_index =
       browser()->tab_strip_model()->GetIndexOfWebContents(target_tab);
   browser()->tab_strip_model()->ActivateTabAt(
-      target_index, {TabStripModel::GestureType::kOther});
+      target_index, TabStripUserGestureDetails(
+                        TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(target_tab, browser()->tab_strip_model()->GetActiveWebContents());
 
   // We navigate using the test server so that the origin doesn't change.
