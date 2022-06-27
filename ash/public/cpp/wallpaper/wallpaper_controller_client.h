@@ -34,9 +34,10 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
       bool show_wallpaper,
       base::OnceCallback<void(bool success)> callback) = 0;
 
-  // Retrieves the current collection id from the Wallpaper Picker Chrome App
-  // for migration and returns it via |result_callback|. The string in
-  // |result_callback| will be empty if the fetch failed.
+  // Formerly retrieved the current collection id from the Wallpaper Picker
+  // Chrome App. Now always replies with empty string.
+  // TODO(b/193788853) delete this function now that it always replies with
+  // empty string.
   virtual void MigrateCollectionIdFromChromeApp(
       const AccountId& account_id,
       base::OnceCallback<void(const std::string&)> result_callback) = 0;

@@ -30,10 +30,6 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace value_store {
-class ValueStore;
-}
-
 namespace {
 class WallpaperControllerClientImplTest;
 }
@@ -159,9 +155,6 @@ class WallpaperControllerClientImpl
   bool IsActiveUserWallpaperControlledByPolicy();
   ash::WallpaperInfo GetActiveUserWallpaperInfo();
   bool ShouldShowWallpaperSetting();
-  void MigrateCollectionIdFromValueStoreForTesting(
-      const AccountId& account_id,
-      value_store::ValueStore* storage);
   // Record Ash.Wallpaper.Source metric when a new wallpaper is set,
   // either by built-in Wallpaper app or a third party extension/app.
   void RecordWallpaperSourceUMA(const ash::WallpaperType type);
@@ -182,14 +175,6 @@ class WallpaperControllerClientImpl
   bool ShouldShowUserNamesOnLogin() const;
 
   base::FilePath GetDeviceWallpaperImageFilePath();
-
-  // Used as callback to |MigrateCollectionIdFromChromeApp|. Called on backend
-  // task runner. Extracts the daily refresh collection id and calls
-  // |SetDailyRefreshCollectionId| on main task runner.
-  void OnGetWallpaperChromeAppValueStore(
-      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-      base::OnceCallback<void(const std::string&)> result_callback,
-      value_store::ValueStore* value_store);
 
   // Passes |collection_id| to wallpaper controller on main task runner.
   void SetDailyRefreshCollectionId(const AccountId& account_id,

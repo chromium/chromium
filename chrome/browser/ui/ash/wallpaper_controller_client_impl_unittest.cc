@@ -19,8 +19,6 @@
 
 namespace {
 
-constexpr char kChromeAppDailyRefreshInfoKey[] = "daily-refresh-info-key";
-
 class WallpaperControllerClientImplTest : public testing::Test {
  public:
   WallpaperControllerClientImplTest()
@@ -69,89 +67,6 @@ TEST_F(WallpaperControllerClientImplTest, Construction) {
 
   // Object was set as client.
   EXPECT_TRUE(controller()->was_client_set());
-}
-
-TEST_F(WallpaperControllerClientImplTest, MigrateCollectionIdFromValueStore) {
-  value_store::TestingValueStore value_store;
-
-  // There is also a resume token and an enabled state, but that's not what is
-  // being tested here, so only populate collectionId.
-  std::string json("{\"collectionId\" : \"fun_collection\"}");
-  value_store.Set(0, kChromeAppDailyRefreshInfoKey, base::Value(json));
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId("fake@test.com", "444444");
-  client()->MigrateCollectionIdFromValueStoreForTesting(account_id,
-                                                        &value_store);
-
-  EXPECT_EQ("fun_collection", controller()->collection_id());
-}
-
-TEST_F(WallpaperControllerClientImplTest,
-       MigrateCollectionIdFromValueStoreNoCollectionId) {
-  value_store::TestingValueStore value_store;
-
-  // There is also a resume token and an enabled state, but that's not what is
-  // being tested here, so only populate collectionId.
-  std::string json("{\"collectionId\" : null}");
-  value_store.Set(0, kChromeAppDailyRefreshInfoKey, base::Value(json));
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId("fake@test.com", "444444");
-  client()->MigrateCollectionIdFromValueStoreForTesting(account_id,
-                                                        &value_store);
-
-  EXPECT_EQ(std::string(), controller()->collection_id());
-}
-
-TEST_F(WallpaperControllerClientImplTest,
-       MigrateCollectionIdFromValueStoreNoStore) {
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId("fake@test.com", "444444");
-  client()->MigrateCollectionIdFromValueStoreForTesting(account_id, nullptr);
-
-  EXPECT_EQ(std::string(), controller()->collection_id());
-}
-
-TEST_F(WallpaperControllerClientImplTest,
-       MigrateCollectionIdFromValueStoreNotOKStatusCode) {
-  using StatusCode = value_store::ValueStore::StatusCode;
-
-  value_store::TestingValueStore value_store;
-  value_store.set_status_code(StatusCode::OTHER_ERROR);
-
-  // There is also a resume token and an enabled state, but that's not what is
-  // being tested here, so only populate collectionId.
-  std::string json("{\"collectionId\" : \"fun_collection\"}");
-  value_store.Set(0, kChromeAppDailyRefreshInfoKey, base::Value(json));
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId("fake@test.com", "444444");
-  client()->MigrateCollectionIdFromValueStoreForTesting(account_id,
-                                                        &value_store);
-
-  EXPECT_EQ(std::string(), controller()->collection_id());
-}
-
-TEST_F(WallpaperControllerClientImplTest,
-       MigrateCollectionIdFromValueStoreNoPref) {
-  value_store::TestingValueStore value_store;
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId("fake@test.com", "444444");
-  client()->MigrateCollectionIdFromValueStoreForTesting(account_id,
-                                                        &value_store);
-
-  EXPECT_EQ(std::string(), controller()->collection_id());
-}
-
-TEST_F(WallpaperControllerClientImplTest,
-       MigrateCollectionIdFromValueStoreMalformedPref) {
-  value_store::TestingValueStore value_store;
-  std::string json("{");
-  value_store.Set(0, kChromeAppDailyRefreshInfoKey, base::Value(json));
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId("fake@test.com", "444444");
-  client()->MigrateCollectionIdFromValueStoreForTesting(account_id,
-                                                        &value_store);
-
-  EXPECT_EQ(std::string(), controller()->collection_id());
 }
 
 TEST_F(WallpaperControllerClientImplTest, IsWallpaperSyncEnabledNoProfile) {
