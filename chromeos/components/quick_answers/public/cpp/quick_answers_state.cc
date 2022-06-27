@@ -91,8 +91,12 @@ void QuickAnswersState::UpdateEligibility() {
   if (resolved_application_locale_.empty())
     return;
 
-  is_eligible_ = IsQuickAnswersAllowedForLocale(
+  bool is_eligible = IsQuickAnswersAllowedForLocale(
       resolved_application_locale_, icu::Locale::getDefault().getName());
+
+  if (is_eligible_ == is_eligible)
+    return;
+  is_eligible_ = is_eligible;
 
   for (auto& observer : observers_) {
     observer.OnEligibilityChanged(is_eligible_);

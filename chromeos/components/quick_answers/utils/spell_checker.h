@@ -8,17 +8,14 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
-#include "chromeos/components/quick_answers/public/mojom/spell_check.mojom.h"
+#include "chromeos/components/quick_answers/utils/spell_check_language.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace network {
 class SharedURLLoaderFactory;
-class SimpleURLLoader;
 }  // namespace network
 
 namespace quick_answers {
@@ -27,6 +24,8 @@ namespace quick_answers {
 class SpellChecker : public QuickAnswersStateObserver {
  public:
   using CheckSpellingCallback = base::OnceCallback<void(bool)>;
+  using SpellCheckLanguageIterator =
+      std::vector<std::unique_ptr<SpellCheckLanguage>>::iterator;
 
   explicit SpellChecker(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -44,44 +43,41 @@ class SpellChecker : public QuickAnswersStateObserver {
   // QuickAnswersStateObserver:
   void OnSettingsEnabled(bool enabled) override;
   void OnApplicationLocaleReady(const std::string& locale) override;
+  void OnPreferredLanguagesChanged(
+      const std::string& preferred_languages) override;
+  void OnEligibilityChanged(bool eligible) override;
 
   base::WeakPtr<SpellChecker> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
-  void InitializeDictionary();
-  void InitializeSpellCheckService();
+  // Called when the Quick answers states are updated.
+  void OnStateUpdated();
 
-  void OnSimpleURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  // Collect spell check results from the language indicated by |iterator|. Run
+  // |callback| with true if the word is found in the current language,
+  // otherwise continue to check the next language.
+  void CollectResults(const std::string& word,
+                      CheckSpellingCallback callback,
+                      SpellCheckLanguageIterator iterator,
+                      int languages_list_version,
+                      bool is_correct);
 
-  void OnDictionaryCreated(
-      mojo::PendingRemote<mojom::SpellCheckDictionary> dictionary);
-
-  void MaybeRetryInitialize();
-
-  // The reply points for PostTaskAndReplyWithResult.
-  void OnPathExistsComplete(bool path_exists);
-  void OnSaveDictionaryDataComplete(bool dictionary_saved);
-  void OnOpenDictionaryFileComplete(base::File file);
-
-  // Task runner where the file operations takes place.
-  scoped_refptr<base::SequencedTaskRunner> const task_runner_;
-
-  // Whether the Quick answers feature is enabled in settings.
-  bool feature_enabled_ = false;
-
-  // Whether the spell check dictionary has been successfully initialized.
-  bool dictionary_initialized_ = false;
-
-  // Number of retries used for initializing the spell check service.
-  int num_retries_ = 0;
-
-  base::FilePath dictionary_file_path_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<network::SimpleURLLoader> loader_;
-  mojo::Remote<mojom::SpellCheckService> service_;
-  mojo::Remote<mojom::SpellCheckDictionary> dictionary_;
+
+  // States of the Quick answers feature.
+  absl::optional<bool> feature_eligible_;
+  absl::optional<bool> feature_enabled_;
+  absl::optional<std::string> application_locale_;
+  absl::optional<std::string> preferred_languages_;
+
+  // List of spell check languages.
+  std::vector<std::unique_ptr<SpellCheckLanguage>> spellcheck_languages_;
+
+  // Version of the languages list to invalidate pending calls if the languages
+  // has ben updated.
+  int languages_list_version_ = 0;
 
   base::ScopedObservation<QuickAnswersState, QuickAnswersStateObserver>
       quick_answers_state_observation_{this};
