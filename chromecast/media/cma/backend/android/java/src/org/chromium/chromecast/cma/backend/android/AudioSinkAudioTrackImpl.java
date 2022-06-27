@@ -100,11 +100,7 @@ class AudioSinkAudioTrackImpl {
     private static final long TIMESTAMP_UPDATE_PERIOD = 250 * MSEC_IN_NSEC;
     private static final long UNDERRUN_LOG_THROTTLE_PERIOD = SEC_IN_NSEC;
 
-    // Internally Android fetches data from AudioTrack buffer in periods of 20ms.
-    private static final long ANDROID_AUDIO_PERIOD_SIZE_US = 20000;
-
-    // Threshold at which we start logging low buffer warnings.
-    private static final long VERY_LOW_BUFFER_LEVEL = ANDROID_AUDIO_PERIOD_SIZE_US;
+    private static final int START_THRESHOLD_MS = 50;
 
     private static long sInstanceCounter;
 
@@ -182,8 +178,6 @@ class AudioSinkAudioTrackImpl {
     private boolean mTriggerTimestampUpdateNow; // Set to true to trigger an early update.
     private long mTimestampStabilityCounter; // Counts consecutive stable timestamps at startup.
     private long mTimestampStabilityStartTimeNsec; // Time when we started being stable.
-
-    private long mLastRenderingDelayUsecs;
 
     private int mLastUnderrunCount;
 
@@ -272,14 +266,13 @@ class AudioSinkAudioTrackImpl {
             int bytesPerBuffer, int sessionId, boolean useHwAvSync) {
         mNativeAudioSinkAudioTrackImpl = nativeAudioSinkAudioTrackImpl;
         mLastTimestampUpdateNsec = NO_TIMESTAMP;
-        mLastRenderingDelayUsecs = NO_TIMESTAMP;
         mTriggerTimestampUpdateNow = false;
         mTimestampStabilityCounter = 0;
         mReferenceTimestampState = ReferenceTimestampState.STARTING_UP;
         mOriginalFramePosOfLastTimestamp = NO_FRAME_POSITION;
         mLastUnderrunCount = 0;
         mTotalFramesWritten = 0;
-        if(isValidSessionId(sessionId) && !useHwAvSync) {
+        if (isValidSessionId(sessionId) && !useHwAvSync) {
             mPendingFramesWithoutTimestamp = new LinkedList<>();
         }
         mTotalPlayedFramesWithoutTimestamp = 0;
@@ -357,6 +350,15 @@ class AudioSinkAudioTrackImpl {
                                             .build());
             if (isValidSessionId(sessionId)) builder.setSessionId(sessionId);
             mAudioTrack = builder.build();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isValidSessionId(sessionId)) {
+                // The playback will not be started until Android AudioTrack has more data than
+                // the start threshold. Reduce the start threshold to 50ms in order to start
+                // playback as soon as possible after starting or resuming. Sometimes other
+                // native applications like Youtube will not push audio data until we play all
+                // pushed data before pausing. See b/237011415.
+                int startThresholdInFrames = START_THRESHOLD_MS * mSampleRateInHz / 1000;
+                mAudioTrack.setStartThresholdInFrames(startThresholdInFrames);
+            }
         } while (mAudioTrack == null && retries++ < MAX_RETRIES_FOR_AUDIO_TRACKS);
 
         // Allocated shared buffers.
@@ -365,6 +367,9 @@ class AudioSinkAudioTrackImpl {
 
         mRenderingDelayBuffer = ByteBuffer.allocateDirect(2 * 8); // 2 long
         mRenderingDelayBuffer.order(ByteOrder.nativeOrder());
+        // Initialize with a invalid rendering delay.
+        mRenderingDelayBuffer.putLong(0, 0);
+        mRenderingDelayBuffer.putLong(8, NO_TIMESTAMP);
 
         mAudioTrackTimestampBuffer = ByteBuffer.allocateDirect(2 * 8); // 2 long
         mAudioTrackTimestampBuffer.order(ByteOrder.nativeOrder());
@@ -484,9 +489,6 @@ class AudioSinkAudioTrackImpl {
                             + " sizeInBytes=" + sizeInBytes + " state=" + getPlayStateString()
                             + " underruns=" + mLastUnderrunCount);
         }
-
-        // Check buffer level before feeding in new data.
-        if (haveValidRefPoint()) checkBufferLevel();
 
         // Setup the PCM ByteBuffer correctly.
         mPcmBuffer.limit(sizeInBytes);
@@ -612,19 +614,6 @@ class AudioSinkAudioTrackImpl {
         return System.nanoTime() - startTimeNsec;
     }
 
-    private void checkBufferLevel() {
-        long bufferLevel = mTotalFramesWritten - mAudioTrack.getPlaybackHeadPosition();
-        long bufferLevelUsec = convertNsecsToUsecs(convertFramesToNanoTime(bufferLevel));
-        if (bufferLevelUsec <= VERY_LOW_BUFFER_LEVEL) {
-            long lastRenderingDelayUsec =
-                    (mLastRenderingDelayUsecs == NO_TIMESTAMP) ? -1 : mLastRenderingDelayUsecs;
-            boolean hitUnderrun = (getUnderrunCount() != mLastUnderrunCount);
-            mBufferLevelWarningLog.log(mTag,
-                    "Low buffer level=" + bufferLevelUsec + "us "
-                            + " RD=" + lastRenderingDelayUsec + (hitUnderrun ? "us *" : "us"));
-        }
-    }
-
     private void updateSampleRateMeasure(long framesWritten) {
         if (mSRWindowFramesWritten == 0) {
             // Start new window.
@@ -645,29 +634,51 @@ class AudioSinkAudioTrackImpl {
     private void updateRenderingDelay() {
         checkForUnderruns();
         updateRefPointTimestamp();
+        long playoutTimeUsecs;
+        long delayUsecs;
+        long nowUsecs = convertNsecsToUsecs(System.nanoTime());
         if (!haveValidRefPoint()) {
+            // Timestamp is resynced because of resuming, reuse the last valid stable rendering
+            // delay before pausing.
+            if (mRenderingDelayBuffer.getLong(8) != NO_TIMESTAMP) {
+                mRenderingDelayBuffer.putLong(8, nowUsecs);
+                return;
+            }
+            if (mUseHwAvSync) {
+                // Hw av sync stream uses the timestamp in the audio buffer instead
+                // of the reported rendering delay to do synchronization. Therefore
+                // it is safe to report zero rendering delay when it is not
+                // available.
+                mRenderingDelayBuffer.putLong(0, 0);
+                mRenderingDelayBuffer.putLong(8, nowUsecs);
+                return;
+            }
+            AudioTimestamp timestamp = new AudioTimestamp();
+            if (mPendingFramesWithoutTimestamp != null && mAudioTrack.getTimestamp(timestamp)) {
+                // mPendingFramesWithoutTimestamp is not null indicates we are using the playback
+                // position instead of the rendering delay to do av sync. Therefore, it is not
+                // necessary to wait for a stable timestamp reference point. Immediately return a
+                // valid rendering delay when it is available could reduce the silence buffer
+                // pushed by cma backend.
+                playoutTimeUsecs = convertNsecsToUsecs(timestamp.nanoTime
+                        + convertFramesToNanoTime(mTotalFramesWritten - timestamp.framePosition));
+                delayUsecs = playoutTimeUsecs - nowUsecs;
+                mRenderingDelayBuffer.putLong(0, delayUsecs);
+                mRenderingDelayBuffer.putLong(8, nowUsecs);
+                return;
+            }
             // No timestamp available yet, just put dummy values and return.
             mRenderingDelayBuffer.putLong(0, 0);
-            // Hw av sync stream uses the timestamp in the audio buffer instead
-            // of the reported rendering delay to do synchronization. Therefore
-            // it is safe to report zero rendering delay when it is not
-            // available.
-            mRenderingDelayBuffer.putLong(
-                    8, mUseHwAvSync ? convertNsecsToUsecs(System.nanoTime()) : NO_TIMESTAMP);
-            mLastRenderingDelayUsecs = NO_TIMESTAMP;
+            mRenderingDelayBuffer.putLong(8, NO_TIMESTAMP);
             return;
         }
 
         // Interpolate to get proper Rendering delay.
-        long playoutTimeNsecs = getInterpolatedTStampNsecs(mTotalFramesWritten);
-        long playoutTimeUsecs = convertNsecsToUsecs(playoutTimeNsecs);
-        long nowUsecs = convertNsecsToUsecs(System.nanoTime());
-        long delayUsecs = playoutTimeUsecs - nowUsecs;
-
+        playoutTimeUsecs = convertNsecsToUsecs(getInterpolatedTStampNsecs(mTotalFramesWritten));
+        delayUsecs = playoutTimeUsecs - nowUsecs;
         // Populate RenderingDelay return value for native land.
         mRenderingDelayBuffer.putLong(0, delayUsecs);
         mRenderingDelayBuffer.putLong(8, nowUsecs);
-        mLastRenderingDelayUsecs = delayUsecs;
 
         if (DEBUG_LEVEL >= 3) {
             Log.i(mTag, "RenderingDelay: delay=" + delayUsecs + " play=" + nowUsecs);
@@ -713,6 +724,8 @@ class AudioSinkAudioTrackImpl {
                             + ")! Resetting rendering delay logic.");
             // Invalidate timestamp (resets RenderingDelay).
             mLastUnderrunCount = underruns;
+            mRenderingDelayBuffer.putLong(0, 0);
+            mRenderingDelayBuffer.putLong(8, NO_TIMESTAMP);
             resyncTimestamp(ReferenceTimestampState.RESYNCING_AFTER_UNDERRUN);
         }
     }
