@@ -151,10 +151,10 @@ TEST_F(CryptoTokenPrivateApiTest, IsAppIdHashInEnterpriseContext) {
   ASSERT_TRUE(GetAppIdHashInEnterpriseContext(rp_id_hash, &result));
   EXPECT_FALSE(result);
 
-  base::Value::ListStorage permitted_list;
-  permitted_list.emplace_back(example_com);
-  profile()->GetPrefs()->Set(prefs::kSecurityKeyPermitAttestation,
-                             base::Value(permitted_list));
+  base::Value::List permitted_list;
+  permitted_list.Append(example_com);
+  profile()->GetPrefs()->SetList(prefs::kSecurityKeyPermitAttestation,
+                                 std::move(permitted_list));
 
   ASSERT_TRUE(GetAppIdHashInEnterpriseContext(example_com_hash, &result));
   EXPECT_TRUE(result);
@@ -350,10 +350,10 @@ TEST_F(CryptoTokenPermissionTest, AttestationPrompt) {
 
 TEST_F(CryptoTokenPermissionTest, PolicyOverridesAttestationPrompt) {
   const std::string example_com("https://example.com");
-  base::Value::ListStorage permitted_list;
-  permitted_list.emplace_back(example_com);
-  profile()->GetPrefs()->Set(prefs::kSecurityKeyPermitAttestation,
-                             base::Value(permitted_list));
+  base::Value::List permitted_list;
+  permitted_list.Append(example_com);
+  profile()->GetPrefs()->SetList(prefs::kSecurityKeyPermitAttestation,
+                                 std::move(permitted_list));
 
   // If an appId is configured by enterprise policy then attestation requests
   // should be permitted without showing a prompt.

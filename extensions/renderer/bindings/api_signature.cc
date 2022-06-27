@@ -636,7 +636,7 @@ APISignature::JSONParseResult APISignature::ConvertArgumentsIgnoringSchema(
     }
   }
 
-  base::Value::ListStorage json;
+  base::Value::List json;
   json.reserve(size);
 
   std::unique_ptr<content::V8ValueConverter> converter =
@@ -656,10 +656,10 @@ APISignature::JSONParseResult APISignature::ConvertArgumentsIgnoringSchema(
       // null). Duplicate that behavior here.
       converted = std::make_unique<base::Value>();
     }
-    json.push_back(base::Value::FromUniquePtrValue(std::move(converted)));
+    json.Append(base::Value::FromUniquePtrValue(std::move(converted)));
   }
 
-  result.arguments_list = std::make_unique<base::ListValue>(std::move(json));
+  result.arguments_list = std::make_unique<base::Value>(std::move(json));
   return result;
 }
 

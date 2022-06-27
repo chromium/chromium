@@ -492,23 +492,22 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
 
   if (binding::IsContextValid(v8_context) &&
       APIActivityLogger::IsLoggingEnabled()) {
-    std::vector<base::Value> list;
+    base::Value::List list;
     list.reserve(2u);
     if (info.source_endpoint.extension_id)
-      list.emplace_back(*info.source_endpoint.extension_id);
+      list.Append(*info.source_endpoint.extension_id);
     else if (info.source_endpoint.native_app_name)
-      list.emplace_back(*info.source_endpoint.native_app_name);
+      list.Append(*info.source_endpoint.native_app_name);
     else
-      list.emplace_back();
+      list.Append(base::Value());
 
     if (!info.source_url.is_empty())
-      list.emplace_back(info.source_url.spec());
+      list.Append(info.source_url.spec());
     else
-      list.emplace_back();
+      list.Append(base::Value());
 
-    APIActivityLogger::LogEvent(
-        bindings_system_->GetIPCMessageSender(), script_context, event_name,
-        std::make_unique<base::ListValue>(std::move(list)));
+    APIActivityLogger::LogEvent(bindings_system_->GetIPCMessageSender(),
+                                script_context, event_name, std::move(list));
   }
 }
 

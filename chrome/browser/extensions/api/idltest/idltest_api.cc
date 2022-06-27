@@ -17,10 +17,10 @@ namespace {
 
 base::Value CopyBinaryValueToIntegerList(
     const base::Value::BlobStorage& input) {
-  base::Value::ListStorage list;
+  base::Value::List list;
   list.reserve(input.size());
   for (int c : input)
-    list.emplace_back(c);
+    list.Append(c);
   return base::Value(std::move(list));
 }
 
