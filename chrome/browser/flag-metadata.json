@@ -971,7 +971,7 @@
   {
     "name": "contextual-search-force-caption",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS", "contextual-search-eng@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 110
   },
   {
     "name": "contextual-search-translations",
@@ -5303,28 +5303,28 @@
   },
   {
     "name": "related-searches",
-    "owners": [ "donnd", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 104
+    "owners": [ "gangwu", "related-searches-vteam@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "related-searches-alternate-ux",
-    "owners": [ "donnd", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 104
+    "owners": [ "gangwu", "related-searches-vteam@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "related-searches-in-bar",
-    "owners": [ "donnd", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 104
+    "owners": [ "gangwu", "related-searches-vteam@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "related-searches-simplified-ux",
-    "owners": [ "donnd", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 104
+    "owners": [ "gangwu", "related-searches-vteam@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "related-searches-ui",
-    "owners": [ "donnd", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 104
+    "owners": [ "gangwu", "related-searches-vteam@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "release-notes-notification-all-channels",
