@@ -444,9 +444,15 @@ class KioskAppsButton : public views::MenuButton,
     launch_app_callback_.Run(kiosk_apps_[command_id]);
   }
 
-  void OnMenuWillShow(SimpleMenuModel* source) override { on_show_menu_.Run(); }
+  void OnMenuWillShow(SimpleMenuModel* source) override {
+    is_menu_opened_ = true;
+    on_show_menu_.Run();
+  }
 
-  void MenuClosed(SimpleMenuModel* source) override { on_close_menu_.Run(); }
+  void MenuClosed(SimpleMenuModel* source) override {
+    on_close_menu_.Run();
+    is_menu_opened_ = false;
+  }
 
   bool IsCommandIdChecked(int command_id) const override { return false; }
 
@@ -459,6 +465,8 @@ class KioskAppsButton : public views::MenuButton,
             AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 
+  bool IsMenuOpened() { return is_menu_opened_; }
+
  private:
   base::RepeatingCallback<void(const KioskAppMenuEntry&)> launch_app_callback_;
   base::RepeatingClosure on_show_menu_;
@@ -467,6 +475,7 @@ class KioskAppsButton : public views::MenuButton,
   std::vector<KioskAppMenuEntry> kiosk_apps_;
 
   bool is_launch_enabled_ = true;
+  bool is_menu_opened_ = false;
 };
 
 // Class that temporarily disables Guest login buttin on shelf.
@@ -981,11 +990,14 @@ void LoginShelfView::UpdateUi() {
           shelf->shelf_widget()->GetShelfBackgroundColor());
     }
     if (kiosk_instruction_bubble_) {
-      // Show kiosk instructions if the kiosk app button is visible.
-      if (kiosk_apps_button_->GetVisible())
+      // Show kiosk instructions if the kiosk app button is visible and the menu
+      // is not opened.
+      if (kiosk_apps_button_->GetVisible() &&
+          !kiosk_apps_button_->IsMenuOpened()) {
         kiosk_instruction_bubble_->GetWidget()->Show();
-      else
+      } else {
         kiosk_instruction_bubble_->GetWidget()->Hide();
+      }
     }
   }
 
