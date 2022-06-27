@@ -1146,6 +1146,8 @@ static_library("extensions") {
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
+      "//chromeos/ash/components/dbus/cicerone:cicerone",
+      "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/components/remote_apps/mojom",
       "//chromeos/dbus",

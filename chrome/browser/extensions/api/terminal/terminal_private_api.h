@@ -11,9 +11,11 @@
 
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "components/value_store/value_store.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 
@@ -74,12 +76,11 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
   void OpenVmshellProcess(const std::string& user_id_hash,
                           base::CommandLine cmdline);
 
-  void OnGetVshSession(const std::string& user_id_hash,
-                       base::CommandLine cmdline,
-                       const std::string& terminal_id,
-                       bool success,
-                       const std::string& failure_reason,
-                       int32_t container_shell_pid);
+  void OnGetVshSession(
+      const std::string& user_id_hash,
+      base::CommandLine cmdline,
+      const std::string& terminal_id,
+      absl::optional<vm_tools::cicerone::GetVshSessionResponse>);
 
   void OpenProcess(const std::string& user_id_hash,
                    base::CommandLine cmdline);

@@ -2236,31 +2236,6 @@ void CrostiniManager::RemoveContainerShutdownObserver(
   container_shutdown_observers_.RemoveObserver(observer);
 }
 
-void CrostiniManager::GetVshSession(const guest_os::GuestId& container_id,
-                                    int32_t host_vsh_pid,
-                                    VshSessionCallback callback) {
-  vm_tools::cicerone::GetVshSessionRequest request;
-  request.set_vm_name(container_id.vm_name);
-  request.set_container_name(container_id.container_name);
-  request.set_owner_id(CryptohomeIdForProfile(profile_));
-  request.set_host_vsh_pid(host_vsh_pid);
-
-  GetCiceroneClient()->GetVshSession(
-      request, base::BindOnce(
-                   [](VshSessionCallback callback,
-                      absl::optional<vm_tools::cicerone::GetVshSessionResponse>
-                          response) {
-                     if (!response) {
-                       std::move(callback).Run(false, "Empty response", 0);
-                     } else {
-                       std::move(callback).Run(response->success(),
-                                               response->failure_reason(),
-                                               response->container_shell_pid());
-                     }
-                   },
-                   std::move(callback)));
-}
-
 CrostiniManager::RestartId CrostiniManager::RestartCrostini(
     guest_os::GuestId container_id,
     CrostiniResultCallback callback,

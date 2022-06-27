@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/terminal_private.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/process_proxy/process_proxy_registry.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -378,28 +379,31 @@ void TerminalPrivateOpenTerminalProcessFunction::OpenVmshellProcess(
       cwd.substr(sizeof(kCwdTerminalIdPrefix) - 1));
 
   // Lookup container shell pid from cicierone to use for cwd.
-  crostini::CrostiniManager::GetForProfile(
-      Profile::FromBrowserContext(browser_context()))
-      ->GetVshSession(
-          *container_id_, host_pid,
-          base::BindOnce(
-              &TerminalPrivateOpenTerminalProcessFunction::OnGetVshSession,
-              this, user_id_hash, std::move(cmdline), /*terminal_id=*/cwd));
+  vm_tools::cicerone::GetVshSessionRequest request;
+  request.set_vm_name(container_id_->vm_name);
+  request.set_container_name(container_id_->container_name);
+  request.set_owner_id(crostini::CryptohomeIdForProfile(
+      Profile::FromBrowserContext(browser_context())));
+  request.set_host_vsh_pid(host_pid);
+  ash::CiceroneClient::Get()->GetVshSession(
+      request,
+      base::BindOnce(
+          &TerminalPrivateOpenTerminalProcessFunction::OnGetVshSession, this,
+          user_id_hash, std::move(cmdline), /*terminal_id=*/cwd));
 }
 
 void TerminalPrivateOpenTerminalProcessFunction::OnGetVshSession(
     const std::string& user_id_hash,
     base::CommandLine cmdline,
     const std::string& terminal_id,
-    bool success,
-    const std::string& failure_reason,
-    int32_t container_shell_pid) {
-  if (!success) {
-    LOG(WARNING) << "Failed to get vsh session for " << terminal_id << ". "
-                 << failure_reason;
+    absl::optional<vm_tools::cicerone::GetVshSessionResponse> response) {
+  if (!response || !response->success()) {
+    LOG(WARNING) << "Failed to get vsh session for " << terminal_id << ": "
+                 << (response ? response->failure_reason() : "empty response");
   } else {
-    cmdline.AppendSwitchASCII(kSwitchCurrentWorkingDir,
-                              base::NumberToString(container_shell_pid));
+    cmdline.AppendSwitchASCII(
+        kSwitchCurrentWorkingDir,
+        base::NumberToString(response->container_shell_pid()));
   }
   OpenProcess(user_id_hash, std::move(cmdline));
 }

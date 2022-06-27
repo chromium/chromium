@@ -423,15 +423,6 @@ class CrostiniManager : public KeyedService,
   void GetContainerSshKeys(const guest_os::GuestId& container_id,
                            GetContainerSshKeysCallback callback);
 
-  // Lookup vsh session from pid. Used by terminal to open new tabs in cwd.
-  using VshSessionCallback =
-      base::OnceCallback<void(bool success,
-                              const std::string& failure_reason,
-                              int32_t container_shell_pid)>;
-  void GetVshSession(const guest_os::GuestId& container_id,
-                     int32_t host_vsh_pid,
-                     VshSessionCallback callback);
-
   // Runs all the steps required to restart the given crostini vm and container.
   // The optional |observer| tracks progress. If provided, it must be alive
   // until the restart completes (i.e. when |callback| is called) or the request
