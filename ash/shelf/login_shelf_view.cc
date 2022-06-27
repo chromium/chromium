@@ -985,9 +985,8 @@ void LoginShelfView::UpdateUi() {
     // Create the bubble once the login shelf view is available for anchoring.
     if (!kiosk_instruction_bubble_) {
       Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
-      kiosk_instruction_bubble_ = new KioskAppInstructionBubble(
-          GetViewByID(kApps), shelf->alignment(),
-          shelf->shelf_widget()->GetShelfBackgroundColor());
+      kiosk_instruction_bubble_ =
+          new KioskAppInstructionBubble(GetViewByID(kApps), shelf->alignment());
     }
     if (kiosk_instruction_bubble_) {
       // Show kiosk instructions if the kiosk app button is visible and the menu
