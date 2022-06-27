@@ -20,8 +20,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
-import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -32,9 +30,6 @@ import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Tests for GeolocationHeader and GeolocationTracker.
@@ -55,33 +50,12 @@ public class GeolocationHeaderTest {
     private static final double LOCATION_LAT = 20.3;
     private static final double LOCATION_LONG = 155.8;
     private static final float LOCATION_ACCURACY = 20f;
-    private static final VisibleWifi VISIBLE_WIFI1 =
-            VisibleWifi.create("ssid1", "11:11:11:11:11:11", -1, 10L);
-    private static final VisibleWifi VISIBLE_WIFI3 =
-            VisibleWifi.create("ssid3", "11:11:11:11:11:13", -30, 30L);
-    private static final VisibleCell VISIBLE_CELL1 = VisibleCell.builder(VisibleCell.RadioType.CDMA)
-                                                             .setCellId(10)
-                                                             .setLocationAreaCode(11)
-                                                             .setMobileCountryCode(12)
-                                                             .setMobileNetworkCode(13)
-                                                             .setTimestamp(10L)
-                                                             .build();
-    private static final VisibleCell VISIBLE_CELL2 = VisibleCell.builder(VisibleCell.RadioType.GSM)
-                                                             .setCellId(20)
-                                                             .setLocationAreaCode(21)
-                                                             .setMobileCountryCode(22)
-                                                             .setMobileNetworkCode(23)
-                                                             .setTimestamp(20L)
-                                                             .build();
 
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
         mOmniboxTestUtils = new OmniboxTestUtils(mActivityTestRule.getActivity());
-        VisibleNetworks visibleNetworks = VisibleNetworks.create(VISIBLE_WIFI1, VISIBLE_CELL1,
-                new HashSet<>(Arrays.asList(VISIBLE_WIFI3)),
-                new HashSet<>(Arrays.asList(VISIBLE_CELL2)));
-        VisibleNetworksTracker.setVisibleNetworksForTesting(visibleNetworks);
+        GeolocationHeader.setAppPermissionGrantedForTesting(true);
     }
 
     @Test

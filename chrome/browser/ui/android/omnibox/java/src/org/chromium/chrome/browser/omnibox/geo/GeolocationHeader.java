@@ -276,12 +276,14 @@ public class GeolocationHeader {
 
             if (!hasGeolocationPermission()) {
                 if (recordUma) recordHistogram(UMA_LOCATION_DISABLED_FOR_CHROME_APP);
+                Log.i(TAG, "[crbug/1338183] App permission is missing");
                 return HeaderState.LOCATION_PERMISSION_BLOCKED;
             }
 
             // Only send X-Geo header if the user hasn't disabled geolocation for url.
             if (isLocationDisabledForUrl(profile, uri)) {
                 if (recordUma) recordHistogram(UMA_LOCATION_DISABLED_FOR_GOOGLE_DOMAIN);
+                Log.i(TAG, "[crbug/1338183] Site permission is missing");
                 return HeaderState.LOCATION_PERMISSION_BLOCKED;
             }
 
@@ -305,11 +307,7 @@ public class GeolocationHeader {
     @Nullable
     public static String getGeoHeader(String url, Tab tab) {
         Profile profile = Profile.fromWebContents(tab.getWebContents());
-        Log.i(TAG, "[getGeoHeader] getGeoHeader for url " + url);
-        if (profile == null) {
-            Log.i(TAG, "[getGeoHeader] getGeoHeader failed because of a null profile");
-            return null;
-        }
+        if (profile == null) return null;
 
         return getGeoHeader(url, profile, tab);
     }
@@ -360,7 +358,7 @@ public class GeolocationHeader {
             long locationAge = Long.MAX_VALUE;
             @HeaderState
             int headerState = geoHeaderStateForUrl(profile, url, true);
-            Log.i(TAG, "[getGeoHeader] headerState: " + headerState);
+            Log.i(TAG, "[crbug/1338183] headerState: " + headerState);
             if (headerState == HeaderState.HEADER_ENABLED) {
                 locationToAttach = GeolocationTracker.getLastKnownLocation(
                         ContextUtils.getApplicationContext());
@@ -412,10 +410,6 @@ public class GeolocationHeader {
             String locationProtoEncoding = encodeProtoLocation(locationToAttach);
             String visibleNetworksProtoEncoding =
                     encodeProtoVisibleNetworks(visibleNetworksToAttach);
-
-            Log.i(TAG, "[getGeoHeader] locationProtoEncoding: " + locationProtoEncoding);
-            Log.i(TAG,
-                    "[getGeoHeader] visibleNetworksProtoEncoding: " + visibleNetworksProtoEncoding);
 
             if (locationProtoEncoding == null && visibleNetworksProtoEncoding == null) return null;
 
