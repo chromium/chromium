@@ -49,17 +49,6 @@ class WebUIIOS {
   virtual void RegisterMessageCallback(const std::string& message,
                                        MessageCallback callback) = 0;
 
-  // TODO(crbug.com/1243386): Instances of RegisterDeprecatedMessageCallback()
-  // should be migrated to RegisterMessageCallback().
-  //
-  // Used by WebUIIOSMessageHandlers. If the given message is already
-  // registered, the call has no effect.
-  using DeprecatedMessageCallback =
-      base::RepeatingCallback<void(const base::ListValue*)>;
-  virtual void RegisterDeprecatedMessageCallback(
-      const std::string& message,
-      const DeprecatedMessageCallback& callback) = 0;
-
   // This is only needed if an embedder overrides handling of a WebUIIOSMessage
   // and then later wants to undo that, or to route it to a different WebUIIOS
   // object.

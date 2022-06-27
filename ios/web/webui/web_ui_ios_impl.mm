@@ -114,12 +114,6 @@ void WebUIIOSImpl::RegisterMessageCallback(const std::string& message,
   message_callbacks_.emplace(message, std::move(callback));
 }
 
-void WebUIIOSImpl::RegisterDeprecatedMessageCallback(
-    const std::string& message,
-    const DeprecatedMessageCallback& callback) {
-  deprecated_message_callbacks_.emplace(message, callback);
-}
-
 void WebUIIOSImpl::OnJsMessage(const base::Value& message,
                                const GURL& page_url,
                                bool user_is_interacting,
@@ -159,13 +153,6 @@ void WebUIIOSImpl::ProcessWebUIIOSMessage(const GURL& source_url,
     // Forward this message and content on.
     message_callback_it->second.Run(args.GetList());
     return;
-  }
-
-  // Look up the deprecated callback for this message.
-  auto deprecated_callback_it = deprecated_message_callbacks_.find(message);
-  if (deprecated_callback_it != deprecated_message_callbacks_.end()) {
-    // Forward this message and content on.
-    deprecated_callback_it->second.Run(&base::Value::AsListValue(args));
   }
 }
 
