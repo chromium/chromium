@@ -66,6 +66,20 @@ class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
   // list of trusted Authorization Servers.
   void AddAuthorizationServer(const chromeos::Uri& server);
 
+  // Implementation of ModelTypeSyncBridge interface.
+  std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
+      override;
+  absl::optional<syncer::ModelError> MergeSyncData(
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
+      syncer::EntityChangeList entity_data) override;
+  absl::optional<syncer::ModelError> ApplySyncChanges(
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
+      syncer::EntityChangeList entity_changes) override;
+  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
+  void GetAllDataForDebugging(DataCallback callback) override;
+  std::string GetClientTag(const syncer::EntityData& entity_data) override;
+  std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+
  private:
   ProfileAuthServersSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
@@ -84,20 +98,6 @@ class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
   // Callback from the store when all metadata are loaded.
   void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-
-  // Implementation of ModelTypeSyncBridge interface.
-  std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
-      override;
-  absl::optional<syncer::ModelError> MergeSyncData(
-      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
-      syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplySyncChanges(
-      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
-      syncer::EntityChangeList entity_changes) override;
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
-  std::string GetClientTag(const syncer::EntityData& entity_data) override;
-  std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
   // Callback to handle commit errors.
   void OnCommit(const absl::optional<syncer::ModelError>& error);

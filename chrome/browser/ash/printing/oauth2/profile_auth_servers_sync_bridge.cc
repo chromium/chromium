@@ -200,11 +200,39 @@ absl::optional<syncer::ModelError>
 ProfileAuthServersSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
+    const std::string uri = change->storage_key();
+    if (change->type() == syncer::EntityChange::ACTION_DELETE) {
+      batch->DeleteData(uri);
+      servers_uris_.erase(uri);
+    } else {
+      batch->WriteData(uri, change->data()
+                                .specifics.printers_authorization_server()
+                                .SerializeAsString());
+      servers_uris_.insert(uri);
+    }
+  }
+
+  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
+  store_->CommitWriteBatch(
+      std::move(batch), base::BindOnce(&ProfileAuthServersSyncBridge::OnCommit,
+                                       weak_ptr_factory_.GetWeakPtr()));
+
   return absl::nullopt;
 }
 
 void ProfileAuthServersSyncBridge::GetData(StorageKeyList storage_keys,
-                                           DataCallback callback) {}
+                                           DataCallback callback) {
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const std::string& key : storage_keys) {
+    if (base::Contains(servers_uris_, key)) {
+      batch->Put(key, ToEntityDataPtr(key));
+    }
+  }
+  std::move(callback).Run(std::move(batch));
+}
 
 void ProfileAuthServersSyncBridge::GetAllDataForDebugging(
     DataCallback callback) {
