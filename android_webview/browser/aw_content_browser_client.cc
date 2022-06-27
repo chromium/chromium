@@ -64,6 +64,8 @@
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 #include "content/public/browser/browser_associated_interface.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -632,30 +634,6 @@ AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate() {
   return safe_browsing_url_checker_delegate_;
 }
 
-static bool IsEnterpriseAuthAppLinkUrl(const GURL& url) {
-  PrefService* pref_service =
-      android_webview::AwBrowserProcess::GetInstance()->local_state();
-
-  const base::Value* authentication_url_list =
-      pref_service->GetList(prefs::kEnterpriseAuthAppLinkPolicy);
-
-  if (authentication_url_list == nullptr) {
-    return false;
-  }
-
-  for (const auto& el : authentication_url_list->GetList()) {
-    const std::string* policy_url = el.FindStringKey("url");
-    GURL authentication_url = GURL(*policy_url);
-
-    // TODO(ayushsha,b/201408457): Use UrlMatcher to match authentication urls.
-    if (authentication_url.EqualsIgnoringRef(url)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 bool AwContentBrowserClient::ShouldOverrideUrlLoading(
     int frame_tree_node_id,
     bool browser_initiated,
@@ -705,7 +683,9 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
   AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
   if ((gurl.SchemeIs(url::kHttpScheme) || gurl.SchemeIs(url::kHttpsScheme)) &&
       aw_settings->enterprise_authentication_app_link_policy_enabled() &&
-      IsEnterpriseAuthAppLinkUrl(gurl)) {
+      android_webview::AwBrowserProcess::GetInstance()
+          ->GetEnterpriseAuthenticationAppLinkManager()
+          ->IsEnterpriseAuthenticationUrl(gurl)) {
     bool success = client_bridge->SendBrowseIntent(url);
     if (success) {
       return true;

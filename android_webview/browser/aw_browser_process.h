@@ -9,6 +9,7 @@
 
 #include "android_webview/browser/aw_apk_type.h"
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
@@ -84,6 +85,9 @@ class AwBrowserProcess {
   static void TriggerMinidumpUploading();
   static ApkType GetApkType();
 
+  EnterpriseAuthenticationAppLinkManager*
+  GetEnterpriseAuthenticationAppLinkManager();
+
  private:
   void CreateSafeBrowsingUIManager();
   void CreateSafeBrowsingAllowlistManager();
@@ -122,6 +126,7 @@ class AwBrowserProcess {
 
   std::unique_ptr<VisibilityMetricsLogger> visibility_metrics_logger_;
   std::unique_ptr<AwContentsLifecycleNotifier> aw_contents_lifecycle_notifier_;
+  std::unique_ptr<EnterpriseAuthenticationAppLinkManager> app_link_manager_;
 };
 
 }  // namespace android_webview
