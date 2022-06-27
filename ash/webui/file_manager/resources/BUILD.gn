@@ -15,7 +15,7 @@ assert(is_chromeos_ash)
 preprocess_folder = "$target_gen_dir/preprocessed"
 mojom_webui_folder = "$root_gen_dir/mojom-webui/ash/webui/file_manager/mojom"
 
-js_library("crt0") {
+js_library("init_globals") {
 }
 
 js_library("runtime_loaded_test_util_swa") {
@@ -85,7 +85,7 @@ preprocess_if_expr("preprocess") {
   out_manifest = "$target_gen_dir/manifest_preprocess.json"
 
   in_files = [
-    "crt0.js",
+    "init_globals.js",
     "main.js",
     "runtime_loaded_test_util_swa.js",
     "script_loader.js",
@@ -93,7 +93,7 @@ preprocess_if_expr("preprocess") {
   ]
 
   deps = [
-    ":crt0",
+    ":init_globals",
     ":main",
     ":script_loader",
   ]

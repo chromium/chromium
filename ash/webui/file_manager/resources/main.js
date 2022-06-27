@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// crt0.js must be the first loaded module.
-import './crt0.js';
+// init_globals.js must be the first loaded module.
+import './init_globals.js';
 import 'chrome://file-manager/background/js/metrics_start.js';
 import './test_util_swa.js';
 
@@ -19,11 +19,6 @@ import {ScriptLoader} from './script_loader.js';
  * interaction.
  */
 class FileManagerApp {
-  /**
-   * Start-up: load the page scripts in order: fakes first (to provide chrome.*
-   * API that the files app foreground scripts expect for initial render), then
-   * the files app foreground scripts.
-   */
   async run() {
     try {
       const win = await promisify(chrome.windows.getCurrent);
