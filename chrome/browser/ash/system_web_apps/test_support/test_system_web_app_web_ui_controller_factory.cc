@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_web_ui_controller_factory.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_web_ui_controller_factory.h"
 
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_url_data_source.h"
@@ -11,9 +11,11 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 
+namespace ash {
+
 namespace {
 
-// WebUIController that serves a System PWA.
+// WebUIController that serves a System Web App.
 class TestSystemWebAppWebUIController : public content::WebUIController {
  public:
   explicit TestSystemWebAppWebUIController(const std::string& source_name,
@@ -62,3 +64,5 @@ bool TestSystemWebAppWebUIControllerFactory::UseWebUIForURL(
   return url.SchemeIs(content::kChromeUIScheme) &&
          url.host_piece() == source_name_;
 }
+
+}  // namespace ash

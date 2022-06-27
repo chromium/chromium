@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_TEST_SYSTEM_WEB_APP_WEB_UI_CONTROLLER_FACTORY_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_TEST_SYSTEM_WEB_APP_WEB_UI_CONTROLLER_FACTORY_H_
+#ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TEST_SUPPORT_TEST_SYSTEM_WEB_APP_WEB_UI_CONTROLLER_FACTORY_H_
+#define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TEST_SUPPORT_TEST_SYSTEM_WEB_APP_WEB_UI_CONTROLLER_FACTORY_H_
 
 #include <memory>
 #include <string>
@@ -14,6 +14,8 @@
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_utils.h"
+
+namespace ash {
 
 // WebUIControllerFactory that creates a TestWebUIController, which serves a
 // page with a web manifest and an icon.
@@ -42,4 +44,6 @@ class TestSystemWebAppWebUIControllerFactory
   content::ScopedWebUIControllerFactoryRegistration scoped_registration_{this};
 };
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_TEST_SYSTEM_WEB_APP_WEB_UI_CONTROLLER_FACTORY_H_
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TEST_SUPPORT_TEST_SYSTEM_WEB_APP_WEB_UI_CONTROLLER_FACTORY_H_

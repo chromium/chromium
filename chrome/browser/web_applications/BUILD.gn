@@ -390,8 +390,6 @@ source_set("web_applications_test_support") {
     # chrome/browser/ash/system_web_apps/test_support/ directory.
     "system_web_apps/test/test_system_web_app_url_data_source.cc",
     "system_web_apps/test/test_system_web_app_url_data_source.h",
-    "system_web_apps/test/test_system_web_app_web_ui_controller_factory.cc",
-    "system_web_apps/test/test_system_web_app_web_ui_controller_factory.h",
     "test/app_registration_waiter.cc",
     "test/app_registration_waiter.h",
     "test/fake_data_retriever.cc",
