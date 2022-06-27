@@ -13,6 +13,8 @@
 
 #if defined(USE_EGL)
 #include <EGL/egl.h>
+
+#include "ui/gl/gpu_switching_manager.h"
 #endif  // defined(USE_EGL)
 
 namespace base {
@@ -89,6 +91,7 @@ class GL_EXPORT GLDisplay {
   virtual ~GLDisplay();
 
   virtual void* GetDisplay() = 0;
+  virtual void Shutdown() = 0;
 
  protected:
   explicit GLDisplay(uint64_t system_device_id);
@@ -107,6 +110,8 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   static GLDisplayEGL* GetDisplayForCurrentContext();
 
   EGLDisplay GetDisplay() override;
+  void Shutdown() override;
+
   void SetDisplay(EGLDisplay display);
   EGLDisplayPlatform GetNativeDisplay() const;
   DisplayType GetDisplayType() const;
@@ -116,17 +121,29 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   bool IsAndroidNativeFenceSyncSupported();
   bool IsANGLEExternalContextAndSurfaceSupported();
 
-  bool InitializeDisplay(EGLDisplayPlatform native_display);
-  void InitializeCommon();
+  bool Initialize(EGLDisplayPlatform native_display);
+  void InitializeForTesting();
   bool InitializeExtensionSettings();
-  void Shutdown();
 
   std::unique_ptr<DisplayExtensionsEGL> ext;
 
  private:
   friend class GLDisplayManager<GLDisplayEGL>;
+  friend class EGLApiTest;
+
+  class EGLGpuSwitchingObserver final : public ui::GpuSwitchingObserver {
+   public:
+    explicit EGLGpuSwitchingObserver(EGLDisplay display);
+    void OnGpuSwitched(GpuPreference active_gpu_heuristic) override;
+
+   private:
+    EGLDisplay display_ = EGL_NO_DISPLAY;
+  };
 
   explicit GLDisplayEGL(uint64_t system_device_id);
+
+  bool InitializeDisplay(EGLDisplayPlatform native_display);
+  void InitializeCommon();
 
   EGLDisplay display_ = EGL_NO_DISPLAY;
   EGLDisplayPlatform native_display_ = EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
@@ -135,6 +152,8 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   bool egl_surfaceless_context_supported_ = false;
   bool egl_context_priority_supported_ = false;
   bool egl_android_native_fence_sync_supported_ = false;
+
+  std::unique_ptr<EGLGpuSwitchingObserver> gpu_switching_observer_;
 };
 #endif  // defined(USE_EGL)
 
@@ -147,6 +166,7 @@ class GL_EXPORT GLDisplayX11 : public GLDisplay {
   ~GLDisplayX11() override;
 
   void* GetDisplay() override;
+  void Shutdown() override;
 
  private:
   friend class GLDisplayManager<GLDisplayX11>;
