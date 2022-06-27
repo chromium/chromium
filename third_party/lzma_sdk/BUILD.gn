@@ -2,25 +2,55 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/arm.gni")
+
+# TODO(richard.townsend@arm.com): Optimizations temporarily disabled for
+# Windows on Arm MSVC builds, see http://crbug.com/v8/10012.
+use_arm_neon_optimizations = (target_cpu == "arm" || target_cpu == "arm64") &&
+                             arm_use_neon && !(is_win && !is_clang)
+
 config("lzma_sdk_config") {
   include_dirs = [ "." ]
 }
 
-# Must be in a config because of how GN orders flags (otherwise -Wall will
-# appear after this, and turn it back on).
-config("clang_warnings") {
-  if (is_clang) {
-    # Upstream uses self-assignment to avoid warnings.
-    cflags = [ "-Wno-self-assign" ]
-  }
-}
-
-config("lzma_defines") {
+# Must be in a config for -Wno-self-assign because of how GN orders flags
+# (otherwise -Wall will appear after this, and turn it back on).
+config("lzma_build_config") {
   defines = [
     "_7ZIP_ST",
     "_7Z_NO_METHODS_FILTERS",
     "_LZMA_PROB32",
   ]
+
+  cflags = []
+  if (is_clang) {
+    # Upstream uses self-assignment to avoid warnings.
+    cflags += [ "-Wno-self-assign" ]
+  }
+
+  if (use_arm_neon_optimizations) {
+    if (is_fuchsia) {
+      defines += [ "ARMV8_OS_FUCHSIA" ]
+    }
+
+    if (target_cpu == "arm" && arm_version >= 8) {
+      if (is_clang) {
+        cflags += [
+          "-march=armv8-a",
+          "-Xclang",
+          "-target-feature",
+          "-Xclang",
+          "+crc",
+          "-Xclang",
+          "-target-feature",
+          "-Xclang",
+          "+crypto",
+        ]
+      } else {
+        cflags += [ "-march=armv8-a+crc+crypto" ]
+      }
+    }
+  }
 }
 
 static_library("lzma_sdk") {
@@ -72,8 +102,7 @@ static_library("lzma_sdk") {
     "//build/config/compiler:no_chromium_code",
 
     # Must be after no_chromium_code for warning flags to be ordered correctly.
-    ":clang_warnings",
-    ":lzma_defines",
+    ":lzma_build_config",
   ]
   public_configs = [ ":lzma_sdk_config" ]
 }
@@ -92,6 +121,11 @@ static_library("lzma_sdk_xz") {
     "XzDec.c",
   ]
 
+  # TODO(crbug.com/1338627): Enable ARM optimizations
+  if (target_cpu == "x86" || target_cpu == "x64") {
+    sources += [ "Sha256Opt.c" ]
+  }
+
   deps = [ ":lzma_sdk" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -99,8 +133,7 @@ static_library("lzma_sdk_xz") {
     "//build/config/compiler:no_chromium_code",
 
     # Must be after no_chromium_code for warning flags to be ordered correctly.
-    ":clang_warnings",
-    ":lzma_defines",
+    ":lzma_build_config",
   ]
   public_configs = [ ":lzma_sdk_config" ]
 }

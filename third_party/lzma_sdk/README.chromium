@@ -1,23 +1,35 @@
 Name: LZMA SDK
 Short Name: lzma
 URL: http://www.7-zip.org/sdk.html
-Version: 19.00
-Date: 2019-02-21
+Version: 21.07
+Date: 2021-12-26
 License: Public Domain
 Security Critical: yes
 CPEPrefix: unknown
 
 Description:
-This contains a part of LZMA SDK 19.00.
+This contains a part of LZMA SDK 21.07.
 
 Local Modifications:
-The original code can be found at http://7-zip.org/a/lzma1900.7z.  Only parts
+The original code can be found at https://7-zip.org/a/lzma2107.7z.  Only parts
 of this archive are copied here.  More specifically:
 
 1/ C code required to open 7z archive files and uncompress LZMA
 2/ 7za.exe and 7zr.exe executables (amd64 version)
 3/ source code for SfxSetup, a utility for creating self extracting archives
 4/ C code required for xz decompression (split into its own static library)
+
+7za.exe and 7zr.exe are both standalone command-line utilities to archive and
+extract files. 7zr is "lightweight" and only handles 7zip extensions. 7za can
+handle a few more. 7za.exe comes from https://www.7-zip.org/a/7z2107-extra.7z.
+
+The patch in chromium.patch was applied to 7zCrc.c, CpuArch.c, LZFind.c and
+Sha256.c to disable some ARM code that was failing to build in Android and
+Fuschia as well as some of the AVX2 and SSE4 code for Windows. In Fuschia,
+`#include <asm/hwcap.h>` is not available. In Android builds, `armv8-a+crc` is
+not a known target architecture, even when the -march cflag is passed,
+specifying the CPU type to use. In Windows, Chromium still supports SSE3,
+so it is not be ready to transition to utilizing AVX2 and SSE4, yet.
 
 The patch in Util/SfxSetup/chromium.patch was applied so that:
 
