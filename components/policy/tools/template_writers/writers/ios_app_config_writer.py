@@ -138,7 +138,9 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
     constraint = self.AddElement(parent, 'constraint', attrs)
     if 'enum' in policy['type']:
       values_element = self.AddElement(constraint, 'values', {})
-      for v in policy['schema']['enum']:
+      enum = policy['schema']['enum'] if 'enum' in policy['schema'] else policy[
+          'schema']['items']['enum']
+      for v in enum:
         value = self.AddElement(values_element, 'value', {})
         self.AddText(value,
                      _ParseSchemaTypeValueToString(v, policy['schema']['type']))

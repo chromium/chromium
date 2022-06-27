@@ -180,6 +180,7 @@
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/browser/pref_names.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
@@ -1946,6 +1947,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 06/2022.
   profile_prefs->ClearPref(kImprovedShortcutsNotificationShownCount);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 06/2022.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  profile_prefs->ClearPref(extensions::pref_names::kU2fSecurityKeyApiEnabled);
+#endif
+  profile_prefs->ClearPref(prefs::kCloudPrintSubmitEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

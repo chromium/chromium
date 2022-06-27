@@ -749,9 +749,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCloudPrintProxyEnabled,
     prefs::kCloudPrintProxyEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kCloudPrintSubmitEnabled,
-    prefs::kCloudPrintSubmitEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kShowAppsShortcutInBookmarkBar,
     bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
     base::Value::Type::BOOLEAN },
@@ -1591,9 +1588,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSecurityKeyPermitAttestation,
     prefs::kSecurityKeyPermitAttestation,
     base::Value::Type::LIST },
-  { key::kU2fSecurityKeyApiEnabled,
-    extensions::pref_names::kU2fSecurityKeyApiEnabled,
-    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
