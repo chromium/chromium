@@ -103,6 +103,8 @@ source_set("cast_runner_core") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]
 
+  visibility += [ "//fuchsia_web/runners/cast/test:*" ]
+
   # Keep CastRunner trim by ensuring that large browser dependencies don't creep in.
   # TODO(crbug.com/1211328): Migrate //fuchsia_web/webengine/web_instance_host to have
   # each web_instance set the command-line options internally, so that no-deps
@@ -226,6 +228,9 @@ test("cast_runner_unittests") {
 test("cast_runner_integration_tests_cfv1") {
   sources = [
     "cast/cast_runner_integration_test.cc",
+    "cast/cast_runner_integration_test_base.cc",
+    "cast/cast_runner_integration_test_base.h",
+    "cast/cast_runner_integration_test_cfv1.cc",
     "common/modular/fake_component_context.cc",
     "common/modular/fake_component_context.h",
   ]
@@ -237,8 +242,8 @@ test("cast_runner_integration_tests_cfv1") {
     "//components/cast/message_port",
     "//fuchsia_web/common/test:run_all_integration_tests",
     "//fuchsia_web/common/test:test_support",
+    "//fuchsia_web/runners/cast/test:cfv1_integration",
     "//fuchsia_web/runners/common/modular",
-    "//media/fuchsia/audio:test_support",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
