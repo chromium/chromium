@@ -39,7 +39,6 @@ proto_library("proto_v2") {
     "v2/wire/feed_action.proto",
     "v2/wire/feed_entry_point_data.proto",
     "v2/wire/feed_entry_point_source.proto",
-    "v2/wire/feed_preferences.proto",
     "v2/wire/feed_query.proto",
     "v2/wire/feed_request.proto",
     "v2/wire/feed_response.proto",
