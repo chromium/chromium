@@ -109,7 +109,8 @@ APIBindingHooks::RequestResult AppHooksDelegate::HandleRequest(
     APIRequestHandler::RequestDetails request_details =
         request_handler_->AddPendingRequest(
             context, binding::AsyncResponseType::kCallback,
-            (*parse_result.arguments)[0].As<v8::Function>());
+            (*parse_result.arguments)[0].As<v8::Function>(),
+            binding::ResultModifierFunction());
     GetInstallState(script_context, request_details.request_id);
   } else {
     NOTREACHED();
