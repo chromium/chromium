@@ -144,6 +144,8 @@ struct EntityMetadata {
 
   std::string ToString() const;
 
+  std::string ToHumanReadableString() const;
+
   base::Value AsValue() const;
 
   friend std::ostream& operator<<(std::ostream& out, const EntityMetadata& md);

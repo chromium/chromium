@@ -121,6 +121,7 @@ KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
         g_browser_process->GetApplicationLocale(),
         optimization_guide_keyed_service, history_service, proto_db_provider,
         profile_path,
+        optimization_guide_keyed_service->GetOptimizationGuideLogger(),
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
   }

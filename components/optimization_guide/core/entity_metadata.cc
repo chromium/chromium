@@ -282,6 +282,21 @@ std::string EntityMetadata::ToString() const {
       base::JoinString(collections, ",").c_str());
 }
 
+std::string EntityMetadata::ToHumanReadableString() const {
+  std::vector<std::string> categories;
+  for (const auto& iter : human_readable_categories) {
+    categories.push_back(
+        base::StringPrintf("{%s,%f}", iter.first.c_str(), iter.second));
+  }
+
+  return base::StringPrintf(
+      "%s %s, %s {%s}, %s {%s}, %s {%s}",
+      "Entity:", human_readable_name.c_str(),
+      "Categories: ", base::JoinString(categories, ",").c_str(),
+      "Aliases: ", base::JoinString(human_readable_aliases, ",").c_str(),
+      "Collections: ", base::JoinString(collections, ",").c_str());
+}
+
 std::ostream& operator<<(std::ostream& out, const EntityMetadata& md) {
   out << md.ToString();
   return out;
