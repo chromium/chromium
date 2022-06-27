@@ -27,6 +27,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/default_search_policy_handler.h"
+#include "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/driver/sync_policy_handler.h"
 #include "components/translate/core/browser/translate_pref_names.h"
@@ -158,6 +159,8 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<policy::NewTabPageLocationPolicyHandler>());
   handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(
       policy::key::kURLBlocklist));
+  handlers->AddHandler(std::make_unique<policy::HttpsOnlyModePolicyHandler>(
+      prefs::kHttpsOnlyModeEnabled));
 
   return handlers;
 }
