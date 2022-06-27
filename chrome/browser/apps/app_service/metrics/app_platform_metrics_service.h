@@ -45,6 +45,9 @@ class AppPlatformMetricsService {
     return app_platform_app_metrics_.get();
   }
 
+  void SetWebsiteMetricsForTesting(
+      std::unique_ptr<apps::WebsiteMetrics> website_metrics);
+
  private:
   friend class AppPlatformInputMetricsTest;
   friend class WebsiteMetricsBrowserTest;

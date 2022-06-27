@@ -13,8 +13,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/webapps/browser/installable/installable_data.h"
-#include "components/webapps/browser/installable/installable_manager.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/installation/installation.mojom.h"
@@ -69,9 +67,32 @@ WebsiteMetrics::ActiveTabWebContentsObserver::ActiveTabWebContentsObserver(
     WebsiteMetrics* owner)
     : content::WebContentsObserver(contents), owner_(owner) {}
 
+WebsiteMetrics::ActiveTabWebContentsObserver::~ActiveTabWebContentsObserver() =
+    default;
+
 void WebsiteMetrics::ActiveTabWebContentsObserver::PrimaryPageChanged(
     content::Page& page) {
   owner_->OnWebContentsUpdated(web_contents());
+
+  if (app_banner_manager_observer_.IsObserving()) {
+    return;
+  }
+
+  auto* app_banner_manager =
+      webapps::AppBannerManager::FromWebContents(web_contents());
+  // In some test cases, AppBannerManager might be null.
+  if (app_banner_manager) {
+    app_banner_manager_observer_.Observe(app_banner_manager);
+  }
+}
+
+void WebsiteMetrics::ActiveTabWebContentsObserver::WebContentsDestroyed() {
+  app_banner_manager_observer_.Reset();
+}
+
+void WebsiteMetrics::ActiveTabWebContentsObserver::
+    OnInstallableWebAppStatusUpdated() {
+  owner_->OnInstallableWebAppStatusUpdated(web_contents());
 }
 
 WebsiteMetrics::WebsiteMetrics(Profile* profile)
@@ -259,25 +280,10 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
   // contents::WebContentsObserver::PrimaryPageChanged(), set the visible url as
   // default value for the ukm key url.
   webcontents_to_ukm_key_[web_contents] = web_contents->GetVisibleURL();
-
-  // WebContents in app windows are filtered out in OnBrowserAdded. installed
-  // web apps opened in tabs are filtered out too. So every WebContents here
-  // must be a website not installed. Check the manifest to get the scope or the
-  // start url if there is a manifest.
-  webapps::InstallableParams params;
-  params.valid_manifest = true;
-  webapps::InstallableManager* manager =
-      webapps::InstallableManager::FromWebContents(web_contents);
-  DCHECK(manager);
-  manager->GetData(
-      params,
-      base::BindOnce(&WebsiteMetrics::OnDidPerformInstallableWebAppCheck,
-                     weak_factory_.GetWeakPtr(), web_contents));
 }
 
-void WebsiteMetrics::OnDidPerformInstallableWebAppCheck(
-    content::WebContents* web_contents,
-    const webapps::InstallableData& data) {
+void WebsiteMetrics::OnInstallableWebAppStatusUpdated(
+    content::WebContents* web_contents) {
   auto it = webcontents_to_ukm_key_.find(web_contents);
   if (it == webcontents_to_ukm_key_.end()) {
     // If the `web_contents` has been removed or replaced, we don't need to set
@@ -285,15 +291,20 @@ void WebsiteMetrics::OnDidPerformInstallableWebAppCheck(
     return;
   }
 
-  if (blink::IsEmptyManifest(data.manifest)) {
+  // WebContents in app windows are filtered out in OnBrowserAdded. Installed
+  // web apps opened in tabs are filtered out too. So every WebContents here
+  // must be a website not installed. Check the manifest to get the scope or the
+  // start url if there is a manifest.
+  auto* app_banner_manager =
+      webapps::AppBannerManager::FromWebContents(web_contents);
+  DCHECK(app_banner_manager);
+
+  if (blink::IsEmptyManifest(app_banner_manager->manifest())) {
     return;
   }
 
-  if (!data.manifest.scope.is_empty()) {
-    it->second = data.manifest.scope;
-  } else if (!data.manifest.start_url.is_empty()) {
-    it->second = data.manifest.start_url;
-  }
+  DCHECK(!app_banner_manager->manifest().scope.is_empty());
+  it->second = app_banner_manager->manifest().scope;
 }
 
 }  // namespace apps

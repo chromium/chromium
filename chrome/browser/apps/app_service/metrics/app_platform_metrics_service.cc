@@ -82,6 +82,11 @@ void AppPlatformMetricsService::Start(
       &AppPlatformMetricsService::CheckForNoisyAppKMReportingInterval);
 }
 
+void AppPlatformMetricsService::SetWebsiteMetricsForTesting(
+    std::unique_ptr<apps::WebsiteMetrics> website_metrics) {
+  website_metrics_ = std::move(website_metrics);
+}
+
 void AppPlatformMetricsService::CheckForNewDay() {
   base::Time now = base::Time::Now();
 

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -26,13 +27,10 @@
 class Browser;
 class Profile;
 
-namespace webapps {
-struct InstallableData;
-}
-
 namespace apps {
 
 class WebsiteMetricsBrowserTest;
+class TestWebsiteMetrics;
 
 // WebsiteMetrics monitors creation/deletion of Browser and its
 // TabStripModel to record the website usage time metrics.
@@ -76,10 +74,13 @@ class WebsiteMetrics : public BrowserListObserver,
 
  private:
   friend class WebsiteMetricsBrowserTest;
+  friend class TestWebsiteMetrics;
 
   // This class monitors the activated WebContent for the activated browser
   // window and notifies a navigation to the WebsiteMetrics.
-  class ActiveTabWebContentsObserver : public content::WebContentsObserver {
+  class ActiveTabWebContentsObserver
+      : public content::WebContentsObserver,
+        public webapps::AppBannerManager::Observer {
    public:
     ActiveTabWebContentsObserver(content::WebContents* contents,
                                  WebsiteMetrics* owner);
@@ -88,13 +89,20 @@ class WebsiteMetrics : public BrowserListObserver,
     ActiveTabWebContentsObserver& operator=(
         const ActiveTabWebContentsObserver&) = delete;
 
-    ~ActiveTabWebContentsObserver() override = default;
+    ~ActiveTabWebContentsObserver() override;
 
     // content::WebContentsObserver
     void PrimaryPageChanged(content::Page& page) override;
+    void WebContentsDestroyed() override;
+
+    // webapps::AppBannerManager::Observer:
+    void OnInstallableWebAppStatusUpdated() override;
 
    private:
     WebsiteMetrics* owner_;
+    base::ScopedObservation<webapps::AppBannerManager,
+                            webapps::AppBannerManager::Observer>
+        app_banner_manager_observer_{this};
   };
 
   void OnTabStripModelChangeInsert(TabStripModel* tab_strip_model,
@@ -112,12 +120,8 @@ class WebsiteMetrics : public BrowserListObserver,
   void OnTabClosed(content::WebContents* web_contents);
 
   // Called by |WebsiteMetrics::ActiveTabWebContentsObserver|.
-  void OnWebContentsUpdated(content::WebContents* contents);
-
-  // Callback invoked by the InstallableManager once it has finished checking
-  // all other installable properties.
-  void OnDidPerformInstallableWebAppCheck(content::WebContents* web_contents,
-                                          const webapps::InstallableData& data);
+  virtual void OnWebContentsUpdated(content::WebContents* contents);
+  virtual void OnInstallableWebAppStatusUpdated(content::WebContents* contents);
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 

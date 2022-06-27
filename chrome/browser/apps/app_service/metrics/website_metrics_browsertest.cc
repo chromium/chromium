@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/containers/contains.h"
+#include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
@@ -25,15 +26,57 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 
-// TODO(crbug.com/1334173): Add tests to verify the scope and the start url are
-// used as the ukm key when a webpage has a manifest.
-
 namespace apps {
+
+class TestWebsiteMetrics : public WebsiteMetrics {
+ public:
+  explicit TestWebsiteMetrics(Profile* profile) : WebsiteMetrics(profile) {}
+
+  void AwaitForInstallableWebAppCheck(const GURL& ukm_key) {
+    if (on_checked_) {
+      return;
+    }
+
+    ukm_key_ = ukm_key;
+
+    base::RunLoop loop;
+    quit_closure_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+ private:
+  void OnWebContentsUpdated(content::WebContents* web_contents) override {
+    WebsiteMetrics::OnWebContentsUpdated(web_contents);
+    on_checked_ = false;
+  }
+
+  void OnInstallableWebAppStatusUpdated(
+      content::WebContents* web_contents) override {
+    WebsiteMetrics::OnInstallableWebAppStatusUpdated(web_contents);
+    if (webcontents_to_ukm_key_[web_contents] != ukm_key_) {
+      return;
+    }
+
+    on_checked_ = true;
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  base::OnceClosure quit_closure_;
+  bool on_checked_ = false;
+  GURL ukm_key_;
+};
 
 class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "chrome/test/data/banners");
+    ASSERT_TRUE(embedded_test_server()->Start());
+
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
     auto metrics_service_ =
         std::make_unique<AppPlatformMetricsService>(profile);
@@ -232,6 +275,47 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ForegroundTabNavigate) {
             GURL("https://b.example.org"));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app], GURL("https://b.example.org"));
+
+  browser->tab_strip_model()->CloseAllTabs();
+  EXPECT_TRUE(webcontents_to_observer_map().empty());
+  EXPECT_TRUE(window_to_web_contents().empty());
+  EXPECT_TRUE(webcontents_to_ukm_key().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToUrlWithManifest) {
+  auto website_metrics_ptr = std::make_unique<apps::TestWebsiteMetrics>(
+      ProfileManager::GetPrimaryUserProfile());
+  auto* metrics = website_metrics_ptr.get();
+  app_platform_metrics_service_->SetWebsiteMetricsForTesting(
+      std::move(website_metrics_ptr));
+
+  Browser* browser = CreateBrowser();
+  auto* window = browser->window()->GetNativeWindow();
+  EXPECT_EQ(1u, window_to_web_contents().size());
+
+  // Open a tab in foreground.
+  GURL url =
+      embedded_test_server()->GetURL("/banners/no_manifest_test_page.html");
+  auto* tab_app = InsertForegroundTab(browser, url.spec());
+  EXPECT_EQ(1u, webcontents_to_observer_map().size());
+  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
+                             window_to_web_contents()[window]));
+  EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(), url);
+  EXPECT_EQ(1u, webcontents_to_ukm_key().size());
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app], url);
+
+  // Navigate the foreground tab to a url with a manifest.
+  url = embedded_test_server()->GetURL("/banners/manifest_test_page.html");
+  auto ukm_key = url.GetWithoutFilename();
+  NavigateActiveTab(browser, url.spec());
+  metrics->AwaitForInstallableWebAppCheck(ukm_key);
+  EXPECT_EQ(1u, webcontents_to_observer_map().size());
+  EXPECT_EQ(1u, window_to_web_contents().size());
+  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
+                             window_to_web_contents()[window]));
+  EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(), url);
+  EXPECT_EQ(1u, webcontents_to_ukm_key().size());
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app], ukm_key);
 
   browser->tab_strip_model()->CloseAllTabs();
   EXPECT_TRUE(webcontents_to_observer_map().empty());
