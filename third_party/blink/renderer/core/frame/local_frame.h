@@ -357,7 +357,6 @@ class CORE_EXPORT LocalFrame final
   void SetPageAndTextZoomFactors(float page_zoom_factor,
                                  float text_zoom_factor);
 
-  void DeviceScaleFactorChanged();
   double DevicePixelRatio() const;
 
   // Informs the local root's document and its local descendant subtree that a

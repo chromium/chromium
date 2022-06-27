@@ -1286,18 +1286,6 @@ void LocalFrame::SetPageAndTextZoomFactors(float page_zoom_factor,
     View()->SetNeedsLayout();
 }
 
-void LocalFrame::DeviceScaleFactorChanged() {
-  GetDocument()->MediaQueryAffectingValueChanged(MediaValueChange::kOther);
-  GetDocument()->GetStyleEngine().MarkViewportStyleDirty();
-  GetDocument()->GetStyleEngine().MarkAllElementsForStyleRecalc(
-      StyleChangeReasonForTracing::Create(style_change_reason::kZoom));
-  for (Frame* child = Tree().FirstChild(); child;
-       child = child->Tree().NextSibling()) {
-    if (auto* child_local_frame = DynamicTo<LocalFrame>(child))
-      child_local_frame->DeviceScaleFactorChanged();
-  }
-}
-
 void LocalFrame::MediaQueryAffectingValueChangedForLocalSubtree(
     MediaValueChange value) {
   GetDocument()->MediaQueryAffectingValueChanged(value);
