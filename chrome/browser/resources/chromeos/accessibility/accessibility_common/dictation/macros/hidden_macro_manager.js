@@ -119,16 +119,4 @@ export class HiddenMacroManager {
  * @const {!Array<!MacroName>}
  * @private
  */
-HiddenMacroManager.HIDDEN_MACROS_ = [
-  MacroName.STOP_LISTENING,
-  MacroName.DELETE_PREV_WORD,
-  MacroName.DELETE_PREV_SENT,
-  MacroName.NAV_NEXT_WORD,
-  MacroName.NAV_PREV_WORD,
-  MacroName.SMART_DELETE_PHRASE,
-  MacroName.SMART_REPLACE_PHRASE,
-  MacroName.SMART_INSERT_BEFORE,
-  MacroName.SMART_SELECT_BTWN_INCL,
-  MacroName.NAV_NEXT_SENT,
-  MacroName.NAV_PREV_SENT,
-];
+HiddenMacroManager.HIDDEN_MACROS_ = [];

@@ -27,7 +27,9 @@ AX_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
   assertNotNullNorUndefined(strategy);
   let macro = await strategy.parse('Hello world');
   assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
-  macro = await strategy.parse('delete');
+  macro = await strategy.parse('type delete the previous character');
+  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
+  macro = await strategy.parse('delete the previous character');
   assertEquals('DELETE_PREV_CHAR', macro.getMacroNameString());
   macro = await strategy.parse('move to the previous character');
   assertEquals('NAV_PREV_CHAR', macro.getMacroNameString());
@@ -55,6 +57,28 @@ AX_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
   assertEquals('LIST_COMMANDS', macro.getMacroNameString());
   macro = await strategy.parse('new line');
   assertEquals('NEW_LINE', macro.getMacroNameString());
+  macro = await strategy.parse('cancel');
+  assertEquals('STOP_LISTENING', macro.getMacroNameString());
+  macro = await strategy.parse('delete the previous word');
+  assertEquals('DELETE_PREV_WORD', macro.getMacroNameString());
+  macro = await strategy.parse('delete the previous sentence');
+  assertEquals('DELETE_PREV_SENT', macro.getMacroNameString());
+  macro = await strategy.parse('move to the next word');
+  assertEquals('NAV_NEXT_WORD', macro.getMacroNameString());
+  macro = await strategy.parse('move to the previous word');
+  assertEquals('NAV_PREV_WORD', macro.getMacroNameString());
+  macro = await strategy.parse('delete hello world');
+  assertEquals('SMART_DELETE_PHRASE', macro.getMacroNameString());
+  macro = await strategy.parse('replace hello world with goodnight world');
+  assertEquals('SMART_REPLACE_PHRASE', macro.getMacroNameString());
+  macro = await strategy.parse('insert hello world before goodnight world');
+  assertEquals('SMART_INSERT_BEFORE', macro.getMacroNameString());
+  macro = await strategy.parse('select from hello world to goodnight world');
+  assertEquals('SMART_SELECT_BTWN_INCL', macro.getMacroNameString());
+  macro = await strategy.parse('move to the next sentence');
+  assertEquals('NAV_NEXT_SENT', macro.getMacroNameString());
+  macro = await strategy.parse('move to the previous sentence');
+  assertEquals('NAV_PREV_SENT', macro.getMacroNameString());
 });
 
 // TODO(crbug.com/1264544): This test fails because of a memory issues

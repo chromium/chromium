@@ -48,7 +48,8 @@ AX_TEST_F('DictationMacrosTest', 'InvalidInputTextViewMacro', async function() {
 
 AX_TEST_F('DictationMacrosTest', 'RepeatableKeyPressMacro', async function() {
   // DELETE_PREV_CHAR is one of many RepeatableKeyPressMacros.
-  const macro = await this.getSimpleParseStrategy().parse('delete');
+  const macro = await this.getSimpleParseStrategy().parse(
+      'delete the previous character');
   assertEquals('DELETE_PREV_CHAR', macro.getMacroNameString());
   const checkContextResult = macro.checkContext();
   assertTrue(checkContextResult.canTryAction);
@@ -87,4 +88,26 @@ AX_TEST_F('DictationMacrosTest', 'StopListeningMacro', async function() {
   assertEquals(undefined, runMacroResult.error);
   assertFalse(this.getDictationActive());
   assertFalse(this.getSpeechRecognitionActive());
+});
+
+// Tests that smart macros can be parsed and constructed with the correct
+// arguments.
+SYNC_TEST_F('DictationMacrosTest', 'SmartMacros', async function() {
+  const strategy = this.getSimpleParseStrategy();
+  assertNotNullNorUndefined(strategy);
+  let macro = await strategy.parse('delete hello world');
+  assertEquals('SMART_DELETE_PHRASE', macro.getMacroNameString());
+  assertEquals('hello world', macro.phrase_);
+  macro = await strategy.parse('replace hello with goodbye');
+  assertEquals('SMART_REPLACE_PHRASE', macro.getMacroNameString());
+  assertEquals('hello', macro.deletePhrase_);
+  assertEquals('goodbye', macro.insertPhrase_);
+  macro = await strategy.parse('insert hello before goodbye');
+  assertEquals('SMART_INSERT_BEFORE', macro.getMacroNameString());
+  assertEquals('hello', macro.insertPhrase_);
+  assertEquals('goodbye', macro.beforePhrase_);
+  macro = await strategy.parse('select from hello to goodbye');
+  assertEquals('SMART_SELECT_BTWN_INCL', macro.getMacroNameString());
+  assertEquals('hello', macro.startPhrase_);
+  assertEquals('goodbye', macro.endPhrase_);
 });
