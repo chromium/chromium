@@ -576,8 +576,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
-                       // TODO(crbug.com/1324856): Re-enable this test
-                       DISABLED_StopStartSWReflectedOnInternalUI) {
+                       StopStartSWReflectedOnInternalUI) {
   Shell* sw_internal_ui_window = CreateNewWindow();
   NavigateToServiceWorkerInternalUI();
 
@@ -612,9 +611,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   ASSERT_EQ(kTitle2, title_watcher2.WaitAndGetTitle());
 
   // Tests that a starting service worker is reflected on internal UI.
-  const std::u16string kTitle3 = u"SW running_status: RUNNING";
+  const std::u16string kTitle3 = u"SW running_status: STARTING";
   TitleWatcher title_watcher_3(web_contents(), kTitle3);
-  SetMutationObserver("running_status", "RUNNING", kTitle3);
+  // To avoid premature timeouts and flakiness, the expected `running_status` to
+  // be asserted will be `STARTING` instead of `RUNNING`.
+  SetMutationObserver("running_status", "STARTING", kTitle3);
 
   wrapper()->StartActiveServiceWorker(GetAllRegistrations().front().scope,
                                       GetAllRegistrations().front().key,
