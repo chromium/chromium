@@ -21,6 +21,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.weblayer.ContextMenuParams;
@@ -384,6 +385,7 @@ public class TabCallbackTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1339982")
     public void testScrollNotificationDirectionChange() throws TimeoutException {
         final String url = mActivityTestRule.getTestDataURL("tall_page.html");
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(url);
