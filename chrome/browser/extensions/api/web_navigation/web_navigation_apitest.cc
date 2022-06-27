@@ -248,13 +248,7 @@ class WebNavigationApiTestWithContextType
     : public WebNavigationApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  WebNavigationApiTestWithContextType() : WebNavigationApiTest(GetParam()) {
-    feature_list_.InitWithFeaturesAndParameters(
-        {
-            {blink::features::kPrerender2, {}},
-        },
-        {});
-  }
+  WebNavigationApiTestWithContextType() : WebNavigationApiTest(GetParam()) {}
   ~WebNavigationApiTestWithContextType() override = default;
   WebNavigationApiTestWithContextType(
       const WebNavigationApiTestWithContextType&) = delete;
@@ -267,9 +261,6 @@ class WebNavigationApiTestWithContextType
     return RunExtensionTest(name, {},
                             {.allow_in_incognito = allow_in_incognito});
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Api) {
@@ -277,7 +268,6 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Api) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, GetFrame) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/getFrame")) << message_;
 }
 
