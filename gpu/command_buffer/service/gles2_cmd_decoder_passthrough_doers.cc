@@ -3452,61 +3452,6 @@ error::Error GLES2DecoderPassthroughImpl::DoTexStorage2DEXT(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::DoTexStorage2DImageCHROMIUM(
-    GLenum target,
-    GLenum internalFormat,
-    GLenum bufferUsage,
-    GLsizei width,
-    GLsizei height) {
-  TextureTarget target_enum = GLenumToTextureTarget(target);
-  if (target_enum == TextureTarget::kCubeMap ||
-      target_enum == TextureTarget::kUnkown) {
-    InsertError(GL_INVALID_ENUM, "Invalid target");
-    return error::kNoError;
-  }
-
-  const BoundTexture& bound_texture =
-      bound_textures_[static_cast<size_t>(target_enum)][active_texture_unit_];
-  if (bound_texture.texture == nullptr) {
-    InsertError(GL_INVALID_OPERATION, "No texture bound");
-    return error::kNoError;
-  }
-
-  gfx::BufferFormat buffer_format;
-  if (!GetGFXBufferFormat(internalFormat, &buffer_format)) {
-    InsertError(GL_INVALID_ENUM, "Invalid buffer format");
-    return error::kNoError;
-  }
-
-  gfx::BufferUsage buffer_usage;
-  if (!GetGFXBufferUsage(bufferUsage, &buffer_usage)) {
-    InsertError(GL_INVALID_ENUM, "Invalid buffer usage");
-    return error::kNoError;
-  }
-
-  if (!GetContextGroup()->image_factory()) {
-    InsertError(GL_INVALID_OPERATION, "Cannot create GL image");
-    return error::kNoError;
-  }
-
-  bool is_cleared;
-  scoped_refptr<gl::GLImage> image =
-      GetContextGroup()->image_factory()->CreateAnonymousImage(
-          gfx::Size(width, height), buffer_format, buffer_usage,
-          gpu::kNullSurfaceHandle, &is_cleared);
-  if (!image || !image->BindTexImage(target)) {
-    InsertError(GL_INVALID_OPERATION, "Failed to create or bind GL Image");
-    return error::kNoError;
-  }
-
-  bound_texture.texture->SetLevelImage(target, 0, image.get());
-
-  // Target is already validated
-  UpdateTextureSizeFromTarget(target);
-
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::DoGenQueriesEXT(
     GLsizei n,
     volatile GLuint* queries) {
@@ -4095,11 +4040,11 @@ error::Error GLES2DecoderPassthroughImpl::DoRequestExtensionCHROMIUM(
   InitializeFeatureInfo(feature_info_->context_type(),
                         feature_info_->disallowed_features(), true);
 
-  // Support for CHROMIUM_texture_storage_image depends on the underlying
+  // Support for texture_storage_image depends on the underlying
   // ImageFactory's ability to create anonymous images.
   gpu::ImageFactory* image_factory = group_->image_factory();
   if (image_factory && image_factory->SupportsCreateAnonymousImage()) {
-    feature_info_->EnableCHROMIUMTextureStorageImage();
+    feature_info_->EnableTextureStorageImage();
   }
 
   return error::kNoError;

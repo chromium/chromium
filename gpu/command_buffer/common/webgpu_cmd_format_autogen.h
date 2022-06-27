@@ -11,8 +11,6 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_WEBGPU_CMD_FORMAT_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_COMMON_WEBGPU_CMD_FORMAT_AUTOGEN_H_
 
-#define GL_SCANOUT_CHROMIUM 0x6000
-
 struct DawnCommands {
   typedef DawnCommands ValueType;
   static const CommandId kCmdId = kDawnCommands;

@@ -2335,16 +2335,6 @@ bool GLES2TraceImplementation::LockDiscardableTextureCHROMIUM(
   return gl_->LockDiscardableTextureCHROMIUM(texture_id);
 }
 
-void GLES2TraceImplementation::TexStorage2DImageCHROMIUM(GLenum target,
-                                                         GLenum internalFormat,
-                                                         GLenum bufferUsage,
-                                                         GLsizei width,
-                                                         GLsizei height) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::TexStorage2DImageCHROMIUM");
-  gl_->TexStorage2DImageCHROMIUM(target, internalFormat, bufferUsage, width,
-                                 height);
-}
-
 void GLES2TraceImplementation::SetColorSpaceMetadataCHROMIUM(
     GLuint texture_id,
     GLcolorSpace color_space) {

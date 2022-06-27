@@ -546,11 +546,6 @@ error::Error DoTexImage2D(GLenum target,
                           GLenum type,
                           GLsizei image_size,
                           const void* pixels);
-error::Error DoTexStorage2DImageCHROMIUM(GLenum target,
-                                         GLenum internalformat,
-                                         GLenum bufferusage,
-                                         GLsizei width,
-                                         GLsizei height);
 error::Error DoTexImage3D(GLenum target,
                           GLint level,
                           GLint internalformat,

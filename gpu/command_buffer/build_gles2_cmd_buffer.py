@@ -1581,16 +1581,6 @@ _NAMED_TYPE_INFO = {
       'GL_SYNC_FENCE',
     ],
   },
-  'ClientBufferUsage': {
-    'type': 'GLenum',
-    'is_complete': True,
-    'valid': [
-      'GL_SCANOUT_CHROMIUM',
-    ],
-    'invalid': [
-      'GL_NONE',
-    ],
-  },
   'WindowRectanglesMode': {
     'type': 'GLenum',
     'is_complete': True,
@@ -3948,12 +3938,6 @@ _FUNCTION_INFO = {
     'impl_func': False,
     'client_test': False,
     'extension': True,
-  },
-  'TexStorage2DImageCHROMIUM': {
-    'decoder_func': 'DoTexStorage2DImageCHROMIUM',
-    'unit_test': False,
-    'extension': 'CHROMIUM_texture_storage_image',
-    'extension_flag': 'chromium_texture_storage_image',
   },
   'SetColorSpaceMetadataCHROMIUM': {
     'type': 'Custom',

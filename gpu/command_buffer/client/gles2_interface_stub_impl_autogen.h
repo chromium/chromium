@@ -1100,11 +1100,6 @@ bool GLES2InterfaceStub::LockDiscardableTextureCHROMIUM(
     GLuint /* texture_id */) {
   return 0;
 }
-void GLES2InterfaceStub::TexStorage2DImageCHROMIUM(GLenum /* target */,
-                                                   GLenum /* internalFormat */,
-                                                   GLenum /* bufferUsage */,
-                                                   GLsizei /* width */,
-                                                   GLsizei /* height */) {}
 void GLES2InterfaceStub::SetColorSpaceMetadataCHROMIUM(
     GLuint /* texture_id */,
     GLcolorSpace /* color_space */) {}

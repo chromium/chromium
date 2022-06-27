@@ -355,9 +355,6 @@ GL_APICALL void         GL_APIENTRY glInitializeDiscardableTextureCHROMIUM (GLui
 GL_APICALL void         GL_APIENTRY glUnlockDiscardableTextureCHROMIUM (GLuint texture_id);
 GL_APICALL bool         GL_APIENTRY glLockDiscardableTextureCHROMIUM (GLuint texture_id);
 
-// Extension CHROMIUM_texture_storage_image
-GL_APICALL void         GL_APIENTRY glTexStorage2DImageCHROMIUM (GLenumTextureBindTarget target, GLenumTextureInternalFormatStorage internalFormat, GLenumClientBufferUsage bufferUsage, GLsizei width, GLsizei height);
-
 // Extension CHROMIUM_color_space_metadata
 GL_APICALL void         GL_APIENTRY glSetColorSpaceMetadataCHROMIUM (GLuint texture_id, GLcolorSpace color_space);
 

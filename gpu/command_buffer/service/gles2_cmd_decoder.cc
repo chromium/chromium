@@ -3624,11 +3624,11 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
     }
   }
 
-  // Support for CHROMIUM_texture_storage_image depends on the underlying
+  // Support for texture_storage_image depends on the underlying
   // ImageFactory's ability to create anonymous images.
   gpu::ImageFactory* image_factory = group_->image_factory();
   if (image_factory && image_factory->SupportsCreateAnonymousImage())
-    feature_info_->EnableCHROMIUMTextureStorageImage();
+    feature_info_->EnableTextureStorageImage();
 
   // In theory |needs_emulation| needs to be true on Desktop GL 4.1 or lower.
   // However, we set it to true everywhere, not to trust drivers to handle
@@ -4316,7 +4316,7 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   }
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
   caps.texture_storage_image =
-      feature_info_->feature_flags().chromium_texture_storage_image;
+      feature_info_->feature_flags().texture_storage_image;
   caps.supports_oop_raster = false;
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.separate_stencil_ref_mask_writemask =
@@ -18426,85 +18426,6 @@ void GLES2DecoderImpl::DoTexStorage3D(GLenum target,
       "widthXheight", width * height, "depth", depth);
   TexStorageImpl(target, levels, internal_format, width, height, depth,
                  ContextState::k3D, "glTexStorage3D");
-}
-
-void GLES2DecoderImpl::DoTexStorage2DImageCHROMIUM(GLenum target,
-                                                   GLenum internal_format,
-                                                   GLenum buffer_usage,
-                                                   GLsizei width,
-                                                   GLsizei height) {
-  TRACE_EVENT2("gpu", "GLES2DecoderImpl::DoTexStorage2DImageCHROMIUM", "width",
-               width, "height", height);
-
-  ScopedGLErrorSuppressor suppressor(
-      "GLES2CmdDecoder::DoTexStorage2DImageCHROMIUM", error_state_.get());
-
-  if (!texture_manager()->ValidForTarget(target, 0, width, height, 1)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glTexStorage2DImageCHROMIUM",
-                       "dimensions out of range");
-    return;
-  }
-
-  TextureRef* texture_ref =
-      texture_manager()->GetTextureInfoForTarget(&state_, target);
-  if (!texture_ref) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glTexStorage2DImageCHROMIUM",
-                       "unknown texture for target");
-    return;
-  }
-
-  Texture* texture = texture_ref->texture();
-  if (texture->IsImmutable()) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glTexStorage2DImageCHROMIUM",
-                       "texture is immutable");
-    return;
-  }
-
-  gfx::BufferFormat buffer_format;
-  if (!GetGFXBufferFormat(internal_format, &buffer_format)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "glTexStorage2DImageCHROMIUM",
-                       "Invalid buffer format");
-    return;
-  }
-
-  gfx::BufferUsage gfx_buffer_usage;
-  if (!GetGFXBufferUsage(buffer_usage, &gfx_buffer_usage)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "glTexStorage2DImageCHROMIUM",
-                       "Invalid buffer usage");
-    return;
-  }
-
-  if (!GetContextGroup()->image_factory()) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glTexStorage2DImageCHROMIUM",
-                       "Cannot create GL image");
-    return;
-  }
-
-  bool is_cleared = false;
-  scoped_refptr<gl::GLImage> image =
-      GetContextGroup()->image_factory()->CreateAnonymousImage(
-          gfx::Size(width, height), buffer_format, gfx_buffer_usage,
-          gpu::kNullSurfaceHandle, &is_cleared);
-  if (!image || !image->BindTexImage(target)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glTexStorage2DImageCHROMIUM",
-                       "Failed to create or bind GL Image");
-    return;
-  }
-
-  gfx::Rect cleared_rect;
-  if (is_cleared)
-    cleared_rect = gfx::Rect(width, height);
-
-  texture_manager()->SetLevelInfo(
-      texture_ref, target, 0, image->GetInternalFormat(), width, height, 1, 0,
-      image->GetDataFormat(), image->GetDataType(), cleared_rect);
-  texture_manager()->SetLevelImage(texture_ref, target, 0, image.get(),
-                                   Texture::BOUND);
-
-  if (texture->IsAttachedToFramebuffer())
-    framebuffer_state_.clear_state_dirty = true;
-
-  texture->SetImmutable(true, false);
 }
 
 void GLES2DecoderImpl::DoProduceTextureDirectCHROMIUM(

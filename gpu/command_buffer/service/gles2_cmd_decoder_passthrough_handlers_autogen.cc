@@ -4441,29 +4441,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleBlendBarrierKHR(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleTexStorage2DImageCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::TexStorage2DImageCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::TexStorage2DImageCHROMIUM*>(
-          cmd_data);
-  if (!features().chromium_texture_storage_image) {
-    return error::kUnknownCommand;
-  }
-
-  GLenum target = static_cast<GLenum>(c.target);
-  GLenum internalFormat = static_cast<GLenum>(c.internalFormat);
-  GLenum bufferUsage = static_cast<GLenum>(c.bufferUsage);
-  GLsizei width = static_cast<GLsizei>(c.width);
-  GLsizei height = static_cast<GLsizei>(c.height);
-  error::Error error = DoTexStorage2DImageCHROMIUM(target, internalFormat,
-                                                   bufferUsage, width, height);
-  if (error != error::kNoError) {
-    return error;
-  }
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::HandleWindowRectanglesEXTImmediate(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

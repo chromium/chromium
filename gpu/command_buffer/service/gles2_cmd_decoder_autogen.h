@@ -5172,46 +5172,6 @@ error::Error GLES2DecoderImpl::HandleBlendBarrierKHR(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleTexStorage2DImageCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::TexStorage2DImageCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::TexStorage2DImageCHROMIUM*>(
-          cmd_data);
-  if (!features().chromium_texture_storage_image) {
-    return error::kUnknownCommand;
-  }
-
-  GLenum target = static_cast<GLenum>(c.target);
-  GLenum internalFormat = static_cast<GLenum>(c.internalFormat);
-  GLenum bufferUsage = static_cast<GLenum>(c.bufferUsage);
-  GLsizei width = static_cast<GLsizei>(c.width);
-  GLsizei height = static_cast<GLsizei>(c.height);
-  if (!validators_->texture_bind_target.IsValid(target)) {
-    LOCAL_SET_GL_ERROR_INVALID_ENUM("glTexStorage2DImageCHROMIUM", target,
-                                    "target");
-    return error::kNoError;
-  }
-  if (!validators_->texture_internal_format_storage.IsValid(internalFormat)) {
-    LOCAL_SET_GL_ERROR_INVALID_ENUM("glTexStorage2DImageCHROMIUM",
-                                    internalFormat, "internalFormat");
-    return error::kNoError;
-  }
-  if (width < 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glTexStorage2DImageCHROMIUM",
-                       "width < 0");
-    return error::kNoError;
-  }
-  if (height < 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glTexStorage2DImageCHROMIUM",
-                       "height < 0");
-    return error::kNoError;
-  }
-  DoTexStorage2DImageCHROMIUM(target, internalFormat, bufferUsage, width,
-                              height);
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderImpl::HandleWindowRectanglesEXTImmediate(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

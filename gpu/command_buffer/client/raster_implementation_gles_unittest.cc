@@ -128,12 +128,6 @@ class RasterMockGLES2Interface : public gles2::GLES2InterfaceStub {
                     GLenum internalFormat,
                     GLsizei width,
                     GLsizei height));
-  MOCK_METHOD5(TexStorage2DImageCHROMIUM,
-               void(GLenum target,
-                    GLenum internalFormat,
-                    GLenum bufferUsage,
-                    GLsizei width,
-                    GLsizei height));
 
   MOCK_METHOD2(PixelStorei, void(GLenum pname, GLint param));
   MOCK_METHOD2(TraceBeginCHROMIUM,

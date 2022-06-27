@@ -6394,7 +6394,7 @@ class GLGenerator():
     with CHeaderWriter(filename, self.year) as f:
       # Forward declaration of a few enums used in constant argument
       # to avoid including GL header files.
-      enum_defines = {'GL_SCANOUT_CHROMIUM': '0x6000'}
+      enum_defines = {}
       if 'FenceSync' in self.function_info:
         enum_defines['GL_SYNC_GPU_COMMANDS_COMPLETE'] = '0x9117'
       if 'ClientWaitSync' in self.function_info:

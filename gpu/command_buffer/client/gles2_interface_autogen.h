@@ -841,11 +841,6 @@ virtual GLint GetFragDataIndexEXT(GLuint program, const char* name) = 0;
 virtual void InitializeDiscardableTextureCHROMIUM(GLuint texture_id) = 0;
 virtual void UnlockDiscardableTextureCHROMIUM(GLuint texture_id) = 0;
 virtual bool LockDiscardableTextureCHROMIUM(GLuint texture_id) = 0;
-virtual void TexStorage2DImageCHROMIUM(GLenum target,
-                                       GLenum internalFormat,
-                                       GLenum bufferUsage,
-                                       GLsizei width,
-                                       GLsizei height) = 0;
 virtual void SetColorSpaceMetadataCHROMIUM(GLuint texture_id,
                                            GLcolorSpace color_space) = 0;
 virtual void WindowRectanglesEXT(GLenum mode,

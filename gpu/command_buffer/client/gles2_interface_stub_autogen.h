@@ -817,11 +817,6 @@ GLint GetFragDataIndexEXT(GLuint program, const char* name) override;
 void InitializeDiscardableTextureCHROMIUM(GLuint texture_id) override;
 void UnlockDiscardableTextureCHROMIUM(GLuint texture_id) override;
 bool LockDiscardableTextureCHROMIUM(GLuint texture_id) override;
-void TexStorage2DImageCHROMIUM(GLenum target,
-                               GLenum internalFormat,
-                               GLenum bufferUsage,
-                               GLsizei width,
-                               GLsizei height) override;
 void SetColorSpaceMetadataCHROMIUM(GLuint texture_id,
                                    GLcolorSpace color_space) override;
 void WindowRectanglesEXT(GLenum mode, GLsizei count, const GLint* box) override;

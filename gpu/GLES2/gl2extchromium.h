@@ -701,23 +701,6 @@ GL_APICALL void GL_APIENTRY glCoverageModulationCHROMIUM(GLenum components);
 #define GL_TEXTURE_FILTERING_HINT_CHROMIUM 0x8AF0
 #endif /* GL_CHROMIUM_texture_filtering_hint */
 
-#ifndef GL_CHROMIUM_texture_storage_image
-#define GL_CHROMIUM_texture_storage_image 1
-#ifdef GL_GLEXT_PROTOTYPES
-GL_APICALL void GL_APIENTRY glTexStorage2DImageCHROMIUM(GLenum target,
-                                                        GLenum internalformat,
-                                                        GLenum bufferusage,
-                                                        GLsizei width,
-                                                        GLsizei height);
-#endif
-typedef void(GL_APIENTRYP PFNGLTEXSTORAGE2DIMAGECHROMIUM)(GLenum target,
-                                                          GLenum internalformat,
-                                                          GLenum bufferusage,
-                                                          GLsizei width,
-                                                          GLsizei height);
-#define GL_SCANOUT_CHROMIUM 0x6000
-#endif /* GL_CHROMIUM_texture_storage_image */
-
 #ifndef GL_CHROMIUM_color_space_metadata
 #define GL_CHROMIUM_color_space_metadata 1
 #ifdef GL_GLEXT_PROTOTYPES

@@ -965,10 +965,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_MULTISAMPLE_BUFFER_BIT6_QCOM",
     },
     {
-        0x6000,
-        "GL_SCANOUT_CHROMIUM",
-    },
-    {
         0x6003,
         "GL_GET_ERROR_QUERY_CHROMIUM",
     },

@@ -193,9 +193,6 @@ struct XVisualInfo;
 // GL_CHROMIUM_texture_filtering_hint
 #define GL_TEXTURE_FILTERING_HINT_CHROMIUM               0x8AF0
 
-// GL_CHROMIUM_texture_storage_image
-#define GL_SCANOUT_CHROMIUM 0x6000
-
 // GL_OES_texure_3D
 #define GL_SAMPLER_3D_OES                                0x8B5F
 

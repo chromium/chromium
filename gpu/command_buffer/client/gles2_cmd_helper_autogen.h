@@ -3075,17 +3075,6 @@ void LockDiscardableTextureCHROMIUM(GLuint texture_id) {
   }
 }
 
-void TexStorage2DImageCHROMIUM(GLenum target,
-                               GLenum internalFormat,
-                               GLsizei width,
-                               GLsizei height) {
-  gles2::cmds::TexStorage2DImageCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::TexStorage2DImageCHROMIUM>();
-  if (c) {
-    c->Init(target, internalFormat, width, height);
-  }
-}
-
 void SetColorSpaceMetadataCHROMIUM(GLuint texture_id,
                                    GLuint shm_id,
                                    GLuint shm_offset,

@@ -52,8 +52,7 @@ VIZ_RESOURCE_FORMAT_EXPORT unsigned int TextureStorageFormat(
     ResourceFormat format,
     bool use_angle_rgbx_format);
 
-// Returns whether the format can be used with GpuMemoryBuffer texture storage,
-// allocated through TexStorage2DImageCHROMIUM.
+// Returns whether the format can be used with GpuMemoryBuffer texture storage.
 VIZ_RESOURCE_FORMAT_EXPORT bool IsGpuMemoryBufferFormatSupported(
     ResourceFormat format);
 
