@@ -76,14 +76,8 @@ for (let level of Object.keys(levelTable)) {
     });
     preferCodec(transceiver, 'video/H264');
 
-    let metadataLoaded = new Promise((resolve) => {
-      v.autoplay = true;
-      v.srcObject = stream;
-      v.id = stream.id
-      v.addEventListener('loadedmetadata', () => {
-        resolve();
-      });
-    });
+    exchangeIceCandidates(pc1, pc2);
+    const trackEvent = new Promise(r => pc2.ontrack = r);
 
     const offer = await pc1.createOffer();
     await pc1.setLocalDescription(offer),
@@ -91,6 +85,15 @@ for (let level of Object.keys(levelTable)) {
     const answer = await pc2.createAnswer();
     await pc2.setLocalDescription(answer);
     await pc1.setRemoteDescription(mungeLevel(answer, level));
+
+    v.srcObject = new MediaStream([(await trackEvent).track]);
+    let metadataLoaded = new Promise((resolve) => {
+      v.autoplay = true;
+      v.id = stream.id
+      v.addEventListener('loadedmetadata', () => {
+        resolve();
+      });
+    });
     await metadataLoaded;
     // Ensure that H.264 is in fact used.
     const statsReport = await transceiver.sender.getStats();
@@ -102,6 +105,9 @@ for (let level of Object.keys(levelTable)) {
                           'Level ' + level + ' H264 video is not supported');
       }
     }
+    // TODO(hta): This will not catch situations where the initial size is
+    // within the permitted bounds, but resolution or framerate changes to
+    // outside the permitted bounds after a while. Should be addressed.
     sizeFitsLevel(v.videoWidth, v.videoHeight, framesPerSecond, level);
   }, 'Level ' + level + ' H264 video is appropriately constrained');
 
