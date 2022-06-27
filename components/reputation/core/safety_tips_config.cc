@@ -80,6 +80,53 @@ security_state::SafetyTipStatus FlagTypeToSafetyTipStatus(
   return security_state::SafetyTipStatus::kNone;
 }
 
+// Return whether |canonical_url| is a member of the designated cohort.
+bool IsUrlAllowedByCohort(const SafetyTipsConfig* proto,
+                          const GURL& canonical_url,
+                          unsigned cohort_index) {
+  DCHECK(proto);
+  DCHECK(canonical_url.is_valid());
+
+  // Ensure that the cohort index is valid before using it. If it isn't valid,
+  // we just pretend the cohort didn't include the canonical URL.
+  if (cohort_index >= static_cast<unsigned>(proto->cohort_size())) {
+    return false;
+  }
+
+  const auto& cohort = proto->cohort(cohort_index);
+
+  // For each possible URL pattern, see if any of the indicated allowed_index or
+  // canonical_index entries correspond to a matching pattern since both sets of
+  // indices are considered valid spoof targets.
+  std::vector<std::string> patterns;
+  UrlToSafetyTipPatterns(canonical_url, &patterns);
+  for (const auto& search_pattern : patterns) {
+    for (const unsigned allowed_index : cohort.allowed_index()) {
+      // Skip over invalid indices.
+      if (allowed_index >=
+          static_cast<unsigned>(proto->allowed_pattern_size())) {
+        continue;
+      }
+      const auto& pattern = proto->allowed_pattern(allowed_index).pattern();
+      if (pattern == search_pattern) {
+        return true;
+      }
+    }
+    for (const unsigned canonical_index : cohort.canonical_index()) {
+      // Skip over invalid indices.
+      if (canonical_index >=
+          static_cast<unsigned>(proto->canonical_pattern_size())) {
+        continue;
+      }
+      const auto& pattern = proto->canonical_pattern(canonical_index).pattern();
+      if (pattern == search_pattern) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -93,24 +140,35 @@ const SafetyTipsConfig* GetSafetyTipsRemoteConfigProto() {
 }
 
 bool IsUrlAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
-                                           const GURL& url) {
+                                           const GURL& visited_url,
+                                           const GURL& canonical_url) {
   DCHECK(proto);
-  DCHECK(url.is_valid());
+  DCHECK(visited_url.is_valid());
   std::vector<std::string> patterns;
-  UrlToSafetyTipPatterns(url, &patterns);
-  auto allowed_pages = proto->allowed_pattern();
+  UrlToSafetyTipPatterns(visited_url, &patterns);
+  auto allowed_patterns = proto->allowed_pattern();
   for (const auto& pattern : patterns) {
     UrlPattern search_target;
     search_target.set_pattern(pattern);
 
-    auto lower = std::lower_bound(
-        allowed_pages.begin(), allowed_pages.end(), search_target,
+    auto maybe_before = std::lower_bound(
+        allowed_patterns.begin(), allowed_patterns.end(), search_target,
         [](const UrlPattern& a, const UrlPattern& b) -> bool {
           return a.pattern() < b.pattern();
         });
 
-    if (lower != allowed_pages.end() && pattern == lower->pattern()) {
-      return true;
+    if (maybe_before != allowed_patterns.end() &&
+        pattern == maybe_before->pattern()) {
+      // If no cohorts are given, it's a universal allowlist entry.
+      if (maybe_before->cohort_index_size() == 0) {
+        return true;
+      }
+
+      for (const unsigned cohort_index : maybe_before->cohort_index()) {
+        if (IsUrlAllowedByCohort(proto, canonical_url, cohort_index)) {
+          return true;
+        }
+      }
     }
   }
   return false;

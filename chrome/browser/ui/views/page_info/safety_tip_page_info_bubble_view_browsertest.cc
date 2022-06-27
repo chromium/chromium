@@ -229,6 +229,34 @@ void SwitchToTabAndWait(const Browser* browser, int tab_index) {
   }
 }
 
+// Add an allowlist with entries that aren't allowlisted for all domains.
+void ConfigureAllowlistWithScopes() {
+  auto config_proto = reputation::GetOrCreateSafetyTipsConfig();
+  config_proto->clear_allowed_pattern();
+  config_proto->clear_canonical_pattern();
+  config_proto->clear_cohort();
+
+  // Note: allowed_pattern must be sorted, so "googlee" comes before "gooogle".
+
+  // googlee.com may spoof google.com
+  config_proto->add_canonical_pattern()->set_pattern("google.com/");
+  auto* pattern = config_proto->add_allowed_pattern();
+  pattern->set_pattern("googlee.com/");
+  auto* cohort = config_proto->add_cohort();
+  cohort->add_canonical_index(0);  // google.com
+  pattern->add_cohort_index(0);
+
+  // gooogle.com may spoof blogspot, but not google.
+  config_proto->add_canonical_pattern()->set_pattern("blogspot.com/");
+  pattern = config_proto->add_allowed_pattern();
+  pattern->set_pattern("gooogle.com/");
+  cohort = config_proto->add_cohort();
+  cohort->add_canonical_index(1);  // blogspot.com
+  pattern->add_cohort_index(1);
+
+  reputation::SetSafetyTipsRemoteConfigProto(std::move(config_proto));
+}
+
 }  // namespace
 
 class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
@@ -806,13 +834,40 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   CheckRecordedHeuristicsUkmCount(0);
 }
 
-// Tests that Safety Tips trigger (or not) on lookalike domains with edit
-// distance when enabled, and not otherwise.
+// Tests that Safety Tips trigger on lookalike domains with edit distance.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggersOnEditDistance) {
-  // This domain is an edit distance from google.com.
+  // This domain is one edit from google.com.
   const GURL kNavigatedUrl = GetURL("goooglé.com");
   const GURL kTargetUrl = GetURL("google.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(IsUIShowing());
+}
+
+// Tests that Safety Tips don't trigger when using a scoped allowlist.
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
+                       DoesntTriggersOnScopedAllowlist) {
+  // This domain is one edit from google.com, but is allowed to spoof google.
+  const GURL kNavigatedUrl = GetURL("googlee.com");
+  const GURL kTargetUrl = GetURL("google.com");
+  ConfigureAllowlistWithScopes();
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_FALSE(IsUIShowing());
+  ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
+}
+
+// Tests that Safety Tips trigger when the URL is on the allowlist, but is
+// scoped to a different domain.
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
+                       TriggersOnWrongScopedAllowlist) {
+  // This domain is one edit from google.com, and may spoof blogspot.com...
+  const GURL kNavigatedUrl = GetURL("gooogle.com");
+  const GURL kTargetUrl = GetURL("google.com");
+  ConfigureAllowlistWithScopes();
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);

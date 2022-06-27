@@ -81,12 +81,6 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
     std::move(callback).Run(CreateAllowDecision());
     return;
   }
-  // If the URL is in the component updater allowlist, don't show any warning.
-  if (reputation::IsUrlAllowlistedBySafetyTipsComponent(
-          proto, response_url.GetWithEmptyPath())) {
-    std::move(callback).Run(CreateAllowDecision());
-    return;
-  }
 
   // TODO(crbug.com/1104386): If this is a reload and if the current
   // URL is the last URL of the stored redirect chain, the interstitial
@@ -115,7 +109,12 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
       });
   if (!GetMatchingDomain(navigated_domain, engaged_sites, in_target_allowlist,
                          proto, &matched_domain, &match_type)) {
-    if (ShouldBlockBySpoofCheckResult(navigated_domain)) {
+    // If the URL fails a spoof check, and isn't in the component allowlist,
+    // then show a spoof check interstitial.
+    if (ShouldBlockBySpoofCheckResult(navigated_domain) &&
+        !reputation::IsUrlAllowlistedBySafetyTipsComponent(
+            proto, response_url.GetWithEmptyPath(),
+            response_url.GetWithEmptyPath())) {
       match_type = LookalikeUrlMatchType::kFailedSpoofChecks;
       RecordUMAFromMatchType(match_type);
       LookalikeUrlContainer* lookalike_container =
@@ -133,29 +132,37 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
 
   RecordUMAFromMatchType(match_type);
 
-  if (ShouldBlockLookalikeUrlNavigation(match_type)) {
-    const std::string suggested_domain = GetETLDPlusOne(matched_domain);
-    DCHECK(!suggested_domain.empty());
-    GURL::Replacements replace_host;
-    replace_host.SetHostStr(suggested_domain);
-    const GURL suggested_url =
-        response_url.ReplaceComponents(replace_host).GetWithEmptyPath();
-    LookalikeUrlContainer* lookalike_container =
-        LookalikeUrlContainer::FromWebState(web_state());
-    lookalike_container->SetLookalikeUrlInfo(suggested_url, response_url,
-                                             match_type);
+  const std::string suggested_domain = GetETLDPlusOne(matched_domain);
+  DCHECK(!suggested_domain.empty());
+  GURL::Replacements replace_host;
+  replace_host.SetHostStr(suggested_domain);
+  const GURL suggested_url =
+      response_url.ReplaceComponents(replace_host).GetWithEmptyPath();
 
-    std::move(callback).Run(CreateLookalikeErrorDecision());
+  // If the URL is in the component updater allowlist, don't show any warning.
+  if (reputation::IsUrlAllowlistedBySafetyTipsComponent(
+          proto, response_url.GetWithEmptyPath(),
+          suggested_url.GetWithEmptyPath())) {
+    std::move(callback).Run(CreateAllowDecision());
     return;
   }
 
-  // Interstitial normally records UKM, but still record when it's not shown.
-  RecordUkmForLookalikeUrlBlockingPage(
-      ukm::GetSourceIdForWebStateDocument(web_state()), match_type,
-      LookalikeUrlBlockingPageUserAction::kInterstitialNotShown,
-      /*triggered_by_initial_url=*/false);
+  if (!ShouldBlockLookalikeUrlNavigation(match_type)) {
+    // Interstitial normally records UKM, but still record when it's not shown.
+    RecordUkmForLookalikeUrlBlockingPage(
+        ukm::GetSourceIdForWebStateDocument(web_state()), match_type,
+        LookalikeUrlBlockingPageUserAction::kInterstitialNotShown,
+        /*triggered_by_initial_url=*/false);
 
-  std::move(callback).Run(CreateAllowDecision());
+    std::move(callback).Run(CreateAllowDecision());
+    return;
+  }
+
+  LookalikeUrlContainer* lookalike_container =
+      LookalikeUrlContainer::FromWebState(web_state());
+  lookalike_container->SetLookalikeUrlInfo(suggested_url, response_url,
+                                           match_type);
+  std::move(callback).Run(CreateLookalikeErrorDecision());
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(LookalikeUrlTabHelper)

@@ -476,12 +476,6 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
     return false;
   }
 
-  // If the URL is in the component allowlist, don't show any warning.
-  if (reputation::IsUrlAllowlistedBySafetyTipsComponent(
-          proto, url.GetWithEmptyPath())) {
-    return false;
-  }
-
   // GetDomainInfo() is expensive, so do possible early-abort checks first.
   base::TimeTicks get_domain_info_start = base::TimeTicks::Now();
   const DomainInfo navigated_domain = GetDomainInfo(url);
@@ -538,13 +532,24 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
     GURL::Replacements replace_host;
     replace_host.SetHostStr(suggested_domain);
     *suggested_url = url.ReplaceComponents(replace_host).GetWithEmptyPath();
-    return true;
+
+    // Only flag the URL if its not allowed to spoof the suggested URL.
+    if (!reputation::IsUrlAllowlistedBySafetyTipsComponent(
+            proto, url.GetWithEmptyPath(), *suggested_url)) {
+      return true;
+    }
   }
 
   if (ShouldBlockBySpoofCheckResult(navigated_domain)) {
     *match_type = LookalikeUrlMatchType::kFailedSpoofChecks;
     *suggested_url = GURL();
-    return true;
+
+    // Only flag the URL if its not allowed to spoof itself (which is how we
+    // indicate spoof-check-specific allowlisting).
+    if (!reputation::IsUrlAllowlistedBySafetyTipsComponent(
+            proto, url.GetWithEmptyPath(), url.GetWithEmptyPath())) {
+      return true;
+    }
   }
 
   return false;
