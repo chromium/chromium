@@ -1601,7 +1601,7 @@ void SiteSettingsHandler::HandleSetBlockAutoplayEnabled(
 void SiteSettingsHandler::EnsureCookiesTreeModelCreated() {
   if (cookies_tree_model_)
     return;
-  cookies_tree_model_ = CookiesTreeModel::CreateForProfile(profile_);
+  cookies_tree_model_ = CookiesTreeModel::CreateForProfileDeprecated(profile_);
   cookies_tree_model_->AddCookiesTreeObserver(this);
 }
 

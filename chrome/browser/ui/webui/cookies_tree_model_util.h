@@ -29,8 +29,10 @@ class CookiesTreeModelUtil {
   std::string GetTreeNodeId(const CookieTreeNode* node);
 
   // Return the details of the child nodes of `parent`.
-  base::Value::List GetChildNodeDetails(const CookieTreeNode* parent,
-                                        bool include_quota_nodes);
+  // DEPRECATED(crbug.com/1271155): The cookies tree model is slowly being
+  // deprecated, during this process the semantics of the model are nuanced
+  // w.r.t partitioned storage, and should not be used in new locations.
+  base::Value::List GetChildNodeDetailsDeprecated(const CookieTreeNode* parent);
 
   // Gets tree node from |path| under |root|. |path| is comma separated list of
   // ids. |id_map| translates ids into object pointers. Return NULL if |path|
@@ -51,8 +53,7 @@ class CookiesTreeModelUtil {
   // maps a CookieTreeNode to an ID and creates a new ID if `node` is not in the
   // maps. Returns nullopt if the `node` does not need to be shown.
   absl::optional<base::Value::Dict> GetCookieTreeNodeDictionary(
-      const CookieTreeNode& node,
-      bool include_quota_nodes);
+      const CookieTreeNode& node);
 
   // IDMap to create unique ID and look up the object for an ID.
   CookiesTreeNodeIdMap id_map_;

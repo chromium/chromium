@@ -23,6 +23,10 @@ void MockBrowsingDataQuotaHelper::StartFetching(FetchResultCallback callback) {
 void MockBrowsingDataQuotaHelper::RevokeHostQuota(const std::string& host) {
 }
 
+void MockBrowsingDataQuotaHelper::DeleteHostData(
+    const std::string& host,
+    blink::mojom::StorageType type) {}
+
 void MockBrowsingDataQuotaHelper::AddHost(const std::string& host,
                                           int64_t temporary_usage,
                                           int64_t persistent_usage,

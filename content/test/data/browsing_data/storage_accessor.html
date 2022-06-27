@@ -22,13 +22,18 @@
       } catch (e) {}
 
       // Access file system.
-      const file_system_promise = new Promise(function(resolve, reject) {
-        window.webkitRequestFileSystem(TEMPORARY, 1024, fs => {
-          fs.root.getFile("foo.txt");
-          resolve();
-        });
+      await new Promise(resolve => {
+        window.webkitRequestFileSystem(TEMPORARY, 1024, function (fs) {
+          fs.root.getFile('foo.txt', { create : true }, fileEntry => {
+            fileEntry.createWriter(function (fileWriter) {
+              fileWriter.onwriteend = () => resolve();
+              let blob = new Blob([1,2,3], { type: 'text/plain' });
+              fileWriter.write(blob);
+            });
+          },
+        );
+        }, () => resolve());
       });
-      await file_system_promise;
 
       // Access service worker.
       await navigator.serviceWorker.register("empty.js");
@@ -37,7 +42,22 @@
       await caches.open('test');
 
       // Access Indexed DB.
-      await indexedDB.open("test");
+      await new Promise(resolve => {
+        let open = indexedDB.open('test');
+        open.onupgradeneeded = () => {
+          open.result.createObjectStore('store', { keyPath: 'id' });
+        }
+        open.onsuccess = () => {
+          let db = open.result;
+          let tx = db.transaction('store', 'readwrite');
+          let store = tx.objectStore('store');
+          store.put({ id: 42, value: 43 });
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+        }
+      });
 
       return true;
      }

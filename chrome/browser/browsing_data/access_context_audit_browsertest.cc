@@ -474,8 +474,8 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TreeModelDeletion) {
   EXPECT_EQ(cookies.size(),
             kEmbeddedPageCookieCount + kTopLevelPageCookieCount);
 
-  auto tree_model =
-      CookiesTreeModel::CreateForProfile(chrome_test_utils::GetProfile(this));
+  auto tree_model = CookiesTreeModel::CreateForProfileDeprecated(
+      chrome_test_utils::GetProfile(this));
   {
     CookiesTreeObserver observer;
     tree_model->AddCookiesTreeObserver(&observer);

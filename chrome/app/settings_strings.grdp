@@ -3422,6 +3422,9 @@
   <message name="IDS_SETTINGS_COOKIES_CACHE_STORAGE" desc="The text shown when there is Cache Storage (name of a Web standard) in the Cookies table">
     Cache Storage
   </message>
+  <message name="IDS_SETTINGS_COOKIES_QUOTA_STORAGE" desc="The text shown when there is Quota Managed Storage in the Cookies table">
+    Quota-managed storage
+  </message>
 
   <!-- Sync / People Page -->
   <message name="IDS_SETTINGS_PEOPLE" desc="Name of the settings page which manages the user's relationship to Google.">

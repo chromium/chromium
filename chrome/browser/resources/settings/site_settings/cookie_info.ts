@@ -51,6 +51,7 @@ export const cookieInfo: {[key: string]: Array<Array<string>>} = {
     ['origin', 'fileSystemOrigin'], ['persistent', 'fileSystemPersistentUsage'],
     ['temporary', 'fileSystemTemporaryUsage']
   ],
+  'quota': [['origin', 'quotaOrigin'], ['totalUsage', 'quotaSize']],
   'service_worker':
       [['origin', 'serviceWorkerOrigin'], ['size', 'serviceWorkerSize']],
   'shared_worker':

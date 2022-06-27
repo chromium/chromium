@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 class BrowsingDataQuotaHelper;
 class Profile;
@@ -68,6 +69,9 @@ class BrowsingDataQuotaHelper
   virtual void StartFetching(FetchResultCallback callback) = 0;
 
   virtual void RevokeHostQuota(const std::string& host) = 0;
+
+  virtual void DeleteHostData(const std::string& host,
+                              blink::mojom::StorageType type) = 0;
 
  protected:
   BrowsingDataQuotaHelper();
