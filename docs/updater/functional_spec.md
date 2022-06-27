@@ -264,9 +264,12 @@ TODO(crbug.com/1035895): Document UI/UX.
 
 The user interface is localized in the following languages: TBD.
 
-TODO(crbug.com/1014591): Implement install cancellation.
+TODO(crbug.com/1014591): Implement install cancellation, including cancellation
+ping.
 
-The install flow can be stopped before the payload finished downloading.
+The install flow can be stopped before the payload finishes downloading. In this
+case, the event ping associated with the install attempt will be sent with an
+`eventresult` of 4 (cancelled).
 
 TODO(crbug.com/1286580): Implement silent mode.
 
@@ -295,6 +298,9 @@ update fails repeatedly.
 The updater communicates with update servers using the
 [Omaha Protocol](protocol_3_1.md).
 
+The updater uses platform-native network stacks (WinHTTP on Windows and
+NSURLSession on macOS).
+
 #### Security
 It is not possible to MITM the updater even if the network (including TLS) is
 compromised. The integrity of the client-server communication is guaranteed
@@ -306,7 +312,8 @@ even if the response was erroneous (misformatted or unparsable), until the
 next normally scheduled update check.
 
 #### DOS Mitigation
-The updater sends DoS mitigation headers in requests to the server.
+The updater sends [DoS mitigation headers](protocol_3_1.md) in requests to the
+server.
 
 When the server responds with an `X-Retry-After header`, the client does not
 issue another update check until the specified period has passed (maximum 24
@@ -333,6 +340,12 @@ specific.
 The macOS API is [defined here](installer_api_mac.md).
 
 TODO(crbug.com/1035895): Document Windows installer APIs
+
+TODO(crbug.com/1339454): Run installers at BELOW_NORMAL_PRIORITY_CLASS if the
+update flow is a background flow.
+
+### Enterprise Enrollment
+TODO(crbug.com/1339451): Document enterprise enrollment and the token.
 
 ### Enterprise Policies
 Enterprise policies can prevent the installation of applications:
@@ -658,6 +671,22 @@ The integrity of the payload is verified.
 
 There is no download cache. Payloads are re-downloaded for applications which
 fail to install.
+
+### Logging
+All updater logs are written to `{UPDATER_DATA_DIR}\updater.log`.
+
+On macOS for system-scope updaters, `{UPDATER_DATA_DIR}` is
+`/Library/Application Support/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}`.
+
+On macOS for user-scope updaters, `{UPDATER_DATA_DIR}` is
+`~/Library/Application Support/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}`.
+
+On Windows for system-scope updaters, `{UPDATER_DATA_DIR}` is
+`%PROGRAMFILES%\{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`. (A 32-bit updater uses
+use `%PROGRAMFILESX86%` if appropriate instead.)
+
+On Windows for user-scope updaters, `{UPDATER_DATA_DIR}` is
+`%LOCALAPPDATA%\{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`.
 
 ## Services
 
