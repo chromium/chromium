@@ -70,6 +70,13 @@ class PrefetchProxyURLLoaderInterceptorTest
   PrefetchProxyURLLoaderInterceptorTest() = default;
   ~PrefetchProxyURLLoaderInterceptorTest() override = default;
 
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kIsolatePrerendersMustProbeOrigin);
+  }
+
   void TearDown() override {
     prerender::NoStatePrefetchManager* no_state_prefetch_manager =
         prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
@@ -113,6 +120,7 @@ class PrefetchProxyURLLoaderInterceptorTest
  private:
   absl::optional<bool> was_intercepted_;
   base::OnceClosure waiting_for_callback_closure_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PrefetchProxyURLLoaderInterceptorTest, DISABLE_ASAN(WantIntercept)) {

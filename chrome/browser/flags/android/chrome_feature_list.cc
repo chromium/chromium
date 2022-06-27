@@ -853,7 +853,7 @@ const base::Feature kTrustedWebActivityQualityEnforcementWarning{
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kShowExtendedPreloadingSetting{
-    "ShowExtendedPreloadingSetting", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ShowExtendedPreloadingSetting", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kStartSurfaceAndroid{"StartSurfaceAndroid",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

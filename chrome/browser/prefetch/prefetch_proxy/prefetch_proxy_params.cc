@@ -77,7 +77,7 @@ absl::optional<size_t> PrefetchProxyMaximumNumberOfPrefetches() {
   }
 
   int max = base::GetFieldTrialParamByFeatureAsInt(features::kIsolatePrerenders,
-                                                   "max_srp_prefetches", 1);
+                                                   "max_srp_prefetches", 5);
   if (max < 0) {
     return absl::nullopt;
   }
@@ -166,7 +166,7 @@ GURL PrefetchProxyTLSCanaryCheckURL() {
   if (url.is_valid()) {
     return url;
   }
-  return GURL("http://tls.tunnel.check.googlezip.net/connect");
+  return GURL("http://tls-tunnel-check.googlezip.net/connect");
 }
 
 GURL PrefetchProxyDNSCanaryCheckURL() {
@@ -175,7 +175,7 @@ GURL PrefetchProxyDNSCanaryCheckURL() {
   if (url.is_valid()) {
     return url;
   }
-  return GURL("http://dns.tunnel.check.googlezip.net/connect");
+  return GURL("http://dns-tunnel-check.googlezip.net/connect");
 }
 
 base::TimeDelta PrefetchProxyCanaryCheckCacheLifetime() {
@@ -194,21 +194,21 @@ size_t PrefetchProxyMaxSubresourcesPerPrerender() {
   }
 
   return base::GetFieldTrialParamByFeatureAsInt(
-      features::kIsolatePrerenders, "max_subresource_count_per_prerender", 50);
+      features::kIsolatePrerenders, "max_subresource_count_per_prerender", 0);
 }
 
 bool PrefetchProxyStartsSpareRenderer() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
              "isolated-prerender-start-spare-renderer") ||
          base::GetFieldTrialParamByFeatureAsBool(features::kIsolatePrerenders,
-                                                 "start_spare_renderer", false);
+                                                 "start_spare_renderer", true);
 }
 
 bool PrefetchProxyUseSpeculationRules() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
              "isolated-prerender-use-speculation-rules") ||
-         base::GetFieldTrialParamByFeatureAsBool(
-             features::kIsolatePrerenders, "use_speculation_rules", false);
+         base::GetFieldTrialParamByFeatureAsBool(features::kIsolatePrerenders,
+                                                 "use_speculation_rules", true);
 }
 
 bool PrefetchProxyShouldPrefetchPosition(size_t position) {
@@ -279,7 +279,7 @@ bool PrefetchProxyAllowAllDomains() {
 bool PrefetchProxyAllowAllDomainsForExtendedPreloading() {
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kIsolatePrerenders, "allow_all_domains_for_extended_preloading",
-      false);
+      true);
 }
 
 base::TimeDelta PrefetchProxyCacheableDuration() {
@@ -294,7 +294,7 @@ std::string PrefetchProxyServerExperimentGroup() {
 
 bool PrefetchProxyUseIndividualNetworkContextsForEachPrefetch() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      features::kIsolatePrerenders, "use_individual_network_contexts", false);
+      features::kIsolatePrerenders, "use_individual_network_contexts", true);
 }
 
 bool PrefetchProxySupportNonPrivatePrefetches() {

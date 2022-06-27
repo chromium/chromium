@@ -509,9 +509,9 @@ class PrefetchProxyBrowserTest
   // features since order is tricky when doing different feature lists between
   // base and derived classes.
   virtual void SetFeatures() {
-    // Important: Features with parameters can't be used here, because it will
-    // cause a failed DCHECK in the SSL reporting test.
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatePrerenders);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIsolatePrerenders,
+        {{"use_speculation_rules", "false"}, {"max_srp_prefetches", "1"}});
   }
 
   void SetUpOnMainThread() override {
@@ -2355,7 +2355,10 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
 class PolicyTestPrefetchProxyBrowserTest : public policy::PolicyTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatePrerenders);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kIsolatePrerenders,
+         blink::features::kSpeculationRulesPrefetchProxy},
+        {});
     policy::PolicyTest::SetUp();
   }
 
@@ -2368,14 +2371,34 @@ class PolicyTestPrefetchProxyBrowserTest : public policy::PolicyTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  void MakeNavigationPrediction(const GURL& doc_url,
-                                const std::vector<GURL>& predicted_urls) {
-    NavigationPredictorKeyedServiceFactory::GetForProfile(browser()->profile())
-        ->OnPredictionUpdated(
-            GetWebContents(), doc_url,
-            NavigationPredictorKeyedService::PredictionSource::
-                kAnchorElementsParsedFromWebPage,
-            predicted_urls);
+  void InsertSpeculation(bool use_prefetch_proxy,
+                         const std::vector<GURL>& prefetch_urls) {
+    std::string speculation_script = R"(
+      var script = document.createElement('script');
+      script.type = 'speculationrules';
+      script.text = `{
+        "prefetch": [{
+          "source": "list",
+          "urls": [)";
+
+    bool first = true;
+    for (const GURL& url : prefetch_urls) {
+      if (!first)
+        speculation_script.append(",");
+      first = false;
+      speculation_script.append("\"").append(url.spec()).append("\"");
+    }
+    speculation_script.append("]");
+
+    if (use_prefetch_proxy)
+      speculation_script.append(R"(,
+          "requires": ["anonymous-client-ip-when-cross-origin"])");
+    speculation_script.append(R"(
+        }]
+      }`;
+      document.head.appendChild(script);)");
+
+    EXPECT_TRUE(ExecuteScript(GetWebContents(), speculation_script));
   }
 
  private:
@@ -2398,7 +2421,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTestPrefetchProxyBrowserTest,
       PrefetchProxyTabHelper::FromWebContents(GetWebContents());
 
   GURL doc_url("https://www.google.com/search?q=test");
-  MakeNavigationPrediction(doc_url, {GURL("https://test.com/")});
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), doc_url));
+  InsertSpeculation(true, {GURL("https://test.com/")});
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(tab_helper->srp_metrics().predicted_urls_count_, 0U);
@@ -2412,7 +2436,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTestPrefetchProxyBrowserTest,
       PrefetchProxyTabHelper::FromWebContents(GetWebContents());
 
   GURL doc_url("https://www.google.com/search?q=test");
-  MakeNavigationPrediction(doc_url, {GURL("https://test.com/")});
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), doc_url));
+  InsertSpeculation(true, {GURL("https://test.com/")});
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(tab_helper->srp_metrics().predicted_urls_count_, 1U);
@@ -2424,6 +2449,15 @@ class SSLReportingPrefetchProxyBrowserTest : public PrefetchProxyBrowserTest {
     // Certificate reports are only sent from official builds, unless this has
     // been called.
     CertReportHelper::SetFakeOfficialBuildForTesting();
+  }
+
+  void SetFeatures() override {
+    // Important: Features with parameters can't be used here, because it will
+    // cause a failed DCHECK in the SSL reporting test.
+    scoped_feature_list_.InitWithFeatures(
+        {features::kIsolatePrerenders,
+         blink::features::kSpeculationRulesPrefetchProxy},
+        {});
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
@@ -2446,6 +2480,9 @@ class SSLReportingPrefetchProxyBrowserTest : public PrefetchProxyBrowserTest {
       return nullptr;
     return helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -2460,7 +2497,7 @@ IN_PROC_BROWSER_TEST_F(
   https_expired_server.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_expired_server.Start());
 
-  GURL safe_page = GetOriginServerURL("/simple.html");
+  GURL safe_page = GURL("https://www.google.com/search?q=test");
 
   // Opt in to sending reports for invalid certificate chains.
   certificate_reporting_test_utils::SetCertReportingOptIn(
@@ -2482,8 +2519,7 @@ IN_PROC_BROWSER_TEST_F(
   tab_helper_observer.SetOnPrefetchErrorClosure(
       prefetch_run_loop.QuitClosure());
 
-  GURL doc_url("https://www.google.com/search?q=test");
-  MakeNavigationPrediction(doc_url, {eligible_link});
+  InsertSpeculation(false, true, {eligible_link});
 
   // This run loop stops when the prefetches completes with its error.
   prefetch_run_loop.Run();
@@ -2918,9 +2954,12 @@ class PrefetchProxyWithNSPBrowserTest : public PrefetchProxyBrowserTest {
   }
 
   void SetFeatures() override {
-    PrefetchProxyBrowserTest::SetFeatures();
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kLightweightNoStatePrefetch);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kIsolatePrerenders,
+          {{"use_speculation_rules", "false"},
+           {"max_subresource_count_per_prerender", "50"}}},
+         {blink::features::kLightweightNoStatePrefetch, {}}},
+        {});
   }
 
  private:
@@ -3575,19 +3614,21 @@ class ProbingAndNSPEnabledPrefetchProxyBrowserTest
 
   void SetFeatures() override {
     PrefetchProxyBrowserTest::SetFeatures();
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kLightweightNoStatePrefetch);
-    probing_scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerendersMustProbeOrigin,
+    scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            {"do_canary", "false"},
-            {"ineligible_decoy_request_probability", "0"},
-        });
+            {features::kIsolatePrerenders,
+             {{"use_speculation_rules", "false"},
+              {"max_subresource_count_per_prerender", "50"}}},
+            {blink::features::kLightweightNoStatePrefetch, {}},
+            {features::kIsolatePrerendersMustProbeOrigin,
+             {{"do_canary", "false"},
+              {"ineligible_decoy_request_probability", "0"}}},
+        },
+        {});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::ScopedFeatureList probing_scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
@@ -4058,7 +4099,9 @@ class SpeculationPrefetchProxyTest : public PrefetchProxyBrowserTest {
   void SetFeatures() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kIsolatePrerenders,
-          {{"use_speculation_rules", "true"}, {"max_srp_prefetches", "3"}}},
+          {{"use_speculation_rules", "true"},
+           {"max_srp_prefetches", "3"},
+           {"max_subresource_count_per_prerender", "50"}}},
          {blink::features::kLightweightNoStatePrefetch, {}},
          {blink::features::kSpeculationRulesPrefetchProxy, {}}},
         {{features::kLazyImageLoading}});
@@ -4518,6 +4561,7 @@ class ZeroCacheTimePrefetchProxyBrowserTest : public PrefetchProxyBrowserTest {
   void SetFeatures() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders, {
+                                          {"use_speculation_rules", "false"},
                                           {"cacheable_duration", "0"},
                                       });
   }
@@ -4581,7 +4625,8 @@ class IndividualNetworkContextsPrefetchProxyBrowserTest
 
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"use_individual_network_contexts", "true"}});
+        {{"use_speculation_rules", "false"},
+         {"use_individual_network_contexts", "true"}});
   }
 
  private:
