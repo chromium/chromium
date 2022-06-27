@@ -2216,7 +2216,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerBrokenLocalStateTest,
   ASSERT_EQ(1, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 }
 
-class WizardControllerProxyAuthOnSigninTest : public WizardControllerTest {
+class WizardControllerProxyAuthOnSigninTest : public OobeBaseTest {
  public:
   WizardControllerProxyAuthOnSigninTest(
       const WizardControllerProxyAuthOnSigninTest&) = delete;
@@ -2232,17 +2232,11 @@ class WizardControllerProxyAuthOnSigninTest : public WizardControllerTest {
   // WizardControllerTest:
   void SetUp() override {
     ASSERT_TRUE(proxy_server_.Start());
-    WizardControllerTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    WizardControllerTest::SetUpOnMainThread();
-    WizardController::default_controller()->AdvanceToScreen(
-        WelcomeView::kScreenId);
+    OobeBaseTest::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    WizardControllerTest::SetUpCommandLine(command_line);
+    OobeBaseTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(::switches::kProxyServer,
                                     proxy_server_.host_port_pair().ToString());
   }
@@ -2250,19 +2244,20 @@ class WizardControllerProxyAuthOnSigninTest : public WizardControllerTest {
   net::SpawnedTestServer& proxy_server() { return proxy_server_; }
 
  private:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   net::SpawnedTestServer proxy_server_;
 };
 
 // TODO(crbug.com/1286218): Flakes on CrOS.
 IN_PROC_BROWSER_TEST_F(WizardControllerProxyAuthOnSigninTest,
-                       DISABLED_ProxyAuthDialogOnSigninScreen) {
+                       ProxyAuthDialogOnSigninScreen) {
   content::WindowedNotificationObserver auth_needed_waiter(
       chrome::NOTIFICATION_AUTH_NEEDED,
       content::NotificationService::AllSources());
 
-  CheckCurrentScreen(WelcomeView::kScreenId);
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
 
-  LoginDisplayHost::default_host()->StartSignInScreen();
   auth_needed_waiter.Wait();
 }
 
