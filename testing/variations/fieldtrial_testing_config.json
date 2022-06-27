@@ -4484,6 +4484,21 @@
             ]
         }
     ],
+    "IOSEnableFaviconForPasswords": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableFaviconForPasswords"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSEnableUnrealizedWebStates": [
         {
             "platforms": [
