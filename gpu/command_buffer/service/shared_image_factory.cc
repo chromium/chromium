@@ -44,10 +44,9 @@
 
 #if defined(USE_OZONE)
 #include "ui/ozone/buildflags.h"
+#include "ui/ozone/public/gl_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
-#if BUILDFLAG(OZONE_PLATFORM_X11)
-#include "ui/gl/gl_image_glx_native_pixmap.h"
-#endif
+#include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)) && \
@@ -268,7 +267,11 @@ SharedImageFactory::SharedImageFactory(
     bool glx_ext_supported = false;
 #if defined(USE_OZONE)
 #if BUILDFLAG(OZONE_PLATFORM_X11)
-    glx_ext_supported = gl::GLImageGLXNativePixmap::CanImportNativePixmap();
+    ui::GLOzone* gl_ozone = ui::OzonePlatform::GetInstance()
+                                ->GetSurfaceFactoryOzone()
+                                ->GetCurrentGLOzone();
+    // This checks for extension support on both GLOzoneEGLX11 and GLOzoneGLX.
+    glx_ext_supported = gl_ozone && gl_ozone->CanImportNativePixmap();
 #endif  // BUILDFLAG(OZONE_PLATFORM_X11)
 #endif  // defined(USE_OZONE)
     if (egl_ext_supported) {
