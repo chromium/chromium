@@ -28,8 +28,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   // this object as long as Shutdown() is not called.
   PasswordStoreProxyBackend(PasswordStoreBackend* built_in_backend,
                             PasswordStoreBackend* android_backend,
-                            PrefService* prefs,
-                            SyncDelegate* sync_delegate);
+                            PrefService* prefs);
   PasswordStoreProxyBackend(const PasswordStoreProxyBackend&) = delete;
   PasswordStoreProxyBackend(PasswordStoreProxyBackend&&) = delete;
   PasswordStoreProxyBackend& operator=(const PasswordStoreProxyBackend&) =
@@ -118,7 +117,6 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   const raw_ptr<PasswordStoreBackend> built_in_backend_;
   const raw_ptr<PasswordStoreBackend> android_backend_;
   raw_ptr<PrefService> const prefs_ = nullptr;
-  const raw_ptr<SyncDelegate> sync_delegate_;
   raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
   base::WeakPtrFactory<PasswordStoreProxyBackend> weak_ptr_factory_{this};

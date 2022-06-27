@@ -47,8 +47,7 @@ PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
-      built_in_backend_.get(), android_backend_.get(), prefs_,
-      sync_delegate_.get());
+      built_in_backend_.get(), android_backend_.get(), prefs_);
 }
 
 PasswordStoreBackendMigrationDecorator::
