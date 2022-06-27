@@ -158,7 +158,7 @@ void ImmersiveModeControllerChromeos::OnWidgetActivationChanged(
   // Enable immersive mode if the widget is activated. Do not disable immersive
   // mode if the widget deactivates, but is not minimized.
   chromeos::ImmersiveFullscreenController::EnableForWidget(
-      widget, active && !widget->IsMinimized());
+      widget, active || !widget->IsMinimized());
 }
 
 void ImmersiveModeControllerChromeos::LayoutBrowserRootView() {
