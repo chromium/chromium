@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
+#include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -162,6 +164,10 @@ std::string ShortcutIdForSSH(const std::string& profileId);
 // Menu shortcut ID for Linux container.
 std::string ShortcutIdFromContainerId(Profile* profile,
                                       const guest_os::GuestId& id);
+
+// Parse Intent extras from shortcut ID.
+base::flat_map<std::string, std::string> ExtrasFromShortcutId(
+    const base::Value& shortcut);
 
 // Returns list of SSH connections {<profile-id>, <description>}.
 std::vector<std::pair<std::string, std::string>> GetSSHConnections(

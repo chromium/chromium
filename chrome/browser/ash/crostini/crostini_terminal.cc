@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,7 +14,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/values.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
@@ -82,15 +80,6 @@ constexpr char kDefaultBackgroundColor[] = "#202124";
 
 constexpr char kSettingPassCtrlW[] = "/hterm/profiles/default/pass-ctrl-w";
 constexpr bool kDefaultPassCtrlW = false;
-
-base::flat_map<std::string, std::string> ExtrasFromShortcutId(
-    const base::Value& shortcut) {
-  base::flat_map<std::string, std::string> extras;
-  for (const auto it : shortcut.DictItems()) {
-    extras[it.first] = it.second.GetString();
-  }
-  return extras;
-}
 
 std::string GetSettingsKey(const std::string& prefix,
                            const std::string& profile,
@@ -507,6 +496,17 @@ std::string ShortcutIdFromContainerId(Profile* profile,
   std::string shortcut_id;
   base::JSONWriter::Write(dict, &shortcut_id);
   return shortcut_id;
+}
+
+base::flat_map<std::string, std::string> ExtrasFromShortcutId(
+    const base::Value& shortcut) {
+  base::flat_map<std::string, std::string> extras;
+  for (const auto it : shortcut.DictItems()) {
+    if (it.second.is_string()) {
+      extras[it.first] = it.second.GetString();
+    }
+  }
+  return extras;
 }
 
 std::vector<std::pair<std::string, std::string>> GetSSHConnections(
