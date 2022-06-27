@@ -32,11 +32,7 @@ ts_library("build_ts") {
     "parse_html_subset_test.ts",
     "parse_html_subset_trusted_types_test.ts",
     "promise_resolver_test.ts",
-
-    # TODO(1189595): Need to add TypeScript definitions for TrustedHTML before
-    # passing this file to the TS Compiler.
-    #"static_types_test.js",
-
+    "static_types_test.ts",
     "util_test.ts",
     "web_ui_listener_mixin_test.ts",
 

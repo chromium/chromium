@@ -6,60 +6,85 @@
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {down, pressAndReleaseKeyOn, up} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise, waitAfterNextRender} from 'chrome://test/test_util.js';
+import {html, PolymerElement, mixinBehaviors} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {assertFalse, assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 
-suite('cr-focus-row-behavior-test', function() {
-  /** @type {FocusableIronListItemElement} */ let testElement;
+class ButtonThreeElement extends PolymerElement {
+  static get is() {
+    return 'button-three';
+  }
 
-  suiteSetup(function() {
-    Polymer({
-      is: 'button-three',
+  static get template() {
+    return html`
+      <button>
+        fake button three
+      </button>
+    `;
+  }
 
-      _template: html`
-        <button>
-          fake button three
+  getFocusableElement() {
+    return this.shadowRoot!.querySelector('button');
+  }
+}
+customElements.define(ButtonThreeElement.is, ButtonThreeElement);
+
+const TestElementBase = mixinBehaviors([FocusRowBehavior], PolymerElement) as
+    {new (): PolymerElement & FocusRowBehavior};
+
+interface TestFocusRowBehaviorElement {
+  $: {
+    control: HTMLElement,
+    controlTwo: HTMLElement,
+  };
+}
+
+class TestFocusRowBehaviorElement extends TestElementBase {
+  static get is() {
+    return 'test-focus-row-behavior-element';
+  }
+
+  static get template() {
+    return html`
+      <div id="container" focus-row-container>
+        <span>fake text</span>
+        <button id="control" focus-row-control focus-type='fake-btn'>
+          fake button
         </button>
-      `,
+        <button id="controlTwo" focus-row-control focus-type='fake-btn-two'>
+          fake button two
+        </button>
+        <button-three focus-row-control focus-type='fake-btn-three'>
+        </button-three>
+      </div>
+    `;
+  }
 
-      /** @return {!Element} */
-      getFocusableElement: function() {
-        return this.$$('button');
-      },
-    });
+  focusCallCount: number = 0;
 
-    Polymer({
-      is: 'focus-row-element',
+  override focus() {
+    this.focusCallCount++;
+  }
+}
+customElements.define(
+    TestFocusRowBehaviorElement.is, TestFocusRowBehaviorElement);
 
-      _template: html`
-        <div id="container" focus-row-container>
-          <span>fake text</span>
-          <button id="control" focus-row-control focus-type='fake-btn'>
-            fake button
-          </button>
-          <button id="controlTwo" focus-row-control focus-type='fake-btn-two'>
-            fake button two
-          </button>
-          <button-three focus-row-control focus-type='fake-btn-three'>
-          </button-three>
-        </div>
-      `,
+declare global {
+  interface HTMLElementTagNameMap {
+    'test-focus-row-behavior-element': TestFocusRowBehaviorElement;
+  }
+}
 
-      behaviors: [FocusRowBehavior],
-      focusCallCount: 0,
 
-      focus: function() {
-        this.focusCallCount++;
-      },
-    });
-  });
+suite('cr-focus-row-behavior-test', function() {
+  let testElement: TestFocusRowBehaviorElement;
 
   setup(async function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
-    testElement = document.createElement('focus-row-element');
+    testElement = document.createElement('test-focus-row-behavior-element');
     document.body.appendChild(testElement);
 
     // Block so that FocusRowBehavior.attached can run.
@@ -95,7 +120,7 @@ suite('cr-focus-row-behavior-test', function() {
     testElement.$.control.addEventListener('focus', function() {
       focused = true;
     });
-    testElement.fire('focus');
+    testElement.dispatchEvent(new CustomEvent('focus'));
     assertTrue(focused);
   });
 
@@ -108,7 +133,7 @@ suite('cr-focus-row-behavior-test', function() {
     testElement.$.controlTwo.addEventListener('focus', function() {
       focused = true;
     });
-    testElement.fire('focus');
+    testElement.dispatchEvent(new CustomEvent('focus'));
     assertTrue(focused);
   });
 
@@ -122,7 +147,7 @@ suite('cr-focus-row-behavior-test', function() {
     testElement.click();
     // iron-list is responsible for firing 'focus' after taps, but is not used
     // in the test, so its necessary to manually fire 'focus' after tap.
-    testElement.fire('focus');
+    testElement.dispatchEvent(new CustomEvent('focus'));
     assertFalse(focused);
   });
 
@@ -132,32 +157,33 @@ suite('cr-focus-row-behavior-test', function() {
     testElement.lastFocused = lastButton;
 
     const wait = eventToPromise('focus', testElement);
-    testElement.fire('focus');
+    testElement.dispatchEvent(new CustomEvent('focus'));
     return wait.then(() => {
       const button = getDeepActiveElement();
-      assertEquals('fake button three', button.textContent.trim());
+      assertTrue(!!button);
+      assertEquals('fake button three', button.textContent!.trim());
     });
   });
 
   test('when shift+tab pressed on first control, focus on container', () => {
     const first = testElement.$.control;
     const second = testElement.$.controlTwo;
-    pressAndReleaseKeyOn(first, '', 'shift', 'Tab');
+    pressAndReleaseKeyOn(first, 0, 'shift', 'Tab');
     assertEquals(1, testElement.focusCallCount);
-    pressAndReleaseKeyOn(second, '', 'shift', 'Tab');
+    pressAndReleaseKeyOn(second, 0, 'shift', 'Tab');
     assertEquals(1, testElement.focusCallCount);
 
     // Simulate updating a row with same first control.
-    testElement.fire('dom-change');
-    pressAndReleaseKeyOn(first, '', 'shift', 'Tab');
+    testElement.dispatchEvent(new CustomEvent('dom-change'));
+    pressAndReleaseKeyOn(first, 0, 'shift', 'Tab');
     assertEquals(2, testElement.focusCallCount);
-    pressAndReleaseKeyOn(second, '', 'shift', 'Tab');
+    pressAndReleaseKeyOn(second, 0, 'shift', 'Tab');
     assertEquals(2, testElement.focusCallCount);
 
     // Simulate updating row with different first control.
     first.remove();
-    testElement.fire('dom-change');
-    pressAndReleaseKeyOn(second, '', 'shift', 'Tab');
+    testElement.dispatchEvent(new CustomEvent('dom-change'));
+    pressAndReleaseKeyOn(second, 0, 'shift', 'Tab');
     assertEquals(3, testElement.focusCallCount);
   });
 });

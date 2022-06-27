@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {getTrustedHTML, getTrustedScript, getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
-import {assertEquals, assertNotReached} from '../chai_assert.js';
+
+import {assertEquals, assertNotReached, assertThrows} from '../chai_assert.js';
 
 suite('StaticTypesTest', function() {
   test('compatible with Trusted Types', () => {
@@ -42,7 +43,7 @@ suite('StaticTypesTest', function() {
   });
 
   test('throws when invalid', () => {
-    const ensureThrows = function(arg) {
+    function ensureThrows(arg: any) {
       assertThrows(() => {
         getTrustedHTML(arg);
       });
@@ -52,7 +53,7 @@ suite('StaticTypesTest', function() {
       assertThrows(() => {
         getTrustedScriptURL(arg);
       });
-    };
+    }
 
     const a = 'test';
     ensureThrows(a);
@@ -60,12 +61,8 @@ suite('StaticTypesTest', function() {
     const b = [a];
     ensureThrows(b);
 
-    const c = b;
-    c.raw = b;
+    // c holds stringified value of `test`, which isn't a template literal.
+    const c = `test`;
     ensureThrows(c);
-
-    // d holds stringified value of `test`, which isn't a template literal.
-    const d = `test`;
-    ensureThrows(d);
   });
 });

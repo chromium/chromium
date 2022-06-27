@@ -4,5 +4,7 @@
 
 export function getTrustedHTML(literal: string[]|
                                TemplateStringsArray): TrustedHTML|string;
-export function getTrustedScript(literal: string[]): TrustedScript|string;
-export function getTrustedScriptURL(literal: string[]): TrustedScriptURL|string;
+export function getTrustedScript(literal: string[]|
+                                 TemplateStringsArray): TrustedScript|string;
+export function getTrustedScriptURL(literal: string[]|TemplateStringsArray):
+    TrustedScriptURL|string;

@@ -27,7 +27,7 @@ var WebUIResourcesListPropertyUpdateBehaviorTest =
     class extends WebUIResourcesBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=resources/list_property_update_behavior_tests.js&host=test';
+    return 'chrome://test/test_loader.html?module=resources/list_property_update_behavior_tests.js';
   }
 };
 
