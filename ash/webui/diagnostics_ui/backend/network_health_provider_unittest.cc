@@ -171,6 +171,9 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   ~NetworkHealthProviderTest() override {
+    // Clear in process instance prior to destroying cros_network_config_ to
+    // avoid UaF errors.
+    network_config::OverrideInProcessInstanceForTesting(nullptr);
     // Ordering here is based on dependencies between classes,
     // CrosNetworkConfig depends on NetworkHandler and NetworkHandler
     // indirectly depends on NetworkCertLoader.
