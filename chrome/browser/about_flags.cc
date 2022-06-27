@@ -7749,7 +7749,7 @@ const FeatureEntry kFeatureEntries[] = {
     {flag_descriptions::kEnableLensFullscreenSearchFlagId,
      flag_descriptions::kEnableLensFullscreenSearchName,
      flag_descriptions::kEnableLensFullscreenSearchDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensFullscreenSearch)},
+     FEATURE_VALUE_TYPE(lens::features::kLensSearchOptimizations)},
     {flag_descriptions::kEnableLensStandaloneFlagId,
      flag_descriptions::kEnableLensStandaloneName,
      flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,

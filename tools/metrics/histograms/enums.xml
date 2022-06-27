@@ -56371,6 +56371,7 @@ from previous Chrome versions.
   <int value="-1285790931" label="FencedFrames:disabled"/>
   <int value="-1285021473" label="save-page-as-mhtml"/>
   <int value="-1284637134" label="pull-to-refresh"/>
+  <int value="-1283306503" label="LensSearchOptimizations:disabled"/>
   <int value="-1283164264" label="CroshSWA:disabled"/>
   <int value="-1282992935"
       label="AutofillLocalCardMigrationShowFeedback:disabled"/>
@@ -58579,6 +58580,7 @@ from previous Chrome versions.
   <int value="157217034" label="enable-tab-for-desktop-share"/>
   <int value="157318016" label="AutomaticTabDiscarding:enabled"/>
   <int value="158490417" label="PhoneHubCameraRoll:enabled"/>
+  <int value="160429011" label="LensSearchOptimizations:enabled"/>
   <int value="160506687" label="ArcRtVcpuDualCore:disabled"/>
   <int value="160524775" label="PDFTwoUpView:disabled"/>
   <int value="160838658" label="SmartDimModelV3:enabled"/>
