@@ -25,7 +25,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 /**
- * A {@link android.content.BroadcastReceiver} that detects when a Trusted Web Activity client app
+ * A {@link android.content.BroadcastReceiver} that detects when an installed webapp (TWA or WebAPK)
  * has been uninstalled or has had its data cleared. When this happens we clear Chrome's data
  * corresponding to that app.
  *
@@ -47,22 +47,22 @@ import javax.inject.Inject;
  * Lifecycle: The lifecycle of this class is managed by Android.
  * Thread safety: {@link #onReceive} will be called on the UI thread.
  */
-public class ClientAppBroadcastReceiver extends BroadcastReceiver {
-    private static final String TAG = "ClientAppBroadRec";
+public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
+    private static final String TAG = "IWBroadcastReceiver";
 
     /**
      * An Action that will trigger clearing data on local builds only, for development. The adb
      * command to trigger is:
      * adb shell am broadcast \
      *   -n com.google.android.apps.chrome/\
-     * org.chromium.chrome.browser.browserservices.ClientAppBroadcastReceiver \
-     *   -a org.chromium.chrome.browser.browserservices.ClientAppBroadcastReceiver.DEBUG \
+     * org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver \
+     *   -a org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver.DEBUG \
      *   --ei android.intent.extra.UID 23
      *
      * But replace 23 with the uid of a Trusted Web Activity Client app.
      */
     private static final String ACTION_DEBUG =
-            "org.chromium.chrome.browser.browserservices.ClientAppBroadcastReceiver.DEBUG";
+            "org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver.DEBUG";
 
     private static final Set<String> BROADCASTS = new HashSet<>(Arrays.asList(
             Intent.ACTION_PACKAGE_DATA_CLEARED,
@@ -76,7 +76,7 @@ public class ClientAppBroadcastReceiver extends BroadcastReceiver {
 
     /** Constructor with default dependencies for Android. */
     @Inject
-    public ClientAppBroadcastReceiver() {
+    public InstalledWebappBroadcastReceiver() {
         this(new ClearDataStrategy(), new InstalledWebappDataRegister(),
                 new BrowserServicesStore(
                         ChromeApplicationImpl.getComponent().resolveSharedPreferencesManager()),
@@ -84,7 +84,7 @@ public class ClientAppBroadcastReceiver extends BroadcastReceiver {
     }
 
     /** Constructor to allow dependency injection in tests. */
-    public ClientAppBroadcastReceiver(ClearDataStrategy strategy,
+    public InstalledWebappBroadcastReceiver(ClearDataStrategy strategy,
             InstalledWebappDataRegister dataRegister, BrowserServicesStore store,
             PermissionUpdater permissionUpdater) {
         mClearDataStrategy = strategy;
@@ -154,8 +154,8 @@ public class ClientAppBroadcastReceiver extends BroadcastReceiver {
             }
 
             String appName = dataRegister.getAppNameForRegisteredUid(uid);
-            Intent intent = ClearDataDialogActivity
-                    .createIntent(context, appName, domains, origins, uninstalled);
+            Intent intent = ClearDataDialogActivity.createIntent(
+                    context, appName, domains, origins, uninstalled);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
             context.startActivity(intent);
         }

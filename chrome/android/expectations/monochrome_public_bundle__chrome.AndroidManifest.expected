@@ -734,15 +734,15 @@
         android:name="org.chromium.chrome.browser.app.send_tab_to_self.SendTabToSelfNotificationReceiver"
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: f6d77f5a
-    <receiver  # DIFF-ANCHOR: 31a8399a
-        android:name="org.chromium.chrome.browser.browserservices.ClientAppBroadcastReceiver"
+    <receiver  # DIFF-ANCHOR: bb762b77
+        android:name="org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver"
         android:exported="true">
       <intent-filter>  # DIFF-ANCHOR: e5bb6a36
         <action android:name="android.intent.action.PACKAGE_DATA_CLEARED"/>
         <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED"/>
         <data android:scheme="package"/>
       </intent-filter>  # DIFF-ANCHOR: e5bb6a36
-    </receiver>  # DIFF-ANCHOR: 31a8399a
+    </receiver>  # DIFF-ANCHOR: bb762b77
     <receiver  # DIFF-ANCHOR: 2f4b69ac
         android:name="org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver"
         android:exported="false">

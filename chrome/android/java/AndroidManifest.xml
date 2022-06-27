@@ -814,7 +814,7 @@ by a child template that "extends" this file.
         </activity>
 
         <!-- Components for Trusted Web Activities -->
-        <receiver android:name="org.chromium.chrome.browser.browserservices.ClientAppBroadcastReceiver"
+        <receiver android:name="org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <data android:scheme="package" />
@@ -823,7 +823,7 @@ by a child template that "extends" this file.
             </intent-filter>
             {% if channel in ['default'] %}
             <intent-filter>
-                <action android:name="org.chromium.chrome.browser.browserservices.ClientAppBroadcastReceiver.DEBUG" />
+                <action android:name="org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver.DEBUG" />
             </intent-filter>
             {% endif %}
         </receiver>

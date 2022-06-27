@@ -35,7 +35,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/base/SplitPreloaderTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/ReadingListSectionHeaderTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ClearDataDialogResultRecorderTest.java",
-  "junit/src/org/chromium/chrome/browser/browserservices/ClientAppBroadcastReceiverTest.java",
+  "junit/src/org/chromium/chrome/browser/browserservices/InstalledWebappBroadcastReceiverTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/InstalledWebappDataRecorderTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/InstalledWebappDataRegisterTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/QualityEnforcerUnitTest.java",

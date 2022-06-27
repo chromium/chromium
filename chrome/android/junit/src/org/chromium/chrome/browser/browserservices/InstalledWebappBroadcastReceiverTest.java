@@ -37,24 +37,23 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Tests for {@link ClientAppBroadcastReceiver}.
+ * Tests for {@link InstalledWebappBroadcastReceiver}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ClientAppBroadcastReceiverTest {
+public class InstalledWebappBroadcastReceiverTest {
     @Mock public Context mContext;
     @Mock public InstalledWebappDataRegister mDataRegister;
-    @Mock public ClientAppBroadcastReceiver.ClearDataStrategy mMockStrategy;
-    @Mock
-    public PermissionUpdater mPermissionUpdater;
+    @Mock public InstalledWebappBroadcastReceiver.ClearDataStrategy mMockStrategy;
+    @Mock public PermissionUpdater mPermissionUpdater;
 
-    private ClientAppBroadcastReceiver mReceiver;
+    private InstalledWebappBroadcastReceiver mReceiver;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mReceiver = new ClientAppBroadcastReceiver(
+        mReceiver = new InstalledWebappBroadcastReceiver(
                 mMockStrategy, mDataRegister, mock(BrowserServicesStore.class), mPermissionUpdater);
         mContext = RuntimeEnvironment.application;
     }
@@ -66,18 +65,14 @@ public class ClientAppBroadcastReceiverTest {
         return intent;
     }
 
-    private void addToRegister(int id, String appName, Set<String> domainAndRegistries,
-            Set<String> origins) {
+    private void addToRegister(
+            int id, String appName, Set<String> domainAndRegistries, Set<String> origins) {
         doReturn(true).when(mDataRegister).chromeHoldsDataForPackage(eq(id));
         doReturn(appName).when(mDataRegister).getAppNameForRegisteredUid(eq(id));
-        doReturn(domainAndRegistries)
-                .when(mDataRegister)
-                .getDomainsForRegisteredUid(eq(id));
+        doReturn(domainAndRegistries).when(mDataRegister).getDomainsForRegisteredUid(eq(id));
 
         if (origins == null) return;
-        doReturn(origins)
-                .when(mDataRegister)
-                .getOriginsForRegisteredUid(eq(id));
+        doReturn(origins).when(mDataRegister).getOriginsForRegisteredUid(eq(id));
     }
 
     private void addToRegister(int id, String appName, Set<String> domainAndRegistries) {
@@ -113,9 +108,9 @@ public class ClientAppBroadcastReceiverTest {
     @Test
     @Feature("TrustedWebActivities")
     public void execute_ValidIntent() {
-        mReceiver =
-                new ClientAppBroadcastReceiver(new ClientAppBroadcastReceiver.ClearDataStrategy(),
-                        mDataRegister, mock(BrowserServicesStore.class), mPermissionUpdater);
+        mReceiver = new InstalledWebappBroadcastReceiver(
+                new InstalledWebappBroadcastReceiver.ClearDataStrategy(), mDataRegister,
+                mock(BrowserServicesStore.class), mPermissionUpdater);
 
         int id = 67;
         String appName = "App Name 3";
@@ -141,9 +136,9 @@ public class ClientAppBroadcastReceiverTest {
     @Test
     @Feature("TrustedwebActivities")
     public void execute_UpdatePermissions() {
-        mReceiver =
-                new ClientAppBroadcastReceiver(new ClientAppBroadcastReceiver.ClearDataStrategy(),
-                        mDataRegister, mock(BrowserServicesStore.class), mPermissionUpdater);
+        mReceiver = new InstalledWebappBroadcastReceiver(
+                new InstalledWebappBroadcastReceiver.ClearDataStrategy(), mDataRegister,
+                mock(BrowserServicesStore.class), mPermissionUpdater);
 
         int id = 67;
         String appName = "App Name 3";
