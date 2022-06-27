@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageHandlerFactory, PageHandlerRemote} from '/ash/webui/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom-webui.js';
+import {UntrustedPageHandlerFactory, UntrustedPageHandlerRemote} from '/ash/webui/demo_mode_app_ui/mojom/demo_mode_app_untrusted_ui.mojom-webui.js';
 
 /**
  * Provides interfaces for sending and receiving messages to/from the browser
@@ -10,9 +10,9 @@ import {PageHandlerFactory, PageHandlerRemote} from '/ash/webui/demo_mode_app_ui
  */
 class PageHandler {
   constructor() {
-    this.handler = new PageHandlerRemote();
+    this.handler = new UntrustedPageHandlerRemote();
 
-    const factoryRemote = PageHandlerFactory.getRemote();
+    const factoryRemote = UntrustedPageHandlerFactory.getRemote();
     factoryRemote.createPageHandler(
         this.handler.$.bindNewPipeAndPassReceiver());
   }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/demo_mode_app_ui/demo_mode_app_ui.h"
+#include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "base/files/file_util.h"
@@ -39,10 +39,11 @@ class DemoModeAppIntegrationTest : public SystemWebAppIntegrationTest {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(component_dir_.CreateUniqueTempDir());
     content::WebUIConfigMap::GetInstance().RemoveForTesting(
-        url::Origin::Create(GURL(ash::kChromeUIDemoModeAppURL)));
-    content::WebUIConfigMap::GetInstance().AddWebUIConfig(
-        std::make_unique<ash::DemoModeAppUIConfig>(base::BindLambdaForTesting(
-            [&] { return component_dir_.GetPath(); })));
+        url::Origin::Create(GURL(ash::kChromeUntrustedUIDemoModeAppURL)));
+    content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
+        std::make_unique<ash::DemoModeAppUntrustedUIConfig>(
+            base::BindLambdaForTesting(
+                [&] { return component_dir_.GetPath(); })));
   }
 
   base::ScopedTempDir component_dir_;
@@ -83,7 +84,7 @@ class WidgetFullscreenWaiter : public views::WidgetObserver {
 
 // Test that the Demo Mode App installs and launches correctly
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest, DemoModeApp) {
-  const GURL url(ash::kChromeUIDemoModeAppURL);
+  const GURL url(ash::kChromeUntrustedUIDemoModeAppURL);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
       ash::SystemWebAppType::DEMO_MODE, url, "Demo Mode App"));
 }
@@ -116,8 +117,8 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
 
   apps::AppLaunchParams params =
       LaunchParamsForApp(ash::SystemWebAppType::DEMO_MODE);
-  params.override_url =
-      GURL("chrome://demo-mode-app/" + file_path.BaseName().MaybeAsASCII());
+  params.override_url = GURL(ash::kChromeUntrustedUIDemoModeAppURL +
+                             file_path.BaseName().MaybeAsASCII());
   content::WebContents* web_contents = LaunchApp(std::move(params));
 
   EXPECT_EQ(
@@ -134,7 +135,8 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
 
   apps::AppLaunchParams params =
       LaunchParamsForApp(ash::SystemWebAppType::DEMO_MODE);
-  params.override_url = GURL("chrome://demo-mode-app/nonexistent.html");
+  params.override_url =
+      GURL("chrome-untrusted://demo-mode-app/nonexistent.html");
   content::WebContents* web_contents = LaunchApp(std::move(params));
 
   EXPECT_EQ(

@@ -5,12 +5,10 @@
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_configs_chromeos.h"
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "content/public/browser/webui_config_map.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #if !defined(OFFICIAL_BUILD)
-#include "ash/webui/demo_mode_app_ui/demo_mode_app_ui.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -22,9 +20,6 @@ void RegisterAshChromeWebUIConfigs() {
 #if !defined(OFFICIAL_BUILD)
   auto& map = content::WebUIConfigMap::GetInstance();
   map.AddWebUIConfig(std::make_unique<ash::SampleSystemWebAppUIConfig>());
-  map.AddWebUIConfig(
-      std::make_unique<ash::DemoModeAppUIConfig>(base::BindRepeating(
-          [] { return ash::DemoSession::Get()->DemoAppComponentPath(); })));
 #endif  // !defined(OFFICIAL_BUILD)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

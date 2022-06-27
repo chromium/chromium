@@ -9,7 +9,7 @@ assert(is_chromeos_ash, "Demo Mode App is ash-chrome only")
 assert(!is_official_build, "Demo Mode App is only built for unofficial builds")
 
 mojom("mojom") {
-  sources = [ "demo_mode_app_ui.mojom" ]
+  sources = [ "demo_mode_app_untrusted_ui.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/ash/webui/demo_mode_app_ui/mojom/"
 }

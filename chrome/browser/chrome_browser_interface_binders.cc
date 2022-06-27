@@ -291,8 +291,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
-#include "ash/webui/demo_mode_app_ui/demo_mode_app_ui.h"
-#include "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom.h"
+#include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #include "ash/webui/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
@@ -1167,13 +1166,6 @@ void PopulateChromeWebUIFrameBinders(
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
-  if (ash::features::IsDemoModeSWAEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::mojom::demo_mode::PageHandlerFactory, ash::DemoModeAppUI>(map);
-  }
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   RegisterWebUIControllerInterfaceBinder<discards::mojom::DetailsProvider,
@@ -1248,6 +1240,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   // --- Section 2: chrome-untrusted:// WebUIs:
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
+  registry.ForWebUI<ash::DemoModeAppUntrustedUI>()
+      .Add<ash::mojom::demo_mode::UntrustedPageHandlerFactory>();
   registry.ForWebUI<ash::UntrustedSampleSystemWebAppUI>()
       .Add<ash::mojom::sample_swa::UntrustedPageInterfacesFactory>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)

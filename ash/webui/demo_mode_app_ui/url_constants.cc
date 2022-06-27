@@ -6,8 +6,8 @@
 
 namespace ash {
 
-const char kChromeUIDemoModeAppHost[] = "demo-mode-app";
-const char kChromeUIDemoModeAppURL[] = "chrome://demo-mode-app/";
-// TODO(b/232019361): Add untrusted demo mode app url to constants here
+const char kChromeUntrustedUIDemoModeAppHost[] = "demo-mode-app";
+const char kChromeUntrustedUIDemoModeAppURL[] =
+    "chrome-untrusted://demo-mode-app/";
 
 }  // namespace ash

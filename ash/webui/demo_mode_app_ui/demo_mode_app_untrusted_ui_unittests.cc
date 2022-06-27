@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include <string>
 
-#include "ash/webui/demo_mode_app_ui/demo_mode_app_ui.h"
+#include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -18,10 +18,10 @@ namespace {
 
 const std::string kFileContents = "Test File Contents";
 
-class DemoModeAppUITest : public testing::Test {
+class DemoModeAppUntrustedUITest : public testing::Test {
  protected:
-  DemoModeAppUITest() = default;
-  ~DemoModeAppUITest() override = default;
+  DemoModeAppUntrustedUITest() = default;
+  ~DemoModeAppUntrustedUITest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -30,7 +30,7 @@ class DemoModeAppUITest : public testing::Test {
     base::WriteFile(content_file_path_, kFileContents);
 
     scheme_registry_ = std::make_unique<url::ScopedSchemeRegistryForTests>();
-    url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
+    url::AddStandardScheme("chrome-untrusted", url::SCHEME_WITH_HOST);
   }
 
   base::FilePath content_file_path_;
@@ -47,53 +47,54 @@ void VerifyDataResponse(std::string expected_response,
   std::move(quit_closure).Run();
 }
 
-TEST_F(DemoModeAppUITest, SourceDataFromComponent) {
+TEST_F(DemoModeAppUntrustedUITest, SourceDataFromComponent) {
   base::RunLoop run_loop;
-  DemoModeAppUI::SourceDataFromComponent(
+  DemoModeAppUntrustedUI::SourceDataFromComponent(
       temp_dir_.GetPath(), content_file_path_.BaseName().MaybeAsASCII(),
       base::BindOnce(&VerifyDataResponse, kFileContents,
                      run_loop.QuitClosure()));
   run_loop.Run();
 }
 
-TEST_F(DemoModeAppUITest, SourceDataFromComponentQueryParam) {
+TEST_F(DemoModeAppUntrustedUITest, SourceDataFromComponentQueryParam) {
   base::RunLoop run_loop;
   std::string resource_path_with_query_param =
       content_file_path_.BaseName().MaybeAsASCII() + "?testparam=testvalue";
 
-  DemoModeAppUI::SourceDataFromComponent(
+  DemoModeAppUntrustedUI::SourceDataFromComponent(
       temp_dir_.GetPath(), resource_path_with_query_param,
       base::BindOnce(&VerifyDataResponse, kFileContents,
                      run_loop.QuitClosure()));
   run_loop.Run();
 }
 
-TEST_F(DemoModeAppUITest, SourceDataFromComponentURLFragment) {
+TEST_F(DemoModeAppUntrustedUITest, SourceDataFromComponentURLFragment) {
   base::RunLoop run_loop;
   std::string resource_path_with_url_fragment =
       content_file_path_.BaseName().MaybeAsASCII() + "#frag";
 
-  DemoModeAppUI::SourceDataFromComponent(
+  DemoModeAppUntrustedUI::SourceDataFromComponent(
       temp_dir_.GetPath(), resource_path_with_url_fragment,
       base::BindOnce(&VerifyDataResponse, kFileContents,
                      run_loop.QuitClosure()));
   run_loop.Run();
 }
 
-TEST_F(DemoModeAppUITest, SourceDataFromComponentQueryParamAndURLFragment) {
+TEST_F(DemoModeAppUntrustedUITest,
+       SourceDataFromComponentQueryParamAndURLFragment) {
   base::RunLoop run_loop;
   std::string resource_path_with_url_fragment =
       content_file_path_.BaseName().MaybeAsASCII() +
       "?testparam=testvalue#frag";
 
-  DemoModeAppUI::SourceDataFromComponent(
+  DemoModeAppUntrustedUI::SourceDataFromComponent(
       temp_dir_.GetPath(), resource_path_with_url_fragment,
       base::BindOnce(&VerifyDataResponse, kFileContents,
                      run_loop.QuitClosure()));
   run_loop.Run();
 }
 
-TEST_F(DemoModeAppUITest, SourceDataFromComponentParentDirReference) {
+TEST_F(DemoModeAppUntrustedUITest, SourceDataFromComponentParentDirReference) {
   base::RunLoop run_loop;
   // Treat temp_dir_ as the parent of the component directory here, that
   // a malicious ".."-containing path may be trying to access
@@ -102,7 +103,7 @@ TEST_F(DemoModeAppUITest, SourceDataFromComponentParentDirReference) {
   std::string resource_path_with_parent_ref =
       "../" + content_file_path_.BaseName().MaybeAsASCII();
 
-  DemoModeAppUI::SourceDataFromComponent(
+  DemoModeAppUntrustedUI::SourceDataFromComponent(
       component_dir.GetPath(), resource_path_with_parent_ref,
       base::BindOnce(&VerifyDataResponse, "", run_loop.QuitClosure()));
   run_loop.Run();

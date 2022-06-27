@@ -12,10 +12,10 @@ assert(!is_official_build, "Demo Mode App is only built for unofficial builds")
 
 static_library("demo_mode_app_ui") {
   sources = [
-    "demo_mode_app_ui.cc",
-    "demo_mode_app_ui.h",
-    "demo_mode_page_handler.cc",
-    "demo_mode_page_handler.h",
+    "demo_mode_app_untrusted_ui.cc",
+    "demo_mode_app_untrusted_ui.h",
+    "demo_mode_untrusted_page_handler.cc",
+    "demo_mode_untrusted_page_handler.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -32,7 +32,7 @@ static_library("demo_mode_app_ui") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "demo_mode_app_ui_unittests.cc" ]
+  sources = [ "demo_mode_app_untrusted_ui_unittests.cc" ]
   deps = [
     ":demo_mode_app_ui",
     "//base",
@@ -59,8 +59,7 @@ generate_grd("build_mojo_grdp") {
   out_grd = mojo_grdp_file
   grd_prefix = grd_prefix
   deps = [ "//ash/webui/demo_mode_app_ui/mojom:mojom_webui_js" ]
-  input_files =
-      [ "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom-webui.js" ]
+  input_files = [ "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_untrusted_ui.mojom-webui.js" ]
   input_files_base_dir =
       rebase_path("$root_gen_dir/mojom-webui", "$root_build_dir")
 }
