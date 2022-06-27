@@ -631,6 +631,10 @@ const NGLayoutResult* NGTableLayoutAlgorithm::Layout() {
 
   if (result->Status() == NGLayoutResult::kNeedsRelayoutAsLastTableBox)
     return RelayoutAsLastTableBox();
+  if (result->Status() == NGLayoutResult::kNeedsEarlierBreak) {
+    return RelayoutAndBreakEarlier<NGTableLayoutAlgorithm>(
+        *result->GetEarlyBreak());
+  }
 
   return result;
 }
@@ -1385,7 +1389,9 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     NGBreakStatus status = FinishFragmentation(
         Node(), ConstraintSpace(), BlockEndBorderPadding(),
         FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
-    // TODO(mstensho): Deal with early-breaks.
+    if (status == NGBreakStatus::kNeedsEarlierBreak)
+      return container_builder_.Abort(NGLayoutResult::kNeedsEarlierBreak);
+
     DCHECK_EQ(status, NGBreakStatus::kContinue);
 
     // Which side to include is normally handled by FinishFragmentation(), but
