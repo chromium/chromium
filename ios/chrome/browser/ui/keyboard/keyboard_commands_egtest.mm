@@ -21,7 +21,7 @@
 #endif
 
 using chrome_test_util::BookmarksNavigationBarDoneButton;
-using chrome_test_util::RecentTabsMenuButton;
+using chrome_test_util::RecentTabsDestinationButton;
 using chrome_test_util::SettingsDoneButton;
 
 // Test cases to verify that keyboard commands are and are not registered when
@@ -143,7 +143,8 @@ using chrome_test_util::SettingsDoneButton;
 - (void)testKeyboardCommandsNotRegistered_BookmarksPresented {
   // Open Bookmarks
   [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:chrome_test_util::BookmarksMenuButton()];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::BookmarksDestinationButton()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [self verifyNoKeyboardCommandsAreRegistered];
@@ -157,7 +158,7 @@ using chrome_test_util::SettingsDoneButton;
 - (void)testKeyboardCommands_RecentTabsPresented {
   // Open Recent Tabs
   [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:RecentTabsMenuButton()];
+  [ChromeEarlGreyUI tapToolsMenuButton:RecentTabsDestinationButton()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [self verifyNoKeyboardCommandsAreRegistered];

@@ -34,7 +34,7 @@
 #define EarlGrey [self earlGrey]
 #pragma clang diagnostic pop
 
-using chrome_test_util::BookmarksMenuButton;
+using chrome_test_util::BookmarksDestinationButton;
 using chrome_test_util::BookmarksSaveEditDoneButton;
 using chrome_test_util::BookmarksSaveEditFolderButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
@@ -43,12 +43,12 @@ using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::ContextBarTrailingButtonWithLabel;
 using chrome_test_util::ContextMenuCopyButton;
 using chrome_test_util::CopyLinkButton;
+using chrome_test_util::DeleteButton;
 using chrome_test_util::EditButton;
 using chrome_test_util::MoveButton;
-using chrome_test_util::ShareButton;
-using chrome_test_util::DeleteButton;
-using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::OpenLinkInIncognitoButton;
+using chrome_test_util::OpenLinkInNewTabButton;
+using chrome_test_util::ShareButton;
 using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
@@ -120,20 +120,20 @@ id<GREYMatcher> SearchIconButton() {
 - (void)openBookmarks {
   // Opens the bookmark manager.
   [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:BookmarksMenuButton()];
+  [ChromeEarlGreyUI tapToolsMenuButton:BookmarksDestinationButton()];
 
   // Assert the menu is gone.
-  [[EarlGrey selectElementWithMatcher:BookmarksMenuButton()]
+  [[EarlGrey selectElementWithMatcher:BookmarksDestinationButton()]
       assertWithMatcher:grey_nil()];
 }
 
 - (void)openBookmarksInWindowWithNumber:(int)windowNumber {
   // Opens the bookmark manager.
   [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:windowNumber];
-  [ChromeEarlGreyUI tapToolsMenuButton:BookmarksMenuButton()];
+  [ChromeEarlGreyUI tapToolsMenuButton:BookmarksDestinationButton()];
 
   // Assert the menu is gone.
-  [[EarlGrey selectElementWithMatcher:BookmarksMenuButton()]
+  [[EarlGrey selectElementWithMatcher:BookmarksDestinationButton()]
       assertWithMatcher:grey_nil()];
 }
 

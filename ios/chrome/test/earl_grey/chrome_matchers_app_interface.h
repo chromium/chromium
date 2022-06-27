@@ -198,9 +198,6 @@
 // Matcher for the clear browsing data action sheet item.
 + (id<GREYMatcher>)confirmClearBrowsingDataButton;
 
-// Returns matcher for the settings button in the tools menu.
-+ (id<GREYMatcher>)settingsMenuButton;
-
 // Returns matcher for the "Done" button in the settings' navigation bar.
 + (id<GREYMatcher>)settingsDoneButton;
 
@@ -369,15 +366,6 @@
 // Returns matcher for the New Window button on the Tools menu.
 + (id<GREYMatcher>)openNewWindowMenuButton;
 
-// Returns matcher for the reading list button on the Tools menu.
-+ (id<GREYMatcher>)readingListMenuButton;
-
-// Returns matcher for the bookmarks button on the Tools menu.
-+ (id<GREYMatcher>)bookmarksMenuButton;
-
-// Returns matcher for the recent tabs button on the Tools menu.
-+ (id<GREYMatcher>)recentTabsMenuButton;
-
 // Returns matcher for the system selection callout.
 + (id<GREYMatcher>)systemSelectionCallout;
 
@@ -535,6 +523,40 @@
 
 // Returns a matcher to the add button in the toolbar of the settings view.
 + (id<GREYMatcher>)settingsToolbarAddButton;
+
+#pragma mark - Overflow Menu Destinations
+
+// Returns matcher for the bookmarks destination button in the overflow menu
+// carousel.
++ (id<GREYMatcher>)bookmarksDestinationButton;
+
+// Returns matcher for the history destination button in the overflow menu
+// carousel.
++ (id<GREYMatcher>)historyDestinationButton;
+
+// Returns matcher for the passwords destination button in the overflow menu
+// carousel.
++ (id<GREYMatcher>)passwordsDestinationButton;
+
+// Returns matcher for the reading list destination button in the overflow menu
+// carousel.
++ (id<GREYMatcher>)readingListDestinationButton;
+
+// Returns matcher for the recent tabs destination button in the overflow menu
+// carousel.
++ (id<GREYMatcher>)recentTabsDestinationButton;
+
+// Returns matcher for the settings destination button in the overflow menu
+// carousel.
++ (id<GREYMatcher>)settingsDestinationButton;
+
+// Returns matcher for the site info destination button in the overflow menu
+// carousel.
++ (id<GREYMatcher>)siteInfoDestinationButton;
+
+// Returns matcher for the downloads destination button in the overflow menu
+// carousel.
++ (id<GREYMatcher>)downloadsDestinationButton;
 
 #pragma mark - Manual Fallback
 

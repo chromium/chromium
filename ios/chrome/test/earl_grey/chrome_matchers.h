@@ -212,9 +212,6 @@ id<GREYMatcher> ClearBrowsingDataView();
 // Returns a matcher for the clear browsing data action sheet item.
 id<GREYMatcher> ConfirmClearBrowsingDataButton();
 
-// Returns a matcher for the settings button in the tools menu.
-id<GREYMatcher> SettingsMenuButton();
-
 // Returns a matcher for the "Done" button in the settings' navigation bar.
 id<GREYMatcher> SettingsDoneButton();
 
@@ -379,15 +376,6 @@ id<GREYMatcher> PaymentRequestPickerSearchBar();
 
 // Returns a matcher for the New Window button on the Tools menu.
 id<GREYMatcher> OpenNewWindowMenuButton();
-
-// Returns a matcher for the reading list on the Tools menu.
-id<GREYMatcher> ReadingListMenuButton();
-
-// Returns a matcher for the bookmarks button on the Tools menu.
-id<GREYMatcher> BookmarksMenuButton();
-
-// Returns a matcher for the recent tabs button on the Tools menu.
-id<GREYMatcher> RecentTabsMenuButton();
 
 // Returns a matcher for the system selection callout.
 id<GREYMatcher> SystemSelectionCallout();
@@ -623,6 +611,34 @@ id<GREYMatcher> ManualFallbackSuggestPasswordMatcher();
 
 // Returns a matcher for the button to accept the generated password.
 id<GREYMatcher> UseSuggestedPasswordMatcher();
+
+#pragma mark - Overflow Menu Destinations
+
+// Returns a matcher for the bookmarks destination button in the overflow menu.
+id<GREYMatcher> BookmarksDestinationButton();
+
+// Returns a matcher for the history destination button in the overflow menu.
+id<GREYMatcher> HistoryDestinationButton();
+
+// Returns a matcher for the reading list destination button in the overflow
+// menu.
+id<GREYMatcher> ReadingListDestinationButton();
+
+// Returns a matcher for the passwords destination button in the overflow menu.
+id<GREYMatcher> PasswordsDestinationButton();
+
+// Returns a matcher for the downloads destination button in the overflow menu.
+id<GREYMatcher> DownloadsDestinationButton();
+
+// Returns a matcher for the recent tabs destination button in the overflow
+// menu.
+id<GREYMatcher> RecentTabsDestinationButton();
+
+// Returns a matcher for the site info destination button in the overflow menu.
+id<GREYMatcher> SiteInfoDestinationButton();
+
+// Returns a matcher for the settings destination button in the overflow menu.
+id<GREYMatcher> SettingsDestinationButton();
 
 #pragma mark - Tab Grid Edit Mode
 

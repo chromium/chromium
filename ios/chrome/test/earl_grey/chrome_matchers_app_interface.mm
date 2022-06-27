@@ -507,10 +507,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_userInteractionEnabled(), nil);
 }
 
-+ (id<GREYMatcher>)settingsMenuButton {
-  return grey_accessibilityID(kToolsMenuSettingsId);
-}
-
 + (id<GREYMatcher>)settingsDoneButton {
   return grey_accessibilityID(kSettingsDoneButtonId);
 }
@@ -793,18 +789,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kToolsMenuNewWindowId);
 }
 
-+ (id<GREYMatcher>)readingListMenuButton {
-  return grey_accessibilityID(kToolsMenuReadingListId);
-}
-
-+ (id<GREYMatcher>)bookmarksMenuButton {
-  return grey_accessibilityID(kToolsMenuBookmarksId);
-}
-
-+ (id<GREYMatcher>)recentTabsMenuButton {
-  return grey_accessibilityID(kToolsMenuOtherDevicesId);
-}
-
 + (id<GREYMatcher>)systemSelectionCallout {
   if (@available(iOS 16.0, *)) {
     return grey_kindOfClass(NSClassFromString(@"_UIEditMenuListViewCell"));
@@ -1066,6 +1050,40 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)settingsToolbarAddButton {
   return grey_accessibilityID(kSettingsToolbarAddButtonId);
+}
+
+#pragma mark - Overflow Menu Destinations
+
++ (id<GREYMatcher>)bookmarksDestinationButton {
+  return grey_accessibilityID(kToolsMenuBookmarksId);
+}
+
++ (id<GREYMatcher>)downloadsDestinationButton {
+  return grey_accessibilityID(kToolsMenuDownloadsId);
+}
+
++ (id<GREYMatcher>)historyDestinationButton {
+  return grey_accessibilityID(kToolsMenuHistoryId);
+}
+
++ (id<GREYMatcher>)passwordsDestinationButton {
+  return grey_accessibilityID(kToolsMenuPasswordsId);
+}
+
++ (id<GREYMatcher>)readingListDestinationButton {
+  return grey_accessibilityID(kToolsMenuReadingListId);
+}
+
++ (id<GREYMatcher>)recentTabsDestinationButton {
+  return grey_accessibilityID(kToolsMenuOtherDevicesId);
+}
+
++ (id<GREYMatcher>)settingsDestinationButton {
+  return grey_accessibilityID(kToolsMenuSettingsId);
+}
+
++ (id<GREYMatcher>)siteInfoDestinationButton {
+  return grey_accessibilityID(kToolsMenuSiteInformation);
 }
 
 #pragma mark - Manual Fallback

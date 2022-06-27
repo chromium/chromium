@@ -31,8 +31,8 @@
 #endif
 
 using chrome_test_util::OpenLinkInNewTabButton;
+using chrome_test_util::SettingsDestinationButton;
 using chrome_test_util::SettingsDoneButton;
-using chrome_test_util::SettingsMenuButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
 using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::WebViewMatcher;

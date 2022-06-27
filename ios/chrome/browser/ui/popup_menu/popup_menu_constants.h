@@ -42,6 +42,8 @@ extern NSString* const kToolsMenuReadingListId;
 extern NSString* const kToolsMenuOtherDevicesId;
 // History item accessibility Identifier.
 extern NSString* const kToolsMenuHistoryId;
+// Passwords item accessibility Identifier.
+extern NSString* const kToolsMenuPasswordsId;
 // Report an issue item accessibility Identifier.
 extern NSString* const kToolsMenuReportAnIssueId;
 // Translate item accessibility Identifier.

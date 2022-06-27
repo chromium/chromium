@@ -276,10 +276,6 @@ id<GREYMatcher> ConfirmClearBrowsingDataButton() {
   return [ChromeMatchersAppInterface confirmClearBrowsingDataButton];
 }
 
-id<GREYMatcher> SettingsMenuButton() {
-  return [ChromeMatchersAppInterface settingsMenuButton];
-}
-
 id<GREYMatcher> SettingsDoneButton() {
   return [ChromeMatchersAppInterface settingsDoneButton];
 }
@@ -477,18 +473,6 @@ id<GREYMatcher> OpenNewWindowMenuButton() {
   return [ChromeMatchersAppInterface openNewWindowMenuButton];
 }
 
-id<GREYMatcher> ReadingListMenuButton() {
-  return [ChromeMatchersAppInterface readingListMenuButton];
-}
-
-id<GREYMatcher> BookmarksMenuButton() {
-  return [ChromeMatchersAppInterface bookmarksMenuButton];
-}
-
-id<GREYMatcher> RecentTabsMenuButton() {
-  return [ChromeMatchersAppInterface recentTabsMenuButton];
-}
-
 id<GREYMatcher> SystemSelectionCallout() {
   return [ChromeMatchersAppInterface systemSelectionCallout];
 }
@@ -678,6 +662,40 @@ id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title) {
 
 id<GREYMatcher> SettingsToolbarAddButton() {
   return [ChromeMatchersAppInterface settingsToolbarAddButton];
+}
+
+#pragma mark - Overflow Menu Destinations
+
+id<GREYMatcher> BookmarksDestinationButton() {
+  return [ChromeMatchersAppInterface bookmarksDestinationButton];
+}
+
+id<GREYMatcher> HistoryDestinationButton() {
+  return [ChromeMatchersAppInterface historyDestinationButton];
+}
+
+id<GREYMatcher> ReadingListDestinationButton() {
+  return [ChromeMatchersAppInterface readingListDestinationButton];
+}
+
+id<GREYMatcher> PasswordsDestinationButton() {
+  return [ChromeMatchersAppInterface passwordsDestinationButton];
+}
+
+id<GREYMatcher> DownloadsDestinationButton() {
+  return [ChromeMatchersAppInterface downloadsDestinationButton];
+}
+
+id<GREYMatcher> RecentTabsDestinationButton() {
+  return [ChromeMatchersAppInterface recentTabsDestinationButton];
+}
+
+id<GREYMatcher> SiteInfoDestinationButton() {
+  return [ChromeMatchersAppInterface siteInfoDestinationButton];
+}
+
+id<GREYMatcher> SettingsDestinationButton() {
+  return [ChromeMatchersAppInterface settingsDestinationButton];
 }
 
 #pragma mark - Manual Fallback

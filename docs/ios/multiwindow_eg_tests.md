@@ -233,14 +233,14 @@ For example, the following code:
   [EarlGrey setRootMatcherForSubsequentInteractions:
                 chrome_test_util::WindowWithNumber(windowNumber)];
   [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+  [ChromeEarlGreyUI tapToolsMenuButton:HistoryDestinationButton()];
 ```
 
 Can be reduced to:
 
 ```
   [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:windowNumber];
-  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+  [ChromeEarlGreyUI tapToolsMenuButton:HistoryDestinationButton()];
 ```
 
 ## Actions

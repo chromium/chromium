@@ -48,10 +48,6 @@ char kResponse1[] = "Test Page 1 content";
 char kResponse2[] = "Test Page 2 content";
 char kResponse3[] = "Test Page 3 content";
 
-// Matcher for the history button in the tools menu.
-id<GREYMatcher> HistoryButton() {
-  return grey_accessibilityID(kToolsMenuHistoryId);
-}
 // Matcher for the edit button in the navigation bar.
 id<GREYMatcher> NavigationEditButton() {
   return grey_accessibilityID(kHistoryToolbarEditButtonIdentifier);
@@ -856,12 +852,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (void)openHistoryPanel {
   [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::HistoryDestinationButton()];
 }
 
 - (void)openHistoryPanelInWindowWithNumber:(int)windowNumber {
   [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:windowNumber];
-  [ChromeEarlGreyUI tapToolsMenuButton:HistoryButton()];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::HistoryDestinationButton()];
 }
 
 @end

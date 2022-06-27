@@ -236,7 +236,7 @@ void AssertHeaderNotVisible(NSString* header) {
 void OpenReadingList() {
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::ReadingListMenuButton()];
+      tapToolsMenuButton:chrome_test_util::ReadingListDestinationButton()];
   // It seems that sometimes there is a delay before the ReadingList is
   // displayed. See https://crbug.com/1109202 .
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
@@ -453,7 +453,7 @@ void OpenPageSecurityInfoBubble() {
   [ChromeEarlGreyUI openToolsMenu];
   // Tap on the Page Info button.
   [ChromeEarlGreyUI
-      tapToolsMenuButton:grey_accessibilityID(kToolsMenuSiteInformation)];
+      tapToolsMenuButton:chrome_test_util::SiteInfoDestinationButton()];
 }
 
 // Tests that the correct version of kDistillableURL is displayed.

@@ -258,7 +258,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
 + (void)tapPrimarySignInButtonInRecentTabs {
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::RecentTabsMenuButton()];
+      tapToolsMenuButton:chrome_test_util::RecentTabsDestinationButton()];
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]

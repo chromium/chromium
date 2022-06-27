@@ -451,7 +451,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       [self createOverflowMenuDestination:passwordTitleID
                               destination:overflow_menu::Destination::Passwords
                                 imageName:passwordIconImageName
-                          accessibilityID:@""
+                          accessibilityID:kToolsMenuPasswordsId
                                   handler:^{
                                     [weakSelf openPasswords];
                                   }];
