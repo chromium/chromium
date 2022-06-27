@@ -291,7 +291,7 @@ public class TileGroup implements MostVisitedSites.Observer {
     @Override
     public void onIconMadeAvailable(GURL siteUrl) {
         for (Tile tile : findTilesForUrl(siteUrl)) {
-            mTileRenderer.updateIcon(tile, () -> mObserver.onTileIconChanged(tile));
+            mTileRenderer.updateIcon(tile, mTileSetupDelegate);
         }
     }
 

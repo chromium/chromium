@@ -214,9 +214,8 @@ public class TileRenderer {
 
         // Note: It is important that the callbacks below don't keep a reference to the tile or
         // modify them as there is no guarantee that the same tile would be used to update the view.
-        if (mImageFetcher != null && tile.getSource() != TileSource.EXPLORE) {
-            updateIcon(tile, setupDelegate.createIconLoadCallback(tile));
-        }
+        updateIcon(tile, setupDelegate);
+        updateContentDescription(tile, tileView);
 
         TileGroup.TileInteractionDelegate delegate = setupDelegate.createInteractionDelegate(tile);
         if (tile.getSource() == TileSource.HOMEPAGE) {
@@ -237,20 +236,52 @@ public class TileRenderer {
         return tileView;
     }
 
-    public void updateIcon(final Tile tile, final Runnable iconCallback) {
+    /** @return True, if the tile represents a Search query. */
+    private boolean isSearchTile(Tile tile) {
         TemplateUrlService searchService = TemplateUrlServiceFactory.get();
-        if (searchService != null
-                && searchService.isSearchResultsPageFromDefaultSearchProvider(tile.getData().url)) {
+        return searchService != null
+                && searchService.isSearchResultsPageFromDefaultSearchProvider(tile.getUrl());
+    }
+
+    /**
+     * Given a Tile data and TileView, apply appropriate content description that will be announced
+     * when the view is focused for accessibility.
+     * The objective of the description is to offer audible guidance that helps users differentiate
+     * navigation (open www.site.com) and search (search www.site.com).
+     *
+     * @param tile Tile data that carries information about the destination URL.
+     * @param tileView The view that should receive updated content description.
+     */
+    private void updateContentDescription(Tile tile, SuggestionsTileView tileView) {
+        if (isSearchTile(tile)) {
+            tileView.setContentDescription(mContext.getString(
+                    R.string.accessibility_omnibox_most_visited_tile_search, tile.getTitle()));
+        } else {
+            tileView.setContentDescription(
+                    mContext.getString(R.string.accessibility_omnibox_most_visited_tile_navigate,
+                            tile.getTitle(), tile.getUrl().getHost()));
+        }
+    }
+
+    /**
+     * Update tile decoration.
+     *
+     * @param tile Tile data that carries information about the target site.
+     * @param setupDelegate The delegate used to setup callbacks and listeners for the new view.
+     */
+    public void updateIcon(final Tile tile, TileGroup.TileSetupDelegate setupDelegate) {
+        if (isSearchTile(tile)) {
             // We already have an icon, and could trigger the update instantly.
             // Problem is, the TileView is likely not attached yet and the update would not be
             // properly reflected. Yield.
+            final Runnable iconCallback = setupDelegate.createIconLoadCallback(tile);
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
                 setTileIconFromRes(tile, R.drawable.ic_suggestion_magnifier);
                 if (iconCallback != null) iconCallback.run();
             });
-        } else {
-            mImageFetcher.makeLargeIconRequest(tile.getData().url, mMinIconSize,
-                    new LargeIconCallbackImpl(tile, iconCallback));
+        } else if (mImageFetcher != null && tile.getSource() != TileSource.EXPLORE) {
+            mImageFetcher.makeLargeIconRequest(tile.getUrl(), mMinIconSize,
+                    new LargeIconCallbackImpl(tile, setupDelegate.createIconLoadCallback(tile)));
         }
     }
 
