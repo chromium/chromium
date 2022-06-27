@@ -268,6 +268,12 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableActivate);
     }
+#if BUILDFLAG(IS_MAC)
+    else if (name == "ble_permission_mac") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kBlePermissionMac);
+    }
+#endif
 
 #define EXP_SHEET(x)                                                    \
   else if (name == "server_link_sheet_" #x) {                           \
@@ -480,3 +486,9 @@ EXP_SHEET(ARM_4)
 EXP_SHEET(ARM_5)
 EXP_SHEET(ARM_6)
 #undef EXP_SHEET
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_permission_mac) {
+  ShowAndVerifyUi();
+}
+#endif

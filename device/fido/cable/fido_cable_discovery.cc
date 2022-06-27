@@ -278,8 +278,11 @@ void FidoCableDiscovery::OnGetAdapter(scoped_refptr<BluetoothAdapter> adapter) {
   switch (fido::mac::ProcessIsSigned()) {
     case fido::mac::CodeSigningState::kSigned:
       FIDO_LOG(DEBUG) << "Bluetooth authorized: "
-                      << (adapter_->GetOsPermissionStatus() !=
-                          BluetoothAdapter::PermissionStatus::kDenied);
+                      << static_cast<int>(adapter_->GetOsPermissionStatus());
+      if (adapter_->GetOsPermissionStatus() ==
+          BluetoothAdapter::PermissionStatus::kDenied) {
+        observer()->BleDenied();
+      }
       break;
     case fido::mac::CodeSigningState::kNotSigned:
       FIDO_LOG(DEBUG)

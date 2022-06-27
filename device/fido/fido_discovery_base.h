@@ -42,6 +42,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryBase {
                                     FidoAuthenticator* authenticator) = 0;
     virtual void AuthenticatorRemoved(FidoDiscoveryBase* discovery,
                                       FidoAuthenticator* authenticator) = 0;
+
+    // BleDenied is called if the user has denied access to the BLE hardware.
+    // This is macOS-specific and, unlike information like the power state, this
+    // information is only available once the caBLE discovery has opened the BLE
+    // adaptor. Thus the signal is plumbed via this observer interface.
+    virtual void BleDenied() {}
   };
 
   // Start authenticator discovery. The Observer must have been set before this

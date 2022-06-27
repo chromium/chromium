@@ -86,6 +86,9 @@ class AuthenticatorRequestDialogModel {
     // Bluetooth Low Energy (BLE).
     kBlePowerOnAutomatic,
     kBlePowerOnManual,
+#if BUILDFLAG(IS_MAC)
+    kBlePermissionMac,
+#endif
 
     // Let the user confirm that they want to create a credential in an
     // off-the-record browsing context. Used for platform and caBLE credentials,
@@ -344,6 +347,11 @@ class AuthenticatorRequestDialogModel {
   //
   // Valid action when at step: kBlePowerOnAutomatic.
   void PowerOnBleAdapter();
+
+  // Open the system dialog to grant BLE permission to Chrome.
+  //
+  // Valid action when at step: kBlePermissionMac.
+  void OpenBlePreferences();
 
   // Tries if a USB device is present -- the user claims they plugged it in.
   //

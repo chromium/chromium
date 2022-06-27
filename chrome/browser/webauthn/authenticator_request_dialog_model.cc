@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/process/launch.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
@@ -26,6 +27,10 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace {
 
@@ -262,6 +267,21 @@ void AuthenticatorRequestDialogModel::
          current_step() == Step::kOffTheRecordInterstitial ||
          current_step() == Step::kNotStarted);
 
+#if BUILDFLAG(IS_MAC)
+  // The BLE permission screen is only shown on macOS <= 12 because:
+  //    * System Preferences has been renamed to System Settings, so the
+  //      string on the button would need to be changed.
+  //    * Opening Preferences/Settings at the BLE permissions page is broken.
+  if (transport_availability()->ble_access_denied &&
+      base::mac::IsAtMostOS12()) {
+    // |step| is not saved because macOS asks the user to restart Chrome
+    // after permission has been granted. So the user will end up retrying
+    // the whole WebAuthn request in the new process.
+    SetCurrentStep(Step::kBlePermissionMac);
+    return;
+  }
+#endif
+
   if (ble_adapter_is_powered()) {
     base::UmaHistogramEnumeration("WebAuthentication.BLEUserEvents",
                                   BleEvent::kAlreadyPowered);
@@ -302,6 +322,19 @@ void AuthenticatorRequestDialogModel::PowerOnBleAdapter() {
 
   bluetooth_adapter_power_on_callback_.Run();
 }
+
+#if BUILDFLAG(IS_MAC)
+void AuthenticatorRequestDialogModel::OpenBlePreferences() {
+  DCHECK_EQ(current_step(), Step::kBlePermissionMac);
+
+  base::LaunchOptions opts;
+  opts.disclaim_responsibility = true;
+  base::LaunchProcess({"open",
+                       "x-apple.systempreferences:com.apple.preference."
+                       "security?Privacy_Bluetooth"},
+                      opts);
+}
+#endif  // IS_MAC
 
 void AuthenticatorRequestDialogModel::TryUsbDevice() {
   DCHECK_EQ(current_step(), Step::kUsbInsertAndActivate);

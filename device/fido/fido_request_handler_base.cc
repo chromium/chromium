@@ -387,6 +387,10 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
 #endif  // BUILDFLAG(IS_WIN)
 }
 
+void FidoRequestHandlerBase::BleDenied() {
+  transport_availability_info_.ble_access_denied = true;
+}
+
 void FidoRequestHandlerBase::GetPlatformCredentialStatus(
     FidoAuthenticator* platform_authenticator) {
   transport_availability_callback_readiness_

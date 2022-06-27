@@ -172,13 +172,15 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  auto title_label = std::make_unique<views::Label>(
-      model()->GetStepTitle(), views::style::CONTEXT_DIALOG_TITLE,
-      views::style::STYLE_PRIMARY);
-  title_label->SetMultiLine(true);
-  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label->SetAllowCharacterBreak(true);
-  label_container->AddChildView(title_label.release());
+  const std::u16string title = model()->GetStepTitle();
+  if (!title.empty()) {
+    auto title_label = std::make_unique<views::Label>(
+        title, views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY);
+    title_label->SetMultiLine(true);
+    title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    title_label->SetAllowCharacterBreak(true);
+    label_container->AddChildView(title_label.release());
+  }
 
   std::u16string description = model()->GetStepDescription();
   if (!description.empty()) {
