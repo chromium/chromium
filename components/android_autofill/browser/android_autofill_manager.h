@@ -75,9 +75,10 @@ class AndroidAutofillManager : public AutofillManager {
                          mojom::RendererFormDataAction action,
                          const FormData& form);
 
-  void SetFillViaAutofillAssistantIntent(
-      const FormData& form,
-      const FormFieldData& field,
+  void SetProfileFillViaAutofillAssistantIntent(
+      const autofill_assistant::AutofillAssistantIntent intent) override;
+
+  void SetCreditCardFillViaAutofillAssistantIntent(
       const autofill_assistant::AutofillAssistantIntent intent) override;
 
  protected:

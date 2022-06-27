@@ -64,9 +64,12 @@ void AndroidAutofillManager::FillProfileForm(
   NOTREACHED();
 }
 
-void AndroidAutofillManager::SetFillViaAutofillAssistantIntent(
-    const FormData& form,
-    const FormFieldData& field,
+void AndroidAutofillManager::SetProfileFillViaAutofillAssistantIntent(
+    const autofill_assistant::AutofillAssistantIntent intent) {
+  NOTREACHED();
+}
+
+void AndroidAutofillManager::SetCreditCardFillViaAutofillAssistantIntent(
     const autofill_assistant::AutofillAssistantIntent intent) {
   NOTREACHED();
 }

@@ -1188,18 +1188,14 @@ void BrowserAutofillManager::FillProfileForm(const AutofillProfile& profile,
                            /*query_id=*/kNoQueryId, form, field, profile);
 }
 
-void BrowserAutofillManager::SetFillViaAutofillAssistantIntent(
-    const FormData& form,
-    const FormFieldData& field,
+void BrowserAutofillManager::SetProfileFillViaAutofillAssistantIntent(
     const autofill_assistant::AutofillAssistantIntent intent) {
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
-    return;
+  address_form_event_logger_->SetAutofillAssistantIntentForFilling(intent);
+}
 
-  auto* logger = GetEventFormLogger(autofill_field->Type().group());
-  if (logger)
-    logger->SetAutofillAssistantIntentForFilling(intent);
+void BrowserAutofillManager::SetCreditCardFillViaAutofillAssistantIntent(
+    const autofill_assistant::AutofillAssistantIntent intent) {
+  credit_card_form_event_logger_->SetAutofillAssistantIntentForFilling(intent);
 }
 
 void BrowserAutofillManager::FillOrPreviewVirtualCardInformation(

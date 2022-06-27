@@ -281,9 +281,10 @@ class BrowserAutofillManager : public AutofillManager,
   // to be uploadable. Exposed for testing.
   bool ShouldUploadForm(const FormStructure& form);
 
-  void SetFillViaAutofillAssistantIntent(
-      const FormData& form,
-      const FormFieldData& field,
+  void SetProfileFillViaAutofillAssistantIntent(
+      const autofill_assistant::AutofillAssistantIntent intent) override;
+
+  void SetCreditCardFillViaAutofillAssistantIntent(
       const autofill_assistant::AutofillAssistantIntent intent) override;
 
   // Returns the last form the autofill manager considered in this frame.

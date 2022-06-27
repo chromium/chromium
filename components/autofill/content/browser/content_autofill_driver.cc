@@ -391,10 +391,10 @@ void ContentAutofillDriver::FillFormForAssistantImpl(
     const autofill_assistant::AutofillAssistantIntent intent) {
   DCHECK(autofill_manager_);
   if (fill_data.is_profile()) {
-    autofill_manager_->SetFillViaAutofillAssistantIntent(form, field, intent);
+    autofill_manager_->SetProfileFillViaAutofillAssistantIntent(intent);
     autofill_manager_->FillProfileForm(fill_data.profile(), form, field);
   } else if (fill_data.is_credit_card()) {
-    autofill_manager_->SetFillViaAutofillAssistantIntent(form, field, intent);
+    autofill_manager_->SetCreditCardFillViaAutofillAssistantIntent(intent);
     autofill_manager_->FillCreditCardForm(
         /*query_id=*/kNoQueryId, form, field, fill_data.credit_card(),
         fill_data.cvc());
