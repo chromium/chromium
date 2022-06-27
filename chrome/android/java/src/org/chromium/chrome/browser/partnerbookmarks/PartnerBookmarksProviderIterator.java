@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
 /**
  * Imports bookmarks from partner content provider using the private provider API.
  */
-public class PartnerBookmarksProviderIterator implements PartnerBookmarkIterator {
+public class PartnerBookmarksProviderIterator implements PartnerBookmark.BookmarkIterator {
     private static final String TAG = "PartnerBookmarks";
     private static final String PROVIDER_AUTHORITY = "com.android.partnerbookmarks";
     private static final Uri CONTENT_URI = new Uri.Builder()
@@ -45,15 +45,9 @@ public class PartnerBookmarksProviderIterator implements PartnerBookmarkIterator
     private static final String BOOKMARKS_SORT_ORDER =
             BOOKMARKS_COLUMN_TYPE + " DESC, " + BOOKMARKS_COLUMN_ID + " ASC";
 
-    private static final String[] BOOKMARKS_PROJECTION = {
-            BOOKMARKS_COLUMN_ID,
-            BOOKMARKS_COLUMN_URL,
-            BOOKMARKS_COLUMN_TITLE,
-            BOOKMARKS_COLUMN_TYPE,
-            BOOKMARKS_COLUMN_PARENT,
-            BOOKMARKS_COLUMN_FAVICON,
-            BOOKMARKS_COLUMN_TOUCHICON,
-    };
+    private static final String[] BOOKMARKS_PROJECTION = {BOOKMARKS_COLUMN_ID, BOOKMARKS_COLUMN_URL,
+            BOOKMARKS_COLUMN_TITLE, BOOKMARKS_COLUMN_TYPE, BOOKMARKS_COLUMN_PARENT,
+            BOOKMARKS_COLUMN_FAVICON, BOOKMARKS_COLUMN_TOUCHICON};
 
     private final Cursor mCursor;
 
