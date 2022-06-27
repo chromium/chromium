@@ -32,6 +32,7 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -405,6 +406,7 @@ class DlpFilesExternalDestinationTest
     crostini_features.set_enabled(true);
 
     chromeos::DBusThreadManager::Initialize();
+    chromeos::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
@@ -440,6 +442,7 @@ class DlpFilesExternalDestinationTest
     DlpFilesControllerTest::TearDown();
 
     chromeos::DBusThreadManager::Shutdown();
+    chromeos::ChunneldClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::SeneschalClient::Shutdown();

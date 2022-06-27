@@ -15,7 +15,6 @@
 #include "chromeos/dbus/arc/arc_midis_client.h"
 #include "chromeos/dbus/arc/arc_obb_mounter_client.h"
 #include "chromeos/dbus/cec_service/cec_service_client.h"
-#include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_clients_browser.h"
@@ -71,10 +70,6 @@ ArcObbMounterClient* DBusThreadManager::GetArcObbMounterClient() {
 CecServiceClient* DBusThreadManager::GetCecServiceClient() {
   return clients_browser_ ? clients_browser_->cec_service_client_.get()
                           : nullptr;
-}
-
-ChunneldClient* DBusThreadManager::GetChunneldClient() {
-  return clients_browser_ ? clients_browser_->chunneld_client_.get() : nullptr;
 }
 
 CrosDisksClient* DBusThreadManager::GetCrosDisksClient() {

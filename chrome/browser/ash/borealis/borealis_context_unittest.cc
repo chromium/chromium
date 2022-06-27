@@ -26,7 +26,6 @@
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/dbus/chunneld/fake_chunneld_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/exo/shell_surface_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -140,7 +139,7 @@ TEST_F(BorealisContextTest, SeneschalFailure) {
 
 TEST_F(BorealisContextTest, ChunneldFailure) {
   auto* chunneld_client = static_cast<chromeos::FakeChunneldClient*>(
-      chromeos::DBusThreadManager::Get()->GetChunneldClient());
+      chromeos::ChunneldClient::Get());
 
   chunneld_client->NotifyChunneldStopped();
   histogram_tester_.ExpectUniqueSample(

@@ -20,7 +20,6 @@ class ArcKeymasterClient;
 class ArcMidisClient;
 class ArcObbMounterClient;
 class CecServiceClient;
-class ChunneldClient;
 class CrosDisksClient;
 class DBusClientsBrowser;
 class DBusThreadManagerSetter;
@@ -73,7 +72,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   ArcMidisClient* GetArcMidisClient();
   ArcObbMounterClient* GetArcObbMounterClient();
   CecServiceClient* GetCecServiceClient();
-  ChunneldClient* GetChunneldClient();
   CrosDisksClient* GetCrosDisksClient();
   DebugDaemonClient* GetDebugDaemonClient();
   EasyUnlockClient* GetEasyUnlockClient();

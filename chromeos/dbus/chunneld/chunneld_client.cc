@@ -12,15 +12,19 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/dbus/chunneld/fake_chunneld_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/chunneld/dbus-constants.h"
 
 namespace chromeos {
+namespace {
+
+ChunneldClient* g_instance = nullptr;
 
 class ChunneldClientImpl : public ChunneldClient {
  public:
-  ChunneldClientImpl() {}
+  ChunneldClientImpl() = default;
 
   ~ChunneldClientImpl() override = default;
 
@@ -41,7 +45,6 @@ class ChunneldClientImpl : public ChunneldClient {
     chunneld_proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     chunneld_proxy_ = bus->GetObjectProxy(
         vm_tools::chunneld::kChunneldServiceName,
@@ -92,12 +95,38 @@ class ChunneldClientImpl : public ChunneldClient {
   base::WeakPtrFactory<ChunneldClientImpl> weak_ptr_factory_{this};
 };
 
-ChunneldClient::ChunneldClient() = default;
+}  // namespace
 
-ChunneldClient::~ChunneldClient() = default;
+// static
+ChunneldClient* ChunneldClient::Get() {
+  return g_instance;
+}
 
-std::unique_ptr<ChunneldClient> ChunneldClient::Create() {
-  return std::make_unique<ChunneldClientImpl>();
+// static
+void ChunneldClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new ChunneldClientImpl())->Init(bus);
+}
+
+// static
+void ChunneldClient::InitializeFake() {
+  (new FakeChunneldClient())->Init(nullptr);
+}
+
+// static
+void ChunneldClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+ChunneldClient::ChunneldClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+ChunneldClient::~ChunneldClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos
