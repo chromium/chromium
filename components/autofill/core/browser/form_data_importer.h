@@ -102,7 +102,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-  raw_ptr<VirtualCardEnrollmentManager> GetVirtualCardEnrollmentManager() {
+  VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() {
     return virtual_card_enrollment_manager_.get();
   }
 

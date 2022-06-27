@@ -42,9 +42,9 @@ VirtualCardEnrollmentProcessState::~VirtualCardEnrollmentProcessState() =
     default;
 
 VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
-    raw_ptr<PersonalDataManager> personal_data_manager,
-    raw_ptr<payments::PaymentsClient> payments_client,
-    raw_ptr<AutofillClient> autofill_client)
+    PersonalDataManager* personal_data_manager,
+    payments::PaymentsClient* payments_client,
+    AutofillClient* autofill_client)
     : autofill_client_(autofill_client),
       personal_data_manager_(personal_data_manager),
       payments_client_(payments_client) {
@@ -283,7 +283,7 @@ VirtualCardEnrollmentManager::GetVirtualCardEnrollmentStrikeDatabase() const {
 }
 
 void VirtualCardEnrollmentManager::LoadRiskDataAndContinueFlow(
-    raw_ptr<PrefService> user_prefs,
+    PrefService* user_prefs,
     base::OnceCallback<void(const std::string&)> callback) {
   if (autofill_client_) {
     autofill_client_->LoadRiskData(std::move(callback));

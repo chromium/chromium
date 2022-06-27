@@ -9,9 +9,9 @@
 namespace autofill {
 
 TestVirtualCardEnrollmentManager::TestVirtualCardEnrollmentManager(
-    raw_ptr<TestPersonalDataManager> personal_data_manager,
-    raw_ptr<payments::TestPaymentsClient> payments_client,
-    raw_ptr<TestAutofillClient> autofill_client = nullptr)
+    TestPersonalDataManager* personal_data_manager,
+    payments::TestPaymentsClient* payments_client,
+    TestAutofillClient* autofill_client = nullptr)
     : VirtualCardEnrollmentManager(personal_data_manager,
                                    payments_client,
                                    autofill_client) {}
@@ -19,7 +19,7 @@ TestVirtualCardEnrollmentManager::TestVirtualCardEnrollmentManager(
 TestVirtualCardEnrollmentManager::~TestVirtualCardEnrollmentManager() = default;
 
 void TestVirtualCardEnrollmentManager::LoadRiskDataAndContinueFlow(
-    raw_ptr<PrefService> user_prefs,
+    PrefService* user_prefs,
     base::OnceCallback<void(const std::string&)> callback) {
   std::move(callback).Run("some risk data");
 }

@@ -90,10 +90,9 @@ struct VirtualCardEnrollmentProcessState {
 class VirtualCardEnrollmentManager {
  public:
   // The parameters should outlive the VirtualCardEnrollmentManager.
-  VirtualCardEnrollmentManager(
-      raw_ptr<PersonalDataManager> personal_data_manager,
-      raw_ptr<payments::PaymentsClient> payments_client,
-      raw_ptr<AutofillClient> autofill_client = nullptr);
+  VirtualCardEnrollmentManager(PersonalDataManager* personal_data_manager,
+                               payments::PaymentsClient* payments_client,
+                               AutofillClient* autofill_client = nullptr);
   VirtualCardEnrollmentManager(const VirtualCardEnrollmentManager&) = delete;
   VirtualCardEnrollmentManager& operator=(const VirtualCardEnrollmentManager&) =
       delete;
@@ -215,7 +214,7 @@ class VirtualCardEnrollmentManager {
   // card enrollment flow. |user_prefs| will only be present in Clank settings
   // page use cases, as we will not have access to web contents.
   virtual void LoadRiskDataAndContinueFlow(
-      raw_ptr<PrefService> user_prefs,
+      PrefService* user_prefs,
       base::OnceCallback<void(const std::string&)> callback);
 
   // Shows the VirtualCardEnrollmentBubble. |state_|'s

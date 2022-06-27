@@ -429,8 +429,7 @@ class AutofillClient : public RiskDataLoader {
   // AutofillClient. VirtualCardEnrollmentManager is used for virtual card
   // enroll and unenroll related flows. This function may return a nullptr on
   // some platforms.
-  virtual raw_ptr<VirtualCardEnrollmentManager>
-  GetVirtualCardEnrollmentManager();
+  virtual VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager();
 
   // Shows a dialog for the user to enroll in a virtual card.
   virtual void ShowVirtualCardEnrollDialog(

@@ -54,8 +54,7 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
   // is a profile-scope data manager used to retrieve promo code offers from the
   // local autofill table. |is_off_the_record| indicates whether the user is
   // currently operating in an off-the-record context (i.e. incognito).
-  void Init(raw_ptr<PersonalDataManager> personal_data_manager,
-            bool is_off_the_record);
+  void Init(PersonalDataManager* personal_data_manager, bool is_off_the_record);
 
   // Returns a weak pointer to the current MerchantPromoCodeManager
   // instance.
