@@ -212,22 +212,16 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       },
 
       /** Whether this dialog should show Camera Roll info */
-      showCameraRoll: {
-        type: Boolean,
-        value: false,
-      },
+      showCameraRoll:
+          {type: Boolean, value: false, observer: 'onAccessStateChanged_'},
 
       /** Whether this dialog should show Notifications info */
-      showNotifications: {
-        type: Boolean,
-        value: false,
-      },
+      showNotifications:
+          {type: Boolean, value: false, observer: 'onAccessStateChanged_'},
 
       /** Whether this dialog should show App Streaming info */
-      showAppStreaming: {
-        type: Boolean,
-        value: false,
-      },
+      showAppStreaming:
+          {type: Boolean, value: false, observer: 'onAccessStateChanged_'},
 
       /**
        * Indicates that the features we want to handle during setup flow.
@@ -820,6 +814,14 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       default:
         return this.i18n(
             'multidevicePermissionsSetupAppssCompletedFailedTitle');
+    }
+  }
+
+  /** @private */
+  onAccessStateChanged_() {
+    if (this.flowState_ === SetupFlowStatus.INTRO && !this.showCameraRoll &&
+        !this.showNotifications && !this.showAppStreaming) {
+      this.$.dialog.close();
     }
   }
 }

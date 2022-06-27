@@ -46,12 +46,15 @@ class MultideviceSetupStateUpdater
 
   bool IsWaitingForAccessToInitiallyEnableNotifications() const;
   bool IsWaitingForAccessToInitiallyEnableCameraRoll() const;
+  bool IsPhoneHubEnabled() const;
   void EnablePhoneHubIfAwaitingVerifiedHost();
   void UpdateIsAwaitingVerifiedHost();
 
   PrefService* pref_service_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   MultideviceFeatureAccessManager* multidevice_feature_access_manager_;
+  MultideviceFeatureAccessManager::AccessStatus notification_access_status_;
+  MultideviceFeatureAccessManager::AccessStatus camera_roll_access_status_;
 };
 
 }  // namespace phonehub

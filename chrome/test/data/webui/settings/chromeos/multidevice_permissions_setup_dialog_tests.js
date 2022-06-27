@@ -1180,4 +1180,53 @@ suite('Multidevice', () => {
     buttonContainer.querySelector('#doneButton').click();
     assertFalse(permissionsSetupDialog.$$('#dialog').open);
   });
+
+  test(
+      'Test dailog is closed when all permissions are graned on phone.',
+      async () => {
+        permissionsSetupDialog.setProperties({
+          showCameraRoll: true,
+          showNotifications: true,
+          showAppStreaming: true,
+          combinedSetupSupported: true
+        });
+        flush();
+
+        assertTrue(!!dialogBody.querySelector('#start-setup-description'));
+        assertTrue(!!buttonContainer.querySelector('#learnMore'));
+        assertTrue(!!buttonContainer.querySelector('#cancelButton'));
+        assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
+        assertFalse(!!buttonContainer.querySelector('#doneButton'));
+        assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
+
+        permissionsSetupDialog.setProperties({
+          showCameraRoll: false,
+          showNotifications: true,
+          showAppStreaming: true,
+          combinedSetupSupported: true
+        });
+        flush();
+
+        assertTrue(permissionsSetupDialog.$$('#dialog').open);
+
+        permissionsSetupDialog.setProperties({
+          showCameraRoll: false,
+          showNotifications: false,
+          showAppStreaming: true,
+          combinedSetupSupported: true
+        });
+        flush();
+
+        assertTrue(permissionsSetupDialog.$$('#dialog').open);
+
+        permissionsSetupDialog.setProperties({
+          showCameraRoll: false,
+          showNotifications: false,
+          showAppStreaming: false,
+          combinedSetupSupported: true
+        });
+        flush();
+
+        assertFalse(permissionsSetupDialog.$$('#dialog').open);
+      });
 });

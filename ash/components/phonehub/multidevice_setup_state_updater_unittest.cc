@@ -78,6 +78,18 @@ class MultideviceSetupStateUpdaterTest : public testing::Test {
     return &fake_multidevice_setup_client_;
   }
 
+  void SetFeatureEnabledState(const std::string& pref_name, bool enabled) {
+    pref_service_.SetBoolean(pref_name, enabled);
+  }
+
+  void ForceNotifyNotificationAccessChanged() {
+    fake_multidevice_feature_access_manager_.NotifyNotificationAccessChanged();
+  }
+
+  void ForceNotifyCameraRollAccessChanged() {
+    fake_multidevice_feature_access_manager_.NotifyCameraRollAccessChanged();
+  }
+
  private:
   std::unique_ptr<MultideviceSetupStateUpdater> updater_;
 
@@ -243,13 +255,15 @@ TEST_F(MultideviceSetupStateUpdaterTest, RevokePhoneHubNotificationsAccess) {
       /*success=*/true);
 }
 
-TEST_F(MultideviceSetupStateUpdaterTest, InitiallyEnablePhoneHubNotifications) {
+TEST_F(MultideviceSetupStateUpdaterTest, InvokePhoneHubNotificationsAccess) {
   SetNotificationAccess(false);
   SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  SetFeatureState(Feature::kPhoneHubNotifications,
+                  FeatureState::kDisabledByUser);
   CreateUpdater();
 
-  // If the notifications feature has not been explicitly set yet, enable it
-  // when Phone Hub is enabled and access has been granted.
+  // Test that there is a call to enable kPhoneHubNotifications when
+  // notification access has been invoked.
   SetNotificationAccess(true);
   fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
       /*expected_feature=*/Feature::kPhoneHubNotifications,
@@ -259,35 +273,67 @@ TEST_F(MultideviceSetupStateUpdaterTest, InitiallyEnablePhoneHubNotifications) {
 
 TEST_F(MultideviceSetupStateUpdaterTest,
        InitiallyEnablePhoneHubNotifications_OnlyEnableFromDefaultState) {
-  SetNotificationAccess(false);
+  SetNotificationAccess(true);
   SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  CreateUpdater();
 
-  // Explicitly disable Phone Hub notifications.
-  SetFeatureState(Feature::kPhoneHub, FeatureState::kDisabledByUser);
+  // If the notifications feature has not been explicitly set yet, enable it
+  // when Phone Hub is enabled and access has been granted.
+  ForceNotifyNotificationAccessChanged();
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kPhoneHubNotifications,
+      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
+}
 
+TEST_F(MultideviceSetupStateUpdaterTest,
+       ShouldNotEnablePhoneHubNotificationsIfFeatureIsNotDefaultState) {
+  SetNotificationAccess(true);
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  // Simulate the notifications feature has been changed by user.
+  SetFeatureEnabledState(
+      ash::multidevice_setup::kPhoneHubNotificationsEnabledPrefName, false);
   CreateUpdater();
 
   // We take no action after access is granted because the Phone Hub
   // notifications feature state was already explicitly set; we respect the
   // user's choice.
-  SetNotificationAccess(true);
+  ForceNotifyNotificationAccessChanged();
   EXPECT_EQ(
       0u,
       fake_multidevice_setup_client()->NumPendingSetFeatureEnabledStateCalls());
 }
 
-TEST_F(MultideviceSetupStateUpdaterTest, InitiallyEnableCameraRoll) {
-  SetCameraRollAccess(false);
+TEST_F(MultideviceSetupStateUpdaterTest,
+       InitiallyEnableCameraRoll_OnlyEnableFromDefaultState) {
+  SetCameraRollAccess(true);
   SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
   CreateUpdater();
 
   // If the camera roll feature has not been explicitly set yet, enable it
   // when Phone Hub is enabled and access has been granted.
-  SetCameraRollAccess(true);
+  ForceNotifyCameraRollAccessChanged();
   fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
       /*expected_feature=*/Feature::kPhoneHubCameraRoll,
       /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
       /*success=*/true);
+}
+
+TEST_F(MultideviceSetupStateUpdaterTest,
+       ShouldNotEnableCameraRollIfFeatureIsNotDefaultState) {
+  SetCameraRollAccess(true);
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  // Simulate the camera roll feature has been changed by user.
+  SetFeatureEnabledState(
+      ash::multidevice_setup::kPhoneHubCameraRollEnabledPrefName, false);
+  CreateUpdater();
+
+  // We take no action after access is granted because the camera roll
+  // feature state was already explicitly set; we respect the user's choice.
+  ForceNotifyCameraRollAccessChanged();
+  EXPECT_EQ(
+      0u,
+      fake_multidevice_setup_client()->NumPendingSetFeatureEnabledStateCalls());
 }
 
 TEST_F(MultideviceSetupStateUpdaterTest,
@@ -317,6 +363,21 @@ TEST_F(MultideviceSetupStateUpdaterTest, RevokePhoneHubCameraRollAccess) {
   fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
       /*expected_feature=*/Feature::kPhoneHubCameraRoll,
       /*expected_enabled=*/false, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
+}
+
+TEST_F(MultideviceSetupStateUpdaterTest, InvokePhoneHubCameraRollAccess) {
+  SetCameraRollAccess(false);
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  SetFeatureState(Feature::kPhoneHubCameraRoll, FeatureState::kDisabledByUser);
+  CreateUpdater();
+
+  // Test that there is a call to enable kPhoneHubCameraRoll when camera roll
+  // access has been invoked.
+  SetCameraRollAccess(true);
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kPhoneHubCameraRoll,
+      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
       /*success=*/true);
 }
 

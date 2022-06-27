@@ -114,7 +114,7 @@ void AppsAccessManagerImpl::OnGetAppsAccessStateResponseReceived(
   if (apps_access_state_response.result() == proto::Result::RESULT_NO_ERROR) {
     current_apps_access_state_ = apps_access_state_response.apps_access_state();
     AccessStatus access_status = ComputeAppsAccessState();
-    UpdateFeatureEnabledState(access_status);
+    UpdateFeatureEnabledState(GetAccessStatus(), access_status);
     SetAccessStatusInternal(access_status);
   }
 }
@@ -150,7 +150,7 @@ void AppsAccessManagerImpl::OnAppPolicyStateChange(
   // remote phone.
   if (initialized_) {
     AccessStatus access_status = ComputeAppsAccessState();
-    UpdateFeatureEnabledState(access_status);
+    UpdateFeatureEnabledState(GetAccessStatus(), access_status);
     SetAccessStatusInternal(access_status);
   }
 }
@@ -255,12 +255,20 @@ AccessStatus AppsAccessManagerImpl::ComputeAppsAccessState() {
 }
 
 void AppsAccessManagerImpl::UpdateFeatureEnabledState(
-    AccessStatus access_status) {
+    AccessStatus previous_access_status,
+    AccessStatus current_access_status) {
   const FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(Feature::kEche);
-  switch (access_status) {
+  switch (current_access_status) {
     case AccessStatus::kAccessGranted:
-      if (IsWaitingForAccessToInitiallyEnableApps()) {
+      if (IsPhoneHubEnabled() &&
+          previous_access_status == AccessStatus::kAvailableButNotGranted) {
+        PA_LOG(INFO) << "Enabling Apps when the access is changed from "
+                        "kAvailableButNotGranted to kAccessGranted.";
+        multidevice_setup_client_->SetFeatureEnabledState(
+            Feature::kEche, /*enabled=*/true, /*auth_token=*/absl::nullopt,
+            base::DoNothing());
+      } else if (IsWaitingForAccessToInitiallyEnableApps()) {
         PA_LOG(INFO) << "Enabling Apps for the first time now "
                      << "that access has been granted by the phone.";
         multidevice_setup_client_->SetFeatureEnabledState(
@@ -290,10 +298,13 @@ bool AppsAccessManagerImpl::IsWaitingForAccessToInitiallyEnableApps() const {
   // 2. the phone has granted access.
   // We do *not* want to automatically enable the feature unless the opt-in flow
   // was triggered from this device
-  return multidevice_setup::IsDefaultFeatureEnabledValue(Feature::kEche,
-                                                         pref_service_) &&
-         multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
-             FeatureState::kEnabledByUser;
+  return IsPhoneHubEnabled() && multidevice_setup::IsDefaultFeatureEnabledValue(
+                                    Feature::kEche, pref_service_);
+}
+
+bool AppsAccessManagerImpl::IsPhoneHubEnabled() const {
+  return multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
+         FeatureState::kEnabledByUser;
 }
 
 void AppsAccessManagerImpl::UpdateSetupOperationState() {

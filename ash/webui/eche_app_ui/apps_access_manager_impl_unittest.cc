@@ -17,6 +17,7 @@
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -171,6 +172,10 @@ class AppsAccessManagerImplTest : public testing::Test {
 
   void NotifyAppsAccessCanceled() {
     return apps_access_manager_->NotifyAppsAccessCanceled();
+  }
+
+  void SetFeatureEnabledState(const std::string& pref_name, bool enabled) {
+    pref_service_.SetBoolean(pref_name, enabled);
   }
 
   multidevice_setup::FakeMultiDeviceSetupClient*
@@ -641,7 +646,6 @@ TEST_F(AppsAccessManagerImplTest, SimulateConnectedToDependentFeaturePending) {
 
 TEST_F(AppsAccessManagerImplTest, FlipAccessNotGrantedToGranted) {
   SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
-  SetFeatureState(Feature::kEche, FeatureState::kEnabledByUser);
   Initialize(AccessStatus::kAvailableButNotGranted);
   VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
@@ -750,6 +754,42 @@ TEST_F(AppsAccessManagerImplTest,
 }
 
 TEST_F(AppsAccessManagerImplTest,
+       InitiallyEnableEcheFeature_OnlyEnableFromDefaultState) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  Initialize(AccessStatus::kAccessGranted);
+
+  // If the Eche feature has not been explicitly set yet, enable it
+  // when Phone Hub is enabled and access has been granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kEche,
+      /*expected_enabled=*/true, /*expected_auth_token=*/absl::nullopt,
+      /*success=*/true);
+}
+
+TEST_F(AppsAccessManagerImplTest,
+       ShouldNotEnableEcheFeatureIfFeatureIsNotDefaultState) {
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+
+  // Simulate the Eche feature has been changed by user.
+  SetFeatureEnabledState(ash::multidevice_setup::kEcheEnabledPrefName, false);
+  Initialize(AccessStatus::kAccessGranted);
+
+  // We take no action after access is granted because the Eche feature
+  // state was already explicitly set; we respect the user's choice.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
+  EXPECT_EQ(
+      0u,
+      fake_multidevice_setup_client()->NumPendingSetFeatureEnabledStateCalls());
+}
+
+TEST_F(AppsAccessManagerImplTest,
        ShouleNotEnableEcheFeatureWhenAppsPolicyDisabled) {
   // Explicitly disable Phone Hub, all sub feature should be disabled
   SetFeatureState(Feature::kPhoneHub, FeatureState::kDisabledByUser);
@@ -772,7 +812,7 @@ TEST_F(AppsAccessManagerImplTest,
 }
 
 TEST_F(AppsAccessManagerImplTest,
-       SimulateAppsPolicyDisabledShouleDisableEcheFeature) {
+       SimulateAppsPolicyDisabledShouldDisableEcheFeature) {
   SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
   SetFeatureState(Feature::kEche, FeatureState::kEnabledByUser);
   Initialize(AccessStatus::kAccessGranted);
