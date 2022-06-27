@@ -76,6 +76,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshForceStatusAreaCollapsible[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshHideNotificationsForFactory[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshNoNudges[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshPowerButtonPosition[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshSideVolumeButtonPosition[];

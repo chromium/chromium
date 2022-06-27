@@ -9,6 +9,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -17,6 +18,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
+#include "base/command_line.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
@@ -146,6 +148,10 @@ bool LauncherNudgeController::IsRecheckTimerRunningForTesting() {
 bool LauncherNudgeController::ShouldShowNudge(base::Time& recheck_time) const {
   PrefService* prefs = GetPrefs();
   if (!prefs)
+    return false;
+
+  // Do not show if the command line flag to hide nudges is set.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kAshNoNudges))
     return false;
 
   if (GetFirstLoginTime(prefs).is_null()) {

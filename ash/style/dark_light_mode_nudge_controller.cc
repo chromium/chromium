@@ -5,10 +5,12 @@
 #include "ash/style/dark_light_mode_nudge_controller.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/dark_light_mode_nudge.h"
+#include "base/command_line.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -62,6 +64,10 @@ bool DarkLightModeNudgeController::ShouldShowNudge() const {
 
   // Do not show the nudge if it is set to be hidden in the tests.
   if (hide_nudge_for_testing_)
+    return false;
+
+  // Do not show if the command line flag to hide nudges is set.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kAshNoNudges))
     return false;
 
   auto* session_controller = Shell::Get()->session_controller();

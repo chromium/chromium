@@ -225,6 +225,11 @@ const char kAshForceStatusAreaCollapsible[] = "force-status-area-collapsible";
 const char kAshHideNotificationsForFactory[] =
     "ash-hide-notifications-for-factory";
 
+// Hides educational nudges that can interfere with tast integration tests.
+// Somewhat similar to --no-first-run but affects system UI behavior, not
+// browser behavior.
+const char kAshNoNudges[] = "ash-no-nudges";
+
 // Power button position includes the power button's physical display side and
 // the percentage for power button center position to the display's
 // width/height in landscape_primary screen orientation. The value is a JSON
