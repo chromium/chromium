@@ -402,6 +402,14 @@ size_t DlpRulesManagerImpl::GetClipboardCheckSizeLimitInBytes() const {
       policy_prefs::kDlpClipboardCheckSizeLimit);
 }
 
+bool DlpRulesManagerImpl::IsFilesPolicyEnabled() const {
+  return base::FeatureList::IsEnabled(
+             features::kDataLeakPreventionFilesRestriction) &&
+         base::Contains(restrictions_map_,
+                        DlpRulesManager::Restriction::kFiles) &&
+         chromeos::DlpClient::Get() && chromeos::DlpClient::Get()->IsAlive();
+}
+
 void DlpRulesManagerImpl::OnPolicyUpdate() {
   components_rules_.clear();
   restrictions_map_.clear();

@@ -99,6 +99,8 @@ class DlpFilesPolicyServiceProviderTest
     auto dlp_rules_manager =
         std::make_unique<testing::StrictMock<policy::MockDlpRulesManager>>();
     mock_rules_manager_ = dlp_rules_manager.get();
+    ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
+        .WillByDefault(testing::Return(true));
     return dlp_rules_manager;
   }
 

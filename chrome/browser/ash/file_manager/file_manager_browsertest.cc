@@ -23,6 +23,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_base.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace file_manager {
 
@@ -290,6 +291,8 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
     auto dlp_rules_manager =
         std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
     mock_rules_manager_ = dlp_rules_manager.get();
+    ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
+        .WillByDefault(testing::Return(true));
     return dlp_rules_manager;
   }
 

@@ -930,7 +930,7 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
 
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (!rules_manager) {
+  if (!rules_manager || !rules_manager->IsFilesPolicyEnabled()) {
     return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
   }
 
@@ -1017,7 +1017,7 @@ FileManagerPrivateInternalGetDlpMetadataFunction::Run() {
 
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (!rules_manager) {
+  if (!rules_manager || !rules_manager->IsFilesPolicyEnabled()) {
     return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
   }
 

@@ -48,6 +48,8 @@ class MockDlpRulesManager : public DlpRulesManager {
 
   MOCK_CONST_METHOD0(GetClipboardCheckSizeLimitInBytes, size_t());
 
+  MOCK_METHOD(bool, IsFilesPolicyEnabled, (), (override, const));
+
   MOCK_CONST_METHOD2(
       GetDisallowedFileTransfers,
       std::vector<uint64_t>(const std::vector<FileMetadata>& files_entries,

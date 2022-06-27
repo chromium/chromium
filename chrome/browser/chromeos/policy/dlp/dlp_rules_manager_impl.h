@@ -52,6 +52,7 @@ class DlpRulesManagerImpl : public DlpRulesManager {
                                   Restriction restriction,
                                   Level level) const override;
   size_t GetClipboardCheckSizeLimitInBytes() const override;
+  bool IsFilesPolicyEnabled() const override;
 
  protected:
   friend class DlpRulesManagerFactory;
