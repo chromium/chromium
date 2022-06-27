@@ -46,6 +46,9 @@ enum ResultCode {
   RESULT_CODE_LAST_CODE
 };
 
+static_assert(RESULT_CODE_KILLED_BAD_MESSAGE == 3,
+              "This enum is frozen - process_posix.cc may spy on this value.");
+
 static_assert(RESULT_CODE_LAST_CODE == 5,
               "This enum is frozen - see the IMPORTANT note above.");
 

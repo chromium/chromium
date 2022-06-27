@@ -326,6 +326,21 @@ bool Process::Terminate(int exit_code, bool wait) const {
   DCHECK(IsValid());
   CHECK_GT(process_, 0);
 
+  // RESULT_CODE_KILLED_BAD_MESSAGE == 3, but layering prevents its use.
+  // |wait| is always false when terminating badly-behaved processes.
+  const bool maybe_compromised = !wait && exit_code == 3;
+  if (maybe_compromised) {
+    // Forcibly terminate the process immediately.
+    const bool was_killed = kill(process_, SIGKILL) != 0;
+#if BUILDFLAG(IS_CHROMEOS)
+    if (was_killed)
+      CleanUpProcessAsync();
+#endif
+    DPLOG_IF(ERROR, !was_killed) << "Unable to terminate process " << process_;
+    return was_killed;
+  }
+
+  // Terminate process giving it a chance to clean up.
   if (kill(process_, SIGTERM) != 0) {
     DPLOG(ERROR) << "Unable to terminate process " << process_;
     return false;
