@@ -586,6 +586,7 @@ void ExtensionDownloader::CreateManifestLoader() {
         net::SiteForCookies::FromUrl(active_request->full_url());
   }
 
+  DCHECK(!manifest_loader_);
   manifest_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   // Update checks can be interrupted if a network change is detected; this is
@@ -683,12 +684,12 @@ bool ExtensionDownloader::TryFetchingExtensionsFromCache(
 }
 
 void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
-    const network::SimpleURLLoader* loader,
+    const network::SimpleURLLoader& loader,
     const int response_code) {
   bool all_force_installed_extensions =
       manifests_queue_.active_request()->is_all_external_policy_download();
 
-  const int net_error = manifest_loader_->NetError();
+  const int net_error = loader.NetError();
   const int request_failure_count =
       manifests_queue_.active_request_failure_count();
   // If the device is offline, do not retry for force installed extensions,
@@ -702,11 +703,11 @@ void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
       RetryManifestFetchRequest(net_error, response_code);
     return;
   }
-  if (ShouldRetryRequest(loader) && request_failure_count < kMaxRetries) {
-    RetryManifestFetchRequest(loader->NetError(), response_code);
+  if (ShouldRetryRequest(&loader) && request_failure_count < kMaxRetries) {
+    RetryManifestFetchRequest(loader.NetError(), response_code);
     return;
   }
-  const GURL url = loader->GetFinalURL();
+  const GURL url = loader.GetFinalURL();
   RETRY_HISTOGRAM("ManifestFetchFailure", request_failure_count, url);
   if (all_force_installed_extensions) {
     if (TryFetchingExtensionsFromCache(manifests_queue_.active_request()))
@@ -732,13 +733,17 @@ void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
 
 void ExtensionDownloader::OnManifestLoadComplete(
     std::unique_ptr<std::string> response_body) {
-  const GURL url = manifest_loader_->GetFinalURL();
+  // Move loader from class-wide field to the local variable in order to make
+  // ExtensionDownloader reentrable.
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      std::move(manifest_loader_);
+  const GURL url = loader->GetFinalURL();
   DCHECK(manifests_queue_.active_request());
+  DCHECK(loader);
 
   int response_code = -1;
-  if (manifest_loader_->ResponseInfo() &&
-      manifest_loader_->ResponseInfo()->headers)
-    response_code = manifest_loader_->ResponseInfo()->headers->response_code();
+  if (loader->ResponseInfo() && loader->ResponseInfo()->headers)
+    response_code = loader->ResponseInfo()->headers->response_code();
 
   VLOG(2) << response_code << " " << url;
 
@@ -760,10 +765,8 @@ void ExtensionDownloader::OnManifestLoadComplete(
   } else {
     VLOG(1) << "Failed to fetch manifest '" << url.possibly_invalid_spec()
             << "' response code:" << response_code;
-    RetryRequestOrHandleFailureOnManifestFetchFailure(manifest_loader_.get(),
-                                                      response_code);
+    RetryRequestOrHandleFailureOnManifestFetchFailure(*loader, response_code);
   }
-  manifest_loader_.reset();
   file_url_loader_factory_.reset();
   manifests_queue_.reset_active_request();
 

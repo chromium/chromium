@@ -272,7 +272,7 @@ class ExtensionDownloader {
   // AddFailureDataOnManifestFetchFailed when fetching of update manifest
   // failed.
   void RetryRequestOrHandleFailureOnManifestFetchFailure(
-      const network::SimpleURLLoader* loader,
+      const network::SimpleURLLoader& loader,
       const int response_code);
 
   // Handles the result of a manifest fetch.
