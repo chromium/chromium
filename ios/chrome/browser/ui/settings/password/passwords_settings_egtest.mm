@@ -294,7 +294,8 @@ id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
   // UIAccessibilityTraitButton.
   return grey_allOf(
       grey_accessibilityLabel(l10n_util::GetNSString(label)),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitButton)), nil);
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitButton)),
+      grey_userInteractionEnabled(), nil);
 }
 
 // Returns matcher for the "Add Password" button located at the bottom of the
