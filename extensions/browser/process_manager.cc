@@ -191,6 +191,7 @@ struct ProcessManager::ExtensionRenderFrameData {
 
       case extensions::mojom::ViewType::kInvalid:
       case extensions::mojom::ViewType::kExtensionBackgroundPage:
+      case extensions::mojom::ViewType::kOffscreenDocument:
         return false;
     }
     NOTREACHED();

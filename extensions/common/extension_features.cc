@@ -102,4 +102,8 @@ const base::Feature kAvoidEarlyExtensionScriptContextCreation{
     "AvoidEarlyExtensionScriptContextCreation",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// The feature enabling offscreen documents in Manifest V3 extensions.
+const base::Feature kExtensionsOffscreenDocuments{
+    "ExtensionsOffscreenDocuments", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace extensions_features

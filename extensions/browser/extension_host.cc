@@ -56,6 +56,7 @@ ExtensionHost::ExtensionHost(const Extension* extension,
       initial_url_(url),
       extension_host_type_(host_type) {
   DCHECK(host_type == mojom::ViewType::kExtensionBackgroundPage ||
+         host_type == mojom::ViewType::kOffscreenDocument ||
          host_type == mojom::ViewType::kExtensionDialog ||
          host_type == mojom::ViewType::kExtensionPopup);
   host_contents_ = WebContents::Create(

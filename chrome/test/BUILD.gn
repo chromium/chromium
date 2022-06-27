@@ -2985,6 +2985,7 @@ if (!is_android) {
         "../browser/extensions/mutation_observers_apitest.cc",
         "../browser/extensions/native_bindings_apitest.cc",
         "../browser/extensions/navigation_observer_browsertest.cc",
+        "../browser/extensions/offscreen_document_browsertest.cc",
         "../browser/extensions/options_page_apitest.cc",
         "../browser/extensions/permissions_manager_browsertest.cc",
         "../browser/extensions/preinstalled_apps_browsertest.cc",

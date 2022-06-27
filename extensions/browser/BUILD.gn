@@ -459,6 +459,8 @@ source_set("browser_sources") {
     "notification_types.h",
     "null_app_sorting.cc",
     "null_app_sorting.h",
+    "offscreen_document_host.cc",
+    "offscreen_document_host.h",
     "path_util.cc",
     "path_util.h",
     "permissions_manager.cc",

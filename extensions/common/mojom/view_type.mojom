@@ -31,4 +31,6 @@ enum ViewType {
   // DEPRECATED_kPanel = 8,
 
   kTabContents = 9,
+
+  kOffscreenDocument = 10,
 };
