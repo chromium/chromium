@@ -22,9 +22,9 @@ HistoryClusterProvider::HistoryClusterProvider(
     SearchProvider* search_provider)
     : AutocompleteProvider(AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER),
       client_(client),
-      listener_(listener),
       search_provider_(search_provider) {
   DCHECK(search_provider_);
+  AddListener(listener);
   search_provider_->AddListener(this);
 }
 
@@ -59,7 +59,7 @@ void HistoryClusterProvider::Stop(bool clear_cached_results,
 void HistoryClusterProvider::OnProviderUpdate(bool updated_matches) {
   if (done_ || !search_provider_->done())
     return;
-  listener_->OnProviderUpdate(CreateMatches());
+  NotifyListeners(CreateMatches());
 }
 
 bool HistoryClusterProvider::CreateMatches() {

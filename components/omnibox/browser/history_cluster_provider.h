@@ -49,7 +49,6 @@ class HistoryClusterProvider : public AutocompleteProvider,
 
   // These are never null.
   const raw_ptr<AutocompleteProviderClient> client_;
-  const raw_ptr<AutocompleteProviderListener> listener_;
   const raw_ptr<SearchProvider> search_provider_;
 };
 
