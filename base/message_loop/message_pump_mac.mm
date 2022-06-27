@@ -430,12 +430,12 @@ void MessagePumpCFRunLoopBase::RunDelayedWorkTimer(CFRunLoopTimerRef timer,
   // The timer fired, assume we have work and let RunWork() figure out what to
   // do and what to schedule after.
   base::mac::CallWithEHFrame(^{
-#if !BUILDFLAG(IS_IOS)
-    // TODO(crbug.com/1338267): Attempt to re-enable this DCHECK on iOS after
-    // migrating base::TimeTicks::Now() to
-    // clock_gettime_nsec_np(CLOCK_UPTIME_RAW).
-    DCHECK_GE(base::TimeTicks::Now(), self->delayed_work_scheduled_at_);
-#endif
+    // It would be incorrect to expect that `self->delayed_work_scheduled_at_`
+    // is smaller than or equal to `TimeTicks::Now()` because the fire date of a
+    // CFRunLoopTimer can be adjusted slightly.
+    // https://developer.apple.com/documentation/corefoundation/1543570-cfrunlooptimercreate?language=objc
+    DCHECK(!self->delayed_work_scheduled_at_.is_max());
+
     self->delayed_work_scheduled_at_ = base::TimeTicks::Max();
     self->RunWork();
   });
