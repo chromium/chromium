@@ -676,7 +676,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
       absl::optional<int> suggestion_group_id;
 
       if (suggestion_details &&
-          suggestion_details->GetListDeprecated()[index].is_dict()) {
+          suggestion_details->GetListDeprecated()[index].is_dict() &&
+          !suggestion_details->GetListDeprecated()[index].DictEmpty()) {
         const base::Value& suggestion_detail =
             suggestion_details->GetListDeprecated()[index];
         match_contents =
