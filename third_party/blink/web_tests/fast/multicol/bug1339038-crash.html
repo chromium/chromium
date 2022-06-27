@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<style>
+  .container {
+    columns: 2;
+    overflow: hidden;
+    scrollbar-gutter: stable;
+    background: url(#tCF1);
+  }
+  .container::-webkit-scrollbar {
+    fill-rule: nonzero
+  }
+</style>
+<div class="container">x</div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  test(() => { }, "No crash or DCHECK failure.");
+</script>

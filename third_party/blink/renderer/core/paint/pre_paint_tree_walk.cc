@@ -682,7 +682,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
     DCHECK(box_fragment->IsFragmentainerBox());
 
     PrePaintTreeWalkContext fragmentainer_context(
-        parent_context, NeedsTreeBuilderContextUpdate(object, parent_context));
+        parent_context, parent_context.NeedsTreeBuilderContext());
 
     fragmentainer_context.current_container.fragmentation_nesting_level++;
     fragmentainer_context.is_parent_first_for_node =
