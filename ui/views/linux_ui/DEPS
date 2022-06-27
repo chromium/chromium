@@ -1,5 +1,4 @@
 include_rules = [
-  "+printing",
   "+ui/shell_dialogs",
 ]
 

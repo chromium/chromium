@@ -8,7 +8,6 @@ import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//components/vector_icons/vector_icons.gni")
-import("//printing/buildflags/buildflags.gni")
 import("//skia/features.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
@@ -569,18 +568,12 @@ component("views") {
   }
 
   if (is_linux || is_chromeos_lacros) {
-    public_deps += [
-      "//printing/buildflags",
-      "//ui/base/cursor:theme_manager",
-    ]
+    public_deps += [ "//ui/base/cursor:theme_manager" ]
     deps += [
       "//build:chromecast_buildflags",
       "//ui/base/ime/linux",
       "//ui/shell_dialogs",
     ]
-    if (enable_basic_printing) {
-      deps += [ "//printing" ]
-    }
     public += [
       "linux_ui/device_scale_factor_observer.h",
       "linux_ui/linux_ui.h",

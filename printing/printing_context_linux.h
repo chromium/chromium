@@ -15,20 +15,7 @@
 namespace printing {
 
 class MetafilePlayer;
-class PrintDialogLinuxInterface;
-class PrintingContextLinux;
-
-class COMPONENT_EXPORT(PRINTING) PrintingContextLinuxDelegate {
- public:
-  virtual ~PrintingContextLinuxDelegate() = default;
-
-  virtual PrintDialogLinuxInterface* CreatePrintDialog(
-      PrintingContextLinux* context) = 0;
-
-  virtual gfx::Size GetPdfPaperSize(PrintingContextLinux* context) = 0;
-
-  static void SetInstance(PrintingContextLinuxDelegate* delegate);
-};
+class PrintDialogGtkInterface;
 
 // PrintingContext with optional native UI for print dialog and pdf_paper_size.
 class COMPONENT_EXPORT(PRINTING) PrintingContextLinux : public PrintingContext {
@@ -37,6 +24,14 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextLinux : public PrintingContext {
   PrintingContextLinux(const PrintingContextLinux&) = delete;
   PrintingContextLinux& operator=(const PrintingContextLinux&) = delete;
   ~PrintingContextLinux() override;
+
+  // Sets the function that creates the print dialog.
+  static void SetCreatePrintDialogFunction(PrintDialogGtkInterface* (
+      *create_dialog_func)(PrintingContextLinux* context));
+
+  // Sets the function that returns pdf paper size through the native API.
+  static void SetPdfPaperSizeFunction(
+      gfx::Size (*get_pdf_paper_size)(PrintingContextLinux* context));
 
   // Initializes with predefined settings.
   void InitWithSettings(std::unique_ptr<PrintSettings> settings);
@@ -61,7 +56,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextLinux : public PrintingContext {
 
  private:
   std::u16string document_name_;
-  raw_ptr<PrintDialogLinuxInterface> print_dialog_;
+  raw_ptr<PrintDialogGtkInterface> print_dialog_;
 };
 
 }  // namespace printing

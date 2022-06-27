@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
-#include "printing/print_dialog_linux_interface.h"
+#include "printing/print_dialog_gtk_interface.h"
 #include "printing/printing_context_linux.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/glib/glib_signal.h"
@@ -24,18 +24,18 @@ class PrintSettings;
 using printing::PrintingContextLinux;
 
 // Needs to be freed on the UI thread to clean up its GTK members variables.
-class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
+class PrintDialogGtk : public printing::PrintDialogGtkInterface,
                        public base::RefCountedDeleteOnSequence<PrintDialogGtk>,
                        public aura::WindowObserver {
  public:
   // Creates and returns a print dialog.
-  static printing::PrintDialogLinuxInterface* CreatePrintDialog(
+  static printing::PrintDialogGtkInterface* CreatePrintDialog(
       PrintingContextLinux* context);
 
   PrintDialogGtk(const PrintDialogGtk&) = delete;
   PrintDialogGtk& operator=(const PrintDialogGtk&) = delete;
 
-  // printing::PrintDialogLinuxInterface implementation.
+  // printing::PrintDialogGtkInterface implementation.
   void UseDefaultSettings() override;
   void UpdateSettings(
       std::unique_ptr<printing::PrintSettings> settings) override;

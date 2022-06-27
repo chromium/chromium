@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PRINTING_PRINT_DIALOG_LINUX_INTERFACE_H_
-#define PRINTING_PRINT_DIALOG_LINUX_INTERFACE_H_
+#ifndef PRINTING_PRINT_DIALOG_GTK_INTERFACE_H_
+#define PRINTING_PRINT_DIALOG_GTK_INTERFACE_H_
 
 #include <memory>
 #include <string>
@@ -16,10 +16,10 @@ namespace printing {
 class MetafilePlayer;
 class PrintSettings;
 
-// An interface for Linux printing dialogs. Classes that live outside of
+// An interface for GTK printing dialogs. Classes that live outside of
 // printing/ can implement this interface and get threading requirements
 // correct without exposing those requirements to printing/.
-class PrintDialogLinuxInterface {
+class PrintDialogGtkInterface {
  public:
   // Tell the dialog to use the default print setting.
   virtual void UseDefaultSettings() = 0;
@@ -37,19 +37,19 @@ class PrintDialogLinuxInterface {
 
   // Prints the document named `document_name` contained in `metafile`.
   // Called from the print worker thread. Once called, the
-  // PrintDialogLinuxInterface instance should not be reused.
+  // PrintDialogGtkInterface instance should not be reused.
   virtual void PrintDocument(const MetafilePlayer& metafile,
                              const std::u16string& document_name) = 0;
 
-  // Releases the caller's ownership of the PrintDialogLinuxInterface. When
-  // called, the caller must not access the PrintDialogLinuxInterface
-  // afterwards, and vice versa.
+  // Releases the caller's ownership of the PrintDialogGtkInterface. When
+  // called, the caller must not access the PrintDialogGtkInterface afterwards,
+  // and vice versa.
   virtual void ReleaseDialog() = 0;
 
  protected:
-  virtual ~PrintDialogLinuxInterface() = default;
+  virtual ~PrintDialogGtkInterface() = default;
 };
 
 }  // namespace printing
 
-#endif  // PRINTING_PRINT_DIALOG_LINUX_INTERFACE_H_
+#endif  // PRINTING_PRINT_DIALOG_GTK_INTERFACE_H_

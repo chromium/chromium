@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
-#include "printing/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor_theme_manager.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
@@ -26,10 +25,6 @@
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
 #include "ui/shell_dialogs/shell_dialog_linux.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PRINTING)
-#include "printing/printing_context_linux.h"  // nogncheck
 #endif
 
 // The main entrypoint into Linux toolkit specific code. GTK/QT code should only
@@ -59,9 +54,6 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
                              public gfx::SkiaFontDelegate,
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
                              public ui::ShellDialogLinux,
-#endif
-#if BUILDFLAG(ENABLE_PRINTING)
-                             public printing::PrintingContextLinuxDelegate,
 #endif
                              public ui::TextEditKeyBindingsDelegateAuraLinux,
                              public ui::CursorThemeManager,

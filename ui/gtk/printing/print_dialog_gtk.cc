@@ -174,7 +174,7 @@ class GtkPrinterList {
 }  // namespace
 
 // static
-printing::PrintDialogLinuxInterface* PrintDialogGtk::CreatePrintDialog(
+printing::PrintDialogGtkInterface* PrintDialogGtk::CreatePrintDialog(
     PrintingContextLinux* context) {
   return new PrintDialogGtk(context);
 }
