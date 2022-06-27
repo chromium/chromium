@@ -36,6 +36,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
@@ -161,6 +162,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -300,6 +302,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final VrModeObserver mVrModeObserver;
     private ObservableSupplierImpl<Boolean> mIsProgressBarVisibleSupplier =
             new ObservableSupplierImpl<>();
+
+    private boolean mIsDestroyed;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -737,8 +741,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @Override
             public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
                 if (!toDifferentDocument) return;
-                updateButtonStatus();
-                updateTabLoadingState(true);
+                if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.DELAY_TOOLBAR_UPDATE_ON_LOAD_STARTED)) {
+                    PostTask.postTask(
+                            UiThreadTaskTraits.USER_BLOCKING, () -> updateTabLoadingState(true));
+                } else {
+                    updateTabLoadingState(true);
+                }
             }
 
             @Override
@@ -1440,6 +1449,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * Call to tear down all of the toolbar dependencies.
      */
     public void destroy() {
+        mIsDestroyed = true;
+
         VrModuleProvider.unregisterVrModeObserver(mVrModeObserver);
 
         if (mInitializedWithNative) {
@@ -1964,6 +1975,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     private void updateTabLoadingState(boolean updateUrl) {
+        if (mIsDestroyed) return;
+
         mLocationBarModel.notifySecurityStateChanged();
         if (updateUrl) {
             mLocationBarModel.notifyUrlChanged();

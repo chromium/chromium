@@ -323,6 +323,8 @@ public abstract class ChromeFeatureList {
     public static final String CRITICAL_PERSISTED_TAB_DATA = "CriticalPersistedTabData";
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
             "DarkenWebsitesCheckboxInThemesSetting";
+    public static final String DELAY_TOOLBAR_UPDATE_ON_LOAD_STARTED =
+            "DelayToolbarUpdateOnLoadStarted";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DIRECT_ACTIONS = "DirectActions";
     public static final String DISABLE_COMPOSITED_PROGRESS_BAR = "DisableCompositedProgressBar";
