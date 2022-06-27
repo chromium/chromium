@@ -59,7 +59,7 @@ class COMPOSITOR_EXPORT LayerAnimationDelegate {
   virtual SkColor GetColorForAnimation() const = 0;
   virtual gfx::Rect GetClipRectForAnimation() const = 0;
   virtual gfx::RoundedCornersF GetRoundedCornersForAnimation() const = 0;
-  virtual gfx::LinearGradient GetGradientMaskForAnimation() const = 0;
+  virtual const gfx::LinearGradient& GetGradientMaskForAnimation() const = 0;
   virtual float GetDeviceScaleFactor() const = 0;
   virtual ui::Layer* GetLayer() = 0;
   virtual cc::Layer* GetCcLayer() const = 0;

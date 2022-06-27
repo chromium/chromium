@@ -79,7 +79,7 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   SkColor GetColorForAnimation() const override;
   gfx::Rect GetClipRectForAnimation() const override;
   gfx::RoundedCornersF GetRoundedCornersForAnimation() const override;
-  gfx::LinearGradient GetGradientMaskForAnimation() const override;
+  const gfx::LinearGradient& GetGradientMaskForAnimation() const override;
   float GetDeviceScaleFactor() const override;
   LayerAnimatorCollection* GetLayerAnimatorCollection() override;
   ui::Layer* GetLayer() override;

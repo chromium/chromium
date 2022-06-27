@@ -404,7 +404,7 @@ class GradientMaskTransition : public LayerAnimationElement {
 
  private:
   gfx::LinearGradient start_;
-  gfx::LinearGradient target_;
+  const gfx::LinearGradient target_;
 };
 
 // ThreadedLayerAnimationElement -----------------------------------------------

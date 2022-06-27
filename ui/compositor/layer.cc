@@ -1600,7 +1600,7 @@ gfx::RoundedCornersF Layer::GetRoundedCornersForAnimation() const {
   return rounded_corner_radii();
 }
 
-gfx::LinearGradient Layer::GetGradientMaskForAnimation() const {
+const gfx::LinearGradient& Layer::GetGradientMaskForAnimation() const {
   return gradient_mask();
 }
 
