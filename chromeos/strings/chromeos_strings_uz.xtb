@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Tungi rejimni yoqish</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />Mos boʻlmagan komponentlar<ph name="LINK_END" /> topildi. Barcha mos komponentlarni identifikatsiyalash uchun Chrome OS tizimini eng oxirgi versiyasiga yangilang.</translation>
 <translation id="2180197493692062006">Xatolik yuz berdi. Ilovani qayta ochishga urining.</translation>
+<translation id="2182088270354640012">Fikr-mulohazangiz uchun tashakkur! Fikr-mulohazangiz Chrome OS tizimini yaxshilashimizga yordam beradi va Chrome OS jamoasi tomonidan koʻrib chiqiladi. Murojaatlar soni juda koʻpligi uchun har biriga javob qaytara olmaymiz.</translation>
 <translation id="2209788852729124853">Traffik hisoblagichlarini tiklash</translation>
 <translation id="2212733584906323460">NS parametrlari</translation>
 <translation id="2217935453350629363">Joriy tezlik</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Oʻchib yonadi…</translation>
 <translation id="2533048460510040082">Tavsiya etilgan yordam kontenti</translation>
 <translation id="2536159006530886390">Internetga ulana olmadi.</translation>
+<translation id="256360469103926202">Fikr-mulohazangiz ChromeOSni yaxshilashimizga yordam beradi va jamoamiz tomonidan koʻrib chiqiladi. Murojaatlar soni juda koʻpligi uchun har biriga javob qaytara olmaymiz.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi bajarilmoqda...</translation>
 <translation id="2584559707064218956">Sozlash uchun Sozlamalarni oching</translation>
 <translation id="2619761439309613843">Kundalik yangilash</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
+<translation id="3275729367986477355">Avatar rasmi</translation>
 <translation id="3283504360622356314">{0,plural, =1{Faylni tahrirlash}other{Fayllarni tahrirlash}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Kalit yoʻnalishi</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Yana yordam olish uchun <ph name="BEGIN_LINK" />Yordam markazi<ph name="END_LINK" /> sahifasini oching.</translation>
 <translation id="4793756956024303490">Arxivlash algoritmi</translation>
 <translation id="4794140124556169553">Protsessorni tekshirish (CPU test) tizim unumdorligiga taʼsir qilishi mumkin</translation>
+<translation id="4800589996161293643">Chromebook hamjamiyati</translation>
 <translation id="4804818685124855865">Uzilish</translation>
 <translation id="4808449224298348341">Chop etilishi bekor qilindi: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Kunduzgi mavzu</translation>
@@ -488,6 +492,7 @@
 Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
+<translation id="522307662484862935">Email manzil biriktirilmasin</translation>
 <translation id="5227902338748591677">Tungi mavzu rejasi</translation>
 <translation id="5234764350956374838">Yopish</translation>
 <translation id="5252456968953390977">Rouming</translation>
@@ -614,6 +619,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6284632978374966585">Tungi mavzuni yoqish</translation>
 <translation id="6295178529664209245">Tuzatishda davom etasizmi?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> sinovi bekor qilindi</translation>
+<translation id="631063167932043783">Ilovani varaqlash</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> mikrodasturini yangilang</translation>
 <translation id="6321407676395378991">Ekran lavhasini yoqish</translation>
 <translation id="6325525973963619867">Amalga oshmadi</translation>
@@ -720,6 +726,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7297226631177386107">HTTPS saytlarga himoya devori orqali ulanish imkonsiz</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook yordam forumi ekspertlari yordamini olish</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Natijalarni Google Qidiruvida chiqarish uchun Qidiruv + Boʻshliq tugmalarini bosing.</translation>
 <translation id="7343649194310845056">Tarmoq qurilmalari</translation>
@@ -762,6 +769,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="773153675489693198">Davrlar soni</translation>
 <translation id="7747039790905080783">Umumiy kalit</translation>
 <translation id="7762130827864645708">Parolingiz oʻzgartirildi. Endi yangi paroldan foydalaning.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />Tizim va ilova axboroti<ph name="END_LINK1" /> hamda <ph name="BEGIN_LINK2" />statistikasini<ph name="END_LINK2" /> yuborish</translation>
 <translation id="7763470514545477072">Domen kengaytmasi topildi</translation>
 <translation id="7769672763586021400">Model identifikatori</translation>
 <translation id="7784116172884276937">DNS serverlar sozlanmagan</translation>
@@ -831,6 +839,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8382302752385457774">Oq yorliq</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" /> korporativ domen boshqaruvida</translation>
 <translation id="8398927464629426868">Qurilmaning quvvat olish yoki sarflash darajasi</translation>
+<translation id="8420955526972171689">Apparatli muammolarni aniqlaydigan testlarni ishga tushirish</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Ichki klaviatura</translation>
 <translation id="8431300646573772016">Yangilangan ChromeOS</translation>

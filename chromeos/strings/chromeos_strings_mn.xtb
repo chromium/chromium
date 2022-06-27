@@ -153,6 +153,7 @@
 <translation id="2163937499206714165">Бараан горимыг асаах</translation>
 <translation id="2177831236093724629"><ph name="LINK_BEGIN" />Шаардлага хангаагүй бүрэлдэхүүн хэсгүүд<ph name="LINK_END" /> олдлоо. Шаардлага хангасан бүх бүрэлдэхүүн хэсгийг таньсан эсэхийг шалгахын тулд Chrome OS-оо хамгийн сүүлийн үеийн хувилбар луу шинэчилнэ үү.</translation>
 <translation id="2180197493692062006">Алдаа гарлаа. Аппыг дахин нээж үзнэ үү.</translation>
+<translation id="2182088270354640012">Санал хүсэлт ирүүлсэнд баярлалаа. Таны санал хүсэлт ChromeOS-г сайжруулахад туслах бөгөөд манай Chrome OS баг үнэлэх болно. Илгээсэн мэдээллийн тооноос болж та шууд хариу хүлээж авахгүй.</translation>
 <translation id="2209788852729124853">Ачаалал тоологчийг шинэчлэх</translation>
 <translation id="2212733584906323460">Нэр тодорхойлох</translation>
 <translation id="2217935453350629363">Одоогийн хурд</translation>
@@ -201,6 +202,7 @@
 <translation id="253029298928638905">Дахин эхлүүлж байна...</translation>
 <translation id="2533048460510040082">Санал болгосон тусламжийн контент</translation>
 <translation id="2536159006530886390">Интернэтэд холбогдох боломжгүй байна.</translation>
+<translation id="256360469103926202">Таны санал хүсэлт ChromeOS-г сайжруулахад туслах бөгөөд манай баг үнэлэх болно. Олон тооны мэдээлэл байгаа тул бид хариу илгээх боломжгүй.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тестийг ажиллуулж байна...</translation>
 <translation id="2584559707064218956">Тохируулахын тулд Тохиргоо руу очно уу</translation>
 <translation id="2619761439309613843">Өдөр тутам сэргээх</translation>
@@ -256,6 +258,7 @@
 <translation id="3226405216343213872">Сканнерыг хайж байна</translation>
 <translation id="3246869037381808805">1 хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="3268178239013324452">Амжилтгүй болсон - Таг нээлттэй</translation>
+<translation id="3275729367986477355">Аватар зураг</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлыг засах}other{Файлуудыг засах}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />Гц</translation>
 <translation id="3291996639387199448">Түлхүүрийн чиглэл</translation>
@@ -429,6 +432,7 @@
 <translation id="4793710386569335688">Илүү их тусламж авах бол <ph name="BEGIN_LINK" />Тусламжийн төв<ph name="END_LINK" /> рүү очно уу.</translation>
 <translation id="4793756956024303490">Шахалтын алгоритм</translation>
 <translation id="4794140124556169553">Төв процессорын нэгжийн туршилтыг ажиллуулах нь таны системийн гүйцэтгэлд нөлөөлж болзошгүй</translation>
+<translation id="4800589996161293643">Chromebook-н нийгэмлэг</translation>
 <translation id="4804818685124855865">Таслах</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> хэвлэх ажлыг цуцалсан</translation>
 <translation id="4809927044794281115">Цайвар загвар</translation>
@@ -488,6 +492,7 @@
 Асуух зүйл байвал микрофоныг товшиж үзнэ үү.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Гарах</translation>
+<translation id="522307662484862935">Имэйл хаягийг бүү оруулаарай</translation>
 <translation id="5227902338748591677">Бараан загварын хуваарь</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
 <translation id="5252456968953390977">Роуминг</translation>
@@ -614,6 +619,7 @@
 <translation id="6284632978374966585">Бараан загварыг асаах</translation>
 <translation id="6295178529664209245">Засварыг үргэлжлүүлэх үү?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тестийг цуцалсан байна</translation>
+<translation id="631063167932043783">Аппыг судлах</translation>
 <translation id="6319207335391420837">Жижиг программыг <ph name="DEVICE_NAME" /> дээр шинэчлэх</translation>
 <translation id="6321407676395378991">Дэлгэц амраагчийг асаах</translation>
 <translation id="6325525973963619867">Амжилтгүй боллоо</translation>
@@ -720,6 +726,7 @@
 <translation id="7297226631177386107">HTTPS вебсайтуудад галт хана дундуур холбогдох боломжгүй</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Chromebook-н тусламжийн хэлэлцүүлгийн мэргэжилтнүүдээс асуугаарай</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Хайлтад илэрц харахын тулд Search болон Space-г дарна уу.</translation>
 <translation id="7343649194310845056">Сүлжээний төхөөрөмжүүд</translation>
@@ -762,6 +769,7 @@
 <translation id="773153675489693198">Мөчлөгийн тоо</translation>
 <translation id="7747039790905080783">Урьдчилан хуваалцсан түлхүүр</translation>
 <translation id="7762130827864645708">Таны нууц үгийг амжилттай өөрчиллөө. Одооноос шинэ нууц үгийг ашиглана уу.</translation>
+<translation id="7762839321248874531"><ph name="BEGIN_LINK1" />Систем, аппын мэдээлэл<ph name="END_LINK1" /> болон <ph name="BEGIN_LINK2" />хэмжигдэхүүн<ph name="END_LINK2" /> илгээх</translation>
 <translation id="7763470514545477072">Домэйн дагаврын тохирол</translation>
 <translation id="7769672763586021400">Загварын ID</translation>
 <translation id="7784116172884276937">Тохируулсан DNS сервер байхгүй</translation>
@@ -831,6 +839,7 @@
 <translation id="8382302752385457774">Цагаан-шошго</translation>
 <translation id="8395584934117017006">Энэ <ph name="DEVICE_TYPE" />-г байгууллага удирддаг</translation>
 <translation id="8398927464629426868">Төхөөрөмжийн одоогийн цэнэглэгдэж эсвэл цэнэгээ алдаж байгаа хувь</translation>
+<translation id="8420955526972171689">Техник хангамжийн асуудлуудыг шалгах, алдааг олж засварлаарай</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Дотоод гар</translation>
 <translation id="8431300646573772016">ChromeOS-н шинэ зүйлс</translation>
