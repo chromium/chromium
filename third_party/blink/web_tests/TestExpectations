@@ -7070,3 +7070,12 @@ crbug.com/1339293 [ Linux ] media/controls/rotated-video-has-right-panel-width.h
 crbug.com/1339293 [ Linux ] media/media-controls-overflow-hidden.html [ Failure Pass ]
 crbug.com/1339293 [ Linux ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/029.html [ Failure Pass ]
 crbug.com/1339293 [ Linux ] virtual/threaded/external/wpt/requestidlecallback/deadline-max-rAF-dynamic.html [ Failure Pass ]
+
+# TODO(crbug.com/1339781): Re-enable this test
+virtual/backface-visibility-interop/paint/invalidation/outline/focus-layers.html [ Skip ]
+
+# TODO(crbug.com/1339781): Re-enable this test
+tables/mozilla/bugs/bug2479-3.html [ Skip ]
+
+# TODO(crbug.com/1339781): Re-enable this test
+tables/mozilla/bugs/bug2479-4.html [ Skip ]
