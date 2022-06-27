@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_url_data_source.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_url_data_source.h"
 
 #include <utility>
 
@@ -12,7 +12,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-namespace web_app {
+namespace ash {
 
 namespace {
 
@@ -94,4 +94,4 @@ void AddTestURLDataSource(const std::string& source_name,
   content::WebUIDataSource::Add(browser_context, data_source);
 }
 
-}  // namespace web_app
+}  // namespace ash

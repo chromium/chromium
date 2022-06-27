@@ -386,10 +386,6 @@ source_set("web_applications_test_support") {
   testonly = true
 
   sources = [
-    # TODO(crbug.com/1321984): Move these files to
-    # chrome/browser/ash/system_web_apps/test_support/ directory.
-    "system_web_apps/test/test_system_web_app_url_data_source.cc",
-    "system_web_apps/test/test_system_web_app_url_data_source.h",
     "test/app_registration_waiter.cc",
     "test/app_registration_waiter.h",
     "test/fake_data_retriever.cc",

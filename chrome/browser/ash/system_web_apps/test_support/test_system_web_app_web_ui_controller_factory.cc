@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_web_ui_controller_factory.h"
 
 #include "base/memory/ref_counted_memory.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_url_data_source.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_url_data_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -21,8 +21,8 @@ class TestSystemWebAppWebUIController : public content::WebUIController {
   explicit TestSystemWebAppWebUIController(const std::string& source_name,
                                            content::WebUI* web_ui)
       : WebUIController(web_ui) {
-    web_app::AddTestURLDataSource(
-        source_name, web_ui->GetWebContents()->GetBrowserContext());
+    AddTestURLDataSource(source_name,
+                         web_ui->GetWebContents()->GetBrowserContext());
   }
   TestSystemWebAppWebUIController(const TestSystemWebAppWebUIController&) =
       delete;

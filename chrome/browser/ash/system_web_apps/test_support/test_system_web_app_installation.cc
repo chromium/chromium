@@ -14,9 +14,9 @@
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_url_data_source.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_url_data_source.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -796,10 +796,9 @@ TestSystemWebAppInstallation::CreateSystemWebAppManager(
   DCHECK_EQ(profile_, profile);
 
   if (GetWebUIType(delegate->GetInstallUrl()) == WebUIType::kChromeUntrusted) {
-    web_app::AddTestURLDataSource(
-        GetChromeUntrustedDataSourceNameFromInstallUrl(
-            delegate->GetInstallUrl()),
-        profile);
+    AddTestURLDataSource(GetChromeUntrustedDataSourceNameFromInstallUrl(
+                             delegate->GetInstallUrl()),
+                         profile);
   }
 
   web_app::WebAppProvider* provider =
