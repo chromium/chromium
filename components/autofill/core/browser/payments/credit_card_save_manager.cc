@@ -1021,18 +1021,17 @@ void CreditCardSaveManager::LogCardUploadDecisions(
 void CreditCardSaveManager::LogCardUploadDecisionsToAutofillInternals(
     int upload_decision_metrics) {
   LogManager* log_manager = client_->GetLogManager();
-  if (!log_manager)
-    return;
 
   auto final_decision =
       (upload_decision_metrics_ & AutofillMetrics::UPLOAD_OFFERED)
           ? LogMessage::kCardUploadDecisionUploadOffered
           : LogMessage::kCardUploadDecisionUploadNotOffered;
 
-  auto buffer = log_manager->Log();
-  buffer << LoggingScope::kCardUploadDecision << final_decision;
-  buffer << Tag{"div"} << Attrib{"class", "form"} << Tag{"tr"} << Tag{"td"}
-         << "Decision Metrics:" << CTag{"td"} << Tag{"td"} << Tag{"table"};
+  LogBuffer buffer(IsLoggingActive(log_manager));
+  LOG_AF(buffer) << LoggingScope::kCardUploadDecision << final_decision;
+  LOG_AF(buffer) << Tag{"div"} << Attrib{"class", "form"} << Tag{"tr"}
+                 << Tag{"td"} << "Decision Metrics:" << CTag{"td"} << Tag{"td"}
+                 << Tag{"table"};
 
   for (int i = 0; i < AutofillMetrics::kNumCardUploadDecisionMetrics; i++) {
     AutofillMetrics::CardUploadDecisionMetric currentBitmaskValue =
@@ -1100,9 +1099,10 @@ void CreditCardSaveManager::LogCardUploadDecisionsToAutofillInternals(
         result = "UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE";
         break;
     }
-    buffer << Tr{} << result;
+    LOG_AF(buffer) << Tr{} << result;
   }
-  buffer << CTag{"table"} << CTag{"td"} << CTag{"tr"} << CTag{"div"};
+  LOG_AF(buffer) << CTag{"table"} << CTag{"td"} << CTag{"tr"} << CTag{"div"};
+  LOG_AF(log_manager) << std::move(buffer);
 }
 
 void CreditCardSaveManager::LogSaveCardRequestExpirationDateReasonMetric() {

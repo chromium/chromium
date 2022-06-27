@@ -119,27 +119,26 @@ FieldCandidatesMap FormField::ParseFormFields(
                  candidate.second.BestHeuristicType() == MERCHANT_PROMO_CODE);
       });
     } else {
-      if (log_manager) {
-        LogBuffer table_rows;
-        for (const auto& field : fields) {
-          table_rows << Tr{} << "Field:" << *field;
-        }
-        for (const auto& [field_id, candidates] : field_candidates) {
-          LogBuffer name;
-          name << "Type candidate for frame and renderer ID: " << field_id;
-          LogBuffer description;
-          ServerFieldType field_type = candidates.BestHeuristicType();
-          description << "BestHeuristicType: "
-                      << AutofillType::ServerFieldTypeToString(field_type)
-                      << ", is fillable: " << IsFillableFieldType(field_type);
-          table_rows << Tr{} << std::move(name) << std::move(description);
-        }
-        log_manager->Log()
-            << LoggingScope::kParsing
-            << LogMessage::kLocalHeuristicDidNotFindEnoughFillableFields
-            << Tag{"table"} << Attrib{"class", "form"} << std::move(table_rows)
-            << CTag{"table"};
+      LogBuffer table_rows(IsLoggingActive(log_manager));
+      for (const auto& field : fields)
+        LOG_AF(table_rows) << Tr{} << "Field:" << *field;
+      for (const auto& [field_id, candidates] : field_candidates) {
+        LogBuffer name(IsLoggingActive(log_manager));
+        name << "Type candidate for frame and renderer ID: " << field_id;
+        LogBuffer description(IsLoggingActive(log_manager));
+        LOG_AF(description)
+            << "BestHeuristicType: "
+            << AutofillType::ServerFieldTypeToString(
+                   candidates.BestHeuristicType())
+            << ", is fillable: "
+            << IsFillableFieldType(candidates.BestHeuristicType());
+        LOG_AF(table_rows) << Tr{} << std::move(name) << std::move(description);
       }
+      LOG_AF(log_manager)
+          << LoggingScope::kParsing
+          << LogMessage::kLocalHeuristicDidNotFindEnoughFillableFields
+          << Tag{"table"} << Attrib{"class", "form"} << std::move(table_rows)
+          << CTag{"table"};
       field_candidates.clear();
     }
   }
@@ -363,15 +362,16 @@ bool FormField::Match(const AutofillField* field,
     value = field->placeholder;
   }
 
-  if (found_match && logging.log_manager) {
-    LogBuffer table_rows;
-    table_rows << Tr{} << "Match type:" << match_type_string;
-    table_rows << Tr{} << "RegEx:" << logging.regex_name;
-    table_rows << Tr{} << "Value: " << HighlightValue(value, matches[0]);
+  if (found_match) {
+    LogBuffer table_rows(IsLoggingActive(logging.log_manager));
+    LOG_AF(table_rows) << Tr{} << "Match type:" << match_type_string;
+    LOG_AF(table_rows) << Tr{} << "RegEx:" << logging.regex_name;
+    LOG_AF(table_rows) << Tr{}
+                       << "Value: " << HighlightValue(value, matches[0]);
     // The matched substring is reported once more as the highlighting is not
     // particularly copy&paste friendly.
-    table_rows << Tr{} << "Matched substring: " << matches[0];
-    logging.log_manager->Log()
+    LOG_AF(table_rows) << Tr{} << "Matched substring: " << matches[0];
+    LOG_AF(logging.log_manager)
         << LoggingScope::kParsing << LogMessage::kLocalHeuristicRegExMatched
         << Tag{"table"} << std::move(table_rows) << CTag{"table"};
   }

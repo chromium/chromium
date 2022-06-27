@@ -43,6 +43,7 @@ static_library("common") {
     "language_code.h",
     "logging/log_buffer.cc",
     "logging/log_buffer.h",
+    "logging/log_macros.h",
     "password_form_fill_data.cc",
     "password_form_fill_data.h",
     "password_form_generation_data.h",

@@ -19,7 +19,7 @@ LogRouter::~LogRouter() = default;
 
 // static
 base::Value LogRouter::CreateEntryForText(const std::string& text) {
-  LogBuffer buffer;
+  LogBuffer buffer(LogBuffer::IsActive(true));
   buffer << Tag{"div"};
   for (const auto& line : base::SplitStringPiece(
            text, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {

@@ -43,19 +43,15 @@
 
 namespace autofill {
 namespace {
-void LogCardUploadDisabled(LogManager* log_manager, std::string context) {
-  if (log_manager) {
-    log_manager->Log() << LoggingScope::kCreditCardUploadStatus
-                       << LogMessage::kCreditCardUploadDisabled << context
-                       << CTag{};
-  }
+void LogCardUploadDisabled(LogManager* log_manager, base::StringPiece context) {
+  LOG_AF(log_manager) << LoggingScope::kCreditCardUploadStatus
+                      << LogMessage::kCreditCardUploadDisabled << context
+                      << CTag{};
 }
 
 void LogCardUploadEnabled(LogManager* log_manager) {
-  if (log_manager) {
-    log_manager->Log() << LoggingScope::kCreditCardUploadStatus
-                       << LogMessage::kCreditCardUploadEnabled << CTag{};
-  }
+  LOG_AF(log_manager) << LoggingScope::kCreditCardUploadStatus
+                      << LogMessage::kCreditCardUploadEnabled << CTag{};
 }
 
 // Given an email account domain, returns the contents before the first dot.

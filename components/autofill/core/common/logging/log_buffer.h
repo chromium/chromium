@@ -12,7 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/types/strong_alias.h"
 #include "base/values.h"
+#include "components/autofill/core/common/logging/log_macros.h"
 #include "url/gurl.h"
 
 // The desired pattern to generate log messages is to pass a scope, a log
@@ -46,6 +48,21 @@
 //   LogBuffer buffer;
 //   for (...) { buffer << something; }
 //   LogBuffer() << std::move(buffer);
+//
+// In practice the LogBuffer requires a boolean parameter indicating whether
+// logging should happen. You should rely on
+// components/autofill/core/common/logging/log_macros.h and follow one of the
+// following patterns:
+//
+// (1) void MyFunction(LogManager* log_manager) {
+//       LOG_AF(log_mannager) << "foobar";
+//     }
+// (2) void MyFunction(LogManager* log_manager) {
+//       LogBuffer buffer(
+//          /*active=*/ log_manager && log_manager->IsLoggingActive());
+//       LOG_AF(buffer) << "foobar";
+//       LOG_AF(log_manager) << std::move(buffer);
+//     }
 
 namespace autofill {
 
@@ -76,11 +93,15 @@ struct Br {};
 // See LogTableRowBuffer below.
 struct Tr {};
 
+class LogManager;
+
 // A buffer into which you can stream values. See the top of this header file
 // for samples.
 class LogBuffer {
  public:
-  LogBuffer();
+  using IsActive = base::StrongAlias<struct ActiveTag, bool>;
+
+  explicit LogBuffer(IsActive active = IsActive(true));
   ~LogBuffer();
 
   LogBuffer(LogBuffer&& other) noexcept;
@@ -95,7 +116,6 @@ class LogBuffer {
   // Returns whether an active WebUI is listening. If false, the buffer may
   // not do any logging.
   bool active() const { return active_; }
-  void set_active(bool active) { active_ = active; }
 
  private:
   friend LogBuffer& operator<<(LogBuffer& buf, Tag&& tag);
@@ -204,6 +224,36 @@ LogTableRowBuffer&& operator<<(LogTableRowBuffer&& buf, Attrib&& attrib);
 LogBuffer HighlightValue(base::StringPiece haystack, base::StringPiece needle);
 LogBuffer HighlightValue(base::StringPiece16 haystack,
                          base::StringPiece16 needle);
+
+namespace internal {
+
+// Traits for LOG_AF() macro for `LogBuffer*`.
+template <typename T>
+struct LoggerTraits<
+    T,
+    typename std::enable_if_t<
+        std::is_convertible_v<decltype(std::declval<T>()), const LogBuffer*>>> {
+  static bool active(const LogBuffer* log_buffer) {
+    return log_buffer && log_buffer->active();
+  }
+
+  static LogBuffer& get_stream(LogBuffer* log_buffer) { return *log_buffer; }
+};
+
+// Traits for LOG_AF() macro for `LogBuffer&`.
+template <typename T>
+struct LoggerTraits<
+    T,
+    typename std::enable_if_t<
+        std::is_convertible_v<decltype(std::declval<T>()), const LogBuffer&>>> {
+  static bool active(const LogBuffer& log_buffer) {
+    return log_buffer.active();
+  }
+
+  static LogBuffer& get_stream(LogBuffer& log_buffer) { return log_buffer; }
+};
+
+}  // namespace internal
 
 }  // namespace autofill
 

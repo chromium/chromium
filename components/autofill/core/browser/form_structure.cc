@@ -506,14 +506,6 @@ ServerFieldTypeSet GetNecessaryTypesFor(ServerFieldType type) {
   }
 }
 
-LogBufferSubmitter LogRationalization(LogManager* log_manager) {
-  if (!log_manager)
-    return LogManager::DevNull();
-  LogBufferSubmitter submitter = log_manager->Log();
-  submitter << LoggingScope::kRationalization << LogMessage::kRationalization;
-  return submitter;
-}
-
 // Creates a unique name for the section that starts with |field|.
 //
 // The section name is a string of the form "%s_%u_%u", where the first string
@@ -820,10 +812,8 @@ void FormStructure::ProcessQueryResponse(
   using FieldSuggestion =
       AutofillQueryResponse::FormSuggestion::FieldSuggestion;
   AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_RESPONSE_PARSED);
-  if (log_manager) {
-    log_manager->Log() << LoggingScope::kParsing
-                       << LogMessage::kProcessingServerData;
-  }
+  LOG_AF(log_manager) << LoggingScope::kParsing
+                      << LogMessage::kProcessingServerData;
 
   bool heuristics_detected_fillable_field = false;
   bool query_response_overrode_heuristics = false;
@@ -1028,10 +1018,8 @@ void FormStructure::UpdateAutofillCount() {
 bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
   // Exclude URLs not on the web via HTTP(S).
   if (!HasAllowedScheme(source_url_)) {
-    if (log_manager) {
-      log_manager->Log() << LoggingScope::kAbortParsing
-                         << LogMessage::kAbortParsingNotAllowedScheme << *this;
-    }
+    LOG_AF(log_manager) << LoggingScope::kAbortParsing
+                        << LogMessage::kAbortParsingNotAllowedScheme << *this;
     return false;
   }
 
@@ -1042,22 +1030,18 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
       (!all_fields_are_passwords() ||
        active_field_count() < kRequiredFieldsForFormsWithOnlyPasswordFields) &&
       !has_author_specified_types_) {
-    if (log_manager) {
-      log_manager->Log() << LoggingScope::kAbortParsing
-                         << LogMessage::kAbortParsingNotEnoughFields
-                         << active_field_count() << *this;
-    }
+    LOG_AF(log_manager) << LoggingScope::kAbortParsing
+                        << LogMessage::kAbortParsingNotEnoughFields
+                        << active_field_count() << *this;
     return false;
   }
 
   // Rule out search forms.
   if (MatchesPattern(base::UTF8ToUTF16(target_url_.path_piece()),
                      kUrlSearchActionRe)) {
-    if (log_manager) {
-      log_manager->Log() << LoggingScope::kAbortParsing
-                         << LogMessage::kAbortParsingUrlMatchesSearchRegex
-                         << *this;
-    }
+    LOG_AF(log_manager) << LoggingScope::kAbortParsing
+                        << LogMessage::kAbortParsingUrlMatchesSearchRegex
+                        << *this;
     return false;
   }
 
@@ -1066,9 +1050,9 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
     has_text_field |= it->form_control_type != "select-one";
   }
 
-  if (!has_text_field && log_manager) {
-    log_manager->Log() << LoggingScope::kAbortParsing
-                       << LogMessage::kAbortParsingFormHasNoTextfield << *this;
+  if (!has_text_field) {
+    LOG_AF(log_manager) << LoggingScope::kAbortParsing
+                        << LogMessage::kAbortParsingFormHasNoTextfield << *this;
   }
 
   return has_text_field;
@@ -1751,7 +1735,8 @@ void FormStructure::RationalizeCreditCardFieldPredictions(
       cc_num_found || num_cc_fields_found >= 3 || num_other_fields_found == 0;
 
   if (!keep_cc_fields && num_cc_fields_found && log_manager) {
-    LogRationalization(log_manager)
+    LOG_AF(log_manager)
+        << LoggingScope::kRationalization << LogMessage::kRationalization
         << "Credit card rationalization: Did not find credit card number, did "
            "not find >= 3 credit card fields ("
         << num_cc_fields_found << "), and had non-cc fields ("
@@ -1798,7 +1783,9 @@ void FormStructure::RationalizeCreditCardFieldPredictions(
         //       month field(s) not immediately preceding an expiry year field.
         if (!keep_cc_fields || !cc_date_found) {
           if (!cc_date_found && log_manager) {
-            LogRationalization(log_manager)
+            LOG_AF(log_manager)
+                << LoggingScope::kRationalization
+                << LogMessage::kRationalization
                 << "Credit card rationalization: Found CC expiration month but "
                    "not a full date.";
           }
@@ -1807,7 +1794,9 @@ void FormStructure::RationalizeCreditCardFieldPredictions(
           auto it2 = it + 1;
           if (it2 == fields_.end()) {
             field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
-            LogRationalization(log_manager)
+            LOG_AF(log_manager)
+                << LoggingScope::kRationalization
+                << LogMessage::kRationalization
                 << "Credit card rationalization: Found multiple expiration "
                    "months and the last field was an expiration month";
             field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
@@ -1817,7 +1806,9 @@ void FormStructure::RationalizeCreditCardFieldPredictions(
                 next_field_type != CREDIT_CARD_EXP_4_DIGIT_YEAR) {
               field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
             }
-            LogRationalization(log_manager)
+            LOG_AF(log_manager)
+                << LoggingScope::kRationalization
+                << LogMessage::kRationalization
                 << "Credit card rationalization: Found multiple expiration "
                    "months and the field following one is not an "
                    "expiration year but "
@@ -1830,7 +1821,9 @@ void FormStructure::RationalizeCreditCardFieldPredictions(
         if (!keep_cc_fields || !cc_date_found) {
           field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
           if (!cc_date_found && log_manager) {
-            LogRationalization(log_manager)
+            LOG_AF(log_manager)
+                << LoggingScope::kRationalization
+                << LogMessage::kRationalization
                 << "Credit card rationalization: Found expiration year but no "
                    "full expriration date.";
           }
@@ -1864,7 +1857,8 @@ void FormStructure::RationalizeStreetAddressAndAddressLine(
       continue;
     }
     if (log_manager) {
-      LogRationalization(log_manager)
+      LOG_AF(log_manager)
+          << LoggingScope::kRationalization << LogMessage::kRationalization
           << "Street Address Rationalization: Converting sequence of (street "
              "address, address line 2) to (address line 1, address line 2)";
     }
@@ -1919,24 +1913,30 @@ void FormStructure::RationalizeAddressLineFields(
 
     int nb_address_rationalized = 0;
     for (auto field_index : *current_section) {
-      LogBufferSubmitter log_submitter = LogRationalization(log_manager);
-      log_submitter
+      LOG_AF(log_manager)
+          << LoggingScope::kRationalization << LogMessage::kRationalization
           << "RationalizeAddressLineFields ADDRESS_HOME_STREET_ADDRESS to ";
       switch (nb_address_rationalized) {
         case 0:
           ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE1,
                                              form_interactions_ukm_logger);
-          log_submitter << "ADDRESS_HOME_LINE1";
+          LOG_AF(log_manager)
+              << LoggingScope::kRationalization << LogMessage::kRationalization
+              << "ADDRESS_HOME_LINE1";
           break;
         case 1:
           ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE2,
                                              form_interactions_ukm_logger);
-          log_submitter << "ADDRESS_HOME_LINE2";
+          LOG_AF(log_manager)
+              << LoggingScope::kRationalization << LogMessage::kRationalization
+              << "ADDRESS_HOME_LINE2";
           break;
         case 2:
           ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE3,
                                              form_interactions_ukm_logger);
-          log_submitter << "ADDRESS_HOME_LINE3";
+          LOG_AF(log_manager)
+              << LoggingScope::kRationalization << LogMessage::kRationalization
+              << "ADDRESS_HOME_LINE3";
           break;
         default:
           NOTREACHED();
@@ -2112,7 +2112,8 @@ void FormStructure::RationalizeAddressStateCountry(
       ApplyRationalizationsToFields(
           upper_index, lower_index, fields_[upper_index]->heuristic_type(),
           fields_[lower_index]->heuristic_type(), form_interactions_ukm_logger);
-      LogRationalization(log_manager)
+      LOG_AF(log_manager)
+          << LoggingScope::kRationalization << LogMessage::kRationalization
           << "RationalizeAddressStateCountry: Heuristics are applicable";
       continue;
     }
@@ -2121,14 +2122,18 @@ void FormStructure::RationalizeAddressStateCountry(
       ApplyRationalizationsToFields(upper_index, lower_index,
                                     ADDRESS_HOME_COUNTRY, ADDRESS_HOME_STATE,
                                     form_interactions_ukm_logger);
-      LogRationalization(log_manager) << "RationalizeAddressStateCountry: "
-                                         "FieldShouldBeRationalizedToCountry";
+      LOG_AF(log_manager) << LoggingScope::kRationalization
+                          << LogMessage::kRationalization
+                          << "RationalizeAddressStateCountry: "
+                             "FieldShouldBeRationalizedToCountry";
     } else {
       ApplyRationalizationsToFields(upper_index, lower_index,
                                     ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY,
                                     form_interactions_ukm_logger);
-      LogRationalization(log_manager) << "RationalizeAddressStateCountry: "
-                                         "!FieldShouldBeRationalizedToCountry";
+      LOG_AF(log_manager) << LoggingScope::kRationalization
+                          << LogMessage::kRationalization
+                          << "RationalizeAddressStateCountry: "
+                             "!FieldShouldBeRationalizedToCountry";
     }
   }
 }
@@ -2715,7 +2720,7 @@ void FormStructure::RationalizeTypeRelationships(LogManager* log_manager) {
       // We have relationship rules for this type, but no `neccessary_type` was
       // found. Disabling Autofill for this field.
       field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
-      LogRationalization(log_manager)
+      LOG_AF(log_manager)
           << "RationalizeTypeRelationships: Fields of type "
           << FieldTypeToStringPiece(field_type)
           << " can only exist if other fields of specific types exist.";

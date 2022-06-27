@@ -82,8 +82,9 @@ base::Value CreateEmptyFragment() {
 
 }  // namespace
 
-LogBuffer::LogBuffer() {
-  buffer_.push_back(CreateEmptyFragment());
+LogBuffer::LogBuffer(IsActive active) : active_(*active) {
+  if (active_)
+    buffer_.push_back(CreateEmptyFragment());
 }
 
 LogBuffer::LogBuffer(LogBuffer&& other) noexcept = default;
@@ -242,7 +243,7 @@ namespace {
 template <typename T, typename CharT = typename T::value_type>
 LogBuffer HighlightValueInternal(T haystack, T needle) {
   using StringPieceT = base::BasicStringPiece<CharT>;
-  LogBuffer buffer;
+  LogBuffer buffer(LogBuffer::IsActive(true));
   size_t pos = haystack.find(needle);
   if (pos == StringPieceT::npos || needle.empty()) {
     buffer << haystack;

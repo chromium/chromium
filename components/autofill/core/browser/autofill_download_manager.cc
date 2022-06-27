@@ -406,7 +406,7 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
     out << Tr{} << "has_form_tag:" << upload.has_form_tag();
 
   if (upload.has_single_username_data()) {
-    LogBuffer single_username_data;
+    LogBuffer single_username_data(LogBuffer::IsActive(true));
     single_username_data << Tag{"span"} << "[";
     single_username_data
         << Tr{} << "username_form_signature:"
@@ -736,12 +736,10 @@ bool AutofillDownloadManager::StartUploadRequest(
     request_data.payload = std::move(payload);
 
     DVLOG(1) << "Sending Autofill Upload Request:\n" << upload;
-    if (log_manager_) {
-      log_manager_->Log() << LoggingScope::kAutofillServer
-                          << LogMessage::kSendAutofillUpload << Br{}
-                          << "Allow upload?: " << allow_upload << Br{}
-                          << "Data: " << Br{} << upload;
-    }
+    LOG_AF(log_manager_) << LoggingScope::kAutofillServer
+                         << LogMessage::kSendAutofillUpload << Br{}
+                         << "Allow upload?: " << allow_upload << Br{}
+                         << "Data: " << Br{} << upload;
 
     if (!allow_upload)
       return false;

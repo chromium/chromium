@@ -85,15 +85,12 @@ void AutofillManager::LogAutofillTypePredictionsAvailable(
       VLOG(1) << *form;
   }
 
-  if (!log_manager || !log_manager->IsLoggingActive())
-    return;
-
-  LogBuffer buffer;
+  LogBuffer buffer(IsLoggingActive(log_manager));
   for (FormStructure* form : forms)
-    buffer << *form;
+    LOG_AF(buffer) << *form;
 
-  log_manager->Log() << LoggingScope::kParsing << LogMessage::kParsedForms
-                     << std::move(buffer);
+  LOG_AF(log_manager) << LoggingScope::kParsing << LogMessage::kParsedForms
+                      << std::move(buffer);
 }
 
 // static
@@ -405,10 +402,8 @@ FormStructure* AutofillManager::FindCachedFormByRendererId(
 FormStructure* AutofillManager::ParseForm(const FormData& form,
                                           const FormStructure* cached_form) {
   if (form_structures_.size() >= kAutofillManagerMaxFormCacheSize) {
-    if (log_manager_) {
-      log_manager_->Log() << LoggingScope::kAbortParsing
-                          << LogMessage::kAbortParsingTooManyForms << form;
-    }
+    LOG_AF(log_manager_) << LoggingScope::kAbortParsing
+                         << LogMessage::kAbortParsingTooManyForms << form;
     return nullptr;
   }
 

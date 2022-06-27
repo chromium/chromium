@@ -371,16 +371,6 @@ size_t TypeValueFormFillingLimit(ServerFieldType field_type) {
   }
 }
 
-// Logs the reason for suppressing autofill suggestions to
-// chrome://autofill-internals.
-void LogSuppressReason(LogManager* log_manager, const std::string& reason) {
-  if (!log_manager)
-    return;
-  log_manager->Log() << LoggingScope::kFilling
-                     << LogMessage::kSuggestionSuppressed
-                     << " Reason: " << reason;
-}
-
 }  // namespace
 
 BrowserAutofillManager::FillingContext::FillingContext(
@@ -659,13 +649,11 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
                                                  SubmissionSource source) {
   base::UmaHistogramEnumeration("Autofill.FormSubmission.PerProfileType",
                                 client()->GetProfileType());
-  if (log_manager()) {
-    log_manager()->Log() << LoggingScope::kSubmission
-                         << LogMessage::kFormSubmissionDetected << Br{}
-                         << "known_success: " << known_success << Br{}
-                         << "source: " << SubmissionSourceToString(source)
-                         << Br{} << form;
-  }
+  LOG_AF(log_manager()) << LoggingScope::kSubmission
+                        << LogMessage::kFormSubmissionDetected << Br{}
+                        << "known_success: " << known_success << Br{}
+                        << "source: " << SubmissionSourceToString(source)
+                        << Br{} << form;
 
   // Always upload page language metrics.
   LogLanguageMetrics(client()->GetLanguageState());
@@ -972,17 +960,25 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
         single_field_form_fill_router_->CancelPendingQueries(this);
         external_delegate_->OnSuggestionsReturned(query_id, suggestions,
                                                   autoselect_first_suggestion);
-        LogSuppressReason(log_manager(), "Ablation experiment");
+        LOG_AF(log_manager())
+            << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
+            << " Reason: Ablation experiment";
         return;
 
       case SuppressReason::kInsecureForm:
-        LogSuppressReason(log_manager(), "Insecure form");
+        LOG_AF(log_manager())
+            << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
+            << " Reason: Insecure form";
         return;
       case SuppressReason::kAutocompleteOff:
-        LogSuppressReason(log_manager(), "autocomplete=off");
+        LOG_AF(log_manager())
+            << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
+            << " Reason: autocomplete=off";
         return;
       case SuppressReason::kAutocompleteUnrecognized:
-        LogSuppressReason(log_manager(), "autocomplete=unrecognized");
+        LOG_AF(log_manager())
+            << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
+            << " Reason: autocomplete=unrecognized";
         return;
     }
 
@@ -1506,39 +1502,38 @@ void BrowserAutofillManager::JavaScriptChangedAutofilledValue(
     const std::u16string& old_value) {
   // Log to chrome://autofill-internals that a field's value was set by
   // JavaScript.
-  if (log_manager()) {
-    auto StructureOfString = [](std::u16string str) {
-      for (auto& c : str) {
-        if (base::IsAsciiAlpha(c)) {
-          c = 'a';
-        } else if (base::IsAsciiDigit(c)) {
-          c = '0';
-        } else if (base::IsAsciiWhitespace(c)) {
-          c = ' ';
-        } else {
-          c = '$';
-        }
-      }
-      return str;
-    };
-    std::string field_number = "unknown";
-    for (size_t i = 0; i < form.fields.size(); ++i) {
-      if (form.fields[i].global_id() == field.global_id()) {
-        field_number = base::StringPrintf("Field %zu", i);
+  auto StructureOfString = [](std::u16string str) {
+    for (auto& c : str) {
+      if (base::IsAsciiAlpha(c)) {
+        c = 'a';
+      } else if (base::IsAsciiDigit(c)) {
+        c = '0';
+      } else if (base::IsAsciiWhitespace(c)) {
+        c = ' ';
+      } else {
+        c = '$';
       }
     }
-    LogBuffer change;
-    change << Tag{"div"} << Attrib{"class", "form"};
-    change << field << Br{};
-    change << "Old value structure: '"
-           << StructureOfString(old_value.substr(0, 80)) << "'" << Br{};
-    change << "New value structure: '"
-           << StructureOfString(field.value.substr(0, 80)) << "'";
-    log_manager()->Log() << LoggingScope::kWebsiteModifiedFieldValue
-                         << LogMessage::kJavaScriptChangedAutofilledValue
-                         << Br{} << Tag{"table"} << Tr{} << field_number
-                         << std::move(change);
-  }
+    return str;
+  };
+  auto GetFieldNumber = [&]() {
+    for (size_t i = 0; i < form.fields.size(); ++i) {
+      if (form.fields[i].global_id() == field.global_id())
+        return base::StringPrintf("Field %zu", i);
+    }
+    return std::string("unknown");
+  };
+  LogBuffer change(IsLoggingActive(log_manager()));
+  LOG_AF(change) << Tag{"div"} << Attrib{"class", "form"};
+  LOG_AF(change) << field << Br{};
+  LOG_AF(change) << "Old value structure: '"
+                 << StructureOfString(old_value.substr(0, 80)) << "'" << Br{};
+  LOG_AF(change) << "New value structure: '"
+                 << StructureOfString(field.value.substr(0, 80)) << "'";
+  LOG_AF(log_manager()) << LoggingScope::kWebsiteModifiedFieldValue
+                        << LogMessage::kJavaScriptChangedAutofilledValue << Br{}
+                        << Tag{"table"} << Tr{} << GetFieldNumber()
+                        << std::move(change);
 
   MaybeTriggerRefillForExpirationDate(form, field, old_value);
 }
@@ -1829,11 +1824,11 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   DCHECK(form_structure);
   DCHECK(autofill_field);
 
-  LogBuffer buffer;
-  buffer << "is credit card section: " << is_credit_card << Br{};
-  buffer << "is refill: " << is_refill << Br{};
-  buffer << *form_structure << Br{};
-  buffer << Tag{"table"};
+  LogBuffer buffer(IsLoggingActive(log_manager()));
+  LOG_AF(buffer) << "is credit card section: " << is_credit_card << Br{};
+  LOG_AF(buffer) << "is refill: " << is_refill << Br{};
+  LOG_AF(buffer) << *form_structure << Br{};
+  LOG_AF(buffer) << Tag{"table"};
 
   form_structure->RationalizePhoneNumbersInSection(autofill_field->section);
 
@@ -1877,13 +1872,15 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     result.fields[i].section = form_structure->field(i)->section;
 
     if (form_structure->field(i)->section != autofill_field->section) {
-      buffer << Tr{} << field_number << "Skipped: not part of filled section";
+      LOG_AF(buffer) << Tr{} << field_number
+                     << "Skipped: not part of filled section";
       continue;
     }
 
     if (form_structure->field(i)->only_fill_when_focused() &&
         !form_structure->field(i)->SameFieldAs(field)) {
-      buffer << Tr{} << field_number << "Skipped: only fill when focused";
+      LOG_AF(buffer) << Tr{} << field_number
+                     << "Skipped: only fill when focused";
       continue;
     }
 
@@ -1903,7 +1900,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
           ->LogHiddenRepresentationalFieldSkipDecision(*form_structure,
                                                        *cached_field, skip);
       if (skip) {
-        buffer << Tr{} << field_number << "Skipped: invisible field";
+        LOG_AF(buffer) << Tr{} << field_number << "Skipped: invisible field";
         continue;
       }
     }
@@ -1953,8 +1950,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
         (!form.fields[i].value.empty() ||
          !form_structure->field(i)->value.empty()) &&
         !cached_field->SameFieldAs(field)) {
-      buffer << Tr{} << field_number
-             << "Skipped: don't fill user-filled fields";
+      LOG_AF(buffer) << Tr{} << field_number
+                     << "Skipped: don't fill user-filled fields";
       continue;
     }
 
@@ -1962,15 +1959,16 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     // when it's a refill.
     if (result.fields[i].is_autofilled && !cached_field->SameFieldAs(field) &&
         !is_refill) {
-      buffer << Tr{} << field_number
-             << "Skipped: don't fill previously filled fields unless during a "
-                "refill";
+      LOG_AF(buffer)
+          << Tr{} << field_number
+          << "Skipped: don't fill previously filled fields unless during a "
+             "refill";
       continue;
     }
 
     if (field_group_type == FieldTypeGroup::kNoGroup) {
-      buffer << Tr{} << field_number
-             << "Skipped: field type has no fillable group";
+      LOG_AF(buffer) << Tr{} << field_number
+                     << "Skipped: field type has no fillable group";
       continue;
     }
 
@@ -1979,9 +1977,10 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     if (is_refill &&
         !base::Contains(filling_context->type_groups_originally_filled,
                         field_group_type)) {
-      buffer << Tr{} << field_number
-             << "Skipped: in a refill, only fields from the group that was "
-                "filled in the initial fill may be filled";
+      LOG_AF(buffer)
+          << Tr{} << field_number
+          << "Skipped: in a refill, only fields from the group that was "
+             "filled in the initial fill may be filled";
       continue;
     }
 
@@ -1991,16 +1990,16 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     if (data_util::IsCreditCardExpirationType(field_type) &&
         (is_credit_card && absl::get<const CreditCard*>(profile_or_credit_card)
                                ->IsExpired(AutofillClock::Now()))) {
-      buffer << Tr{} << field_number
-             << "Skipped: don't fill expiration date of expired cards";
+      LOG_AF(buffer) << Tr{} << field_number
+                     << "Skipped: don't fill expiration date of expired cards";
       continue;
     }
 
     // A field with a specific type is only allowed to be filled a limited
     // number of times given by |TypeValueFormFillingLimit(field_type)|.
     if (++type_count[field_type] > TypeValueFormFillingLimit(field_type)) {
-      buffer << Tr{} << field_number
-             << "Skipped: field-type filling-limit reached";
+      LOG_AF(buffer) << Tr{} << field_number
+                     << "Skipped: field-type filling-limit reached";
       continue;
     }
 
@@ -2042,16 +2041,17 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     bool has_value_after = !result.fields[i].value.empty();
     bool is_autofilled_after = result.fields[i].is_autofilled;
 
-    buffer << Tr{} << field_number
-           << base::StringPrintf(
-                  "Fillable - has value: %d->%d; autofilled: %d->%d. %s",
-                  has_value_before, has_value_after, is_autofilled_before,
-                  is_autofilled_after, failure_to_fill.c_str());
+    LOG_AF(buffer)
+        << Tr{} << field_number
+        << base::StringPrintf(
+               "Fillable - has value: %d->%d; autofilled: %d->%d. %s",
+               has_value_before, has_value_after, is_autofilled_before,
+               is_autofilled_after, failure_to_fill.c_str());
 
     if (!cached_field->IsFocusable() && result.fields[i].is_autofilled)
       AutofillMetrics::LogHiddenOrPresentationalSelectFieldsFilled();
   }
-  buffer << CTag{"table"};
+  LOG_AF(buffer) << CTag{"table"};
 
   autofilled_form_signatures_.push_front(form_structure->FormSignatureAsStr());
   // Only remember the last few forms that we've seen, both to avoid false
@@ -2059,11 +2059,9 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   if (autofilled_form_signatures_.size() > kMaxRecentFormSignaturesToRemember)
     autofilled_form_signatures_.pop_back();
 
-  if (log_manager()) {
-    log_manager()->Log() << LoggingScope::kFilling
-                         << LogMessage::kSendFillingData << Br{}
-                         << std::move(buffer);
-  }
+  LOG_AF(log_manager()) << LoggingScope::kFilling
+                        << LogMessage::kSendFillingData << Br{}
+                        << std::move(buffer);
 
   auto field_types = base::MakeFlatMap<FieldGlobalId, ServerFieldType>(
       *form_structure, {}, [](const auto& field) {
