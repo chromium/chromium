@@ -866,17 +866,12 @@ testcase.recentsNoRenameForPlayFiles = async () => {
 
 /**
  * Tests cut operation can be performed in Recents view on files from
- * Downloads, Drive and Play Files.
+ * Downloads.
  */
-testcase.recentsAllowCut = async () => {
-  await addPlayFileEntries();
+testcase.recentsAllowCutForDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
-      RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.directoryA],
-      [ENTRIES.desktop]);
-  const files = TestEntryInfo.getExpectedRows([
-    ENTRIES.beautiful, ENTRIES.desktop, RECENT_MODIFIED_ANDROID_DOCUMENT,
-    RECENT_MODIFIED_ANDROID_IMAGE, RECENT_MODIFIED_ANDROID_VIDEO
-  ]);
+      RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.directoryA], []);
+  const files = TestEntryInfo.getExpectedRows([ENTRIES.beautiful]);
   const newFolderBreadcrumb =
       `/My files/Downloads/${ENTRIES.directoryA.nameText}`;
 
@@ -886,8 +881,7 @@ testcase.recentsAllowCut = async () => {
   await cutFileAndPasteTo(
       appId, ENTRIES.beautiful.nameText, newFolderBreadcrumb);
   // The file being cut should appear in the new directory.
-  const filesInNewDir1 = TestEntryInfo.getExpectedRows([ENTRIES.beautiful]);
-  await remoteCall.waitForFiles(appId, filesInNewDir1);
+  await remoteCall.waitForFiles(appId, files);
   // Recents view still have the full file list because the file being cut just
   // moves to a new directory, but it still belongs to Recent.
   await navigateToRecent(appId);
@@ -895,19 +889,27 @@ testcase.recentsAllowCut = async () => {
   // Use "go to location" to validate the file in Recents after cut is
   // collected from the new folder.
   await goToFileLocation(appId, ENTRIES.beautiful.nameText);
-  await remoteCall.waitForFiles(appId, filesInNewDir1);
+  await remoteCall.waitForFiles(appId, files);
   await verifyBreadcrumbsPath(appId, newFolderBreadcrumb);
+};
+
+/**
+ * Tests cut operation can be performed in Recents view on files from
+ * Drive.
+ */
+testcase.recentsAllowCutForDrive = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.directoryA], [ENTRIES.desktop]);
+  const files = TestEntryInfo.getExpectedRows([ENTRIES.desktop]);
+  const newFolderBreadcrumb =
+      `/My files/Downloads/${ENTRIES.directoryA.nameText}`;
 
   // Cut/Paste a file originated from Drive.
   await navigateToRecent(appId);
   await remoteCall.waitForFiles(appId, files);
   await cutFileAndPasteTo(appId, ENTRIES.desktop.nameText, newFolderBreadcrumb);
   // The file being cut should appear in the new directory.
-  const filesInNewDir2 = TestEntryInfo.getExpectedRows([
-    ENTRIES.beautiful,
-    ENTRIES.desktop,
-  ]);
-  await remoteCall.waitForFiles(appId, filesInNewDir2);
+  await remoteCall.waitForFiles(appId, files);
   // Recents view still have the full file list because the file being cut just
   // moves to a new directory, but it still belongs to Recent.
   await navigateToRecent(appId);
@@ -915,8 +917,24 @@ testcase.recentsAllowCut = async () => {
   // Use "go to location" to validate the file in Recents after cut is
   // collected from the new folder.
   await goToFileLocation(appId, ENTRIES.desktop.nameText);
-  await remoteCall.waitForFiles(appId, filesInNewDir2);
+  await remoteCall.waitForFiles(appId, files);
   await verifyBreadcrumbsPath(appId, newFolderBreadcrumb);
+};
+
+/**
+ * Tests cut operation can be performed in Recents view on files from
+ * Play Files.
+ */
+testcase.recentsAllowCutForPlayFiles = async () => {
+  await addPlayFileEntries();
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.directoryA], []);
+  const files = TestEntryInfo.getExpectedRows([
+    RECENT_MODIFIED_ANDROID_DOCUMENT, RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO
+  ]);
+  const newFolderBreadcrumb =
+      `/My files/Downloads/${ENTRIES.directoryA.nameText}`;
 
   // Cut/Paste a file originated from Play Files.
   await navigateToRecent(appId);
@@ -924,9 +942,9 @@ testcase.recentsAllowCut = async () => {
   await cutFileAndPasteTo(
       appId, RECENT_MODIFIED_ANDROID_IMAGE.nameText, newFolderBreadcrumb);
   // The file being cut should appear in the new directory.
-  const filesInNewDir3 = TestEntryInfo.getExpectedRows(
-      [ENTRIES.beautiful, ENTRIES.desktop, RECENT_MODIFIED_ANDROID_IMAGE]);
-  await remoteCall.waitForFiles(appId, filesInNewDir3);
+  const filesInNewDir =
+      TestEntryInfo.getExpectedRows([RECENT_MODIFIED_ANDROID_IMAGE]);
+  await remoteCall.waitForFiles(appId, filesInNewDir);
   // Recents view still have the full file list because the file being cut just
   // moves to a new directory, but it still belongs to Recent.
   await navigateToRecent(appId);
@@ -934,6 +952,6 @@ testcase.recentsAllowCut = async () => {
   // Use "go to location" to validate the file in Recents after cut is
   // collected from the new folder.
   await goToFileLocation(appId, RECENT_MODIFIED_ANDROID_IMAGE.nameText);
-  await remoteCall.waitForFiles(appId, filesInNewDir3);
+  await remoteCall.waitForFiles(appId, filesInNewDir);
   await verifyBreadcrumbsPath(appId, newFolderBreadcrumb);
 };

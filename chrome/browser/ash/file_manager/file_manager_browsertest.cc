@@ -1715,11 +1715,29 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("recentsA11yMessages").EnableFiltersInRecents(),
         TestCase("recentsA11yMessages").EnableFiltersInRecents().FilesSwa(),
-        TestCase("recentsAllowCut")
+        TestCase("recentsAllowCutForDownloads")
             .EnableArc()
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowCut")
+        TestCase("recentsAllowCutForDownloads")
+            .EnableArc()
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2()
+            .FilesSwa(),
+        TestCase("recentsAllowCutForDrive")
+            .EnableArc()
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2(),
+        TestCase("recentsAllowCutForDrive")
+            .EnableArc()
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2()
+            .FilesSwa(),
+        TestCase("recentsAllowCutForPlayFiles")
+            .EnableArc()
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2(),
+        TestCase("recentsAllowCutForPlayFiles")
             .EnableArc()
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2()
