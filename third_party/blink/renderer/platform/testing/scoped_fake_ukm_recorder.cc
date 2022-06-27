@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/testing/scoped_fake_ukm_recorder.h"
+#include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom-blink.h"

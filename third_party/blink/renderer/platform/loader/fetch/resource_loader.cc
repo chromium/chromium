@@ -1246,14 +1246,18 @@ void ResourceLoader::DidFinishLoading(
   resource_->SetDecodedBodyLength(decoded_body_length);
 
   if (pervasive_payload_requested.has_value()) {
-    auto* ukm_recorder = ukm::UkmRecorder::Get();
+    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
+    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+        pending_recorder.InitWithNewPipeAndPassReceiver());
+    auto ukm_recorder =
+        std::make_unique<ukm::MojoUkmRecorder>(std::move(pending_recorder));
     ukm::SourceId ukm_source_id =
         resource_->GetResourceRequest().GetUkmSourceId();
     ukm::builders::Network_CacheTransparency builder(ukm_source_id);
     builder.SetFoundPervasivePayload(pervasive_payload_requested.value());
     builder.SetTotalBytesFetched(
         ukm::GetExponentialBucketMinForBytes(encoded_data_length));
-    builder.Record(ukm_recorder->Get());
+    builder.Record(ukm_recorder.get());
   }
 
   response_end_time_for_error_cases_ = response_end_time;

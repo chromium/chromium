@@ -56,7 +56,8 @@ import("//third_party/blink/renderer/core/page/build.gni")
 import("//third_party/blink/renderer/core/paint/build.gni")
 import("//third_party/blink/renderer/core/permissions_policy/build.gni")
 import("//third_party/blink/renderer/core/resize_observer/build.gni")
-import("//third_party/blink/renderer/core/scheduler_integration_tests/build.gni")
+import(
+    "//third_party/blink/renderer/core/scheduler_integration_tests/build.gni")
 import("//third_party/blink/renderer/core/script/build.gni")
 import("//third_party/blink/renderer/core/scroll/build.gni")
 import("//third_party/blink/renderer/core/speculation_rules/build.gni")
@@ -483,8 +484,6 @@ source_set("testing") {
     "testing/origin_trials_test_partial.h",
     "testing/record_test.cc",
     "testing/record_test.h",
-    "testing/scoped_fake_ukm_recorder.cc",
-    "testing/scoped_fake_ukm_recorder.h",
     "testing/scoped_mock_overlay_scrollbars.h",
     "testing/sequence_test.cc",
     "testing/sequence_test.h",

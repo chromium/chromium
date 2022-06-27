@@ -351,6 +351,8 @@ void FrameFetchContext::PrepareRequest(
   if (GetResourceFetcherProperties().IsDetached())
     return;
 
+  request.SetUkmSourceId(document_->UkmSourceID());
+
   if (document_loader_->ForceFetchCacheMode())
     request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SCOPED_FAKE_UKM_RECORDER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SCOPED_FAKE_UKM_RECORDER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_SCOPED_FAKE_UKM_RECORDER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_SCOPED_FAKE_UKM_RECORDER_H_
 
 #include "components/ukm/test_ukm_recorder.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -39,4 +39,4 @@ class ScopedFakeUkmRecorder : public ukm::mojom::UkmRecorderInterface {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SCOPED_FAKE_UKM_RECORDER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_SCOPED_FAKE_UKM_RECORDER_H_

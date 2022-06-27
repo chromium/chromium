@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "net/base/features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -35,6 +34,7 @@
 #include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/noop_web_url_loader.h"
+#include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -814,14 +814,14 @@ class ResourceLoaderCacheTransparencyTest : public ResourceLoaderTest {
     ResourceLoaderTest::SetUp();
   }
 
-  const ukm::TestAutoSetUkmRecorder& test_ukm_recorder() const {
-    return test_ukm_recorder_;
+  const ukm::TestUkmRecorder* GetUkmRecorder() {
+    return scoped_fake_ukm_recorder_.recorder();
   }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
+  ScopedFakeUkmRecorder scoped_fake_ukm_recorder_;
 };
 
 TEST_F(ResourceLoaderCacheTransparencyTest, PervasivePayloadRequested) {
@@ -848,12 +848,14 @@ TEST_F(ResourceLoaderCacheTransparencyTest, PervasivePayloadRequested) {
                            /*should_report_corb_blocking=*/false,
                            /*pervasive_payload_requested=*/true);
 
+  base::RunLoop().RunUntilIdle();
+
   // Check UKM recording
-  auto entries = test_ukm_recorder().GetEntriesByName(
+  auto entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Network_CacheTransparency::kEntryName);
   ASSERT_EQ(1u, entries.size());
   const ukm::mojom::UkmEntry* entry = entries[0];
-  test_ukm_recorder().ExpectEntryMetric(
+  GetUkmRecorder()->ExpectEntryMetric(
       entry,
       ukm::builders::Network_CacheTransparency::kFoundPervasivePayloadName,
       true);
@@ -883,12 +885,14 @@ TEST_F(ResourceLoaderCacheTransparencyTest, PervasivePayloadNotRequested) {
                            /*should_report_corb_blocking=*/false,
                            /*pervasive_payload_requested=*/false);
 
+  base::RunLoop().RunUntilIdle();
+
   // Check UKM recording
-  auto entries = test_ukm_recorder().GetEntriesByName(
+  auto entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Network_CacheTransparency::kEntryName);
   ASSERT_EQ(1u, entries.size());
   const ukm::mojom::UkmEntry* entry = entries[0];
-  test_ukm_recorder().ExpectEntryMetric(
+  GetUkmRecorder()->ExpectEntryMetric(
       entry,
       ukm::builders::Network_CacheTransparency::kFoundPervasivePayloadName,
       false);

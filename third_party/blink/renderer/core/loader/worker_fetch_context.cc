@@ -188,6 +188,8 @@ void WorkerFetchContext::PrepareRequest(ResourceRequest& request,
                                         ResourceLoaderOptions& options,
                                         WebScopedVirtualTimePauser&,
                                         ResourceType resource_type) {
+  request.SetUkmSourceId(GetExecutionContext()->UkmSourceID());
+
   String user_agent = global_scope_->UserAgent();
   probe::ApplyUserAgentOverride(Probe(), &user_agent);
   DCHECK(!user_agent.IsNull());

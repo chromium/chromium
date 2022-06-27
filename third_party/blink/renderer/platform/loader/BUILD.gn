@@ -230,7 +230,6 @@ source_set("unit_tests") {
 
   deps = [
     "//base/test:test_support",
-    "//components/ukm:test_support",
     "//mojo/public/cpp/test_support:test_utils",
     "//net:test_support",
     "//net/traffic_annotation:test_support",

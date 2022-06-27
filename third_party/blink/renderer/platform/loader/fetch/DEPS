@@ -10,9 +10,3 @@ include_rules = [
   "+services/network/public/cpp/optional_trust_token_params.h",
   "+third_party/blink/renderer/platform/mojo",
 ]
-
-specific_include_rules = {
-  "resource_loader_test.cc": [
-    "+components/ukm/test_ukm_recorder.h"
-  ]
-}
