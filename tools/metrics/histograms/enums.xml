@@ -56094,6 +56094,7 @@ from previous Chrome versions.
   <int value="-1454397907" label="OptimizationHints:disabled"/>
   <int value="-1454264660" label="ProminentDarkModeActiveTabTitle:disabled"/>
   <int value="-1453647118" label="PasswordLeakDetection:disabled"/>
+  <int value="-1452786530" label="ChromeOSZramWriteback:enabled"/>
   <int value="-1452010225" label="WindowNaming:disabled"/>
   <int value="-1451644187" label="OverviewSwipeToClose:enabled"/>
   <int value="-1450657485" label="EnableHardwareMirrorMode:enabled"/>
@@ -60103,6 +60104,7 @@ from previous Chrome versions.
   <int value="1152491093" label="MediaSessionService:disabled"/>
   <int value="1153454438"
       label="AutofillCreditCardLastUsedDateDisplay:disabled"/>
+  <int value="1153658720" label="ChromeOSZramWriteback:disabled"/>
   <int value="1154722867" label="TranslateAssistContent:disabled"/>
   <int value="1154790184" label="ScanAppMultiPageScan:enabled"/>
   <int value="1155905651" label="DrawVerticallyEdgeToEdge:disabled"/>

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/memory/swap_configuration.h"
 
 #include "base/bind.h"
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -41,6 +42,52 @@ const base::FeatureParam<int>
 const base::FeatureParam<int>
     kCrOSMemoryPressureSignalStudyModerateThresholdPrecentageBps{
         &kCrOSMemoryPressureSignalStudy, "moderate_threshold_percentage", 4000};
+
+COMPONENT_EXPORT(ASH_MEMORY)
+const base::Feature kCrOSEnableZramWriteback{"ChromeOSZramWriteback",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int> kCrOSWritebackPeriodicTimeSec{
+    &kCrOSEnableZramWriteback, "ZramWritebackPeriodicTimeSec",
+    base::Seconds(10).InSeconds()};
+const base::FeatureParam<int> kCrOSZramWritebackWritebackBackoffTimeSec{
+    &kCrOSEnableZramWriteback, "CrOSZramWritebackWritebackBackoffTimeSec",
+    base::Seconds(30).InSeconds()};
+const base::FeatureParam<int> kCrOSZramWritebackDevSizePctFree{
+    &kCrOSEnableZramWriteback, "ZramBDSizePctOfFree", 15};
+const base::FeatureParam<int> kCrOSWritebackMinPages{
+    &kCrOSEnableZramWriteback, "ZramWritebackMinPages",
+    ((2 << 20) / 4096) /* 2MiB worth of pages */};
+const base::FeatureParam<int> kCrOSWritebackMaxPages{
+    &kCrOSEnableZramWriteback, "ZramWritebackMaxPages",
+    ((128 << 20) / 4096) /* 128MiB worth of pages */
+};
+const base::FeatureParam<bool> kCrOSWritebackHuge{&kCrOSEnableZramWriteback,
+                                                  "ZramWritebackHuge", false};
+const base::FeatureParam<bool> kCrOSWritebackHugeIdle{
+    &kCrOSEnableZramWriteback, "ZramWritebackHugeIdle", true};
+const base::FeatureParam<bool> kCrOSWritebackIdle{&kCrOSEnableZramWriteback,
+                                                  "ZramWritebackIdle", true};
+const base::FeatureParam<int> kCrOSWritebackIdleMinTimeSec{
+    &kCrOSEnableZramWriteback, "ZramWritebackIdleMinTimeSec",
+    base::Minutes(2).InSeconds()};
+const base::FeatureParam<int> kCrOSWritebackIdleMaxTimeSec{
+    &kCrOSEnableZramWriteback, "ZramWritebackIdleMaxTimeSec",
+    base::Days(1).InSeconds()};
+
+const ZramWritebackParams ZramWritebackParams::Get() {
+  ZramWritebackParams params;
+  params.periodic_time = base::Seconds(kCrOSWritebackPeriodicTimeSec.Get());
+  params.backoff_time =
+      base::Seconds(kCrOSZramWritebackWritebackBackoffTimeSec.Get());
+  params.idle_max_time = base::Seconds(kCrOSWritebackIdleMaxTimeSec.Get());
+  params.idle_min_time = base::Seconds(kCrOSWritebackIdleMinTimeSec.Get());
+  params.max_pages = kCrOSWritebackMaxPages.Get();
+  params.min_pages = kCrOSWritebackMinPages.Get();
+  params.writeback_huge_idle = kCrOSWritebackHugeIdle.Get();
+  params.writeback_huge = kCrOSWritebackHuge.Get();
+  params.writeback_idle = kCrOSWritebackIdle.Get();
+  return params;
+}
 
 namespace {
 

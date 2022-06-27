@@ -241,6 +241,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/app_restore/features.h"
 #include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
@@ -3491,6 +3492,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-notifications-revamp", flag_descriptions::kNotificationsRevampName,
      flag_descriptions::kNotificationsRevampDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kNotificationsRefresh)},
+    {"enable-zram-writeback", flag_descriptions::kEnableZramWriteback,
+     flag_descriptions::kEnableZramWritebackDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::kCrOSEnableZramWriteback)},
     // Used to carry the policy value crossing the Chrome process lifetime.
     {crosapi::browser_util::kLacrosAvailabilityPolicyInternalName, "", "",
      kOsCrOS, MULTI_VALUE_TYPE(kLacrosAvailabilityPolicyChoices)},

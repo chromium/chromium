@@ -300,6 +300,22 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
                                 int32_t value,
                                 DBusMethodCallback<std::string> callback) = 0;
 
+  // Zram Writeback Dbus Messages
+  virtual void SwapZramEnableWriteback(
+      uint32_t size_mb,
+      DBusMethodCallback<std::string> callback) = 0;
+
+  virtual void SwapZramSetWritebackLimit(
+      uint32_t limit_pages,
+      DBusMethodCallback<std::string> callback) = 0;
+
+  virtual void SwapZramMarkIdle(uint32_t age_seconds,
+                                DBusMethodCallback<std::string> callback) = 0;
+
+  virtual void InitiateSwapZramWriteback(
+      debugd::ZramWritebackMode mode,
+      DBusMethodCallback<std::string> callback) = 0;
+
   // Stops the packet capture process identified with |handle|. |handle| is a
   // unique process identifier that is returned from debugd's PacketCaptureStart
   // D-Bus method when the packet capture process is started. Stops all on-going

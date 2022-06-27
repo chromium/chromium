@@ -64,6 +64,30 @@ void FakeDebugDaemonClient::SetSwapParameter(
   std::move(callback).Run(std::string());
 }
 
+void FakeDebugDaemonClient::SwapZramEnableWriteback(
+    uint32_t size_mb,
+    DBusMethodCallback<std::string> callback) {
+  std::move(callback).Run(std::string());
+}
+
+void FakeDebugDaemonClient::SwapZramSetWritebackLimit(
+    uint32_t limit_pages,
+    DBusMethodCallback<std::string> callback) {
+  std::move(callback).Run(std::string());
+}
+
+void FakeDebugDaemonClient::SwapZramMarkIdle(
+    uint32_t age_seconds,
+    DBusMethodCallback<std::string> callback) {
+  std::move(callback).Run(std::string());
+}
+
+void FakeDebugDaemonClient::InitiateSwapZramWriteback(
+    debugd::ZramWritebackMode mode,
+    DBusMethodCallback<std::string> callback) {
+  std::move(callback).Run(std::string());
+}
+
 std::string FakeDebugDaemonClient::GetTracingAgentName() {
   return kCrOSTracingAgentName;
 }

@@ -3102,6 +3102,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "enable-zram-writeback",
+    "owners": ["bgeffon@google.com", "chromeos-memory@google.com"],
+    "expiry_milestone": 118
+  },
+  {
     "name": "encrypted-client-hello",
     "owners": [ "davidben", "trusty-transport@chromium.org" ],
     "expiry_milestone": 114

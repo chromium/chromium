@@ -21,6 +21,7 @@
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
 #include "chromeos/ash/components/memory/memory.h"
+#include "chromeos/ash/components/memory/zram_writeback_controller.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chromeos/network/fast_transition_observer.h"
 
@@ -284,6 +285,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       quick_pair_delegate_;
 
   std::unique_ptr<AudioSurveyHandler> audio_survey_handler_;
+
+  std::unique_ptr<ash::memory::ZramWritebackController>
+      zram_writeback_controller_;
 
   // Only temporarily owned, will be null after PostCreateMainMessageLoop().
   // The Accessor is constructed before initialization of FeatureList and should

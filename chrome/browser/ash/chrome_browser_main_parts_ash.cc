@@ -1379,6 +1379,11 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   zram_detail_ = base::MakeRefCounted<memory::ZramMetrics>();
   zram_detail_->Start();
 
+  if (ash::memory::ZramWritebackController::IsSupportedAndEnabled()) {
+    zram_writeback_controller_ = ash::memory::ZramWritebackController::Create();
+    zram_writeback_controller_->Start();
+  }
+
   ChromeBrowserMainPartsLinux::PostBrowserStart();
 }
 
@@ -1394,6 +1399,10 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   }
   if (zram_detail_ != nullptr) {
     zram_detail_->Stop();
+  }
+
+  if (zram_writeback_controller_ != nullptr) {
+    zram_writeback_controller_->Stop();
   }
 
   SystemProxyManager::Shutdown();

@@ -18,6 +18,7 @@ component("memory") {
     "//components/memory_pressure",
     "//crypto",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
+    "//third_party/re2",
   ]
   sources = [
     "aligned_memory.h",
@@ -31,6 +32,12 @@ component("memory") {
     "pressure/system_memory_pressure_evaluator.h",
     "swap_configuration.cc",
     "swap_configuration.h",
+    "zram_writeback_backend.cc",
+    "zram_writeback_backend.h",
+    "zram_writeback_controller.cc",
+    "zram_writeback_controller.h",
+    "zram_writeback_policy.cc",
+    "zram_writeback_policy.h",
   ]
 }
 
@@ -50,5 +57,6 @@ source_set("unit_tests") {
     "memory_unittest.cc",
     "pagemap_unittest.cc",
     "pressure/system_memory_pressure_evaluator_unittest.cc",
+    "zram_writeback_controller_unittest.cc",
   ]
 }

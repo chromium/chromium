@@ -43,6 +43,20 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void SetSwapParameter(const std::string& parameter,
                         int32_t value,
                         DBusMethodCallback<std::string> callback) override;
+  void SwapZramEnableWriteback(
+      uint32_t size_mb,
+      DBusMethodCallback<std::string> callback) override;
+
+  void SwapZramSetWritebackLimit(
+      uint32_t limit_pages,
+      DBusMethodCallback<std::string> callback) override;
+
+  void SwapZramMarkIdle(uint32_t age_seconds,
+                        DBusMethodCallback<std::string> callback) override;
+
+  void InitiateSwapZramWriteback(
+      debugd::ZramWritebackMode mode,
+      DBusMethodCallback<std::string> callback) override;
   void StartAgentTracing(const base::trace_event::TraceConfig& trace_config,
                          StartAgentTracingCallback callback) override;
   void StopAgentTracing(StopAgentTracingCallback callback) override;
