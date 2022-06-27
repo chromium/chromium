@@ -9,6 +9,7 @@
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/zx/channel.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -19,6 +20,10 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/service_provider_impl.h"
 #include "base/strings/string_piece.h"
+
+namespace sys {
+class ServiceDirectory;
+}
 
 namespace cr_fuchsia {
 
@@ -141,6 +146,9 @@ class AgentImpl final : public ::fuchsia::modular::Agent {
 
   // Set of service names to publish to all components.
   const std::vector<std::string> public_service_names_;
+
+  // Used to route requests for public services via the outgoing directory.
+  std::unique_ptr<sys::ServiceDirectory> public_services_;
 
   // Binds this Agent implementation into the |outgoing_directory|.
   base::ScopedServiceBinding<::fuchsia::modular::Agent> agent_binding_;

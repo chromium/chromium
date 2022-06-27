@@ -4,9 +4,13 @@
 
 #include "fuchsia_web/runners/common/modular/agent_impl.h"
 
+#include <lib/fdio/directory.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include <utility>
+
 #include "base/bind.h"
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 
 namespace cr_fuchsia {
@@ -60,7 +64,21 @@ AgentImpl::AgentImpl(
     : create_component_state_callback_(
           std::move(create_component_state_callback)),
       public_service_names_(std::move(public_service_names)),
-      agent_binding_(outgoing_directory, this) {}
+      agent_binding_(outgoing_directory, this) {
+  if (!public_service_names_.empty()) {
+    fuchsia::io::DirectoryHandle root_directory;
+    zx_status_t status =
+        outgoing_directory->Serve(root_directory.NewRequest().TakeChannel());
+    ZX_CHECK(status == ZX_OK, status) << "Serve(root)";
+    fuchsia::io::DirectoryHandle svc_directory;
+    status = fdio_service_connect_at(
+        root_directory.channel().get(), "svc",
+        svc_directory.NewRequest().TakeChannel().release());
+    ZX_CHECK(status == ZX_OK, status) << "open(svc)";
+    public_services_ =
+        std::make_unique<sys::ServiceDirectory>(std::move(svc_directory));
+  }
+}
 
 AgentImpl::~AgentImpl() {
   DCHECK(active_components_.empty());
@@ -81,10 +99,9 @@ void AgentImpl::Connect(
     for (const auto& service_name : public_service_names_) {
       zx_status_t status = outgoing->AddPublicService(
           std::make_unique<vfs::Service>(
-              [service_name](zx::channel request,
-                             async_dispatcher_t* dispatcher) {
-                base::ComponentContextForProcess()->svc()->Connect(
-                    service_name, std::move(request));
+              [public_services = public_services_.get(), service_name](
+                  zx::channel request, async_dispatcher_t* dispatcher) {
+                public_services->Connect(service_name, std::move(request));
               }),
           service_name);
       CHECK_EQ(status, ZX_OK);
