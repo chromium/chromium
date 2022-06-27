@@ -233,6 +233,14 @@ void SigninViewController::ShowModalInterceptFirstRunExperienceDialog(
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+void SigninViewController::ShowModalProfileCustomizationDialog() {
+  CloseModalSignin();
+  dialog_ = std::make_unique<SigninModalDialogImpl>(
+      SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
+          browser_, /*show_profile_switch_iph=*/true),
+      GetOnModalDialogClosedCallback());
+}
+
 void SigninViewController::ShowModalSigninEmailConfirmationDialog(
     const std::string& last_email,
     const std::string& email,

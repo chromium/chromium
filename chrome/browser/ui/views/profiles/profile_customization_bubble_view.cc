@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -32,10 +33,21 @@ ProfileCustomizationBubbleView::~ProfileCustomizationBubbleView() = default;
 
 // static
 ProfileCustomizationBubbleView* ProfileCustomizationBubbleView::CreateBubble(
-    Profile* profile,
+    Browser* browser,
     views::View* anchor_view) {
+  // With `kSyncPromoAfterSigninIntercept` enabled, the profile customization
+  // should be always displayed in a modal dialog. Once the feature is launched,
+  // `ProfileCustomizationBubbleView` will be removed and all the callers will
+  // migrate to `ShowModalProfileCustomizationDialog()`.
+  // Return value is only used in tests, so it's fine to return nullptr if a
+  // `ProfileCustomizationBubbleView` was not created.
+  if (base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept)) {
+    browser->signin_view_controller()->ShowModalProfileCustomizationDialog();
+    return nullptr;
+  }
+
   ProfileCustomizationBubbleView* bubble_view =
-      new ProfileCustomizationBubbleView(profile, anchor_view);
+      new ProfileCustomizationBubbleView(browser->profile(), anchor_view);
   // The widget is owned by the views system.
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(bubble_view);
@@ -101,5 +113,5 @@ void DiceWebSigninInterceptorDelegate::ShowProfileCustomizationBubbleInternal(
                                  ->toolbar_button_provider()
                                  ->GetAvatarToolbarButton();
   DCHECK(anchor_view);
-  ProfileCustomizationBubbleView::CreateBubble(browser->profile(), anchor_view);
+  ProfileCustomizationBubbleView::CreateBubble(browser, anchor_view);
 }

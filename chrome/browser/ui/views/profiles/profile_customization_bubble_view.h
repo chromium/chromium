@@ -14,6 +14,7 @@ namespace views {
 class View;
 }  // namespace views
 
+class Browser;
 class Profile;
 
 // This bubble is implemented as a WebUI page rendered inside a native bubble.
@@ -28,7 +29,7 @@ class ProfileCustomizationBubbleView : public views::BubbleDialogDelegateView {
   ~ProfileCustomizationBubbleView() override;
 
   // Creates and shows the bubble.
-  static ProfileCustomizationBubbleView* CreateBubble(Profile* profile,
+  static ProfileCustomizationBubbleView* CreateBubble(Browser* browser,
                                                       views::View* anchor_view);
 
  private:
