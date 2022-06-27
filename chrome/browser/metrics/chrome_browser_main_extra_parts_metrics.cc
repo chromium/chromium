@@ -30,7 +30,6 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/google/google_brand.h"
-#include "chrome/browser/metrics/bluetooth_available_utility.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
 #include "chrome/browser/metrics/power/power_metrics_reporter.h"
@@ -521,8 +520,6 @@ void RecordStartupMetrics() {
                             IsParallelDllLoadingEnabled());
   crypto::MeasureTPMAvailabilityWin();
 #endif  // BUILDFLAG(IS_WIN)
-
-  bluetooth_utility::ReportBluetoothAvailability();
 
   // Record whether Chrome is the default browser or not.
   // Disabled on Linux due to hanging browser tests, see crbug.com/1216328.

@@ -11231,6 +11231,7 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BluetoothStackName">
   <int value="0" label="BlueZ"/>
   <int value="1" label="Floss"/>
+  <int value="2" label="Unknown"/>
 </enum>
 
 <enum name="BluetoothStatus">
