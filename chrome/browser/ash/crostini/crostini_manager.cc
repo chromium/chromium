@@ -1339,8 +1339,6 @@ void CrostiniManager::MaybeUpdateCrostiniAfterChecks() {
     upgrade_available_notification_ =
         CrostiniUpgradeAvailableNotification::Show(profile_, base::DoNothing());
   }
-  // TODO(crbug/953544) Remove this once we have transitioned completely to DLC
-  InstallTermina(base::DoNothing(), /*is_initial_install=*/false);
 }
 
 void CrostiniManager::InstallTermina(CrostiniResultCallback callback,
