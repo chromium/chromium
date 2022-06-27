@@ -633,7 +633,6 @@ source_set("browser_tests") {
     "isolated_app_browsertest.cc",
     "manifest_update_manager_browsertest.cc",
     "preinstalled_web_app_manager_browsertest.cc",
-    "preinstalled_web_app_migration_browsertest.cc",
     "preinstalled_web_apps_browsertest.cc",
     "user_uninstalled_preinstalled_web_app_prefs_browsertest.cc",
     "web_app_audio_focus_browsertest.cc",
@@ -674,6 +673,23 @@ source_set("browser_tests") {
     "//components/webapps/services/web_app_origin_association/test:test_support",
     "//ui/events/devices:test_support",
     "//url",
+  ]
+}
+
+# On Lacros, these browser tests require Ash to be running.
+source_set("app_service_browser_tests") {
+  testonly = true
+
+  sources = [ "preinstalled_web_app_migration_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":web_applications",
+    ":web_applications_test_support",
+    "//base",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
   ]
 }
 

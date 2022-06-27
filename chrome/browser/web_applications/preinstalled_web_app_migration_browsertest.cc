@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/test/app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -502,10 +503,15 @@ class PreinstalledWebAppMigratePlatformAppBrowserTest
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigratePlatformAppBrowserTest,
                        MigratePlatformAppPreferences) {
   // Install platform app to migrate.
-  ASSERT_EQ(InstallExtension(
-                test_data_dir_.AppendASCII("platform_apps/app_window_2"), 1)
-                ->id(),
-            kPlatformAppId);
+  {
+    AppRegistrationWaiter extension_app_registration_waiter(profile(),
+                                                            kPlatformAppId);
+    ASSERT_EQ(InstallExtension(
+                  test_data_dir_.AppendASCII("platform_apps/app_window_2"), 1)
+                  ->id(),
+              kPlatformAppId);
+    extension_app_registration_waiter.Await();
+  }
 
   // Migrate extension app to web app.
   {

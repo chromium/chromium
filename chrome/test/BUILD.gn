@@ -2356,6 +2356,8 @@ if (!is_android) {
         # profile which can never be deleted.
         "../browser/ui/web_applications/web_app_profile_deletion_browsertest.cc",
       ]
+
+      deps += [ "//chrome/browser/web_applications:app_service_browser_tests" ]
     }
 
     if (is_win) {
@@ -4462,6 +4464,7 @@ if (!is_android) {
       deps -= [
         "//chrome/browser/ash/system_web_apps:browser_tests",
         "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+        "//chrome/browser/web_applications:app_service_browser_tests",
         "//chrome/browser/web_applications:browser_tests",
       ]
       sources -= [
@@ -4661,6 +4664,7 @@ if (is_chromeos_lacros) {
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/metrics/structured",
+      "//chrome/browser/web_applications:app_service_browser_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chromeos/crosapi/cpp:cpp",
       "//chromeos/crosapi/mojom",
@@ -4687,10 +4691,7 @@ if (is_chromeos_lacros) {
     ]
 
     data = [
-      "data/extensions/api_test/login_screen_apis/",
-      "data/extensions/api_test/preference/",
-      "data/extensions/api_test/vpn_provider/",
-      "data/extensions/platform_apps/minimal/",
+      "data/extensions/",
       "data/media/",
       "data/policy/test_certs/",
       "data/web_app_shortcuts/",
