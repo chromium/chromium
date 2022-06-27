@@ -320,15 +320,18 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest, DoesNotShowInterstitial_Safe) {
   NavigateWithThreatType(safe_browsing::SB_THREAT_TYPE_SAFE, false);
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest, ShowsInterstitial_Malware) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
+                       DISABLED_ShowsInterstitial_Malware) {
   NavigateWithThreatType(safe_browsing::SB_THREAT_TYPE_URL_MALWARE, true);
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest, ShowsInterstitial_Phishing) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
+                       DISABLED_ShowsInterstitial_Phishing) {
   NavigateWithThreatType(safe_browsing::SB_THREAT_TYPE_URL_PHISHING, true);
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest, CheckNavigationErrorType) {
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
+                       DISABLED_CheckNavigationErrorType) {
   auto threat_types = {
       safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
       safe_browsing::SB_THREAT_TYPE_URL_MALWARE,
@@ -356,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest, ShowsInterstitial_Billing) {
 }
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
-                       ShowsInterstitial_Malware_Subresource) {
+                       DISABLED_ShowsInterstitial_Malware_Subresource) {
   NavigateWithSubResourceAndThreatType(
       safe_browsing::SB_THREAT_TYPE_URL_MALWARE, true);
 }
