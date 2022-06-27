@@ -19,6 +19,10 @@ using OnMetricsReportingCallbackType = base::OnceCallback<void(bool)>;
 enum class ChangeMetricsReportingStateCalledFrom {
   kUnknown,
   kUiSettings,
+
+  // Called from Chrome OS settings change. Chrome OS manages settings
+  // externally and metrics service listens for changes.
+  kCrosMetricsSettingsChange,
 };
 
 // Changes metrics reporting state without caring about the success of the
