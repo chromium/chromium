@@ -1595,8 +1595,6 @@ base::Value::Dict SerializePasswordReuseEvent(
   event_dict.Set("domains_matching_password", std::move(domains_list));
 
   event_dict.Set("frame_id", event.frame_id());
-  event_dict.Set("is_chrome_signin_password",
-                 event.is_chrome_signin_password());
 
   std::string sync_account_type;
   switch (event.sync_account_type()) {

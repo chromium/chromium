@@ -321,12 +321,11 @@ message LoginReputationClientRequest {
     // The frame that the password reuse is detected.
     optional int32 frame_id = 2;
 
-    // TODO(crbug/914410): Remove once ReusedPasswordAccountType is implemented.
-    // Whether the reused password is used for Chrome signin.
-    optional bool is_chrome_signin_password = 3;
+    // Deprecated field.
+    reserved 3;
 
     // TODO(crbug/914410): Remove once ReusedPasswordAccountType is implemented.
-    // Sync account type. Only set if |is_chrome_signin_password| is true.
+    // Sync account type.
     enum SyncAccountType {
       // Not a sign-in user.
       NOT_SIGNED_IN = 0;

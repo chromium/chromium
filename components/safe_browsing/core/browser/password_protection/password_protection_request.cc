@@ -264,7 +264,6 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
           request_proto_->mutable_password_reuse_event();
       bool matches_signin_password =
           password_type_ == PasswordType::PRIMARY_ACCOUNT_PASSWORD;
-      reuse_event->set_is_chrome_signin_password(matches_signin_password);
       reuse_event->set_reused_password_type(
           password_protection_service_->GetPasswordProtectionReusedPasswordType(
               password_type_));
