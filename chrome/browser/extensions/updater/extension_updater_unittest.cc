@@ -1504,12 +1504,11 @@ class ExtensionUpdaterTest : public testing::Test {
     std::string hash;
     CRXFileInfo crx_file_info;
     base::Version version("0.0.1");
-    std::set<int> requests({0});
     ExtensionDownloaderTask task = CreateDownloaderTask(id);
     task.fetch_priority = fetch_priority;
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            std::move(task), test_url, hash, version.GetString(), requests,
+            std::move(task), test_url, hash, version.GetString(),
             fetch_priority);
 
     updater.downloader_->FetchUpdatedExtension(std::move(fetch), absl::nullopt);
@@ -1554,7 +1553,7 @@ class ExtensionUpdaterTest : public testing::Test {
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
             CreateDownloaderTask(id), test_url, hash, version.GetString(),
-            requests, DownloadFetchPriority::kBackground);
+            DownloadFetchPriority::kBackground);
     updater.downloader_->FetchUpdatedExtension(std::move(fetch), absl::nullopt);
 
     if (pending) {
@@ -1823,12 +1822,10 @@ class ExtensionUpdaterTest : public testing::Test {
     const std::string id(32, 'a');
     std::string hash;
     base::Version version("0.0.1");
-    std::set<int> requests;
-    requests.insert(0);
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> extension_fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
             CreateDownloaderTask(id), test_url, hash, version.GetString(),
-            requests, DownloadFetchPriority::kBackground);
+            DownloadFetchPriority::kBackground);
     updater.downloader_->FetchUpdatedExtension(std::move(extension_fetch),
                                                absl::nullopt);
 
@@ -2044,16 +2041,14 @@ class ExtensionUpdaterTest : public testing::Test {
     std::string version1 = "0.1";
     std::string version2 = "0.1";
 
-    std::set<int> requests;
-    requests.insert(0);
     // Start two fetches
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch1 =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            CreateDownloaderTask(id1), url1, hash1, version1, requests,
+            CreateDownloaderTask(id1), url1, hash1, version1,
             DownloadFetchPriority::kBackground);
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch2 =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            CreateDownloaderTask(id2), url2, hash2, version2, requests,
+            CreateDownloaderTask(id2), url2, hash2, version2,
             DownloadFetchPriority::kBackground);
     updater.downloader_->FetchUpdatedExtension(std::move(fetch1),
                                                absl::optional<std::string>());
