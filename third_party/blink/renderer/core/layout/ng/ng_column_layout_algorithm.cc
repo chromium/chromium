@@ -1290,6 +1290,14 @@ LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
     size = std::min(size, available_outer_space.ClampNegativeToZero());
   }
 
+  // Table-cell sizing is special. The aspects of specified block-size (and its
+  // min/max variants) that are actually honored by table cells is taken care of
+  // in the table layout algorithm. A constraint space with fixed block-size
+  // will be passed from the table layout algorithm if necessary. Leave it
+  // alone.
+  if (ConstraintSpace().IsTableCell())
+    return size;
+
   // The {,min-,max-}block-size properties are specified on the multicol
   // container, but here we're calculating the column block sizes inside the
   // multicol container, which isn't exactly the same. We may shrink the column
