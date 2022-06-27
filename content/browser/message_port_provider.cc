@@ -87,12 +87,9 @@ void MessagePortProvider::PostMessageToFrame(
 }
 #endif
 
-// TODO(crbug.com/1329657): The last IS_FUCHSIA check will not be needed once
-// its build sets enable_cast_receiver.
-#if BUILDFLAG(ENABLE_CAST_RECEIVER) &&                    \
-        (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CASTOS) || \
-         BUILDFLAG(IS_CAST_ANDROID)) ||                   \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA) ||           \
+    BUILDFLAG(ENABLE_CAST_RECEIVER) && \
+        (BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID))
 // static
 void MessagePortProvider::PostMessageToFrame(
     Page& page,

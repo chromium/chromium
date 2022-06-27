@@ -18,12 +18,9 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
-// TODO(crbug.com/1329657): The last IS_FUCHSIA check will not be needed once
-// its build sets enable_cast_receiver.
-#if BUILDFLAG(ENABLE_CAST_RECEIVER) &&                    \
-        (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CASTOS) || \
-         BUILDFLAG(IS_CAST_ANDROID)) ||                   \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA) ||           \
+    BUILDFLAG(ENABLE_CAST_RECEIVER) && \
+        (BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID))
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #endif
 
@@ -57,12 +54,11 @@ class CONTENT_EXPORT MessagePortProvider {
       const base::android::JavaParamRef<jobjectArray>& ports);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1329657): The last IS_FUCHSIA check will not be needed once
-// its build sets enable_cast_receiver.
-#if BUILDFLAG(ENABLE_CAST_RECEIVER) &&                    \
-        (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CASTOS) || \
-         BUILDFLAG(IS_CAST_ANDROID)) ||                   \
-    BUILDFLAG(IS_FUCHSIA)
+// Fuchsia WebEngine always uses this version.
+// Some Cast Receiver implementations use it too.
+#if BUILDFLAG(IS_FUCHSIA) ||           \
+    BUILDFLAG(ENABLE_CAST_RECEIVER) && \
+        (BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID))
   // If |target_origin| is unset, then no origin scoping is applied.
   static void PostMessageToFrame(
       Page& page,
