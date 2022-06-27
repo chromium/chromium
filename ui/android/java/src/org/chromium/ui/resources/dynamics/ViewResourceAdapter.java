@@ -21,8 +21,11 @@ import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
@@ -31,18 +34,17 @@ import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
-import org.chromium.ui.resources.statics.NinePatchData;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * An adapter that exposes a {@link View} as a {@link DynamicResource}. In order to properly use
- * this adapter {@link ViewResourceAdapter#invalidate(Rect)} must be called when parts of the
+ * An adapter that exposes a {@link View} as a {@link DynamicResourceSnapshot}. In order to properly
+ * use this adapter {@link ViewResourceAdapter#invalidate(Rect)} must be called when parts of the
  * {@link View} are invalidated.  For {@link ViewGroup}s the easiest way to do this is to override
  * {@link ViewGroup#invalidateChildInParent(int[], Rect)}.
  */
-public class ViewResourceAdapter extends DynamicResource implements OnLayoutChangeListener {
+public class ViewResourceAdapter implements DynamicResource, OnLayoutChangeListener {
     private final View mView;
     private final Rect mDirtyRect = new Rect();
 
@@ -67,6 +69,9 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
     // is finished we move back to UPDATED and repeat.
     public enum ImageReaderStatus { NEW, INITIALIZING, UPDATED, RUNNING }
     private ThreadUtils.ThreadChecker mAdapterThreadChecker = new ThreadUtils.ThreadChecker();
+
+    @Nullable
+    private Callback<Resource> mOnResourceReady;
 
     // RenderNode was added in API level 29 (Android 10). So restrict AcceleratedImageReader as
     // well.
@@ -368,17 +373,16 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
     }
 
     /**
-     * If this resource is dirty ({@link #isDirty()} returned {@code true}), it will recapture a
-     * {@link Bitmap} of the {@link View}.
-     * @see DynamicResource#getBitmap()
+     * Typically called when ({@link #isDirty()} returned {@code true}), to return a new
+     * {@link Bitmap} and clear out the dirty rect, resulting in a non-dirty view. Depending on the
+     * draw mechanism, this may return a null bitmap. In such a case, on the next frame, isDirty()
+     * should still be used to decide whether to call this.
      * @return A {@link Bitmap} representing the {@link View}.
      */
-    @Override
     @SuppressWarnings("NewApi")
     public Bitmap getBitmap() {
         mAdapterThreadChecker.assertOnValidThread();
         TraceEvent.begin("ViewResourceAdapter:getBitmap");
-        super.getBitmap();
         boolean bitmapReady = false;
         if (mLastGetBitmapTimestamp > 0) {
             RecordHistogram.recordLongTimesHistogram("ViewResourceAdapter.GetBitmapInterval",
@@ -404,16 +408,6 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
         return mBitmap;
     }
 
-    @Override
-    public boolean shouldRemoveResourceOnNullBitmap() {
-        return mUseHardwareBitmapDraw;
-    }
-
-    @Override
-    public Rect getBitmapSize() {
-        return mViewSize;
-    }
-
     /**
      * Set the downsampling scale. The rendered size is not affected.
      * @param scale The scale to use. <1 means the Bitmap is smaller than the View.
@@ -426,27 +420,48 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
         mScale = scale;
     }
 
-    /**
-     * Override this method to create the native resource type for the generated bitmap.
-     */
-    @Override
+    /** {@see Resource#createNativeResource()}. */
     public long createNativeResource() {
         return ResourceFactory.createBitmapResource(null);
     }
 
     @Override
-    public final NinePatchData getNinePatchData() {
-        return null;
+    public void setOnResourceReadyCallback(Callback<Resource> onResourceReady) {
+        mOnResourceReady = onResourceReady;
     }
 
-    @Override
-    public boolean isDirty() {
+    /**
+     * Note that this is called for every access to the resource during a frame. If a resource is
+     * dirty, it should not be dirty again during the same looper call.
+     * {@link DynamicResourceLoader#loadResource(int)} only notifies
+     * {@link ResourceLoaderCallback#onResourceLoaded} if the resource is dirty.
+     * Therefore, if the resource is not dirty, {@link #onResourceRequested()} doesn't get called.
+     * TODO(dtrainor): Add checks so that a dynamic resource **can't** be built more than once each
+     * frame.
+     * @return Whether or not this resource is dirty and the CC component should be rebuilt.
+     */
+    @CallSuper
+    protected boolean isDirty() {
         // The bitmap is dirty if some part of it has changed, or in hardware mode we're waiting for
         // the results of a previous request (null mBitmap or RUNNING).
         return !mDirtyRect.isEmpty()
                 || (mUseHardwareBitmapDraw
                         && (mBitmap == null
                                 || mReader.currentStatus() == ImageReaderStatus.RUNNING));
+    }
+
+    @Override
+    public void onResourceRequested() {
+        // TODO(skym): The hardware capture approach should be pushing bitmaps when they're ready,
+        // and avoid relying on isDirty and/or onResourceRequested signals. However this is an
+        // intermediate state during refactoring, and is intentionally keeping the old behavior for
+        // now.
+        if (mOnResourceReady != null && isDirty()) {
+            Bitmap bitmap = getBitmap();
+            Resource resource = new DynamicResourceSnapshot(
+                    bitmap, mUseHardwareBitmapDraw, mViewSize, createNativeResource());
+            mOnResourceReady.onResult(resource);
+        }
     }
 
     @Override

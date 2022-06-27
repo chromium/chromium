@@ -328,6 +328,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/resources/dynamics/BitmapDynamicResource.java",
     "java/src/org/chromium/ui/resources/dynamics/DynamicResource.java",
     "java/src/org/chromium/ui/resources/dynamics/DynamicResourceLoader.java",
+    "java/src/org/chromium/ui/resources/dynamics/DynamicResourceSnapshot.java",
     "java/src/org/chromium/ui/resources/dynamics/ViewResourceAdapter.java",
     "java/src/org/chromium/ui/resources/dynamics/ViewResourceInflater.java",
     "java/src/org/chromium/ui/resources/statics/NinePatchData.java",
@@ -405,6 +406,7 @@ java_group("ui_full_java") {
 
 robolectric_library("ui_junit_test_support") {
   sources = [
+    "junit/src/org/chromium/ui/resources/dynamics/DynamicResourceTestUtils.java",
     "junit/src/org/chromium/ui/shadows/ShadowAnimatedStateListDrawable.java",
     "junit/src/org/chromium/ui/shadows/ShadowAppCompatResources.java",
     "junit/src/org/chromium/ui/shadows/ShadowAsyncLayoutInflater.java",
@@ -416,6 +418,7 @@ robolectric_library("ui_junit_test_support") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java",
+    "//third_party/junit",
   ]
 }
 
@@ -504,6 +507,7 @@ robolectric_binary("ui_junit_tests") {
     "junit/src/org/chromium/ui/widget/ViewRectProviderTest.java",
   ]
   deps = [
+    ":ui_android_jni_headers",
     ":ui_java",
     ":ui_java_test_support",
     ":ui_javatest_resources",
