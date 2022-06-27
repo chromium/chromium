@@ -348,11 +348,6 @@ webrtc::RtpEncodingParameters ToRtpEncodingParameters(
   }
   // https://w3c.github.io/webrtc-svc/
   if (encoding->hasScalabilityMode()) {
-    if (encoding->scalabilityMode() == "L1T2") {
-      webrtc_encoding.num_temporal_layers = 2;
-    } else if (encoding->scalabilityMode() == "L1T3") {
-      webrtc_encoding.num_temporal_layers = 3;
-    }
     webrtc_encoding.scalability_mode = encoding->scalabilityMode().Utf8();
   }
   webrtc_encoding.adaptive_ptime = encoding->adaptivePtime();
