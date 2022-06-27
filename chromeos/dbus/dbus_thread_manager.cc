@@ -26,7 +26,6 @@
 #include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/dbus/runtime_probe/runtime_probe_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
-#include "chromeos/dbus/smbprovider/smb_provider_client.h"
 
 namespace chromeos {
 
@@ -104,10 +103,6 @@ OobeConfigurationClient* DBusThreadManager::GetOobeConfigurationClient() {
 RuntimeProbeClient* DBusThreadManager::GetRuntimeProbeClient() {
   return clients_browser_ ? clients_browser_->runtime_probe_client_.get()
                           : nullptr;
-}
-
-SmbProviderClient* DBusThreadManager::GetSmbProviderClient() {
-  RETURN_DBUS_CLIENT(smb_provider_client_);
 }
 
 #undef RETURN_DBUS_CLIENT
@@ -200,11 +195,6 @@ void DBusThreadManagerSetter::SetImageBurnerClient(
 void DBusThreadManagerSetter::SetImageLoaderClient(
     std::unique_ptr<ImageLoaderClient> client) {
   image_loader_client_ = std::move(client);
-}
-
-void DBusThreadManagerSetter::SetSmbProviderClient(
-    std::unique_ptr<SmbProviderClient> client) {
-  smb_provider_client_ = std::move(client);
 }
 
 }  // namespace chromeos

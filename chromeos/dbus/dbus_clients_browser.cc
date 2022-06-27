@@ -36,8 +36,6 @@
 #include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/dbus/runtime_probe/fake_runtime_probe_client.h"
 #include "chromeos/dbus/runtime_probe/runtime_probe_client.h"
-#include "chromeos/dbus/smbprovider/fake_smb_provider_client.h"
-#include "chromeos/dbus/smbprovider/smb_provider_client.h"
 
 namespace chromeos {
 
@@ -76,8 +74,6 @@ DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
       CREATE_DBUS_CLIENT(OobeConfigurationClient, use_real_clients);
   runtime_probe_client_ =
       CREATE_DBUS_CLIENT(RuntimeProbeClient, use_real_clients);
-  smb_provider_client_ =
-      CREATE_DBUS_CLIENT(SmbProviderClient, use_real_clients);
 }
 
 DBusClientsBrowser::~DBusClientsBrowser() = default;
@@ -99,7 +95,6 @@ void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   image_loader_client_->Init(system_bus);
   oobe_configuration_client_->Init(system_bus);
   runtime_probe_client_->Init(system_bus);
-  smb_provider_client_->Init(system_bus);
 }
 
 }  // namespace chromeos

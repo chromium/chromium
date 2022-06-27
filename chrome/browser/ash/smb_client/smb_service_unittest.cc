@@ -44,8 +44,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/smbprovider/fake_smb_provider_client.h"
+#include "chromeos/dbus/smbprovider/smb_provider_client.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -171,10 +171,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager_temp));
 
-    // This isn't used, but still needs to exist.
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetSmbProviderClient(
-        std::make_unique<FakeSmbProviderClient>());
+    SmbProviderClient::InitializeFake();
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     // Takes ownership of |disk_mount_manager_|, but Shutdown() must be called.
@@ -187,7 +184,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     profile_manager_.reset();
     disks::DiskMountManager::Shutdown();
     ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    SmbProviderClient::Shutdown();
   }
 
   void CreateService(TestingProfile* profile) {

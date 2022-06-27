@@ -66,6 +66,7 @@
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
+#include "chromeos/dbus/smbprovider/smb_provider_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
@@ -157,6 +158,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::ResourcedClient>(bus);
   InitializeDBusClient<SeneschalClient>(bus);
   InitializeDBusClient<SessionManagerClient>(bus);
+  InitializeDBusClient<SmbProviderClient>(bus);
   InitializeDBusClient<SpacedClient>(bus);
   InitializeDBusClient<SystemClockClient>(bus);
   InitializeDBusClient<SystemProxyClient>(bus);
@@ -234,6 +236,7 @@ void ShutdownDBus() {
   SystemProxyClient::Shutdown();
   SystemClockClient::Shutdown();
   SpacedClient::Shutdown();
+  SmbProviderClient::Shutdown();
   SessionManagerClient::Shutdown();
   SeneschalClient::Shutdown();
   chromeos::ResourcedClient::Shutdown();

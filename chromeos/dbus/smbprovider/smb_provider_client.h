@@ -38,11 +38,18 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_SMBPROVIDER) SmbProviderClient
   SmbProviderClient(const SmbProviderClient&) = delete;
   SmbProviderClient& operator=(const SmbProviderClient&) = delete;
 
-  ~SmbProviderClient() override;
+  // Returns the global instance if initialized. May return null.
+  static SmbProviderClient* Get();
 
-  // Factory function, creates a new instance and returns ownership.
-  // For normal usage, access the singleton via DBusThreadManager::Get().
-  static std::unique_ptr<SmbProviderClient> Create();
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance used on Linux desktop, if
+  // no instance already exists.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
 
   // Calls GetShares. This gets the shares from |server_url| and calls
   // |callback| when shares are found. The DirectoryEntryListProto will contain
@@ -65,8 +72,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_SMBPROVIDER) SmbProviderClient
                                   ParseNetBiosPacketCallback callback) = 0;
 
  protected:
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   SmbProviderClient();
+  ~SmbProviderClient() override;
 };
 
 }  // namespace chromeos

@@ -133,6 +133,8 @@ class SmbShareFinderTest : public testing::Test {
         std::make_unique<InMemoryHostLocator>(should_run_synchronously);
     host_locator_ = host_locator.get();
 
+    // If re-initializing the client, ensure the old client is destroyed first.
+    fake_client_.reset();
     fake_client_ =
         std::make_unique<FakeSmbProviderClient>(should_run_synchronously);
     share_finder_ = std::make_unique<SmbShareFinder>(fake_client_.get());

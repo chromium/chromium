@@ -30,7 +30,6 @@ class ImageBurnerClient;
 class ImageLoaderClient;
 class OobeConfigurationClient;
 class RuntimeProbeClient;
-class SmbProviderClient;
 
 // THIS CLASS IS BEING DEPRECATED. See README.md for guidelines and
 // https://crbug.com/647367 for details.
@@ -80,7 +79,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   ImageLoaderClient* GetImageLoaderClient();
   OobeConfigurationClient* GetOobeConfigurationClient();
   RuntimeProbeClient* GetRuntimeProbeClient();
-  SmbProviderClient* GetSmbProviderClient();
 
  private:
   DBusThreadManager();
@@ -104,7 +102,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
   void SetGnubbyClient(std::unique_ptr<GnubbyClient> client);
   void SetImageBurnerClient(std::unique_ptr<ImageBurnerClient> client);
   void SetImageLoaderClient(std::unique_ptr<ImageLoaderClient> client);
-  void SetSmbProviderClient(std::unique_ptr<SmbProviderClient> client);
 
  private:
   friend class DBusThreadManager;
@@ -120,7 +117,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
   std::unique_ptr<GnubbyClient> gnubby_client_;
   std::unique_ptr<ImageBurnerClient> image_burner_client_;
   std::unique_ptr<ImageLoaderClient> image_loader_client_;
-  std::unique_ptr<SmbProviderClient> smb_provider_client_;
 };
 
 }  // namespace chromeos

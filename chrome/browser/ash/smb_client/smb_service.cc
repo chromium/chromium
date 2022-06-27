@@ -426,13 +426,7 @@ file_system_provider::Service* SmbService::GetProviderService() const {
 }
 
 SmbProviderClient* SmbService::GetSmbProviderClient() const {
-  // If the DBusThreadManager or the SmbProviderClient aren't available,
-  // there isn't much we can do. This should only happen when running tests.
-  if (!chromeos::DBusThreadManager::IsInitialized() ||
-      !chromeos::DBusThreadManager::Get()) {
-    return nullptr;
-  }
-  return chromeos::DBusThreadManager::Get()->GetSmbProviderClient();
+  return chromeos::SmbProviderClient::Get();
 }
 
 void SmbService::RestoreMounts() {
