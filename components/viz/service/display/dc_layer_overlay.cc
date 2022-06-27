@@ -38,6 +38,9 @@ namespace {
 
 constexpr int kDCLayerDebugBorderWidth = 4;
 constexpr gfx::Insets kDCLayerDebugBorderInsets = gfx::Insets(-2);
+// This is the number of frames we should wait before actual overlay promotion
+// under multi-video cases.
+constexpr int kDCLayerFramesDelayedBeforeOverlay = 5;
 
 // This is used for a histogram to determine why overlays are or aren't used,
 // so don't remove entries and make sure to update enums.xml if it changes.
@@ -57,7 +60,8 @@ enum DCLayerResult {
   DC_LAYER_FAILED_COPY_REQUESTS = 12,
   DC_LAYER_FAILED_VIDEO_CAPTURE_ENABLED = 13,
   DC_LAYER_FAILED_OUTPUT_HDR = 14,
-  kMaxValue = DC_LAYER_FAILED_OUTPUT_HDR,
+  DC_LAYER_FAILED_NOT_DAMAGED = 15,
+  kMaxValue = DC_LAYER_FAILED_NOT_DAMAGED,
 };
 
 enum : size_t {
@@ -697,6 +701,7 @@ void DCLayerOverlayProcessor::Process(
 
   // Used for whether overlay should be skipped
   int yuv_quads_in_quad_list = 0;
+  int damaged_yuv_quads_in_quad_list = 0;
   bool has_protected_video_or_texture_overlays = false;
 
   for (auto it = quad_list->begin(); it != quad_list->end();
@@ -721,8 +726,14 @@ void DCLayerOverlayProcessor::Process(
             has_overlay_support_, allowed_yuv_overlay_count_,
             processed_yuv_overlay_count_, resource_provider);
         yuv_quads_in_quad_list++;
-        if (result == DC_LAYER_SUCCESS)
-          processed_yuv_overlay_count_++;
+        if (it->shared_quad_state->overlay_damage_index.has_value() &&
+            !surface_damage_rect_list_[it->shared_quad_state
+                                           ->overlay_damage_index.value()]
+                 .IsEmpty()) {
+          damaged_yuv_quads_in_quad_list++;
+          if (result == DC_LAYER_SUCCESS)
+            processed_yuv_overlay_count_++;
+        }
         break;
       case DrawQuad::Material::kStreamVideoContent: {
         if (allow_promotion_hinting_) {
@@ -790,10 +801,22 @@ void DCLayerOverlayProcessor::Process(
   // We might not save power if there are more than one videos and only part of
   // them are promoted to overlay. Skip overlays for this frame unless there are
   // protected video or texture overlays.
+  // In case of videos being paused or not started yet, we will allow multiple
+  // overlays if the number of damaged overlays doesn't exceed
+  // |allowed_yuv_overlay_count|. However, videos are not always damaged in
+  // every frame during video playback. To prevent overlay promotion from being
+  // switched between on and off, we wait for
+  // |kDCLayerFramesDelayedBeforeOverlay| frames before allowing multiple
+  // overlays
   bool reject_overlays = false;
-  if (yuv_quads_in_quad_list != processed_yuv_overlay_count_ &&
-      !has_protected_video_or_texture_overlays) {
-    reject_overlays = true;
+  if (yuv_quads_in_quad_list > 1 && !has_protected_video_or_texture_overlays) {
+    if (damaged_yuv_quads_in_quad_list == processed_yuv_overlay_count_) {
+      frames_since_last_qualified_multi_overlays_++;
+    } else {
+      frames_since_last_qualified_multi_overlays_ = 0;
+    }
+    reject_overlays = frames_since_last_qualified_multi_overlays_ <=
+                      kDCLayerFramesDelayedBeforeOverlay;
   }
 
   // A YUV quad might be rejected later due to not allowed as an underlay.
@@ -812,6 +835,21 @@ void DCLayerOverlayProcessor::Process(
       RecordDCLayerResult(DC_LAYER_FAILED_TOO_MANY_OVERLAYS, it);
       continue;
     }
+
+    // Do not promote undamaged video to overlays.
+    bool undamaged =
+        it->shared_quad_state->overlay_damage_index.has_value() &&
+        surface_damage_rect_list_[it->shared_quad_state->overlay_damage_index
+                                      .value()]
+            .IsEmpty();
+
+    if (yuv_quads_in_quad_list > allowed_yuv_overlay_count_ &&
+        !has_protected_video_or_texture_overlays &&
+        it->material == DrawQuad::Material::kYuvVideoContent && undamaged) {
+      RecordDCLayerResult(DC_LAYER_FAILED_NOT_DAMAGED, it);
+      continue;
+    }
+
     gfx::Rect quad_rectangle_in_target_space =
         gfx::ToEnclosingRect(ClippedQuadRectangle(*it));
 

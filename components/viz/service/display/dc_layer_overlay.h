@@ -111,6 +111,10 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   void OnDisplayRemoved() override;
   void UpdateHasHwOverlaySupport();
 
+  void set_frames_since_last_qualified_multi_overlays_for_testing(int value) {
+    frames_since_last_qualified_multi_overlays_ = value;
+  }
+
  private:
   // Detects overlay processing skip inside |render_pass|.
   bool ShouldSkipOverlay(AggregatedRenderPass* render_pass,
@@ -162,6 +166,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   bool has_overlay_support_;
   const int allowed_yuv_overlay_count_;
   int processed_yuv_overlay_count_ = 0;
+  unsigned long frames_since_last_qualified_multi_overlays_ = 0;
 
   // Reference to the global viz singleton.
   const raw_ptr<const DebugRendererSettings> debug_settings_;

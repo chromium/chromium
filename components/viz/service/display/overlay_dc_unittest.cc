@@ -214,6 +214,8 @@ class DCLayerOverlayTest : public testing::Test {
         std::make_unique<DCTestOverlayProcessor>(output_surface_.get());
     overlay_processor_->set_using_dc_layers_for_testing(true);
     overlay_processor_->SetViewportSize(gfx::Size(256, 256));
+    overlay_processor_
+        ->set_frames_since_last_qualified_multi_overlays_for_testing(5);
     EXPECT_TRUE(overlay_processor_->IsOverlaySupported());
   }
 
@@ -785,6 +787,7 @@ TEST_F(DCLayerOverlayTest, MultipleYUVOverlay) {
     gfx::Rect rect(10, 10, 80, 80);
     video_quad->rect = rect;
     video_quad->visible_rect = rect;
+    pass->shared_quad_state_list.back()->overlay_damage_index = 1;
 
     auto* second_video_quad = CreateFullscreenCandidateYUVVideoQuad(
         resource_provider_.get(), child_resource_provider_.get(),
@@ -792,6 +795,7 @@ TEST_F(DCLayerOverlayTest, MultipleYUVOverlay) {
     gfx::Rect second_rect(100, 100, 120, 120);
     second_video_quad->rect = second_rect;
     second_video_quad->visible_rect = second_rect;
+    pass->shared_quad_state_list.back()->overlay_damage_index = 2;
 
     DCLayerOverlayList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -800,6 +804,9 @@ TEST_F(DCLayerOverlayTest, MultipleYUVOverlay) {
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
+    surface_damage_rect_list.push_back(gfx::Rect(0, 0, 256, 256));
+    surface_damage_rect_list.push_back(video_quad->rect);
+    surface_damage_rect_list.push_back(second_video_quad->rect);
 
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
