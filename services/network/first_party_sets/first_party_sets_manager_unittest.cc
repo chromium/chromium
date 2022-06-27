@@ -37,7 +37,8 @@ MATCHER_P(SerializesTo, want, "") {
 
 class FirstPartySetsManagerTest : public ::testing::Test {
  public:
-  explicit FirstPartySetsManagerTest(bool enabled) : manager_(enabled) {}
+  explicit FirstPartySetsManagerTest(bool enabled, bool context_enabled)
+      : manager_(enabled), fps_context_config_(context_enabled) {}
 
   void SetCompleteSets(
       const base::flat_map<net::SchemefulSite, net::SchemefulSite>& content) {
@@ -99,9 +100,8 @@ class FirstPartySetsManagerTest : public ::testing::Test {
 
 class FirstPartySetsManagerDisabledTest : public FirstPartySetsManagerTest {
  public:
-  FirstPartySetsManagerDisabledTest() : FirstPartySetsManagerTest(false) {
-    // FPS setting by the browser overrules FPS setting by the context.
-    SetFirstPartySetsContextConfig(true);
+  FirstPartySetsManagerDisabledTest()
+      : FirstPartySetsManagerTest(/*enabled=*/false, /*context_enabled=*/true) {
   }
 };
 
@@ -176,9 +176,8 @@ TEST_F(FirstPartySetsManagerDisabledTest, Sets_IsEmpty) {
 
 class FirstPartySetsEnabledTest : public FirstPartySetsManagerTest {
  public:
-  FirstPartySetsEnabledTest() : FirstPartySetsManagerTest(true) {
-    SetFirstPartySetsContextConfig(true);
-  }
+  FirstPartySetsEnabledTest()
+      : FirstPartySetsManagerTest(/*enabled=*/true, /*context_enabled=*/true) {}
 };
 
 TEST_F(FirstPartySetsEnabledTest, Sets_IsEmpty) {

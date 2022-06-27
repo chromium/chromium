@@ -11,7 +11,6 @@ namespace network {
 // info in the given network context.
 class FirstPartySetsContextConfig {
  public:
-  FirstPartySetsContextConfig() = default;
   explicit FirstPartySetsContextConfig(bool enabled);
 
   bool is_enabled() const { return enabled_; }
