@@ -225,6 +225,12 @@ class FlagsState {
       bool feature_state,
       base::CommandLine* command_line);
 
+  // Updates |command_line| by merging the value of the --force-variation-ids
+  // list with corresponding entries in |variation_ids|.
+  void MergeVariationIdsCommandLineSwitch(
+      const std::vector<std::string>& variation_ids,
+      base::CommandLine* command_line);
+
   // Sanitizes |enabled_entries| to only contain entries that are defined in the
   // |feature_entries_| and whose |supported_platforms| matches |platform_mask|.
   // Pass -1 to |platform_mask| to not do platform filtering.

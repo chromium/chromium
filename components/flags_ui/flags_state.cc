@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -751,8 +752,7 @@ void FlagsState::AddSwitchesToCommandLine(
                                   false, command_line);
   }
   if (!variation_ids.empty()) {
-    command_line->AppendSwitchASCII(variations::switches::kForceVariationIds,
-                                    base::JoinString(variation_ids, ","));
+    MergeVariationIdsCommandLineSwitch(variation_ids, command_line);
   }
 
   if (sentinels == kAddSentinels) {
@@ -786,6 +786,25 @@ void FlagsState::MergeFeatureCommandLineSwitch(
   std::string switch_value = base::JoinString(features, ",");
   if (switch_value != original_switch_value)
     command_line->AppendSwitchASCII(switch_name, switch_value);
+}
+
+void FlagsState::MergeVariationIdsCommandLineSwitch(
+    const std::vector<std::string>& variation_ids,
+    base::CommandLine* command_line) {
+  DCHECK(!variation_ids.empty());
+  std::string variation_ids_switch = command_line->GetSwitchValueASCII(
+      variations::switches::kForceVariationIds);
+
+  // At this point, the switch value is guaranteed to change since
+  // |variation_ids| is not empty. Hence, we do not conditionally update the
+  // switch value, as is done in FlagsState::MergeFeatureCommandLineSwitch().
+  // Note that it is an error to try to set the same variation id in multiple
+  // ways.
+  command_line->AppendSwitchASCII(
+      variations::switches::kForceVariationIds,
+      base::StrCat({variation_ids_switch,
+                    variation_ids_switch.empty() ? "" : ",",
+                    base::JoinString(variation_ids, ",")}));
 }
 
 std::set<std::string> FlagsState::SanitizeList(
