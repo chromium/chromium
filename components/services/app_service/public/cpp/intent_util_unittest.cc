@@ -1679,6 +1679,7 @@ TEST_F(IntentUtilTest, CloneIntent) {
   auto dst_intent = src_intent->Clone();
   EXPECT_EQ(action, dst_intent->action);
   EXPECT_FALSE(dst_intent->ui_bypassed.has_value());
+  EXPECT_EQ(*src_intent, *dst_intent);
 
   GURL test_url1 = GURL("https://www.google.com/");
   GURL test_url2 = GURL("https://www.abc.com/");
@@ -1722,6 +1723,7 @@ TEST_F(IntentUtilTest, CloneIntent) {
   EXPECT_EQ(ui_bypassed, dst_intent->ui_bypassed);
   EXPECT_EQ(3u, dst_intent->extras.size());
   EXPECT_EQ(extras, dst_intent->extras);
+  EXPECT_EQ(*src_intent, *dst_intent);
 }
 
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
@@ -1775,4 +1777,71 @@ TEST_F(IntentUtilTest, MojomConvert) {
   EXPECT_TRUE(dst_intent->extras.has_value());
   EXPECT_EQ(3u, dst_intent->extras->size());
   EXPECT_EQ(extras, dst_intent->extras.value());
+}
+
+TEST_F(IntentUtilTest, IntentEqual) {
+  auto intent1 = std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
+  auto intent2 = std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
+  EXPECT_EQ(*intent1, *intent2);
+
+  GURL test_url1 = GURL("https://www.google.com/");
+  GURL test_url2 = GURL("https://www.abc.com/");
+
+  {
+    // Verify whether intents are not equal when IntentFile is different.
+    auto file1 = std::make_unique<apps::IntentFile>(test_url1);
+    auto file2 = std::make_unique<apps::IntentFile>(test_url2);
+    std::vector<apps::IntentFilePtr> files1;
+    std::vector<apps::IntentFilePtr> files2;
+    files1.push_back(std::move(file1));
+    files2.push_back(std::move(file2));
+    intent1->files = std::move(files1);
+    intent2->files = std::move(files2);
+    EXPECT_NE(*intent1, *intent2);
+  }
+
+  {
+    // Verify whether intents are not equal when IntentFile is equal.
+    auto file1 = std::make_unique<apps::IntentFile>(test_url1);
+    auto file2 = std::make_unique<apps::IntentFile>(test_url1);
+    std::vector<apps::IntentFilePtr> files1;
+    std::vector<apps::IntentFilePtr> files2;
+    files1.push_back(std::move(file1));
+    files2.push_back(std::move(file2));
+    intent1->files = std::move(files1);
+    intent2->files = std::move(files2);
+    EXPECT_EQ(*intent1, *intent2);
+  }
+
+  {
+    // Verify whether intents are not equal when extras is different.
+    base::flat_map<std::string, std::string> extras1 = {{"key1", "value1"}};
+    base::flat_map<std::string, std::string> extras2 = {{"key2", "value2"}};
+    intent1->extras = std::move(extras1);
+    intent2->extras = std::move(extras2);
+    EXPECT_NE(*intent1, *intent2);
+  }
+
+  {
+    // Verify whether intents are not equal when extras is equal.
+    base::flat_map<std::string, std::string> extras1 = {{"key1", "value1"}};
+    base::flat_map<std::string, std::string> extras2 = {{"key1", "value1"}};
+    intent1->extras = std::move(extras1);
+    intent2->extras = std::move(extras2);
+    EXPECT_EQ(*intent1, *intent2);
+  }
+
+  {
+    // Verify whether intents are not equal when mime_type is different.
+    intent1->mime_type = "image/jpeg";
+    intent2->mime_type = "image/png";
+    EXPECT_NE(*intent1, *intent2);
+  }
+
+  {
+    // Verify whether intents are not equal when mime_type is different.
+    intent1->mime_type = "image/jpeg";
+    intent2->mime_type = "image/jpeg";
+    EXPECT_EQ(*intent1, *intent2);
+  }
 }

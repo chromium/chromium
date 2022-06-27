@@ -1192,21 +1192,14 @@ TEST_F(IntentUtilsTest, CrosapiIntentConversion) {
       apps_util::ConvertAppServiceToCrosapiIntent(original_intent, nullptr);
   auto converted_intent =
       apps_util::CreateAppServiceIntentFromCrosapi(crosapi_intent, nullptr);
-  EXPECT_EQ(original_intent->action, converted_intent->action);
-  EXPECT_EQ(original_intent->url.value(), converted_intent->url.value());
+  EXPECT_EQ(*original_intent, *converted_intent);
 
   original_intent = apps_util::MakeShareIntent("text", "title");
   crosapi_intent =
       apps_util::ConvertAppServiceToCrosapiIntent(original_intent, nullptr);
   converted_intent =
       apps_util::CreateAppServiceIntentFromCrosapi(crosapi_intent, nullptr);
-  EXPECT_EQ(original_intent->action, converted_intent->action);
-  EXPECT_EQ(original_intent->mime_type.value(),
-            converted_intent->mime_type.value());
-  EXPECT_EQ(original_intent->share_text.value(),
-            converted_intent->share_text.value());
-  EXPECT_EQ(original_intent->share_title.value(),
-            converted_intent->share_title.value());
+  EXPECT_EQ(*original_intent, *converted_intent);
 
   original_intent =
       std::make_unique<apps::Intent>(apps_util::kIntentActionView);
@@ -1215,8 +1208,7 @@ TEST_F(IntentUtilsTest, CrosapiIntentConversion) {
       apps_util::ConvertAppServiceToCrosapiIntent(original_intent, nullptr);
   converted_intent =
       apps_util::CreateAppServiceIntentFromCrosapi(crosapi_intent, nullptr);
-  ASSERT_TRUE(converted_intent->data.has_value());
-  EXPECT_EQ(original_intent->data.value(), converted_intent->data.value());
+  EXPECT_EQ(*original_intent, *converted_intent);
 }
 
 // TODO(crbug.com/1253250): Will be removed soon.
