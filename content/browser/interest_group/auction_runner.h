@@ -828,9 +828,8 @@ class CONTENT_EXPORT AuctionRunner {
     size_t num_second_highest_bids_ = 0;
 
     // The numeric value of the bid that got the second highest score. When
-    // there's a tie for second highest score, just take the most recent one (
-    // any bid with the second highest score can be the most recent one since
-    // the order of bids getting scored is arbitrary).
+    // there's a tie for the second highest score, one of the second highest
+    // scoring bids is randomly chosen.
     double highest_scoring_other_bid_ = 0.0;
     double second_highest_score_ = 0.0;
     // Whether all bids of the highest score are from the same interest group
