@@ -2,7 +2,7 @@
 # run tests and understand the implications of changing these files.
 
 # If you're making changes that affect CQ builders (like adding new tests or
-# compile targets) please get a review from someone in //infra/OWNERS.
+# compile targets) you need a review from a Trooper in //infra/OWNERS.
 file://infra/OWNERS
 
 jam@chromium.org
