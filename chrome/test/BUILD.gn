@@ -369,6 +369,8 @@ static_library("test_support") {
     deps += [ "//components/constrained_window" ]
 
     sources += [
+      "../browser/badging/test_badge_manager_delegate.cc",
+      "../browser/badging/test_badge_manager_delegate.h",
       "../browser/banners/test_app_banner_manager_desktop.cc",
       "../browser/banners/test_app_banner_manager_desktop.h",
       "../browser/renderer_context_menu/render_view_context_menu_test_util.cc",
@@ -1655,8 +1657,6 @@ if (!is_android) {
       "../browser/background_sync/background_sync_browsertest.cc",
       "../browser/background_sync/background_sync_content_setting_browsertest.cc",
       "../browser/background_sync/background_sync_metrics_browsertest.cc",
-      "../browser/badging/test_badge_manager_delegate.cc",
-      "../browser/badging/test_badge_manager_delegate.h",
       "../browser/banners/app_banner_manager_browsertest.cc",
       "../browser/banners/app_banner_manager_browsertest_base.cc",
       "../browser/banners/app_banner_manager_browsertest_base.h",
@@ -2001,8 +2001,6 @@ if (!is_android) {
       "../browser/safe_browsing/test_safe_browsing_database_helper.cc",
       "../browser/safe_browsing/test_safe_browsing_database_helper.h",
       "../browser/safe_xml_parser_browsertest.cc",
-      "../browser/scoped_disable_client_side_decorations_for_test.cc",
-      "../browser/scoped_disable_client_side_decorations_for_test.h",
       "../browser/search/ntp_custom_background_enabled_policy_handler_browsertest.cc",
       "../browser/search_engines/template_url_scraper_browsertest.cc",
       "../browser/secure_origin_allowlist_browsertest.cc",
@@ -6733,8 +6731,6 @@ test("unit_tests") {
     sources += [
       # Badging isn't supported on Android.
       "../browser/badging/badge_manager_unittest.cc",
-      "../browser/badging/test_badge_manager_delegate.cc",
-      "../browser/badging/test_badge_manager_delegate.h",
     ]
 
     sources += [
@@ -8674,6 +8670,8 @@ if (!is_android) {
       "../browser/password_manager/password_manager_test_base.h",
       "../browser/password_manager/passwords_navigation_observer.cc",
       "../browser/password_manager/passwords_navigation_observer.h",
+      "../browser/scoped_disable_client_side_decorations_for_test.cc",
+      "../browser/scoped_disable_client_side_decorations_for_test.h",
       "../browser/ssl/cert_verifier_browser_test.cc",
       "../browser/ssl/cert_verifier_browser_test.h",
       "../browser/ssl/cert_verifier_platform_browser_test.cc",
@@ -8889,6 +8887,10 @@ if (!is_android) {
         "../browser/ui/views/profiles/profile_picker_test_base.h",
       ]
     }
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 
   proto_library("test_proto") {
@@ -9011,8 +9013,6 @@ if (!is_android) {
       "../browser/renderer_context_menu/render_view_context_menu_test_util.cc",
       "../browser/renderer_context_menu/render_view_context_menu_test_util.h",
       "../browser/resource_coordinator/tab_metrics_logger_interactive_uitest.cc",
-      "../browser/scoped_disable_client_side_decorations_for_test.cc",
-      "../browser/scoped_disable_client_side_decorations_for_test.h",
       "../browser/sessions/session_restore_interactive_uitest.cc",
       "../browser/site_isolation/site_per_process_interactive_browsertest.cc",
       "../browser/site_isolation/site_per_process_text_input_browsertest.cc",
