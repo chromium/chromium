@@ -229,7 +229,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
   if (!GetProcess()->IsInitializedAndNotDead())
     return false;
 
-  int parent_routing_id = MSG_ROUTING_NONE;
+  absl::optional<blink::RemoteFrameToken> parent_frame_token;
   if (frame_tree_node_->parent()) {
     // It is safe to use GetRenderFrameProxyHost to get the parent proxy, since
     // new child frames always start out as local frames, so a new proxy should
@@ -247,8 +247,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
     if (!parent_proxy->is_render_frame_proxy_live())
       return false;
 
-    parent_routing_id = parent_proxy->GetRoutingID();
-    CHECK_NE(parent_routing_id, MSG_ROUTING_NONE);
+    parent_frame_token = parent_proxy->GetFrameToken();
   }
 
   absl::optional<blink::FrameToken> opener_frame_token;
@@ -261,7 +260,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
   int view_routing_id = GetRenderViewHost()->GetRoutingID();
   GetAgentSchedulingGroup().CreateFrameProxy(
       frame_token_, routing_id_, opener_frame_token, view_routing_id,
-      parent_routing_id, frame_tree_node_->tree_scope_type(),
+      parent_frame_token, frame_tree_node_->tree_scope_type(),
       frame_tree_node_->current_replication_state().Clone(),
       frame_tree_node_->devtools_frame_token(),
       CreateAndBindRemoteMainFrameInterfaces());

@@ -155,7 +155,7 @@ void RenderViewImpl::Initialize(
     RenderFrameProxy::CreateFrameProxy(
         agent_scheduling_group_, params->main_frame->get_remote_params()->token,
         params->main_frame->get_remote_params()->routing_id,
-        params->opener_frame_token, GetRoutingID(), MSG_ROUTING_NONE,
+        params->opener_frame_token, GetRoutingID(), absl::nullopt,
         blink::mojom::TreeScopeType::kDocument /* ignored for main frames */,
         std::move(params->replication_state), params->devtools_main_frame_token,
         std::move(
@@ -193,11 +193,16 @@ RenderViewImpl::~RenderViewImpl() {
 }
 
 /*static*/
-RenderView* RenderView::FromWebView(blink::WebView* webview) {
+RenderViewImpl* RenderViewImpl::FromWebView(blink::WebView* webview) {
   DCHECK(RenderThread::IsMainThread());
   ViewMap* views = g_view_map.Pointer();
   auto it = views->find(webview);
   return it == views->end() ? NULL : it->second;
+}
+
+/*static*/
+RenderView* RenderView::FromWebView(blink::WebView* webview) {
+  return RenderViewImpl::FromWebView(webview);
 }
 
 /*static*/

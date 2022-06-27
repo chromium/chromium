@@ -103,7 +103,8 @@ interface AgentSchedulingGroup {
   //    making the mapping ambiguous and non-authoritative.
   CreateFrameProxy(blink.mojom.RemoteFrameToken token, int32 routing_id,
                    blink.mojom.FrameToken? opener_frame_token,
-                   int32 view_routing_id, int32 parent_routing_id,
+                   int32 view_routing_id,
+                   blink.mojom.RemoteFrameToken? parent_frame_token,
                    blink.mojom.TreeScopeType tree_scope_type,
                    blink.mojom.FrameReplicationState replication_state,
                    mojo_base.mojom.UnguessableToken devtools_frame_token,

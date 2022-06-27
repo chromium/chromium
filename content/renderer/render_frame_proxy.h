@@ -77,12 +77,13 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   // for example, after a cross-process navigation or after the addition of a
   // new frame local to some other process. |routing_id| will be the ID of the
   // newly created RenderFrameProxy. |render_view_routing_id| identifies the
-  // RenderView to be associated with this frame.  |opener|, if supplied, is the
-  // new frame's opener.  |parent_routing_id| is the routing ID of the
-  // RenderFrameProxy to which the new frame is parented.
+  // RenderView to be associated with this frame.  `opener_frame_token`, if
+  // supplied, is the new frame's opener.  `parent_frame_token`, if supplied,
+  // is the frame token of the RenderFrameProxy to which the new frame is
+  // parented.
   //
-  // |parent_routing_id| always identifies a RenderFrameProxy (never a
-  // RenderFrame) because a new child of a local frame should always start out
+  // `parent_frame_token` always identifies a remote frame (never a
+  // local frame) because a new child of a local frame should always start out
   // as a frame, not a proxy.
   static RenderFrameProxy* CreateFrameProxy(
       AgentSchedulingGroup& agent_scheduling_group,
@@ -90,7 +91,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       int routing_id,
       const absl::optional<blink::FrameToken>& opener_frame_token,
       int render_view_routing_id,
-      int parent_routing_id,
+      const absl::optional<blink::RemoteFrameToken>& parent_frame_token,
       blink::mojom::TreeScopeType tree_scope_type,
       blink::mojom::FrameReplicationStatePtr replicated_state,
       const base::UnguessableToken& devtools_frame_token,

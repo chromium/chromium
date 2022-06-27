@@ -99,6 +99,9 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // Returns the RenderViewImpl for the given routing ID.
   static RenderViewImpl* FromRoutingID(int routing_id);
 
+  // Returns the RenderViewImpl for the given blink::WebView.
+  static RenderViewImpl* FromWebView(blink::WebView* web_view);
+
   // blink::WebViewClient implementation --------------------------------------
 
   blink::WebView* CreateView(

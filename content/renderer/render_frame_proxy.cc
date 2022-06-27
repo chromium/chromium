@@ -83,14 +83,14 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     int routing_id,
     const absl::optional<blink::FrameToken>& opener_frame_token,
     int render_view_routing_id,
-    int parent_routing_id,
+    const absl::optional<blink::RemoteFrameToken>& parent_frame_token,
     blink::mojom::TreeScopeType tree_scope_type,
     blink::mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& devtools_frame_token,
     mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
-  RenderFrameProxy* parent = nullptr;
-  if (parent_routing_id != MSG_ROUTING_NONE) {
-    parent = RenderFrameProxy::FromRoutingID(parent_routing_id);
+  blink::WebRemoteFrame* parent = nullptr;
+  if (parent_frame_token) {
+    parent = blink::WebRemoteFrame::FromFrameToken(parent_frame_token.value());
     // It is possible that the parent proxy has been detached in this renderer
     // process, just as the parent's real frame was creating this child frame.
     // In this case, do not create the proxy. See https://crbug.com/568670.
@@ -125,13 +125,13 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     // Create a frame under an existing parent. The parent is always expected
     // to be a RenderFrameProxy, because navigations initiated by local frames
     // should not wind up here.
-    web_frame = parent->web_frame()->CreateRemoteChild(
+    web_frame = parent->CreateRemoteChild(
         tree_scope_type, blink::WebString::FromUTF8(replicated_state->name),
         replicated_state->frame_policy, proxy.get(),
         proxy->blink_interface_registry_.get(),
         proxy->GetRemoteAssociatedInterfaces(), frame_token,
         devtools_frame_token, opener);
-    render_view = parent->render_view();
+    render_view = RenderViewImpl::FromWebView(parent->View());
   }
 
   proxy->Init(web_frame, render_view);

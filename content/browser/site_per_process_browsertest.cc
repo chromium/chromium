@@ -5113,8 +5113,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   int view_routing_id = root->frame_tree()
                             ->GetRenderViewHost(site_instance_group_a)
                             ->GetRoutingID();
-  int parent_routing_id =
-      root->child_at(0)->render_manager()->GetProxyToParent()->GetRoutingID();
+  blink::RemoteFrameToken parent_frame_token =
+      root->child_at(0)->render_manager()->GetProxyToParent()->GetFrameToken();
 
   // Tell main frame A to delete its subframe B.
   FrameDeletedObserver observer(root->child_at(0)->current_frame_host());
@@ -5131,11 +5131,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   remote_main_frame_interfaces->main_frame_host = main_frame_host.Unbind();
 
   // Send the message to create a proxy for B's new child frame in A.  This
-  // used to crash, as parent_routing_id refers to a proxy that doesn't exist
+  // used to crash, as `parent_frame_token` refers to a proxy that doesn't exist
   // anymore.
   agent_scheduling_group_a->CreateFrameProxy(
       blink::RemoteFrameToken(), new_routing_id, absl::nullopt, view_routing_id,
-      parent_routing_id, blink::mojom::TreeScopeType::kDocument,
+      parent_frame_token, blink::mojom::TreeScopeType::kDocument,
       blink::mojom::FrameReplicationState::New(),
       base::UnguessableToken::Create(),
       std::move(remote_main_frame_interfaces));
