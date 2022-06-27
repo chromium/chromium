@@ -574,7 +574,7 @@ void PrePaintTreeWalk::RebuildContextForMissedDescendant(
 
   // We don't need to pass a fragment here, since we're not actually going to
   // search for any descendant fragment. We've already determined which fragment
-  // that we're going to visit (then one we missed), since we're here.
+  // that we're going to visit (the one we missed), since we're here.
   UpdateContextForOOFContainer(object, context, /* fragment */ nullptr);
 
   if (!object.CanContainAbsolutePositionObjects() ||
