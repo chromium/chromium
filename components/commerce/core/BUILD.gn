@@ -145,6 +145,7 @@ static_library("shopping_service") {
     ":feature_list",
     ":metrics",
     ":proto",
+    ":subscriptions",
     "//base",
     "//components/bookmarks/browser",
     "//components/keyed_service/core",
@@ -196,5 +197,19 @@ source_set("shopping_service_unit_tests") {
     "//components/prefs:test_support",
     "//testing/gtest",
     "//url:url",
+  ]
+}
+
+source_set("subscriptions") {
+  sources = [
+    "subscriptions/commerce_subscription.cc",
+    "subscriptions/commerce_subscription.h",
+    "subscriptions/subscriptions_manager.cc",
+    "subscriptions/subscriptions_manager.h",
+  ]
+
+  deps = [
+    ":feature_list",
+    "//base",
   ]
 }

@@ -16,6 +16,8 @@
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/commerce/core/shopping_bookmark_model_observer.h"
+#include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "components/commerce/core/web_wrapper.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -60,6 +62,8 @@ ShoppingService::ShoppingService(
     shopping_bookmark_observer_ =
         std::make_unique<ShoppingBookmarkModelObserver>(bookmark_model);
   }
+
+  subscriptions_manager_ = std::make_unique<SubscriptionsManager>();
 }
 
 void ShoppingService::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -339,6 +343,20 @@ void ShoppingService::HandleOptGuideMerchantInfoResponse(
   }
 
   std::move(callback).Run(url, std::move(info));
+}
+
+void ShoppingService::Subscribe(
+    std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
+    base::OnceCallback<void(bool)> callback) {
+  subscriptions_manager_->Subscribe(std::move(subscriptions),
+                                    std::move(callback));
+}
+
+void ShoppingService::Unsubscribe(
+    std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
+    base::OnceCallback<void(bool)> callback) {
+  subscriptions_manager_->Unsubscribe(std::move(subscriptions),
+                                      std::move(callback));
 }
 
 void ShoppingService::Shutdown() {}

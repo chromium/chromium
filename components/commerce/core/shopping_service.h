@@ -35,7 +35,9 @@ class OptimizationMetadata;
 namespace commerce {
 
 class ShoppingBookmarkModelObserver;
+class SubscriptionsManager;
 class WebWrapper;
+struct CommerceSubscription;
 
 // Information returned by the product info APIs.
 struct ProductInfo {
@@ -93,6 +95,18 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   void GetProductInfoForUrl(const GURL& url, ProductInfoCallback callback);
 
   void GetMerchantInfoForUrl(const GURL& url, MerchantInfoCallback callback);
+
+  // Create new subscriptions in batch if needed, and will notify |callback| if
+  // the operation completes successfully.
+  void Subscribe(
+      std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
+      base::OnceCallback<void(bool)> callback);
+
+  // Delete existing subscriptions in batch if needed, and will notify
+  // |callback| if the operation completes successfully.
+  void Unsubscribe(
+      std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
+      base::OnceCallback<void(bool)> callback);
 
   void Shutdown() override;
 
@@ -189,6 +203,8 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   std::unordered_map<std::string,
                      std::tuple<uint32_t, bool, std::unique_ptr<ProductInfo>>>
       product_info_cache_;
+
+  std::unique_ptr<SubscriptionsManager> subscriptions_manager_;
 
   base::WeakPtrFactory<ShoppingService> weak_ptr_factory_;
 };
