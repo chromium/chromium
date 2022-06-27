@@ -1566,11 +1566,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kOsUISyncInternalsURL), GURL(chrome::kOsUISysInternalsUrl),
       GURL(chrome::kOsUITermsURL), GURL(chrome::kChromeUIUserImageURL),
       GURL(chrome::kOsUIVersionURL), GURL(chrome::kChromeUIVmUrl),
-      GURL(chrome::kOsUISystemURL), GURL(chrome::kOsUIHelpAppURL),
-      // The CL to land this didn't land yet. Once landed they need to be moved
-      // to Lacros. However  - as the refactor might precede this, there is no
-      // TODO for it.
-      GURL(chrome::kChromeUICertificateManagerDialogURL)};
+      GURL(chrome::kOsUISystemURL), GURL(chrome::kOsUIHelpAppURL)};
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return std::vector<GURL>{GURL(chrome::kChromeUIAboutURL),
                            GURL(chrome::kChromeUIComponentsUrl),
