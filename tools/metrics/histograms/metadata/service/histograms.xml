@@ -1067,7 +1067,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorkerCache.Cache.Browser.Match.RelatedFetchEvent"
-    units="ms" expires_after="2022-08-01">
+    units="ms" expires_after="2023-06-24">
   <owner>wanderview@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
