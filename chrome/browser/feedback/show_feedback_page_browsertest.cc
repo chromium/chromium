@@ -92,23 +92,28 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   EXPECT_EQ(expected_url, visible_url);
 }
 
-// Test that when `extra_diagnostics` parameter appended.
+// Test that when parameters appended include:
+// - `extra_diagnostics` string.
+// - `description_template` string.
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        OsFeedbackAdditionalContextAddedToUrl) {
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
   std::string unused;
   const std::string extra_diagnostics = "extra diagnostics param";
+  const std::string description_template = "Q1: Question one?";
   GURL expected_url(base::StrCat(
       {ash::kChromeUIOSFeedbackUrl, "/?extra_diagnostics=",
-       base::EscapeQueryParamValue(extra_diagnostics, /*use_plus=*/false)}));
+       base::EscapeQueryParamValue(extra_diagnostics, /*use_plus=*/false),
+       "&description_template=",
+       base::EscapeQueryParamValue(description_template, /*use_plus=*/false)}));
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
 
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                true);
   chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,
-                           /*description_template=*/unused,
+                           /*description_template=*/description_template,
                            /*description_placeholder_text=*/unused,
                            /*category_tag=*/unused,
                            /*extra_diagnostics=*/extra_diagnostics);

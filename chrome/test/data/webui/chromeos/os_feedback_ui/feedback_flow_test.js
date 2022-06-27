@@ -8,6 +8,7 @@ import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_pr
 import {AdditionalContextQueryParam, FeedbackFlowElement, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {FeedbackContext, SendReportStatus} from 'chrome://os-feedback/feedback_types.js';
 import {setFeedbackServiceProviderForTesting, setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
+import {SearchPageElement} from 'chrome://os-feedback/search_page.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -62,6 +63,13 @@ export function FeedbackFlowTestSuite() {
     assertTrue(!!page);
 
     return page.feedbackContext_;
+  }
+
+  /** @return {!SearchPageElement} */
+  function getSearchPage() {
+    assertTrue(!!page);
+
+    return /** @type {!SearchPageElement} */ (page.$['searchPage']);
   }
 
   // Test that the search page is shown by default.
@@ -348,9 +356,15 @@ export function FeedbackFlowTestSuite() {
         const extra_diagnostics = 'some%20extra%20diagnostics';
         queryParams.set(
             AdditionalContextQueryParam.EXTRA_DIAGNOSTICS, extra_diagnostics);
+        const description_template = 'Q1%3A%20Question%20one?';
+        queryParams.set(
+            AdditionalContextQueryParam.DESCRIPTION_TEMPLATE,
+            description_template);
         // Replace current querystring with the new one.
         window.history.replaceState(null, '', '?' + queryParams.toString());
         await initializePage();
+        page.setCurrentStateForTesting(FeedbackFlowState.SEARCH);
+        const descriptionElement = getSearchPage().$['descriptionText'];
 
         const feedbackContext = getFeedbackContext_();
         assertEquals(fakeFeedbackContext.pageUrl, feedbackContext.pageUrl);
@@ -358,6 +372,8 @@ export function FeedbackFlowTestSuite() {
         assertEquals(
             decodeURIComponent(extra_diagnostics),
             feedbackContext.extraDiagnostics);
+        assertEquals(
+            decodeURIComponent(description_template), descriptionElement.value);
       });
 
   // Test that the extra diagnostics gets set when query parameter is empty.
@@ -370,11 +386,14 @@ export function FeedbackFlowTestSuite() {
             '?' +
                 '');
         await initializePage();
+        page.setCurrentStateForTesting(FeedbackFlowState.SEARCH);
+        const descriptionElement = getSearchPage().$['descriptionText'];
 
         const feedbackContext = getFeedbackContext_();
         // TODO(ashleydp): Update expectation when page_url passed.
         assertEquals(fakeFeedbackContext.pageUrl, feedbackContext.pageUrl);
         assertEquals(fakeFeedbackContext.email, feedbackContext.email);
         assertEquals('', feedbackContext.extraDiagnostics);
+        assertEquals('', descriptionElement.value);
       });
 }

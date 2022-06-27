@@ -57,8 +57,21 @@ export class SearchPageElement extends SearchPageElementBase {
     return html`{__html_template__}`;
   }
 
+  static get properties() {
+    return {
+      descriptionTemplate: {
+        type: String,
+        readonly: true,
+        observer: SearchPageElement.prototype.descriptionTemplateChanged_
+      },
+    };
+  }
+
   constructor() {
     super();
+
+    /** @type {string} */
+    this.descriptionTemplate = '';
 
     /**
      * Record the most recent number of characters in the input for which a
@@ -267,6 +280,14 @@ export class SearchPageElement extends SearchPageElementBase {
    */
   setDescription(text) {
     this.getInputElement_().value = text;
+  }
+
+  /**
+   * @param {string} currentTemplate
+   * @protected
+   */
+  descriptionTemplateChanged_(currentTemplate) {
+    this.getInputElement_().value = currentTemplate;
   }
 }
 

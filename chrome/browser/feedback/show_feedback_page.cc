@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -49,6 +50,7 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kExtraDiagnosticsQueryParam[] = "extra_diagnostics";
+constexpr char kDescriptionTemplateQueryParam[] = "description_template";
 constexpr char kQueryParamSeparator[] = "&";
 constexpr char kQueryParamKeyValueSeparator[] = "=";
 
@@ -60,12 +62,18 @@ std::string StrCatQueryParam(const std::string query_param,
 }
 
 // Returns URL for OS Feedback with additional data passed as query parameters.
-GURL BuildFeedbackUrl(const std::string extra_diagnostics) {
+GURL BuildFeedbackUrl(const std::string extra_diagnostics,
+                      const std::string description_template) {
   std::vector<std::string> query_params;
 
   if (!extra_diagnostics.empty()) {
     query_params.emplace_back(
         StrCatQueryParam(kExtraDiagnosticsQueryParam, extra_diagnostics));
+  }
+
+  if (!description_template.empty()) {
+    query_params.emplace_back(
+        StrCatQueryParam(kDescriptionTemplateQueryParam, description_template));
   }
 
   // Use default URL if no extra parameters to be added.
@@ -155,7 +163,7 @@ void RequestFeedbackFlow(const GURL& page_url,
   if (use_os_feedback) {
     web_app::SystemAppLaunchParams params{};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    params.url = BuildFeedbackUrl(extra_diagnostics);
+    params.url = BuildFeedbackUrl(extra_diagnostics, description_template);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     web_app::LaunchSystemWebAppAsync(
         profile, ash::SystemWebAppType::OS_FEEDBACK, std::move(params));

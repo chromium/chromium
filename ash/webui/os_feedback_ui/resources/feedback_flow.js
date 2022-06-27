@@ -30,6 +30,7 @@ export const FeedbackFlowState = {
  * @enum {string}
  */
 export const AdditionalContextQueryParam = {
+  DESCRIPTION_TEMPLATE: 'description_template',
   EXTRA_DIAGNOSTICS: 'extra_diagnostics',
 };
 
@@ -81,6 +82,14 @@ export class FeedbackFlowElement extends PolymerElement {
     this.description_;
 
     /**
+     * The description template provided source application to help user write
+     * feedback.
+     * @type {string}
+     * @protected
+     */
+    this.descriptionTemplate_;
+
+    /**
      * The status of sending report.
      * @type {?SendReportStatus}
      * @private
@@ -126,6 +135,12 @@ export class FeedbackFlowElement extends PolymerElement {
         params.get(AdditionalContextQueryParam.EXTRA_DIAGNOSTICS);
     this.feedbackContext_.extraDiagnostics =
         extraDiagnostics ? decodeURIComponent(extraDiagnostics) : '';
+    const descriptionTemplate =
+        params.get(AdditionalContextQueryParam.DESCRIPTION_TEMPLATE);
+    this.descriptionTemplate_ =
+        descriptionTemplate && descriptionTemplate.length > 0 ?
+        decodeURIComponent(descriptionTemplate) :
+        '';
   }
 
   /**
