@@ -2213,6 +2213,15 @@ crbug.com/710214 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-vertical
 
 crbug.com/1067031 external/wpt/css/css-overflow/webkit-line-clamp-035.html [ Failure ]
 
+crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-margin-001.html [ Pass Failure ]
+crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-circle-004.html [ Pass Failure ]
+crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-circle-005.html [ Pass Failure ]
+crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-ellipse-004.html [ Pass Failure ]
+crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-ellipse-005.html [ Pass Failure ]
+crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-inset-003.html [ Pass Failure ]
+crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-polygon-004.html [ Pass Failure ]
+crbug.com/1339525 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-shape-arguments-000.html [ Pass Failure ]
+
 crbug.com/424365 external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-024.html [ Failure ]
 crbug.com/1129522 external/wpt/css/css-shapes/shape-outside/shape-image/gradients/shape-outside-linear-gradient-008.html [ Failure ]
 crbug.com/1129522 external/wpt/css/css-shapes/shape-outside/shape-image/gradients/shape-outside-linear-gradient-006.html [ Failure ]
