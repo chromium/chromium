@@ -8794,13 +8794,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // In order to be considered for Lacros, flags additionally need to be usable
-  // on Chrome OS.
-  if (!(entry.supported_platforms & (kOsCrOS | kOsCrOSOwnerOnly)))
-    return true;
-#endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
-
   // enable-unsafe-webgpu is only available on Dev/Canary channels.
   if (!strcmp("enable-unsafe-webgpu", entry.internal_name) &&
       channel != version_info::Channel::DEV &&

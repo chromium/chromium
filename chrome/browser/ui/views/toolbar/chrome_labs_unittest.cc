@@ -77,15 +77,6 @@ const flags_ui::FeatureEntry::FeatureParam kTestVariationOther2[] = {
 const flags_ui::FeatureEntry::FeatureVariation kTestVariations2[] = {
     {"Description", kTestVariationOther2, 1, nullptr}};
 
-// Experiment platform to use for feature flags.
-unsigned short GetPlatformToUse() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return flags_ui::FlagsState::GetCurrentPlatform() | flags_ui::kOsCrOS;
-#else
-  return flags_ui::FlagsState::GetCurrentPlatform();
-#endif
-}
-
 std::vector<LabInfo> TestLabInfo() {
   std::vector<LabInfo> test_feature_info;
   test_feature_info.emplace_back(LabInfo(kFirstTestFeatureId, u"", u"", "",
@@ -118,9 +109,11 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
         user_manager_enabler_(base::WrapUnique(user_manager_)),
 #endif
         scoped_feature_entries_(
-            {{kFirstTestFeatureId, "", "", GetPlatformToUse(),
+            {{kFirstTestFeatureId, "", "",
+              flags_ui::FlagsState::GetCurrentPlatform(),
               FEATURE_VALUE_TYPE(kTestFeature1)},
-             {kTestFeatureWithVariationId, "", "", GetPlatformToUse(),
+             {kTestFeatureWithVariationId, "", "",
+              flags_ui::FlagsState::GetCurrentPlatform(),
               FEATURE_WITH_PARAMS_VALUE_TYPE(kTestFeature2,
                                              kTestVariations2,
                                              "TestTrial")},
@@ -128,7 +121,8 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
              // compatible with the current platform.
              {kThirdTestFeatureId, "", "", 0,
               FEATURE_VALUE_TYPE(kTestFeature3)},
-             {kExpiredFlagTestFeatureId, "", "", GetPlatformToUse(),
+             {kExpiredFlagTestFeatureId, "", "",
+              flags_ui::FlagsState::GetCurrentPlatform(),
               FEATURE_VALUE_TYPE(kExpiredFlagTestFeature)}}) {
     // Set expiration milestone such that the flag is expired.
     flags::testing::SetFlagExpiration(kExpiredFlagTestFeatureId, 0);
@@ -257,9 +251,11 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
         user_manager_enabler_(base::WrapUnique(user_manager_)),
 #endif
         scoped_feature_entries_(
-            {{kFirstTestFeatureId, "", "", GetPlatformToUse(),
+            {{kFirstTestFeatureId, "", "",
+              flags_ui::FlagsState::GetCurrentPlatform(),
               FEATURE_VALUE_TYPE(kTestFeature1)},
-             {kTestFeatureWithVariationId, "", "", GetPlatformToUse(),
+             {kTestFeatureWithVariationId, "", "",
+              flags_ui::FlagsState::GetCurrentPlatform(),
               FEATURE_WITH_PARAMS_VALUE_TYPE(kTestFeature2,
                                              kTestVariations2,
                                              "TestTrial")},
@@ -267,7 +263,8 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
              // compatible with the current platform.
              {kThirdTestFeatureId, "", "", 0,
               FEATURE_VALUE_TYPE(kTestFeature3)},
-             {kExpiredFlagTestFeatureId, "", "", GetPlatformToUse(),
+             {kExpiredFlagTestFeatureId, "", "",
+              flags_ui::FlagsState::GetCurrentPlatform(),
               FEATURE_VALUE_TYPE(kExpiredFlagTestFeature)}}) {
     // Set expiration milestone such that the flag is expired.
     flags::testing::SetFlagExpiration(kExpiredFlagTestFeatureId, 0);

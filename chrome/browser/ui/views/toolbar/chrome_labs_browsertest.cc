@@ -21,24 +21,14 @@ namespace {
 const char kFirstTestFeatureId[] = "feature-1";
 const base::Feature kTestFeature1{"FeatureName1",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Experiment platform to use for feature flags.
-unsigned short GetPlatformToUse() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return flags_ui::FlagsState::GetCurrentPlatform() | flags_ui::kOsCrOS;
-#else
-  return flags_ui::FlagsState::GetCurrentPlatform();
-#endif
-}
-
 }  // namespace
 
 class ChromeLabsUiTest : public DialogBrowserTest {
  public:
   ChromeLabsUiTest()
-      : scoped_feature_entries_(
-            {{kFirstTestFeatureId, "", "", GetPlatformToUse(),
-              FEATURE_VALUE_TYPE(kTestFeature1)}}) {
+      : scoped_feature_entries_({{kFirstTestFeatureId, "", "",
+                                  flags_ui::FlagsState::GetCurrentPlatform(),
+                                  FEATURE_VALUE_TYPE(kTestFeature1)}}) {
     scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
 
     std::vector<LabInfo> test_feature_info = {

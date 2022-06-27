@@ -47,15 +47,6 @@ const char kExpiredFlagTestFeatureId[] = "expired-feature";
 const base::Feature kTestFeatureExpired{"Expired",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Experiment platform to use for feature flags.
-unsigned short GetPlatformToUse() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return flags_ui::FlagsState::GetCurrentPlatform() | flags_ui::kOsCrOS;
-#else
-  return flags_ui::FlagsState::GetCurrentPlatform();
-#endif
-}
-
 }  // namespace
 
 class ChromeLabsButtonTest : public TestWithBrowserView {
@@ -67,9 +58,9 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
         user_manager_enabler_(base::WrapUnique(user_manager_)),
 #endif
 
-        scoped_feature_entries_(
-            {{kFirstTestFeatureId, "", "", GetPlatformToUse(),
-              FEATURE_VALUE_TYPE(kTestFeature1)}}) {
+        scoped_feature_entries_({{kFirstTestFeatureId, "", "",
+                                  flags_ui::FlagsState::GetCurrentPlatform(),
+                                  FEATURE_VALUE_TYPE(kTestFeature1)}}) {
   }
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -233,9 +224,9 @@ class ChromeLabsButtonOnlyExpiredFeaturesAvailableTest
     : public TestWithBrowserView {
  public:
   ChromeLabsButtonOnlyExpiredFeaturesAvailableTest()
-      : scoped_feature_entries_(
-            {{kExpiredFlagTestFeatureId, "", "", GetPlatformToUse(),
-              FEATURE_VALUE_TYPE(kTestFeatureExpired)}}) {
+      : scoped_feature_entries_({{kExpiredFlagTestFeatureId, "", "",
+                                  flags_ui::FlagsState::GetCurrentPlatform(),
+                                  FEATURE_VALUE_TYPE(kTestFeatureExpired)}}) {
     flags::testing::SetFlagExpiration(kExpiredFlagTestFeatureId, 0);
   }
   void SetUp() override {
