@@ -127,9 +127,6 @@
           hidden="[[!isCloudGamingDevice_]]" slot="title">
         [[i18nDynamic(locale, 'marketingOptInScreenGameDeviceTitle')]]
       </h1>
-      <h1 hidden="[[!isCloudGamingDevice_]]" slot="title">
-        [[i18nDynamic(locale, 'marketingOptInScreenGameDeviceTitle2')]]
-      </h1>
       <div slot="subtitle">
         <!-- No marketing opt in -->
         <div hidden="[[isCloudGamingDevice_]]">
@@ -156,7 +153,7 @@
           <iron-icon id="toggleRowIcon" icon="oobe-32:chromebook"></iron-icon>
           <div id="chromebookUpdatesOptionLabel" class="flex layout vertical"
               aria-hidden="true">
-            <div class="toggle-title" hidden="[[!isCloudGamingDevice_]]">
+            <div class="toggle-title" hidden="[[isCloudGamingDevice_]]">
               [[i18nDynamic(locale, 'marketingOptInGetChromebookUpdates')]]
             </div>
             <div class="toggle-title" hidden="[[!isCloudGamingDevice_]]">

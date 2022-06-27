@@ -48,15 +48,12 @@ void MarketingOptInScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("marketingOptInScreenTitle",
                IDS_LOGIN_MARKETING_OPT_IN_SCREEN_TITLE);
-  builder->Add(
-      "marketingOptInScreenGameDeviceTitle",
-      IDS_LOGIN_MARKETING_OPT_IN_SCREEN_WITH_CLOUDGAMINGDEVICE_TITLE_1);
-  builder->Add(
-      "marketingOptInScreenGameDeviceTitle2",
-      IDS_LOGIN_MARKETING_OPT_IN_SCREEN_WITH_CLOUDGAMINGDEVICE_TITLE_2);
-  builder->Add(
+  builder->Add("marketingOptInScreenGameDeviceTitle",
+               IDS_LOGIN_MARKETING_OPT_IN_SCREEN_WITH_CLOUDGAMINGDEVICE_TITLE);
+  builder->AddF(
       "marketingOptInScreenGameDeviceSubtitle",
-      IDS_LOGIN_MARKETING_OPT_IN_SCREEN_WITH_CLOUDGAMINGDEVICE_SUBTITLE);
+      IDS_LOGIN_MARKETING_OPT_IN_SCREEN_WITH_CLOUDGAMINGDEVICE_SUBTITLE,
+      ui::GetChromeOSDeviceName());
   builder->AddF("marketingOptInScreenSubtitle",
                 IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SUBTITLE,
                 ui::GetChromeOSDeviceName());
