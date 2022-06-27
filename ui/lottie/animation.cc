@@ -250,6 +250,7 @@ void Animation::Paint(gfx::Canvas* canvas,
 void Animation::PaintFrame(gfx::Canvas* canvas,
                            float t,
                            const gfx::Size& size) {
+  TRACE_EVENT1("ui", "Animation::PaintFrame", "timestamp", t);
   DCHECK_GE(t, 0.f);
   DCHECK_LE(t, 1.f);
   // Not all of the image assets necessarily appear in the frame at time |t|. To
@@ -278,6 +279,7 @@ cc::SkottieWrapper::FrameDataFetchResult Animation::LoadImageForAsset(
     float t,
     sk_sp<SkImage>&,
     SkSamplingOptions&) {
+  TRACE_EVENT0("ui", "Animation::LoadImageForAsset");
   cc::SkottieFrameDataProvider::ImageAsset& image_asset =
       *image_assets_.at(asset_id);
   all_frame_data.emplace(asset_id,
