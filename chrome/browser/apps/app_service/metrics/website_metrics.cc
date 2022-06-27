@@ -179,8 +179,7 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
     const TabStripModelChange::Remove& remove,
     const TabStripSelectionChange& selection) {
   for (const auto& removed_tab : remove.contents) {
-    webcontents_to_observer_map_.erase(removed_tab.contents);
-    webcontents_to_ukm_key_.erase(removed_tab.contents);
+    OnTabClosed(removed_tab.contents);
   }
 
   // Last tab detached.
@@ -197,8 +196,7 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
     // contents.
     auto it = window_to_web_contents_.find(window);
     if (it != window_to_web_contents_.end()) {
-      webcontents_to_observer_map_.erase(it->second);
-      webcontents_to_ukm_key_.erase(it->second);
+      OnTabClosed(it->second);
       window_to_web_contents_.erase(it);
     }
   }
@@ -206,8 +204,7 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
 
 void WebsiteMetrics::OnTabStripModelChangeReplace(
     const TabStripModelChange::Replace& replace) {
-  webcontents_to_observer_map_.erase(replace.old_contents);
-  webcontents_to_ukm_key_.erase(replace.old_contents);
+  OnTabClosed(replace.old_contents);
 }
 
 void WebsiteMetrics::OnActiveTabChanged(aura::Window* window,
@@ -231,6 +228,11 @@ void WebsiteMetrics::OnActiveTabChanged(aura::Window* window,
 
   // TODO(crbug.com/1334173): Calculate the usage time for the activated tab
   // url.
+}
+
+void WebsiteMetrics::OnTabClosed(content::WebContents* web_contents) {
+  webcontents_to_ukm_key_.erase(web_contents);
+  webcontents_to_observer_map_.erase(web_contents);
 }
 
 void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {

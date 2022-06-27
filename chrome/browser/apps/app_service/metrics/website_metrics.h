@@ -103,6 +103,7 @@ class WebsiteMetrics : public BrowserListObserver,
   void OnActiveTabChanged(aura::Window* window,
                           content::WebContents* old_contents,
                           content::WebContents* new_contents);
+  void OnTabClosed(content::WebContents* web_contents);
 
   // Called by |WebsiteMetrics::ActiveTabWebContentsObserver|.
   void OnWebContentsUpdated(content::WebContents* contents);
