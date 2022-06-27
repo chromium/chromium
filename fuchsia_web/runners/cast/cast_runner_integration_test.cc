@@ -812,7 +812,7 @@ TEST_F(AudioCastRunnerIntegrationTest, MicrophoneRedirect) {
   // Expect fuchsia.media.Audio connection to be redirected to the agent.
   base::RunLoop run_loop;
   ASSERT_EQ(
-      component.component_state()->outgoing_directory()->AddPublicService(
+      component.component_services()->AddPublicService(
           std::make_unique<vfs::Service>(
               [quit_closure = run_loop.QuitClosure()](
                   zx::channel channel, async_dispatcher_t* dispatcher) mutable {
@@ -843,7 +843,7 @@ TEST_F(CastRunnerIntegrationTest, CameraRedirect) {
   // agent.
   bool received_device_watcher_request = false;
   ASSERT_EQ(
-      component.component_state()->outgoing_directory()->AddPublicService(
+      component.component_services()->AddPublicService(
           std::make_unique<vfs::Service>(
               [&received_device_watcher_request](
                   zx::channel channel, async_dispatcher_t* dispatcher) mutable {
@@ -918,15 +918,13 @@ TEST_F(CastRunnerIntegrationTest, MultipleComponentsUsingCamera) {
   // agent.
   bool received_device_watcher_request = false;
   ASSERT_EQ(
-      second_component.component_state()
-          ->outgoing_directory()
-          ->AddPublicService(std::make_unique<vfs::Service>(
-                                 [&received_device_watcher_request](
-                                     zx::channel channel,
-                                     async_dispatcher_t* dispatcher) mutable {
-                                   received_device_watcher_request = true;
-                                 }),
-                             fuchsia::camera3::DeviceWatcher::Name_),
+      second_component.component_services()->AddPublicService(
+          std::make_unique<vfs::Service>(
+              [&received_device_watcher_request](
+                  zx::channel channel, async_dispatcher_t* dispatcher) mutable {
+                received_device_watcher_request = true;
+              }),
+          fuchsia::camera3::DeviceWatcher::Name_),
       ZX_OK);
 
   second_component.ExecuteJavaScript("connectCamera();");
