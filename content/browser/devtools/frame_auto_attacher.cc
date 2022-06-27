@@ -179,9 +179,7 @@ void FrameAutoAttacher::UpdatePages() {
 
           FrameTreeNode* frame_tree_node = rfhi->frame_tree_node();
           if (frame_tree_node->IsMainFrame() &&
-              (frame_tree_node->IsFencedFrameRoot() ||
-               WebContentsImpl::FromFrameTreeNode(frame_tree_node)
-                   ->IsPortal())) {
+              WebContentsImpl::FromFrameTreeNode(frame_tree_node)->IsPortal()) {
             scoped_refptr<DevToolsAgentHost> new_host =
                 RenderFrameDevToolsAgentHost::GetOrCreateFor(frame_tree_node);
             new_hosts->insert(new_host);
@@ -294,26 +292,29 @@ void FrameAutoAttacher::UpdateFrames() {
   Hosts new_hosts;
   DevToolsAgentHost::List new_worklet_hosts;
   if (render_frame_host_) {
-    base::queue<FrameTreeNode*> queue;
-    for (size_t i = 0; i < render_frame_host_->child_count(); ++i) {
-      queue.push(render_frame_host_->child_at(i));
-    }
-    while (!queue.empty()) {
-      FrameTreeNode* node = queue.front();
-      queue.pop();
-      bool should_create = node->current_frame_host()->is_local_root_subframe();
-      if (should_create) {
-        scoped_refptr<DevToolsAgentHost> new_host =
-            RenderFrameDevToolsAgentHost::GetOrCreateFor(node);
-        new_hosts.insert(new_host);
-        // Note: We don't add children of a local root to |queue|, as they
-        // will be looked at by a separate TargetAutoAttacher created for the
-        // local root.
-      } else {
-        for (size_t i = 0; i < node->child_count(); ++i)
-          queue.push(node->child_at(i));
-      }
-    }
+    render_frame_host_->ForEachRenderFrameHost(base::BindRepeating(
+        [](Hosts* new_hosts, RenderFrameHostImpl* root, RenderFrameHost* rfh) {
+          auto* rfh_impl = static_cast<RenderFrameHostImpl*>(rfh);
+          if (rfh_impl == root || !rfh_impl->is_local_root())
+            return RenderFrameHost::FrameIterationAction::kContinue;
+
+          // At this point, |rfh_impl| is a local root that is in the subtree of
+          // |root|.
+          FrameTreeNode* node = rfh_impl->frame_tree_node();
+          bool should_create =
+              !node->IsMainFrame() || node->IsFencedFrameRoot();
+          if (should_create) {
+            scoped_refptr<DevToolsAgentHost> new_host =
+                RenderFrameDevToolsAgentHost::GetOrCreateFor(node);
+            new_hosts->insert(new_host);
+          }
+
+          // Note: We don't search through children of local roots as they will
+          // be handled by a FrameAutoAttacher that is created for the local
+          // root.
+          return RenderFrameHost::FrameIterationAction::kSkipChildren;
+        },
+        &new_hosts, render_frame_host_));
 
     AuctionWorkletDevToolsAgentHostManager::GetInstance().GetAllForFrame(
         render_frame_host_, &new_worklet_hosts);

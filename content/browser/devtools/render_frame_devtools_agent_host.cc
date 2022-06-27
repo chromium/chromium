@@ -717,7 +717,7 @@ std::string RenderFrameDevToolsAgentHost::GetType() {
   if (IsChildFrame())
     return kTypeFrame;
   if (frame_tree_node_ && frame_tree_node_->IsFencedFrameRoot())
-    return kTypePage;
+    return kTypeFrame;
   if (web_contents() &&
       static_cast<WebContentsImpl*>(web_contents())->IsPortal()) {
     return kTypePage;
