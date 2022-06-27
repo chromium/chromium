@@ -95,11 +95,7 @@ android_library("translate_android_enums_java") {
   srcjar_deps = [ ":translate_android_enums" ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
-
+robolectric_library("junit") {
   sources =
       [ "java/src/org/chromium/components/translate/TranslateOptionsTest.java" ]
   deps = [

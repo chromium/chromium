@@ -66,15 +66,9 @@ if (!limit_android_deps) {
     deps = [ "$google_play_services_package:google_play_services_base_java" ]
   }
 
-  android_library("chromium_play_services_availability_shadows_java") {
-    # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-    bypass_platform_checks = true
-    testonly = true
+  robolectric_library("chromium_play_services_availability_shadows_java") {
     sources = [ "util/org/chromium/gms/shadows/ShadowChromiumPlayServicesAvailability.java" ]
-    deps = [
-      ":chromium_play_services_availability_java",
-      "//third_party/android_deps:robolectric_all_java",
-    ]
+    deps = [ ":chromium_play_services_availability_java" ]
   }
 }
 
@@ -1463,7 +1457,7 @@ if (!limit_android_deps) {
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/bouncycastle:bouncycastle_java",
     ]
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1474,7 +1468,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
     testonly = true
     deps = [ ":org_robolectric_annotations_java" ]
-    bypass_platform_checks = true
+    is_robolectric = true
 
     # Could also be jetified, but jetification was
     # removed from the build system and 3pp prevents
@@ -1492,7 +1486,7 @@ if (!limit_android_deps) {
       ":com_google_guava_guava_java",
       ":org_robolectric_annotations_java",
     ]
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1509,7 +1503,7 @@ if (!limit_android_deps) {
       ":org_robolectric_annotations_java",
       ":org_robolectric_pluginapi_java",
     ]
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2183,7 +2177,7 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     testonly = true
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2206,7 +2200,7 @@ if (!limit_android_deps) {
       ":org_robolectric_shadowapi_java",
       ":org_robolectric_utils_reflector_java",
     ]
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2223,7 +2217,7 @@ if (!limit_android_deps) {
     ]
     testonly = true
     deps = [ ":com_google_guava_guava_java" ]
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2240,7 +2234,7 @@ if (!limit_android_deps) {
     ]
     testonly = true
     deps = [ ":org_robolectric_annotations_java" ]
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2261,7 +2255,7 @@ if (!limit_android_deps) {
       ":org_robolectric_pluginapi_java",
       ":org_robolectric_utils_java",
     ]
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2283,7 +2277,7 @@ if (!limit_android_deps) {
       ":org_robolectric_pluginapi_java",
       ":org_robolectric_utils_java",
     ]
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2310,7 +2304,7 @@ if (!limit_android_deps) {
       ":org_robolectric_utils_java",
       ":org_robolectric_utils_reflector_java",
     ]
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2330,7 +2324,7 @@ if (!limit_android_deps) {
       ":org_robolectric_annotations_java",
       ":org_robolectric_utils_java",
     ]
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2362,7 +2356,7 @@ if (!limit_android_deps) {
       "//third_party/icu4j:icu4j_java",
       "//third_party/sqlite4java:sqlite4java_java",
     ]
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2384,7 +2378,7 @@ if (!limit_android_deps) {
       ":org_ow2_asm_asm_util_java",
       ":org_robolectric_utils_java",
     ]
-    bypass_platform_checks = true
+    is_robolectric = true
   }
 }
 # === Generated Code End ===

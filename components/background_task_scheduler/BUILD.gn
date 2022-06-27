@@ -138,7 +138,6 @@ if (is_android) {
       "//third_party/android_deps:chromium_play_services_availability_shadows_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
-      "//third_party/robolectric:robolectric_test_sdk_java",
     ]
   }
 }
