@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -65,4 +68,12 @@ SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
         kSidePanelContentProxyKey,
         std::make_unique<SidePanelContentProxy>(true).release());
   return content_view->GetProperty(kSidePanelContentProxyKey);
+}
+
+void SidePanelUtil::RecordSidePanelOpen(
+    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+  base::RecordAction(base::UserMetricsAction("SidePanel.Show"));
+
+  if (trigger.has_value())
+    base::UmaHistogramEnumeration("SidePanel.OpenTrigger", trigger.value());
 }

@@ -87176,6 +87176,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Dismiss"/>
 </enum>
 
+<enum name="SidePanelOpenTrigger">
+  <int value="0" label="Opened from toolbar button"/>
+  <int value="1" label="Opened from lens context menu"/>
+  <int value="2" label="Opened from side search page action button"/>
+  <int value="3" label="Opened from user notes context menu in page"/>
+</enum>
+
 <enum name="SideSearchAvailabilityChangeType">
   <int value="0" label="Become available"/>
   <int value="1" label="Become unavailable"/>

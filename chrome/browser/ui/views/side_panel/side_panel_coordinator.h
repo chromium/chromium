@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 
 class BrowserView;
 class SidePanelComboboxModel;
@@ -38,7 +39,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   SidePanelCoordinator& operator=(const SidePanelCoordinator&) = delete;
   ~SidePanelCoordinator() override;
 
-  void Show(absl::optional<SidePanelEntry::Id> entry_id = absl::nullopt);
+  void Show(absl::optional<SidePanelEntry::Id> entry_id = absl::nullopt,
+            absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
+                absl::nullopt);
   void Close();
   void Toggle();
 

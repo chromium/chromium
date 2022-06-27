@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_combobox_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -167,7 +166,9 @@ SidePanelCoordinator::~SidePanelCoordinator() {
   browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
 }
 
-void SidePanelCoordinator::Show(absl::optional<SidePanelEntry::Id> entry_id) {
+void SidePanelCoordinator::Show(
+    absl::optional<SidePanelEntry::Id> entry_id,
+    absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
   if (!entry_id.has_value())
     entry_id = GetLastActiveEntryId().value_or(kDefaultEntry);
 
@@ -177,7 +178,7 @@ void SidePanelCoordinator::Show(absl::optional<SidePanelEntry::Id> entry_id) {
 
   if (GetContentView() == nullptr) {
     InitializeSidePanel();
-    base::RecordAction(base::UserMetricsAction("SidePanel.Show"));
+    SidePanelUtil::RecordSidePanelOpen(open_trigger);
     // Record usage for side panel promo.
     feature_engagement::TrackerFactory::GetForBrowserContext(
         browser_view_->GetProfile())
@@ -248,7 +249,7 @@ void SidePanelCoordinator::Toggle() {
   if (IsSidePanelShowing()) {
     Close();
   } else {
-    Show();
+    Show(absl::nullopt, SidePanelUtil::SidePanelOpenTrigger::kToolbarButton);
   }
 }
 

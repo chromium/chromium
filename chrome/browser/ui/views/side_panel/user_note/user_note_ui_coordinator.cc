@@ -241,7 +241,9 @@ void UserNoteUICoordinator::Invalidate() {
 void UserNoteUICoordinator::Show() {
   auto* side_panel_coordinator =
       BrowserView::GetBrowserViewForBrowser(browser_)->side_panel_coordinator();
-  side_panel_coordinator->Show(SidePanelEntry::Id::kUserNote);
+  side_panel_coordinator->Show(
+      SidePanelEntry::Id::kUserNote,
+      SidePanelUtil::SidePanelOpenTrigger::kNotesInPageContextMenu);
 }
 
 void UserNoteUICoordinator::OnTabStripModelChanged(
