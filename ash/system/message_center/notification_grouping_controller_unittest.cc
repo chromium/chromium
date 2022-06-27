@@ -223,4 +223,25 @@ TEST_F(NotificationGroupingControllerTest,
   EXPECT_EQ(1u, message_center->GetPopupNotifications().size());
 }
 
+// Create a group notification while the message center bubble is
+// is shown.
+TEST_F(NotificationGroupingControllerTest,
+       NotificationsGroupingMessageCenterBubbleShown) {
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+
+  auto* message_center = MessageCenter::Get();
+  std::string id0, id1, id2;
+  const GURL url(u"http://test-url.com/");
+
+  id0 = AddNotificationWithOriginUrl(url);
+  id1 = AddNotificationWithOriginUrl(url);
+  id2 = AddNotificationWithOriginUrl(url);
+
+  EXPECT_TRUE(message_center->FindNotificationById(id0)->group_child());
+  EXPECT_TRUE(message_center->FindNotificationById(id1)->group_child());
+
+  std::string id_parent = id0 + kIdSuffixForGroupContainerNotification;
+  EXPECT_TRUE(message_center->FindNotificationById(id_parent)->group_parent());
+}
+
 }  // namespace ash

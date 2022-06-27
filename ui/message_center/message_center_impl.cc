@@ -510,6 +510,8 @@ void MessageCenterImpl::MarkSinglePopupAsShown(const std::string& id,
 }
 
 void MessageCenterImpl::ResetPopupTimer(const std::string& id) {
+  DCHECK(FindPopupNotificationById(id));
+
   popup_timers_controller_->CancelTimer(id);
   popup_timers_controller_->StartTimer(
       id, popup_timers_controller_->GetTimeoutForNotification(
