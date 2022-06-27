@@ -316,6 +316,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Flaky on Android (crbug.com/1324507).
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ShouldSetTheOnlyClientFlag DISABLED_ShouldSetTheOnlyClientFlag
+#else
+#define MAYBE_ShouldSetTheOnlyClientFlag ShouldSetTheOnlyClientFlag
+#endif
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        ShouldSetTheOnlyClientFlag) {
   ASSERT_TRUE(SetupSync());
