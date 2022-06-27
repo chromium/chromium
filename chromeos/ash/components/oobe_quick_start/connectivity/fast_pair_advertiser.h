@@ -68,9 +68,6 @@ class FastPairAdvertiser : public device::BluetoothAdvertisement::Observer {
   void OnUnregisterAdvertisementError(
       device::BluetoothAdvertisement::ErrorCode error_code);
 
-  // Returns metadata in format [ adjusted_tx_power (1 byte) ].
-  std::vector<uint8_t> GenerateServiceMetadata();
-
   // Returns metadata in format [ fast_pair_code (2 bytes) ].
   std::vector<uint8_t> GenerateManufacturerMetadata();
 

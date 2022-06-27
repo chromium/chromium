@@ -24,7 +24,6 @@ namespace {
 constexpr const char kFastPairServiceUuid[] =
     "0000fe2c-0000-1000-8000-00805f9b34fb";
 const uint8_t kFastPairModelId[] = {0x41, 0xc0, 0xd9};
-const int8_t kAdjustedTxPower = -66;
 
 }  // namespace
 
@@ -154,12 +153,6 @@ class FastPairAdvertiserTest : public testing::Test {
 
     auto expected_payload = std::vector<uint8_t>(std::begin(kFastPairModelId),
                                                  std::end(kFastPairModelId));
-    std::vector<uint8_t> metadata;
-    int8_t power_converted = -kAdjustedTxPower;
-    metadata.push_back(power_converted);
-    expected_payload.insert(std::end(expected_payload), std::begin(metadata),
-                            std::end(metadata));
-
     EXPECT_EQ(expected_payload,
               register_args_->service_data[kFastPairServiceUuid]);
   }

@@ -17,10 +17,6 @@ constexpr const char kFastPairServiceUuid[] =
 constexpr uint8_t kFastPairModelId[] = {0x41, 0xc0, 0xd9};
 constexpr uint16_t kCompanyId = 0x00e0;
 
-// TODO(b/207087915): This value comes from Android, but we may need to
-// find a more appropriate power setting for Chrome OS devices.
-const int8_t kAdjustedTxPower = -66;
-
 }  // namespace
 
 // static
@@ -90,9 +86,6 @@ void FastPairAdvertiser::RegisterAdvertisement(
       std::make_unique<device::BluetoothAdvertisement::ServiceData>();
   auto payload = std::vector<uint8_t>(std::begin(kFastPairModelId),
                                       std::end(kFastPairModelId));
-  auto service_metadata = GenerateServiceMetadata();
-  payload.insert(std::end(payload), std::begin(service_metadata),
-                 std::end(service_metadata));
   service_data->insert(std::pair<std::string, std::vector<uint8_t>>(
       kFastPairServiceUuid, payload));
   advertisement_data->set_service_data(std::move(service_data));
@@ -103,8 +96,6 @@ void FastPairAdvertiser::RegisterAdvertisement(
   manufacturer_data->insert(std::pair<uint16_t, std::vector<uint8_t>>(
       kCompanyId, manufacturer_metadata));
   advertisement_data->set_manufacturer_data(std::move(manufacturer_data));
-
-  advertisement_data->set_include_tx_power(true);
 
   adapter_->RegisterAdvertisement(
       std::move(advertisement_data),
@@ -153,16 +144,6 @@ void FastPairAdvertiser::OnUnregisterAdvertisementError(
   advertisement_.reset();
   std::move(stop_callback_).Run();
   // |this| might be destroyed here, do not access local fields.
-}
-
-std::vector<uint8_t> FastPairAdvertiser::GenerateServiceMetadata() {
-  std::vector<uint8_t> metadata;
-
-  // Note: We convert this to a positive value before transport to align with
-  // Android's behavior.
-  int8_t powerConverted = -kAdjustedTxPower;
-  metadata.push_back(powerConverted);
-  return metadata;
 }
 
 std::vector<uint8_t> FastPairAdvertiser::GenerateManufacturerMetadata() {
