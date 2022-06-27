@@ -180890,7 +180890,7 @@
       ]
      ],
      "text-decoration-subelements-002.html": [
-      "c3af8e62df553c10a27c0522fe619a56740eb729",
+      "8ac1afa705677262d847686a769df0a0a8a1de79",
       [
        null,
        [
@@ -180899,7 +180899,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            75,
+            75
+           ],
+           [
+            42,
+            42
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "text-decoration-subelements-003.html": [
@@ -180909,6 +180925,32 @@
        [
         [
          "/css/css-text-decor/reference/text-decoration-subelements-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-decoration-subelements-004.html": [
+      "9d23727e27dcbba6f6eebba91746220aad161eac",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-subelements-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-decoration-subelements-005.html": [
+      "1ed03d2aadf8855826ba3435c72b373c43c0843e",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-subelements-005-ref.html",
          "=="
         ]
        ],
@@ -288183,6 +288225,14 @@
        "5e229a9b72f65cc3863232a489ffe8dea17c8760",
        []
       ],
+      "text-decoration-subelements-004-ref.html": [
+       "2f02494c40f6e4c733c4e0b7ab09d84af6156d41",
+       []
+      ],
+      "text-decoration-subelements-005-ref.html": [
+       "77f385a3c7b03ed5b8b47bc0f04541723d815ea4",
+       []
+      ],
       "text-decoration-thickness-001-notref.html": [
        "4e7db88ce5b41e28aa43fc339c35438855abb928",
        []
@@ -374994,7 +375044,7 @@
       ]
      ],
      "linear-timing-functions-output.tentative.html": [
-      "6817f535f1dca092986d7a144ba7acc592061fdd",
+      "132840357188adb30bb51c28d5f00b39bc0140c8",
       [
        null,
        {}

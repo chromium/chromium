@@ -105,5 +105,26 @@ test(function(t) {
 
   assert_animations_equal_at(anim, equiv, 1000);
 }, 'linear function easing, steps equivalent');
+
+test(function(t) {
+  var anim = create_animated_div(t, 'linear(0, 0.1 -10%, 1)');
+  var equiv = create_animated_div(t, 'linear(0, 0.1 0%, 1)');
+
+  assert_animations_equal_at(anim, equiv, 0);
+  assert_animations_equal_at(anim, equiv, 100);
+  assert_animations_equal_at(anim, equiv, 550);
+  assert_animations_equal_at(anim, equiv, 1000);
+}, 'linear function easing, input value being unspecified in the first entry implies zero');
+
+test(function(t) {
+  var anim = create_animated_div(t, 'linear(0, 0.9 110%, 1)');
+  var equiv = create_animated_div(t, 'linear(0, 0.9 110%, 1 110%)');
+
+  assert_animations_equal_at(anim, equiv, 0);
+  assert_animations_equal_at(anim, equiv, 450);
+  assert_animations_equal_at(anim, equiv, 900);
+  assert_animations_equal_at(anim, equiv, 950);
+  assert_animations_equal_at(anim, equiv, 1000);
+}, 'linear function easing, input value being unspecified in the last entry implies max input value');
 </script>
 </body>
