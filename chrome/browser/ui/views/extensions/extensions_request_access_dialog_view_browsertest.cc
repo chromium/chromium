@@ -38,6 +38,9 @@ class ExtensionsRequestAccessDialogViewBrowserTest
       extensions_features::kExtensionsMenuAccessControl};
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionsRequestAccessDialogViewBrowserTest, InvokeUi) {
+// TODO(crbug.com/1339738): Flaky on win-clang and win/win64 trunk builds. 
+// ExtensionsRequestAccessDialog may not longer be used, wait to see if the class is
+// deleted before fixing this.
+IN_PROC_BROWSER_TEST_F(ExtensionsRequestAccessDialogViewBrowserTest, DISABLED_InvokeUi) {
   ShowAndVerifyUi();
 }
