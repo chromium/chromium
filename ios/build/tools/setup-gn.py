@@ -20,9 +20,6 @@ import tempfile
 SUPPORTED_TARGETS = ('iphoneos', 'iphonesimulator', 'maccatalyst')
 SUPPORTED_CONFIGS = ('Debug', 'Release', 'Profile', 'Official')
 
-# Name of the gn variable to set when generating Xcode project.
-GENERATE_XCODE_PROJECT = 'ios_set_attributes_for_xcode_project_generation'
-
 # Pattern matching lines from ~/.lldbinit that must not be copied to the
 # generated .lldbinit file. They match what the user were told to add to
 # their global ~/.lldbinit file before setup-gn.py was updated to generate
@@ -102,7 +99,7 @@ class GnGenerator(object):
     self._config = config
     self._target = target
 
-  def _GetGnArgs(self, extra_args=None):
+  def _GetGnArgs(self):
     """Build the list of arguments to pass to gn.
 
     Returns:
@@ -140,11 +137,6 @@ class GnGenerator(object):
         'target_environment',
         self.TARGET_ENVIRONMENT_VALUES[self._target]))
 
-    # If extra arguments are passed to the function, pass them before the
-    # user overrides (if any).
-    if extra_args is not None:
-      args.extend(extra_args)
-
     # Add user overrides after the other configurations so that they can
     # refer to them and override them.
     args.extend(self._settings.items('gn_args'))
@@ -175,8 +167,7 @@ class GnGenerator(object):
             stream.write('import("%s")\n' % import_rule)
           stream.write('\n')
 
-      extra_args = [(GENERATE_XCODE_PROJECT, xcode_project_name is not None)]
-      gn_args = self._GetGnArgs(extra_args)
+      gn_args = self._GetGnArgs()
 
       for name, value in gn_args:
         if isinstance(value, bool):
@@ -225,6 +216,11 @@ class GnGenerator(object):
       gn_command.append('--ninja-executable=autoninja')
       gn_command.append('--xcode-build-system=new')
       gn_command.append('--xcode-project=%s' % xcode_project_name)
+      gn_command.append('--xcode-additional-files-patterns=*.md')
+      gn_command.append('--xcode-additional-files-roots=//ios;//ios_internal')
+      gn_command.append('--xcode-configs=' + ';'.join(SUPPORTED_CONFIGS))
+      gn_command.append('--xcode-config-build-dir='
+                        '//out/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}')
       if self._settings.has_section('filters'):
         target_filters = self._settings.values('filters')
         if target_filters:

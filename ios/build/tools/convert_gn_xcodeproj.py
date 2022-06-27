@@ -200,22 +200,12 @@ class XcodeProject(object):
     # iterating this list and python dictionaries cannot be mutated
     # during iteration.
 
-    # TODO(crbug.com/1334028) Disable code signing for Xcode 14.
-    lines = check_output(['xcodebuild', '-version']).splitlines()
-    xcode_version_int = int(lines[0].split()[-1].split('.')[0])
-
     for key, obj in list(self.IterObjectsByIsa('XCConfigurationList')):
       # Use the first build configuration as template for creating all the
       # new build configurations.
       build_config_template = self.objects[obj['buildConfigurations'][0]]
       build_config_template['buildSettings']['CONFIGURATION_BUILD_DIR'] = \
           '$(PROJECT_DIR)/../$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)'
-
-      # TODO(crbug.com/1334028) Disable code signing for Xcode 14.
-      if xcode_version_int >= 14:
-        build_config_template['buildSettings']['CODE_SIGN_IDENTITY'] = ''
-        build_config_template['buildSettings']['CODE_SIGNING_REQUIRED'] = 'NO'
-        build_config_template['buildSettings']['CODE_SIGNING_ALLOWED'] = 'NO'
 
       # Remove the existing build configurations from the project before
       # creating the new ones.
@@ -357,7 +347,7 @@ def UpdateXcodeProject(project_dir, old_project_dir, configurations, root_dir):
   SortFileReferencesByName(project, sources, root_object.get('productRefGroup'))
 
   objects = collections.OrderedDict(sorted(project.objects.items()))
-  WriteXcodeProject(project_dir, json.dumps(json_data))
+  # WriteXcodeProject(project_dir, json.dumps(json_data))
 
 
 def CreateGroup(project, parent_group, group_name, use_relative_paths):
