@@ -102,7 +102,7 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
   // The lifetime of `policy_applier_` is managed by the owner of this instance.
   // The owner should call `ReleaseMojoBinderPolicies()` when it destroys the
   // applier.
-  raw_ptr<MojoBinderPolicyApplier, DanglingUntriaged> policy_applier_ = nullptr;
+  raw_ptr<MojoBinderPolicyApplier> policy_applier_ = nullptr;
 };
 
 }  // namespace content

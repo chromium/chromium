@@ -3633,8 +3633,12 @@ void RenderFrameHostImpl::RendererDidActivateForPrerendering() {
   // does not have Mojo capability control applied.
   if (mojo_binder_policy_applier_) {
     mojo_binder_policy_applier_->GrantAll();
-    mojo_binder_policy_applier_.reset();
+
+    // As per `ReleaseMojoBinderPolicies` method requirement, the policy applier
+    // owner should call the method when destroying the object, so we first
+    // need to call this method before resetting the unique pointer.
     broker_.ReleaseMojoBinderPolicies();
+    mojo_binder_policy_applier_.reset();
   }
 }
 
