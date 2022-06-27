@@ -766,18 +766,24 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (from_touch && !ShouldShowContextMenuFromTouch(data))
     return false;
 
-  absl::optional<gfx::Point> host_context_menu_location;
-  auto* main_frame =
-      WebLocalFrameImpl::FromFrame(DynamicTo<LocalFrame>(page_->MainFrame()));
-  if (main_frame) {
-    host_context_menu_location =
-        main_frame->FrameWidgetImpl()->GetAndResetContextMenuLocation();
-  }
-
   WebLocalFrameImpl* selected_web_frame =
       WebLocalFrameImpl::FromFrame(selected_frame);
   if (!selected_web_frame || !selected_web_frame->Client())
     return false;
+
+  absl::optional<gfx::Point> host_context_menu_location;
+  if (selected_web_frame->FrameWidgetImpl()) {
+    host_context_menu_location =
+        selected_web_frame->FrameWidgetImpl()->GetAndResetContextMenuLocation();
+  }
+  if (!host_context_menu_location.has_value()) {
+    auto* main_frame =
+        WebLocalFrameImpl::FromFrame(DynamicTo<LocalFrame>(page_->MainFrame()));
+    if (main_frame && main_frame != selected_web_frame) {
+      host_context_menu_location =
+          main_frame->FrameWidgetImpl()->GetAndResetContextMenuLocation();
+    }
+  }
 
   selected_web_frame->ShowContextMenu(
       context_menu_client_receiver_.BindNewEndpointAndPassRemote(
