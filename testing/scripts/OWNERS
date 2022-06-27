@@ -3,7 +3,6 @@
 
 bsheedy@chromium.org
 kbr@chromium.org
-martiniss@chromium.org
 
 per-file check_static_initializers.py=thakis@chromium.org
 per-file check_static_initializers.py=thomasanderson@chromium.org
