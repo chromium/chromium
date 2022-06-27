@@ -59,17 +59,22 @@ class DrawFrame {
       (this.submissionCount() - 1);
   }
 
-  updateCanvasOrientationAndSize(canvas, orientationDeg, scale) {
+  updateCanvasOrientation(canvas, orientationDeg) {
     // Swap canvas width/height for 90 or 270 deg rotations
     if (orientationDeg === 90 || orientationDeg === 270) {
-      canvas.width = this.size_.height * scale;
-      canvas.height = this.size_.width * scale;
+      canvas.width = this.size_.height;
+      canvas.height = this.size_.width;
     }
     // Restore original canvas width/height for 0 or 180 deg rotations
     else {
-      canvas.width = this.size_.width * scale;
-      canvas.height = this.size_.height * scale;
+      canvas.width = this.size_.width;
+      canvas.height = this.size_.height;
     }
+  }
+
+  updateCanvasSize(canvas, scale) {
+    canvas.width *= scale;
+    canvas.height *= scale;
   }
 
   getFilter(source_index) {
@@ -266,11 +271,10 @@ class Viewer {
   redrawCurrentFrame_() {
     const frame = this.getCurrentFrame();
     if (!frame) return;
-    frame.updateCanvasOrientationAndSize(this.canvas_,
-                this.viewOrientation, this.viewScale);
+    frame.updateCanvasOrientation(this.canvas_, this.viewOrientation);
+    frame.updateCanvasSize(this.canvas_, this.viewScale);
     this.updateTransformMatrix(this.viewOrientation);
     // this.drawContext_.translate(this.translationX, this.translationY);
-    frame.updateCanvasSize(this.canvas_, this.viewScale);
     frame.draw(this.canvas_, this.drawContext_,
                 this.viewScale, this.viewOrientation,
                 this.transformMatrix);
