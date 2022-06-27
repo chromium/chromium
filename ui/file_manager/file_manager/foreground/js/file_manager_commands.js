@@ -1329,9 +1329,15 @@ CommandHandler.COMMANDS_['restore-from-trash'] =
  */
 CommandHandler.COMMANDS_['empty-trash'] = new (class extends FilesCommand {
   execute(event, fileManager) {
-    fileManager.ui.deleteConfirmDialog.show(
-        str('CONFIRM_EMPTY_TRASH'),
-        () => fileManager.fileOperationManager.emptyTrash());
+    fileManager.ui.deleteConfirmDialog.show(str('CONFIRM_EMPTY_TRASH'), () => {
+      if (window.isSWA) {
+        startIOTask(
+            chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH, /*entries=*/[],
+            /*params=*/ {});
+        return;
+      }
+      fileManager.fileOperationManager.emptyTrash();
+    });
   }
 
   /** @override */

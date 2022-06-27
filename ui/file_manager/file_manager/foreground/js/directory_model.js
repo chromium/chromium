@@ -120,7 +120,7 @@ export class DirectoryModel extends EventTarget {
         this.onWatcherDirectoryChanged_.bind(this));
     // For non-watchable directory (e.g. FakeEntry), we need to subscribe to
     // the IOTask and manually refresh.
-    if (util.isRecentsFilterV2Enabled()) {
+    if (util.isRecentsFilterV2Enabled() || util.isTrashEnabled()) {
       chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(
           this.updateFileListAfterIOTask_.bind(this));
     }
@@ -1689,12 +1689,14 @@ export class DirectoryModel extends EventTarget {
     /** @type {!Set<!chrome.fileManagerPrivate.IOTaskType>} */
     const eventTypesRequireRefresh = new Set([
       chrome.fileManagerPrivate.IOTaskType.DELETE,
+      chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH,
       chrome.fileManagerPrivate.IOTaskType.MOVE,
     ]);
     /** @type {!Set<?VolumeManagerCommon.RootType>} */
-    const rootTypesRequireRefresh =
-        new Set([VolumeManagerCommon.RootType.RECENT]);
-
+    const rootTypesRequireRefresh = new Set([
+      VolumeManagerCommon.RootType.RECENT,
+      VolumeManagerCommon.RootType.TRASH,
+    ]);
     const currentRootType = this.getCurrentRootType();
     if (!rootTypesRequireRefresh.has(currentRootType)) {
       return;
