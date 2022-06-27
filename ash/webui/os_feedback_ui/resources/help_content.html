@@ -1,7 +1,9 @@
 <style>
-  a[href] {
-    color: var(--cros-text-color-primary);
-    text-decoration: none;
+  .help-content-label {
+    color: var(--cros-text-color-secondary);
+    font-size: 15px;
+    font-weight: 500;
+    margin: 24px 0 0;
   }
 
   .help-item {
@@ -9,16 +11,18 @@
     margin:  12px 0 0;
   }
 
+  .help-item a {
+    color: var(--cros-text-color-primary);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
   iron-icon {
     padding-inline-end: 12px;
   }
-
-  #helpContentLabel {
-    margin: 24px 0 0;
-  }
 </style>
 <div id="helpContentContainer">
-  <h2 id="helpContentLabel">[[getLabel_(searchResult)]]</h2>
+  <h2 class="help-content-label">[[getLabel_(searchResult)]]</h2>
   <dom-repeat items="[[searchResult.contentList]]">
     <template>
       <div class="help-item">

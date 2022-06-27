@@ -102,7 +102,7 @@ export function helpContentTestSuite() {
         /* isPopularContent= */ true);
 
     // Verify the title is in the helpContentElement.
-    const title = getElement('#helpContentLabel');
+    const title = getElement('.help-content-label');
     assertTrue(!!title);
     assertEquals('Top help content', title.textContent);
 
@@ -119,7 +119,7 @@ export function helpContentTestSuite() {
         /* isPopularContent =*/ false);
 
     // Verify the title is in the helpContentElement.
-    const title = getElement('#helpContentLabel');
+    const title = getElement('.help-content-label');
     assertTrue(!!title);
     assertEquals('Suggested help content', title.textContent);
 
@@ -175,7 +175,7 @@ export function helpContentTestSuite() {
         /* isPopularContent= */ true);
 
     // Verify the title is in the helpContentElement.
-    const title = getElement('#helpContentLabel');
+    const title = getElement('.help-content-label');
     assertTrue(!!title);
     assertEquals(
         'No suggested content. See top help content.', title.textContent);
