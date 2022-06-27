@@ -46,4 +46,11 @@ String CSSScopeRule::cssText() const {
   return result.ReleaseString();
 }
 
+void CSSScopeRule::SetPreludeText(const ExecutionContext* execution_context,
+                                  String value) {
+  CSSStyleSheet::RuleMutationScope mutation_scope(this);
+  To<StyleRuleScope>(group_rule_.Get())
+      ->SetPreludeText(execution_context, value);
+}
+
 }  // namespace blink

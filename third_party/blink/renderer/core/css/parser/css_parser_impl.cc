@@ -1134,37 +1134,8 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(CSSParserTokenStream& stream) {
     observer_->EndRuleHeader(prelude_offset_end);
   }
 
-  absl::optional<CSSSelectorList> from;
-  absl::optional<CSSSelectorList> to;
-
-  prelude.ConsumeWhitespace();
-  if (prelude.Peek().GetType() != kLeftParenthesisToken)
-    return nullptr;
-
-  // <scope-start>
-  {
-    auto block = prelude.ConsumeBlock();
-    from = CSSSelectorParser::ParseScopeBoundary(block, context_, style_sheet_);
-    if (!from)
-      return nullptr;
-  }
-
-  prelude.ConsumeWhitespace();
-
-  // to (<scope-end>)
-  if (css_parsing_utils::ConsumeIfIdent(prelude, "to")) {
-    if (prelude.Peek().GetType() != kLeftParenthesisToken)
-      return nullptr;
-
-    auto block = prelude.ConsumeBlock();
-    to = CSSSelectorParser::ParseScopeBoundary(block, context_, style_sheet_);
-    if (!to)
-      return nullptr;
-  }
-
-  prelude.ConsumeWhitespace();
-
-  if (!prelude.AtEnd())
+  auto* style_scope = StyleScope::Parse(prelude, context_, style_sheet_);
+  if (!style_scope)
     return nullptr;
 
   if (observer_)
@@ -1177,8 +1148,6 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(CSSParserTokenStream& stream) {
   if (observer_)
     observer_->EndRuleBody(stream.Offset());
 
-  auto* style_scope =
-      MakeGarbageCollected<StyleScope>(std::move(*from), std::move(to));
   return MakeGarbageCollected<StyleRuleScope>(*style_scope, rules);
 }
 

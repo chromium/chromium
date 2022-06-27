@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -543,6 +544,14 @@ StyleRuleScope::StyleRuleScope(const StyleRuleScope& other)
 void StyleRuleScope::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(style_scope_);
   StyleRuleGroup::TraceAfterDispatch(visitor);
+}
+
+void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
+                                    String value) {
+  auto* parser_context =
+      MakeGarbageCollected<CSSParserContext>(*execution_context);
+  Vector<CSSParserToken, 32> tokens = CSSTokenizer(value).TokenizeToEOF();
+  style_scope_ = StyleScope::Parse(tokens, parser_context, nullptr);
 }
 
 StyleRuleGroup::StyleRuleGroup(RuleType type,

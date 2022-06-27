@@ -8,16 +8,21 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
+class StyleSheetContents;
 
 class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
  public:
   StyleScope(CSSSelectorList from, absl::optional<CSSSelectorList> to);
   StyleScope(const StyleScope&);
+  static StyleScope* Parse(CSSParserTokenRange prelude,
+                           const CSSParserContext* context,
+                           StyleSheetContents* style_sheet);
 
   void Trace(blink::Visitor* visitor) const { visitor->Trace(parent_); }
 

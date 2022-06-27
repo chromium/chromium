@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_content_loader.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
+#include "third_party/blink/renderer/core/inspector/protocol/css.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
@@ -326,7 +327,8 @@ class InspectorCSSAgent::ModifyRuleAction final
     kSetMediaRuleText,
     kSetContainerRuleText,
     kSetSupportsRuleText,
-    kSetKeyframeKey
+    kSetKeyframeKey,
+    kSetScopeRuleText,
   };
 
   ModifyRuleAction(Type type,
@@ -366,6 +368,9 @@ class InspectorCSSAgent::ModifyRuleAction final
       case kSetKeyframeKey:
         return style_sheet_->SetKeyframeKey(new_range_, old_text_, nullptr,
                                             nullptr, exception_state);
+      case kSetScopeRuleText:
+        return style_sheet_->SetScopeRuleText(new_range_, old_text_, nullptr,
+                                              nullptr, exception_state);
       default:
         NOTREACHED();
     }
@@ -396,6 +401,10 @@ class InspectorCSSAgent::ModifyRuleAction final
         break;
       case kSetKeyframeKey:
         css_rule_ = style_sheet_->SetKeyframeKey(
+            old_range_, new_text_, &new_range_, &old_text_, exception_state);
+        break;
+      case kSetScopeRuleText:
+        css_rule_ = style_sheet_->SetScopeRuleText(
             old_range_, new_text_, &new_range_, &old_text_, exception_state);
         break;
       default:
@@ -574,6 +583,11 @@ CSSContainerRule* InspectorCSSAgent::AsCSSContainerRule(CSSRule* rule) {
 // static
 CSSSupportsRule* InspectorCSSAgent::AsCSSSupportsRule(CSSRule* rule) {
   return DynamicTo<CSSSupportsRule>(rule);
+}
+
+// static
+CSSScopeRule* InspectorCSSAgent::AsCSSScopeRule(CSSRule* rule) {
+  return DynamicTo<CSSScopeRule>(rule);
 }
 
 InspectorCSSAgent::InspectorCSSAgent(
@@ -1663,6 +1677,35 @@ Response InspectorCSSAgent::setContainerQueryText(
     CSSContainerRule* rule =
         InspectorCSSAgent::AsCSSContainerRule(action->TakeRule());
     *result = BuildContainerQueryObject(rule);
+  }
+  return InspectorDOMAgent::ToResponse(exception_state);
+}
+
+Response InspectorCSSAgent::setScopeText(
+    const String& style_sheet_id,
+    std::unique_ptr<protocol::CSS::SourceRange> range,
+    const String& text,
+    std::unique_ptr<protocol::CSS::CSSScope>* result) {
+  FrontendOperationScope scope;
+  InspectorStyleSheet* inspector_style_sheet = nullptr;
+  Response response =
+      AssertInspectorStyleSheetForId(style_sheet_id, inspector_style_sheet);
+  if (!response.IsSuccess())
+    return response;
+  SourceRange text_range;
+  response =
+      JsonRangeToSourceRange(inspector_style_sheet, range.get(), &text_range);
+  if (!response.IsSuccess())
+    return response;
+
+  DummyExceptionStateForTesting exception_state;
+  ModifyRuleAction* action = MakeGarbageCollected<ModifyRuleAction>(
+      ModifyRuleAction::kSetScopeRuleText, inspector_style_sheet, text_range,
+      text);
+  bool success = dom_agent_->History()->Perform(action, exception_state);
+  if (success) {
+    CSSScopeRule* rule = InspectorCSSAgent::AsCSSScopeRule(action->TakeRule());
+    *result = BuildScopeObject(rule);
   }
   return InspectorDOMAgent::ToResponse(exception_state);
 }

@@ -1909,6 +1909,16 @@ experimental domain CSS
       # The resulting CSS Supports rule after modification.
       CSSSupports supports
 
+  # Modifies the expression of a scope at-rule.
+  experimental command setScopeText
+    parameters
+      StyleSheetId styleSheetId
+      SourceRange range
+      string text
+    returns
+      # The resulting CSS Scope rule after modification.
+      CSSScope scope
+
   # Modifies the rule selector.
   command setRuleSelector
     parameters

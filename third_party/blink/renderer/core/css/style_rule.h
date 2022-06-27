@@ -384,6 +384,8 @@ class CORE_EXPORT StyleRuleScope : public StyleRuleGroup {
 
   const StyleScope& GetStyleScope() const { return *style_scope_; }
 
+  void SetPreludeText(const ExecutionContext*, String);
+
  private:
   Member<const StyleScope> style_scope_;
 };

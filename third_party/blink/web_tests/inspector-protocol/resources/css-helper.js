@@ -56,6 +56,12 @@
     await this._logMessage(message, expectError, styleSheetId);
   }
 
+  async setScopeText(styleSheetId, expectError, options) {
+    options.styleSheetId = styleSheetId;
+    var message = await this._dp.CSS.setScopeText(options);
+    await this._logMessage(message, expectError, styleSheetId);
+  }
+
   async addRule(styleSheetId, expectError, options) {
     options.styleSheetId = styleSheetId;
     var message = await this._dp.CSS.addRule(options);
