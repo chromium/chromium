@@ -37,7 +37,7 @@ from collections import defaultdict
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.results_fetcher import Build
-from blinkpy.tool.commands.command import Command
+from blinkpy.tool.commands.command import Command, check_dir_option
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.test_expectations import SystemConfigurationRemover, TestExpectations
 from blinkpy.web_tests.port import base, factory
@@ -68,7 +68,11 @@ class AbstractRebaseliningCommand(Command):
          '(default is to de-dupe automatically). You can use "blink_tool.py '
          'optimize-baselines" to optimize separately.'))
     results_directory_option = optparse.make_option(
-        '--results-directory', help='Local results directory to use.')
+        '--results-directory',
+        action='callback',
+        callback=check_dir_option,
+        type='string',
+        help='Local results directory to use.')
     suffixes_option = optparse.make_option(
         '--suffixes',
         default=','.join(BASELINE_SUFFIX_LIST),

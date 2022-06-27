@@ -12,6 +12,7 @@ import re
 
 from blinkpy.common.net.git_cl import GitCL, TryJobStatus
 from blinkpy.common.path_finder import PathFinder
+from blinkpy.tool.commands.command import check_file_option
 from blinkpy.tool.commands.rebaseline import AbstractParallelRebaselineCommand
 from blinkpy.tool.commands.rebaseline import TestBaselineSet
 
@@ -72,7 +73,9 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             optparse.make_option(
                 '--test-name-file',
                 dest='test_name_file',
-                default=None,
+                action='callback',
+                callback=check_file_option,
+                type='string',
                 help='Read names of tests to rebaseline from this file, one '
                 'test per line.'),
             optparse.make_option(
