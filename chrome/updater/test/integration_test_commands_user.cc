@@ -152,6 +152,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void UpdateAll() const override { updater::test::UpdateAll(updater_scope_); }
 
+  void DeleteUpdaterDirectory() const override {
+    updater::test::DeleteUpdaterDirectory(updater_scope_);
+  }
+
   void InstallApp(const std::string& app_id) const override {
     updater::test::InstallApp(updater_scope_, app_id);
   }

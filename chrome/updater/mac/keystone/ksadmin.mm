@@ -32,6 +32,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/mac/mac_util.h"
@@ -225,10 +226,8 @@ class KSAdminApp : public App {
  public:
   explicit KSAdminApp(const std::map<std::string, std::string>& switches)
       : switches_(switches),
-        system_service_proxy_(
-            base::MakeRefCounted<UpdateServiceProxy>(UpdaterScope::kSystem)),
-        user_service_proxy_(
-            base::MakeRefCounted<UpdateServiceProxy>(UpdaterScope::kUser)) {}
+        system_service_proxy_(CreateUpdateServiceProxy(UpdaterScope::kSystem)),
+        user_service_proxy_(CreateUpdateServiceProxy(UpdaterScope::kUser)) {}
 
  private:
   ~KSAdminApp() override = default;
@@ -250,7 +249,7 @@ class KSAdminApp : public App {
   int PrintKeystoneTag(const std::string& app_id) const;
   void PrintKeystoneTickets(const std::string& app_id) const;
 
-  scoped_refptr<UpdateServiceProxy> ServiceProxy(UpdaterScope scope) const;
+  scoped_refptr<UpdateService> ServiceProxy(UpdaterScope scope) const;
   void ChooseService(
       base::OnceCallback<void(UpdaterScope scope)> callback) const;
 
@@ -260,11 +259,11 @@ class KSAdminApp : public App {
   NSDictionary<NSString*, KSTicket*>* LoadTicketStore() const;
 
   const std::map<std::string, std::string> switches_;
-  scoped_refptr<UpdateServiceProxy> system_service_proxy_;
-  scoped_refptr<UpdateServiceProxy> user_service_proxy_;
+  scoped_refptr<UpdateService> system_service_proxy_;
+  scoped_refptr<UpdateService> user_service_proxy_;
 };
 
-scoped_refptr<UpdateServiceProxy> KSAdminApp::ServiceProxy(
+scoped_refptr<UpdateService> KSAdminApp::ServiceProxy(
     UpdaterScope scope) const {
   return scope == UpdaterScope::kSystem ? system_service_proxy_
                                         : user_service_proxy_;

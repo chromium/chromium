@@ -178,6 +178,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void UpdateAll() const override { RunCommand("update_all", {}); }
 
+  void DeleteUpdaterDirectory() const override {
+    RunCommand("delete_updater_directory", {});
+  }
+
   void InstallApp(const std::string& app_id) const override {
     RunCommand("install_app", {Param("app_id", app_id)});
   }

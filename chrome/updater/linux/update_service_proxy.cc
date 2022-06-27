@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 
@@ -13,7 +14,8 @@ namespace updater {
 
 // TODO(crbug.com/1276169) - implement.
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
-    UpdaterScope /*updater_scope*/) {
+    UpdaterScope /*updater_scope*/,
+    const base::TimeDelta& get_version_timeout) {
   NOTIMPLEMENTED();
   return nullptr;
 }

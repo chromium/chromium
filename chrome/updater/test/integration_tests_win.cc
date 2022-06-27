@@ -507,6 +507,7 @@ void EnterTestMode(const GURL& url) {
                   .SetUseCUP(false)
                   .SetInitialDelay(0.1)
                   .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
+                  .SetOverinstallTimeout(base::Seconds(11))
                   .Modify());
 }
 

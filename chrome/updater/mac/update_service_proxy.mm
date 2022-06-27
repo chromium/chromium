@@ -18,6 +18,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
@@ -201,11 +202,16 @@ using base::SysUTF8ToNSString;
 namespace updater {
 
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
-    UpdaterScope updater_scope) {
-  return base::MakeRefCounted<UpdateServiceProxy>(updater_scope);
+    UpdaterScope updater_scope,
+    const base::TimeDelta& get_version_timeout) {
+  return base::MakeRefCounted<UpdateServiceProxy>(updater_scope,
+                                                  get_version_timeout);
 }
 
-UpdateServiceProxy::UpdateServiceProxy(UpdaterScope scope) : scope_(scope) {
+UpdateServiceProxy::UpdateServiceProxy(
+    UpdaterScope scope,
+    const base::TimeDelta& get_version_timeout)
+    : scope_(scope), get_version_timeout_(get_version_timeout) {
   client_.reset([[CRUUpdateServiceProxyImpl alloc] initWithScope:scope]);
   callback_runner_ = base::SequencedTaskRunnerHandle::Get();
 }
@@ -214,10 +220,11 @@ void UpdateServiceProxy::GetVersion(
     base::OnceCallback<void(const base::Version&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  VLOG(2) << __func__ << " with timeout " << get_version_timeout_;
   auto timeout_callback = std::make_unique<base::CancelableOnceClosure>(
       base::BindOnce(&UpdateServiceProxy::Reset, base::Unretained(this)));
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, timeout_callback->callback(), base::Minutes(2));
+      FROM_HERE, timeout_callback->callback(), get_version_timeout_);
 
   __block base::OnceCallback<void(const base::Version&)> block_callback =
       std::move(callback).Then(base::BindOnce(

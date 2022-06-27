@@ -17,6 +17,7 @@
 class GURL;
 
 namespace base {
+class TimeDelta;
 class Value;
 }
 
@@ -46,6 +47,7 @@ class ExternalConstantsOverrider : public ExternalConstants {
   int ServerKeepAliveSeconds() const override;
   crx_file::VerifierFormat CrxVerifierFormat() const override;
   base::Value::Dict GroupPolicies() const override;
+  base::TimeDelta OverinstallTimeout() const override;
 
  private:
   const base::Value::Dict override_values_;

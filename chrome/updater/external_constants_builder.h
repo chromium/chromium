@@ -11,6 +11,10 @@
 #include "base/files/file_path.h"
 #include "base/values.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace crx_file {
 enum class VerifierFormat;
 }
@@ -54,6 +58,9 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& SetGroupPolicies(
       const base::Value::Dict& group_policies);
   ExternalConstantsBuilder& ClearGroupPolicies();
+
+  ExternalConstantsBuilder& SetOverinstallTimeout(
+      const base::TimeDelta& overinstall_timeout);
 
   // Write the external constants overrides file in the default location
   // with the values that have been previously set, replacing any file

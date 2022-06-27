@@ -340,7 +340,8 @@ class UpdaterCallback
 }  // namespace
 
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
-    UpdaterScope updater_scope) {
+    UpdaterScope updater_scope,
+    const base::TimeDelta& /*get_version_timeout*/) {
   return base::MakeRefCounted<UpdateServiceProxy>(updater_scope);
 }
 

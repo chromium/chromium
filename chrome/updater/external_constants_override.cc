@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -145,6 +146,19 @@ base::Value::Dict ExternalConstantsOverrider::GroupPolicies() const {
       << "Unexpected type of override[" << kDevOverrideKeyGroupPolicies
       << "]: " << base::Value::GetTypeName(group_policies_value->type());
   return group_policies_value->GetDict().Clone();
+}
+
+base::TimeDelta ExternalConstantsOverrider::OverinstallTimeout() const {
+  if (!override_values_.contains(kDevOverrideKeyOverinstallTimeout)) {
+    return next_provider_->OverinstallTimeout();
+  }
+
+  const base::Value* value =
+      override_values_.Find(kDevOverrideKeyOverinstallTimeout);
+  CHECK(value->is_int()) << "Unexpected type of override["
+                         << kDevOverrideKeyOverinstallTimeout
+                         << "]: " << base::Value::GetTypeName(value->type());
+  return base::Seconds(value->GetInt());
 }
 
 // static

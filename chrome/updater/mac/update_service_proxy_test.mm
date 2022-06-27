@@ -293,8 +293,8 @@ void MacUpdateServiceProxyTest::SetUp() {
   run_loop_ = std::make_unique<base::RunLoop>();
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
-        service_ =
-            base::MakeRefCounted<UpdateServiceProxy>(UpdaterScope::kUser);
+        service_ = base::MakeRefCounted<UpdateServiceProxy>(
+            UpdaterScope::kUser, base::TimeDelta::Max());
       }));
 }
 

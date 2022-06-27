@@ -5,6 +5,7 @@
 #include "chrome/updater/external_constants_default.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
@@ -38,6 +39,10 @@ class DefaultExternalConstants : public ExternalConstants {
 
   base::Value::Dict GroupPolicies() const override {
     return base::Value::Dict();
+  }
+
+  base::TimeDelta OverinstallTimeout() const override {
+    return base::Minutes(2);
   }
 
  private:

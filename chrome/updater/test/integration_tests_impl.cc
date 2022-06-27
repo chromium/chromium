@@ -322,6 +322,12 @@ void UpdateAll(UpdaterScope scope) {
   loop.Run();
 }
 
+void DeleteUpdaterDirectory(UpdaterScope scope) {
+  absl::optional<base::FilePath> install_dir = GetBaseInstallDirectory(scope);
+  ASSERT_TRUE(install_dir);
+  ASSERT_TRUE(base::DeletePathRecursively(*install_dir));
+}
+
 void SetupFakeUpdaterPrefs(UpdaterScope scope, const base::Version& version) {
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
   ASSERT_TRUE(global_prefs) << "No global prefs.";

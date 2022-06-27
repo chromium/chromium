@@ -241,6 +241,8 @@ class IntegrationTest : public ::testing::Test {
 
   void UpdateAll() { test_commands_->UpdateAll(); }
 
+  void DeleteUpdaterDirectory() { test_commands_->DeleteUpdaterDirectory(); }
+
   base::FilePath GetDifferentUserPath() {
     return test_commands_->GetDifferentUserPath();
   }
@@ -335,6 +337,34 @@ TEST_F(IntegrationTest, InstallUninstall) {
   // library separation for the public, private, and legacy interfaces.
   ExpectInterfacesRegistered();
 #endif  // BUILDFLAG(IS_WIN)
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, OverinstallWorking) {
+  SetupRealUpdaterLowerVersion();
+  WaitForUpdaterExit();
+  ExpectVersionNotActive(kUpdaterVersion);
+
+  // A new version hands off installation to the old version, and doesn't
+  // change the active version of the updater.
+  Install();
+  WaitForUpdaterExit();
+  ExpectVersionNotActive(kUpdaterVersion);
+
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, OverinstallBroken) {
+  SetupRealUpdaterLowerVersion();
+  WaitForUpdaterExit();
+  DeleteUpdaterDirectory();
+
+  // Since the old version is not working, the new version should install and
+  // become active.
+  Install();
+  WaitForUpdaterExit();
+  ExpectVersionActive(kUpdaterVersion);
+
   Uninstall();
 }
 

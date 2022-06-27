@@ -13,6 +13,10 @@
 
 class GURL;
 
+namespace base {
+class TimeDelta;
+}
+
 namespace crx_file {
 enum class VerifierFormat;
 }
@@ -45,6 +49,9 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
 
   // Overrides for the `GroupPolicyManager`.
   virtual base::Value::Dict GroupPolicies() const = 0;
+
+  // Overrides the overinstall timeout.
+  virtual base::TimeDelta OverinstallTimeout() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<ExternalConstants>;

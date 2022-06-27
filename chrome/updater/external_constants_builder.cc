@@ -11,6 +11,7 @@
 
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_default.h"
@@ -117,6 +118,13 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearGroupPolicies() {
   return *this;
 }
 
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetOverinstallTimeout(
+    const base::TimeDelta& overinstall_timeout) {
+  overrides_.Set(kDevOverrideKeyOverinstallTimeout,
+                 static_cast<int>(overinstall_timeout.InSeconds()));
+  return *this;
+}
+
 bool ExternalConstantsBuilder::Overwrite() {
   const absl::optional<base::FilePath> base_path =
       GetBaseDataDirectory(GetUpdaterScope());
@@ -151,6 +159,8 @@ bool ExternalConstantsBuilder::Modify() {
     SetCrxVerifierFormat(verifier->CrxVerifierFormat());
   if (!overrides_.contains(kDevOverrideKeyGroupPolicies))
     SetGroupPolicies(verifier->GroupPolicies());
+  if (!overrides_.contains(kDevOverrideKeyOverinstallTimeout))
+    SetOverinstallTimeout(verifier->OverinstallTimeout());
 
   return Overwrite();
 }

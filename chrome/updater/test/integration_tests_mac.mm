@@ -120,6 +120,7 @@ void EnterTestMode(const GURL& url) {
                   .SetInitialDelay(0.1)
                   .SetServerKeepAliveSeconds(1)
                   .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
+                  .SetOverinstallTimeout(base::Seconds(11))
                   .Modify());
 }
 

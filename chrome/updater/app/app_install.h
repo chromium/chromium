@@ -21,6 +21,7 @@ class Version;
 
 namespace updater {
 
+class ExternalConstants;
 class UpdateService;
 
 // This class defines an interface for installing an application. The interface
@@ -97,6 +98,8 @@ class AppInstall : public App {
   std::unique_ptr<SplashScreen> splash_screen_;
 
   scoped_refptr<AppInstallController> app_install_controller_;
+
+  scoped_refptr<ExternalConstants> external_constants_;
 
   scoped_refptr<UpdateService> update_service_;
 };

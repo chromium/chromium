@@ -282,6 +282,8 @@ void AppTestHelper::FirstTaskRun() {
      WithSwitch("install_data_index",
                 (WithSwitch("app_id", WithSystemScope(Wrap(&Update)))))},
     {"update_all", WithSystemScope(Wrap(&UpdateAll))},
+    {"delete_updater_directory",
+     WithSystemScope(Wrap(&DeleteUpdaterDirectory))},
     {"install_app", WithSwitch("app_id", WithSystemScope(Wrap(&InstallApp)))},
     {"uninstall_app",
      WithSwitch("app_id", WithSystemScope(Wrap(&UninstallApp)))},

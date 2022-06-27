@@ -65,6 +65,7 @@ class IntegrationTestCommands
   virtual void Update(const std::string& app_id,
                       const std::string& install_data_index) const = 0;
   virtual void UpdateAll() const = 0;
+  virtual void DeleteUpdaterDirectory() const = 0;
   virtual void PrintLog() const = 0;
   virtual base::FilePath GetDifferentUserPath() const = 0;
   virtual void WaitForUpdaterExit() const = 0;
