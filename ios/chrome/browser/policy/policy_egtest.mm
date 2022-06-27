@@ -527,8 +527,8 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   // Set restrictions.
-  std::vector<base::Value> restrictions;
-  restrictions.push_back(base::Value("restricted"));
+  base::Value::List restrictions;
+  restrictions.Append("restricted");
   SetPolicy(base::Value(std::move(restrictions)),
             policy::key::kRestrictAccountsToPatterns);
 
