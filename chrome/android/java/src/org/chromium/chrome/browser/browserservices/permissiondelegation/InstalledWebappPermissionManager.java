@@ -63,7 +63,7 @@ public class InstalledWebappPermissionManager {
     private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     // Use a Lazy instance so we don't instantiate it on Android versions pre-O.
-    private final Lazy<NotificationChannelPreserver> mPermissionPreserver;
+    private final Lazy<NotificationChannelPreserver> mChannelPreserver;
 
     public static InstalledWebappPermissionManager get() {
         return ChromeApplicationImpl.getComponent().resolvePermissionManager();
@@ -71,11 +71,12 @@ public class InstalledWebappPermissionManager {
 
     @Inject
     public InstalledWebappPermissionManager(@Named(APP_CONTEXT) Context context,
-            InstalledWebappPermissionStore store, Lazy<NotificationChannelPreserver> preserver,
+            InstalledWebappPermissionStore store,
+            Lazy<NotificationChannelPreserver> channelPreserver,
             TrustedWebActivityUmaRecorder umaRecorder) {
         mPackageManager = context.getPackageManager();
         mStore = store;
-        mPermissionPreserver = preserver;
+        mChannelPreserver = channelPreserver;
         mUmaRecorder = umaRecorder;
     }
 
@@ -144,7 +145,7 @@ public class InstalledWebappPermissionManager {
                 mStore.setStateForOrigin(origin, packageName, appName, type, enabled);
 
         if (type == ContentSettingsType.NOTIFICATIONS) {
-            NotificationChannelPreserver.deleteChannelIfNeeded(mPermissionPreserver, origin);
+            NotificationChannelPreserver.deleteChannelIfNeeded(mChannelPreserver, origin);
         }
 
         if (stateChanged) {
@@ -179,7 +180,7 @@ public class InstalledWebappPermissionManager {
                 mStore.setStateForOrigin(origin, packageName, appName, type, settingValue);
 
         if (type == ContentSettingsType.NOTIFICATIONS) {
-            NotificationChannelPreserver.deleteChannelIfNeeded(mPermissionPreserver, origin);
+            NotificationChannelPreserver.deleteChannelIfNeeded(mChannelPreserver, origin);
         }
 
         if (stateChanged) {
@@ -191,7 +192,7 @@ public class InstalledWebappPermissionManager {
     void unregister(Origin origin) {
         mStore.removeOrigin(origin);
 
-        NotificationChannelPreserver.restoreChannelIfNeeded(mPermissionPreserver, origin);
+        NotificationChannelPreserver.restoreChannelIfNeeded(mChannelPreserver, origin);
 
         InstalledWebappBridge.notifyPermissionsChange(ContentSettingsType.NOTIFICATIONS);
         InstalledWebappBridge.notifyPermissionsChange(ContentSettingsType.GEOLOCATION);
