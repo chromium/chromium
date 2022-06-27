@@ -1283,6 +1283,7 @@ public class BookmarkTest {
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_cct/false"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @DisabledTest(message = "crbug.com/1339976")
     public void testReadingListOpenInRegularTab() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
