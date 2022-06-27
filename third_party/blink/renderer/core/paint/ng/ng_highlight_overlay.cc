@@ -33,6 +33,10 @@ unsigned GetTextContentOffset(const Text& text, unsigned offset) {
   return ng_offset.value();
 }
 
+unsigned ClampOffset(unsigned offset, const NGTextFragmentPaintInfo& fragment) {
+  return std::min(std::max(offset, fragment.from), fragment.to);
+}
+
 }  // namespace
 
 String HighlightLayer::ToString() const {
@@ -186,7 +190,6 @@ bool HighlightPart::operator!=(const HighlightPart& other) const {
 
 Vector<HighlightLayer> NGHighlightOverlay::ComputeLayers(
     const HighlightRegistry* registry,
-    const NGTextFragmentPaintInfo& originating,
     const LayoutSelectionStatus* selection,
     const DocumentMarkerVector& custom,
     const DocumentMarkerVector& grammar,
@@ -224,7 +227,6 @@ Vector<HighlightLayer> NGHighlightOverlay::ComputeLayers(
 Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
     const Node* node,
     const HighlightRegistry* registry,
-    const NGTextFragmentPaintInfo& originating,
     const LayoutSelectionStatus* selection,
     const DocumentMarkerVector& custom,
     const DocumentMarkerVector& grammar,
@@ -233,13 +235,6 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
   DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
 
   Vector<HighlightEdge> result{};
-  DCHECK_LT(originating.from, originating.to);
-  result.emplace_back(originating.from,
-                      HighlightLayer{HighlightLayerType::kOriginating},
-                      HighlightEdgeType::kStart);
-  result.emplace_back(originating.to,
-                      HighlightLayer{HighlightLayerType::kOriginating},
-                      HighlightEdgeType::kEnd);
 
   // |node| might not be a Text node (e.g. <br>), or it might be nullptr (e.g.
   // ::first-letter). In both cases, we should still try to paint kOriginating
@@ -331,24 +326,41 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
 }
 
 Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
+    const NGTextFragmentPaintInfo& originating,
     const Vector<HighlightLayer>& layers,
     const Vector<HighlightEdge>& edges) {
   DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
+  const HighlightLayer originating_layer{HighlightLayerType::kOriginating};
   Vector<HighlightPart> result{};
   Vector<bool> active(layers.size());
   absl::optional<unsigned> prev_offset{};
+  if (edges.IsEmpty()) {
+    result.push_back(HighlightPart{originating_layer,
+                                   originating.from,
+                                   originating.to,
+                                   {originating_layer}});
+    return result;
+  }
+  if (originating.from < edges.front().offset) {
+    result.push_back(HighlightPart{originating_layer,
+                                   originating.from,
+                                   edges.front().offset,
+                                   {originating_layer}});
+  }
   for (const HighlightEdge& edge : edges) {
     // If there is actually some text between the previous and current edges...
     if (prev_offset.has_value() && *prev_offset < edge.offset) {
-      // ...and there is at least one active layer over that range...
-      wtf_size_t topmost_active_index = active.ReverseFind(true);
-      if (topmost_active_index != kNotFound) {
-        // ...then enqueue this part of the text to be painted in that layer.
-        HighlightPart part{layers[topmost_active_index], *prev_offset,
-                           edge.offset};
+      // ...and the range overlaps with the fragment being painted...
+      unsigned from = ClampOffset(*prev_offset, originating);
+      unsigned to = ClampOffset(edge.offset, originating);
+      if (from < to) {
+        // ...then find the topmost layer and enqueue a new part to be painted.
+        HighlightPart part{originating_layer, from, to, {originating_layer}};
         for (wtf_size_t i = 0; i < layers.size(); i++) {
-          if (active[i])
+          if (active[i]) {
+            part.layer = layers[i];
             part.decorations.push_back(layers[i]);
+          }
         }
         result.push_back(part);
       }
@@ -362,6 +374,12 @@ Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
         << "edge should be kStart iff the layer is active or else kEnd";
     active[edge_layer_index] = edge.type == HighlightEdgeType::kStart;
     prev_offset.emplace(edge.offset);
+  }
+  if (edges.back().offset < originating.to) {
+    result.push_back(HighlightPart{originating_layer,
+                                   edges.back().offset,
+                                   originating.to,
+                                   {originating_layer}});
   }
   return result;
 }
