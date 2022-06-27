@@ -2333,7 +2333,7 @@
     {
       // crbug.com/1008951
       name: "TextDecoratingBox",
-      status: "test",
+      status: "stable",
     },
     {
       name: "TextDetector",
