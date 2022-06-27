@@ -1404,14 +1404,6 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2D(
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
   }
-  if (feature_info_->workarounds().client_max_texture_size && texture) {
-    GLint max_level = base::bits::Log2Floor(
-        feature_info_->workarounds().client_max_texture_size);
-    if (level > max_level) {
-      InsertError(GL_INVALID_VALUE, "Level too large");
-      return error::kNoError;
-    }
-  }
   BindPendingImageForClientIDIfNeeded(texture);
   api()->glFramebufferTexture2DEXTFn(
       target, attachment, textarget,

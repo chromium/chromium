@@ -1662,10 +1662,10 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.image_ab30 = feature_info_->feature_flags().chromium_image_ab30;
   caps.image_ycbcr_p010 =
       feature_info_->feature_flags().chromium_image_ycbcr_p010;
-  if (feature_info_->workarounds().client_max_texture_size) {
+  if (feature_info_->workarounds().webgl_or_caps_max_texture_size) {
     caps.max_texture_size =
         std::min(caps.max_texture_size,
-                 feature_info_->workarounds().client_max_texture_size);
+                 feature_info_->workarounds().webgl_or_caps_max_texture_size);
   }
   caps.max_copy_texture_chromium_size =
       feature_info_->workarounds().max_copy_texture_chromium_size;
@@ -2257,16 +2257,6 @@ error::Error GLES2DecoderPassthroughImpl::PatchGetNumericResults(GLenum pname,
         return error::kInvalidArguments;
       }
       std::copy(std::begin(scissor_), std::end(scissor_), params);
-      break;
-
-    case GL_MAX_TEXTURE_SIZE:
-    case GL_MAX_CUBE_MAP_TEXTURE_SIZE:
-    case GL_MAX_3D_TEXTURE_SIZE:
-      if (feature_info_->workarounds().client_max_texture_size) {
-        *params = std::min(
-            *params, static_cast<T>(
-                         feature_info_->workarounds().client_max_texture_size));
-      }
       break;
 
     default:

@@ -78,6 +78,7 @@ struct GPU_EXPORT Capabilities {
   int max_fragment_uniform_vectors = 0;
   int max_renderbuffer_size = 0;
   int max_texture_image_units = 0;
+  // Note this may be smaller than GL_MAX_TEXTURE_SIZE for a GLES context.
   int max_texture_size = 0;
   int max_varying_vectors = 0;
   int max_vertex_attribs = 0;

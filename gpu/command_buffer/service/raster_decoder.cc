@@ -1299,13 +1299,13 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   } else {
     NOTIMPLEMENTED();
   }
-  if (feature_info()->workarounds().client_max_texture_size) {
+  if (feature_info()->workarounds().webgl_or_caps_max_texture_size) {
     caps.max_texture_size =
         std::min(caps.max_texture_size,
-                 feature_info()->workarounds().client_max_texture_size);
+                 feature_info()->workarounds().webgl_or_caps_max_texture_size);
     caps.max_cube_map_texture_size =
         std::min(caps.max_cube_map_texture_size,
-                 feature_info()->workarounds().client_max_texture_size);
+                 feature_info()->workarounds().webgl_or_caps_max_texture_size);
   }
   if (feature_info()->workarounds().max_3d_array_texture_size) {
     caps.max_3d_texture_size =
