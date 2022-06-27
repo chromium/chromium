@@ -1091,8 +1091,9 @@ void ClientSession::OnDesktopDisplayChanged(
               << display.y_dpi() << "], screen_id=" << display.screen_id();
   }
 
-  // Set the display index, if this is the first message being processed.
-  if (selected_display_index_ == webrtc::kInvalidScreenId) {
+  // Set the display index, if this is the first message being processed or if
+  // the selected display no longer exists.
+  if (!IsValidDisplayIndex(selected_display_index_)) {
     if (can_capture_full_desktop_) {
       selected_display_index_ = webrtc::kFullDesktopScreenId;
     } else {
@@ -1208,6 +1209,11 @@ void ClientSession::CreateRemoteWebAuthnMessageHandler(
       channel_name, std::move(pipe),
       desktop_environment_->CreateRemoteWebAuthnStateChangeNotifier());
   remote_webauthn_message_handler_ = unowned_handler->GetWeakPtr();
+}
+
+bool ClientSession::IsValidDisplayIndex(webrtc::ScreenId index) const {
+  return index == webrtc::kFullDesktopScreenId ||
+         desktop_display_info_.GetDisplayInfo(index) != nullptr;
 }
 
 }  // namespace remoting

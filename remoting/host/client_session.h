@@ -264,6 +264,10 @@ class ClientSession : public protocol::HostStub,
 
   void CreatePerMonitorVideoStreams();
 
+  // True if |index| corresponds with an existing display (or the combined
+  // display).
+  bool IsValidDisplayIndex(webrtc::ScreenId index) const;
+
 #if defined(WEBRTC_USE_GIO)
   void ExtractAndSetInputInjectorMetadata(
       webrtc::DesktopCaptureMetadata capture_metadata);
