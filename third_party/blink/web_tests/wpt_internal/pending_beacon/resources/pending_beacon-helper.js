@@ -8,3 +8,10 @@ async function getBeaconCount(uuid) {
   const count = await res.json();
   return count;
 }
+
+async function getBeaconData(uuid) {
+  const res = await fetch(
+      `resources/get_beacon_data.py?uuid=${uuid}`, {cache: 'no-store'});
+  const data = await res.text();
+  return data;
+}

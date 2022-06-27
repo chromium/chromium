@@ -57,7 +57,7 @@ void PendingBeaconService::SendBeacons(
     network::SharedURLLoaderFactory* shared_url_loader_factory) {
   for (const auto& beacon : beacons) {
     auto resource_request = std::make_unique<network::ResourceRequest>();
-    resource_request->url = beacon->url();
+    resource_request->url = beacon->GenerateRequestURL();
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
         network::SimpleURLLoader::Create(std::move(resource_request),
                                          kPendingBeaconNetworkTag);

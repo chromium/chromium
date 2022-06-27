@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/pending_beacon_host.h"
 
 #include "content/browser/renderer_host/pending_beacon_service.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace content {
@@ -85,6 +86,13 @@ void Beacon::SetData(const std::string& data) {
 
 void Beacon::SendNow() {
   beacon_host_->SendBeacon(this);
+}
+
+const GURL Beacon::GenerateRequestURL() const {
+  if (method_ == blink::mojom::BeaconMethod::kGet) {
+    return net::AppendQueryParameter(url_, "data", beacon_data_);
+  }
+  return url_;
 }
 
 }  // namespace content
