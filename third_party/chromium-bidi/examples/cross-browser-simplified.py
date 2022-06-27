@@ -16,6 +16,9 @@
 # This script implements Puppeteer's `examples/cross-browser.js` scenario using WebDriver BiDi.
 # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js
 
+# As `script.callFunction` is not implemented by Firefox yet, `script.evaluate` is used instead:
+# https://bugzilla.mozilla.org/show_bug.cgi?id=1750541
+
 from pathlib import Path
 import asyncio
 import json
@@ -109,33 +112,24 @@ async def main():
         }}, websocket)
 
     # Puppeteer:
-    # const resultsSelector = '.titlelink';
-    # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L37
-    results_selector = {
-        "type": "string",
-        "value": ".titlelink"}
-
-    # `script.callFunction` is not implemented by Firefox yet:
-    # https://bugzilla.mozilla.org/show_bug.cgi?id=1750541
-
-    # Puppeteer:
     # const links = await page.evaluate((resultsSelector) => {...}, resultsSelector);
 
     # Part 1. Execute BiDi command.
-    # ... await page.evaluate((resultsSelector) => {...}, resultsSelector);
+    # As `script.callFunction` is not implemented by Firefox yet, use
+    # `script.evaluate` instead:
+    # https://bugzilla.mozilla.org/show_bug.cgi?id=1750541
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L38
     command_result = await run_and_wait_command({
         "id": 1002,
-        "method": "script.callFunction",
+        "method": "script.evaluate",
         "params": {
-            "functionDeclaration": """(resultsSelector) => {
-                const anchors = Array.from(document.querySelectorAll(resultsSelector));
+            "expression": """(() => {
+                const anchors = Array.from(document.querySelectorAll('.titlelink'));
                 return anchors.map((anchor) => {
                     const title = anchor.textContent.trim();
                     return `${title} - ${anchor.href}`;
                 });
-            }""",
-            "args": [results_selector],
+            })()""",
             "target": {"context": context_id},
             "awaitPromise": True}},
         websocket)

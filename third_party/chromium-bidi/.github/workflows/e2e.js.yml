@@ -39,6 +39,8 @@ jobs:
         run: CHANNEL=chrome-dev npm run e2e
       - name: Run examples/cross-browser.py
         run: python3 examples/cross-browser.py
+      - name: Run examples/cross-browser-simplified.py
+        run: python3 examples/cross-browser-simplified.py
 
 env:
   FORCE_COLOR: 3
