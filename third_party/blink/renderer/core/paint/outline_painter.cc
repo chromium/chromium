@@ -548,7 +548,7 @@ class ComplexOutlinePainter {
         PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
     if (is_rounded_) {
       context_.StrokePath(center_path, auto_dark_mode,
-                          Path(center_path).length() + width_, width_);
+                          Path(center_path).length(), width_);
     } else {
       // Draw edges one by one instead of the whole path to let the corners
       // have starting/ending dots/dashes.

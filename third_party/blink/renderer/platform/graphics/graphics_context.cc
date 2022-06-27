@@ -1076,7 +1076,8 @@ void GraphicsContext::StrokePath(const Path& path_to_stroke,
     return;
 
   DrawPath(path_to_stroke.GetSkPath(),
-           ImmutableState()->StrokeFlags(length, dash_thickness),
+           ImmutableState()->StrokeFlags(length, dash_thickness,
+                                         path_to_stroke.IsClosed()),
            auto_dark_mode);
 }
 

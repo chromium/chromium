@@ -54,21 +54,20 @@ void StrokeData::SetLineDash(const DashArray& dashes, float dash_offset) {
   dash_ = SkDashPathEffect::Make(intervals.get(), count, dash_offset);
 }
 
-void StrokeData::SetupPaint(cc::PaintFlags* flags,
-                            const int length,
-                            const int dash_thickness) const {
+void StrokeData::SetupPaint(cc::PaintFlags* flags) const {
   flags->setStyle(cc::PaintFlags::kStroke_Style);
   flags->setStrokeWidth(SkFloatToScalar(thickness_));
   flags->setStrokeCap(line_cap_);
   flags->setStrokeJoin(line_join_);
   flags->setStrokeMiter(SkFloatToScalar(miter_limit_));
 
-  SetupPaintDashPathEffect(flags, length, dash_thickness);
+  SetupPaintDashPathEffect(flags);
 }
 
 void StrokeData::SetupPaintDashPathEffect(cc::PaintFlags* flags,
                                           const int length,
-                                          const int dash_thickness) const {
+                                          const int dash_thickness,
+                                          const bool closed_path) const {
   int dash_width = dash_thickness ? dash_thickness : thickness_;
   if (dash_) {
     flags->setPathEffect(dash_);
@@ -82,18 +81,23 @@ void StrokeData::SetupPaintDashPathEffect(cc::PaintFlags* flags,
     if (length <= dash_length * 2) {
       // No space for dashes
       flags->setPathEffect(nullptr);
-    } else if (length <= 2 * dash_length + gap_length) {
-      // Exactly 2 dashes proportionally sized
-      float multiplier = length / (2 * dash_length + gap_length);
-      SkScalar intervals[2] = {dash_length * multiplier,
-                               gap_length * multiplier};
-      flags->setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
     } else {
-      float gap = gap_length;
-      if (style_ == kDashedStroke)
-        gap = SelectBestDashGap(length, dash_length, gap_length);
-      SkScalar intervals[2] = {dash_length, gap};
-      flags->setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
+      float two_dashes_with_gap_length = 2 * dash_length + gap_length;
+      if (closed_path)
+        two_dashes_with_gap_length += gap_length;
+      if (length <= two_dashes_with_gap_length) {
+        // Exactly 2 dashes proportionally sized
+        float multiplier = length / two_dashes_with_gap_length;
+        SkScalar intervals[2] = {dash_length * multiplier,
+                                 gap_length * multiplier};
+        flags->setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
+      } else {
+        float gap = gap_length;
+        if (style_ == kDashedStroke)
+          gap = SelectBestDashGap(length, dash_length, gap_length, closed_path);
+        SkScalar intervals[2] = {dash_length, gap};
+        flags->setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
+      }
     }
   } else if (style_ == kDottedStroke) {
     flags->setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
@@ -111,7 +115,7 @@ void StrokeData::SetupPaintDashPathEffect(cc::PaintFlags* flags,
     // even if that dot is a little inside the true endpoint. Without it
     // we can drop the end dot due to rounding along the line.
     static const float kEpsilon = 1.0e-2f;
-    float gap = SelectBestDashGap(length, dash_width, dash_width);
+    float gap = SelectBestDashGap(length, dash_width, dash_width, closed_path);
     SkScalar intervals[2] = {0, gap + dash_width - kEpsilon};
     flags->setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
   } else {
@@ -125,16 +129,18 @@ bool StrokeData::StrokeIsDashed(float width, StrokeStyle style) {
 
 float StrokeData::SelectBestDashGap(float stroke_length,
                                     float dash_length,
-                                    float gap_length) {
+                                    float gap_length,
+                                    bool closed_path) {
   // Determine what number of dashes gives the minimum deviation from
-  // gapLength between dashes. Set the gap to that width.
-  float min_num_dashes =
-      floorf((stroke_length + gap_length) / (dash_length + gap_length));
+  // gap_length between dashes. Set the gap to that width.
+  float available_length =
+      closed_path ? stroke_length : stroke_length + gap_length;
+  float min_num_dashes = floorf(available_length / (dash_length + gap_length));
   float max_num_dashes = min_num_dashes + 1;
-  float min_gap =
-      (stroke_length - min_num_dashes * dash_length) / (min_num_dashes - 1);
-  float max_gap =
-      (stroke_length - max_num_dashes * dash_length) / (max_num_dashes - 1);
+  float min_num_gaps = closed_path ? min_num_dashes : min_num_dashes - 1;
+  float max_num_gaps = closed_path ? max_num_dashes : max_num_dashes - 1;
+  float min_gap = (stroke_length - min_num_dashes * dash_length) / min_num_gaps;
+  float max_gap = (stroke_length - max_num_dashes * dash_length) / max_num_gaps;
   return (max_gap <= 0) ||
                  (fabs(min_gap - gap_length) < fabs(max_gap - gap_length))
              ? min_gap
