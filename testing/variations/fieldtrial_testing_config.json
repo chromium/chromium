@@ -1107,7 +1107,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_500ms",
+                    "name": "Enabled_20220625",
                     "params": {
                         "duration": "500ms"
                     },
