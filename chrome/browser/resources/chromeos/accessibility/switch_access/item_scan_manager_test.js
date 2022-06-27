@@ -51,7 +51,7 @@ function currentNode() {
   return Navigator.byItem.node_;
 }
 
-TEST_F('SwitchAccessItemScanManagerTest', 'MoveTo', async function() {
+AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveTo', async function() {
   const website = `<div id="outerGroup">
                      <div id="group">
                        <input type="text">
@@ -115,7 +115,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'MoveTo', async function() {
       'Did not find the right group');
 });
 
-TEST_F('SwitchAccessItemScanManagerTest', 'JumpTo', async function() {
+AX_TEST_F('SwitchAccessItemScanManagerTest', 'JumpTo', async function() {
   const website = `<div id="group1">
                      <input id="testinput" type="text">
                      <button></button>
@@ -153,7 +153,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'JumpTo', async function() {
       'Did not jump back to the right group.');
 });
 
-TEST_F('SwitchAccessItemScanManagerTest', 'SelectButton', async function() {
+AX_TEST_F('SwitchAccessItemScanManagerTest', 'SelectButton', async function() {
   const website = `<button id="test" aria-pressed=false>First Button</button>
       <button>Second Button</button>
       <script>
@@ -183,7 +183,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'SelectButton', async function() {
   Navigator.byItem.node_.performAction('select');
 });
 
-TEST_F('SwitchAccessItemScanManagerTest', 'EnterGroup', async function() {
+AX_TEST_F('SwitchAccessItemScanManagerTest', 'EnterGroup', async function() {
   const website = `<div id="group">
                      <button></button>
                      <button></button>
@@ -212,7 +212,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'EnterGroup', async function() {
       'Did not move back to the original group');
 });
 
-TEST_F('SwitchAccessItemScanManagerTest', 'MoveForward', async function() {
+AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveForward', async function() {
   const website = `<div>
                      <button id="button1"></button>
                      <button id="button2"></button>
@@ -266,7 +266,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'MoveForward', async function() {
       'button1 should come after the BackButtonNode');
 });
 
-TEST_F('SwitchAccessItemScanManagerTest', 'MoveBackward', async function() {
+AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveBackward', async function() {
   const website = `<div>
                      <button id="button1"></button>
                      <button id="button2"></button>
@@ -318,7 +318,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'MoveBackward', async function() {
       'button1 should come before button2');
 });
 
-TEST_F(
+AX_TEST_F(
     'SwitchAccessItemScanManagerTest', 'NodeUndefinedBeforeTreeChangeRemoved',
     async function() {
       const website = `<div>
@@ -346,7 +346,7 @@ TEST_F(
           {type: chrome.automation.TreeChangeType.NODE_REMOVED});
     });
 
-TEST_F(
+AX_TEST_F(
     'SwitchAccessItemScanManagerTest', 'ScanAndTypeVirtualKeyboard',
     async function() {
       const website = `<input type="text" id="testinput"></input>`;
@@ -381,7 +381,7 @@ TEST_F(
       }
     });
 
-TEST_F(
+AX_TEST_F(
     'SwitchAccessItemScanManagerTest', 'DismissVirtualKeyboard',
     async function() {
       const website =
@@ -429,7 +429,7 @@ TEST_F(
     });
 
 // TODO(crbug.com/1260231): Test is flaky.
-TEST_F(
+AX_TEST_F(
     'SwitchAccessItemScanManagerTest', 'DISABLED_ChildrenChangedDoesNotRefresh',
     async function() {
       const website = `
@@ -479,11 +479,11 @@ TEST_F(
       assertEquals(slider, Navigator.byItem.node_);
     });
 
-TEST_F('SwitchAccessItemScanManagerTest', 'InitialFocus', async function() {
+AX_TEST_F('SwitchAccessItemScanManagerTest', 'InitialFocus', async function() {
   const website = `<input></input><button autofocus></button>`;
   const rootWebArea = await this.runWithLoadedTree(website);
-  // The button should have initial focus. This ensures we move past the focus
-  // event below.
+  // The button should have initial focus. This ensures we move past the
+  // focus event below.
   const button =
       await this.untilFocusIs({role: chrome.automation.RoleType.BUTTON});
 
@@ -499,7 +499,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'InitialFocus', async function() {
 });
 
 
-TEST_F(
+AX_TEST_F(
     'SwitchAccessItemScanManagerTest', 'SyncFocusToNewWindow',
     async function() {
       const website1 = `<button autofocus>one</button>`;
@@ -570,7 +570,7 @@ TEST_F(
     });
 
 // TODO(crbug.com/1219067): Unflake.
-TEST_F(
+AX_TEST_F(
     'SwitchAccessItemScanManagerTest', 'DISABLED_LockScreenBlocksUserSession',
     async function() {
       const website = `<button autofocus>kitties!</button>`;
