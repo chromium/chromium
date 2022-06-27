@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 
 #include "third_party/blink/renderer/core/animation/document_animations.h"
-#include "third_party/blink/renderer/core/css/css_element_offset_value.h"
+#include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_id_selector_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -32,14 +32,6 @@ bool IsNone(const CSSValue* value) {
   return IsIdentifier(value, CSSValueID::kNone);
 }
 
-bool IsStart(const CSSValue* value) {
-  return IsIdentifier(value, CSSValueID::kStart);
-}
-
-bool IsEnd(const CSSValue* value) {
-  return IsIdentifier(value, CSSValueID::kEnd);
-}
-
 const cssvalue::CSSIdSelectorValue* GetIdSelectorValue(const CSSValue* value) {
   if (const auto* selector = DynamicTo<CSSFunctionValue>(value)) {
     if (selector->FunctionType() != CSSValueID::kSelector)
@@ -61,39 +53,6 @@ absl::optional<Element*> ComputeScrollSource(Document& document,
   return absl::nullopt;
 }
 
-Element* ComputeElementOffsetTarget(Document& document, const CSSValue* value) {
-  if (const auto* id = GetIdSelectorValue(value))
-    return document.getElementById(id->Id());
-  return nullptr;
-}
-
-String ComputeElementOffsetEdge(const CSSValue* value) {
-  if (!value || IsStart(value))
-    return "start";
-  DCHECK(IsEnd(value));
-  return "end";
-}
-
-double ComputeElementOffsetThreshold(const CSSValue* value) {
-  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
-    DCHECK(primitive_value->IsNumber());
-    return primitive_value->GetDoubleValue();
-  }
-  return 0;
-}
-
-ScrollTimelineElementBasedOffset* ComputeElementBasedOffset(
-    Document& document,
-    const cssvalue::CSSElementOffsetValue* value) {
-  auto* offset = ScrollTimelineElementBasedOffset::Create();
-  Element* target = ComputeElementOffsetTarget(document, value->Target());
-  if (target)
-    offset->setTarget(target);
-  offset->setEdge(ComputeElementOffsetEdge(value->Edge()));
-  offset->setThreshold(ComputeElementOffsetThreshold(value->Threshold()));
-  return offset;
-}
-
 ScrollTimeline::ScrollDirection ComputeScrollDirection(const CSSValue* value) {
   CSSValueID value_id = CSSValueID::kAuto;
 
@@ -112,38 +71,6 @@ ScrollTimeline::ScrollDirection ComputeScrollDirection(const CSSValue* value) {
     default:
       return ScrollTimeline::kBlock;
   }
-}
-
-ScrollTimelineOffset* ComputeScrollOffset(Document& document,
-                                          const CSSValue* value) {
-  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value))
-    return MakeGarbageCollected<ScrollTimelineOffset>(primitive_value);
-  if (auto* offset = DynamicTo<cssvalue::CSSElementOffsetValue>(value)) {
-    auto* element_based = ComputeElementBasedOffset(document, offset);
-    return MakeGarbageCollected<ScrollTimelineOffset>(element_based);
-  }
-  DCHECK(!value || IsAuto(value));
-  return MakeGarbageCollected<ScrollTimelineOffset>();
-}
-
-HeapVector<Member<ScrollTimelineOffset>> ComputeScrollOffsets(
-    Document& document,
-    const CSSValue* start,
-    const CSSValue* end) {
-  HeapVector<Member<ScrollTimelineOffset>> offsets;
-
-  const bool start_is_auto = !start || IsAuto(start);
-  const bool end_is_auto = !end || IsAuto(end);
-
-  // TODO(crbug.com/1094014): scroll_offsets will replace start and end
-  // offsets once spec decision on multiple scroll offsets is finalized.
-  // https://github.com/w3c/csswg-drafts/issues/4912
-  if (!start_is_auto)
-    offsets.push_back(ComputeScrollOffset(document, start));
-  if (!end_is_auto || !start_is_auto)
-    offsets.push_back(ComputeScrollOffset(document, end));
-
-  return offsets;
 }
 
 class ElementReferenceObserver : public IdTargetObserver {
@@ -181,22 +108,6 @@ HeapVector<Member<IdTargetObserver>> CreateElementReferenceObservers(
         document, id->Id(), timeline));
   }
 
-  // TODO(crbug.com/1094014): The 'offsets' descriptor will replace the 'start'
-  // and 'end' descriptors eventually.
-  HeapVector<Member<const CSSValue>> offsets = {rule->GetStart(),
-                                                rule->GetEnd()};
-
-  for (const CSSValue* offset : offsets) {
-    const auto* element_offset =
-        DynamicTo<cssvalue::CSSElementOffsetValue>(offset);
-    if (!element_offset)
-      continue;
-    if (const auto* id = GetIdSelectorValue(element_offset->Target())) {
-      observers.push_back(MakeGarbageCollected<ElementReferenceObserver>(
-          document, id->Id(), timeline));
-    }
-  }
-
   return observers;
 }
 
@@ -206,7 +117,6 @@ CSSScrollTimeline::Options::Options(Document& document,
                                     StyleRuleScrollTimeline& rule)
     : source_(ComputeScrollSource(document, rule.GetSource())),
       direction_(ComputeScrollDirection(rule.GetOrientation())),
-      offsets_(ComputeScrollOffsets(document, rule.GetStart(), rule.GetEnd())),
       rule_(&rule) {}
 
 // TODO(crbug.com/1329159): Support nearest scroll ancestor.
@@ -215,21 +125,15 @@ CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
           document,
           ReferenceType::kSource,
           options.source_.value_or(document->ScrollingElementNoLayout()),
-          options.direction_,
-          std::move(options.offsets_)),
+          options.direction_),
       rule_(options.rule_) {
   DCHECK(rule_);
-}
-
-const AtomicString& CSSScrollTimeline::Name() const {
-  return rule_->GetName();
 }
 
 bool CSSScrollTimeline::Matches(const Options& options) const {
   // TODO(crbug.com/1060384): Support ReferenceType::kNearestAncestor.
   return HasExplicitSource() && (SourceInternal() == options.source_) &&
-         (GetOrientation() == options.direction_) &&
-         (ScrollOffsetsEqual(options.offsets_)) && (rule_ == options.rule_);
+         (GetOrientation() == options.direction_) && (rule_ == options.rule_);
 }
 
 void CSSScrollTimeline::AnimationAttached(Animation* animation) {

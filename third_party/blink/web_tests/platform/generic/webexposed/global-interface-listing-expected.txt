@@ -8386,7 +8386,6 @@ interface ScriptProcessorNode : AudioNode
 interface ScrollTimeline : AnimationTimeline
     attribute @@toStringTag
     getter orientation
-    getter scrollOffsets
     getter source
     method constructor
 interface SecurityPolicyViolationEvent : Event

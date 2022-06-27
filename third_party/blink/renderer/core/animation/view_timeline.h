@@ -29,13 +29,7 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
  public:
   static ViewTimeline* Create(Document&, ViewTimelineOptions*, ExceptionState&);
 
-  // TODO(crbug.com/1329159): Add additional arguments as ratified.
-  // TODO(crbug.com/1329159): Remove scroll-offsets. Presently needed for the
-  // ScrollTimeline constructor.
-  ViewTimeline(Document*,
-               Element* subject,
-               ScrollDirection orientation,
-               HeapVector<Member<ScrollTimelineOffset>> scroll_offsets);
+  ViewTimeline(Document*, Element* subject, ScrollDirection orientation);
 
   bool IsViewTimeline() const override { return true; }
 

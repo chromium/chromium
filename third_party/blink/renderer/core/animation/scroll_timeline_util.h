@@ -14,6 +14,7 @@
 namespace blink {
 
 using CompositorScrollTimeline = cc::ScrollTimeline;
+using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
 
 class AnimationTimeline;
 class ComputedStyle;
@@ -38,8 +39,7 @@ GetCompositorScrollElementId(const Node*);
 CompositorScrollTimeline::ScrollDirection CORE_EXPORT
 ConvertOrientation(ScrollTimeline::ScrollDirection, const ComputedStyle*);
 
-double ComputeProgress(double current_offset,
-                       const WTF::Vector<double>& resolved_offsets);
+absl::optional<ScrollOffsets> CreateScrollOffsets(ScrollTimeline* timeline);
 
 }  // namespace scroll_timeline_util
 

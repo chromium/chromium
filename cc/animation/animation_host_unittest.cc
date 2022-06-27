@@ -337,9 +337,7 @@ TEST_F(AnimationHostTest, LayerTreeMutatorUpdateReflectsScrollAnimations) {
 
   // Create scroll timeline that links scroll animation and worklet animation
   // together.
-  std::vector<double> scroll_offsets;
-  scroll_offsets.push_back(0);
-  scroll_offsets.push_back(100);
+  ScrollTimeline::ScrollOffsets scroll_offsets(0, 100);
   auto scroll_timeline = ScrollTimeline::Create(
       element_id, ScrollTimeline::ScrollDown, scroll_offsets);
 
@@ -380,9 +378,7 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
 
   // Create scroll timeline that links scroll animation and scroll-linked
   // animation together.
-  std::vector<double> scroll_offsets;
-  scroll_offsets.push_back(0);
-  scroll_offsets.push_back(100);
+  ScrollTimeline::ScrollOffsets scroll_offsets(0, 100);
   auto scroll_timeline = ScrollTimeline::Create(
       element_id_, ScrollTimeline::ScrollDown, scroll_offsets);
 
@@ -458,10 +454,7 @@ TEST_F(AnimationHostTest, ScrollTimelineOffsetUpdatedByScrollAnimation) {
   timeline_->AttachAnimation(mock_scroll_animation);
   host_impl_->AddToTicking(mock_scroll_animation);
 
-  std::vector<double> scroll_offsets;
-  scroll_offsets.push_back(0);
-  scroll_offsets.push_back(100);
-
+  ScrollTimeline::ScrollOffsets scroll_offsets(0, 100);
   auto scroll_timeline = ScrollTimeline::Create(
       element_id_, ScrollTimeline::ScrollDown, scroll_offsets);
 

@@ -28,7 +28,6 @@ blink_core_tests_animation = [
   "keyframe_effect_test.cc",
   "list_interpolation_functions_test.cc",
   "property_handle_test.cc",
-  "scroll_timeline_offset_test.cc",
   "scroll_timeline_test.cc",
   "scroll_timeline_util_test.cc",
   "svg_number_interpolation_type_test.cc",
