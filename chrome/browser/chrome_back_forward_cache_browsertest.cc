@@ -236,7 +236,6 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, BasicIframe) {
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
-// TODO(crbug.com/1324437): Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
                        PermissionContextBase) {
   // HTTPS needed for GEOLOCATION permission
@@ -301,11 +300,11 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   // HTTPS needed for WebShare permission.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(https_server.Start());
 
-  GURL url_a(https_server.GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server.GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server.GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server.GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
@@ -336,11 +335,11 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   // HTTPS needed for WebNfc permission.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(https_server.Start());
 
-  GURL url_a(https_server.GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server.GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server.GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server.GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
@@ -375,11 +374,11 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
                        RestoresMixedContentSettings) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   ASSERT_TRUE(https_server.Start());
-  GURL url_a(https_server.GetURL("a.com",
+  GURL url_a(https_server.GetURL("a.test",
                                  "/content_setting_bubble/mixed_script.html"));
-  GURL url_b(https_server.GetURL("b.com",
+  GURL url_b(https_server.GetURL("b.test",
                                  "/content_setting_bubble/mixed_script.html"));
 
   // 1) Load page A that has mixed content.

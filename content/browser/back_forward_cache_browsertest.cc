@@ -418,13 +418,13 @@ void BackForwardCacheBrowserTest::MatchEventList(RenderFrameHostImpl* rfh,
       << location.ToString();
 }
 
-  // Creates a minimal HTTPS server, accessible through https_server().
-  // Returns a pointer to the server.
+// Creates a minimal HTTPS server, accessible through https_server().
+// Returns a pointer to the server.
 net::EmbeddedTestServer* BackForwardCacheBrowserTest::CreateHttpsServer() {
   https_server_ = std::make_unique<net::EmbeddedTestServer>(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_server_->AddDefaultHandlers(GetTestDataFilePath());
-  https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   return https_server();
 }
 
@@ -882,8 +882,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ResponseHeaders) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
 
-  GURL url_a(https_server()->GetURL("a.com", "/set-header?X-Foo: bar"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.test", "/set-header?X-Foo: bar"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   NavigationHandleObserver observer1(web_contents(), url_a);
@@ -1061,8 +1061,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheHTTPDocumentOnly) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
-  GURL http_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL https_url(https_server()->GetURL("a.com", "/title1.html"));
+  GURL http_url(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
   GURL file_url = net::FilePathToFileURL(GetTestFilePath("", "title1.html"));
   GURL data_url = GURL("data:text/html,");
   GURL blank_url = GURL(url::kAboutBlankURL);

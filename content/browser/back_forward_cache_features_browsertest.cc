@@ -1342,7 +1342,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 1) Navigate to a page with WakeLock usage.
   GURL url(https_server()->GetURL(
-      "a.com", "/back_forward_cache/page_with_wakelock.html"));
+      "a.test", "/back_forward_cache/page_with_wakelock.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderFrameHostImpl* rfh_a = current_frame_host();
@@ -1352,7 +1352,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(EvalJs(rfh_a, "wakeLockIsReleased()").ExtractBool());
 
   // 2) Navigate away.
-  shell()->LoadURL(https_server()->GetURL("b.com", "/title1.html"));
+  shell()->LoadURL(https_server()->GetURL("b.test", "/title1.html"));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
@@ -1513,7 +1513,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // embedded_server()
   EXPECT_TRUE(NavigateToURL(
       shell(), https_server()->GetURL(
-                   "a.com", "/payments/payment_app_invocation.html")));
+                   "a.test", "/payments/payment_app_invocation.html")));
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver rfh_a_deleted(rfh_a);
 
@@ -1527,7 +1527,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 2) Navigate away.
   EXPECT_TRUE(
-      NavigateToURL(shell(), https_server()->GetURL("b.com", "/title1.html")));
+      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title1.html")));
 
   // The page uses PaymentManager so it should be deleted.
   rfh_a_deleted.WaitUntilDeleted();
@@ -1744,8 +1744,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        BlocklistedFeaturesTracking_CrossSite_BrowserInitiated) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
-  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title2.html"));
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title2.html"));
   // 1) Navigate to a page.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
@@ -1789,8 +1789,8 @@ IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
     BlocklistedFeaturesTracking_CrossSite_RendererInitiated) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
-  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title2.html"));
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title2.html"));
 
   // 1) Navigate to a page.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -1914,8 +1914,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   // 1) Navigate to an empty page.
-  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title2.html"));
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title2.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
@@ -1956,8 +1956,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   // 1) Navigate to an empty page.
-  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
@@ -2283,8 +2283,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 1) Navigate to an empty page.
   GURL url_a(https_server()->GetURL(
-      "a.com", "/back_forward_cache/page_with_broadcastchannel.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+      "a.test", "/back_forward_cache/page_with_broadcastchannel.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
@@ -2316,8 +2316,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 1) Navigate to an empty page.
   GURL url_a(https_server()->GetURL(
-      "a.com", "/back_forward_cache/page_with_broadcastchannel.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+      "a.test", "/back_forward_cache/page_with_broadcastchannel.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
@@ -2405,8 +2405,8 @@ IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
 
-  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
@@ -2439,8 +2439,8 @@ IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
 
-  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
@@ -2663,7 +2663,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(
       shell(),
-      https_server()->GetURL("a.com", "/back_forward_cache/empty.html")));
+      https_server()->GetURL("a.test", "/back_forward_cache/empty.html")));
 
   // Register a service worker.
   RegisterServiceWorker(current_frame_host());
@@ -2673,7 +2673,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 2) Navigate away.
   EXPECT_TRUE(
-      NavigateToURL(shell(), https_server()->GetURL("b.com", "/title1.html")));
+      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title1.html")));
 
   EXPECT_FALSE(deleted.deleted());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
@@ -2696,7 +2696,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 1) Navigate to A in tab X.
   EXPECT_TRUE(NavigateToURL(
       tab_x,
-      https_server()->GetURL("a.com", "/back_forward_cache/empty.html")));
+      https_server()->GetURL("a.test", "/back_forward_cache/empty.html")));
   // 2) Register a service worker.
   RegisterServiceWorker(current_frame_host());
 
@@ -2704,13 +2704,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameDeletedObserver deleted(rfh_a);
   // 3) Navigate away to B in tab X.
   EXPECT_TRUE(
-      NavigateToURL(tab_x, https_server()->GetURL("b.com", "/title1.html")));
+      NavigateToURL(tab_x, https_server()->GetURL("b.test", "/title1.html")));
   EXPECT_FALSE(deleted.deleted());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   // 4) Navigate to A in tab Y.
   EXPECT_TRUE(NavigateToURL(
       tab_y,
-      https_server()->GetURL("a.com", "/back_forward_cache/empty.html")));
+      https_server()->GetURL("a.test", "/back_forward_cache/empty.html")));
   // 5) Close tab Y to activate a service worker version.
   // This should evict |rfh_a| from the cache.
   tab_y->Close();
@@ -2730,7 +2730,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   https_server.RegisterRequestHandler(
       base::BindRepeating(&RequestHandlerForUpdateWorker));
   https_server.AddDefaultHandlers(GetTestDataFilePath());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   SetupCrossSiteRedirector(&https_server);
   ASSERT_TRUE(https_server.Start());
   Shell* tab_to_execute_service_worker = shell();
@@ -2743,7 +2743,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       tab_to_execute_service_worker,
       https_server.GetURL(
-          "a.com", "/back_forward_cache/service_worker_post_message.html")));
+          "a.test", "/back_forward_cache/service_worker_post_message.html")));
 
   // 2) Register a service worker.
   EXPECT_EQ("DONE", EvalJs(tab_to_execute_service_worker,
@@ -2753,7 +2753,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       tab_to_be_bfcached,
       https_server.GetURL(
-          "a.com", "/back_forward_cache/service_worker_post_message.html")));
+          "a.test", "/back_forward_cache/service_worker_post_message.html")));
   const std::string script_to_store =
       "executeCommandOnServiceWorker('StoreClients')";
   EXPECT_EQ("DONE", EvalJs(tab_to_execute_service_worker, script_to_store));
@@ -2762,7 +2762,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 4) Navigate away to B in |tab_to_be_bfcached|.
   EXPECT_TRUE(NavigateToURL(tab_to_be_bfcached,
-                            https_server.GetURL("b.com", "/title1.html")));
+                            https_server.GetURL("b.test", "/title1.html")));
   EXPECT_FALSE(rfh.IsDestroyed());
   EXPECT_TRUE(rfh->IsInBackForwardCache());
 
@@ -2785,7 +2785,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictOnServiceWorkerClaim) {
   https_server.RegisterRequestHandler(
       base::BindRepeating(&RequestHandlerForUpdateWorker));
   https_server.AddDefaultHandlers(GetTestDataFilePath());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   SetupCrossSiteRedirector(&https_server);
   ASSERT_TRUE(https_server.Start());
 
@@ -2796,13 +2796,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictOnServiceWorkerClaim) {
   EXPECT_TRUE(NavigateToURL(
       tab_to_be_bfcached,
       https_server.GetURL(
-          "a.com", "/back_forward_cache/service_worker_registration.html")));
+          "a.test", "/back_forward_cache/service_worker_registration.html")));
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver deleted(rfh_a);
 
   // 2) Navigate away to B in |tab_to_be_bfcached|.
   EXPECT_TRUE(NavigateToURL(tab_to_be_bfcached,
-                            https_server.GetURL("b.com", "/title1.html")));
+                            https_server.GetURL("b.test", "/title1.html")));
   EXPECT_FALSE(deleted.deleted());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
@@ -2810,7 +2810,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictOnServiceWorkerClaim) {
   EXPECT_TRUE(NavigateToURL(
       tab_to_execute_service_worker,
       https_server.GetURL(
-          "a.com", "/back_forward_cache/service_worker_registration.html")));
+          "a.test", "/back_forward_cache/service_worker_registration.html")));
 
   // 4) Register a service worker for |tab_to_execute_service_worker|.
   EXPECT_EQ("DONE", EvalJs(tab_to_execute_service_worker,
@@ -2834,7 +2834,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   https_server.RegisterRequestHandler(
       base::BindRepeating(&RequestHandlerForUpdateWorker));
   https_server.AddDefaultHandlers(GetTestDataFilePath());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   SetupCrossSiteRedirector(&https_server);
   ASSERT_TRUE(https_server.Start());
 
@@ -2845,7 +2845,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // service worker.
   EXPECT_TRUE(NavigateToURL(
       tab_to_be_bfcached,
-      https_server.GetURL("a.com",
+      https_server.GetURL("a.test",
                           "/back_forward_cache/"
                           "service_worker_registration.html?to_be_bfcached")));
 
@@ -2865,12 +2865,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       tab_to_unregister_service_worker,
       https_server.GetURL(
-          "a.com", "/back_forward_cache/service_worker_registration.html")));
+          "a.test", "/back_forward_cache/service_worker_registration.html")));
 
   // 5) Navigate from A to B in |tab_to_be_bfcached|. Now |tab_to_be_bfcached|
   // should be in bfcache.
   EXPECT_TRUE(NavigateToURL(tab_to_be_bfcached,
-                            https_server.GetURL("b.com", "/title1.html")));
+                            https_server.GetURL("b.test", "/title1.html")));
   EXPECT_FALSE(deleted.deleted());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
@@ -3088,7 +3088,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothForwardCacheBrowserTest, WebBluetooth) {
 
   // WebBluetooth requires HTTPS.
   ASSERT_TRUE(CreateHttpsServer()->Start());
-  GURL url(https_server()->GetURL("a.com", "/back_forward_cache/empty.html"));
+  GURL url(https_server()->GetURL("a.test", "/back_forward_cache/empty.html"));
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url));
   BackForwardCacheDisabledTester tester;
@@ -3111,7 +3111,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothForwardCacheBrowserTest, WebBluetooth) {
       current_frame_host()->GetRoutingID(), reason));
 
   ASSERT_TRUE(NavigateToURL(web_contents(),
-                            https_server()->GetURL("b.com", "/title1.html")));
+                            https_server()->GetURL("b.test", "/title1.html")));
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
                     {}, {reason}, {}, FROM_HERE);
@@ -3128,7 +3128,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebUSB) {
   // Main document.
   {
     content::BackForwardCacheDisabledTester tester;
-    GURL url(https_server()->GetURL("a.com", "/title1.html"));
+    GURL url(https_server()->GetURL("a.test", "/title1.html"));
 
     EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -3171,7 +3171,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebUSB) {
   // Worker.
   {
     content::BackForwardCacheDisabledTester tester;
-    GURL url(https_server()->GetURL("e.com", "/title1.html"));
+    GURL url(https_server()->GetURL("e.test", "/title1.html"));
     EXPECT_TRUE(NavigateToURL(shell(), url));
     EXPECT_FALSE(current_frame_host()->IsBackForwardCacheDisabled());
     EXPECT_EQ("Found 0 devices", content::EvalJs(current_frame_host(), R"(
@@ -3190,7 +3190,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebUSB) {
   // Nested worker.
   {
     content::BackForwardCacheDisabledTester tester;
-    GURL url(https_server()->GetURL("f.com", "/title1.html"));
+    GURL url(https_server()->GetURL("f.test", "/title1.html"));
     EXPECT_TRUE(NavigateToURL(shell(), url));
     EXPECT_FALSE(current_frame_host()->IsBackForwardCacheDisabled());
     EXPECT_EQ("Found 0 devices", content::EvalJs(current_frame_host(), R"(
@@ -3582,8 +3582,8 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest, OrientationCached) {
 IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
                        SensorPausedWhileCached) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
-  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
 
   provider_->SetRelativeOrientationSensorData(0, 0, 0);
 
@@ -3719,7 +3719,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   GURL url_a(https_server()->GetURL("/title1.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
@@ -3802,7 +3802,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   GURL url_a(https_server()->GetURL("/title1.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to A.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
@@ -3942,7 +3942,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        MAYBE_PresentationConnectionClosed) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
   GURL url_a(https_server()->GetURL(
-      "a.com", "/back_forward_cache/presentation_controller.html"));
+      "a.test", "/back_forward_cache/presentation_controller.html"));
 
   // Navigate to A (presentation controller page).
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
@@ -3971,7 +3971,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
           receiver_connection.BindNewPipeAndPassReceiver()));
 
   // Navigate to B, make sure that the connection started in A is closed.
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
   EXPECT_CALL(
       mock_controller_connection,
       DidClose(blink::mojom::PresentationConnectionCloseReason::WENT_AWAY));
@@ -4204,8 +4204,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSupportedFeatures,
                        CacheWithSpecifiedFeatures) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
-  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to the page A with BroadcastChannel.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -4252,8 +4252,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNoSupportedFeatures,
                        DontCache) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
-  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
 
   // 1) Navigate to the page A with BroadcastChannel.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
