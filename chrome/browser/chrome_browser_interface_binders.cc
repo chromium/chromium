@@ -707,7 +707,7 @@ void PopulateChromeFrameBinders(
 
 #else
   map->Add<blink::mojom::BadgeService>(
-      base::BindRepeating(&badging::BadgeManager::BindFrameReceiver));
+      base::BindRepeating(&badging::BadgeManager::BindFrameReceiverIfAllowed));
   if (base::FeatureList::IsEnabled(features::kWebPayments)) {
     map->Add<payments::mojom::PaymentRequest>(
         base::BindRepeating(&payments::CreatePaymentRequest));

@@ -14,9 +14,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/service_worker_version_base_info.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/badging/badging.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -84,16 +86,16 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   // Sets the delegate used for setting/clearing badges.
   void SetDelegate(std::unique_ptr<BadgeManagerDelegate> delegate);
 
-  static void BindFrameReceiver(
+  static void BindFrameReceiverIfAllowed(
       content::RenderFrameHost* frame,
       mojo::PendingReceiver<blink::mojom::BadgeService> receiver);
 
   // Binds a remote ServiceWorkerGlobalScope to a badge service.  After
   // receiving a badge update from a ServiceWorkerGlobalScope, the badge
   // service must update the badge for each app under `service_worker_scope`.
-  static void BindServiceWorkerReceiver(
+  static void BindServiceWorkerReceiverIfAllowed(
       content::RenderProcessHost* service_worker_process_host,
-      const GURL& service_worker_scope,
+      const content::ServiceWorkerVersionBaseInfo& info,
       mojo::PendingReceiver<blink::mojom::BadgeService> receiver);
 
   // Gets the badge for |app_id|. This will be absl::nullopt if the app is not

@@ -84,7 +84,7 @@ void BadgeManager::SetDelegate(std::unique_ptr<BadgeManagerDelegate> delegate) {
   delegate_ = std::move(delegate);
 }
 
-void BadgeManager::BindFrameReceiver(
+void BadgeManager::BindFrameReceiverIfAllowed(
     content::RenderFrameHost* frame,
     mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -108,14 +108,18 @@ void BadgeManager::BindFrameReceiver(
                                 std::move(context));
 }
 
-void BadgeManager::BindServiceWorkerReceiver(
+void BadgeManager::BindServiceWorkerReceiverIfAllowed(
     content::RenderProcessHost* service_worker_process_host,
-    const GURL& service_worker_scope,
+    const content::ServiceWorkerVersionBaseInfo& info,
     mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(crbug.com/1276419): decline the request if the service worker
-  // is created by a fenced frame.
+  // The Badging API is not allowed for the fenced frames.
+  if (info.ancestor_frame_type ==
+      blink::mojom::AncestorFrameType::kFencedFrame) {
+    mojo::ReportBadMessage("The Badging API is not allowed in a fenced frame");
+    return;
+  }
 
   auto* profile = Profile::FromBrowserContext(
       service_worker_process_host->GetBrowserContext());
@@ -126,7 +130,7 @@ void BadgeManager::BindServiceWorkerReceiver(
     return;
 
   auto context = std::make_unique<BadgeManager::ServiceWorkerBindingContext>(
-      service_worker_process_host->GetID(), service_worker_scope);
+      service_worker_process_host->GetID(), info.scope);
 
   badge_manager->receivers_.Add(badge_manager, std::move(receiver),
                                 std::move(context));

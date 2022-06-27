@@ -45,7 +45,8 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
       int process_id,
       int thread_id,
       int devtools_agent_route_id,
-      ukm::SourceId ukm_source_id);
+      ukm::SourceId ukm_source_id,
+      blink::mojom::AncestorFrameType ancestor_frame_type);
   ServiceWorkerVersionInfo(const ServiceWorkerVersionInfo& other);
   ~ServiceWorkerVersionInfo() override;
 

@@ -116,15 +116,7 @@ ScriptPromise NavigatorBadge::ClearAppBadgeHelper(ScriptState* script_state) {
 // static
 bool NavigatorBadge::IsAllowed(ScriptState* script_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
-  if (context->IsWindow()) {
-    LocalFrame* local_frame = To<LocalDOMWindow>(context)->GetFrame();
-    if (local_frame == nullptr) {
-      return true;
-    }
-    return !local_frame->IsInFencedFrameTree();
-  }
-  // TODO(crbug.com/1276419): implement the case without a window e.g. workers.
-  return true;
+  return !context->IsInFencedFrame();
 }
 
 mojo::Remote<mojom::blink::BadgeService> NavigatorBadge::badge_service() {

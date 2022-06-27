@@ -956,6 +956,13 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // to check if the registration is already deleted or not.
   ServiceWorkerRegistration::Status registration_status_;
 
+  // A copy of ServiceWorkerRegistration::ancestor_frame_type(). Cached for the
+  // same reason as `navigation_preload_state_`: A live registration doesn't
+  // necessarily exist whenever there is a live version, but
+  // `ancestor_frame_type_` is needed to check if it was registered in fenced
+  // frame or not.
+  const blink::mojom::AncestorFrameType ancestor_frame_type_;
+
   // The client security state passed to the network URL loader factory used to
   // fetch service worker subresources.
   //

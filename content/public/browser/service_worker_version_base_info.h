@@ -8,25 +8,23 @@
 #include "content/common/content_export.h"
 #include "content/public/common/child_process_host.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
-#include "url/gurl.h"
 
 namespace content {
 
 // Basic information about a service worker.
 struct CONTENT_EXPORT ServiceWorkerVersionBaseInfo {
  public:
-  ServiceWorkerVersionBaseInfo() = default;
-  ServiceWorkerVersionBaseInfo(const GURL& scope,
-                               const blink::StorageKey& storage_key,
-                               int64_t registration_id,
-                               int64_t version_id,
-                               int process_id)
-      : scope(scope),
-        storage_key(storage_key),
-        registration_id(registration_id),
-        version_id(version_id),
-        process_id(process_id) {}
+  ServiceWorkerVersionBaseInfo();
+  ServiceWorkerVersionBaseInfo(
+      const GURL& scope,
+      const blink::StorageKey& storage_key,
+      int64_t registration_id,
+      int64_t version_id,
+      int process_id,
+      blink::mojom::AncestorFrameType ancestor_frame_type);
+  ServiceWorkerVersionBaseInfo(const ServiceWorkerVersionBaseInfo& other);
   virtual ~ServiceWorkerVersionBaseInfo() = default;
 
   GURL scope;
@@ -34,6 +32,9 @@ struct CONTENT_EXPORT ServiceWorkerVersionBaseInfo {
   int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;
   int64_t version_id = blink::mojom::kInvalidServiceWorkerVersionId;
   int process_id = ChildProcessHost::kInvalidUniqueID;
+  // The information of frame type when the service worker is registered.
+  // This will be used to check if the frame is fenced frame or not.
+  blink::mojom::AncestorFrameType ancestor_frame_type;
 };
 
 }  // namespace content

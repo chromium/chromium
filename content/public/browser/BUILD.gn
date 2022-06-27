@@ -346,6 +346,7 @@ source_set("browser_sources") {
     "service_worker_external_request_timeout_type.h",
     "service_worker_running_info.cc",
     "service_worker_running_info.h",
+    "service_worker_version_base_info.cc",
     "service_worker_version_base_info.h",
     "session_storage_namespace.cc",
     "session_storage_namespace.h",

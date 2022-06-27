@@ -185,8 +185,8 @@ void BindBadgeServiceForServiceWorker(
   if (!render_process_host)
     return;
 
-  badging::BadgeManager::BindServiceWorkerReceiver(
-      render_process_host, info.scope, std::move(receiver));
+  badging::BadgeManager::BindServiceWorkerReceiverIfAllowed(
+      render_process_host, info, std::move(receiver));
 }
 #endif
 
