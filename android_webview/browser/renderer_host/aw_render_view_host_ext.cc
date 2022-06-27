@@ -7,6 +7,7 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -43,7 +44,6 @@ AwRenderViewHostExt::AwRenderViewHostExt(AwRenderViewHostExtClient* client,
                                          content::WebContents* contents)
     : content::WebContentsObserver(contents),
       client_(client),
-      has_new_hit_test_data_(false),
       frame_host_receivers_(contents, this) {
   DCHECK(client_);
 }
@@ -68,18 +68,23 @@ void AwRenderViewHostExt::DocumentHasImages(DocumentHasImagesResult result) {
   }
 }
 
-bool AwRenderViewHostExt::HasNewHitTestData() const {
-  return has_new_hit_test_data_;
-}
-
-void AwRenderViewHostExt::MarkHitTestDataRead() {
-  has_new_hit_test_data_ = false;
-}
-
 void AwRenderViewHostExt::RequestNewHitTestDataAt(
     const gfx::PointF& touch_center,
     const gfx::SizeF& touch_area) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // If the new hit testing approach for touch start is enabled we just early
+  // return.
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewHitTestInBlinkOnTouchStart)) {
+    return;
+  }
+
+  // The following code is broken for OOPIF and fenced frames. The hit testing
+  // feature for touch start replaces this code and works correctly in those
+  // scenarios. For mitigating risk we've put the old code behind a feature
+  // flag.
+  //
   // We only need to get blink::WebView on the renderer side to invoke the
   // blink hit test Mojo method, so sending this message via LocalMainFrame
   // interface is enough.
@@ -87,9 +92,9 @@ void AwRenderViewHostExt::RequestNewHitTestDataAt(
     local_main_frame_remote->HitTest(touch_center, touch_area);
 }
 
-const mojom::HitTestData& AwRenderViewHostExt::GetLastHitTestData() const {
+mojom::HitTestDataPtr AwRenderViewHostExt::TakeLastHitTestData() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return *last_hit_test_data_;
+  return std::move(last_hit_test_data_);
 }
 
 void AwRenderViewHostExt::SetTextZoomFactor(float factor) {
@@ -145,19 +150,15 @@ void AwRenderViewHostExt::OnPageScaleFactorChanged(float page_scale_factor) {
 
 void AwRenderViewHostExt::UpdateHitTestData(
     mojom::HitTestDataPtr hit_test_data) {
-  content::RenderFrameHost* main_frame_host =
+  content::RenderFrameHost* render_frame_host =
       frame_host_receivers_.GetCurrentTargetFrame();
-  while (main_frame_host->GetParent())
-    main_frame_host = main_frame_host->GetParent();
-
-  // Make sense from any frame of the current frame tree, because a focused
+  // Make sense from any frame of the active frame tree, because a focused
   // node could be in either the mainframe or a subframe.
-  if (main_frame_host != web_contents()->GetPrimaryMainFrame())
+  if (!render_frame_host->IsActive())
     return;
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   last_hit_test_data_ = std::move(hit_test_data);
-  has_new_hit_test_data_ = true;
 }
 
 void AwRenderViewHostExt::ContentsSizeChanged(const gfx::Size& contents_size) {

@@ -915,36 +915,35 @@ void AwContents::RequestNewHitTestDataAt(JNIEnv* env,
 
 void AwContents::UpdateLastHitTestData(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!render_view_host_ext_->HasNewHitTestData())
-    return;
 
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (!obj)
     return;
 
-  const android_webview::mojom::HitTestData& data =
-      render_view_host_ext_->GetLastHitTestData();
-  render_view_host_ext_->MarkHitTestDataRead();
+  android_webview::mojom::HitTestDataPtr data =
+      render_view_host_ext_->TakeLastHitTestData();
+  if (!data)
+    return;
 
   // Make sure to null the Java object if data is empty/invalid.
   ScopedJavaLocalRef<jstring> extra_data_for_type;
-  if (data.extra_data_for_type.length())
+  if (data->extra_data_for_type.length())
     extra_data_for_type =
-        ConvertUTF8ToJavaString(env, data.extra_data_for_type);
+        ConvertUTF8ToJavaString(env, data->extra_data_for_type);
 
   ScopedJavaLocalRef<jstring> href;
-  if (data.href.length())
-    href = ConvertUTF16ToJavaString(env, data.href);
+  if (data->href.length())
+    href = ConvertUTF16ToJavaString(env, data->href);
 
   ScopedJavaLocalRef<jstring> anchor_text;
-  if (data.anchor_text.length())
-    anchor_text = ConvertUTF16ToJavaString(env, data.anchor_text);
+  if (data->anchor_text.length())
+    anchor_text = ConvertUTF16ToJavaString(env, data->anchor_text);
 
   ScopedJavaLocalRef<jstring> img_src;
-  if (data.img_src.is_valid())
-    img_src = ConvertUTF8ToJavaString(env, data.img_src.spec());
+  if (data->img_src.is_valid())
+    img_src = ConvertUTF8ToJavaString(env, data->img_src.spec());
 
-  Java_AwContents_updateHitTestData(env, obj, static_cast<jint>(data.type),
+  Java_AwContents_updateHitTestData(env, obj, static_cast<jint>(data->type),
                                     extra_data_for_type, href, anchor_text,
                                     img_src);
 }

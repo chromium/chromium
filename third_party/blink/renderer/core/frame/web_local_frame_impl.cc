@@ -152,6 +152,7 @@
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/icon_url.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -176,6 +177,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/events/after_print_event.h"
 #include "third_party/blink/renderer/core/events/before_print_event.h"
+#include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -589,6 +591,64 @@ class PaintPreviewContext : public PrintContext {
     canvas->drawPicture(builder->EndRecording(property_tree_state.Unalias()));
     return true;
   }
+};
+
+// Android WebView requires hit testing results on every touch event. This
+// pushes the hit test result to the callback that is registered.
+class TouchStartEventListener : public NativeEventListener {
+ public:
+  explicit TouchStartEventListener(
+      base::RepeatingCallback<void(const blink::WebHitTestResult&)> callback)
+      : callback_(std::move(callback)) {}
+
+  void Invoke(ExecutionContext*, Event* event) override {
+    auto* touch_event = DynamicTo<TouchEvent>(event);
+    if (!touch_event)
+      return;
+    const auto* native_event = touch_event->NativeEvent();
+    if (!native_event)
+      return;
+
+    DCHECK_EQ(WebInputEvent::Type::kTouchStart,
+              native_event->Event().GetType());
+    const auto& web_touch_event =
+        static_cast<const WebTouchEvent&>(native_event->Event());
+
+    if (web_touch_event.touches_length != 1u)
+      return;
+
+    LocalDOMWindow* dom_window = event->currentTarget()->ToLocalDOMWindow();
+    CHECK(dom_window);
+
+    WebGestureEvent tap_event(
+        WebInputEvent::Type::kGestureTap, WebInputEvent::kNoModifiers,
+        base::TimeTicks::Now(), WebGestureDevice::kTouchscreen);
+    // GestureTap is only ever from a touchscreen.
+    tap_event.SetPositionInWidget(
+        web_touch_event.touches[0].PositionInWidget());
+    tap_event.SetPositionInScreen(
+        web_touch_event.touches[0].PositionInScreen());
+    tap_event.SetFrameScale(web_touch_event.FrameScale());
+    tap_event.SetFrameTranslate(web_touch_event.FrameTranslate());
+    tap_event.data.tap.tap_count = 1;
+    tap_event.data.tap.height = tap_event.data.tap.width =
+        std::max(web_touch_event.touches[0].radius_x,
+                 web_touch_event.touches[0].radius_y);
+
+    HitTestResult result =
+        dom_window->GetFrame()
+            ->GetEventHandler()
+            .HitTestResultForGestureEvent(
+                tap_event, HitTestRequest::kReadOnly | HitTestRequest::kActive)
+            .GetHitTestResult();
+
+    result.SetToShadowHostIfInRestrictedShadowRoot();
+
+    callback_.Run(result);
+  }
+
+ private:
+  base::RepeatingCallback<void(const blink::WebHitTestResult&)> callback_;
 };
 
 // WebFrame -------------------------------------------------------------------
@@ -2869,6 +2929,18 @@ void WebLocalFrameImpl::SetSessionStorageArea(
         session_storage_area) {
   CoreInitializer::GetInstance().SetSessionStorageArea(
       *GetFrame(), std::move(session_storage_area));
+}
+
+void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(
+    base::RepeatingCallback<void(const blink::WebHitTestResult&)> callback) {
+  TouchStartEventListener* touch_start_event_listener =
+      MakeGarbageCollected<TouchStartEventListener>(std::move(callback));
+  AddEventListenerOptionsResolved options;
+  options.setPassive(true);
+  options.SetPassiveSpecified(true);
+  options.setCapture(true);
+  GetFrame()->DomWindow()->addEventListener(
+      event_type_names::kTouchstart, touch_start_event_listener, &options);
 }
 
 void WebLocalFrameImpl::SetTargetToCurrentHistoryItem(const WebString& target) {

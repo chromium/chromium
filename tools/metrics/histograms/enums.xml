@@ -57152,6 +57152,7 @@ from previous Chrome versions.
   <int value="-785528415" label="FedCm:disabled"/>
   <int value="-784199026" label="EnableFilesAppCopyImage:enabled"/>
   <int value="-783890018" label="LacrosProfileMigrationForAnyUser:disabled"/>
+  <int value="-783093620" label="WebViewHitTestInBlinkOnTouchStart:enabled"/>
   <int value="-780798969" label="disable-single-click-autofill"/>
   <int value="-778126349" label="DownloadsLocationChange:enabled"/>
   <int value="-778098896" label="EnableAggregatedMlSearchRanking:disabled"/>
@@ -59359,6 +59360,7 @@ from previous Chrome versions.
   <int value="663294302" label="ForceUseAPDownloadProtection:disabled"/>
   <int value="664363259" label="SiteCharacteristicsDatabase:enabled"/>
   <int value="664591021" label="EnableContinueReading:enabled"/>
+  <int value="665320858" label="WebViewHitTestInBlinkOnTouchStart:disabled"/>
   <int value="665409384"
       label="AutofillToolkitViewsCreditCardDialogsMac:enabled"/>
   <int value="665647051" label="DiscountConsentV2:enabled"/>

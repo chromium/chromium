@@ -46,6 +46,9 @@ const base::Feature kWebViewConnectionlessSafeBrowsing{
 const base::Feature kWebViewForceDarkModeMatchTheme{
     "WebViewForceDarkModeMatchTheme", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kWebViewHitTestInBlinkOnTouchStart{
+    "WebViewHitTestInBlinkOnTouchStart", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enable display cutout support for Android P and above.
 const base::Feature kWebViewDisplayCutout{"WebViewDisplayCutout",
                                           base::FEATURE_ENABLED_BY_DEFAULT};

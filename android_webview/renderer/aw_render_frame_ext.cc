@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -216,6 +217,16 @@ bool AwRenderFrameExt::OnAssociatedInterfaceRequestForFrame(
   return registry_.TryBindInterface(interface_name, handle);
 }
 
+void AwRenderFrameExt::DidCreateDocumentElement() {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebViewHitTestInBlinkOnTouchStart)) {
+    return;
+  }
+  render_frame()->GetWebFrame()->AddHitTestOnTouchStartCallback(
+      base::BindRepeating(&AwRenderFrameExt::HandleHitTestResult,
+                          base::Unretained(this)));
+}
+
 void AwRenderFrameExt::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
   // Clear the cache when we cross site boundaries in the main frame.
@@ -268,6 +279,11 @@ void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
   const blink::WebHitTestResult result = webview->HitTestResultForTap(
       gfx::Point(touch_center.x(), touch_center.y()),
       gfx::Size(touch_area.width(), touch_area.height()));
+  HandleHitTestResult(result);
+}
+
+void AwRenderFrameExt::HandleHitTestResult(
+    const blink::WebHitTestResult& result) {
   auto data = mojom::HitTestData::New();
 
   GURL absolute_image_url = result.AbsoluteImageURL();

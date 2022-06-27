@@ -82,6 +82,7 @@ class WebContentSettingsClient;
 class WebLocalFrameClient;
 class WebFrameWidget;
 class WebHistoryItem;
+class WebHitTestResult;
 class WebInputMethodController;
 class WebPerformance;
 class WebPlugin;
@@ -902,6 +903,14 @@ class WebLocalFrame : public WebFrame {
   virtual void SetSessionStorageArea(
       CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
           session_storage_area) = 0;
+
+  // Android WebView requires notification of hit tests from blink. It requires
+  // hit tests on touchstart. So this method installs a passive event listener
+  // on touchstart and does a GestureTap hit test providing the results to the
+  // callback.
+  virtual void AddHitTestOnTouchStartCallback(
+      base::RepeatingCallback<void(const blink::WebHitTestResult&)>
+          callback) = 0;
 
  protected:
   explicit WebLocalFrame(mojom::TreeScopeType scope,

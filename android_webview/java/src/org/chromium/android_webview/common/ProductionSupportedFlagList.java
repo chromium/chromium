@@ -337,6 +337,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.TIMED_HTML_PARSER_BUDGET,
                     "If enabled, the HTMLDocumentParser will use a budget based on elapsed time"
                             + " rather than token count."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_HIT_TEST_IN_BLINK_ON_TOUCH_START,
+                    "Hit test on touch start in blink"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
