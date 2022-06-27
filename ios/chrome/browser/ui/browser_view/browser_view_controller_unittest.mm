@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
+#import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -148,6 +149,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         OCMProtocolMock(@protocol(PageInfoCommands));
     [dispatcher startDispatchingToTarget:mockPageInfoCommandHandler
                              forProtocol:@protocol(PageInfoCommands)];
+    id mockQrScannerCommandHandler =
+        OCMProtocolMock(@protocol(QRScannerCommands));
+    [dispatcher startDispatchingToTarget:mockQrScannerCommandHandler
+                             forProtocol:@protocol(QRScannerCommands)];
 
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
     // to ApplicationSettingsCommands, that needs to be mocked and dispatched

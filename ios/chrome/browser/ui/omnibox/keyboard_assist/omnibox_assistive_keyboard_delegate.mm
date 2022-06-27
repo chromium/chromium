@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
@@ -19,7 +20,9 @@
 
 @implementation OmniboxAssistiveKeyboardDelegateImpl
 
-@synthesize dispatcher = _dispatcher;
+@synthesize applicationCommandsHandler = _applicationCommandsHandler;
+@synthesize browserCommandsHandler = _browserCommandsHandler;
+@synthesize qrScannerCommandsHandler = _qrScannerCommandsHandler;
 @synthesize omniboxTextField = _omniboxTextField;
 @synthesize voiceSearchButtonGuide = _voiceSearchButtonGuide;
 
@@ -27,7 +30,7 @@
 
 - (void)keyboardAccessoryVoiceSearchTouchUpInside:(UIView*)view {
   if (ios::provider::IsVoiceSearchEnabled()) {
-    [self.dispatcher preloadVoiceSearch];
+    [self.browserCommandsHandler preloadVoiceSearch];
     base::RecordAction(base::UserMetricsAction("MobileCustomRowVoiceSearch"));
     // Since the keyboard accessory view is in a different window than the main
     // UIViewController upon which Voice Search will be presented, the guide
@@ -44,13 +47,13 @@
           CGRectGetHeight(frame);
       self.voiceSearchButtonGuide.constrainedFrame = frame;
     }
-    [self.dispatcher startVoiceSearch];
+    [self.applicationCommandsHandler startVoiceSearch];
   }
 }
 
 - (void)keyboardAccessoryCameraSearchTouchUp {
   base::RecordAction(base::UserMetricsAction("MobileCustomRowCameraSearch"));
-  [self.dispatcher showQRScanner];
+  [self.qrScannerCommandsHandler showQRScanner];
 }
 
 - (void)keyPressed:(NSString*)title {

@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -471,6 +472,8 @@ enum class IOSOverflowMenuActionType {
       id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
          FindInPageCommands, LoadQueryCommands, TextZoomCommands>>(
       self.browser->GetCommandDispatcher());
+  self.actionHandler.qrScannerCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), QRScannerCommands);
   self.actionHandler.delegate = self.mediator;
   self.actionHandler.navigationAgent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);

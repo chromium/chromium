@@ -17,9 +17,12 @@
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
@@ -120,11 +123,14 @@
           self.browser->GetCommandDispatcher());
 
   self.keyboardDelegate = [[OmniboxAssistiveKeyboardDelegateImpl alloc] init];
+  self.keyboardDelegate.applicationCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  self.keyboardDelegate.qrScannerCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), QRScannerCommands);
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
-  self.keyboardDelegate.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCommands>>(
-          self.browser->GetCommandDispatcher());
+  self.keyboardDelegate.browserCommandsHandler =
+      static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
   self.keyboardDelegate.omniboxTextField = self.textField;
   ConfigureAssistiveKeyboardViews(self.textField, kDotComTLD,
                                   self.keyboardDelegate);

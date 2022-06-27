@@ -197,9 +197,7 @@ using base::UserMetricsAction;
     }
     case PopupMenuActionQRCodeSearch:
       RecordAction(UserMetricsAction("MobileMenuScanQRCode"));
-      // TODO(crbug.com/1323775): This will need to be called on the
-      // QRScannerCommands handler.
-      [self.dispatcher showQRScanner];
+      [self.qrScannerCommandsHandler showQRScanner];
       break;
     case PopupMenuActionSearchCopiedImage: {
       RecordAction(UserMetricsAction("MobileMenuSearchCopiedImage"));

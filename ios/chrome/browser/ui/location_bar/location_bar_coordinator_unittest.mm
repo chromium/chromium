@@ -19,6 +19,9 @@
 #include "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
@@ -30,6 +33,8 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -105,6 +110,26 @@ class LocationBarCoordinatorTest : public PlatformTest {
     browser_->GetWebStateList()->InsertWebState(
         0, std::move(web_state), WebStateList::INSERT_FORCE_INDEX,
         WebStateOpener());
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+
+    id mockQrScannerCommandHandler =
+        OCMProtocolMock(@protocol(QRScannerCommands));
+    [dispatcher startDispatchingToTarget:mockQrScannerCommandHandler
+                             forProtocol:@protocol(QRScannerCommands)];
+
+    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
+    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
+    // as well.
+    id mockApplicationCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mockApplicationSettingsCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher
+        startDispatchingToTarget:mockApplicationSettingsCommandHandler
+                     forProtocol:@protocol(ApplicationSettingsCommands)];
 
     delegate_ = [[TestToolbarCoordinatorDelegate alloc] init];
 
