@@ -2,6 +2,11 @@
   const {page, session, dp} = await testRunner.startBlank(
     `Tests that the initiator position is correct even when that initiator is minified.`);
 
+  window.onerror = (msg) => testRunner.log('onerror: ' + msg);
+  window.onunhandledrejection = (e) => testRunner.log('onunhandledrejection: ' + e.reason);
+  let errorForLog = new Error();
+  setTimeout(() => testRunner.die('Timeout', errorForLog), 5000);
+
   dp.Network.enable();
   dp.Page.enable();
   dp.Page.navigate({url: testRunner.url('resources/minified.html')});
@@ -9,6 +14,7 @@
   let requests = [];
   await dp.Network.onceRequestWillBeSent(e => {
     requests.push(e.params);
+    errorForLog = new Error(JSON.stringify(requests));
     // Wait for all expected requests to be done.
     return requests.length === 4;
   });
