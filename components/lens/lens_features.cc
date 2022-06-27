@@ -28,6 +28,9 @@ const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2{
 const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3{
     &kLensStandalone, "use-menu-item-alt-text-3", false};
 
+const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText4{
+    &kLensStandalone, "use-menu-item-alt-text-4", false};
+
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
     &kLensStandalone, "region-search-enable-ukm-logging", true};
 
@@ -89,6 +92,11 @@ bool UseRegionSearchMenuItemAltText2() {
 bool UseRegionSearchMenuItemAltText3() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
          kRegionSearchUseMenuItemAltText3.Get();
+}
+
+bool UseRegionSearchMenuItemAltText4() {
+  return base::FeatureList::IsEnabled(kLensStandalone) &&
+         kRegionSearchUseMenuItemAltText4.Get();
 }
 
 bool IsLensFullscreenSearchEnabled() {

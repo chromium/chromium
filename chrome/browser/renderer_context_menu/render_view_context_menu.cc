@@ -2148,10 +2148,17 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
   } else if (lens::features::UseRegionSearchMenuItemAltText2()) {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT2;
-  } else if (lens::features::UseRegionSearchMenuItemAltText3() ||
-             lens::features::IsLensFullscreenSearchEnabled()) {
-    // Default text for fullscreen search when enabled. Uses `Google` instead of
-    // `Google Lens` like the first alternative string.
+  } else if (lens::features::UseRegionSearchMenuItemAltText3()) {
+    // Uses `Google` instead of `Google Lens` like the first alternative string.
+    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
+    provider_name = std::u16string(kGoogle);
+  } else if (lens::features::UseRegionSearchMenuItemAltText4()) {
+    // This string is the same as currently launched but uses `Google` instead
+    // of `Google Lens` as the provider name.
+    provider_name = std::u16string(kGoogle);
+  } else if (lens::features::IsLensFullscreenSearchEnabled()) {
+    // Default text for fullscreen search when enabled. This is the same string
+    // as the third alternative text option.
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
     provider_name = std::u16string(kGoogle);
   }
