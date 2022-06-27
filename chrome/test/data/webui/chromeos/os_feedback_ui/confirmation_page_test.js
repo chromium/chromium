@@ -107,7 +107,7 @@ export function confirmationPageTest() {
     assertTrue(isVisible(exploreLink));
     assertEquals(
         'help-resources:explore', getElement(exploreLink, '#startIcon').icon);
-    assertEquals('Explore app', getElementContent(exploreLink, '#label'));
+    assertEquals('Explore app', getElementContent(page, '#explore > .label'));
     assertTrue(page.i18nExists('exploreAppLabel'));
     assertEquals(
         'Find help articles and answers to common Chromebook questions',
@@ -121,7 +121,7 @@ export function confirmationPageTest() {
         'help-resources:diagnostics',
         getElement(diagnosticsLink, '#startIcon').icon);
     assertEquals(
-        'Diagnostics app', getElementContent(diagnosticsLink, '#label'));
+        'Diagnostics app', getElementContent(page, '#diagnostics > .label'));
     assertTrue(page.i18nExists('diagnosticsAppLabel'));
     assertEquals(
         'Run tests and troubleshooting for hardware issues',
@@ -139,7 +139,8 @@ export function confirmationPageTest() {
         'help-resources2:chromebook-community',
         getElement(communityLink, '#startIcon').icon);
     assertEquals(
-        'Chromebook community', getElementContent(communityLink, '#label'));
+        'Chromebook community',
+        getElementContent(page, '#chromebookCommunity > .label'));
     assertEquals(
         'Ask the experts in the Chromebook help forum',
         getElementContent(communityLink, '#subLabel'));
