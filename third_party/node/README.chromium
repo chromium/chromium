@@ -248,3 +248,19 @@ https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry/createWrite
 
 Local Modifications:
 (none)
+
+Name: HTML Minifier
+Short Name: html-minifier
+URL: https://www.npmjs.com/package/html-minifier
+Version: 4.0.0
+License: MIT
+Security Critical: No, as html-minifier itself is only used during build time.
+It does affect the contents of shipped HTML files though.
+
+Description:
+HTMLMinifier is a highly configurable, well-tested, JavaScript-based HTML
+minifier.
+
+Local Modifications:
+Removed uglify-js dependency since we don't plan to use the --minify-js flag in
+Chromium.
