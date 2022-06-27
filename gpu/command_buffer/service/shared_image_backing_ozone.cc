@@ -141,6 +141,8 @@ void SharedImageBackingOzone::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
                      context_state_.get(), format(), size(), alpha_type())) {
       DLOG(ERROR) << "Failed to write pixels.";
     }
+  } else if (in_fence) {
+    external_write_fence_ = in_fence->GetGpuFenceHandle().Clone();
   }
 }
 
@@ -421,12 +423,25 @@ bool SharedImageBackingOzone::BeginAccess(
     read_fences_.clear();
   }
 
-  // If current stream is different than last_write_stream_ then wait on that
-  // stream's write_fence_ (except on ARM Mali boards for ChromeOS).
+  // Always wait on an `external_write_fence_` if present.
+  if (!external_write_fence_.is_null()) {
+    DCHECK(write_fence_.is_null());  // `write_fence_` should be null.
+    // For write access we expect new `write_fence_` so we can move the
+    // old fence here.
+    if (!readonly)
+      fences->emplace_back(std::move(external_write_fence_));
+    else
+      fences->emplace_back(external_write_fence_.Clone());
+  }
+
+  // If current stream is different than `last_write_stream_` then wait on that
+  // stream's `write_fence_` (except on ARM Mali boards for ChromeOS).
   if (!write_fence_.is_null() && (workarounds_.add_fence_for_same_gl_context ||
                                   last_write_stream_ != access_stream)) {
-    // For write access we expect new write_fence_ so we can move the old fence
-    // here.
+    DCHECK(external_write_fence_
+               .is_null());  // `external_write_fence_` should be null.
+    // For write access we expect new `write_fence_` so we can move the old
+    // fence here.
     if (!readonly)
       fences->emplace_back(std::move(write_fence_));
     else

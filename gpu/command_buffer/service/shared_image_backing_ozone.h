@@ -125,6 +125,8 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
 
   scoped_refptr<gfx::NativePixmap> pixmap_;
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
+  // Write fence that is external and does not do Begin/EndAccess (eg. exo)
+  gfx::GpuFenceHandle external_write_fence_;
   gfx::GpuFenceHandle write_fence_;
   base::flat_map<AccessStream, gfx::GpuFenceHandle> read_fences_;
   AccessStream last_write_stream_;
