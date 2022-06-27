@@ -17,9 +17,18 @@
 #include <windows.h>
 #include <string.h>
 
+#include <algorithm>
+#include <array>
 #include <iterator>
+#include <set>
+#include <string>
 
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "test/scoped_set_thread_name.h"
 #include "test/win/win_multiprocess.h"
 #include "util/misc/from_pointer_cast.h"
 #include "util/synchronization/semaphore.h"
@@ -30,6 +39,8 @@
 namespace crashpad {
 namespace test {
 namespace {
+
+using ::testing::IsSupersetOf;
 
 TEST(ProcessReaderWin, SelfBasic) {
   ProcessReaderWin process_reader;
@@ -98,6 +109,7 @@ TEST(ProcessReaderWin, ChildBasic) {
 }
 
 TEST(ProcessReaderWin, SelfOneThread) {
+  const ScopedSetThreadName scoped_set_thread_name("SelfBasic");
   ProcessReaderWin process_reader;
   ASSERT_TRUE(process_reader.Initialize(GetCurrentProcess(),
                                         ProcessSuspensionState::kRunning));
@@ -111,6 +123,9 @@ TEST(ProcessReaderWin, SelfOneThread) {
   ASSERT_GE(threads.size(), 1u);
 
   EXPECT_EQ(threads[0].id, GetCurrentThreadId());
+  if (ScopedSetThreadName::IsSupported()) {
+    EXPECT_EQ(threads[0].name, "SelfBasic");
+  }
   EXPECT_NE(ProgramCounterFromCONTEXT(threads[0].context.context<CONTEXT>()),
             nullptr);
   EXPECT_EQ(threads[0].suspend_count, 0u);
@@ -132,18 +147,21 @@ class ProcessReaderChildThreadSuspendCount final : public WinMultiprocess {
 
   class SleepingThread : public Thread {
    public:
-    SleepingThread() : done_(nullptr) {}
+    explicit SleepingThread(const std::string& thread_name)
+        : done_(nullptr), thread_name_(thread_name) {}
 
     void SetHandle(Semaphore* done) {
       done_= done;
     }
 
     void ThreadMain() override {
+      const ScopedSetThreadName scoped_set_thread_name(thread_name_);
       done_->Wait();
     }
 
    private:
     Semaphore* done_;
+    const std::string thread_name_;
   };
 
   void WinMultiprocessParent() override {
@@ -158,8 +176,31 @@ class ProcessReaderChildThreadSuspendCount final : public WinMultiprocess {
 
       const auto& threads = process_reader.Threads();
       ASSERT_GE(threads.size(), kCreatedThreads + 1);
-      for (const auto& thread : threads)
+
+      for (const auto& thread : threads) {
         EXPECT_EQ(thread.suspend_count, 0u);
+      }
+
+      if (ScopedSetThreadName::IsSupported()) {
+        EXPECT_EQ(threads[0].name, "WinMultiprocessChild-Main");
+
+        const std::set<std::string> expected_thread_names = {
+            "WinMultiprocessChild-1",
+            "WinMultiprocessChild-2",
+            "WinMultiprocessChild-3",
+        };
+        // Windows can create threads besides the ones created in
+        // WinMultiprocessChild(), so keep track of the (non-main) thread names
+        // and make sure all the expected names are present.
+        std::set<std::string> thread_names;
+        for (size_t i = 1; i < threads.size(); i++) {
+          if (!threads[i].name.empty()) {
+            thread_names.emplace(threads[i].name);
+          }
+        }
+
+        EXPECT_THAT(thread_names, IsSupersetOf(expected_thread_names));
+      }
     }
 
     {
@@ -173,15 +214,23 @@ class ProcessReaderChildThreadSuspendCount final : public WinMultiprocess {
       // suspended.
       const auto& threads = process_reader.Threads();
       ASSERT_GE(threads.size(), kCreatedThreads + 1);
-      for (const auto& thread : threads)
+      for (const auto& thread : threads) {
         EXPECT_EQ(thread.suspend_count, 0u);
+      }
     }
   }
 
   void WinMultiprocessChild() override {
+    const ScopedSetThreadName scoped_set_thread_name(
+        "WinMultiprocessChild-Main");
+
     // Create three dummy threads so we can confirm we read successfully read
     // more than just the main thread.
-    SleepingThread threads[kCreatedThreads];
+    std::array<SleepingThread, kCreatedThreads> threads = {
+        SleepingThread(std::string("WinMultiprocessChild-1")),
+        SleepingThread(std::string("WinMultiprocessChild-2")),
+        SleepingThread(std::string("WinMultiprocessChild-3")),
+    };
     Semaphore done(0);
     for (auto& thread : threads)
       thread.SetHandle(&done);

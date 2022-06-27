@@ -23,6 +23,7 @@
 #include "minidump/minidump_extensions.h"
 #include "snapshot/memory_map_region_snapshot.h"
 #include "snapshot/minidump/minidump_simple_string_dictionary_reader.h"
+#include "snapshot/minidump/minidump_string_reader.h"
 #include "util/file/file_io.h"
 
 namespace crashpad {
@@ -576,16 +577,73 @@ bool ProcessSnapshotMinidump::InitializeThreads() {
     return false;
   }
 
+  if (!InitializeThreadNames()) {
+    return false;
+  }
+
   for (uint32_t thread_index = 0; thread_index < thread_count; ++thread_index) {
     const RVA thread_rva = stream_it->second->Rva + sizeof(thread_count) +
                            thread_index * sizeof(MINIDUMP_THREAD);
 
     auto thread = std::make_unique<internal::ThreadSnapshotMinidump>();
-    if (!thread->Initialize(file_reader_, thread_rva, arch_)) {
+    if (!thread->Initialize(file_reader_, thread_rva, arch_, thread_names_)) {
       return false;
     }
 
     threads_.push_back(std::move(thread));
+  }
+
+  return true;
+}
+
+bool ProcessSnapshotMinidump::InitializeThreadNames() {
+  const auto& stream_it = stream_map_.find(kMinidumpStreamTypeThreadNameList);
+  if (stream_it == stream_map_.end()) {
+    return true;
+  }
+
+  if (stream_it->second->DataSize < sizeof(MINIDUMP_THREAD_NAME_LIST)) {
+    LOG(ERROR) << "thread_name_list size mismatch";
+    return false;
+  }
+
+  if (!file_reader_->SeekSet(stream_it->second->Rva)) {
+    return false;
+  }
+
+  uint32_t thread_name_count;
+  if (!file_reader_->ReadExactly(&thread_name_count,
+                                 sizeof(thread_name_count))) {
+    return false;
+  }
+
+  if (sizeof(MINIDUMP_THREAD_NAME_LIST) +
+          thread_name_count * sizeof(MINIDUMP_THREAD_NAME) !=
+      stream_it->second->DataSize) {
+    LOG(ERROR) << "thread_name_list size mismatch";
+    return false;
+  }
+
+  for (uint32_t thread_name_index = 0; thread_name_index < thread_name_count;
+       ++thread_name_index) {
+    const RVA thread_name_rva =
+        stream_it->second->Rva + sizeof(thread_name_count) +
+        thread_name_index * sizeof(MINIDUMP_THREAD_NAME);
+    if (!file_reader_->SeekSet(thread_name_rva)) {
+      return false;
+    }
+    MINIDUMP_THREAD_NAME minidump_thread_name;
+    if (!file_reader_->ReadExactly(&minidump_thread_name,
+                                   sizeof(minidump_thread_name))) {
+      return false;
+    }
+    std::string name;
+    if (!internal::ReadMinidumpUTF16String(
+            file_reader_, minidump_thread_name.RvaOfThreadName, &name)) {
+      return false;
+    }
+
+    thread_names_.emplace(minidump_thread_name.ThreadId, std::move(name));
   }
 
   return true;

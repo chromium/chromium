@@ -17,21 +17,47 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "minidump/minidump_thread_id_map.h"
+#include "snapshot/thread_snapshot.h"
 #include "util/file/file_writer.h"
 #include "util/numeric/safe_assignment.h"
 
 namespace crashpad {
 
 MinidumpThreadNameWriter::MinidumpThreadNameWriter()
-    : MinidumpWritable(), thread_name_(), name_() {}
+    : MinidumpWritable(), rva_of_thread_name_(), thread_id_(), name_() {}
 
 MinidumpThreadNameWriter::~MinidumpThreadNameWriter() {}
 
-const MINIDUMP_THREAD_NAME* MinidumpThreadNameWriter::MinidumpThreadName()
-    const {
+void MinidumpThreadNameWriter::InitializeFromSnapshot(
+    const ThreadSnapshot* thread_snapshot,
+    const MinidumpThreadIDMap& thread_id_map) {
+  DCHECK_EQ(state(), kStateMutable);
+
+  const auto it = thread_id_map.find(thread_snapshot->ThreadID());
+  DCHECK(it != thread_id_map.end());
+  SetThreadId(it->second);
+  SetThreadName(thread_snapshot->ThreadName());
+}
+
+RVA64 MinidumpThreadNameWriter::RvaOfThreadName() const {
   DCHECK_EQ(state(), kStateWritable);
 
-  return &thread_name_;
+  return rva_of_thread_name_;
+}
+
+uint32_t MinidumpThreadNameWriter::ThreadId() const {
+  DCHECK_EQ(state(), kStateWritable);
+
+  return thread_id_;
+}
+
+bool MinidumpThreadNameWriter::Freeze() {
+  DCHECK_EQ(state(), kStateMutable);
+
+  name_->RegisterRVA(&rva_of_thread_name_);
+
+  return MinidumpWritable::Freeze();
 }
 
 void MinidumpThreadNameWriter::SetThreadName(const std::string& name) {
@@ -46,10 +72,9 @@ void MinidumpThreadNameWriter::SetThreadName(const std::string& name) {
 size_t MinidumpThreadNameWriter::SizeOfObject() {
   DCHECK_GE(state(), kStateFrozen);
 
-  // This object doesn’t directly write anything itself. Its
-  // MINIDUMP_THREAD_NAME is written by its parent as part of a
-  // MINIDUMP_THREAD_NAME_LIST, and its children are responsible for writing
-  // themselves.
+  // This object doesn’t directly write anything itself. Its parent writes the
+  // MINIDUMP_THREAD_NAME objects as part of a MINIDUMP_THREAD_NAME_LIST, and
+  // its children are responsible for writing themselves.
   return 0;
 }
 
@@ -61,24 +86,6 @@ std::vector<internal::MinidumpWritable*> MinidumpThreadNameWriter::Children() {
   children.emplace_back(name_.get());
 
   return children;
-}
-
-bool MinidumpThreadNameWriter::WillWriteAtOffsetImpl(FileOffset offset) {
-  DCHECK_EQ(state(), kStateFrozen);
-
-  // This cannot use RegisterRVA(&thread_name_.RvaOfThreadName), since
-  // &MINIDUMP_THREAD_NAME_LIST::RvaOfThreadName is not aligned on a pointer
-  // boundary, so it causes failures on 32-bit ARM.
-  //
-  // Instead, manually update the RVA64 to the current file offset since the
-  // child thread_name_ will write its contents at that offset.
-  decltype(thread_name_.RvaOfThreadName) local_rva_of_thread_name;
-  if (!AssignIfInRange(&local_rva_of_thread_name, offset)) {
-    LOG(ERROR) << "offset " << offset << " out of range";
-    return false;
-  }
-  thread_name_.RvaOfThreadName = local_rva_of_thread_name;
-  return MinidumpWritable::WillWriteAtOffsetImpl(offset);
 }
 
 bool MinidumpThreadNameWriter::WriteObject(FileWriterInterface* file_writer) {
@@ -95,6 +102,19 @@ MinidumpThreadNameListWriter::MinidumpThreadNameListWriter()
     : MinidumpStreamWriter(), thread_names_() {}
 
 MinidumpThreadNameListWriter::~MinidumpThreadNameListWriter() {}
+
+void MinidumpThreadNameListWriter::InitializeFromSnapshot(
+    const std::vector<const ThreadSnapshot*>& thread_snapshots,
+    const MinidumpThreadIDMap& thread_id_map) {
+  DCHECK_EQ(state(), kStateMutable);
+  DCHECK(thread_names_.empty());
+
+  for (const ThreadSnapshot* thread_snapshot : thread_snapshots) {
+    auto thread = std::make_unique<MinidumpThreadNameWriter>();
+    thread->InitializeFromSnapshot(thread_snapshot, thread_id_map);
+    AddThreadName(std::move(thread));
+  }
+}
 
 void MinidumpThreadNameListWriter::AddThreadName(
     std::unique_ptr<MinidumpThreadNameWriter> thread_name) {
@@ -150,10 +170,15 @@ bool MinidumpThreadNameListWriter::WriteObject(
   std::vector<WritableIoVec> iovecs(1, iov);
   iovecs.reserve(thread_names_.size() + 1);
 
+  std::vector<MINIDUMP_THREAD_NAME> minidump_thread_names;
+  minidump_thread_names.reserve(thread_names_.size());
   for (const auto& thread_name : thread_names_) {
-    iov.iov_base = thread_name->MinidumpThreadName();
-    iov.iov_len = sizeof(MINIDUMP_THREAD_NAME);
-    iovecs.emplace_back(iov);
+    auto& minidump_thread_name = minidump_thread_names.emplace_back();
+    minidump_thread_name.ThreadId = thread_name->ThreadId();
+    minidump_thread_name.RvaOfThreadName = thread_name->RvaOfThreadName();
+    iov.iov_base = &minidump_thread_name;
+    iov.iov_len = sizeof(minidump_thread_name);
+    iovecs.push_back(iov);
   }
 
   return file_writer->WriteIoVec(&iovecs);

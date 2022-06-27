@@ -26,6 +26,7 @@
 #include "client/simple_string_dictionary.h"
 #include "gtest/gtest.h"
 #include "snapshot/ios/process_snapshot_ios_intermediate_dump.h"
+#include "test/scoped_set_thread_name.h"
 #include "test/scoped_temp_dir.h"
 #include "test/test_paths.h"
 #include "util/file/filesystem.h"
@@ -206,6 +207,8 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestAnnotations) {
 }
 
 TEST_F(InProcessIntermediateDumpHandlerTest, TestThreads) {
+  const ScopedSetThreadName scoped_set_thread_name("TestThreads");
+
   WriteReport();
   internal::ProcessSnapshotIOSIntermediateDump process_snapshot;
   ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), {}));
@@ -221,6 +224,7 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestThreads) {
                         &count),
             0);
   EXPECT_EQ(threads[0]->ThreadID(), identifier_info.thread_id);
+  EXPECT_EQ(threads[0]->ThreadName(), "TestThreads");
 }
 
 TEST_F(InProcessIntermediateDumpHandlerTest, TestProcess) {

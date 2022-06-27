@@ -75,6 +75,7 @@ class ProcessReaderMac {
     ThreadContext thread_context;
     FloatContext float_context;
     DebugContext debug_context;
+    std::string name;
     uint64_t id;
     mach_vm_address_t stack_region_address;
     mach_vm_size_t stack_region_size;

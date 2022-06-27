@@ -17,6 +17,8 @@
 
 #include "snapshot/thread_snapshot.h"
 
+#include <string>
+
 #include "snapshot/sanitized/memory_snapshot_sanitized.h"
 #include "util/misc/range_set.h"
 
@@ -44,6 +46,7 @@ class ThreadSnapshotSanitized final : public ThreadSnapshot {
   const CPUContext* Context() const override;
   const MemorySnapshot* Stack() const override;
   uint64_t ThreadID() const override;
+  std::string ThreadName() const override;
   int SuspendCount() const override;
   int Priority() const override;
   uint64_t ThreadSpecificDataAddress() const override;

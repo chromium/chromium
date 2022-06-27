@@ -37,6 +37,7 @@ static_library("test") {
     "scoped_guarded_page.h",
     "scoped_module_handle.cc",
     "scoped_module_handle.h",
+    "scoped_set_thread_name.h",
     "scoped_temp_dir.cc",
     "scoped_temp_dir.h",
     "test_paths.cc",
@@ -55,6 +56,14 @@ static_library("test") {
         "multiprocess_posix.cc",
       ]
     }
+  }
+
+  # TODO(crbug.com/812974): Remove !crashpad_is_fuchsia when Fuchsia is no
+  # longer treated as a posix platform.
+  if (crashpad_is_posix && !crashpad_is_fuchsia) {
+    sources += [
+      "scoped_set_thread_name_posix.cc",
+    ]
   }
 
   if (crashpad_is_mac || crashpad_is_ios) {
@@ -96,6 +105,7 @@ static_library("test") {
     sources += [
       "multiprocess_exec_win.cc",
       "scoped_guarded_page_win.cc",
+      "scoped_set_thread_name_win.cc",
       "scoped_temp_dir_win.cc",
       "win/child_launcher.cc",
       "win/child_launcher.h",
@@ -109,7 +119,10 @@ static_library("test") {
   }
 
   if (crashpad_is_fuchsia) {
-    sources += [ "multiprocess_exec_fuchsia.cc" ]
+    sources += [
+      "multiprocess_exec_fuchsia.cc",
+      "scoped_set_thread_name_fuchsia.cc",
+    ]
   }
 
   public_configs = [ "..:crashpad_config" ]

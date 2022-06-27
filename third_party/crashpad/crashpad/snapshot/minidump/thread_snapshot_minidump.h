@@ -17,6 +17,8 @@
 
 #include <windows.h>
 
+#include <map>
+
 #include "minidump/minidump_extensions.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/minidump/memory_snapshot_minidump.h"
@@ -46,16 +48,20 @@ class ThreadSnapshotMinidump : public ThreadSnapshot {
   //!     the thread’s MINIDUMP_THREAD structure is located.
   //! \param[in] arch The architecture of the system this thread is running on.
   //!     Used to decode CPU Context.
+  //! \param[in] thread_names Map from thread ID to thread name previously read
+  //!     from the minidump's MINIDUMP_THREAD_NAME_LIST.
   //!
   //! \return `true` if the snapshot could be created, `false` otherwise with
   //!     an appropriate message logged.
   bool Initialize(FileReaderInterface* file_reader,
                   RVA minidump_thread_rva,
-                  CPUArchitecture arch);
+                  CPUArchitecture arch,
+                  const std::map<uint32_t, std::string>& thread_names);
 
   const CPUContext* Context() const override;
   const MemorySnapshot* Stack() const override;
   uint64_t ThreadID() const override;
+  std::string ThreadName() const override;
   int SuspendCount() const override;
   int Priority() const override;
   uint64_t ThreadSpecificDataAddress() const override;
@@ -71,6 +77,7 @@ class ThreadSnapshotMinidump : public ThreadSnapshot {
   bool InitializeContext(const std::vector<unsigned char>& minidump_context);
 
   MINIDUMP_THREAD minidump_thread_;
+  std::string thread_name_;
   MinidumpContextConverter context_;
   MemorySnapshotMinidump stack_;
   InitializationStateDcheck initialized_;

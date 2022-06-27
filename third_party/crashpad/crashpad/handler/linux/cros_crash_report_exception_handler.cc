@@ -29,7 +29,7 @@
 #include "util/linux/ptrace_client.h"
 #include "util/misc/metrics.h"
 #include "util/misc/uuid.h"
-#include "util/posix/double_fork_and_exec.h"
+#include "util/posix/spawn_subprocess.h"
 
 namespace crashpad {
 
@@ -266,12 +266,11 @@ bool CrosCrashReportExceptionHandler::HandleExceptionWithConnection(
     argv.push_back("--always_allow_feedback");
   }
 
-  if (!DoubleForkAndExec(argv,
-                         nullptr /* envp */,
-                         file_writer.fd() /* preserve_fd */,
-                         false /* use_path */,
-                         nullptr /* child_function */)) {
-    LOG(ERROR) << "DoubleForkAndExec failed";
+  if (!SpawnSubprocess(argv,
+                       nullptr /* envp */,
+                       file_writer.fd() /* preserve_fd */,
+                       false /* use_path */,
+                       nullptr /* child_function */)) {
     Metrics::ExceptionCaptureResult(
         Metrics::CaptureResult::kFinishedWritingCrashReportFailed);
     return false;

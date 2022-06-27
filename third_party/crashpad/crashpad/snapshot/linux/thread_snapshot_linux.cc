@@ -133,6 +133,7 @@ ThreadSnapshotLinux::ThreadSnapshotLinux()
       context_(),
       stack_(),
       thread_specific_data_address_(0),
+      thread_name_(),
       thread_id_(-1),
       priority_(-1),
       initialized_() {}
@@ -200,6 +201,7 @@ bool ThreadSnapshotLinux::Initialize(
   thread_specific_data_address_ =
       thread.thread_info.thread_specific_data_address;
 
+  thread_name_ = thread.name;
   thread_id_ = thread.tid;
 
   priority_ =
@@ -232,6 +234,11 @@ const MemorySnapshot* ThreadSnapshotLinux::Stack() const {
 uint64_t ThreadSnapshotLinux::ThreadID() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return thread_id_;
+}
+
+std::string ThreadSnapshotLinux::ThreadName() const {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  return thread_name_;
 }
 
 int ThreadSnapshotLinux::SuspendCount() const {

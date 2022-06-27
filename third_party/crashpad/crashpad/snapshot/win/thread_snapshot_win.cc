@@ -165,6 +165,11 @@ uint64_t ThreadSnapshotWin::ThreadID() const {
   return thread_.id;
 }
 
+std::string ThreadSnapshotWin::ThreadName() const {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  return thread_.name;
+}
+
 int ThreadSnapshotWin::SuspendCount() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return thread_.suspend_count;

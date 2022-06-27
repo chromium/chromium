@@ -25,6 +25,7 @@
 
 #include "minidump/minidump_stream_writer.h"
 #include "minidump/minidump_string_writer.h"
+#include "minidump/minidump_thread_id_map.h"
 #include "minidump/minidump_writable.h"
 
 namespace crashpad {
@@ -45,28 +46,57 @@ class MinidumpThreadNameWriter final : public internal::MinidumpWritable {
 
   ~MinidumpThreadNameWriter() override;
 
-  //! \brief Returns a MINIDUMP_THREAD_NAME referencing this object’s data.
+  //! \brief Initializes the MINIDUMP_THREAD_NAME based on \a thread_snapshot.
   //!
-  //! This method is expected to be called by a MinidumpThreadNameListWriter in
-  //! order to obtain a MINIDUMP_THREAD_NAME to include in its list.
+  //! \param[in] thread_snapshot The thread snapshot to use as source data.
+  //! \param[in] thread_id_map A MinidumpThreadIDMap to be consulted to
+  //!     determine the 32-bit minidump thread ID to use for \a thread_snapshot.
+  //!
+  //! \note Valid in #kStateMutable.
+  void InitializeFromSnapshot(const ThreadSnapshot* thread_snapshot,
+                              const MinidumpThreadIDMap& thread_id_map);
+
+  //! \brief Sets the ThreadId for MINIDUMP_THREAD_NAME::ThreadId.
+  void SetThreadId(uint32_t thread_id) { thread_id_ = thread_id; }
+
+  //! \brief Gets the ThreadId for MINIDUMP_THREAD_NAME::ThreadId.
   //!
   //! \note Valid in #kStateWritable.
-  const MINIDUMP_THREAD_NAME* MinidumpThreadName() const;
-
-  //! \brief Sets MINIDUMP_THREAD_NAME::ThreadId.
-  void SetThreadId(uint32_t thread_id) { thread_name_.ThreadId = thread_id; }
+  uint32_t ThreadId() const;
 
   //! \brief Sets MINIDUMP_THREAD_NAME::RvaOfThreadName.
   void SetThreadName(const std::string& thread_name);
 
+  //! \brief Returns an RVA64 which has been updated with the relative address
+  //!    of the thread name.
+  //!
+  //! This method is expected to be called by a MinidumpThreadNameListWriter in
+  //! order to obtain the RVA64 of the thread name.
+  //!
+  //! \note Valid in #kStateWritable.
+  RVA64 RvaOfThreadName() const;
+
  private:
   // MinidumpWritable:
+  bool Freeze() override;
   size_t SizeOfObject() override;
   std::vector<MinidumpWritable*> Children() override;
-  bool WillWriteAtOffsetImpl(FileOffset offset) override;
   bool WriteObject(FileWriterInterface* file_writer) override;
 
-  MINIDUMP_THREAD_NAME thread_name_;
+  // This exists as a separate field so MinidumpWritable::RegisterRVA() can be
+  // used on a guaranteed-aligned pointer (MINIDUMP_THREAD_NAME::RvaOfThreadName
+  // is not 64-bit aligned, causing issues on ARM).
+  RVA64 rva_of_thread_name_;
+
+  // Although this class manages the data for a MINIDUMP_THREAD_NAME, it does
+  // not directly hold a MINIDUMP_THREAD_NAME, as that struct contains a
+  // non-aligned RVA64 field which prevents it use with
+  // MinidumpWritable::RegisterRVA().
+  //
+  // Instead, this class individually holds the fields of the
+  // MINIDUMP_THREAD_NAME which are fetched by MinidumpThreadNameListWriter.
+  uint32_t thread_id_;
+
   std::unique_ptr<internal::MinidumpUTF16StringWriter> name_;
 };
 
@@ -82,6 +112,18 @@ class MinidumpThreadNameListWriter final
       delete;
 
   ~MinidumpThreadNameListWriter() override;
+
+  //! \brief Adds an initialized MINIDUMP_THREAD_NAME for each thread in \a
+  //!     thread_snapshots to the MINIDUMP_THREAD_NAME_LIST.
+  //!
+  //! \param[in] thread_snapshots The thread snapshots to use as source data.
+  //! \param[in] thread_id_map A MinidumpThreadIDMap previously built by
+  //!     MinidumpThreadListWriter::InitializeFromSnapshot().
+  //!
+  //! \note Valid in #kStateMutable.
+  void InitializeFromSnapshot(
+      const std::vector<const ThreadSnapshot*>& thread_snapshots,
+      const MinidumpThreadIDMap& thread_id_map);
 
   //! \brief Adds a MinidumpThreadNameWriter to the MINIDUMP_THREAD_LIST.
   //!
