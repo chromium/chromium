@@ -458,8 +458,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
         // In non-OOPR mode we need to update the client side SkSurface with the
         // copied texture. Recreating SkSurface here matches the GPU process
         // behaviour that will happen in OOPR mode.
-        if (!use_oop_rasterization_)
+        if (!use_oop_rasterization_) {
+          EnsureWriteAccess();
           GetSkSurface();
+        }
       } else {
         EnsureWriteAccess();
         if (surface_) {
