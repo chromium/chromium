@@ -262,9 +262,6 @@
       <message name="IDS_ADD" desc="Prompt for the user to add something, like a new address. [CHAR_LIMIT=20]">
         Add
       </message>
-      <message name="IDS_CHANGE" desc="Prompt for the user to change something. [CHAR_LIMIT=20]">
-        Change
-      </message>
       <message name="IDS_SHARE" desc="Content description for a button to share item(s). [CHAR_LIMIT=20]">
         Share
       </message>

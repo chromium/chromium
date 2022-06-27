@@ -20,10 +20,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -54,14 +52,12 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.download.DownloadLaterPromptStatus;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.home.rename.RenameUtils;
 import org.chromium.chrome.browser.download.home.toolbar.DownloadHomeToolbar;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -73,7 +69,6 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.RenameResult;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
@@ -104,9 +99,6 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     public JniMocker mJniMocker = new JniMocker();
     @Mock
     private UrlFormatter.Natives mUrlFormatterJniMock;
-
-    @Mock
-    PrefService mPrefService;
 
     private ModalDialogManager.Presenter mAppModalPresenter;
 
@@ -147,9 +139,6 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         when(mUrlFormatterJniMock.formatStringUrlForSecurityDisplay(
                      anyString(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(inv -> inv.getArgument(0));
-        when(mPrefService.getInteger(eq(Pref.DOWNLOAD_LATER_PROMPT_STATUS)))
-                .thenReturn(DownloadLaterPromptStatus.SHOW_INITIAL);
-        doNothing().when(mPrefService).setInteger(anyString(), anyInt());
 
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.OFFLINE_PAGES_PREFETCHING, true);
@@ -197,10 +186,10 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         ObservableSupplierImpl<Boolean> isPrefetchEnabledSupplier = new ObservableSupplierImpl<>();
         isPrefetchEnabledSupplier.set(true);
 
-        mDownloadCoordinator = new DownloadManagerCoordinatorImpl(getActivity(), config,
-                isPrefetchEnabledSupplier, settingsLauncher, mSnackbarManager, mModalDialogManager,
-                mPrefService, mTracker, faviconProvider, mStubbedOfflineContentProvider,
-                mDiscardableReferencePool);
+        mDownloadCoordinator =
+                new DownloadManagerCoordinatorImpl(getActivity(), config, isPrefetchEnabledSupplier,
+                        settingsLauncher, mSnackbarManager, mModalDialogManager, mTracker,
+                        faviconProvider, mStubbedOfflineContentProvider, mDiscardableReferencePool);
         getActivity().setContentView(mDownloadCoordinator.getView());
 
         mDownloadCoordinator.updateForUrl(UrlConstants.DOWNLOADS_URL);

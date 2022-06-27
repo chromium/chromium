@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** A helper class to build and return an {@link DownloadManagerCoordinator}. */
@@ -44,9 +43,8 @@ class DownloadManagerCoordinatorFactoryHelper {
                 DownloadManagerCoordinatorFactoryHelper::settingsLaunchHelper;
         return DownloadManagerCoordinatorFactory.create(activity, config,
                 new PrefetchEnabledSupplier(), settingsLaunchHelper, snackbarManager,
-                modalDialogManager, UserPrefs.get(profile),
-                TrackerFactory.getTrackerForProfile(profile), new FaviconProviderImpl(profile),
-                OfflineContentAggregatorFactory.get(),
+                modalDialogManager, TrackerFactory.getTrackerForProfile(profile),
+                new FaviconProviderImpl(profile), OfflineContentAggregatorFactory.get(),
                 GlobalDiscardableReferencePool.getReferencePool());
     }
 

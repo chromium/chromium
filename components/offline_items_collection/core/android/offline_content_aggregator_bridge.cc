@@ -249,26 +249,6 @@ void OfflineContentAggregatorBridge::RenameItem(
                         std::move(callback));
 }
 
-void OfflineContentAggregatorBridge::ChangeSchedule(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jobj,
-    const base::android::JavaParamRef<jstring>& j_namespace,
-    const base::android::JavaParamRef<jstring>& j_id,
-    jboolean j_only_on_wifi,
-    jlong j_start_time_ms) {
-  absl::optional<OfflineItemSchedule> schedule;
-  if (j_only_on_wifi)
-    schedule = absl::make_optional<OfflineItemSchedule>(true, absl::nullopt);
-  else if (j_start_time_ms > 0) {
-    schedule = absl::make_optional<OfflineItemSchedule>(
-        false, base::Time::FromJavaTime(j_start_time_ms));
-  }
-
-  provider_->ChangeSchedule(JNI_OfflineContentAggregatorBridge_CreateContentId(
-                                env, j_namespace, j_id),
-                            std::move(schedule));
-}
-
 void OfflineContentAggregatorBridge::OnItemsAdded(
     const OfflineContentProvider::OfflineItemList& items) {
   if (java_ref_.is_null())

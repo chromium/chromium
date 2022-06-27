@@ -84,8 +84,6 @@ class OfflineContentAggregator : public OfflineContentProvider,
   void RenameItem(const ContentId& id,
                   const std::string& name,
                   RenameCallback callback) override;
-  void ChangeSchedule(const ContentId& id,
-                      absl::optional<OfflineItemSchedule> schedule) override;
 
  private:
   // OfflineContentProvider::Observer implementation.

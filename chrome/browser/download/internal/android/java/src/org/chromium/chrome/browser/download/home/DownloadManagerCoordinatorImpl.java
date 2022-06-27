@@ -30,7 +30,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -60,9 +59,8 @@ class DownloadManagerCoordinatorImpl
     public DownloadManagerCoordinatorImpl(Activity activity, DownloadManagerUiConfig config,
             Supplier<Boolean> exploreOfflineTabVisibilitySupplier,
             Callback<Context> settingsLauncher, SnackbarManager snackbarManager,
-            ModalDialogManager modalDialogManager, PrefService prefService, Tracker tracker,
-            FaviconProvider faviconProvider, OfflineContentProvider provider,
-            DiscardableReferencePool discardableReferencePool) {
+            ModalDialogManager modalDialogManager, Tracker tracker, FaviconProvider faviconProvider,
+            OfflineContentProvider provider, DiscardableReferencePool discardableReferencePool) {
         mActivity = activity;
         mSettingsLauncher = settingsLauncher;
         mDeleteCoordinator = new DeleteUndoCoordinator(snackbarManager);
@@ -70,7 +68,7 @@ class DownloadManagerCoordinatorImpl
         mListCoordinator = new DateOrderedListCoordinator(mActivity, config,
                 exploreOfflineTabVisibilitySupplier, provider, mDeleteCoordinator::showSnackbar,
                 mSelectionDelegate, this::notifyFilterChanged, createDateOrderedListObserver(),
-                modalDialogManager, prefService, faviconProvider, discardableReferencePool);
+                modalDialogManager, faviconProvider, discardableReferencePool);
         mToolbarCoordinator = new ToolbarCoordinator(mActivity, this, mListCoordinator,
                 mSelectionDelegate, config.isSeparateActivity, tracker);
 

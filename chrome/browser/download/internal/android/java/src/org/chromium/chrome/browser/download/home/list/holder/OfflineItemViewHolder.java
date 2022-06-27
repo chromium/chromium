@@ -48,7 +48,6 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
     private Runnable mShareCallback;
     private Runnable mDeleteCallback;
     private Runnable mRenameCallback;
-    private Runnable mChangeCallback;
 
     // flag to hide rename list menu option for offline pages
     private boolean mCanRename;
@@ -144,11 +143,6 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
         mDeleteCallback =
                 () -> properties.get(ListProperties.CALLBACK_REMOVE).onResult(offlineItem);
 
-        if (mIsScheduled) {
-            mChangeCallback =
-                    () -> properties.get(ListProperties.CALLBACK_CHANGE).onResult(offlineItem);
-        }
-
         mMore.setClickable(!properties.get(ListProperties.SELECTION_MODE_ACTIVE));
     }
 
@@ -165,7 +159,6 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
 
         if (mCanShare) listItems.add(buildMenuListItem(R.string.share, 0, 0));
         if (mCanRename) listItems.add(buildMenuListItem(R.string.rename, 0, 0));
-        if (mIsScheduled) listItems.add(buildMenuListItem(R.string.change, 0, 0));
 
         listItems.add(buildMenuListItem(R.string.delete, 0, 0));
         ListMenu.Delegate delegate = (model) -> {
@@ -176,8 +169,6 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
                 if (mDeleteCallback != null) mDeleteCallback.run();
             } else if (textId == R.string.rename) {
                 if (mRenameCallback != null) mRenameCallback.run();
-            } else if (textId == R.string.change) {
-                if (mChangeCallback != null) mChangeCallback.run();
             }
         };
         return new BasicListMenu(mMore.getContext(), listItems, delegate);

@@ -79,10 +79,6 @@ public interface ListProperties {
     WritableObjectPropertyKey<Callback<OfflineItem>> CALLBACK_RENAME =
             new WritableObjectPropertyKey<>();
 
-    /** The callback for when a UI action should change the {@link OfflineItem}. */
-    WritableObjectPropertyKey<Callback<OfflineItem>> CALLBACK_CHANGE =
-            new WritableObjectPropertyKey<>();
-
     /** The provider to retrieve expensive assets for a {@link OfflineItem}. */
     WritableObjectPropertyKey<VisualsProvider> PROVIDER_VISUALS = new WritableObjectPropertyKey<>();
 
@@ -106,7 +102,6 @@ public interface ListProperties {
 
     PropertyKey[] ALL_KEYS = new PropertyKey[] {ENABLE_ITEM_ANIMATIONS, CALLBACK_OPEN,
             CALLBACK_PAUSE, CALLBACK_RESUME, CALLBACK_CANCEL, CALLBACK_SHARE, CALLBACK_REMOVE,
-            CALLBACK_RENAME, CALLBACK_CHANGE, PROVIDER_VISUALS, PROVIDER_FAVICON,
-            CALLBACK_SELECTION, SELECTION_MODE_ACTIVE, CALLBACK_PAGINATION_CLICK,
-            CALLBACK_GROUP_PAGINATION_CLICK};
+            CALLBACK_RENAME, PROVIDER_VISUALS, PROVIDER_FAVICON, CALLBACK_SELECTION,
+            SELECTION_MODE_ACTIVE, CALLBACK_PAGINATION_CLICK, CALLBACK_GROUP_PAGINATION_CLICK};
 }

@@ -23,13 +23,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.download.DownloadLaterMetrics.DownloadLaterUiEvent;
-import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper;
-import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper.Source;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -43,10 +39,8 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -318,9 +312,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
     // Represents the currently displayed UI data.
     private DownloadProgressMessageUiData mCurrentInfo;
-
-    // Used to show the download later dialog to change download schedule.
-    private DownloadLaterDialogHelper mDownloadLaterDialogHelper;
 
     // The delegate to provide dependencies.
     private final Delegate mDelegate;
@@ -965,9 +956,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             ContentId itemId, final OfflineItemSchedule schedule) {
         OfflineItem offlineItem = mTrackedItems.remove(itemId);
         removeNotification(itemId);
-        if (itemId != null && schedule != null) {
-            onChangeScheduleClicked(itemId, schedule);
-        } else if (itemId != null) {
+        if (itemId != null) {
             mDelegate.openDownload(itemId,
                     OTRProfileID.deserializeWithoutVerify(
                             offlineItem == null ? null : offlineItem.otrProfileId),
@@ -998,23 +987,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             recordCloseButtonClicked();
             computeNextStepForUpdate(null, false, true, false);
         }
-    }
-
-    private void onChangeScheduleClicked(
-            final ContentId id, final OfflineItemSchedule currentSchedule) {
-        if (mDownloadLaterDialogHelper != null) mDownloadLaterDialogHelper.destroy();
-
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-        // Show the download later dialog to let the user change download schedule.
-        mDownloadLaterDialogHelper = DownloadLaterDialogHelper.create(
-                getContext(), getModalDialogManager(), prefService);
-        DownloadLaterMetrics.recordDownloadLaterUiEvent(
-                DownloadLaterUiEvent.DOWNLOAD_INFOBAR_CHANGE_SCHEDULE_CLICKED);
-        mDownloadLaterDialogHelper.showChangeScheduleDialog(
-                currentSchedule, Source.DOWNLOAD_INFOBAR, (newSchedule) -> {
-                    if (newSchedule == null) return;
-                    OfflineContentAggregatorFactory.get().changeSchedule(id, newSchedule);
-                });
     }
 
     private static void recordMessageState(@UiState int state, DownloadProgressMessageUiData info) {

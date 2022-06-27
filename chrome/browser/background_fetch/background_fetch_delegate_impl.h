@@ -67,10 +67,6 @@ class BackgroundFetchDelegateImpl
   void RenameItem(const offline_items_collection::ContentId& id,
                   const std::string& name,
                   RenameCallback callback) override;
-  void ChangeSchedule(
-      const offline_items_collection::ContentId& id,
-      absl::optional<offline_items_collection::OfflineItemSchedule> schedule)
-      override;
 
  protected:
   // BackgroundFetchDelegateBase:

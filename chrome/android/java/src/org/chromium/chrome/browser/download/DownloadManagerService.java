@@ -57,8 +57,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
-import org.chromium.components.offline_items_collection.OfflineItem;
-import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -1304,22 +1302,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     }
 
     /**
-     * Change the download schedule to start the download in a different condition.
-     * @param id The id of the {@link OfflineItem} that requests the change.
-     * @param schedule The download schedule that defines when to start the download.
-     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
-     */
-    // Deprecated after new download backend.
-    public void changeSchedule(
-            final ContentId id, final OfflineItemSchedule schedule, OTRProfileID otrProfileID) {
-        boolean onlyOnWifi = (schedule == null) ? false : schedule.onlyOnWifi;
-        long startTimeMs = (schedule == null) ? -1 : schedule.startTimeMs;
-        DownloadManagerServiceJni.get().changeSchedule(getNativeDownloadManagerService(),
-                DownloadManagerService.this, id.id, onlyOnWifi, startTimeMs,
-                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
-    }
-
-    /**
      * Add an Intent extra for StateAtCancel UMA to know the state of a request prior to a
      * user-initiated cancel.
      * @param intent The Intent associated with the download action.
@@ -1726,8 +1708,6 @@ public class DownloadManagerService implements DownloadController.Observer,
         void renameDownload(long nativeDownloadManagerService, DownloadManagerService caller,
                 String downloadGuid, String targetName, Callback</*RenameResult*/ Integer> callback,
                 ProfileKey profileKey);
-        void changeSchedule(long nativeDownloadManagerService, DownloadManagerService caller,
-                String downloadGuid, boolean onlyOnWifi, long startTimeMs, ProfileKey profileKey);
         void getAllDownloads(long nativeDownloadManagerService, DownloadManagerService caller,
                 ProfileKey profileKey);
         void checkForExternallyRemovedDownloads(long nativeDownloadManagerService,
