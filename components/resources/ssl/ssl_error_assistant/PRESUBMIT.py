@@ -12,6 +12,10 @@ USE_PYTHON3 = True
 # TODO(meacer): Refactor and reuse shared code with
 #               chrome/browser/resources/safe_browsing/PRESUBMIT.py
 def CheckVersionUpdatedInSSLErrorAssistantProto(input_api, output_api):
+  # Don't report errors for "git cl presubmit --all/--files"
+  if input_api.no_diffs:
+    return []
+
   def IsSSLErrorAssistantProto(x):
     return (input_api.os_path.basename(x.LocalPath()) ==
             'ssl_error_assistant.asciipb')
