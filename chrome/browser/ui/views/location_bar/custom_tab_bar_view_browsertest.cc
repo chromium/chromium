@@ -274,15 +274,8 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, IsNotCreatedInPopup) {
   EXPECT_FALSE(popup_view->toolbar()->custom_tab_bar());
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups \
-  DISABLED_BackToAppButtonIsNotVisibleInOutOfScopePopups
-#else
-#define MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups \
-  BackToAppButtonIsNotVisibleInOutOfScopePopups
-#endif
 IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
-                       MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups) {
+                       BackToAppButtonIsNotVisibleInOutOfScopePopups) {
   const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
   const GURL out_of_scope_url = GURL("https://example.com");
 
