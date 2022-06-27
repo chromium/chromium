@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ANOMALY_DETECTOR_FAKE_ANOMALY_DETECTOR_CLIENT_H_
-#define CHROMEOS_DBUS_ANOMALY_DETECTOR_FAKE_ANOMALY_DETECTOR_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ANOMALY_DETECTOR_FAKE_ANOMALY_DETECTOR_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ANOMALY_DETECTOR_FAKE_ANOMALY_DETECTOR_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
+#include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // FakeAnomalyDetectorClient is a fake implementation of AnomalyDetectorClient
 // used for testing.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ANOMALY_DETECTOR) FakeAnomalyDetectorClient
+class COMPONENT_EXPORT(ASH_DBUS_ANOMALY_DETECTOR) FakeAnomalyDetectorClient
     : public AnomalyDetectorClient {
  public:
   FakeAnomalyDetectorClient();
@@ -40,6 +40,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ANOMALY_DETECTOR) FakeAnomalyDetectorClient
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ANOMALY_DETECTOR_FAKE_ANOMALY_DETECTOR_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ANOMALY_DETECTOR_FAKE_ANOMALY_DETECTOR_CLIENT_H_

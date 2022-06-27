@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
@@ -45,7 +46,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
-#include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
 #include "chromeos/dbus/arc/arc_camera_client.h"
 #include "chromeos/dbus/arc/arc_sensor_service_client.h"
@@ -114,7 +114,7 @@ void InitializeDBus() {
 
   // NOTE: base::Feature is not initialized yet, so any non MultiProcessMash
   // dbus client initialization for Ash should be done in Shell::Init.
-  InitializeDBusClient<chromeos::AnomalyDetectorClient>(bus);
+  InitializeDBusClient<AnomalyDetectorClient>(bus);
   InitializeDBusClient<chromeos::ArcAppfuseProviderClient>(bus);
   InitializeDBusClient<chromeos::ArcCameraClient>(bus);
   InitializeDBusClient<ArcQuotaClient>(bus);
@@ -272,7 +272,7 @@ void ShutdownDBus() {
   ArcQuotaClient::Shutdown();
   chromeos::ArcCameraClient::Shutdown();
   chromeos::ArcAppfuseProviderClient::Shutdown();
-  chromeos::AnomalyDetectorClient::Shutdown();
+  AnomalyDetectorClient::Shutdown();
 
   chromeos::DBusThreadManager::Shutdown();
   chromeos::SystemSaltGetter::Shutdown();

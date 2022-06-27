@@ -27,12 +27,12 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/vm_shutdown_observer.h"
 #include "chrome/browser/ash/vm_starting_observer.h"
+#include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector.pb.h"
+#include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/anomaly_detector/anomaly_detector.pb.h"
-#include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -148,7 +148,7 @@ class ContainerShutdownObserver : public base::CheckedObserver {
 // possible. The existence of Cicerone is abstracted behind this class and
 // only the Concierge name is exposed outside of here.
 class CrostiniManager : public KeyedService,
-                        public chromeos::AnomalyDetectorClient::Observer,
+                        public ash::AnomalyDetectorClient::Observer,
                         public ash::ConciergeClient::VmObserver,
                         public ash::ConciergeClient::ContainerObserver,
                         public ash::CiceroneClient::Observer,

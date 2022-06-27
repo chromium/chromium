@@ -5,11 +5,12 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
 
 component("anomaly_detector") {
-  output_name = "chromeos_anomaly_detector"
-  defines = [ "IS_CHROMEOS_DBUS_ANOMALY_DETECTOR_IMPL" ]
+  output_name = "ash_anomaly_detector"
+  defines = [ "IS_ASH_DBUS_ANOMALY_DETECTOR_IMPL" ]
   deps = [
     ":proto",
     "//base",
@@ -27,5 +28,5 @@ component("anomaly_detector") {
 proto_library("proto") {
   sources = [ "//third_party/cros_system_api/dbus/anomaly_detector/anomaly_detector.proto" ]
 
-  proto_out_dir = "chromeos/dbus/anomaly_detector"
+  proto_out_dir = "chromeos/ash/components/dbus/anomaly_detector"
 }

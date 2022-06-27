@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/anomaly_detector/fake_anomaly_detector_client.h"
+#include "chromeos/ash/components/dbus/anomaly_detector/fake_anomaly_detector_client.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeAnomalyDetectorClient::FakeAnomalyDetectorClient() = default;
 FakeAnomalyDetectorClient::~FakeAnomalyDetectorClient() = default;
@@ -34,4 +34,4 @@ void FakeAnomalyDetectorClient::NotifyGuestFileCorruption(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

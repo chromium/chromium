@@ -59,9 +59,9 @@
 #include "chrome/browser/ui/views/crostini/crostini_expired_container_warning_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -1230,8 +1230,8 @@ CrostiniManager::CrostiniManager(Profile* profile)
   GetCiceroneClient()->AddObserver(this);
   GetConciergeClient()->AddVmObserver(this);
   GetConciergeClient()->AddContainerObserver(this);
-  if (chromeos::AnomalyDetectorClient::Get()) {  // May be null in tests.
-    chromeos::AnomalyDetectorClient::Get()->AddObserver(this);
+  if (ash::AnomalyDetectorClient::Get()) {  // May be null in tests.
+    ash::AnomalyDetectorClient::Get()->AddObserver(this);
   }
   if (chromeos::NetworkHandler::IsInitialized()) {
     network_state_handler_observer_.Observe(
@@ -1276,8 +1276,8 @@ void CrostiniManager::RemoveDBusObservers() {
   dbus_observers_removed_ = true;
   GetCiceroneClient()->RemoveObserver(this);
   GetConciergeClient()->RemoveContainerObserver(this);
-  if (chromeos::AnomalyDetectorClient::Get()) {  // May be null in tests.
-    chromeos::AnomalyDetectorClient::Get()->RemoveObserver(this);
+  if (ash::AnomalyDetectorClient::Get()) {  // May be null in tests.
+    ash::AnomalyDetectorClient::Get()->RemoveObserver(this);
   }
   if (chromeos::PowerManagerClient::Get()) {
     chromeos::PowerManagerClient::Get()->RemoveObserver(this);
@@ -1460,7 +1460,7 @@ void CrostiniManager::StartTerminaVm(std::string name,
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  auto* anomaly_detector_client = chromeos::AnomalyDetectorClient::Get();
+  auto* anomaly_detector_client = ash::AnomalyDetectorClient::Get();
   if (anomaly_detector_client &&
       !anomaly_detector_client->IsGuestFileCorruptionSignalConnected()) {
     LOG(ERROR) << "GuestFileCorruptionSignal not connected, will not be "

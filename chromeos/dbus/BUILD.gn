@@ -29,8 +29,6 @@ component("dbus") {
     ":vm_permission_service_proto",
     ":vm_sk_forwarding_proto",
     "//base",
-    "//chromeos/dbus/anomaly_detector",
-    "//chromeos/dbus/anomaly_detector:proto",
     "//chromeos/dbus/cec_service",
     "//chromeos/dbus/chunneld",
     "//chromeos/dbus/chunneld:proto",

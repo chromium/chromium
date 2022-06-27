@@ -22,12 +22,12 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
-#include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "components/account_id/account_id.h"
@@ -58,7 +58,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
     arc::SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
-    chromeos::AnomalyDetectorClient::InitializeFake();
+    ash::AnomalyDetectorClient::InitializeFake();
     ash::CryptohomeMiscClient::InitializeFake();
     chromeos::VmPluginDispatcherClient::InitializeFake();
     lock_to_single_user_manager_ = std::make_unique<LockToSingleUserManager>();
@@ -105,7 +105,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc_service_manager_.reset();
     chromeos::VmPluginDispatcherClient::Shutdown();
     ash::CryptohomeMiscClient::Shutdown();
-    chromeos::AnomalyDetectorClient::Shutdown();
+    ash::AnomalyDetectorClient::Shutdown();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
