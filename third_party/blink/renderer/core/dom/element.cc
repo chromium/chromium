@@ -8572,7 +8572,6 @@ bool Element::IsReplacedElementRespectingCSSOverflow() const {
   // 1) SVGElement
   // 2) HTMLFrameOwnerElement
   // 3) HTMLImageElement
-  // 4) HTMLCanvasElement
   // See https://github.com/w3c/csswg-drafts/issues/7144 for details on enabling
   // ink overflow for replaced elements.
   if (GetPseudoId() == kPseudoIdPageTransitionIncomingImage ||
@@ -8582,7 +8581,7 @@ bool Element::IsReplacedElementRespectingCSSOverflow() const {
   if (!RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled())
     return false;
 
-  return IsA<HTMLVideoElement>(this);
+  return IsA<HTMLVideoElement>(this) || IsA<HTMLCanvasElement>(this);
 }
 
 const ComputedStyle* Element::StyleForPositionFallback(unsigned index) {
