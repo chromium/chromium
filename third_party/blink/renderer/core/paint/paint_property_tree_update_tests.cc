@@ -1522,6 +1522,41 @@ TEST_P(PaintPropertyTreeUpdateTest, OverflowClipUpdateForVideo) {
   EXPECT_CLIP_RECT(FloatRoundedRect(12, 9, 2, 4), properties->OverflowClip());
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, OverflowClipWithBorderRadiusForVideo) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    video {
+      position: fixed;
+      top: 0px;
+      left: 0px;
+      width: 8px;
+      height: 8px;
+      padding: 1px 2px 3px 4px;
+    }
+    </style>
+    <video id="target"></video>
+  )HTML");
+
+  auto* target = GetDocument().getElementById("target");
+  const auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->OverflowClip());
+  EXPECT_CLIP_RECT(FloatRoundedRect(4, 1, 8, 8), properties->OverflowClip());
+  ASSERT_FALSE(properties->InnerBorderRadiusClip());
+
+  target->setAttribute(html_names::kStyleAttr, "border-radius: 5px");
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(properties, PaintPropertiesForElement("target"));
+  ASSERT_TRUE(properties->OverflowClip());
+  EXPECT_CLIP_RECT(FloatRoundedRect(4, 1, 8, 8), properties->OverflowClip());
+  ASSERT_TRUE(properties->InnerBorderRadiusClip());
+  EXPECT_CLIP_RECT(FloatRoundedRect(gfx::RectF(4, 1, 8, 8),
+                                    FloatRoundedRect::Radii(
+                                        gfx::SizeF(1, 4), gfx::SizeF(3, 4),
+                                        gfx::SizeF(1, 2), gfx::SizeF(3, 2))),
+                   properties->InnerBorderRadiusClip());
+}
+
 TEST_P(PaintPropertyTreeUpdateTest, ChangingClipPath) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
   SetBodyInnerHTML(R"HTML(

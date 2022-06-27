@@ -58,7 +58,8 @@ class LayoutVideo final : public LayoutMedia {
 
   OverflowClipAxes ComputeOverflowClipAxes() const final {
     NOT_DESTROYED();
-    return kOverflowClipBothAxis;
+    return RespectsCSSOverflow() ? LayoutMedia::ComputeOverflowClipAxes()
+                                 : kOverflowClipBothAxis;
   }
 
  private:

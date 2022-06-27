@@ -2904,6 +2904,12 @@ PhysicalRect LayoutBox::OverflowClipRect(
     clip_rect = PhysicalBorderBoxRect();
     clip_rect.Contract(BorderBoxOutsets());
     clip_rect.Move(location);
+
+    // Videos need to be pre-snapped so that they line up with the
+    // display_rect and can enable hardware overlays.
+    if (IsVideo())
+      clip_rect = LayoutReplaced::PreSnappedRectForPersistentSizing(clip_rect);
+
     if (HasNonVisibleOverflow()) {
       const auto overflow_clip = GetOverflowClipAxes();
       if (overflow_clip != kOverflowClipBothAxis) {

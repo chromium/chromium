@@ -10,6 +10,7 @@
     <includes>
       <!-- GRIT minimizes all CSS and Javascript -->
       <include name="IDR_UASTYLE_HTML_CSS" file="../renderer/core/html/resources/html.css" flattenhtml="true" type="BINDATA" compress="brotli"/>
+      <include name="IDR_UASTYLE_OVERFLOW_REPLACED_CSS" file="../renderer/core/html/resources/overflow_replaced.css" flattenhtml="true" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_QUIRKS_CSS" file="../renderer/core/html/resources/quirks.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_VIEW_SOURCE_CSS" file="../renderer/core/css/view-source.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_THEME_CHROMIUM_ANDROID_CSS" file="../renderer/core/html/resources/android.css" type="BINDATA" compress="brotli"/>

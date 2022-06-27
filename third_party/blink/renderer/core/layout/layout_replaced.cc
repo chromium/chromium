@@ -1235,4 +1235,19 @@ bool LayoutReplaced::RespectsCSSOverflow() const {
   return element && element->IsReplacedElementRespectingCSSOverflow();
 }
 
+bool LayoutReplaced::ClipsToContentBox() const {
+  if (!RespectsCSSOverflow())
+    return true;
+
+  // TODO(khushalsagar): There can be more cases where the content clips to
+  // content box. For instance, when padding is 0 and the reference box is the
+  // padding box.
+  const auto& overflow_clip_margin = StyleRef().OverflowClipMargin();
+  return GetOverflowClipAxes() == kOverflowClipBothAxis &&
+         overflow_clip_margin &&
+         overflow_clip_margin->GetReferenceBox() ==
+             StyleOverflowClipMargin::ReferenceBox::kContentBox &&
+         !overflow_clip_margin->GetMargin();
+}
+
 }  // namespace blink

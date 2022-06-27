@@ -2128,7 +2128,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
           clip_rect = To<LayoutBox>(object_).OverflowClipRect(
               context_.current.paint_offset);
         }
-        state.SetClipRect(gfx::RectF(clip_rect), ToSnappedClipRect(clip_rect));
+
+        if (object_.IsLayoutReplaced()) {
+          // TODO(crbug.com/1248598): Should we use non-snapped clip rect for
+          // the first parameter?
+          auto snapped_rect = ToSnappedClipRect(clip_rect);
+          state.SetClipRect(snapped_rect.Rect(), snapped_rect);
+        } else {
+          state.SetClipRect(gfx::RectF(clip_rect),
+                            ToSnappedClipRect(clip_rect));
+        }
 
         state.layout_clip_rect_excluding_overlay_scrollbars =
             FloatClipRect(gfx::RectF(To<LayoutBox>(object_).OverflowClipRect(
