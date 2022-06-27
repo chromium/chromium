@@ -489,11 +489,29 @@ var CrSettingsPrivacyGuidePageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-// TODO(crbug.com/1307443): disabling due to flakiness on several builders.
+TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuidePageTests', function() {
+  runMochaSuite('PrivacyGuidePageTests');
+});
+
+TEST_F('CrSettingsPrivacyGuidePageTest', 'MsbbFragmentNavigations', function() {
+  runMochaSuite('MsbbFragmentNavigations');
+});
+
 TEST_F(
-    'CrSettingsPrivacyGuidePageTest', 'DISABLED_PrivacyGuidePageTests',
+    'CrSettingsPrivacyGuidePageTest', 'HistorySyncFragmentNavigations',
     function() {
-        runMochaSuite('PrivacyGuidePage');
+      runMochaSuite('HistorySyncFragmentNavigations');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyGuidePageTest', 'SafeBrowsingFragmentNavigations',
+    function() {
+      runMochaSuite('SafeBrowsingFragmentNavigations');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyGuidePageTest', 'CookiesFragmentNavigations', function() {
+      runMochaSuite('CookiesFragmentNavigations');
     });
 
 // TODO(crbug.com/1328037): Flaky on Linux Tests(dbg).
