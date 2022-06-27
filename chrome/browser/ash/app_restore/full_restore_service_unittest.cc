@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -81,12 +80,9 @@ syncer::SyncData CreateRestoreOnStartupPrefSyncData(
 
 syncer::SyncData CreateRestoreAppsAndPagesPrefSyncData(RestoreOption value) {
   sync_pb::EntitySpecifics specifics;
-  sync_pb::PreferenceSpecifics* pref =
-      features::IsSyncSettingsCategorizationEnabled()
-          ? specifics.mutable_os_preference()->mutable_preference()
-          : specifics.mutable_preference();
   SetPrefValue(kRestoreAppsAndPagesPrefName,
-               base::Value(static_cast<int>(value)), pref);
+               base::Value(static_cast<int>(value)),
+               specifics.mutable_os_preference()->mutable_preference());
   return syncer::SyncData::CreateRemoteData(
       specifics, syncer::ClientTagHash::FromHashed("unused"));
 }
@@ -219,10 +215,7 @@ class FullRestoreServiceTest : public testing::Test {
           std::make_unique<syncer::FakeSyncChangeProcessor>(),
           std::make_unique<syncer::SyncErrorFactoryMock>());
 
-      if (!features::IsSyncSettingsCategorizationEnabled())
-        return;
-      // If SyncSettingsCategorization is enabled, OS_PREFERENCES sync should be
-      // started separately.
+      // OS_PREFERENCES sync should be started separately.
       syncer::SyncableService* os_sync_service =
           profile()->GetTestingPrefService()->GetSyncableService(
               syncer::OS_PREFERENCES);
@@ -233,21 +226,16 @@ class FullRestoreServiceTest : public testing::Test {
       return;
     }
 
-    if (features::IsSyncSettingsCategorizationEnabled()) {
-      syncer::SyncDataList os_sync_data_list;
-      os_sync_data_list.push_back(CreateRestoreAppsAndPagesPrefSyncData(
-          maybe_restore_apps_and_pages_value.value()));
-      syncer::SyncableService* os_sync_service =
-          profile()->GetTestingPrefService()->GetSyncableService(
-              syncer::OS_PREFERENCES);
-      os_sync_service->MergeDataAndStartSyncing(
-          syncer::OS_PREFERENCES, os_sync_data_list,
-          std::make_unique<syncer::FakeSyncChangeProcessor>(),
-          std::make_unique<syncer::SyncErrorFactoryMock>());
-    } else {
-      sync_data_list.push_back(CreateRestoreAppsAndPagesPrefSyncData(
-          maybe_restore_apps_and_pages_value.value()));
-    }
+    syncer::SyncDataList os_sync_data_list;
+    os_sync_data_list.push_back(CreateRestoreAppsAndPagesPrefSyncData(
+        maybe_restore_apps_and_pages_value.value()));
+    syncer::SyncableService* os_sync_service =
+        profile()->GetTestingPrefService()->GetSyncableService(
+            syncer::OS_PREFERENCES);
+    os_sync_service->MergeDataAndStartSyncing(
+        syncer::OS_PREFERENCES, os_sync_data_list,
+        std::make_unique<syncer::FakeSyncChangeProcessor>(),
+        std::make_unique<syncer::SyncErrorFactoryMock>());
 
     sync_service->MergeDataAndStartSyncing(
         syncer::PREFERENCES, sync_data_list,
@@ -271,11 +259,9 @@ class FullRestoreServiceTest : public testing::Test {
     os_change_list.push_back(syncer::SyncChange(
         FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
         CreateRestoreAppsAndPagesPrefSyncData(restore_apps_and_pages_value)));
-    syncer::ModelType model_type =
-        features::IsSyncSettingsCategorizationEnabled() ? syncer::OS_PREFERENCES
-                                                        : syncer::PREFERENCES;
     syncer::SyncableService* os_sync_service =
-        profile()->GetTestingPrefService()->GetSyncableService(model_type);
+        profile()->GetTestingPrefService()->GetSyncableService(
+            syncer::OS_PREFERENCES);
     os_sync_service->ProcessSyncChanges(FROM_HERE, os_change_list);
   }
 
