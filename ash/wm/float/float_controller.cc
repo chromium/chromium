@@ -8,13 +8,16 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/check_op.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -33,12 +36,27 @@ bool InTabletMode() {
   return Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
 
-gfx::Size GetPreferredFloatWindowTabletSize(const gfx::Rect& work_area) {
+gfx::Size GetPreferredFloatWindowTabletSize(const gfx::Rect& work_area,
+                                            bool landscape) {
+  // We use the landscape bounds to determine the preferred width and height,
+  // even in portrait mode.
+  const int landscape_width =
+      landscape ? work_area.width() : work_area.height();
+  const int landscape_height =
+      landscape ? work_area.height() : work_area.width();
   const int preferred_width =
-      static_cast<int>(work_area.width() * kFloatWindowTabletWidthRatio);
-  const int preferred_height =
-      work_area.height() * kFloatWindowTabletHeightRatio;
+      static_cast<int>(landscape_width * kFloatWindowTabletWidthRatio);
+  const int preferred_height = landscape_height * kFloatWindowTabletHeightRatio;
   return gfx::Size(preferred_width, preferred_height);
+}
+
+// Returns whether the display nearest `window` is in landscape orientation.
+bool IsLandscapeOrientationForWindow(aura::Window* window) {
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  const chromeos::OrientationType orientation = chromeos::RotationToOrientation(
+      chromeos::GetDisplayNaturalOrientation(display), display.rotation());
+  return chromeos::IsLandscapeOrientation(orientation);
 }
 
 }  // namespace
@@ -53,7 +71,9 @@ gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
   DCHECK(CanFloatWindowInTablet(window));
   const gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
                                   ->user_work_area_bounds();
-  const gfx::Size preferred_size = GetPreferredFloatWindowTabletSize(work_area);
+  const bool landscape = IsLandscapeOrientationForWindow(window);
+  const gfx::Size preferred_size =
+      GetPreferredFloatWindowTabletSize(work_area, landscape);
   const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
 
   const int width = std::max(preferred_size.width(), minimum_size.width());
@@ -77,11 +97,20 @@ bool FloatController::CanFloatWindowInTablet(aura::Window* window) {
 
   const gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
                                   ->user_work_area_bounds();
+  const bool landscape = IsLandscapeOrientationForWindow(window);
   const int preferred_height =
-      GetPreferredFloatWindowTabletSize(work_area).height();
+      GetPreferredFloatWindowTabletSize(work_area, landscape).height();
   const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
-  if (minimum_size.width() > work_area.width() / 2 ||
-      minimum_size.height() > preferred_height) {
+  if (minimum_size.height() > preferred_height)
+    return false;
+
+  const int landscape_width =
+      landscape ? work_area.width() : work_area.height();
+  // The maximize size for a floated window is half the landscape width minus
+  // some space for the split view divider and padding.
+  if (minimum_size.width() >
+      ((landscape_width - kSplitviewDividerShortSideLength) / 2 -
+       kFloatWindowPaddingDp * 2)) {
     return false;
   }
   return true;
@@ -123,8 +152,11 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
   DCHECK(float_window_);
   if ((display::DisplayObserver::DISPLAY_METRIC_WORK_AREA & metrics) == 0)
     return;
+
   if (!CanFloatWindowInTablet(float_window_))
     ResetFloatedWindow();
+  else
+    MaybeUpdateWindowUIAndBoundsForTablet(float_window_);
 }
 
 void FloatController::Float(aura::Window* window) {

@@ -6,6 +6,8 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/display/screen_orientation_controller_test_api.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -13,6 +15,7 @@
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -64,9 +67,11 @@ TEST_F(WindowFloatTest, WindowFloatingSwitch) {
   EXPECT_FALSE(controller->IsFloated(window_2.get()));
 }
 
+using TabletWindowFloatTest = WindowFloatTest;
+
 // Tests that a window can be floated in tablet mode, unless its minimum width
 // is greater than half the work area.
-TEST_F(WindowFloatTest, TabletPositioningLandscape) {
+TEST_F(TabletWindowFloatTest, TabletPositioningLandscape) {
   UpdateDisplay("800x600");
 
   aura::test::TestWindowDelegate window_delegate;
@@ -91,7 +96,7 @@ TEST_F(WindowFloatTest, TabletPositioningLandscape) {
 
 // Tests that a window that cannot be floated in tablet mode unfloats after
 // entering tablet mode.
-TEST_F(WindowFloatTest, FloatWindowUnfloatsEnterTablet) {
+TEST_F(TabletWindowFloatTest, FloatWindowUnfloatsEnterTablet) {
   UpdateDisplay("800x600");
 
   aura::test::TestWindowDelegate window_delegate;
@@ -110,7 +115,7 @@ TEST_F(WindowFloatTest, FloatWindowUnfloatsEnterTablet) {
 
 // Tests that a floated window unfloats if a display change makes it no longer a
 // valid floating window.
-TEST_F(WindowFloatTest, FloatWindowUnfloatsDisplayChange) {
+TEST_F(TabletWindowFloatTest, FloatWindowUnfloatsDisplayChange) {
   UpdateDisplay("1800x1000");
 
   aura::test::TestWindowDelegate window_delegate;
@@ -133,7 +138,7 @@ TEST_F(WindowFloatTest, FloatWindowUnfloatsDisplayChange) {
 
 // Tests that windows floated in tablet mode have immersive mode disabled,
 // showing their title bars.
-TEST_F(WindowFloatTest, TabletImmersiveMode) {
+TEST_F(TabletWindowFloatTest, ImmersiveMode) {
   // Create a test app window that has a header.
   auto window = CreateAppWindow();
   auto* immersive_controller = chromeos::ImmersiveFullscreenController::Get(
@@ -151,6 +156,53 @@ TEST_F(WindowFloatTest, TabletImmersiveMode) {
 
   // TODO(crbug.com/1339489): Add tests to check immersive mode when transition
   // to tablet from clamshell and vice versa.
+}
+
+TEST_F(TabletWindowFloatTest, Rotation) {
+  // Use a display where the width and height are quite different, otherwise it
+  // would be hard to tell if portrait mode is using landscape bounds to
+  // calculate floating window bounds.
+  UpdateDisplay("1800x1000");
+
+  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  wm::ActivateWindow(window.get());
+
+  // Enter tablet mode and float `window`.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(Shell::Get()->float_controller()->IsFloated(window.get()));
+  const gfx::Rect no_rotation_bounds = window->bounds();
+
+  // Set the primary display as the internal display so that the orientation
+  // controller can rotate it.
+  display::test::ScopedSetInternalDisplayId scoped_set_internal(
+      Shell::Get()->display_manager(),
+      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  ScreenOrientationControllerTestApi orientation_test_api(
+      Shell::Get()->screen_orientation_controller());
+
+  // First rotate to landscape secondary orientation. The float bounds should
+  // be the same.
+  orientation_test_api.SetDisplayRotation(
+      display::Display::ROTATE_180, display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(window->bounds(), no_rotation_bounds);
+
+  // Rotate to the two portrait orientations. The float bounds should be
+  // similar since landscape bounds are used for portrait float calculations
+  // as well, but slightly different since the shelf affects the work area
+  // differently.
+  const int shelf_size = ShelfConfig::Get()->shelf_size();
+  orientation_test_api.SetDisplayRotation(
+      display::Display::ROTATE_90, display::Display::RotationSource::ACTIVE);
+  EXPECT_NEAR(no_rotation_bounds.width(), window->bounds().width(), shelf_size);
+  EXPECT_NEAR(no_rotation_bounds.height(), window->bounds().height(),
+              shelf_size);
+
+  orientation_test_api.SetDisplayRotation(
+      display::Display::ROTATE_270, display::Display::RotationSource::ACTIVE);
+  EXPECT_NEAR(no_rotation_bounds.width(), window->bounds().width(), shelf_size);
+  EXPECT_NEAR(no_rotation_bounds.height(), window->bounds().height(),
+              shelf_size);
 }
 
 }  // namespace ash
