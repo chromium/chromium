@@ -11,8 +11,4 @@ set -o pipefail
 # The commands below should output the built product to this directory.
 PREFIX="$1"
 
-if [ -f "updater/ChromiumUpdater_test.app" ]; then
-  mv updater/ChromiumUpdater_test.app "$PREFIX"
-elif [ -f "updater/ChromiumUpdater.app" ]; then
-  mv updater/ChromiumUpdater.app "$PREFIX"
-fi
+mv updater/ChromiumUpdater_test.app "$PREFIX"
