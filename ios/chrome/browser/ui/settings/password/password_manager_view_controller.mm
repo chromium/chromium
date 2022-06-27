@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller.h"
 
 #import <UIKit/UIKit.h>
 
@@ -39,11 +39,11 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_exporter.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_settings_commands.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
@@ -208,7 +208,7 @@ bool IsFaviconEnabled() {
 
 @end
 
-@interface PasswordsTableViewController () <
+@interface PasswordManagerViewController () <
     BooleanObserver,
     ChromeAccountManagerServiceObserver,
     PasswordExporterDelegate,
@@ -315,7 +315,7 @@ bool IsFaviconEnabled() {
 
 @end
 
-@implementation PasswordsTableViewController
+@implementation PasswordManagerViewController
 
 #pragma mark - Initialization
 
@@ -477,7 +477,7 @@ bool IsFaviconEnabled() {
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   [super didMoveToParentViewController:parent];
   if (!parent) {
-    [self.presentationDelegate passwordsTableViewControllerDismissed];
+    [self.presentationDelegate PasswordManagerViewControllerDismissed];
   }
 }
 
@@ -716,7 +716,7 @@ bool IsFaviconEnabled() {
 - (BOOL)shouldHideToolbar {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kSupportForAddPasswordsInSettings)) {
-      return NO;
+    return NO;
   }
 
   return [super shouldHideToolbar];
@@ -1099,7 +1099,6 @@ bool IsFaviconEnabled() {
       UIPopoverArrowDirectionAny;
   [self presentViewController:errorInfoPopover animated:YES completion:nil];
 }
-
 
 #pragma mark - PasswordsConsumer
 
@@ -1698,12 +1697,12 @@ bool IsFaviconEnabled() {
                              }];
   [exportConfirmation addAction:cancelAction];
 
-  __weak PasswordsTableViewController* weakSelf = self;
+  __weak PasswordManagerViewController* weakSelf = self;
   UIAlertAction* exportAction = [UIAlertAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS)
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction* action) {
-                PasswordsTableViewController* strongSelf = weakSelf;
+                PasswordManagerViewController* strongSelf = weakSelf;
                 if (!strongSelf) {
                   return;
                 }
@@ -1758,10 +1757,10 @@ bool IsFaviconEnabled() {
   RemoveFormsToBeDeleted(_blockedForms, blockedToDelete);
 
   // Remove empty sections.
-  __weak PasswordsTableViewController* weakSelf = self;
+  __weak PasswordManagerViewController* weakSelf = self;
   [self.tableView
       performBatchUpdates:^{
-        PasswordsTableViewController* strongSelf = weakSelf;
+        PasswordManagerViewController* strongSelf = weakSelf;
         if (!strongSelf)
           return;
 
@@ -1784,7 +1783,7 @@ bool IsFaviconEnabled() {
         }
       }
       completion:^(BOOL finished) {
-        PasswordsTableViewController* strongSelf = weakSelf;
+        PasswordManagerViewController* strongSelf = weakSelf;
         if (!strongSelf)
           return;
         // If both lists are empty, exit editing mode.
@@ -2106,7 +2105,7 @@ bool IsFaviconEnabled() {
           l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_PREPARING_ALERT_TITLE)
                        message:nil
                 preferredStyle:UIAlertControllerStyleAlert];
-  __weak PasswordsTableViewController* weakSelf = self;
+  __weak PasswordManagerViewController* weakSelf = self;
   UIAlertAction* cancelAction =
       [UIAlertAction actionWithTitle:l10n_util::GetNSString(
                                          IDS_IOS_EXPORT_PASSWORDS_CANCEL_BUTTON)
@@ -2186,7 +2185,7 @@ bool IsFaviconEnabled() {
 
 - (void)presentViewController:(UIViewController*)viewController {
   if (_preparingPasswordsAlert.beingPresented) {
-    __weak PasswordsTableViewController* weakSelf = self;
+    __weak PasswordManagerViewController* weakSelf = self;
     [_preparingPasswordsAlert
         dismissViewControllerAnimated:YES
                            completion:^{

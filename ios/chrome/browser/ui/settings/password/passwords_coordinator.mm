@@ -23,12 +23,12 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_settings_commands.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -41,11 +41,11 @@
     PasswordIssuesCoordinatorDelegate,
     PasswordsInOtherAppsCoordinatorDelegate,
     PasswordsSettingsCommands,
-    PasswordsTableViewControllerPresentationDelegate>
+    PasswordManagerViewControllerPresentationDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
-    PasswordsTableViewController* passwordsViewController;
+    PasswordManagerViewController* passwordsViewController;
 
 // Main mediator for this coordinator.
 @property(nonatomic, strong) PasswordsMediator* mediator;
@@ -124,7 +124,7 @@
       initWithSuccessfulReauthTimeAccessor:self.mediator];
 
   self.passwordsViewController =
-      [[PasswordsTableViewController alloc] initWithBrowser:self.browser];
+      [[PasswordManagerViewController alloc] initWithBrowser:self.browser];
 
   self.passwordsViewController.handler = self;
   self.passwordsViewController.delegate = self.mediator;
@@ -204,9 +204,9 @@
   [self.passwordsInOtherAppsCoordinator start];
 }
 
-#pragma mark - PasswordsTableViewControllerPresentationDelegate
+#pragma mark - PasswordManagerViewControllerPresentationDelegate
 
-- (void)passwordsTableViewControllerDismissed {
+- (void)PasswordManagerViewControllerDismissed {
   [self.delegate passwordsCoordinatorDidRemove:self];
 }
 

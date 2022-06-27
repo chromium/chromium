@@ -57,7 +57,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
 
   // A helper object for passing data about saved passwords from a finished
-  // password store request to the PasswordsTableViewController.
+  // password store request to the PasswordManagerViewController.
   std::unique_ptr<SavedPasswordsPresenterObserverBridge>
       _passwordsPresenterObserver;
 
@@ -158,7 +158,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
   _syncService = nullptr;
 }
 
-#pragma mark - PasswordsTableViewControllerDelegate
+#pragma mark - PasswordManagerViewControllerDelegate
 
 - (void)deletePasswordForms:
     (const std::vector<password_manager::PasswordForm>&)forms {

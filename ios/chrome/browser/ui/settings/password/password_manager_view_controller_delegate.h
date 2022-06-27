@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONTROLLER_DELEGATE_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONTROLLER_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_DELEGATE_H_
+#define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_DELEGATE_H_
 
 #import <Foundation/Foundation.h>
 
@@ -32,8 +32,8 @@ namespace password_manager {
 struct PasswordForm;
 }
 
-// Delegate for `PasswordsTableViewController`.
-@protocol PasswordsTableViewControllerDelegate
+// Delegate for `PasswordManagerViewController`.
+@protocol PasswordManagerViewControllerDelegate
 
 // Deletes form with its duplicates.
 - (void)deletePasswordForms:
@@ -56,4 +56,4 @@ struct PasswordForm;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONTROLLER_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_DELEGATE_H_

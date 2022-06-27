@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
@@ -15,10 +15,10 @@
 class Browser;
 @class PasswordExporter;
 @protocol PasswordsSettingsCommands;
-@protocol PasswordsTableViewControllerDelegate;
-@protocol PasswordsTableViewControllerPresentationDelegate;
+@protocol PasswordManagerViewControllerDelegate;
+@protocol PasswordManagerViewControllerPresentationDelegate;
 
-@interface PasswordsTableViewController
+@interface PasswordManagerViewController
     : SettingsRootTableViewController <PasswordsConsumer,
                                        SettingsControllerProtocol>
 
@@ -34,9 +34,9 @@ class Browser;
 @property(nonatomic, weak) id<PasswordsSettingsCommands> handler;
 
 // Delegate.
-@property(nonatomic, weak) id<PasswordsTableViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<PasswordManagerViewControllerDelegate> delegate;
 
-@property(nonatomic, weak) id<PasswordsTableViewControllerPresentationDelegate>
+@property(nonatomic, weak) id<PasswordManagerViewControllerPresentationDelegate>
     presentationDelegate;
 
 // Reauthentication module.
@@ -48,4 +48,4 @@ class Browser;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_H_
