@@ -125,6 +125,10 @@
 #include "media/mojo/services/stable_video_decoder_factory_service.h"
 #endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 
+#if defined(USE_CUPS)
+#include "chrome/browser/ash/crosapi/printing_metrics_ash.h"
+#endif  // defined(USE_CUPS)
+
 namespace crosapi {
 namespace {
 
@@ -206,6 +210,9 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       prefs_ash_(
           std::make_unique<PrefsAsh>(g_browser_process->profile_manager(),
                                      g_browser_process->local_state())),
+#if defined(USE_CUPS)
+      printing_metrics_ash_(std::make_unique<PrintingMetricsAsh>()),
+#endif  // defined(USE_CUPS)
       remoting_ash_(std::make_unique<RemotingAsh>()),
       resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),

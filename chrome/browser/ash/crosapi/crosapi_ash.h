@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 namespace media {
@@ -76,6 +77,7 @@ class NetworkingPrivateAsh;
 class PolicyServiceAsh;
 class PowerAsh;
 class PrefsAsh;
+class PrintingMetricsAsh;
 class RemotingAsh;
 class ResourceManagerAsh;
 class ScreenManagerAsh;
@@ -326,6 +328,12 @@ class CrosapiAsh : public mojom::Crosapi {
     return chrome_app_kiosk_service_ash_.get();
   }
 
+#if defined(USE_CUPS)
+  PrintingMetricsAsh* printing_metrics_ash() {
+    return printing_metrics_ash_.get();
+  }
+#endif  // defined(USE_CUPS)
+
   SearchProviderAsh* search_provider_ash() {
     return search_provider_ash_.get();
   }
@@ -444,6 +452,9 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
   std::unique_ptr<PowerAsh> power_ash_;
   std::unique_ptr<PrefsAsh> prefs_ash_;
+#if defined(USE_CUPS)
+  std::unique_ptr<PrintingMetricsAsh> printing_metrics_ash_;
+#endif  // defined(USE_CUPS)
   std::unique_ptr<RemotingAsh> remoting_ash_;
   std::unique_ptr<ResourceManagerAsh> resource_manager_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;

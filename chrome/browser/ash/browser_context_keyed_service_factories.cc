@@ -39,13 +39,13 @@
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/extensions/input_method_api.h"
 #include "chrome/browser/chromeos/extensions/media_player_api.h"
-#include "chrome/browser/chromeos/extensions/printing_metrics/print_job_finished_event_dispatcher.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 
 #if defined(USE_CUPS)
 #include "chrome/browser/ash/printing/cups_proxy_service_manager_factory.h"
+#include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_service.h"
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #endif
 
@@ -74,7 +74,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::MediaPlayerAPI::GetFactoryInstance();
 #if defined(USE_CUPS)
   extensions::PrintingAPIHandler::GetFactoryInstance();
-  extensions::PrintJobFinishedEventDispatcher::GetFactoryInstance();
+  extensions::PrintingMetricsService::GetFactoryInstance();
 #endif
   FileChangeServiceFactory::GetInstance();
   file_manager::EventRouterFactory::GetInstance();

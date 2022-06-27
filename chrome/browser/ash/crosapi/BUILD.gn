@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
+import("//printing/buildflags/buildflags.gni")
 
 assert(is_chromeos_ash)
 assert(use_ozone)
@@ -209,6 +210,15 @@ source_set("crosapi") {
     "window_util.h",
   ]
 
+  if (use_cups) {
+    sources += [
+      "print_job_info_idl_conversions.cc",
+      "print_job_info_idl_conversions.h",
+      "printing_metrics_ash.cc",
+      "printing_metrics_ash.h",
+    ]
+  }
+
   deps = [
     "//ash",
     "//ash/components/account_manager",
@@ -367,6 +377,10 @@ source_set("unit_tests") {
     "test_local_printer_ash.h",
     "test_mojo_connection_manager_unittest.cc",
   ]
+
+  if (use_cups) {
+    sources += [ "print_job_info_idl_conversions_unittest.cc" ]
+  }
 
   deps = [
     ":crosapi",

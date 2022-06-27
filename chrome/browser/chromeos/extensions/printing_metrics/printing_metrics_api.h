@@ -7,9 +7,12 @@
 
 #include <vector>
 
-#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace extensions {
 
@@ -21,9 +24,8 @@ class PrintingMetricsGetPrintJobsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnPrintJobsRetrieved(
-      bool success,
-      std::vector<ash::printing::proto::PrintJobInfo> print_job_info_protos);
+  void OnPrintJobsRetrieved(std::vector<base::Value> print_jobs);
+
   DECLARE_EXTENSION_FUNCTION("printingMetrics.getPrintJobs",
                              PRINTINGMETRICS_GETPRINTJOBS)
 };

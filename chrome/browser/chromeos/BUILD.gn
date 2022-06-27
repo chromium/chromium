@@ -1876,12 +1876,10 @@ source_set("chromeos") {
       "../ash/printing/cups_proxy_service_manager_factory.cc",
       "../ash/printing/cups_proxy_service_manager_factory.h",
       "../ash/printing/printer_info_cups.cc",
-      "extensions/printing_metrics/print_job_finished_event_dispatcher.cc",
-      "extensions/printing_metrics/print_job_finished_event_dispatcher.h",
-      "extensions/printing_metrics/print_job_info_idl_conversions.cc",
-      "extensions/printing_metrics/print_job_info_idl_conversions.h",
       "extensions/printing_metrics/printing_metrics_api.cc",
       "extensions/printing_metrics/printing_metrics_api.h",
+      "extensions/printing_metrics/printing_metrics_service.cc",
+      "extensions/printing_metrics/printing_metrics_service.h",
     ]
   } else {
     sources += [
@@ -3103,8 +3101,6 @@ source_set("unit_tests") {
   if (use_cups) {
     sources += [
       "../ash/printing/cups_print_job_manager_utils_unittest.cc",
-      "extensions/printing_metrics/print_job_finished_event_dispatcher_unittest.cc",
-      "extensions/printing_metrics/print_job_info_idl_conversions_unittest.cc",
       "extensions/printing_metrics/printing_metrics_api_unittest.cc",
     ]
   }

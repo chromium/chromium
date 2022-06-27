@@ -20,6 +20,8 @@ class PrintJobHistoryService : public KeyedService {
    public:
     virtual void OnPrintJobFinished(
         const printing::proto::PrintJobInfo& print_job_info) = 0;
+
+    virtual void OnShutdown() {}
   };
 
   PrintJobHistoryService();
@@ -42,6 +44,9 @@ class PrintJobHistoryService : public KeyedService {
 
   void AddObserver(PrintJobHistoryService::Observer* observer);
   void RemoveObserver(PrintJobHistoryService::Observer* observer);
+
+  // KeyedService:
+  void Shutdown() override;
 
  protected:
   base::ObserverList<PrintJobHistoryService::Observer>::Unchecked observers_;

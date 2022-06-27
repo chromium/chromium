@@ -64,6 +64,7 @@ mojom("mojom") {
     "policy_service.mojom",
     "power.mojom",
     "prefs.mojom",
+    "printing_metrics.mojom",
     "remoting.mojom",
     "resource_manager.mojom",
     "screen_manager.mojom",
