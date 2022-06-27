@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_H_
 
+#include <map>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -115,8 +117,7 @@ class WebsiteMetrics : public BrowserListObserver,
   // The map from the window to the active tab contents.
   base::flat_map<aura::Window*, content::WebContents*> window_to_web_contents_;
 
-  base::flat_map<content::WebContents*,
-                 std::unique_ptr<ActiveTabWebContentsObserver>>
+  std::map<content::WebContents*, std::unique_ptr<ActiveTabWebContentsObserver>>
       webcontents_to_observer_map_;
 
   // The map from the web_contents to the ukm key url. When the url for web

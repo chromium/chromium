@@ -63,6 +63,17 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
     return browser;
   }
 
+  Browser* CreateAppBrowser(const std::string& app_id) {
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    auto params = Browser::CreateParams::CreateForApp(
+        "_crx_" + app_id, true /* trusted_source */,
+        gfx::Rect(), /* window_bounts */
+        profile, true /* user_gesture */);
+    Browser* browser = Browser::Create(params);
+    browser->window()->Show();
+    return browser;
+  }
+
   content::WebContents* NavigateAndWait(Browser* browser,
                                         const std::string& url,
                                         WindowOpenDisposition disposition) {
@@ -103,6 +114,10 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
     return InstallWebApp(start_url, web_app::UserDisplayMode::kBrowser);
   }
 
+  web_app::AppId InstallWebAppOpeningAsWindow(const std::string& start_url) {
+    return InstallWebApp(start_url, web_app::UserDisplayMode::kStandalone);
+  }
+
   WebsiteMetrics* website_metrics() {
     DCHECK(app_platform_metrics_service_);
     return app_platform_metrics_service_->website_metrics_.get();
@@ -113,8 +128,8 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
     return website_metrics()->window_to_web_contents_;
   }
 
-  base::flat_map<content::WebContents*,
-                 std::unique_ptr<WebsiteMetrics::ActiveTabWebContentsObserver>>&
+  std::map<content::WebContents*,
+           std::unique_ptr<WebsiteMetrics::ActiveTabWebContentsObserver>>&
   webcontents_to_observer_map() {
     return website_metrics()->webcontents_to_observer_map_;
   }
@@ -145,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
 
   // Open a second tab in foreground with no app.
   auto* tab_app1 = InsertForegroundTab(browser, "https://b.example.org");
-  EXPECT_EQ(1u, webcontents_to_observer_map().size());
+  EXPECT_EQ(2u, webcontents_to_observer_map().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
                              window_to_web_contents()[window]));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(),
@@ -157,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   auto* tab_app3 = InsertForegroundTab(browser, "https://c.example.org");
   auto* tab_app4 = InsertForegroundTab(browser, "https://d.example.org");
 
-  EXPECT_EQ(1u, webcontents_to_observer_map().size());
+  EXPECT_EQ(4u, webcontents_to_observer_map().size());
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
                              window_to_web_contents()[window]));
@@ -177,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   i = browser->tab_strip_model()->GetIndexOfWebContents(tab_app3);
   browser->tab_strip_model()->CloseWebContentsAt(
       i, TabStripModel::CLOSE_USER_GESTURE);
-  EXPECT_EQ(1u, webcontents_to_observer_map().size());
+  EXPECT_EQ(2u, webcontents_to_observer_map().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
                              window_to_web_contents()[window]));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(),
@@ -232,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   auto* tab_app2 = InsertForegroundTab(browser1, "https://b.example.org");
 
   EXPECT_EQ(1u, window_to_web_contents().size());
-  EXPECT_EQ(1u, webcontents_to_observer_map().size());
+  EXPECT_EQ(2u, webcontents_to_observer_map().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
                              window_to_web_contents()[window1]));
   EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
@@ -247,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   auto* tab_app4 = InsertForegroundTab(browser2, "https://d.example.org");
 
   EXPECT_EQ(2u, window_to_web_contents().size());
-  EXPECT_EQ(2u, webcontents_to_observer_map().size());
+  EXPECT_EQ(4u, webcontents_to_observer_map().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
                              window_to_web_contents()[window2]));
   EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),
@@ -261,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   browser1->tab_strip_model()->CloseWebContentsAt(
       i, TabStripModel::CLOSE_USER_GESTURE);
   EXPECT_EQ(2u, window_to_web_contents().size());
-  EXPECT_EQ(2u, webcontents_to_observer_map().size());
+  EXPECT_EQ(3u, webcontents_to_observer_map().size());
   EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
             GURL("https://b.example.org"));
   EXPECT_EQ(3u, webcontents_to_ukm_key().size());
@@ -291,8 +306,28 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   browser1->tab_strip_model()->CloseWebContentsAt(
       i, TabStripModel::CLOSE_USER_GESTURE);
 
-  EXPECT_TRUE(webcontents_to_observer_map().empty());
   EXPECT_TRUE(window_to_web_contents().empty());
+  EXPECT_TRUE(webcontents_to_observer_map().empty());
+  EXPECT_TRUE(webcontents_to_ukm_key().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, WindowedWebApp) {
+  std::string app_id = InstallWebAppOpeningAsWindow("https://d.example.org");
+
+  // Open app D in a window (configured to open in a window).
+  Browser* browser = CreateAppBrowser(app_id);
+  InsertForegroundTab(browser, "https://d.example.org");
+
+  // Verify there is no window, web contents recorded.
+  EXPECT_TRUE(window_to_web_contents().empty());
+  EXPECT_TRUE(webcontents_to_observer_map().empty());
+  EXPECT_TRUE(webcontents_to_ukm_key().empty());
+
+  // Close the browser.
+  browser->tab_strip_model()->CloseAllTabs();
+
+  EXPECT_TRUE(window_to_web_contents().empty());
+  EXPECT_TRUE(webcontents_to_observer_map().empty());
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
 }
 
@@ -332,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   auto* tab_app4 = InsertForegroundTab(browser2, "https://d.example.org");
 
   EXPECT_EQ(2u, window_to_web_contents().size());
-  EXPECT_EQ(2u, webcontents_to_observer_map().size());
+  EXPECT_EQ(4u, webcontents_to_observer_map().size());
   EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
             GURL("https://c.example.org"));
   EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),

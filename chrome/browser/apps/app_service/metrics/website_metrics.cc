@@ -179,6 +179,7 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
     const TabStripModelChange::Remove& remove,
     const TabStripSelectionChange& selection) {
   for (const auto& removed_tab : remove.contents) {
+    webcontents_to_observer_map_.erase(removed_tab.contents);
     webcontents_to_ukm_key_.erase(removed_tab.contents);
   }
 
@@ -205,6 +206,7 @@ void WebsiteMetrics::OnTabStripModelChangeRemove(
 
 void WebsiteMetrics::OnTabStripModelChangeReplace(
     const TabStripModelChange::Replace& replace) {
+  webcontents_to_observer_map_.erase(replace.old_contents);
   webcontents_to_ukm_key_.erase(replace.old_contents);
 }
 
@@ -212,8 +214,6 @@ void WebsiteMetrics::OnActiveTabChanged(aura::Window* window,
                                         content::WebContents* old_contents,
                                         content::WebContents* new_contents) {
   if (old_contents) {
-    webcontents_to_observer_map_.erase(old_contents);
-
     // Clear `old_contents` from `window_to_web_contents_`.
     auto it = window_to_web_contents_.find(window);
     if (it != window_to_web_contents_.end())
