@@ -141,7 +141,7 @@ export class InputPage extends Page {
   }
 
   record(source: MediaStream) {
-    let chunks = new Array<Blob>();
+    let chunks: Blob[] = [];
     const recordButton = $('record-btn');
     const clipSection = $('audio-file');
     this.mediaRecorder = new MediaRecorder(source);
@@ -164,7 +164,7 @@ export class InputPage extends Page {
 
         audio.controls = true;
         const blob = new Blob(chunks, {'type': 'audio/ogg; codecs=opus'});
-        chunks = new Array<Blob>();
+        chunks = [];
         const audioURL = window.URL.createObjectURL(blob);
         audio.src = audioURL;
         this.testInputFeedback.set('audioUrl', audioURL);

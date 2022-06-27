@@ -17,6 +17,7 @@ module.exports = {
     'brace-style': ['error', '1tbs'],
     'curly': ['error', 'multi-line', 'consistent'],
     'new-parens': 'error',
+    'no-array-constructor': 'error',
     'no-console': ['error', {allow: ['info', 'warn', 'error', 'assert']}],
     'no-extra-boolean-cast': 'error',
     'no-extra-semi': 'error',

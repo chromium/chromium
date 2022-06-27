@@ -167,7 +167,7 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
   /** @override */
   getCrostiniActivePorts() {
     this.methodCalled('getCrostiniActivePorts');
-    return Promise.resolve(new Array());
+    return Promise.resolve([]);
   }
 
   /** @override */

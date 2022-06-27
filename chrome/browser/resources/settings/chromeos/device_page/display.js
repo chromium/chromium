@@ -641,7 +641,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     // Clear the mappings before recalculating.
     this.modeToParentModeMap_ = new Map();
     this.parentModeToRefreshRateMap_ = new Map();
-    this.displayModeList_ = new Array();
+    this.displayModeList_ = [];
 
     // Build the modes into a nested map of width => height => refresh rate.
     const modes = this.createModeMap_(selectedDisplay);
@@ -715,7 +715,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     // Add an entry in the outer map for |parentModeIndex|. The inner
     // array (the value at |parentModeIndex|) will be populated with all
     // possible refresh rates for the given resolution.
-    this.parentModeToRefreshRateMap_.set(parentModeIndex, new Array());
+    this.parentModeToRefreshRateMap_.set(parentModeIndex, []);
 
     const resolutionOption =
         this.i18n('displayResolutionOnlyMenuItem', width, height);

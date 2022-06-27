@@ -100,7 +100,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
      * List of ports are currently being forwarded.
      * @private {!Array<?CrostiniPortActiveSetting>}
      */
-    this.activePorts_ = new Array();
+    this.activePorts_ = [];
 
     /**
      * Tracks the last port that was selected for removal.
