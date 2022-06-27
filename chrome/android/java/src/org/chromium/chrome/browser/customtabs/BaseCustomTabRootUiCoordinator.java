@@ -210,6 +210,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mCustomTabHeightStrategy.onPostInflationStartup();
     }
 
+    @Override
+    protected void setStatusBarScrimFraction(float scrimFraction) {
+        super.setStatusBarScrimFraction(scrimFraction);
+        // TODO(jinsukkim): Separate CCT scrim update action from status bar scrim stuff.
+        mCustomTabHeightStrategy.setScrimFraction(scrimFraction);
+    }
+
     /**
      * Delegates changing the background color to the {@link CustomTabHeightStrategy}.
      * Returns {@code true} if any action were taken, {@code false} if not.

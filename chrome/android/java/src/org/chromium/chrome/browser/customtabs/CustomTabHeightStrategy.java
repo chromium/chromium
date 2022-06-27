@@ -61,4 +61,10 @@ public class CustomTabHeightStrategy {
         throw new IllegalStateException(
                 "Custom close animation should be performed only on partial CCT.");
     }
+
+    /**
+     * Set the scrim value to apply to partial CCT UI.
+     * @param scrimFraction Scrim fraction.
+     */
+    public void setScrimFraction(float scrimFraction) {}
 }

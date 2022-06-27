@@ -1152,7 +1152,7 @@ public class RootUiCoordinator
                 new ScrimCoordinator.SystemUiScrimDelegate() {
                     @Override
                     public void setStatusBarScrimFraction(float scrimFraction) {
-                        mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
+                        RootUiCoordinator.this.setStatusBarScrimFraction(scrimFraction);
                     }
 
                     @Override
@@ -1160,6 +1160,10 @@ public class RootUiCoordinator
                 };
         return new ScrimCoordinator(mActivity, delegate, coordinator,
                 coordinator.getContext().getColor(R.color.omnibox_focused_fading_background_color));
+    }
+
+    protected void setStatusBarScrimFraction(float scrimFraction) {
+        mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
     }
 
     protected void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {

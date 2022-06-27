@@ -128,6 +128,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     @Nullable
     private Runnable mFinishRunnable;
 
+    private int mToolbarColor;
+
     /** A callback to be called once the Custom Tab has been resized. */
     interface OnResizedCallback {
         /** The Custom Tab has been resized. */
@@ -428,11 +430,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         background.setCornerRadii(new float[] {toolbarCornerRadius, toolbarCornerRadius,
                 toolbarCornerRadius, toolbarCornerRadius, 0, 0, 0, 0});
         updateShadowOffset();
+        mToolbarColor = toolbar.getBackground().getColor();
         if (mDrawOutlineShadow) {
             int width = mActivity.getResources().getDimensionPixelSize(
                     R.dimen.custom_tabs_outline_width);
-            int color = toolbar.getBackground().getColor();
-            background.setStroke(width, toolbar.getToolbarHairlineColor(color));
+            background.setStroke(width, toolbar.getToolbarHairlineColor(mToolbarColor));
         }
 
         handleView.setBackground(background);
@@ -442,6 +444,23 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         // Having the transparent background is necessary for the shadow effect.
         mActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    }
+
+    @Override
+    public void setScrimFraction(float scrimFraction) {
+        int scrimColor = mActivity.getResources().getColor(R.color.default_scrim_color);
+        float scrimColorAlpha = (scrimColor >>> 24) / 255f;
+        int scrimColorOpaque = scrimColor & 0xFF000000;
+        int color = ColorUtils.getColorWithOverlay(
+                mToolbarColor, scrimColorOpaque, scrimFraction * scrimColorAlpha, false);
+
+        // Drag handle view is not part of CoordinatorLayout. As the root UI scrim changes,
+        // the handle view color needs updating to match it. This is a better way than running
+        // PCCT's own scrim coordinator since it can apply shape-aware scrim to the handle view
+        // that has the rounded corner.
+        View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
+        GradientDrawable drawable = (GradientDrawable) handleView.getBackground();
+        drawable.setColor(color);
     }
 
     private void initializeHeight() {
