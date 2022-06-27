@@ -1598,6 +1598,13 @@ config("disable_nullability_completeness") {
   cflags = [ "-Wno-nullability-completeness" ]
 }
 
+# TODO(crbug.com/1339746): MDCNavigationBar.h has conflicting deprecation
+# specification, causing compilation to fail. Disable the warning until this
+# is fixed in MDC. Remove this once fixed.
+config("disable_availability") {
+  cflags = [ "-Wno-availability" ]
+}
+
 ios_framework_bundle("material_components_ios") {
   sources = _mdc_sources
 
@@ -1640,6 +1647,11 @@ ios_framework_bundle("material_components_ios") {
     # nullability specification, causing compilation to fail. Disable
     # the warning until this is fixed in MDC. Remove this once fixed.
     ":disable_nullability_completeness",
+
+    # TODO(crbug.com/1339746): MDCNavigationBar.h has conflicting deprecation
+    # specification, causing compilation to fail. Disable the warning until this
+    # is fixed in MDC. Remove this once fixed.
+    ":disable_availability",
   ]
 }
 
