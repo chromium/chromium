@@ -3675,6 +3675,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "ignore-sync-encryption-keys-long-missing",
+    "owners": ["victorvianna", "chrome-sync-dev@google.com"],
+    "expiry_milestone": 116
+  },
+  {
     "name": "improve-reader-mode-prompt",
     "owners": ["lazzzis@google.com", "aishwaryarj@google.com",
                "//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/OWNERS"],

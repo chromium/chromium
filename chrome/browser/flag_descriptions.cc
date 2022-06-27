@@ -1547,6 +1547,14 @@ const char kIgnoreGpuBlocklistDescription[] =
     "Overrides the built-in software rendering list and enables "
     "GPU-acceleration on unsupported system configurations.";
 
+const char kIgnoreSyncEncryptionKeysLongMissingName[] =
+    "Ignore Chrome Sync encryption keys long missing";
+const char kIgnoreSyncEncryptionKeysLongMissingDescription[] =
+    "Drops pending encrypted updates if their key has been missing for a "
+    "(configurable) number of consecutive GetUpdates. Restarting the browser "
+    "resets the counter. The threshold is configurable via the "
+    "MinGuResponsesToIgnoreKey feature parameter.";
+
 const char kImprovedDesksKeyboardShortcutsName[] =
     "Enable improved desks keyboard shortcuts";
 const char kImprovedDesksKeyboardShortcutsDescription[] =

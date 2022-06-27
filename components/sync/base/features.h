@@ -31,7 +31,7 @@ inline constexpr base::Feature kIgnoreSyncEncryptionKeysLongMissing{
 // The threshold for kIgnoreSyncEncryptionKeysLongMissing to start ignoring keys
 // (measured in number of GetUpdatesResponses messages).
 inline constexpr base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
-    &kIgnoreSyncEncryptionKeysLongMissing, "MinGuResponsesToIgnoreKey", 50};
+    &kIgnoreSyncEncryptionKeysLongMissing, "MinGuResponsesToIgnoreKey", 3};
 
 // When enabled, Sync machinery will read and writes password notes to the
 // `encrypted_notes_backup` field inside the PasswordSpecifics proto. Together

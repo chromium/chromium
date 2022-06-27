@@ -8662,6 +8662,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kSystemColorChooser)},
 #endif  // BUILDFLAG(IS_MAC)
 
+    {"ignore-sync-encryption-keys-long-missing",
+     flag_descriptions::kIgnoreSyncEncryptionKeysLongMissingName,
+     flag_descriptions::kIgnoreSyncEncryptionKeysLongMissingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(syncer::kIgnoreSyncEncryptionKeysLongMissing)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

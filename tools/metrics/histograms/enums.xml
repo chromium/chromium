@@ -55509,6 +55509,7 @@ from previous Chrome versions.
   <int value="-1835592983" label="WebAppEnableLaunchHandler:disabled"/>
   <int value="-1834967404" label="DesktopCaptureLacrosV2:enabled"/>
   <int value="-1834841895" label="CrostiniWebUIUpgrader:enabled"/>
+  <int value="-1834475132" label="IgnoreSyncEncryptionKeysLongMissing:enabled"/>
   <int value="-1834151268" label="OmniboxDynamicMaxAutocomplete:disabled"/>
   <int value="-1833149810" label="enable-accessibility-tab-switcher"/>
   <int value="-1832575380" label="show-saved-copy"/>
@@ -61071,6 +61072,7 @@ from previous Chrome versions.
   <int value="1803465156" label="enable-zero-suggest-most-visited"/>
   <int value="1803470125" label="SyncUSSSessions:enabled"/>
   <int value="1803914892" label="TemporaryUnexpireFlagsM76:enabled"/>
+  <int value="1806220475" label="IgnoreSyncEncryptionKeysLongMissing:disabled"/>
   <int value="1806450300" label="WebUsbDeviceDetection:enabled"/>
   <int value="1807374811" label="CCTModuleCache:enabled"/>
   <int value="1808936313" label="AutofillEnableNameSurenameParsing:enabled"/>
