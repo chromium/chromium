@@ -559,7 +559,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         WebString text = plugin->SelectionAsText();
         if (!text.IsEmpty()) {
           data.selected_text = text.Utf8();
-          data.edit_flags |= ContextMenuDataEditFlags::kCanCopy;
+          if (plugin->CanCopy())
+            data.edit_flags |= ContextMenuDataEditFlags::kCanCopy;
         }
         bool plugin_can_edit_text = plugin->CanEditText();
         if (plugin_can_edit_text) {

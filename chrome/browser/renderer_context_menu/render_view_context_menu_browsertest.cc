@@ -99,6 +99,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
+#include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -368,11 +369,21 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  struct PdfInfo {
+    // The selected text in the PDF when context menu is created.
+    std::u16string selection_text;
+
+    // Whether the PDF has copy permission.
+    bool can_copy;
+  };
+
   guest_view::TestGuestViewManager* test_guest_view_manager() const {
     return test_guest_view_manager_;
   }
 
-  std::unique_ptr<TestRenderViewContextMenu> SetupAndCreateMenu() {
+  // Creates a context menu with the given `info`:
+  std::unique_ptr<TestRenderViewContextMenu> SetupAndCreateMenuWithPdfInfo(
+      const PdfInfo& info) {
     // Load a pdf page.
     GURL page_url = ui_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
@@ -399,10 +410,20 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
     params.frame_url = extension_frame_->GetLastCommittedURL();
     params.media_type = blink::mojom::ContextMenuDataMediaType::kPlugin;
     params.media_flags |= blink::ContextMenuData::kMediaCanRotate;
+    params.selection_text = info.selection_text;
+    // Mimic how `edit_flag` is set in ContextMenuController::ShowContextMenu().
+    if (info.can_copy)
+      params.edit_flags |= blink::ContextMenuDataEditFlags::kCanCopy;
+
     auto menu =
         std::make_unique<TestRenderViewContextMenu>(*extension_frame_, params);
     menu->Init();
     return menu;
+  }
+
+  std::unique_ptr<TestRenderViewContextMenu> SetupAndCreateMenu() {
+    return SetupAndCreateMenuWithPdfInfo(
+        {/*selection_text=*/u"", /*can_copy=*/true});
   }
 
   // Helper function for testing context menu of a pdf plugin inside a web page.
@@ -2140,6 +2161,34 @@ IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,
 
   ASSERT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_ROTATECW));
   ASSERT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_ROTATECCW));
+}
+
+IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest, CopyWithoutText) {
+  std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
+
+  // Test that 'Copy' doesn't exist.
+  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
+}
+
+IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest, CopyText) {
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      SetupAndCreateMenuWithPdfInfo(
+          {/*selection_text=*/u"text", /*can_copy=*/true});
+
+  // Test that 'Copy' exists and it is enabled.
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
+  ASSERT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPY));
+}
+
+IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,
+                       CopyTextWithRestriction) {
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      SetupAndCreateMenuWithPdfInfo(
+          {/*selection_text=*/u"text", /*can_copy=*/false});
+
+  // Test that 'Copy' exists and it is disabled.
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
+  ASSERT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPY));
 }
 
 IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,

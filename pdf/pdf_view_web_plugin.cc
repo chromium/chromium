@@ -639,6 +639,10 @@ bool PdfViewWebPlugin::CanRedo() const {
   return engine_->CanRedo();
 }
 
+bool PdfViewWebPlugin::CanCopy() const {
+  return engine_->HasPermission(DocumentPermission::kCopy);
+}
+
 bool PdfViewWebPlugin::ExecuteEditCommand(const blink::WebString& name,
                                           const blink::WebString& value) {
   if (name == "SelectAll")

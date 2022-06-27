@@ -241,6 +241,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool HasEditableText() const override;
   bool CanUndo() const override;
   bool CanRedo() const override;
+  bool CanCopy() const override;
   bool ExecuteEditCommand(const blink::WebString& name,
                           const blink::WebString& value) override;
   blink::WebURL LinkAtPosition(const gfx::Point& /*position*/) const override;

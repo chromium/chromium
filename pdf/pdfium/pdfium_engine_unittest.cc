@@ -678,23 +678,43 @@ TEST_F(PDFiumEngineTest, HandleInputEventRawKeyDown) {
   EXPECT_TRUE(engine->HandleInputEvent(raw_key_down_event));
 }
 
+namespace {
+#if BUILDFLAG(IS_WIN)
+constexpr char kSelectTextExpectedText[] =
+    "Hello, world!\r\nGoodbye, world!\r\nHello, world!\r\nGoodbye, world!";
+#else
+constexpr char kSelectTextExpectedText[] =
+    "Hello, world!\nGoodbye, world!\nHello, world!\nGoodbye, world!";
+#endif
+}  // namespace
+
 TEST_F(PDFiumEngineTest, SelectText) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
+  EXPECT_TRUE(engine->HasPermission(DocumentPermission::kCopy));
+
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   engine->SelectAll();
-#if BUILDFLAG(IS_WIN)
-  constexpr char kExpectedText[] =
-      "Hello, world!\r\nGoodbye, world!\r\nHello, world!\r\nGoodbye, world!";
-#else
-  constexpr char kExpectedText[] =
-      "Hello, world!\nGoodbye, world!\nHello, world!\nGoodbye, world!";
-#endif
-  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
+}
+
+TEST_F(PDFiumEngineTest, SelectTextWithCopyRestriction) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("hello_world2_with_copy_restriction.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_FALSE(engine->HasPermission(DocumentPermission::kCopy));
+
+  // The copy restriction should not affect the text selection hehavior.
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  engine->SelectAll();
+  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
 }
 
 TEST_F(PDFiumEngineTest, SelectCroppedText) {

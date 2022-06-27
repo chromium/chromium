@@ -835,6 +835,7 @@ TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithNoPermissions) {
   EXPECT_EQ(kContentRestrictionCopy | kContentRestrictionCut |
                 kContentRestrictionPaste | kContentRestrictionPrint,
             plugin_->GetContentRestrictions());
+  EXPECT_FALSE(plugin_->CanCopy());
 }
 
 TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithCopyAllowed) {
@@ -845,6 +846,7 @@ TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithCopyAllowed) {
   EXPECT_EQ(kContentRestrictionCut | kContentRestrictionPaste |
                 kContentRestrictionPrint,
             plugin_->GetContentRestrictions());
+  EXPECT_TRUE(plugin_->CanCopy());
 }
 
 TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithPrintLowQualityAllowed) {
