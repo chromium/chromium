@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/immediate_crash.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -97,7 +96,8 @@ bool EndpointResultIsNonProtocol(const HostResolverEndpointResult& result) {
 
 const std::vector<bool>*
 HostResolver::ResolveHostRequest::GetExperimentalResultsForTesting() const {
-  IMMEDIATE_CRASH();
+  NOTREACHED();
+  return nullptr;
 }
 
 const size_t HostResolver::ManagerOptions::kDefaultRetryAttempts =
