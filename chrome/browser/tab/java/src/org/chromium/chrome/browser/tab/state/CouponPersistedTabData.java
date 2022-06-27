@@ -7,11 +7,16 @@ package org.chromium.chrome.browser.tab.state;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.proto.CouponPersistedTabData.CouponPersistedTabDataProto;
 
 import java.nio.ByteBuffer;
+import java.util.Locale;
 
 /**
  * {@link PersistedTabData} for Shopping websites with coupons.
@@ -74,14 +79,42 @@ public class CouponPersistedTabData extends PersistedTabData {
         return mCoupon;
     }
 
-    // TODO(crbug.com/1337470): Implement deserialize & serialize methods.
     @Override
     Supplier<ByteBuffer> getSerializeSupplier() {
-        return () -> null;
+        CouponPersistedTabDataProto.Builder builder = CouponPersistedTabDataProto.newBuilder();
+        if (mCoupon != null) {
+            if (mCoupon.promoCode != null) {
+                builder.setCode(mCoupon.promoCode);
+            }
+
+            if (mCoupon.couponName != null) {
+                builder.setName(mCoupon.couponName);
+            }
+        }
+        return () -> {
+            return builder.build().toByteString().asReadOnlyByteBuffer();
+        };
     }
 
     @Override
     boolean deserialize(@Nullable ByteBuffer bytes) {
+        // Do not attempt to deserialize if the bytes are null
+        if (bytes == null || !bytes.hasRemaining()) {
+            return false;
+        }
+        try {
+            CouponPersistedTabDataProto couponPersistedTabDataProto =
+                    CouponPersistedTabDataProto.parseFrom(bytes);
+            mCoupon = new Coupon(
+                    couponPersistedTabDataProto.getName(), couponPersistedTabDataProto.getCode());
+            return true;
+        } catch (InvalidProtocolBufferException e) {
+            Log.e(TAG,
+                    String.format(Locale.US,
+                            "There was a problem deserializing "
+                                    + "CouponPersistedTabData. Details: %s",
+                            e.getMessage()));
+        }
         return false;
     }
 
