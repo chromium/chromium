@@ -999,24 +999,6 @@ void PermissionUmaUtil::RecordAutoDSEPermissionReverted(
   base::UmaHistogramEnumeration(
       "Permissions.DSE.AutoPermissionRevertTransition." + permission_string,
       transition);
-
-  if (transition == AutoDSEPermissionRevertTransition::INVALID_END_STATE) {
-    base::UmaHistogramEnumeration(
-        "Permissions.DSE.InvalidAutoPermissionRevertTransition."
-        "BackedUpSetting." +
-            permission_string,
-        backed_up_setting, CONTENT_SETTING_NUM_SETTINGS);
-    base::UmaHistogramEnumeration(
-        "Permissions.DSE.InvalidAutoPermissionRevertTransition."
-        "EffectiveSetting." +
-            permission_string,
-        effective_setting, CONTENT_SETTING_NUM_SETTINGS);
-    base::UmaHistogramEnumeration(
-        "Permissions.DSE.InvalidAutoPermissionRevertTransition."
-        "EndStateSetting." +
-            permission_string,
-        end_state_setting, CONTENT_SETTING_NUM_SETTINGS);
-  }
 }
 
 // static

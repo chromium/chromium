@@ -7367,12 +7367,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Permissions.Action"/>
   <affected-histogram name="Permissions.DSE.AutoPermissionRevertTransition"/>
   <affected-histogram name="Permissions.DSE.EffectiveSetting"/>
-  <affected-histogram
-      name="Permissions.DSE.InvalidAutoPermissionRevertTransition.BackedUpSetting"/>
-  <affected-histogram
-      name="Permissions.DSE.InvalidAutoPermissionRevertTransition.EffectiveSetting"/>
-  <affected-histogram
-      name="Permissions.DSE.InvalidAutoPermissionRevertTransition.EndStateSetting"/>
   <affected-histogram name="Permissions.MissingOSLevelPermission.Action"/>
   <affected-histogram name="Permissions.MissingOSLevelPermission.ShouldShow"/>
   <affected-histogram name="Permissions.Prompt.Accepted.Persisted"/>

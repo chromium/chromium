@@ -342,6 +342,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Permissions.DSE.InvalidAutoPermissionRevertTransition.BackedUpSetting"
     enum="ContentSetting" expires_after="2022-07-01">
+  <obsolete>
+    Removed in June 2022, since the data it provides is no longer relevant.
+  </obsolete>
   <owner>andypaicu@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -357,6 +360,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Permissions.DSE.InvalidAutoPermissionRevertTransition.EffectiveSetting"
     enum="ContentSetting" expires_after="2022-07-01">
+  <obsolete>
+    Removed in June 2022, since the data it provides is no longer relevant.
+  </obsolete>
   <owner>andypaicu@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -371,6 +377,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Permissions.DSE.InvalidAutoPermissionRevertTransition.EndStateSetting"
     enum="ContentSetting" expires_after="2022-07-01">
+  <obsolete>
+    Removed in June 2022, since the data it provides is no longer relevant.
+  </obsolete>
   <owner>andypaicu@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
