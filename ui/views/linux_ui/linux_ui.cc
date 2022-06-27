@@ -31,6 +31,9 @@ void LinuxUI::SetInstance(std::unique_ptr<LinuxUI> instance) {
   ShellDialogLinux::SetInstance(g_linux_ui);
 #endif
   ui::SetTextEditKeyBindingsDelegate(g_linux_ui);
+#if BUILDFLAG(ENABLE_PRINTING)
+  printing::PrintingContextLinuxDelegate::SetInstance(g_linux_ui);
+#endif
 
   // Do not set IME instance for ozone as we delegate creating the input method
   // to OzonePlatforms instead. If this is set, OzonePlatform never sets a

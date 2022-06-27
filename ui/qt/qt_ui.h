@@ -8,9 +8,14 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/qt/qt_interface.h"
 #include "ui/views/linux_ui/linux_ui.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "printing/printing_context_linux.h"  // nogncheck
+#endif
 
 namespace qt {
 
@@ -74,6 +79,13 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
   // ui::TextEditKeybindingDelegate:
   bool MatchEvent(const ui::Event& event,
                   std::vector<ui::TextEditCommandAuraLinux>* commands) override;
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  // printing::PrintingContextLinuxDelegate:
+  printing::PrintDialogLinuxInterface* CreatePrintDialog(
+      printing::PrintingContextLinux* context) override;
+  gfx::Size GetPdfPaperSize(printing::PrintingContextLinux* context) override;
+#endif
 
   // QtInterface::Delegate:
   void FontChanged() override;

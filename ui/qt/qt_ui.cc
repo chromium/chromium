@@ -313,6 +313,19 @@ bool QtUi::MatchEvent(const ui::Event& event,
   return false;
 }
 
+#if BUILDFLAG(ENABLE_PRINTING)
+printing::PrintDialogLinuxInterface* QtUi::CreatePrintDialog(
+    printing::PrintingContextLinux* context) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return nullptr;
+}
+
+gfx::Size QtUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return gfx::Size();
+}
+#endif
+
 void QtUi::FontChanged() {
   auto params = shim_->GetFontRenderParams();
   auto desc = shim_->GetFontDescription();
