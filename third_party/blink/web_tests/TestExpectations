@@ -7079,3 +7079,8 @@ tables/mozilla/bugs/bug2479-3.html [ Skip ]
 
 # TODO(crbug.com/1339781): Re-enable this test
 tables/mozilla/bugs/bug2479-4.html [ Skip ]
+
+crbug.com/1339755 [ Mac10.13 ] compositing/overflow/nested-render-surfaces-with-rotation.html [ Skip ]
+crbug.com/1339755 [ Mac10.13 ] media/video-zoom-controls.html [ Skip ]
+crbug.com/1339755 [ Mac10.13 ] virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html [ Skip ]
+crbug.com/1339755 [ Mac10.13 ] virtual/oopr-canvas2d/fast/canvas/quadraticCurveTo.xml [ Skip ]
