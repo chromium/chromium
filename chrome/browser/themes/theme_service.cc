@@ -73,6 +73,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/linux_ui/linux_ui.h"
 #endif
 
@@ -481,6 +482,12 @@ bool ThemeService::ShouldUseSystemTheme() const {
 
 bool ThemeService::ShouldUseCustomFrame() const {
 #if BUILDFLAG(IS_LINUX)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformRuntimeProperties()
+           .supports_server_side_window_decorations) {
+    return true;
+  }
+
   return profile_->GetPrefs()->GetBoolean(prefs::kUseCustomChromeFrame);
 #else
   return true;

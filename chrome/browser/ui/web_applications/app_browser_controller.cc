@@ -393,12 +393,7 @@ bool AppBrowserController::ShouldUseSystemTheme() const {
 }
 
 bool AppBrowserController::ShouldUseCustomFrame() const {
-#if BUILDFLAG(IS_LINUX)
-  return browser_->profile()->GetPrefs()->GetBoolean(
-      prefs::kUseCustomChromeFrame);
-#else
   return true;
-#endif
 }
 
 void AppBrowserController::AddColorMixers(

@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 
+#include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 using DesktopBrowserFrameAuraLinuxTest = InProcessBrowserTest;
@@ -30,12 +34,34 @@ gfx::Size GetWindowSize(Browser* browser) {
   return bounds.size();
 }
 
+void VerifyColorsForFrameType(const Browser* browser, bool use_custom_frame) {
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(browser->profile());
+  EXPECT_EQ(use_custom_frame, theme_service->ShouldUseCustomFrame());
+
+  ui::ColorProviderManager::ResetForTesting();
+
+  bool initialized_color_provider_for_custom_frame;
+  ui::ColorProviderManager::GetForTesting().AppendColorProviderInitializer(
+      base::BindLambdaForTesting([&initialized_color_provider_for_custom_frame](
+                                     ui::ColorProvider* provider,
+                                     const ui::ColorProviderManager::Key& key) {
+        initialized_color_provider_for_custom_frame =
+            key.frame_type == ui::ColorProviderManager::FrameType::kChromium;
+      }));
+  ASSERT_NE(nullptr,
+            BrowserView::GetBrowserViewForBrowser(browser)->GetColorProvider());
+  EXPECT_EQ(use_custom_frame, initialized_color_provider_for_custom_frame);
+
+  ui::ColorProviderManager::ResetForTesting();
+}
+
 }  // namespace
 
 // Tests that DesktopBrowserFrameAuraLinux::UseCustomFrame() returns the correct
 // value that respects 1) the current value of the user preference and
 // 2) capabilities of the platform.
-// Also tests the regression found in crbug.com/1243937.
+// Also tests the regressions found in crbug.com/1243937 and crbug.com/1329756.
 IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, UseCustomFrame) {
   const BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
@@ -65,6 +91,7 @@ IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, UseCustomFrame) {
           pref_service->SetBoolean(prefs::kUseCustomChromeFrame, setting);
           EXPECT_EQ(frame->UseCustomFrame(), setting)
               << " when setting is " << setting;
+          VerifyColorsForFrameType(browser(), frame->UseCustomFrame());
         }
       } else {
         // This platform either does not support overriding the property or does
@@ -74,6 +101,7 @@ IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, UseCustomFrame) {
           pref_service->SetBoolean(prefs::kUseCustomChromeFrame, setting);
           EXPECT_TRUE(frame->UseCustomFrame())
               << " when setting is " << setting;
+          VerifyColorsForFrameType(browser(), frame->UseCustomFrame());
         }
       }
     }
