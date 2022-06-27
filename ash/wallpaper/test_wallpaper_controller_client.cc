@@ -45,7 +45,6 @@ void TestWallpaperControllerClient::AddCollection(
 
 void TestWallpaperControllerClient::ResetCounts() {
   open_count_ = 0;
-  close_preview_count_ = 0;
   set_default_wallpaper_count_ = 0;
   migrate_collection_id_from_chrome_app_count_ = 0;
   fetch_daily_refresh_wallpaper_param_ = std::string();
@@ -59,10 +58,6 @@ void TestWallpaperControllerClient::ResetCounts() {
 // WallpaperControllerClient:
 void TestWallpaperControllerClient::OpenWallpaperPicker() {
   open_count_++;
-}
-
-void TestWallpaperControllerClient::MaybeClosePreviewWallpaper() {
-  close_preview_count_++;
 }
 
 void TestWallpaperControllerClient::SetDefaultWallpaper(

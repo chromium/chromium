@@ -35,7 +35,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
                      const std::vector<backdrop::Image>& images);
 
   size_t open_count() const { return open_count_; }
-  size_t close_preview_count() const { return close_preview_count_; }
   size_t set_default_wallpaper_count() const {
     return set_default_wallpaper_count_;
   }
@@ -80,7 +79,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
 
   // WallpaperControllerClient:
   void OpenWallpaperPicker() override;
-  void MaybeClosePreviewWallpaper() override;
   void SetDefaultWallpaper(
       const AccountId& account_id,
       bool show_wallpaper,
@@ -117,7 +115,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
 
  private:
   size_t open_count_ = 0;
-  size_t close_preview_count_ = 0;
   size_t set_default_wallpaper_count_ = 0;
   size_t migrate_collection_id_from_chrome_app_count_ = 0;
   size_t fetch_images_for_collection_count_ = 0;

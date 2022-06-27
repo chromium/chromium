@@ -66,7 +66,6 @@ class WallpaperControllerClientImpl
 
   // ash::WallpaperControllerClient:
   void OpenWallpaperPicker() override;
-  void MaybeClosePreviewWallpaper() override;
   void SetDefaultWallpaper(
       const AccountId& account_id,
       bool show_wallpaper,

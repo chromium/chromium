@@ -157,10 +157,8 @@ class ASH_EXPORT WallpaperControllerImpl
   // always return true thereafter.
   bool HasShownAnyWallpaper() const;
 
-  // Ash cannot close the chrome side of the wallpaper preview so this function
-  // tells the chrome side to do so. Also Ash cannot tell whether or not the
-  // wallpaper picker is currently open so this will close the wallpaper preview
-  // if it is open and do nothing if it is not open.
+  // Exit wallpaper preview state if it is open and do nothing if it is not
+  // open.
   void MaybeClosePreviewWallpaper();
 
   // Shows the wallpaper and alerts observers of changes.

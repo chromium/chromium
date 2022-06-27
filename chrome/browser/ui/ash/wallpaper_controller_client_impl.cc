@@ -47,7 +47,6 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/extensions/wallpaper_private_api.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -674,19 +673,6 @@ void WallpaperControllerClientImpl::OpenWallpaperPicker() {
   params.launch_source = apps::mojom::LaunchSource::kFromShelf;
   web_app::LaunchSystemWebAppAsync(
       profile, ash::SystemWebAppType::PERSONALIZATION, params);
-}
-
-void WallpaperControllerClientImpl::MaybeClosePreviewWallpaper() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
-
-  extensions::EventRouter* event_router = extensions::EventRouter::Get(profile);
-
-  auto event = std::make_unique<extensions::Event>(
-      extensions::events::WALLPAPER_PRIVATE_ON_CLOSE_PREVIEW_WALLPAPER,
-      extensions::api::wallpaper_private::OnClosePreviewWallpaper::kEventName,
-      base::Value::List());
-  event_router->DispatchEventToExtension(kWallpaperManagerId, std::move(event));
 }
 
 void WallpaperControllerClientImpl::SetDefaultWallpaper(

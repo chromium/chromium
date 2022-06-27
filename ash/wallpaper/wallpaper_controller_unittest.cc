@@ -387,11 +387,20 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
   void OnWallpaperColorsChanged() override { ++colors_changed_count_; }
   void OnWallpaperBlurChanged() override { ++blur_changed_count_; }
   void OnFirstWallpaperShown() override { ++first_shown_count_; }
+  void OnWallpaperPreviewStarted() override {
+    DCHECK(!is_in_wallpaper_preview_);
+    is_in_wallpaper_preview_ = true;
+  }
+  void OnWallpaperPreviewEnded() override {
+    DCHECK(is_in_wallpaper_preview_);
+    is_in_wallpaper_preview_ = false;
+  }
 
   int colors_changed_count() const { return colors_changed_count_; }
   int blur_changed_count() const { return blur_changed_count_; }
   int first_shown_count() const { return first_shown_count_; }
   int wallpaper_changed_count() const { return wallpaper_changed_count_; }
+  bool is_in_wallpaper_preview() const { return is_in_wallpaper_preview_; }
 
  private:
   WallpaperController* controller_;
@@ -399,6 +408,7 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
   int blur_changed_count_ = 0;
   int first_shown_count_ = 0;
   int wallpaper_changed_count_ = 0;
+  bool is_in_wallpaper_preview_ = false;
 };
 
 }  // namespace
@@ -2531,9 +2541,12 @@ TEST_F(WallpaperControllerTest, ClosePreviewWallpaperOnOverviewStart) {
   gfx::ImageSkia custom_wallpaper = CreateImage(640, 480, kWallpaperColor);
   EXPECT_NE(kWallpaperColor, GetWallpaperColor());
   ClearWallpaperCount();
+
+  TestWallpaperControllerObserver observer(controller_);
   controller_->SetCustomWallpaper(account_id_1, file_name_1, layout,
                                   custom_wallpaper, true /*preview_mode=*/);
   RunAllTasksUntilIdle();
+  EXPECT_TRUE(observer.is_in_wallpaper_preview());
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
   // Verify that the user wallpaper info remains unchanged during the preview.
@@ -2547,12 +2560,12 @@ TEST_F(WallpaperControllerTest, ClosePreviewWallpaperOnOverviewStart) {
   ClearWallpaperCount();
   EnterOverview();
   RunAllTasksUntilIdle();
+  EXPECT_FALSE(observer.is_in_wallpaper_preview());
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_NE(kWallpaperColor, GetWallpaperColor());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
   EXPECT_EQ(user_wallpaper_info, default_wallpaper_info);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-  EXPECT_EQ(1u, client_.close_preview_count());
 }
 
 TEST_F(WallpaperControllerTest, ClosePreviewWallpaperOnWindowCycleStart) {
@@ -2576,6 +2589,8 @@ TEST_F(WallpaperControllerTest, ClosePreviewWallpaperOnWindowCycleStart) {
       CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
   WindowState::Get(wallpaper_picker_window.get())->Activate();
 
+  TestWallpaperControllerObserver observer(controller_);
+
   // Set a custom wallpaper for the user and enable preview. Verify that the
   // wallpaper is changed to the expected color.
   const WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER;
@@ -2585,6 +2600,7 @@ TEST_F(WallpaperControllerTest, ClosePreviewWallpaperOnWindowCycleStart) {
   controller_->SetCustomWallpaper(account_id_1, file_name_1, layout,
                                   custom_wallpaper, true /*preview_mode=*/);
   RunAllTasksUntilIdle();
+  EXPECT_TRUE(observer.is_in_wallpaper_preview());
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
   // Verify that the user wallpaper info remains unchanged during the preview.
@@ -2598,12 +2614,12 @@ TEST_F(WallpaperControllerTest, ClosePreviewWallpaperOnWindowCycleStart) {
   Shell::Get()->window_cycle_controller()->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   RunAllTasksUntilIdle();
+  EXPECT_FALSE(observer.is_in_wallpaper_preview());
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_NE(kWallpaperColor, GetWallpaperColor());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
   EXPECT_EQ(user_wallpaper_info, default_wallpaper_info);
   EXPECT_TRUE(Shell::Get()->window_cycle_controller()->IsCycling());
-  EXPECT_EQ(1u, client_.close_preview_count());
 }
 
 TEST_F(WallpaperControllerTest,
@@ -2628,6 +2644,8 @@ TEST_F(WallpaperControllerTest,
       CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
   WindowState::Get(wallpaper_picker_window.get())->Activate();
 
+  TestWallpaperControllerObserver observer(controller_);
+
   // Set a custom wallpaper for the user and enable preview. Verify that the
   // wallpaper is changed to the expected color.
   const WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER;
@@ -2637,6 +2655,7 @@ TEST_F(WallpaperControllerTest,
   controller_->SetCustomWallpaper(account_id_1, file_name_1, layout,
                                   custom_wallpaper, true /*preview_mode=*/);
   RunAllTasksUntilIdle();
+  EXPECT_TRUE(observer.is_in_wallpaper_preview());
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
   // Verify that the user wallpaper info remains unchanged during the preview.
@@ -2650,13 +2669,13 @@ TEST_F(WallpaperControllerTest,
   SimulateUserLogin(account_id_2);
   controller_->ShowUserWallpaper(account_id_2);
   RunAllTasksUntilIdle();
+  EXPECT_FALSE(observer.is_in_wallpaper_preview());
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_NE(kWallpaperColor, GetWallpaperColor());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
   EXPECT_TRUE(
       controller_->GetUserWallpaperInfo(account_id_2, &user_wallpaper_info));
   EXPECT_EQ(user_wallpaper_info, default_wallpaper_info);
-  EXPECT_EQ(1u, client_.close_preview_count());
 }
 
 TEST_F(WallpaperControllerTest, ConfirmPreviewWallpaper) {
