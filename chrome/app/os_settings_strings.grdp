@@ -1849,7 +1849,7 @@ Press an assigned switch or key to remove assignment.
     Add playbook
   </message>
   <message name="IDS_SETTINGS_CROSTINI_PRECONFIGURED_CONTAINERS_ATTACH_PLAYBOOK_BUTTON_LABEL" desc="Label for button to attach an Ansible Playbook to preconfigure a Linux container.">
-    Apply playbook
+    Select playbook
   </message>
   <message name="IDS_SETTINGS_CROSTINI_ANSIBLE_PLAYBOOK_SELECT_DIALOG_TITLE" desc="The text used as the title for Ansible Playbook selection">
     Select an Ansible Playbook to add
