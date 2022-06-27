@@ -15,17 +15,10 @@
 #include "components/safe_search_api/url_checker_client.h"
 #include "url/gurl.h"
 
-namespace base {
-struct Feature;
-}
-
 namespace safe_search_api {
 
 // The SafeSearch API classification of a URL.
 enum class Classification { SAFE, UNSAFE };
-
-// Visible for testing.
-extern const base::Feature kAllowAllGoogleUrls;
 
 // This class uses one implementation of URLCheckerClient to check the
 // classification of the content on a given URL and returns the result

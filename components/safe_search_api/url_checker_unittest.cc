@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -160,40 +159,6 @@ TEST_F(SafeSearchURLCheckerTest, CacheTimeout) {
   // immediately.
   EXPECT_CALL(*this, OnCheckDone(url, Classification::UNSAFE, false));
   ASSERT_FALSE(SendResponse(url, Classification::UNSAFE, false));
-}
-
-TEST_F(SafeSearchURLCheckerTest, AllowAllGoogleURLs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kAllowAllGoogleUrls);
-  {
-    GURL url("https://sites.google.com/porn");
-    EXPECT_CALL(*this, OnCheckDone(url, Classification::SAFE, _));
-    // No server interaction.
-    bool cache_hit = CheckURL(url);
-    ASSERT_TRUE(cache_hit);
-  }
-  {
-    GURL url("https://youtube.com/porn");
-    EXPECT_CALL(*this, OnCheckDone(url, Classification::SAFE, _));
-    // No server interaction
-    bool cache_hit = CheckURL(url);
-    ASSERT_TRUE(cache_hit);
-  }
-}
-
-TEST_F(SafeSearchURLCheckerTest, NoAllowAllGoogleURLs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kAllowAllGoogleUrls);
-  {
-    GURL url("https://sites.google.com/porn");
-    EXPECT_CALL(*this, OnCheckDone(url, Classification::UNSAFE, false));
-    ASSERT_FALSE(SendResponse(url, Classification::UNSAFE, false));
-  }
-  {
-    GURL url("https://youtube.com/porn");
-    EXPECT_CALL(*this, OnCheckDone(url, Classification::UNSAFE, false));
-    ASSERT_FALSE(SendResponse(url, Classification::UNSAFE, false));
-  }
 }
 
 TEST_F(SafeSearchURLCheckerTest, DestroyURLCheckerBeforeCallback) {
