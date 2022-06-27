@@ -115,12 +115,6 @@ SmbProviderClient* DBusThreadManager::GetSmbProviderClient() {
   RETURN_DBUS_CLIENT(smb_provider_client_);
 }
 
-VirtualFileProviderClient* DBusThreadManager::GetVirtualFileProviderClient() {
-  return clients_browser_
-             ? clients_browser_->virtual_file_provider_client_.get()
-             : nullptr;
-}
-
 #undef RETURN_DBUS_CLIENT
 
 void DBusThreadManager::InitializeClients() {

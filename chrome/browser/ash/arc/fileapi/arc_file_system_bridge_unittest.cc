@@ -27,8 +27,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
+#include "chromeos/dbus/virtual_file_provider/virtual_file_provider_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -57,8 +57,8 @@ class ArcFileSystemBridgeTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    chromeos::VirtualFileProviderClient::InitializeFake();
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -82,8 +82,8 @@ class ArcFileSystemBridgeTest : public testing::Test {
     arc_bridge_service_.file_system()->CloseInstance(&fake_file_system_);
     arc_file_system_bridge_.reset();
     profile_manager_.reset();
+    chromeos::VirtualFileProviderClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:
@@ -219,7 +219,7 @@ TEST_F(ArcFileSystemBridgeTest, GetVirtualFileId) {
   // Set up fake virtual file provider client.
   constexpr char kId[] = "testfile";
   auto* fake_client = static_cast<chromeos::FakeVirtualFileProviderClient*>(
-      chromeos::DBusThreadManager::Get()->GetVirtualFileProviderClient());
+      chromeos::VirtualFileProviderClient::Get());
   fake_client->set_expected_size(kTestFileSize);
   fake_client->set_result_id(kId);
 
@@ -253,7 +253,7 @@ TEST_F(ArcFileSystemBridgeTest, OpenFileToRead) {
 
   constexpr char kId[] = "testfile";
   auto* fake_client = static_cast<chromeos::FakeVirtualFileProviderClient*>(
-      chromeos::DBusThreadManager::Get()->GetVirtualFileProviderClient());
+      chromeos::VirtualFileProviderClient::Get());
   fake_client->set_expected_size(kTestFileSize);
   fake_client->set_result_id(kId);
   fake_client->set_result_fd(base::ScopedFD(temp_file.TakePlatformFile()));

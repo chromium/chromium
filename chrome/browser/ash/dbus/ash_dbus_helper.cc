@@ -68,6 +68,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/dbus/virtual_file_provider/virtual_file_provider_client.h"
 #include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
@@ -163,6 +164,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::UpdateEngineClient>(bus);
   InitializeDBusClient<UserDataAuthClient>(bus);
   InitializeDBusClient<UpstartClient>(bus);
+  InitializeDBusClient<chromeos::VirtualFileProviderClient>(bus);
   InitializeDBusClient<chromeos::VmPluginDispatcherClient>(bus);
 
   // Initialize the device settings service so that we'll take actions per
@@ -220,6 +222,7 @@ void ShutdownDBus() {
   }
   // Other D-Bus clients are shut down, also in reverse order of initialization.
   chromeos::VmPluginDispatcherClient::Shutdown();
+  chromeos::VirtualFileProviderClient::Shutdown();
   UpstartClient::Shutdown();
   UserDataAuthClient::Shutdown();
   chromeos::UpdateEngineClient::Shutdown();

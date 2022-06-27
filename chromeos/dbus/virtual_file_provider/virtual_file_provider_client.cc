@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "chromeos/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -18,6 +19,8 @@
 namespace chromeos {
 
 namespace {
+
+VirtualFileProviderClient* g_instance = nullptr;
 
 class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
  public:
@@ -55,7 +58,6 @@ class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
- protected:
   // DBusClient override.
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
@@ -105,13 +107,36 @@ class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
 
 }  // namespace
 
-VirtualFileProviderClient::VirtualFileProviderClient() = default;
-
-VirtualFileProviderClient::~VirtualFileProviderClient() = default;
+// static
+VirtualFileProviderClient* VirtualFileProviderClient::Get() {
+  return g_instance;
+}
 
 // static
-std::unique_ptr<VirtualFileProviderClient> VirtualFileProviderClient::Create() {
-  return std::make_unique<VirtualFileProviderClientImpl>();
+void VirtualFileProviderClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new VirtualFileProviderClientImpl())->Init(bus);
+}
+
+// static
+void VirtualFileProviderClient::InitializeFake() {
+  (new FakeVirtualFileProviderClient())->Init(nullptr);
+}
+
+// static
+void VirtualFileProviderClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+VirtualFileProviderClient::VirtualFileProviderClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+VirtualFileProviderClient::~VirtualFileProviderClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos
