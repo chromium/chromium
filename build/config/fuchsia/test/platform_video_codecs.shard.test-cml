@@ -1,9 +1,0 @@
-{
-  use: [
-    {
-      protocol: [
-        "fuchsia.mediacodec.CodecFactory",
-      ]
-    },
-  ],
-}
