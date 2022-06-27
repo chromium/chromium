@@ -208,11 +208,20 @@ public final class ChromePreferenceKeys {
 
     public static final KeyPrefix CUSTOM_TABS_DEX_LAST_UPDATE_TIME_PREF_PREFIX =
             new KeyPrefix("pref_local_custom_tabs_module_dex_last_update_time_*");
-    public static final String CUSTOM_TABS_LAST_URL = "pref_last_custom_tab_url";
+
+    /** Package name of the client app that uses CCT service of the last launched CCT. */
+    public static final String CUSTOM_TABS_LAST_CLIENT_PACKAGE =
+            "Chrome.CustomTabs.LastClientPackage";
     public static final String CUSTOM_TABS_LAST_CLOSE_TIMESTAMP =
             "Chrome.CustomTabs.LastCloseTimestamp";
     public static final String CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION =
             "Chrome.CustomTabs.LastCloseTabInteraction";
+    /** The referrer URI string of the last launched CCT. */
+    public static final String CUSTOM_TABS_LAST_REFERRER = "Chrome.CustomTabs.LastReferrer";
+    /** {@link Activity#getTaskId()} of the last launched CCT. */
+    public static final String CUSTOM_TABS_LAST_TASK_ID = "Chrome.CustomTabs.LastTaskId";
+    /** Uri of the last launched CCT. */
+    public static final String CUSTOM_TABS_LAST_URL = "pref_last_custom_tab_url";
 
     /**
      * Keys used to save whether it is ready to promo.
@@ -969,9 +978,12 @@ public final class ChromePreferenceKeys {
                 CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED,
                 CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
                 CONTINUOUS_SEARCH_DISMISSAL_COUNT,
-                CRYPTID_LAST_RENDER_TIMESTAMP,
-                CUSTOM_TABS_LAST_CLOSE_TIMESTAMP,
+                CUSTOM_TABS_LAST_CLIENT_PACKAGE,
                 CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION,
+                CUSTOM_TABS_LAST_CLOSE_TIMESTAMP,
+                CUSTOM_TABS_LAST_REFERRER,
+                CUSTOM_TABS_LAST_TASK_ID,
+                CRYPTID_LAST_RENDER_TIMESTAMP,
                 DEFAULT_BROWSER_PROMO_LAST_DEFAULT_STATE,
                 DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME,
                 DEFAULT_BROWSER_PROMO_PROMOED_BY_SYSTEM_SETTINGS,
