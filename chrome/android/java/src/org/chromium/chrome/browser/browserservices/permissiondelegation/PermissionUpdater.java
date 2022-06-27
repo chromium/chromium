@@ -41,7 +41,7 @@ public class PermissionUpdater {
     }
 
     public static PermissionUpdater get() {
-        return ChromeApplicationImpl.getComponent().resolveTwaPermissionUpdater();
+        return ChromeApplicationImpl.getComponent().resolvePermissionUpdater();
     }
 
     /**

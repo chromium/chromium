@@ -80,7 +80,7 @@ public class ClientAppBroadcastReceiver extends BroadcastReceiver {
         this(new ClearDataStrategy(), new InstalledWebappDataRegister(),
                 new BrowserServicesStore(
                         ChromeApplicationImpl.getComponent().resolveSharedPreferencesManager()),
-                ChromeApplicationImpl.getComponent().resolveTwaPermissionUpdater());
+                ChromeApplicationImpl.getComponent().resolvePermissionUpdater());
     }
 
     /** Constructor to allow dependency injection in tests. */

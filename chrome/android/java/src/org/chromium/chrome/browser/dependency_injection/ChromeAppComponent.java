@@ -35,9 +35,9 @@ public interface ChromeAppComponent {
 
     CustomTabsConnection resolveCustomTabsConnection();
     SharedPreferencesManager resolveSharedPreferencesManager();
-    ClearDataDialogResultRecorder resolveTwaClearDataDialogRecorder();
+    ClearDataDialogResultRecorder resolveClearDataDialogResultRecorder();
     InstalledWebappPermissionManager resolvePermissionManager();
-    PermissionUpdater resolveTwaPermissionUpdater();
+    PermissionUpdater resolvePermissionUpdater();
     TrustedWebActivityClient resolveTrustedWebActivityClient();
     ExternalAuthUtils resolveExternalAuthUtils();
 

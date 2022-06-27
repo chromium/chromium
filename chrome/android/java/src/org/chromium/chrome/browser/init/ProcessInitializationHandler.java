@@ -432,7 +432,7 @@ public class ProcessInitializationHandler {
 
         deferredStartupHandler.addDeferredTask(
                 ChromeApplicationImpl.getComponent()
-                        .resolveTwaClearDataDialogRecorder()::makeDeferredRecordings);
+                        .resolveClearDataDialogResultRecorder()::makeDeferredRecordings);
         deferredStartupHandler.addDeferredTask(WebApkUninstallUmaTracker::recordDeferredUma);
 
         deferredStartupHandler.addDeferredTask(
