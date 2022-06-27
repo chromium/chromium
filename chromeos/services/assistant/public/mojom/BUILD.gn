@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,5 +7,5 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "assistant_audio_decoder.mojom" ]
 
-  public_deps = [ "//sandbox/policy/mojom" ]
+  public_deps = [ "//chromeos/ash/services/assistant/public/mojom" ]
 }

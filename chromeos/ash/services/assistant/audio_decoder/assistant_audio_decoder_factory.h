@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_AUDIO_DECODER_ASSISTANT_AUDIO_DECODER_FACTORY_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_AUDIO_DECODER_ASSISTANT_AUDIO_DECODER_FACTORY_H_
 
-#include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

@@ -33,7 +33,7 @@ component("util") {
     "//base",
     "//base:i18n",
     "//chromeos/ash/services/assistant/public/cpp",
-    "//chromeos/services/assistant/public/mojom",
+    "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/ui/vector_icons",
     "//net",
     "//ui/base",

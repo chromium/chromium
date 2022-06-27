@@ -33,7 +33,7 @@ mojom("mojom") {
 
   deps = [
     "//ash/public/mojom",
-    "//chromeos/services/assistant/public/mojom",
+    "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/services/network_config/public/mojom",
     "//media/mojo/mojom",
     "//services/device/public/mojom",

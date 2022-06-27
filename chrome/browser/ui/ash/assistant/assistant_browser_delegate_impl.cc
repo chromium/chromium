@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate_impl.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_context.h"

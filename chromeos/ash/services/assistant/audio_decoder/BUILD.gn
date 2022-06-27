@@ -20,7 +20,7 @@ source_set("lib") {
 
   deps = [
     "//base",
-    "//chromeos/services/assistant/public/mojom",
+    "//chromeos/ash/services/assistant/public/mojom",
   ]
 
   public_deps = [

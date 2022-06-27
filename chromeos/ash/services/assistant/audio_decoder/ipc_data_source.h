@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/threading/thread_checker.h"
-#include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "media/base/data_source.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
