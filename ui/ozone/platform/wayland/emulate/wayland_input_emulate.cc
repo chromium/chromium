@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 
 namespace wl {
@@ -107,7 +108,8 @@ void WaylandInputEmulate::RemoveObserver(Observer* obs) {
 
 void WaylandInputEmulate::EmulatePointerMotion(
     gfx::AcceleratedWidget widget,
-    const gfx::Point& mouse_surface_loc) {
+    const gfx::Point& mouse_surface_loc,
+    const gfx::Point& mouse_screen_loc_in_px) {
   auto it = windows_.find(widget);
   DCHECK(it != windows_.end());
 
@@ -115,7 +117,8 @@ void WaylandInputEmulate::EmulatePointerMotion(
   if (!test_window->buffer_attached_and_configured) {
     auto pending_event =
         std::make_unique<PendingEvent>(ui::EventType::ET_MOUSE_MOVED, widget);
-    pending_event->location_in_px = mouse_surface_loc;
+    pending_event->pointer_surface_location = mouse_surface_loc;
+    pending_event->pointer_screen_location_in_px = mouse_screen_loc_in_px;
     test_window->pending_events.emplace_back(std::move(pending_event));
     return;
   }
@@ -127,18 +130,30 @@ void WaylandInputEmulate::EmulatePointerMotion(
 
   // If it's a toplevel window, activate it. This results in raising the the
   // parent window and its children windows.
+  // TODO(oshima): This is probably not right because a inactive window can
+  // still receive mouse wheel event, and you may want to move a mouse pointer
+  // w/o activating a window. A window will be activated when a mouse is
+  // clicked.
   auto window_type = wayland_proxy->GetWindowType(widget);
   if (window_type != ui::PlatformWindowType::kTooltip &&
       window_type != ui::PlatformWindowType::kMenu &&
       !wayland_proxy->WindowHasPointerFocus(widget)) {
     weston_test_activate_surface(weston_test_, wlsurface);
   }
+  bool screen_coordinates =
+      wayland_proxy->GetWaylandWindowForAcceleratedWidget(widget)
+          ->IsScreenCoordinatesEnabled();
 
+  auto* target_surface = screen_coordinates ? nullptr : wlsurface;
+  auto target_location =
+      screen_coordinates ? mouse_screen_loc_in_px : mouse_surface_loc;
+
+  // TODO(crbug.com/1306688): The coordinate should be in DIP.
   timespec ts = (base::TimeTicks::Now() - base::TimeTicks()).ToTimeSpec();
-  weston_test_move_pointer(weston_test_, wlsurface,
+  weston_test_move_pointer(weston_test_, target_surface,
                            static_cast<uint64_t>(ts.tv_sec) >> 32,
                            ts.tv_sec & 0xffffffff, ts.tv_nsec,
-                           mouse_surface_loc.x(), mouse_surface_loc.y());
+                           target_location.x(), target_location.y());
   wayland_proxy->ScheduleDisplayFlush();
 }
 
@@ -215,7 +230,7 @@ void WaylandInputEmulate::EmulateTouch(gfx::AcceleratedWidget widget,
   auto* test_window = it->second.get();
   if (!test_window->buffer_attached_and_configured) {
     auto pending_event = std::make_unique<PendingEvent>(event_type, widget);
-    pending_event->location_in_px = touch_screen_loc;
+    pending_event->touch_screen_location = touch_screen_loc;
     pending_event->touch_id = id;
     test_window->pending_events.emplace_back(std::move(pending_event));
     return;
@@ -282,7 +297,9 @@ void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget,
   //
   // This is needed as running some tests doesn't result in sending frames that
   // require buffers to be created.
-  auto buffer_size = wayland_proxy->GetWindowBounds(widget).size();
+  auto* wayland_window =
+      wayland_proxy->GetWaylandWindowForAcceleratedWidget(widget);
+  auto buffer_size = wayland_window->GetBoundsInPixels().size();
   // Adjust the buffer size in case if the window was created with empty size.
   if (buffer_size.IsEmpty())
     buffer_size.SetSize(1, 1);
@@ -348,8 +365,8 @@ void WaylandInputEmulate::HandlePointerPosition(void* data,
                                                 wl_fixed_t x,
                                                 wl_fixed_t y) {
   WaylandInputEmulate* emulate = static_cast<WaylandInputEmulate*>(data);
-  auto mouse_position_on_screen_px =
-      gfx::Point(wl_fixed_to_int(x), wl_fixed_to_int(y));
+  gfx::Point mouse_position_on_screen_px(wl_fixed_to_int(x),
+                                         wl_fixed_to_int(y));
   for (WaylandInputEmulate::Observer& observer : emulate->observers_)
     observer.OnPointerMotionGlobal(mouse_position_on_screen_px);
 }
@@ -437,8 +454,9 @@ void WaylandInputEmulate::FrameCallbackHandler(void* data,
 
     switch (event->type) {
       case ui::EventType::ET_MOUSE_MOVED:
-        input_emulate->EmulatePointerMotion(window->widget,
-                                            event->location_in_px);
+        input_emulate->EmulatePointerMotion(
+            window->widget, event->pointer_surface_location,
+            event->pointer_screen_location_in_px);
         break;
       case ui::EventType::ET_MOUSE_PRESSED:
       case ui::EventType::ET_MOUSE_RELEASED:
@@ -454,7 +472,8 @@ void WaylandInputEmulate::FrameCallbackHandler(void* data,
       case ui::EventType::ET_TOUCH_MOVED:
       case ui::EventType::ET_TOUCH_RELEASED:
         input_emulate->EmulateTouch(window->widget, event->type,
-                                    event->touch_id, event->location_in_px);
+                                    event->touch_id,
+                                    event->touch_screen_location);
         break;
       default:
         NOTREACHED();

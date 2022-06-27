@@ -645,6 +645,7 @@ source_set("ui_test_support") {
     "//ui/events:test_support",
     "//ui/events/types:headers",
     "//ui/gfx",
+    "//ui/ozone/platform/wayland",
     "//ui/platform_window/common",
   ]
 }

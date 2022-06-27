@@ -58,7 +58,8 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
   void EmulatePointerMotion(gfx::AcceleratedWidget widget,
-                            const gfx::Point& mouse_surface_loc);
+                            const gfx::Point& mouse_surface_loc,
+                            const gfx::Point& mouse_screen_loc_in_px);
   void EmulatePointerButton(gfx::AcceleratedWidget widget,
                             ui::EventType event_type,
                             uint32_t changed_button);
@@ -82,10 +83,13 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     ui::EventType type;
     gfx::AcceleratedWidget widget;
 
-    // Set for type == ET_MOUSE_MOVED || type == ET_TOUCH_*. Location is in
-    // surface coordinates for mouse events, and in root coordinates for touch
-    // events.
-    gfx::Point location_in_px;
+    // Set for type == ET_MOUSE_MOVED. Locations are
+    // in surface local, and pixel screen coordinates respectively.
+    gfx::Point pointer_surface_location;
+    gfx::Point pointer_screen_location_in_px;
+
+    // Set for type == ET_TOUCH_*. Location is in dip screen coordinates.
+    gfx::Point touch_screen_location;
 
     // Set for type == ET_MOUSE_PRESSED || type == ET_MOUSE_RELEASED.
     uint32_t mouse_button = 0;

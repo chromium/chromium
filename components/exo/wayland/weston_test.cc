@@ -23,6 +23,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 
 namespace exo {
@@ -99,15 +100,14 @@ static void weston_test_move_pointer(struct wl_client* client,
   auto* weston_test = GetUserDataAs<WestonTestState>(resource);
 
   // Convert cursor point from window space to root space
-  gfx::Point point_in_root(x, y);
+  gfx::Point point_in_screen(x, y);
   if (surface_resource) {
     aura::Window* window = GetUserDataAs<Surface>(surface_resource)->window();
-    aura::Window::ConvertPointToTarget(window, window->GetRootWindow(),
-                                       &point_in_root);
+    wm::ConvertPointToScreen(window, &point_in_screen);
   }
   base::RunLoop run_loop;
-  ui_controls::SendMouseMoveNotifyWhenDone(point_in_root.x(), point_in_root.y(),
-                                           run_loop.QuitClosure());
+  ui_controls::SendMouseMoveNotifyWhenDone(
+      point_in_screen.x(), point_in_screen.y(), run_loop.QuitClosure());
   {
     // Do not process incoming wayland events which may destroy resources.
     ScopedEventDispatchDisabler disable(weston_test->server);

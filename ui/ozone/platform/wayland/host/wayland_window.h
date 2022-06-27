@@ -309,6 +309,9 @@ class WaylandWindow : public PlatformWindow,
   // WaylandPopup, if |this| has type of WaylandPopup.
   virtual WaylandPopup* AsWaylandPopup();
 
+  // Returns true if the window's bounds is in screen coordinates.
+  virtual bool IsScreenCoordinatesEnabled() const;
+
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner() {
     return ui_task_runner_;
   }

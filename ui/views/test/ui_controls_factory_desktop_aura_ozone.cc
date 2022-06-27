@@ -161,8 +161,8 @@ class UIControlsDesktopOzone : public UIControlsAura {
                                      int y,
                                      base::OnceClosure closure) override {
     gfx::Point screen_location(x, y);
-    gfx::Point root_location = screen_location;
     aura::Window* root_window;
+
     // Touch release events might not have coordinates that match any window, so
     // just use whichever window is on top.
     if (action & ui_controls::RELEASE)
@@ -170,19 +170,9 @@ class UIControlsDesktopOzone : public UIControlsAura {
     else
       root_window = RootWindowForPoint(screen_location);
 
-    aura::client::ScreenPositionClient* screen_position_client =
-        aura::client::GetScreenPositionClient(root_window);
-    if (screen_position_client) {
-      screen_position_client->ConvertPointFromScreen(root_window,
-                                                     &root_location);
-    }
-
-    aura::WindowTreeHost* host = root_window->GetHost();
-    gfx::Point screen_point(root_location);
-    host->ConvertDIPToScreenInPixels(&screen_point);
     ozone_ui_controls_test_helper_->SendTouchEvent(
         root_window->GetHost()->GetAcceleratedWidget(), action, id,
-        screen_point, std::move(closure));
+        screen_location, std::move(closure));
 
     return true;
   }

@@ -80,10 +80,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // WaylandWindow overrides:
   absl::optional<std::vector<gfx::Rect>> GetWindowShape() const override;
-
-  bool screen_coordinates_enabled() const {
-    return screen_coordinates_enabled_;
-  }
+  bool IsScreenCoordinatesEnabled() const override;
 
   // Client-side decorations on Wayland take some portion of the window surface,
   // and when they are turned on or off, the window geometry is changed.  That

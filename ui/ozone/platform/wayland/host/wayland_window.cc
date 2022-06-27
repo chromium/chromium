@@ -709,6 +709,10 @@ WaylandPopup* WaylandWindow::AsWaylandPopup() {
   return nullptr;
 }
 
+bool WaylandWindow::IsScreenCoordinatesEnabled() const {
+  return false;
+}
+
 uint32_t WaylandWindow::DispatchEventToDelegate(
     const PlatformEvent& native_event) {
   bool handled = DispatchEventFromNativeUiEvent(

@@ -49,6 +49,13 @@ wl_surface* WaylandProxyImpl::GetWlSurfaceForAcceleratedWidget(
   return window->root_surface()->surface();
 }
 
+ui::WaylandWindow* WaylandProxyImpl::GetWaylandWindowForAcceleratedWidget(
+    gfx::AcceleratedWidget widget) {
+  auto* window = connection_->wayland_window_manager()->GetWindow(widget);
+  DCHECK(window);
+  return window;
+}
+
 wl_buffer* WaylandProxyImpl::CreateShmBasedWlBuffer(
     const gfx::Size& buffer_size) {
   ui::WaylandShmBuffer shm_buffer(connection_->wayland_buffer_factory(),
@@ -76,12 +83,6 @@ ui::PlatformWindowType WaylandProxyImpl::GetWindowType(
   auto* window = connection_->wayland_window_manager()->GetWindow(widget);
   DCHECK(window);
   return window->type();
-}
-
-gfx::Rect WaylandProxyImpl::GetWindowBounds(gfx::AcceleratedWidget widget) {
-  auto* window = connection_->wayland_window_manager()->GetWindow(widget);
-  DCHECK(window);
-  return window->GetBoundsInPixels();
 }
 
 bool WaylandProxyImpl::WindowHasPointerFocus(gfx::AcceleratedWidget widget) {

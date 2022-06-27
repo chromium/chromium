@@ -167,13 +167,13 @@ void WaylandOzoneUIControlsTestHelper::SendKeyPressEvent(
 void WaylandOzoneUIControlsTestHelper::SendMouseMotionNotifyEvent(
     gfx::AcceleratedWidget widget,
     const gfx::Point& mouse_loc,
-    const gfx::Point& mouse_root_loc,
+    const gfx::Point& mouse_screen_loc_in_px,
     base::OnceClosure closure) {
   WaylandGlobalEventWaiter::Create(
       WaylandGlobalEventWaiter::WaylandEventType::kMotion, mouse_loc,
       std::move(closure), input_emulate_.get());
-
-  input_emulate_->EmulatePointerMotion(widget, mouse_loc);
+  input_emulate_->EmulatePointerMotion(widget, mouse_loc,
+                                       mouse_screen_loc_in_px);
 }
 
 void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
@@ -182,7 +182,7 @@ void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
     int button_state,
     int accelerator_state,
     const gfx::Point& mouse_loc,
-    const gfx::Point& mouse_root_loc,
+    const gfx::Point& mouse_screen_loc_in_px,
     base::OnceClosure closure) {
   uint32_t changed_button = 0;
   switch (type) {
@@ -208,7 +208,7 @@ void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
                          accelerator_state & ui_controls::kCommand, {}, true);
   }
 
-  SendMouseMotionNotifyEvent(widget, mouse_loc, mouse_root_loc, {});
+  SendMouseMotionNotifyEvent(widget, mouse_loc, mouse_screen_loc_in_px, {});
 
   WaylandGlobalEventWaiter::Create(
       WaylandGlobalEventWaiter::WaylandEventType::kButton, changed_button,

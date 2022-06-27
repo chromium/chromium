@@ -329,6 +329,10 @@ absl::optional<std::vector<gfx::Rect>> WaylandToplevelWindow::GetWindowShape()
   return window_shape_in_dips_;
 }
 
+bool WaylandToplevelWindow::IsScreenCoordinatesEnabled() const {
+  return screen_coordinates_enabled_;
+}
+
 // static
 void WaylandToplevelWindow::AllowSettingDecorationInsetsForTest(bool allow) {
   decorations_allowed_for_test_ = allow;
