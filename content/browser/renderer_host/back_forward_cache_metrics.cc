@@ -175,7 +175,7 @@ void BackForwardCacheMetrics::DidCommitNavigation(
                     page_store_result_->browsing_instance_swap_result().value())
               : -1);
       SCOPED_CRASH_KEY_NUMBER(
-          "BFCacheMismatch", "not_restored",
+          "BFCacheMismatch", "blocklisted",
           page_store_result_->blocklisted_features().ToEnumBitmask());
       SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "disabled",
                               page_store_result_->disabled_reasons().size());
