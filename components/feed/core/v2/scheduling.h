@@ -30,8 +30,15 @@ struct RequestSchedule {
   RequestSchedule(RequestSchedule&&);
   RequestSchedule& operator=(RequestSchedule&&);
 
+  enum class Type : int {
+    kScheduledRefresh = 0,
+    kFeedCloseRefresh = 1,
+    kMaxValue = kFeedCloseRefresh,
+  };
+
   base::Time anchor_time;
   std::vector<base::TimeDelta> refresh_offsets;
+  Type type = Type::kScheduledRefresh;
 };
 
 base::Value RequestScheduleToValue(const RequestSchedule&);
