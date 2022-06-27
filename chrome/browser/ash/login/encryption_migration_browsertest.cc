@@ -80,8 +80,9 @@ class EncryptionMigrationTestBase
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
 
-    FakeUserDataAuthClient::TestApi::Get()->SetEcryptfsUserHome(
-        GetTestCryptohomeId(), true);
+    FakeUserDataAuthClient::TestApi::Get()->SetHomeEncryptionMethod(
+        GetTestCryptohomeId(),
+        FakeUserDataAuthClient::HomeEncryptionMethod::kEcryptfs);
     FakeUserDataAuthClient::TestApi::Get()->set_run_default_dircrypto_migration(
         false);
 

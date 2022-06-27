@@ -9,8 +9,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 
-#include <set>
-
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -24,6 +22,12 @@ namespace ash {
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     : public UserDataAuthClient {
  public:
+  // The method by which a user's home directory can be encrypted.
+  enum class HomeEncryptionMethod {
+    kDirCrypto,
+    kEcryptfs,
+  };
+
   class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) TestApi {
    public:
     ~TestApi() = default;
@@ -75,8 +79,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     // Marks |cryptohome_id| as using ecryptfs (|use_ecryptfs|=true) or
     // dircrypto
     // (|use_ecryptfs|=false).
-    void SetEcryptfsUserHome(const cryptohome::AccountIdentifier& cryptohome_id,
-                             bool use_ecryptfs);
+    void SetHomeEncryptionMethod(
+        const cryptohome::AccountIdentifier& cryptohome_id,
+        HomeEncryptionMethod method);
 
     // Marks a PIN key as locked or unlocked. The key is identified by the
     // |account_id| of the user it belongs to and its |label|. The key must
@@ -310,9 +315,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void ReturnProtobufMethodCallback(const ReplyType& reply,
                                     DBusMethodCallback<ReplyType> callback);
 
-  // Returns true if the user's home is backed by eCryptfs.
-  bool IsEcryptfsUserHome(const cryptohome::AccountIdentifier& cryptohome_id);
-
   // This method is used to implement StartMigrateToDircrypto with simulated
   // progress updates.
   void OnDircryptoMigrationProgressUpdated();
@@ -333,12 +335,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   void RunPendingWaitForServiceToBeAvailableCallbacks();
 
-  // Marks |cryptohome_id| as using ecryptfs (|use_ecryptfs|=true) or
-  // dircrypto
-  // (|use_ecryptfs|=false).
-  void SetEcryptfsUserHome(const cryptohome::AccountIdentifier& cryptohome_id,
-                           bool use_ecryptfs);
-
   ::user_data_auth::CryptohomeErrorCode cryptohome_error_ =
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   int prepare_guest_request_count_ = 0;
@@ -350,10 +346,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // The collection of users we know about.
   std::map<cryptohome::AccountIdentifier, UserCryptohomeState> users_;
-
-  // Set of account identifiers whose user homes use ecryptfs. User homes not
-  // mentioned here use dircrypto.
-  std::set<cryptohome::AccountIdentifier> ecryptfs_user_homes_;
 
   // Timer for triggering the dircrypto migration progress signal.
   base::RepeatingTimer dircrypto_migration_progress_timer_;

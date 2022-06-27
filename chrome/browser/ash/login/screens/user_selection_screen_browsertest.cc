@@ -87,9 +87,9 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
 
   std::unique_ptr<base::HistogramTester> histogram_tester =
       std::make_unique<base::HistogramTester>();
-  FakeUserDataAuthClient::TestApi::Get()->SetEcryptfsUserHome(
+  FakeUserDataAuthClient::TestApi::Get()->SetHomeEncryptionMethod(
       cryptohome::CreateAccountIdentifierFromAccountId(users[1].account_id),
-      true);
+      FakeUserDataAuthClient::HomeEncryptionMethod::kEcryptfs);
 
   // Focus the 2nd user pod (consumer).
   ASSERT_TRUE(LoginScreenTestApi::FocusUser(users[1].account_id));
@@ -102,9 +102,9 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   histogram_tester->ExpectBucketCount("Ash.Login.Login.MigrationBanner", true,
                                       1);
 
-  FakeUserDataAuthClient::TestApi::Get()->SetEcryptfsUserHome(
+  FakeUserDataAuthClient::TestApi::Get()->SetHomeEncryptionMethod(
       cryptohome::CreateAccountIdentifierFromAccountId(users[2].account_id),
-      false);
+      FakeUserDataAuthClient::HomeEncryptionMethod::kDirCrypto);
   histogram_tester = std::make_unique<base::HistogramTester>();
   // Focus the 3rd user pod (consumer).
   ASSERT_TRUE(LoginScreenTestApi::FocusUser(users[2].account_id));
@@ -117,9 +117,9 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   histogram_tester->ExpectBucketCount("Ash.Login.Login.MigrationBanner", false,
                                       1);
 
-  FakeUserDataAuthClient::TestApi::Get()->SetEcryptfsUserHome(
+  FakeUserDataAuthClient::TestApi::Get()->SetHomeEncryptionMethod(
       cryptohome::CreateAccountIdentifierFromAccountId(users[3].account_id),
-      true);
+      FakeUserDataAuthClient::HomeEncryptionMethod::kEcryptfs);
   histogram_tester = std::make_unique<base::HistogramTester>();
 
   // Focus to the 4th user pod (enterprise).

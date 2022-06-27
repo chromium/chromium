@@ -56,6 +56,11 @@ using FakeAuthFactor =
 struct FakeUserDataAuthClient::UserCryptohomeState {
   // Maps labels to auth factors.
   std::map<std::string, FakeAuthFactor> auth_factors;
+
+  // A flag describing how we pretend that the user's home directory is
+  // encrypted.
+  HomeEncryptionMethod home_encryption_method =
+      HomeEncryptionMethod::kDirCrypto;
 };
 
 namespace {
@@ -141,10 +146,20 @@ void FakeUserDataAuthClient::TestApi::ReportServiceIsNotAvailable() {
   client_->RunPendingWaitForServiceToBeAvailableCallbacks();
 }
 
-void FakeUserDataAuthClient::TestApi::SetEcryptfsUserHome(
+void FakeUserDataAuthClient::TestApi::SetHomeEncryptionMethod(
     const cryptohome::AccountIdentifier& cryptohome_id,
-    bool use_ecryptfs) {
-  client_->SetEcryptfsUserHome(cryptohome_id, use_ecryptfs);
+    HomeEncryptionMethod method) {
+  auto user_it = client_->users_.find(cryptohome_id);
+  if (user_it == std::end(client_->users_)) {
+    LOG(ERROR) << "User does not exist: " << cryptohome_id.account_id();
+    // TODO(crbug.com/1334538): Some existing tests rely on us creating the
+    // user here, but new tests shouldn't. Eventually this should crash.
+    user_it =
+        client_->users_.insert({cryptohome_id, UserCryptohomeState()}).first;
+  }
+  DCHECK(user_it != std::end(client_->users_));
+  UserCryptohomeState& user_state = user_it->second;
+  user_state.home_encryption_method = method;
 }
 
 void FakeUserDataAuthClient::TestApi::SetPinLocked(
@@ -207,38 +222,69 @@ void FakeUserDataAuthClient::Unmount(
 void FakeUserDataAuthClient::Mount(
     const ::user_data_auth::MountRequest& request,
     MountCallback callback) {
-  ::user_data_auth::CryptohomeErrorCode error = cryptohome_error_;
   last_mount_request_ = request;
   ++mount_request_count_;
+
   ::user_data_auth::MountReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 
-  cryptohome::AccountIdentifier account;
-  if (request.guest_mount()) {
-    account.set_account_id(kGuestUserName);
-    reply.set_sanitized_username(GetStubSanitizedUsername(account));
-  } else {
-    if (request.has_account()) {
-      account = request.account();
-      reply.set_sanitized_username(GetStubSanitizedUsername(account));
-      if (TestApi::Get()->mount_create_required_ && !request.has_create())
-        error = ::user_data_auth::CryptohomeErrorCode::
-            CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND;
-    } else {
-      auto auth_session = auth_sessions_.find(request.auth_session_id());
-      DCHECK(auth_session != std::end(auth_sessions_));
-      account = auth_session->second.account;
-    }
-
-    reply.set_sanitized_username(GetStubSanitizedUsername(account));
-    if (IsEcryptfsUserHome(account) && !request.to_migrate_from_ecryptfs() &&
-        request.force_dircrypto_if_available()) {
-      error = ::user_data_auth::CryptohomeErrorCode::
-          CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION;
-    }
+  if (cryptohome_error_ !=
+      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(cryptohome_error_);
+    return;
   }
 
-  reply.set_error(error);
-  ReturnProtobufMethodCallback(reply, std::move(callback));
+  if (request.guest_mount()) {
+    cryptohome::AccountIdentifier account_id;
+    account_id.set_account_id(kGuestUserName);
+    reply.set_sanitized_username(GetStubSanitizedUsername(account_id));
+    return;
+  }
+
+  // TODO(crbug.com/1334538): We should get rid of mount_create_required_
+  // and instead check whether the user exists or not here. Tests would then
+  // need to set up a user (or not).
+  if (TestApi::Get()->mount_create_required_ && !request.has_create()) {
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
+    return;
+  }
+
+  const cryptohome::AccountIdentifier* account_id;
+  if (request.has_account()) {
+    account_id = &request.account();
+  } else {
+    auto auth_session = auth_sessions_.find(request.auth_session_id());
+    CHECK(auth_session != std::end(auth_sessions_))
+        << "Invalid account session";
+    account_id = &auth_session->second.account;
+  }
+  DCHECK(account_id);
+
+  auto user_it = users_.find(*account_id);
+  if (user_it == std::end(users_)) {
+    LOG_IF(ERROR, !request.has_create())
+        << "UserDataAuth::Mount called without create field for nonexistant "
+           "user: "
+        << account_id->account_id();
+    // TODO(crbug.com/1334538): Old tests rely on this behavior, but new tests
+    // shouldn't: Instead, they should either fill in the `create` field, or
+    // they should set up a test user first.
+    user_it = users_.insert({*account_id, UserCryptohomeState()}).first;
+  }
+  DCHECK(user_it != std::end(users_));
+  const UserCryptohomeState& user_state = user_it->second;
+
+  const bool is_ecryptfs =
+      user_state.home_encryption_method == HomeEncryptionMethod::kEcryptfs;
+  if (is_ecryptfs && !request.to_migrate_from_ecryptfs() &&
+      request.force_dircrypto_if_available()) {
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION);
+    return;
+  }
+
+  reply.set_sanitized_username(GetStubSanitizedUsername(*account_id));
 }
 void FakeUserDataAuthClient::Remove(
     const ::user_data_auth::RemoveRequest& request,
@@ -500,8 +546,24 @@ void FakeUserDataAuthClient::NeedsDircryptoMigration(
     const ::user_data_auth::NeedsDircryptoMigrationRequest& request,
     NeedsDircryptoMigrationCallback callback) {
   ::user_data_auth::NeedsDircryptoMigrationReply reply;
-  reply.set_needs_dircrypto_migration(IsEcryptfsUserHome(request.account_id()));
-  ReturnProtobufMethodCallback(reply, std::move(callback));
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+
+  const cryptohome::AccountIdentifier& account_id = request.account_id();
+
+  const auto user_it = users_.find(account_id);
+  if (user_it == std::end(users_)) {
+    // TODO(crbug.com/1334538): New tests shouldn't rely on this behavior and
+    // instead set up the user first.
+    LOG(ERROR) << "User does not exist: " << account_id.account_id();
+    reply.set_needs_dircrypto_migration(false);
+    return;
+  }
+  DCHECK(user_it != users_.end());
+  const UserCryptohomeState& user_state = user_it->second;
+
+  const bool is_ecryptfs =
+      user_state.home_encryption_method == HomeEncryptionMethod::kEcryptfs;
+  reply.set_needs_dircrypto_migration(is_ecryptfs);
 }
 void FakeUserDataAuthClient::GetSupportedKeyPolicies(
     const ::user_data_auth::GetSupportedKeyPoliciesRequest& request,
@@ -825,15 +887,6 @@ void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
   }
 }
 
-void FakeUserDataAuthClient::SetEcryptfsUserHome(
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    bool use_ecryptfs) {
-  if (use_ecryptfs)
-    ecryptfs_user_homes_.insert(cryptohome_id);
-  else
-    ecryptfs_user_homes_.erase(cryptohome_id);
-}
-
 void FakeUserDataAuthClient::RunPendingWaitForServiceToBeAvailableCallbacks() {
   std::vector<WaitForServiceToBeAvailableCallback> callbacks;
   callbacks.swap(pending_wait_for_service_to_be_available_callbacks_);
@@ -856,7 +909,13 @@ void FakeUserDataAuthClient::OnDircryptoMigrationProgressUpdated() {
     NotifyDircryptoMigrationProgress(
         ::user_data_auth::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_SUCCESS,
         dircrypto_migration_progress_, kDircryptoMigrationMaxProgress);
-    SetEcryptfsUserHome(last_migrate_to_dircrypto_request_.account_id(), false);
+    const auto user_it =
+        users_.find(last_migrate_to_dircrypto_request_.account_id());
+    DCHECK(user_it != std::end(users_))
+        << "User for dircrypto migration does not exist";
+
+    UserCryptohomeState& user_state = user_it->second;
+    user_state.home_encryption_method = HomeEncryptionMethod::kDirCrypto;
     dircrypto_migration_progress_timer_.Stop();
     return;
   }
@@ -883,11 +942,6 @@ void FakeUserDataAuthClient::NotifyDircryptoMigrationProgress(
   progress.set_total_bytes(total);
   for (auto& observer : observer_list_)
     observer.DircryptoMigrationProgress(progress);
-}
-
-bool FakeUserDataAuthClient::IsEcryptfsUserHome(
-    const cryptohome::AccountIdentifier& cryptohome_id) {
-  return base::Contains(ecryptfs_user_homes_, cryptohome_id);
 }
 
 void FakeUserDataAuthClient::CreateUserProfileDir(
@@ -947,7 +1001,8 @@ void FakeUserDataAuthClient::AddExistingUser(
   // Insert user without any associated keys.
   const auto [_, was_inserted] =
       users_.insert({account_id, UserCryptohomeState()});
-  DCHECK(was_inserted) << "User already exists: " << account_id.account_id();
+  LOG_IF(ERROR, !was_inserted)
+      << "User already exists: " << account_id.account_id();
 }
 
 }  // namespace ash
