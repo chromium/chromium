@@ -222,16 +222,22 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   std::string GenerateBase64EncodedProto(bool is_signed_in,
                                          bool is_first_party_context);
 
-  // Adds variation ids and trigger variation ids to |target_set|.
-  static bool AddVariationIdsToSet(
-      const std::vector<std::string>& variation_ids,
-      std::set<VariationIDEntry>* target_set);
+  // Adds variation ids and trigger variation ids to |target_set|. If
+  // |should_dedupe| is true, the ids in |variation_ids| that have already been
+  // added as non-Google-app ids are not added to |target_set|. Returns false if
+  // any variation ids are malformed or duplicated. Returns true otherwise.
+  bool AddVariationIdsToSet(const std::vector<std::string>& variation_ids,
+                            bool should_dedupe,
+                            std::set<VariationIDEntry>* target_set);
 
   // Parses a comma-separated string of variation ids and trigger variation ids
-  // and adds them to |target_set|.
-  static bool ParseVariationIdsParameter(
-      const std::string& command_line_variation_ids,
-      std::set<VariationIDEntry>* target_set);
+  // and adds them to |target_set|. If |should_dedupe| is true, ids that have
+  // already been added as non-Google-app ids are not added to |target_set|.
+  // Returns false if any variation ids are malformed or duplicated. Returns
+  // true otherwise.
+  bool ParseVariationIdsParameter(const std::string& command_line_variation_ids,
+                                  bool should_dedupe,
+                                  std::set<VariationIDEntry>* target_set);
 
   // Returns the value of the X-Client-Data header corresponding to
   // |is_signed_in| and |web_visibility|. Considering |web_visibility| may allow
@@ -248,6 +254,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // |keys|. Each entry in the returned vector will be unique.
   std::vector<VariationID> GetVariationsVectorImpl(
       const std::set<IDCollectionKey>& key);
+
+  // Returns whether |id| has already been added to the active set of variation
+  // ids. This includes ids from field trials, synthetic trials, and forced ids.
+  // Note that Google app ids are treated differently. They may be reused as a
+  // Google Web id.
+  bool IsDuplicateId(VariationID id);
 
   const Mode mode_;
 
