@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//tools/grit/grit_rule.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 bluetooth_grd_prefix = "bluetooth_internals"
@@ -38,13 +39,36 @@ generate_grd("build_grd") {
   deps = [
     ":build_internal_mojo_grdp",
     ":build_public_mojo_grdp",
+    ":build_ts",
   ]
   input_files = [
+    "bluetooth_internals.css",
+    "bluetooth_internals.html",
+    "menu.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  grdp_files = [
+    public_mojo_grdp_file,
+    internals_mojo_grdp_file,
+  ]
+
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+}
+
+# TODO(crbug.com/1337318): This page should be converted to TypeScript but this
+# will be a lot of work. Passing the JavaScript files through the TypeScript
+# compiler will provide basic static checks (e.g. syntax) without validating
+# types.
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
     "adapter_broker.js",
     "adapter_page.js",
     "debug_log_page.js",
     "characteristic_list.js",
-    "bluetooth_internals.css",
     "descriptor_list.js",
     "device_broker.js",
     "device_collection.js",
@@ -53,9 +77,7 @@ generate_grd("build_grd") {
     "device_utils.js",
     "devices_page.js",
     "expandable_list.js",
-    "bluetooth_internals.html",
     "bluetooth_internals.js",
-    "menu.svg",
     "main.js",
     "object_fieldset.js",
     "page_manager.js",
@@ -65,12 +87,7 @@ generate_grd("build_grd") {
     "snackbar.js",
     "value_control.js",
   ]
-  input_files_base_dir = rebase_path("./", "//")
-
-  grdp_files = [
-    public_mojo_grdp_file,
-    internals_mojo_grdp_file,
-  ]
+  deps = [ "//ui/webui/resources:library" ]
 }
 
 grit("resources") {
