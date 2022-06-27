@@ -32,6 +32,7 @@
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/components/security_interstitials/https_only_mode/feature.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -63,6 +64,8 @@ typedef NS_ENUM(NSUInteger, PrivacyTableViewControllerTestConfig) {
   PrivacyTableViewControllerTestConfigEnhancedProtectionEnabled = 1 << 0,
   // Tests should run with Third-party intents in Incognito flag enabled.
   PrivacyTableViewControllerTestConfig3PIntentsInIncognitoEnabled = 1 << 1,
+  // Tests should run with HTTPS-Only Mode flag enabled.
+  PrivacyTableViewControllerTestConfigHttpsOnlyModeSettingEnabled = 1 << 2,
 };
 
 // `ScopedFeatureList` wrapper so `PrivacyTableViewControllerTest` can ensure
@@ -108,6 +111,15 @@ class PrivacyTableViewControllerTest
       enabledDisabledFeatures.first.push_back(kIOS3PIntentsInIncognito);
     } else {
       enabledDisabledFeatures.second.push_back(kIOS3PIntentsInIncognito);
+    }
+
+    if (GetParam() &
+        PrivacyTableViewControllerTestConfigHttpsOnlyModeSettingEnabled) {
+      enabledDisabledFeatures.first.push_back(
+          security_interstitials::features::kHttpsOnlyMode);
+    } else {
+      enabledDisabledFeatures.second.push_back(
+          security_interstitials::features::kHttpsOnlyMode);
     }
 
     return enabledDisabledFeatures;
