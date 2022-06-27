@@ -32,7 +32,7 @@ class SyncService;
 // PrefService used by MailtoHandlerService.
 @property(nonatomic, assign) PrefService* localState;
 
-// SingleSignOnService used by DiscoverFeedService.
+// SingleSignOnService used by MailtoHandlerService.
 @property(nonatomic, strong) id<SingleSignOnService> ssoService;
 
 @end
