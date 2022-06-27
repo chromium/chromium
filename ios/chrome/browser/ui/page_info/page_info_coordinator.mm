@@ -8,8 +8,8 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/page_info/page_info_permissions_mediator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_mediator.h"
@@ -58,8 +58,8 @@
       self.viewController;
 
   self.dispatcher = self.browser->GetCommandDispatcher();
-  self.viewController.handler =
-      static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
+  self.viewController.pageInfoCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PageInfoCommands);
 
   if (@available(iOS 15.0, *)) {
     if (web::features::IsMediaPermissionsControlEnabled()) {

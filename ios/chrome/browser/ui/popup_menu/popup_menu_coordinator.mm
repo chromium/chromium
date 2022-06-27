@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
@@ -350,6 +351,8 @@ enum class IOSOverflowMenuActionType {
             id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
                FindInPageCommands, TextZoomCommands>>(
             self.browser->GetCommandDispatcher());
+        self.overflowMenuMediator.pageInfoCommandsHandler = HandlerForProtocol(
+            self.browser->GetCommandDispatcher(), PageInfoCommands);
         self.overflowMenuMediator.webStateList =
             self.browser->GetWebStateList();
         self.overflowMenuMediator.navigationAgent =
@@ -472,6 +475,8 @@ enum class IOSOverflowMenuActionType {
       id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
          FindInPageCommands, LoadQueryCommands, TextZoomCommands>>(
       self.browser->GetCommandDispatcher());
+  self.actionHandler.pageInfoCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PageInfoCommands);
   self.actionHandler.qrScannerCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), QRScannerCommands);
   self.actionHandler.delegate = self.mediator;

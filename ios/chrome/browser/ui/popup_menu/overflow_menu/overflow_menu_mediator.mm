@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -1507,9 +1508,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 // Dismisses the menu and shows page information.
 - (void)openSiteInformation {
   [self.dispatcher dismissPopupMenuAnimated:YES];
-  // TODO(crbug.com/1323758): This will need to be called on the
-  // PageInfoCommands handler.
-  [self.dispatcher showPageInfo];
+  [self.pageInfoCommandsHandler showPageInfo];
 }
 
 // Dismisses the menu and opens settings, firing metrics for the settings

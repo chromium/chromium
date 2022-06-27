@@ -23,8 +23,6 @@
 // which in practice is the BrowserViewController instance displaying the tab.
 @protocol BrowserCommands <
     NSObject,
-    // TODO(crbug.com/1323758):Remove PageInfoCommands conformance.
-    PageInfoCommands,
     // TODO(crbug.com/1323764): Remove PopupMenuCommands conformance.
     PopupMenuCommands,
     // TODO(crbug.com/1323778): Remove SnackbarCommands conformance.
