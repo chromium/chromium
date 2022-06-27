@@ -729,7 +729,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   const ConnectionType connection_type_;
   scoped_refptr<base::SequencedTaskRunner> dbus_task_runner_;
   base::WaitableEvent on_shutdown_;
-  raw_ptr<DBusConnection> connection_;
+  raw_ptr<DBusConnection, DanglingUntriaged> connection_;
 
   base::PlatformThreadId origin_thread_id_;
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;

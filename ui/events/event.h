@@ -70,7 +70,7 @@ class EVENTS_EXPORT Event {
     void set_time_stamp(base::TimeTicks time) { event_->time_stamp_ = time; }
 
    private:
-    raw_ptr<Event> event_;
+    raw_ptr<Event, DanglingUntriaged> event_;
   };
 
   void SetNativeEvent(const PlatformEvent& event);

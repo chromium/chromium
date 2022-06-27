@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(X11) MallocedRefCountedMemory
  private:
   ~MallocedRefCountedMemory() override;
 
-  const raw_ptr<uint8_t> data_;
+  const raw_ptr<uint8_t, DanglingUntriaged> data_;
 };
 
 // Wraps another RefCountedMemory, giving a view into it.  Similar to

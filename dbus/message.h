@@ -139,7 +139,7 @@ class CHROME_DBUS_EXPORT Message {
   std::string ToStringInternal(const std::string& indent,
                                MessageReader* reader);
 
-  raw_ptr<DBusMessage> raw_message_;
+  raw_ptr<DBusMessage, DanglingUntriaged> raw_message_;
 };
 
 // MessageCall is a type of message used for calling a method via D-Bus.
@@ -371,7 +371,7 @@ class CHROME_DBUS_EXPORT MessageWriter {
   // Helper function used to implement AppendVariantOfByte() etc.
   void AppendVariantOfBasic(int dbus_type, const void* value);
 
-  raw_ptr<Message> message_;
+  raw_ptr<Message, DanglingUntriaged> message_;
   DBusMessageIter raw_message_iter_;
   bool container_is_open_;
 };
@@ -513,7 +513,7 @@ class CHROME_DBUS_EXPORT MessageReader {
   // Helper function used to implement PopVariantOfByte() etc.
   bool PopVariantOfBasic(int dbus_type, void* value);
 
-  raw_ptr<Message> message_;
+  raw_ptr<Message, DanglingUntriaged> message_;
   DBusMessageIter raw_message_iter_;
 };
 

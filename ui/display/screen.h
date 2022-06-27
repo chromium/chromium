@@ -147,7 +147,7 @@ class DISPLAY_EXPORT Screen {
 
     explicit ScreenSaverSuspender(Screen* screen) : screen_(screen) {}
 
-    raw_ptr<Screen> screen_;
+    raw_ptr<Screen, DanglingUntriaged> screen_;
   };
 
   // Suspends the platform-specific screensaver until the returned

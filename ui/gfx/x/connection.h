@@ -262,7 +262,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
     // The response must already have been obtained using WaitForResponse().
     void TakeResponse(RawReply* reply, std::unique_ptr<Error>* error);
 
-    raw_ptr<Connection> connection = nullptr;
+    raw_ptr<Connection, DanglingUntriaged> connection = nullptr;
     SequenceType sequence = 0;
     bool generates_reply = false;
     const char* request_name_for_tracing = nullptr;
@@ -326,7 +326,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   uint32_t GenerateIdImpl();
 
-  raw_ptr<xcb_connection_t> connection_ = nullptr;
+  raw_ptr<xcb_connection_t, DanglingUntriaged> connection_ = nullptr;
   std::unique_ptr<XlibDisplay> xlib_display_;
 
   bool synchronous_ = false;

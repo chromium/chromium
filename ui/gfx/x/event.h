@@ -91,11 +91,11 @@ class COMPONENT_EXPORT(X11) Event {
   // XProto event state.
   int type_id_ = 0;
   void (*deleter_)(void*) = nullptr;
-  raw_ptr<void> event_ = nullptr;
+  raw_ptr<void, DanglingUntriaged> event_ = nullptr;
 
   // This member points to a field in |event_|, or may be nullptr if there's no
   // associated window for the event.  It's owned by |event_|, not us.
-  raw_ptr<Window> window_ = nullptr;
+  raw_ptr<Window, DanglingUntriaged> window_ = nullptr;
 };
 
 }  // namespace x11

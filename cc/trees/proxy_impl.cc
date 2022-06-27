@@ -77,7 +77,7 @@ class ScopedCommitCompletionEvent {
   }
 
  private:
-  const raw_ptr<CompletionEvent> event_;
+  const raw_ptr<CompletionEvent, DanglingUntriaged> event_;
   CommitTimestamps commit_timestamps_;
   raw_ptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   base::WeakPtr<ProxyMain> proxy_main_weak_ptr_;

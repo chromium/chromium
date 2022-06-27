@@ -44,7 +44,7 @@ class BrowserAccessibilityAuraLinux : public BrowserAccessibility {
 
  private:
   // TODO(nektar): Rename to platform_node_ to avoid confusion with ui::AXNode.
-  raw_ptr<ui::AXPlatformNodeAuraLinux> node_;
+  raw_ptr<ui::AXPlatformNodeAuraLinux, DanglingUntriaged> node_;
 };
 
 CONTENT_EXPORT BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(

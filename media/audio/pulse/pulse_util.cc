@@ -101,7 +101,7 @@ class ScopedPropertyList {
   pa_proplist* get() const { return property_list_; }
 
  private:
-  raw_ptr<pa_proplist> property_list_;
+  raw_ptr<pa_proplist, DanglingUntriaged> property_list_;
 };
 
 struct InputBusData {

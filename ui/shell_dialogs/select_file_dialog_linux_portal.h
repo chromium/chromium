@@ -98,7 +98,7 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
 
     // The response object handle that the portal will send a signal to upon the
     // dialog's completion.
-    raw_ptr<dbus::ObjectProxy> response_handle = nullptr;
+    raw_ptr<dbus::ObjectProxy, DanglingUntriaged> response_handle = nullptr;
     absl::optional<gfx::AcceleratedWidget> parent;
     Type type;
     // The task runner the SelectFileImpl method was called on.

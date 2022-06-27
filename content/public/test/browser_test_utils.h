@@ -1299,7 +1299,7 @@ class DOMMessageQueue : public NotificationObserver,
   base::queue<std::string> message_queue_;
   base::OnceClosure quit_closure_;
   bool renderer_crashed_ = false;
-  raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_ = nullptr;
 };
 
 // Used to wait for a new WebContents to be created. Instantiate this object

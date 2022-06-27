@@ -121,12 +121,12 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
   // This is a GLib structure that we can add event sources to.  On the main
   // thread, we use the default GLib context, which is the one to which all GTK
   // events are dispatched.
-  raw_ptr<GMainContext> context_ = nullptr;
+  raw_ptr<GMainContext, DanglingUntriaged> context_ = nullptr;
   bool context_owned_ = false;
 
   // The work source.  It is shared by all calls to Run and destroyed when
   // the message pump is destroyed.
-  raw_ptr<GSource> work_source_;
+  raw_ptr<GSource, DanglingUntriaged> work_source_;
 
   // We use a wakeup pipe to make sure we'll get out of the glib polling phase
   // when another thread has scheduled us to do some work.  There is a glib

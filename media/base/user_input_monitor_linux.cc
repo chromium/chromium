@@ -97,7 +97,7 @@ class UserInputMonitorLinux : public UserInputMonitorBase {
   void StopKeyboardMonitoring() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  raw_ptr<UserInputMonitorAdapter> core_;
+  raw_ptr<UserInputMonitorAdapter, DanglingUntriaged> core_;
 };
 
 UserInputMonitorAdapter* CreateUserInputMonitor(
