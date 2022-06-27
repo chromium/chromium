@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
@@ -44,11 +45,15 @@ class RuleFeatureSetTest : public testing::Test {
   }
 
   static RuleFeatureSet::SelectorPreMatch CollectFeaturesTo(
-      CSSSelectorList selector_list,
+      CSSSelectorVector& selector_vector,
       const StyleScope* style_scope,
       RuleFeatureSet& set) {
-    auto* style_rule = MakeGarbageCollected<StyleRule>(
-        std::move(selector_list),
+    if (selector_vector.IsEmpty()) {
+      return RuleFeatureSet::SelectorPreMatch::kSelectorNeverMatches;
+    }
+
+    auto* style_rule = StyleRule::Create(
+        selector_vector,
         MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode));
     return CollectFeaturesTo(style_rule, style_scope, set);
   }
@@ -76,11 +81,10 @@ class RuleFeatureSetTest : public testing::Test {
   static RuleFeatureSet::SelectorPreMatch CollectFeaturesTo(
       const String& selector_text,
       RuleFeatureSet& set) {
-    CSSSelectorList selector_list = CSSParser::ParseSelector(
+    CSSSelectorVector selector_vector = CSSParser::ParseSelector(
         StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
         selector_text);
-    return CollectFeaturesTo(std::move(selector_list),
-                             nullptr /* style_scope */, set);
+    return CollectFeaturesTo(selector_vector, nullptr /* style_scope */, set);
   }
 
   void ClearFeatures() { rule_feature_set_.Clear(); }

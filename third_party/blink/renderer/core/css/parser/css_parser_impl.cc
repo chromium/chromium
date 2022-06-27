@@ -1383,10 +1383,10 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream) {
     observer_->StartRuleHeader(StyleRule::kStyle, stream.LookAheadOffset());
 
   // Parse the prelude of the style rule
-  CSSSelectorList selector_list = CSSSelectorParser::ConsumeSelector(
+  CSSSelectorVector selector_vector = CSSSelectorParser::ConsumeSelector(
       stream, context_, style_sheet_, observer_);
 
-  if (!selector_list.IsValid()) {
+  if (selector_vector.IsEmpty()) {
     // Read the rest of the prelude if there was an error
     stream.EnsureLookAhead();
     while (!stream.UncheckedAtEnd() &&
@@ -1403,21 +1403,20 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream) {
   DCHECK_EQ(stream.Peek().GetType(), kLeftBraceToken);
   CSSParserTokenStream::BlockGuard guard(stream);
 
-  if (!selector_list.IsValid())
+  if (selector_vector.IsEmpty())
     return nullptr;  // Parse error, invalid selector list
 
   // TODO(csharrison): How should we lazily parse css that needs the observer?
   if (!observer_ && lazy_state_) {
     DCHECK(style_sheet_);
-    return MakeGarbageCollected<StyleRule>(
-        std::move(selector_list),
-        MakeGarbageCollected<CSSLazyPropertyParserImpl>(stream.Offset() - 1,
-                                                        lazy_state_));
+    return StyleRule::Create(selector_vector,
+                             MakeGarbageCollected<CSSLazyPropertyParserImpl>(
+                                 stream.Offset() - 1, lazy_state_));
   }
   ConsumeDeclarationList(stream, StyleRule::kStyle);
 
-  return MakeGarbageCollected<StyleRule>(
-      std::move(selector_list),
+  return StyleRule::Create(
+      selector_vector,
       CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
 

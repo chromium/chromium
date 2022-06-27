@@ -351,17 +351,36 @@ unsigned StyleRule::AverageSizeInBytes() {
          CSSPropertyValueSet::AverageSizeInBytes();
 }
 
-StyleRule::StyleRule(CSSSelectorList selector_list,
+StyleRule::StyleRule(base::PassKey<StyleRule>,
+                     CSSSelectorVector& selector_vector,
+                     size_t flattened_size,
                      CSSPropertyValueSet* properties)
-    : StyleRuleBase(kStyle),
-      selector_list_(std::move(selector_list)),
-      properties_(properties) {}
+    : StyleRuleBase(kStyle), properties_(properties) {
+  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray(),
+                                       flattened_size);
+}
 
-StyleRule::StyleRule(CSSSelectorList selector_list,
+StyleRule::StyleRule(base::PassKey<StyleRule>,
+                     CSSSelectorVector& selector_vector,
+                     size_t flattened_size,
                      CSSLazyPropertyParser* lazy_property_parser)
+    : StyleRuleBase(kStyle), lazy_property_parser_(lazy_property_parser) {
+  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray(),
+                                       flattened_size);
+}
+
+// NOTE: Currently, this move constructor leaves the other object fully intact,
+// since there's no benefit in not doing so.
+StyleRule::StyleRule(base::PassKey<StyleRule>,
+                     CSSSelectorVector& selector_vector,
+                     size_t flattened_size,
+                     StyleRule&& other)
     : StyleRuleBase(kStyle),
-      selector_list_(std::move(selector_list)),
-      lazy_property_parser_(lazy_property_parser) {}
+      properties_(other.properties_),
+      lazy_property_parser_(other.lazy_property_parser_) {
+  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray(),
+                                       flattened_size);
+}
 
 const CSSPropertyValueSet& StyleRule::Properties() const {
   if (!properties_) {
@@ -371,10 +390,26 @@ const CSSPropertyValueSet& StyleRule::Properties() const {
   return *properties_;
 }
 
-StyleRule::StyleRule(const StyleRule& o)
-    : StyleRuleBase(o),
-      selector_list_(o.selector_list_.Copy()),
-      properties_(o.Properties().MutableCopy()) {}
+StyleRule::StyleRule(const StyleRule& other, size_t flattened_size)
+    : StyleRuleBase(kStyle), properties_(other.Properties().MutableCopy()) {
+  for (unsigned i = 0; i < flattened_size; ++i) {
+    new (&SelectorArray()[i]) CSSSelector(other.SelectorArray()[i]);
+  }
+}
+
+StyleRule::~StyleRule() {
+  // Clean up any RareData that the selectors may be owning.
+  CSSSelector* selector = SelectorArray();
+  for (;;) {
+    bool is_last = selector->IsLastInSelectorList();
+    selector->~CSSSelector();
+    if (is_last) {
+      break;
+    } else {
+      ++selector;
+    }
+  }
+}
 
 MutableCSSPropertyValueSet& StyleRule::MutableProperties() {
   // Ensure properties_ is initialized.

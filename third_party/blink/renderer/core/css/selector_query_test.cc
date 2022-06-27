@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -70,21 +71,24 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
   document->documentElement()->setInnerHTML(
       "<body><style>span::before { content: 'X' }</style><span></span></body>");
 
-  CSSSelectorList selector_list = CSSParser::ParseSelector(
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
       nullptr, "span::before");
+  CSSSelectorList selector_list =
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
   std::unique_ptr<SelectorQuery> query =
       SelectorQuery::Adopt(std::move(selector_list));
   Element* elm = query->QueryFirst(*document);
   EXPECT_EQ(nullptr, elm);
 
-  selector_list = CSSParser::ParseSelector(
+  selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
       nullptr, "span");
+  selector_list = CSSSelectorList::AdoptSelectorVector(selector_vector);
   query = SelectorQuery::Adopt(std::move(selector_list));
   elm = query->QueryFirst(*document);
   EXPECT_NE(nullptr, elm);
@@ -99,11 +103,13 @@ TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
 
   document->body()->BeginParsingChildren();
 
-  CSSSelectorList selector_list = CSSParser::ParseSelector(
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
       nullptr, "p:last-of-type");
+  CSSSelectorList selector_list =
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
   std::unique_ptr<SelectorQuery> query =
       SelectorQuery::Adopt(std::move(selector_list));
   Element* elm = query->QueryFirst(*document);

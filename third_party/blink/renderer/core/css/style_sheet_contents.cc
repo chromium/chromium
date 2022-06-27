@@ -242,6 +242,33 @@ void StyleSheetContents::ClearRules() {
   child_rules_.clear();
 }
 
+static bool ReplaceRuleIfExistsInternal(
+    const StyleRuleBase* old_rule,
+    StyleRuleBase* new_rule,
+    HeapVector<Member<StyleRuleBase>>& child_rules) {
+  for (wtf_size_t i = 0; i < child_rules.size(); ++i) {
+    StyleRuleBase* rule = child_rules[i].Get();
+    if (rule == old_rule) {
+      child_rules[i] = new_rule;
+      return true;
+    }
+    if (IsA<StyleRuleGroup>(rule)) {
+      if (ReplaceRuleIfExistsInternal(old_rule, new_rule,
+                                      To<StyleRuleGroup>(rule)->ChildRules())) {
+        return true;
+      }
+    }
+  }
+
+  // Not found.
+  return false;
+}
+
+void StyleSheetContents::ReplaceRuleIfExists(const StyleRuleBase* old_rule,
+                                             StyleRuleBase* new_rule) {
+  ReplaceRuleIfExistsInternal(old_rule, new_rule, child_rules_);
+}
+
 bool StyleSheetContents::WrapperInsertRule(StyleRuleBase* rule,
                                            unsigned index) {
   DCHECK(is_mutable_);

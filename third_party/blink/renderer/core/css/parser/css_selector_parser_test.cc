@@ -155,12 +155,12 @@ TEST(CSSSelectorParserTest, PseudoElementsInCompoundLists) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list = CSSSelectorParser::ParseSelector(
+    CSSSelectorVector vector = CSSSelectorParser::ParseSelector(
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         nullptr);
-    EXPECT_FALSE(list.IsValid());
+    EXPECT_EQ(vector.size(), 0u);
   }
 }
 
@@ -177,12 +177,12 @@ TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list = CSSSelectorParser::ParseSelector(
+    CSSSelectorVector vector = CSSSelectorParser::ParseSelector(
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         nullptr);
-    EXPECT_TRUE(list.IsValid());
+    EXPECT_GT(vector.size(), 0u);
   }
 }
 
@@ -211,12 +211,12 @@ TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list = CSSSelectorParser::ParseSelector(
+    CSSSelectorVector vector = CSSSelectorParser::ParseSelector(
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         nullptr);
-    EXPECT_FALSE(list.IsValid());
+    EXPECT_EQ(vector.size(), 0u);
   }
 }
 
@@ -254,15 +254,16 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
     CSSTokenizer tokenizer(test_case.selector);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list = CSSSelectorParser::ParseSelector(
+    CSSSelectorVector vector = CSSSelectorParser::ParseSelector(
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         nullptr);
-    EXPECT_EQ(list.IsValid(), test_case.valid);
+    EXPECT_EQ(!vector.IsEmpty(), test_case.valid);
     if (!test_case.valid)
       continue;
 
+    CSSSelectorList list = CSSSelectorList::AdoptSelectorVector(vector);
     ASSERT_TRUE(list.HasOneSelector());
 
     auto* selector = list.First();
@@ -284,12 +285,12 @@ TEST(CSSSelectorParserTest, WorkaroundForInvalidCustomPseudoInUAStyle) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list = CSSSelectorParser::ParseSelector(
+    CSSSelectorVector vector = CSSSelectorParser::ParseSelector(
         range,
         MakeGarbageCollected<CSSParserContext>(
             kUASheetMode, SecureContextMode::kInsecureContext),
         nullptr);
-    EXPECT_TRUE(list.IsValid());
+    EXPECT_GT(vector.size(), 0u);
   }
 }
 
@@ -302,12 +303,12 @@ TEST(CSSSelectorParserTest, InvalidPseudoElementInNonRightmostCompound) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list = CSSSelectorParser::ParseSelector(
+    CSSSelectorVector vector = CSSSelectorParser::ParseSelector(
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         nullptr);
-    EXPECT_FALSE(list.IsValid());
+    EXPECT_EQ(vector.size(), 0u);
   }
 }
 
@@ -322,9 +323,9 @@ TEST(CSSSelectorParserTest, UnresolvedNamespacePrefix) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list =
+    CSSSelectorVector vector =
         CSSSelectorParser::ParseSelector(range, context, sheet);
-    EXPECT_FALSE(list.IsValid());
+    EXPECT_EQ(vector.size(), 0u);
   }
 }
 
@@ -339,9 +340,9 @@ TEST(CSSSelectorParserTest, UnexpectedPipe) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list =
+    CSSSelectorVector vector =
         CSSSelectorParser::ParseSelector(range, context, sheet);
-    EXPECT_FALSE(list.IsValid());
+    EXPECT_EQ(vector.size(), 0u);
   }
 }
 
@@ -368,8 +369,9 @@ TEST(CSSSelectorParserTest, SerializedUniversal) {
     CSSTokenizer tokenizer(test_case[0]);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list =
+    CSSSelectorVector vector =
         CSSSelectorParser::ParseSelector(range, context, sheet);
+    CSSSelectorList list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list.IsValid());
     EXPECT_EQ(test_case[1], list.SelectorsText());
   }
@@ -387,9 +389,9 @@ TEST(CSSSelectorParserTest, AttributeSelectorUniversalInvalid) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list =
+    CSSSelectorVector vector =
         CSSSelectorParser::ParseSelector(range, context, sheet);
-    EXPECT_FALSE(list.IsValid());
+    EXPECT_EQ(vector.size(), 0u);
   }
 }
 
@@ -410,19 +412,19 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
 
-    CSSSelectorList author_list = CSSSelectorParser::ParseSelector(
+    CSSSelectorVector author_vector = CSSSelectorParser::ParseSelector(
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         nullptr);
-    EXPECT_FALSE(author_list.IsValid());
+    EXPECT_EQ(author_vector.size(), 0u);
 
-    CSSSelectorList ua_list = CSSSelectorParser::ParseSelector(
+    CSSSelectorVector ua_vector = CSSSelectorParser::ParseSelector(
         range,
         MakeGarbageCollected<CSSParserContext>(
             kUASheetMode, SecureContextMode::kInsecureContext),
         nullptr);
-    EXPECT_TRUE(ua_list.IsValid());
+    EXPECT_GT(ua_vector.size(), 0u);
   }
 }
 
@@ -605,8 +607,10 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLStrict) {
     CSSTokenizer tokenizer(test_case.input);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list =
+    CSSSelectorVector vector =
         CSSSelectorParser::ParseSelector(range, context, sheet);
+    EXPECT_GT(vector.size(), 0u);
+    CSSSelectorList list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list.IsValid());
     const CSSSelector* selector = list.First();
     ASSERT_TRUE(selector);
@@ -630,8 +634,10 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLQuirks) {
     CSSTokenizer tokenizer(test_case.input);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list =
+    CSSSelectorVector vector =
         CSSSelectorParser::ParseSelector(range, context, sheet);
+    EXPECT_GT(vector.size(), 0u);
+    CSSSelectorList list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list.IsValid());
     const CSSSelector* selector = list.First();
     ASSERT_TRUE(selector);
@@ -640,8 +646,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLQuirks) {
 }
 
 TEST(CSSSelectorParserTest, ShadowPartPseudoElementValid) {
-  const char* test_cases[] = {"::part(ident)",
-                              "host::part(ident)",
+  const char* test_cases[] = {"::part(ident)", "host::part(ident)",
                               "host::part(ident):hover"};
 
   for (auto* test_case : test_cases) {
@@ -649,11 +654,12 @@ TEST(CSSSelectorParserTest, ShadowPartPseudoElementValid) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list = CSSSelectorParser::ParseSelector(
+    CSSSelectorVector vector = CSSSelectorParser::ParseSelector(
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         nullptr);
+    CSSSelectorList list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_EQ(test_case, list.SelectorsText());
   }
 }
@@ -669,11 +675,14 @@ TEST(CSSSelectorParserTest, ShadowPartAndBeforeAfterPseudoElementValid) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list = CSSSelectorParser::ParseSelector(
+    CSSSelectorVector vector = CSSSelectorParser::ParseSelector(
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         nullptr);
+    EXPECT_GT(vector.size(), 0u);
+    CSSSelectorList list = CSSSelectorList::AdoptSelectorVector(vector);
+    EXPECT_TRUE(list.IsValid());
     EXPECT_EQ(test_case, list.SelectorsText());
   }
 }
@@ -896,8 +905,9 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
     CSSTokenizer tokenizer(test_case.input);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSSelectorList list =
+    CSSSelectorVector vector =
         CSSSelectorParser::ParseSelector(range, context, sheet);
+    CSSSelectorList list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list.IsValid());
     const CSSSelector* selector = list.First();
     for (auto sub_expectation : test_case.expectation) {

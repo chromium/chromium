@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -100,11 +101,13 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
                          unsigned expected_result_cache_count,
                          const ExpectedResultCacheEntry (
                              &expected_result_cache_entries)[length]) const {
-    CSSSelectorList selector_list = CSSParser::ParseSelector(
+    CSSSelectorVector selector_vector = CSSParser::ParseSelector(
         MakeGarbageCollected<CSSParserContext>(
             *document, NullURL(), true /* origin_clean */, Referrer(),
             WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
         nullptr, selector_text);
+    CSSSelectorList selector_list =
+        CSSSelectorList::AdoptSelectorVector(selector_vector);
     const CSSSelector* selector = nullptr;
     for (selector = selector_list.First();
          selector && selector->GetPseudoType() != CSSSelector::kPseudoHas;

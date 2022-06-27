@@ -117,6 +117,12 @@ class CORE_EXPORT StyleSheetContents final
 
   void ClearRules();
 
+  // If the given rule exists, replace it with the new one. This is used when
+  // CSSOM wants to modify the rule but cannot do so without reallocating
+  // (see setCssSelectorText()).
+  void ReplaceRuleIfExists(const StyleRuleBase* old_rule,
+                           StyleRuleBase* new_rule);
+
   // Rules other than @import.
   const HeapVector<Member<StyleRuleBase>>& ChildRules() const {
     return child_rules_;

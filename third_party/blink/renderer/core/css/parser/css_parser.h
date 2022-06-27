@@ -16,6 +16,7 @@ namespace blink {
 
 class Color;
 class CSSParserObserver;
+class CSSParserSelector;
 class CSSSelectorList;
 class Element;
 class ExecutionContext;
@@ -27,6 +28,9 @@ class CSSValue;
 class CSSPrimitiveValue;
 enum class ParseSheetResult;
 enum class SecureContextMode;
+
+// See css_selector_parser.h.
+using CSSSelectorVector = Vector<std::unique_ptr<CSSParserSelector>>;
 
 // This class serves as the public API for the css/parser subsystem
 class CORE_EXPORT CSSParser {
@@ -45,9 +49,9 @@ class CORE_EXPORT CSSParser {
       CSSDeferPropertyParsing defer_property_parsing =
           CSSDeferPropertyParsing::kNo,
       bool allow_import_rules = true);
-  static CSSSelectorList ParseSelector(const CSSParserContext*,
-                                       StyleSheetContents*,
-                                       const String&);
+  static CSSSelectorVector ParseSelector(const CSSParserContext*,
+                                         StyleSheetContents*,
+                                         const String&);
   static CSSSelectorList ParsePageSelector(const CSSParserContext&,
                                            StyleSheetContents*,
                                            const String&);

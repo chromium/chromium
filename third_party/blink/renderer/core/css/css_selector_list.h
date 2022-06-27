@@ -64,6 +64,11 @@ using CSSSelectorVector = Vector<std::unique_ptr<CSSParserSelector>>;
 // Use CSSSelector::TagHistory() and CSSSelector::IsLastInTagHistory()
 // to traverse through each sequence of simple selectors,
 // from .c3 to #ident; from span to .c2; from div to .c1
+//
+// StyleRule stores its selectors in an identical memory layout,
+// but not as part of a CSSSelectorList (see its class comments).
+// It reuses many of the exposed static member functions from CSSSelectorList
+// to provide a subset of its API.
 class CORE_EXPORT CSSSelectorList {
   USING_FAST_MALLOC(CSSSelectorList);
 
@@ -81,8 +86,16 @@ class CORE_EXPORT CSSSelectorList {
 
   ~CSSSelectorList() = default;
 
+  // Finds out how many elements one would need to allocate for
+  // AdoptSelectorVector(), ie., storing the selector tree as a flattened list.
+  // The returned count is in CSSSelector elements, not bytes.
+  static size_t FlattenedSize(const CSSSelectorVector& selector_vector);
   static CSSSelectorList AdoptSelectorVector(
       CSSSelectorVector& selector_vector);
+  static void AdoptSelectorVector(CSSSelectorVector& selector_vector,
+                                  CSSSelector* selector_array,
+                                  size_t flattened_size);
+
   CSSSelectorList Copy() const;
 
   bool IsValid() const { return !!selector_array_; }

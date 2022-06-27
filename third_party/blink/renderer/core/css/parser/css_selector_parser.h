@@ -21,7 +21,11 @@ class Node;
 class StyleSheetContents;
 
 // SelectorVector is the list of CSS selectors as it is parsed,
-// where each selector can contain others (in a tree).
+// where each selector can contain others (in a tree). Typically,
+// before actual use, you would convert it into a flattened list using
+// CSSSelectorList::AdoptSelectorVector(), but it can be useful to have this
+// temporary form to find out e.g. how many bytes it will occupy
+// (e.g. in StyleRule::Create) before you actually make that allocation.
 using CSSSelectorVector = Vector<std::unique_ptr<CSSParserSelector>>;
 
 // FIXME: We should consider building CSSSelectors directly instead of using
@@ -30,13 +34,15 @@ class CORE_EXPORT CSSSelectorParser {
   STACK_ALLOCATED();
 
  public:
-  static CSSSelectorList ParseSelector(CSSParserTokenRange,
-                                       const CSSParserContext*,
-                                       StyleSheetContents*);
-  static CSSSelectorList ConsumeSelector(CSSParserTokenStream&,
+  // Both ParseSelector() and ConsumeSelector() return an empty list
+  // on error.
+  static CSSSelectorVector ParseSelector(CSSParserTokenRange,
                                          const CSSParserContext*,
-                                         StyleSheetContents*,
-                                         CSSParserObserver*);
+                                         StyleSheetContents*);
+  static CSSSelectorVector ConsumeSelector(CSSParserTokenStream&,
+                                           const CSSParserContext*,
+                                           StyleSheetContents*,
+                                           CSSParserObserver*);
 
   static bool ConsumeANPlusB(CSSParserTokenRange&, std::pair<int, int>&);
 
@@ -68,9 +74,9 @@ class CORE_EXPORT CSSSelectorParser {
 
   // These will all consume trailing comments if successful
 
-  CSSSelectorList ConsumeComplexSelectorList(CSSParserTokenRange&);
-  CSSSelectorList ConsumeComplexSelectorList(CSSParserTokenStream&,
-                                             CSSParserObserver*);
+  CSSSelectorVector ConsumeComplexSelectorList(CSSParserTokenRange&);
+  CSSSelectorVector ConsumeComplexSelectorList(CSSParserTokenStream&,
+                                               CSSParserObserver*);
   CSSSelectorList ConsumeCompoundSelectorList(CSSParserTokenRange&);
   // Consumes a complex selector list if inside_compound_pseudo_ is false,
   // otherwise consumes a compound selector list.
@@ -137,7 +143,7 @@ class CORE_EXPORT CSSSelectorParser {
   static std::unique_ptr<CSSParserSelector>
   SplitCompoundAtImplicitShadowCrossingCombinator(
       std::unique_ptr<CSSParserSelector> compound_selector);
-  void RecordUsageAndDeprecations(const CSSSelectorList&);
+  void RecordUsageAndDeprecations(const CSSSelectorVector&);
   static bool ContainsUnknownWebkitPseudoElements(
       const CSSSelector& complex_selector);
 
