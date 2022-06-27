@@ -19,6 +19,9 @@ Usually you need a policy when
 -   Deprecating an old feature. Create a policy to give enterprise users more
     time to migrate away from the feature.
 
+**To read more about best practices for shipping enterprise friendly features
+read [this article](https://www.chromium.org/developers/enterprise-changes/).**
+
 ## Adding a new policy
 
 1.  Think carefully about the name and the desired semantics of the new policy:
