@@ -1255,9 +1255,6 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     }
   }
 
-  if (!child_iterator.NextChild())
-    container_builder_.SetHasSeenAllChildren();
-
   if (table_box_extent) {
     // If we broke inside a section, the block-end border/padding shouldn't be
     // added to this fragment.
@@ -1293,7 +1290,23 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
   if (pending_repeated_footer && table_box_extent) {
     DCHECK(table_box_will_continue);
-    // We broke before we got to the footer. Add it now.
+    // We broke before we got to the footer. Add it now. Before doing that,
+    // though, also insert break tokens for the sections that we didn't get to
+    // (if any), so that things will be resumed correctly when laying out the
+    // next table fragment (inserting a break token for the repeated footer
+    // alone would make the table child iterator skip any preceding sections).
+    auto entry = child_iterator.NextChild();
+    for (; NGBlockNode child = entry.GetNode();
+         entry = child_iterator.NextChild()) {
+      if (child == grouped_children.footer)
+        break;
+
+      auto* token = NGBlockBreakToken::CreateBreakBefore(
+          child, /* is_forced_break */ false);
+      container_builder_.AddBreakToken(token);
+    }
+    DCHECK_EQ(entry.GetNode(), grouped_children.footer);
+
     LogicalOffset offset(section_inline_offset, child_block_offset);
     NGConstraintSpace child_space = CreateSectionConstraintSpace(
         grouped_children.footer, offset.block_offset,
@@ -1320,6 +1333,9 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       DCHECK(!pending_repeated_footer->incoming_break_token);
     }
   }
+
+  if (!child_iterator.NextChild())
+    container_builder_.SetHasSeenAllChildren();
 
   LayoutUnit column_block_size;
   LogicalRect table_grid_rect;
