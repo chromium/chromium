@@ -307,4 +307,7 @@ const base::Feature kStaticKeyPinningEnforcement(
 const base::Feature kCookieDomainRejectNonASCII{
     "CookieDomainRejectNonASCII", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kBlockSetCookieHeader{"BlockSetCookieHeader",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace net::features

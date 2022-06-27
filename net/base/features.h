@@ -439,6 +439,9 @@ NET_EXPORT extern const base::Feature kStaticKeyPinningEnforcement;
 // When enabled, cookies with a non-ASCII domain attribute will be rejected.
 NET_EXPORT extern const base::Feature kCookieDomainRejectNonASCII;
 
+// Blocks the 'Set-Cookie' request header on outbound fetch requests.
+NET_EXPORT extern const base::Feature kBlockSetCookieHeader;
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
