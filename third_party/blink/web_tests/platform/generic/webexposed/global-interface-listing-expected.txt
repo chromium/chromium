@@ -2623,6 +2623,7 @@ interface FederatedCredential : Credential
     static method logoutRps
     attribute @@toStringTag
     getter iconURL
+    getter idToken
     getter name
     getter protocol
     getter provider

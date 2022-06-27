@@ -10,4 +10,5 @@ dictionary FederatedIdentityProvider {
   required USVString clientId;
   // Optional hint for the account ID.
   USVString hint;
+  USVString nonce;
 };

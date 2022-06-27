@@ -16,7 +16,6 @@
 namespace blink {
 
 class CredentialRequestOptions;
-class FederatedAccountLoginRequest;
 class FederatedCredentialInit;
 
 class MODULES_EXPORT FederatedCredential final : public Credential {
@@ -34,7 +33,8 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
   static FederatedCredential* Create(const KURL& provider_url,
                                      const String& client_id,
                                      const String& hint,
-                                     const CredentialRequestOptions* options);
+                                     const CredentialRequestOptions* options,
+                                     const String& id_token);
 
   static bool IsRejectingPromiseDueToCSP(ContentSecurityPolicy* policy,
                                          ScriptPromiseResolver* resolver,
@@ -48,7 +48,8 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
   FederatedCredential(const KURL& provider_url,
                       const String& client_id,
                       const String& hint,
-                      const CredentialRequestOptions* options);
+                      const CredentialRequestOptions* options,
+                      const String& id_token);
 
   void Trace(Visitor*) const override;
 
@@ -66,14 +67,14 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
   }
   const String& name() const { return name_; }
   const KURL& iconURL() const { return icon_url_; }
+  const String& idToken() const { return id_token_; }
   const String& protocol() const {
     // TODO(mkwst): This is a stub, as we don't yet have any support on the
     // Chromium-side.
     return g_empty_string;
   }
 
-  ScriptPromise login(ScriptState* script_state,
-                      FederatedAccountLoginRequest* request);
+  ScriptPromise login(ScriptState* script_state);
 
   static ScriptPromise logoutRps(
       ScriptState*,
@@ -86,6 +87,7 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
   const KURL provider_url_;
   const String client_id_;
   Member<const CredentialRequestOptions> options_;
+  const String id_token_;
 };
 
 }  // namespace blink

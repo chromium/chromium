@@ -554,6 +554,53 @@ void AbortOtpRequest(ScriptState* script_state) {
   webotp_service->Abort();
 }
 
+// Abort an ongoing FederatedCredential login() operation.
+void AbortFederatedCredentialRequest(ScriptState* script_state) {
+  if (!script_state->ContextIsValid())
+    return;
+
+  auto* auth_request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  auth_request->CancelTokenRequest();
+}
+
+void OnRequestIdToken(ScriptPromiseResolver* resolver,
+                      const KURL& provider_url,
+                      const String& client_id,
+                      const String& hint,
+                      const CredentialRequestOptions* options,
+                      RequestIdTokenStatus status,
+                      const WTF::String& id_token) {
+  switch (status) {
+    case RequestIdTokenStatus::kErrorTooManyRequests: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError,
+          "Only one navigator.credentials.get request may be outstanding at "
+          "one time."));
+      return;
+    }
+    case RequestIdTokenStatus::kErrorCanceled: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "The request has been aborted."));
+      return;
+    }
+    case RequestIdTokenStatus::kError: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError, "Error retrieving an id token."));
+      return;
+    }
+    case RequestIdTokenStatus::kSuccess: {
+      FederatedCredential* credential = FederatedCredential::Create(
+          provider_url, client_id, hint, options, id_token);
+      resolver->Resolve(credential);
+      return;
+    }
+    default: {
+      NOTREACHED();
+    }
+  }
+}
+
 void OnStoreComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver) {
   auto* resolver = scoped_resolver->Release();
   AssertSecurityRequirementsBeforeResponse(
@@ -1173,6 +1220,7 @@ ScriptPromise CredentialsContainer::get(
             provider->GetAsFederatedIdentityProvider();
         KURL provider_url(federated_identity_provider->url());
         String client_id = federated_identity_provider->clientId();
+        String nonce = federated_identity_provider->getNonceOr("");
 
         if (!provider_url.IsValid() || client_id == "") {
           resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -1187,10 +1235,26 @@ ScriptPromise CredentialsContainer::get(
           return promise;
         }
 
-        FederatedCredential* credential = FederatedCredential::Create(
-            provider_url, client_id, federated_identity_provider->getHintOr(""),
-            options);
-        resolver->Resolve(credential);
+        DCHECK(options->federated()->hasPreferAutoSignIn());
+        if (options->hasSignal()) {
+          if (options->signal()->aborted()) {
+            resolver->Reject(MakeGarbageCollected<DOMException>(
+                DOMExceptionCode::kAbortError, "Request has been aborted."));
+            return promise;
+          }
+          options->signal()->AddAlgorithm(WTF::Bind(
+              &AbortFederatedCredentialRequest, WrapPersistent(script_state)));
+        }
+        bool prefer_auto_sign_in = options->federated()->preferAutoSignIn();
+        auto* auth_request =
+            CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+
+        auth_request->RequestIdToken(
+            provider_url, client_id, nonce, prefer_auto_sign_in,
+            WTF::Bind(&OnRequestIdToken, WrapPersistent(resolver), provider_url,
+                      client_id, federated_identity_provider->getHintOr(""),
+                      WrapPersistent(options)));
+
         return promise;
       }
     }
