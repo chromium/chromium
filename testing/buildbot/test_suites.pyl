@@ -495,6 +495,19 @@
       },
     },
 
+    'chrome_finch_smoke_tests': {
+      'variations_smoke_tests': {
+        'isolate_name': 'variations_smoke_tests',
+        'mixins': [
+          'skia_gold_test',
+        ],
+        'resultdb': {
+          'enable': True,
+          'result_format': 'single'
+        },
+      },
+    },
+
     'chrome_isolated_script_tests': {
       'chrome_sizes': {
         'merge': {

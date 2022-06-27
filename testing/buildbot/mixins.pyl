@@ -224,6 +224,13 @@
       },
     },
   },
+  'chrome-finch-swarming-pool': {
+    'swarming': {
+      'dimensions': {
+        'pool': 'chrome.tests.finch',
+      },
+    },
+  },
   'chrome-swarming-pool': {
     'swarming': {
       'dimensions': {

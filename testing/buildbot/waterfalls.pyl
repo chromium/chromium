@@ -6401,6 +6401,41 @@
   {
     'project': 'chrome',
     'bucket': 'ci',
+    'name': 'internal.chrome.fyi',
+    'mixins': ['chrome-tester-service-account'],
+    'machines': {
+      'linux-finch-smoke-chrome': {
+        'mixins': [
+          'chrome-finch-swarming-pool',
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_finch_smoke_tests',
+        },
+      },
+      'mac-finch-smoke-chrome': {
+        'mixins': [
+          'chrome-finch-swarming-pool',
+          'mac_11_or_12_arm64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_finch_smoke_tests',
+        },
+      },
+      'win-finch-smoke-chrome': {
+        'mixins': [
+          'chrome-finch-swarming-pool',
+          'win10',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_finch_smoke_tests',
+        },
+      },
+    },
+  },
+  {
+    'project': 'chrome',
+    'bucket': 'ci',
     'name': 'internal.chromeos.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
