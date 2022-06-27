@@ -52,14 +52,10 @@ bool Matches(const ComputedStyle& style,
 
 // static
 Element* ContainerQueryEvaluator::FindContainer(
-    const StyleRecalcContext& context,
+    Element* context_element,
     const ContainerSelector& container_selector) {
-  Element* container = context.container;
-  if (!container)
-    return nullptr;
-
   // TODO(crbug.com/1213888): Cache results.
-  for (Element* element = container; element;
+  for (Element* element = context_element; element;
        element = element->ParentOrShadowHostElement()) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (style->IsContainerForSizeContainerQueries() &&
@@ -75,7 +71,7 @@ Element* ContainerQueryEvaluator::FindContainer(
 bool ContainerQueryEvaluator::EvalAndAdd(const StyleRecalcContext& context,
                                          const ContainerQuery& query,
                                          MatchResult& match_result) {
-  Element* container = FindContainer(context, query.Selector());
+  Element* container = FindContainer(context.container, query.Selector());
   if (!container)
     return false;
   ContainerQueryEvaluator* evaluator = container->GetContainerQueryEvaluator();

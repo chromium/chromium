@@ -1568,7 +1568,8 @@ Element* StyleResolver::FindContainerForElement(
     Element* element,
     const ContainerSelector& container_selector) {
   auto context = StyleRecalcContext::FromAncestors(*element);
-  return ContainerQueryEvaluator::FindContainer(context, container_selector);
+  return ContainerQueryEvaluator::FindContainer(context.container,
+                                                container_selector);
 }
 
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(

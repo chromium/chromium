@@ -131,7 +131,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     // ancestor chain of `context_element`. Optimally, the nearest container-
     // query container is provided, although it's harmless to provide some
     // descendant of that container (we'll just traverse a bit more).
-    explicit ContainerSizes(const Element* context_element)
+    explicit ContainerSizes(Element* context_element)
         : context_element_(context_element) {}
 
     // ContainerSizes::Width/Height is normally computed lazily by looking
@@ -153,7 +153,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
    private:
     void CacheSizeIfNeeded(PhysicalAxes, absl::optional<double>& cache) const;
 
-    Member<const Element> context_element_;
+    Member<Element> context_element_;
     mutable PhysicalAxes cached_physical_axes_{kPhysicalAxisNone};
     mutable absl::optional<double> cached_width_;
     mutable absl::optional<double> cached_height_;
