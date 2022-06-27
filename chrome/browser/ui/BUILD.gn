@@ -3152,6 +3152,7 @@ static_library("ui") {
       "//chromeos/ash/services/assistant:lib",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/assistant/public/mojom",
+      "//chromeos/ash/services/auth_factor_config",
       "//chromeos/components/local_search_service/public/cpp",
       "//chromeos/components/local_search_service/public/mojom",
       "//chromeos/components/onc",
