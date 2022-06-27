@@ -30,13 +30,14 @@ TEST_F(JavaScriptContentWorldTest, AddFeature) {
       [[user_content_controller userScripts] count];
   ASSERT_GT(initial_scripts_count, 0ul);
 
-  web::JavaScriptContentWorld world(GetBrowserState());
+  web::JavaScriptContentWorld world(GetBrowserState(),
+                                    WKContentWorld.pageWorld);
 
   FakeJavaScriptFeature feature(
       JavaScriptFeature::ContentWorld::kAnyContentWorld);
   world.AddFeature(&feature);
   EXPECT_TRUE(world.HasFeature(&feature));
-  EXPECT_FALSE(world.GetWKContentWorld());
+  EXPECT_EQ(WKContentWorld.pageWorld, world.GetWKContentWorld());
 
   unsigned long scripts_count = [[user_content_controller userScripts] count];
   ASSERT_GT(scripts_count, initial_scripts_count);
@@ -54,14 +55,14 @@ TEST_F(JavaScriptContentWorldTest, AddFeatureToSpecificWKContentWorld) {
   ASSERT_GT(initial_scripts_count, 0ul);
 
   web::JavaScriptContentWorld world(GetBrowserState(),
-                                    [WKContentWorld defaultClientWorld]);
+                                    WKContentWorld.defaultClientWorld);
 
   FakeJavaScriptFeature feature(
       JavaScriptFeature::ContentWorld::kAnyContentWorld);
   world.AddFeature(&feature);
   EXPECT_TRUE(world.HasFeature(&feature));
 
-  EXPECT_EQ([WKContentWorld defaultClientWorld], world.GetWKContentWorld());
+  EXPECT_EQ(WKContentWorld.defaultClientWorld, world.GetWKContentWorld());
 
   unsigned long scripts_count = [[user_content_controller userScripts] count];
   ASSERT_GT(scripts_count, initial_scripts_count);
@@ -79,14 +80,14 @@ TEST_F(JavaScriptContentWorldTest, AddFeatureToIsolatedWorldOnly) {
   ASSERT_GT(initial_scripts_count, 0ul);
 
   web::JavaScriptContentWorld world(GetBrowserState(),
-                                    [WKContentWorld defaultClientWorld]);
+                                    WKContentWorld.defaultClientWorld);
 
   FakeJavaScriptFeature feature(
       JavaScriptFeature::ContentWorld::kIsolatedWorldOnly);
   world.AddFeature(&feature);
   EXPECT_TRUE(world.HasFeature(&feature));
 
-  EXPECT_EQ([WKContentWorld defaultClientWorld], world.GetWKContentWorld());
+  EXPECT_EQ(WKContentWorld.defaultClientWorld, world.GetWKContentWorld());
 
   unsigned long scripts_count = [[user_content_controller userScripts] count];
   ASSERT_GT(scripts_count, initial_scripts_count);
@@ -96,7 +97,7 @@ TEST_F(JavaScriptContentWorldTest, AddFeatureToIsolatedWorldOnly) {
 // content world triggers a DCHECK.
 TEST_F(JavaScriptContentWorldTest, AddIsolatedWorldFeatureToPageWorld) {
   web::JavaScriptContentWorld world(GetBrowserState(),
-                                    [WKContentWorld pageWorld]);
+                                    WKContentWorld.pageWorld);
   FakeJavaScriptFeature feature(
       JavaScriptFeature::ContentWorld::kIsolatedWorldOnly);
 

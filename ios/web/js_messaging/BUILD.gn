@@ -10,6 +10,7 @@ source_set("js_messaging") {
   deps = [
     ":frame_listeners_js",
     ":java_script_content_world_header",
+    ":java_script_feature_manager_header",
     ":scoped_wk_script_message_handler",
     ":setup_frame_js",
     ":web_frames_manager_impl_header",
@@ -58,7 +59,10 @@ source_set("web_frames_manager_impl_header") {
 
 source_set("java_script_feature") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  public_deps = [ ":java_script_content_world_header" ]
+  public_deps = [
+    ":java_script_content_world_header",
+    ":java_script_feature_manager_header",
+  ]
   deps = [
     ":js_messaging",
     ":scoped_wk_script_message_handler",
@@ -73,7 +77,6 @@ source_set("java_script_feature") {
   sources = [
     "java_script_content_world.mm",
     "java_script_feature.mm",
-    "java_script_feature_manager.h",
     "java_script_feature_manager.mm",
     "script_message.mm",
   ]
@@ -89,6 +92,17 @@ source_set("java_script_content_world_header") {
   ]
 
   sources = [ "java_script_content_world.h" ]
+}
+
+source_set("java_script_feature_manager_header") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":java_script_content_world_header",
+    "//base",
+  ]
+
+  sources = [ "java_script_feature_manager.h" ]
 }
 
 source_set("java_script_feature_util") {

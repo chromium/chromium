@@ -58,10 +58,18 @@ JavaScriptFeatureManager* JavaScriptFeatureManager::FromBrowserState(
   return feature_manager;
 }
 
+JavaScriptContentWorld*
+JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
+    BrowserState* browser_state) {
+  DCHECK(browser_state);
+  JavaScriptFeatureManager* feature_manager = FromBrowserState(browser_state);
+  return feature_manager->page_content_world_.get();
+}
+
 void JavaScriptFeatureManager::ConfigureFeatures(
     std::vector<JavaScriptFeature*> features) {
-  page_content_world_ =
-      std::make_unique<JavaScriptContentWorld>(browser_state_);
+  page_content_world_ = std::make_unique<JavaScriptContentWorld>(
+      browser_state_, WKContentWorld.pageWorld);
   AddSharedCommonFeatures(page_content_world_.get());
 
   isolated_world_ = std::make_unique<JavaScriptContentWorld>(

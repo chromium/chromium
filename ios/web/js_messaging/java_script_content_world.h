@@ -33,10 +33,6 @@ class JavaScriptContentWorld {
   ~JavaScriptContentWorld();
   JavaScriptContentWorld(const JavaScriptContentWorld&) = delete;
 
-  // Creates a content world for features which will interact with the page
-  // content world shared by the webpage's JavaScript.
-  explicit JavaScriptContentWorld(BrowserState* browser_state);
-
   // Creates a content world for features which will interact with the given
   // |content_world|.
   JavaScriptContentWorld(BrowserState* browser_state,

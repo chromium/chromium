@@ -20,6 +20,7 @@
 #include "crypto/aead.h"
 #include "crypto/random.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -114,7 +115,7 @@ bool WebFrameImpl::CanCallJavaScriptFunction() const {
   // because calling the function directly on the webstate with
   // |ExecuteJavaScript| is secure. However, iframes require an encryption key
   // in order to securely pass the function name and parameters to the frame.
-  return is_main_frame_ || frame_key_;
+  return is_main_frame_ || frame_key_ || frame_info_;
 }
 
 BrowserState* WebFrameImpl::GetBrowserState() {
@@ -173,6 +174,11 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
                                      reply_with_result);
   }
 
+  // There should always be a content_world now and
+  // `__gCrWeb.message.routeMessage` calls shouldn't be necessary.
+  // TODO(crbug.com/1339441): Remove custom iFrame messaging system.
+  NOTREACHED();
+
   base::Value message_payload(base::Value::Type::DICTIONARY);
   message_payload.SetKey("messageId", base::Value(message_id));
   message_payload.SetKey("replyWithResult", base::Value(reply_with_result));
@@ -203,8 +209,11 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
 bool WebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
     const std::vector<base::Value>& parameters) {
-  return CallJavaScriptFunctionInContentWorld(name, parameters,
-                                              /*content_world=*/nullptr,
+  JavaScriptContentWorld* content_world =
+      JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
+          GetBrowserState());
+
+  return CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
                                               /*reply_with_result=*/false);
 }
 
@@ -221,8 +230,10 @@ bool WebFrameImpl::CallJavaScriptFunction(
     const std::vector<base::Value>& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
-  return CallJavaScriptFunctionInContentWorld(name, parameters,
-                                              /*content_world=*/nullptr,
+  JavaScriptContentWorld* content_world =
+      JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
+          GetBrowserState());
+  return CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
                                               std::move(callback), timeout);
 }
 
