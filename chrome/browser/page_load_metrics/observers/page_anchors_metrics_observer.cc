@@ -63,6 +63,14 @@ void PageAnchorsMetricsObserver::RecordUkm() {
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PageAnchorsMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  is_in_prerendered_page_ = true;
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PageAnchorsMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
@@ -73,11 +81,25 @@ PageAnchorsMetricsObserver::OnFencedFramesStart(
 
 void PageAnchorsMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming&) {
+  // Do not report Ukm while prerendering.
+  if (is_in_prerendered_page_)
+    return;
+
   RecordUkm();
 }
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PageAnchorsMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming&) {
+  // Do not report Ukm while prerendering.
+  if (is_in_prerendered_page_)
+    return CONTINUE_OBSERVING;
+
   RecordUkm();
   return STOP_OBSERVING;
+}
+
+void PageAnchorsMetricsObserver::DidActivatePrerenderedPage(
+    content::NavigationHandle* navigation_handle) {
+  DCHECK(is_in_prerendered_page_);
+  is_in_prerendered_page_ = false;
 }
