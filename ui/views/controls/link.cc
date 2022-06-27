@@ -59,6 +59,10 @@ void Link::SetForceUnderline(bool force_underline) {
   RecalculateFont();
 }
 
+bool Link::GetForceUnderline() const {
+  return force_underline_;
+}
+
 ui::Cursor Link::GetCursor(const ui::MouseEvent& event) {
   if (!GetEnabled())
     return ui::Cursor();
@@ -231,6 +235,7 @@ void Link::ConfigureFocus() {
 
 BEGIN_METADATA(Link, Label)
 ADD_READONLY_PROPERTY_METADATA(SkColor, Color, ui::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(bool, ForceUnderline)
 END_METADATA
 
 }  // namespace views
