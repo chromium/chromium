@@ -1157,43 +1157,6 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
                                      ash::SplitViewTestApi::SnapPosition::LEFT);
   EXPECT_FALSE(frame_view->caption_button_container_->GetVisible());
 }
-
-// Test that for a browser app window, its caption buttons may or may not hide
-// in tablet mode.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
-                       AppHeaderVisibilityInTabletModeTest) {
-  // Create a browser app window.
-  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-      "test_browser_app", true /* trusted_source */, gfx::Rect(),
-      browser()->profile(), true);
-  params.initial_show_state = ui::SHOW_STATE_DEFAULT;
-  Browser* browser2 = Browser::Create(params);
-  AddBlankTabAndShow(browser2);
-  BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
-  Widget* widget2 = browser_view2->GetWidget();
-  BrowserNonClientFrameViewChromeOS* frame_view2 =
-      GetFrameViewChromeOS(browser_view2);
-  widget2->GetNativeWindow()->SetProperty(
-      aura::client::kResizeBehaviorKey,
-      aura::client::kResizeBehaviorCanMaximize |
-          aura::client::kResizeBehaviorCanResize);
-  StartOverview();
-  EXPECT_FALSE(frame_view2->caption_button_container_->GetVisible());
-  EndOverview();
-  EXPECT_TRUE(frame_view2->caption_button_container_->GetVisible());
-
-  ASSERT_NO_FATAL_FAILURE(
-      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
-  StartOverview();
-  EXPECT_FALSE(frame_view2->caption_button_container_->GetVisible());
-
-  EndOverview();
-  EXPECT_TRUE(frame_view2->caption_button_container_->GetVisible());
-
-  ash::SplitViewTestApi().SnapWindow(
-      widget2->GetNativeWindow(), ash::SplitViewTestApi::SnapPosition::RIGHT);
-  EXPECT_TRUE(frame_view2->caption_button_container_->GetVisible());
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Regression test for https://crbug.com/879851.
@@ -1278,6 +1241,71 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   const int inset_in_overview_mode =
       window->GetProperty(aura::client::kTopViewInset);
   EXPECT_EQ(inset_normal, inset_in_overview_mode);
+}
+
+class FloatBrowserNonClientFrameViewChromeOSTest
+    : public TopChromeMdParamTest<InProcessBrowserTest> {
+ public:
+  FloatBrowserNonClientFrameViewChromeOSTest() = default;
+  FloatBrowserNonClientFrameViewChromeOSTest(
+      const FloatBrowserNonClientFrameViewChromeOSTest&) = delete;
+  FloatBrowserNonClientFrameViewChromeOSTest& operator=(
+      const FloatBrowserNonClientFrameViewChromeOSTest&) = delete;
+  ~FloatBrowserNonClientFrameViewChromeOSTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::wm::features::kFloatWindow};
+};
+
+// Test that for a browser app window, its caption buttons may or may not hide
+// in tablet mode.
+IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
+                       AppHeaderVisibilityInTabletModeTest) {
+  // Create a browser app window.
+  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+      "test_browser_app", /*trusted_source=*/true, gfx::Rect(),
+      browser()->profile(), true);
+  params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+  Browser* browser2 = Browser::Create(params);
+  AddBlankTabAndShow(browser2);
+  BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
+  Widget* widget2 = browser_view2->GetWidget();
+  BrowserNonClientFrameViewChromeOS* frame_view2 =
+      GetFrameViewChromeOS(browser_view2);
+  widget2->GetNativeWindow()->SetProperty(
+      aura::client::kResizeBehaviorKey,
+      aura::client::kResizeBehaviorCanMaximize |
+          aura::client::kResizeBehaviorCanResize);
+  StartOverview();
+  EXPECT_FALSE(frame_view2->caption_button_container_->GetVisible());
+  EndOverview();
+  EXPECT_TRUE(frame_view2->caption_button_container_->GetVisible());
+
+  ASSERT_NO_FATAL_FAILURE(
+      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
+  StartOverview();
+  EXPECT_FALSE(frame_view2->caption_button_container_->GetVisible());
+
+  EndOverview();
+  EXPECT_TRUE(frame_view2->caption_button_container_->GetVisible());
+
+  auto* immersive_controller = chromeos::ImmersiveFullscreenController::Get(
+      views::Widget::GetWidgetForNativeView(widget2->GetNativeWindow()));
+
+  // Snap a window. Immersive mode is enabled so its title bar is not visible.
+  ash::SplitViewTestApi().SnapWindow(
+      widget2->GetNativeWindow(), ash::SplitViewTestApi::SnapPosition::RIGHT);
+  EXPECT_TRUE(frame_view2->caption_button_container_->GetVisible());
+  EXPECT_TRUE(immersive_controller->IsEnabled());
+
+  // Float a window. Immersive mode is disabled so its title bar is visible.
+  ui::test::EventGenerator event_generator(
+      widget2->GetNativeWindow()->GetRootWindow());
+  event_generator.PressAndReleaseKey(ui::VKEY_F,
+                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(frame_view2->caption_button_container_->GetVisible());
+  EXPECT_FALSE(immersive_controller->IsEnabled());
 }
 
 namespace {
@@ -1420,6 +1448,7 @@ INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewAshTest);
+INSTANTIATE_TEST_SUITE(FloatBrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(HomeLauncherBrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(TabSearchFrameCaptionButtonTest);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

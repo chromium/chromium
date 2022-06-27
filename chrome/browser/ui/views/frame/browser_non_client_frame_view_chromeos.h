@@ -143,8 +143,6 @@ class BrowserNonClientFrameViewChromeOS
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            BrowserHeaderVisibilityInTabletModeTest);
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
-                           AppHeaderVisibilityInTabletModeTest);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            ImmersiveModeTopViewInset);
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            ToggleTabletModeOnMinimizedWindow);
@@ -152,6 +150,8 @@ class BrowserNonClientFrameViewChromeOS
                            ActiveStateOfButtonMatchesWidget);
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
                            RestoreMinimizedBrowserUpdatesCaption);
+  FRIEND_TEST_ALL_PREFIXES(FloatBrowserNonClientFrameViewChromeOSTest,
+                           AppHeaderVisibilityInTabletModeTest);
   FRIEND_TEST_ALL_PREFIXES(ImmersiveModeControllerChromeosWebAppBrowserTest,
                            FrameLayoutToggleTabletMode);
   FRIEND_TEST_ALL_PREFIXES(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
@@ -233,6 +233,12 @@ class BrowserNonClientFrameViewChromeOS
 
   // Called any time the theme has changed and may need to be animated.
   void MaybeAnimateThemeChanged();
+
+  // Returns whether the associated window is currently floated or not.
+  bool IsFloated() const;
+
+  // Helper to check whether we should enable immersive mode.
+  bool ShouldEnableImmersiveModeController() const;
 
   // Returns the top level aura::Window for this browser window.
   const aura::Window* GetFrameWindow() const;

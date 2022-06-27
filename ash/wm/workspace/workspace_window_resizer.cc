@@ -21,6 +21,7 @@
 #include "ash/wm/default_window_resizer.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
+#include "ash/wm/float/tablet_mode_float_window_resizer.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_window_resizer.h"
 #include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_delegate.h"
@@ -299,14 +300,23 @@ std::unique_ptr<WindowResizer> CreateWindowResizerForTabletMode(
     aura::Window* window,
     const gfx::PointF& point_in_parent,
     int window_component,
-    ::wm::WindowMoveSource source) {
+    wm::WindowMoveSource source) {
+  WindowState* window_state = WindowState::Get(window);
+
+  // Dragging floated windows in tablet mode is allowed.
+  // TODO(crbug.com/1338715): Investigate if we need to wrap the resizer in a
+  // DragWindowResizer.
+  if (window_state->IsFloated() && window_component == HTCAPTION) {
+    window_state->CreateDragDetails(point_in_parent, HTCAPTION, source);
+    return std::make_unique<TabletModeFloatWindowResizer>(window_state);
+  }
+
   // Window dragging from top and tab dragging are disabled if "WebUITabStrip"
   // feature is enabled. "WebUITabStrip" will be enabled on 81 for Krane and on
   // 82 for all other boards.
   if (features::IsWebUITabStripEnabled())
     return nullptr;
 
-  WindowState* window_state = WindowState::Get(window);
   // Only maximized/fullscreen/snapped window can be dragged from the top of
   // the screen.
   if (!window_state->IsMaximized() && !window_state->IsFullscreen() &&

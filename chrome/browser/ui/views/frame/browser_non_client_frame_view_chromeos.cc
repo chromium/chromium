@@ -632,25 +632,14 @@ void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
   if (web_app_frame_toolbar())
     web_app_frame_toolbar()->SetVisible(should_show_caption_buttons);
 
-  if (enabled) {
-    // Enter immersive mode if the feature is enabled and the widget is not
-    // already in fullscreen mode. Popups that are not activated but not
-    // minimized are still put in immersive mode, since they may still be
-    // visible but not activated due to something transparent and/or not
-    // fullscreen (ie. fullscreen launcher).
-    if (!frame()->IsFullscreen() && !browser_view()->GetSupportsTabStrip() &&
-        !frame()->IsMinimized()) {
-      browser_view()->immersive_mode_controller()->SetEnabled(true);
-      return;
-    }
-  } else {
-    // Exit immersive mode if the feature is enabled and the widget is not in
-    // fullscreen mode.
-    if (!frame()->IsFullscreen() && !browser_view()->GetSupportsTabStrip()) {
-      browser_view()->immersive_mode_controller()->SetEnabled(false);
-      return;
-    }
-  }
+  ImmersiveModeController* immersive_mode_controller =
+      browser_view()->immersive_mode_controller();
+  const bool was_enabled = immersive_mode_controller->IsEnabled();
+  immersive_mode_controller->SetEnabled(ShouldEnableImmersiveModeController());
+
+  // Do not relayout if immersive mode has not changed.
+  if (was_enabled == immersive_mode_controller->IsEnabled())
+    return;
 
   InvalidateLayout();
   // Can be null in tests.
@@ -697,6 +686,27 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
     // when exiting fullscreen.
     if (enter_fullscreen || exit_fullscreen)
       ResetWindowControls();
+  }
+
+  if (key == chromeos::kWindowStateTypeKey) {
+    if (!chromeos::TabletState::Get()->InTabletMode())
+      return;
+
+    // Update the window controls if we are entering or exiting float state.
+    const bool enter_floated = IsFloated();
+    const bool exit_floated = static_cast<chromeos::WindowStateType>(old) ==
+                              chromeos::WindowStateType::kFloated;
+    if (!enter_floated && !exit_floated)
+      return;
+
+    ResetWindowControls();
+
+    // Additionally updates immersive mode for PWA/SWA so that we show the title
+    // bar when floated, and hide the title bar otherwise.
+    browser_view()->immersive_mode_controller()->SetEnabled(
+        ShouldEnableImmersiveModeController());
+
+    return;
   }
 
   if (key == chromeos::kIsShowingInOverviewKey) {
@@ -794,8 +804,11 @@ bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview()
     const {
-  return UsePackagedAppHeaderStyle(browser_view()->browser()) ||
-         !chromeos::TabletState::Get()->InTabletMode();
+  if (UsePackagedAppHeaderStyle(browser_view()->browser()))
+    return true;
+  if (!chromeos::TabletState::Get()->InTabletMode())
+    return true;
+  return IsFloated();
 }
 
 int BrowserNonClientFrameViewChromeOS::GetToolbarLeftInset() const {
@@ -823,6 +836,10 @@ int BrowserNonClientFrameViewChromeOS::GetTabStripRightInset() const {
 }
 
 bool BrowserNonClientFrameViewChromeOS::GetShouldPaint() const {
+  // Floated windows show their frame as they need to be dragged or hidden.
+  if (IsFloated())
+    return true;
+
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   // Normal windows that have a WebUI-based tab strip do not need a browser
   // frame as no tab strip is drawn on top of the browser frame.
@@ -1047,6 +1064,32 @@ void BrowserNonClientFrameViewChromeOS::MaybeAnimateThemeChanged() {
   // repainting theme changes.
   render_widget_host->InsertVisualStateCallback(
       theme_changed_animation_callback_.callback());
+}
+
+bool BrowserNonClientFrameViewChromeOS::IsFloated() const {
+  return GetFrameWindow()->GetProperty(chromeos::kWindowStateTypeKey) ==
+         chromeos::WindowStateType::kFloated;
+}
+
+bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController()
+    const {
+  if (chromeos::TabletState::Get()->InTabletMode()) {
+    // Tabbed browsers do not support immersive mode in tablet mode. We use the
+    // web ui touchable tabstrip, which has its own sliding mechanism to view
+    // the tabs.
+    if (browser_view()->GetSupportsTabStrip())
+      return false;
+
+    // No immersive mode for minimized windows as they aren't visible, and
+    // floated windows need a permanent header to drag.
+    if (frame()->IsMinimized() || IsFloated())
+      return false;
+
+    return true;
+  }
+
+  // In clamshell mode, we want immersive mode if fullscreen.
+  return frame()->IsFullscreen();
 }
 
 const aura::Window* BrowserNonClientFrameViewChromeOS::GetFrameWindow() const {

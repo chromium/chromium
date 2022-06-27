@@ -824,7 +824,7 @@ void HandleToggleFloating() {
   DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
   aura::Window* window = window_util::GetActiveWindow();
   DCHECK(window);
-  // TODO(sammiequon|shidi): Add some UI like a bounce if a window cannnot be
+  // TODO(sammiequon|shidi): Add some UI like a bounce if a window cannot be
   // floated.
   chromeos::ToggleFloating(window);
   base::RecordAction(UserMetricsAction("Accel_Toggle_Floating"));

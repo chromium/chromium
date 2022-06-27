@@ -98,7 +98,8 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
     if (window_state_->IsFullscreen())
       return;
     if (Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
-            widget_)) {
+            widget_) &&
+        !window_state_->IsFloated()) {
       ImmersiveFullscreenController::EnableForWidget(widget_, true);
     }
   }
@@ -127,7 +128,7 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
         Shell::Get()->tablet_mode_controller() &&
         Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
             widget)) {
-      if (window_state->IsMinimized())
+      if (window_state->IsMinimized() || window_state->IsFloated())
         ImmersiveFullscreenController::EnableForWidget(widget_, false);
       else if (window_state->IsMaximized())
         ImmersiveFullscreenController::EnableForWidget(widget_, true);

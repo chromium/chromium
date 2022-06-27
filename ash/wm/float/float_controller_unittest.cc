@@ -10,6 +10,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/wm/core/window_util.h"
@@ -128,6 +129,28 @@ TEST_F(WindowFloatTest, FloatWindowUnfloatsDisplayChange) {
   // width.
   UpdateDisplay("700x600");
   EXPECT_FALSE(controller->IsFloated(window.get()));
+}
+
+// Tests that windows floated in tablet mode have immersive mode disabled,
+// showing their title bars.
+TEST_F(WindowFloatTest, TabletImmersiveMode) {
+  // Create a test app window that has a header.
+  auto window = CreateAppWindow();
+  auto* immersive_controller = chromeos::ImmersiveFullscreenController::Get(
+      views::Widget::GetWidgetForNativeView(window.get()));
+
+  // Enter tablet mode and float `window`.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_TRUE(immersive_controller->IsEnabled());
+
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(immersive_controller->IsEnabled());
+
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(immersive_controller->IsEnabled());
+
+  // TODO(crbug.com/1339489): Add tests to check immersive mode when transition
+  // to tablet from clamshell and vice versa.
 }
 
 }  // namespace ash
