@@ -206,11 +206,25 @@ void ExtensionWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   ContentScriptTracker::ReadyToCommitNavigation(PassKey(), navigation_handle);
 
+  // We don't force autoplay to allow while prerendering.
+  if (navigation_handle->GetRenderFrameHost()->GetLifecycleState() ==
+          content::RenderFrameHost::LifecycleState::kPrerendering &&
+      !navigation_handle->IsPrerenderedPageActivation()) {
+    return;
+  }
+
   const ExtensionRegistry* const registry =
       ExtensionRegistry::Get(browser_context_);
 
+  content::RenderFrameHost* parent_or_outerdoc =
+      navigation_handle->GetParentFrameOrOuterDocument();
+
+  content::RenderFrameHost* outermost_main_rfh =
+      parent_or_outerdoc ? parent_or_outerdoc->GetOutermostMainFrame()
+                         : navigation_handle->GetRenderFrameHost();
+
   const Extension* const extension =
-      GetExtensionFromFrame(web_contents()->GetPrimaryMainFrame(), false);
+      GetExtensionFromFrame(outermost_main_rfh, false);
   KioskDelegate* const kiosk_delegate =
       ExtensionsBrowserClient::Get()->GetKioskDelegate();
   DCHECK(kiosk_delegate);
@@ -220,9 +234,10 @@ void ExtensionWebContentsObserver::ReadyToCommitNavigation(
   // If the top most frame is an extension, packaged app, hosted app, etc. then
   // the main frame and all iframes should be able to autoplay without
   // restriction. <webview> should still have autoplay blocked though.
-  GURL url = navigation_handle->IsInMainFrame()
-                 ? navigation_handle->GetURL()
-                 : navigation_handle->GetWebContents()->GetLastCommittedURL();
+  GURL url =
+      parent_or_outerdoc
+          ? parent_or_outerdoc->GetOutermostMainFrame()->GetLastCommittedURL()
+          : navigation_handle->GetURL();
   if (is_kiosk || registry->enabled_extensions().GetExtensionOrAppByURL(url)) {
     mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient> client;
     navigation_handle->GetRenderFrameHost()
