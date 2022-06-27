@@ -7,8 +7,11 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -692,6 +695,73 @@ void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
   sections->push_back(
       NGTableTypes::CreateSection(section, start_row, current_row - start_row,
                                   section_block_size, treat_section_as_tbody));
+}
+
+void NGTableAlgorithmUtils::FinalizeTableCellLayout(
+    LayoutUnit unconstrained_intrinsic_block_size,
+    NGBoxFragmentBuilder* builder) {
+  const NGBlockNode& node = builder->Node();
+  const NGConstraintSpace& space = builder->ConstraintSpace();
+  const bool has_inflow_children = !builder->Children().IsEmpty();
+
+  // Hide table-cells if:
+  //  - They are within a collapsed column(s).
+  //  - They have "empty-cells: hide", non-collapsed borders, and no children.
+  builder->SetIsHiddenForPaint(
+      space.IsTableCellHiddenForPaint() ||
+      (space.HideTableCellIfEmpty() && !has_inflow_children));
+
+  builder->SetHasCollapsedBorders(space.IsTableCellWithCollapsedBorders());
+
+  builder->SetIsTableNGPart();
+
+  builder->SetTableCellColumnIndex(space.TableCellColumnIndex());
+
+  // If we're resuming after a break, there'll be no alignment, since the
+  // fragment will start at the block-start edge of the fragmentainer then.
+  if (IsResumingLayout(builder->PreviousBreakToken()))
+    return;
+
+  switch (node.Style().VerticalAlign()) {
+    case EVerticalAlign::kTop:
+      // Do nothing for 'top' vertical alignment.
+      break;
+    case EVerticalAlign::kBaselineMiddle:
+    case EVerticalAlign::kSub:
+    case EVerticalAlign::kSuper:
+    case EVerticalAlign::kTextTop:
+    case EVerticalAlign::kTextBottom:
+    case EVerticalAlign::kLength:
+      // All of the above are treated as 'baseline' for the purposes of
+      // table-cell vertical alignment.
+    case EVerticalAlign::kBaseline:
+      // Table-cells (with baseline vertical alignment) always produce a
+      // baseline of their end-content edge (even if the content doesn't have
+      // any baselines).
+      if (!builder->Baseline() || node.ShouldApplyLayoutContainment()) {
+        builder->SetBaseline(unconstrained_intrinsic_block_size -
+                             builder->BorderScrollbarPadding().block_end);
+      }
+
+      // Only adjust if we have *inflow* children. If we only have
+      // OOF-positioned children don't align them to the alignment baseline.
+      if (has_inflow_children) {
+        if (auto alignment_baseline = space.TableCellAlignmentBaseline()) {
+          builder->MoveChildrenInBlockDirection(*alignment_baseline -
+                                                *builder->Baseline());
+        }
+      }
+      break;
+    case EVerticalAlign::kMiddle:
+      builder->MoveChildrenInBlockDirection(
+          (builder->FragmentBlockSize() - unconstrained_intrinsic_block_size) /
+          2);
+      break;
+    case EVerticalAlign::kBottom:
+      builder->MoveChildrenInBlockDirection(builder->FragmentBlockSize() -
+                                            unconstrained_intrinsic_block_size);
+      break;
+  };
 }
 
 void NGColspanCellTabulator::StartRow() {

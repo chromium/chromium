@@ -1629,7 +1629,6 @@ virtual/layout_ng_table_frag/fragmentation/single-line-cells-repeating-thead-cel
 crbug.com/1295905 [ Mac11-arm64 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/sections-and-captions-mixed-order.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/balance-table-with-border-spacing.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/multicol-table-cell-height-002.xht [ Failure ]
-crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/table/multicol-table-cell-vertical-align-001.xht [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/border-spacing-break-before-unbreakable-row.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/break-in-second-table-section.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/break-in-tbody-after-caption.html [ Failure ]

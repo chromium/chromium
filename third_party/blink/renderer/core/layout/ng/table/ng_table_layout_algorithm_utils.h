@@ -83,6 +83,11 @@ class NGTableAlgorithmUtils {
       NGTableTypes::Sections* sections,
       NGTableTypes::Rows* rows,
       NGTableTypes::CellBlockConstraints* cell_block_constraints);
+
+  // Performs any final adjustments for table-cells at the end of layout.
+  static void FinalizeTableCellLayout(
+      LayoutUnit unconstrained_intrinsic_block_size,
+      NGBoxFragmentBuilder*);
 };
 
 // NGColspanCellTabulator keeps track of columns occupied by colspanned cells

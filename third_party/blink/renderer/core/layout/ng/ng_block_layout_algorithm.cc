@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -1026,8 +1027,10 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
   }
 
   // At this point, perform any final table-cell adjustments needed.
-  if (ConstraintSpace().IsTableCell())
-    FinalizeForTableCell(unconstrained_intrinsic_block_size);
+  if (ConstraintSpace().IsTableCell()) {
+    NGTableAlgorithmUtils::FinalizeTableCellLayout(
+        unconstrained_intrinsic_block_size, &container_builder_);
+  }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
@@ -2298,76 +2301,6 @@ LayoutUnit NGBlockLayoutAlgorithm::PositionSelfCollapsingChildWithParentBfc(
   ApplyClearance(child_space, &child_bfc_block_offset);
 
   return child_bfc_block_offset;
-}
-
-void NGBlockLayoutAlgorithm::FinalizeForTableCell(
-    LayoutUnit unconstrained_intrinsic_block_size) {
-  const bool has_inflow_children = !container_builder_.Children().IsEmpty();
-
-  // Hide table-cells if:
-  //  - They are within a collapsed column(s).
-  //  - They have "empty-cells: hide", non-collapsed borders, and no children.
-  container_builder_.SetIsHiddenForPaint(
-      ConstraintSpace().IsTableCellHiddenForPaint() ||
-      (ConstraintSpace().HideTableCellIfEmpty() && !has_inflow_children));
-
-  container_builder_.SetHasCollapsedBorders(
-      ConstraintSpace().IsTableCellWithCollapsedBorders());
-
-  container_builder_.SetIsTableNGPart();
-
-  container_builder_.SetTableCellColumnIndex(
-      ConstraintSpace().TableCellColumnIndex());
-
-  // If we're resuming after a break, there'll be no alignment, since the
-  // fragment will start at the block-start edge of the fragmentainer then.
-  if (IsResumingLayout(BreakToken()))
-    return;
-
-  switch (Style().VerticalAlign()) {
-    case EVerticalAlign::kTop:
-      // Do nothing for 'top' vertical alignment.
-      break;
-    case EVerticalAlign::kBaselineMiddle:
-    case EVerticalAlign::kSub:
-    case EVerticalAlign::kSuper:
-    case EVerticalAlign::kTextTop:
-    case EVerticalAlign::kTextBottom:
-    case EVerticalAlign::kLength:
-      // All of the above are treated as 'baseline' for the purposes of
-      // table-cell vertical alignment.
-    case EVerticalAlign::kBaseline:
-      // Table-cells (with baseline vertical alignment) always produce a
-      // baseline of their end-content edge (even if the content doesn't have
-      // any baselines).
-      if (!container_builder_.Baseline() ||
-          Node().ShouldApplyLayoutContainment()) {
-        container_builder_.SetBaseline(unconstrained_intrinsic_block_size -
-                                       BorderScrollbarPadding().block_end);
-      }
-
-      // Only adjust if we have *inflow* children. If we only have
-      // OOF-positioned children don't align them to the alignment baseline.
-      if (has_inflow_children) {
-        if (auto alignment_baseline =
-                ConstraintSpace().TableCellAlignmentBaseline()) {
-          container_builder_.MoveChildrenInBlockDirection(
-              *alignment_baseline - *container_builder_.Baseline());
-        }
-      }
-      break;
-    case EVerticalAlign::kMiddle:
-      container_builder_.MoveChildrenInBlockDirection(
-          (container_builder_.FragmentBlockSize() -
-           unconstrained_intrinsic_block_size) /
-          2);
-      break;
-    case EVerticalAlign::kBottom:
-      container_builder_.MoveChildrenInBlockDirection(
-          container_builder_.FragmentBlockSize() -
-          unconstrained_intrinsic_block_size);
-      break;
-  };
 }
 
 LayoutUnit NGBlockLayoutAlgorithm::FragmentainerSpaceAvailable() const {

@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -293,6 +294,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
   if (const auto* token = BreakToken())
     previously_consumed_block_size = token->ConsumedBlockSize();
 
+  LayoutUnit unconstrained_intrinsic_block_size = intrinsic_block_size_;
   intrinsic_block_size_ =
       ClampIntrinsicBlockSize(ConstraintSpace(), Node(), BreakToken(),
                               BorderScrollbarPadding(), intrinsic_block_size_);
@@ -330,10 +332,10 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
 #endif
   }
 
-  // TODO(mstensho): We need to do more here (vertical alignment, for instance),
-  // if this is a table cell.
-  if (ConstraintSpace().IsTableCell())
-    container_builder_.SetIsTableNGPart();
+  if (ConstraintSpace().IsTableCell()) {
+    NGTableAlgorithmUtils::FinalizeTableCellLayout(
+        unconstrained_intrinsic_block_size, &container_builder_);
+  }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
