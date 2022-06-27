@@ -323,10 +323,11 @@ class AutocompleteController : public AutocompleteProviderListener,
   // The client passed to the providers.
   std::unique_ptr<AutocompleteProviderClient> provider_client_;
 
-  // Returns a list of which providers to run based on whether we're in keyword
-  // mode and which keyword we're searching.  Currently returns all providers
-  // except when we're in keyword mode for a starter pack search engine.
-  Providers GetProvidersToRun();
+  // Returns whether the given provider should be ran based on whether we're in
+  // keyword mode and which keyword we're searching. Currently runs all enabled
+  // providers unless in a Starter Pack scope, except for OpenTabProvider which
+  // only runs on Lacros and the @tabs scope.
+  bool ShouldRunProvider(AutocompleteProvider* provider);
 
   // A list of all providers.
   Providers providers_;

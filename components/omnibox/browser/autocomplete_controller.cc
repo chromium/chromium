@@ -34,6 +34,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/builtin_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"
@@ -480,7 +481,10 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // if we run all providers.
   in_start_ = true;
   base::TimeTicks start_time = base::TimeTicks::Now();
-  for (const auto& provider : GetProvidersToRun()) {
+  for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
+
     base::TimeTicks provider_start_time = base::TimeTicks::Now();
     provider->Start(input_, minimal_changes);
     if (!input.want_asynchronous_matches())
@@ -558,10 +562,10 @@ void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
     return;
   }
 
-  // Starter Pack engines in keyword mode only run a subset of the providers, so
-  // call `GetProvidersToRun()` to determine the subset or if we run all
-  // providers (the Default case).
-  for (auto provider : GetProvidersToRun()) {
+  for (auto provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
+
     provider->StartPrefetch(input);
   }
 }
@@ -1186,39 +1190,62 @@ void AutocompleteController::SetStartStopTimerDurationForTesting(
   stop_timer_duration_ = duration;
 }
 
-AutocompleteController::Providers AutocompleteController::GetProvidersToRun() {
+bool AutocompleteController::ShouldRunProvider(AutocompleteProvider* provider) {
   if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
       input_.keyword_mode_entry_method() !=
           metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID) {
-    // We're in keyword mode. Try to grab the TemplateURL to determine which
-    // provider to run.
+    // We're in keyword mode. Only a subset of providers are run when we're in a
+    // starter pack keyword mode. Try to grab the TemplateURL to determine if
+    // we're in starter pack mode and whether this provider should be run.
     AutocompleteInput keyword_input = input_;
     const TemplateURL* keyword_turl =
         KeywordProvider::GetSubstitutingTemplateURLForInput(
             template_url_service_, &keyword_input);
-    Providers provider_subset;
     if (keyword_turl && keyword_turl->starter_pack_id() > 0) {
-      // Search provider and keyword provider are still run because we would
-      // lose the suggestion the keyword chip is attached to otherwise. Search
-      // provider suggestions are curbed for starter pack scopes in
-      // `SearchProvider::ShouldCurbDefaultSuggestions()`.
-      provider_subset.push_back(search_provider_.get());
-      provider_subset.push_back(keyword_provider_.get());
+      switch (provider->type()) {
+        // Search provider and keyword provider are still run because we would
+        // lose the suggestion the keyword chip is attached to otherwise. Search
+        // provider suggestions are curbed for starter pack scopes in
+        // `SearchProvider::ShouldCurbDefaultSuggestions()`.
+        case AutocompleteProvider::TYPE_SEARCH:
+        case AutocompleteProvider::TYPE_KEYWORD:
+          return true;
 
-      switch (keyword_turl->starter_pack_id()) {
-        case TemplateURLStarterPackData::kBookmarks:
-          provider_subset.push_back(bookmark_provider_.get());
-          break;
-        case TemplateURLStarterPackData::kHistory:
-          provider_subset.push_back(history_quick_provider_.get());
-          provider_subset.push_back(history_url_provider_.get());
-          break;
+        // @Bookmarks starter pack scope - run only the bookmarks provider.
+        case AutocompleteProvider::TYPE_BOOKMARK:
+          return (keyword_turl->starter_pack_id() ==
+                  TemplateURLStarterPackData::kBookmarks);
+
+        // @History starter pack scope - run history quick and history url
+        // providers.
+        case AutocompleteProvider::TYPE_HISTORY_QUICK:
+        case AutocompleteProvider::TYPE_HISTORY_URL:
+          return (keyword_turl->starter_pack_id() ==
+                  TemplateURLStarterPackData::kHistory);
+
+        // @Tabs starter pack scope - run the open tab provider.
+        case AutocompleteProvider::TYPE_OPEN_TAB:
+          return (keyword_turl->starter_pack_id() ==
+                  TemplateURLStarterPackData::kTabs);
+
+        // No other providers should run when in a starter pack scope.
+        default:
+          return false;
       }
-
-      return provider_subset;
     }
   }
 
+  // Open Tab Provider should only be run for @tabs starter pack mode and in the
+  // CrOS launcher.  As a temporary condition, we don't run the open tab
+  // provider when IsSiteSearchStarterPackEnabled() is true, even though that
+  // could interfere with the launcher.
+  // TODO(crbug/1287313): This needs to be updated before running live
+  // experiments.
+  if (provider->type() == AutocompleteProvider::TYPE_OPEN_TAB &&
+      OmniboxFieldTrial::IsSiteSearchStarterPackEnabled()) {
+    return false;
+  }
+
   // Otherwise, run all providers.
-  return providers_;
+  return true;
 }

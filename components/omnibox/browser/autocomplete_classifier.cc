@@ -47,6 +47,9 @@ int AutocompleteClassifier::DefaultOmniboxProviders() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       // Custom search engines cannot be used on mobile.
       AutocompleteProvider::TYPE_KEYWORD |
+      (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled()
+           ? AutocompleteProvider::TYPE_OPEN_TAB
+           : 0) |
 #else
       AutocompleteProvider::TYPE_CLIPBOARD |
       AutocompleteProvider::TYPE_MOST_VISITED_SITES |
