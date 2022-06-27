@@ -19,27 +19,28 @@ namespace media::hls::types {
 using DecimalInteger = uint64_t;
 
 MEDIA_EXPORT ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
-    SourceString source_str);
+    ResolvedSourceString source_str);
 
 // A `DecimalFloatingPoint` is an unsigned floating-point value.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=on%20its%20AttributeNames.%0A%0A%20%20%20o-,decimal%2Dfloating%2Dpoint,-%3A%20an%20unquoted%20string
 using DecimalFloatingPoint = double;
 
 MEDIA_EXPORT ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
-    SourceString source_str);
+    ResolvedSourceString source_str);
 
 // A `SignedDecimalFloatingPoint` is a signed floating-point value.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=decimal%20positional%20notation.%0A%0A%20%20%20o-,signed%2Ddecimal%2Dfloating%2Dpoint,-%3A%20an%20unquoted%20string
 using SignedDecimalFloatingPoint = double;
 
 MEDIA_EXPORT ParseStatus::Or<SignedDecimalFloatingPoint>
-ParseSignedDecimalFloatingPoint(SourceString source_str);
+ParseSignedDecimalFloatingPoint(ResolvedSourceString source_str);
 
 // A `DecimalResolution` is a set of two `DecimalInteger`s describing width and
 // height.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=enumerated%2Dstring%2Dlist.%0A%0A%20%20%20o-,decimal%2Dresolution,-%3A%20two%20decimal%2Dintegers
 struct MEDIA_EXPORT DecimalResolution {
-  static ParseStatus::Or<DecimalResolution> Parse(SourceString source_str);
+  static ParseStatus::Or<DecimalResolution> Parse(
+      ResolvedSourceString source_str);
 
   types::DecimalInteger width;
   types::DecimalInteger height;
@@ -49,7 +50,8 @@ struct MEDIA_EXPORT DecimalResolution {
 // in tags describing byte ranges of a resource.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.2
 struct MEDIA_EXPORT ByteRangeExpression {
-  static ParseStatus::Or<ByteRangeExpression> Parse(SourceString source_str);
+  static ParseStatus::Or<ByteRangeExpression> Parse(
+      ResolvedSourceString source_str);
 
   // The length of the sub-range, in bytes.
   types::DecimalInteger length;
@@ -88,7 +90,7 @@ class MEDIA_EXPORT ByteRange {
 // Parses a string surrounded by double-quotes ("), returning the inner string.
 // These appear in the context of attribute-lists, and are subject to variable
 // substitution. `sub_buffer` must outlive the returned string.
-MEDIA_EXPORT ParseStatus::Or<base::StringPiece> ParseQuotedString(
+MEDIA_EXPORT ParseStatus::Or<ResolvedSourceString> ParseQuotedString(
     SourceString source_str,
     const VariableDictionary& variable_dict,
     VariableDictionary::SubstitutionBuffer& sub_buffer);

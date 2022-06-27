@@ -139,7 +139,8 @@ struct AttributeMapComparator {
 
 }  // namespace
 
-ParseStatus::Or<DecimalInteger> ParseDecimalInteger(SourceString source_str) {
+ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
+    ResolvedSourceString source_str) {
   static const base::NoDestructor<re2::RE2> decimal_integer_regex("\\d{1,20}");
 
   const auto str = source_str.Str();
@@ -161,7 +162,7 @@ ParseStatus::Or<DecimalInteger> ParseDecimalInteger(SourceString source_str) {
 }
 
 ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
-    SourceString source_str) {
+    ResolvedSourceString source_str) {
   // Utilize signed parsing function
   auto result = ParseSignedDecimalFloatingPoint(source_str);
   if (result.has_error()) {
@@ -178,7 +179,7 @@ ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
 }
 
 ParseStatus::Or<SignedDecimalFloatingPoint> ParseSignedDecimalFloatingPoint(
-    SourceString source_str) {
+    ResolvedSourceString source_str) {
   // Accept no decimal point, decimal point with leading digits, trailing
   // digits, or both
   static const base::NoDestructor<re2::RE2> decimal_floating_point_regex(
@@ -202,7 +203,7 @@ ParseStatus::Or<SignedDecimalFloatingPoint> ParseSignedDecimalFloatingPoint(
 }
 
 ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
-    SourceString source_str) {
+    ResolvedSourceString source_str) {
   // decimal-resolution values are in the format: DecimalInteger 'x'
   // DecimalInteger
   const auto x_index = source_str.Str().find_first_of('x');
@@ -229,7 +230,7 @@ ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
 }
 
 ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
-    SourceString source_str) {
+    ResolvedSourceString source_str) {
   // If this ByteRange has an offset, it will be separated from the length by
   // '@'.
   const auto at_index = source_str.Str().find_first_of('@');
@@ -271,7 +272,7 @@ absl::optional<ByteRange> ByteRange::Validate(DecimalInteger length,
   return ByteRange(length, offset);
 }
 
-ParseStatus::Or<base::StringPiece> ParseQuotedString(
+ParseStatus::Or<ResolvedSourceString> ParseQuotedString(
     SourceString source_str,
     const VariableDictionary& variable_dict,
     VariableDictionary::SubstitutionBuffer& sub_buffer) {

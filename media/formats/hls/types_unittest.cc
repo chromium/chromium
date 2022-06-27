@@ -20,24 +20,23 @@ TEST(HlsTypesTest, ParseDecimalInteger) {
   const auto error_test = [](base::StringPiece input,
                              const base::Location& from =
                                  base::Location::Current()) {
-    auto result =
-        types::ParseDecimalInteger(SourceString::CreateForTesting(1, 1, input));
+    auto result = types::ParseDecimalInteger(
+        ResolvedSourceString::CreateForTesting(input));
     ASSERT_TRUE(result.has_error()) << from.ToString();
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseDecimalInteger)
         << from.ToString();
   };
 
-  const auto ok_test = [](base::StringPiece input,
-                          types::DecimalInteger expected,
-                          const base::Location& from =
-                              base::Location::Current()) {
-    auto result =
-        types::ParseDecimalInteger(SourceString::CreateForTesting(1, 1, input));
-    ASSERT_TRUE(result.has_value()) << from.ToString();
-    auto value = std::move(result).value();
-    EXPECT_EQ(value, expected) << from.ToString();
-  };
+  const auto ok_test =
+      [](base::StringPiece input, types::DecimalInteger expected,
+         const base::Location& from = base::Location::Current()) {
+        auto result = types::ParseDecimalInteger(
+            ResolvedSourceString::CreateForTesting(input));
+        ASSERT_TRUE(result.has_value()) << from.ToString();
+        auto value = std::move(result).value();
+        EXPECT_EQ(value, expected) << from.ToString();
+      };
 
   // Empty string is not allowed
   error_test("");
@@ -76,23 +75,22 @@ TEST(HlsTypesTest, ParseDecimalFloatingPoint) {
                              const base::Location& from =
                                  base::Location::Current()) {
     auto result = types::ParseDecimalFloatingPoint(
-        SourceString::CreateForTesting(1, 1, input));
+        ResolvedSourceString::CreateForTesting(input));
     ASSERT_TRUE(result.has_error()) << from.ToString();
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseDecimalFloatingPoint)
         << from.ToString();
   };
 
-  const auto ok_test = [](base::StringPiece input,
-                          types::DecimalFloatingPoint expected,
-                          const base::Location& from =
-                              base::Location::Current()) {
-    auto result = types::ParseDecimalFloatingPoint(
-        SourceString::CreateForTesting(1, 1, input));
-    ASSERT_TRUE(result.has_value()) << from.ToString();
-    auto value = std::move(result).value();
-    EXPECT_DOUBLE_EQ(value, expected) << from.ToString();
-  };
+  const auto ok_test =
+      [](base::StringPiece input, types::DecimalFloatingPoint expected,
+         const base::Location& from = base::Location::Current()) {
+        auto result = types::ParseDecimalFloatingPoint(
+            ResolvedSourceString::CreateForTesting(input));
+        ASSERT_TRUE(result.has_value()) << from.ToString();
+        auto value = std::move(result).value();
+        EXPECT_DOUBLE_EQ(value, expected) << from.ToString();
+      };
 
   // Empty string is not allowed
   error_test("");
@@ -128,7 +126,7 @@ TEST(HlsTypesTest, ParseSignedDecimalFloatingPoint) {
                              const base::Location& from =
                                  base::Location::Current()) {
     auto result = types::ParseSignedDecimalFloatingPoint(
-        SourceString::CreateForTesting(1, 1, input));
+        ResolvedSourceString::CreateForTesting(input));
     ASSERT_TRUE(result.has_error()) << from.ToString();
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(),
@@ -136,16 +134,15 @@ TEST(HlsTypesTest, ParseSignedDecimalFloatingPoint) {
         << from.ToString();
   };
 
-  const auto ok_test = [](base::StringPiece input,
-                          types::SignedDecimalFloatingPoint expected,
-                          const base::Location& from =
-                              base::Location::Current()) {
-    auto result = types::ParseSignedDecimalFloatingPoint(
-        SourceString::CreateForTesting(1, 1, input));
-    ASSERT_TRUE(result.has_value()) << from.ToString();
-    auto value = std::move(result).value();
-    EXPECT_DOUBLE_EQ(value, expected) << from.ToString();
-  };
+  const auto ok_test =
+      [](base::StringPiece input, types::SignedDecimalFloatingPoint expected,
+         const base::Location& from = base::Location::Current()) {
+        auto result = types::ParseSignedDecimalFloatingPoint(
+            ResolvedSourceString::CreateForTesting(input));
+        ASSERT_TRUE(result.has_value()) << from.ToString();
+        auto value = std::move(result).value();
+        EXPECT_DOUBLE_EQ(value, expected) << from.ToString();
+      };
 
   // Empty string is not allowed
   error_test("");
@@ -520,7 +517,8 @@ TEST(HlsTypesTest, ParseQuotedString) {
         VariableDictionary::SubstitutionBuffer sub_buffer;
         auto out = types::ParseQuotedString(in_str, dict, sub_buffer);
         ASSERT_TRUE(out.has_value()) << from.ToString();
-        EXPECT_EQ(std::move(out).value(), expected_out) << from.ToString();
+        EXPECT_EQ(std::move(out).value().Str(), expected_out)
+            << from.ToString();
       };
 
   const auto error_test = [&dict](base::StringPiece in,
@@ -568,7 +566,7 @@ TEST(HlsTypesTest, ParseDecimalResolution) {
                              const base::Location& from =
                                  base::Location::Current()) {
     auto result = types::DecimalResolution::Parse(
-        SourceString::CreateForTesting(1, 1, input));
+        ResolvedSourceString::CreateForTesting(input));
     ASSERT_TRUE(result.has_error()) << from.ToString();
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseDecimalResolution)
@@ -579,7 +577,7 @@ TEST(HlsTypesTest, ParseDecimalResolution) {
       [](base::StringPiece input, types::DecimalResolution expected,
          const base::Location& from = base::Location::Current()) {
         auto result = types::DecimalResolution::Parse(
-            SourceString::CreateForTesting(1, 1, input));
+            ResolvedSourceString::CreateForTesting(input));
         ASSERT_TRUE(result.has_value()) << from.ToString();
         auto value = std::move(result).value();
         EXPECT_EQ(value.width, expected.width) << from.ToString();
@@ -643,7 +641,7 @@ TEST(HlsTypesTest, ParseByteRangeExpression) {
                              const base::Location& from =
                                  base::Location::Current()) {
     auto result = types::ByteRangeExpression::Parse(
-        SourceString::CreateForTesting(input));
+        ResolvedSourceString::CreateForTesting(input));
     ASSERT_TRUE(result.has_error());
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseByteRange)
@@ -653,7 +651,7 @@ TEST(HlsTypesTest, ParseByteRangeExpression) {
       [](base::StringPiece input, types::ByteRangeExpression expected,
          const base::Location& from = base::Location::Current()) {
         auto result = types::ByteRangeExpression::Parse(
-            SourceString::CreateForTesting(input));
+            ResolvedSourceString::CreateForTesting(input));
         ASSERT_TRUE(result.has_value());
         auto value = std::move(result).value();
         EXPECT_EQ(value.length, expected.length);

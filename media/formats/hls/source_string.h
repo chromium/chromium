@@ -14,18 +14,52 @@
 namespace media::hls {
 
 struct SourceLineIterator;
+class VariableDictionary;
+
+// Type representing the resolution state for a `SourceString`.
+// As there is only one state here (unresolved), this struct is empty.
+struct SourceStringState {};
+
+// Type containing the resolution state for a `ResolvedSourceString`.
+struct ResolvedSourceStringState {
+  // Whether this string has undergone variable substitution and has
+  // substitutions applied to the original source.
+  bool contains_substitutions;
+};
+
+template <typename T>
+class GenericSourceString;
+
+// A `SourceString` is a slice of the original manifest string that may contain
+// unresolved variable references.
+using SourceString = GenericSourceString<SourceStringState>;
+
+// A `ResolvedSourceString` is a string slice that has either undergone or
+// skipped variable substitution, and may differ from the original source.
+using ResolvedSourceString = GenericSourceString<ResolvedSourceStringState>;
 
 // This structure represents contents of a single line in an HLS manifest, not
 // including the line ending. This may be the entire line, or a substring of the
 // line (clipped at either/both ends).
-struct MEDIA_EXPORT SourceString {
-  static SourceString Create(base::PassKey<SourceLineIterator>,
-                             size_t line,
-                             base::StringPiece str);
-  static SourceString CreateForTesting(base::StringPiece str);
-  static SourceString CreateForTesting(size_t line,
-                                       size_t column,
-                                       base::StringPiece str);
+template <typename ResolutionState>
+class MEDIA_EXPORT GenericSourceString {
+ public:
+  static GenericSourceString Create(base::PassKey<SourceLineIterator>,
+                                    size_t line,
+                                    base::StringPiece str);
+  static GenericSourceString Create(base::PassKey<VariableDictionary>,
+                                    size_t line,
+                                    size_t column,
+                                    base::StringPiece str,
+                                    ResolutionState resolution_state);
+  static GenericSourceString CreateForTesting(base::StringPiece str);
+  static GenericSourceString CreateForTesting(size_t line,
+                                              size_t column,
+                                              base::StringPiece str);
+  static GenericSourceString CreateForTesting(size_t line,
+                                              size_t column,
+                                              base::StringPiece str,
+                                              ResolutionState resolution_state);
 
   // Returns the 1-based line index of this SourceString within the manifest.
   size_t Line() const { return line_; }
@@ -42,20 +76,57 @@ struct MEDIA_EXPORT SourceString {
 
   size_t Size() const { return str_.size(); }
 
-  SourceString Substr(size_t pos = 0,
-                      size_t count = base::StringPiece::npos) const;
+  GenericSourceString Substr(size_t pos = 0,
+                             size_t count = base::StringPiece::npos) const;
 
   // Consumes this string up to the given count, which may be longer than this
   // string. Returns the substring that was consumed.
-  SourceString Consume(size_t count = base::StringPiece::npos);
+  GenericSourceString Consume(size_t count = base::StringPiece::npos);
+
+  // Produces a `ResolvedSourceString` by bypassing variable substitution.
+  // This is useful for passing strings that must not contain variables to
+  // functions consuming strings that may or may not have contained variable
+  // references.
+  ResolvedSourceString SkipVariableSubstitution() const;
+
+  // Returns whether this string contains variable substitutions, i.e. is
+  // different from the original source.
+  bool ContainsSubstitutions() const;
 
  private:
-  SourceString(size_t line, size_t column, base::StringPiece str);
+  template <typename>
+  friend class GenericSourceString;
+
+  GenericSourceString(size_t line,
+                      size_t column,
+                      base::StringPiece str,
+                      ResolutionState resolution_state);
 
   size_t line_;
   size_t column_;
   base::StringPiece str_;
+  ResolutionState resolution_state_;
 };
+
+// `SourceLineIterator` may not create resolved source strings
+template <>
+ResolvedSourceString ResolvedSourceString::Create(
+    base::PassKey<SourceLineIterator>,
+    size_t line,
+    base::StringPiece str) = delete;
+
+// `VariableDictionary` may not create unresolved source strings
+template <>
+SourceString SourceString::Create(base::PassKey<VariableDictionary>,
+                                  size_t line,
+                                  size_t column,
+                                  base::StringPiece str,
+                                  SourceStringState resolution_state) = delete;
+
+// Resolved source strings may not skip variable substitution
+template <>
+ResolvedSourceString ResolvedSourceString::SkipVariableSubstitution() const =
+    delete;
 
 // Exposes a line-based iteration API over the source text of an HLS manifest.
 struct MEDIA_EXPORT SourceLineIterator {

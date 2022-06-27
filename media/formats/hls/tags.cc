@@ -35,7 +35,8 @@ ParseStatus::Or<T> ParseDecimalIntegerTag(TagItem tag,
     return ParseStatusCode::kMalformedTag;
   }
 
-  auto value = types::ParseDecimalInteger(*tag.GetContent());
+  auto value =
+      types::ParseDecimalInteger(tag.GetContent()->SkipVariableSubstitution());
   if (value.has_error()) {
     return ParseStatus(ParseStatusCode::kMalformedTag)
         .AddCause(std::move(value).error());
@@ -255,7 +256,8 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   // Extract duration
   // TODO(crbug.com/1284763): Below version 3 this should be rounded to an
   // integer
-  auto duration_result = types::ParseDecimalFloatingPoint(duration_str);
+  auto duration_result =
+      types::ParseDecimalFloatingPoint(duration_str.SkipVariableSubstitution());
   if (duration_result.has_error()) {
     return ParseStatus(ParseStatusCode::kMalformedTag)
         .AddCause(std::move(duration_result).error());
@@ -422,7 +424,8 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
   // Extract the 'BANDWIDTH' attribute
   if (map.HasValue(XStreamInfTagAttribute::kBandwidth)) {
     auto bandwidth = types::ParseDecimalInteger(
-        map.GetValue(XStreamInfTagAttribute::kBandwidth));
+        map.GetValue(XStreamInfTagAttribute::kBandwidth)
+            .SkipVariableSubstitution());
     if (bandwidth.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(bandwidth).error());
@@ -436,7 +439,8 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
   // Extract the 'AVERAGE-BANDWIDTH' attribute
   if (map.HasValue(XStreamInfTagAttribute::kAverageBandwidth)) {
     auto average_bandwidth = types::ParseDecimalInteger(
-        map.GetValue(XStreamInfTagAttribute::kAverageBandwidth));
+        map.GetValue(XStreamInfTagAttribute::kAverageBandwidth)
+            .SkipVariableSubstitution());
     if (average_bandwidth.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(average_bandwidth).error());
@@ -448,7 +452,8 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
   // Extract the 'SCORE' attribute
   if (map.HasValue(XStreamInfTagAttribute::kScore)) {
     auto score = types::ParseDecimalFloatingPoint(
-        map.GetValue(XStreamInfTagAttribute::kScore));
+        map.GetValue(XStreamInfTagAttribute::kScore)
+            .SkipVariableSubstitution());
     if (score.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(score).error());
@@ -466,13 +471,14 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(codecs).error());
     }
-    out.codecs = std::string{std::move(codecs).value()};
+    out.codecs = std::string{std::move(codecs).value().Str()};
   }
 
   // Extract the 'RESOLUTION' attribute
   if (map.HasValue(XStreamInfTagAttribute::kResolution)) {
     auto resolution = types::DecimalResolution::Parse(
-        map.GetValue(XStreamInfTagAttribute::kResolution));
+        map.GetValue(XStreamInfTagAttribute::kResolution)
+            .SkipVariableSubstitution());
     if (resolution.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(resolution).error());
@@ -483,7 +489,8 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
   // Extract the 'FRAME-RATE' attribute
   if (map.HasValue(XStreamInfTagAttribute::kFrameRate)) {
     auto frame_rate = types::ParseDecimalFloatingPoint(
-        map.GetValue(XStreamInfTagAttribute::kFrameRate));
+        map.GetValue(XStreamInfTagAttribute::kFrameRate)
+            .SkipVariableSubstitution());
     if (frame_rate.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(frame_rate).error());
@@ -500,7 +507,8 @@ ParseStatus::Or<XTargetDurationTag> XTargetDurationTag::Parse(TagItem tag) {
     return ParseStatusCode::kMalformedTag;
   }
 
-  auto duration_result = types::ParseDecimalInteger(tag.GetContent().value());
+  auto duration_result = types::ParseDecimalInteger(
+      tag.GetContent().value().SkipVariableSubstitution());
   if (duration_result.has_error()) {
     return ParseStatus(ParseStatusCode::kMalformedTag)
         .AddCause(std::move(duration_result).error());
@@ -534,7 +542,8 @@ ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
   base::TimeDelta part_target;
   if (map.HasValue(XPartInfTagAttribute::kPartTarget)) {
     auto result = types::ParseDecimalFloatingPoint(
-        map.GetValue(XPartInfTagAttribute::kPartTarget));
+        map.GetValue(XPartInfTagAttribute::kPartTarget)
+            .SkipVariableSubstitution());
 
     if (result.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
@@ -573,7 +582,8 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
   absl::optional<base::TimeDelta> can_skip_until;
   if (map.HasValue(XServerControlTagAttribute::kCanSkipUntil)) {
     auto result = types::ParseDecimalFloatingPoint(
-        map.GetValue(XServerControlTagAttribute::kCanSkipUntil));
+        map.GetValue(XServerControlTagAttribute::kCanSkipUntil)
+            .SkipVariableSubstitution());
 
     if (result.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
@@ -606,7 +616,8 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
   absl::optional<base::TimeDelta> hold_back;
   if (map.HasValue(XServerControlTagAttribute::kHoldBack)) {
     auto result = types::ParseDecimalFloatingPoint(
-        map.GetValue(XServerControlTagAttribute::kHoldBack));
+        map.GetValue(XServerControlTagAttribute::kHoldBack)
+            .SkipVariableSubstitution());
 
     if (result.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
@@ -624,7 +635,8 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
   absl::optional<base::TimeDelta> part_hold_back;
   if (map.HasValue(XServerControlTagAttribute::kPartHoldBack)) {
     auto result = types::ParseDecimalFloatingPoint(
-        map.GetValue(XServerControlTagAttribute::kPartHoldBack));
+        map.GetValue(XServerControlTagAttribute::kPartHoldBack)
+            .SkipVariableSubstitution());
 
     if (result.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
@@ -671,7 +683,8 @@ ParseStatus::Or<XByteRangeTag> XByteRangeTag::Parse(TagItem tag) {
     return ParseStatusCode::kMalformedTag;
   }
 
-  auto range = types::ByteRangeExpression::Parse(*tag.GetContent());
+  auto range = types::ByteRangeExpression::Parse(
+      tag.GetContent()->SkipVariableSubstitution());
   if (range.has_error()) {
     return ParseStatus(ParseStatusCode::kMalformedTag)
         .AddCause(std::move(range).error());
