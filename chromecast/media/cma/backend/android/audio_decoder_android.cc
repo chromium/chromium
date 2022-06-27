@@ -14,7 +14,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
-#include "chromecast/media/cma/backend/android/audio_sink_manager.h"
 #include "chromecast/media/cma/backend/android/media_pipeline_backend_android.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "chromecast/media/cma/base/decoder_config_adapter.h"
@@ -67,8 +66,7 @@ AudioDecoderAndroid::RateShifterInfo::RateShifterInfo(float playback_rate)
 // static
 int64_t MediaPipelineBackend::AudioDecoder::GetMinimumBufferedTime(
     const AudioConfig& config) {
-  return AudioSinkAndroid::GetMinimumBufferedTime(
-      AudioSinkManager::GetDefaultSinkType(), config);
+  return AudioSinkAndroid::GetMinimumBufferedTime(config);
 }
 
 AudioDecoderAndroid::AudioDecoderAndroid(MediaPipelineBackendAndroid* backend)
@@ -80,7 +78,6 @@ AudioDecoderAndroid::AudioDecoderAndroid(MediaPipelineBackendAndroid* backend)
       pushed_eos_(false),
       sink_error_(false),
       current_pts_(kInvalidTimestamp),
-      sink_(AudioSinkManager::GetDefaultSinkType()),
       pending_output_frames_(kNoPendingOutput),
       volume_multiplier_(1.0f),
       pool_(new ::media::AudioBufferMemoryPool()),
@@ -115,9 +112,6 @@ void AudioDecoderAndroid::Initialize() {
   pushed_eos_ = false;
   current_pts_ = kInvalidTimestamp;
   pending_output_frames_ = kNoPendingOutput;
-
-  last_sink_delay_.timestamp_microseconds = kInvalidTimestamp;
-  last_sink_delay_.delay_microseconds = 0;
 }
 
 bool AudioDecoderAndroid::Start(int64_t start_pts) {
@@ -166,7 +160,6 @@ bool AudioDecoderAndroid::Resume() {
   TRACE_FUNCTION_ENTRY0();
   DCHECK(sink_);
   sink_->SetPaused(false);
-  last_sink_delay_ = AudioDecoderAndroid::RenderingDelay();
   return true;
 }
 
@@ -297,7 +290,6 @@ void AudioDecoderAndroid::ResetSinkForNewConfig(const AudioConfig& config) {
               backend_->ContentType());
   sink_->SetStreamVolumeMultiplier(volume_multiplier_);
   pending_output_frames_ = kNoPendingOutput;
-  last_sink_delay_ = AudioDecoderAndroid::RenderingDelay();
 }
 
 void AudioDecoderAndroid::CreateDecoder() {
@@ -352,7 +344,10 @@ bool AudioDecoderAndroid::SetVolume(float multiplier) {
 
 AudioDecoderAndroid::RenderingDelay AudioDecoderAndroid::GetRenderingDelay() {
   TRACE_FUNCTION_ENTRY0();
-  AudioDecoderAndroid::RenderingDelay delay = last_sink_delay_;
+  if (!sink_) {
+    return AudioDecoderAndroid::RenderingDelay();
+  }
+  AudioDecoderAndroid::RenderingDelay delay = sink_->GetRenderingDelay();
   if (delay.timestamp_microseconds != kInvalidTimestamp) {
     double usec_per_sample = 1000000.0 / config_.samples_per_second;
 
@@ -638,15 +633,13 @@ bool AudioDecoderAndroid::BypassDecoder() const {
           config_.sample_format == kSampleFormatPlanarF32);
 }
 
-void AudioDecoderAndroid::OnWritePcmCompletion(BufferStatus status,
-                                               const RenderingDelay& delay) {
+void AudioDecoderAndroid::OnWritePcmCompletion(BufferStatus status) {
   DVLOG(3) << __func__ << ": status=" << status;
 
   TRACE_FUNCTION_ENTRY0();
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(MediaPipelineBackendAndroid::kBufferSuccess, status);
   pending_output_frames_ = kNoPendingOutput;
-  last_sink_delay_ = delay;
 
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&AudioDecoderAndroid::PushMorePcm,

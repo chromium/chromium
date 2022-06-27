@@ -74,8 +74,7 @@ class AudioDecoderAndroid : public MediaPipelineBackend::AudioDecoder,
   };
 
   // AudioSinkAndroid::Delegate implementation:
-  void OnWritePcmCompletion(BufferStatus status,
-                            const RenderingDelay& delay) override;
+  void OnWritePcmCompletion(BufferStatus status) override;
   void OnSinkError(SinkError error) override;
 
   void CleanUpPcm();
@@ -116,7 +115,6 @@ class AudioDecoderAndroid : public MediaPipelineBackend::AudioDecoder,
   int64_t current_pts_;
 
   ManagedAudioSink sink_;
-  RenderingDelay last_sink_delay_;
   int64_t pending_output_frames_;
   float volume_multiplier_;
 

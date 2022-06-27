@@ -91,9 +91,17 @@ void CmaAudioOutput::Initialize(
       // If AUDIO_PREFETCH is enabled, we're able to push audio ahead of
       // realtime. Set the sync mode to kModeSyncPts to allow cma backend to
       // buffer the early pushed data, instead of dropping them.
+      // If the output is created with a valid audio track session id, it means
+      // the output stream is owned by other native applications on Android.
+      // In that case, other native applications relay on the reported playback
+      // position to do av sync or use hardware av sync mode. Set the sync mode
+      // to kModeApkSyncPts to avoid setting timestamp of silence buffers pushed
+      // by us to allow the backend decoder distinguishes real audio data vs
+      // silence.
       audio_params_.effects() & ::media::AudioParameters::AUDIO_PREFETCH
-          ? (use_hw_av_sync_ ? MediaPipelineDeviceParams::kModeHwAvSyncPts
-                             : MediaPipelineDeviceParams::kModeSyncPts)
+          ? (audio_track_session_id > 0
+                 ? MediaPipelineDeviceParams::kModeApkSyncPts
+                 : MediaPipelineDeviceParams::kModeSyncPts)
           : MediaPipelineDeviceParams::kModeIgnorePts,
       MediaPipelineDeviceParams::kAudioStreamNormal,
       cma_backend_task_runner.get(), GetContentType(device_id), device_id);

@@ -33,11 +33,6 @@ AudioSinkManager* AudioSinkManager::Get() {
   return sink_manager_instance.get();
 }
 
-// static
-AudioSinkAndroid::SinkType AudioSinkManager::GetDefaultSinkType() {
-  return AudioSinkAndroid::kSinkTypeJavaBased;
-}
-
 AudioSinkManager::AudioSinkManager() {}
 AudioSinkManager::~AudioSinkManager() {}
 
