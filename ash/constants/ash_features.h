@@ -175,6 +175,8 @@ extern const base::Feature kCryptAuthV2Enrollment;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptohomeRecoveryFlow;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kCryptohomeRecoveryFlowUI;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptohomeRecoverySetup;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDemoModeSWA;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -670,6 +672,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryReorderEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsConsumerAutoUpdateToggleAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDesksCloseAllEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCryptohomeRecoveryFlowEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCryptohomeRecoveryFlowUIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCryptohomeRecoverySetupEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDarkLightModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();

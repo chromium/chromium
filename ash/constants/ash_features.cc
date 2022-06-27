@@ -429,6 +429,11 @@ const base::Feature kCryptAuthV2Enrollment{"CryptAuthV2Enrollment",
 const base::Feature kCryptohomeRecoveryFlow{"CryptohomeRecoveryFlow",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the UI for the cryptohome recovery feature:
+// - New UI for Gaia password changed screen.
+const base::Feature kCryptohomeRecoveryFlowUI{
+    "CryptohomeRecoveryFlowUI", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the UI to enable or disable cryptohome recovery in the settings
 // page. Also guards the wiring of cryptohome recovery settings to the
 // cryptohome backend.
@@ -1761,6 +1766,10 @@ bool IsConsumerAutoUpdateToggleAllowed() {
 
 bool IsCryptohomeRecoveryFlowEnabled() {
   return base::FeatureList::IsEnabled(kCryptohomeRecoveryFlow);
+}
+
+bool IsCryptohomeRecoveryFlowUIEnabled() {
+  return base::FeatureList::IsEnabled(kCryptohomeRecoveryFlowUI);
 }
 
 bool IsCryptohomeRecoverySetupEnabled() {

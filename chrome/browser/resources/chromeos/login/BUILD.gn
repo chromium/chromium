@@ -97,6 +97,7 @@ generate_grd("build_oobe_grd") {
     # Vector resources
     "images/arc_sideloading_illustration.svg",
     "images/browser_sync.svg",
+    "images/data_loss_warning.svg",
     "images/device-disabled.svg",
     "images/encryption_migration.svg",
     "images/enrollment_complete.svg",
