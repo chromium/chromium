@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -44,6 +45,23 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     return &style_rule->GetContainerQuery();
   }
 
+  class TemporaryContainerElement {
+    STACK_ALLOCATED();
+
+   public:
+    explicit TemporaryContainerElement(
+        Document& document,
+        scoped_refptr<const ComputedStyle> style) {
+      element = MakeGarbageCollected<HTMLDivElement>(document);
+      document.body()->AppendChild(element);
+      element->SetComputedStyle(style);
+    }
+
+    ~TemporaryContainerElement() { element->remove(); }
+
+    Element* element;
+  };
+
   bool Eval(String query,
             double width,
             double height,
@@ -52,11 +70,13 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     auto style = ComputedStyle::Clone(GetDocument().ComputedStyleRef());
     style->SetContainerType(container_type);
 
+    TemporaryContainerElement temp_container(GetDocument(), style);
+
     ContainerQuery* container_query = ParseContainer(query);
     DCHECK(container_query);
     auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
     evaluator->ContainerChanged(
-        GetDocument(), *style,
+        GetDocument(), *temp_container.element,
         PhysicalSize(LayoutUnit(width), LayoutUnit(height)), contained_axes);
     return evaluator->Eval(*container_query);
   }
@@ -79,8 +99,10 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     style->SetVariableData(AtomicString(custom_property_name), value->Value(),
                            false);
 
+    TemporaryContainerElement temp_container(GetDocument(), style);
+
     auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
-    evaluator->ContainerChanged(GetDocument(), *style,
+    evaluator->ContainerChanged(GetDocument(), *temp_container.element,
                                 PhysicalSize(LayoutUnit(100), LayoutUnit(100)),
                                 PhysicalAxes{kPhysicalAxisNone});
 
@@ -97,7 +119,10 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     auto style = ComputedStyle::Clone(GetDocument().ComputedStyleRef());
     style->SetContainerType(container_type);
 
-    return evaluator->ContainerChanged(GetDocument(), *style, size, axes);
+    TemporaryContainerElement temp_container(GetDocument(), style);
+
+    return evaluator->ContainerChanged(GetDocument(), *temp_container.element,
+                                       size, axes);
   }
 
   bool EvalAndAdd(ContainerQueryEvaluator* evaluator,

@@ -11,18 +11,24 @@
 namespace blink {
 
 CSSContainerValues::CSSContainerValues(Document& document,
-                                       const ComputedStyle& style,
+                                       Element& container,
                                        absl::optional<double> width,
                                        absl::optional<double> height)
     : MediaValuesDynamic(document.GetFrame()),
-      style_(&style),
+      style_(container.GetComputedStyle()),
       width_(width),
       height_(height),
-      writing_mode_(style.GetWritingMode()),
+      writing_mode_(container.ComputedStyleRef().GetWritingMode()),
       font_sizes_(CSSToLengthConversionData::FontSizes(
-                      &style,
+                      container.GetComputedStyle(),
                       document.documentElement()->GetComputedStyle())
-                      .Unzoomed()) {}
+                      .Unzoomed()),
+      container_sizes_(container.ParentOrShadowHostElement()) {}
+
+void CSSContainerValues::Trace(Visitor* visitor) const {
+  visitor->Trace(container_sizes_);
+  MediaValuesDynamic::Trace(visitor);
+}
 
 float CSSContainerValues::EmFontSize() const {
   return font_sizes_.Em();
@@ -38,6 +44,14 @@ float CSSContainerValues::ExFontSize() const {
 
 float CSSContainerValues::ChFontSize() const {
   return font_sizes_.Ch();
+}
+
+double CSSContainerValues::ContainerWidth() const {
+  return container_sizes_.Width().value_or(SmallViewportWidth());
+}
+
+double CSSContainerValues::ContainerHeight() const {
+  return container_sizes_.Height().value_or(SmallViewportHeight());
 }
 
 }  // namespace blink

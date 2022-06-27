@@ -61,7 +61,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // Dependent queries are cleared when kUnnamed/kNamed is returned (and left
   // unchanged otherwise).
   Change ContainerChanged(Document&,
-                          const ComputedStyle&,
+                          Element& container,
                           PhysicalSize,
                           PhysicalAxes contained_axes);
 
@@ -74,7 +74,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   friend class ContainerQueryEvaluatorTest;
 
   void SetData(Document&,
-               const ComputedStyle&,
+               Element& container,
                PhysicalSize,
                PhysicalAxes contained_axes);
   void ClearResults();
