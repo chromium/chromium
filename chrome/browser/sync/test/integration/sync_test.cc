@@ -694,13 +694,13 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
             GetFakeServer()->AsWeakPtr()));
   }
 
-  SyncServiceImplHarness::SigninType singin_type =
+  SyncServiceImplHarness::SigninType signin_type =
       UsingExternalServers() ? SyncServiceImplHarness::SigninType::UI_SIGNIN
                              : SyncServiceImplHarness::SigninType::FAKE_SIGNIN;
 
   DCHECK(!clients_[index]);
   clients_[index] = SyncServiceImplHarness::Create(GetProfile(index), username_,
-                                                   password_, singin_type);
+                                                   password_, signin_type);
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
   InitializeConfigurationRefresher(index);
 
