@@ -527,7 +527,6 @@ source_set("browser_sources") {
     sources += [
       "browser_ppapi_host.h",
       "pepper_vpn_provider_resource_host_proxy.h",
-      "plugin_data_remover.h",
       "plugin_service.h",
       "plugin_service_filter.h",
     ]
