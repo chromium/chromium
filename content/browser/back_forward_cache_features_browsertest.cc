@@ -20,6 +20,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/web_transport_simple_test_server.h"
 #include "content/shell/browser/shell.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -3117,188 +3118,137 @@ IN_PROC_BROWSER_TEST_F(BluetoothForwardCacheBrowserTest, WebBluetooth) {
                     {}, {reason}, {}, FROM_HERE);
 }
 
+enum class SerialContext {
+  kDocument,
+  kWorker,
+  kNestedWorker,
+};
+
+enum class SerialType {
+  kSerial,
+  kWebUsb,
+};
+
+class BackForwardCacheBrowserWebUsbTest
+    : public BackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<
+          std::tuple<SerialContext, SerialType>> {
+ public:
+  std::string GetJsToUseSerial(SerialContext context, SerialType serial_type) {
+    switch (serial_type) {
+      case SerialType::kSerial:
+        switch (context) {
+          case SerialContext::kDocument:
+            return R"(
+              new Promise(async resolve => {
+                let ports = await navigator.serial.getPorts();
+                resolve("Found " + ports.length + " ports");
+              });
+            )";
+          case SerialContext::kWorker:
+            return R"(
+              new Promise(async resolve => {
+                const worker = new Worker(
+                    "/back_forward_cache/serial/worker.js");
+                worker.onmessage = message => resolve(message.data);
+                worker.postMessage("Run");
+              });
+            )";
+          case SerialContext::kNestedWorker:
+            return R"(
+              new Promise(async resolve => {
+                const worker = new Worker(
+                  "/back_forward_cache/serial/nested-worker.js");
+                worker.onmessage = message => resolve(message.data);
+                worker.postMessage("Run");
+              });
+            )";
+        }
+      case SerialType::kWebUsb:
+        switch (context) {
+          case SerialContext::kDocument:
+            return R"(
+              new Promise(async resolve => {
+                let devices = await navigator.usb.getDevices();
+                resolve("Found " + devices.length + " devices");
+              });
+            )";
+          case SerialContext::kWorker:
+            return R"(
+              new Promise(async resolve => {
+                const worker = new Worker(
+                    "/back_forward_cache/webusb/worker.js");
+                worker.onmessage = message => resolve(message.data);
+                worker.postMessage("Run");
+              });
+            )";
+          case SerialContext::kNestedWorker:
+            return R"(
+              new Promise(async resolve => {
+                const worker = new Worker(
+                  "/back_forward_cache/webusb/nested-worker.js");
+                worker.onmessage = message => resolve(message.data);
+                worker.postMessage("Run");
+              });
+            )";
+        }
+    }
+  }
+};
+
 // Check the BackForwardCache is disabled when the WebUSB feature is used.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebUSB) {
+// TODO(https://crbug.com/1339720): Consider testing in a subframe. This will
+// require adjustments to Permissions Policy.
+IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserWebUsbTest, Serials) {
   // WebUSB requires HTTPS.
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
-  auto web_usb_reason = BackForwardCacheDisable::DisabledReason(
-      BackForwardCacheDisable::DisabledReasonId::kWebUSB);
+  SerialContext context;
+  SerialType serial_type;
+  std::tie(context, serial_type) = GetParam();
 
-  // Main document.
-  {
-    content::BackForwardCacheDisabledTester tester;
-    GURL url(https_server()->GetURL("a.test", "/title1.html"));
+  content::BackForwardCacheDisabledTester tester;
+  GURL url(https_server()->GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(a.test)"));
 
-    EXPECT_TRUE(NavigateToURL(shell(), url));
+  ASSERT_TRUE(NavigateToURL(shell(), url));
 
-    EXPECT_FALSE(current_frame_host()->IsBackForwardCacheDisabled());
-    EXPECT_EQ("Found 0 devices", content::EvalJs(current_frame_host(), R"(
-        new Promise(async resolve => {
-          let devices = await navigator.usb.getDevices();
-          resolve("Found " + devices.length + " devices");
-        });
-    )"));
-    EXPECT_TRUE(current_frame_host()->IsBackForwardCacheDisabled());
-    EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-        current_frame_host()->GetProcess()->GetID(),
-        current_frame_host()->GetRoutingID(), web_usb_reason));
-  }
+  // Check that the frames we care about are cacheable.
+  RenderFrameHostImplWrapper main_rfh(current_frame_host());
+  RenderFrameHostImplWrapper sub_rfh(
+      current_frame_host()->child_at(0)->current_frame_host());
+  ASSERT_FALSE(main_rfh->IsBackForwardCacheDisabled());
+  ASSERT_FALSE(sub_rfh->IsBackForwardCacheDisabled());
 
-  // Nested document.
-  {
-    content::BackForwardCacheDisabledTester tester;
-    GURL url(https_server()->GetURL("c.com",
-                                    "/cross_site_iframe_factory.html?c(d)"));
-    EXPECT_TRUE(NavigateToURL(shell(), url));
-    RenderFrameHostImpl* rfh_c = current_frame_host();
-    RenderFrameHostImpl* rfh_d = rfh_c->child_at(0)->current_frame_host();
+  // Execute script to use WebUSB.
+  ASSERT_EQ(
+      serial_type == SerialType::kSerial ? "Found 0 ports" : "Found 0 devices",
+      content::EvalJs(main_rfh.get(), GetJsToUseSerial(context, serial_type)));
 
-    EXPECT_FALSE(rfh_c->IsBackForwardCacheDisabled());
-    EXPECT_FALSE(rfh_d->IsBackForwardCacheDisabled());
-    EXPECT_EQ("Found 0 devices", content::EvalJs(rfh_c, R"(
-        new Promise(async resolve => {
-          let devices = await navigator.usb.getDevices();
-          resolve("Found " + devices.length + " devices");
-        });
-    )"));
-    EXPECT_TRUE(rfh_c->IsBackForwardCacheDisabled());
-    EXPECT_FALSE(rfh_d->IsBackForwardCacheDisabled());
-    EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-        rfh_c->GetProcess()->GetID(), rfh_c->GetRoutingID(), web_usb_reason));
-  }
-
-  // Worker.
-  {
-    content::BackForwardCacheDisabledTester tester;
-    GURL url(https_server()->GetURL("e.test", "/title1.html"));
-    EXPECT_TRUE(NavigateToURL(shell(), url));
-    EXPECT_FALSE(current_frame_host()->IsBackForwardCacheDisabled());
-    EXPECT_EQ("Found 0 devices", content::EvalJs(current_frame_host(), R"(
-        new Promise(async resolve => {
-          const worker = new Worker("/back_forward_cache/webusb/worker.js");
-          worker.onmessage = message => resolve(message.data);
-          worker.postMessage("Run");
-        });
-    )"));
-    EXPECT_TRUE(current_frame_host()->IsBackForwardCacheDisabled());
-    EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-        current_frame_host()->GetProcess()->GetID(),
-        current_frame_host()->GetRoutingID(), web_usb_reason));
-  }
-
-  // Nested worker.
-  {
-    content::BackForwardCacheDisabledTester tester;
-    GURL url(https_server()->GetURL("f.test", "/title1.html"));
-    EXPECT_TRUE(NavigateToURL(shell(), url));
-    EXPECT_FALSE(current_frame_host()->IsBackForwardCacheDisabled());
-    EXPECT_EQ("Found 0 devices", content::EvalJs(current_frame_host(), R"(
-        new Promise(async resolve => {
-          const worker = new Worker(
-            "/back_forward_cache/webusb/nested-worker.js");
-          worker.onmessage = message => resolve(message.data);
-          worker.postMessage("Run");
-        });
-    )"));
-    EXPECT_TRUE(current_frame_host()->IsBackForwardCacheDisabled());
-    EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-        current_frame_host()->GetProcess()->GetID(),
-        current_frame_host()->GetRoutingID(), web_usb_reason));
-  }
+  // Verify that the correct frames are now uncacheable.
+  EXPECT_TRUE(main_rfh->IsBackForwardCacheDisabled());
+  EXPECT_FALSE(sub_rfh->IsBackForwardCacheDisabled());
+  auto expected_reason =
+      serial_type == SerialType::kSerial
+          ? BackForwardCacheDisable::DisabledReasonId::kSerial
+          : BackForwardCacheDisable::DisabledReasonId::kWebUSB;
+  EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
+      main_rfh->GetProcess()->GetID(), main_rfh->GetRoutingID(),
+      BackForwardCacheDisable::DisabledReason(expected_reason)));
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheBrowserWebUsbTest,
+    testing::Combine(testing::Values(SerialContext::kDocument,
+                                     SerialContext::kWorker,
+                                     SerialContext::kNestedWorker),
+                     testing::Values(SerialType::kWebUsb
 #if !BUILDFLAG(IS_ANDROID)
-// Check that the back-forward cache is disabled when the Serial API is used.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Serial) {
-  // Serial API requires HTTPS.
-  ASSERT_TRUE(CreateHttpsServer()->Start());
-
-  auto serial_reason = BackForwardCacheDisable::DisabledReason(
-      BackForwardCacheDisable::DisabledReasonId::kSerial);
-  // Main document.
-  {
-    content::BackForwardCacheDisabledTester tester;
-    GURL url(https_server()->GetURL("a.com", "/title1.html"));
-
-    EXPECT_TRUE(NavigateToURL(shell(), url));
-
-    EXPECT_FALSE(current_frame_host()->IsBackForwardCacheDisabled());
-    EXPECT_EQ("Found 0 ports", content::EvalJs(current_frame_host(), R"(
-        new Promise(async resolve => {
-          let ports = await navigator.serial.getPorts();
-          resolve("Found " + ports.length + " ports");
-        });
-    )"));
-    EXPECT_TRUE(current_frame_host()->IsBackForwardCacheDisabled());
-    EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-        current_frame_host()->GetProcess()->GetID(),
-        current_frame_host()->GetRoutingID(), serial_reason));
-  }
-
-  // Nested document.
-  {
-    content::BackForwardCacheDisabledTester tester;
-    GURL url(https_server()->GetURL("c.com",
-                                    "/cross_site_iframe_factory.html?c(d)"));
-    EXPECT_TRUE(NavigateToURL(shell(), url));
-    RenderFrameHostImpl* rfh_c = current_frame_host();
-    RenderFrameHostImpl* rfh_d = rfh_c->child_at(0)->current_frame_host();
-
-    EXPECT_FALSE(rfh_c->IsBackForwardCacheDisabled());
-    EXPECT_FALSE(rfh_d->IsBackForwardCacheDisabled());
-    EXPECT_EQ("Found 0 ports", content::EvalJs(rfh_c, R"(
-        new Promise(async resolve => {
-          let ports = await navigator.serial.getPorts();
-          resolve("Found " + ports.length + " ports");
-        });
-    )"));
-    EXPECT_TRUE(rfh_c->IsBackForwardCacheDisabled());
-    EXPECT_FALSE(rfh_d->IsBackForwardCacheDisabled());
-    EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-        rfh_c->GetProcess()->GetID(), rfh_c->GetRoutingID(), serial_reason));
-  }
-
-  // Worker.
-  {
-    content::BackForwardCacheDisabledTester tester;
-    GURL url(https_server()->GetURL("e.com", "/title1.html"));
-    EXPECT_TRUE(NavigateToURL(shell(), url));
-    EXPECT_FALSE(current_frame_host()->IsBackForwardCacheDisabled());
-    EXPECT_EQ("Found 0 ports", content::EvalJs(current_frame_host(), R"(
-        new Promise(async resolve => {
-          const worker = new Worker("/back_forward_cache/serial/worker.js");
-          worker.onmessage = message => resolve(message.data);
-          worker.postMessage("Run");
-        });
-    )"));
-    EXPECT_TRUE(current_frame_host()->IsBackForwardCacheDisabled());
-    EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-        current_frame_host()->GetProcess()->GetID(),
-        current_frame_host()->GetRoutingID(), serial_reason));
-  }
-
-  // Nested worker.
-  {
-    content::BackForwardCacheDisabledTester tester;
-    GURL url(https_server()->GetURL("f.com", "/title1.html"));
-    EXPECT_TRUE(NavigateToURL(shell(), url));
-    EXPECT_FALSE(current_frame_host()->IsBackForwardCacheDisabled());
-    EXPECT_EQ("Found 0 ports", content::EvalJs(current_frame_host(), R"(
-        new Promise(async resolve => {
-          const worker = new Worker(
-            "/back_forward_cache/serial/nested-worker.js");
-          worker.onmessage = message => resolve(message.data);
-          worker.postMessage("Run");
-        });
-    )"));
-    EXPECT_TRUE(current_frame_host()->IsBackForwardCacheDisabled());
-    EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-        current_frame_host()->GetProcess()->GetID(),
-        current_frame_host()->GetRoutingID(), serial_reason));
-  }
-}
-#endif
+                                     ,
+                                     SerialType::kSerial
+#endif  // !BUILDFLAG(IS_ANDROID)
+                                     )));
 
 // Check that an audio suspends when the page goes to the cache and can resume
 // after restored.

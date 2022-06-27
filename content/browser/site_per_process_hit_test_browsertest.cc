@@ -5842,8 +5842,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHighDPIHitTestBrowserTest,
 // Test that clicking a select element in an out-of-process iframe creates
 // a popup menu in the correct position.
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
-  GURL main_url(
-      embedded_test_server()->GetURL("/cross_site_iframe_factory.html?a(a)"));
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
