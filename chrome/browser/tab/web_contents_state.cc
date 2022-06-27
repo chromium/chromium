@@ -267,9 +267,10 @@ bool ExtractNavigationEntries(
     for (int i = 0; i < entry_count; ++i) {
       // Read each SerializedNavigationEntry as a separate pickle to avoid
       // optional reads of one tab bleeding into the next tab's data.
-      size_t tab_navigation_data_length = 0;
+      int tab_navigation_data_length = 0;
       const char* tab_navigation_data = nullptr;
-      if (!iter.ReadData(&tab_navigation_data, &tab_navigation_data_length)) {
+      if (!iter.ReadInt(&tab_navigation_data_length) ||
+          !iter.ReadBytes(&tab_navigation_data, tab_navigation_data_length)) {
         LOG(ERROR) << "Failed to restore tab entry from byte array. "
                    << "(SerializedNavigationEntry size="
                    << tab_navigation_data_length << ").";

@@ -1137,7 +1137,7 @@ class BASE_EXPORT GlobalActivityTracker {
 
     OwningProcess owner;            // The process that created this record.
     uint64_t address;               // The base address of the module.
-    int64_t load_time;              // Time of last load/unload.
+    uint64_t load_time;             // Time of last load/unload.
     uint64_t size;                  // The size of the module in bytes.
     uint32_t timestamp;             // Opaque timestamp of the module.
     uint32_t age;                   // Opaque "age" associated with the module.

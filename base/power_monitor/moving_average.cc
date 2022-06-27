@@ -8,7 +8,6 @@
 #include <limits>
 
 #include "base/check_op.h"
-#include "base/numerics/clamped_math.h"
 
 namespace {
 constexpr int kIntMax = std::numeric_limits<int>::max();
@@ -35,17 +34,15 @@ void MovingAverage::AddSample(int sample) {
 }
 
 int MovingAverage::GetAverageRoundedDown() const {
-  if (Size() == 0 || uint64_t{Size()} > static_cast<uint64_t>(kInt64Max)) {
+  if (Size() == 0)
     return 0;
-  }
-  return static_cast<int>(sum_ / static_cast<int64_t>(Size()));
+  return sum_ / Size();
 }
 
 int MovingAverage::GetAverageRoundedToClosest() const {
-  if (Size() == 0 || uint64_t{Size()} > static_cast<uint64_t>(kInt64Max))
+  if (Size() == 0)
     return 0;
-  return static_cast<int>((base::ClampedNumeric<int64_t>(sum_) + Size() / 2) /
-                          static_cast<int64_t>(Size()));
+  return (sum_ + Size() / 2) / Size();
 }
 
 double MovingAverage::GetUnroundedAverage() const {

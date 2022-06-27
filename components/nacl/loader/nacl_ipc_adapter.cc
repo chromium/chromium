@@ -742,8 +742,8 @@ bool NaClIPCAdapter::SendCompleteMessage(const char* buffer,
   // Length of the message not including the body. The data passed to us by the
   // plugin should match that in the message header. This should have already
   // been validated by GetBufferStatus.
-  size_t body_len = buffer_len - sizeof(NaClMessageHeader);
-  CHECK(body_len == header->payload_size);
+  int body_len = static_cast<int>(buffer_len - sizeof(NaClMessageHeader));
+  DCHECK(body_len == static_cast<int>(header->payload_size));
 
   // We actually discard the flags and only copy the ones we care about. This
   // is just because message doesn't have a constructor that takes raw flags.

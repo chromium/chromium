@@ -578,9 +578,7 @@ void PoissonAllocationSampler::DoRecordAlloc(intptr_t accumulated_bytes,
     }
   }
 
-  // This cast is safe because this function is only called with a positive
-  // value of `accumulated_bytes`.
-  size_t samples = static_cast<size_t>(accumulated_bytes) / mean_interval;
+  size_t samples = accumulated_bytes / mean_interval;
   accumulated_bytes %= mean_interval;
 
   do {

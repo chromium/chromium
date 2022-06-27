@@ -38,7 +38,7 @@ float g_device_scale_factor_for_testing = 0.0;
 void AppendDataToRequestBody(
     const scoped_refptr<network::ResourceRequestBody>& request_body,
     const char* data,
-    size_t data_length) {
+    int data_length) {
   request_body->AppendBytes(data, data_length);
 }
 
@@ -208,11 +208,11 @@ const int kCurrentVersion = 31;
 // PageState serialization format you almost certainly want to add/remove fields
 // in page_state.mojom rather than using these methods.
 
-void WriteData(const void* data, size_t length, SerializeObject* obj) {
+void WriteData(const void* data, int length, SerializeObject* obj) {
   obj->pickle.WriteData(static_cast<const char*>(data), length);
 }
 
-void ReadData(SerializeObject* obj, const void** data, size_t* length) {
+void ReadData(SerializeObject* obj, const void** data, int* length) {
   const char* tmp;
   if (obj->iter.ReadData(&tmp, length)) {
     *data = tmp;
@@ -253,12 +253,12 @@ void WriteReal(double data, SerializeObject* obj) {
 
 double ReadReal(SerializeObject* obj) {
   const void* tmp = nullptr;
-  size_t length = 0;
+  int length = 0;
   double value = 0.0;
   ReadData(obj, &tmp, &length);
-  if (length == sizeof(double)) {
+  if (length == static_cast<int>(sizeof(double))) {
     // Use memcpy, as tmp may not be correctly aligned.
-    memcpy(&value, tmp, length);
+    memcpy(&value, tmp, sizeof(double));
   } else {
     obj->parse_error = true;
   }
@@ -295,8 +295,13 @@ std::string ReadStdString(SerializeObject* obj) {
 
 // Pickles a std::u16string as <int length>:<char*16 data> tuple>.
 void WriteString(const std::u16string& str, SerializeObject* obj) {
-  obj->pickle.WriteData(reinterpret_cast<const char*>(str.data()),
-                        str.length() * sizeof(char16_t));
+  const char16_t* data = str.data();
+  size_t length_in_bytes = str.length() * sizeof(char16_t);
+
+  CHECK_LT(length_in_bytes,
+           static_cast<size_t>(std::numeric_limits<int>::max()));
+  obj->pickle.WriteInt(length_in_bytes);
+  obj->pickle.WriteBytes(data, length_in_bytes);
 }
 
 // If str is a null optional, this simply pickles a length of -1. Otherwise,
@@ -319,11 +324,11 @@ const char16_t* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
     return nullptr;
   }
 
-  if (length_in_bytes < 0)  // Not an error!  See WriteString(nullopt).
+  if (length_in_bytes < 0)
     return nullptr;
 
   const char* data;
-  if (!obj->iter.ReadBytes(&data, static_cast<size_t>(length_in_bytes))) {
+  if (!obj->iter.ReadBytes(&data, length_in_bytes)) {
     obj->parse_error = true;
     return nullptr;
   }
@@ -394,7 +399,7 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
       case network::DataElement::Tag::kBytes: {
         const auto& bytes = element.As<network::DataElementBytes>().bytes();
         WriteInteger(static_cast<int>(HTTPBodyElementType::kTypeData), obj);
-        WriteData(bytes.data(), bytes.size(), obj);
+        WriteData(bytes.data(), static_cast<int>(bytes.size()), obj);
         break;
       }
       case network::DataElement::Tag::kFile: {
@@ -423,9 +428,9 @@ void ReadResourceRequestBody(
         static_cast<HTTPBodyElementType>(ReadInteger(obj));
     if (type == HTTPBodyElementType::kTypeData) {
       const void* data;
-      size_t length;
+      int length = -1;
       ReadData(obj, &data, &length);
-      if (!obj->parse_error) {
+      if (length >= 0) {
         AppendDataToRequestBody(request_body, static_cast<const char*>(data),
                                 length);
       }
@@ -856,9 +861,9 @@ void ReadFrameState(mojom::FrameState* frame, ExplodedFrameState* state) {
 
 void ReadMojoPageState(SerializeObject* obj, ExplodedPageState* state) {
   const void* tmp = nullptr;
-  size_t length = 0;
+  int length = 0;
   ReadData(obj, &tmp, &length);
-  DCHECK_GT(length, 0u);
+  DCHECK_GT(length, 0);
   if (obj->parse_error)
     return;
 

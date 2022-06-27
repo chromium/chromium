@@ -65,7 +65,8 @@ void ParamTraits<SkImageInfo>::Log(const SkImageInfo& p, std::string* l) {
 void ParamTraits<SkBitmap>::Write(base::Pickle* m, const SkBitmap& p) {
   WriteParam(m, p.info());
   size_t pixel_size = p.computeByteSize();
-  m->WriteData(reinterpret_cast<const char*>(p.getPixels()), pixel_size);
+  m->WriteData(reinterpret_cast<const char*>(p.getPixels()),
+               static_cast<int>(pixel_size));
 }
 
 bool ParamTraits<SkBitmap>::Read(const base::Pickle* m,
@@ -76,14 +77,15 @@ bool ParamTraits<SkBitmap>::Read(const base::Pickle* m,
     return false;
 
   const char* bitmap_data;
-  size_t bitmap_data_size = 0;
+  int bitmap_data_size = 0;
   if (!iter->ReadData(&bitmap_data, &bitmap_data_size))
     return false;
+  // ReadData() only returns true if bitmap_data_size >= 0.
 
   if (!r->tryAllocPixels(image_info))
     return false;
 
-  if (bitmap_data_size != r->computeByteSize())
+  if (static_cast<size_t>(bitmap_data_size) != r->computeByteSize())
     return false;
   memcpy(r->getPixels(), bitmap_data, bitmap_data_size);
   return true;

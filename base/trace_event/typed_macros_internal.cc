@@ -128,7 +128,7 @@ base::trace_event::TrackEventHandle CreateTrackEvent(
   if (!g_typed_event_callback)
     return base::trace_event::TrackEventHandle();
 
-  const auto thread_id = base::PlatformThread::CurrentId();
+  const int thread_id = static_cast<int>(base::PlatformThread::CurrentId());
   auto* trace_log = base::trace_event::TraceLog::GetInstance();
   DCHECK(trace_log);
 

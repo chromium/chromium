@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/feature_list.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "content/public/common/content_features.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
@@ -184,7 +183,7 @@ void PepperURLLoaderHost::DidReceiveData(const char* data, int data_length) {
   UpdateProgress();
 
   auto message = std::make_unique<PpapiPluginMsg_URLLoader_SendData>();
-  message->WriteData(data, base::checked_cast<size_t>(data_length));
+  message->WriteData(data, data_length);
   SendUpdateToPlugin(std::move(message));
 }
 

@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemUsageCache {
   static const base::FilePath::CharType kUsageFileName[];
   static const char kUsageFileHeader[];
   static const int kUsageFileSize;
-  static const size_t kUsageFileHeaderSize;
+  static const int kUsageFileHeaderSize;
 
  private:
   // Read the size, validity and the "dirty" entry described in the .usage file.

@@ -135,7 +135,7 @@ void WriteValue(const base::Value& value, int recursion, base::Pickle* pickle) {
     }
     case base::Value::Type::BINARY: {
       pickle->WriteData(reinterpret_cast<const char*>(value.GetBlob().data()),
-                        value.GetBlob().size());
+                        base::checked_cast<int>(value.GetBlob().size()));
       break;
     }
     case base::Value::Type::DICT: {
@@ -433,7 +433,7 @@ void ParamTraits<std::vector<char>>::Write(base::Pickle* m,
   if (p.empty()) {
     m->WriteData(NULL, 0);
   } else {
-    m->WriteData(&p.front(), p.size());
+    m->WriteData(&p.front(), base::checked_cast<int>(p.size()));
   }
 }
 
@@ -441,8 +441,8 @@ bool ParamTraits<std::vector<char>>::Read(const base::Pickle* m,
                                           base::PickleIterator* iter,
                                           param_type* r) {
   const char *data;
-  size_t data_size = 0;
-  if (!iter->ReadData(&data, &data_size))
+  int data_size = 0;
+  if (!iter->ReadData(&data, &data_size) || data_size < 0)
     return false;
   r->resize(data_size);
   if (data_size)
@@ -459,7 +459,8 @@ void ParamTraits<std::vector<unsigned char>>::Write(base::Pickle* m,
   if (p.empty()) {
     m->WriteData(NULL, 0);
   } else {
-    m->WriteData(reinterpret_cast<const char*>(&p.front()), p.size());
+    m->WriteData(reinterpret_cast<const char*>(&p.front()),
+                 base::checked_cast<int>(p.size()));
   }
 }
 
@@ -467,8 +468,8 @@ bool ParamTraits<std::vector<unsigned char>>::Read(const base::Pickle* m,
                                                    base::PickleIterator* iter,
                                                    param_type* r) {
   const char *data;
-  size_t data_size = 0;
-  if (!iter->ReadData(&data, &data_size))
+  int data_size = 0;
+  if (!iter->ReadData(&data, &data_size) || data_size < 0)
     return false;
   r->resize(data_size);
   if (data_size)
@@ -494,11 +495,12 @@ void ParamTraits<std::vector<bool>>::Write(base::Pickle* m,
 bool ParamTraits<std::vector<bool>>::Read(const base::Pickle* m,
                                           base::PickleIterator* iter,
                                           param_type* r) {
-  size_t size;
+  int size;
+  // ReadLength() checks for < 0 itself.
   if (!iter->ReadLength(&size))
     return false;
   r->resize(size);
-  for (size_t i = 0; i < size; i++) {
+  for (int i = 0; i < size; i++) {
     bool value;
     if (!ReadParam(m, iter, &value))
       return false;
@@ -1435,7 +1437,7 @@ void ParamTraits<Message>::Write(base::Pickle* m, const Message& p) {
   m->WriteUInt32(static_cast<uint32_t>(p.routing_id()));
   m->WriteUInt32(p.type());
   m->WriteUInt32(p.flags());
-  m->WriteData(p.payload(), p.payload_size());
+  m->WriteData(p.payload(), static_cast<uint32_t>(p.payload_size()));
 }
 
 bool ParamTraits<Message>::Read(const base::Pickle* m,
@@ -1447,7 +1449,7 @@ bool ParamTraits<Message>::Read(const base::Pickle* m,
       !iter->ReadUInt32(&flags))
     return false;
 
-  size_t payload_size;
+  int payload_size;
   const char* payload;
   if (!iter->ReadData(&payload, &payload_size))
     return false;
@@ -1490,7 +1492,7 @@ bool ParamTraits<MSG>::Read(const base::Pickle* m,
                             base::PickleIterator* iter,
                             param_type* r) {
   const char *data;
-  size_t data_size = 0;
+  int data_size = 0;
   bool result = iter->ReadData(&data, &data_size);
   if (result && data_size == sizeof(MSG)) {
     memcpy(r, data, sizeof(MSG));

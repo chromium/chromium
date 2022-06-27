@@ -205,14 +205,14 @@ scoped_refptr<X509Certificate> X509Certificate::CreateFromPickle(
 scoped_refptr<X509Certificate> X509Certificate::CreateFromPickleUnsafeOptions(
     base::PickleIterator* pickle_iter,
     UnsafeCreateOptions options) {
-  size_t chain_length = 0;
+  int chain_length = 0;
   if (!pickle_iter->ReadLength(&chain_length))
     return nullptr;
 
   std::vector<base::StringPiece> cert_chain;
   const char* data = nullptr;
-  size_t data_length = 0;
-  for (size_t i = 0; i < chain_length; ++i) {
+  int data_length = 0;
+  for (int i = 0; i < chain_length; ++i) {
     if (!pickle_iter->ReadData(&data, &data_length))
       return nullptr;
     cert_chain.push_back(base::StringPiece(data, data_length));

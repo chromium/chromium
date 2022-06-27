@@ -18,8 +18,8 @@ size_t GetMemorySectionSize(void* address) {
   if (!::VirtualQuery(address, &memory_info, sizeof(memory_info)))
     return 0;
   return memory_info.RegionSize -
-         static_cast<size_t>(static_cast<char*>(address) -
-                             static_cast<char*>(memory_info.AllocationBase));
+         (static_cast<char*>(address) -
+          static_cast<char*>(memory_info.AllocationBase));
 }
 }  // namespace
 
