@@ -53,6 +53,7 @@ class LayerTreeImpl;
 class RenderSurfaceImpl;
 struct RenderSurfacePropertyChangedFlags;
 struct CompositorCommitData;
+struct ViewportPropertyIds;
 
 using SyncedScrollOffset =
     SyncedProperty<AdditionGroup<gfx::PointF, gfx::Vector2dF>>;
@@ -182,7 +183,9 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
                            const gfx::Transform& transform);
   void ResetChangeTracking();
   // Updates the parent, target, and screen space transforms and snapping.
-  void UpdateTransforms(int id);
+  void UpdateTransforms(
+      int id,
+      const ViewportPropertyIds* viewport_property_ids = nullptr);
   void UpdateTransformChanged(TransformNode* node, TransformNode* parent_node);
   void UpdateNodeAndAncestorsAreAnimatedOrInvertible(
       TransformNode* node,
@@ -199,8 +202,6 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   }
   float page_scale_factor() const { return page_scale_factor_; }
 
-  void set_overscroll_node_id(int id) { overscroll_node_id_ = id; }
-  int overscroll_node_id() const { return overscroll_node_id_; }
   void set_fixed_elements_dont_overscroll(bool value) {
     fixed_elements_dont_overscroll_ = value;
   }
@@ -249,7 +250,8 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   bool ShouldUndoOverscroll(const TransformNode* node) const;
   void UpdateFixedNodeTransformAndClip(
       const TransformNode* node,
-      gfx::Vector2dF& fixed_position_adjustment);
+      gfx::Vector2dF& fixed_position_adjustment,
+      const ViewportPropertyIds* viewport_property_ids);
 
   const StickyPositionNodeData* GetStickyPositionData(int node_id) const {
     return const_cast<TransformTree*>(this)->MutableStickyPositionData(node_id);
@@ -276,7 +278,8 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
 
   StickyPositionNodeData* MutableStickyPositionData(int node_id);
   gfx::Vector2dF StickyPositionOffset(TransformNode* node);
-  void UpdateLocalTransform(TransformNode* node);
+  void UpdateLocalTransform(TransformNode* node,
+                            const ViewportPropertyIds* viewport_property_ids);
   void UpdateScreenSpaceTransform(TransformNode* node,
                                   TransformNode* parent_node);
   void UpdateAnimationProperties(TransformNode* node,
@@ -291,7 +294,6 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   // scale is calculated using page scale factor, device scale factor and the
   // scale factor of device transform. So we need to store them explicitly.
   float page_scale_factor_;
-  int overscroll_node_id_;
   bool fixed_elements_dont_overscroll_;
   float device_scale_factor_;
   float device_transform_scale_factor_;
@@ -333,14 +335,6 @@ class CC_EXPORT ClipTree final : public PropertyTree<ClipNode> {
 
   void SetViewportClip(gfx::RectF viewport_rect);
   gfx::RectF ViewportClip() const;
-
-  void set_overscroll_node_id(int id) { overscroll_node_id_ = id; }
-  int overscroll_node_id() const { return overscroll_node_id_; }
-
- private:
-  // Used to track the ClipNode that is corresponding to the overscroll
-  // TransformNode.
-  int overscroll_node_id_;
 };
 
 class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {

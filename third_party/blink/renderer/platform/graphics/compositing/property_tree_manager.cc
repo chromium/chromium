@@ -382,14 +382,6 @@ void PropertyTreeManager::SetCurrentEffectState(
   }
 }
 
-void PropertyTreeManager::SetOverscrollTransformNodeId(const int id) {
-  transform_tree_.set_overscroll_node_id(id);
-}
-
-void PropertyTreeManager::SetOverscrollClipNodeId(const int id) {
-  clip_tree_.set_overscroll_node_id(id);
-}
-
 void PropertyTreeManager::SetFixedElementsDontOverscroll(const bool value) {
   transform_tree_.set_fixed_elements_dont_overscroll(value);
 }

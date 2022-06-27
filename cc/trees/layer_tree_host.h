@@ -807,6 +807,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return recording_scale_factor_;
   }
 
+  const ViewportPropertyIds& viewport_property_ids() const {
+    return pending_commit_state()->viewport_property_ids;
+  }
+
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   base::ReadOnlySharedMemoryRegion CreateSharedMemoryForSmoothnessUkm();
 
