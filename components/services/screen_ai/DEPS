@@ -5,6 +5,7 @@ include_rules = [
   "+ui/accessibility/ax_node_data.h",
   "+ui/accessibility/ax_role_properties.h",
   "+ui/accessibility/ax_tree_update.h",
+  "+ui/accessibility/test_ax_tree_update_json_reader.h",
   "+ui/gfx/geometry",
   "+sandbox/policy"
 ]

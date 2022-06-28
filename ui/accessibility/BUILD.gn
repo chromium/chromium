@@ -232,6 +232,8 @@ static_library("test_support") {
     "platform/test_ax_tree_update.h",
     "test_ax_node_helper.cc",
     "test_ax_node_helper.h",
+    "test_ax_tree_update_json_reader.cc",
+    "test_ax_tree_update_json_reader.h",
     "tree_generator.cc",
     "tree_generator.h",
   ]
