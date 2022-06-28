@@ -60,8 +60,9 @@ class SubAppInstallCommand : public web_app::WebAppCommand {
 
   void MaybeFinishCommand();
 
-  void AddResultAndRemoveFromPendingInstalls(const web_app::AppId& app_id,
-                                             webapps::InstallResultCode result);
+  void AddResultAndRemoveFromPendingInstalls(
+      const web_app::UnhashedAppId& unhashed_app_id,
+      webapps::InstallResultCode result);
 
   raw_ptr<web_app::WebAppInstallManager> install_manager_;
   raw_ptr<web_app::WebAppRegistrar> registrar_;

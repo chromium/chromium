@@ -141,7 +141,7 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
 
   std::vector<blink::mojom::SubAppsServiceAddResultPtr> Result(
       blink::mojom::SubAppsServiceAddResultCode result_code,
-      AppId sub_app_id) {
+      UnhashedAppId sub_app_id) {
     blink::mojom::SubAppsServiceAddResultPtr mojom_pair =
         blink::mojom::SubAppsServiceAddResult::New();
     mojom_pair->unhashed_app_id = sub_app_id;
