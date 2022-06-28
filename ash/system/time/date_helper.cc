@@ -22,6 +22,12 @@ namespace {
 // Milliseconds per minute.
 constexpr int kMillisecondsPerMinute = 60000;
 
+// Default week title for a few special languages that cannot find the start of
+// a week. So far the known languages that cannot return their day of week are:
+// 'bn', 'fa', 'mr', 'pa-PK'.
+const std::vector<std::u16string> kDefaultWeekTitle = {u"S", u"M", u"T", u"W",
+                                                       u"T", u"F", u"S"};
+
 UDate TimeToUDate(const base::Time& time) {
   return static_cast<UDate>(time.ToDoubleT() *
                             base::Time::kMillisecondsPerSecond);
@@ -176,6 +182,13 @@ void DateHelper::ResetFormatters() {
   twelve_hour_clock_interval_formatter_ = CreateDateIntervalFormatter("hm");
   twenty_four_hour_clock_interval_formatter_ =
       CreateDateIntervalFormatter("Hm");
+}
+
+void DateHelper::ResetForTesting() {
+  ResetFormatters();
+  CalculateLocalWeekTitles();
+  gregorian_calendar_->setTimeZone(
+      system::TimezoneSettings::GetInstance()->GetTimezone());
 }
 
 void DateHelper::CalculateLocalWeekTitles() {

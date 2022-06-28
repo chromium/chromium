@@ -222,7 +222,7 @@ ASH_EXPORT const std::pair<base::Time, base::Time> GetFetchStartEndTimes(
 // Gets the int index of this day in the week, starts from 1. This number is
 // different for different languages. If cannot find this local's day in a week,
 // returns its time exploded's `day_of_week`;
-int GetDayOfWeekInt(const base::Time date);
+ASH_EXPORT int GetDayOfWeekInt(const base::Time date);
 
 }  // namespace calendar_utils
 

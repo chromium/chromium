@@ -21,14 +21,6 @@
 
 namespace ash {
 
-namespace {
-// Default week title for a few special languages that cannot find the start of
-// a week. So far the known languages that cannot return their day of week are:
-// 'bn', 'fa', 'mr', 'pa-PK'.
-std::vector<std::u16string> kDefaultWeekTitle = {u"S", u"M", u"T", u"W",
-                                                 u"T", u"F", u"S"};
-}  // namespace
-
 // A singleton class used to create and cache `GregorianCalendar`,
 // `icu::SimpleDateFormat` and `icu::DateIntervalFormat` objects, so that they
 // don't have to be recreated each time when querying the time difference or
@@ -66,7 +58,7 @@ class DateHelper : public LocaleChangeObserver,
 
   // Get the time difference to UTC time based on the time passed in and the
   // system timezone. Daylight saving is considered.
-  base::TimeDelta GetTimeDifference(base::Time date) const;
+  ASH_EXPORT base::TimeDelta GetTimeDifference(base::Time date) const;
 
   // Gets the local midnight in UTC time of the `date`.
   // e.g. If the `date` is Apr 1st 1:00 (which is Mar 31st 18:00 PST), the
@@ -125,6 +117,9 @@ class DateHelper : public LocaleChangeObserver,
   }
 
   std::vector<std::u16string> week_titles() { return week_titles_; }
+
+  // Reset after a locale change in the test.
+  ASH_EXPORT void ResetForTesting();
 
  private:
   friend base::DefaultSingletonTraits<DateHelper>;

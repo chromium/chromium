@@ -4,11 +4,16 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 
+#include <math.h>
+
 #include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
+#include "ash/system/time/calendar_utils.h"
+#include "ash/system/time/date_helper.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -945,6 +950,32 @@ base::Value::Dict GetFileManagerStrings() {
   return dict;
 }
 
+int GetLocaleBasedWeekStart() {
+  // To avoid the DST difference, use a certain date here to calculate the week
+  // start, since there are no daylight saving starts/ends in June worldwide.
+  base::Time fixed_date;
+  bool result = base::Time::FromString("15 Jun 2021 12:00 GMT", &fixed_date);
+  DCHECK(result);
+  int local_day_of_week = 2;  // 15 Jun 2021 is Tuesday.
+  // Adjust local_day_of_week according to the current timezone. We are using
+  // 12:00pm UTC above, so only need to check if the local time difference is
+  // larger than +12 or not, all other differences fall into the same day.
+  // Note: timezone difference will never be lower than -12.
+  base::TimeDelta time_difference =
+      ash::DateHelper::GetInstance()->GetTimeDifference(fixed_date);
+  if (time_difference.InHours() >= 12) {
+    // Local time is one day after, e.g. it's Wednesday.
+    local_day_of_week += 1;
+  }
+
+  const int day_of_week = ash::calendar_utils::GetDayOfWeekInt(fixed_date);
+  // We know the fixed date is Thursday, day_of_week is between 1 and 7.
+  // * if day_of_week is 4, then Monday is the start of the week, so return 1;
+  // * if day_of_week is 5, then Sunday is the start of the week, so return 0;
+  // * if day_of_week is 6, then Saturday is the start of the week, so return 6;
+  return fmod(local_day_of_week - (day_of_week - 1) + 7, 7);
+}
+
 void AddFileManagerFeatureStrings(const std::string& locale,
                                   Profile* profile,
                                   base::Value::Dict* dict) {
@@ -989,4 +1020,5 @@ void AddFileManagerFeatureStrings(const std::string& locale,
             base::FeatureList::IsEnabled(chromeos::features::kGuestOsFiles));
 
   dict->Set("UI_LOCALE", locale);
+  dict->Set("WEEK_START_FROM", GetLocaleBasedWeekStart());
 }
