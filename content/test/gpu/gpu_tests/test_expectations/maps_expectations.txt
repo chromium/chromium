@@ -77,6 +77,9 @@
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
+# Flakes on Linux Release (AMD RX 5500 XT)
+crbug.com/1340081 [ linux release amd-0x7340 ] Maps_maps [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
