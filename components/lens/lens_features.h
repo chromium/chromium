@@ -16,8 +16,15 @@ namespace features {
 // Enables context menu search by image sending to the Lens homepage.
 extern const base::Feature kLensStandalone;
 
-// Enables Lens fullscreen search on Desktop platforms.
-extern const base::Feature kLensFullscreenSearch;
+// Feature that controls the compression of images before they are sent to Lens.
+extern const base::Feature kLensImageCompression;
+
+// Enables a variety of changes aimed to improve user's engagement with current
+// Lens features.
+extern const base::Feature kLensSearchOptimizations;
+
+// Enables a fix to properly handle transparent images in Lens Image Search
+extern const base::Feature kLensTransparentImagesFix;
 
 // Enables a fix for cursor pointer/crosshair state over overlay on Mac.
 // TODO(crbug/1266514): make default and remove feature once launched.
@@ -42,8 +49,8 @@ extern const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch;
 // Enables the side panel for Lens features on Chrome where supported.
 extern const base::FeatureParam<bool> kEnableSidePanelForLens;
 
-// Sends images as PNG to Lens Standalone to fix issues with transparency.
-extern const base::FeatureParam<bool> kSendImagesAsPng;
+// Enables Lens fullscreen search on Desktop platforms.
+extern const base::FeatureParam<bool> kEnableFullscreenSearch;
 
 // Returns whether to enable UKM logging for Lens Region Search feature.
 extern bool GetEnableUKMLoggingForRegionSearch();
