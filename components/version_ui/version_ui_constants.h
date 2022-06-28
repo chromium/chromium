@@ -80,6 +80,7 @@ extern const char kOsVersionHeaderText1[];
 extern const char kOsVersionHeaderText2[];
 extern const char kOsVersionHeaderLink[];
 #endif
+extern const char kCopyLabel[];
 extern const char kRevision[];
 extern const char kSanitizer[];
 extern const char kTitle[];

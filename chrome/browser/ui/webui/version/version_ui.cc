@@ -66,6 +66,7 @@ WebUIDataSource* CreateVersionUIDataSource() {
     {version_ui::kLogoAltText, IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},
     {version_ui::kApplicationLabel, IDS_PRODUCT_NAME},
     {version_ui::kCompany, IDS_ABOUT_VERSION_COMPANY_NAME},
+    {version_ui::kCopyLabel, IDS_VERSION_UI_COPY_LABEL},
     {version_ui::kRevision, IDS_VERSION_UI_REVISION},
     {version_ui::kUserAgentName, IDS_VERSION_UI_USER_AGENT},
     {version_ui::kCommandLineName, IDS_VERSION_UI_COMMAND_LINE},

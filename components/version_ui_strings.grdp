@@ -54,6 +54,9 @@
       Firmware Version
     </message>
   </if>
+  <message name="IDS_VERSION_UI_COPY_LABEL" desc="label for the button to copy the version string">
+    Copy version string
+  </message>
   <message name="IDS_VERSION_UI_EXECUTABLE_PATH" desc="label for the executable path on the about:version page">
     Executable Path
   </message>
