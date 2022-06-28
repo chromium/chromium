@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/android/segmentation_platform_conversion_bridge.h"
+#include "components/segmentation_platform/public/android/segmentation_platform_conversion_bridge.h"
 
-#include "components/segmentation_platform/internal/jni_headers/SegmentationPlatformConversionBridge_jni.h"
+#include "components/segmentation_platform/public/jni_headers/SegmentationPlatformConversionBridge_jni.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/trigger_context.h"
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_ANDROID_SEGMENTATION_PLATFORM_CONVERSION_BRIDGE_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_ANDROID_SEGMENTATION_PLATFORM_CONVERSION_BRIDGE_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_ANDROID_SEGMENTATION_PLATFORM_CONVERSION_BRIDGE_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_ANDROID_SEGMENTATION_PLATFORM_CONVERSION_BRIDGE_H_
 
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
@@ -15,7 +15,7 @@ using base::android::ScopedJavaLocalRef;
 namespace segmentation_platform {
 
 // A helper class for creating Java objects required by the segmentation
-// platform from their C++ counterparts.
+// platform public API from their C++ counterparts.
 class SegmentationPlatformConversionBridge {
  public:
   static ScopedJavaLocalRef<jobject> CreateJavaSegmentSelectionResult(
@@ -29,4 +29,4 @@ class SegmentationPlatformConversionBridge {
 
 }  // namespace segmentation_platform
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_ANDROID_SEGMENTATION_PLATFORM_CONVERSION_BRIDGE_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_ANDROID_SEGMENTATION_PLATFORM_CONVERSION_BRIDGE_H_

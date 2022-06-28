@@ -41,6 +41,10 @@ source_set("public") {
   ]
 
   if (is_android) {
+    sources += [
+      "android/segmentation_platform_conversion_bridge.cc",
+      "android/segmentation_platform_conversion_bridge.h",
+    ]
     deps += [ ":jni_headers" ]
   }
 }
@@ -63,6 +67,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/segmentation_platform/OnDemandSegmentSelectionResult.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentSelectionResult.java",
+      "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformService.java",
       "android/java/src/org/chromium/components/segmentation_platform/TriggerContext.java",
     ]
@@ -81,6 +86,9 @@ if (is_android) {
   generate_jni("jni_headers") {
     visibility = [ ":*" ]
 
-    sources = [ "android/java/src/org/chromium/components/segmentation_platform/TriggerContext.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
+      "android/java/src/org/chromium/components/segmentation_platform/TriggerContext.java",
+    ]
   }
 }
