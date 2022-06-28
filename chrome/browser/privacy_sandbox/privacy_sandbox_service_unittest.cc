@@ -48,6 +48,16 @@
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chromeos/login/login_state/login_state.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/startup/browser_init_params.h"
+#endif
+
 namespace {
 using browsing_topics::Topic;
 using privacy_sandbox::CanonicalTopic;
@@ -1839,6 +1849,60 @@ TEST_F(PrivacySandboxServiceTest, InitializeV2Pref) {
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrivacySandboxServiceTest, DeviceLocalAccountUser) {
+  // No prompt should be shown if the user is associated with a device local
+  // account on CrOS.
+  SetupDialogTestState(feature_list(), prefs(),
+                       {/*consent_required=*/true,
+                        /*old_api_pref=*/true,
+                        /*new_api_pref=*/false,
+                        /*notice_displayed=*/false,
+                        /*consent_decision_made=*/false,
+                        /*confirmation_not_shown=*/false});
+  // No prompt should be shown for a public session account.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::LoginState::Initialize();
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LoggedInUserType::LOGGED_IN_USER_PUBLIC_ACCOUNT);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      crosapi::mojom::BrowserInitParams::New();
+  init_params->session_type = crosapi::mojom::SessionType::kPublicSession;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif
+  EXPECT_EQ(PrivacySandboxService::PromptType::kNone,
+            privacy_sandbox_service()->GetRequiredPromptType());
+
+  // No prompt should be shown for a web kiosk account.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->session_type = crosapi::mojom::SessionType::kWebKioskSession;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif
+  EXPECT_EQ(PrivacySandboxService::PromptType::kNone,
+            privacy_sandbox_service()->GetRequiredPromptType());
+
+  // A prompt should be shown for a regular user.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif
+  EXPECT_EQ(PrivacySandboxService::PromptType::kConsent,
+            privacy_sandbox_service()->GetRequiredPromptType());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 class PrivacySandboxPrefInitTest : public PrivacySandboxServiceTest {
   void InitializeBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
@@ -2633,6 +2697,10 @@ class PrivacySandboxServiceDialogTestBase {
  public:
   PrivacySandboxServiceDialogTestBase() {
     privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (!user_manager::UserManager::IsInitialized())
+      user_manager_.Initialize();
+#endif
   }
 
  protected:
@@ -2646,6 +2714,9 @@ class PrivacySandboxServiceDialogTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::FakeChromeUserManager user_manager_;
+#endif
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   MockPrivacySandboxSettings privacy_sandbox_settings_;
 };

@@ -39,6 +39,10 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/profiles/profiles_state.h"
+#endif
+
 namespace {
 
 constexpr char kBlockedTopicsTopicKey[] = "topic";
@@ -137,6 +141,22 @@ void SortTopicsForDisplay(
               return a.GetLocalizedRepresentation() <
                      b.GetLocalizedRepresentation();
             });
+}
+
+// Returns whether |profile_type|, and the current browser session on CrOS,
+// represent a regular (e.g. non guest, non system, non kiosk) profile.
+bool IsRegularProfile(profile_metrics::BrowserProfileType profile_type) {
+  if (profile_type != profile_metrics::BrowserProfileType::kRegular)
+    return false;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Any Device Local account, which is a CrOS concept powering things like
+  // Kiosks and Managed Guest Sessions, is not considered regular.
+  return !profiles::IsPublicSession() && !profiles::IsKioskSession() &&
+         !profiles::IsChromeAppKioskSession();
+#else
+  return true;
+#endif
 }
 
 }  // namespace
@@ -751,7 +771,7 @@ void PrivacySandboxService::RecordPrivacySandbox3StartupMetrics() {
 
 void PrivacySandboxService::LogPrivacySandboxState() {
   // Do not record metrics for non-regular profiles.
-  if (profile_type_ != profile_metrics::BrowserProfileType::kRegular)
+  if (!IsRegularProfile(profile_type_))
     return;
 
   // Start by recording any metrics for Privacy Sandbox 3.
@@ -932,7 +952,7 @@ PrivacySandboxService::GetRequiredPromptTypeInternal(
     return PromptType::kNone;
 
   // If the profile isn't a regular profile, no prompt should ever be shown.
-  if (profile_type != profile_metrics::BrowserProfileType::kRegular)
+  if (!IsRegularProfile(profile_type))
     return PromptType::kNone;
 
   // If the release 3 feature is not enabled, no prompt is required.
