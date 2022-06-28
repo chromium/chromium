@@ -39,12 +39,18 @@ class EventCaptureMac : public remote_cocoa::CocoaMouseCaptureDelegate {
   NSWindow* GetWindow() const override;
 
  private:
+  // Mouse capture uses CocoaMouseCapture. We create a narrow
+  // local event monitor with NSEventMaskKeyDown, to only listen
+  // for keydown events and detect ESC to close the capture scrim.
+  void CreateKeyDownLocalMonitor(ui::EventHandler* event_handler,
+                                 gfx::NativeWindow target_native_window);
   base::OnceClosure capture_lost_callback_;
   NSView* web_contents_view_;
   NSWindow* window_;
   raw_ptr<ui::EventHandler> event_handler_;
   ui::WeakPtrNSObjectFactory<EventCaptureMac> factory_;
   std::unique_ptr<remote_cocoa::CocoaMouseCapture> mouse_capture_;
+  id local_keyboard_monitor_ = 0;
 };
 
 }  // namespace image_editor
