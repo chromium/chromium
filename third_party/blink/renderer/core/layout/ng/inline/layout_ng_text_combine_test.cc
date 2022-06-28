@@ -640,7 +640,7 @@ LayoutNGBlockFlow OL id="root"
   +--LayoutNGListItem LI
   |  +--LayoutNGOutsideListMarker ::marker
   |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  +--LayoutText (anonymous) "1. "
+  |  |  |  +--LayoutTextFragment (anonymous) ("1. ")
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
 
@@ -845,7 +845,7 @@ LayoutNGBlockFlow DETAILS id="root"
   +--LayoutNGListItem SUMMARY
   |  +--LayoutNGInsideListMarker ::marker
   |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  +--LayoutText (anonymous) "\u25BE "
+  |  |  |  +--LayoutTextFragment (anonymous) ("\u25BE ")
   |  +--LayoutNGTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutNGBlockFlow (anonymous)
@@ -865,7 +865,7 @@ LayoutNGBlockFlow DETAILS id="root" style="color: red !important;"
   +--LayoutNGListItem SUMMARY
   |  +--LayoutNGInsideListMarker ::marker
   |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  +--LayoutText (anonymous) "\u25BE "
+  |  |  |  +--LayoutTextFragment (anonymous) ("\u25BE ")
   |  +--LayoutNGTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutNGBlockFlow (anonymous)
@@ -1455,7 +1455,7 @@ LayoutNGBlockFlow OL id="root"
   +--LayoutNGListItem LI
   |  +--LayoutNGOutsideListMarker ::marker
   |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  +--LayoutText (anonymous) "1. "
+  |  |  |  +--LayoutTextFragment (anonymous) ("1. ")
   |  +--LayoutNGTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
 )DUMP",

@@ -60,18 +60,25 @@ LayoutTextFragment* LayoutTextFragment::Create(Node* node,
                                                  length, legacy);
 }
 
-LayoutTextFragment* LayoutTextFragment::CreateAnonymous(PseudoElement& pseudo,
+LayoutTextFragment* LayoutTextFragment::CreateAnonymous(Document& doc,
                                                         StringImpl* text,
                                                         unsigned start,
                                                         unsigned length,
                                                         LegacyLayout legacy) {
   LayoutTextFragment* fragment =
       LayoutTextFragment::Create(nullptr, text, start, length, legacy);
-  fragment->SetDocumentForAnonymous(&pseudo.GetDocument());
+  fragment->SetDocumentForAnonymous(&doc);
   if (length)
-    pseudo.GetDocument().View()->IncrementVisuallyNonEmptyCharacterCount(
-        length);
+    doc.View()->IncrementVisuallyNonEmptyCharacterCount(length);
   return fragment;
+}
+
+LayoutTextFragment* LayoutTextFragment::CreateAnonymous(PseudoElement& pseudo,
+                                                        StringImpl* text,
+                                                        unsigned start,
+                                                        unsigned length,
+                                                        LegacyLayout legacy) {
+  return CreateAnonymous(pseudo.GetDocument(), text, start, length, legacy);
 }
 
 LayoutTextFragment* LayoutTextFragment::CreateAnonymous(PseudoElement& pseudo,

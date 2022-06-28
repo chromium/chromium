@@ -14,7 +14,7 @@ layer at (0,0) size 1200x900
       LayoutNGBlockFlow {UL} at (0,342) size 1200x27
         LayoutNGListItem {LI} at (60,0) size 1140x27
           LayoutNGOutsideListMarker {::marker} at (-22,0) size 9x27
-            LayoutText (anonymous) at (0,0) size 9x26
+            LayoutTextFragment (anonymous) at (0,0) size 9x26
               text run at (0,0) width 9: "\x{2022} "
           LayoutText {#text} at (0,0) size 445x26
             text run at (0,0) width 445: "Abe should be outside the frame and inside it."

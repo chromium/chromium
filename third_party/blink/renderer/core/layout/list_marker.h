@@ -14,7 +14,7 @@ namespace blink {
 class CounterStyle;
 class LayoutListItem;
 class LayoutNGListItem;
-class LayoutText;
+class LayoutTextFragment;
 
 // This class holds code shared among all classes for list markers, for both
 // legacy layout and LayoutNG.
@@ -102,7 +102,7 @@ class CORE_EXPORT ListMarker {
 
   int ListItemValue(const LayoutObject&) const;
 
-  LayoutText& GetTextChild(const LayoutObject& marker) const;
+  LayoutTextFragment& GetTextChild(const LayoutObject& marker) const;
   LayoutObject* GetContentChild(const LayoutObject& marker) const;
 
   unsigned marker_text_type_ : 3;  // MarkerTextType

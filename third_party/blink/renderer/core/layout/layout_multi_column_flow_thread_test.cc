@@ -1535,7 +1535,7 @@ LayoutListItem DIV id="mc"
 LayoutNGListItem DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
   |  +--LayoutNGOutsideListMarker ::marker
-  |  |  +--LayoutText (anonymous) "\u2022 "
+  |  |  +--LayoutTextFragment (anonymous) ("\u2022 ")
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
               ToSimpleLayoutTree(container));
