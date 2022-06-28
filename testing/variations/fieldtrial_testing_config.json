@@ -3948,6 +3948,42 @@
             ]
         }
     ],
+    "FeedPositionAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Feed_Position_Push_Down_Small_1",
+                    "params": {
+                        "push_down_feed_small": "true"
+                    },
+                    "enable_features": [
+                        "FeedPositionAndroid"
+                    ]
+                },
+                {
+                    "name": "Enabled_Feed_Position_Push_Down_Large_1",
+                    "params": {
+                        "push_down_feed_large": "true"
+                    },
+                    "enable_features": [
+                        "FeedPositionAndroid"
+                    ]
+                },
+                {
+                    "name": "Enabled_Feed_Position_Pull_Up_1",
+                    "params": {
+                        "pull_up_feed": "true"
+                    },
+                    "enable_features": [
+                        "FeedPositionAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeedPullToRefreshIph": [
         {
             "platforms": [
