@@ -3911,7 +3911,9 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
 // Test the functionalities that are related to dragging a snapped window while
 // overview grid is open on the other side of the screen. See the expected
 // behaviors described in go/tab-dragging-in-tablet-mode.
-TEST_F(SplitViewTabDraggingTest, DragSnappedWindowWhileOverviewOpen) {
+// TODO(crbug.com/1337266): Remove this test when classic view tab dragging is
+// removed.
+TEST_F(SplitViewTabDraggingTest, DISABLED_DragSnappedWindowWhileOverviewOpen) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
