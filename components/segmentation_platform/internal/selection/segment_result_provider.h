@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
-#include "components/segmentation_platform/internal/input_context.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

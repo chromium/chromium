@@ -9,10 +9,10 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
-#include "components/segmentation_platform/internal/input_context.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/selection/segment_selector.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 
 class PrefService;

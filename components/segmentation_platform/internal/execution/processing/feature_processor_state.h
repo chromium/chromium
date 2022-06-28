@@ -13,8 +13,8 @@
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
-#include "components/segmentation_platform/internal/input_context.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

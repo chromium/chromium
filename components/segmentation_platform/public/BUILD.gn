@@ -14,6 +14,8 @@ source_set("public") {
     "features.cc",
     "features.h",
     "field_trial_register.h",
+    "input_context.cc",
+    "input_context.h",
     "local_state_helper.h",
     "model_provider.cc",
     "model_provider.h",

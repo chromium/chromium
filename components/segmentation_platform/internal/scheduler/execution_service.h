@@ -13,8 +13,8 @@
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
-#include "components/segmentation_platform/internal/input_context.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 class PrefService;

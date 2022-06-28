@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
-#include "components/segmentation_platform/internal/input_context.h"
+#include "components/segmentation_platform/public/input_context.h"
 
 namespace segmentation_platform {
 namespace proto {

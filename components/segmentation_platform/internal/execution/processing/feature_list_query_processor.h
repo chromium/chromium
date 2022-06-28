@@ -14,8 +14,8 @@
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/uma_feature_processor.h"
-#include "components/segmentation_platform/internal/input_context.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
