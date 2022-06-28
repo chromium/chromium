@@ -834,6 +834,14 @@
           'shards': 10,
         },
       },
+      'Linux ASan LSan Low Symbols FYI Tests (1)': {
+        # These are very slow on the ASAN trybot for some reason.
+        # crbug.com/1257927
+        'swarming': {
+          'shards': 40,
+          'quickrun_shards': 80
+        },
+      },
       'Linux ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/1257927
@@ -1443,6 +1451,13 @@
       'android-marshmallow-arm64-rel',
     ],
     'modifications': {
+      'Linux ASan LSan Low Symbols FYI Tests (1)': {
+        # These are very slow on the ASAN trybot for some reason.
+        # crbug.com/1257927
+        'swarming': {
+          'shards': 5,
+        },
+      },
       'Linux ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/1257927
@@ -1518,6 +1533,12 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/cast-linux.content_browsertests.filter',
         ],
+      },
+      'Linux ASan LSan Low Symbols FYI Tests (1)': {
+        'swarming': {
+          'shards': 12,
+          'quickrun_shards': 24,
+        },
       },
       'Linux ASan LSan Tests (1)': {
         'swarming': {
@@ -1775,6 +1796,13 @@
   },
   'content_unittests': {
     'modifications': {
+      'Linux ASan LSan Low Symbols FYI Tests (1)': {
+        # These are slow on the ASAN trybot for some reason.
+        # crbug.com/1257927
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'Linux ASan LSan Tests (1)': {
         # These are slow on the ASAN trybot for some reason.
         # crbug.com/1257927
@@ -1942,6 +1970,7 @@
   'gin_unittests': {
     'remove_from': [
       'ToTLinuxASan',  # https://crbug.com/831667
+      'Linux ASan LSan Low Symbols FYI Tests (1)',  # https://crbug.com/831667
       'Linux ASan LSan Tests (1)',  # https://crbug.com/831667
       'Linux Chromium OS ASan LSan Tests (1)',  # https://crbug.com/831667
     ],
@@ -1964,6 +1993,21 @@
     'modifications': {
       # TODO(kbr): figure out a better way to specify blocks of
       # arguments like this for tests on multiple machines.
+      'Linux ASan LSan Low Symbols FYI Tests (1)': {
+        'args': [
+          '--use-gpu-in-tests',
+          '--no-xvfb',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': '10de:2184',
+              'os': 'Ubuntu',
+              'pool': 'chromium.tests.gpu',
+            },
+          ],
+        },
+      },
       'Linux ASan LSan Tests (1)': {
         'args': [
           '--use-gpu-in-tests',
@@ -2222,6 +2266,13 @@
       'Linux - Future (dbg)': {  # client.v8.chromium
         'swarming': {
           'shards': 3,
+        },
+      },
+      'Linux ASan LSan Low Symbols FYI Tests (1)': {
+        # These are slow on the ASan trybot for some reason, crbug.com/1257927
+        'swarming': {
+          'shards': 6,
+          'quickrun_shards': 12,
         },
       },
       'Linux ASan LSan Tests (1)': {
@@ -2590,6 +2641,13 @@
       },
       'CrWinAsan(dll)': {
         # TODO(crbug.com/1257927): net_unittests is slow under ASan.
+        'swarming': {
+          'shards': 16,
+        },
+      },
+      'Linux ASan LSan Low Symbols FYI Tests (1)': {
+        # These are very slow on the ASAN trybot for some reason.
+        # crbug.com/1257927
         'swarming': {
           'shards': 16,
         },
@@ -3021,6 +3079,11 @@
       },
     },
     'modifications': {
+      'Linux ASan LSan Low Symbols FYI Tests (1)': {
+        'swarming': {
+          'quickrun_shards': 2,
+        },
+      },
       'Linux ASan LSan Tests (1)': {
         'swarming': {
           'quickrun_shards': 2,
@@ -3059,6 +3122,11 @@
       'CrWinAsan(dll)', # https://crbug.com/935598
     ],
     'modifications': {
+      'Linux ASan LSan Low Symbols FYI Tests (1)': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'Linux ASan LSan Tests (1)': {
         'swarming': {
           'shards': 4,
@@ -3267,6 +3335,13 @@
       'android-pie-arm64-rel',  # https://crbug.com/1010211
     ],
     'modifications': {
+      'Linux ASan LSan Low Symbols FYI Tests (1)': {
+        # These are slow on the ASAN trybot for some reason.
+        # crbug.com/1257927
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'Linux ASan LSan Tests (1)': {
         # These are slow on the ASAN trybot for some reason.
         # crbug.com/1257927
@@ -3671,6 +3746,13 @@
       'android-marshmallow-x86-rel-non-cq',
     ],
     'modifications': {
+      'Linux ASan LSan Low Symbols FYI Tests (1)': {
+        # These are very slow on the ASAN trybot for some reason.
+        # crbug.com/1257927
+        'swarming': {
+          'shards': 5,
+        },
+      },
       'Linux ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/1257927

@@ -604,7 +604,8 @@
     },
 
     'chromium.memory': {
-      'Linux ASan LSan Builder': 'asan_lsan_release_trybot_reclient',
+      'Linux ASan LSan Builder': 'asan_lsan_release_trybot_minimum_symbols_reclient',
+      'Linux ASan LSan Low Symbols FYI Builder': 'asan_lsan_release_trybot_reclient',
       'Linux CFI': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'Linux Chromium OS ASan LSan Builder': 'asan_lsan_chromeos_release_bot_dcheck_always_on_reclient',
       'Linux ChromiumOS MSan Builder': 'chromeos_msan_release_bot_reclient',
@@ -1888,8 +1889,12 @@
       'asan', 'lsan', 'release_trybot_minimal_symbols',
     ],
 
-    'asan_lsan_release_trybot_reclient': [
+    'asan_lsan_release_trybot_minimum_symbols_reclient': [
       'asan', 'lsan', 'release_trybot_minimal_symbols_reclient',
+    ],
+
+    'asan_lsan_release_trybot_reclient': [
+      'asan', 'lsan', 'release_trybot_reclient',
     ],
 
     'asan_minimal_symbols_disable_nacl_release_bot_dcheck_always_on': [
