@@ -627,13 +627,13 @@ void OmniboxViewViews::SetTextAndSelectedRanges(
   // the cursor are visible. If possible given the prior guarantee, also
   // guarantees |kPadTrailing| chars of the text following the cursor are
   // visible.
-  static const uint32_t kPadTrailing = 30;
-  static const uint32_t kPadLeading = 10;
+  static const size_t kPadTrailing = 30;
+  static const size_t kPadLeading = 10;
 
   // We use SetTextWithoutCaretBoundsChangeNotification() in order to avoid
   // triggering accessibility events multiple times.
   SetTextWithoutCaretBoundsChangeNotification(text, ranges[0].end());
-  Scroll({0, std::min<size_t>(ranges[0].end() + kPadTrailing, text.size()),
+  Scroll({0, std::min(ranges[0].end() + kPadTrailing, text.size()),
           ranges[0].end() - std::min(kPadLeading, ranges[0].end())});
   // Setting the primary selected range will also fire an appropriate final
   // accessibility event after the changes above.

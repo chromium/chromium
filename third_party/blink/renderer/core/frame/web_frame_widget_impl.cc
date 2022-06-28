@@ -3361,7 +3361,8 @@ bool WebFrameWidgetImpl::SetComposition(
   return controller->SetComposition(
       text, ime_text_spans,
       replacement_range.IsValid()
-          ? WebRange(replacement_range.start(), replacement_range.length())
+          ? WebRange(base::checked_cast<int>(replacement_range.start()),
+                     base::checked_cast<int>(replacement_range.length()))
           : WebRange(),
       selection_start, selection_end);
 }
@@ -3377,7 +3378,8 @@ void WebFrameWidgetImpl::CommitText(
   controller->CommitText(
       text, ime_text_spans,
       replacement_range.IsValid()
-          ? WebRange(replacement_range.start(), replacement_range.length())
+          ? WebRange(base::checked_cast<int>(replacement_range.start()),
+                     base::checked_cast<int>(replacement_range.length()))
           : WebRange(),
       relative_cursor_pos);
 }

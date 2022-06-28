@@ -66,7 +66,7 @@ std::string SelectionModel::ToString() const {
   for (auto selection : secondary_selections()) {
     str += ",";
     if (selection.is_empty())
-      base::StringAppendF(&str, "%" PRIu32, selection.end());
+      base::StringAppendF(&str, "%" PRIuS, selection.end());
     else
       str += selection.ToString();
   }

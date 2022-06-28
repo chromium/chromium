@@ -130,9 +130,9 @@ void TextInput::SetCompositionText(const ui::CompositionText& composition) {
   // user has a selection, then we can assume the min value of the cursor_pos
   // range as the start of the composition, as the selection will be replaced
   // by the composition text being set.
-  uint32_t composition_start = composition_range_.IsValid()
-                                   ? composition_range_.GetMin()
-                                   : cursor_pos_.GetMin();
+  size_t composition_start = cursor_pos_.IsValid() ? cursor_pos_.GetMin() : 0;
+  if (composition_range_.IsValid())
+    composition_start = composition_range_.GetMin();
   composition_range_ = gfx::Range(composition_start,
                                   composition_start + composition.text.size());
   delegate_->SetCompositionText(composition);

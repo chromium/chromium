@@ -22,8 +22,6 @@ Range& Range::operator=(const NSRange& range) {
     *this = InvalidRange();
   } else {
     set_start(range.location);
-    // Don't overflow |end_|.
-    DCHECK_LE(range.length, std::numeric_limits<size_t>::max() - start());
     set_end(start() + range.length);
   }
   return *this;

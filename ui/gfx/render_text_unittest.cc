@@ -511,12 +511,14 @@ class RenderTextTest : public testing::Test {
       size_t logical_index = run_list->visual_to_logical(i);
       const internal::TextRunHarfBuzz& run = *run_list->runs()[logical_index];
       if (run.range.length() == 1) {
-        result.append(base::StringPrintf("[%d]", run.range.start()));
+        result.append(base::StringPrintf("[%" PRIuS "]", run.range.start()));
       } else if (run.font_params.is_rtl) {
-        result.append(base::StringPrintf("[%d<-%d]", run.range.end() - 1,
+        result.append(base::StringPrintf("[%" PRIuS "<-%" PRIuS "]",
+                                         run.range.end() - 1,
                                          run.range.start()));
       } else {
-        result.append(base::StringPrintf("[%d->%d]", run.range.start(),
+        result.append(base::StringPrintf("[%" PRIuS "->%" PRIuS "]",
+                                         run.range.start(),
                                          run.range.end() - 1));
       }
     }

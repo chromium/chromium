@@ -574,7 +574,7 @@ Textfield* BridgedNativeWidgetTest::InstallTextField(const std::string& text) {
 }
 
 NSString* BridgedNativeWidgetTest::GetActualText() {
-  return GetViewStringForRange(ns_view_, NSMakeRange(0, NSUIntegerMax));
+  return GetViewStringForRange(ns_view_, EmptyRange());
 }
 
 NSString* BridgedNativeWidgetTest::GetActualSelectedText() {
@@ -582,7 +582,7 @@ NSString* BridgedNativeWidgetTest::GetActualSelectedText() {
 }
 
 NSString* BridgedNativeWidgetTest::GetExpectedText() {
-  return GetViewStringForRange(dummy_text_view_, NSMakeRange(0, NSUIntegerMax));
+  return GetViewStringForRange(dummy_text_view_, EmptyRange());
 }
 
 NSString* BridgedNativeWidgetTest::GetExpectedSelectedText() {

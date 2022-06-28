@@ -6,12 +6,13 @@
 
 #include <inttypes.h>
 
+#include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 
 namespace gfx {
 
 std::string Range::ToString() const {
-  return base::StringPrintf("{%" PRIu32 ",%" PRIu32 "}", start(), end());
+  return base::StringPrintf("{%" PRIuS ",%" PRIuS "}", start(), end());
 }
 
 std::ostream& operator<<(std::ostream& os, const Range& range) {

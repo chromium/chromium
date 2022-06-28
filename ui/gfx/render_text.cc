@@ -784,7 +784,7 @@ void RenderText::MoveCursor(BreakType break_type,
 
 bool RenderText::SetSelection(const SelectionModel& model) {
   // Enforce valid selection model components.
-  uint32_t text_length = static_cast<uint32_t>(text().length());
+  size_t text_length = text().length();
   std::vector<Range> ranges = model.GetAllSelections();
   for (auto& range : ranges) {
     range = {std::min(range.start(), text_length),
@@ -810,7 +810,7 @@ bool RenderText::MoveCursorToPoint(const Point& point,
 }
 
 bool RenderText::SelectRange(const Range& range, bool primary) {
-  uint32_t text_length = static_cast<uint32_t>(text().length());
+  size_t text_length = text().length();
   Range sel(std::min(range.start(), text_length),
             std::min(range.end(), text_length));
   // Allow selection bounds at valid indices amid multi-character graphemes.
@@ -1919,7 +1919,8 @@ int RenderText::GetLineContainingYCoord(float text_y) {
 bool RenderText::RangeContainsCaret(const Range& range,
                                     size_t caret_pos,
                                     LogicalCursorDirection caret_affinity) {
-  // NB: exploits unsigned wraparound (WG14/N1124 section 6.2.5 paragraph 9).
+  if (caret_pos == 0 && caret_affinity == CURSOR_BACKWARD)
+    return false;
   size_t adjacent = (caret_affinity == CURSOR_BACKWARD) ?
       caret_pos - 1 : caret_pos + 1;
   return range.Contains(Range(caret_pos, adjacent));

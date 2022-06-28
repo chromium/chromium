@@ -20,16 +20,16 @@ namespace chrome_pdf {
 
 // This class collects a chunks of data into one data stream. Client can check
 // if data in certain range is available, and get missing chunks of data.
-template <uint32_t N>
+template <size_t N>
 class ChunkStream {
  public:
-  static constexpr uint32_t kChunkSize = N;
+  static constexpr size_t kChunkSize = N;
   using ChunkData = typename std::array<unsigned char, N>;
 
   ChunkStream() {}
   ~ChunkStream() {}
 
-  void SetChunkData(uint32_t chunk_index, std::unique_ptr<ChunkData> data) {
+  void SetChunkData(size_t chunk_index, std::unique_ptr<ChunkData> data) {
     if (!data)
       return;
 
@@ -48,11 +48,11 @@ class ChunkStream {
       return false;
 
     unsigned char* data_buffer = static_cast<unsigned char*>(buffer);
-    uint32_t start = range.start();
+    size_t start = range.start();
     while (start != range.end()) {
-      const uint32_t chunk_index = GetChunkIndex(start);
-      const uint32_t chunk_start = start % kChunkSize;
-      const uint32_t len =
+      const size_t chunk_index = GetChunkIndex(start);
+      const size_t chunk_start = start % kChunkSize;
+      const size_t len =
           std::min(kChunkSize - chunk_start, range.end() - start);
       memcpy(data_buffer, data_[chunk_index]->data() + chunk_start, len);
       data_buffer += len;
@@ -61,9 +61,9 @@ class ChunkStream {
     return true;
   }
 
-  uint32_t GetChunkIndex(uint32_t offset) const { return offset / kChunkSize; }
+  size_t GetChunkIndex(size_t offset) const { return offset / kChunkSize; }
 
-  gfx::Range GetChunksRange(uint32_t offset, uint32_t size) const {
+  gfx::Range GetChunksRange(size_t offset, size_t size) const {
     return gfx::Range(GetChunkIndex(offset), GetChunkEnd(offset + size));
   }
 
@@ -81,12 +81,12 @@ class ChunkStream {
     return filled_chunks_.Contains(chunks_range);
   }
 
-  bool IsChunkAvailable(uint32_t chunk_index) const {
+  bool IsChunkAvailable(size_t chunk_index) const {
     return filled_chunks_.Contains(chunk_index);
   }
 
-  void set_eof_pos(uint32_t eof_pos) { eof_pos_ = eof_pos; }
-  uint32_t eof_pos() const { return eof_pos_; }
+  void set_eof_pos(size_t eof_pos) { eof_pos_ = eof_pos; }
+  size_t eof_pos() const { return eof_pos_; }
 
   const RangeSet& filled_chunks() const { return filled_chunks_; }
 
@@ -94,7 +94,7 @@ class ChunkStream {
     return eof_pos_ > 0 && IsRangeAvailable(gfx::Range(0, eof_pos_));
   }
 
-  bool IsValidChunkIndex(uint32_t chunk_index) const {
+  bool IsValidChunkIndex(size_t chunk_index) const {
     return !eof_pos_ || (chunk_index <= GetChunkIndex(eof_pos_ - 1));
   }
 
@@ -105,18 +105,18 @@ class ChunkStream {
     filled_chunks_count_ = 0;
   }
 
-  uint32_t filled_chunks_count() const { return filled_chunks_count_; }
-  uint32_t total_chunks_count() const { return GetChunkEnd(eof_pos_); }
+  size_t filled_chunks_count() const { return filled_chunks_count_; }
+  size_t total_chunks_count() const { return GetChunkEnd(eof_pos_); }
 
  private:
-  uint32_t GetChunkEnd(uint32_t offset) const {
+  size_t GetChunkEnd(size_t offset) const {
     return (offset + kChunkSize - 1) / kChunkSize;
   }
 
   std::vector<std::unique_ptr<ChunkData>> data_;
-  uint32_t eof_pos_ = 0;
+  size_t eof_pos_ = 0;
   RangeSet filled_chunks_;
-  uint32_t filled_chunks_count_ = 0;
+  size_t filled_chunks_count_ = 0;
 };
 
 }  // namespace chrome_pdf

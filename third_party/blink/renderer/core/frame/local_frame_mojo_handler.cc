@@ -83,10 +83,10 @@ constexpr char kInvalidWorldID[] =
     "JavaScriptExecuteRequestInIsolatedWorld gets an invalid world id.";
 
 #if BUILDFLAG(IS_MAC)
-uint32_t GetCurrentCursorPositionInFrame(LocalFrame* local_frame) {
+size_t GetCurrentCursorPositionInFrame(LocalFrame* local_frame) {
   blink::WebRange range =
       WebLocalFrameImpl::FromFrame(local_frame)->SelectionRange();
-  return range.IsNull() ? 0U : static_cast<uint32_t>(range.StartOffset());
+  return range.IsNull() ? size_t{0} : static_cast<size_t>(range.StartOffset());
 }
 #endif
 
@@ -1155,12 +1155,13 @@ void LocalFrameMojoHandler::GetFirstRectForRange(const gfx::Range& range) {
     if (!pepper_has_caret) {
       // When request range is invalid we will try to obtain it from current
       // frame selection. The fallback value will be 0.
-      uint32_t start = range.IsValid()
+      size_t start = range.IsValid()
                            ? range.start()
                            : GetCurrentCursorPositionInFrame(frame_);
 
       WebLocalFrameImpl::FromFrame(frame_)->FirstRectForCharacterRange(
-          start, range.length(), rect);
+          base::checked_cast<unsigned>(start),
+          base::checked_cast<unsigned>(range.length()), rect);
     }
   }
 
@@ -1173,7 +1174,8 @@ void LocalFrameMojoHandler::GetStringForRange(
   gfx::Point baseline_point;
   ui::mojom::blink::AttributedStringPtr attributed_string = nullptr;
   NSAttributedString* string = SubstringUtil::AttributedSubstringInRange(
-      frame_, range.start(), range.length(), &baseline_point);
+      frame_, base::checked_cast<WTF::wtf_size_t>(range.start()),
+      base::checked_cast<WTF::wtf_size_t>(range.length()), &baseline_point);
   if (string)
     attributed_string = ui::mojom::blink::AttributedString::From(string);
 

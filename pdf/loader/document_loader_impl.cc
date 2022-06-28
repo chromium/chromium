@@ -218,7 +218,7 @@ void DocumentLoaderImpl::ContinueDownload() {
   DCHECK(!IsDocumentComplete());
   DCHECK_GT(GetDocumentSize(), 0U);
 
-  const uint32_t range_start =
+  const size_t range_start =
       pending_requests_.IsEmpty() ? 0 : pending_requests_.First().start();
   RangeSet candidates_for_request(
       gfx::Range(range_start, chunk_stream_.total_chunks_count()));
@@ -243,8 +243,8 @@ void DocumentLoaderImpl::ContinueDownload() {
   chunk_.Clear();
   is_partial_loader_active_ = true;
 
-  const uint32_t start = next_request.start() * DataStream::kChunkSize;
-  const uint32_t length =
+  const size_t start = next_request.start() * DataStream::kChunkSize;
+  const size_t length =
       std::min(GetDocumentSize() - start,
                next_request.length() * DataStream::kChunkSize);
 
@@ -330,8 +330,8 @@ bool DocumentLoaderImpl::SaveBuffer(char* input, uint32_t input_size) {
     if (chunk_.data_size == 0)
       chunk_.chunk_data = std::make_unique<DataStream::ChunkData>();
 
-    const uint32_t new_chunk_data_len =
-        std::min(DataStream::kChunkSize - chunk_.data_size, input_size);
+    const size_t new_chunk_data_len =
+        std::min(DataStream::kChunkSize - chunk_.data_size, size_t{input_size});
     memcpy(chunk_.chunk_data->data() + chunk_.data_size, input,
            new_chunk_data_len);
     chunk_.data_size += new_chunk_data_len;
@@ -379,7 +379,7 @@ void DocumentLoaderImpl::ReadComplete() {
     if (chunk_.data_size != 0)
       SaveChunkData();
   } else {
-    uint32_t eof = EndOfCurrentChunk();
+    size_t eof = EndOfCurrentChunk();
     if (!chunk_stream_.filled_chunks().IsEmpty()) {
       eof = std::max(
           chunk_stream_.filled_chunks().Last().end() * DataStream::kChunkSize,
