@@ -216,14 +216,14 @@ void SecurityTokenSamlTest::ConfigureFakeGaia() {
 
 // Subscribes for the notifications from the Login Screen UI,
 void SecurityTokenSamlTest::StartObservingLoginUiMessages() {
-  GetLoginUI()->RegisterDeprecatedMessageCallback(
+  GetLoginUI()->RegisterMessageCallback(
       "securityTokenPinDialogShownForTest",
       base::BindRepeating(&SecurityTokenSamlTest::OnPinDialogShownMessage,
                           weak_factory_.GetWeakPtr()));
 }
 
 // Called when the Login Screen UI notifies that the PIN dialog is shown.
-void SecurityTokenSamlTest::OnPinDialogShownMessage(const base::ListValue*) {
+void SecurityTokenSamlTest::OnPinDialogShownMessage(const base::Value::List&) {
   ++pin_dialog_shown_count_;
   if (pin_dialog_shown_run_loop_)
     pin_dialog_shown_run_loop_->Quit();
