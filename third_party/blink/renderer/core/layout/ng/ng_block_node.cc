@@ -1345,7 +1345,8 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
 
 void NGBlockNode::PlaceChildrenInLayoutBox(
     const NGPhysicalBoxFragment& physical_fragment,
-    const NGBlockBreakToken* previous_break_token) const {
+    const NGBlockBreakToken* previous_break_token,
+    bool needs_invalidation_check) const {
   for (const auto& child_fragment : physical_fragment.Children()) {
     // Skip any line-boxes we have as children, this is handled within
     // NGInlineNode at the moment.
@@ -1364,7 +1365,8 @@ void NGBlockNode::PlaceChildrenInLayoutBox(
       continue;
 
     CopyChildFragmentPosition(box_fragment, child_fragment.offset,
-                              physical_fragment, previous_break_token);
+                              physical_fragment, previous_break_token,
+                              needs_invalidation_check);
   }
 }
 
@@ -1564,7 +1566,20 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     // Each anonymous child of a multicol container constitutes one column.
     // Position each child fragment in the first column that they occur,
     // relatively to the block-start of the flow thread.
-    PlaceChildrenInLayoutBox(child_fragment, previous_column_break_token);
+    //
+    // We may fail to detect visual movement of flow thread children if the
+    // child re-uses a cached result, since the LayoutBox's frame_rect_ is in
+    // the flow thread coordinate space. If the column block-size or inline-size
+    // has changed, we might miss paint invalidation, unless we request it to be
+    // checked explicitly. We only need to do this for direct flow thread
+    // children, since movement detection works fine for descendants. If it's
+    // not detected during layout (due to cache hits), it will be detected
+    // during pre-paint.
+    //
+    // TODO(mstensho): Get rid of this in the future if we become able to
+    // compare visual offsets rather than flow thread offsets.
+    PlaceChildrenInLayoutBox(child_fragment, previous_column_break_token,
+                             /* needs_invalidation_check */ true);
 
     // If the multicol container has inline children, there may still be floats
     // there, but they aren't stored as child fragments of |column| in that case
@@ -1588,7 +1603,8 @@ void NGBlockNode::CopyChildFragmentPosition(
     const NGPhysicalBoxFragment& child_fragment,
     PhysicalOffset offset,
     const NGPhysicalBoxFragment& container_fragment,
-    const NGBlockBreakToken* previous_container_break_token) const {
+    const NGBlockBreakToken* previous_container_break_token,
+    bool needs_invalidation_check) const {
   auto* layout_box = To<LayoutBox>(child_fragment.GetMutableLayoutObject());
   if (!layout_box)
     return;
@@ -1598,6 +1614,9 @@ void NGBlockNode::CopyChildFragmentPosition(
   LayoutPoint point = ToLayoutPoint(child_fragment, offset, container_fragment,
                                     previous_container_break_token);
   layout_box->SetLocationAndUpdateOverflowControlsIfNeeded(point);
+
+  if (needs_invalidation_check)
+    layout_box->SetShouldCheckForPaintInvalidation();
 }
 
 void NGBlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {

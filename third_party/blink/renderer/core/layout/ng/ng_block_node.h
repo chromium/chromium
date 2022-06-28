@@ -243,7 +243,8 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       const NGPhysicalBoxFragment& child_fragment,
       PhysicalOffset,
       const NGPhysicalBoxFragment& container_fragment,
-      const NGBlockBreakToken* previous_container_break_token = nullptr) const;
+      const NGBlockBreakToken* previous_container_break_token = nullptr,
+      bool needs_invalidation_check = false) const;
 
   // If extra columns are added after a multicol has been written back to
   // legacy, for example for an OOF positioned element, we need to update the
@@ -283,9 +284,9 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       const NGPhysicalBoxFragment& container,
       const NGFragmentItems& items,
       const NGBlockBreakToken* previous_break_token) const;
-  void PlaceChildrenInLayoutBox(
-      const NGPhysicalBoxFragment&,
-      const NGBlockBreakToken* previous_break_token) const;
+  void PlaceChildrenInLayoutBox(const NGPhysicalBoxFragment&,
+                                const NGBlockBreakToken* previous_break_token,
+                                bool needs_invalidation_check = false) const;
   void PlaceChildrenInFlowThread(
       LayoutMultiColumnFlowThread*,
       const NGConstraintSpace&,
