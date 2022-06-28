@@ -180,6 +180,8 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/omaha/metrics/UpdateSuccessMetricsTest.java",
   "junit/src/org/chromium/chrome/browser/page_info/PageInfoPermissionsControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/page_info/PermissionParamsListBuilderUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksFaviconThrottleTest.java",
+  "junit/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReaderTest.java",
   "junit/src/org/chromium/chrome/browser/password_manager/settings/DialogManagerTest.java",
   "junit/src/org/chromium/chrome/browser/password_manager/settings/EnsureAsyncPostingRule.java",
   "junit/src/org/chromium/chrome/browser/password_manager/settings/ExportWarningDialogFragmentTest.java",

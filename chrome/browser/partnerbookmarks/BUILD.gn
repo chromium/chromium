@@ -6,28 +6,12 @@ import("//build/config/android/rules.gni")
 
 android_library("delegate_java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmark.java",
     "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarkIterator.java",
     "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksDelegate.java",
     "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksDelegateImpl.java",
-    "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksFaviconThrottle.java",
-    "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksProviderIterator.java",
-    "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReader.java",
   ]
 
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-    "//build/android:build_java",
-    "//chrome/browser/partnercustomizations:java",
-    "//components/embedder_support/android:util_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//ui/android:ui_no_recycler_view_java",
-  ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-
-  srcjar_deps = [ "//chrome:partner_bookmarks_javagen" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 
   resources_package = "org.chromium.chrome.browser.partnerbookmarks"
 
@@ -42,33 +26,5 @@ android_library("delegate_public_impl_java") {
   deps = [
     ":delegate_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
-}
-
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReader.java" ]
-}
-
-android_library("junit") {
-  testonly = true
-
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-
-  sources = [
-    "junit/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksFaviconThrottleTest.java",
-    "junit/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReaderTest.java",
-  ]
-
-  deps = [
-    ":delegate_java",
-    "//base:base_java_test_support",
-    "//base:base_junit_test_support",
-    "//chrome/browser/partnercustomizations:java",
-    "//third_party/android_deps:robolectric_all_java",
-    "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
-    "//third_party/mockito:mockito_java",
   ]
 }
