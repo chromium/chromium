@@ -1669,7 +1669,7 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
     color_attachment.view = view;
     color_attachment.loadOp = WGPULoadOp_Clear;
     color_attachment.storeOp = WGPUStoreOp_Store;
-    color_attachment.clearColor = {0.0, 0.0, 0.0, 0.0};
+    color_attachment.clearValue = {0.0, 0.0, 0.0, 0.0};
 
     WGPURenderPassDescriptor render_pass_descriptor = {};
     render_pass_descriptor.colorAttachmentCount = 1;
