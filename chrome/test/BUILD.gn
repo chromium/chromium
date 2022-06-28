@@ -1188,7 +1188,6 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser:browser_themes",
       "//chrome/browser:buildflags",
-      "//chrome/browser:cart_db_content_proto",
       "//chrome/browser:coupon_db_content_proto",
       "//chrome/browser:theme_properties",
       "//chrome/browser/accessibility:test_support",
@@ -1266,6 +1265,7 @@ if (!is_android) {
       "//components/cbor",
       "//components/certificate_transparency",
       "//components/certificate_transparency:proto",
+      "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:commerce_heuristics_data",
       "//components/commerce/core:feature_list",
       "//components/component_updater/installer_policies:installer_policies_no_content_deps",
@@ -6814,7 +6814,6 @@ test("unit_tests") {
 
     deps += [
       "//chrome:packed_resources_integrity_hash",
-      "//chrome/browser:cart_db_content_proto",
       "//chrome/browser:coupon_db_content_proto",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/autofill_assistant/password_change/proto:proto",
@@ -6841,6 +6840,7 @@ test("unit_tests") {
       "//components/autofill_assistant/browser/public:proto",
       "//components/autofill_assistant/browser/public:unit_test_support",
       "//components/chrome_cleaner/test:test_name_helper",
+      "//components/commerce/core:cart_db_content_proto",
       "//components/endpoint_fetcher:endpoint_fetcher",
       "//components/enterprise",
       "//components/enterprise:test_support",

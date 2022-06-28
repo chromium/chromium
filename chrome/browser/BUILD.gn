@@ -4360,7 +4360,6 @@ static_library("browser") {
     ]
     deps += [
       ":browser_themes",
-      ":cart_db_content_proto",
       ":coupon_db_content_proto",
       ":theme_properties",
       "//chrome/app:command_ids",
@@ -4413,6 +4412,7 @@ static_library("browser") {
       "//components/accuracy_tips",
       "//components/app_constants",
       "//components/autofill_assistant/browser/public:proto",
+      "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:public",
       "//components/constrained_window",
       "//components/device_signals/core/browser",
@@ -8251,9 +8251,6 @@ if (is_android) {
 }
 
 if (!is_android) {
-  proto_library("cart_db_content_proto") {
-    sources = [ "cart/cart_db_content.proto" ]
-  }
   proto_library("coupon_db_content_proto") {
     sources = [ "commerce/coupons/coupon_db_content.proto" ]
   }

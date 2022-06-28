@@ -4,8 +4,8 @@
 
 #include "chrome/browser/cart/cart_db.h"
 
-#include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"
 
 CartDB::CartDB(content::BrowserContext* browser_context)
     : proto_db_(

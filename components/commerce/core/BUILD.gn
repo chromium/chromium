@@ -84,6 +84,11 @@ if (is_android) {
     proto_in_dir = "//"
     sources = [ "proto/commerce_subscription_db_content.proto" ]
   }
+} else {
+  proto_library("cart_db_content_proto") {
+    proto_in_dir = "//"
+    sources = [ "proto/cart_db_content.proto" ]
+  }
 }
 
 source_set("commerce_heuristics_data") {

@@ -23,9 +23,9 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/search/ntp_features.h"
 #endif
 

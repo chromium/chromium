@@ -5,7 +5,7 @@
 #define CHROME_BROWSER_CART_CART_DISCOUNT_LINK_FETCHER_H_
 
 #include "base/callback.h"
-#include "chrome/browser/cart/cart_db_content.pb.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 
 namespace network {

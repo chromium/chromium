@@ -6,11 +6,11 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/search/ntp_features.h"
 
 CartHandler::CartHandler(

@@ -145,7 +145,6 @@
 #else
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
-#include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
@@ -160,6 +159,7 @@
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
