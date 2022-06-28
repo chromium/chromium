@@ -95,6 +95,13 @@ void SideSearchIconView::UpdateImpl() {
     return;
 
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+
+  // TODO(crbug.com/1339789): BrowserView should never be null here, investigate
+  // why GetBrowserViewForBrowser() is returning null in certain circumstances
+  // and remove this check.
+  if (!browser_view)
+    return;
+
   const bool was_visible = GetVisible();
   const bool should_show =
       tab_contents_helper->CanShowSidePanelForCommittedNavigation() &&
@@ -129,6 +136,13 @@ void SideSearchIconView::OnExecuting(PageActionIconView::ExecuteSource source) {
   HidePageActionLabel();
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+
+  // TODO(crbug.com/1339789): BrowserView should never be null here, investigate
+  // why GetBrowserViewForBrowser() is returning null in certain circumstances
+  // and remove this check.
+  if (!browser_view)
+    return;
+
   if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
     content::WebContents* active_contents =
         browser_view->GetActiveWebContents();
