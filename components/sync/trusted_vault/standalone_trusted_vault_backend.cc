@@ -153,6 +153,35 @@ StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::operator=(
 StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::
     ~PendingTrustedRecoveryMethod() = default;
 
+// static
+StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA
+StandaloneTrustedVaultBackend::GetDownloadKeysStatusForUMAFromResponse(
+    TrustedVaultDownloadKeysStatus response_status) {
+  switch (response_status) {
+    case TrustedVaultDownloadKeysStatus::kSuccess:
+      return TrustedVaultDownloadKeysStatusForUMA::kSuccess;
+    case TrustedVaultDownloadKeysStatus::kMemberNotFound:
+      return TrustedVaultDownloadKeysStatusForUMA::kMemberNotFound;
+    case TrustedVaultDownloadKeysStatus::kMembershipNotFound:
+      return TrustedVaultDownloadKeysStatusForUMA::kMembershipNotFound;
+    case TrustedVaultDownloadKeysStatus::kMembershipCorrupted:
+      return TrustedVaultDownloadKeysStatusForUMA::kMembershipCorrupted;
+    case TrustedVaultDownloadKeysStatus::kMembershipEmpty:
+      return TrustedVaultDownloadKeysStatusForUMA::kMembershipEmpty;
+    case TrustedVaultDownloadKeysStatus::kNoNewKeys:
+      return TrustedVaultDownloadKeysStatusForUMA::kNoNewKeys;
+    case TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed:
+      return TrustedVaultDownloadKeysStatusForUMA::kKeyProofsVerificationFailed;
+    case TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure:
+      return TrustedVaultDownloadKeysStatusForUMA::kAccessTokenFetchingFailure;
+    case TrustedVaultDownloadKeysStatus::kOtherError:
+      return TrustedVaultDownloadKeysStatusForUMA::kOtherError;
+  }
+
+  NOTREACHED();
+  return TrustedVaultDownloadKeysStatusForUMA::kOtherError;
+}
+
 StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
     const base::FilePath& file_path,
     std::unique_ptr<Delegate> delegate,
@@ -192,22 +221,42 @@ void StandaloneTrustedVaultBackend::FetchKeys(
   const sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(account_info.gaia);
 
+  if (per_user_vault && HasNonConstantKey(*per_user_vault) &&
+      !per_user_vault->keys_are_stale()) {
+    // There are locally available keys, which weren't marked as stale. Keys
+    // download attempt is not needed.
+    FulfillOngoingFetchKeys(/*status_for_uma=*/absl::nullopt);
+    return;
+  }
+  if (!connection_) {
+    // Feature disabled.
+    FulfillOngoingFetchKeys(/*status_for_uma=*/absl::nullopt);
+    return;
+  }
   // TODO(crbug.com/1094326): currently there is no guarantee that
   // |primary_account_| is set before FetchKeys() call and this may cause
   // redundant sync error in the UI (for key retrieval), especially during the
   // browser startup. Try to find a way to avoid this issue.
-  if (!connection_ || !primary_account_.has_value() ||
-      primary_account_->gaia != account_info.gaia ||
-      !per_user_vault->local_device_registration_info().device_registered() ||
-      AreConnectionRequestsThrottled()) {
-    // Keys download attempt is not possible.
-    FulfillOngoingFetchKeys();
+  if (!primary_account_.has_value() ||
+      primary_account_->gaia != account_info.gaia) {
+    // Keys download attempt is not possible because there is no primary
+    // account.
+    FulfillOngoingFetchKeys(
+        TrustedVaultDownloadKeysStatusForUMA::kNoPrimaryAccount);
     return;
   }
-  if (HasNonConstantKey(*per_user_vault) && !per_user_vault->keys_are_stale()) {
-    // There are locally available keys, which weren't marked as stale. Keys
-    // download attempt is not needed.
-    FulfillOngoingFetchKeys();
+  DCHECK(per_user_vault);
+  if (!per_user_vault->local_device_registration_info().device_registered()) {
+    // Keys download attempt is not possible because the device is not
+    // registered.
+    FulfillOngoingFetchKeys(
+        TrustedVaultDownloadKeysStatusForUMA::kDeviceNotRegistered);
+    return;
+  }
+  if (AreConnectionRequestsThrottled()) {
+    // Keys download attempt is not possible.
+    FulfillOngoingFetchKeys(
+        TrustedVaultDownloadKeysStatusForUMA::kThrottledClientSide);
     return;
   }
 
@@ -228,7 +277,8 @@ void StandaloneTrustedVaultBackend::FetchKeys(
     // Corrupted state: device is registered, but |key_pair| can't be imported.
     // TODO(crbug.com/1094326): restore from this state (throw away the key and
     // trigger device registration again).
-    FulfillOngoingFetchKeys();
+    FulfillOngoingFetchKeys(TrustedVaultDownloadKeysStatusForUMA::
+                                kCorruptedLocalDeviceRegistration);
     return;
   }
 
@@ -688,8 +738,6 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
   DCHECK(ongoing_connection_request_);
   ongoing_connection_request_ = nullptr;
 
-  base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatus", status);
-
   sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account_->gaia);
   DCHECK(per_user_vault);
@@ -704,7 +752,10 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       StoreKeys(primary_account_->gaia, vault_keys, last_vault_key_version);
       break;
     }
-    case TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted:
+    case TrustedVaultDownloadKeysStatus::kMemberNotFound:
+    case TrustedVaultDownloadKeysStatus::kMembershipNotFound:
+    case TrustedVaultDownloadKeysStatus::kMembershipCorrupted:
+    case TrustedVaultDownloadKeysStatus::kMembershipEmpty:
     case TrustedVaultDownloadKeysStatus::kNoNewKeys:
     case TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed: {
       // Unable to download new keys due to known protocol errors. The only way
@@ -724,8 +775,9 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       RecordFailedConnectionRequestForThrottling();
       break;
   }
-  // Regardless of the |status| ongoing fetch keys request should be fulfilled.
-  FulfillOngoingFetchKeys();
+
+  // In all cases the ongoing fetch keys request should be fulfilled.
+  FulfillOngoingFetchKeys(GetDownloadKeysStatusForUMAFromResponse(status));
 }
 
 void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
@@ -740,14 +792,20 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
 
 void StandaloneTrustedVaultBackend::AbandonConnectionRequest() {
   ongoing_connection_request_ = nullptr;
-  FulfillOngoingFetchKeys();
+  FulfillOngoingFetchKeys(TrustedVaultDownloadKeysStatusForUMA::kAborted);
 }
 
-void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys() {
+void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
+    absl::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma) {
   if (!ongoing_fetch_keys_gaia_id_.has_value()) {
     return;
   }
   DCHECK(!ongoing_fetch_keys_callback_.is_null());
+
+  if (status_for_uma.has_value()) {
+    base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatus",
+                                  *status_for_uma);
+  }
 
   const sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(*ongoing_fetch_keys_gaia_id_);

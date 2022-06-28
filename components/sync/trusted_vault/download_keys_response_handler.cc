@@ -13,6 +13,7 @@
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -35,8 +36,9 @@ FindSyncMembership(const sync_pb::SecurityDomainMember& member) {
 }
 
 // Extracts (decrypts |wrapped_key| and converts to ExtractedSharedKey) shared
-// keys from |membership| and sorts them by version.
-std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
+// keys from |membership| and sorts them by version. In case of decryption
+// errors it returns nullopt.
+absl::optional<std::vector<ExtractedSharedKey>> ExtractAndSortSharedKeys(
     const sync_pb::SecurityDomainMember::SecurityDomainMembership& membership,
     const SecureBoxPrivateKey& member_private_key) {
   std::map<int, ExtractedSharedKey> epoch_to_extracted_key;
@@ -46,7 +48,7 @@ std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
             member_private_key, ProtoStringToBytes(shared_key.wrapped_key()));
     if (!decrypted_key.has_value()) {
       // Decryption failed.
-      return std::vector<ExtractedSharedKey>();
+      return absl::nullopt;
     }
     epoch_to_extracted_key[shared_key.epoch()].version = shared_key.epoch();
     epoch_to_extracted_key[shared_key.epoch()].trusted_vault_key =
@@ -155,8 +157,7 @@ DownloadKeysResponseHandler::ProcessResponse(
       break;
     case TrustedVaultRequest::HttpStatus::kNotFound:
       return ProcessedResponse(
-          /*status=*/TrustedVaultDownloadKeysStatus::
-              kMemberNotFoundOrCorrupted);
+          /*status=*/TrustedVaultDownloadKeysStatus::kMemberNotFound);
     case TrustedVaultRequest::HttpStatus::kAccessTokenFetchingFailure:
       return ProcessedResponse(
           /*status=*/TrustedVaultDownloadKeysStatus::
@@ -180,19 +181,24 @@ DownloadKeysResponseHandler::ProcessResponse(
   if (!membership) {
     // Member is not in sync security domain.
     return ProcessedResponse(
-        /*status=*/TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted);
+        /*status=*/TrustedVaultDownloadKeysStatus::kMembershipNotFound);
   }
 
-  std::vector<ExtractedSharedKey> extracted_keys =
+  const absl::optional<std::vector<ExtractedSharedKey>> extracted_keys =
       ExtractAndSortSharedKeys(*membership, device_key_pair_->private_key());
-  if (extracted_keys.empty()) {
-    // |current_member| doesn't have any keys, should be treated as not
-    // registered member.
+  if (!extracted_keys.has_value()) {
+    // |current_member| appears corrupt, as its keys could not be decrypted.
     return ProcessedResponse(
-        /*status=*/TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted);
+        /*status=*/TrustedVaultDownloadKeysStatus::kMembershipCorrupted);
+  }
+  if (extracted_keys->empty()) {
+    // |current_member| doesn't have any keys, should be treated as a corrupt
+    // state.
+    return ProcessedResponse(
+        /*status=*/TrustedVaultDownloadKeysStatus::kMembershipEmpty);
   }
 
-  if (!IsValidKeyChain(extracted_keys, last_trusted_vault_key_and_version_)) {
+  if (!IsValidKeyChain(*extracted_keys, last_trusted_vault_key_and_version_)) {
     // Data corresponding to |current_member| is corrupted or
     // |last_trusted_vault_key_and_version_| is too old.
     return ProcessedResponse(
@@ -201,7 +207,7 @@ DownloadKeysResponseHandler::ProcessResponse(
   }
 
   std::vector<ExtractedSharedKey> new_keys =
-      GetNewKeys(extracted_keys, last_trusted_vault_key_and_version_.version);
+      GetNewKeys(*extracted_keys, last_trusted_vault_key_and_version_.version);
   if (new_keys.empty()) {
     return ProcessedResponse(
         /*status=*/TrustedVaultDownloadKeysStatus::kNoNewKeys);

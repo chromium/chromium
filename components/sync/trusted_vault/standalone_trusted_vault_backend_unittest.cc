@@ -963,7 +963,9 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDownloadKeysStatus",
-      /*sample=*/TrustedVaultDownloadKeysStatus::kSuccess,
+      /*sample=*/
+      StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA::
+          kSuccess,
       /*expected_bucket_count=*/1);
 }
 
@@ -1007,7 +1009,9 @@ TEST_F(StandaloneTrustedVaultBackendTest,
            /*last_key_version=*/0);
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDownloadKeysStatus",
-      /*sample=*/TrustedVaultDownloadKeysStatus::kOtherError,
+      /*sample=*/
+      StandaloneTrustedVaultBackend::TrustedVaultDownloadKeysStatusForUMA::
+          kOtherError,
       /*expected_bucket_count=*/1);
 
   download_keys_callback = TrustedVaultConnection::DownloadNewKeysCallback();
