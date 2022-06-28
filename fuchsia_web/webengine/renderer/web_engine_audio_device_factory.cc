@@ -14,19 +14,17 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace {
 
 content::RenderFrame* GetRenderFrameForToken(
     const blink::LocalFrameToken& frame_token) {
-  auto* web_frame = blink::WebFrame::FromFrameToken(frame_token);
+  auto* web_frame = blink::WebLocalFrame::FromFrameToken(frame_token);
   if (!web_frame)
     return nullptr;
 
-  int render_frame_id =
-      content::RenderFrame::GetRoutingIdForWebFrame(web_frame);
-  return content::RenderFrame::FromRoutingID(render_frame_id);
+  return content::RenderFrame::FromWebFrame(web_frame);
 }
 
 }  // namespace
