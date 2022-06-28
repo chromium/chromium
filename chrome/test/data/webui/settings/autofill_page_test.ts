@@ -364,7 +364,7 @@ suite('PasswordsUITest', function() {
 
   test('Credential urls is used in the subpage header', async function() {
     const SHOWN_URL = 'www.google.com';
-    loadTimeData.overrideValues({enablePasswordNotes: true});
+    loadTimeData.overrideValues({enablePasswordViewPage: true});
     Router.resetInstanceForTesting(buildRouter());
     routes.PASSWORD_VIEW =
         (Router.getInstance().getRoutes() as SettingsRoutes).PASSWORD_VIEW;

@@ -268,13 +268,20 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
             'usernameInputInvalid_, password_, noteInvalid_, ' +
             'isPasswordNotesEnabled_)',
       },
-      /**
-       * Whether the flag notes feature for passwords is enabled.
-       */
+
+      /* If true, note field will be shown and used when saving the password. */
       isPasswordNotesEnabled_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('enablePasswordNotes');
+        }
+      },
+
+      /* If true, change event will be dispatched. */
+      isPasswordViewPageEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordViewPage');
         }
       },
     };
@@ -305,6 +312,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   private password_: string;
   private isSaveButtonDisabled_: boolean;
   private isPasswordNotesEnabled_: boolean;
+  private isPasswordViewPageEnabled_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -579,7 +587,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     PasswordManagerImpl.getInstance()
         .changeSavedPassword(idsToChange, params)
         .finally(() => {
-          if (this.isPasswordNotesEnabled_) {
+          if (this.isPasswordViewPageEnabled_) {
             this.dispatchChangePasswordEvent_(params);
           }
           this.close();

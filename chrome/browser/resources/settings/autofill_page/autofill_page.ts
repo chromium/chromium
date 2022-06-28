@@ -70,7 +70,7 @@ export class SettingsAutofillPageElement extends
       enablePasswordViewPage_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('enablePasswordNotes');
+          return loadTimeData.getBoolean('enablePasswordViewPage');
         }
       },
 

@@ -244,10 +244,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
             'eligibleForAccountStorage_)',
       },
 
-      isPasswordNotesEnabled_: {
+      isPasswordViewPageEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('enablePasswordNotes');
+          return loadTimeData.getBoolean('enablePasswordViewPage');
         },
         reflectToAttribute: true,
       },
@@ -315,6 +315,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private hasPasswordExceptions_: boolean;
   private shouldShowBanner_: boolean;
   private isAccountStoreUser_: boolean;
+  private isPasswordViewPageEnabled_: boolean;
   private isUnifiedPasswordManagerEnabled_: boolean;
   private shouldShowDevicePasswordsLink_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;

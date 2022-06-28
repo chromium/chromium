@@ -164,6 +164,11 @@ const char kPasswordNotesName[] = "Password notes in settings";
 const char kPasswordNotesDescription[] =
     "Enables a note section for each password in the settings page.";
 
+const char kPasswordViewPageInSettingsName[] = "Password view page in settings";
+const char kPasswordViewPageInSettingsDescription[] =
+    "Enables a new password details subpage in the settings password "
+    "management UI.";
+
 const char kEnableBluetoothSerialPortProfileInSerialApiName[] =
     "Enable Bluetooth Serial Port Profile in Serial API";
 const char kEnableBluetoothSerialPortProfileInSerialApiDescription[] =

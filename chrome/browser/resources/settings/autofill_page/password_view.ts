@@ -110,6 +110,13 @@ export class PasswordViewElement extends PasswordViewElementBase {
         notify: true,
       },
 
+      isPasswordNotesEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordNotes');
+        },
+      },
+
       inAccount_: Boolean,
 
       isPasswordVisible_: {
@@ -156,6 +163,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
   private activeDialogAnchorStack_: Array<HTMLElement>;
   credential: MultiStorePasswordUiEntry|null;
   private inAccount_: boolean|undefined;
+  private isPasswordNotesEnabled_: boolean;
   private isPasswordVisible_: boolean;
   private onDevice_: boolean|undefined;
   private password_: string;
@@ -268,6 +276,10 @@ export class PasswordViewElement extends PasswordViewElementBase {
 
   private isFederated_(): boolean {
     return !!this.credential && !!this.credential.federationText;
+  }
+
+  private isNoteEnabled_(): boolean {
+    return !this.isFederated_() && this.isPasswordNotesEnabled_;
   }
 
   /** Handler to copy the password from the password field. */

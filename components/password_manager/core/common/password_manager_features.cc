@@ -100,8 +100,14 @@ const base::Feature kMuteCompromisedPasswords {
 };
 
 // Enables adding, displaying and modifying extra notes to stored credentials.
+// When enabled, "PasswordViewPageInSettings" feature is ignored and the new
+// password view subpage is force enabled.
 const base::Feature kPasswordNotes{"PasswordNotes",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables the new password viewing subpage.
+const base::Feature kPasswordViewPageInSettings{
+    "PasswordViewPageInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables sending credentials from the settings UI.
 const base::Feature kSendPasswords{"SendPasswords",

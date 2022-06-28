@@ -193,10 +193,10 @@ export class PasswordsDeviceSectionElement extends
         value: '',
       },
 
-      isPasswordNotesEnabled_: {
+      isPasswordViewPageEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('enablePasswordNotes');
+          return loadTimeData.getBoolean('enablePasswordViewPage');
         },
         reflectToAttribute: true,
       },
@@ -225,6 +225,7 @@ export class PasswordsDeviceSectionElement extends
   private showMoveMultiplePasswordsDialog_: boolean;
   private currentRoute_: Route|null;
   private devicePasswordsLabel_: string;
+  private isPasswordViewPageEnabled_: boolean;
   private accountStorageOptInStateListener_:
       AccountStorageOptInStateChangedListener|null = null;
 

@@ -4911,12 +4911,17 @@
   {
     "name": "password-notes",
     "owners": ["mamir", "derinel@google.com"],
-    "expiry_milestone": 105
+    "expiry_milestone": 108
   },
   {
     "name": "password-scripts-fetching",
     "owners": [ "kolos", "treib", "brunobraga@google.com", "chrome-duplex@google.com" ],
     "expiry_milestone": 105
+  },
+  {
+    "name": "password-view-page-in-settings",
+    "owners": ["mamir", "derinel@google.com"],
+    "expiry_milestone": 108
   },
   {
     "name": "passwords-account-storage-revised-opt-in-flow",

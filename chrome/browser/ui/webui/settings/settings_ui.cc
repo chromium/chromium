@@ -272,6 +272,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           password_manager::features::kMuteCompromisedPasswords));
 
   html_source->AddBoolean(
+      "enablePasswordViewPage",
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordViewPageInSettings) ||
+          base::FeatureList::IsEnabled(
+              password_manager::features::kPasswordNotes));
+
+  html_source->AddBoolean(
       "enablePasswordNotes",
       base::FeatureList::IsEnabled(password_manager::features::kPasswordNotes));
 
