@@ -2992,6 +2992,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Status.Revoke" enum="FedCmRevokeStatus">
+    <obsolete>
+      Removed June 2022 with the removal of the revoke() method.
+    </obsolete>
     <summary>
       Records the status of a revoke call to the FedCM API.
     </summary>
