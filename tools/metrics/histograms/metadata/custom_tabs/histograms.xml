@@ -494,6 +494,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TrustedWebActivity.Notification.PermissionRequestResult"
+    enum="ContentSetting" expires_after="2022-12-04">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <owner>
+    src/chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
+  </owner>
+  <summary>
+    The result of a TWA notification permission request for the purpose of
+    notification delegation. This is logged when the
+    NotificationPermissionUpdater receives the result from the
+    TrustedWebActivityClient.
+  </summary>
+</histogram>
+
 <histogram name="TrustedWebActivity.QualityEnforcementViolation"
     enum="TrustedWebActivityQualityEnforcementViolationType"
     expires_after="M104">

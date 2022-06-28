@@ -16,6 +16,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
+import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
@@ -146,6 +148,8 @@ public class NotificationPermissionUpdater {
                             ComponentName app, @ContentSettingValues int settingValue) {
                         if (mCalled) return;
                         mCalled = true;
+                        TrustedWebActivityUmaRecorder.recordNotificationPermissionRequestResult(
+                                settingValue);
                         updatePermission(origin, callback, app.getPackageName(), settingValue);
                     }
 
@@ -168,8 +172,11 @@ public class NotificationPermissionUpdater {
             return;
         }
 
-        WebApkServiceClient.getInstance().requestNotificationPermission(packageName,
-                settingValue -> updatePermission(origin, callback, packageName, settingValue));
+        WebApkServiceClient.getInstance().requestNotificationPermission(
+                packageName, settingValue -> {
+                    WebApkUmaRecorder.recordNotificationPermissionRequestResult(settingValue);
+                    updatePermission(origin, callback, packageName, settingValue);
+                });
     }
 
     /**

@@ -13,6 +13,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browserservices.constants.LocationUpdateError;
 import org.chromium.chrome.browser.browserservices.constants.QualityEnforcementViolationType;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
 
@@ -157,6 +158,16 @@ public class TrustedWebActivityUmaRecorder {
         RecordHistogram.recordEnumeratedHistogram(
                 "TrustedWebActivity.DelegatedNotificationSmallIconFallback", fallback,
                 DelegatedNotificationSmallIconFallback.NUM_ENTRIES);
+    }
+
+    /**
+     * Records the notification permission request result for a TWA.
+     */
+    public static void recordNotificationPermissionRequestResult(
+            @ContentSettingValues int settingValue) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "TrustedWebActivity.Notification.PermissionRequestResult", settingValue,
+                ContentSettingValues.NUM_SETTINGS);
     }
 
     /**
