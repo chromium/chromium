@@ -26,6 +26,9 @@ namespace {
 // Returns manufacturer read from sys_vendor file. Runs in the separate thread
 // pool which supports blocking sys calls.
 // Returns an empty string on error.
+//
+// We use this function instead of base::SysInfo::GetHardwareInfo() since the
+// latter always returns "Google" as a manufacturer on ChromeOS.
 std::string GetManufacturerFromSysfsSync() {
   static const size_t kMaxStringSize = 100u;
   std::string manufacturer;
