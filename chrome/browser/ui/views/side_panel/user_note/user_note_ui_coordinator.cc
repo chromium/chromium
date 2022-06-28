@@ -91,7 +91,7 @@ void UserNoteUICoordinator::OnNoteUpdated(const base::UnguessableToken& id,
                                           const std::string& note_content) {
   auto* service =
       user_notes::UserNoteServiceFactory::GetForContext(browser_->profile());
-  service->OnNoteUpdated(id, note_content);
+  service->OnNoteEdited(id, note_content);
 }
 
 void UserNoteUICoordinator::FocusNote(const base::UnguessableToken& guid) {

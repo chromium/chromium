@@ -182,7 +182,7 @@ void UserNoteService::OnNoteSelected(const base::UnguessableToken& id,
 
 void UserNoteService::OnNoteDeleted(const base::UnguessableToken& id) {
   DCHECK(IsUserNotesEnabled());
-  NOTIMPLEMENTED();
+  storage_->DeleteNote(id);
 }
 
 void UserNoteService::OnNoteCreationDone(const base::UnguessableToken& id,
@@ -218,10 +218,13 @@ void UserNoteService::OnNoteCreationCancelled(
   (*entry_it->second.managers.begin())->RemoveNote(id);
 }
 
-void UserNoteService::OnNoteUpdated(const base::UnguessableToken& id,
-                                    const std::string& note_content) {
+void UserNoteService::OnNoteEdited(const base::UnguessableToken& id,
+                                   const std::string& note_content) {
   DCHECK(IsUserNotesEnabled());
-  NOTIMPLEMENTED();
+  const UserNote* note = GetNoteModel(id);
+  if (!note)
+    return;
+  storage_->UpdateNote(note, note_content);
 }
 
 void UserNoteService::OnNotesChanged() {

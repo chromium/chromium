@@ -104,8 +104,8 @@ class UserNoteService : public KeyedService,
   void OnNoteCreationDone(const base::UnguessableToken& id,
                           const std::string& note_content) override;
   void OnNoteCreationCancelled(const base::UnguessableToken& id) override;
-  void OnNoteUpdated(const base::UnguessableToken& id,
-                     const std::string& note_content) override;
+  void OnNoteEdited(const base::UnguessableToken& id,
+                    const std::string& note_content) override;
 
   // UserNoteStorage implementation
   void OnNotesChanged() override;
