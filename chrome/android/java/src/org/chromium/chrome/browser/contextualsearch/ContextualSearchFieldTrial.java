@@ -6,17 +6,11 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.variations.VariationsAssociatedData;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Provides Field Trial support for the Contextual Search application within Chrome for Android.
@@ -43,182 +37,6 @@ public class ContextualSearchFieldTrial {
 
     // Cached values to avoid repeated and redundant JNI operations.
     private static Boolean sEnabled;
-    private static Boolean[] sSwitches = new Boolean[ContextualSearchSwitch.NUM_ENTRIES];
-
-    // SWITCHES
-    // TODO(donnd): remove all supporting code once short-lived data collection is done.
-    @IntDef({ContextualSearchSwitch.IS_TRANSLATION_DISABLED,
-            ContextualSearchSwitch.IS_ONLINE_DETECTION_DISABLED,
-            ContextualSearchSwitch.IS_SEARCH_TERM_RESOLUTION_DISABLED,
-            ContextualSearchSwitch.IS_MANDATORY_PROMO_ENABLED,
-            ContextualSearchSwitch.IS_ENGLISH_TARGET_TRANSLATION_ENABLED,
-            ContextualSearchSwitch.IS_BAR_OVERLAP_COLLECTION_ENABLED,
-            ContextualSearchSwitch.IS_BAR_OVERLAP_SUPPRESSION_ENABLED,
-            ContextualSearchSwitch.IS_WORD_EDGE_SUPPRESSION_ENABLED,
-            ContextualSearchSwitch.IS_SHORT_WORD_SUPPRESSION_ENABLED,
-            ContextualSearchSwitch.IS_NOT_LONG_WORD_SUPPRESSION_ENABLED,
-            ContextualSearchSwitch.IS_NOT_AN_ENTITY_SUPPRESSION_ENABLED,
-            ContextualSearchSwitch.IS_ENGAGEMENT_SUPPRESSION_ENABLED,
-            ContextualSearchSwitch.IS_SHORT_TEXT_RUN_SUPPRESSION_ENABLED,
-            ContextualSearchSwitch.IS_SMALL_TEXT_SUPPRESSION_ENABLED,
-            ContextualSearchSwitch.IS_AMP_AS_SEPARATE_TAB_DISABLED,
-            ContextualSearchSwitch.IS_SEND_HOME_COUNTRY_DISABLED,
-            ContextualSearchSwitch.IS_PAGE_CONTENT_NOTIFICATION_DISABLED,
-            ContextualSearchSwitch.IS_UKM_RANKER_LOGGING_DISABLED,
-            ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED,
-            ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE_ENABLED,
-            ContextualSearchSwitch.IS_SEND_BASE_PAGE_URL_DISABLED})
-    @Retention(RetentionPolicy.SOURCE)
-    /**
-     * Boolean Switch values that are backed by either a Feature or a Variations parameter.
-     * Values are used for indexing ContextualSearchSwitchNames - should start from 0 and can't
-     * have gaps.
-     */
-    @interface ContextualSearchSwitch {
-        /**
-         * @deprecated
-         * Whether all translate code is disabled (master switch, needed to disable all translate
-         * code for Contextual Search in case of an emergency).
-         */
-        int IS_TRANSLATION_DISABLED = 0;
-        /**
-         * @deprecated
-         * Whether detection of device-online should be disabled (default false).
-         * (safety switch for disabling online-detection also used to disable detection when
-         * running tests).
-         */
-        int IS_ONLINE_DETECTION_DISABLED = 1;
-
-        /** @deprecated */
-        int IS_SEARCH_TERM_RESOLUTION_DISABLED = 2;
-        /** @deprecated */
-        int IS_MANDATORY_PROMO_ENABLED = 3;
-
-        /**
-         * @deprecated
-         * Whether English-target translation should be enabled (default is disabled for 'en').
-         * Enables usage of English as the target language even when it's the primary UI language.
-         */
-        int IS_ENGLISH_TARGET_TRANSLATION_ENABLED = 4;
-        /**
-         * @deprecated
-         * Whether collecting data on Bar overlap is enabled.
-         */
-        int IS_BAR_OVERLAP_COLLECTION_ENABLED = 5;
-        /**
-         * @deprecated
-         * Whether triggering is suppressed by a selection nearly overlapping the normal
-         * Bar peeking location.
-         */
-        int IS_BAR_OVERLAP_SUPPRESSION_ENABLED = 6;
-        /**
-         * @deprecated
-         * Whether triggering is suppressed by a tap that's near the edge of a word.
-         */
-        int IS_WORD_EDGE_SUPPRESSION_ENABLED = 7;
-        /**
-         * @deprecated
-         * Whether triggering is suppressed by a tap that's in a short word.
-         * */
-        int IS_SHORT_WORD_SUPPRESSION_ENABLED = 8;
-        /**
-         * @deprecated
-         * Whether triggering is suppressed by a tap that's not in a long word.
-         */
-        int IS_NOT_LONG_WORD_SUPPRESSION_ENABLED = 9;
-        /**
-         * @deprecated
-         * Whether triggering is suppressed for a tap that's not on an entity.
-         */
-        int IS_NOT_AN_ENTITY_SUPPRESSION_ENABLED = 10;
-        /**
-         * @deprecated
-         * Whether triggering is suppressed due to lack of engagement with the feature.
-         */
-        int IS_ENGAGEMENT_SUPPRESSION_ENABLED = 11;
-        /**
-         * @deprecated
-         * Whether triggering is suppressed for a tap that has a short element run-length.
-         */
-        int IS_SHORT_TEXT_RUN_SUPPRESSION_ENABLED = 12;
-        /**
-         * @deprecated
-         * Whether triggering is suppressed for a tap on small-looking text.
-         */
-        int IS_SMALL_TEXT_SUPPRESSION_ENABLED = 13;
-        /**
-         * @deprecated
-         * Whether to disable auto-promotion of clicks in the AMP carousel into a
-         * separate Tab.
-         */
-        int IS_AMP_AS_SEPARATE_TAB_DISABLED = 14;
-        /**
-         * @deprecated
-         * Whether sending the "home country" to Google is disabled.
-         */
-        int IS_SEND_HOME_COUNTRY_DISABLED = 15;
-        /**
-         * @deprecated
-         * Whether sending the page content notifications to observers (e.g. icing for
-         * conversational search) is disabled.
-         */
-        int IS_PAGE_CONTENT_NOTIFICATION_DISABLED = 16;
-        /**
-         * @deprecated
-         * Whether logging for Machine Learning is disabled.
-         */
-        int IS_UKM_RANKER_LOGGING_DISABLED = 17;
-        /**
-         * @deprecated
-         * Whether or not ML-based Tap suppression is enabled.
-         */
-        int IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED = 18;
-        /**
-         * @deprecated
-         * Whether or not to override tap-disable for users that have never opened the
-         * panel.
-         */
-        int IS_CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE_ENABLED = 19;
-        /**
-         * @deprecated
-         * Whether sending the URL of the page viewed by the user is disabled.
-         */
-        int IS_SEND_BASE_PAGE_URL_DISABLED = 20;
-
-        int NUM_ENTRIES = 21;
-    }
-
-    @VisibleForTesting
-    static final String TRANSLATION_DISABLED = "disable_translation";
-
-    // Indexed by ContextualSearchSwitch
-    private static final String[] ContextualSearchSwitchNames = {
-            TRANSLATION_DISABLED, // IS_TRANSLATION_DISABLED
-            "disable_online_detection", // IS_ONLINE_DETECTION_DISABLED
-            "disable_search_term_resolution", // DISABLE_SEARCH_TERM_RESOLUTION
-            "mandatory_promo_enabled", // IS_MANDATORY_PROMO_ENABLED
-            "enable_english_target_translation", // IS_ENGLISH_TARGET_TRANSLATION_ENABLED
-            "enable_bar_overlap_collection", // IS_BAR_OVERLAP_COLLECTION_ENABLED
-            "enable_bar_overlap_suppression", // IS_BAR_OVERLAP_SUPPRESSION_ENABLED
-            "enable_word_edge_suppression", // IS_WORD_EDGE_SUPPRESSION_ENABLED
-            "enable_short_word_suppression", //  IS_SHORT_WORD_SUPPRESSION_ENABLED
-            "enable_not_long_word_suppression", // IS_NOT_LONG_WORD_SUPPRESSION_ENABLED
-            "enable_not_an_entity_suppression", //  IS_NOT_AN_ENTITY_SUPPRESSION_ENABLED
-            "enable_engagement_suppression", // IS_ENGAGEMENT_SUPPRESSION_ENABLED
-            "enable_short_text_run_suppression", // IS_SHORT_TEXT_RUN_SUPPRESSION_ENABLED
-            "enable_small_text_suppression", // IS_SMALL_TEXT_SUPPRESSION_ENABLED
-            "disable_amp_as_separate_tab", // IS_AMP_AS_SEPARATE_TAB_DISABLED
-            "disable_send_home_country", //  IS_SEND_HOME_COUNTRY_DISABLED
-            "disable_page_content_notification", // IS_PAGE_CONTENT_NOTIFICATION_DISABLED
-            "disable_ukm_ranker_logging", // IS_UKM_RANKER_LOGGING_DISABLED
-            ChromeFeatureList.CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION, // (related to Chrome Feature)
-            ChromeFeatureList.CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE, // (related to Chrome Feature)
-            "disable_send_url" // IS_SEND_BASE_PAGE_URL_DISABLED
-    };
-
-    private ContextualSearchFieldTrial() {
-        assert ContextualSearchSwitchNames.length == ContextualSearchSwitch.NUM_ENTRIES;
-    }
 
     /**
      * Current Variations parameters associated with the ContextualSearch Field Trial or a
@@ -228,22 +46,6 @@ public class ContextualSearchFieldTrial {
     public static boolean isEnabled() {
         if (sEnabled == null) sEnabled = detectEnabled();
         return sEnabled.booleanValue();
-    }
-
-    static boolean getSwitch(@ContextualSearchSwitch int value) {
-        if (sSwitches[value] == null) {
-            switch (value) {
-                case ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED:
-                case ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE_ENABLED:
-                    sSwitches[value] =
-                            ChromeFeatureList.isEnabled(ContextualSearchSwitchNames[value]);
-                    break;
-                default:
-                    assert !TextUtils.isEmpty(ContextualSearchSwitchNames[value]);
-                    sSwitches[value] = getBooleanParam(ContextualSearchSwitchNames[value]);
-            }
-        }
-        return sSwitches[value].booleanValue();
     }
 
     /**

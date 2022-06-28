@@ -3649,28 +3649,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ContextualSearchSwitch.IS_TRANSLATION_DISABLED, ContextualSearchSwitch.IS_ONLINE_DETECTION_DISABLED, ContextualSearchSwitch.IS_SEARCH_TERM_RESOLUTION_DISABLED, ContextualSearchSwitch.IS_MANDATORY_PROMO_ENABLED, ContextualSearchSwitch.IS_ENGLISH_TARGET_TRANSLATION_ENABLED, ContextualSearchSwitch.IS_BAR_OVERLAP_COLLECTION_ENABLED, ContextualSearchSwitch.IS_BAR_OVERLAP_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_WORD_EDGE_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_SHORT_WORD_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_NOT_LONG_WORD_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_NOT_AN_ENTITY_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_ENGAGEMENT_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_SHORT_TEXT_RUN_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_SMALL_TEXT_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_AMP_AS_SEPARATE_TAB_DISABLED, ContextualSearchSwitch.IS_SEND_HOME_COUNTRY_DISABLED, ContextualSearchSwitch.IS_PAGE_CONTENT_NOTIFICATION_DISABLED, ContextualSearchSwitch.IS_UKM_RANKER_LOGGING_DISABLED, ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE_ENABLED, ContextualSearchSwitch.IS_SEND_BASE_PAGE_URL_DISABLED"
-        errorLine1="    private static Boolean[] sSwitches = new Boolean[ContextualSearchSwitch.NUM_ENTRIES];"
-        errorLine2="                                                                            ~~~~~~~~~~~">
-        <location
-            file="$SRC/chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchFieldTrial.java"
-            line="46"
-            column="77"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ContextualSearchSwitch.IS_TRANSLATION_DISABLED, ContextualSearchSwitch.IS_ONLINE_DETECTION_DISABLED, ContextualSearchSwitch.IS_SEARCH_TERM_RESOLUTION_DISABLED, ContextualSearchSwitch.IS_MANDATORY_PROMO_ENABLED, ContextualSearchSwitch.IS_ENGLISH_TARGET_TRANSLATION_ENABLED, ContextualSearchSwitch.IS_BAR_OVERLAP_COLLECTION_ENABLED, ContextualSearchSwitch.IS_BAR_OVERLAP_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_WORD_EDGE_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_SHORT_WORD_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_NOT_LONG_WORD_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_NOT_AN_ENTITY_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_ENGAGEMENT_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_SHORT_TEXT_RUN_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_SMALL_TEXT_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_AMP_AS_SEPARATE_TAB_DISABLED, ContextualSearchSwitch.IS_SEND_HOME_COUNTRY_DISABLED, ContextualSearchSwitch.IS_PAGE_CONTENT_NOTIFICATION_DISABLED, ContextualSearchSwitch.IS_UKM_RANKER_LOGGING_DISABLED, ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED, ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE_ENABLED, ContextualSearchSwitch.IS_SEND_BASE_PAGE_URL_DISABLED"
-        errorLine1="        assert ContextualSearchSwitchNames.length == ContextualSearchSwitch.NUM_ENTRIES;"
-        errorLine2="                                                                            ~~~~~~~~~~~">
-        <location
-            file="$SRC/chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchFieldTrial.java"
-            line="220"
-            column="77"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: ContextualSearchPreference.UNINITIALIZED, ContextualSearchPreference.ENABLED, ContextualSearchPreference.DISABLED"
         errorLine1="                getPreferenceValue(), ContextualSearchPreference.NUM_ENTRIES);"
         errorLine2="                                                                 ~~~~~~~~~~~">

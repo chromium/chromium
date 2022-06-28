@@ -36,8 +36,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION + ","
-                + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
+        "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
 @EnableFeatures({ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION})
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 // TODO(crbug.com/1338223):update the tests to be batched.
