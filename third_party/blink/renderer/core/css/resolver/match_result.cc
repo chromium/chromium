@@ -90,7 +90,7 @@ void MatchResult::FinishAddingAuthorRulesForTreeScope(
 void MatchResult::Reset() {
   matched_properties_.clear();
   is_cacheable_ = true;
-  depends_on_container_queries_ = false;
+  depends_on_size_container_queries_ = false;
   current_origin_ = CascadeOrigin::kUserAgent;
   current_tree_order_ = 0;
   tree_scopes_.clear();

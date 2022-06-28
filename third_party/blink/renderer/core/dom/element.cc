@@ -3629,7 +3629,7 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
     }
   }
 
-  if (style->DependsOnContainerQueries())
+  if (style->DependsOnSizeContainerQueries())
     GetDocument().GetStyleEngine().SetStyleAffectedByLayout();
 
   return style;

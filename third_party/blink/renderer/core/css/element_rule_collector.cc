@@ -410,7 +410,8 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
     const ContainerQuery* container_query =
         container_query_seeker.Seek(rule_data.GetPosition());
     if (container_query) {
-      result_.SetDependsOnContainerQueries();
+      // TODO(crbug.com/1302630): May depend on style() queries.
+      result_.SetDependsOnSizeContainerQueries();
 
       // If we are matching pseudo elements like a ::before rule when computing
       // the styles of the originating element, we don't know whether the
@@ -879,7 +880,7 @@ void ElementRuleCollector::DidMatchRule(
         style_->SetHasCustomHighlightName(result.custom_highlight_name);
       }
     } else if (dynamic_pseudo == kPseudoIdFirstLine && container_query) {
-      style_->SetFirstLineDependsOnContainerQueries(true);
+      style_->SetFirstLineDependsOnSizeContainerQueries(true);
     }
   } else {
     matched_rules_.push_back(MatchedRule(rule_data, layer_order, proximity,

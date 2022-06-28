@@ -1309,7 +1309,7 @@ TEST_F(StyleResolverTest, TextShadowInHighlightPseudoNotNone2) {
       WebFeature::kTextShadowNotNoneInHighlightPseudo));
 }
 
-TEST_F(StyleResolverTestCQ, DependsOnContainerQueries) {
+TEST_F(StyleResolverTestCQ, DependsOnSizeContainerQueries) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       #a { color: red; }
@@ -1340,14 +1340,14 @@ TEST_F(StyleResolverTestCQ, DependsOnContainerQueries) {
   ASSERT_TRUE(d);
   ASSERT_TRUE(e);
 
-  EXPECT_FALSE(a->ComputedStyleRef().DependsOnContainerQueries());
-  EXPECT_TRUE(b->ComputedStyleRef().DependsOnContainerQueries());
-  EXPECT_TRUE(c->ComputedStyleRef().DependsOnContainerQueries());
-  EXPECT_TRUE(d->ComputedStyleRef().DependsOnContainerQueries());
-  EXPECT_FALSE(e->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_FALSE(a->ComputedStyleRef().DependsOnSizeContainerQueries());
+  EXPECT_TRUE(b->ComputedStyleRef().DependsOnSizeContainerQueries());
+  EXPECT_TRUE(c->ComputedStyleRef().DependsOnSizeContainerQueries());
+  EXPECT_TRUE(d->ComputedStyleRef().DependsOnSizeContainerQueries());
+  EXPECT_FALSE(e->ComputedStyleRef().DependsOnSizeContainerQueries());
 }
 
-TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesPseudo) {
+TEST_F(StyleResolverTestCQ, DependsOnSizeContainerQueriesPseudo) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       main { container-type: size; width: 100px; }
@@ -1371,14 +1371,14 @@ TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesPseudo) {
   ASSERT_TRUE(before);
   ASSERT_TRUE(after);
 
-  EXPECT_TRUE(a->ComputedStyleRef().DependsOnContainerQueries());
-  EXPECT_FALSE(before->ComputedStyleRef().DependsOnContainerQueries());
-  EXPECT_TRUE(after->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_TRUE(a->ComputedStyleRef().DependsOnSizeContainerQueries());
+  EXPECT_FALSE(before->ComputedStyleRef().DependsOnSizeContainerQueries());
+  EXPECT_TRUE(after->ComputedStyleRef().DependsOnSizeContainerQueries());
 }
 
-// Verify that the ComputedStyle::DependsOnContainerQuery flag does
+// Verify that the ComputedStyle::DependsOnSizeContainerQuery flag does
 // not end up in the MatchedPropertiesCache (MPC).
-TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesMPC) {
+TEST_F(StyleResolverTestCQ, DependsOnSizeContainerQueriesMPC) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       @container (min-width: 9999999px) {
@@ -1393,9 +1393,9 @@ TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesMPC) {
   // rules (i.e. whatever is provided by UA style). The selector inside
   // the @container rule does ultimately _not_ match <div id=a> (because the
   // container query evaluates to 'false'), however, it _does_ cause the
-  // ComputedStyle::DependsOnContainerQuery flag to be set on #a.
+  // ComputedStyle::DependsOnSizeContainerQuery flag to be set on #a.
   //
-  // We must ensure that we don't add the DependsOnContainerQuery-flagged
+  // We must ensure that we don't add the DependsOnSizeContainerQuery-flagged
   // style to the MPC, otherwise the subsequent cache hit for #b would result
   // in the flag being (incorrectly) set for that element.
 
@@ -1407,8 +1407,8 @@ TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesMPC) {
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
 
-  EXPECT_TRUE(a->ComputedStyleRef().DependsOnContainerQueries());
-  EXPECT_FALSE(b->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_TRUE(a->ComputedStyleRef().DependsOnSizeContainerQueries());
+  EXPECT_FALSE(b->ComputedStyleRef().DependsOnSizeContainerQueries());
 }
 
 TEST_F(StyleResolverTest, NoCascadeLayers) {

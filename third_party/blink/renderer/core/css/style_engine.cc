@@ -2659,7 +2659,7 @@ void StyleEngine::RecalcStyleForContainer(Element& container,
   DCHECK(!StyleRecalcChange().ShouldRecalcStyleFor(container));
 
   // If the container itself depends on an outer container, then its
-  // DependsOnContainerQueries flag will be set, and we would recalc its
+  // DependsOnSizeContainerQueries flag will be set, and we would recalc its
   // style (due to ForceRecalcContainer/ForceRecalcDescendantContainers).
   // This is not necessary, hence we suppress recalc for this element.
   change = change.SuppressRecalc();
@@ -2755,7 +2755,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
     // depends on size container queries, fall back to re-attaching its box tree
     // when any of the size queries change the evaluation result.
     if (style.HasPseudoElementStyle(kPseudoIdFirstLine) &&
-        style.FirstLineDependsOnContainerQueries()) {
+        style.FirstLineDependsOnSizeContainerQueries()) {
       change = change.ForceMarkReattachLayoutTree().ForceReattachLayoutTree();
     }
   }

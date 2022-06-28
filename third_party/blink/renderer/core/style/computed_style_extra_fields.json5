@@ -1107,7 +1107,7 @@
       inherited: true,
     },
     {
-      name: "DependsOnContainerQueries",
+      name: "DependsOnSizeContainerQueries",
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",
@@ -1116,7 +1116,7 @@
     {
       // Set to true if this ComputedStyle is for an element whose ::first-line
       // style depends on size container queries.
-      name: "FirstLineDependsOnContainerQueries",
+      name: "FirstLineDependsOnSizeContainerQueries",
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",

@@ -2334,7 +2334,8 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
   //
   // [1] See blink::NodeLayoutUpgrade::Reasons
   NodeLayoutUpgrade::Reasons upgrade_mask =
-      maybe_needs_layout ? NodeLayoutUpgrade::kDependsOnContainerQueries : 0;
+      maybe_needs_layout ? NodeLayoutUpgrade::kDependsOnSizeContainerQueries
+                         : 0;
 
   if (NodeLayoutUpgrade::GetReasons(node) & upgrade_mask)
     is_dirty = true;

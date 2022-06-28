@@ -61,7 +61,7 @@ absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
 
 void SetHasContainerRelativeUnits(const ComputedStyle* style) {
   const_cast<ComputedStyle*>(style)->SetHasContainerRelativeUnits();
-  const_cast<ComputedStyle*>(style)->SetDependsOnContainerQueries(true);
+  const_cast<ComputedStyle*>(style)->SetDependsOnSizeContainerQueries(true);
 }
 
 }  // namespace

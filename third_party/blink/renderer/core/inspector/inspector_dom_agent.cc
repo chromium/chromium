@@ -1671,7 +1671,7 @@ InspectorDOMAgent::GetContainerQueryingDescendants(Element* container) {
 bool InspectorDOMAgent::ContainerQueriedByElement(Element* container,
                                                   Element* element) {
   const ComputedStyle* style = element->GetComputedStyle();
-  if (!style || !style->DependsOnContainerQueries())
+  if (!style || !style->DependsOnSizeContainerQueries())
     return false;
 
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();

@@ -41,7 +41,7 @@ bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
   // Container queries may affect display:none elements, and we since we store
   // that dependency on ComputedStyle we need to recalc style for display:none
   // subtree roots.
-  return !old_style || old_style->DependsOnContainerQueries();
+  return !old_style || old_style->DependsOnSizeContainerQueries();
 }
 
 bool StyleRecalcChange::ShouldUpdatePseudoElement(
@@ -53,7 +53,7 @@ bool StyleRecalcChange::ShouldUpdatePseudoElement(
   if (pseudo_element.NeedsLayoutSubtreeUpdate())
     return true;
   return RecalcContainerQueryDependent() &&
-         pseudo_element.ComputedStyleRef().DependsOnContainerQueries();
+         pseudo_element.ComputedStyleRef().DependsOnSizeContainerQueries();
 }
 
 String StyleRecalcChange::ToString() const {
@@ -148,7 +148,7 @@ bool StyleRecalcChange::IndependentInherit(
   // element.
   return propagate_ == kIndependentInherit &&
          (!RecalcContainerQueryDependent() ||
-          !old_style.DependsOnContainerQueries());
+          !old_style.DependsOnSizeContainerQueries());
 }
 
 }  // namespace blink
