@@ -248,6 +248,11 @@ class FragmentTreeDumper {
         box = current.Item()->LineBoxFragment();
       AppendIndentation(indent, box);
 
+      if (current.Item()->IsLayoutObjectDestroyedOrMoved()) {
+        builder_->Append("DEAD LAYOUT OBJECT!\n");
+        return;
+      }
+
       // TODO(kojii): Use the same format as layout tree dump for now. We can
       // make this more similar to |AppendFragmentToString| above.
       builder_->Append(current->ToString());
