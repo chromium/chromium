@@ -945,24 +945,11 @@ void HTMLDocumentParser::ConstructTreeFromHTMLToken() {
   }
 
   // We clear the token_ in case ConstructTree() synchronously re-enters the
-  // parser. We don't clear the token immediately for kCharacter tokens because
-  // the AtomicHTMLToken avoids copying the characters by keeping a pointer to
-  // the underlying buffer in the HTMLToken. Fortunately, kCharacter tokens
-  // can't cause us to re-enter the parser.
-  if (Token().GetType() != HTMLToken::kCharacter)
-    Token().Clear();
+  // parser.
+  Token().Clear();
 
   tree_builder_->ConstructTree(&atomic_token);
   CheckIfBlockingStylesheetAdded();
-
-  // FIXME: ConstructTree may synchronously cause Document to be detached.
-  if (!token_)
-    return;
-
-  if (!Token().IsUninitialized()) {
-    DCHECK_EQ(Token().GetType(), HTMLToken::kCharacter);
-    Token().Clear();
-  }
 }
 
 bool HTMLDocumentParser::HasInsertionPoint() {
