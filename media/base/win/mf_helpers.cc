@@ -128,4 +128,16 @@ ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config) {
   }
 }
 
+// GUID is little endian. The byte array in network order is big endian.
+std::vector<uint8_t> ByteArrayFromGUID(REFGUID guid) {
+  std::vector<uint8_t> byte_array(sizeof(GUID));
+  GUID* reversed_guid = reinterpret_cast<GUID*>(byte_array.data());
+  *reversed_guid = guid;
+  reversed_guid->Data1 = _byteswap_ulong(guid.Data1);
+  reversed_guid->Data2 = _byteswap_ushort(guid.Data2);
+  reversed_guid->Data3 = _byteswap_ushort(guid.Data3);
+  // Data4 is already a byte array so no need to byte swap.
+  return byte_array;
+}
+
 }  // namespace media

@@ -89,9 +89,17 @@ CdmKeysInfo ToCdmKeysInfo(const MFMediaKeyStatus* key_statuses, int count) {
   keys_info.reserve(count);
   for (int i = 0; i < count; ++i) {
     const auto& key_status = key_statuses[i];
+
+    if (key_status.cbKeyId != sizeof(GUID)) {
+      DLOG(ERROR) << __func__ << ": Key ID with unsupported size ignored";
+      continue;
+    }
+
+    GUID* key_id_guid = reinterpret_cast<GUID*>(key_status.pbKeyId);
     keys_info.push_back(std::make_unique<CdmKeyInformation>(
-        key_status.pbKeyId, key_status.cbKeyId,
-        ToCdmKeyStatus(key_status.eMediaKeyStatus), /*system_code=*/0));
+        ByteArrayFromGUID(*key_id_guid),
+        ToCdmKeyStatus(key_status.eMediaKeyStatus),
+        /*system_code=*/0));
   }
   return keys_info;
 }
