@@ -99,11 +99,14 @@ class NGAbsoluteUtilsTest : public RenderingTest {
       const NGLogicalStaticPosition& static_position,
       const WritingDirectionMode container_writing_direction,
       NGLogicalOutOfFlowDimensions* dimensions) {
+    const NGLogicalOutOfFlowInsets insets =
+        ComputeOutOfFlowInsets(node.Style(), space.AvailableSize());
     LogicalSize computed_available_size =
-        ComputeOutOfFlowAvailableSize(node, space, static_position);
+        ComputeOutOfFlowAvailableSize(node, space, insets, static_position);
     blink::ComputeOutOfFlowInlineDimensions(
-        node, space, border_padding, static_position, computed_available_size,
-        absl::nullopt, container_writing_direction, dimensions);
+        node, space, insets, border_padding, static_position,
+        computed_available_size, absl::nullopt, container_writing_direction,
+        dimensions);
   }
 
   void ComputeOutOfFlowBlockDimensions(
@@ -113,11 +116,14 @@ class NGAbsoluteUtilsTest : public RenderingTest {
       const NGLogicalStaticPosition& static_position,
       const WritingDirectionMode container_writing_direction,
       NGLogicalOutOfFlowDimensions* dimensions) {
+    const NGLogicalOutOfFlowInsets insets =
+        ComputeOutOfFlowInsets(node.Style(), space.AvailableSize());
     LogicalSize computed_available_size =
-        ComputeOutOfFlowAvailableSize(node, space, static_position);
+        ComputeOutOfFlowAvailableSize(node, space, insets, static_position);
     blink::ComputeOutOfFlowBlockDimensions(
-        node, space, border_padding, static_position, computed_available_size,
-        absl::nullopt, container_writing_direction, dimensions);
+        node, space, insets, border_padding, static_position,
+        computed_available_size, absl::nullopt, container_writing_direction,
+        dimensions);
   }
 
   Persistent<Element> element_;
