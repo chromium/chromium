@@ -7,11 +7,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
-#include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
@@ -108,13 +105,7 @@ void FollowTabHelper::PageLoaded(
                 ios::GetChromeBrowserProvider()
                     .GetFollowProvider()
                     ->GetRecommendedStatus(web_page_urls);
-            feature_engagement::Tracker* tracker =
-                feature_engagement::TrackerFactory::GetForBrowserState(
-                    ChromeBrowserState::FromBrowserState(
-                        web_state->GetBrowserState()));
-            if (channel_recommended &&
-                tracker->ShouldTriggerHelpUI(
-                    feature_engagement::kIPHFollowWhileBrowsingFeature)) {
+            if (channel_recommended) {
               DCHECK(follow_iph_presenter_);
               [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
             }
