@@ -1306,7 +1306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundRadio.SignalLevel.{NetworkType}"
-    enum="RadioSignalLevel" expires_after="2022-07-03">
+    enum="RadioSignalLevel" expires_after="2023-06-28">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@google.com</owner>
   <owner>skyostil@chromium.org</owner>
@@ -1326,7 +1326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundRadio.Wakeups.Cell.30Seconds"
-    enum="RadioSignalLevel" expires_after="2022-07-03">
+    enum="RadioSignalLevel" expires_after="2023-06-28">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@google.com</owner>
   <owner>skyostil@chromium.org</owner>
@@ -1345,7 +1345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundRadio.{Direction}KiB.{NetworkType}.30Seconds"
-    enum="RadioSignalLevel" expires_after="2022-07-03">
+    enum="RadioSignalLevel" expires_after="2023-06-28">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@google.com</owner>
   <owner>skyostil@chromium.org</owner>
@@ -1387,9 +1387,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.FrameDamageAreaInDip.{ProcessType}" units="dip"
-    expires_after="2022-06-30">
+    expires_after="2023-06-28">
   <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@chromium.org</owner>
+  <owner>khokhlov@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
     Damaged area of a LayerTree's CompositorFrame in device-independent pixels.
@@ -1402,9 +1402,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.FrameDamageDiagonalInDip.{ProcessType}" units="dip"
-    expires_after="2022-06-30">
+    expires_after="2023-06-28">
   <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@chromium.org</owner>
+  <owner>khokhlov@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
     Diagonal length of the damaged area of a LayerTree's CompositorFrame in
