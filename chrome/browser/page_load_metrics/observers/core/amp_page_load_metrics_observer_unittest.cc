@@ -813,12 +813,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFullNavigation) {
 TEST_P(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFrameDeleted) {
   GURL amp_url("https://ampviewer.com/page");
 
-  // `RenderFrameHostImpl::Detach()` is currently not working for FF.
-  // TODO(crbug.com/1316570): Remove this and execute the test for FF.
-  if (WithFencedFrames()) {
-    return;
-  }
-
   NavigationSimulator::CreateRendererInitiated(GURL("https://ampviewer.com/"),
                                                main_rfh())
       ->Commit();
