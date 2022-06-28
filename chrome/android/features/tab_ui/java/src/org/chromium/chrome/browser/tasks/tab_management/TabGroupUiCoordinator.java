@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -99,28 +100,30 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager) {
-        mActivity = activity;
-        mContext = parentView.getContext();
-        mIncognitoStateProvider = incognitoStateProvider;
-        mScrimCoordinator = scrimCoordinator;
-        mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
-        mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
-        mToolbarView = (TabGroupUiToolbarView) LayoutInflater.from(mContext).inflate(
-                R.layout.bottom_tab_strip_toolbar, parentView, false);
-        mTabListContainerView = mToolbarView.getViewContainer();
-        mBottomSheetController = bottomSheetController;
-        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        mActivityLifecycleDispatcher.register(this);
-        mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
-        mTabModelSelector = tabModelSelector;
-        mLayoutStateProviderSupplier = layoutStateProviderSupplier;
-        mRootView = rootView;
-        mSnackbarManager = snackbarManager;
-        mShareDelegateSupplier = shareDelegateSupplier;
-        mTabCreatorManager = tabCreatorManager;
-        mDynamicResourceLoaderSupplier = dynamicResourceLoaderSupplier;
-        mTabContentManager = tabContentManager;
-        parentView.addView(mToolbarView);
+        try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.constructor")) {
+            mActivity = activity;
+            mContext = parentView.getContext();
+            mIncognitoStateProvider = incognitoStateProvider;
+            mScrimCoordinator = scrimCoordinator;
+            mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
+            mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
+            mToolbarView = (TabGroupUiToolbarView) LayoutInflater.from(mContext).inflate(
+                    R.layout.bottom_tab_strip_toolbar, parentView, false);
+            mTabListContainerView = mToolbarView.getViewContainer();
+            mBottomSheetController = bottomSheetController;
+            mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+            mActivityLifecycleDispatcher.register(this);
+            mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
+            mTabModelSelector = tabModelSelector;
+            mLayoutStateProviderSupplier = layoutStateProviderSupplier;
+            mRootView = rootView;
+            mSnackbarManager = snackbarManager;
+            mShareDelegateSupplier = shareDelegateSupplier;
+            mTabCreatorManager = tabCreatorManager;
+            mDynamicResourceLoaderSupplier = dynamicResourceLoaderSupplier;
+            mTabContentManager = tabContentManager;
+            parentView.addView(mToolbarView);
+        }
     }
 
     /**
@@ -129,59 +132,61 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     @Override
     public void initializeWithNative(Activity activity,
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController) {
-        if (UmaSessionStats.isMetricsServiceAvailable()) {
-            UmaSessionStats.registerSyntheticFieldTrial(
-                    ChromeFeatureList.TAB_GROUPS_ANDROID + SYNTHETIC_TRIAL_POSTFIX,
-                    "Downloaded_Enabled");
-        }
-
-        boolean actionOnAllRelatedTabs = TabUiFeatureUtilities.isConditionalTabStripEnabled();
-        mTabStripCoordinator = new TabListCoordinator(TabListCoordinator.TabListMode.STRIP,
-                mContext, mTabModelSelector, null, null, actionOnAllRelatedTabs, null, null,
-                TabProperties.UiType.STRIP, null, null, mTabListContainerView, true, COMPONENT_NAME,
-                mRootView);
-        mTabStripCoordinator.initWithNative(mDynamicResourceLoaderSupplier.get());
-
-        mModelChangeProcessor = PropertyModelChangeProcessor.create(mModel,
-                new TabGroupUiViewBinder.ViewHolder(
-                        mToolbarView, mTabStripCoordinator.getContainerView()),
-                TabGroupUiViewBinder::bind);
-
-        // TODO(crbug.com/972217): find a way to enable interactions between grid tab switcher
-        //  and the dialog here.
-        TabGridDialogMediator.DialogController dialogController = null;
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(activity)
-                && mScrimCoordinator != null) {
-            mTabGridDialogCoordinator =
-                    new TabGridDialogCoordinator(mActivity, mTabModelSelector, mTabContentManager,
-                            mTabCreatorManager, mActivity.findViewById(R.id.coordinator), null,
-                            null, null, mShareDelegateSupplier, mScrimCoordinator, mRootView);
-            mTabGridDialogCoordinator.initWithNative(mContext, mTabModelSelector,
-                    mTabContentManager, mTabStripCoordinator.getTabGroupTitleEditor());
-            dialogController = mTabGridDialogCoordinator.getDialogController();
-        }
-
-        mMediator = new TabGroupUiMediator(mActivity, visibilityController, this, mModel,
-                mTabModelSelector, mTabCreatorManager, mLayoutStateProviderSupplier,
-                mIncognitoStateProvider, dialogController, mActivityLifecycleDispatcher,
-                mSnackbarManager, mOmniboxFocusStateSupplier);
-
-        TabGroupUtils.startObservingForCreationIPH();
-
-        if (TabUiFeatureUtilities.isConditionalTabStripEnabled()) return;
-
-        // TODO(meiliang): Potential leak if the observer is added after restoreCompleted. Fix it.
-        // Record the group count after all tabs are being restored. This only happen once per life
-        // cycle, therefore remove the observer after recording. We only focus on normal tab model
-        // because we don't restore tabs in incognito tab model.
-        mTabModelSelector.getModel(false).addObserver(new TabModelObserver() {
-            @Override
-            public void restoreCompleted() {
-                recordTabGroupCount();
-                recordSessionCount();
-                mTabModelSelector.getModel(false).removeObserver(this);
+        try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.initializeWithNative")) {
+            if (UmaSessionStats.isMetricsServiceAvailable()) {
+                UmaSessionStats.registerSyntheticFieldTrial(
+                        ChromeFeatureList.TAB_GROUPS_ANDROID + SYNTHETIC_TRIAL_POSTFIX,
+                        "Downloaded_Enabled");
             }
-        });
+
+            boolean actionOnAllRelatedTabs = TabUiFeatureUtilities.isConditionalTabStripEnabled();
+            mTabStripCoordinator = new TabListCoordinator(TabListCoordinator.TabListMode.STRIP,
+                    mContext, mTabModelSelector, null, null, actionOnAllRelatedTabs, null, null,
+                    TabProperties.UiType.STRIP, null, null, mTabListContainerView, true,
+                    COMPONENT_NAME, mRootView);
+            mTabStripCoordinator.initWithNative(mDynamicResourceLoaderSupplier.get());
+
+            mModelChangeProcessor = PropertyModelChangeProcessor.create(mModel,
+                    new TabGroupUiViewBinder.ViewHolder(
+                            mToolbarView, mTabStripCoordinator.getContainerView()),
+                    TabGroupUiViewBinder::bind);
+
+            // TODO(crbug.com/972217): find a way to enable interactions between grid tab switcher
+            //  and the dialog here.
+            TabGridDialogMediator.DialogController dialogController = null;
+            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(activity)
+                    && mScrimCoordinator != null) {
+                mTabGridDialogCoordinator = new TabGridDialogCoordinator(mActivity,
+                        mTabModelSelector, mTabContentManager, mTabCreatorManager,
+                        mActivity.findViewById(R.id.coordinator), null, null, null,
+                        mShareDelegateSupplier, mScrimCoordinator, mRootView);
+                mTabGridDialogCoordinator.initWithNative(mContext, mTabModelSelector,
+                        mTabContentManager, mTabStripCoordinator.getTabGroupTitleEditor());
+                dialogController = mTabGridDialogCoordinator.getDialogController();
+            }
+
+            mMediator = new TabGroupUiMediator(mActivity, visibilityController, this, mModel,
+                    mTabModelSelector, mTabCreatorManager, mLayoutStateProviderSupplier,
+                    mIncognitoStateProvider, dialogController, mActivityLifecycleDispatcher,
+                    mSnackbarManager, mOmniboxFocusStateSupplier);
+
+            TabGroupUtils.startObservingForCreationIPH();
+
+            if (TabUiFeatureUtilities.isConditionalTabStripEnabled()) return;
+
+            // TODO(meiliang): Potential leak if the observer is added after restoreCompleted. Fix
+            // it. Record the group count after all tabs are being restored. This only happen once
+            // per life cycle, therefore remove the observer after recording. We only focus on
+            // normal tab model because we don't restore tabs in incognito tab model.
+            mTabModelSelector.getModel(false).addObserver(new TabModelObserver() {
+                @Override
+                public void restoreCompleted() {
+                    recordTabGroupCount();
+                    recordSessionCount();
+                    mTabModelSelector.getModel(false).removeObserver(this);
+                }
+            });
+        }
     }
 
     /**

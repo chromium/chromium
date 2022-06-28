@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -213,25 +214,6 @@ public class TabListCoordinator
                     "Attempting to create a tab list UI with invalid mode");
         }
 
-        if (!attachToParent) {
-            mRecyclerView = (TabListRecyclerView) LayoutInflater.from(context).inflate(
-                    R.layout.tab_list_recycler_view_layout, parentView, false);
-        } else {
-            LayoutInflater.from(context).inflate(
-                    R.layout.tab_list_recycler_view_layout, parentView, true);
-            mRecyclerView = parentView.findViewById(R.id.tab_list_view);
-        }
-
-        if (mode == TabListMode.CAROUSEL) {
-            ViewGroup.LayoutParams layoutParams = mRecyclerView.getLayoutParams();
-            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            mRecyclerView.setLayoutParams(layoutParams);
-        }
-
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setHasFixedSize(true);
-        if (recyclerListener != null) mRecyclerView.setRecyclerListener(recyclerListener);
-
         // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
         // incognito profile) instead of always using regular profile. It works correctly now, but
         // it is not safe.
@@ -243,21 +225,42 @@ public class TabListCoordinator
                 selectionDelegateProvider, gridCardOnClickListenerProvider, dialogHandler,
                 priceWelcomeMessageController, componentName, itemType);
 
-        if (mMode == TabListMode.GRID) {
-            GridLayoutManager gridLayoutManager =
-                    new GridLayoutManager(context, GRID_LAYOUT_SPAN_COUNT_COMPACT);
-            mRecyclerView.setLayoutManager(gridLayoutManager);
-            mMediator.registerOrientationListener(gridLayoutManager);
-            mMediator.updateSpanCount(gridLayoutManager,
-                    context.getResources().getConfiguration().orientation,
-                    context.getResources().getConfiguration().screenWidthDp);
-            mMediator.setupAccessibilityDelegate(mRecyclerView);
-        } else if (mMode == TabListMode.STRIP || mMode == TabListMode.CAROUSEL
-                || mMode == TabListMode.LIST) {
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(context,
-                    mMode == TabListMode.LIST ? LinearLayoutManager.VERTICAL
-                                              : LinearLayoutManager.HORIZONTAL,
-                    false));
+        try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
+            if (!attachToParent) {
+                mRecyclerView = (TabListRecyclerView) LayoutInflater.from(context).inflate(
+                        R.layout.tab_list_recycler_view_layout, parentView, false);
+            } else {
+                LayoutInflater.from(context).inflate(
+                        R.layout.tab_list_recycler_view_layout, parentView, true);
+                mRecyclerView = parentView.findViewById(R.id.tab_list_view);
+            }
+
+            if (mode == TabListMode.CAROUSEL) {
+                ViewGroup.LayoutParams layoutParams = mRecyclerView.getLayoutParams();
+                layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                mRecyclerView.setLayoutParams(layoutParams);
+            }
+
+            mRecyclerView.setAdapter(mAdapter);
+            mRecyclerView.setHasFixedSize(true);
+            if (recyclerListener != null) mRecyclerView.setRecyclerListener(recyclerListener);
+
+            if (mMode == TabListMode.GRID) {
+                GridLayoutManager gridLayoutManager =
+                        new GridLayoutManager(context, GRID_LAYOUT_SPAN_COUNT_COMPACT);
+                mRecyclerView.setLayoutManager(gridLayoutManager);
+                mMediator.registerOrientationListener(gridLayoutManager);
+                mMediator.updateSpanCount(gridLayoutManager,
+                        context.getResources().getConfiguration().orientation,
+                        context.getResources().getConfiguration().screenWidthDp);
+                mMediator.setupAccessibilityDelegate(mRecyclerView);
+            } else if (mMode == TabListMode.STRIP || mMode == TabListMode.CAROUSEL
+                    || mMode == TabListMode.LIST) {
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(context,
+                        mMode == TabListMode.LIST ? LinearLayoutManager.VERTICAL
+                                                  : LinearLayoutManager.HORIZONTAL,
+                        false));
+            }
         }
 
         if (mMode == TabListMode.GRID && selectionDelegateProvider == null) {
@@ -285,25 +288,30 @@ public class TabListCoordinator
     void initWithNative(DynamicResourceLoader dynamicResourceLoader) {
         if (mIsInitialized) return;
 
-        mIsInitialized = true;
+        try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.initWithNative")) {
+            mIsInitialized = true;
 
-        Profile profile = Profile.getLastUsedRegularProfile();
-        mMediator.initWithNative(profile);
-        if (dynamicResourceLoader != null) {
-            mRecyclerView.createDynamicView(dynamicResourceLoader);
-        }
+            Profile profile = Profile.getLastUsedRegularProfile();
+            mMediator.initWithNative(profile);
+            if (dynamicResourceLoader != null) {
+                mRecyclerView.createDynamicView(dynamicResourceLoader);
+            }
 
-        if ((mMode == TabListMode.GRID || mMode == TabListMode.LIST)
-                && mItemType != UiType.SELECTABLE) {
-            ItemTouchHelper touchHelper = new ItemTouchHelper(mMediator.getItemTouchHelperCallback(
-                    mContext.getResources().getDimension(R.dimen.swipe_to_dismiss_threshold),
-                    mContext.getResources().getDimension(R.dimen.tab_grid_merge_threshold),
-                    mContext.getResources().getDimension(R.dimen.bottom_sheet_peek_height),
-                    profile));
-            touchHelper.attachToRecyclerView(mRecyclerView);
+            if ((mMode == TabListMode.GRID || mMode == TabListMode.LIST)
+                    && mItemType != UiType.SELECTABLE) {
+                ItemTouchHelper touchHelper =
+                        new ItemTouchHelper(mMediator.getItemTouchHelperCallback(
+                                mContext.getResources().getDimension(
+                                        R.dimen.swipe_to_dismiss_threshold),
+                                mContext.getResources().getDimension(
+                                        R.dimen.tab_grid_merge_threshold),
+                                mContext.getResources().getDimension(
+                                        R.dimen.bottom_sheet_peek_height),
+                                profile));
+                touchHelper.attachToRecyclerView(mRecyclerView);
+            }
         }
     }
-
     /**
      * Update the location of the selected thumbnail.
      * @return Whether a valid {@link Rect} is obtained.

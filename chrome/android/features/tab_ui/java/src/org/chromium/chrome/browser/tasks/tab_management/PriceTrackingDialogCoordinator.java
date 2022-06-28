@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -30,36 +31,41 @@ class PriceTrackingDialogCoordinator implements OnCheckedChangeListener {
             TabSwitcherMediator.ResetHandler resetHandler, TabModelSelector tabModelSelector,
             PriceDropNotificationManager notificationManager,
             @TabListCoordinator.TabListMode int mode) {
-        mDialogView = (PriceTrackingDialogView) LayoutInflater.from(context).inflate(
-                R.layout.price_tracking_dialog_layout, null, false);
-        mDialogView.setupTrackPricesSwitchOnCheckedChangeListener(this);
-        mDialogView.setupPriceAlertsArrowOnClickListener(
-                v -> { notificationManager.launchNotificationSettings(); });
-        mModalDialogManager = modalDialogManager;
+        try (TraceEvent e = TraceEvent.scoped("PriceTrackingDialogCoordinator.constructor")) {
+            mDialogView = (PriceTrackingDialogView) LayoutInflater.from(context).inflate(
+                    R.layout.price_tracking_dialog_layout, null, false);
+            mDialogView.setupTrackPricesSwitchOnCheckedChangeListener(this);
+            mDialogView.setupPriceAlertsArrowOnClickListener(
+                    v -> { notificationManager.launchNotificationSettings(); });
+            mModalDialogManager = modalDialogManager;
 
-        ModalDialogProperties.Controller dialogController = new ModalDialogProperties.Controller() {
-            @Override
-            public void onClick(PropertyModel model, int buttonType) {}
+            ModalDialogProperties.Controller dialogController =
+                    new ModalDialogProperties.Controller() {
+                        @Override
+                        public void onClick(PropertyModel model, int buttonType) {}
 
-            @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {
-                if (dismissalCause == DialogDismissalCause.ACTIVITY_DESTROYED) return;
+                        @Override
+                        public void onDismiss(PropertyModel model, int dismissalCause) {
+                            if (dismissalCause == DialogDismissalCause.ACTIVITY_DESTROYED) return;
 
-                // We only need to call resetWithTabList under GRID tab switcher. For now it's used
-                // to show/hide price drop cards on tabs timely.
-                if (mode == TabListCoordinator.TabListMode.GRID) {
-                    resetHandler.resetWithTabList(
-                            tabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
-                            false, TabSwitcherCoordinator.isShowingTabsInMRUOrder(mode));
-                }
-            }
-        };
+                            // We only need to call resetWithTabList under GRID tab switcher. For
+                            // now it's used to show/hide price drop cards on tabs timely.
+                            if (mode == TabListCoordinator.TabListMode.GRID) {
+                                resetHandler.resetWithTabList(
+                                        tabModelSelector.getTabModelFilterProvider()
+                                                .getCurrentTabModelFilter(),
+                                        false,
+                                        TabSwitcherCoordinator.isShowingTabsInMRUOrder(mode));
+                            }
+                        }
+                    };
 
-        mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                         .with(ModalDialogProperties.CONTROLLER, dialogController)
-                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
-                         .build();
+            mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                             .with(ModalDialogProperties.CONTROLLER, dialogController)
+                             .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                             .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
+                             .build();
+        }
     }
 
     void show() {

@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -124,61 +125,65 @@ class TabSelectionEditorCoordinator {
     public TabSelectionEditorCoordinator(Context context, ViewGroup parentView,
             TabModelSelector tabModelSelector, TabContentManager tabContentManager,
             @TabListMode int mode, ViewGroup rootView) {
-        mContext = context;
-        mParentView = parentView;
-        mTabModelSelector = tabModelSelector;
-        assert mode == TabListCoordinator.TabListMode.GRID
-                || mode == TabListCoordinator.TabListMode.LIST;
+        try (TraceEvent e = TraceEvent.scoped("TabSelectionEditorCoordinator.constructor")) {
+            mContext = context;
+            mParentView = parentView;
+            mTabModelSelector = tabModelSelector;
+            assert mode == TabListCoordinator.TabListMode.GRID
+                    || mode == TabListCoordinator.TabListMode.LIST;
 
-        mTabSelectionEditorLayout =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.tab_selection_editor_layout, parentView, false)
-                        .findViewById(R.id.selectable_list);
+            mTabSelectionEditorLayout =
+                    LayoutInflater.from(context)
+                            .inflate(R.layout.tab_selection_editor_layout, parentView, false)
+                            .findViewById(R.id.selectable_list);
 
-        mTabListCoordinator = new TabListCoordinator(mode, context, mTabModelSelector,
-                tabContentManager::getTabThumbnailWithCallback, null, false, null, null,
-                TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, null,
-                mTabSelectionEditorLayout, false, COMPONENT_NAME, rootView);
+            mTabListCoordinator = new TabListCoordinator(mode, context, mTabModelSelector,
+                    tabContentManager::getTabThumbnailWithCallback, null, false, null, null,
+                    TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, null,
+                    mTabSelectionEditorLayout, false, COMPONENT_NAME, rootView);
 
-        // Note: The TabSelectionEditorCoordinator is always created after native is initialized.
-        assert LibraryLoader.getInstance().isInitialized();
-        mTabListCoordinator.initWithNative(null);
+            // Note: The TabSelectionEditorCoordinator is always created after native is
+            // initialized.
+            assert LibraryLoader.getInstance().isInitialized();
+            mTabListCoordinator.initWithNative(null);
 
-        mTabListCoordinator.registerItemType(TabProperties.UiType.DIVIDER,
-                new LayoutViewBuilder(R.layout.divider_preference),
-                (model, view, propertyKey) -> {});
-        RecyclerView.LayoutManager layoutManager =
-                mTabListCoordinator.getContainerView().getLayoutManager();
-        if (layoutManager instanceof GridLayoutManager) {
-            ((GridLayoutManager) layoutManager)
-                    .setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                        @Override
-                        public int getSpanSize(int i) {
-                            int itemType = mTabListCoordinator.getContainerView()
-                                                   .getAdapter()
-                                                   .getItemViewType(i);
+            mTabListCoordinator.registerItemType(TabProperties.UiType.DIVIDER,
+                    new LayoutViewBuilder(R.layout.divider_preference),
+                    (model, view, propertyKey) -> {});
+            RecyclerView.LayoutManager layoutManager =
+                    mTabListCoordinator.getContainerView().getLayoutManager();
+            if (layoutManager instanceof GridLayoutManager) {
+                ((GridLayoutManager) layoutManager)
+                        .setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                            @Override
+                            public int getSpanSize(int i) {
+                                int itemType = mTabListCoordinator.getContainerView()
+                                                       .getAdapter()
+                                                       .getItemViewType(i);
 
-                            if (itemType == TabProperties.UiType.DIVIDER) {
-                                return ((GridLayoutManager) layoutManager).getSpanCount();
+                                if (itemType == TabProperties.UiType.DIVIDER) {
+                                    return ((GridLayoutManager) layoutManager).getSpanCount();
+                                }
+                                return 1;
                             }
-                            return 1;
-                        }
-                    });
+                        });
+            }
+
+            mTabSelectionEditorLayout.initialize(mParentView,
+                    mTabListCoordinator.getContainerView(),
+                    mTabListCoordinator.getContainerView().getAdapter(), mSelectionDelegate);
+            mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
+
+            mModel = new PropertyModel.Builder(TabSelectionEditorProperties.ALL_KEYS)
+                             .with(IS_VISIBLE, false)
+                             .build();
+
+            mTabSelectionEditorLayoutChangeProcessor = PropertyModelChangeProcessor.create(
+                    mModel, mTabSelectionEditorLayout, TabSelectionEditorLayoutBinder::bind, false);
+
+            mTabSelectionEditorMediator = new TabSelectionEditorMediator(mContext,
+                    mTabModelSelector, this::resetWithListOfTabs, mModel, mSelectionDelegate);
         }
-
-        mTabSelectionEditorLayout.initialize(mParentView, mTabListCoordinator.getContainerView(),
-                mTabListCoordinator.getContainerView().getAdapter(), mSelectionDelegate);
-        mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
-
-        mModel = new PropertyModel.Builder(TabSelectionEditorProperties.ALL_KEYS)
-                         .with(IS_VISIBLE, false)
-                         .build();
-
-        mTabSelectionEditorLayoutChangeProcessor = PropertyModelChangeProcessor.create(
-                mModel, mTabSelectionEditorLayout, TabSelectionEditorLayoutBinder::bind, false);
-
-        mTabSelectionEditorMediator = new TabSelectionEditorMediator(
-                mContext, mTabModelSelector, this::resetWithListOfTabs, mModel, mSelectionDelegate);
     }
 
     /**
