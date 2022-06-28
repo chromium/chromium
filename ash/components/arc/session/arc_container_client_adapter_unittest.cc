@@ -209,6 +209,7 @@ TEST_F(ArcContainerClientAdapterTest, ConvertUpgradeParams_SkipTtsCacheSetup) {
 TEST_F(ArcContainerClientAdapterTest,
        ConvertUpgradeParams_EnableTtsCacheSetup) {
   UpgradeParams upgrade_params;
+  upgrade_params.skip_tts_cache = false;
   client_adapter()->UpgradeArc(std::move(upgrade_params),
                                base::BindOnce(&OnMiniInstanceStarted));
   const auto& upgrade_request =

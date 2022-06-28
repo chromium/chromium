@@ -112,6 +112,7 @@ source_set("unit_tests") {
     "arc_session_impl_unittest.cc",
     "arc_session_runner_unittest.cc",
     "arc_stop_reason_unittest.cc",
+    "arc_upgrade_params_unittest.cc",
     "arc_vm_client_adapter_unittest.cc",
     "connection_holder_unittest.cc",
     "connection_notifier_unittest.cc",

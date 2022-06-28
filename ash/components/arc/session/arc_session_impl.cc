@@ -463,7 +463,8 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   params.num_cores_disabled = num_cores_disabled;
   params.enable_notifications_refresh =
       ash::features::IsNotificationsRefreshEnabled();
-  params.enable_tts_caching = base::FeatureList::IsEnabled(kEnableTTSCaching);
+  params.enable_tts_caching =
+      base::FeatureList::IsEnabled(kEnableTTSCacheSetup);
   params.enable_consumer_auto_update_toggle = base::FeatureList::IsEnabled(
       ash::features::kConsumerAutoUpdateToggleAllowed);
 
