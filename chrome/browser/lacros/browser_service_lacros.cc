@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -352,10 +353,10 @@ void BrowserServiceLacros::UpdateKeepAlive(bool enabled) {
   }
 }
 
-void BrowserServiceLacros::OpenForFullRestore() {
+void BrowserServiceLacros::OpenForFullRestore(bool skip_crash_restore) {
   LoadMainProfile(
       base::BindOnce(&BrowserServiceLacros::OpenForFullRestoreWithProfile,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), skip_crash_restore),
       /*can_trigger_fre=*/true);
 }
 
@@ -668,7 +669,9 @@ void BrowserServiceLacros::RestoreTabWithProfile(RestoreTabCallback callback,
   std::move(callback).Run();
 }
 
-void BrowserServiceLacros::OpenForFullRestoreWithProfile(Profile* profile) {
+void BrowserServiceLacros::OpenForFullRestoreWithProfile(
+    bool skip_crash_restore,
+    Profile* profile) {
   if (!profile) {
     LOG(WARNING) << "No profile, it might be an early exit from the FRE. "
                     "Aborting the requested action.";
@@ -707,6 +710,9 @@ void BrowserServiceLacros::OpenForFullRestoreWithProfile(Profile* profile) {
 
   // Modify the command line to restore browser sessions.
   lacros_command_line->AppendSwitch(switches::kRestoreLastSession);
+
+  if (skip_crash_restore)
+    lacros_command_line->AppendSwitch(switches::kHideCrashRestoreBubble);
 
   StartupBrowserCreator browser_creator;
   browser_creator.LaunchBrowserForLastProfiles(

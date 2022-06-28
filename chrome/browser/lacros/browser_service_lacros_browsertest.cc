@@ -40,6 +40,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 
@@ -274,6 +275,66 @@ class BrowserServiceLacrosWindowlessBrowserTest
     PrefService* pref_service = g_browser_process->local_state();
     pref_service->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
   }
+
+  // Creates a new profile with a URLS startup preference and an open tab.
+  void SetupSingleProfileWithURLSPreference() {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    // Create two profiles.
+    base::FilePath dest_path = profile_manager->user_data_dir();
+
+    Profile* profile = nullptr;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      profile = profile_manager->GetProfile(
+          dest_path.Append(FILE_PATH_LITERAL("New Profile")));
+      ASSERT_TRUE(profile);
+    }
+    DisableWelcomePages({profile});
+
+    // Lacros only supports syncing profiles for now.
+    // TODO(crbug.com/1260291): Revisit this once non-syncing profiles are
+    // allowed.
+    ProfileAttributesStorage* attributes_storage =
+        &profile_manager->GetProfileAttributesStorage();
+    attributes_storage->GetProfileAttributesWithPath(profile->GetPath())
+        ->SetAuthInfo("gaia_id", u"email",
+                      /*is_consented_primary_account=*/true);
+
+    // Don't delete Profile too early.
+    ScopedProfileKeepAlive profile_keep_alive(
+        profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+    // Open some urls in the browser.
+    Browser* browser = Browser::Create(
+        Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+    chrome::NewTab(browser);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, embedded_test_server()->GetURL("/empty.html")));
+
+    // Establish the startup preference.
+    std::vector<GURL> urls;
+    urls.push_back(ui_test_utils::GetTestUrl(
+        base::FilePath(base::FilePath::kCurrentDirectory),
+        base::FilePath(FILE_PATH_LITERAL("title1.html"))));
+    urls.push_back(ui_test_utils::GetTestUrl(
+        base::FilePath(base::FilePath::kCurrentDirectory),
+        base::FilePath(FILE_PATH_LITERAL("title2.html"))));
+
+    // Set different startup preferences for the profile.
+    SessionStartupPref pref(SessionStartupPref::URLS);
+    pref.urls = urls;
+    SessionStartupPref::SetStartupPref(profile, pref);
+    profile->GetPrefs()->CommitPendingWrite();
+
+    // Ensure the session ends with the profile created above.
+    auto last_opened_profiles =
+        g_browser_process->profile_manager()->GetLastOpenedProfiles();
+    EXPECT_EQ(1u, last_opened_profiles.size());
+    EXPECT_TRUE(base::Contains(last_opened_profiles, profile));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
@@ -420,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
   // Trigger Lacros full restore.
   base::RunLoop run_loop;
   testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 2);
-  browser_service()->OpenForFullRestore();
+  browser_service()->OpenForFullRestore(/*skip_crash_restore=*/true);
   run_loop.Run();
 
   // The startup URLs are ignored, and instead the last open sessions are
@@ -443,6 +504,117 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
   tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("/form.html",
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
+                       PRE_FullRestoreDoNotSkipCrashRestore) {
+  // Simulate a full restore by setting up a profile in a PRE_ test.
+  SetupSingleProfileWithURLSPreference();
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
+                       FullRestoreDoNotSkipCrashRestore) {
+  // Browser launch should be suppressed with the kNoStartupWindow switch.
+  ASSERT_FALSE(browser());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  // Open the profile.
+  base::FilePath dest_path = profile_manager->user_data_dir();
+
+  Profile* profile = nullptr;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    profile = profile_manager->GetProfile(
+        dest_path.Append(FILE_PATH_LITERAL("New Profile")));
+    ASSERT_TRUE(profile);
+  }
+
+  // The profile to be restored should match the one in the PRE_ test.
+  auto last_opened_profiles =
+      g_browser_process->profile_manager()->GetLastOpenedProfiles();
+  EXPECT_EQ(1u, last_opened_profiles.size());
+  EXPECT_TRUE(base::Contains(last_opened_profiles, profile));
+
+  // Disable the profile picker and set the exit type to crashed.
+  g_browser_process->local_state()->SetInteger(
+      prefs::kBrowserProfilePickerAvailabilityOnStartup,
+      static_cast<int>(ProfilePicker::AvailabilityOnStartup::kDisabled));
+  ExitTypeService::GetInstanceForProfile(profile)
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
+
+  // Trigger Lacros full restore but do not skip crash restore prompts.
+  browser_service()->OpenForFullRestore(/*skip_crash_restore=*/false);
+
+  // The browser should not be restored but instead we should have the browser's
+  // crash restore bubble prompt.
+  Browser* new_browser = nullptr;
+  ASSERT_EQ(1u, chrome::GetBrowserCount(profile));
+  new_browser = chrome::FindBrowserWithProfile(profile);
+  ASSERT_TRUE(new_browser);
+
+  TabStripModel* tab_strip = new_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  EXPECT_TRUE(content::WaitForLoadStop(tab_strip->GetWebContentsAt(0)));
+
+  views::BubbleDialogDelegate* crash_bubble_delegate =
+      SessionCrashedBubbleView::GetInstanceForTest();
+  EXPECT_TRUE(crash_bubble_delegate);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
+                       PRE_FullRestoreSkipCrashRestore) {
+  // Simulate a full restore by setting up a profile in a PRE_ test.
+  SetupSingleProfileWithURLSPreference();
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
+                       FullRestoreSkipCrashRestore) {
+  // Browser launch should be suppressed with the kNoStartupWindow switch.
+  ASSERT_FALSE(browser());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  // Open the profile.
+  base::FilePath dest_path = profile_manager->user_data_dir();
+
+  Profile* profile = nullptr;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    profile = profile_manager->GetProfile(
+        dest_path.Append(FILE_PATH_LITERAL("New Profile")));
+    ASSERT_TRUE(profile);
+  }
+
+  // The profile to be restored should match the one in the PRE_ test.
+  auto last_opened_profiles =
+      g_browser_process->profile_manager()->GetLastOpenedProfiles();
+  EXPECT_EQ(1u, last_opened_profiles.size());
+  EXPECT_TRUE(base::Contains(last_opened_profiles, profile));
+
+  // Disable the profile picker and set the exit type to crashed.
+  g_browser_process->local_state()->SetInteger(
+      prefs::kBrowserProfilePickerAvailabilityOnStartup,
+      static_cast<int>(ProfilePicker::AvailabilityOnStartup::kDisabled));
+  ExitTypeService::GetInstanceForProfile(profile)
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
+
+  // Trigger Lacros full restore and skip crash restore prompts.
+  base::RunLoop run_loop;
+  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
+  browser_service()->OpenForFullRestore(/*skip_crash_restore=*/true);
+  run_loop.Run();
+
+  // The browser should be restored (ignoring startup preference).
+  Browser* new_browser = nullptr;
+  ASSERT_EQ(1u, chrome::GetBrowserCount(profile));
+  new_browser = chrome::FindBrowserWithProfile(profile);
+  ASSERT_TRUE(new_browser);
+
+  TabStripModel* tab_strip = new_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  EXPECT_EQ("/empty.html",
             tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 }
 

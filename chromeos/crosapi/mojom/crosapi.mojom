@@ -1149,7 +1149,7 @@ struct OpenUrlParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 69.
+// Next MinVersion: 70.
 // Next ID: 19
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
@@ -1268,8 +1268,11 @@ interface BrowserService {
   // Opens lacros with a full restore (all previously open windows from the
   // previous lacros session). This must be called before a browser has been
   // created as this will update the state of the last opened profiles.
+  // If `skip_crash_restore` is true full restore will restore the previous
+  // session, bypassing the typical crash restore flow (i.e. the crash restore
+  // bubble anchored to the browser's app menu button).
   [MinVersion=64]
-  OpenForFullRestore@15();
+  OpenForFullRestore@15([MinVersion=69] bool skip_crash_restore);
 
   // The old UpdateComponentPolicy method.
   [MinVersion=67]

@@ -177,7 +177,8 @@ void FullRestoreAppLaunchHandler::OnStateChanged() {
   if (crosapi::BrowserManager::Get()->IsRunning()) {
     observation_.Reset();
     VLOG(1) << "Full restore opens Lacros";
-    crosapi::BrowserManager::Get()->OpenForFullRestore();
+    crosapi::BrowserManager::Get()->OpenForFullRestore(
+        /*skip_crash_restore=*/IsLastSessionExitTypeCrashed());
   }
 }
 
@@ -275,8 +276,7 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
 
   restore_data()->RemoveApp(app_constants::kChromeAppId);
 
-  if (ExitTypeService::GetLastSessionExitType(profile()) ==
-      ExitType::kCrashed) {
+  if (IsLastSessionExitTypeCrashed()) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kHideCrashRestoreBubble);
   }
@@ -358,7 +358,8 @@ void FullRestoreAppLaunchHandler::MaybeRestoreLacros() {
 
   if (crosapi::BrowserManager::Get()->IsRunning()) {
     VLOG(1) << "Full restore opens Lacros";
-    crosapi::BrowserManager::Get()->OpenForFullRestore();
+    crosapi::BrowserManager::Get()->OpenForFullRestore(
+        /*skip_crash_restore=*/IsLastSessionExitTypeCrashed());
     return;
   }
 
@@ -499,6 +500,11 @@ void FullRestoreAppLaunchHandler::MaybeStartSaveTimer() {
   // timer.
   if (are_chrome_apps_initialized_ && are_web_apps_initialized_)
     ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
+}
+
+bool FullRestoreAppLaunchHandler::IsLastSessionExitTypeCrashed() {
+  return ExitTypeService::GetLastSessionExitType(profile()) ==
+         ExitType::kCrashed;
 }
 
 ScopedLaunchBrowserForTesting::ScopedLaunchBrowserForTesting() {

@@ -149,6 +149,10 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
   // If the restore process finish, start the save timer.
   void MaybeStartSaveTimer();
 
+  // Returns true if the previous session is reported to have ended with a
+  // crash.
+  bool IsLastSessionExitTypeCrashed();
+
   bool should_restore_ = false;
 
   // Specifies whether it is the first time to run the full restore feature.

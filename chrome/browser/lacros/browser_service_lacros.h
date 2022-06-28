@@ -58,7 +58,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
   void UpdateDeviceAccountPolicy(const std::vector<uint8_t>& policy) override;
   void NotifyPolicyFetchAttempt() override;
   void UpdateKeepAlive(bool enabled) override;
-  void OpenForFullRestore() override;
+  void OpenForFullRestore(bool skip_crash_restore) override;
 
  private:
   struct PendingOpenUrl;
@@ -97,7 +97,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
                           OpenUrlCallback callback,
                           Profile* profile);
   void RestoreTabWithProfile(RestoreTabCallback callback, Profile* profile);
-  void OpenForFullRestoreWithProfile(Profile* profile);
+  void OpenForFullRestoreWithProfile(bool skip_crash_restore, Profile* profile);
   void UpdateComponentPolicy(policy::ComponentPolicyMap policy) override;
 
   // Called when a session is restored.
