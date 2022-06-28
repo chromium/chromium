@@ -5527,6 +5527,21 @@
             ]
         }
     ],
+    "MessagePumpMacDelayedWorkOptimizations": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MessagePumpMacDelayedWorkOptimizations"
+                    ]
+                }
+            ]
+        }
+    ],
     "MessagesPreinstall": [
         {
             "platforms": [
