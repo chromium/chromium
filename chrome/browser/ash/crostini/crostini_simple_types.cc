@@ -79,6 +79,7 @@ const char* CrostiniResultString(const CrostiniResult res) {
     ENTRY(CONTAINER_CREATE_FAILED_SIGNAL);
     ENTRY(STOP_VM_NO_RESPONSE);
     ENTRY(SIGNAL_NOT_CONNECTED);
+    ENTRY(INSTALL_TERMINA_CANCELLED);
   }
 #undef ENTRY
   return "unknown code";

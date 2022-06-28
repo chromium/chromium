@@ -28,8 +28,8 @@ namespace crostini {
 TerminaInstaller::TerminaInstaller() = default;
 TerminaInstaller::~TerminaInstaller() = default;
 
-void TerminaInstaller::Cancel() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
+void TerminaInstaller::CancelInstall() {
+  is_cancelled_ = true;
 }
 
 void TerminaInstaller::Install(base::OnceCallback<void(InstallResult)> callback,
@@ -67,14 +67,16 @@ void TerminaInstaller::OnInstallDlc(
     const chromeos::DlcserviceClient::InstallResult& result) {
   CHECK(result.dlc_id == kCrostiniDlcName);
   InstallResult response;
-  if (result.error == dlcservice::kErrorNone) {
+  if (is_cancelled_) {
+    response = InstallResult::Cancelled;
+  } else if (result.error == dlcservice::kErrorNone) {
     response = InstallResult::Success;
     dlc_id_ = kCrostiniDlcName;
     termina_location_ = base::FilePath(result.root_path);
   } else if (is_initial_install && result.error == dlcservice::kErrorBusy) {
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&TerminaInstaller::InstallDlc,
+        base::BindOnce(&TerminaInstaller::RetryInstallDlc,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        is_initial_install),
         base::Seconds(5));
@@ -95,7 +97,20 @@ void TerminaInstaller::OnInstallDlc(
       response = InstallResult::Failure;
     }
   }
+
+  is_cancelled_ = false;
   std::move(callback).Run(response);
+}
+
+void TerminaInstaller::RetryInstallDlc(
+    base::OnceCallback<void(InstallResult)> callback,
+    bool is_initial_install) {
+  if (is_cancelled_) {
+    is_cancelled_ = false;
+    std::move(callback).Run(InstallResult::Cancelled);
+    return;
+  }
+  InstallDlc(std::move(callback), is_initial_install);
 }
 
 void TerminaInstaller::Uninstall(base::OnceCallback<void(bool)> callback) {

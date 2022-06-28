@@ -280,9 +280,9 @@ class CrostiniManager::CrostiniRestarter
   // immediately after calling this.
   void FinishRestart(CrostiniResult result);
 
-  // If the current operation can be cancelled, cancel it, complete the
-  // restart (deleting |this|), and return true.
-  bool MaybeCancelCurrentOperation();
+  // If the current operation can be cancelled, cancel it. This is run at most
+  // once, when all requests are cancelled or the restart is aborted.
+  void MaybeCancelCurrentOperation();
 
   void LogRestarterResult(const RestartRequest& request, CrostiniResult result);
 
@@ -456,6 +456,7 @@ void CrostiniManager::CrostiniRestarter::Timeout(mojom::InstallerState state) {
 }
 
 void CrostiniManager::CrostiniRestarter::CancelRequest(RestartId restart_id) {
+  int num_requests = requests_.size();
   FinishRequests(
       base::BindRepeating(
           [](RestartId restart_id, const RestartRequest& request) -> bool {
@@ -463,17 +464,18 @@ void CrostiniManager::CrostiniRestarter::CancelRequest(RestartId restart_id) {
           },
           restart_id),
       CrostiniResult::RESTART_REQUEST_CANCELLED);
+  DCHECK_LE(requests_.size(), num_requests);
 
   if (requests_.empty()) {
-    // May delete |this|.
     MaybeCancelCurrentOperation();
   }
 }
 
 void CrostiniManager::CrostiniRestarter::Abort(base::OnceClosure callback) {
   abort_callbacks_.push_back(std::move(callback));
-  if (abort_callbacks_.size() > 1) {
-    // The subsequent steps only need to be run once.
+  if (requests_.empty()) {
+    // New requests are not added to aborted restarters, so we've already been
+    // aborted and/or all requests were explicitly cancelled.
     return;
   }
 
@@ -482,7 +484,6 @@ void CrostiniManager::CrostiniRestarter::Abort(base::OnceClosure callback) {
   FinishRequests(
       base::BindRepeating([](const RestartRequest& request) { return true; }),
       CrostiniResult::RESTART_ABORTED);
-  // May delete |this|.
   MaybeCancelCurrentOperation();
 }
 
@@ -931,30 +932,12 @@ void CrostiniManager::CrostiniRestarter::FinishRestart(CrostiniResult result) {
   crostini_manager_->RestartCompleted(this, std::move(closure));
 }
 
-bool CrostiniManager::CrostiniRestarter::MaybeCancelCurrentOperation() {
+void CrostiniManager::CrostiniRestarter::MaybeCancelCurrentOperation() {
   if (stage_ == mojom::InstallerState::kInstallImageLoader) {
-    // TerminaInstaller offers a way to cancel installation, which also
-    // prevents any callback from running.
+    // Currently this is the only step that can be "cancelled". The relevant
+    // completion callback, LoadComponentFinished(), is still called.
     crostini_manager_->CancelInstallTermina();
-
-    // Not specific to kInstallImageLoader, this will also need to be run if
-    // any other steps are made cancellable.
-    // TODO(timloh): This posts a task because unit tests synchronously cancel
-    // restart requests from observer methods. If we remove this behaviour,
-    // we could just call ReturnEarlyIfNeeded() directly.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](base::WeakPtr<CrostiniRestarter> weak_this) {
-                         if (weak_this) {
-                           weak_this->ReturnEarlyIfNeeded();
-                         }
-                       },
-                       weak_ptr_factory_.GetWeakPtr()));
-    return true;
   }
-
-  // Current stage can not be cancelled.
-  return false;
 }
 
 void CrostiniManager::CrostiniRestarter::LogRestarterResult(
@@ -1362,6 +1345,9 @@ void CrostiniManager::InstallTermina(CrostiniResultCallback callback,
             } else if (result == TerminaInstaller::InstallResult::NeedUpdate) {
               LOG(ERROR) << "Installing Termina failed: need update";
               res = CrostiniResult::NEED_UPDATE;
+            } else if (result == TerminaInstaller::InstallResult::Cancelled) {
+              LOG(ERROR) << "Installing Termina failed: cancelled";
+              res = CrostiniResult::INSTALL_TERMINA_CANCELLED;
             } else {
               CHECK(false)
                   << "Got unexpected value of TerminaInstaller::InstallResult";
@@ -1374,7 +1360,7 @@ void CrostiniManager::InstallTermina(CrostiniResultCallback callback,
 }
 
 void CrostiniManager::CancelInstallTermina() {
-  termina_installer_.Cancel();
+  termina_installer_.CancelInstall();
 }
 
 void CrostiniManager::UninstallTermina(BoolCallback callback) {

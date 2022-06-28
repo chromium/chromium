@@ -77,12 +77,13 @@ class TerminaInstallTest : public testing::Test {
     run_loop_.Quit();
   }
 
-  void ExpectNotCalled(TerminaInstaller::InstallResult result) {
-    ASSERT_TRUE(false) << "Callback was run unexpectedly";
-  }
-
   void ExpectOffline(TerminaInstaller::InstallResult result) {
     EXPECT_EQ(result, TerminaInstaller::InstallResult::Offline);
+    run_loop_.Quit();
+  }
+
+  void ExpectCancelled(TerminaInstaller::InstallResult result) {
+    EXPECT_EQ(result, TerminaInstaller::InstallResult::Cancelled);
     run_loop_.Quit();
   }
 
@@ -237,6 +238,17 @@ TEST_F(TerminaInstallTest, InstallDlc) {
   ExpectDlcInstalled();
 }
 
+TEST_F(TerminaInstallTest, InstallDlcCancell) {
+  termina_installer_.Install(
+      base::BindOnce(&TerminaInstallTest::ExpectCancelled,
+                     base::Unretained(this)),
+      /*is_initial_install=*/true);
+  termina_installer_.CancelInstall();
+  run_loop_.Run();
+
+  CheckDlcInstallCalledTimes(1);
+}
+
 TEST_F(TerminaInstallTest, InstallDlcError) {
   fake_dlc_client_->set_install_error("An error");
 
@@ -285,14 +297,14 @@ TEST_F(TerminaInstallTest, InstallDlcBusyRetryIsCancelable) {
   fake_dlc_client_->set_install_error(dlcservice::kErrorBusy);
 
   termina_installer_.Install(
-      base::BindOnce(&TerminaInstallTest::ExpectNotCalled,
+      base::BindOnce(&TerminaInstallTest::ExpectCancelled,
                      base::Unretained(this)),
       /*is_initial_install=*/true);
   task_env_.FastForwardBy(base::Seconds(0));
 
   CheckDlcInstallCalledTimes(1);
 
-  termina_installer_.Cancel();
+  termina_installer_.CancelInstall();
 
   task_env_.FastForwardBy(base::Days(1));
 
@@ -373,23 +385,6 @@ TEST_F(TerminaInstallTest, InstallDlcFallbackError) {
                                             base::Unretained(this)),
                              /*is_initial_install=*/false);
   run_loop_.Run();
-
-  CheckDlcInstallCalledTimes(1);
-  EXPECT_FALSE(component_manager_->IsRegisteredMayBlock(
-      imageloader::kTerminaComponentName));
-}
-
-TEST_F(TerminaInstallTest, InstallDlcFallbackIsCancelable) {
-  fake_dlc_client_->set_install_error("An error");
-  PrepareComponentForLoad();
-
-  termina_installer_.Install(
-      base::BindOnce(&TerminaInstallTest::ExpectNotCalled,
-                     base::Unretained(this)),
-      /*is_initial_install=*/false);
-  termina_installer_.Cancel();
-
-  task_env_.FastForwardBy(base::Days(1));
 
   CheckDlcInstallCalledTimes(1);
   EXPECT_FALSE(component_manager_->IsRegisteredMayBlock(

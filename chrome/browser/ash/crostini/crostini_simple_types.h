@@ -110,7 +110,8 @@ enum class CrostiniResult {
   CONTAINER_CREATE_FAILED_SIGNAL = 75,
   STOP_VM_NO_RESPONSE = 76,
   SIGNAL_NOT_CONNECTED = 77,
-  kMaxValue = SIGNAL_NOT_CONNECTED,
+  INSTALL_TERMINA_CANCELLED = 78,
+  kMaxValue = INSTALL_TERMINA_CANCELLED,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };

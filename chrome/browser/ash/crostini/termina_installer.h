@@ -36,6 +36,8 @@ class TerminaInstaller {
     Offline,
     // The device must be updated before termina can be installed.
     NeedUpdate,
+    // The install request was cancelled.
+    Cancelled,
   };
 
   // This is really a bool, but std::vector<bool> has weird properties that stop
@@ -66,8 +68,11 @@ class TerminaInstaller {
   absl::optional<std::string> GetDlcId();
 
   // Attempt to cancel a pending install. The DLC service does not support
-  // this, but we have some retry logic that can be aborted.
-  void Cancel();
+  // this, but we have some retry logic that can be aborted. The result
+  // callback is run on completion with a result of Cancelled.
+  // If there are multiple concurrent install requests, the wrong request may
+  // end up cancelled.
+  void CancelInstall();
 
  private:
   void InstallDlc(base::OnceCallback<void(InstallResult)> callback,
@@ -75,6 +80,8 @@ class TerminaInstaller {
   void OnInstallDlc(base::OnceCallback<void(InstallResult)> callback,
                     bool is_initial_install,
                     const chromeos::DlcserviceClient::InstallResult& result);
+  void RetryInstallDlc(base::OnceCallback<void(InstallResult)> callback,
+                       bool is_initial_install);
 
   void RemoveComponentIfPresent(base::OnceCallback<void()> callback,
                                 UninstallResult* result);
@@ -87,6 +94,9 @@ class TerminaInstaller {
 
   absl::optional<base::FilePath> termina_location_{absl::nullopt};
   absl::optional<std::string> dlc_id_{};
+
+  bool is_cancelled_ = false;
+
   base::WeakPtrFactory<TerminaInstaller> weak_ptr_factory_{this};
 };
 
