@@ -45,19 +45,19 @@ constexpr {{constant.kind|cpp_pod_type}} {{interface.name}}::{{constant.name}};
 {%-   endif %}
 {%- endfor %}
 
-uint32_t {{interface.name}}::MessageToStableIPCHash_(mojo::Message& message) {
+std::pair<uint32_t, const void*> {{interface.name}}::MessageToMethodInfo_(mojo::Message& message) {
 {%- if interface.methods %}
   switch (message.name()) {
 {%-   for method in interface.methods %}
     case internal::k{{interface.name}}_{{method.name}}_Name: {
       constexpr uint32_t value = base::MD5Hash32Constexpr(
               "(Impl){{namespace_as_string}}::{{interface.name}}::{{method.name}}");
-      return value;
+      return std::make_pair(value, reinterpret_cast<const void*>(&{{interface.name}}::{{method.name}}_Sym::IPCSymbol));
     }
 {%-   endfor %}
   }
 {%- endif %}
-  return 0;
+  return std::make_pair(0, nullptr);
 }
 
 
@@ -92,18 +92,13 @@ const char* {{interface.name}}::MessageToMethodName_(mojo::Message& message) {
 #endif // BUILDFLAG(MOJO_TRACE_ENABLED)
 }
 
-const void* {{interface.name}}::MessageToMethodAddress_(mojo::Message& message) {
-{%- if interface.methods %}
-  switch (message.name()) {
 {%-   for method in interface.methods %}
-    case internal::k{{interface.name}}_{{method.name}}_Name: {
-        return reinterpret_cast<const void*>(&{{interface.name}}::{{method.name}}_Sym::IPCSymbol);
-    }
-{%-   endfor %}
-  }
-{%- endif %}
-  return nullptr;
+void {{interface.name}}::{{method.name}}_Sym::IPCSymbol() {
+  // This method's address is used for indetifiying the mojo method name after
+  // symblozation. So each IPCSymbol should have a unique address.
+  NO_CODE_FOLDING();
 }
+{%-   endfor %}
 
 {%- for method in interface.methods %}
 {%-   if method.sync %}

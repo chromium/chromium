@@ -107,9 +107,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfacePtrStateBase {
       bool has_uninterruptable_methods,
       std::unique_ptr<MessageReceiver> payload_validator,
       const char* interface_name,
-      MessageToStableIPCHashCallback ipc_hash_callback,
-      MessageToMethodNameCallback method_name_callback,
-      MessageToMethodAddressCallback method_address_callback);
+      MessageToMethodInfoCallback method_info_callback,
+      MessageToMethodNameCallback method_name_callback);
 
  private:
   void OnQueryVersion(base::OnceCallback<void(uint32_t)> callback,
@@ -263,9 +262,8 @@ class InterfacePtrState : public InterfacePtrStateBase {
             Interface::PassesAssociatedKinds_, Interface::HasSyncMethods_,
             Interface::HasUninterruptableMethods_,
             std::make_unique<typename Interface::ResponseValidator_>(),
-            Interface::Name_, Interface::MessageToStableIPCHash_,
-            Interface::MessageToMethodName_,
-            Interface::MessageToMethodAddress_)) {
+            Interface::Name_, Interface::MessageToMethodInfo_,
+            Interface::MessageToMethodName_)) {
       proxy_ = std::make_unique<Proxy>(endpoint_client());
     }
   }

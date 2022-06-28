@@ -53,17 +53,15 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   // called the constructor.
   //
   // `receiver` may be null, but if non-null it must outlive this object.
-  InterfaceEndpointClient(
-      ScopedInterfaceEndpointHandle handle,
-      MessageReceiverWithResponderStatus* receiver,
-      std::unique_ptr<MessageReceiver> payload_validator,
-      bool expect_sync_requests,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      uint32_t interface_version,
-      const char* interface_name,
-      MessageToStableIPCHashCallback ipc_hash_callback,
-      MessageToMethodNameCallback method_name_callback,
-      MessageToMethodAddressCallback method_address_callback);
+  InterfaceEndpointClient(ScopedInterfaceEndpointHandle handle,
+                          MessageReceiverWithResponderStatus* receiver,
+                          std::unique_ptr<MessageReceiver> payload_validator,
+                          bool expect_sync_requests,
+                          scoped_refptr<base::SequencedTaskRunner> task_runner,
+                          uint32_t interface_version,
+                          const char* interface_name,
+                          MessageToMethodInfoCallback method_info_callback,
+                          MessageToMethodNameCallback method_name_callback);
 
   InterfaceEndpointClient(const InterfaceEndpointClient&) = delete;
   InterfaceEndpointClient& operator=(const InterfaceEndpointClient&) = delete;
@@ -195,14 +193,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   void MaybeSendNotifyIdle();
 
   const char* interface_name() const { return interface_name_; }
-  MessageToStableIPCHashCallback ipc_hash_callback() const {
-    return ipc_hash_callback_;
+  MessageToMethodInfoCallback method_info_callback() const {
+    return method_info_callback_;
   }
   MessageToMethodNameCallback method_name_callback() const {
     return method_name_callback_;
-  }
-  MessageToMethodAddressCallback method_address_callback() const {
-    return method_address_callback_;
   }
 
 #if DCHECK_IS_ON()
@@ -332,9 +327,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   internal::ControlMessageProxy control_message_proxy_{this};
   internal::ControlMessageHandler control_message_handler_;
   const char* interface_name_;
-  const MessageToStableIPCHashCallback ipc_hash_callback_;
+  const MessageToMethodInfoCallback method_info_callback_;
   const MessageToMethodNameCallback method_name_callback_;
-  const MessageToMethodAddressCallback method_address_callback_;
 
 #if DCHECK_IS_ON()
   // The code location of the the most recent call into a method on this

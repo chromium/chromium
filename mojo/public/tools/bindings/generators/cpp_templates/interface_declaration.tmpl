@@ -16,9 +16,9 @@ class {{export_attribute}} {{interface.name}}
     : public {{interface.name}}InterfaceBase {
  public:
   static const char Name_[];
-  static uint32_t MessageToStableIPCHash_(mojo::Message& message);
+  static std::pair<uint32_t, const void*> MessageToMethodInfo_(mojo::Message& message);
   static const char* MessageToMethodName_(mojo::Message& message);
-  static const void* MessageToMethodAddress_(mojo::Message& message);
+
 
 {%-  if interface.uuid %}
   static constexpr base::Token Uuid_{ {{interface.uuid[0]}}ULL,
@@ -58,7 +58,7 @@ class {{export_attribute}} {{interface.name}}
 {#--- Per method symbols #}
 {%- for method in interface.methods %}
   struct {{method.name}}_Sym {
-    static void IPCSymbol() {};
+    NOINLINE static void IPCSymbol();
   };
 {%- endfor %}
 

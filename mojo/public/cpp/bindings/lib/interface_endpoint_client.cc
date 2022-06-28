@@ -424,9 +424,8 @@ InterfaceEndpointClient::InterfaceEndpointClient(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     uint32_t interface_version,
     const char* interface_name,
-    MessageToStableIPCHashCallback ipc_hash_callback,
-    MessageToMethodNameCallback method_name_callback,
-    MessageToMethodAddressCallback method_address_callback)
+    MessageToMethodInfoCallback method_info_callback,
+    MessageToMethodNameCallback method_name_callback)
     : expect_sync_requests_(expect_sync_requests),
       handle_(std::move(handle)),
       incoming_receiver_(receiver),
@@ -434,9 +433,8 @@ InterfaceEndpointClient::InterfaceEndpointClient(
       task_runner_(std::move(task_runner)),
       control_message_handler_(this, interface_version),
       interface_name_(interface_name),
-      ipc_hash_callback_(ipc_hash_callback),
-      method_name_callback_(method_name_callback),
-      method_address_callback_(method_address_callback) {
+      method_info_callback_(method_info_callback),
+      method_name_callback_(method_name_callback) {
   DCHECK(handle_.is_valid());
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -850,10 +848,11 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
               [&](perfetto::EventContext& ctx) {
                 auto* info = ctx.event()->set_chrome_mojo_event_info();
                 info->set_mojo_interface_tag(interface_name_);
-                info->set_ipc_hash(ipc_hash_callback_(*message));
+                const auto method_info = method_info_callback_(*message);
+                info->set_ipc_hash(method_info.first);
 
-                const auto method_address = reinterpret_cast<uintptr_t>(
-                    method_address_callback_(*message));
+                const auto method_address =
+                    reinterpret_cast<uintptr_t>(method_info.second);
                 const absl::optional<size_t> location_iid =
                     base::trace_event::InternedUnsymbolizedSourceLocation::Get(
                         &ctx, method_address);
