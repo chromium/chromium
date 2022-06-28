@@ -10,6 +10,7 @@ import("//chromeos/ash/components/hibernate/buildflags.gni")
 import("//chromeos/components/sensors/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
+import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
@@ -1619,9 +1620,6 @@ source_set("chromeos") {
     "app_mode/chrome_kiosk_external_loader_broker.h",
     "app_mode/kiosk_app_external_loader.cc",
     "app_mode/kiosk_app_external_loader.h",
-    "app_mode/kiosk_session_plugin_handler.cc",
-    "app_mode/kiosk_session_plugin_handler.h",
-    "app_mode/kiosk_session_plugin_handler_delegate.h",
     "app_mode/kiosk_settings_navigation_throttle.cc",
     "app_mode/kiosk_settings_navigation_throttle.h",
     "app_mode/startup_app_launcher_update_checker.cc",
@@ -1953,6 +1951,14 @@ source_set("chromeos") {
 
   if (enable_hibernate) {
     deps += [ "//chromeos/ash/components/dbus/hiberman" ]
+  }
+
+  if (enable_plugins) {
+    sources += [
+      "app_mode/kiosk_session_plugin_handler.cc",
+      "app_mode/kiosk_session_plugin_handler.h",
+      "app_mode/kiosk_session_plugin_handler_delegate.h",
+    ]
   }
 }
 
@@ -3007,7 +3013,6 @@ source_set("unit_tests") {
     "../ui/browser_finder_chromeos_unittest.cc",
     "app_mode/app_session_unittest.cc",
     "app_mode/chrome_kiosk_app_launcher_unittest.cc",
-    "app_mode/kiosk_session_plugin_handler_unittest.cc",
     "extensions/active_tab_permission_granter_delegate_chromeos_unittest.cc",
     "extensions/default_app_order_unittest.cc",
     "extensions/device_local_account_external_policy_loader_unittest.cc",
@@ -3285,6 +3290,10 @@ source_set("unit_tests") {
       "../ash/chromebox_for_meetings/service_adaptor_unittest.cc",
     ]
     deps += [ "//ash/services/chromebox_for_meetings/public/cpp:test_support" ]
+  }
+
+  if (enable_plugins) {
+    sources += [ "app_mode/kiosk_session_plugin_handler_unittest.cc" ]
   }
 
   data = [

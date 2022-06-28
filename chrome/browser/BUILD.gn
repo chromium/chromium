@@ -5268,9 +5268,6 @@ static_library("browser") {
       "chromeos/app_mode/chrome_kiosk_external_loader_broker.h",
       "chromeos/app_mode/kiosk_app_external_loader.cc",
       "chromeos/app_mode/kiosk_app_external_loader.h",
-      "chromeos/app_mode/kiosk_session_plugin_handler.cc",
-      "chromeos/app_mode/kiosk_session_plugin_handler.h",
-      "chromeos/app_mode/kiosk_session_plugin_handler_delegate.h",
       "chromeos/app_mode/kiosk_settings_navigation_throttle.cc",
       "chromeos/app_mode/kiosk_settings_navigation_throttle.h",
       "chromeos/app_mode/startup_app_launcher_update_checker.cc",
@@ -5492,6 +5489,14 @@ static_library("browser") {
       "//ui/chromeos/styles:cros_styles_views",
       "//ui/platform_window",
     ]
+
+    if (enable_plugins) {
+      sources += [
+        "chromeos/app_mode/kiosk_session_plugin_handler.cc",
+        "chromeos/app_mode/kiosk_session_plugin_handler.h",
+        "chromeos/app_mode/kiosk_session_plugin_handler_delegate.h",
+      ]
+    }
 
     # component builds are not compatible on device.
     assert(!is_chromeos_device || !is_component_build)

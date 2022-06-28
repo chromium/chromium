@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
+#include "ppapi/buildflags/buildflags.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -43,8 +43,9 @@ extern const char kKioskSessionStartTime[];
 
 extern const base::TimeDelta kKioskSessionDurationHistogramLimit;
 
-class KioskSessionPluginHandler;
 class AppSessionMetricsService;
+class KioskSessionPluginHandler;
+class KioskSessionPluginHandlerDelegate;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -63,14 +64,14 @@ enum class KioskSessionState {
 };
 
 // AppSession maintains a kiosk session and handles its lifetime.
-class AppSession : public KioskSessionPluginHandlerDelegate {
+class AppSession {
  public:
   AppSession();
   explicit AppSession(base::OnceClosure attempt_user_exit,
                       PrefService* local_state);
   AppSession(const AppSession&) = delete;
   AppSession& operator=(const AppSession&) = delete;
-  ~AppSession() override;
+  virtual ~AppSession();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -89,6 +90,8 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
   Browser* GetSettingsBrowserForTesting();
   void SetOnHandleBrowserCallbackForTesting(base::RepeatingClosure closure);
 
+  KioskSessionPluginHandlerDelegate* GetPluginHandlerDelegateForTesting();
+
  protected:
   // Set the |profile_| object.
   void SetProfile(Profile* profile);
@@ -102,20 +105,21 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
   // App Kiosk.
   class AppWindowHandler;
 
+  // PluginHandlerDelegateImpl handles callbacks from `plugin_handler_`.
+  class PluginHandlerDelegateImpl;
+
   void OnHandledNewBrowserWindow();
   void OnAppWindowAdded(extensions::AppWindow* app_window);
   void OnLastAppWindowClosed();
-
-  // KioskSessionPluginHandlerDelegate
-  bool ShouldHandlePlugin(const base::FilePath& plugin_path) const override;
-  void OnPluginCrashed(const base::FilePath& plugin_path) override;
-  void OnPluginHung(const std::set<int>& hung_plugins) override;
 
   bool is_shutting_down_ = false;
 
   std::unique_ptr<AppWindowHandler> app_window_handler_;
   std::unique_ptr<AppSessionBrowserWindowHandler> browser_window_handler_;
+#if BUILDFLAG(ENABLE_PLUGINS)
+  std::unique_ptr<PluginHandlerDelegateImpl> plugin_handler_delegate_;
   std::unique_ptr<KioskSessionPluginHandler> plugin_handler_;
+#endif
 
   raw_ptr<Profile> profile_ = nullptr;
 
