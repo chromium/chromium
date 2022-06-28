@@ -22,9 +22,9 @@ promise_test(async () => {
   let uuid1 = await sharedStorage.selectURL(
       "verify-storage-entries-url-selection-operation",
       [{url: url0,
-        reporting_metadata: {'click': "resources/frame0.html"}},
+        reportingMetadata: {'click': "resources/frame0.html"}},
        {url: url1,
-        reporting_metadata:
+        reportingMetadata:
           {'mouse interaction': "resources/frame1.html",
           'click': "resources/frame2.html"}}]);
 

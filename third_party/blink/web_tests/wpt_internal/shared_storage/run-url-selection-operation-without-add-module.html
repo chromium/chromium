@@ -42,7 +42,7 @@ promise_test(async t => {
   try {
       await sharedStorage.selectURL(
           "test-url-selection-operation", [{
-              reporting_metadata: {
+              reportingMetadata: {
                   'click': "https://google.com"
               }
           }]);
@@ -79,7 +79,7 @@ promise_test(async t => {
       await sharedStorage.selectURL(
           "test-url-selection-operation", [{
               url: "resources/frame0.html",
-              reporting_metadata: {
+              reportingMetadata: {
                   'click': "https://#"
               }
           }]);
@@ -98,7 +98,7 @@ promise_test(async t => {
       await sharedStorage.selectURL(
           "test-url-selection-operation", [{
               url: "resources/frame0.html",
-              reporting_metadata: {
+              reportingMetadata: {
                   'click': "http://google.com"
               }
           }]);
@@ -116,16 +116,16 @@ promise_test(async t => {
       await sharedStorage.selectURL(
           "test-url-selection-operation", [{
               url: "resources/frame0.html",
-              reporting_metadata: {}
+              reportingMetadata: {}
           }]);
   } catch (e) {
     assert_equals(e.name, 'DataError');
-      assert_equals(e.message, 'selectURL could not get reporting_metadata \
+      assert_equals(e.message, 'selectURL could not get reportingMetadata \
 object attributes');
     return;
   }
   assert_unreached("did not reject");
-}, 'selectURL() with invalid reporting_metadata');
+}, 'selectURL() with invalid reportingMetadata');
 
 </script>
 </body>
