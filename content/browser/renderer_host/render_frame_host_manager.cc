@@ -974,15 +974,15 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
     // done inside GetFrameHostForNavigation(request), but we avoid calling that
     // method for navigations which will be forced into the current document.
     CleanUpNavigation();
-    request->set_associated_site_instance_type(
-        NavigationRequest::AssociatedSiteInstanceType::CURRENT);
+    request->set_associated_rfh_type(
+        NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
   } else {
     RenderFrameHostImpl* dest_rfh = GetFrameHostForNavigation(request);
     DCHECK(dest_rfh);
-    request->set_associated_site_instance_type(
+    request->set_associated_rfh_type(
         dest_rfh == render_frame_host_.get()
-            ? NavigationRequest::AssociatedSiteInstanceType::CURRENT
-            : NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+            ? NavigationRequest::AssociatedRenderFrameHostType::CURRENT
+            : NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
   }
 }
 
@@ -1300,8 +1300,8 @@ void RenderFrameHostManager::MaybeCleanUpNavigation() {
   NavigationRequest* navigation_request =
       frame_tree_node_->navigation_request();
   if (navigation_request &&
-      navigation_request->associated_site_instance_type() ==
-          NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE) {
+      navigation_request->associated_rfh_type() ==
+          NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE) {
     return;
   }
   CleanUpNavigation();

@@ -174,13 +174,16 @@ class CONTENT_EXPORT NavigationRequest
     DID_COMMIT_ERROR_PAGE,
   };
 
-  // The SiteInstance currently associated with the navigation. Note that the
+  // The RenderFrameHost currently associated with the navigation. Note that the
   // final value will only be known when the response is received, or the
-  // navigation fails, as server redirects can modify the SiteInstance to use
+  // navigation fails, as server redirects can modify the RenderFrameHost to use
   // for the navigation.
-  enum class AssociatedSiteInstanceType {
+  enum class AssociatedRenderFrameHostType {
     NONE = 0,
+    // The navigation reuses the current RenderFrameHost.
     CURRENT,
+    // The navigation uses a new RenderFrameHost, the speculative
+    // RenderFrameHost.
     SPECULATIVE,
   };
 
@@ -442,11 +445,11 @@ class CONTENT_EXPORT NavigationRequest
 
   bool from_begin_navigation() const { return from_begin_navigation_; }
 
-  AssociatedSiteInstanceType associated_site_instance_type() const {
-    return associated_site_instance_type_;
+  AssociatedRenderFrameHostType associated_rfh_type() const {
+    return associated_rfh_type_;
   }
-  void set_associated_site_instance_type(AssociatedSiteInstanceType type) {
-    associated_site_instance_type_ = type;
+  void set_associated_rfh_type(AssociatedRenderFrameHostType type) {
+    associated_rfh_type_ = type;
   }
 
   void set_was_discarded() { commit_params_->was_discarded = true; }
@@ -1601,9 +1604,9 @@ class CONTENT_EXPORT NavigationRequest
   // Whether devtools overrides were applied on the User-Agent request header.
   bool devtools_user_agent_override_ = false;
 
-  // The type of SiteInstance associated with this navigation.
-  AssociatedSiteInstanceType associated_site_instance_type_ =
-      AssociatedSiteInstanceType::NONE;
+  // The type of RenderFrameHost associated with this navigation.
+  AssociatedRenderFrameHostType associated_rfh_type_ =
+      AssociatedRenderFrameHostType::NONE;
 
   // Stores the SiteInstance created on redirects to check if there is an
   // existing RenderProcessHost that can commit the navigation so that the

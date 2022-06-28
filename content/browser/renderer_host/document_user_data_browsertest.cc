@@ -300,8 +300,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
-  EXPECT_EQ(navigation_request->associated_site_instance_type(),
-            NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  EXPECT_EQ(navigation_request->associated_rfh_type(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
   EXPECT_TRUE(pending_rfh);
 
   // 3) Get the DocumentUserData associated with the speculative
@@ -379,8 +379,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   RenderFrameHostImpl* current_rfh =
       root->render_manager()->current_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
-  EXPECT_EQ(navigation_request->associated_site_instance_type(),
-            NavigationRequest::AssociatedSiteInstanceType::CURRENT);
+  EXPECT_EQ(navigation_request->associated_rfh_type(),
+            NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
   EXPECT_TRUE(current_rfh);
   EXPECT_TRUE(current_rfh->IsActive());
 
@@ -475,8 +475,8 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
-  EXPECT_EQ(navigation_request->associated_site_instance_type(),
-            NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  EXPECT_EQ(navigation_request->associated_rfh_type(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
   EXPECT_TRUE(pending_rfh);
 
   // 3) While there is a speculative RenderFrameHost in the root FrameTreeNode,

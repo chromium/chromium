@@ -4490,8 +4490,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
-  EXPECT_EQ(navigation_request->associated_site_instance_type(),
-            NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  EXPECT_EQ(navigation_request->associated_rfh_type(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
   EXPECT_TRUE(pending_rfh);
 
   // 4) Check the LifecycleStateImpl of both rfh_a and pending_rfh before
@@ -4604,8 +4604,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   RenderFrameHostImpl* speculative_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
-  EXPECT_EQ(navigation_request->associated_site_instance_type(),
-            NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  EXPECT_EQ(navigation_request->associated_rfh_type(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
   EXPECT_TRUE(speculative_rfh);
 
   // 3) Check the LifecycleStateImpl of both rfh_a and speculative_rfh before
@@ -4681,11 +4681,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       root->render_manager()->current_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
   if (ShouldSkipEarlyCommitPendingForCrashedFrame()) {
-    EXPECT_EQ(navigation_request->associated_site_instance_type(),
-              NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+    EXPECT_EQ(navigation_request->associated_rfh_type(),
+              NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
   } else {
-    EXPECT_EQ(navigation_request->associated_site_instance_type(),
-              NavigationRequest::AssociatedSiteInstanceType::CURRENT);
+    EXPECT_EQ(navigation_request->associated_rfh_type(),
+              NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
   }
 
   // 4) Check the LifecycleStateImpl of B's RFH.

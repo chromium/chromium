@@ -1394,8 +1394,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   navigation_request->coep_reporter_ = std::move(coep_reporter);
   navigation_request->isolation_info_for_subresources_ =
       isolation_info_for_subresources;
-  navigation_request->associated_site_instance_type_ =
-      AssociatedSiteInstanceType::CURRENT;
+  navigation_request->associated_rfh_type_ =
+      AssociatedRenderFrameHostType::CURRENT;
   navigation_request->StartNavigation();
   DCHECK(navigation_request->IsNavigationStarted());
 
@@ -2323,9 +2323,9 @@ void NavigationRequest::StartNavigation() {
     common_params_->should_replace_current_entry = true;
   }
 
-  DCHECK_NE(AssociatedSiteInstanceType::NONE, associated_site_instance_type_);
+  DCHECK_NE(AssociatedRenderFrameHostType::NONE, associated_rfh_type_);
   RenderFrameHostImpl* navigating_frame_host =
-      associated_site_instance_type_ == AssociatedSiteInstanceType::SPECULATIVE
+      associated_rfh_type_ == AssociatedRenderFrameHostType::SPECULATIVE
           ? frame_tree_node_->render_manager()->speculative_frame_host()
           : frame_tree_node_->current_frame_host();
   DCHECK(navigating_frame_host);
@@ -3573,13 +3573,13 @@ void NavigationRequest::OnResponseStarted(
     render_frame_host_ =
         frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
 
-    // Update the associated SiteInstance type, which could have changed
+    // Update the associated RenderFrameHost type, which could have changed
     // due to redirects during navigation.
-    set_associated_site_instance_type(
+    set_associated_rfh_type(
         render_frame_host_ ==
                 frame_tree_node_->render_manager()->current_frame_host()
-            ? AssociatedSiteInstanceType::CURRENT
-            : AssociatedSiteInstanceType::SPECULATIVE);
+            ? AssociatedRenderFrameHostType::CURRENT
+            : AssociatedRenderFrameHostType::SPECULATIVE);
 
     if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
             render_frame_host_, GetUrlInfo(),
@@ -3920,12 +3920,12 @@ void NavigationRequest::OnRequestFailedInternal(
   CHECK(!render_frame_host_ || render_frame_host_ == render_frame_host);
   render_frame_host_ = render_frame_host;
 
-  // Update the associated SiteInstance type.
-  set_associated_site_instance_type(
+  // Update the associated RenderFrameHost type.
+  set_associated_rfh_type(
       render_frame_host_ ==
               frame_tree_node_->render_manager()->current_frame_host()
-          ? AssociatedSiteInstanceType::CURRENT
-          : AssociatedSiteInstanceType::SPECULATIVE);
+          ? AssociatedRenderFrameHostType::CURRENT
+          : AssociatedRenderFrameHostType::SPECULATIVE);
 
   // Set the site URL now if it hasn't been set already.  It's possible to get
   // here if we navigate to an error out of an initial "blank" SiteInstance.

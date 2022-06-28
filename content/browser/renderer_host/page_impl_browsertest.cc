@@ -316,8 +316,8 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PageObjectBeforeAndAfterCommit) {
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
   NavigationRequest* navigation_request = root->navigation_request();
-  EXPECT_EQ(navigation_request->associated_site_instance_type(),
-            NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  EXPECT_EQ(navigation_request->associated_rfh_type(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
   EXPECT_TRUE(pending_rfh);
 
   // 3) While there is a speculative RenderFrameHost in the root FrameTreeNode,
