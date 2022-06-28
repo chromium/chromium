@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -413,6 +414,11 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
 
   auto* local_dom_window = dom_window->ToLocalDOMWindow();
   DCHECK(local_dom_window);
+
+  // Instantiate WindowProxy, so that a script state can be created for it
+  // successfully later.
+  // TODO(https://crbug.com/1336142): This should not be necessary.
+  local_dom_window->GetScriptController().WindowProxy(script_state->World());
 
   // Set the Picture-in-Picture window's base URL to be the same as the opener
   // window's so that relative URLs will be resolved in the same way.

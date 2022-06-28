@@ -11,4 +11,9 @@ function navigateInDocumentPipWindow(url) {
     return true;
 }
 
+function addScriptToPictureInPictureWindow() {
+    pipWindow.document.write("<script>document.testvalue = 123;<\/script>");
+    return pipWindow.document.testvalue == 123;
+}
+
 </script>
