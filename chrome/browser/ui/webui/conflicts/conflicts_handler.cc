@@ -20,15 +20,15 @@ ConflictsHandler::~ConflictsHandler() = default;
 void ConflictsHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestModuleList",
       base::BindRepeating(&ConflictsHandler::HandleRequestModuleList,
                           base::Unretained(this)));
 }
 
-void ConflictsHandler::HandleRequestModuleList(const base::ListValue* args) {
+void ConflictsHandler::HandleRequestModuleList(
+    const base::Value::List& args_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value::ConstListView args_list = args->GetListDeprecated();
 
   // Make sure the JS doesn't call 'requestModuleList' more than once.
   // TODO(739291): It would be better to kill the renderer instead of the

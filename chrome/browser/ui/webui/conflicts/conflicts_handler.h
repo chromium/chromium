@@ -8,13 +8,9 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/conflicts/conflicts_data_fetcher.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class DictionaryValue;
-class Listvalue;
-}
 
 // This class takes care of sending the list of all loaded modules to the
 // chrome://conflicts WebUI page when it is requested.
@@ -32,7 +28,7 @@ class ConflictsHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Callback for the "requestModuleList" message.
-  void HandleRequestModuleList(const base::ListValue* args);
+  void HandleRequestModuleList(const base::Value::List& args);
 
   void OnConflictsDataFetched(base::DictionaryValue results);
 
