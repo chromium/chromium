@@ -1176,10 +1176,11 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       RenderFrame::FromWebFrame(web_frame->FirstChild()->ToWebLocalFrame()));
 
   // Unload the child frame.
+  blink::RemoteFrameToken child_remote_frame_token = blink::RemoteFrameToken();
   auto replication_state = ReconstructReplicationStateForTesting(child_frame);
   static_cast<mojom::Frame*>(child_frame)
       ->Unload(kProxyRoutingId, true, replication_state.Clone(),
-               blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces());
+               child_remote_frame_token, CreateStubRemoteFrameInterfaces());
   EXPECT_TRUE(web_frame->FirstChild()->IsWebRemoteFrame());
 
   // Do the first step of a remote-to-local transition for the child proxy,
@@ -1203,9 +1204,9 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
   // Detach the child frame (currently remote) in the main frame.
   ExecuteJavaScriptForTests(
       "document.body.removeChild(document.querySelector('iframe'));");
-  RenderFrameProxy* child_proxy =
-      RenderFrameProxy::FromRoutingID(kProxyRoutingId);
-  EXPECT_FALSE(child_proxy);
+  blink::WebRemoteFrame* child_remote_frame =
+      blink::WebRemoteFrame::FromFrameToken(child_remote_frame_token);
+  EXPECT_FALSE(child_remote_frame);
 
   // The provisional frame should have been deleted along with the proxy, and
   // thus any subsequent messages (such as OnNavigate) already in flight for it
