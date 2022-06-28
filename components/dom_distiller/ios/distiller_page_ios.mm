@@ -87,17 +87,17 @@ base::Value ConvertedResultFromScriptResult(const base::Value* value,
     DCHECK_EQ(result.type(), base::Value::Type::DICTIONARY);
 
   } else if (value->is_list()) {
-    std::vector<base::Value> list;
-    for (const base::Value& list_item : value->GetListDeprecated()) {
+    base::Value::List list;
+    for (const base::Value& list_item : value->GetList()) {
       base::Value converted_item =
           ConvertedResultFromScriptResult(&list_item, max_depth - 1);
       if (converted_item.type() == base::Value::Type::NONE) {
         return result;
       }
 
-      list.push_back(std::move(converted_item));
+      list.Append(std::move(converted_item));
     }
-    result = base::Value(list);
+    result = base::Value(std::move(list));
     DCHECK_EQ(result.type(), base::Value::Type::LIST);
   } else {
     NOTREACHED();  // Convert other types as needed.

@@ -42,14 +42,13 @@ absl::optional<SiteDerivedFeatures> ParseSiteDerivedFeatures(
 
   // For every feature name at index 2*N, their value is at 2*N+1. In particular
   // the size must be an even number.
-  size_t size = derived_features_json->GetListDeprecated().size();
+  size_t size = derived_features_json->GetList().size();
   if (size % 2 != 0)
     return absl::nullopt;
 
   std::vector<double> derived_features;
   for (size_t i = 1; i < size; i += 2) {
-    const base::Value& feature_value =
-        derived_features_json->GetListDeprecated()[i];
+    const base::Value& feature_value = derived_features_json->GetList()[i];
     // If the value is a bool, convert it to 1.0 or 0.0.
     double numerical_feature_value;
     if (feature_value.is_double() || feature_value.is_int())
@@ -65,28 +64,28 @@ absl::optional<SiteDerivedFeatures> ParseSiteDerivedFeatures(
   return SiteDerivedFeatures{*url, derived_features};
 }
 
-// Reads a JSON "{[....]}" into a vector of base::Value. Returns the empty
-// vector in case of failure.
-std::vector<base::Value> ReadJsonListToValues(const std::string& file_name) {
+// Reads a JSON "{[....]}" into a base::Value::List. Returns an empty
+// list in case of failure.
+base::Value::List ReadJsonList(const std::string& file_name) {
   base::FilePath dir_source_root;
   if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &dir_source_root))
-    return {};
+    return base::Value::List();
 
   std::string raw_content;
   bool read_success = base::ReadFileToString(
       dir_source_root.AppendASCII(file_name), &raw_content);
   if (!read_success)
-    return {};
+    return base::Value::List();
 
   absl::optional<base::Value> parsed_content =
       base::JSONReader::Read(raw_content);
   if (!parsed_content)
-    return {};
+    return base::Value::List();
 
   if (!parsed_content->is_list())
-    return {};
+    return base::Value::List();
 
-  return std::move(*parsed_content).TakeListDeprecated();
+  return std::move(parsed_content->GetList());
 }
 
 // This test uses input data of core features and the output of the training
@@ -97,15 +96,15 @@ TEST(DomDistillerPageFeaturesTest, TestCalculateDerivedFeatures) {
   const std::string kExpectationsFile =
       "components/test/data/dom_distiller/derived_features.json";
   std::vector<SiteDerivedFeatures> expected_sites_feature_info;
-  for (const base::Value& site_info : ReadJsonListToValues(kExpectationsFile)) {
+  for (const base::Value& site_info : ReadJsonList(kExpectationsFile)) {
     absl::optional<SiteDerivedFeatures> parsed =
         ParseSiteDerivedFeatures(site_info);
     ASSERT_TRUE(parsed) << "Invalid expectation file";
     expected_sites_feature_info.push_back(*parsed);
   }
 
-  std::vector<base::Value> input_sites_feature_info = ReadJsonListToValues(
-      "components/test/data/dom_distiller/core_features.json");
+  base::Value::List input_sites_feature_info =
+      ReadJsonList("components/test/data/dom_distiller/core_features.json");
   ASSERT_FALSE(input_sites_feature_info.empty());
   ASSERT_EQ(expected_sites_feature_info.size(),
             input_sites_feature_info.size());
