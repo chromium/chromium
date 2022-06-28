@@ -13,6 +13,7 @@
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
@@ -188,15 +189,15 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
   }
 
   SkColor GetSelectedColor(Browser* browser) {
-    return GetOmniboxColor(
-        BrowserView::GetBrowserViewForBrowser(browser)->GetColorProvider(),
-        OmniboxPart::RESULTS_BACKGROUND, OmniboxPartState::SELECTED);
+    return BrowserView::GetBrowserViewForBrowser(browser)
+        ->GetColorProvider()
+        ->GetColor(kColorOmniboxResultsBackgroundSelected);
   }
 
   SkColor GetNormalColor(Browser* browser) {
-    return GetOmniboxColor(
-        BrowserView::GetBrowserViewForBrowser(browser)->GetColorProvider(),
-        OmniboxPart::RESULTS_BACKGROUND);
+    return BrowserView::GetBrowserViewForBrowser(browser)
+        ->GetColorProvider()
+        ->GetColor(kColorOmniboxResultsBackground);
   }
 
   void SetUseDarkColor(bool use_dark) {

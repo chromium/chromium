@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -238,6 +237,7 @@ void LocationBarView::Init() {
 
   // Initialize the IME autocomplete labels which are visible only when IME is
   // turned on.  Use the same font with the omnibox and highlighted background.
+  const auto* const color_provider = GetColorProvider();
   auto CreateImeAutocompletionLabel =
       [&](gfx::HorizontalAlignment horizontal_alignment) {
         auto label = std::make_unique<views::Label>(
@@ -245,13 +245,9 @@ void LocationBarView::Init() {
         label->SetHorizontalAlignment(horizontal_alignment);
         label->SetElideBehavior(gfx::NO_ELIDE);
         label->SetAutoColorReadabilityEnabled(false);
-        const auto* const color_provider = GetColorProvider();
-        label->SetBackground(views::CreateSolidBackground(GetOmniboxColor(
-            color_provider, OmniboxPart::LOCATION_BAR_BACKGROUND,
-            OmniboxPartState::SELECTED)));
-        label->SetEnabledColor(GetOmniboxColor(
-            color_provider, OmniboxPart::LOCATION_BAR_TEXT_DEFAULT,
-            OmniboxPartState::SELECTED));
+        label->SetBackground(views::CreateSolidBackground(
+            color_provider->GetColor(kColorOmniboxBackground)));
+        label->SetEnabledColor(color_provider->GetColor(kColorOmniboxText));
         label->SetVisible(false);
         return label;
       };
@@ -284,7 +280,7 @@ void LocationBarView::Init() {
         AddChildView(std::make_unique<IntentChipButton>(browser_, this));
   }
 
-  SkColor icon_color = GetColor(OmniboxPart::RESULTS_ICON);
+  SkColor icon_color = color_provider->GetColor(kColorOmniboxResultsIcon);
 
   std::vector<std::unique_ptr<ContentSettingImageModel>> models =
       ContentSettingImageModel::GenerateContentSettingImageModels();
@@ -389,11 +385,6 @@ void LocationBarView::Init() {
 
 bool LocationBarView::IsInitialized() const {
   return is_initialized_;
-}
-
-SkColor LocationBarView::GetColor(OmniboxPart part) const {
-  DCHECK(GetWidget());
-  return GetOmniboxColor(GetColorProvider(), part);
 }
 
 int LocationBarView::GetBorderRadius() const {
@@ -769,7 +760,8 @@ void LocationBarView::OnThemeChanged() {
   if (!IsInitialized())
     return;
 
-  SkColor icon_color = GetColor(OmniboxPart::RESULTS_ICON);
+  const SkColor icon_color =
+      GetColorProvider()->GetColor(kColorOmniboxResultsIcon);
   page_action_icon_controller_->SetIconColor(icon_color);
   for (ContentSettingImageView* image_view : content_setting_views_)
     image_view->SetIconColor(icon_color);
@@ -879,11 +871,11 @@ WebContents* LocationBarView::GetWebContents() {
 }
 
 SkColor LocationBarView::GetIconLabelBubbleSurroundingForegroundColor() const {
-  return GetColor(OmniboxPart::LOCATION_BAR_TEXT_DEFAULT);
+  return GetColorProvider()->GetColor(kColorOmniboxText);
 }
 
 SkColor LocationBarView::GetIconLabelBubbleBackgroundColor() const {
-  return GetColor(OmniboxPart::LOCATION_BAR_BACKGROUND);
+  return GetColorProvider()->GetColor(kColorOmniboxBackground);
 }
 
 bool LocationBarView::ShouldHideContentSettingImage() {
@@ -986,16 +978,17 @@ gfx::Rect LocationBarView::GetLocalBoundsWithoutEndcaps() const {
 void LocationBarView::RefreshBackground() {
   // Match the background color to the popup if the Omnibox is visibly focused.
   SkColor background_color, border_color;
+  const auto* const color_provider = GetColorProvider();
   if (omnibox_view_->model()->is_caret_visible()) {
-    background_color = border_color = GetColor(OmniboxPart::RESULTS_BACKGROUND);
+    background_color = border_color =
+        color_provider->GetColor(kColorOmniboxResultsBackground);
   } else {
-    const SkColor normal = GetColor(OmniboxPart::LOCATION_BAR_BACKGROUND);
-    const SkColor hovered = GetOmniboxColor(
-        GetColorProvider(), OmniboxPart::LOCATION_BAR_BACKGROUND,
-        OmniboxPartState::HOVERED);
+    const SkColor normal = color_provider->GetColor(kColorOmniboxBackground);
+    const SkColor hovered =
+        color_provider->GetColor(kColorOmniboxBackgroundHovered);
     const double opacity = hover_animation_.GetCurrentValue();
     background_color = gfx::Tween::ColorValueBetween(opacity, normal, hovered);
-    border_color = GetColorProvider()->GetColor(kColorLocationBarBorder);
+    border_color = color_provider->GetColor(kColorLocationBarBorder);
   }
 
   if (is_popup_mode_) {
@@ -1402,7 +1395,14 @@ void LocationBarView::OnLocationIconDragged(const ui::MouseEvent& event) {
 
 SkColor LocationBarView::GetSecurityChipColor(
     security_state::SecurityLevel security_level) const {
-  return GetOmniboxSecurityChipColor(GetColorProvider(), security_level);
+  ui::ColorId id = kColorOmniboxSecurityChipDefault;
+  if (security_level == security_state::SECURE_WITH_POLICY_INSTALLED_CERT)
+    id = kColorOmniboxTextDimmed;
+  else if (security_level == security_state::SECURE)
+    id = kColorOmniboxSecurityChipSecure;
+  else if (security_level == security_state::DANGEROUS)
+    id = kColorOmniboxSecurityChipDangerous;
+  return GetColorProvider()->GetColor(id);
 }
 
 bool LocationBarView::ShowPageInfoDialog() {

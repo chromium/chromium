@@ -32,8 +32,8 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -591,9 +591,8 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
 void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
 
-  const SkColor dimmed_text_color = GetOmniboxColor(
-      GetColorProvider(), OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
-  set_placeholder_text_color(dimmed_text_color);
+  set_placeholder_text_color(
+      GetColorProvider()->GetColor(kColorOmniboxTextDimmed));
 
   EmphasizeURLComponents();
 }
@@ -989,9 +988,8 @@ int OmniboxViewViews::GetOmniboxTextLength() const {
 }
 
 void OmniboxViewViews::SetEmphasis(bool emphasize, const gfx::Range& range) {
-  SkColor color = GetOmniboxColor(
-      GetColorProvider(), emphasize ? OmniboxPart::LOCATION_BAR_TEXT_DEFAULT
-                                    : OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
+  const SkColor color = GetColorProvider()->GetColor(
+      emphasize ? kColorOmniboxText : kColorOmniboxTextDimmed);
   if (range.IsValid())
     ApplyColor(color, range);
   else

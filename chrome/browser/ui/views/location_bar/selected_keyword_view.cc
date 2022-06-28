@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 
 #include "base/check.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
@@ -36,11 +36,10 @@ SelectedKeywordView::GetKeywordLabelNames(const std::u16string& keyword,
 }
 
 SelectedKeywordView::SelectedKeywordView(
-    LocationBarView* location_bar,
+    IconLabelBubbleView::Delegate* delegate,
     TemplateURLService* template_url_service,
     const gfx::FontList& font_list)
-    : IconLabelBubbleView(font_list, location_bar),
-      location_bar_(location_bar),
+    : IconLabelBubbleView(font_list, delegate),
       template_url_service_(template_url_service) {
   full_label_.SetFontList(font_list);
   full_label_.SetVisible(false);
@@ -67,7 +66,7 @@ void SelectedKeywordView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 }
 
 SkColor SelectedKeywordView::GetForegroundColor() const {
-  return location_bar_->GetColor(OmniboxPart::LOCATION_BAR_SELECTED_KEYWORD);
+  return GetColorProvider()->GetColor(kColorOmniboxKeywordSelected);
 }
 
 gfx::Size SelectedKeywordView::CalculatePreferredSize() const {

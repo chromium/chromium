@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -237,15 +238,11 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
                           view->GetNativeTheme()->UserHasContrastPreference();
   // TODO(tapted): Consider using background()->SetNativeControlColor() and
   // always have a background.
-  if ((part_state == OmniboxPartState::NORMAL && !prefers_contrast))
+  if (part_state == OmniboxPartState::NORMAL && !prefers_contrast)
     return nullptr;
 
-  return views::CreateSolidBackground(GetOmniboxColor(
-      view->GetColorProvider(), OmniboxPart::RESULTS_BACKGROUND, part_state));
-}
-
-SkColor OmniboxResultView::GetColor(OmniboxPart part) const {
-  return GetOmniboxColor(GetColorProvider(), part, GetThemeState());
+  return views::CreateThemedSolidBackground(
+      GetOmniboxBackgroundColorId(part_state));
 }
 
 void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
@@ -279,19 +276,25 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
 }
 
 void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
+  const SkColor icon_color = GetColorProvider()->GetColor(
+      GetMatchSelected() ? kColorOmniboxResultsIconSelected
+                         : kColorOmniboxResultsIcon);
   views::SetImageFromVectorIconWithColor(
       remove_suggestion_button_, vector_icons::kCloseRoundedIcon,
-      GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-      GetColor(OmniboxPart::RESULTS_ICON),
+      GetLayoutConstant(LOCATION_BAR_ICON_SIZE), icon_color,
       /* omnibox buttons are never disabled */
       gfx::kPlaceholderColor);
 
-  SetBackground(GetPopupCellBackground(this, GetThemeState()));
+  const OmniboxPartState state = GetThemeState();
+  SetBackground(GetPopupCellBackground(this, state));
 
   // Reapply the dim color to account for the highlight state.
-  suggestion_view_->separator()->ApplyTextColor(
-      OmniboxPart::RESULTS_TEXT_DIMMED);
-  keyword_view_->separator()->ApplyTextColor(OmniboxPart::RESULTS_TEXT_DIMMED);
+  const bool selected = state == OmniboxPartState::SELECTED;
+  const ui::ColorId dimmed_id = selected
+                                    ? kColorOmniboxResultsTextDimmedSelected
+                                    : kColorOmniboxResultsTextDimmed;
+  suggestion_view_->separator()->ApplyTextColor(dimmed_id);
+  keyword_view_->separator()->ApplyTextColor(dimmed_id);
   if (remove_suggestion_button_->GetVisible())
     views::FocusRing::Get(remove_suggestion_button_)->SchedulePaint();
 
@@ -303,25 +306,23 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   suggestion_view_->icon()->SetImage(GetIcon().ToImageSkia());
   keyword_view_->icon()->SetImage(gfx::CreateVectorIcon(
       omnibox::kKeywordSearchIcon, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-      GetColor(OmniboxPart::RESULTS_ICON)));
+      icon_color));
 
   // We must reapply colors for all the text fields here. If we don't, we can
   // break theme changes for ZeroSuggest. See https://crbug.com/1095205.
   //
   // TODO(tommycli): We should finish migrating this logic to live entirely
   // within OmniboxTextView, which should keep track of its own OmniboxPart.
+  const ui::ColorId default_id =
+      selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText;
   bool prefers_contrast =
       GetNativeTheme() && GetNativeTheme()->UserHasContrastPreference();
   if (match_.answer) {
-    suggestion_view_->content()->ApplyTextColor(
-        OmniboxPart::RESULTS_TEXT_DEFAULT);
-    suggestion_view_->description()->ApplyTextColor(
-        OmniboxPart::RESULTS_TEXT_DEFAULT);
+    suggestion_view_->content()->ApplyTextColor(default_id);
+    suggestion_view_->description()->ApplyTextColor(default_id);
   } else if (match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
-    suggestion_view_->content()->ApplyTextColor(
-        OmniboxPart::RESULTS_TEXT_DEFAULT);
-    suggestion_view_->description()->ApplyTextColor(
-        OmniboxPart::RESULTS_TEXT_DIMMED);
+    suggestion_view_->content()->ApplyTextColor(default_id);
+    suggestion_view_->description()->ApplyTextColor(dimmed_id);
   } else if (prefers_contrast || force_reapply_styles) {
     // Normally, OmniboxTextView caches its appearance, but in high contrast,
     // selected-ness changes the text colors, so the styling of the text part of
@@ -334,15 +335,14 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
     keyword_view_->content()->ReapplyStyling();
     keyword_view_->description()->ReapplyStyling();
   } else if (keyword_view_->GetVisible()) {
-    keyword_view_->description()->ApplyTextColor(
-        OmniboxPart::RESULTS_TEXT_DIMMED);
+    keyword_view_->description()->ApplyTextColor(dimmed_id);
   }
 
   button_row_->SetThemeState(GetThemeState());
 
   // The selection indicator indicates when the suggestion is focused. Do not
   // show the selection indicator if an auxiliary button is selected.
-  selection_indicator_->SetVisible(GetMatchSelected() &&
+  selection_indicator_->SetVisible(selected &&
                                    popup_contents_view_->GetSelection().state ==
                                        OmniboxPopupSelection::NORMAL);
 }
@@ -523,7 +523,9 @@ void OmniboxResultView::EmitTextChangedAccessiblityEvent() {
 
 gfx::Image OmniboxResultView::GetIcon() const {
   return popup_contents_view_->GetMatchIcon(
-      match_, GetColor(OmniboxPart::RESULTS_ICON));
+      match_, GetColorProvider()->GetColor(
+                  GetMatchSelected() ? kColorOmniboxResultsIconSelected
+                                     : kColorOmniboxResultsIcon));
 }
 
 void OmniboxResultView::UpdateHoverState() {

@@ -56,9 +56,6 @@ class OmniboxResultView : public views::View {
       views::View* view,
       OmniboxPartState part_state);
 
-  // Helper to get the color for |part| using the current state.
-  SkColor GetColor(OmniboxPart part) const;
-
   // Updates the match used to paint the contents of this result view. We copy
   // the match so that we can continue to paint the last result even after the
   // model has changed.

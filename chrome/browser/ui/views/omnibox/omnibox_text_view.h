@@ -39,11 +39,10 @@ class OmniboxTextView : public views::View {
   int GetHeightForWidth(int width) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
-  // Applies given part's theme color to underlying render text. Using
-  // OmniboxPart::RESULTS_TEXT_DIMMED gives the gray used by Dim() in the past.
-  // This is called Apply* instead of Set* because the only state kept is in
-  // render_text, so call this after setting text with methods below.
-  void ApplyTextColor(OmniboxPart part);
+  // Applies given theme color to underlying render text. This is called Apply*
+  // instead of Set* because the only state kept is in render_text, so call this
+  // after setting text with methods below.
+  void ApplyTextColor(ui::ColorId id);
 
   // Returns the render text, or an empty string if there is none.
   const std::u16string& GetText() const;

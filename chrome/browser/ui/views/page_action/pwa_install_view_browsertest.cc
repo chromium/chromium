@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -617,8 +618,8 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, TextContrast) {
   pwa_install_view_->GetWidget()->OnNativeWidgetActivationChanged(true);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  SkColor omnibox_background = browser_view->GetLocationBarView()->GetColor(
-      OmniboxPart::LOCATION_BAR_BACKGROUND);
+  SkColor omnibox_background =
+      browser_view->GetColorProvider()->GetColor(kColorOmniboxBackground);
   SkColor label_color = pwa_install_view_->GetLabelColorForTesting();
   EXPECT_EQ(SkColorGetA(label_color), SK_AlphaOPAQUE);
   EXPECT_GT(color_utils::GetContrastRatio(omnibox_background, label_color),

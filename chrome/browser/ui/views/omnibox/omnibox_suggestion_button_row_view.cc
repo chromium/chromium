@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -60,13 +61,13 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetCornerRadius(GetInsets().height() +
                     GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
 
-    views::InkDrop::Get(this)->SetHighlightOpacity(
-        GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
+    views::InkDrop::Get(this)->SetHighlightOpacity(kOmniboxOpacityHovered);
     views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
         [](OmniboxSuggestionRowButton* host) {
-          return GetOmniboxColor(host->GetColorProvider(),
-                                 OmniboxPart::RESULTS_BUTTON_INK_DROP,
-                                 host->theme_state_);
+          return host->GetColorProvider()->GetColor(
+              (host->theme_state_ == OmniboxPartState::SELECTED)
+                  ? kColorOmniboxResultsButtonInkDropSelected
+                  : kColorOmniboxResultsButtonInkDrop);
         },
         this));
     SetAnimationDuration(base::TimeDelta());
@@ -100,22 +101,23 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     // We can't use colors from NativeTheme as the omnibox theme might be
     // different (for example, if the NTP colors are customized).
     const auto* const color_provider = GetColorProvider();
-    SkColor icon_color = GetOmniboxColor(
-        color_provider, OmniboxPart::RESULTS_ICON, theme_state_);
+    const bool selected = theme_state_ == OmniboxPartState::SELECTED;
+    SkColor icon_color = color_provider->GetColor(
+        selected ? kColorOmniboxResultsIconSelected : kColorOmniboxResultsIcon);
     SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(*icon_, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
                               icon_color));
-    SetEnabledTextColors(GetOmniboxColor(
-        color_provider, OmniboxPart::RESULTS_TEXT_DEFAULT, theme_state_));
+    SetEnabledTextColors(color_provider->GetColor(
+        selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));
   }
 
   void UpdateBackgroundColor() override {
     const auto* const color_provider = GetColorProvider();
-    SkColor stroke_color = GetOmniboxColor(
-        color_provider, OmniboxPart::RESULTS_BUTTON_BORDER, theme_state_);
-    SkColor fill_color = GetOmniboxColor(
-        color_provider, OmniboxPart::RESULTS_BACKGROUND, theme_state_);
+    const SkColor stroke_color =
+        color_provider->GetColor(kColorOmniboxResultsButtonBorder);
+    const SkColor fill_color =
+        color_provider->GetColor(GetOmniboxBackgroundColorId(theme_state_));
     SetBackground(CreateBackgroundFromPainter(
         views::Painter::CreateRoundRectWith1PxBorderPainter(
             fill_color, stroke_color, GetCornerRadius())));

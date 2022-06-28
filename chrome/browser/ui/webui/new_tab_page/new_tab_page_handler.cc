@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -261,48 +260,36 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   theme->most_visited = std::move(most_visited);
 
   auto search_box = realbox::mojom::SearchBoxTheme::New();
-  search_box->bg =
-      GetOmniboxColor(&color_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
+  search_box->bg = color_provider.GetColor(kColorOmniboxBackground);
   search_box->bg_hovered =
-      GetOmniboxColor(&color_provider, OmniboxPart::LOCATION_BAR_BACKGROUND,
-                      OmniboxPartState::HOVERED);
+      color_provider.GetColor(kColorOmniboxBackgroundHovered);
   search_box->border_color =
       webui::GetNativeTheme(web_contents)->UserHasContrastPreference()
           ? color_provider.GetColor(kColorLocationBarBorder)
           : SkColorSetRGB(218, 220, 224);  // google-grey-300
-  search_box->icon =
-      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_ICON);
-  search_box->icon_selected = GetOmniboxColor(
-      &color_provider, OmniboxPart::RESULTS_ICON, OmniboxPartState::SELECTED);
+  search_box->icon = color_provider.GetColor(kColorOmniboxResultsIcon);
+  search_box->icon_selected =
+      color_provider.GetColor(kColorOmniboxResultsIconSelected);
   search_box->is_dark = !color_utils::IsDark(text_color);
   search_box->ntp_bg = color_provider.GetColor(kColorNewTabPageBackground);
-  search_box->placeholder =
-      GetOmniboxColor(&color_provider, OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
+  search_box->placeholder = color_provider.GetColor(kColorOmniboxTextDimmed);
   search_box->results_bg =
-      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_BACKGROUND);
+      color_provider.GetColor(kColorOmniboxResultsBackground);
   search_box->results_bg_hovered =
-      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_BACKGROUND,
-                      OmniboxPartState::HOVERED);
+      color_provider.GetColor(kColorOmniboxResultsBackgroundHovered);
   search_box->results_bg_selected =
-      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_BACKGROUND,
-                      OmniboxPartState::SELECTED);
+      color_provider.GetColor(kColorOmniboxResultsBackgroundSelected);
   search_box->results_dim =
-      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_TEXT_DIMMED);
+      color_provider.GetColor(kColorOmniboxResultsTextDimmed);
   search_box->results_dim_selected =
-      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_TEXT_DIMMED,
-                      OmniboxPartState::SELECTED);
-  search_box->results_text =
-      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_TEXT_DEFAULT);
+      color_provider.GetColor(kColorOmniboxResultsTextDimmedSelected);
+  search_box->results_text = color_provider.GetColor(kColorOmniboxText);
   search_box->results_text_selected =
-      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_TEXT_DEFAULT,
-                      OmniboxPartState::SELECTED);
-  search_box->results_url =
-      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_TEXT_URL);
+      color_provider.GetColor(kColorOmniboxResultsTextSelected);
+  search_box->results_url = color_provider.GetColor(kColorOmniboxResultsUrl);
   search_box->results_url_selected =
-      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_TEXT_URL,
-                      OmniboxPartState::SELECTED);
-  search_box->text =
-      GetOmniboxColor(&color_provider, OmniboxPart::LOCATION_BAR_TEXT_DEFAULT);
+      color_provider.GetColor(kColorOmniboxResultsUrlSelected);
+  search_box->text = color_provider.GetColor(kColorOmniboxText);
   theme->search_box = std::move(search_box);
 
   return theme;

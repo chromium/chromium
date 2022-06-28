@@ -32,7 +32,7 @@
 #include "ui/views/style/platform_style.h"
 
 float PageActionIconView::Delegate::GetPageActionInkDropVisibleOpacity() const {
-  return GetOmniboxStateOpacity(OmniboxPartState::SELECTED);
+  return kOmniboxOpacitySelected;
 }
 
 int PageActionIconView::Delegate::GetPageActionIconSize() const {

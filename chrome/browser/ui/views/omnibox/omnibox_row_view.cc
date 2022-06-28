@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -24,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -154,12 +156,17 @@ class OmniboxRowView::HeaderView : public views::View {
       part_state = OmniboxPartState::HOVERED;
     }
 
-    SkColor text_color = GetOmniboxColor(
-        GetColorProvider(), OmniboxPart::RESULTS_TEXT_DIMMED, part_state);
+    const auto* const color_provider = GetColorProvider();
+    const SkColor text_color =
+        color_provider->GetColor((part_state == OmniboxPartState::SELECTED)
+                                     ? kColorOmniboxResultsTextDimmedSelected
+                                     : kColorOmniboxResultsTextDimmed);
     header_label_->SetEnabledColor(text_color);
 
-    SkColor icon_color = GetOmniboxColor(GetColorProvider(),
-                                         OmniboxPart::RESULTS_ICON, part_state);
+    const SkColor icon_color =
+        color_provider->GetColor((part_state == OmniboxPartState::SELECTED)
+                                     ? kColorOmniboxResultsIconSelected
+                                     : kColorOmniboxResultsIcon);
     views::InkDrop::Get(header_toggle_button_)->SetBaseColor(icon_color);
 
     int dip_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);

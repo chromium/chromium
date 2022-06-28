@@ -12,12 +12,14 @@
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
@@ -67,47 +69,37 @@ void ApplyTextStyleForType(SuggestionAnswer::TextStyle text_style,
                            OmniboxResultView* result_view,
                            gfx::RenderText* render_text,
                            const gfx::Range& range) {
-  struct TextStyleNewAnswers {
-    void Apply(gfx::RenderText* render_text, const gfx::Range& range) {
-      render_text->ApplyWeight(weight, range);
-      render_text->ApplyBaselineStyle(baseline, range);
-      render_text->ApplyColor(color, range);
-    }
-    SkColor color;
-    gfx::BaselineStyle baseline = gfx::NORMAL_BASELINE;
-    gfx::Font::Weight weight = gfx::Font::Weight::NORMAL;
-  };
+  const gfx::Font::Weight weight =
+      (text_style == SuggestionAnswer::TextStyle::BOLD)
+          ? gfx::Font::Weight::BOLD
+          : gfx::Font::Weight::NORMAL;
+  render_text->ApplyWeight(weight, range);
 
-  TextStyleNewAnswers style;
-  const SkColor part_color = result_view->GetColor(
-      (text_style == SuggestionAnswer::TextStyle::NORMAL_DIM)
-          ? OmniboxPart::RESULTS_TEXT_DIMMED
-          : OmniboxPart::RESULTS_TEXT_DEFAULT);
-  switch (text_style) {
-    case SuggestionAnswer::TextStyle::SECONDARY:
-      style = {result_view->GetColor(OmniboxPart::RESULTS_TEXT_SECONDARY)};
-      break;
-    case SuggestionAnswer::TextStyle::POSITIVE:
-      style = {result_view->GetColor(OmniboxPart::RESULTS_TEXT_POSITIVE)};
-      break;
-    case SuggestionAnswer::TextStyle::NEGATIVE:
-      style = {result_view->GetColor(OmniboxPart::RESULTS_TEXT_NEGATIVE)};
-      break;
-    case SuggestionAnswer::TextStyle::SUPERIOR:
-      style = {.color = part_color, .baseline = gfx::SUPERIOR};
-      break;
-    case SuggestionAnswer::TextStyle::BOLD:
-      style = {.color = part_color,
-               .baseline = gfx::NORMAL_BASELINE,
-               .weight = gfx::Font::Weight::BOLD};
-      break;
-    case SuggestionAnswer::TextStyle::NORMAL:
-    case SuggestionAnswer::TextStyle::NORMAL_DIM:
-    default:
-      style = {part_color};
-      break;
+  const gfx::BaselineStyle baseline =
+      (text_style == SuggestionAnswer::TextStyle::SUPERIOR)
+          ? gfx::SUPERIOR
+          : gfx::NORMAL_BASELINE;
+  render_text->ApplyBaselineStyle(baseline, range);
+
+  const bool selected =
+      result_view->GetThemeState() == OmniboxPartState::SELECTED;
+  ui::ColorId id;
+  if (text_style == SuggestionAnswer::TextStyle::NORMAL_DIM) {
+    id = selected ? kColorOmniboxResultsTextDimmedSelected
+                  : kColorOmniboxResultsTextDimmed;
+  } else if (text_style == SuggestionAnswer::TextStyle::SECONDARY) {
+    id = selected ? kColorOmniboxResultsTextSecondarySelected
+                  : kColorOmniboxResultsTextSecondary;
+  } else if (text_style == SuggestionAnswer::TextStyle::POSITIVE) {
+    id = selected ? kColorOmniboxResultsTextPositiveSelected
+                  : kColorOmniboxResultsTextPositive;
+  } else if (text_style == SuggestionAnswer::TextStyle::NEGATIVE) {
+    id = selected ? kColorOmniboxResultsTextNegativeSelected
+                  : kColorOmniboxResultsTextNegative;
+  } else {
+    id = selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText;
   }
-  style.Apply(render_text, range);
+  render_text->ApplyColor(result_view->GetColorProvider()->GetColor(id), range);
 }
 
 }  // namespace
@@ -145,10 +137,10 @@ void OmniboxTextView::OnPaint(gfx::Canvas* canvas) {
   render_text_->Draw(canvas);
 }
 
-void OmniboxTextView::ApplyTextColor(OmniboxPart part) {
+void OmniboxTextView::ApplyTextColor(ui::ColorId id) {
   if (GetText().empty())
     return;
-  render_text_->SetColor(result_view_->GetColor(part));
+  render_text_->SetColor(GetColorProvider()->GetColor(id));
   SchedulePaint();
 }
 
@@ -254,15 +246,19 @@ void OmniboxTextView::ReapplyStyling() {
     if ((*cached_classifications_)[i].style & ACMatchClassification::MATCH)
       render_text_->ApplyWeight(gfx::Font::Weight::BOLD, current_range);
 
-    OmniboxPart part = OmniboxPart::RESULTS_TEXT_DEFAULT;
+    const bool selected =
+        result_view_->GetThemeState() == OmniboxPartState::SELECTED;
+    ui::ColorId id =
+        selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText;
     if ((*cached_classifications_)[i].style & ACMatchClassification::URL) {
-      part = OmniboxPart::RESULTS_TEXT_URL;
+      id = selected ? kColorOmniboxResultsUrlSelected : kColorOmniboxResultsUrl;
       render_text_->SetDirectionalityMode(gfx::DIRECTIONALITY_AS_URL);
     } else if ((*cached_classifications_)[i].style &
                ACMatchClassification::DIM) {
-      part = OmniboxPart::RESULTS_TEXT_DIMMED;
+      id = selected ? kColorOmniboxResultsTextDimmedSelected
+                    : kColorOmniboxResultsTextDimmed;
     }
-    render_text_->ApplyColor(result_view_->GetColor(part), current_range);
+    render_text_->ApplyColor(GetColorProvider()->GetColor(id), current_range);
   }
 
   OnStyleChanged();
