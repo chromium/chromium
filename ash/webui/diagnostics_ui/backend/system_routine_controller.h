@@ -60,6 +60,8 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   }
 
  private:
+  friend class SystemRoutineControllerTest;
+
   void OnAvailableRoutinesFetched(
       GetSupportedRoutinesCallback callback,
       const std::vector<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>&
