@@ -66,6 +66,26 @@ class NGCaretPositionTest : public NGLayoutTest {
     EXPECT_EQ(caret.text_offset, offset_) << caret.text_offset.value_or(-1); \
   }
 
+TEST_F(NGCaretPositionTest, AfterSpan) {
+  InsertStyleElement("b { background-color: yellow; }");
+  SetBodyInnerHTML("<div><b id=target>ABC</b></div>");
+  const auto& target = *GetElementById("target");
+
+  TEST_CARET(blink::ComputeNGCaretPosition(
+                 PositionWithAffinity(Position::AfterNode(target))),
+             FragmentOf(&target), kAfterBox, absl::nullopt);
+}
+
+TEST_F(NGCaretPositionTest, AfterSpanCulled) {
+  SetBodyInnerHTML("<div><b id=target>ABC</b></div>");
+  const auto& target = *GetElementById("target");
+
+  TEST_CARET(blink::ComputeNGCaretPosition(
+                 PositionWithAffinity(Position::AfterNode(target))),
+             FragmentOf(target.firstChild()), kAtTextOffset,
+             absl::optional<unsigned>(3));
+}
+
 TEST_F(NGCaretPositionTest, CaretPositionInOneLineOfText) {
   SetInlineFormattingContext("t", "foo", 3);
   const Node* text = container_->firstChild();

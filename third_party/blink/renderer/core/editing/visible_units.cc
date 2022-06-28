@@ -564,6 +564,7 @@ template <typename F>
 static Position MostBackwardOrForwardCaretPosition(
     const Position& position,
     EditingBoundaryCrossingRule rule,
+    SnapToClient client,
     F AlgorithmInFlatTree) {
   Node* position_anchor = position.AnchorNode();
   if (!position_anchor)
@@ -572,7 +573,7 @@ static Position MostBackwardOrForwardCaretPosition(
 
   // Find the most backward or forward caret position in the flat tree.
   const Position& candidate = ToPositionInDOMTree(
-      AlgorithmInFlatTree(ToPositionInFlatTree(position), rule));
+      AlgorithmInFlatTree(ToPositionInFlatTree(position), rule, client));
   Node* candidate_anchor = candidate.AnchorNode();
   if (!candidate_anchor)
     return position;
@@ -635,7 +636,8 @@ static PositionTemplate<Strategy> AdjustPositionForBackwardIteration(
 template <typename Strategy>
 static PositionTemplate<Strategy> MostBackwardCaretPosition(
     const PositionTemplate<Strategy>& position,
-    EditingBoundaryCrossingRule rule) {
+    EditingBoundaryCrossingRule rule,
+    SnapToClient client) {
   DCHECK(!NeedsLayoutTreeUpdate(position)) << position;
   TRACE_EVENT0("input", "VisibleUnits::mostBackwardCaretPosition");
 
@@ -668,7 +670,8 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
       // Don't change editability.
       const bool current_editable = IsEditable(*current_node);
       if (start_editable != current_editable) {
-        if (rule == kCannotCrossEditingBoundary)
+        if (rule == kCannotCrossEditingBoundary &&
+            client != SnapToClient::kLocalCaretRect)
           break;
         boundary_crossed = true;
       }
@@ -676,8 +679,11 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
     }
 
     // There is no caret position in non-text svg elements.
-    if (current_node->IsSVGElement() && !IsA<SVGTextElement>(current_node))
+    if (current_node->IsSVGElement() && !IsA<SVGTextElement>(current_node)) {
+      if (boundary_crossed && rule == kCannotCrossEditingBoundary)
+        break;
       continue;
+    }
 
     // If we've moved to a position that is visually distinct, return the last
     // saved position. There is code below that terminates early if we're
@@ -691,11 +697,17 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
         AssociatedLayoutObjectOf(*current_node, current_pos.OffsetInLeafNode(),
                                  LayoutObjectSide::kFirstLetterIfOnBoundary);
     if (!layout_object ||
-        layout_object->Style()->Visibility() != EVisibility::kVisible)
+        layout_object->Style()->Visibility() != EVisibility::kVisible) {
+      if (boundary_crossed && rule == kCannotCrossEditingBoundary)
+        break;
       continue;
+    }
 
-    if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object))
+    if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object)) {
+      if (boundary_crossed && rule == kCannotCrossEditingBoundary)
+        break;
       continue;
+    }
 
     if (!writing_mode.has_value()) {
       writing_mode.emplace(layout_object->Style()->GetWritingMode());
@@ -703,9 +715,13 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
       return last_visible.ComputePosition();
     }
 
-    if (rule == kCanCrossEditingBoundary && boundary_crossed) {
-      last_visible = current_pos;
-      break;
+    if (boundary_crossed) {
+      if (rule == kCannotCrossEditingBoundary)
+        return PositionTemplate<Strategy>::AfterNode(*current_node);
+      if (rule == kCanCrossEditingBoundary) {
+        last_visible = current_pos;
+        break;
+      }
     }
 
     // track last visible streamer position
@@ -758,14 +774,18 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
 }
 
 Position MostBackwardCaretPosition(const Position& position,
-                                   EditingBoundaryCrossingRule rule) {
+                                   EditingBoundaryCrossingRule rule,
+                                   SnapToClient client) {
   return MostBackwardOrForwardCaretPosition(
-      position, rule, MostBackwardCaretPosition<EditingInFlatTreeStrategy>);
+      position, rule, client,
+      MostBackwardCaretPosition<EditingInFlatTreeStrategy>);
 }
 
 PositionInFlatTree MostBackwardCaretPosition(const PositionInFlatTree& position,
-                                             EditingBoundaryCrossingRule rule) {
-  return MostBackwardCaretPosition<EditingInFlatTreeStrategy>(position, rule);
+                                             EditingBoundaryCrossingRule rule,
+                                             SnapToClient client) {
+  return MostBackwardCaretPosition<EditingInFlatTreeStrategy>(position, rule,
+                                                              client);
 }
 
 namespace {
@@ -788,7 +808,8 @@ bool HasInvisibleFirstLetter(const Node* node) {
 template <typename Strategy>
 PositionTemplate<Strategy> MostForwardCaretPosition(
     const PositionTemplate<Strategy>& position,
-    EditingBoundaryCrossingRule rule) {
+    EditingBoundaryCrossingRule rule,
+    SnapToClient client) {
   DCHECK(!NeedsLayoutTreeUpdate(position)) << position;
   TRACE_EVENT0("input", "VisibleUnits::mostForwardCaretPosition");
 
@@ -818,7 +839,8 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
       // Don't change editability.
       const bool current_editable = IsEditable(*current_node);
       if (start_editable != current_editable) {
-        if (rule == kCannotCrossEditingBoundary)
+        if (rule == kCannotCrossEditingBoundary &&
+            client != SnapToClient::kLocalCaretRect)
           break;
         boundary_crossed = true;
       }
@@ -832,8 +854,11 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
       break;
 
     // There is no caret position in non-text svg elements.
-    if (current_node->IsSVGElement() && !IsA<SVGTextElement>(current_node))
+    if (current_node->IsSVGElement() && !IsA<SVGTextElement>(current_node)) {
+      if (boundary_crossed && rule == kCannotCrossEditingBoundary)
+        break;
       continue;
+    }
 
     // Do not move to a visually distinct position.
     if (EndsOfNodeAreVisuallyDistinctPositions(current_node) &&
@@ -850,11 +875,17 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
     const LayoutObject* const layout_object =
         AssociatedLayoutObjectOf(*current_node, current_pos.OffsetInLeafNode());
     if (!layout_object ||
-        layout_object->Style()->Visibility() != EVisibility::kVisible)
+        layout_object->Style()->Visibility() != EVisibility::kVisible) {
+      if (boundary_crossed && rule == kCannotCrossEditingBoundary)
+        break;
       continue;
+    }
 
-    if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object))
+    if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object)) {
+      if (boundary_crossed && rule == kCannotCrossEditingBoundary)
+        break;
       continue;
+    }
 
     if (!writing_mode.has_value()) {
       writing_mode.emplace(layout_object->Style()->GetWritingMode());
@@ -862,8 +893,12 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
       return last_visible.ComputePosition();
     }
 
-    if (rule == kCanCrossEditingBoundary && boundary_crossed)
-      return current_pos.DeprecatedComputePosition();
+    if (boundary_crossed) {
+      if (rule == kCannotCrossEditingBoundary)
+        return PositionTemplate<Strategy>::BeforeNode(*current_node);
+      if (rule == kCanCrossEditingBoundary)
+        return current_pos.DeprecatedComputePosition();
+    }
 
     // track last visible streamer position
     if (IsStreamer<Strategy>(current_pos))
@@ -904,14 +939,18 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
 }
 
 Position MostForwardCaretPosition(const Position& position,
-                                  EditingBoundaryCrossingRule rule) {
+                                  EditingBoundaryCrossingRule rule,
+                                  SnapToClient client) {
   return MostBackwardOrForwardCaretPosition(
-      position, rule, MostForwardCaretPosition<EditingInFlatTreeStrategy>);
+      position, rule, client,
+      MostForwardCaretPosition<EditingInFlatTreeStrategy>);
 }
 
 PositionInFlatTree MostForwardCaretPosition(const PositionInFlatTree& position,
-                                            EditingBoundaryCrossingRule rule) {
-  return MostForwardCaretPosition<EditingInFlatTreeStrategy>(position, rule);
+                                            EditingBoundaryCrossingRule rule,
+                                            SnapToClient client) {
+  return MostForwardCaretPosition<EditingInFlatTreeStrategy>(position, rule,
+                                                             client);
 }
 
 // Returns true if the visually equivalent positions around have different

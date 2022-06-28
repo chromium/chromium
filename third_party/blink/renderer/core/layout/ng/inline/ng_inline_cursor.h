@@ -546,6 +546,22 @@ class CORE_EXPORT NGInlineCursor {
   // Move the current position to the last fragment on same layout object.
   void MoveToLastForSameLayoutObject();
 
+  // Move the current position to the last fragment on the same layout object,
+  // in visual order. This is the same as |MoveToLastForSameLayoutObject|,
+  // except for culled inlines.
+  //
+  // Note that this method will only consider fragments reachable through
+  // |MoveToNextForSameLayoutObject|.
+  void MoveToVisualLastForSameLayoutObject();
+
+  // Move the current position to the first fragment on the same layout object,
+  // in visual order.
+  //
+  // Note that this method will only consider fragments reachable through
+  // |MoveToNextForSameLayoutObject|. For non-culled inlines, this means this
+  // method is a no-op.
+  void MoveToVisualFirstForSameLayoutObject();
+
 #if DCHECK_IS_ON()
   void CheckValid(const NGInlineCursorPosition& position) const;
 #else
@@ -605,6 +621,10 @@ class CORE_EXPORT NGInlineCursor {
 
   // |MoveToNextForSameLayoutObject| that doesn't check |culled_inline_|.
   void MoveToNextForSameLayoutObjectExceptCulledInline();
+
+  // Used for |MoveToVisualLastForSameLayoutObject| and
+  // |MoveToVisualFirstForSameLayoutObject|.
+  void MoveToVisualFirstOrLastForCulledInline(bool last);
 
   // A helper class to enumerate |LayoutObject|s that contribute to a culled
   // inline.

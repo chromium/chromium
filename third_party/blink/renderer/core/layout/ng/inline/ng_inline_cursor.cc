@@ -1697,6 +1697,43 @@ void NGInlineCursor::MoveToNextForSameLayoutObject() {
   MoveToNextForSameLayoutObjectExceptCulledInline();
 }
 
+void NGInlineCursor::MoveToVisualLastForSameLayoutObject() {
+  if (culled_inline_)
+    MoveToVisualFirstOrLastForCulledInline(true);
+  else
+    MoveToLastForSameLayoutObject();
+}
+
+void NGInlineCursor::MoveToVisualFirstForSameLayoutObject() {
+  if (culled_inline_)
+    MoveToVisualFirstOrLastForCulledInline(false);
+}
+
+void NGInlineCursor::MoveToVisualFirstOrLastForCulledInline(bool last) {
+  NGInlineCursorPosition found_position;
+  absl::optional<size_t> found_index;
+
+  // Iterate through the remaining fragments to find the lowest/greatest index.
+  for (; Current(); MoveToNextForSameLayoutObject()) {
+    // Index of the current fragment into |fragment_items_|.
+    size_t index = Current().Item() - fragment_items_->Items().data();
+    DCHECK_LT(index, fragment_items_->Size());
+    if (!found_index || (last && index > *found_index) ||
+        (!last && index < *found_index)) {
+      found_position = Current();
+      found_index = index;
+
+      // Break if there cannot be any fragment lower/greater than this one.
+      if ((last && index == fragment_items_->Size() - 1) ||
+          (!last && index == 0))
+        break;
+    }
+  }
+
+  DCHECK(found_position);
+  MoveTo(found_position);
+}
+
 //
 // |NGInlineBackwardCursor| functions.
 //

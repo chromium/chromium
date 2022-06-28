@@ -20,6 +20,38 @@ namespace blink {
 
 namespace {
 
+// Gets the resolved direction for any inline, including non-atomic inline
+// boxes.
+TextDirection ResolvedDirection(const NGInlineCursor& cursor) {
+  if (cursor.Current().IsText() || cursor.Current().IsAtomicInline())
+    return cursor.Current().ResolvedDirection();
+
+  // TODO(abotella): We should define the |TextDirection| of an inline box,
+  // which is used to determine at which edge of a non-editable box to place the
+  // text editing caret. We currently use the line's base direction, but this is
+  // wrong:
+  //   <div dir=ltr>abc A<span>B</span>C abc</div>
+  NGInlineCursor line_box;
+  line_box.MoveTo(cursor);
+  line_box.MoveToContainingLine();
+  return line_box.Current().BaseDirection();
+}
+
+// Gets the bidi level for any inline, including non-atomic inline boxes.
+UBiDiLevel BidiLevel(const NGInlineCursor& cursor) {
+  if (cursor.Current().IsText() || cursor.Current().IsAtomicInline())
+    return cursor.Current().BidiLevel();
+
+  // TODO(abotella): Just like the |TextDirection| of an inline box, the bidi
+  // level of an inline box should also be defined. Since |ResolvedDirection|
+  // defaults to the line's base direction, though, we use the corresponding
+  // base level here.
+  NGInlineCursor line_box;
+  line_box.MoveTo(cursor);
+  line_box.MoveToContainingLine();
+  return IsLtr(line_box.Current().BaseDirection()) ? 0 : 1;
+}
+
 // |AbstractInlineBox| provides abstraction of leaf nodes (text and atomic
 // inlines) in both legacy and NG inline layout, so that the same bidi
 // adjustment algorithm can be applied on both types of inline layout.
@@ -70,13 +102,13 @@ class AbstractInlineBox {
   UBiDiLevel BidiLevel() const {
     DCHECK(IsNotNull());
     return IsOldLayout() ? GetInlineBox().BidiLevel()
-                         : line_cursor_.Current().BidiLevel();
+                         : ::blink::BidiLevel(line_cursor_);
   }
 
   TextDirection Direction() const {
     DCHECK(IsNotNull());
     return IsOldLayout() ? GetInlineBox().Direction()
-                         : line_cursor_.Current().ResolvedDirection();
+                         : ResolvedDirection(line_cursor_);
   }
 
   AbstractInlineBox PrevLeafChild() const {
@@ -213,7 +245,7 @@ SideAffinity GetSideAffinity(const NGCaretPosition& caret_position) {
   DCHECK(IsAtFragmentStart(caret_position) || IsAtFragmentEnd(caret_position));
   const bool is_at_start = IsAtFragmentStart(caret_position);
   const bool is_at_left_side =
-      is_at_start == IsLtr(caret_position.cursor.Current().ResolvedDirection());
+      is_at_start == IsLtr(ResolvedDirection(caret_position.cursor));
   return is_at_left_side ? SideAffinity::kLeft : SideAffinity::kRight;
 }
 

@@ -1221,6 +1221,30 @@ TEST_P(NGInlineCursorTest, CursorForDescendants) {
               ElementsAre("text3"));
 }
 
+TEST_P(NGInlineCursorTest, MoveToVisualFirstOrLast) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=root dir="rtl">
+      here is
+      <span id="span1">some <bdo dir="rtl">MIXED</bdo></span>
+      <bdo dir="rtl">TEXT</bdo>
+    </div>
+  )HTML");
+
+  //          _here_is_some_MIXED_TEXT_
+  // visual:  _TXET_DEXIM_here_is_some_
+  // in span:       ______        ____
+
+  NGInlineCursor cursor1;
+  cursor1.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("span1"));
+  cursor1.MoveToVisualFirstForSameLayoutObject();
+  EXPECT_EQ("NGPhysicalTextFragment 'MIXED'", cursor1.Current()->ToString());
+
+  NGInlineCursor cursor2;
+  cursor2.MoveToIncludingCulledInline(*GetLayoutObjectByElementId("span1"));
+  cursor2.MoveToVisualLastForSameLayoutObject();
+  EXPECT_EQ("NGPhysicalTextFragment 'some'", cursor2.Current()->ToString());
+}
+
 class NGInlineCursorBlockFragmentationTest
     : public NGLayoutTest,
       private ScopedLayoutNGBlockFragmentationForTest {

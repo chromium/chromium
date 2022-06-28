@@ -593,16 +593,18 @@ TEST_P(ParameterizedComputeCaretRectTest, CaretRectAvoidNonEditable) {
   const PhysicalRect& rect1 = ComputeCaretRect(caret_position1);
   EXPECT_EQ(PhysicalRect(10, 0, 1, 10), rect1);
 
-  // TODO(jfernandez): It should be 89, but LayoutBox::LocalCaretRect is buggy
-  // and it adds the padding-left twice.
-  // TODO(jfernandez): As a matter of fact, 69 would be better result IMHO,
-  // positioning the caret at the end of the non-editable area.
-  // TODO(jfernandez): We might avoid using LayoutBox::LocalCaretRect when using
-  // LayoutNG
   const PositionWithAffinity& caret_position2 =
       HitTestResultAtLocation(60, 5).GetPosition();
   const PhysicalRect& rect2 = ComputeCaretRect(caret_position2);
-  EXPECT_EQ(PhysicalRect(99, 0, 1, 10), rect2);
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    EXPECT_EQ(PhysicalRect(69, 0, 1, 10), rect2);
+  } else {
+    // TODO(jfernandez): It should be 89, but LayoutBox::LocalCaretRect is buggy
+    // and it adds the padding-left twice.
+    // TODO(jfernandez): As a matter of fact, 69 would be better result IMHO,
+    // positioning the caret at the end of the non-editable area.
+    EXPECT_EQ(PhysicalRect(99, 0, 1, 10), rect2);
+  }
 }
 
 }  // namespace blink
