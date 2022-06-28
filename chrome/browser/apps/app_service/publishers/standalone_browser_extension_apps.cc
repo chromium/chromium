@@ -25,6 +25,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
@@ -139,7 +140,8 @@ void StandaloneBrowserExtensionApps::LaunchAppWithParams(
   if (ShouldSaveToFullRestore(proxy(), params.app_id)) {
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         params.app_id, params.container, params.disposition, params.display_id,
-        std::move(params.launch_files), std::move(params.intent));
+        std::move(params.launch_files),
+        ConvertIntentToMojomIntent(params.intent));
     full_restore::SaveAppLaunchInfo(proxy()->profile()->GetPath(),
                                     std::move(launch_info));
   }

@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/extension_registry.h"
@@ -249,7 +250,7 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  params.intent = std::move(intent);
+  params.intent = ConvertMojomIntentToIntent(intent);
 
   return params;
 }
@@ -439,7 +440,7 @@ apps::AppLaunchParams ConvertCrosapiToLaunchParams(
     }
   }
 
-  params.intent = apps_util::ConvertCrosapiToAppServiceIntent(
+  params.intent = apps_util::CreateAppServiceIntentFromCrosapi(
       crosapi_params->intent, profile);
   return params;
 }

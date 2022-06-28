@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
@@ -51,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchWithIntent) {
           [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
             EXPECT_EQ(params.intent->action, apps_util::kIntentActionSend);
             EXPECT_EQ(*params.intent->mime_type, "text/csv");
-            EXPECT_EQ(params.intent->files->size(), 1U);
+            EXPECT_EQ(params.intent->files.size(), 1U);
             run_loop.Quit();
             return nullptr;
           }));
@@ -87,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, IntentWithoutFiles) {
             EXPECT_EQ(params.intent->action,
                       apps_util::kIntentActionSendMultiple);
             EXPECT_EQ(*params.intent->mime_type, "*/*");
-            EXPECT_EQ(params.intent->files->size(), 0U);
+            EXPECT_EQ(params.intent->files.size(), 0U);
             run_loop.Quit();
             return nullptr;
           }));

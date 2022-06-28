@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
@@ -32,7 +33,7 @@ struct AppLaunchParams {
                   apps::mojom::LaunchSource launch_source,
                   int64_t display_id,
                   const std::vector<base::FilePath>& files,
-                  const apps::mojom::IntentPtr& intentPtr);
+                  const IntentPtr& intentPtr);
 
   AppLaunchParams(const AppLaunchParams&) = delete;
   AppLaunchParams& operator=(const AppLaunchParams&) = delete;
@@ -90,7 +91,7 @@ struct AppLaunchParams {
 
   // The intent the application was launched with. Empty if the application was
   // not launched with intent.
-  apps::mojom::IntentPtr intent;
+  IntentPtr intent;
 
   // When PWA is launched as a URL handler, the URL that we should launch the
   // PWA to. Null when it's not a URL handler launch.

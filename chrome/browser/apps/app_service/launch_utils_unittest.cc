@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -268,7 +269,8 @@ TEST_F(LaunchUtilsTest, ConvertToCrosapiIntent) {
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
   const int64_t kDisplayId = 4;
   auto params = CreateLaunchParams(container, disposition, false, kDisplayId);
-  params.intent = apps_util::CreateIntentFromUrl(GURL("abc.example.com"));
+  params.intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                                 GURL("abc.example.com"));
 
   auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
   auto converted_params =
@@ -278,7 +280,7 @@ TEST_F(LaunchUtilsTest, ConvertToCrosapiIntent) {
   EXPECT_EQ(params.disposition, converted_params.disposition);
   EXPECT_EQ(params.launch_source, converted_params.launch_source);
   EXPECT_EQ(params.display_id, converted_params.display_id);
-  EXPECT_EQ(params.intent, converted_params.intent);
+  EXPECT_EQ(*params.intent, *converted_params.intent);
 }
 
 // Verifies that convert params from crosapi with incomplete params works.
@@ -344,10 +346,10 @@ TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
   EXPECT_EQ(converted_params.intent->action, apps_util::kIntentActionSend);
   EXPECT_EQ(converted_params.intent->mime_type, kIntentMimeType);
   EXPECT_EQ(converted_params.intent->share_text, kShareText);
-  EXPECT_EQ(converted_params.intent->files->size(), 1U);
-  EXPECT_EQ((*converted_params.intent->files)[0]->file_name,
+  EXPECT_EQ(converted_params.intent->files.size(), 1U);
+  EXPECT_EQ(converted_params.intent->files[0]->file_name,
             base::SafeBaseName::Create(kBaseName));
-  EXPECT_EQ((*converted_params.intent->files)[0]->mime_type, kFileMimeType);
+  EXPECT_EQ(converted_params.intent->files[0]->mime_type, kFileMimeType);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

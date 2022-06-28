@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/full_restore_read_handler.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -244,7 +245,7 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
         !it.second->display_id.has_value()) {
       continue;
     }
-    apps::mojom::IntentPtr intent;
+
     apps::AppLaunchParams params(
         app_id,
         static_cast<apps::mojom::LaunchContainer>(it.second->container.value()),
@@ -253,7 +254,9 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
         it.second->display_id.value(),
         it.second->file_paths.has_value() ? it.second->file_paths.value()
                                           : std::vector<base::FilePath>{},
-        it.second->intent.has_value() ? it.second->intent.value() : intent);
+        it.second->intent.has_value()
+            ? apps::ConvertMojomIntentToIntent(it.second->intent.value())
+            : nullptr);
     params.restore_id = it.first;
     proxy->LaunchAppWithParams(std::move(params));
   }

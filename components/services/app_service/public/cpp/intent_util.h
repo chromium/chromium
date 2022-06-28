@@ -156,6 +156,8 @@ bool IsGenericFileHandler(const apps::mojom::IntentPtr& intent,
                           const apps::mojom::IntentFilterPtr& filter);
 
 // Return true if `intent` corresponds to a share intent.
+// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
+// AppService.
 bool IsShareIntent(const apps::mojom::IntentPtr& intent);
 
 // Return true if |value| matches |pattern| with simple glob syntax.

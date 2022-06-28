@@ -51,6 +51,7 @@
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -706,9 +707,9 @@ void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
                                          /*prefer_container=*/false);
   auto window_info = apps::MakeWindowInfo(params.display_id);
   if (params.intent) {
-    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
-                        params.launch_source, std::move(window_info),
-                        base::DoNothing());
+    LaunchAppWithIntent(
+        params.app_id, event_flags, ConvertIntentToMojomIntent(params.intent),
+        params.launch_source, std::move(window_info), base::DoNothing());
   } else {
     Launch(params.app_id, event_flags, params.launch_source,
            std::move(window_info));

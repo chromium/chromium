@@ -131,8 +131,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
 
 const apps::ShareTarget* WebAppLaunchProcess::MaybeGetShareTarget() const {
   DCHECK(web_app_);
-  bool is_share_intent =
-      params_.intent && apps_util::IsShareIntent(params_.intent);
+  bool is_share_intent = params_.intent && params_.intent->IsShareIntent();
   return is_share_intent && web_app_->share_target().has_value()
              ? &web_app_->share_target().value()
              : nullptr;
@@ -293,9 +292,7 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
     // TODO(crbug.com/1213776): Expose share target in the LaunchParams and
     // don't navigate if navigate_existing_client: never is in effect.
     NavigateParams nav_params = NavigateParamsForShareTarget(
-        browser, *share_target,
-        *apps::ConvertMojomIntentToIntent(params_.intent),
-        params_.launch_files);
+        browser, *share_target, *params_.intent, params_.launch_files);
     nav_params.disposition = navigation_disposition;
     return {
         .web_contents = NavigateWebAppUsingParams(params_.app_id, nav_params),

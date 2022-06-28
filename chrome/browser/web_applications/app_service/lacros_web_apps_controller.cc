@@ -30,6 +30,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -292,7 +293,8 @@ void LacrosWebAppsController::LaunchInternal(const std::string& app_id,
                                              apps::AppLaunchParams params,
                                              CommandFinishedCallback callback) {
   bool is_file_handling_launch =
-      !params.launch_files.empty() && !apps_util::IsShareIntent(params.intent);
+      !params.launch_files.empty() &&
+      !(params.intent && params.intent->IsShareIntent());
   if (is_file_handling_launch) {
     // File handling may create the WebContents asynchronously.
     publisher_helper().LaunchAppWithFilesCheckingUserPermission(

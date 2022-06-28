@@ -117,7 +117,7 @@ Browser* OSFeedbackAppDelegate::LaunchAndNavigateSystemWebApp(
     apps::AppLaunchParams app_params(
         params.app_id, params.container, params.disposition,
         params.launch_source, params.display_id, params.launch_files,
-        params.intent ? params.intent.Clone() : nullptr);
+        params.intent ? params.intent->Clone() : nullptr);
     // Take a screenshot and launch the app afterward.
     ash::OsFeedbackScreenshotManager::GetInstance()->TakeScreenshot(
         base::BindOnce(&OSFeedbackAppDelegate::OnScreenshotTaken,

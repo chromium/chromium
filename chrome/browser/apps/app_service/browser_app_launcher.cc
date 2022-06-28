@@ -27,6 +27,7 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/sessions/core/session_id.h"
 #endif
 
@@ -77,7 +78,7 @@ content::WebContents* LaunchAppWithParamsImpl(
         params_for_restore.app_id, session_id, params_for_restore.container,
         params_for_restore.disposition, params_for_restore.display_id,
         std::move(params_for_restore.launch_files),
-        std::move(params_for_restore.intent));
+        apps::ConvertIntentToMojomIntent(params_for_restore.intent));
     full_restore::SaveAppLaunchInfo(profile->GetPath(), std::move(launch_info));
 
     return web_contents;
@@ -103,7 +104,7 @@ content::WebContents* LaunchAppWithParamsImpl(
         params_for_restore.app_id, params_for_restore.container,
         params_for_restore.disposition, params_for_restore.display_id,
         std::move(params_for_restore.launch_files),
-        std::move(params_for_restore.intent));
+        apps::ConvertIntentToMojomIntent(params_for_restore.intent));
     full_restore::SaveAppLaunchInfo(profile->GetPath(), std::move(launch_info));
   } else {
     RecordAppLaunchMetrics(profile, apps::AppType::kChromeApp, params.app_id,

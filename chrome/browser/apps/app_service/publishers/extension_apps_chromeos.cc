@@ -68,6 +68,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/services/app_service/public/cpp/instance.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -204,9 +205,9 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
     auto event_flags = apps::GetEventFlags(params.container, params.disposition,
                                            /*prefer_container=*/false);
     auto window_info = apps::MakeWindowInfo(params.display_id);
-    LaunchExtension(params.app_id, event_flags, std::move(params.intent),
-                    params.launch_source, std::move(window_info),
-                    base::DoNothing());
+    LaunchExtension(
+        params.app_id, event_flags, ConvertIntentToMojomIntent(params.intent),
+        params.launch_source, std::move(window_info), base::DoNothing());
   }
 }
 
@@ -999,7 +1000,7 @@ content::WebContents* ExtensionAppsChromeOs::LaunchImpl(
         params_for_restore.app_id, params_for_restore.container,
         params_for_restore.disposition, params_for_restore.display_id,
         std::move(params_for_restore.launch_files),
-        std::move(params_for_restore.intent));
+        ConvertIntentToMojomIntent(params_for_restore.intent));
     full_restore::SaveAppLaunchInfo(profile()->GetPath(),
                                     std::move(launch_info));
   }

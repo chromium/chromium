@@ -57,6 +57,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
@@ -1039,7 +1040,7 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
               params_for_restore.container, params_for_restore.disposition,
               params_for_restore.display_id,
               std::move(params_for_restore.launch_files),
-              std::move(params_for_restore.intent));
+              ConvertIntentToMojomIntent(params_for_restore.intent));
       full_restore::SaveAppLaunchInfo(profile()->GetPath(),
                                       std::move(launch_info));
     }

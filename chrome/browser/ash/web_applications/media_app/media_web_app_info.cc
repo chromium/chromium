@@ -116,10 +116,10 @@ std::vector<apps::FileHandler::AcceptEntry> MakeFileHandlerAccept(
 const apps::AppLaunchParams PickFileFromParams(
     const apps::AppLaunchParams& params,
     size_t index) {
-  return apps::AppLaunchParams(params.app_id, params.container,
-                               params.disposition, params.launch_source,
-                               params.display_id, {params.launch_files[index]},
-                               params.intent ? params.intent.Clone() : nullptr);
+  return apps::AppLaunchParams(
+      params.app_id, params.container, params.disposition, params.launch_source,
+      params.display_id, {params.launch_files[index]},
+      params.intent ? params.intent->Clone() : nullptr);
 }
 
 }  // namespace

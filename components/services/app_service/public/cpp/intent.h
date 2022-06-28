@@ -91,6 +91,9 @@ struct Intent {
   // Returns true if matches all existing conditions in the filter.
   bool MatchFilter(const IntentFilterPtr& filter);
 
+  // Returns true if `intent` corresponds to a share intent.
+  bool IsShareIntent();
+
   // Intent action. e.g. view, send.
   std::string action;
   // The URL of the intent. e.g. https://www.google.com/.

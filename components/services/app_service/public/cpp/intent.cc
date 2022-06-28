@@ -214,6 +214,11 @@ bool Intent::MatchFilter(const IntentFilterPtr& filter) {
   return true;
 }
 
+bool Intent::IsShareIntent() {
+  return action == apps_util::kIntentActionSend ||
+         action == apps_util::kIntentActionSendMultiple;
+}
+
 IntentFilePtr ConvertMojomIntentFileToIntentFile(
     const apps::mojom::IntentFilePtr& mojom_intent_file) {
   if (!mojom_intent_file) {
