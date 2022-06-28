@@ -55,6 +55,8 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer,
   void OnGetRgbKeyboardCapabilities(
       absl::optional<rgbkbd::RgbKeyboardCapabilities> reply);
 
+  void InitializeRgbKeyboard();
+
   rgbkbd::RgbKeyboardCapabilities capabilities_ =
       rgbkbd::RgbKeyboardCapabilities::kNone;
 

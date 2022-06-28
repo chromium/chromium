@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
+#include "ash/rgb_keyboard/rgb_keyboard_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -123,13 +124,23 @@ void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(
   VLOG(1) << "RGB Keyboard capabilities="
           << static_cast<uint32_t>(capabilities_);
 
+  if (IsRgbKeyboardSupported())
+    InitializeRgbKeyboard();
+}
+
+void RgbKeyboardManager::InitializeRgbKeyboard() {
+  DCHECK(RgbkbdClient::Get());
+
   // Upon login, CapsLock may already be enabled.
-  if (IsRgbKeyboardSupported()) {
-    VLOG(1) << "Setting initial RGB keyboard caps lock state to "
-            << ime_controller_ptr_->IsCapsLockEnabled();
-    RgbkbdClient::Get()->SetCapsLockState(
-        ime_controller_ptr_->IsCapsLockEnabled());
-  }
+  VLOG(1) << "Setting initial RGB keyboard caps lock state to "
+          << ime_controller_ptr_->IsCapsLockEnabled();
+  RgbkbdClient::Get()->SetCapsLockState(
+      ime_controller_ptr_->IsCapsLockEnabled());
+
+  // Set keyboard to the default color on startup
+  RgbkbdClient::Get()->SetStaticBackgroundColor(SkColorGetR(kDefaultColor),
+                                                SkColorGetG(kDefaultColor),
+                                                SkColorGetB(kDefaultColor));
 }
 
 }  // namespace ash
