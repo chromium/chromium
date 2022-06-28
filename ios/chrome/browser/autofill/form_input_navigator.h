@@ -30,9 +30,9 @@
 
 // Called when updating the keyboard view. Checks if the page contains a next
 // and a previous element.
-// |completionHandler| is called with 2 bools, the first indicating if a
+// `completionHandler` is called with 2 bools, the first indicating if a
 // previous element was found, and the second indicating if a next element was
-// found. |completionHandler| cannot be nil.
+// found. `completionHandler` cannot be nil.
 - (void)fetchPreviousAndNextElementsPresenceWithCompletionHandler:
     (void (^)(bool, bool))completionHandler;
 

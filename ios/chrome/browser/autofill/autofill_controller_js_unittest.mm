@@ -36,7 +36,7 @@ using base::test::ios::kWaitForJSCompletionTimeout;
 struct ElementByName {
   // The name of the element.
   const char* element_name;
-  // The index in the elements that have |element_name|.
+  // The index in the elements that have `element_name`.
   const int index;
   // The option index if the element is a select, -1 otherwise.
   const int option_index;
@@ -62,7 +62,7 @@ NSString* GetElementByNameJavaScript(ElementByName element) {
   return query;
 }
 
-// Generates an array of JavaScripts that get each element in |elements| by
+// Generates an array of JavaScripts that get each element in `elements` by
 // name.
 NSArray* GetElementsByNameJavaScripts(const ElementByName elements[],
                                       size_t elements_size) {
@@ -130,7 +130,7 @@ enum ExtractMask {
   EXTRACT_VALUE = 1 << 0,        // Extract value from WebFormControlElement.
   EXTRACT_OPTION_TEXT = 1 << 1,  // Extract option text from
                                  // WebFormSelectElement. Only valid when
-                                 // |EXTRACT_VALUE| is set.
+                                 // `EXTRACT_VALUE` is set.
                                  // This is used for form submission where
                                  // human readable value is captured.
   EXTRACT_OPTIONS = 1 << 2,      // Extract options from
@@ -141,7 +141,7 @@ const ExtractMask kFormExtractMasks[] = {
     EXTRACT_NONE, EXTRACT_VALUE, EXTRACT_OPTION_TEXT, EXTRACT_OPTIONS,
 };
 
-// Gets the attributes to check for a mask in |kFormExtractMasks|.
+// Gets the attributes to check for a mask in `kFormExtractMasks`.
 NSArray* GetFormFieldAttributeListsToCheck(NSUInteger mask) {
   if (!(mask & EXTRACT_VALUE)) {
     return @[
@@ -736,14 +736,14 @@ NSArray* GetTestFormSelectElementWithOptgroup() {
 
 // clang-format on
 
-// Generates JavaScripts to check a JavaScripts object |results| with the
-// expected values given in |expected|, which is a dictionary with string
+// Generates JavaScripts to check a JavaScripts object `results` with the
+// expected values given in `expected`, which is a dictionary with string
 // values for all the keys other than @"option_vaues" and @"option_contents";
 // the values of @"option_vaues" and @"option_contents" are arrays of
-// strings or undefined. Only attributes in |attributes_to_check| are checked.
-// A different expected value is chosen in |expected| for different
-// |extract_mask|.
-// |index| is the index of the control element in the form. If it is >0, it will
+// strings or undefined. Only attributes in `attributes_to_check` are checked.
+// A different expected value is chosen in `expected` for different
+// `extract_mask`.
+// `index` is the index of the control element in the form. If it is >0, it will
 // be used to generate a name for nameless elements.
 NSString* GenerateElementItemVerifyingJavaScripts(NSString* results,
                                                   NSUInteger extract_mask,
@@ -789,11 +789,11 @@ NSString* GenerateElementItemVerifyingJavaScripts(NSString* results,
   return [verifying_javascripts componentsJoinedByString:@"&&"];
 }
 
-// Generates JavaScripts to check a JavaScripts array |results| with the
-// expected values given in |expected|, which is an array of dictionaries; each
-// dictionary is the expected values of the corresponding item in |results|.
-// Only attributes in |attributes_to_check| are checked. A different expected
-// value is chosen in |expected| for different |extract_mask|.
+// Generates JavaScripts to check a JavaScripts array `results` with the
+// expected values given in `expected`, which is an array of dictionaries; each
+// dictionary is the expected values of the corresponding item in `results`.
+// Only attributes in `attributes_to_check` are checked. A different expected
+// value is chosen in `expected` for different `extract_mask`.
 NSString* GenerateTestItemVerifyingJavaScripts(NSString* results,
                                                NSUInteger extract_mask,
                                                NSArray* expected,
@@ -842,60 +842,60 @@ class AutofillControllerJsTest : public PlatformTest {
     return main_frame;
   }
 
-  // Helper method that EXPECTs |javascript| evaluation on page
-  // |kHTMLForTestingElements| with expectation given by
-  // |elements_with_true_expected|.
+  // Helper method that EXPECTs `javascript` evaluation on page
+  // `kHTMLForTestingElements` with expectation given by
+  // `elements_with_true_expected`.
   void TestExecutingBooleanJavaScriptOnElement(
       NSString* javascript,
       const ElementByName elements_with_true_expected[],
       size_t size_elements_with_true_expected);
 
   // Helper method that EXPECTs
-  // |__gCrWeb.fill.webFormControlElementToFormField|. This method applies
-  // |__gCrWeb.fill.webFormControlElementToFormField| on each element in
-  // |test_data| with all possible extract masks and verify the results.
+  // `__gCrWeb.fill.webFormControlElementToFormField`. This method applies
+  // `__gCrWeb.fill.webFormControlElementToFormField` on each element in
+  // `test_data` with all possible extract masks and verify the results.
   void TestWebFormControlElementToFormField(NSArray* test_data,
                                             NSString* tag_name);
 
-  // Helper method for testing |javascripts_statement| that evalutate
-  // |attribute_name| of the elements in |test_data| which has tag name
-  // |tag_name|. EXPECTs JavaScript evaluation on
+  // Helper method for testing `javascripts_statement` that evalutate
+  // `attribute_name` of the elements in `test_data` which has tag name
+  // `tag_name`. EXPECTs JavaScript evaluation on
   // "window.document.getElementsByTagName()"
   void TestInputElementDataEvaluation(NSString* javascripts_statement,
                                       NSString* attribute_name,
                                       NSArray* test_data,
                                       NSString* tag_name);
 
-  // Helper method that EXPECTs |__gCrWeb.fill.webFormElementToFormData| on
-  // a form element obtained by |get_form_element_javascripts|. The results
-  // are verified with |verifying_java_scripts|.
+  // Helper method that EXPECTs `__gCrWeb.fill.webFormElementToFormData` on
+  // a form element obtained by `get_form_element_javascripts`. The results
+  // are verified with `verifying_java_scripts`.
   void TestWebFormElementToFormDataForOneForm(
       NSString* get_form_element_javascripts,
       NSUInteger extract_mask,
       NSString* expected_result,
       NSString* verifying_javascripts);
 
-  // EXPECTs |__gCrWeb.fill.webFormElementToFormData| on all the test data.
+  // EXPECTs `__gCrWeb.fill.webFormElementToFormData` on all the test data.
   void TestWebFormElementToFormData(NSArray* test_items);
 
-  // EXPECTs |__gCrWeb.autofill.extractNewForms| on |html|.
+  // EXPECTs `__gCrWeb.autofill.extractNewForms` on `html`.
   void TestExtractNewForms(NSString* html,
                            BOOL is_origin_window_location,
                            NSArray* expected_items);
 
-  // Helper method that EXPECTs the |java_script| evaluation results on each
-  // element obtained by JavaScripts in |get_element_java_scripts|. The
+  // Helper method that EXPECTs the `java_script` evaluation results on each
+  // element obtained by JavaScripts in `get_element_java_scripts`. The
   // expected results are boolean and are true only for elements in
-  // |get_element_java_scripts_expecting_true| which is subset of
-  // |get_element_java_scripts|.
+  // `get_element_java_scripts_expecting_true` which is subset of
+  // `get_element_java_scripts`.
   void ExecuteBooleanJavaScriptOnElementsAndCheck(
       NSString* java_script,
       NSArray* get_element_java_scripts,
       NSArray* get_element_java_scripts_expecting_true);
 
-  // Helper method that EXPECTs the |java_script| evaluation results on each
-  // element obtained by scripts in |get_element_javas_cripts|; the expected
-  // result is the corresponding entry in |expected_results|.
+  // Helper method that EXPECTs the `java_script` evaluation results on each
+  // element obtained by scripts in `get_element_javas_cripts`; the expected
+  // result is the corresponding entry in `expected_results`.
   void ExecuteJavaScriptOnElementsAndCheck(NSString* java_script,
                                            NSArray* get_element_java_scripts,
                                            NSArray* expected_results);
@@ -910,7 +910,7 @@ void AutofillControllerJsTest::TestExecutingBooleanJavaScriptOnElement(
     NSString* javascript,
     const ElementByName elements_with_true_expected[],
     size_t size_elements_with_true_expected) {
-  // Elements in |kHTMLForTestingElements|.
+  // Elements in `kHTMLForTestingElements`.
   const ElementByName elementsByName[] = {
       {"hl", 0, -1},
       {"firstname", 0, -1},
@@ -1443,9 +1443,9 @@ void AutofillControllerJsTest::TestWebFormControlElementToFormField(
                                       "@')[%" PRIuNS "]",
                                      tag_name, i - 1];
       NSDictionary* expected = [test_data objectAtIndex:i];
-      // Generates JavaScripts to verify the results. Parameter |results| is
+      // Generates JavaScripts to verify the results. Parameter `results` is
       // @"field" as in the evaluation JavaScripts the results are returned in
-      // |field|.
+      // `field`.
       NSString* verifying_javascripts = GenerateElementItemVerifyingJavaScripts(
           @"field", extract_mask, expected, attributes_to_check, -1);
       EXPECT_NSEQ(
@@ -1774,7 +1774,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   autofill::FormUtilJavaScriptFeature::GetInstance()
       ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
 
-  // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+  // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return [web::test::ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]",
                                          web_state()) intValue] ==
@@ -1976,7 +1976,7 @@ TEST_F(AutofillControllerJsTest, FillActiveFormField) {
   autofill::FormUtilJavaScriptFeature::GetInstance()
       ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
 
-  // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+  // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return [web::test::ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]",
                                          web_state()) intValue] ==

@@ -23,7 +23,7 @@
 // Class for Autofill suggestion in the customized keyboard.
 @interface FormSuggestionLabel : UIView
 
-// Designated initializer. Initializes with |delegate| for |suggestion|.
+// Designated initializer. Initializes with `delegate` for `suggestion`.
 - (instancetype)initWithSuggestion:(FormSuggestion*)suggestion
                              index:(NSUInteger)index
                     numSuggestions:(NSUInteger)numSuggestions

@@ -174,7 +174,7 @@ class FormSuggestionControllerTest : public PlatformTest {
   }
 
  protected:
-  // Sets up |suggestion_controller_| with the specified array of
+  // Sets up `suggestion_controller_` with the specified array of
   // FormSuggestionProviders.
   void SetUpController(NSArray* providers) {
     suggestion_controller_ =

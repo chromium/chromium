@@ -138,7 +138,7 @@ class FormStructureBrowserTest
   // DataDrivenTest:
   void GenerateResults(const std::string& input, std::string* output) override;
 
-  // Serializes the given |forms| into a string.
+  // Serializes the given `forms` into a string.
   std::string FormStructuresToString(
       const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms);
 
@@ -261,7 +261,7 @@ bool FormStructureBrowserTest::LoadHtmlWithoutSubresourcesAndInitRendererIds(
   autofill::FormUtilJavaScriptFeature::GetInstance()
       ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
 
-  // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+  // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
   return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return [web::test::ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]",
                                          web_state()) intValue] ==
@@ -312,7 +312,7 @@ std::string FormStructureBrowserTest::FormStructuresToString(
       }
 
       // Normalize the section by replacing the unique but platform-dependent
-      // integers in |field->section| with consecutive unique integers.
+      // integers in `field->section` with consecutive unique integers.
       // The section string is of the form "fieldname_id1_id2-suffix", where
       // id1, id2 are platform-dependent and thus need to be substituted.
       size_t last_underscore = section.find_last_of('_');

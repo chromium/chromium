@@ -49,7 +49,7 @@ struct IconImageMap {
   NSString* image_name;
 };
 
-// Creates a label with the given |text| and |alpha| suitable for use in a
+// Creates a label with the given `text` and `alpha` suitable for use in a
 // suggestion button in the keyboard accessory view.
 UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
   UILabel* label = [[UILabel alloc] init];
@@ -150,8 +150,8 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
   self.layer.cornerRadius = self.bounds.size.height / 2.0;
 }
 
-// Animates |highlight| property to YES for a duration of
-// |animationOnScreenDuration|.
+// Animates `highlight` property to YES for a duration of
+// `animationOnScreenDuration`.
 - (void)animateWithHighlight {
   __weak __typeof(self) weakSelf = self;
   [self animateWithHighlight:YES
@@ -172,7 +172,7 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 
 #pragma mark - Private
 
-// Animates |highlight| property from current state to |highlighted|.
+// Animates `highlight` property from current state to `highlighted`.
 - (void)animateWithHighlight:(BOOL)highlighted
                   completion:(ProceduralBlockWithBool)completion {
   if (self.highlighted == highlighted) {

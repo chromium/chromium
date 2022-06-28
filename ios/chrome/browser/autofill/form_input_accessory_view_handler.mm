@@ -55,8 +55,8 @@ FormInputAccessoryAction UMAActionForAssistAction(NSString* assistAction) {
 
 namespace {
 
-// Finds all views of a particular kind if class |aClass| in the subview
-// hierarchy of the given |root| view.
+// Finds all views of a particular kind if class `aClass` in the subview
+// hierarchy of the given `root` view.
 NSArray* SubviewsWithClass(UIView* root, Class aClass) {
   DCHECK(root);
   NSMutableArray* viewsToExamine = [NSMutableArray arrayWithObject:root];
@@ -74,7 +74,7 @@ NSArray* SubviewsWithClass(UIView* root, Class aClass) {
   return subviews;
 }
 
-// Returns true if |item|'s action name contains |actionName|.
+// Returns true if `item`'s action name contains `actionName`.
 BOOL ItemActionMatchesName(UIBarButtonItem* item, NSString* actionName) {
   SEL itemAction = [item action];
   if (!itemAction)
@@ -85,9 +85,9 @@ BOOL ItemActionMatchesName(UIBarButtonItem* item, NSString* actionName) {
   return [itemActionName rangeOfString:actionName].location != NSNotFound;
 }
 
-// Finds all UIToolbarItems associated with a given UIToolbar |toolbar| with
+// Finds all UIToolbarItems associated with a given UIToolbar `toolbar` with
 // action selectors with a name that contains the action name specified by
-// |actionName|.
+// `actionName`.
 NSArray* FindToolbarItemsForActionName(UIToolbar* toolbar,
                                        NSString* actionName) {
   NSMutableArray* toolbarItems = [NSMutableArray array];
@@ -101,7 +101,7 @@ NSArray* FindToolbarItemsForActionName(UIToolbar* toolbar,
 }
 
 // Finds all UIToolbarItem(s) with action selectors of the name specified by
-// |actionName| in any UIToolbars in the view hierarchy below |root|.
+// `actionName` in any UIToolbars in the view hierarchy below `root`.
 NSArray* FindDescendantToolbarItemsForActionName(UIView* root,
                                                  NSString* actionName) {
   NSMutableArray* descendants = [NSMutableArray array];
@@ -116,7 +116,7 @@ NSArray* FindDescendantToolbarItemsForActionName(UIView* root,
 }
 
 // Finds all UIBarButtonItem(s) with action selectors of the name specified by
-// |actionName| in the UITextInputAssistantItem passed.
+// `actionName` in the UITextInputAssistantItem passed.
 NSArray* FindDescendantToolbarItemsForActionName(
     UITextInputAssistantItem* inputAssistantItem,
     NSString* actionName) {

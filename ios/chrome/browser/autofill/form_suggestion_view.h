@@ -41,7 +41,7 @@
 // The layout guide center to use to refer to the first suggestion label.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
-// Updates with |suggestions|.
+// Updates with `suggestions`.
 - (void)updateSuggestions:(NSArray<FormSuggestion*>*)suggestions;
 
 // Reset content insets back to zero and sets the delegate to nil. Used to stop
