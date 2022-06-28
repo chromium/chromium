@@ -1573,7 +1573,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1333098")
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testTabGroupManualSelection_DisabledForSingleTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
