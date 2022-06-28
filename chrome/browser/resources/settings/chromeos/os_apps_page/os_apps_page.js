@@ -224,7 +224,12 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   connectedCallback() {
     super.connectedCallback();
 
-    this.watch('app_', state => getSelectedApp(state));
+    this.watch('app_', state => {
+      // Don't set `app_` to `null`, since it triggers Polymer
+      // data bindings of <app-management-uninstall-button> which does not
+      // accept `null`, use `undefined` instead.
+      return getSelectedApp(state) || undefined;
+    });
 
     /**
      * @private {!chromeos.settings.appNotification.mojom.AppNotificationsHandlerInterface}
