@@ -236,7 +236,8 @@ public class WebContentsAccessibilityTest {
     }
 
     public AccessibilityNodeInfoCompat createAccessibilityNodeInfo(int virtualViewId) {
-        return mActivityTestRule.mNodeProvider.createAccessibilityNodeInfo(virtualViewId);
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mActivityTestRule.mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
     }
 
     /**

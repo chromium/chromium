@@ -531,6 +531,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int opt_request_id,
       base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
                               int hit_node_id)> opt_callback) override;
+  // Return true if this is the root -- there are no parent frames of any kind.
   bool AccessibilityIsMainFrame() override;
   WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
 

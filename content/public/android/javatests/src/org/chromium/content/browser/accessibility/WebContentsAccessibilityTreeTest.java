@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests for WebContentsAccessibilityImpl integration with accessibility services.
@@ -163,7 +164,8 @@ public class WebContentsAccessibilityTreeTest {
 
     // Helper method to create an AccessibilityNodeInfo object.
     private AccessibilityNodeInfoCompat createAccessibilityNodeInfo(int virtualViewId) {
-        return mActivityTestRule.mNodeProvider.createAccessibilityNodeInfo(virtualViewId);
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mActivityTestRule.mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
     }
 
     // ------------------ ACCNAME TESTS ------------------ //

@@ -2913,7 +2913,14 @@ void RenderFrameHostImpl::AccessibilityHitTest(
 }
 
 bool RenderFrameHostImpl::AccessibilityIsMainFrame() {
-  return is_main_frame();
+  // Do not use is_main_frame() or IsOutermostMainFrame().
+  // Frame trees may be nested so it can be the case that is_main_frame() is
+  // true, but is not the outermost RenderFrameHost (it only checks for nullity
+  // of |parent_|. In particular, !is_main_frame() cannot be used to check if
+  // this RenderFrameHost is embedded. In addition, IsOutermostMainFrame()
+  // does not escape guest views. Therefore, we must check for any kind of
+  // parent document or embedder.
+  return !GetParentOrOuterDocumentOrEmbedder();
 }
 
 WebContentsAccessibility*
@@ -9926,8 +9933,23 @@ RenderFrameHost* RenderFrameHost::FromPlaceholderToken(
 
 ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
   auto* parent = GetParentOrOuterDocumentOrEmbedder();
-  if (!parent)
+  if (!parent) {
+    DCHECK(AccessibilityIsMainFrame())
+        << "Child frame requires a parent, root=" << GetLastCommittedURL();
     return ui::AXTreeIDUnknown();
+  }
+  // TODO(accessibility) The following check fails when running this test with
+  // --force-renderer-accessibility:
+  // http/tests/devtools/resource-tree/resource-tree-frame-in-crafted-frame.js
+  // It seems that fabricating a frame with document.write() results in a
+  // frame that has no embedding token.
+  // DCHECK(parent->GetAXTreeID() != ui::AXTreeIDUnknown())
+  //     << "Parent frame must have an id, child url = " <<
+  //     GetLastCommittedURL()
+  //     << "    parent url = " << parent->GetLastCommittedURL();
+  DCHECK(!AccessibilityIsMainFrame())
+      << "Root frame must not have a parent, root=" << GetLastCommittedURL()
+      << "  parent=" << parent->GetLastCommittedURL();
   return parent->GetAXTreeID();
 }
 
