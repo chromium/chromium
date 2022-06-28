@@ -1180,6 +1180,12 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
         total_size_of_brp_quarantined_bytes.load(std::memory_order_relaxed);
     stats.total_brp_quarantined_count =
         total_count_of_brp_quarantined_slots.load(std::memory_order_relaxed);
+    stats.cumulative_brp_quarantined_bytes =
+        cumulative_size_of_brp_quarantined_bytes.load(
+            std::memory_order_relaxed);
+    stats.cumulative_brp_quarantined_count =
+        cumulative_count_of_brp_quarantined_slots.load(
+            std::memory_order_relaxed);
 #endif
 
     size_t direct_mapped_allocations_total_size = 0;

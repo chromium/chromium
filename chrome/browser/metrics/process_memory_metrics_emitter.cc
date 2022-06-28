@@ -251,6 +251,12 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      MetricSize::kTiny, "brp_quarantined_count", EmitTo::kSizeInUmaOnly,
      nullptr},
 #endif
+    {"malloc/partitions", "Malloc.BRPQuarantinedBytesPerMinute",
+     MetricSize::kSmall, "brp_quarantined_bytes_per_minute",
+     EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions", "Malloc.BRPQuarantinedCountPerMinute",
+     MetricSize::kTiny, "brp_quarantined_count_per_minute",
+     EmitTo::kSizeInUmaOnly, nullptr},
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"malloc/partitions/allocator/thread_cache", "Malloc.ThreadCache",
      MetricSize::kSmall, kSize, EmitTo::kSizeInUmaOnly, nullptr},

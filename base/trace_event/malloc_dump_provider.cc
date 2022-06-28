@@ -115,7 +115,9 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
                                size_t* resident_size,
                                size_t* allocated_objects_size,
                                size_t* allocated_objects_count,
-                               uint64_t* syscall_count) {
+                               uint64_t* syscall_count,
+                               size_t* cumulative_brp_quarantined_size,
+                               size_t* cumulative_brp_quarantined_count) {
   MemoryDumpPartitionStatsDumper partition_stats_dumper("malloc", pmd,
                                                         level_of_detail);
   bool is_light_dump = level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND;
@@ -147,6 +149,12 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
   *allocated_objects_size += partition_stats_dumper.total_active_bytes();
   *allocated_objects_count += partition_stats_dumper.total_active_count();
   *syscall_count += partition_stats_dumper.syscall_count();
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  *cumulative_brp_quarantined_size +=
+      partition_stats_dumper.cumulative_brp_quarantined_bytes();
+  *cumulative_brp_quarantined_count +=
+      partition_stats_dumper.cumulative_brp_quarantined_count();
+#endif
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -309,15 +317,18 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   size_t allocated_objects_size = 0;
   size_t allocated_objects_count = 0;
   uint64_t syscall_count = 0;
+  size_t cumulative_brp_quarantined_size = 0;
+  size_t cumulative_brp_quarantined_count = 0;
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   uint64_t pa_only_resident_size;
   uint64_t pa_only_allocated_objects_size;
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  ReportPartitionAllocStats(pmd, args.level_of_detail, &total_virtual_size,
-                            &resident_size, &allocated_objects_size,
-                            &allocated_objects_count, &syscall_count);
+  ReportPartitionAllocStats(
+      pmd, args.level_of_detail, &total_virtual_size, &resident_size,
+      &allocated_objects_size, &allocated_objects_count, &syscall_count,
+      &cumulative_brp_quarantined_size, &cumulative_brp_quarantined_count);
 
   pa_only_resident_size = resident_size;
   pa_only_allocated_objects_size = allocated_objects_size;
@@ -394,23 +405,52 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
                           static_cast<uint64_t>(waste));
   }
 
-  ReportSyscallCount(syscall_count, outer_dump);
+  ReportPerMinuteStats(syscall_count, cumulative_brp_quarantined_size,
+                       cumulative_brp_quarantined_count, outer_dump,
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+                       partitions_dump
+#else
+                       nullptr
+#endif
+  );
 
   return true;
 }
 
-void MallocDumpProvider::ReportSyscallCount(uint64_t syscall_count,
-                                            MemoryAllocatorDump* malloc_dump) {
+void MallocDumpProvider::ReportPerMinuteStats(
+    uint64_t syscall_count,
+    size_t cumulative_brp_quarantined_bytes,
+    size_t cumulative_brp_quarantined_count,
+    MemoryAllocatorDump* malloc_dump,
+    MemoryAllocatorDump* partition_alloc_dump) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   uint64_t new_syscalls = syscall_count - last_syscall_count_;
+  size_t new_brp_quarantined_bytes =
+      cumulative_brp_quarantined_bytes - last_cumulative_brp_quarantined_bytes_;
+  size_t new_brp_quarantined_count =
+      cumulative_brp_quarantined_count - last_cumulative_brp_quarantined_count_;
   base::TimeDelta time_since_last_dump =
       base::TimeTicks::Now() - last_memory_dump_time_;
   uint64_t syscalls_per_minute = static_cast<uint64_t>(
       (60 * new_syscalls) / time_since_last_dump.InSecondsF());
   malloc_dump->AddScalar("syscalls_per_minute", "count", syscalls_per_minute);
+  if (partition_alloc_dump) {
+    size_t brp_quarantined_bytes_per_minute =
+        (60 * new_brp_quarantined_bytes) / time_since_last_dump.InSecondsF();
+    size_t brp_quarantined_count_per_minute =
+        (60 * new_brp_quarantined_count) / time_since_last_dump.InSecondsF();
+    partition_alloc_dump->AddScalar("brp_quarantined_bytes_per_minute",
+                                    MemoryAllocatorDump::kUnitsBytes,
+                                    brp_quarantined_bytes_per_minute);
+    partition_alloc_dump->AddScalar("brp_quarantined_count_per_minute",
+                                    MemoryAllocatorDump::kNameObjectCount,
+                                    brp_quarantined_count_per_minute);
+  }
 
   last_memory_dump_time_ = base::TimeTicks::Now();
   last_syscall_count_ = syscall_count;
+  last_cumulative_brp_quarantined_bytes_ = cumulative_brp_quarantined_bytes;
+  last_cumulative_brp_quarantined_count_ = cumulative_brp_quarantined_count;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
@@ -425,6 +465,14 @@ std::string GetPartitionDumpName(const char* root_name,
                             partition_name);
 }
 
+MemoryDumpPartitionStatsDumper::MemoryDumpPartitionStatsDumper(
+    const char* root_name,
+    ProcessMemoryDump* memory_dump,
+    MemoryDumpLevelOfDetail level_of_detail)
+    : root_name_(root_name),
+      memory_dump_(memory_dump),
+      detailed_(level_of_detail != MemoryDumpLevelOfDetail::BACKGROUND) {}
+
 void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
     const char* partition_name,
     const partition_alloc::PartitionMemoryStats* memory_stats) {
@@ -433,6 +481,12 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   total_active_bytes_ += memory_stats->total_active_bytes;
   total_active_count_ += memory_stats->total_active_count;
   syscall_count_ += memory_stats->syscall_count;
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  cumulative_brp_quarantined_bytes_ +=
+      memory_stats->cumulative_brp_quarantined_bytes;
+  cumulative_brp_quarantined_count_ +=
+      memory_stats->cumulative_brp_quarantined_count;
+#endif  //  BUILDFLAG(USE_BACKUP_REF_PTR)
 
   std::string dump_name = GetPartitionDumpName(root_name_, partition_name);
   MemoryAllocatorDump* allocator_dump =

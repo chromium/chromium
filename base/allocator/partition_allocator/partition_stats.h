@@ -59,6 +59,10 @@ struct PartitionMemoryStats {
       total_brp_quarantined_bytes;  // Total bytes that are quarantined by BRP.
   size_t total_brp_quarantined_count;  // Total number of slots that are
                                        // quarantined by BRP.
+  size_t cumulative_brp_quarantined_bytes;  // Cumulative bytes that are
+                                            // quarantined by BRP.
+  size_t cumulative_brp_quarantined_count;  // Cumulative number of slots that
+                                            // are quarantined by BRP.
 #endif
 
   bool has_thread_cache;
