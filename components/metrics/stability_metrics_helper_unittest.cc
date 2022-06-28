@@ -68,15 +68,6 @@ TEST_F(StabilityMetricsHelperTest, LogRendererCrash) {
   // Failed launch increments failed launch count.
   helper.LogRendererCrash(false, base::TERMINATION_STATUS_LAUNCH_FAILED, 1);
 
-  metrics::SystemProfileProto system_profile;
-
-  // Call ProvideStabilityMetrics to check that it will force pending tasks to
-  // be executed immediately.
-  helper.ProvideStabilityMetrics(&system_profile);
-
-  EXPECT_EQ(3, system_profile.stability().renderer_crash_count());
-  EXPECT_EQ(0, system_profile.stability().extension_renderer_crash_count());
-
   histogram_tester.ExpectUniqueSample("CrashExitCodes.Renderer", 1, 3);
   histogram_tester.ExpectBucketCount("BrowserRenderProcessHost.ChildCrashes",
                                      RENDERER_TYPE_RENDERER, 3);
@@ -116,12 +107,6 @@ TEST_F(StabilityMetricsHelperTest, LogRendererCrashEnableExtensions) {
 
   // Failed launch increments extension failed launch count.
   helper.LogRendererCrash(true, base::TERMINATION_STATUS_LAUNCH_FAILED, 1);
-
-  metrics::SystemProfileProto system_profile;
-  helper.ProvideStabilityMetrics(&system_profile);
-
-  EXPECT_EQ(0, system_profile.stability().renderer_crash_count());
-  EXPECT_EQ(2, system_profile.stability().extension_renderer_crash_count());
 
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      StabilityEventType::kRendererCrash, 0);

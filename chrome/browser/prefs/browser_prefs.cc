@@ -743,6 +743,10 @@ const char kNativeBridge64BitSupportExperimentEnabled[] =
 const char kBackgroundTracingLastUpload[] = "background_tracing.last_upload";
 const char kStabilityGpuCrashCount[] =
     "user_experience_metrics.stability.gpu_crash_count";
+const char kStabilityRendererCrashCount[] =
+    "user_experience_metrics.stability.renderer_crash_count";
+const char kStabilityExtensionRendererCrashCount[] =
+    "user_experience_metrics.stability.extension_renderer_crash_count";
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
 #endif
@@ -818,6 +822,8 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 06/2022.
   registry->RegisterInt64Pref(kBackgroundTracingLastUpload, 0);
   registry->RegisterIntegerPref(kStabilityGpuCrashCount, 0);
+  registry->RegisterIntegerPref(kStabilityRendererCrashCount, 0);
+  registry->RegisterIntegerPref(kStabilityExtensionRendererCrashCount, 0);
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(kStabilityPageLoadCount, 0);
 #endif
@@ -1676,6 +1682,8 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 06/2022.
   local_state->ClearPref(kBackgroundTracingLastUpload);
   local_state->ClearPref(kStabilityGpuCrashCount);
+  local_state->ClearPref(kStabilityRendererCrashCount);
+  local_state->ClearPref(kStabilityExtensionRendererCrashCount);
 #if !BUILDFLAG(IS_ANDROID)
   local_state->ClearPref(kStabilityPageLoadCount);
 #endif

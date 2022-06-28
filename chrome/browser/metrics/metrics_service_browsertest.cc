@@ -117,16 +117,10 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(crashy_url)));
     observer.Wait();
 
-    // The MetricsService listens for the same notification, so the |observer|
-    // might finish waiting before the MetricsService has a chance to process
-    // the notification.  To avoid racing here, we repeatedly run the message
-    // loop until the MetricsService catches up.  This should happen "real soon
-    // now", since the notification is posted to all observers essentially
-    // simultaneously... so busy waiting here shouldn't be too bad.
-    const PrefService* prefs = g_browser_process->local_state();
-    while (!prefs->GetInteger(metrics::prefs::kStabilityRendererCrashCount)) {
-      content::RunAllPendingInMessageLoop();
-    }
+    // The MetricsService listens for the same notification, so the observer
+    // might finish waiting before the MetricsService has processed the
+    // notification. To avoid racing here, we repeatedly run the message loop.
+    content::RunAllPendingInMessageLoop();
   }
 
   // Open a couple of tabs of random content.
@@ -165,8 +159,8 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CloseRenderersNormally) {
   // Verify that the expected stability metrics were recorded.
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      metrics::StabilityEventType::kPageLoad, 2);
-  EXPECT_EQ(0, g_browser_process->local_state()->GetInteger(
-                   metrics::prefs::kStabilityRendererCrashCount));
+  histogram_tester.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 0);
 }
 
 // Flaky on Linux. See http://crbug.com/131094
@@ -189,8 +183,8 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CrashRenderers) {
   // The three tabs from OpenTabs() and the one tab to open chrome://crash/.
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      metrics::StabilityEventType::kPageLoad, 3);
-  EXPECT_EQ(1, g_browser_process->local_state()->GetInteger(
-                   metrics::prefs::kStabilityRendererCrashCount));
+  histogram_tester.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 1);
 
 #if BUILDFLAG(IS_WIN)
   // Consult Stability Team before changing this test as it's recorded to
@@ -220,8 +214,8 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest,
   // The three tabs from OpenTabs() and the one tab to open chrome://crash/.
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      metrics::StabilityEventType::kPageLoad, 3);
-  EXPECT_EQ(1, g_browser_process->local_state()->GetInteger(
-                   metrics::prefs::kStabilityRendererCrashCount));
+  histogram_tester.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 1);
 
   histogram_tester.ExpectUniqueSample(
       "CrashExitCodes.Renderer",
@@ -240,8 +234,8 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
   // chrome://checkcrash/.
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      metrics::StabilityEventType::kPageLoad, 3);
-  EXPECT_EQ(1, g_browser_process->local_state()->GetInteger(
-                   metrics::prefs::kStabilityRendererCrashCount));
+  histogram_tester.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 1);
 
 #if BUILDFLAG(IS_WIN)
   // Consult Stability Team before changing this test as it's recorded to
@@ -271,8 +265,8 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, OOMRenderers) {
   // chrome://memory-exhaust/.
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      metrics::StabilityEventType::kPageLoad, 3);
-  EXPECT_EQ(1, g_browser_process->local_state()->GetInteger(
-                   metrics::prefs::kStabilityRendererCrashCount));
+  histogram_tester.ExpectBucketCount(
+      "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 1);
 
 // On 64-bit, the Job object should terminate the renderer on an OOM. However,
 // if the system is low on memory already, then the allocator might just return

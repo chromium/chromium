@@ -150,10 +150,6 @@ const char kStabilityCrashCountDueToGmsCoreUpdate[] =
 const char kStabilityExitedCleanly[] =
     "user_experience_metrics.stability.exited_cleanly";
 
-// Number of times an extension renderer process crashed since the last report.
-const char kStabilityExtensionRendererCrashCount[] =
-    "user_experience_metrics.stability.extension_renderer_crash_count";
-
 // The total number of samples that will be lost if ASSOCIATE_INTERNAL_PROFILE
 // isn't enabled since the previous stability recorded, this is different than
 // the previous browser run, because one file was just uploaded before the
@@ -185,10 +181,6 @@ const char kStabilityPageLoadCount[] =
 const char kStabilityRendererLaunchCount[] =
     "user_experience_metrics.stability.renderer_launch_count";
 #endif
-
-// Number of times a renderer process crashed since the last report.
-const char kStabilityRendererCrashCount[] =
-    "user_experience_metrics.stability.renderer_crash_count";
 
 // Base64 encoded serialized UMA system profile proto from the previous session.
 const char kStabilitySavedSystemProfile[] =

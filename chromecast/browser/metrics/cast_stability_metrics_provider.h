@@ -10,7 +10,6 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
-class PrefRegistrySimple;
 class PrefService;
 
 namespace content {
@@ -29,9 +28,6 @@ namespace metrics {
 class CastStabilityMetricsProvider : public ::metrics::MetricsProvider,
                                      public content::NotificationObserver {
  public:
-  // Registers local state prefs used by this class.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
   CastStabilityMetricsProvider(::metrics::MetricsService* metrics_service,
                                PrefService* pref_service);
 
@@ -44,8 +40,6 @@ class CastStabilityMetricsProvider : public ::metrics::MetricsProvider,
   // metrics::MetricsProvider implementation:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
-  void ProvideStabilityMetrics(
-      ::metrics::SystemProfileProto* system_profile_proto) override;
 
   // Logs an external crash, presumably from the ExternalMetrics service.
   void LogExternalCrash(const std::string& crash_type);

@@ -38,15 +38,6 @@ void IOSChromeStabilityMetricsProvider::OnRecordingDisabled() {
   recording_enabled_ = false;
 }
 
-void IOSChromeStabilityMetricsProvider::ProvideStabilityMetrics(
-    metrics::SystemProfileProto* system_profile_proto) {
-  helper_.ProvideStabilityMetrics(system_profile_proto);
-}
-
-void IOSChromeStabilityMetricsProvider::ClearSavedStabilityMetrics() {
-  helper_.ClearSavedStabilityMetrics();
-}
-
 void IOSChromeStabilityMetricsProvider::LogRendererCrash() {
   if (!recording_enabled_)
     return;

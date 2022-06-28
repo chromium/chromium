@@ -56,9 +56,14 @@ class ContentStabilityMetricsProvider
   // MetricsProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
+#if BUILDFLAG(IS_ANDROID)
+  // A couple Local-State-pref-based stability counts are retained for Android
+  // WebView. Other platforms, including Android Chrome and WebLayer, should use
+  // Stability.Counts2 as the source of truth for these counts.
   void ProvideStabilityMetrics(
       SystemProfileProto* system_profile_proto) override;
   void ClearSavedStabilityMetrics() override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   static void SetupWebContentsObserver(content::WebContents* web_contents);
 

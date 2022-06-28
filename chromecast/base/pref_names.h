@@ -14,7 +14,6 @@ extern const char kMetricsIsNewClientID[];
 extern const char kOptInStats[];
 extern const char kStabilityKernelCrashCount[];
 extern const char kStabilityOtherUserCrashCount[];
-extern const char kStabilityRendererCrashCount[];
 extern const char kStabilitySystemUncleanShutdownCount[];
 extern const char kWebColorScheme[];
 

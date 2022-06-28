@@ -28,10 +28,6 @@ const char kStabilityKernelCrashCount[] =
 const char kStabilityOtherUserCrashCount[] =
     "user_experience_metrics.stability.other_user_crash_count";
 
-// Number of times a renderer process crashed since the last report.
-const char kStabilityRendererCrashCount[] =
-    "user_experience_metrics.stability.renderer_crash_count";
-
 // Total number of unclean system shutdowns since the last report.
 const char kStabilitySystemUncleanShutdownCount[] =
     "user_experience_metrics.stability.system_unclean_shutdowns";
