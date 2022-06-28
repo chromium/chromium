@@ -20,13 +20,26 @@ enum class TrustedVaultDeviceRegistrationStateForUMA {
   kMaxValue = kAttemptingRegistrationWithPersistentAuthError,
 };
 
+// Used to provide UMA metric breakdowns.
+enum class TrustedVaultURLFetchReasonForUMA {
+  kUnspecified,
+  kRegisterDevice,
+  kRegisterUnspecifiedAuthenticationFactor,
+  kDownloadKeys,
+  kDownloadIsRecoverabilityDegraded,
+};
+
 void RecordTrustedVaultDeviceRegistrationState(
     TrustedVaultDeviceRegistrationStateForUMA registration_state);
 
 // Records url fetch response status (combined http and net error code). If
 // |http_response_code| is non-zero, it will be recorded, otherwise |net_error|
 // will be recorded.
-void RecordTrustedVaultURLFetchResponse(int http_response_code, int net_error);
+void RecordTrustedVaultURLFetchResponse(
+    int http_response_code,
+    int net_error,
+    TrustedVaultURLFetchReasonForUMA reason =
+        TrustedVaultURLFetchReasonForUMA::kUnspecified);
 
 }  // namespace syncer
 

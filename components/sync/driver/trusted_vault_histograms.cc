@@ -4,9 +4,32 @@
 
 #include "components/sync/driver/trusted_vault_histograms.h"
 
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 
 namespace syncer {
+
+namespace {
+
+std::string GetReasonSuffix(TrustedVaultURLFetchReasonForUMA reason) {
+  switch (reason) {
+    case TrustedVaultURLFetchReasonForUMA::kUnspecified:
+      return std::string();
+    case TrustedVaultURLFetchReasonForUMA::kRegisterDevice:
+      return "RegisterDevice";
+    case TrustedVaultURLFetchReasonForUMA::
+        kRegisterUnspecifiedAuthenticationFactor:
+      return "RegisterUnspecifiedAuthenticationFactor";
+    case TrustedVaultURLFetchReasonForUMA::kDownloadKeys:
+      return "DownloadKeys";
+    case TrustedVaultURLFetchReasonForUMA::kDownloadIsRecoverabilityDegraded:
+      return "DownloadIsRecoverabilityDegraded";
+  }
+}
+
+}  // namespace
 
 void RecordTrustedVaultDeviceRegistrationState(
     TrustedVaultDeviceRegistrationStateForUMA registration_state) {
@@ -16,13 +39,23 @@ void RecordTrustedVaultDeviceRegistrationState(
 
 // Records url fetch response status (combined http and net error code).
 // Either |http_status| or |net_error| must be non zero.
-void RecordTrustedVaultURLFetchResponse(int http_response_code, int net_error) {
+void RecordTrustedVaultURLFetchResponse(
+    int http_response_code,
+    int net_error,
+    TrustedVaultURLFetchReasonForUMA reason) {
   DCHECK_LE(net_error, 0);
   DCHECK_GE(http_response_code, 0);
 
-  base::UmaHistogramSparse(
-      "Sync.TrustedVaultURLFetchResponse",
-      http_response_code == 0 ? net_error : http_response_code);
+  const int value = http_response_code == 0 ? net_error : http_response_code;
+  const std::string suffix = GetReasonSuffix(reason);
+
+  base::UmaHistogramSparse("Sync.TrustedVaultURLFetchResponse", value);
+
+  if (!suffix.empty()) {
+    base::UmaHistogramSparse(
+        base::StrCat({"Sync.TrustedVaultURLFetchResponse", ".", suffix}),
+        value);
+  }
 }
 
 }  // namespace syncer

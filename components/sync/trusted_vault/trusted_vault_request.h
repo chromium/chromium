@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -62,7 +63,8 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
       HttpMethod http_method,
       const GURL& request_url,
       const absl::optional<std::string>& serialized_request_proto,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      TrustedVaultURLFetchReasonForUMA reason_for_uma);
   TrustedVaultRequest(const TrustedVaultRequest& other) = delete;
   TrustedVaultRequest& operator=(const TrustedVaultRequest& other) = delete;
   ~TrustedVaultRequest() override;
@@ -93,6 +95,7 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   const GURL request_url_;
   const absl::optional<std::string> serialized_request_proto_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  const TrustedVaultURLFetchReasonForUMA reason_for_uma_;
 
   CompletionCallback completion_callback_;
 
