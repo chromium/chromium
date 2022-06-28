@@ -5,6 +5,7 @@
 #include "extensions/browser/offscreen_document_host.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -13,9 +14,12 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/browser/script_result_queue.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
@@ -185,13 +189,13 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, APIAccessIsLimited) {
   {
     // Offscreen documents have very limited API access. Even though the
     // extension has the storage and tabs permissions, the only extension API
-    // exposed should be `runtime`.
+    // exposed should be `runtime` (and our test API).
     constexpr char kScript[] =
         R"({
              let keys = Object.keys(chrome);
              domAutomationController.send(JSON.stringify(keys.sort()));
            })";
-    EXPECT_EQ(R"(["csi","loadTimes","runtime"])",
+    EXPECT_EQ(R"(["csi","loadTimes","runtime","test"])",
               ExecuteScriptSync(contents, kScript));
   }
 
@@ -210,6 +214,97 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, APIAccessIsLimited) {
         R"("PlatformNaclArch","PlatformOs","RequestUpdateCheckStatus",)"
         R"("connect","getURL","id","onConnect","onMessage","sendMessage"])";
     EXPECT_EQ(kExpectedProperties, ExecuteScriptSync(contents, kScript));
+  }
+}
+
+// Exercise message passing between the offscreen document and a corresponding
+// service worker.
+IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, MessagingTest) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": { "service_worker": "background.js" }
+         })";
+  static constexpr char kOffscreenDocumentHtml[] =
+      R"(<html>
+           Offscreen
+           <script src="offscreen.js"></script>
+         </html>)";
+  // Both the offscreen document and the service worker have methods to send a
+  // message and to echo back arguments with a reply.
+  static constexpr char kOffscreenDocumentJs[] =
+      R"(chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+           sendResponse({msg, sender, reply: 'offscreen reply'});
+         });
+         function sendMessageFromOffscreen() {
+           chrome.runtime.sendMessage('message from offscreen', (response) => {
+             chrome.test.sendScriptResult(response);
+           });
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+           sendResponse({msg, sender, reply: 'background reply'});
+         });
+         function sendMessageFromBackground() {
+           chrome.runtime.sendMessage('message from background', (response) => {
+             chrome.test.sendScriptResult(response);
+           });
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                     kOffscreenDocumentHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.js"), kOffscreenDocumentJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
+
+  std::unique_ptr<OffscreenDocumentHost> offscreen_document =
+      CreateOffscreenDocument(*extension, offscreen_url);
+
+  {
+    // First, try sending a message from the service worker to the offscreen
+    // document.
+    std::string expected = content::JsReplace(
+        R"({
+             "msg": "message from background",
+             "reply": "offscreen reply",
+             "sender": {
+               "id": $1,
+               "url": $2
+             }
+           })",
+        extension->id(), extension->GetResourceURL("background.js"));
+    base::Value result = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), "sendMessageFromBackground();",
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+    EXPECT_THAT(result, base::test::IsJson(expected));
+  }
+
+  {
+    // Next, send a message in the other direction, from the offscreen document
+    // to the service worker.
+    std::string expected = content::JsReplace(
+        R"({
+             "msg": "message from offscreen",
+             "reply": "background reply",
+             "sender": {
+               "id": $1,
+               "origin": $2,
+               "url": $3
+             }
+           })",
+        extension->id(), extension->origin(), offscreen_url);
+    content::WebContents* contents = offscreen_document->host_contents();
+    ScriptResultQueue result_queue;
+    content::ExecuteScriptAsync(contents, "sendMessageFromOffscreen();");
+    base::Value result = result_queue.GetNextResult();
+    EXPECT_THAT(result, base::test::IsJson(expected));
   }
 }
 

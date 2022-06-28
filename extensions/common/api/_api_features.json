@@ -637,6 +637,7 @@
       "blessed_web_page",
       "content_script",
       "lock_screen_extension",
+      "offscreen_extension",
       "unblessed_extension"
     ]
   }, {
