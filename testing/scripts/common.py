@@ -208,7 +208,7 @@ def parse_common_test_results(json_results, test_separator='/'):
   def convert_trie_to_flat_paths(trie, prefix=None):
     # Also see blinkpy.web_tests.layout_package.json_results_generator
     result = {}
-    for name, data in trie.iteritems():
+    for name, data in trie.items():
       if prefix:
         name = prefix + test_separator + name
       if len(data) and not 'actual' in data and not 'expected' in data:
@@ -232,7 +232,7 @@ def parse_common_test_results(json_results, test_separator='/'):
   passing_statuses = ('PASS', 'SLOW', 'NEEDSREBASELINE')
 
   for test, result in convert_trie_to_flat_paths(
-      json_results['tests']).iteritems():
+      json_results['tests']).items():
     key = 'unexpected_' if result.get('is_unexpected') else ''
     data = result['actual']
     actual_results = data.split()
@@ -291,7 +291,7 @@ def get_gtest_summary_passes(output):
   mapping = {}
 
   for cur_iteration_data in output.get('per_iteration_data', []):
-    for test_fullname, results in cur_iteration_data.iteritems():
+    for test_fullname, results in cur_iteration_data.items():
       # Results is a list with one entry per test try. Last one is the final
       # result.
       last_result = results[-1]
