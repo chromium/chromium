@@ -1,0 +1,89 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCPeerConnection stats caching</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../webrtc/RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+
+  pc1.createDataChannel('wpt');
+
+  const stats = [];
+  const firstStats = await pc1.getStats();
+  await pc1.setLocalDescription();
+  const secondStats = await new Promise(resolve => {
+    pc1.onicecandidate = async (e) => {
+      if (e.candidate) {
+        pc1.onicecandidate = undefined;
+        resolve(await pc1.getStats());
+      }
+    };
+  });
+  assert_true(!!secondStats);
+
+  let firstCandidateCount = 0;
+  firstStats.forEach(report => {
+    if (report.type === 'local-candidate') {
+      firstCandidatecount++;
+    }
+  });
+  assert_equals(firstCandidateCount, 0);
+
+  let secondCandidateCount = 0;
+  secondStats.forEach(report => {
+    if (report.type === 'local-candidate') {
+      secondCandidateCount++;
+    }
+  });
+  assert_greater_than(secondCandidateCount, firstCandidateCount);
+}, 'onicecandidate does not cache results');
+
+promise_test(async (t) => {
+  const pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc2.close());
+
+  pc1.createDataChannel('wpt');
+
+  await pc1.setLocalDescription();
+  const offer = pc1.localDescription;
+  const candidate = await new Promise(resolve => {
+    pc1.onicecandidate = e => {
+      if (e.candidate) {
+        pc1.onicecandidate = undefined;
+        resolve(e.candidate);
+      }
+    };
+  });
+  await pc2.setRemoteDescription(offer);
+  await pc2.setLocalDescription();
+
+  const initialStats = await pc2.getStats();
+  // Replace the candidate IP address. This avoids a mdns candidate which in some
+  // implementations seems to show up later.
+  const mangledCandidate = candidate.candidate.replace(candidate.candidate.split(' ')[4], '127.0.0.1');
+  await pc2.addIceCandidate({sdpMid: candidate.sdpMid, candidate: mangledCandidate});
+  const newStats = await pc2.getStats();
+
+  let initialRemoteCandidates = 0;
+  initialStats.forEach(report => {
+    if (report.type === 'remote-candidate') {
+      initialRemoteCandidates++;
+    }
+  });
+  let newRemoteCandidates = 0;
+  newStats.forEach(report => {
+    if (report.type === 'remote-candidate') {
+      newRemoteCandidates++;
+    }
+  });
+  assert_equals(initialRemoteCandidates + 1, newRemoteCandidates);
+}, 'addIceCandidate does not cache results');
+
+</script>
