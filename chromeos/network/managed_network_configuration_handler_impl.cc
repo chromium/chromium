@@ -522,8 +522,9 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
     }
   }
 
-  ApplyOrQueuePolicies(userhash, policies->ApplyOncNetworkConfigurationList(
-                                     network_configs_onc));
+  ApplyOrQueuePolicies(
+      userhash, policies->ApplyOncNetworkConfigurationList(network_configs_onc),
+      /*can_affect_other_networks=*/true);
 
   for (auto& observer : observers_)
     observer.PoliciesChanged(userhash);
@@ -542,13 +543,23 @@ bool ManagedNetworkConfigurationHandlerImpl::IsAnyPolicyApplicationRunning()
 
 void ManagedNetworkConfigurationHandlerImpl::ApplyOrQueuePolicies(
     const std::string& userhash,
-    base::flat_set<std::string> modified_policies) {
+    base::flat_set<std::string> modified_policies,
+    bool can_affect_other_networks) {
   const NetworkProfile* profile =
       network_profile_handler_->GetProfileForUserhash(userhash);
   if (!profile) {
     VLOG(1) << "The relevant Shill profile isn't initialized yet, postponing "
             << "policy application.";
     // OnProfileAdded will apply all policies for this userhash.
+    return;
+  }
+  if (!can_affect_other_networks && modified_policies.empty()) {
+    // The change can not affect managed networks (e.g. because it only
+    // affected resolved client certificates) but no policy
+    // NetworkConfigurations have changed, so there can be no effective change.
+    // Avoid scheduling a policy application for this.
+    // This can happen e.g. if a ONC variable changes which is not used by any
+    // NetworkConfiguration.
     return;
   }
 
@@ -609,8 +620,10 @@ void ManagedNetworkConfigurationHandlerImpl::SetProfileWideVariableExpansions(
     const std::string& userhash,
     base::flat_map<std::string, std::string> expansions) {
   ApplyOrQueuePolicies(
-      userhash, GetOrCreatePoliciesForUser(userhash)->SetProfileWideExpansions(
-                    std::move(expansions)));
+      userhash,
+      GetOrCreatePoliciesForUser(userhash)->SetProfileWideExpansions(
+          std::move(expansions)),
+      /*can_affect_other_networks=*/false);
 }
 
 bool ManagedNetworkConfigurationHandlerImpl::SetResolvedClientCertificate(
@@ -622,7 +635,8 @@ bool ManagedNetworkConfigurationHandlerImpl::SetResolvedClientCertificate(
           guid, std::move(resolved_cert));
   if (!change_had_effect)
     return false;
-  ApplyOrQueuePolicies(userhash, {guid});
+  ApplyOrQueuePolicies(userhash, {guid},
+                       /*can_affect_other_networks=*/false);
   return true;
 }
 
@@ -643,7 +657,11 @@ void ManagedNetworkConfigurationHandlerImpl::OnProfileAdded(
     return;
   }
 
-  ApplyOrQueuePolicies(profile.userhash, policies->GetAllPolicyGuids());
+  // The profile's network policy may have a GlobalNetworkConfiguration which
+  // can affect unmanaged networks (see ApplyGlobalPolicyOnUnmanagedEntry in
+  // PolicyAppliactor), so set can_affect_other_networks to true.
+  ApplyOrQueuePolicies(profile.userhash, policies->GetAllPolicyGuids(),
+                       /*can_affect_other_networks=*/true);
 }
 
 void ManagedNetworkConfigurationHandlerImpl::OnProfileRemoved(

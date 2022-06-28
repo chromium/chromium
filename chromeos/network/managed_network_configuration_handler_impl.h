@@ -295,10 +295,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   void SetManagedActiveProxyValues(const std::string& guid,
                                    base::Value* dictionary);
 
-  // Applies policies for |userhash|. |modified_policies| contains the GUIDs of
-  // the network configurations that changed since the last policy application.
+  // Applies policies for |userhash|.
+  // |modified_policies| contains the GUIDs of the network configurations that
+  // changed since the last policy application. |can_affect_other_networks|
+  // should be true if the operation that led to this call may have changed
+  // effective settings of network configurations that are not in the
+  // |modified_policies| list, e.g. because a global network setting has
+  // changed.
   void ApplyOrQueuePolicies(const std::string& userhash,
-                            base::flat_set<std::string> modified_policies);
+                            base::flat_set<std::string> modified_policies,
+                            bool can_affect_other_networks);
 
   void SchedulePolicyApplication(const std::string& userhash);
   void StartPolicyApplication(const std::string& userhash);

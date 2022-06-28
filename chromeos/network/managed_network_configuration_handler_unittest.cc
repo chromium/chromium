@@ -275,7 +275,12 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
         path_to_onc.empty()
             ? onc::ReadDictionaryFromJson(kEmptyUnencryptedConfiguration)
             : test_utils::ReadTestDictionaryValue(path_to_onc);
+    SetPolicy(onc_source, userhash, std::move(policy));
+  }
 
+  void SetPolicy(::onc::ONCSource onc_source,
+                 const std::string& userhash,
+                 base::Value policy) {
     onc::Validator validator(true,   // error_on_unknown_field
                              true,   // error_on_wrong_recommended
                              false,  // error_on_missing_field
@@ -385,6 +390,169 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, RemoveIrrelevantFields) {
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
   EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
+}
+
+// A network policy uses a variable expansion which is set after the policy has
+// been initially applied.
+TEST_F(ManagedNetworkConfigurationHandlerTest, VariableSetAfterPolicy) {
+  InitializeStandardProfiles();
+
+  // Initial policy application.
+  const char* const onc_policy = R"(
+      {
+        "NetworkConfigurations": [
+          {
+            "GUID": "policy_wifi1",
+            "Type": "WiFi",
+            "Name": "Managed wifi1",
+            "WiFi": {
+              "Recommended": [ "AutoConnect"],
+              "SSID": "wifi1",
+              "Security": "WPA-EAP",
+              "EAP": {
+                "Outer": "PEAP",
+                "Identity": "${LOGIN_ID}",
+                "Recommended": [
+                  "AnonymousIdentity",
+                ]
+              }
+            }
+          }
+        ],
+        "Type": "UnencryptedConfiguration"
+      })";
+  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+            base::test::ParseJson(onc_policy));
+  base::RunLoop().RunUntilIdle();
+
+  std::string service_path =
+      GetShillServiceClient()->FindServiceMatchingGUID(kTestGuidManagedWifi);
+  ASSERT_FALSE(service_path.empty());
+
+  // Expect that the variable has not been resolved because it didn't have a
+  // value.
+  {
+    const base::Value* properties =
+        GetShillServiceClient()->GetServiceProperties(service_path);
+    ASSERT_TRUE(properties);
+    const std::string* identity =
+        properties->FindStringKey(shill::kEapIdentityProperty);
+    ASSERT_TRUE(identity);
+    EXPECT_EQ(*identity, "${LOGIN_ID}");
+  }
+
+  // Set a value for the variable.
+  managed_handler()->SetProfileWideVariableExpansions(
+      kUser1, {{"LOGIN_ID", "VarValue"}});
+
+  // Expect that a policy re-application happens and the variable gets resolved.
+  EXPECT_TRUE(managed_handler()->IsAnyPolicyApplicationRunning());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(managed_handler()->IsAnyPolicyApplicationRunning());
+
+  {
+    const base::Value* properties =
+        GetShillServiceClient()->GetServiceProperties(service_path);
+    ASSERT_TRUE(properties);
+    const std::string* identity =
+        properties->FindStringKey(shill::kEapIdentityProperty);
+    ASSERT_TRUE(identity);
+    EXPECT_EQ(*identity, "VarValue");
+  }
+}
+
+// A network policy uses a variable expansion which is set before the policy has
+// been initially applied.
+TEST_F(ManagedNetworkConfigurationHandlerTest, VariableSetBeforePolicy) {
+  InitializeStandardProfiles();
+
+  // Set a value for the variable.
+  managed_handler()->SetProfileWideVariableExpansions(
+      kUser1, {{"LOGIN_ID", "VarValue"}});
+  // Initial policy application.
+  const char* const onc_policy = R"(
+      {
+        "NetworkConfigurations": [
+          {
+            "GUID": "policy_wifi1",
+            "Type": "WiFi",
+            "Name": "Managed wifi1",
+            "WiFi": {
+              "Recommended": [ "AutoConnect"],
+              "SSID": "wifi1",
+              "Security": "WPA-EAP",
+              "EAP": {
+                "Outer": "PEAP",
+                "Identity": "${LOGIN_ID}",
+                "Recommended": [
+                  "AnonymousIdentity",
+                ]
+              }
+            }
+          }
+        ],
+        "Type": "UnencryptedConfiguration"
+      })";
+  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+            base::test::ParseJson(onc_policy));
+  base::RunLoop().RunUntilIdle();
+
+  std::string service_path =
+      GetShillServiceClient()->FindServiceMatchingGUID(kTestGuidManagedWifi);
+  ASSERT_FALSE(service_path.empty());
+
+  // Expect that the variable has been resolved.
+  {
+    const base::Value* properties =
+        GetShillServiceClient()->GetServiceProperties(service_path);
+    ASSERT_TRUE(properties);
+    const std::string* identity =
+        properties->FindStringKey(shill::kEapIdentityProperty);
+    ASSERT_TRUE(identity);
+    EXPECT_EQ(*identity, "VarValue");
+  }
+}
+
+// A variable expansion is changed which does not affect any network.
+TEST_F(ManagedNetworkConfigurationHandlerTest, VariableDoesNotAffectPolicy) {
+  InitializeStandardProfiles();
+
+  // Initial policy application.
+  const char* const onc_policy = R"(
+      {
+        "NetworkConfigurations": [
+          {
+            "GUID": "policy_wifi1",
+            "Type": "WiFi",
+            "Name": "Managed wifi1",
+            "WiFi": {
+              "Recommended": [ "AutoConnect"],
+              "SSID": "wifi1",
+              "Security": "WPA-EAP",
+              "EAP": {
+                "Outer": "PEAP",
+                "Identity": "no_variable",
+                "Recommended": [
+                  "AnonymousIdentity",
+                ]
+              }
+            }
+          }
+        ],
+        "Type": "UnencryptedConfiguration"
+      })";
+  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+            base::test::ParseJson(onc_policy));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(managed_handler()->IsAnyPolicyApplicationRunning());
+
+  // Set a value for a variable which is not referenced by any network.
+  managed_handler()->SetProfileWideVariableExpansions(
+      kUser1, {{"LOGIN_ID", "VarValue"}});
+
+  // No policy re-application should be in progress.
+  EXPECT_FALSE(managed_handler()->IsAnyPolicyApplicationRunning());
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
