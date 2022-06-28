@@ -4033,8 +4033,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.DeviceOrientation.{DeviceUIMode}"
-    enum="DeviceOrientation" expires_after="2022-08-11">
-  <owner>cattalyya@chromium.org</owner>
+    enum="DeviceOrientation" expires_after="2023-07-27">
+  <owner>zxdan@chromium.org</owner>
   <owner>afakhry@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
