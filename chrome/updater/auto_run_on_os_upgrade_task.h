@@ -49,6 +49,7 @@ class AutoRunOnOsUpgradeTask
   SEQUENCE_CHECKER(sequence_checker_);
   UpdaterScope scope_;
   scoped_refptr<PersistedData> persisted_data_;
+  std::string os_upgrade_string_;
 };
 
 }  // namespace updater

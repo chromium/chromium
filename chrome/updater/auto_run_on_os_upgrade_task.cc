@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/updater/constants.h"
@@ -62,6 +63,28 @@ void AutoRunOnOsUpgradeTask::RunOnOsUpgradeForApps(
 }
 
 #if BUILDFLAG(IS_WIN)
+namespace {
+
+// Returns an OS upgrade string in the format
+// `{previous_os_version}-{current_os_version}`. For example,
+// "9.0.1200.0.0-10.0.19042.0.0".
+std::string GetOSUpgradeVersionsString(
+    const OSVERSIONINFOEX& previous_os_version,
+    const OSVERSIONINFOEX& current_os_version) {
+  std::string os_upgrade_string;
+
+  for (const auto& version : {previous_os_version, current_os_version}) {
+    os_upgrade_string += base::StringPrintf(
+        "%lu.%lu.%lu.%u.%u%s", version.dwMajorVersion, version.dwMinorVersion,
+        version.dwBuildNumber, version.wServicePackMajor,
+        version.wServicePackMinor, os_upgrade_string.empty() ? "-" : "");
+  }
+
+  return os_upgrade_string;
+}
+
+}  // namespace
+
 size_t AutoRunOnOsUpgradeTask::RunOnOsUpgradeForApp(const std::string& app_id) {
   size_t number_of_successful_tasks = 0;
   const std::vector<AppCommandRunner> app_command_runners =
@@ -70,11 +93,12 @@ size_t AutoRunOnOsUpgradeTask::RunOnOsUpgradeForApp(const std::string& app_id) {
   std::for_each(app_command_runners.begin(), app_command_runners.end(),
                 [&](const auto& app_command_runner) {
                   base::Process process;
-                  if (FAILED(app_command_runner.Run({}, process)))
+                  if (FAILED(app_command_runner.Run(
+                          {base::SysUTF8ToWide(os_upgrade_string_)}, process)))
                     return;
 
                   VLOG(1) << "Successfully launched OS upgrade task with PID: "
-                          << process.Pid();
+                          << process.Pid() << ": " << os_upgrade_string_;
                   ++number_of_successful_tasks;
                 });
 
@@ -82,18 +106,31 @@ size_t AutoRunOnOsUpgradeTask::RunOnOsUpgradeForApp(const std::string& app_id) {
 }
 
 bool AutoRunOnOsUpgradeTask::HasOSUpgraded() {
-  const absl::optional<OSVERSIONINFOEX> last_os_version =
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const absl::optional<OSVERSIONINFOEX> previous_os_version =
       persisted_data_->GetLastOSVersion();
-  if (!last_os_version) {
+  if (!previous_os_version) {
     // Initialize the OS version.
     persisted_data_->SetLastOSVersion();
     return false;
   }
 
-  return CompareOSVersions(last_os_version.value(), VER_GREATER);
+  if (!CompareOSVersions(previous_os_version.value(), VER_GREATER))
+    return false;
+
+  if (const absl::optional<OSVERSIONINFOEX> current_os_version = GetOSVersion();
+      current_os_version) {
+    os_upgrade_string_ = GetOSUpgradeVersionsString(previous_os_version.value(),
+                                                    current_os_version.value());
+  }
+
+  return true;
 }
 
 void AutoRunOnOsUpgradeTask::SetOSUpgraded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Save the current OS as the old OS version.
   persisted_data_->SetLastOSVersion();
 }

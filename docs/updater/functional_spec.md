@@ -728,8 +728,10 @@ As shown above, `{command format}` needs to be the complete path to an
 executable followed by optional parameters.
 
 If "AutoRunOnOSUpgrade" is non-zero, the command is invoked when the updater
-detects an OS upgrade. In this case, `command format` must contain only static
-parameters, since this command is called automatically with no substitutions.
+detects an OS upgrade. In this case, `command format` can optionally contain a
+single substitutible parameter, which is filled in with the OS versions in the
+format `{Previous OS Version}-{Current OS Version}`. It is ok to have a static
+command line as well if the OS versions information is not required.
 
 #### Usage
 Once registered, commands may be invoked using the `execute` method in the
