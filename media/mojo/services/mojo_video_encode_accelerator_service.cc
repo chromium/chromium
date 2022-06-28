@@ -24,20 +24,24 @@ void MojoVideoEncodeAcceleratorService::Create(
     mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver,
     CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
     const gpu::GpuPreferences& gpu_preferences,
-    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    const gpu::GPUInfo::GPUDevice& gpu_device) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MojoVideoEncodeAcceleratorService>(
-          std::move(create_vea_callback), gpu_preferences, gpu_workarounds),
+          std::move(create_vea_callback), gpu_preferences, gpu_workarounds,
+          gpu_device),
       std::move(receiver));
 }
 
 MojoVideoEncodeAcceleratorService::MojoVideoEncodeAcceleratorService(
     CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
     const gpu::GpuPreferences& gpu_preferences,
-    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    const gpu::GPUInfo::GPUDevice& gpu_device)
     : create_vea_callback_(std::move(create_vea_callback)),
       gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),
+      gpu_device_(gpu_device),
       output_buffer_size_(0) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -118,7 +122,7 @@ void MojoVideoEncodeAcceleratorService::Initialize(
 
   encoder_ = std::move(create_vea_callback_)
                  .Run(config, this, gpu_preferences_, gpu_workarounds_,
-                      media_log_->Clone());
+                      gpu_device_, media_log_->Clone());
   if (!encoder_) {
     MEDIA_LOG(ERROR, media_log_.get())
         << __func__ << " Error creating or initializing VEA";

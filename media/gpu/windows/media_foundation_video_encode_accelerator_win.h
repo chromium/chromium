@@ -20,6 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/win/shlwapi.h"
+#include "base/win/windows_types.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/bitrate.h"
@@ -44,7 +45,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
  public:
   explicit MediaFoundationVideoEncodeAccelerator(
       const gpu::GpuPreferences& gpu_preferences,
-      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      CHROME_LUID luid);
 
   MediaFoundationVideoEncodeAccelerator(
       const MediaFoundationVideoEncodeAccelerator&) = delete;
@@ -263,6 +265,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // DXGI device manager for handling hardware input textures
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
+
+  // Preferred adapter for DXGIDeviceManager.
+  const CHROME_LUID luid_;
 
   // A buffer used as a scratch space for I420 to NV12 conversion
   std::vector<uint8_t> resize_buffer_;

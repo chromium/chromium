@@ -286,7 +286,8 @@ struct MediaFoundationVideoEncodeAccelerator::BitstreamBufferRef {
 // See bug: http://crbug.com/777659.
 MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
     const gpu::GpuPreferences& gpu_preferences,
-    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    CHROME_LUID luid)
     : compatible_with_win7_(
           gpu_preferences.enable_media_foundation_vea_on_windows7),
       disable_dynamic_framerate_update_(
@@ -298,7 +299,8 @@ MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
       main_client_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       encoder_thread_task_runner_(base::ThreadPool::CreateCOMSTATaskRunner(
           {},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED)) {
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
+      luid_(luid) {
   DETACH_FROM_SEQUENCE(encode_sequence_checker_);
   encoder_weak_ptr_ = encoder_task_weak_factory_.GetWeakPtr();
 }
@@ -530,10 +532,11 @@ void MediaFoundationVideoEncodeAccelerator::EncoderInitializeTask(
   NOTIFY_RETURN_ON_HR_FAILURE(hr, "Failed to create sample", );
 
   if (media::IsMediaFoundationD3D11VideoCaptureEnabled()) {
-    dxgi_device_manager_ = DXGIDeviceManager::Create();
+    MEDIA_LOG(INFO, media_log.get())
+        << "Preferred DXGI device " << luid_.HighPart << ":" << luid_.LowPart;
+    dxgi_device_manager_ = DXGIDeviceManager::Create(luid_);
     NOTIFY_RETURN_ON_FAILURE(!dxgi_device_manager_,
                              "Failed to create DXGIDeviceManager", );
-
     auto mf_dxgi_device_manager =
         dxgi_device_manager_->GetMFDXGIDeviceManager();
     hr = encoder_->ProcessMessage(

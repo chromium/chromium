@@ -1869,7 +1869,7 @@ class VideoCaptureDeviceMFWinTestWithDXGI : public VideoCaptureDeviceMFWinTest {
     if (ShouldSkipD3D11Test())
       GTEST_SKIP();
 
-    dxgi_device_manager_ = DXGIDeviceManager::Create();
+    dxgi_device_manager_ = DXGIDeviceManager::Create(CHROME_LUID{0, 0});
     VideoCaptureDeviceMFWinTest::SetUp();
   }
 };

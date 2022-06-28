@@ -483,7 +483,8 @@ void VideoEncoderClient::CreateEncoderTask(const Video* video,
       encoder_client_config_.spatial_layers);
 
   encoder_ = GpuVideoEncodeAcceleratorFactory::CreateVEA(
-      config, this, gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds());
+      config, this, gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),
+      gpu::GPUInfo::GPUDevice());
   *success = (encoder_ != nullptr);
 
   // Initialization is continued once the encoder notifies us of the coded size

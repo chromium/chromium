@@ -321,7 +321,7 @@ void GetVideoCapabilities(const gpu::GpuPreferences& gpu_preferences,
   gpu_info->video_encode_accelerator_supported_profiles =
       media::GpuVideoAcceleratorUtil::ConvertMediaToGpuEncodeProfiles(
           media::GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
-              gpu_preferences, gpu_workarounds,
+              gpu_preferences, gpu_workarounds, gpu_info->active_gpu(),
               /*populate_extended_info=*/false));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -832,7 +832,8 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
   media::MojoVideoEncodeAcceleratorProvider::Create(
       std::move(vea_provider_receiver),
       base::BindRepeating(&media::GpuVideoEncodeAcceleratorFactory::CreateVEA),
-      gpu_preferences_, gpu_channel_manager_->gpu_driver_bug_workarounds());
+      gpu_preferences_, gpu_channel_manager_->gpu_driver_bug_workarounds(),
+      gpu_info_.active_gpu());
 }
 
 void GpuServiceImpl::CreateGpuMemoryBuffer(

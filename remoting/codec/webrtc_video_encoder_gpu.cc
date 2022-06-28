@@ -68,6 +68,11 @@ gpu::GpuDriverBugWorkarounds CreateGpuWorkarounds() {
   return gpu_workarounds;
 }
 
+gpu::GPUInfo::GPUDevice CreateGpuDevice() {
+  gpu::GPUInfo::GPUDevice device;
+  return device;
+}
+
 struct OutputBuffer {
   base::UnsafeSharedMemoryRegion region;
   base::WritableSharedMemoryMapping mapping;
@@ -369,7 +374,8 @@ void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
       input_format, input_visible_size_, codec_profile_, initial_bitrate);
   video_encode_accelerator_ =
       media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
-          config, this, CreateGpuPreferences(), CreateGpuWorkarounds());
+          config, this, CreateGpuPreferences(), CreateGpuWorkarounds(),
+          CreateGpuDevice());
 
   if (!video_encode_accelerator_) {
     LOG(ERROR) << "Could not create VideoEncodeAccelerator";
@@ -421,7 +427,7 @@ bool WebrtcVideoEncoderGpu::IsSupportedByH264(const Profile& profile) {
 
   media::VideoEncodeAccelerator::SupportedProfiles profiles =
       media::GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
-          CreateGpuPreferences(), CreateGpuWorkarounds());
+          CreateGpuPreferences(), CreateGpuWorkarounds(), CreateGpuDevice());
   for (const auto& supported_profile : profiles) {
     if (supported_profile.profile != kH264Profile) {
       continue;
