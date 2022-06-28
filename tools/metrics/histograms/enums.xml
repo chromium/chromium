@@ -57250,6 +57250,7 @@ from previous Chrome versions.
   <int value="-508250572" label="ServiceWorkerLongRunningMessage:disabled"/>
   <int value="-508143738" label="disable-accelerated-fixed-root-background"/>
   <int value="-507719964" label="FeedbackOnContinueSectionRemove:disabled"/>
+  <int value="-507183181" label="CommerceHintAndroid:enabled"/>
   <int value="-507066244" label="AndroidDarkSearch:enabled"/>
   <int value="-506706655" label="respect-autocomplete-off-autofill"/>
   <int value="-506366023" label="VizHitTest:enabled"/>
@@ -60323,6 +60324,7 @@ from previous Chrome versions.
   <int value="1530182188" label="PdfHonorJsContentSettings:enabled"/>
   <int value="1531164533" label="SyncPseudoUSSFavicons:disabled"/>
   <int value="1531741496" label="DragFromShelfToHomeOrOverview:disabled"/>
+  <int value="1532006216" label="CommerceHintAndroid:disabled"/>
   <int value="1532505461" label="HelpAppLauncherSearch:disabled"/>
   <int value="1532621308" label="UnifiedPasswordManagerDesktop:disabled"/>
   <int value="1533004890" label="CrostiniEnableDlc:enabled"/>

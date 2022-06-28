@@ -599,6 +599,10 @@ const char kClosedTabCacheDescription[] =
     "NOTE: This feature is higly experimental and will lead to various "
     "breakages, enable at your own risk.";
 
+const char kCommerceHintAndroidName[] = "Commerce Hint Android";
+const char kCommerceHintAndroidDescription[] =
+    "Enables commerce hint detection on Android.";
+
 const char kConsolidatedSiteStorageControlsName[] =
     "Consolidated Site Storage Controls";
 const char kConsolidatedSiteStorageControlsDescription[] =

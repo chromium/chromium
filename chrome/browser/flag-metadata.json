@@ -1644,6 +1644,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-commerce-hint-android",
+    "owners": [ "chrome-shopping@google.com" ],
+    "expiry_milestone": 106
+  },
+  {
     "name": "enable-commerce-merchant-viewer",
     "owners": [ "chrome-shopping@google.com" ],
     "expiry_milestone": 108

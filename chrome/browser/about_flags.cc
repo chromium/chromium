@@ -8788,6 +8788,13 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-commerce-hint-android",
+     flag_descriptions::kCommerceHintAndroidName,
+     flag_descriptions::kCommerceHintAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(commerce::kCommerceHintAndroid)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

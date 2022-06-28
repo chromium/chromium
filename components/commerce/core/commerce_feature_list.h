@@ -78,6 +78,9 @@ extern const char kRetailCouponsWithCodeParam[];
 // Feature flag for Discount user consent v2.
 extern const base::Feature kDiscountConsentV2;
 
+// Feature flag for exposing commerce hint on Android.
+extern const base::Feature kCommerceHintAndroid;
+
 // Feature parameters for ChromeCart on Desktop.
 
 // Whether to use OptimizationGuide to optimize renderer signal collection.
