@@ -477,8 +477,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   stop_timer_.Stop();
 
   // Start the new query. Starter Pack engines in keyword mode only run a subset
-  // of the providers, so call `GetProvidersToRun()` to determine the subset or
-  // if we run all providers.
+  // of the providers, so call `ShouldRunProvider()` to determine which.
   in_start_ = true;
   base::TimeTicks start_time = base::TimeTicks::Now();
   for (const auto& provider : providers_) {
@@ -636,6 +635,9 @@ void AutocompleteController::AddProviderAndTriggeringLogs(
     OmniboxLog* logs) const {
   logs->providers_info.clear();
   for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
+
     // Add per-provider info, if any.
     provider->AddProviderInfo(&logs->providers_info);
 
@@ -660,6 +662,8 @@ void AutocompleteController::ResetSession() {
   search_service_worker_signal_sent_ = false;
 
   for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
     provider->ResetSession();
   }
 
@@ -793,8 +797,11 @@ void AutocompleteController::UpdateResult(
   AutocompleteResult old_matches_to_reuse;
   old_matches_to_reuse.Swap(&result_);
 
-  for (const auto& provider : providers_)
+  for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
     result_.AppendMatches(provider->matches());
+  }
 
   bool perform_tab_match = true;
 #if BUILDFLAG(IS_ANDROID)
@@ -1111,6 +1118,9 @@ void AutocompleteController::NotifyChanged(bool notify_default_match) {
 
 void AutocompleteController::CheckIfDone() {
   for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
+
     if (!provider->done()) {
       done_ = false;
       return;
@@ -1139,8 +1149,11 @@ void AutocompleteController::StartStopTimer() {
 
 void AutocompleteController::StopHelper(bool clear_result,
                                         bool due_to_user_inactivity) {
-  for (const auto& provider : providers_)
+  for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
     provider->Stop(clear_result, due_to_user_inactivity);
+  }
 
   expire_timer_.Stop();
   stop_timer_.Stop();
@@ -1190,7 +1203,8 @@ void AutocompleteController::SetStartStopTimerDurationForTesting(
   stop_timer_duration_ = duration;
 }
 
-bool AutocompleteController::ShouldRunProvider(AutocompleteProvider* provider) {
+bool AutocompleteController::ShouldRunProvider(
+    AutocompleteProvider* provider) const {
   if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
       input_.keyword_mode_entry_method() !=
           metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID) {

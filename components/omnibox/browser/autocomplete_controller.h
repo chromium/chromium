@@ -327,7 +327,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // keyword mode and which keyword we're searching. Currently runs all enabled
   // providers unless in a Starter Pack scope, except for OpenTabProvider which
   // only runs on Lacros and the @tabs scope.
-  bool ShouldRunProvider(AutocompleteProvider* provider);
+  bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
   // A list of all providers.
   Providers providers_;
