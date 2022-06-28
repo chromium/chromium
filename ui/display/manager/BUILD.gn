@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
-assert(is_chromeos_ash || enable_cast_receiver)
+assert(is_chromeos_ash || is_castos || is_cast_android)
 
 component("manager") {
   sources = [

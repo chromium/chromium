@@ -117,7 +117,7 @@ cast_test_group("cast_tests") {
   if (!is_cast_audio_only) {
     tests += [ "//gpu:gpu_unittests" ]
 
-    if (use_aura) {
+    if (use_aura && !is_fuchsia) {
       tests += [ "//chromecast/graphics:cast_graphics_unittests" ]
     }
   }
