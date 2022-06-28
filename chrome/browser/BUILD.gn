@@ -5562,6 +5562,8 @@ static_library("browser") {
       "chromeos/arc/start_smart_selection_action_menu.h",
       "chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.cc",
       "chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.h",
+      "chromeos/extensions/login_screen/login/cleanup/open_windows_cleanup_handler.cc",
+      "chromeos/extensions/login_screen/login/cleanup/open_windows_cleanup_handler.h",
       "chromeos/extensions/login_screen/login/login_api_prefs.cc",
       "chromeos/extensions/login_screen/login/login_api_prefs.h",
       "chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.cc",

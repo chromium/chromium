@@ -6,6 +6,7 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/browsing_data_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/open_windows_cleanup_handler.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -19,6 +20,8 @@ constexpr char kLacrosBrowsingDataCleanupHandlerHistogramName[] =
     "LacrosBrowsingData";
 constexpr char kLacrosExtensionCleanupHandlerHistogramName[] =
     "LacrosExtension";
+constexpr char kLacrosOpenWindowsCleanupHandlerHistogramName[] =
+    "LacrosOpenWindows";
 
 }  // namespace
 
@@ -38,6 +41,8 @@ CleanupManagerLacros::~CleanupManagerLacros() = default;
 void CleanupManagerLacros::InitializeCleanupHandlers() {
   cleanup_handlers_.insert({kLacrosBrowsingDataCleanupHandlerHistogramName,
                             std::make_unique<BrowsingDataCleanupHandler>()});
+  cleanup_handlers_.insert({kLacrosOpenWindowsCleanupHandlerHistogramName,
+                            std::make_unique<OpenWindowsCleanupHandler>()});
   cleanup_handlers_.insert({kLacrosExtensionCleanupHandlerHistogramName,
                             std::make_unique<ExtensionCleanupHandler>()});
 }

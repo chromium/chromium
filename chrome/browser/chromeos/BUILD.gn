@@ -1819,8 +1819,6 @@ source_set("chromeos") {
     "extensions/login_screen/login/cleanup/files_cleanup_handler.h",
     "extensions/login_screen/login/cleanup/lacros_cleanup_handler.cc",
     "extensions/login_screen/login/cleanup/lacros_cleanup_handler.h",
-    "extensions/login_screen/login/cleanup/open_windows_cleanup_handler.cc",
-    "extensions/login_screen/login/cleanup/open_windows_cleanup_handler.h",
     "extensions/login_screen/login/cleanup/print_jobs_cleanup_handler.cc",
     "extensions/login_screen/login/cleanup/print_jobs_cleanup_handler.h",
     "extensions/login_screen/login/errors.cc",

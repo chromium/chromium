@@ -30,6 +30,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Lacros" summary="Handler which calls cleanup on Lacros"/>
   <variant name="LacrosBrowsingData" summary="Handler for files on Lacros"/>
   <variant name="LacrosExtension" summary="Handler for extensions on Lacros"/>
+  <variant name="LacrosOpenWindows"
+      summary="Handler for open browser windows on Lacros"/>
   <variant name="OpenWindows" summary="Handler for open browser windows"/>
   <variant name="PrintJobs" summary="Handler for print jobs"/>
 </variants>
