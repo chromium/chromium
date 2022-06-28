@@ -902,7 +902,6 @@ crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/credentialless/
 crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/credentialless/image.https.window.html [ Crash Failure Pass ]
 crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/credentialless/link.https.window.html [ Crash Failure Pass ]
 crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/credentialless/redirect.window.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/credentialless/script.https.window.html [ Crash Failure Pass ]
 crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/credentialless/video.https.window.html [ Crash Timeout ]
 crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/reporting-navigation.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Crash Failure ]
