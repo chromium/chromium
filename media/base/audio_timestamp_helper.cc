@@ -53,8 +53,15 @@ base::TimeDelta AudioTimestampHelper::GetTimestamp() const {
 
 base::TimeDelta AudioTimestampHelper::GetFrameDuration(int frame_count) const {
   DCHECK_GE(frame_count, 0);
+  base::TimeDelta current_timestamp = GetTimestamp();
   base::TimeDelta end_timestamp = ComputeTimestamp(frame_count_ + frame_count);
-  return end_timestamp - GetTimestamp();
+
+  if ((current_timestamp.is_min() && end_timestamp.is_min()) ||
+      (current_timestamp.is_max() && end_timestamp.is_max())) {
+    return base::TimeDelta();
+  }
+
+  return end_timestamp - current_timestamp;
 }
 
 int64_t AudioTimestampHelper::GetFramesToTarget(base::TimeDelta target) const {

@@ -234,13 +234,17 @@ void AudioOpusEncoder::Flush(EncoderStatusCB done_cb) {
 void AudioOpusEncoder::OnFifoOutput(AudioBus* audio_bus) {
   audio_bus->ToInterleaved<Float32SampleTypeTraits>(audio_bus->frames(),
                                                     buffer_.data());
+  // We already reported an error. Don't attempt to encode any further inputs.
+  if (!current_done_cb_)
+    return;
 
   std::unique_ptr<uint8_t[]> encoded_data(new uint8_t[kOpusMaxDataBytes]);
   auto result = opus_encode_float(opus_encoder_.get(), buffer_.data(),
                                   converted_params_.frames_per_buffer(),
                                   encoded_data.get(), kOpusMaxDataBytes);
 
-  if (result < 0 && current_done_cb_) {
+  if (result < 0) {
+    DCHECK(current_done_cb_);
     std::move(current_done_cb_)
         .Run(EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
                            opus_strerror(result)));
@@ -261,6 +265,16 @@ void AudioOpusEncoder::OnFifoOutput(AudioBus* audio_bus) {
 
     auto duration = timestamp_tracker_->GetFrameDuration(
         converted_params_.frames_per_buffer());
+
+    // `timestamp_tracker_` will return base::TimeDelta() if the timestamps
+    // overflow.
+    if (duration.is_zero()) {
+      DCHECK(current_done_cb_);
+      std::move(current_done_cb_)
+          .Run(EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+                             "Invalid computed duration."));
+      return;
+    }
 
     EncodedAudioBuffer encoded_buffer(converted_params_,
                                       std::move(encoded_data),
