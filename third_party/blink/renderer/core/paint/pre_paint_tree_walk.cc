@@ -451,10 +451,6 @@ void PrePaintTreeWalk::UpdateContextForOOFContainer(
   // The OOF containing block structure is special under block fragmentation: A
   // fragmentable OOF is always a direct child of a fragmentainer.
   context.absolute_positioned_container = context.current_fragmentainer;
-  if (!context.absolute_positioned_container.fragment) {
-    context.absolute_positioned_container.fragment =
-        context.oof_container_candidate_fragment;
-  }
   if (object.CanContainFixedPositionObjects()) {
     context.fixed_positioned_container = context.absolute_positioned_container;
   }
@@ -965,7 +961,6 @@ void PrePaintTreeWalk::WalkChildren(
             (box->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks));
 
         traversable_fragment = nullptr;
-        context.oof_container_candidate_fragment = nullptr;
       }
     } else if (box->PhysicalFragmentCount()) {
       // Enter LayoutNGBoxFragment-accompanied child LayoutObject traversal if
@@ -987,13 +982,6 @@ void PrePaintTreeWalk::WalkChildren(
           box->CanTraversePhysicalFragments())
         traversable_fragment = first_fragment;
     }
-
-    // Inline-contained OOFs are placed in the containing block of the
-    // containing inline in NG, not an anonymous block that's part of a
-    // continuation, if any. We need to know where these might be stored, so
-    // that we eventually search the right ancestor fragment for them.
-    if (traversable_fragment && !box->IsAnonymousBlock())
-      context.oof_container_candidate_fragment = traversable_fragment;
   }
 
   // Keep track of fragments that act as containers for OOFs, so that we can
