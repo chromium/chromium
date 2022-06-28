@@ -24,7 +24,14 @@ const char kTestHtml[] =
     "</head>"
     "<body>"
     "  <h1 id=\"header\">browsertest</h1>"
+    "<script src=\"test.js\" type=\"module\"></script>"
     "</body>";
+
+const char kTestJs[] =
+    "import {pageHandler} from './page_handler.js'; "
+    "document.addEventListener('DOMContentLoaded', function () {"
+    " pageHandler.toggleFullscreen(); "
+    "});";
 
 const char kEmptyHtml[] = "<head></head><body></body>";
 
@@ -125,6 +132,28 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
       std::string(kTestHtml),
       content::EvalJs(web_contents, R"(document.documentElement.innerHTML)",
                       content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
+}
+
+// Verify that javascript content loaded from component can invoke
+// the ToggleFullscreen mojo API
+IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
+                       DemoModeAppToggleFullscreenFromComponentContent) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath file_path = component_dir_.GetPath().AppendASCII("test.html");
+  base::WriteFile(file_path, kTestHtml);
+  base::FilePath js_file_path = component_dir_.GetPath().AppendASCII("test.js");
+  base::WriteFile(js_file_path, kTestJs);
+  WaitForTestSystemAppInstall();
+
+  apps::AppLaunchParams params =
+      LaunchParamsForApp(ash::SystemWebAppType::DEMO_MODE);
+  params.override_url = GURL(ash::kChromeUntrustedUIDemoModeAppURL +
+                             file_path.BaseName().MaybeAsASCII());
+  content::WebContents* web_contents = LaunchApp(std::move(params));
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+      web_contents->GetTopLevelNativeWindow());
+
+  WidgetFullscreenWaiter(widget).WaitThenAssert(true);
 }
 
 // TODO(b/232945108): Change this to instead verify default resource if
