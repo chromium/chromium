@@ -40,11 +40,13 @@ namespace content {
 
 namespace {
 
-// Note on lifetime: this context should be deleted when the WebContents
-// is destroyed.
+// Note on lifetime: this context is deleted via WebContentsObserver's
+// WebContentsDestroyed() method when the WebContents is destroyed.
 class WebContentsContext : public WebContentsFrameTracker::Context {
  public:
-  explicit WebContentsContext(WebContents* contents) : contents_(contents) {}
+  explicit WebContentsContext(WebContents* contents) : contents_(contents) {
+    DCHECK(contents_);
+  }
   ~WebContentsContext() override = default;
 
   // WebContextFrameTracker::Context overrides.
@@ -150,6 +152,9 @@ void WebContentsFrameTracker::DidStopCapturingWebContents() {
 
 void WebContentsFrameTracker::SetCapturedContentSize(
     const gfx::Size& content_size) {
+  if (!web_contents())
+    return;
+
   // For efficiency, this function should only be called when the captured
   // content size changes. The caller is responsible for enforcing that.
 
@@ -292,8 +297,6 @@ float WebContentsFrameTracker::CalculatePreferredScaleFactor(
            << ", current_content_size=" << current_content_size.ToString()
            << ", unscaled_current_content_size="
            << unscaled_current_content_size.ToString()
-           << ", context_->GetScaleOverrideForCapture()="
-           << context_->GetScaleOverrideForCapture()
            << ", factors.x()=" << factors.x() << " factors.y()=" << factors.y()
            << ", largest_factor=" << largest_factor
            << ", preferred factor=" << preferred_factor;
@@ -339,6 +342,7 @@ void WebContentsFrameTracker::RenderFrameHostChanged(
 
 void WebContentsFrameTracker::WebContentsDestroyed() {
   is_capturing_ = false;
+  context_ = nullptr;
   Observe(nullptr);
   OnPossibleTargetChange();
 }
@@ -351,7 +355,10 @@ void WebContentsFrameTracker::SetWebContentsAndContextFromRoutingId(
     const GlobalRenderFrameHostId& id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   Observe(WebContents::FromRenderFrameHost(RenderFrameHost::FromID(id)));
-  context_ = std::make_unique<WebContentsContext>(web_contents());
+  if (web_contents()) {
+    // If the routing ID was invalid, don't set up a context.
+    context_ = std::make_unique<WebContentsContext>(web_contents());
+  }
   OnPossibleTargetChange();
 }
 
@@ -408,6 +415,7 @@ void WebContentsFrameTracker::SetWebContentsAndContextForTesting(
 void WebContentsFrameTracker::OnPossibleTargetChange() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!web_contents()) {
+    DCHECK(!context_);
     device_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&WebContentsVideoCaptureDevice::OnTargetPermanentlyLost,
@@ -454,6 +462,7 @@ void WebContentsFrameTracker::SetTargetView(gfx::NativeView view) {
 }
 
 void WebContentsFrameTracker::SetCaptureScaleOverride(float new_value) {
+  DCHECK(context_);
   if (new_value != capture_scale_override_) {
     capture_scale_override_ = new_value;
     context_->SetScaleOverrideForCapture(new_value);
