@@ -119,13 +119,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Skip to login screen for telemetry.
-     */
-    static skipToLoginForTesting() {
-      chrome.send('OobeTestApi.skipToLoginForTesting');
-    }
-
-    /**
      * Login for telemetry.
      * @param {string} username Login username.
      * @param {string} password Login password.
