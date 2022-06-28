@@ -125,7 +125,6 @@ absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
       {TP::COLOR_NTP_LOGO, kColorNewTabPageLogo},
       {TP::COLOR_NTP_SECTION_BORDER, kColorNewTabPageSectionBorder},
       {TP::COLOR_NTP_SHORTCUT, kColorNewTabPageMostVisitedTileBackground},
-      {TP::COLOR_NTP_TEXT, kColorNewTabPageText},
       {TP::COLOR_NTP_TEXT_LIGHT, kColorNewTabPageTextLight},
       {TP::COLOR_FRAME_CAPTION_ACTIVE, kColorFrameCaptionActive},
       {TP::COLOR_FRAME_CAPTION_INACTIVE, kColorFrameCaptionInactive},
