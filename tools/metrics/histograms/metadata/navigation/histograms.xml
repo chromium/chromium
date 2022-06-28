@@ -889,6 +889,9 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram name="Navigation.NavigationRequestCreation.SpeculativeRFHExisted"
     enum="SpeculativeRenderFrameHostType" expires_after="2022-06-30">
+  <obsolete>
+    Obsolete after 2022-06-30.
+  </obsolete>
   <owner>rakina@chromium.org</owner>
   <owner>dcheng@chromium.org</owner>
   <summary>
@@ -1265,6 +1268,9 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram name="Navigation.UndoCommit.IsSpeculativeRenderFrameLive"
     enum="BooleanPresent" expires_after="2022-06-30">
+  <obsolete>
+    Obsolete after 2022-06-30.
+  </obsolete>
   <owner>rakina@chromium.org</owner>
   <owner>dcheng@chromium.org</owner>
   <summary>
