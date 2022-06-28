@@ -449,6 +449,8 @@ bool Buffer::ProduceTransferableResource(
     return false;
   }
 
+  const bool request_release_fence =
+      !per_commit_explicit_release_callback.is_null();
   if (per_commit_explicit_release_callback)
     pending_explicit_releases_.emplace(
         next_commit_id_, std::move(per_commit_explicit_release_callback));
@@ -508,6 +510,11 @@ bool Buffer::ProduceTransferableResource(
                                                   sync_token, texture_target_);
     resource->is_overlay_candidate = is_overlay_candidate_;
     resource->format = viz::GetResourceFormat(gpu_memory_buffer_->GetFormat());
+    if (context_provider->ContextCapabilities().chromium_gpu_fence &&
+        request_release_fence) {
+      resource->synchronization_type =
+          viz::TransferableResource::SynchronizationType::kReleaseFence;
+    }
 
     // The contents texture will be released when no longer used by the
     // compositor.
