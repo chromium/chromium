@@ -3124,6 +3124,9 @@ namespace gl {
 class GLContext;
 """ % {'name': set_name.upper()})
 
+  if set_name == 'egl':
+    file.write("class GLDisplayEGL;\n")
+
   # Write typedefs for function pointer types. Always use the GL name for the
   # typedef.
   file.write('\n')
@@ -3158,10 +3161,10 @@ struct GL_EXPORT DisplayExtensionsEGL {
     file.write(
 """
 
-  void InitializeExtensionSettings(EGLDisplay display);
-  void UpdateConditionalExtensionSettings(EGLDisplay display);
+  void InitializeExtensionSettings(GLDisplayEGL* display);
+  void UpdateConditionalExtensionSettings(GLDisplayEGL* display);
 
-  static std::string GetPlatformExtensions(EGLDisplay display);
+  static std::string GetPlatformExtensions(GLDisplayEGL* display);
 """)
   file.write('};\n')
   file.write('\n')
@@ -3325,6 +3328,8 @@ def GenerateSource(file, functions, set_name, used_extensions,
                    'ui/gl/gl_implementation.h',
                    'ui/gl/gl_version_info.h',
                    set_header_name ]
+  if set_name == 'egl':
+    include_list.append('ui/gl/gl_display.h')
 
   includes_string = "\n".join(["#include \"{0}\"".format(h)
                                for h in sorted(include_list)])
@@ -3491,7 +3496,7 @@ void Driver%s::InitializeExtensionBindings() {
     file.write("""\
 }
 
-void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
+void DisplayExtensionsEGL::InitializeExtensionSettings(GLDisplayEGL* display) {
   std::string platform_extensions(GetPlatformExtensions(display));
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(platform_extensions));

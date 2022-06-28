@@ -18,15 +18,16 @@
 #include "base/threading/thread_restrictions.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_switching_manager.h"
+#include "ui/gl/init/gl_initializer.h"
 
 #if defined(USE_EGL)
 #include "ui/gl/gl_egl_api_implementation.h"
+#include "ui/gl/gl_surface_egl.h"
 #endif  // defined(USE_EGL)
 
 namespace gl {
@@ -166,28 +167,28 @@ bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
 }  // namespace
 
 GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
-  GLDisplayEGL* display =
-      GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
   switch (GetGLImplementation()) {
     case kGLImplementationDesktopGL:
     case kGLImplementationDesktopGLCoreProfile:
       if (!InitializeOneOffForSandbox()) {
         LOG(ERROR) << "GLSurfaceCGL::InitializeOneOff failed.";
       }
-      break;
+      return GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
 #if defined(USE_EGL)
     case kGLImplementationEGLGLES2:
-    case kGLImplementationEGLANGLE:
-      if (!display->Initialize(EGLDisplayPlatform(0))) {
-        LOG(ERROR) << "GLDisplayEGL::Initialize failed.";
+    case kGLImplementationEGLANGLE: {
+      GLDisplay* display = GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform(0),
+                                                          system_device_id);
+      if (!display) {
+        LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
         return nullptr;
       }
-      break;
+      return display;
+    }
 #endif  // defined(USE_EGL)
     default:
-      break;
+      return GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
   }
-  return display;
 }
 
 bool InitializeStaticGLBindings(GLImplementationParts implementation) {
@@ -226,8 +227,7 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
 void ShutdownGLPlatform(GLDisplay* display) {
   ClearBindingsGL();
 #if defined(USE_EGL)
-  if (display)
-    display->Shutdown();
+  GLSurfaceEGL::ShutdownOneOff(static_cast<GLDisplayEGL*>(display));
   ClearBindingsEGL();
 #endif  // defined(USE_EGL)
 }

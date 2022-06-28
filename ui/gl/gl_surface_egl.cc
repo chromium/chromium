@@ -31,6 +31,7 @@
 #include "ui/gl/gl_surface_presentation_helper.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/scoped_make_current.h"
 #include "ui/gl/sync_control_vsync_provider.h"
 
@@ -83,6 +84,10 @@ using ui::GetLastEGLErrorString;
 namespace gl {
 
 namespace {
+
+class EGLGpuSwitchingObserver;
+
+EGLGpuSwitchingObserver* g_egl_gpu_switching_observer = nullptr;
 
 constexpr const char kSwapEventTraceCategories[] = "gpu";
 
@@ -149,6 +154,21 @@ class EGLSyncControlVSyncProvider : public SyncControlVSyncProvider {
  private:
   EGLSurface surface_;
   raw_ptr<GLDisplayEGL> display_;
+};
+
+class EGLGpuSwitchingObserver final : public ui::GpuSwitchingObserver {
+ public:
+  explicit EGLGpuSwitchingObserver(GLDisplayEGL* display) : display_(display) {
+    DCHECK(display_);
+  }
+
+  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override {
+    DCHECK(display_->ext->b_EGL_ANGLE_power_preference);
+    eglHandleGPUSwitchANGLE(display_->GetDisplay());
+  }
+
+ private:
+  raw_ptr<GLDisplayEGL> display_ = nullptr;
 };
 
 bool ValidateEglConfig(EGLDisplay display,
@@ -360,6 +380,50 @@ EGLDisplay GLSurfaceEGL::GetEGLDisplay() {
 GLDisplayEGL* GLSurfaceEGL::GetGLDisplayEGL() {
   return GLDisplayManagerEGL::GetInstance()->GetDisplay(
       GpuPreference::kDefault);
+}
+
+// static
+GLDisplayEGL* GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform native_display,
+                                             uint64_t system_device_id) {
+  GLDisplayEGL* display =
+      GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
+  if (display->GetDisplay() == EGL_NO_DISPLAY) {
+    if (!display->InitializeDisplay(native_display))
+      return nullptr;
+    display->InitializeCommon();
+    if (display->ext->b_EGL_ANGLE_power_preference) {
+      g_egl_gpu_switching_observer = new EGLGpuSwitchingObserver(display);
+      ui::GpuSwitchingManager::GetInstance()->AddObserver(
+          g_egl_gpu_switching_observer);
+    }
+  }
+  return display;
+}
+
+// static
+GLDisplayEGL* GLSurfaceEGL::InitializeOneOffForTesting() {
+  GLDisplayEGL* display =
+      GLDisplayManagerEGL::GetInstance()->GetDisplay(GpuPreference::kDefault);
+  display->SetDisplay(eglGetCurrentDisplay());
+  display->ext->InitializeExtensionSettings(display);
+  display->InitializeCommon();
+  return display;
+}
+
+// static
+void GLSurfaceEGL::ShutdownOneOff(GLDisplayEGL* display) {
+  if (!display || display->GetDisplay() == EGL_NO_DISPLAY) {
+    return;
+  }
+
+  if (g_egl_gpu_switching_observer) {
+    ui::GpuSwitchingManager::GetInstance()->RemoveObserver(
+        g_egl_gpu_switching_observer);
+    delete g_egl_gpu_switching_observer;
+    g_egl_gpu_switching_observer = nullptr;
+  }
+
+  display->Shutdown();
 }
 
 GLSurfaceEGL::~GLSurfaceEGL() = default;

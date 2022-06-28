@@ -18,9 +18,8 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gl/egl_mock.h"
-#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_egl_api_implementation.h"
-#include "ui/gl/gl_utils.h"
+#include "ui/gl/gl_surface_egl.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
@@ -75,13 +74,11 @@ class GpuFenceManagerTest : public GpuServiceTest {
 
     gl::ClearBindingsEGL();
     gl::InitializeStaticGLBindingsEGL();
-    display_ = gl::GetDefaultDisplayEGL();
-    display_->InitializeForTesting();
+    display_ = gl::GLSurfaceEGL::InitializeOneOffForTesting();
   }
 
   void TeardownMockEGL() {
-    if (display_)
-      display_->Shutdown();
+    gl::GLSurfaceEGL::ShutdownOneOff(display_);
     egl_.reset();
   }
 
