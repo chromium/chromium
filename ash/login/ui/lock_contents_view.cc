@@ -2462,7 +2462,10 @@ LoginUserView* LockContentsView::TryToFindUserView(const AccountId& user) {
     return big_view->GetUserView();
 
   // Try to find |user| in users_list_.
-  return users_list_->GetUserView(user);
+  if (users_list_)
+    return users_list_->GetUserView(user);
+
+  return nullptr;
 }
 
 void LockContentsView::SetDisplayStyle(DisplayStyle style) {
