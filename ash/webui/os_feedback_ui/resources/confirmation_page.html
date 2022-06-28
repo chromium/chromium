@@ -26,6 +26,14 @@
     font-weight: var(--feedback-medium-font-weight);
     line-height: 20px;
   }
+
+  .sub-label {
+    color: var(--cros-text-color-secondary);
+    font-family: 'Roboto';
+    font-size: 13px;
+    font-weight: var(--feedback-regular-font-weight);
+    line-height: 20px;
+  }
 </style>
 <!--TODO(xiangdongkong): use localized strings -->
 <div id="container">
@@ -38,22 +46,28 @@
       <p id="helpResourcesLabel">Here are some other helpful resources:</p>
       <cr-link-row id="explore" start-icon="help-resources:explore"
           external using-slotted-label
-          sub-label="[[i18n('exploreAppDescription')]]"
           on-click="handleLinkClicked_">
           <span slot="label" class="label">[[i18n('exploreAppLabel')]]</span>
+          <span slot="sub-label"
+              class="sub-label">[[i18n('exploreAppDescription')]]
+          </span>
       </cr-link-row>
       <cr-link-row id="diagnostics" start-icon="help-resources:diagnostics"
           external using-slotted-label
-          sub-label="[[i18n('diagnosticsAppDescription')]]"
           on-click="handleLinkClicked_">
           <span slot="label" class="label">[[i18n('diagnosticsAppLabel')]]</span>
+          <span slot="sub-label"
+              class="sub-label">[[i18n('diagnosticsAppDescription')]]
+          </span>
       </cr-link-row>
       <cr-link-row id="chromebookCommunity"
           start-icon="help-resources2:chromebook-community"
-          sub-label="[[i18n('askCommunityDescription')]]"
           hidden="[[isOffline_(sendReportStatus)]]" external using-slotted-label
           on-click="handleLinkClicked_">
           <span slot="label" class="label">[[i18n('askCommunityLabel')]]</span>
+          <span slot="sub-label"
+              class="sub-label">[[i18n('askCommunityDescription')]]
+          </span>
       </cr-link-row>
     </div>
   </div>
