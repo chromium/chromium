@@ -73,6 +73,7 @@
 #include <ctype.h>
 #include <errno.h>  /* for EINVAL */
 #include <limits.h>
+#include <stddef.h>
 #include <string.h>
 #include <time.h>
 
