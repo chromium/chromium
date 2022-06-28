@@ -56,27 +56,42 @@ void ErrorTest(absl::optional<base::StringPiece> content,
 }
 
 template <typename T>
-T OkTest(absl::optional<base::StringPiece> content,
-         const base::Location& from = base::Location::Current()) {
-  auto tag = content ? TagItem::Create(ToTagName(T::kName),
-                                       SourceString::CreateForTesting(*content))
-                     : TagItem::CreateEmpty(ToTagName(T::kName), 1);
+struct OkTestResult {
+  T tag;
+
+  // `tag` may have references to this string. To avoid UAF when moving
+  // small strings we wrap it in a `std::unique_ptr`.
+  std::unique_ptr<std::string> source;
+};
+
+template <typename T>
+OkTestResult<T> OkTest(absl::optional<std::string> content,
+                       const base::Location& from = base::Location::Current()) {
+  std::unique_ptr<std::string> source =
+      content ? std::make_unique<std::string>(std::move(*content)) : nullptr;
+  auto tag = source ? TagItem::Create(ToTagName(T::kName),
+                                      SourceString::CreateForTesting(*source))
+                    : TagItem::CreateEmpty(ToTagName(T::kName), 1);
   auto result = T::Parse(tag);
   EXPECT_TRUE(result.has_value()) << from.ToString();
-  return std::move(result).value();
+  return OkTestResult<T>{.tag = std::move(result).value(),
+                         .source = std::move(source)};
 }
 
 template <typename T>
-T OkTest(absl::optional<base::StringPiece> content,
-         const VariableDictionary& variable_dict,
-         VariableDictionary::SubstitutionBuffer& sub_buffer,
-         const base::Location& from = base::Location::Current()) {
-  auto tag = content ? TagItem::Create(ToTagName(T::kName),
-                                       SourceString::CreateForTesting(*content))
-                     : TagItem::CreateEmpty(ToTagName(T::kName), 1);
+OkTestResult<T> OkTest(absl::optional<std::string> content,
+                       const VariableDictionary& variable_dict,
+                       VariableDictionary::SubstitutionBuffer& sub_buffer,
+                       const base::Location& from = base::Location::Current()) {
+  auto source =
+      content ? std::make_unique<std::string>(std::move(*content)) : nullptr;
+  auto tag = source ? TagItem::Create(ToTagName(T::kName),
+                                      SourceString::CreateForTesting(*source))
+                    : TagItem::CreateEmpty(ToTagName(T::kName), 1);
   auto result = T::Parse(tag, variable_dict, sub_buffer);
   CHECK(result.has_value()) << from.ToString();
-  return std::move(result).value();
+  return OkTestResult<T>{.tag = std::move(result).value(),
+                         .source = std::move(source)};
 }
 
 // Helper to test identification of this tag in a manifest.
@@ -137,14 +152,14 @@ void RunDecimalIntegerTagTest(types::DecimalInteger T::*field) {
   ErrorTest<T>("1,", ParseStatusCode::kMalformedTag);
   ErrorTest<T>("{$X}", ParseStatusCode::kMalformedTag);
 
-  auto tag = OkTest<T>("0");
-  EXPECT_EQ(tag.*field, 0u);
-  tag = OkTest<T>("1");
-  EXPECT_EQ(tag.*field, 1u);
-  tag = OkTest<T>("10");
-  EXPECT_EQ(tag.*field, 10u);
-  tag = OkTest<T>("14");
-  EXPECT_EQ(tag.*field, 14u);
+  auto result = OkTest<T>("0");
+  EXPECT_EQ(result.tag.*field, 0u);
+  result = OkTest<T>("1");
+  EXPECT_EQ(result.tag.*field, 1u);
+  result = OkTest<T>("10");
+  EXPECT_EQ(result.tag.*field, 10u);
+  result = OkTest<T>("14");
+  EXPECT_EQ(result.tag.*field, 14u);
 }
 
 VariableDictionary CreateBasicDictionary(
@@ -182,32 +197,32 @@ TEST(HlsTagsTest, ParseXVersionTag) {
   RunTagIdenficationTest<XVersionTag>("#EXT-X-VERSION:123\n", "123");
 
   // Test valid versions
-  auto tag = OkTest<XVersionTag>("1");
-  EXPECT_EQ(tag.version, 1u);
-  tag = OkTest<XVersionTag>("2");
-  EXPECT_EQ(tag.version, 2u);
-  tag = OkTest<XVersionTag>("3");
-  EXPECT_EQ(tag.version, 3u);
-  tag = OkTest<XVersionTag>("4");
-  EXPECT_EQ(tag.version, 4u);
-  tag = OkTest<XVersionTag>("5");
-  EXPECT_EQ(tag.version, 5u);
-  tag = OkTest<XVersionTag>("6");
-  EXPECT_EQ(tag.version, 6u);
-  tag = OkTest<XVersionTag>("7");
-  EXPECT_EQ(tag.version, 7u);
-  tag = OkTest<XVersionTag>("8");
-  EXPECT_EQ(tag.version, 8u);
-  tag = OkTest<XVersionTag>("9");
-  EXPECT_EQ(tag.version, 9u);
-  tag = OkTest<XVersionTag>("10");
-  EXPECT_EQ(tag.version, 10u);
+  auto result = OkTest<XVersionTag>("1");
+  EXPECT_EQ(result.tag.version, 1u);
+  result = OkTest<XVersionTag>("2");
+  EXPECT_EQ(result.tag.version, 2u);
+  result = OkTest<XVersionTag>("3");
+  EXPECT_EQ(result.tag.version, 3u);
+  result = OkTest<XVersionTag>("4");
+  EXPECT_EQ(result.tag.version, 4u);
+  result = OkTest<XVersionTag>("5");
+  EXPECT_EQ(result.tag.version, 5u);
+  result = OkTest<XVersionTag>("6");
+  EXPECT_EQ(result.tag.version, 6u);
+  result = OkTest<XVersionTag>("7");
+  EXPECT_EQ(result.tag.version, 7u);
+  result = OkTest<XVersionTag>("8");
+  EXPECT_EQ(result.tag.version, 8u);
+  result = OkTest<XVersionTag>("9");
+  EXPECT_EQ(result.tag.version, 9u);
+  result = OkTest<XVersionTag>("10");
+  EXPECT_EQ(result.tag.version, 10u);
 
   // While unsupported playlist versions are rejected, that's NOT the
   // responsibility of this tag parsing function. The playlist should be
   // rejected at a higher level.
-  tag = OkTest<XVersionTag>("99999");
-  EXPECT_EQ(tag.version, 99999u);
+  result = OkTest<XVersionTag>("99999");
+  EXPECT_EQ(result.tag.version, 99999u);
 
   // Test invalid versions
   ErrorTest<XVersionTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
@@ -223,27 +238,27 @@ TEST(HlsTagsTest, ParseInfTag) {
   RunTagIdenficationTest<InfTag>("#EXTINF:123,\t\n", "123,\t");
 
   // Test some valid tags
-  auto tag = OkTest<InfTag>("123,");
-  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(123.0)));
-  EXPECT_EQ(tag.title.Str(), "");
+  auto result = OkTest<InfTag>("123,");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(123.0)));
+  EXPECT_EQ(result.tag.title.Str(), "");
 
-  tag = OkTest<InfTag>("1.23,");
-  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(1.23)));
-  EXPECT_EQ(tag.title.Str(), "");
+  result = OkTest<InfTag>("1.23,");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(1.23)));
+  EXPECT_EQ(result.tag.title.Str(), "");
 
   // The spec implies that whitespace characters like this usually aren't
   // permitted, but "\t" is a common occurrence for the title value.
-  tag = OkTest<InfTag>("99.5,\t");
-  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(99.5)));
-  EXPECT_EQ(tag.title.Str(), "\t");
+  result = OkTest<InfTag>("99.5,\t");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(99.5)));
+  EXPECT_EQ(result.tag.title.Str(), "\t");
 
-  tag = OkTest<InfTag>("9.5,,,,");
-  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(9.5)));
-  EXPECT_EQ(tag.title.Str(), ",,,");
+  result = OkTest<InfTag>("9.5,,,,");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(9.5)));
+  EXPECT_EQ(result.tag.title.Str(), ",,,");
 
-  tag = OkTest<InfTag>("12,asdfsdf   ");
-  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(12.0)));
-  EXPECT_EQ(tag.title.Str(), "asdfsdf   ");
+  result = OkTest<InfTag>("12,asdfsdf   ");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(12.0)));
+  EXPECT_EQ(result.tag.title.Str(), "asdfsdf   ");
 
   // Test some invalid tags
   ErrorTest<InfTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
@@ -254,8 +269,8 @@ TEST(HlsTagsTest, ParseInfTag) {
   ErrorTest<InfTag>("asdf,", ParseStatusCode::kMalformedTag);
 
   // Test max value
-  tag = OkTest<InfTag>(base::NumberToString(MaxSeconds()) + ",\t");
-  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(MaxSeconds())));
+  result = OkTest<InfTag>(base::NumberToString(MaxSeconds()) + ",\t");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(MaxSeconds())));
   ErrorTest<InfTag>(base::NumberToString(MaxSeconds() + 1) + ",\t",
                     ParseStatusCode::kValueOverflowsTimeDelta);
 }
@@ -294,30 +309,30 @@ TEST(HlsTagsTest, ParseXDefineTag) {
       "NAME=\"FOO\",VALUE=\"Bar\",");
 
   // Test some valid inputs
-  auto tag = OkTest<XDefineTag>(R"(NAME="Foo",VALUE="bar",)");
-  EXPECT_EQ(tag.name.GetName(), "Foo");
-  EXPECT_TRUE(tag.value.has_value());
-  EXPECT_EQ(tag.value.value(), "bar");
+  auto result = OkTest<XDefineTag>(R"(NAME="Foo",VALUE="bar",)");
+  EXPECT_EQ(result.tag.name.GetName(), "Foo");
+  EXPECT_TRUE(result.tag.value.has_value());
+  EXPECT_EQ(result.tag.value.value(), "bar");
 
-  tag = OkTest<XDefineTag>(R"(VALUE="90/12#%)(zx./",NAME="Hello12_-")");
-  EXPECT_EQ(tag.name.GetName(), "Hello12_-");
-  EXPECT_TRUE(tag.value.has_value());
-  EXPECT_EQ(tag.value.value(), "90/12#%)(zx./");
+  result = OkTest<XDefineTag>(R"(VALUE="90/12#%)(zx./",NAME="Hello12_-")");
+  EXPECT_EQ(result.tag.name.GetName(), "Hello12_-");
+  EXPECT_TRUE(result.tag.value.has_value());
+  EXPECT_EQ(result.tag.value.value(), "90/12#%)(zx./");
 
-  tag = OkTest<XDefineTag>(R"(IMPORT="-F90_Baz")");
-  EXPECT_EQ(tag.name.GetName(), "-F90_Baz");
-  EXPECT_FALSE(tag.value.has_value());
+  result = OkTest<XDefineTag>(R"(IMPORT="-F90_Baz")");
+  EXPECT_EQ(result.tag.name.GetName(), "-F90_Baz");
+  EXPECT_FALSE(result.tag.value.has_value());
 
   // IMPORT and VALUE are not currently considered an error
-  tag = OkTest<XDefineTag>(R"(IMPORT="F00_Bar",VALUE="Test")");
-  EXPECT_EQ(tag.name.GetName(), "F00_Bar");
-  EXPECT_FALSE(tag.value.has_value());
+  result = OkTest<XDefineTag>(R"(IMPORT="F00_Bar",VALUE="Test")");
+  EXPECT_EQ(result.tag.name.GetName(), "F00_Bar");
+  EXPECT_FALSE(result.tag.value.has_value());
 
   // NAME with empty value is allowed
-  tag = OkTest<XDefineTag>(R"(NAME="HELLO",VALUE="")");
-  EXPECT_EQ(tag.name.GetName(), "HELLO");
-  EXPECT_TRUE(tag.value.has_value());
-  EXPECT_EQ(tag.value.value(), "");
+  result = OkTest<XDefineTag>(R"(NAME="HELLO",VALUE="")");
+  EXPECT_EQ(result.tag.name.GetName(), "HELLO");
+  EXPECT_TRUE(result.tag.value.has_value());
+  EXPECT_EQ(result.tag.value.value(), "");
 
   // Empty content is not allowed
   ErrorTest<XDefineTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
@@ -350,10 +365,10 @@ TEST(HlsTagsTest, ParseXPlaylistTypeTag) {
   RunTagIdenficationTest<XPlaylistTypeTag>("#EXT-X-PLAYLIST-TYPE:EVENT\n",
                                            "EVENT");
 
-  auto tag = OkTest<XPlaylistTypeTag>("EVENT");
-  EXPECT_EQ(tag.type, PlaylistType::kEvent);
-  tag = OkTest<XPlaylistTypeTag>("VOD");
-  EXPECT_EQ(tag.type, PlaylistType::kVOD);
+  auto result = OkTest<XPlaylistTypeTag>("EVENT");
+  EXPECT_EQ(result.tag.type, PlaylistType::kEvent);
+  result = OkTest<XPlaylistTypeTag>("VOD");
+  EXPECT_EQ(result.tag.type, PlaylistType::kVOD);
 
   ErrorTest<XPlaylistTypeTag>("FOOBAR", ParseStatusCode::kUnknownPlaylistType);
   ErrorTest<XPlaylistTypeTag>("EEVENT", ParseStatusCode::kUnknownPlaylistType);
@@ -371,36 +386,37 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   VariableDictionary variable_dict = CreateBasicDictionary();
   VariableDictionary::SubstitutionBuffer sub_buffer;
 
-  auto tag = OkTest<XStreamInfTag>(
+  auto result = OkTest<XStreamInfTag>(
       R"(BANDWIDTH=1010,AVERAGE-BANDWIDTH=1000,CODECS="foo,bar",SCORE=12.2)",
       variable_dict, sub_buffer);
-  EXPECT_EQ(tag.bandwidth, 1010u);
-  EXPECT_EQ(tag.average_bandwidth, 1000u);
-  EXPECT_DOUBLE_EQ(tag.score.value(), 12.2);
-  EXPECT_EQ(tag.codecs, "foo,bar");
-  EXPECT_EQ(tag.resolution, absl::nullopt);
-  EXPECT_EQ(tag.frame_rate, absl::nullopt);
+  EXPECT_EQ(result.tag.bandwidth, 1010u);
+  EXPECT_EQ(result.tag.average_bandwidth, 1000u);
+  EXPECT_DOUBLE_EQ(result.tag.score.value(), 12.2);
+  EXPECT_EQ(result.tag.codecs, "foo,bar");
+  EXPECT_EQ(result.tag.resolution, absl::nullopt);
+  EXPECT_EQ(result.tag.frame_rate, absl::nullopt);
 
-  tag = OkTest<XStreamInfTag>(
+  result = OkTest<XStreamInfTag>(
       R"(BANDWIDTH=1010,RESOLUTION=1920x1080,FRAME-RATE=29.97)", variable_dict,
       sub_buffer);
-  EXPECT_EQ(tag.bandwidth, 1010u);
-  EXPECT_EQ(tag.average_bandwidth, absl::nullopt);
-  EXPECT_EQ(tag.score, absl::nullopt);
-  EXPECT_EQ(tag.codecs, absl::nullopt);
-  ASSERT_TRUE(tag.resolution.has_value());
-  EXPECT_EQ(tag.resolution->width, 1920u);
-  EXPECT_EQ(tag.resolution->height, 1080u);
-  EXPECT_DOUBLE_EQ(tag.frame_rate.value(), 29.97);
+  EXPECT_EQ(result.tag.bandwidth, 1010u);
+  EXPECT_EQ(result.tag.average_bandwidth, absl::nullopt);
+  EXPECT_EQ(result.tag.score, absl::nullopt);
+  EXPECT_EQ(result.tag.codecs, absl::nullopt);
+  ASSERT_TRUE(result.tag.resolution.has_value());
+  EXPECT_EQ(result.tag.resolution->width, 1920u);
+  EXPECT_EQ(result.tag.resolution->height, 1080u);
+  EXPECT_DOUBLE_EQ(result.tag.frame_rate.value(), 29.97);
 
   // "BANDWIDTH" is the only required attribute
-  tag = OkTest<XStreamInfTag>(R"(BANDWIDTH=5050)", variable_dict, sub_buffer);
-  EXPECT_EQ(tag.bandwidth, 5050u);
-  EXPECT_EQ(tag.average_bandwidth, absl::nullopt);
-  EXPECT_EQ(tag.score, absl::nullopt);
-  EXPECT_EQ(tag.codecs, absl::nullopt);
-  EXPECT_EQ(tag.resolution, absl::nullopt);
-  EXPECT_EQ(tag.frame_rate, absl::nullopt);
+  result =
+      OkTest<XStreamInfTag>(R"(BANDWIDTH=5050)", variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.bandwidth, 5050u);
+  EXPECT_EQ(result.tag.average_bandwidth, absl::nullopt);
+  EXPECT_EQ(result.tag.score, absl::nullopt);
+  EXPECT_EQ(result.tag.codecs, absl::nullopt);
+  EXPECT_EQ(result.tag.resolution, absl::nullopt);
+  EXPECT_EQ(result.tag.frame_rate, absl::nullopt);
 
   ErrorTest<XStreamInfTag>(absl::nullopt, variable_dict, sub_buffer,
                            ParseStatusCode::kMalformedTag);
@@ -445,13 +461,13 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
                            sub_buffer, ParseStatusCode::kMalformedTag);
 
   // "CODECS" is subject to variable substitution
-  tag = OkTest<XStreamInfTag>(R"(BANDWIDTH=1010,CODECS="{$FOO},{$BAR}")",
-                              variable_dict, sub_buffer);
-  EXPECT_EQ(tag.bandwidth, 1010u);
-  EXPECT_EQ(tag.average_bandwidth, absl::nullopt);
-  EXPECT_EQ(tag.score, absl::nullopt);
-  EXPECT_EQ(tag.codecs, "bar,baz");
-  EXPECT_EQ(tag.resolution, absl::nullopt);
+  result = OkTest<XStreamInfTag>(R"(BANDWIDTH=1010,CODECS="{$FOO},{$BAR}")",
+                                 variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.bandwidth, 1010u);
+  EXPECT_EQ(result.tag.average_bandwidth, absl::nullopt);
+  EXPECT_EQ(result.tag.score, absl::nullopt);
+  EXPECT_EQ(result.tag.codecs, "bar,baz");
+  EXPECT_EQ(result.tag.resolution, absl::nullopt);
 
   // "RESOLUTION" must be a valid decimal-resolution
   ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,RESOLUTION=1920x)", variable_dict,
@@ -483,18 +499,18 @@ TEST(HlsTagsTest, ParseXTargetDurationTag) {
   ErrorTest<XTargetDurationTag>("{$ONE}", ParseStatusCode::kMalformedTag);
   ErrorTest<XTargetDurationTag>("1,", ParseStatusCode::kMalformedTag);
 
-  auto tag = OkTest<XTargetDurationTag>("0");
-  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(0)));
+  auto result = OkTest<XTargetDurationTag>("0");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(0)));
 
-  tag = OkTest<XTargetDurationTag>("1");
-  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(1)));
+  result = OkTest<XTargetDurationTag>("1");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(1)));
 
-  tag = OkTest<XTargetDurationTag>("99");
-  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(99)));
+  result = OkTest<XTargetDurationTag>("99");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(99)));
 
   // Test max value
-  tag = OkTest<XTargetDurationTag>(base::NumberToString(MaxSeconds()));
-  EXPECT_EQ(tag.duration, base::Seconds(MaxSeconds()));
+  result = OkTest<XTargetDurationTag>(base::NumberToString(MaxSeconds()));
+  EXPECT_EQ(result.tag.duration, base::Seconds(MaxSeconds()));
   ErrorTest<XTargetDurationTag>(base::NumberToString(MaxSeconds() + 1),
                                 ParseStatusCode::kValueOverflowsTimeDelta);
 }
@@ -513,12 +529,12 @@ TEST(HlsTagsTest, ParseXDiscontinuitySequenceTag) {
 TEST(HlsTagsTest, ParseXByteRangeTag) {
   RunTagIdenficationTest<XByteRangeTag>("#EXT-X-BYTERANGE:12@34\n", "12@34");
 
-  auto tag = OkTest<XByteRangeTag>("12");
-  EXPECT_EQ(tag.range.length, 12u);
-  EXPECT_EQ(tag.range.offset, absl::nullopt);
-  tag = OkTest<XByteRangeTag>("12@34");
-  EXPECT_EQ(tag.range.length, 12u);
-  EXPECT_EQ(tag.range.offset, 34u);
+  auto result = OkTest<XByteRangeTag>("12");
+  EXPECT_EQ(result.tag.range.length, 12u);
+  EXPECT_EQ(result.tag.range.offset, absl::nullopt);
+  result = OkTest<XByteRangeTag>("12@34");
+  EXPECT_EQ(result.tag.range.length, 12u);
+  EXPECT_EQ(result.tag.range.offset, 34u);
 
   ErrorTest<XByteRangeTag>("FOOBAR", ParseStatusCode::kMalformedTag);
   ErrorTest<XByteRangeTag>("12@", ParseStatusCode::kMalformedTag);
@@ -552,19 +568,20 @@ TEST(HlsTagsTest, ParseXPartInfTag) {
   ErrorTest<XPartInfTag>("PART-TARGET=10,PART-TARGET=10",
                          ParseStatusCode::kMalformedTag);
 
-  auto tag = OkTest<XPartInfTag>("PART-TARGET=1.2");
-  EXPECT_TRUE(RoughlyEqual(tag.target_duration, base::Seconds(1.2)));
-  tag = OkTest<XPartInfTag>("PART-TARGET=1");
-  EXPECT_TRUE(RoughlyEqual(tag.target_duration, base::Seconds(1)));
-  tag = OkTest<XPartInfTag>("PART-TARGET=0");
-  EXPECT_TRUE(RoughlyEqual(tag.target_duration, base::Seconds(0)));
-  tag = OkTest<XPartInfTag>("FOO=BAR,PART-TARGET=100,BAR=BAZ");
-  EXPECT_TRUE(RoughlyEqual(tag.target_duration, base::Seconds(100)));
+  auto result = OkTest<XPartInfTag>("PART-TARGET=1.2");
+  EXPECT_TRUE(RoughlyEqual(result.tag.target_duration, base::Seconds(1.2)));
+  result = OkTest<XPartInfTag>("PART-TARGET=1");
+  EXPECT_TRUE(RoughlyEqual(result.tag.target_duration, base::Seconds(1)));
+  result = OkTest<XPartInfTag>("PART-TARGET=0");
+  EXPECT_TRUE(RoughlyEqual(result.tag.target_duration, base::Seconds(0)));
+  result = OkTest<XPartInfTag>("FOO=BAR,PART-TARGET=100,BAR=BAZ");
+  EXPECT_TRUE(RoughlyEqual(result.tag.target_duration, base::Seconds(100)));
 
   // Test the max value
-  tag =
+  result =
       OkTest<XPartInfTag>("PART-TARGET=" + base::NumberToString(MaxSeconds()));
-  EXPECT_TRUE(RoughlyEqual(tag.target_duration, base::Seconds(MaxSeconds())));
+  EXPECT_TRUE(
+      RoughlyEqual(result.tag.target_duration, base::Seconds(MaxSeconds())));
   ErrorTest<XPartInfTag>(
       "PART-TARGET=" + base::NumberToString(MaxSeconds() + 1),
       ParseStatusCode::kValueOverflowsTimeDelta);
@@ -578,21 +595,21 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
   ErrorTest<XServerControlTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
 
   // Content is allowed to be empty
-  auto tag = OkTest<XServerControlTag>("");
-  EXPECT_EQ(tag.skip_boundary, absl::nullopt);
-  EXPECT_EQ(tag.can_skip_dateranges, false);
-  EXPECT_EQ(tag.hold_back, absl::nullopt);
-  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
-  EXPECT_EQ(tag.can_block_reload, false);
+  auto result = OkTest<XServerControlTag>("");
+  EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(result.tag.can_skip_dateranges, false);
+  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.can_block_reload, false);
 
-  tag = OkTest<XServerControlTag>(
+  result = OkTest<XServerControlTag>(
       "CAN-SKIP-UNTIL=50,CAN-SKIP-DATERANGES=YES,HOLD-BACK=60,PART-HOLD-BACK="
       "40,CAN-BLOCK-RELOAD=YES,FUTURE-PROOF=YES");
-  EXPECT_TRUE(RoughlyEqual(tag.skip_boundary, base::Seconds(50)));
-  EXPECT_EQ(tag.can_skip_dateranges, true);
-  EXPECT_TRUE(RoughlyEqual(tag.hold_back, base::Seconds(60)));
-  EXPECT_TRUE(RoughlyEqual(tag.part_hold_back, base::Seconds(40)));
-  EXPECT_EQ(tag.can_block_reload, true);
+  EXPECT_TRUE(RoughlyEqual(result.tag.skip_boundary, base::Seconds(50)));
+  EXPECT_EQ(result.tag.can_skip_dateranges, true);
+  EXPECT_TRUE(RoughlyEqual(result.tag.hold_back, base::Seconds(60)));
+  EXPECT_TRUE(RoughlyEqual(result.tag.part_hold_back, base::Seconds(40)));
+  EXPECT_EQ(result.tag.can_block_reload, true);
 
   ErrorTest<XServerControlTag>("CAN-SKIP-UNTIL=-5",
                                ParseStatusCode::kMalformedTag);
@@ -601,21 +618,22 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
   ErrorTest<XServerControlTag>("CAN-SKIP-UNTIL=\"5\"",
                                ParseStatusCode::kMalformedTag);
 
-  tag = OkTest<XServerControlTag>("CAN-SKIP-UNTIL=5");
-  EXPECT_TRUE(RoughlyEqual(tag.skip_boundary, base::Seconds(5)));
-  EXPECT_EQ(tag.can_skip_dateranges, false);
-  EXPECT_EQ(tag.hold_back, absl::nullopt);
-  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
-  EXPECT_EQ(tag.can_block_reload, false);
+  result = OkTest<XServerControlTag>("CAN-SKIP-UNTIL=5");
+  EXPECT_TRUE(RoughlyEqual(result.tag.skip_boundary, base::Seconds(5)));
+  EXPECT_EQ(result.tag.can_skip_dateranges, false);
+  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.can_block_reload, false);
 
   // Test max value
-  tag = OkTest<XServerControlTag>("CAN-SKIP-UNTIL=" +
-                                  base::NumberToString(MaxSeconds()));
-  EXPECT_TRUE(RoughlyEqual(tag.skip_boundary, base::Seconds(MaxSeconds())));
-  EXPECT_EQ(tag.can_skip_dateranges, false);
-  EXPECT_EQ(tag.hold_back, absl::nullopt);
-  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
-  EXPECT_EQ(tag.can_block_reload, false);
+  result = OkTest<XServerControlTag>("CAN-SKIP-UNTIL=" +
+                                     base::NumberToString(MaxSeconds()));
+  EXPECT_TRUE(
+      RoughlyEqual(result.tag.skip_boundary, base::Seconds(MaxSeconds())));
+  EXPECT_EQ(result.tag.can_skip_dateranges, false);
+  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.can_block_reload, false);
 
   ErrorTest<XServerControlTag>(
       "CAN-SKIP-UNTIL=" + base::NumberToString(MaxSeconds() + 1),
@@ -624,22 +642,23 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
   // 'CAN-SKIP-DATERANGES' requires the presence of 'CAN-SKIP-UNTIL'
   ErrorTest<XServerControlTag>("CAN-SKIP-DATERANGES=YES",
                                ParseStatusCode::kMalformedTag);
-  tag = OkTest<XServerControlTag>("CAN-SKIP-DATERANGES=YES,CAN-SKIP-UNTIL=50");
-  EXPECT_TRUE(RoughlyEqual(tag.skip_boundary, base::Seconds(50)));
-  EXPECT_EQ(tag.can_skip_dateranges, true);
-  EXPECT_EQ(tag.hold_back, absl::nullopt);
-  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
-  EXPECT_EQ(tag.can_block_reload, false);
+  result =
+      OkTest<XServerControlTag>("CAN-SKIP-DATERANGES=YES,CAN-SKIP-UNTIL=50");
+  EXPECT_TRUE(RoughlyEqual(result.tag.skip_boundary, base::Seconds(50)));
+  EXPECT_EQ(result.tag.can_skip_dateranges, true);
+  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.can_block_reload, false);
 
   // The only value that results in `true` is "YES"
   for (std::string x : {"NO", "Y", "TRUE", "1", "yes"}) {
-    tag = OkTest<XServerControlTag>("CAN-SKIP-DATERANGES=" + x +
-                                    ",CAN-SKIP-UNTIL=50");
-    EXPECT_TRUE(RoughlyEqual(tag.skip_boundary, base::Seconds(50)));
-    EXPECT_EQ(tag.can_skip_dateranges, false);
-    EXPECT_EQ(tag.hold_back, absl::nullopt);
-    EXPECT_EQ(tag.part_hold_back, absl::nullopt);
-    EXPECT_EQ(tag.can_block_reload, false);
+    result = OkTest<XServerControlTag>("CAN-SKIP-DATERANGES=" + x +
+                                       ",CAN-SKIP-UNTIL=50");
+    EXPECT_TRUE(RoughlyEqual(result.tag.skip_boundary, base::Seconds(50)));
+    EXPECT_EQ(result.tag.can_skip_dateranges, false);
+    EXPECT_EQ(result.tag.hold_back, absl::nullopt);
+    EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+    EXPECT_EQ(result.tag.can_block_reload, false);
   }
 
   // 'HOLD-BACK' must be a valid DecimalFloatingPoint
@@ -649,21 +668,21 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
   ErrorTest<XServerControlTag>("HOLD-BACK=\"5\"",
                                ParseStatusCode::kMalformedTag);
 
-  tag = OkTest<XServerControlTag>("HOLD-BACK=50");
-  EXPECT_EQ(tag.skip_boundary, absl::nullopt);
-  EXPECT_EQ(tag.can_skip_dateranges, false);
-  EXPECT_TRUE(RoughlyEqual(tag.hold_back, base::Seconds(50)));
-  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
-  EXPECT_EQ(tag.can_block_reload, false);
+  result = OkTest<XServerControlTag>("HOLD-BACK=50");
+  EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(result.tag.can_skip_dateranges, false);
+  EXPECT_TRUE(RoughlyEqual(result.tag.hold_back, base::Seconds(50)));
+  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.can_block_reload, false);
 
   // Test max value
-  tag = OkTest<XServerControlTag>("HOLD-BACK=" +
-                                  base::NumberToString(MaxSeconds()));
-  EXPECT_EQ(tag.skip_boundary, absl::nullopt);
-  EXPECT_EQ(tag.can_skip_dateranges, false);
-  EXPECT_TRUE(RoughlyEqual(tag.hold_back, base::Seconds(MaxSeconds())));
-  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
-  EXPECT_EQ(tag.can_block_reload, false);
+  result = OkTest<XServerControlTag>("HOLD-BACK=" +
+                                     base::NumberToString(MaxSeconds()));
+  EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(result.tag.can_skip_dateranges, false);
+  EXPECT_TRUE(RoughlyEqual(result.tag.hold_back, base::Seconds(MaxSeconds())));
+  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.can_block_reload, false);
   ErrorTest<XServerControlTag>(
       "HOLD-BACK=" + base::NumberToString(MaxSeconds() + 1),
       ParseStatusCode::kValueOverflowsTimeDelta);
@@ -676,41 +695,42 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
   ErrorTest<XServerControlTag>("PART-HOLD-BACK=\"5\"",
                                ParseStatusCode::kMalformedTag);
 
-  tag = OkTest<XServerControlTag>("PART-HOLD-BACK=50");
-  EXPECT_EQ(tag.skip_boundary, absl::nullopt);
-  EXPECT_EQ(tag.can_skip_dateranges, false);
-  EXPECT_EQ(tag.hold_back, absl::nullopt);
-  EXPECT_EQ(tag.part_hold_back, base::Seconds(50));
-  EXPECT_EQ(tag.can_block_reload, false);
+  result = OkTest<XServerControlTag>("PART-HOLD-BACK=50");
+  EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(result.tag.can_skip_dateranges, false);
+  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, base::Seconds(50));
+  EXPECT_EQ(result.tag.can_block_reload, false);
 
   // Test max value
-  tag = OkTest<XServerControlTag>("PART-HOLD-BACK=" +
-                                  base::NumberToString(MaxSeconds()));
-  EXPECT_EQ(tag.skip_boundary, absl::nullopt);
-  EXPECT_EQ(tag.can_skip_dateranges, false);
-  EXPECT_EQ(tag.hold_back, absl::nullopt);
-  EXPECT_TRUE(RoughlyEqual(tag.part_hold_back, base::Seconds(MaxSeconds())));
-  EXPECT_EQ(tag.can_block_reload, false);
+  result = OkTest<XServerControlTag>("PART-HOLD-BACK=" +
+                                     base::NumberToString(MaxSeconds()));
+  EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(result.tag.can_skip_dateranges, false);
+  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
+  EXPECT_TRUE(
+      RoughlyEqual(result.tag.part_hold_back, base::Seconds(MaxSeconds())));
+  EXPECT_EQ(result.tag.can_block_reload, false);
   ErrorTest<XServerControlTag>(
       "PART-HOLD-BACK=" + base::NumberToString(MaxSeconds() + 1),
       ParseStatusCode::kValueOverflowsTimeDelta);
 
   // The only value that results in `true` is "YES"
   for (std::string x : {"NO", "Y", "TRUE", "1", "yes"}) {
-    tag = OkTest<XServerControlTag>("CAN-BLOCK-RELOAD=" + x);
-    EXPECT_EQ(tag.skip_boundary, absl::nullopt);
-    EXPECT_EQ(tag.can_skip_dateranges, false);
-    EXPECT_EQ(tag.hold_back, absl::nullopt);
-    EXPECT_EQ(tag.part_hold_back, absl::nullopt);
-    EXPECT_EQ(tag.can_block_reload, false);
+    result = OkTest<XServerControlTag>("CAN-BLOCK-RELOAD=" + x);
+    EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+    EXPECT_EQ(result.tag.can_skip_dateranges, false);
+    EXPECT_EQ(result.tag.hold_back, absl::nullopt);
+    EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+    EXPECT_EQ(result.tag.can_block_reload, false);
   }
 
-  tag = OkTest<XServerControlTag>("CAN-BLOCK-RELOAD=YES");
-  EXPECT_EQ(tag.skip_boundary, absl::nullopt);
-  EXPECT_EQ(tag.can_skip_dateranges, false);
-  EXPECT_EQ(tag.hold_back, absl::nullopt);
-  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
-  EXPECT_EQ(tag.can_block_reload, true);
+  result = OkTest<XServerControlTag>("CAN-BLOCK-RELOAD=YES");
+  EXPECT_EQ(result.tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(result.tag.can_skip_dateranges, false);
+  EXPECT_EQ(result.tag.hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(result.tag.can_block_reload, true);
 }
 
 }  // namespace media::hls
