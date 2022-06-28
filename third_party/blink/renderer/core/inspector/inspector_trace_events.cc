@@ -1127,8 +1127,8 @@ void inspector_paint_event::Data(perfetto::TracedValue context,
 }
 
 void FrameEventData(perfetto::TracedDictionary& dict, LocalFrame* frame) {
-  bool is_main_frame = frame && frame->IsMainFrame();
-  dict.Add("isMainFrame", is_main_frame);
+  dict.Add("isMainFrame", frame->IsMainFrame());
+  dict.Add("isOutermostMainFrame", frame->IsOutermostMainFrame());
   // TODO(dgozman): this does not work with OOPIF, so everyone who
   // uses it should migrate to frame instead.
   dict.Add("page", IdentifiersFactory::FrameId(&frame->LocalFrameRoot()));
