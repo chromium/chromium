@@ -490,10 +490,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMaxZeroSuggestMatches,
                                     kOmniboxMaxZPSMatchesVariations,
                                     "OmniboxMaxZPSVariations")},
-    {"omnibox-local-history-zero-suggest",
-     flag_descriptions::kOmniboxLocalHistoryZeroSuggestName,
-     flag_descriptions::kOmniboxLocalHistoryZeroSuggestDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(omnibox::kLocalHistoryZeroSuggest)},
 #if defined(DCHECK_IS_CONFIGURABLE)
     {"dcheck-is-fatal", flag_descriptions::kDcheckIsFatalName,
      flag_descriptions::kDcheckIsFatalDescription, flags_ui::kOsIos,

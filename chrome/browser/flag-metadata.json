@@ -4613,11 +4613,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "omnibox-local-history-zero-suggest",
-    "owners": ["rkgibson@google.com", "stkhapugin", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 105
-  },
-  {
     "name": "omnibox-max-url-matches",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 110

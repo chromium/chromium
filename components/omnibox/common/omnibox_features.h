@@ -40,7 +40,6 @@ extern const base::Feature kRetainSuggestionsWithHeaders;
 extern const base::Feature kClobberTriggersContextualWebZeroSuggest;
 extern const base::Feature kClobberTriggersSRPZeroSuggest;
 extern const base::Feature kLocalHistorySuggestRevamp;
-extern const base::Feature kLocalHistoryZeroSuggest;
 extern const base::Feature kOmniboxLocalZeroSuggestAgeThreshold;
 extern const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP;
 extern const base::Feature kOnFocusSuggestionsContextualWeb;

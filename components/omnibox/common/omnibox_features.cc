@@ -150,10 +150,6 @@ const base::Feature kOnFocusSuggestionsContextualWebOnContent{
 extern const base::Feature kLocalHistorySuggestRevamp{
     "LocalHistorySuggestRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Allows the LocalHistoryZeroSuggestProvider to use local search history.
-const base::Feature kLocalHistoryZeroSuggest{"LocalHistoryZeroSuggest",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables prefetching of the zero prefix suggestions for signed-in users.
 const base::Feature kZeroSuggestPrefetching{"ZeroSuggestPrefetching",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

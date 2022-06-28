@@ -441,11 +441,6 @@ extern const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[];
 extern const char kOmniboxOnFocusSuggestionsName[];
 extern const char kOmniboxOnFocusSuggestionsDescription[];
 
-// Title and description for the flag to control Omnibox Local zero-prefix
-// suggestions.
-extern const char kOmniboxLocalHistoryZeroSuggestName[];
-extern const char kOmniboxLocalHistoryZeroSuggestDescription[];
-
 // Title and description for the flag to swap Omnibox Textfield implementation
 // to a new experimental one.
 extern const char kOmniboxNewImplementationName[];
