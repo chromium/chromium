@@ -16,7 +16,6 @@ extern NSString* const kAutofillAddressManagedViewId;
 extern NSString* const kAutofillCreditCardTableViewId;
 extern NSString* const kAutofillCreditCardSwitchViewId;
 extern NSString* const kAutofillCreditCardManagedViewId;
-extern NSString* const kSettingsAddPaymentMethodButtonId;
 
 // Accessibility identifier for the edit card table view.
 extern NSString* const kAutofillCreditCardEditTableViewId;

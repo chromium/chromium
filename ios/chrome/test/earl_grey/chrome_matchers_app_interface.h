@@ -220,10 +220,6 @@
 // Returns matcher for the "Add Credit Card" view in the Settings menu.
 + (id<GREYMatcher>)addCreditCardView;
 
-// Returns matcher for the "Add Payment Method" button in the Settings Payment
-// Methods view.
-+ (id<GREYMatcher>)addPaymentMethodButton;
-
 // Returns matcher for the "Add" credit card button in the Payment
 // Methods add credit card view.
 + (id<GREYMatcher>)addCreditCardButton;

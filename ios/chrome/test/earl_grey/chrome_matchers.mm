@@ -304,10 +304,6 @@ id<GREYMatcher> AddCreditCardView() {
   return [ChromeMatchersAppInterface addCreditCardView];
 }
 
-id<GREYMatcher> AddPaymentMethodButton() {
-  return [ChromeMatchersAppInterface addPaymentMethodButton];
-}
-
 id<GREYMatcher> AddCreditCardButton() {
   return [ChromeMatchersAppInterface addCreditCardButton];
 }

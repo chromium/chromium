@@ -92,12 +92,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kSupportForAddPasswordsInSettings)) {
-      self.shouldDisableDoneButtonOnEdit = YES;
-    } else {
-      self.shouldHideDoneButton = YES;
-    }
+    self.shouldDisableDoneButtonOnEdit = YES;
     _browserState = browserState;
     _personalDataManager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(_browserState);
@@ -144,10 +139,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    self.navigationController.toolbarHidden = NO;
-  }
+  self.navigationController.toolbarHidden = NO;
 }
 
 #pragma mark - LoadModel Helpers
@@ -245,38 +237,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - SettingsRootTableViewController
 
-- (BOOL)shouldShowEditButton {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    // The edit button is put in the toolbar instead of the navigation bar.
-    return NO;
-  }
-  return YES;
-}
-
 - (BOOL)editButtonEnabled {
   return [self localProfilesExist];
 }
 
 - (BOOL)shouldHideToolbar {
-  return !base::FeatureList::IsEnabled(
-             password_manager::features::kSupportForAddPasswordsInSettings) ||
-         self.navigationController.visibleViewController != self;
+  return self.navigationController.visibleViewController != self;
 }
 
 - (BOOL)shouldShowEditDoneButton {
-  return !base::FeatureList::IsEnabled(
-      password_manager::features::kSupportForAddPasswordsInSettings);
+  return NO;
 }
 
 - (void)updateUIForEditState {
   [super updateUIForEditState];
   [self setSwitchItemEnabled:!self.tableView.editing
                     itemType:ItemTypeAutofillAddressSwitch];
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    [self updatedToolbarForEditState];
-  }
+  [self updatedToolbarForEditState];
 }
 
 // Override.

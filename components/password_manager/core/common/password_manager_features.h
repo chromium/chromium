@@ -57,7 +57,6 @@ extern const base::Feature kSecondaryServerFieldPredictions;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 extern const base::Feature kSkipUndecryptablePasswords;
 #endif
-extern const base::Feature kSupportForAddPasswordsInSettings;
 #if BUILDFLAG(IS_LINUX)
 extern const base::Feature kSyncUndecryptablePasswordsLinux;
 #endif

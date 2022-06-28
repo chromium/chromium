@@ -537,10 +537,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kAutofillCreditCardTableViewId);
 }
 
-+ (id<GREYMatcher>)addPaymentMethodButton {
-  return grey_accessibilityID(kSettingsAddPaymentMethodButtonId);
-}
-
 + (id<GREYMatcher>)addCreditCardButton {
   return grey_accessibilityID(kSettingsAddCreditCardButtonID);
 }

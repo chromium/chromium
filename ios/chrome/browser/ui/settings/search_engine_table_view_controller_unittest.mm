@@ -498,20 +498,12 @@ TEST_F(SearchEngineTableViewControllerTest, EditingMode) {
 
   // Edit button should be disabled since there is no custom engine.
   EXPECT_FALSE([searchEngineController editButtonEnabled]);
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    EXPECT_TRUE([searchEngineController shouldHideToolbar]);
-  }
   AddCustomSearchEngine(kEngineC2Name, kEngineC2Url,
                         base::Time::Now() - base::Minutes(10), false);
   AddCustomSearchEngine(kEngineC1Name, kEngineC1Url,
                         base::Time::Now() - base::Seconds(10), false);
 
   EXPECT_TRUE([searchEngineController editButtonEnabled]);
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    EXPECT_TRUE([searchEngineController shouldHideToolbar]);
-  }
   CheckPrepopulatedItem(kEngineP3Name, kEngineP3Url, false, 0, 0);
   CheckPrepopulatedItem(kEngineP1Name, kEngineP1Url, false, 0, 1);
   CheckPrepopulatedItem(kEngineP2Name, kEngineP2Url, true, 0, 2);
@@ -522,10 +514,6 @@ TEST_F(SearchEngineTableViewControllerTest, EditingMode) {
 
   // Toolbar should not be displayed unless selection happens.
   EXPECT_TRUE([searchEngineController editButtonEnabled]);
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    EXPECT_TRUE([searchEngineController shouldHideToolbar]);
-  }
   // Prepopulated engines should be disabled with checkmark removed.
   CheckPrepopulatedItem(kEngineP3Name, kEngineP3Url, false, 0, 0, false);
   CheckPrepopulatedItem(kEngineP1Name, kEngineP1Url, false, 0, 1, false);
@@ -550,10 +538,6 @@ TEST_F(SearchEngineTableViewControllerTest, EditingMode) {
   [searchEngineController setEditing:NO animated:NO];
 
   EXPECT_TRUE([searchEngineController editButtonEnabled]);
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    EXPECT_TRUE([searchEngineController shouldHideToolbar]);
-  }
 
   CheckPrepopulatedItem(kEngineP3Name, kEngineP3Url, false, 0, 0);
   CheckPrepopulatedItem(kEngineP1Name, kEngineP1Url, false, 0, 1);

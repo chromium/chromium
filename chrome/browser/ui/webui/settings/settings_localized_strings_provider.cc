@@ -1246,11 +1246,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
           autofill::features::kAutofillEnableSupportForHonorificPrefixes));
 
   html_source->AddBoolean(
-      "addPasswordsInSettingsEnabled",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings));
-
-  html_source->AddBoolean(
       "virtualCardEnrollmentEnabled",
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableUpdateVirtualCardEnrollment) &&

@@ -130,15 +130,6 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
                     grey_sufficientlyVisible(), nil);
 }
 
-// Matcher for the nav bar's edit button.
-id<GREYMatcher> NavigationBarEditButton() {
-  return grey_allOf(
-      ButtonWithAccessibilityLabelId(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
-      grey_not(TabGridEditButton()), grey_kindOfClass([UIButton class]),
-      grey_ancestor(grey_kindOfClass([UINavigationBar class])),
-      grey_sufficientlyVisible(), nil);
-}
-
 // Matcher for the toolbar's edit button.
 id<GREYMatcher> SettingToolbarEditButton() {
   return grey_accessibilityID(kSettingsToolbarEditButtonId);
@@ -502,13 +493,8 @@ id<GREYMatcher> SettingToolbarEditButton() {
   [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
 
   // Switch on edit mode.
-  if ([ChromeEarlGrey isAddCredentialsInSettingsEnabled]) {
-    [[EarlGrey selectElementWithMatcher:SettingToolbarEditButton()]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-        performAction:grey_tap()];
-  }
+  [[EarlGrey selectElementWithMatcher:SettingToolbarEditButton()]
+      performAction:grey_tap()];
 
   // Verify that the Add Language button is disabled.
   [[EarlGrey selectElementWithMatcher:AddLanguageButton()]

@@ -567,11 +567,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDelayThresholdMinutesToUpdateGaiaCookieDescription,
      flags_ui::kOsIos,
      MULTI_VALUE_TYPE(kDelayThresholdMinutesToUpdateGaiaCookieChoices)},
-    {"add-passwords-in-settings",
-     flag_descriptions::kAddPasswordsInSettingsName,
-     flag_descriptions::kAddPasswordsInSettingsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kSupportForAddPasswordsInSettings)},
     {"record-snapshot-size", flag_descriptions::kRecordSnapshotSizeName,
      flag_descriptions::kRecordSnapshotSizeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kRecordSnapshotSize)},

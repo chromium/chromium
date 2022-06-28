@@ -450,11 +450,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   private computeShowAddPasswordButton_(): boolean {
-    return loadTimeData.getBoolean('addPasswordsInSettingsEnabled') &&
-        // Don't show add button if password manager is disabled by policy.
-        !(this.prefs.credentials_enable_service.enforcement ===
-              chrome.settingsPrivate.Enforcement.ENFORCED &&
-          !this.prefs.credentials_enable_service.value);
+    // Don't show add button if password manager is disabled by policy.
+    return !(
+        this.prefs.credentials_enable_service.enforcement ===
+            chrome.settingsPrivate.Enforcement.ENFORCED &&
+        !this.prefs.credentials_enable_service.value);
   }
 
   private computeSignedIn_(): boolean {

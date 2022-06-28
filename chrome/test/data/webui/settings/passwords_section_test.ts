@@ -1801,27 +1801,8 @@ suite('PasswordsSection', function() {
   });
 
   test(
-      'addPasswordButtonShownOnlyWhenAddingPasswordsFeatureEnabled',
-      function() {
-        loadTimeData.overrideValues({addPasswordsInSettingsEnabled: false});
-        const passwordsSectionAddPasswordsDisabled =
-            elementFactory.createPasswordsSection(passwordManager, [], []);
-        assertFalse(
-            !!passwordsSectionAddPasswordsDisabled.shadowRoot!.querySelector(
-                '#addPasswordButton'));
-
-        loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
-        const passwordsSectionAddPasswordsEnabled =
-            elementFactory.createPasswordsSection(passwordManager, [], []);
-        assertTrue(
-            !!passwordsSectionAddPasswordsEnabled.shadowRoot!.querySelector(
-                '#addPasswordButton'));
-      });
-
-  test(
       'addPasswordButtonShownOnlyWhenPasswordManagerNotDisabledByPolicy',
       function() {
-        loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
         const passwordsSection =
             elementFactory.createPasswordsSection(passwordManager, [], []);
         const addButton =
@@ -1841,7 +1822,6 @@ suite('PasswordsSection', function() {
       });
 
   test('addPasswordButtonOpensAddPasswordDialog', function() {
-    loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
     const passwordsSection =
         elementFactory.createPasswordsSection(passwordManager, [], []);
     assertFalse(!!passwordsSection.shadowRoot!.querySelector<HTMLElement>(

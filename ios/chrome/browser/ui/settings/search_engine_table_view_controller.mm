@@ -93,10 +93,7 @@ const char kUmaSelectDefaultSearchEngine[] =
     _faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kSupportForAddPasswordsInSettings)) {
-      self.shouldDisableDoneButtonOnEdit = YES;
-    }
+    self.shouldDisableDoneButtonOnEdit = YES;
     [self updateUIForEditState];
   }
   return self;
@@ -181,10 +178,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    self.navigationController.toolbarHidden = NO;
-  }
+  self.navigationController.toolbarHidden = NO;
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
@@ -257,23 +251,12 @@ const char kUmaSelectDefaultSearchEngine[] =
   [self deleteItemAtIndexPaths:indexPaths];
 }
 
-// Hide toolbar for non-editing mode or when no items are selected.
 - (BOOL)shouldHideToolbar {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    return NO;
-  }
-  return !self.editing || self.tableView.indexPathsForSelectedRows.count == 0;
-}
-
-- (BOOL)shouldShowEditButton {
-  return !base::FeatureList::IsEnabled(
-      password_manager::features::kSupportForAddPasswordsInSettings);
+  return NO;
 }
 
 - (BOOL)shouldShowEditDoneButton {
-  return !base::FeatureList::IsEnabled(
-      password_manager::features::kSupportForAddPasswordsInSettings);
+  return NO;
 }
 
 - (BOOL)editButtonEnabled {
@@ -285,10 +268,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 
 - (void)updateUIForEditState {
   [super updateUIForEditState];
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    [self updatedToolbarForEditState];
-  }
+  [self updatedToolbarForEditState];
 }
 
 #pragma mark - UITableViewDelegate

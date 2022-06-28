@@ -74,11 +74,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "add-passwords-in-settings",
-    "owners": [ "vidhanj", "mamir", "lizapopova" ],
-    "expiry_milestone": 103
-  },
-  {
     "name": "add-to-homescreen-iph",
     "owners": [ "shaktisahu" ],
     "expiry_milestone": 100

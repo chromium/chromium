@@ -7141,12 +7141,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      SINGLE_VALUE_TYPE(switches::kEnableBluetoothSerialPortProfileInSerialApi)},
 
-    {"add-passwords-in-settings",
-     flag_descriptions::kAddPasswordsInSettingsName,
-     flag_descriptions::kAddPasswordsInSettingsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kSupportForAddPasswordsInSettings)},
-
     {"password-view-page-in-settings",
      flag_descriptions::kPasswordViewPageInSettingsName,
      flag_descriptions::kPasswordViewPageInSettingsDescription, kOsDesktop,

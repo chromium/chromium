@@ -1200,10 +1200,6 @@ UIWindow* GetAnyKeyWindow() {
   return [ChromeEarlGreyAppInterface isTriggerVariationEnabled:variationID];
 }
 
-- (BOOL)isAddCredentialsInSettingsEnabled {
-  return [ChromeEarlGreyAppInterface isAddCredentialsInSettingsEnabled];
-}
-
 - (BOOL)isUKMEnabled {
   return [ChromeEarlGreyAppInterface isUKMEnabled];
 }

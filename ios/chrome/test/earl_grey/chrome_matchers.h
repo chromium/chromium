@@ -234,10 +234,6 @@ id<GREYMatcher> LanguagesButton();
 // Returns a matcher for the "Add Credit Card" view in the Settings menu.
 id<GREYMatcher> AddCreditCardView();
 
-// Returns a matcher for the "Add Payment Method" button in the Settings Payment
-// Methods view.
-id<GREYMatcher> AddPaymentMethodButton();
-
 // Returns a matcher for the "Add" credit card button in the Payment
 // Methods add credit card view.
 id<GREYMatcher> AddCreditCardButton();

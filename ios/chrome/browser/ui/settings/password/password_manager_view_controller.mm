@@ -339,12 +339,7 @@ bool IsFaviconEnabled() {
             ? IDS_IOS_PASSWORD_MANAGER
             : IDS_IOS_PASSWORDS;
     self.title = l10n_util::GetNSString(titleStringID);
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kSupportForAddPasswordsInSettings)) {
-      self.shouldDisableDoneButtonOnEdit = YES;
-    } else {
-      self.shouldHideDoneButton = YES;
-    }
+    self.shouldDisableDoneButtonOnEdit = YES;
     self.searchTerm = @"";
     _passwordManagerEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:_browserState->GetPrefs()
@@ -427,16 +422,13 @@ bool IsFaviconEnabled() {
                      action:@selector(dismissSearchController:)
            forControlEvents:UIControlEventTouchUpInside];
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    // If the settings are managed by enterprise policy and the password manager
-    // is not enabled, there won't be any add functionality.
-    if (!(_browserState->GetPrefs()->IsManagedPreference(
-              password_manager::prefs::kCredentialsEnableService) &&
-          ![_passwordManagerEnabled value])) {
-      self.shouldShowAddButtonInToolbar = YES;
-      self.addButtonInToolbar.enabled = YES;
-    }
+  // If the settings are managed by enterprise policy and the password manager
+  // is not enabled, there won't be any add functionality.
+  if (!(_browserState->GetPrefs()->IsManagedPreference(
+            password_manager::prefs::kCredentialsEnableService) &&
+        ![_passwordManagerEnabled value])) {
+    self.shouldShowAddButtonInToolbar = YES;
+    self.addButtonInToolbar.enabled = YES;
   }
 
   [self loadModel];
@@ -458,10 +450,7 @@ bool IsFaviconEnabled() {
       appearanceWhenContainedInInstancesOfClasses:@[ [UISearchBar class] ]];
   [cancelButton setTitlePositionAdjustment:offset
                              forBarMetrics:UIBarMetricsDefault];
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    self.navigationController.toolbarHidden = NO;
-  }
+  self.navigationController.toolbarHidden = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -700,43 +689,22 @@ bool IsFaviconEnabled() {
   }
 }
 
-- (BOOL)shouldShowEditButton {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    // The edit button is put in the toolbar instead of the navigation bar.
-    return NO;
-  }
-  return YES;
-}
-
 - (BOOL)editButtonEnabled {
   return !_savedForms.empty() || !_blockedForms.empty();
 }
 
 - (BOOL)shouldHideToolbar {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    return NO;
-  }
-
-  return [super shouldHideToolbar];
+  return NO;
 }
 
 - (BOOL)shouldShowEditDoneButton {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    // The "Done" button in the navigation bar closes the sheet.
-    return NO;
-  }
-  return YES;
+  // The "Done" button in the navigation bar closes the sheet.
+  return NO;
 }
 
 - (void)updateUIForEditState {
   [super updateUIForEditState];
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    [self updatedToolbarForEditState];
-  }
+  [self updatedToolbarForEditState];
 }
 
 - (void)addButtonCallback {
@@ -805,13 +773,8 @@ bool IsFaviconEnabled() {
 - (TableViewSwitchItem*)savePasswordsItem {
   TableViewSwitchItem* savePasswordsItem =
       [[TableViewSwitchItem alloc] initWithType:ItemTypeSavePasswordsSwitch];
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    savePasswordsItem.text =
-        l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
-  } else {
-    savePasswordsItem.text = l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS);
-  }
+  savePasswordsItem.text =
+      l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
   savePasswordsItem.on = [_passwordManagerEnabled value];
   savePasswordsItem.accessibilityIdentifier = kSavePasswordSwitchTableViewId;
   return savePasswordsItem;
@@ -841,14 +804,8 @@ bool IsFaviconEnabled() {
   TableViewInfoButtonItem* managedSavePasswordItem =
       [[TableViewInfoButtonItem alloc]
           initWithType:ItemTypeManagedSavePasswords];
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kSupportForAddPasswordsInSettings)) {
-    managedSavePasswordItem.text =
-        l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
-  } else {
-    managedSavePasswordItem.text =
-        l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS);
-  }
+  managedSavePasswordItem.text =
+      l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
   managedSavePasswordItem.statusText =
       [_passwordManagerEnabled value]
           ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
@@ -1237,12 +1194,8 @@ bool IsFaviconEnabled() {
         [self clearSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch
                         withRowAnimation:UITableViewRowAnimationTop];
 
-        if (base::FeatureList::IsEnabled(
-                password_manager::features::
-                    kSupportForAddPasswordsInSettings)) {
-          // Hide the toolbar when the search controller is presented.
-          self.navigationController.toolbarHidden = YES;
-        }
+        // Hide the toolbar when the search controller is presented.
+        self.navigationController.toolbarHidden = YES;
       }
                         completion:nil];
 }
@@ -1312,11 +1265,7 @@ bool IsFaviconEnabled() {
         [self.tableView insertRowsAtIndexPaths:rowsIndexPaths
                               withRowAnimation:UITableViewRowAnimationTop];
 
-        if (base::FeatureList::IsEnabled(
-                password_manager::features::
-                    kSupportForAddPasswordsInSettings)) {
-          self.navigationController.toolbarHidden = NO;
-        }
+        self.navigationController.toolbarHidden = NO;
 
         // Add "On-device encryption" section.
         [self updateOnDeviceEncryptionSessionWithUpdateTableView:YES

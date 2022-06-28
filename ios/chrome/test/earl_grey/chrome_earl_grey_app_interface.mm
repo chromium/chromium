@@ -1071,11 +1071,6 @@ NSString* SerializedValue(const base::Value* value) {
   return std::find(ids.begin(), ids.end(), variationID) != ids.end();
 }
 
-+ (BOOL)isAddCredentialsInSettingsEnabled {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kSupportForAddPasswordsInSettings);
-}
-
 + (BOOL)isUKMEnabled {
   return base::FeatureList::IsEnabled(ukm::kUkmFeature);
 }

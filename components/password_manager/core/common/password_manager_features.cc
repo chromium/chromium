@@ -178,11 +178,6 @@ const base::Feature kSkipUndecryptablePasswords = {
     "SkipUndecryptablePasswords", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Enables the addition of passwords in Chrome Settings.
-// TODO(crbug/1226008): Remove once it's launched.
-const base::Feature kSupportForAddPasswordsInSettings = {
-    "SupportForAddPasswordsInSettings", base::FEATURE_ENABLED_BY_DEFAULT};
-
 #if BUILDFLAG(IS_LINUX)
 // When enabled, all undecryptable passwords are deleted from the local database
 // during initial sync flow.
