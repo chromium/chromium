@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -45,9 +44,6 @@ const char* kContainmentNotSatisfied =
 const char* kUnsupportedDisplay =
     "Element has unsupported display type (display: contents).";
 }  // namespace rejection_names
-
-const char kForcedRendering[] =
-    "Rendering was performed in a subtree hidden by content-visibility:hidden.";
 
 ScrollableArea* GetScrollableArea(Node* node) {
   if (!node)
@@ -516,15 +512,8 @@ void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
     if (emit_warnings && v8::Isolate::GetCurrent()->InContext() &&
         !IsActivatable(DisplayLockActivationReason::kAny) && document_ &&
         element_) {
-      // Note that this is a verbose level message, since it can happen
-      // frequently and is not necessarily a problem if the developer is
-      // accessing content-visibility: hidden subtrees intentionally.
-      auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kJavaScript,
-          mojom::blink::ConsoleMessageLevel::kVerbose, kForcedRendering);
-      console_message->SetNodes(document_->GetFrame(),
-                                {DOMNodeIds::IdForNode(element_)});
-      document_->AddConsoleMessage(console_message);
+      document_->GetDisplayLockDocumentState().IssueForcedRenderWarning(
+          element_);
     }
   }
 }

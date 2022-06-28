@@ -195,6 +195,8 @@ class CORE_EXPORT DisplayLockDocumentState final
 
   static constexpr float kViewportMarginPercentage = 150.f;
 
+  void IssueForcedRenderWarning(Element*);
+
  private:
   IntersectionObserver& EnsureIntersectionObserver();
 
@@ -229,6 +231,8 @@ class CORE_EXPORT DisplayLockDocumentState final
   bool printing_ = false;
 
   base::TimeTicks last_lock_update_timestamp_ = base::TimeTicks();
+
+  unsigned forced_render_warnings_ = 0;
 };
 
 }  // namespace blink

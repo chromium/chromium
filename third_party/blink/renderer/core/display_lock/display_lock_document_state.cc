@@ -11,11 +11,23 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+
+namespace {
+
+const char kForcedRendering[] =
+    "Rendering was performed in a subtree hidden by content-visibility:hidden.";
+const char kForcedRenderingMax[] =
+    "Rendering was performed in a subtree hidden by content-visibility:hidden. "
+    "Further messages will be suppressed.";
+constexpr unsigned kMaxConsoleMessages = 500;
+
+}  // namespace
 
 namespace blink {
 
@@ -602,6 +614,23 @@ void DisplayLockDocumentState::UnlockShapingDeferredInclusiveDescendants(
     DEFERRED_SHAPING_VLOG(1)
         << "Partially unlocked " << count << " elements ==> remaining="
         << (LockedDisplayLockCount() - DisplayLockBlockingAllActivationCount());
+  }
+}
+
+void DisplayLockDocumentState::IssueForcedRenderWarning(Element* element) {
+  // Note that this is a verbose level message, since it can happen
+  // frequently and is not necessarily a problem if the developer is
+  // accessing content-visibility: hidden subtrees intentionally.
+  if (forced_render_warnings_ < kMaxConsoleMessages) {
+    forced_render_warnings_++;
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kVerbose,
+        forced_render_warnings_ == kMaxConsoleMessages ? kForcedRenderingMax
+                                                       : kForcedRendering);
+    console_message->SetNodes(document_->GetFrame(),
+                              {DOMNodeIds::IdForNode(element)});
+    document_->AddConsoleMessage(console_message);
   }
 }
 
