@@ -23,6 +23,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ASCII_FAST_PATH_H_
 
 #include <stdint.h>
+#include <limits>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
