@@ -43,6 +43,13 @@ const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 // Enables client side detection referrer chain.
 extern const base::Feature kClientSideDetectionReferrerChain;
 
+// Killswitch for client side phishing detection. Since client side models are
+// run on a large fraction of navigations, crashes due to the model are very
+// impactful, even if only a small fraction of users have a bad version of the
+// model. This Finch flag allows us to remediate long-tail component versions
+// while we fix the root cause.
+extern const base::Feature kClientSideDetectionKillswitch;
+
 // Controls whether an access token is attached to scanning requests triggered
 // by enterprise Connectors.
 extern const base::Feature kConnectorsScanningAccessToken;
