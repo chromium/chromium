@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
@@ -64,6 +66,16 @@ class InterruptedAutoStartEnrollmentTest : public OobeBaseTest,
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
+class OobeBaseTestPolymer3 : public OobeBaseTest {
+ public:
+  OobeBaseTestPolymer3() {
+    scoped_feature_list_.InitAndEnableFeature(features::kEnableOobePolymer3);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Tests that the default first screen is the welcome screen after OOBE
 // when auto enrollment is enabled and device is not yet enrolled.
 IN_PROC_BROWSER_TEST_F(InterruptedAutoStartEnrollmentTest, ShowsWelcome) {
@@ -71,6 +83,11 @@ IN_PROC_BROWSER_TEST_F(InterruptedAutoStartEnrollmentTest, ShowsWelcome) {
 }
 
 IN_PROC_BROWSER_TEST_F(OobeBaseTest, OobeNoExceptions) {
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  OobeBaseTest::CheckJsExceptionErrors(0);
+}
+
+IN_PROC_BROWSER_TEST_F(OobeBaseTestPolymer3, OobeNoExceptions) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   OobeBaseTest::CheckJsExceptionErrors(0);
 }

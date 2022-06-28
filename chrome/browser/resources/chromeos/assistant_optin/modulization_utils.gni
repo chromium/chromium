@@ -13,7 +13,7 @@ assistant_auto_imports = [
   "chrome/browser/resources/chromeos/components/behaviors/oobe_dialog_host_behavior.html|OobeDialogHostBehavior",
   "chrome/browser/resources/chromeos/components/behaviors/multi_step_behavior.html|MultiStepBehavior,MultiStepBehaviorInterface",
   "chrome/browser/resources/chromeos/assistant_optin/browser_proxy.html|BrowserProxyImpl",
-  "chrome/browser/resources/chromeos/assistant_optin/utils.html|HtmlSanitizer,webviewStripLinksContentScript",
+  "chrome/browser/resources/chromeos/assistant_optin/utils.html|HtmlSanitizer,webviewStripLinksContentScript,AssistantNativeIconType",
   "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,PolymerElement,html,mixinBehaviors",
   "ui/webui/resources/html/util.html|announceAccessibleMessage",
 ]
