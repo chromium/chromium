@@ -209,7 +209,7 @@ function setUpCursorChangeListener(
 }
 
 // TODO(crbug.com/1268230): Re-enable test.
-TEST_F(
+AX_TEST_F(
     'SwitchAccessTextNavigationManagerTest', 'DISABLED_JumpToBeginning',
     async function() {
       await runTextNavigationTest(this, {
@@ -223,7 +223,7 @@ TEST_F(
     });
 
 // TODO(crbug.com/1268230): Re-enable test.
-TEST_F(
+AX_TEST_F(
     'SwitchAccessTextNavigationManagerTest', 'DISABLED_JumpToEnd',
     async function() {
       await runTextNavigationTest(this, {
@@ -237,7 +237,7 @@ TEST_F(
     });
 
 // TODO(crbug.com/1177096) Renable test
-TEST_F(
+AX_TEST_F(
     'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveBackwardOneChar',
     async function() {
       await runTextNavigationTest(this, {
@@ -251,7 +251,7 @@ TEST_F(
     });
 
 // TODO(crbug.com/1268230): Re-enable test.
-TEST_F(
+AX_TEST_F(
     'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveBackwardOneWord',
     async function() {
       await runTextNavigationTest(this, {
@@ -265,7 +265,7 @@ TEST_F(
     });
 
 // TODO(crbug.com/1268230): Re-enable test.
-TEST_F(
+AX_TEST_F(
     'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveForwardOneChar',
     async function() {
       await runTextNavigationTest(this, {
@@ -279,7 +279,7 @@ TEST_F(
     });
 
 // TODO(crbug.com/1268230): Re-enable test.
-TEST_F(
+AX_TEST_F(
     'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveForwardOneWord',
     async function() {
       await runTextNavigationTest(this, {
@@ -293,7 +293,7 @@ TEST_F(
     });
 
 // TODO(crbug.com/1268230): Re-enable test.
-TEST_F(
+AX_TEST_F(
     'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveUpOneLine',
     async function() {
       await runTextNavigationTest(this, {
@@ -309,7 +309,7 @@ TEST_F(
     });
 
 // TODO(crbug.com/1268230): Re-enable test.
-TEST_F(
+AX_TEST_F(
     'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveDownOneLine',
     async function() {
       await runTextNavigationTest(this, {
@@ -329,7 +329,7 @@ TEST_F(
  * Test the setSelectStart function by checking correct index is stored as the
  * selection start index.
  */
-TEST_F(
+AX_TEST_F(
     'SwitchAccessTextNavigationManagerTest', 'DISABLED_SelectStart',
     async function() {
       const website =
@@ -350,7 +350,7 @@ TEST_F(
  * and node then calling setSelectEnd and checking for the correct selection
  * bounds
  */
-TEST_F(
+AX_TEST_F(
     'SwitchAccessTextNavigationManagerTest', 'DISABLED_SelectEnd',
     async function() {
       const website =
@@ -374,7 +374,7 @@ TEST_F(
  * Test use of setSelectStart and setSelectEnd with the moveForwardOneChar
  * function.
  */
-TEST_F(
+AX_TEST_F(
     'SwitchAccessTextNavigationManagerTest', 'DISABLED_SelectCharacter',
     async function() {
       await runTextSelectionTest(this, {
@@ -394,7 +394,7 @@ TEST_F(
  * Test use of setSelectStart and setSelectEnd with a backward selection using
  * the moveBackwardOneWord function.
  */
-TEST_F(
+AX_TEST_F(
     'SwitchAccessTextNavigationManagerTest', 'DISABLED_SelectWordBackward',
     async function() {
       await runTextSelectionTest(this, {
