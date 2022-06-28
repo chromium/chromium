@@ -58,7 +58,6 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   // active, and vice versa.
   SkColor GetInvertedShieldLayerColor(ShieldLayerType type) const;
   SkColor GetInvertedBaseLayerColor(BaseLayerType type) const;
-  SkColor GetInvertedControlsLayerColor(ControlsLayerType type) const;
   SkColor GetInvertedContentLayerColor(ContentLayerType type) const;
 
   // Gets the background color that can be applied on any layer. The returned

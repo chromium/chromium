@@ -182,11 +182,6 @@ SkColor AshColorProvider::GetInvertedBaseLayerColor(BaseLayerType type) const {
   return GetBaseLayerColorImpl(type, /*inverted=*/true);
 }
 
-SkColor AshColorProvider::GetInvertedControlsLayerColor(
-    ControlsLayerType type) const {
-  return GetControlsLayerColorImpl(type, !IsDarkModeEnabled());
-}
-
 SkColor AshColorProvider::GetInvertedContentLayerColor(
     ContentLayerType type) const {
   return GetContentLayerColorImpl(type, !IsDarkModeEnabled());
