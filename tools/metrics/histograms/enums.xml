@@ -99203,20 +99203,6 @@ others/histograms.xml -->
   <int value="2" label="Error">Launching the Chrome process failed.</int>
 </enum>
 
-<enum name="WebAppLauncherUpdateResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failed to create temp dir">
-    Failed to create temporary directory in launcher's web-app data directory.
-  </int>
-  <int value="2" label="Failed to replace launcher">
-    Failed to atomically replace launcher with a copy or hardlink of
-    chrome_pwa_launcher.exe.
-  </int>
-  <int value="3" label="Latest version path does not exist">
-    Failed to find chrome_pwa_launcher.exe at the expected path.
-  </int>
-</enum>
-
 <enum name="WebAppManifestUpdateResult">
   <int value="0" label="No app in scope"/>
   <int value="1" label="Updating throttled"/>

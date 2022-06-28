@@ -592,16 +592,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApp.Launcher.UpdateResult"
-    enum="WebAppLauncherUpdateResult" expires_after="2022-07-01">
-  <owner>davidbienvenu@chromium.org</owner>
-  <owner>jessemckenna@google.com</owner>
-  <summary>
-    The result of updating a single Progressive Web App (PWA) launcher with the
-    latest version of chrome_pwa_launcher.exe. Windows-only.
-  </summary>
-</histogram>
-
 <histogram name="WebApp.Mover.Result" enum="WebAppMoverResult"
     expires_after="2022-04-24">
   <owner>dmurph@chromium.org</owner>
