@@ -177,6 +177,14 @@ if (current_toolchain == default_toolchain) {
     header_output = "$target_gen_dir/${target_name}.h"
     namespace = "vr"
   }
+
+  generate_jni_registration("jni_registration_for_testing") {
+    targets =
+        [ "//chrome/android:chrome_modern_public_bundle__vr_bundle_module" ]
+    header_output = "$target_gen_dir/${target_name}.h"
+    namespace = "vr"
+    testonly = true
+  }
 }
 
 group("test_support") {
@@ -184,6 +192,7 @@ group("test_support") {
 }
 
 test("vr_android_unittests") {
+  defines = [ "JNI_REGISTRATION_FOR_TESTING" ]
   sources = [
     "arcore_device/arcore_device_unittest.cc",
     "arcore_device/fake_arcore.cc",
@@ -197,7 +206,7 @@ test("vr_android_unittests") {
   libs = [ "android" ]
 
   deps = [
-    ":jni_registration",
+    ":jni_registration_for_testing",
     ":test_support",
     ":vr_android",
     "//base/test:test_support",

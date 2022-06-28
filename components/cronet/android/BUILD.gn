@@ -47,6 +47,9 @@ generate_jni("cronet_jni_headers") {
 generate_jni_registration("cronet_jni_registration") {
   targets = [ ":cronet_impl_native_base_java" ]
   header_output = _jni_registration_header
+
+  # JNI generated is used for test and non-test apks.
+  include_testonly = true
   sources_exclusions = [
     "//base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
     "//base/android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java",

@@ -475,4 +475,26 @@ static base::android::ScopedJavaLocalRef<jobject> Java_TestJni_getCompressFormat
   return base::android::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
+static std::atomic<jmethodID> g_org_chromium_TestJni_returnIntArrayForTesting(nullptr);
+static base::android::ScopedJavaLocalRef<jintArray> Java_TestJni_returnIntArrayForTesting(JNIEnv*
+    env, const base::android::JavaRef<jobject>& obj) {
+  jclass clazz = org_chromium_TestJni_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(),
+      org_chromium_TestJni_clazz(env), NULL);
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
+      base::android::MethodID::TYPE_INSTANCE>(
+          env,
+          clazz,
+          "returnIntArrayForTesting",
+          "()[I",
+          &g_org_chromium_TestJni_returnIntArrayForTesting);
+
+  jintArray ret =
+      static_cast<jintArray>(env->CallObjectMethod(obj.obj(),
+          call_context.base.method_id));
+  return base::android::ScopedJavaLocalRef<jintArray>(env, ret);
+}
+
 #endif  // org_chromium_TestJni_JNI

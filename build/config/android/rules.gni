@@ -369,6 +369,14 @@ if (enable_java_templates) {
           ]
         }
       }
+      if (defined(invoker.include_testonly)) {
+        _include_testonly = invoker.include_testonly
+      } else {
+        _include_testonly = defined(testonly) && testonly
+      }
+      if (_include_testonly) {
+        args += [ "--include_test_only" ]
+      }
 
       if (use_hashed_jni_names) {
         args += [ "--use_proxy_hash" ]
