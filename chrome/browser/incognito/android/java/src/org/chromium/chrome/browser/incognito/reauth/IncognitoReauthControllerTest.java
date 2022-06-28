@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
@@ -14,11 +13,13 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -31,9 +32,11 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -43,6 +46,9 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 
 /**
  * Unit tests for {@link IncognitoReauthController}.
@@ -50,6 +56,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class IncognitoReauthControllerTest {
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
     @Mock
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
     @Mock
@@ -66,6 +75,10 @@ public class IncognitoReauthControllerTest {
     private IncognitoReauthCoordinatorFactory mIncognitoReauthCoordinatorFactoryMock;
     @Mock
     private IncognitoReauthCoordinator mIncognitoReauthCoordinatorMock;
+    @Mock
+    private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock
+    private PrefService mPrefServiceMock;
 
     @Captor
     ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
@@ -104,6 +117,14 @@ public class IncognitoReauthControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefServiceMock);
+        when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
+                .thenReturn(true);
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
+        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(true);
+
         doReturn(false).when(mTabModelSelectorMock).isTabStateInitialized();
         doReturn(false).when(mTabModelSelectorMock).isIncognitoSelected();
 

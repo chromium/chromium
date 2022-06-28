@@ -94,10 +94,6 @@ public class IncognitoReauthManager {
      * @return A boolean indicating if Incognito re-authentication is possible or not.
      */
     public static boolean isIncognitoReauthEnabled(Profile profile) {
-        if (sIsIncognitoReauthFeatureAvailableForTesting != null) {
-            return sIsIncognitoReauthFeatureAvailableForTesting;
-        }
-
         return isIncognitoReauthFeatureAvailable()
                 && IncognitoReauthSettingUtils.isDeviceScreenLockEnabled()
                 && isIncognitoReauthSettingEnabled(profile);
