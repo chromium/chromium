@@ -80,7 +80,6 @@ async def test_browsingContext_getTreeWithNestedSameOriginContexts_contextsRetur
             "context": context_id,
             "children": [{
                 "context": any_string,
-                "parent": context_id,
                 "url": nested_iframe,
                 "children": []
             }],
@@ -112,7 +111,6 @@ async def test_browsingContext_getTreeWithNestedCrossOriginContexts_contextsRetu
             "context": context_id,
             "children": [{
                 "context": any_string,
-                "parent": context_id,
                 "url": nested_iframe,
                 "children": []
             }],
@@ -202,12 +200,10 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
             "url": top_level_page,
             "children": [{
                 "context": any_string,
-                "parent": any_string,
                 # It's not guaranteed the nested page is already loaded.
                 "url": any_string,
                 "children": [{
                     "context": any_string,
-                    "parent": any_string,
                     # It's not guaranteed the nested page is already loaded.
                     "url": any_string,
                     "children": []}]}, ]}]

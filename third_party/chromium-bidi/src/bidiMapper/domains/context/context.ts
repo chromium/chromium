@@ -97,15 +97,20 @@ export abstract class Context implements IContext {
     awaitPromise: boolean
   ): Promise<Script.EvaluateResult>;
 
-  public serializeToBidiValue(maxDepth: number): BrowsingContext.Info {
+  public serializeToBidiValue(
+    maxDepth: number,
+    isRoot: boolean
+  ): BrowsingContext.Info {
     return {
       context: this.#contextId,
-      parent: this.#parentId,
       url: this.#url,
       children:
         maxDepth > 0
-          ? this.getChildren().map((c) => c.serializeToBidiValue(maxDepth - 1))
+          ? this.getChildren().map((c) =>
+              c.serializeToBidiValue(maxDepth - 1, false)
+            )
           : null,
+      ...(isRoot ? { parent: this.#parentId } : {}),
     };
   }
 

@@ -225,7 +225,7 @@ export class TargetContext extends Context {
 
         await this.#eventManager.sendEvent(
           new BrowsingContext.ContextCreatedEvent(
-            frameContext.serializeToBidiValue(0)
+            frameContext.serializeToBidiValue(0, true)
           ),
           frameContext.getContextId()
         );

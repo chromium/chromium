@@ -86,7 +86,9 @@ export class BrowsingContextProcessor {
     Context.addContext(context);
 
     await this.#eventManager.sendEvent(
-      new BrowsingContext.ContextCreatedEvent(context.serializeToBidiValue(0)),
+      new BrowsingContext.ContextCreatedEvent(
+        context.serializeToBidiValue(0, true)
+      ),
       context.getContextId()
     );
   }
@@ -111,7 +113,7 @@ export class BrowsingContextProcessor {
     Context.removeContext(contextId);
     await this.#eventManager.sendEvent(
       new BrowsingContext.ContextDestroyedEvent(
-        context.serializeToBidiValue(0)
+        context.serializeToBidiValue(0, true)
       ),
       contextId
     );
@@ -128,7 +130,7 @@ export class BrowsingContextProcessor {
     return {
       result: {
         contexts: resultContexts.map((c) =>
-          c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE)
+          c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE, true)
         ),
       },
     };
