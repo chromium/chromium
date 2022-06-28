@@ -84,6 +84,11 @@ void FuseBoxMounter::DetachStorage(const std::string& subdir,
 void FuseBoxMounter::Unmount(FuseBoxDiskMountManager* disk_mount_manager) {
   DCHECK(disk_mount_manager);
 
+  if (!mounted_) {
+    VLOG(1) << "FuseBoxMounter::Unmount ignored: not mounted";
+    return;
+  }
+
   disk_mount_manager->UnmountPath(
       uri_, base::BindOnce(&FuseBoxMounter::UnmountResponse, GetWeakPtr()));
 }

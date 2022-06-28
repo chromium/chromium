@@ -606,7 +606,6 @@ VolumeManager::VolumeManager(
       disk_mount_manager_(disk_mount_manager),
       file_system_provider_service_(file_system_provider_service),
       get_mtp_storage_info_callback_(get_mtp_storage_info_callback),
-      fusebox_mounter_(FuseBoxMounter::Create()),
       snapshot_manager_(new SnapshotManager(profile_)),
       documents_provider_root_manager_(
           std::make_unique<DocumentsProviderRootManager>(
@@ -630,6 +629,8 @@ void VolumeManager::Initialize() {
     return;
   }
 
+  if (!fusebox_mounter_.get())
+    fusebox_mounter_.reset(FuseBoxMounter::Create());
   if (fusebox_mounter_.get())
     fusebox_mounter_->Mount(disk_mount_manager_);
 
