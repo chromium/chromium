@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -37,7 +38,8 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
         feature == media_feature_names::kMaxInlineSizeMediaFeature ||
         feature == media_feature_names::kBlockSizeMediaFeature ||
         feature == media_feature_names::kMinBlockSizeMediaFeature ||
-        feature == media_feature_names::kMaxBlockSizeMediaFeature) {
+        feature == media_feature_names::kMaxBlockSizeMediaFeature ||
+        CSSVariableParser::IsValidVariableName(feature)) {
       return false;
     }
     return true;
