@@ -96,7 +96,6 @@ class CORE_EXPORT NGHighlightOverlay {
   // that need to be painted, in overlay painting order.
   static Vector<HighlightLayer> ComputeLayers(
       const HighlightRegistry*,
-      const NGTextFragmentPaintInfo& originating,
       const LayoutSelectionStatus* selection,
       const DocumentMarkerVector& custom,
       const DocumentMarkerVector& grammar,
@@ -108,20 +107,20 @@ class CORE_EXPORT NGHighlightOverlay {
   static Vector<HighlightEdge> ComputeEdges(
       const Node*,
       const HighlightRegistry*,
-      const NGTextFragmentPaintInfo& originating,
       const LayoutSelectionStatus* selection,
       const DocumentMarkerVector& custom,
       const DocumentMarkerVector& grammar,
       const DocumentMarkerVector& spelling,
       const DocumentMarkerVector& target);
 
-  // Given highlight |layers| and |edges|, returns the ranges that the given
-  // |layer| should paint text proper for, suppressing ranges where it’s not the
-  // topmost active highlight and splitting for underlying decoration changes.
+  // Given highlight |layers| and |edges|, returns the ranges of text that can
+  // be painted in the same layer with the same decorations, clamping the result
+  // to the given |originating| fragment.
   //
   // The edges must not represent overlapping ranges. If the highlight is active
   // in overlapping ranges, those ranges must be merged before ComputeEdges.
   static Vector<HighlightPart> ComputeParts(
+      const NGTextFragmentPaintInfo& originating,
       const Vector<HighlightLayer>& layers,
       const Vector<HighlightEdge>& edges);
 };
