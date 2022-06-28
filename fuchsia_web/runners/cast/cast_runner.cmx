@@ -36,7 +36,6 @@
       "fuchsia.sys.Loader",
       "fuchsia.sys.Runner-cast",
       "fuchsia.sysmem.Allocator",
-      "fuchsia.tracing.perfetto.ProducerConnector",
       "fuchsia.ui.composition.Allocator",
       "fuchsia.ui.composition.Flatland",
       "fuchsia.ui.input3.Keyboard",

@@ -31,7 +31,6 @@
       "fuchsia.posix.socket.Provider",
       "fuchsia.process.Launcher",
       "fuchsia.sysmem.Allocator",
-      "fuchsia.tracing.perfetto.ProducerConnector",
       "fuchsia.ui.composition.Allocator",
       "fuchsia.ui.composition.Flatland",
       "fuchsia.ui.input3.Keyboard",

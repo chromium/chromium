@@ -67,7 +67,6 @@
                 "fuchsia.net.name.Lookup",
                 "fuchsia.posix.socket.Provider",
                 "fuchsia.process.Launcher",
-                "fuchsia.tracing.perfetto.ProducerConnector",
                 "fuchsia.ui.composition.Allocator",
                 "fuchsia.ui.composition.Flatland",
                 "fuchsia.ui.composition.ScreenCapture",
