@@ -955,7 +955,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SignedInAccountsViewImpression" enum="BooleanShown"
-    expires_after="2022-08-07">
+    expires_after="2023-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1036,7 +1036,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SSOAuth.GetIdentities.ErrorCode"
-    enum="SigninSSOAuthGetIdentitiesErrorCode" expires_after="2022-08-07">
+    enum="SigninSSOAuthGetIdentitiesErrorCode" expires_after="2023-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
