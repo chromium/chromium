@@ -53,4 +53,8 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
         mEndButtonView.setVisibility(VISIBLE);
         mEndButtonView.setImageDrawable(drawable);
     }
+
+    public void setEndButtonClickListener(OnClickListener clickListener) {
+        mEndButtonView.setOnClickListener(clickListener);
+    }
 }
