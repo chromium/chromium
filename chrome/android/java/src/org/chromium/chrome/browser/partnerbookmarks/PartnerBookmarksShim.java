@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.partnerbookmarks;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.components.version_info.VersionInfo;
 
@@ -33,7 +34,7 @@ public class PartnerBookmarksShim {
 
         PartnerBookmarksReader reader =
                 new PartnerBookmarksReader(context, PartnerBrowserCustomizations.getInstance(),
-                        new PartnerBookmarksDelegateImpl()::createIterator);
+                        AppHooks.get()::getPartnerBookmarkIterator);
 
         boolean systemOrPreStable =
                 (context.getApplicationInfo().flags & ApplicationInfo.FLAG_SYSTEM) == 1
