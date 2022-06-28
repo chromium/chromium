@@ -34,6 +34,7 @@ mojom("mojom") {
     "download_controller.mojom",
     "drive_integration_service.mojom",
     "echo_private.mojom",
+    "emoji_picker.mojom",
     "extension_info_private.mojom",
     "feedback.mojom",
     "field_trial.mojom",

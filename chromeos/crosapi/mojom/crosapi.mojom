@@ -30,6 +30,7 @@ import "chromeos/crosapi/mojom/document_scan.mojom";
 import "chromeos/crosapi/mojom/download_controller.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/echo_private.mojom";
+import "chromeos/crosapi/mojom/emoji_picker.mojom";
 import "chromeos/crosapi/mojom/extension_info_private.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/field_trial.mojom";
@@ -116,8 +117,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 85
-// Next method id: 88
+// Next version: 86
+// Next method id: 89
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -270,6 +271,9 @@ interface Crosapi {
   // confirm the device is a ChromeOS device.
   [MinVersion=71] BindEchoPrivate@74(
       pending_receiver<EchoPrivate> receiver);
+
+  // EmojiPicker is a service to allow lacros to open the system emoji picker.
+  [MinVersion=85] BindEmojiPicker@89(pending_receiver<EmojiPicker> receiver);
 
   // ExtensionInfoPrivate is a service that allows trusted extensions in Lacros
   // to get and set system properties. Implemented in Ash.

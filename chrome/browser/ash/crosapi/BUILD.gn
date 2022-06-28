@@ -97,6 +97,8 @@ source_set("crosapi") {
     "drive_integration_service_ash.h",
     "echo_private_ash.cc",
     "echo_private_ash.h",
+    "emoji_picker_ash.cc",
+    "emoji_picker_ash.h",
     "environment_provider.cc",
     "environment_provider.h",
     "extension_info_private_ash.cc",

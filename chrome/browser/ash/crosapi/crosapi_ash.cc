@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
+#include "chrome/browser/ash/crosapi/emoji_picker_ash.h"
 #include "chrome/browser/ash/crosapi/extension_info_private_ash.h"
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
@@ -177,6 +178,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       drive_integration_service_ash_(
           std::make_unique<DriveIntegrationServiceAsh>()),
       echo_private_ash_(std::make_unique<EchoPrivateAsh>()),
+      emoji_picker_ash_(std::make_unique<EmojiPickerAsh>()),
       extension_info_private_ash_(std::make_unique<ExtensionInfoPrivateAsh>()),
       feedback_ash_(std::make_unique<FeedbackAsh>()),
       field_trial_service_ash_(std::make_unique<FieldTrialServiceAsh>()),
@@ -725,6 +727,10 @@ void CrosapiAsh::BindDriveIntegrationService(
 void CrosapiAsh::BindEchoPrivate(
     mojo::PendingReceiver<mojom::EchoPrivate> receiver) {
   echo_private_ash_->BindReceiver(std::move(receiver));
+}
+void CrosapiAsh::BindEmojiPicker(
+    mojo::PendingReceiver<mojom::EmojiPicker> receiver) {
+  emoji_picker_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindExtensionInfoPrivate(

@@ -1,6 +1,8 @@
 include_rules = [
   "+chromeos/crosapi/cpp/crosapi_constants.h",
+  "+chromeos/crosapi/mojom/emoji_picker.mojom.h",
   "+chromeos/lacros/lacros_paths.h",
+  "+chromeos/lacros/lacros_service.h",
   "+components/vector_icons",
   "+components/version_info",
   "+media/media_buildflags.h",

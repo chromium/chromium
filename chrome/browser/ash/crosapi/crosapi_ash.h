@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/emoji_picker.mojom-forward.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -53,6 +54,7 @@ class DocumentScanAsh;
 class DownloadControllerAsh;
 class DriveIntegrationServiceAsh;
 class EchoPrivateAsh;
+class EmojiPickerAsh;
 class ExtensionInfoPrivateAsh;
 class FeedbackAsh;
 class FieldTrialServiceAsh;
@@ -173,6 +175,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DriveIntegrationService> receiver) override;
   void BindEchoPrivate(
       mojo::PendingReceiver<mojom::EchoPrivate> receiver) override;
+  void BindEmojiPicker(
+      mojo::PendingReceiver<mojom::EmojiPicker> receiver) override;
   void BindExtensionInfoPrivate(
       mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) override;
   void BindExtensionPublisher(
@@ -311,6 +315,7 @@ class CrosapiAsh : public mojom::Crosapi {
   }
 
   EchoPrivateAsh* echo_private_ash() { return echo_private_ash_.get(); }
+  EmojiPickerAsh* emoji_picker_ash() { return emoji_picker_ash_.get(); }
 
   ExtensionInfoPrivateAsh* extension_info_private_ash() {
     return extension_info_private_ash_.get();
@@ -425,6 +430,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<DownloadControllerAsh> download_controller_ash_;
   std::unique_ptr<DriveIntegrationServiceAsh> drive_integration_service_ash_;
   std::unique_ptr<EchoPrivateAsh> echo_private_ash_;
+  std::unique_ptr<EmojiPickerAsh> emoji_picker_ash_;
   std::unique_ptr<ExtensionInfoPrivateAsh> extension_info_private_ash_;
   std::unique_ptr<FeedbackAsh> feedback_ash_;
   std::unique_ptr<FieldTrialServiceAsh> field_trial_service_ash_;
