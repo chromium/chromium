@@ -54,6 +54,10 @@ class GPU_GLES2_EXPORT GLContextVirtual : public gl::GLContext {
   void FlushForDriverCrashWorkaround() override;
 #endif
 
+#if defined(USE_EGL)
+  gl::GLDisplayEGL* GetGLDisplayEGL() override;
+#endif
+
  protected:
   ~GLContextVirtual() override;
   void ResetExtensions() override;
