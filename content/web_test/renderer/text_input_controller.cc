@@ -53,13 +53,16 @@ class TextInputControllerBindings
   void ExtendSelectionAndDelete(int before, int after);
   void DeleteSurroundingText(int before, int after);
   void SetMarkedText(const std::string& text, int start, int length);
-  void SetMarkedTextFromExistingText(int start, int length);
+  void SetMarkedTextFromExistingText(int start, int end);
   bool HasMarkedText();
   std::vector<int> MarkedRange();
   std::vector<int> SelectedRange();
   std::vector<int> FirstRectForCharacterRange(unsigned location,
                                               unsigned length);
   void SetComposition(const std::string& text);
+  void SetCompositionWithReplacementRange(const std::string& text,
+                                          int replacement_start,
+                                          int replacement_end);
   void ForceTextInputStateUpdate();
 
   base::WeakPtr<TextInputController> controller_;
@@ -119,6 +122,9 @@ TextInputControllerBindings::GetObjectTemplateBuilder(v8::Isolate* isolate) {
       .SetMethod("firstRectForCharacterRange",
                  &TextInputControllerBindings::FirstRectForCharacterRange)
       .SetMethod("setComposition", &TextInputControllerBindings::SetComposition)
+      .SetMethod(
+          "setCompositionWithReplacementRange",
+          &TextInputControllerBindings::SetCompositionWithReplacementRange)
       .SetMethod("forceTextInputStateUpdate",
                  &TextInputControllerBindings::ForceTextInputStateUpdate);
 }
@@ -188,7 +194,14 @@ std::vector<int> TextInputControllerBindings::FirstRectForCharacterRange(
 
 void TextInputControllerBindings::SetComposition(const std::string& text) {
   if (controller_)
-    controller_->SetComposition(text);
+    controller_->SetComposition(text, -1, -1);
+}
+void TextInputControllerBindings::SetCompositionWithReplacementRange(
+    const std::string& text,
+    int replacement_start,
+    int replacement_end) {
+  if (controller_)
+    controller_->SetComposition(text, replacement_start, replacement_end);
 }
 void TextInputControllerBindings::ForceTextInputStateUpdate() {
   if (controller_)
@@ -368,7 +381,9 @@ std::vector<int> TextInputController::FirstRectForCharacterRange(
   return int_array;
 }
 
-void TextInputController::SetComposition(const std::string& text) {
+void TextInputController::SetComposition(const std::string& text,
+                                         int replacement_range_start,
+                                         int replacement_range_end) {
   // Sends a keydown event with key code = 0xE5 to emulate input method
   // behavior.
   blink::WebKeyboardEvent key_down(blink::WebInputEvent::Type::kRawKeyDown,
@@ -390,10 +405,15 @@ void TextInputController::SetComposition(const std::string& text) {
       ui::ImeTextSpan::Type::kComposition, 0, textLength,
       ui::ImeTextSpan::Thickness::kThin,
       ui::ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT));
+  blink::WebRange replacement_range =
+      (replacement_range_start == -1 && replacement_range_end == -1)
+          ? blink::WebRange()
+          : blink::WebRange(replacement_range_start,
+                            replacement_range_end - replacement_range_start);
   if (auto* controller = GetInputMethodController()) {
     controller->SetComposition(
         newText, blink::WebVector<ui::ImeTextSpan>(std::move(ime_text_spans)),
-        blink::WebRange(), textLength, textLength);
+        replacement_range, textLength, textLength);
   }
 }
 
