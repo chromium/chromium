@@ -5,4 +5,4 @@
 package org.chromium.chrome.browser.partnerbookmarks;
 
 /** For now a placeholder. Intended to replace {@link PartnerBookmark.BookmarkIterator}. */
-public interface PartnerBookmarkIterator extends PartnerBookmark.BookmarkIterator {}
+public interface PartnerBookmarkIterator {}
