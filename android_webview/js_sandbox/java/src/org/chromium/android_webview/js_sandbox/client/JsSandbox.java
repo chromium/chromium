@@ -23,18 +23,19 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxService;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Executor;
 
 import javax.annotation.concurrent.GuardedBy;
 
 /** Sandbox that can execute JS in a safe environment. This class is thread safe. */
-public class AwJsSandbox implements AutoCloseable {
+public class JsSandbox implements AutoCloseable {
     // TODO(crbug.com/1297672): Add capability to this class to support spawning
     // different processes as needed. This might require that we have a static
     // variable in here that tracks the existing services we are connected to and
     // connect to a different one when creating a new object.
-    private static final String TAG = "AwJsSandbox";
+    private static final String TAG = "JsSandbox";
     private static final String JS_SANDBOX_SERVICE_NAME =
             "org.chromium.android_webview.js_sandbox.service.JsSandboxService0";
     private final Object mLock = new Object();
@@ -44,51 +45,54 @@ public class AwJsSandbox implements AutoCloseable {
 
     private final ConnectionSetup mConnection;
 
+    @GuardedBy("mLock")
+    private HashSet<JsIsolate> mActiveIsolateSet = new HashSet<JsIsolate>();
+
     static class ConnectionSetup implements ServiceConnection {
-        private CallbackToFutureAdapter.Completer mCompleter;
-        private AwJsSandbox mAwJsSandbox;
+        private CallbackToFutureAdapter.Completer<JsSandbox> mCompleter;
+        private JsSandbox mJsSandbox;
         private Context mContext;
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             IJsSandboxService jsSandboxService = IJsSandboxService.Stub.asInterface(service);
-            mAwJsSandbox = new AwJsSandbox(this, jsSandboxService);
-            mCompleter.set(mAwJsSandbox);
+            mJsSandbox = new JsSandbox(this, jsSandboxService);
+            mCompleter.set(mJsSandbox);
             mCompleter = null;
         }
 
-        // TODO(crbug.com/1297672): We need to track evaluateJavascript requests to fail them when
-        // onServiceDisconnected is called.
         // TODO(crbug.com/1297672): We may want an explicit way to signal to the client that the
         // process crashed (like onRenderProcessGone in WebView), without them having to first call
         // one of the methods and have it fail.
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            unbindAndSetException(
-                    new RuntimeException("AwJsSandbox internal error: onServiceDisconnected()"));
+            runShutdownTasks(
+                    new RuntimeException("JsSandbox internal error: onServiceDisconnected()"));
         }
 
         @Override
         public void onBindingDied(ComponentName name) {
-            unbindAndSetException(
-                    new RuntimeException("AwJsSandbox internal error: onBindingDead()"));
+            runShutdownTasks(new RuntimeException("JsSandbox internal error: onBindingDead()"));
         }
 
         @Override
         public void onNullBinding(ComponentName name) {
-            unbindAndSetException(
-                    new RuntimeException("AwJsSandbox internal error: onNullBinding()"));
+            runShutdownTasks(new RuntimeException("JsSandbox internal error: onNullBinding()"));
         }
 
-        private void unbindAndSetException(Exception e) {
-            mContext.unbindService(this);
+        private void runShutdownTasks(Exception e) {
+            if (mJsSandbox != null) {
+                mJsSandbox.doClose(new SandboxDeadException());
+            } else {
+                mContext.unbindService(this);
+            }
             if (mCompleter != null) {
                 mCompleter.setException(e);
             }
             mCompleter = null;
         }
 
-        ConnectionSetup(Context context, CallbackToFutureAdapter.Completer completer) {
+        ConnectionSetup(Context context, CallbackToFutureAdapter.Completer<JsSandbox> completer) {
             mContext = context;
             mCompleter = completer;
         }
@@ -102,7 +106,7 @@ public class AwJsSandbox implements AutoCloseable {
      *         application
      *     context if the connection is expected to outlive a single activity/service.
      */
-    public static ListenableFuture<AwJsSandbox> newConnectedInstance(Context context) {
+    public static ListenableFuture<JsSandbox> newConnectedInstance(Context context) {
         PackageInfo systemWebViewPackage = WebView.getCurrentWebViewPackage();
         ComponentName compName =
                 new ComponentName(systemWebViewPackage.packageName, JS_SANDBOX_SERVICE_NAME);
@@ -111,13 +115,13 @@ public class AwJsSandbox implements AutoCloseable {
     }
 
     @VisibleForTesting
-    public static ListenableFuture<AwJsSandbox> newConnectedInstanceForTesting(Context context) {
+    public static ListenableFuture<JsSandbox> newConnectedInstanceForTesting(Context context) {
         ComponentName compName = new ComponentName(context, JS_SANDBOX_SERVICE_NAME);
         int flag = Context.BIND_AUTO_CREATE;
         return bindToServiceWithCallback(context, compName, flag);
     }
 
-    private static ListenableFuture<AwJsSandbox> bindToServiceWithCallback(
+    private static ListenableFuture<JsSandbox> bindToServiceWithCallback(
             Context context, ComponentName compName, int flag) {
         Intent intent = new Intent();
         intent.setComponent(compName);
@@ -145,18 +149,18 @@ public class AwJsSandbox implements AutoCloseable {
             }
 
             // Debug string.
-            return "AwJsSandbox Future";
+            return "JsSandbox Future";
         });
     }
 
-    // We prevent direct initializations of this class. Use AwJsSandbox.newConnectedInstance().
-    private AwJsSandbox(ConnectionSetup connectionSetup, IJsSandboxService jsSandboxService) {
+    // We prevent direct initializations of this class. Use JsSandbox.newConnectedInstance().
+    private JsSandbox(ConnectionSetup connectionSetup, IJsSandboxService jsSandboxService) {
         mConnection = connectionSetup;
         mJsSandboxService = jsSandboxService;
     }
 
     /** Creates an execution isolate within which JS can be executed multiple times. */
-    public AwJsIsolate createIsolate() {
+    public JsIsolate createIsolate() {
         synchronized (mLock) {
             if (mJsSandboxService == null) {
                 throw new IllegalStateException(
@@ -170,9 +174,12 @@ public class AwJsSandbox implements AutoCloseable {
                 } else {
                     mainExecutor = ContextCompat.getMainExecutor(mConnection.mContext);
                 }
-                return new AwJsIsolate(isolateStub, mainExecutor);
+
+                JsIsolate isolate = new JsIsolate(isolateStub, this, mainExecutor);
+                mActiveIsolateSet.add(isolate);
+                return isolate;
             } catch (RemoteException e) {
-                throw e.rethrowAsRuntimeException();
+                throw new RuntimeException(e);
             }
         }
     }
@@ -196,14 +203,35 @@ public class AwJsSandbox implements AutoCloseable {
         }
     }
 
+    void removeFromIsolateSet(JsIsolate isolate) {
+        synchronized (mLock) {
+            if (mActiveIsolateSet != null) {
+                mActiveIsolateSet.remove(isolate);
+            }
+        }
+    }
+
     @Override
     public void close() {
+        doClose(new IsolateTerminatedException());
+    }
+
+    private void doClose(Exception cancelPendingWith) {
         synchronized (mLock) {
             if (mJsSandboxService == null) {
                 return;
             }
+            cancelPendingEvaluationsLocked(cancelPendingWith);
             mConnection.mContext.unbindService(mConnection);
             mJsSandboxService = null;
         }
+    }
+
+    @GuardedBy("mLock")
+    private void cancelPendingEvaluationsLocked(Exception e) {
+        for (JsIsolate ele : mActiveIsolateSet) {
+            ele.cancelAllPendingEvaluations(e);
+        }
+        mActiveIsolateSet = null;
     }
 }

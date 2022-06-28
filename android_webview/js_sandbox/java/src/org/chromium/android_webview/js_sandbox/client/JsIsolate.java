@@ -31,8 +31,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.GuardedBy;
 
 /** Provides a sandboxed execution Isolate. This class should be accessed in a single-thread. */
-public class AwJsIsolate implements AutoCloseable {
-    private static final String TAG = "AwJsIsolate";
+public class JsIsolate implements AutoCloseable {
+    private static final String TAG = "JsIsolate";
     private final Object mSetLock = new Object();
     private IJsSandboxIsolate mJsIsolateStub;
     private android.util.CloseGuard mGuard;
@@ -43,18 +43,19 @@ public class AwJsIsolate implements AutoCloseable {
 
                 @Override
                 public Thread newThread(Runnable r) {
-                    return new Thread(r, "AwJsIsolate Thread #" + mCount.getAndIncrement());
+                    return new Thread(r, "JsIsolate Thread #" + mCount.getAndIncrement());
                 }
             });
+    private final JsSandbox mJsSandbox;
 
     @GuardedBy("mSetLock")
-    private HashSet<CallbackToFutureAdapter.Completer> mPendingCompleterSet =
-            new HashSet<CallbackToFutureAdapter.Completer>();
+    private HashSet<CallbackToFutureAdapter.Completer<String>> mPendingCompleterSet =
+            new HashSet<CallbackToFutureAdapter.Completer<String>>();
 
     private class IJsSandboxIsolateCallbackStubWrapper extends IJsSandboxIsolateCallback.Stub {
-        private CallbackToFutureAdapter.Completer mCompleter;
+        private CallbackToFutureAdapter.Completer<String> mCompleter;
 
-        IJsSandboxIsolateCallbackStubWrapper(CallbackToFutureAdapter.Completer completer) {
+        IJsSandboxIsolateCallbackStubWrapper(CallbackToFutureAdapter.Completer<String> completer) {
             mCompleter = completer;
         }
 
@@ -72,8 +73,9 @@ public class AwJsIsolate implements AutoCloseable {
         }
     }
 
-    AwJsIsolate(IJsSandboxIsolate jsIsolateStub, Executor executor) {
+    JsIsolate(IJsSandboxIsolate jsIsolateStub, JsSandbox sandbox, Executor executor) {
         mMainExecutor = executor;
+        mJsSandbox = sandbox;
         mJsIsolateStub = jsIsolateStub;
         if (Build.VERSION.SDK_INT >= 30) {
             mGuard = new android.util.CloseGuard();
@@ -106,7 +108,7 @@ public class AwJsIsolate implements AutoCloseable {
             try {
                 mJsIsolateStub.evaluateJavascript(code, callbackStub);
             } catch (RemoteException e) {
-                completer.setException(e.rethrowAsRuntimeException());
+                completer.setException(new RuntimeException(e));
                 synchronized (mSetLock) {
                     mPendingCompleterSet.remove(completer);
                 }
@@ -129,6 +131,7 @@ public class AwJsIsolate implements AutoCloseable {
             Log.e(TAG, "RemoteException was thrown during close()", e);
         }
         mJsIsolateStub = null;
+        mJsSandbox.removeFromIsolateSet(this);
         if (Build.VERSION.SDK_INT >= 30) {
             mGuard.close();
         }
@@ -173,18 +176,19 @@ public class AwJsIsolate implements AutoCloseable {
         }
     }
 
-    private void cancelAllPendingEvaluations(Exception e) {
-        final HashSet<CallbackToFutureAdapter.Completer> pendingSet;
+    void cancelAllPendingEvaluations(Exception e) {
+        final HashSet<CallbackToFutureAdapter.Completer<String>> pendingSet;
         synchronized (mSetLock) {
+            if (mPendingCompleterSet == null) return;
             pendingSet = mPendingCompleterSet;
             mPendingCompleterSet = null;
         }
-        for (CallbackToFutureAdapter.Completer ele : pendingSet) {
+        for (CallbackToFutureAdapter.Completer<String> ele : pendingSet) {
             ele.setException(e);
         }
     }
 
-    private void removePending(CallbackToFutureAdapter.Completer completer) {
+    private void removePending(CallbackToFutureAdapter.Completer<String> completer) {
         synchronized (mSetLock) {
             if (mPendingCompleterSet != null) {
                 mPendingCompleterSet.remove(completer);

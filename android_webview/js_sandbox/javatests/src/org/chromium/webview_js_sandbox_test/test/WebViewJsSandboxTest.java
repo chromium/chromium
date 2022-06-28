@@ -14,10 +14,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.android_webview.js_sandbox.client.AwJsIsolate;
-import org.chromium.android_webview.js_sandbox.client.AwJsSandbox;
 import org.chromium.android_webview.js_sandbox.client.EvaluationFailedException;
 import org.chromium.android_webview.js_sandbox.client.IsolateTerminatedException;
+import org.chromium.android_webview.js_sandbox.client.JsIsolate;
+import org.chromium.android_webview.js_sandbox.client.JsSandbox;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 
@@ -36,9 +36,9 @@ public class WebViewJsSandboxTest {
         final String expected = "PASS";
         Context context = ContextUtils.getApplicationContext();
 
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-        AwJsIsolate jsIsolate = jsSandbox.createIsolate();
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+        JsIsolate jsIsolate = jsSandbox.createIsolate();
         ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
         String result = resultFuture.get(5, TimeUnit.SECONDS);
         jsIsolate.close();
@@ -54,10 +54,10 @@ public class WebViewJsSandboxTest {
         final String expected = "PASS";
         Context context = ContextUtils.getApplicationContext();
 
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-        AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
-        AwJsIsolate jsIsolate2 = jsSandbox.createIsolate();
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+        JsIsolate jsIsolate1 = jsSandbox.createIsolate();
+        JsIsolate jsIsolate2 = jsSandbox.createIsolate();
         jsIsolate1.close();
         ListenableFuture<String> resultFuture = jsIsolate2.evaluateJavascript(code);
         String result = resultFuture.get(5, TimeUnit.SECONDS);
@@ -77,12 +77,12 @@ public class WebViewJsSandboxTest {
 
         Context context = ContextUtils.getApplicationContext();
 
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-        AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+        JsIsolate jsIsolate1 = jsSandbox.createIsolate();
         ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascript(code1);
         String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
-        AwJsIsolate jsIsolate2 = jsSandbox.createIsolate();
+        JsIsolate jsIsolate2 = jsSandbox.createIsolate();
         ListenableFuture<String> resultFuture2 = jsIsolate2.evaluateJavascript(code2);
         String result2 = resultFuture2.get(5, TimeUnit.SECONDS);
         jsIsolate1.close();
@@ -102,12 +102,12 @@ public class WebViewJsSandboxTest {
         final String expected2 = "undefined PASS";
         Context context = ContextUtils.getApplicationContext();
 
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-        AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+        JsIsolate jsIsolate1 = jsSandbox.createIsolate();
         ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascript(code1);
         String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
-        AwJsIsolate jsIsolate2 = jsSandbox.createIsolate();
+        JsIsolate jsIsolate2 = jsSandbox.createIsolate();
         ListenableFuture<String> resultFuture2 = jsIsolate2.evaluateJavascript(code2);
         String result2 = resultFuture2.get(5, TimeUnit.SECONDS);
         jsIsolate1.close();
@@ -127,9 +127,9 @@ public class WebViewJsSandboxTest {
         final String expected2 = "PASS PASS";
         Context context = ContextUtils.getApplicationContext();
 
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-        AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+        JsIsolate jsIsolate1 = jsSandbox.createIsolate();
         ListenableFuture<String> resultFuture1 = jsIsolate1.evaluateJavascript(code1);
         String result1 = resultFuture1.get(5, TimeUnit.SECONDS);
         ListenableFuture<String> resultFuture2 = jsIsolate1.evaluateJavascript(code2);
@@ -148,9 +148,9 @@ public class WebViewJsSandboxTest {
         final String contains = "RandomLinkError";
         Context context = ContextUtils.getApplicationContext();
 
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-        AwJsIsolate jsIsolate = jsSandbox.createIsolate();
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+        JsIsolate jsIsolate = jsSandbox.createIsolate();
         ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
         boolean isOfCorrectType = false;
         String error = "";
@@ -173,9 +173,9 @@ public class WebViewJsSandboxTest {
         final String code = "while(true){}";
         Context context = ContextUtils.getApplicationContext();
 
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-        AwJsIsolate jsIsolate = jsSandbox.createIsolate();
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+        JsIsolate jsIsolate = jsSandbox.createIsolate();
         ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
         boolean isOfCorrectType = false;
         try {
@@ -196,9 +196,9 @@ public class WebViewJsSandboxTest {
         final int num_of_evaluations = 10;
         Context context = ContextUtils.getApplicationContext();
 
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-        AwJsIsolate jsIsolate = jsSandbox.createIsolate();
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+        JsIsolate jsIsolate = jsSandbox.createIsolate();
         Vector<ListenableFuture<String>> resultFutures = new Vector<ListenableFuture<String>>();
         for (int i = 0; i < num_of_evaluations; i++) {
             ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
@@ -221,9 +221,9 @@ public class WebViewJsSandboxTest {
     @Test
     @MediumTest
     public void testFeatureDetection() throws Throwable {
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture =
-                AwJsSandbox.newConnectedInstance(ContextUtils.getApplicationContext());
-        try (AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+        ListenableFuture<JsSandbox> JsSandboxFuture =
+                JsSandbox.newConnectedInstance(ContextUtils.getApplicationContext());
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS)) {
             Assert.assertTrue(jsSandbox.isIsolateTerminationSupported());
         }
     }
@@ -241,9 +241,9 @@ public class WebViewJsSandboxTest {
                 + " return ab2str(value);"
                 + "});";
         Context context = ContextUtils.getApplicationContext();
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        try (AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-                AwJsIsolate jsIsolate = jsSandbox.createIsolate()) {
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate = jsSandbox.createIsolate()) {
             boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-1", bytes);
             Assert.assertTrue(provideNamedDataReturn);
             ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascript(code);
@@ -266,9 +266,9 @@ public class WebViewJsSandboxTest {
                 + "  });"
                 + "});";
         Context context = ContextUtils.getApplicationContext();
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        try (AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-                AwJsIsolate jsIsolate = jsSandbox.createIsolate()) {
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate = jsSandbox.createIsolate()) {
             boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-1", bytes);
             Assert.assertTrue(provideNamedDataReturn);
             ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascript(code);
@@ -284,9 +284,9 @@ public class WebViewJsSandboxTest {
         final String code = "Promise.resolve(\"PASS\")";
         final String expected = "PASS";
         Context context = ContextUtils.getApplicationContext();
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        try (AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-                AwJsIsolate jsIsolate = jsSandbox.createIsolate()) {
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate = jsSandbox.createIsolate()) {
             ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
             String result = resultFuture.get(5, TimeUnit.SECONDS);
 
@@ -306,9 +306,9 @@ public class WebViewJsSandboxTest {
         final String expected = "PASS";
         Context context = ContextUtils.getApplicationContext();
 
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        try (AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-                AwJsIsolate jsIsolate = jsSandbox.createIsolate()) {
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate = jsSandbox.createIsolate()) {
             ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavascript(code1);
             ListenableFuture<String> resultFuture2 = jsIsolate.evaluateJavascript(code2);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
@@ -338,9 +338,9 @@ public class WebViewJsSandboxTest {
                 + " });"
                 + "});";
         Context context = ContextUtils.getApplicationContext();
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        try (AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-                AwJsIsolate jsIsolate = jsSandbox.createIsolate()) {
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate = jsSandbox.createIsolate()) {
             jsIsolate.provideNamedData("id-1", bytes);
             jsIsolate.provideNamedData("id-2", bytes);
             jsIsolate.provideNamedData("id-3", bytes);
@@ -366,9 +366,9 @@ public class WebViewJsSandboxTest {
         final String contains = "RandomLinkError";
         Context context = ContextUtils.getApplicationContext();
 
-        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
-        try (AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
-                AwJsIsolate jsIsolate = jsSandbox.createIsolate()) {
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        try (JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+                JsIsolate jsIsolate = jsSandbox.createIsolate()) {
             ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
             try {
                 String result = resultFuture.get(5, TimeUnit.SECONDS);
@@ -378,6 +378,27 @@ public class WebViewJsSandboxTest {
                     throw e;
                 }
                 Assert.assertTrue(e.getCause().getMessage().contains(contains));
+            }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaluationThrowsWhenSandboxDead() throws Throwable {
+        final String code = "while(true){}";
+        Context context = ContextUtils.getApplicationContext();
+
+        ListenableFuture<JsSandbox> JsSandboxFuture = JsSandbox.newConnectedInstance(context);
+        JsSandbox jsSandbox = JsSandboxFuture.get(5, TimeUnit.SECONDS);
+        JsIsolate jsIsolate = jsSandbox.createIsolate();
+        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
+        try {
+            jsSandbox.close();
+            resultFuture.get(5, TimeUnit.SECONDS);
+            Assert.fail("Should have thrown.");
+        } catch (ExecutionException e) {
+            if (!(e.getCause() instanceof IsolateTerminatedException)) {
+                throw e;
             }
         }
     }
