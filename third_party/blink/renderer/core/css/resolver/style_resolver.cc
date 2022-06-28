@@ -1244,8 +1244,10 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
   if (collector.MatchedResult().DependsOnContainerQueries())
     state.Style()->SetDependsOnContainerQueries(true);
-  if (collector.MatchedResult().DependsOnViewportContainerQueries())
+  if (collector.MatchedResult().DependsOnStaticViewportUnits())
     state.Style()->SetHasStaticViewportUnits();
+  if (collector.MatchedResult().DependsOnDynamicViewportUnits())
+    state.Style()->SetHasDynamicViewportUnits();
   if (collector.MatchedResult().DependsOnRemContainerQueries())
     state.Style()->SetHasRemUnits();
   if (collector.MatchedResult().ConditionallyAffectsAnimations())

@@ -109,9 +109,15 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
                                          MatchResult& match_result) {
   MediaQueryResultFlags result_flags;
   bool result = Eval(query, &result_flags);
-  if (result_flags.is_viewport_dependent)
-    match_result.SetDependsOnViewportContainerQueries();
   unsigned unit_flags = result_flags.unit_flags;
+  if (unit_flags & MediaQueryExpValue::UnitFlags::kDynamicViewport)
+    match_result.SetDependsOnDynamicViewportUnits();
+  // Note that container-relative units *may* fall back to the small viewport,
+  // hence we also set the DependsOnStaticViewportUnits flag when in that case.
+  if (unit_flags & (MediaQueryExpValue::UnitFlags::kStaticViewport |
+                    MediaQueryExpValue::UnitFlags::kContainer)) {
+    match_result.SetDependsOnStaticViewportUnits();
+  }
   if (unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative)
     match_result.SetDependsOnRemContainerQueries();
   if (unit_flags & MediaQueryExpValue::UnitFlags::kFontRelative)

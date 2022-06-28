@@ -37,6 +37,26 @@ MediaQueryExpValue DvhValue(double value) {
       value, CSSPrimitiveValue::UnitType::kDynamicViewportHeight);
 }
 
+MediaQueryExpValue SvhValue(double value) {
+  return MediaQueryExpValue(value,
+                            CSSPrimitiveValue::UnitType::kSmallViewportHeight);
+}
+
+MediaQueryExpValue LvhValue(double value) {
+  return MediaQueryExpValue(value,
+                            CSSPrimitiveValue::UnitType::kLargeViewportHeight);
+}
+
+MediaQueryExpValue VhValue(double value) {
+  return MediaQueryExpValue(value,
+                            CSSPrimitiveValue::UnitType::kViewportHeight);
+}
+
+MediaQueryExpValue CqhValue(double value) {
+  return MediaQueryExpValue(value,
+                            CSSPrimitiveValue::UnitType::kContainerHeight);
+}
+
 MediaQueryExpValue CssValue(const CSSPrimitiveValue& value) {
   return MediaQueryExpValue(value);
 }
@@ -370,6 +390,18 @@ TEST(MediaQueryExpTest, UnitFlags) {
   // 10dvh < width
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kDynamicViewport,
             LeftExp("width", LtCmp(DvhValue(10.0))).GetUnitFlags());
+  // 10svh < width
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kStaticViewport,
+            LeftExp("width", LtCmp(SvhValue(10.0))).GetUnitFlags());
+  // 10lvh < width
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kStaticViewport,
+            LeftExp("width", LtCmp(LvhValue(10.0))).GetUnitFlags());
+  // 10vh < width
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kStaticViewport,
+            LeftExp("width", LtCmp(VhValue(10.0))).GetUnitFlags());
+  // 10cqh < width
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kContainer,
+            LeftExp("width", LtCmp(CqhValue(10.0))).GetUnitFlags());
 
   // width < calc(10em + 10dvh)
   const auto* calc_value =

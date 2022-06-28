@@ -1125,4 +1125,58 @@ TEST_F(ContainerQueryTest, NoContainerQueryEvaluatorWhenDisabled) {
       GetDocument().getElementById("container")->GetContainerQueryEvaluator());
 }
 
+TEST_F(ContainerQueryTest, QueryViewportDependency) {
+  ScopedCSSViewportUnits4ForTest viewport_units(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        container-type: size;
+      }
+      @container (width: 200px) {
+        #target1 { color: pink; }
+      }
+      @container (width: 100vw) {
+        #target2 { color: pink; }
+      }
+      @container (width: 100svw) {
+        #target3 { color: pink; }
+      }
+      @container (width: 100dvw) {
+        #target4 { color: pink; }
+      }
+    </style>
+    <div id="container">
+      <span id=target1></span>
+      <span id=target2></span>
+      <span id=target3></span>
+      <span id=target4></span>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target1 = GetDocument().getElementById("target1");
+  Element* target2 = GetDocument().getElementById("target2");
+  Element* target3 = GetDocument().getElementById("target3");
+  Element* target4 = GetDocument().getElementById("target4");
+
+  ASSERT_TRUE(target1);
+  ASSERT_TRUE(target2);
+  ASSERT_TRUE(target3);
+  ASSERT_TRUE(target4);
+
+  EXPECT_FALSE(target1->ComputedStyleRef().HasStaticViewportUnits());
+  EXPECT_FALSE(target1->ComputedStyleRef().HasDynamicViewportUnits());
+
+  EXPECT_TRUE(target2->ComputedStyleRef().HasStaticViewportUnits());
+  EXPECT_FALSE(target2->ComputedStyleRef().HasDynamicViewportUnits());
+
+  EXPECT_TRUE(target3->ComputedStyleRef().HasStaticViewportUnits());
+  EXPECT_FALSE(target3->ComputedStyleRef().HasDynamicViewportUnits());
+
+  EXPECT_FALSE(target4->ComputedStyleRef().HasStaticViewportUnits());
+  EXPECT_TRUE(target4->ComputedStyleRef().HasDynamicViewportUnits());
+}
+
 }  // namespace blink

@@ -98,10 +98,12 @@ class CORE_EXPORT MediaQueryExpValue {
   }
 
   enum UnitFlags {
-    kNone = 0x0,
-    kFontRelative = 0x1,
-    kRootFontRelative = 0x2,
-    kDynamicViewport = 0x4,
+    kNone = 0,
+    kFontRelative = 1 << 0,
+    kRootFontRelative = 1 << 1,
+    kDynamicViewport = 1 << 2,
+    kStaticViewport = 1 << 3,
+    kContainer = 1 << 4,
   };
 
   unsigned GetUnitFlags() const;
