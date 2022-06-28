@@ -34,6 +34,7 @@
 #include <vector>
 
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "v8/include/v8-forward.h"
@@ -47,6 +48,7 @@ namespace blink {
 
 class Element;
 class Image;
+class WebLabelElement;
 
 // Provides access to some properties of a DOM element node.
 class BLINK_EXPORT WebElement : public WebNode {
@@ -82,6 +84,9 @@ class BLINK_EXPORT WebElement : public WebNode {
   WebString AttributeLocalName(unsigned index) const;
   WebString AttributeValue(unsigned index) const;
   unsigned AttributeCount() const;
+
+  // Returns all <label> elements associated to this element.
+  WebVector<WebLabelElement> Labels() const;
 
   // Returns true if this is an autonomous custom element.
   bool IsAutonomousCustomElement() const;
