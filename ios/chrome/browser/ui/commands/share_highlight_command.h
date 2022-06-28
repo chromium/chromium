@@ -14,9 +14,9 @@ class GURL;
 // page.
 @interface ShareHighlightCommand : NSObject
 
-// Initializes the object with the page's |URL|, |title| and the currently
-// |selectedText|. |sourceView| represents the view owning the
-// selected text, and |sourceRect| represents the starting bounds of that
+// Initializes the object with the page's `URL`, `title` and the currently
+// `selectedText`. `sourceView` represents the view owning the
+// selected text, and `sourceRect` represents the starting bounds of that
 // text.
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
@@ -38,7 +38,7 @@ class GURL;
 @property(nonatomic, readonly, weak) UIView* sourceView;
 
 // Coordinates representing the starting bounds of the selected text inside
-// |sourceView|.
+// `sourceView`.
 @property(nonatomic, readonly, assign) CGRect sourceRect;
 
 @end

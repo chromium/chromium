@@ -15,8 +15,8 @@
 // Protocol for commands arounds Bookmarks manipulation.
 @protocol BookmarksCommands <NSObject>
 
-// Adds bookmarks for the given list of URLs in |command|.
-// If |command.presentFolderChooser| is true:
+// Adds bookmarks for the given list of URLs in `command`.
+// If `command.presentFolderChooser` is true:
 // - the user will be prompted to choose a location to store the bookmarks.
 // Otherwise, only a single URL must be provided:
 // - If it is already bookmarked, the "edit bookmark" flow will begin.

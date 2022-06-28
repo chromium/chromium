@@ -37,7 +37,7 @@
 // TODO(crbug.com/1134586): Reuse BookmarksCommands' bookmark instead.
 - (void)bookmarkCurrentPage;
 
-// Adds a page to the reading list using data in |command|.
+// Adds a page to the reading list using data in `command`.
 // TODO(crbug.com/1272540): Remove this command.
 - (void)addToReadingList:(ReadingListAddCommand*)command;
 

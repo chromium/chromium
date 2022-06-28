@@ -22,14 +22,14 @@
 //
 //   id<SomeProtocol> handler = HandlerForProtocol(dispatcher, SomeProtocol);
 //
-//     |dispatcher| should be a CommandDispatcher object, and SomeProtocol is
+//     `dispatcher` should be a CommandDispatcher object, and SomeProtocol is
 //     the *name* of a protocol (not a string, not a Protocol* pointer, and not
 //     an @protocol() expression to generate one).
 //
-// This will typecast |dispatcher| to an id<SomeProtocol> (for compile-time
-// type checking), and verify that |dispatcher| is currently dispatching
-// for |protocol| (for run-time verification). If |dispatcher| isn't dispatching
-// for |protocol|, HandlerForProtocol() returns nil and DCHECKs.
+// This will typecast `dispatcher` to an id<SomeProtocol> (for compile-time
+// type checking), and verify that `dispatcher` is currently dispatching
+// for `protocol` (for run-time verification). If `dispatcher` isn't dispatching
+// for `protocol`, HandlerForProtocol() returns nil and DCHECKs.
 //
 #define HandlerForProtocol(Dispatcher, ProtocolName) \
   static_cast<id<ProtocolName>>(                     \
@@ -37,31 +37,31 @@
 
 @interface CommandDispatcher : NSObject
 
-// Registers the given |target| to receive forwarded messages for the given
-// |selector|.
+// Registers the given `target` to receive forwarded messages for the given
+// `selector`.
 - (void)startDispatchingToTarget:(id)target forSelector:(SEL)selector;
 
-// Removes forwarding registration for the given |selector|.
+// Removes forwarding registration for the given `selector`.
 - (void)stopDispatchingForSelector:(SEL)selector;
 
-// Registers the given |target| to receive forwarded messages for the methods of
-// the given |protocol|. Only required instance methods are registered. The
+// Registers the given `target` to receive forwarded messages for the methods of
+// the given `protocol`. Only required instance methods are registered. The
 // other definitions in the protocol are ignored.
 - (void)startDispatchingToTarget:(id)target forProtocol:(Protocol*)protocol;
 
-// Removes forwarding registration for the given |selector|. Only dispatching to
+// Removes forwarding registration for the given `selector`. Only dispatching to
 // required instance methods is removed. The other definitions in the protocol
 // are ignored.
 - (void)stopDispatchingForProtocol:(Protocol*)protocol;
 
-// Removes all forwarding registrations for the given |target|.
+// Removes all forwarding registrations for the given `target`.
 - (void)stopDispatchingToTarget:(id)target;
 
-// YES if the dispatcher is currently dispatching for |protocol|, including
-// (recursively) any protocols that |protocol| conforms to.
+// YES if the dispatcher is currently dispatching for `protocol`, including
+// (recursively) any protocols that `protocol` conforms to.
 - (BOOL)dispatchingForProtocol:(Protocol*)protocol;
 
-// Returns the receiver if it is dispatching for |protocol|, and CHECK()s
+// Returns the receiver if it is dispatching for `protocol`, and CHECK()s
 // otherwise.
 - (CommandDispatcher*)strictCallableForProtocol:(Protocol*)protocol;
 

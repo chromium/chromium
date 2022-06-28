@@ -25,26 +25,26 @@ enum class TrustedVaultUserActionTriggerForUMA;
 @protocol ApplicationSettingsCommands
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the accounts settings UI, presenting from |baseViewController|. If
-// |baseViewController| is nil BVC will be used as presenterViewController.
+// Shows the accounts settings UI, presenting from `baseViewController`. If
+// `baseViewController` is nil BVC will be used as presenterViewController.
 - (void)showAccountsSettingsFromViewController:
     (UIViewController*)baseViewController;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the Google services settings UI, presenting from |baseViewController|.
-// If |baseViewController| is nil BVC will be used as presenterViewController.
+// Shows the Google services settings UI, presenting from `baseViewController`.
+// If `baseViewController` is nil BVC will be used as presenterViewController.
 - (void)showGoogleServicesSettingsFromViewController:
     (UIViewController*)baseViewController;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the Sync settings UI, presenting from |baseViewController|.
-// If |baseViewController| is nil BVC will be used as presenterViewController.
+// Shows the Sync settings UI, presenting from `baseViewController`.
+// If `baseViewController` is nil BVC will be used as presenterViewController.
 - (void)showSyncSettingsFromViewController:
     (UIViewController*)baseViewController;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the sync encryption passphrase UI, presenting from
-// |baseViewController|.
+// `baseViewController`.
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController;
 
@@ -100,7 +100,7 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the Settings UI, presenting from |baseViewController|.
+// Shows the Settings UI, presenting from `baseViewController`.
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
@@ -109,8 +109,8 @@ enum class TrustedVaultUserActionTriggerForUMA;
     (UIViewController*)baseViewController;
 
 // Presents the Trusted Vault reauth dialog.
-// |baseViewController| presents the sign-in.
-// |trigger| UI elements where the trusted vault reauth has been triggered.
+// `baseViewController` presents the sign-in.
+// `trigger` UI elements where the trusted vault reauth has been triggered.
 - (void)
     showTrustedVaultReauthForFetchKeysFromViewController:
         (UIViewController*)baseViewController
@@ -121,8 +121,8 @@ enum class TrustedVaultUserActionTriggerForUMA;
 
 // Presents the Trusted Vault degraded recoverability (to enroll additional
 // recovery factors).
-// |baseViewController| presents the sign-in.
-// |trigger| UI elements where the trusted vault reauth has been triggered.
+// `baseViewController` presents the sign-in.
+// `trigger` UI elements where the trusted vault reauth has been triggered.
 - (void)
     showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
         (UIViewController*)baseViewController
@@ -155,37 +155,37 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)displayRegularTabSwitcherInGridLayout;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the Autofill Settings UI, presenting from |baseViewController|.
+// Shows the Autofill Settings UI, presenting from `baseViewController`.
 - (void)showAutofillSettingsFromViewController:
     (UIViewController*)baseViewController;
 
-// Shows the Report an Issue UI, presenting from |baseViewController|.
+// Shows the Report an Issue UI, presenting from `baseViewController`.
 - (void)showReportAnIssueFromViewController:
             (UIViewController*)baseViewController
                                      sender:(UserFeedbackSender)sender;
 
-// Shows the Report an Issue UI, presenting from |baseViewController|, using
-// |specificProductData| for additional product data to be sent in the report.
+// Shows the Report an Issue UI, presenting from `baseViewController`, using
+// `specificProductData` for additional product data to be sent in the report.
 - (void)
     showReportAnIssueFromViewController:(UIViewController*)baseViewController
                                  sender:(UserFeedbackSender)sender
                     specificProductData:(NSDictionary<NSString*, NSString*>*)
                                             specificProductData;
 
-// Opens the |command| URL in a new tab.
+// Opens the `command` URL in a new tab.
 // TODO(crbug.com/907527): Check if it is possible to merge it with the
 // URLLoader methods.
 - (void)openURLInNewTab:(OpenNewTabCommand*)command;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the signin UI, presenting from |baseViewController|.
+// Shows the signin UI, presenting from `baseViewController`.
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the consistency promo UI that allows users to sign in to Chrome using
 // the default accounts on the device.
-// Redirects to |url| when the sign-in flow is complete.
+// Redirects to `url` when the sign-in flow is complete.
 - (void)showConsistencyPromoFromViewController:
             (UIViewController*)baseViewController
                                            URL:(const GURL&)url;
@@ -197,7 +197,7 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Sets whether the UI is displaying incognito content.
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible;
 
-// Open a new window with |userActivity|
+// Open a new window with `userActivity`
 - (void)openNewWindowWithActivity:(NSUserActivity*)userActivity;
 
 @end

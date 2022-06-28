@@ -96,8 +96,8 @@
   free(requiredInstanceMethods);
 }
 
-// |-stopDispatchingToTarget| should be called much less often than
-// |-forwardingTargetForSelector|, so removal is intentionally O(n) in order
+// `-stopDispatchingToTarget` should be called much less often than
+// `-forwardingTargetForSelector`, so removal is intentionally O(n) in order
 // to prioritize the speed of lookups.
 - (void)stopDispatchingToTarget:(id)target {
   std::vector<SEL> selectorsToErase;
@@ -179,8 +179,8 @@
   return [super respondsToSelector:selector];
 }
 
-// Overriden because overrides of |forwardInvocation| also require an override
-// of |methodSignatureForSelector|, as the method signature is needed to
+// Overriden because overrides of `forwardInvocation` also require an override
+// of `methodSignatureForSelector`, as the method signature is needed to
 // construct NSInvocations.
 - (NSMethodSignature*)methodSignatureForSelector:(SEL)aSelector {
   NSMethodSignature* signature = [super methodSignatureForSelector:aSelector];
@@ -193,7 +193,7 @@
 
 #pragma mark - Private
 
-// Returns the target registered to receive messeages for |selector|.
+// Returns the target registered to receive messeages for `selector`.
 - (id)targetForSelector:(SEL)selector {
   auto target = _forwardingTargets.find(selector);
   if (target == _forwardingTargets.end()) {

@@ -10,7 +10,7 @@
 // An instance of this class contains the data needed to do a Lens search.
 @interface SearchImageWithLensCommand : NSObject
 
-// Initializes to search for |image|.
+// Initializes to search for `image`.
 - (instancetype)initWithImage:(UIImage*)image NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

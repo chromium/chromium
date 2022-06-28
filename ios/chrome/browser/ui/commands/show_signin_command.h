@@ -46,7 +46,7 @@ typedef NS_ENUM(NSInteger, AuthenticationOperation) {
                          callback:(ShowSigninCommandCompletionCallback)callback
     NS_DESIGNATED_INITIALIZER;
 
-// Initializes a ShowSigninCommand with |identity| and |callback| set to nil.
+// Initializes a ShowSigninCommand with `identity` and `callback` set to nil.
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
                       promoAction:(signin_metrics::PromoAction)promoAction;
