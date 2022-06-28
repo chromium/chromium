@@ -980,6 +980,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAdaptiveSuggestionsCountName,
      flag_descriptions::kAdaptiveSuggestionsCountDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kAdaptiveSuggestionsCount)},
+    {"trending-queries-module", flag_descriptions::kTrendingQueriesModuleName,
+     flag_descriptions::kTrendingQueriesModuleDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTrendingQueriesModule)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

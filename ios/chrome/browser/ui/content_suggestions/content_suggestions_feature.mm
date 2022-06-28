@@ -32,6 +32,10 @@ const base::Feature kContentSuggestionsUIViewControllerMigration{
 const base::Feature kContentSuggestionsUIModuleRefresh{
     "ContentSuggestionsUIModuleRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature disabled by default.
+const base::Feature kTrendingQueriesModule{"TrendingQueriesModule",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
@@ -55,4 +59,8 @@ bool IsContentSuggestionsUIViewControllerMigrationEnabled() {
 
 bool IsContentSuggestionsUIModuleRefreshEnabled() {
   return base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh);
+}
+
+bool IsTrendingQueriesModuleEnabled() {
+  return base::FeatureList::IsEnabled(kTrendingQueriesModule);
 }

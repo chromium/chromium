@@ -658,6 +658,10 @@ const char kToolbarContainerDescription[] =
     "When enabled, the toolbars and their fullscreen animations will be "
     "managed by the toolbar container coordinator rather than BVC.";
 
+extern const char kTrendingQueriesModuleName[] = "Show Trending Queries module";
+extern const char kTrendingQueriesModuleDescription[] =
+    "When enabled, the trending queries module will be shown in the NTP";
+
 extern const char kUIViewWindowObservingName[] =
     "Support KVO on UIView's window property.";
 extern const char kUIViewWindowObservingDescription[] =

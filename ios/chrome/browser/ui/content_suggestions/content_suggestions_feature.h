@@ -28,6 +28,9 @@ extern const base::Feature kContentSuggestionsUIViewControllerMigration;
 // Feature to section the Content Suggestions into modules.
 extern const base::Feature kContentSuggestionsUIModuleRefresh;
 
+// Feature to show the Trending Queries module.
+extern const base::Feature kTrendingQueriesModule;
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 extern const char kDiscoverFeedIsNativeUIEnabled[];
@@ -47,5 +50,8 @@ bool IsContentSuggestionsUIViewControllerMigrationEnabled();
 
 // Whether the Content Suggestions UI Module Refresh feature is enabled.
 bool IsContentSuggestionsUIModuleRefreshEnabled();
+
+// Whether the Trending Queries module feature is enabled.
+bool IsTrendingQueriesModuleEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_FEATURE_H_

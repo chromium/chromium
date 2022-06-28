@@ -6006,6 +6006,11 @@
     "expiry_milestone": 106
   },
   {
+    "name": "trending-queries-module",
+    "owners": [ "thegreenfrog", "bling-team@google.com" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "trim-on-memory-pressure",
     "owners": [ "bgeffon" ],
     "expiry_milestone": 90

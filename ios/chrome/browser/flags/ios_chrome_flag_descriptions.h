@@ -593,6 +593,10 @@ extern const char kTFLiteLanguageDetectionDescription[];
 extern const char kToolbarContainerName[];
 extern const char kToolbarContainerDescription[];
 
+// Title and Description for the flag to enable the trending queries module.
+extern const char kTrendingQueriesModuleName[];
+extern const char kTrendingQueriesModuleDescription[];
+
 // Title and description for the flag to enable -[UIView window] observing.
 extern const char kUIViewWindowObservingName[];
 extern const char kUIViewWindowObservingDescription[];
