@@ -17,6 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/performance_hint/hint_session.h"

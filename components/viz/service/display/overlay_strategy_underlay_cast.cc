@@ -9,23 +9,20 @@
 
 #include "base/containers/adapters.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 #include "build/chromecast_buildflags.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/service/display/overlay_candidate_factory.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-#include "base/no_destructor.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#endif
-
 namespace viz {
+
 namespace {
 
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 // This persistent mojo::Remote is bound then used by all the instances
 // of OverlayStrategyUnderlayCast.
 mojo::Remote<chromecast::media::mojom::VideoGeometrySetter>&
@@ -35,7 +32,6 @@ GetVideoGeometrySetter() {
       g_video_geometry_setter;
   return *g_video_geometry_setter;
 }
-#endif
 
 }  // namespace
 
@@ -265,14 +261,12 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
 void OverlayStrategyUnderlayCast::CommitCandidate(
     const OverlayProposedCandidate& proposed_candidate,
     AggregatedRenderPass* render_pass) {
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   DCHECK(GetVideoGeometrySetter());
   GetVideoGeometrySetter()->SetVideoGeometry(
       proposed_candidate.candidate.display_rect,
       proposed_candidate.candidate.transform,
       VideoHoleDrawQuad::MaterialCast(*proposed_candidate.quad_iter)
           ->overlay_plane_id);
-#endif
 
   if (proposed_candidate.candidate.has_mask_filter) {
     render_pass->ReplaceExistingQuadWithSolidColor(
@@ -288,13 +282,11 @@ OverlayStrategy OverlayStrategyUnderlayCast::GetUMAEnum() const {
   return OverlayStrategy::kUnderlayCast;
 }
 
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 // static
 void OverlayStrategyUnderlayCast::ConnectVideoGeometrySetter(
     mojo::PendingRemote<chromecast::media::mojom::VideoGeometrySetter>
         video_geometry_setter) {
   GetVideoGeometrySetter().Bind(std::move(video_geometry_setter));
 }
-#endif
 
 }  // namespace viz

@@ -15,15 +15,19 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
-#include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+
+#if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
+#include "components/viz/service/display/overlay_strategy_underlay_cast.h"
+#endif
 
 namespace viz {
 
@@ -151,10 +155,12 @@ OverlayProcessorOzone::OverlayProcessorOzone(
       case OverlayStrategy::kUnderlay:
         strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
         break;
+#if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
       case OverlayStrategy::kUnderlayCast:
         strategies_.push_back(
             std::make_unique<OverlayStrategyUnderlayCast>(this));
         break;
+#endif
       default:
         NOTREACHED();
     }

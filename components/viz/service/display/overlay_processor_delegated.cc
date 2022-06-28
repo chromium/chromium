@@ -32,7 +32,6 @@
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
-#include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "ui/gfx/geometry/rect.h"

@@ -15,9 +15,19 @@ source_set("resource_format") {
   sources = [ "resources/resource_format.h" ]
 }
 
+# TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
+# such builds no longer reach this file.
+always_enable_blending_for_primary =
+    is_castos || is_cast_android || (is_fuchsia && is_chromecast)
+assert(enable_cast_overlay_strategy || !always_enable_blending_for_primary)
+
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "USE_VIZ_DEBUGGER=$use_viz_debugger" ]
+  flags = [
+    "USE_VIZ_DEBUGGER=$use_viz_debugger",
+    "ENABLE_CAST_OVERLAY_STRATEGY=$enable_cast_overlay_strategy",
+    "ALWAYS_ENABLE_BLENDING_FOR_PRIMARY=$always_enable_blending_for_primary",
+  ]
 }
 
 viz_component("resource_format_utils") {
@@ -397,6 +407,7 @@ viz_source_set("unit_tests") {
     sources += [ "gpu/vulkan_in_process_context_provider_unittest.cc" ]
   }
   deps = [
+    ":buildflags",
     ":common",
     "//base/test:test_support",
     "//cc:test_support",

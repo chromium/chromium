@@ -21,6 +21,7 @@
 #include "cc/test/fake_output_surface_client.h"
 #include "cc/test/resource_provider_test_utils.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -44,7 +45,6 @@
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
-#include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 #include "components/viz/test/fake_skia_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -61,6 +61,10 @@
 #if defined(USE_OZONE)
 #include "components/viz/service/display/overlay_processor_delegated.h"
 #include "ui/base/ui_base_features.h"
+#endif
+
+#if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
+#include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 #endif
 
 using testing::_;
@@ -361,12 +365,14 @@ class TransparentUnderlayOverlayProcessor : public DefaultOverlayProcessor {
   }
 };
 
+#if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
 class UnderlayCastOverlayProcessor : public DefaultOverlayProcessor {
  public:
   UnderlayCastOverlayProcessor() : DefaultOverlayProcessor() {
     strategies_.push_back(std::make_unique<OverlayStrategyUnderlayCast>(this));
   }
 };
+#endif
 
 class ChangeThresholdOnTopOverlayProcessor : public DefaultOverlayProcessor {
  public:
@@ -403,20 +409,6 @@ std::unique_ptr<AggregatedRenderPass> CreateRenderPass() {
 
   SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
   shared_state->opacity = 1.f;
-  return pass;
-}
-
-std::unique_ptr<AggregatedRenderPass> CreateRenderPassWithTransform(
-    const gfx::Transform& transform) {
-  AggregatedRenderPassId render_pass_id{1};
-  gfx::Rect output_rect(0, 0, 256, 256);
-
-  auto pass = std::make_unique<AggregatedRenderPass>();
-  pass->SetNew(render_pass_id, output_rect, output_rect, gfx::Transform());
-
-  SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
-  shared_state->opacity = 1.f;
-  shared_state->quad_to_target_transform = transform;
   return pass;
 }
 
@@ -551,6 +543,21 @@ TextureDrawQuad* CreateCandidateQuadAt(
       RGBA_8888, test_surface_id);
 }
 
+#if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
+std::unique_ptr<AggregatedRenderPass> CreateRenderPassWithTransform(
+    const gfx::Transform& transform) {
+  AggregatedRenderPassId render_pass_id{1};
+  gfx::Rect output_rect(0, 0, 256, 256);
+
+  auto pass = std::make_unique<AggregatedRenderPass>();
+  pass->SetNew(render_pass_id, output_rect, output_rect, gfx::Transform());
+
+  SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
+  shared_state->opacity = 1.f;
+  shared_state->quad_to_target_transform = transform;
+  return pass;
+}
+
 // For Cast we use VideoHoleDrawQuad, and that's what overlay_processor_
 // expects.
 VideoHoleDrawQuad* CreateVideoHoleDrawQuadAt(
@@ -563,6 +570,7 @@ VideoHoleDrawQuad* CreateVideoHoleDrawQuadAt(
   overlay_quad->SetNew(shared_quad_state, rect, rect, overlay_plane_id);
   return overlay_quad;
 }
+#endif
 
 TextureDrawQuad* CreateTransparentCandidateQuadAt(
     DisplayResourceProvider* parent_resource_provider,
@@ -768,7 +776,9 @@ using TransitionOverlayTypeTest = OverlayTest<TransitionOverlayProcessor>;
 using UnderlayTest = OverlayTest<UnderlayOverlayProcessor>;
 using TransparentUnderlayTest =
     OverlayTest<TransparentUnderlayOverlayProcessor>;
+#if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
 using UnderlayCastTest = OverlayTest<UnderlayCastOverlayProcessor>;
+#endif
 using MultiOverlayTest = UseMultipleOverlaysTest<MultiOverlayProcessor>;
 using MultiUnderlayTest = UseMultipleOverlaysTest<MultiUnderlayProcessor>;
 using SizeSortedMultiOverlayTest =
@@ -3676,7 +3686,9 @@ TEST_F(UnderlayTest, CandidateNoDamageWhenQuadSharedStateNoOccludingDamage) {
     }
   }
 }
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
 TEST_F(UnderlayCastTest, ReplacementQuad) {
   auto pass = CreateRenderPass();
   CreateVideoHoleDrawQuadAt(pass->shared_quad_state_list.back(), pass.get(),
@@ -3965,9 +3977,9 @@ TEST_F(UnderlayCastTest, OverlayPromotionWithMaskFilter) {
       SkBlendMode::kDstOut,
       pass_list.front()->quad_list.front()->shared_quad_state->blend_mode);
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
 
-#if defined(ALWAYS_ENABLE_BLENDING_FOR_PRIMARY)
+#if BUILDFLAG(ALWAYS_ENABLE_BLENDING_FOR_PRIMARY)
 TEST_F(UnderlayCastTest, PrimaryPlaneOverlayIsAlwaysTransparent) {
   auto pass = CreateRenderPass();
   gfx::Rect output_rect = pass->output_rect;
@@ -3982,9 +3994,10 @@ TEST_F(UnderlayCastTest, PrimaryPlaneOverlayIsAlwaysTransparent) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
   auto output_surface_plane = overlay_processor_->ProcessOutputSurfaceAsOverlay(
-      kDisplaySize, kDefaultBufferFormat, gfx::ColorSpace(),
+      kDisplaySize, kDisplaySize, kDefaultBufferFormat, gfx::ColorSpace(),
       false /* has_alpha */, 1.0f /* opacity */, gpu::Mailbox());
 
+  SurfaceDamageRectList surface_damage_rect_list;
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
@@ -3994,7 +4007,7 @@ TEST_F(UnderlayCastTest, PrimaryPlaneOverlayIsAlwaysTransparent) {
   ASSERT_EQ(true, output_surface_plane.enable_blending);
   EXPECT_EQ(0U, content_bounds_.size());
 }
-#endif
+#endif  // BUILDFLAG(ALWAYS_ENABLE_BLENDING_FOR_PRIMARY)
 
 #if BUILDFLAG(IS_APPLE)
 class CALayerOverlayRPDQTest : public CALayerOverlayTest {

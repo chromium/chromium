@@ -291,12 +291,6 @@ viz_component("service") {
     }
   }
 
-  # TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-  # such builds no longer reach this file.
-  if (is_castos || is_cast_android || (is_fuchsia && is_chromecast)) {
-    deps += [ "//chromecast/media/service/mojom" ]
-  }
-
   if (is_mac) {
     sources += [
       "display/ca_layer_overlay.cc",
@@ -327,9 +321,16 @@ viz_component("service") {
       "display/overlay_strategy_single_on_top.h",
       "display/overlay_strategy_underlay.cc",
       "display/overlay_strategy_underlay.h",
+    ]
+  }
+
+  if (enable_cast_overlay_strategy) {
+    sources += [
       "display/overlay_strategy_underlay_cast.cc",
       "display/overlay_strategy_underlay_cast.h",
     ]
+
+    deps += [ "//chromecast/media/service/mojom" ]
   }
 
   if (is_android) {
@@ -358,12 +359,6 @@ viz_component("service") {
     ]
 
     public_deps += [ "//ui/ozone" ]
-  }
-
-  # TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
-  # such builds no longer reach this file.
-  if (is_castos || is_cast_android || (is_fuchsia && is_chromecast)) {
-    defines += [ "ALWAYS_ENABLE_BLENDING_FOR_PRIMARY" ]
   }
 
   if (is_win) {

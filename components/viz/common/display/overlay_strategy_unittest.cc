@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "components/viz/common/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,8 +27,12 @@ TEST(ParseOverlayStrategiesTest, ParseFullList) {
 
   EXPECT_THAT(strategies, UnorderedElementsAre(OverlayStrategy::kFullscreen,
                                                OverlayStrategy::kSingleOnTop,
-                                               OverlayStrategy::kUnderlay,
-                                               OverlayStrategy::kUnderlayCast));
+                                               OverlayStrategy::kUnderlay
+#if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
+                                               ,
+                                               OverlayStrategy::kUnderlayCast
+#endif
+                                               ));
 }
 
 TEST(ParseOverlayStrategiesTest, BadValue) {

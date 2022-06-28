@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//components/viz/viz.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("compositing") {
@@ -38,6 +39,9 @@ mojom("compositing") {
   enabled_features = []
   if (use_ozone) {
     enabled_features += [ "use_ozone" ]
+  }
+  if (enable_cast_overlay_strategy) {
+    enabled_features += [ "enable_cast_overlay_strategy" ]
   }
 
   cpp_typemaps = [

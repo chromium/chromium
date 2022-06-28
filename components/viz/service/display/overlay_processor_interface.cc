@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/buildflags.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
@@ -202,7 +203,7 @@ OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
   overlay_plane.display_rect =
       gfx::RectF(viewport_size.width(), viewport_size.height());
 
-#if defined(ALWAYS_ENABLE_BLENDING_FOR_PRIMARY)
+#if BUILDFLAG(ALWAYS_ENABLE_BLENDING_FOR_PRIMARY)
   // On Chromecast, always use RGBA as the scanout format for the primary plane.
   overlay_plane.enable_blending = true;
 #endif
