@@ -29,9 +29,6 @@ namespace web_app {
 // Preinstalled apps are the only type of externally installed apps that
 // can be uninstalled by user. So if an user has uninstalled a preinstalled app,
 // then it should stay uninstalled on startup.
-// TODO(crbug.com/1029410): Ensure PreinstalledWebAppManager relies on
-// UserUninstalledPreinstalledWebAppPrefs instead of
-// ExternallyInstalledWebAppPrefs once removed.
 //
 // To prevent that, we keep track of the install URLs of preinstalled apps
 // outside of the web_app DB so that on every startup, the WebAppSystem can

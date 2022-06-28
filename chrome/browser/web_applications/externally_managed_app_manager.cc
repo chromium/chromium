@@ -101,7 +101,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
   std::vector<GURL> installed_urls;
   for (const auto& apps_it :
        registrar_->GetExternallyInstalledApps(install_source)) {
-    // TODO(crbug.com/1029410): Remove this check once we cleanup
+    // TODO(crbug.com/1339965): Remove this check once we cleanup
     // ExternallyInstalledWebAppPrefs on external app uninstall.
     bool has_same_external_source =
         registrar_->GetAppById(apps_it.first)

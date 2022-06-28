@@ -23,6 +23,9 @@ class PrefRegistrySyncable;
 }
 
 namespace web_app {
+// TODO(crbug.com/1339965): Retire ExternallyInstalledWebAppPrefs
+// completely if metrics being measured in
+// externally_installed_prefs_migration_metrics.h look good.
 
 // This field is being retired from prefs::kWebAppsPreferences, but is
 // needed for migration to UserUninstalledPreinstalledWebAppPrefs.
