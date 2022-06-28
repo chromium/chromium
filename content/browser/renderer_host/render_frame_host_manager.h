@@ -797,14 +797,16 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // above.
   bool InitRenderFrame(RenderFrameHostImpl* render_frame_host);
 
-  // Find the routing ID of the frame or proxy that this frame will replace or
-  // |MSG_ROUTING_NONE| if there is none. When initializing a new RenderFrame
-  // for |render_frame_host|, it may be replacing a RenderFrameProxy or another
-  // RenderFrame in the renderer or recovering from a crash. |existing_proxy| is
-  // the proxy for |this| in the destination renderer, nullptr if there is no
-  // proxy. |render_frame_host| is used only for sanity checking.
-  int GetReplacementRoutingId(RenderFrameProxyHost* existing_proxy,
-                              RenderFrameHostImpl* render_frame_host) const;
+  // Find the `blink::FrameToken` of the frame or proxy that this frame will
+  // replace or absl::nullopt if there is none. When initializing a new
+  // RenderFrame for `render_frame_host`, it may be replacing a RenderFrameProxy
+  // or another RenderFrame in the renderer or recovering from a crash.
+  // `existing_proxy` is the proxy for `this` in the destination renderer,
+  // nullptr if there is no proxy. `render_frame_host` is used only for sanity
+  // checking.
+  absl::optional<blink::FrameToken> GetReplacementFrameToken(
+      RenderFrameProxyHost* existing_proxy,
+      RenderFrameHostImpl* render_frame_host) const;
 
   // Helper to reinitialize the RenderFrame, RenderView, and the opener chain
   // for the provided |render_frame_host|.  Used when the |render_frame_host|

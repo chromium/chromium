@@ -1004,9 +1004,6 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceEmulationWithOOPIF) {
                ReconstructReplicationStateForTesting(child_frame),
                blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces());
   EXPECT_TRUE(web_frame->FirstChild()->IsWebRemoteFrame());
-  RenderFrameProxy* child_proxy = RenderFrameProxy::FromWebFrame(
-      web_frame->FirstChild()->ToWebRemoteFrame());
-  ASSERT_TRUE(child_proxy);
 
   // Verify that the system device scale factor has propagated into the
   // RenderFrameProxy.
@@ -1085,12 +1082,13 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceScaleCorrectAfterCrossOriginNav) {
   blink::VisualProperties test_visual_properties =
       MakeVisualPropertiesWithDeviceScaleFactor(device_scale);
 
+  blink::RemoteFrameToken remote_child_frame_token = blink::RemoteFrameToken();
   // Unload the main frame after which it should become a WebRemoteFrame.
   auto replication_state = ReconstructReplicationStateForTesting(frame());
   // replication_state.origin = url::Origin(GURL("http://foo.com"));
   static_cast<mojom::Frame*>(frame())->Unload(
       kProxyRoutingId, true, replication_state->Clone(),
-      blink::RemoteFrameToken(), CreateStubRemoteFrameInterfaces());
+      remote_child_frame_token, CreateStubRemoteFrameInterfaces());
   EXPECT_TRUE(web_view_->MainFrame()->IsWebRemoteFrame());
 
   // Do the remote-to-local transition for the proxy, which is to create a
@@ -1129,7 +1127,10 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceScaleCorrectAfterCrossOriginNav) {
       *agent_scheduling_group_, blink::LocalFrameToken(), routing_id,
       TestRenderFrame::CreateStubFrameReceiver(),
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
-      kProxyRoutingId, absl::nullopt, MSG_ROUTING_NONE, MSG_ROUTING_NONE,
+      /*previous_frame_token=*/remote_child_frame_token,
+      /*opener_frame_token=*/absl::nullopt,
+      /*parent_frame_token=*/absl::nullopt,
+      /*previous_sibling_frame_token=*/absl::nullopt,
       base::UnguessableToken::Create(), blink::mojom::TreeScopeType::kDocument,
       std::move(replication_state), std::move(widget_params),
       blink::mojom::FrameOwnerProperties::New(),
@@ -1190,7 +1191,10 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       *agent_scheduling_group_, blink::LocalFrameToken(), routing_id,
       TestRenderFrame::CreateStubFrameReceiver(),
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
-      kProxyRoutingId, absl::nullopt, frame()->GetRoutingID(), MSG_ROUTING_NONE,
+      child_remote_frame_token,
+      /*opener_frame_token=*/absl::nullopt,
+      /*parent_frame_token=*/web_frame->GetFrameToken(),
+      /*previous_sibling_frame_token=*/absl::nullopt,
       base::UnguessableToken::Create(), blink::mojom::TreeScopeType::kDocument,
       std::move(replication_state),
       /*widget_params=*/nullptr, blink::mojom::FrameOwnerProperties::New(),

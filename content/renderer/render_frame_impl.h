@@ -185,12 +185,12 @@ class CONTENT_EXPORT RenderFrameImpl
       const base::UnguessableToken& devtools_frame_token,
       mojom::CreateLocalMainFrameParamsPtr params);
 
-  // Creates a new RenderFrame with |routing_id|. If |previous_routing_id| is
-  // MSG_ROUTING_NONE, it creates the Blink WebLocalFrame and inserts it into
+  // Creates a new RenderFrame with |routing_id|. If |previous_frame_token| is
+  // not provided, it creates the Blink WebLocalFrame and inserts it into
   // the frame tree after the frame identified by |previous_sibling_routing_id|,
   // or as the first child if |previous_sibling_routing_id| is MSG_ROUTING_NONE.
   // Otherwise, the frame is semi-orphaned until it commits, at which point it
-  // replaces the previous object identified by |previous_routing_id|. The
+  // replaces the previous object identified by |previous_frame_token|. The
   // previous object can either be a RenderFrame or a RenderFrameProxy.
   // The frame's opener is set to the frame identified by |opener_routing_id|.
   // The frame is created as a child of the RenderFrame identified by
@@ -214,10 +214,10 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
-      int previous_routing_id,
+      const absl::optional<blink::FrameToken>& previous_frame_token,
       const absl::optional<blink::FrameToken>& opener_frame_token,
-      int parent_routing_id,
-      int previous_sibling_routing_id,
+      const absl::optional<blink::FrameToken>& parent_frame_token,
+      const absl::optional<blink::FrameToken>& previous_sibling_frame_token,
       const base::UnguessableToken& devtools_frame_token,
       blink::mojom::TreeScopeType tree_scope_type,
       blink::mojom::FrameReplicationStatePtr replicated_state,
@@ -260,10 +260,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // Web tests override the creation of RenderFrames in order to inject a
   // partial testing fake.
   static void InstallCreateHook(CreateRenderFrameImplFunction create_frame);
-
-  // Looks up and returns the WebFrame corresponding to a given frame routing
-  // ID.
-  static blink::WebFrame* ResolveWebFrame(int opener_frame_routing_id);
 
   // Overwrites the given URL to use an HTML5 embed if possible.
   blink::WebURL OverrideFlashEmbedWithHTML(const blink::WebURL& url) override;

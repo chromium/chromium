@@ -3218,14 +3218,14 @@ bool RenderFrameHostManager::InitRenderFrame(
   if (frame_tree_node_->opener())
     opener_frame_token = GetOpenerFrameToken(site_instance_group);
 
-  int parent_routing_id = MSG_ROUTING_NONE;
+  absl::optional<blink::FrameToken> parent_frame_token;
   if (frame_tree_node_->parent()) {
-    parent_routing_id =
+    parent_frame_token =
         frame_tree_node_->parent()
             ->frame_tree_node()
             ->render_manager()
-            ->GetRoutingIdForSiteInstanceGroup(site_instance_group);
-    CHECK_NE(parent_routing_id, MSG_ROUTING_NONE);
+            ->GetFrameTokenForSiteInstanceGroup(site_instance_group);
+    CHECK(parent_frame_token);
   }
 
   // At this point, all RenderFrameProxies for sibling frames have already been
@@ -3233,14 +3233,14 @@ bool RenderFrameHostManager::InitRenderFrame(
   // correct order for indexed window access (e.g., window.frames[1]), pass the
   // previous sibling frame so that this frame is correctly inserted into the
   // frame tree on the renderer side.
-  int previous_sibling_routing_id = MSG_ROUTING_NONE;
+  absl::optional<blink::FrameToken> previous_sibling_frame_token;
   FrameTreeNode* previous_sibling =
       frame_tree_node_->current_frame_host()->PreviousSibling();
   if (previous_sibling) {
-    previous_sibling_routing_id =
-        previous_sibling->render_manager()->GetRoutingIdForSiteInstanceGroup(
+    previous_sibling_frame_token =
+        previous_sibling->render_manager()->GetFrameTokenForSiteInstanceGroup(
             site_instance_group);
-    CHECK_NE(previous_sibling_routing_id, MSG_ROUTING_NONE);
+    CHECK(previous_sibling_frame_token);
   }
 
   RenderFrameProxyHost* existing_proxy =
@@ -3249,18 +3249,19 @@ bool RenderFrameHostManager::InitRenderFrame(
   if (existing_proxy && !existing_proxy->is_render_frame_proxy_live())
     existing_proxy->InitRenderFrameProxy();
 
-  // Figure out the routing ID of the frame or proxy that this frame will
-  // replace. This will usually will be |existing_proxy|'s routing ID, but
-  // with RenderDocument it might also be a RenderFrameHost's routing ID.
-  int previous_routing_id =
-      GetReplacementRoutingId(existing_proxy, render_frame_host);
+  // Figure out the FrameToken of the frame or proxy that this frame will
+  // replace. This usually will be `existing_proxy`'s FrameToken, but
+  // with RenderDocument it might also be a RenderFrameHost's FrameToken.
+  absl::optional<blink::FrameToken> previous_frame_token =
+      GetReplacementFrameToken(existing_proxy, render_frame_host);
 
   return render_frame_host->CreateRenderFrame(
-      previous_routing_id, opener_frame_token, parent_routing_id,
-      previous_sibling_routing_id);
+      previous_frame_token, opener_frame_token, parent_frame_token,
+      previous_sibling_frame_token);
 }
 
-int RenderFrameHostManager::GetReplacementRoutingId(
+absl::optional<blink::FrameToken>
+RenderFrameHostManager::GetReplacementFrameToken(
     RenderFrameProxyHost* existing_proxy,
     RenderFrameHostImpl* render_frame_host) const {
   // Check whether there is an existing proxy for this frame in this
@@ -3272,9 +3273,7 @@ int RenderFrameHostManager::GetReplacementRoutingId(
   // RenderFrameProxyHost.
   if (existing_proxy) {
     // We are navigating cross-SiteInstance in a main frame or subframe.
-    int proxy_routing_id = existing_proxy->GetRoutingID();
-    CHECK_NE(proxy_routing_id, MSG_ROUTING_NONE);
-    return proxy_routing_id;
+    return existing_proxy->GetFrameToken();
   } else {
     // No proxy means that this is one of:
     // - a same-SiteInstance subframe navigation
@@ -3291,13 +3290,13 @@ int RenderFrameHostManager::GetReplacementRoutingId(
       // this can only be when RenderDocument-subframe is enabled.
       DCHECK(ShouldCreateNewHostForSameSiteSubframe());
       DCHECK_NE(render_frame_host, current_frame_host());
-      return current_frame_host()->GetRoutingID();
+      return current_frame_host()->GetFrameToken();
     } else {
       // The renderer crashed and there is no previous proxy or previous frame
       // in the renderer to be replaced.
       DCHECK(current_frame_host()->must_be_replaced());
       DCHECK_NE(render_frame_host, current_frame_host());
-      return MSG_ROUTING_NONE;
+      return absl::nullopt;
     }
   }
 }

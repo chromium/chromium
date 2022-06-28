@@ -140,17 +140,20 @@ class RenderFrameImplTest : public RenderViewTest {
     std::ignore = main_frame_host.BindNewEndpointAndPassDedicatedReceiver();
     remote_main_frame_interfaces->main_frame_host = main_frame_host.Unbind();
 
+    blink::RemoteFrameToken remote_child_token = blink::RemoteFrameToken();
     RenderFrameImpl::FromWebFrame(
         GetMainRenderFrame()->GetWebFrame()->FirstChild())
         ->Unload(kFrameProxyRouteId, false, frame_replication_state->Clone(),
-                 blink::RemoteFrameToken(),
-                 std::move(remote_main_frame_interfaces));
+                 remote_child_token, std::move(remote_main_frame_interfaces));
     MockPolicyContainerHost mock_policy_container_host;
     RenderFrameImpl::CreateFrame(
         *agent_scheduling_group_, blink::LocalFrameToken(), kSubframeRouteId,
         TestRenderFrame::CreateStubFrameReceiver(),
         TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
-        MSG_ROUTING_NONE, absl::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
+        /*previous_frame_token=*/absl::nullopt,
+        /*opener_frame_token=*/absl::nullopt,
+        /*parent_frame_token=*/remote_child_token,
+        /*previous_sibling_frame_token=*/absl::nullopt,
         base::UnguessableToken::Create(),
         blink::mojom::TreeScopeType::kDocument,
         std::move(frame_replication_state), std::move(widget_params),

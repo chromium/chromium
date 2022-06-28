@@ -33,7 +33,6 @@ namespace content {
 class AgentSchedulingGroup;
 class BlinkInterfaceRegistryImpl;
 class RenderFrameImpl;
-class RenderViewImpl;
 
 // When a page's frames are rendered by multiple processes, each renderer has a
 // full copy of the frame tree. It has full RenderFrames for the frames it is
@@ -107,9 +106,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       const base::UnguessableToken& devtools_frame_token,
       const blink::WebElement& frame_owner_element);
 
-  // Returns the RenderFrameProxy for the given routing ID.
-  static RenderFrameProxy* FromRoutingID(int routing_id);
-
   // Returns the RenderFrameProxy given a WebRemoteFrame. |web_frame| must not
   // be null, nor will this method return null.
   static RenderFrameProxy* FromWebFrame(blink::WebRemoteFrame* web_frame);
@@ -133,9 +129,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   void SetReplicatedState(blink::mojom::FrameReplicationStatePtr state);
 
   int routing_id() { return routing_id_; }
-  RenderViewImpl* render_view() { return render_view_; }
   blink::WebRemoteFrame* web_frame() { return web_frame_; }
-  std::string unique_name() const;
 
   // blink::WebRemoteFrameClient implementation:
   void FrameDetached(DetachType type) override;
@@ -147,7 +141,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   RenderFrameProxy(AgentSchedulingGroup& agent_scheduling_group,
                    int routing_id);
 
-  void Init(blink::WebRemoteFrame* frame, RenderViewImpl* render_view);
+  void Init(blink::WebRemoteFrame* frame);
 
   // The |AgentSchedulingGroup| this proxy is associated with. NOTE: This is
   // different than the |AgentSchedulingGroup| associated with the frame being
@@ -164,8 +158,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   // RenderFrameProxyHost.
   std::unique_ptr<blink::AssociatedInterfaceProvider>
       remote_associated_interfaces_;
-
-  RenderViewImpl* render_view_ = nullptr;
 
   service_manager::BinderRegistry binder_registry_;
   blink::AssociatedInterfaceRegistry associated_interfaces_;

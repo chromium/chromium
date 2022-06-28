@@ -3171,10 +3171,10 @@ bool RenderFrameHostImpl::RequiresPerformActionPointInPixels() const {
 }
 
 bool RenderFrameHostImpl::CreateRenderFrame(
-    int previous_routing_id,
+    const absl::optional<blink::FrameToken>& previous_frame_token,
     const absl::optional<blink::FrameToken>& opener_frame_token,
-    int parent_routing_id,
-    int previous_sibling_routing_id) {
+    const absl::optional<blink::FrameToken>& parent_frame_token,
+    const absl::optional<blink::FrameToken>& previous_sibling_frame_token) {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::CreateRenderFrame");
   DCHECK(!IsRenderFrameLive()) << "Creating frame twice";
 
@@ -3192,10 +3192,10 @@ bool RenderFrameHostImpl::CreateRenderFrame(
       params->interface_broker.InitWithNewPipeAndPassReceiver());
 
   params->routing_id = routing_id_;
-  params->previous_routing_id = previous_routing_id;
+  params->previous_frame_token = previous_frame_token;
   params->opener_frame_token = opener_frame_token;
-  params->parent_routing_id = parent_routing_id;
-  params->previous_sibling_routing_id = previous_sibling_routing_id;
+  params->parent_frame_token = parent_frame_token;
+  params->previous_sibling_frame_token = previous_sibling_frame_token;
   params->tree_scope_type = frame_tree_node()->tree_scope_type();
   params->replication_state =
       browsing_context_state_->current_replication_state().Clone();
@@ -3253,7 +3253,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   // RenderWidgetHostImpl. https://crbug.com/545684
   if (owned_render_widget_host_) {
     DCHECK(parent_);
-    DCHECK_NE(parent_routing_id, MSG_ROUTING_NONE);
+    DCHECK(parent_frame_token);
     RenderWidgetHostView* rwhv = RenderWidgetHostViewChildFrame::Create(
         owned_render_widget_host_.get(),
         parent_->GetRenderWidgetHost()->GetScreenInfos());
@@ -3268,22 +3268,20 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   params->frame = pending_frame_remote.InitWithNewEndpointAndPassReceiver();
   SetMojomFrameRemote(std::move(pending_frame_remote));
 
-  // https://crbug.com/1006814. The renderer needs at least one of these IDs to
-  // be able to insert the new frame in the frame tree.
-  DCHECK(params->previous_routing_id != MSG_ROUTING_NONE ||
-         params->parent_routing_id != MSG_ROUTING_NONE);
+  // https://crbug.com/1006814. The renderer needs at least one of these tokens
+  // to be able to insert the new frame in the frame tree.
+  DCHECK(params->previous_frame_token || params->parent_frame_token);
   GetAgentSchedulingGroup().CreateFrame(std::move(params));
 
-  if (previous_routing_id != MSG_ROUTING_NONE) {
-    RenderFrameProxyHost* proxy = RenderFrameProxyHost::FromID(
-        GetProcess()->GetID(), previous_routing_id);
+  if (previous_frame_token &&
+      previous_frame_token->Is<blink::RemoteFrameToken>()) {
+    RenderFrameProxyHost* proxy = RenderFrameProxyHost::FromFrameToken(
+        GetProcess()->GetID(),
+        previous_frame_token->GetAs<blink::RemoteFrameToken>());
     // We have also created a RenderFrameProxy in CreateFrame above, so
     // remember that.
-    //
-    // RenderDocument: |proxy| can be null, when |previous_routing_id| refers to
-    // a RenderFrameHost instead of a RenderFrameProxy.
-    if (proxy)
-      proxy->SetRenderFrameProxyCreated(true);
+    CHECK(proxy);
+    proxy->SetRenderFrameProxyCreated(true);
   }
 
   // The renderer now has a RenderFrame for this RenderFrameHost.  Note that

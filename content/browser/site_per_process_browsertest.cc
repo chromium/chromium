@@ -5193,8 +5193,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       node->render_manager()->speculative_frame_host()->GetRoutingID();
   blink::LocalFrameToken frame_token =
       node->render_manager()->speculative_frame_host()->GetFrameToken();
-  int previous_routing_id =
-      node->render_manager()->GetProxyToParent()->GetRoutingID();
+  blink::RemoteFrameToken previous_frame_token =
+      node->render_manager()->GetProxyToParent()->GetFrameToken();
 
   // Now go to c.com so the navigation to a.com is cancelled and send an IPC
   // to create a new RenderFrame with the routing id of the previously pending
@@ -5208,11 +5208,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     params->routing_id = frame_routing_id;
     params->frame = pending_frame.InitWithNewEndpointAndPassReceiver();
     std::ignore = params->interface_broker.InitWithNewPipeAndPassReceiver();
-    params->previous_routing_id = previous_routing_id;
+    params->previous_frame_token = previous_frame_token;
     params->opener_frame_token = absl::nullopt;
-    params->parent_routing_id =
-        shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID();
-    params->previous_sibling_routing_id = IPC::mojom::kRoutingIdNone;
+    params->parent_frame_token =
+        shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
     params->frame_owner_properties = blink::mojom::FrameOwnerProperties::New();
     params->token = frame_token;
     params->devtools_frame_token = base::UnguessableToken::Create();
@@ -5268,11 +5267,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
       node->current_frame_host()->GetFrameToken();
   int widget_routing_id =
       node->current_frame_host()->GetRenderWidgetHost()->GetRoutingID();
-  int parent_routing_id =
+  absl::optional<blink::FrameToken> parent_frame_token =
       node->parent()
           ->frame_tree_node()
           ->render_manager()
-          ->GetRoutingIdForSiteInstanceGroup(
+          ->GetFrameTokenForSiteInstanceGroup(
               node->current_frame_host()->GetSiteInstance()->group());
 
   // Have the parent frame remove the child frame from its DOM. This should
@@ -5291,10 +5290,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
     params->routing_id = frame_routing_id;
     params->frame = pending_frame.InitWithNewEndpointAndPassReceiver();
     std::ignore = params->interface_broker.InitWithNewPipeAndPassReceiver();
-    params->previous_routing_id = IPC::mojom::kRoutingIdNone;
+    params->previous_frame_token = absl::nullopt;
     params->opener_frame_token = absl::nullopt;
-    params->parent_routing_id = parent_routing_id;
-    params->previous_sibling_routing_id = IPC::mojom::kRoutingIdNone;
+    params->parent_frame_token = parent_frame_token;
+    params->previous_sibling_frame_token = absl::nullopt;
     params->frame_owner_properties = blink::mojom::FrameOwnerProperties::New();
     params->widget_params = mojom::CreateFrameWidgetParams::New();
     params->widget_params->routing_id = widget_routing_id;

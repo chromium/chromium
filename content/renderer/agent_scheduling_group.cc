@@ -278,9 +278,9 @@ void AgentSchedulingGroup::DestroyView(int32_t view_id) {
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
   RenderFrameImpl::CreateFrame(
       *this, params->token, params->routing_id, std::move(params->frame),
-      std::move(params->interface_broker), params->previous_routing_id,
-      params->opener_frame_token, params->parent_routing_id,
-      params->previous_sibling_routing_id, params->devtools_frame_token,
+      std::move(params->interface_broker), params->previous_frame_token,
+      params->opener_frame_token, params->parent_frame_token,
+      params->previous_sibling_frame_token, params->devtools_frame_token,
       params->tree_scope_type, std::move(params->replication_state),
       std::move(params->widget_params),
       std::move(params->frame_owner_properties),
