@@ -1849,7 +1849,7 @@
       },
       {
         "args": [
-          "--board=amd64-generic",
+          "--board=betty-pi-arc",
           "--use-vm"
         ],
         "experiment_percentage": 100,
@@ -1857,7 +1857,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "lacros_variations_tast_tests amd64-generic",
+        "name": "lacros_variations_tast_tests betty-pi-arc",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1877,7 +1877,7 @@
         },
         "test": "lacros_variations_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_variations_tast_tests/",
-        "variant_id": "amd64-generic"
+        "variant_id": "betty-pi-arc"
       }
     ],
     "isolated_scripts": [

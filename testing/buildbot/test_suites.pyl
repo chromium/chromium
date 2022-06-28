@@ -7441,7 +7441,7 @@
       },
       'lacros_variations_tast_tests': {
         'variants': [
-          'LACROS_AMD64_GENERIC',
+          'LACROS_BETTY_PI_ARC',
         ]
       },
     },
