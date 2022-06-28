@@ -13,7 +13,14 @@ import org.chromium.components.payments.PaymentFeatureList;
 import java.util.HashMap;
 import java.util.Map;
 
-/** The shadow of PaymentFeatureList. */
+/**
+ * The shadow of PaymentFeatureList that allows unit tests to avoid loading native libraries to
+ * check payment feature flag states. Usage example:
+ *
+ *   @RunWith(BaseRobolectricTestRunner.class)
+ *   @Config(manifest = Config.NONE, shadows = {ShadowPaymentFeatureList.class})
+ *   public class MyTest {}
+ */
 @Implements(PaymentFeatureList.class)
 public class ShadowPaymentFeatureList {
     private static final Map<String, Boolean> sFeatureStatuses = new HashMap<>();
@@ -30,6 +37,8 @@ public class ShadowPaymentFeatureList {
                 PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
         ShadowPaymentFeatureList.setFeatureEnabled(
                 PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD, true);
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT_FEATURE, true);
     }
 
     @Resetter
